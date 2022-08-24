@@ -125,15 +125,17 @@ const ChannelListMessengerWithContext = <
     }
   }, [loading, loadingChannels]);
 
-  if (debugRef.current.setEventType) debugRef.current.setEventType('send');
-  if (debugRef.current.setSendEventParams)
-    debugRef.current.setSendEventParams({
-      action: 'Channels',
-      data: channels.map((channel) => ({
-        data: channel.data,
-        members: channel.state.members,
-      })),
-    });
+  if (debugRef && debugRef.current) {
+    if (debugRef.current.setEventType) debugRef.current.setEventType('send');
+    if (debugRef.current.setSendEventParams)
+      debugRef.current.setSendEventParams({
+        action: 'Channels',
+        data: channels.map((channel) => ({
+          data: channel.data,
+          members: channel.state.members,
+        })),
+      });
+  }
 
   if (error && !refreshing && !loadingChannels && !channels?.length) {
     return (
@@ -154,6 +156,10 @@ const ChannelListMessengerWithContext = <
 
   const ListFooterComponent = () =>
     channels.length && ListHeaderComponent ? <ListHeaderComponent /> : null;
+
+  if (loadingChannels) {
+    return <LoadingIndicator listType='channel' />;
+  }
 
   return (
     <>

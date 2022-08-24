@@ -36,7 +36,7 @@ export const useChannelTruncated = <
       setForceUpdate((count) => count + 1);
     };
 
-    client.on('channel.truncated', handleEvent);
-    return () => client.off('channel.truncated', handleEvent);
+    const listener = client?.on('channel.truncated', handleEvent);
+    return () => listener?.unsubscribe();
   }, []);
 };

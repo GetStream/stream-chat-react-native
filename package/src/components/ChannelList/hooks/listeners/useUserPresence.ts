@@ -33,12 +33,13 @@ export const useUserPresence = <
       });
     };
 
-    client.on('user.presence.changed', handleEvent);
-    client.on('user.updated', handleEvent);
+    const listeners = [
+      client?.on('user.presence.changed', handleEvent),
+      client?.on('user.updated', handleEvent),
+    ];
 
     return () => {
-      client.off('user.presence.changed', handleEvent);
-      client.off('user.updated', handleEvent);
+      listeners?.forEach((l) => l?.unsubscribe());
     };
   }, []);
 };

@@ -1,0 +1,44 @@
+Function called when a user presses a message.
+
+:::caution
+
+The default handler for message press interactions acts differently when pressing on reactions and attachments.
+You will have to handle these cases when overriding this function.
+
+:::
+
+| Type     |
+| -------- |
+| function |
+
+| Parameter | Description                                   |
+| --------- | --------------------------------------------- |
+| payload   | `{ additionalInfo, actionHandlers, message }` |
+
+The `additionalInfo` prop is handy for getting information from certain click events.
+A good example of this is getting the user details when a textMention (for example @Enigma-I-am) is clicked.
+
+For example:
+
+```tsx
+    <Channel
+      onPressMessage={({ additionalInfo, defaultHandler, emitter }) => {
+
+          if (emitter === 'textMention') {
+            console.log(additionalInfo?.user);
+            return;
+          }
+
+          if (emitter === 'card' || emitter === 'textLink') {
+            console.log(additionalInfo?.url);
+            return;
+          }
+
+          defaultHandler?.();
+      }}
+    >
+```
+
+:::info
+
+The `additionalInfo` prop will change over time as we explore more usecases for different `emitter's`.

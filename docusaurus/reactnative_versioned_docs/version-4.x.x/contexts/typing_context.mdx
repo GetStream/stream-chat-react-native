@@ -1,0 +1,35 @@
+---
+id: typing-context
+title: TypingContext
+---
+
+`TypingContext` is provided by [`Channel`](../core-components/channel.mdx) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
+
+## Basic Usage
+
+`TypingContext` can be consumed by any of the child component of `Channel` component as following:
+
+```tsx
+import { useContext } from 'react';
+import { TypingContext } from 'stream-chat-react-native';
+
+const { typing } = useContext(TypingContext);
+```
+
+Alternatively, you can also use `useTypingContext` hook provided by library to consume TypingContext.
+
+```tsx
+import { useTypingContext } from 'stream-chat-react-native';
+
+const { typing } = useTypingContext();
+```
+
+## Value
+
+### typing
+
+The value is a map of <!-- TODO: Change to new docs -->[javascript SDK's typing.start event](https://getstream.io/chat/docs/javascript/event_object/?language=javascript) object mapped by user id, when there are users typing.
+
+| Type   |
+| ------ |
+| object |

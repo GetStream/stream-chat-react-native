@@ -1,5 +1,19 @@
 # Change Log
 
+### [1.11.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.11.1...sampleapp@v1.11.2) (2022-08-17)
+
+
+### Bug Fixes
+
+* SampleApp app icons in right format ([0e51dcf](https://github.com/GetStream/stream-chat-react-native/commit/0e51dcffff798e75801a219f57c5b1e36f7a208a))
+* SampleApp app icons in right format ([824f4dc](https://github.com/GetStream/stream-chat-react-native/commit/824f4dc42f3369c0bb24a81f65abe85aff2ce774))
+* SampleApp app icons in right format (renaming files) ([8679dbb](https://github.com/GetStream/stream-chat-react-native/commit/8679dbb43fa2a568dfad73c4aa97c3aacfbed9d8))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.11.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.11.0...sampleapp@v1.11.1) (2022-08-10)
 
 

@@ -1,11 +1,8 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { LogBox, Platform, SafeAreaView, View, useColorScheme, Text } from 'react-native';
+import { LogBox, Platform, SafeAreaView, View, useColorScheme, I18nManager } from 'react-native';
 import { DarkTheme, DefaultTheme, NavigationContainer, RouteProp } from '@react-navigation/native';
-import {
-  createStackNavigator,
-  StackNavigationProp,
-  useHeaderHeight,
-} from '@react-navigation/stack';
+import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChannelSort, Channel as ChannelType, StreamChat } from 'stream-chat';
 import {
@@ -46,6 +43,8 @@ type StreamChatGenerics = {
   reactionType: LocalReactionType;
   userType: LocalUserType;
 };
+
+I18nManager.forceRTL(false);
 
 const chatClient = StreamChat.getInstance<StreamChatGenerics>('q95x9hkbyd6p');
 const userToken =

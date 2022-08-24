@@ -1,8 +1,5 @@
-import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useContext, useRef } from 'react';
 
-import type { Channel } from 'stream-chat';
-
-import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 export type DebugContextValue = {

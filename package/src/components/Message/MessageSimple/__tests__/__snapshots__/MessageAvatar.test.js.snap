@@ -47,6 +47,7 @@ exports[`MessageAvatar should render message avatar 1`] = `
               "width": 32,
             },
             Object {
+              "backgroundColor": "#ececec",
               "borderRadius": 16,
               "height": 32,
               "width": 32,

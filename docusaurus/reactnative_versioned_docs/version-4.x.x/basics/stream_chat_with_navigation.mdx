@@ -1,0 +1,302 @@
+---
+id: stream_chat_with_navigation
+sidebar_position: 3
+title: Stream Chat with Navigation
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+Stream Chat for React Native provides many features out of the box that require positioning on the screen in a certain manor to result in the desired UI.
+The `AttachmentPicker`, `ImageGallery`, and `MessageOverlay`, all need to be rendered in front of other components to have the desired effect.
+All of these elements are controlled by the `OverlayProvider`, when used together with navigation considerations need to be taken in how these will appear.
+
+The guidance provided makes the assumption you are using [React Navigation](https://reactnavigation.org/) in your app in conjunction with [`createStackNavigator`](https://reactnavigation.org/docs/stack-navigator/).
+
+:::note
+
+**If you are using another navigation solution, or utilizing [`createNativeStackNavigator`](https://reactnavigation.org/docs/native-stack-navigator/), other considerations will need to be taken depending on your navigation arrangement.**
+
+<br />
+
+<code>createNativeStackNavigator</code> uses the native APIs <code>UINavigationController</code> on iOS and <code>
+  Fragment
+</code> on Android. The <code>OverlayProvider</code> needs to exist in a view that can render content in front of the chat
+screen. Therefore using a <code>fullScreenModal</code> with <code>createNativeStackNavigator</code>, which uses <code>
+  UIModalPresentationFullScreen
+</code> on iOS and <code>modal</code> on Android, to render your chat screen will leave the <code>
+  OverlayProvider
+</code> rendered behind the chat. If you are having issues we suggest you get in touch with support and we can find a
+solution to your specific navigation arrangement.
+
+:::
+
+## Navigation Container
+
+The [`NavigationContainer`](https://reactnavigation.org/docs/navigation-container/) manages the apps state in React Navigation.
+Nested navigators and screens all exist within the container.
+To ensure the `OverlayProvider` can render content above all of these screens, headers, tab-bars, etc. the `OverlayProvider` must be rendered around them.
+
+[As noted in Hello Stream Chat](./hello_stream_chat.mdx#chat) the `Chat` component can either surround the entire application or be rendered locally on a screen.
+You can choose whatever suits your needs best, theming, connection handling, and translations are all handled out of the box in the `Chat` component; and this may be a consideration in where in the app you want this component to be rendered.
+
+:::note
+
+Having it higher in the _stack_ helps to ensure it is not unmounted at times when a connection is present.
+If `Chat` is unmounted with a connection present you may have to implement some connection handling functions yourself to ensure you reconnect when the app is, for instance, reopened from the background.
+The WebSocket connection closes on it's own approximately 15 seconds after the app is backgrounded.
+Not handling the connection on [`appState`](https://reactnative.dev/docs/appstate) changes will also effect [how Stream Chat handles Push Notifications](../guides/push_notifications_v2.mdx).
+
+:::
+
+<Tabs
+  defaultValue='app'
+  values={[
+    { label: 'App', value: 'app' },
+    { label: 'Screen', value: 'screen' },
+  ]}
+>
+<TabItem value='app'>
+
+```tsx
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { Chat, OverlayProvider } from 'stream-chat-react-native';
+
+const client = StreamChat.getInstance('api_key');
+const Stack = createStackNavigator<{ home: undefined }>();
+
+export const App = () =>
+  <NavigationContainer>
+    <OverlayProvider>
+      <Chat client={client}>
+        <Stack.Navigator>
+          <Stack.Screen component={() => {/** App components */})} name='home' />
+        </Stack.Navigator>
+      </Chat>
+    </OverlayProvider>
+  </NavigationContainer>;
+```
+
+</TabItem>
+<TabItem value='screen'>
+
+```tsx
+import { StreamChat } from 'stream-chat';
+import { Chat } from 'stream-chat-react-native';
+
+const client = StreamChat.getInstance('api_key');
+
+export const Screen = () => <Chat client={client}>{/** App components */}</Chat>;
+```
+
+```tsx
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { OverlayProvider } from 'stream-chat-react-native';
+import { Screen } from './Screen';
+
+const Stack = createStackNavigator<{ home: undefined }>();
+
+export const App = () => (
+  <NavigationContainer>
+    <OverlayProvider>
+      <Stack.Navigator>
+        <Stack.Screen component={Screen} name='home' />
+      </Stack.Navigator>
+    </OverlayProvider>
+  </NavigationContainer>
+);
+```
+
+</TabItem>
+</Tabs>
+
+## Keyboard
+
+The `Channel` component contains a <!-- TODO: Change to new docs for links -->`KeyboardCompatibleView` that, like [the standard React Native `KeyboardAvoidingView`](https://reactnative.dev/docs/keyboardavoidingview), needs a `keyboardVerticalOffset` to account for distance between the top of the user screen and the react native view.
+This height in most cases with React Navigation in conjunction with Stream Chat is the header height of React Navigation.
+This can be accessed from React Navigation using the `useHeaderHeight` hook from `@react-navigation/stack`, and given as a prop to `Channel`.
+
+```tsx
+  const headerHeight = useHeaderHeight();
+
+  <Channel keyboardVerticalOffset={headerHeight}>
+```
+
+## Attachment Picker
+
+The `AttachmentPicker` is a keyboard-esk view that allows a user to attach photos and files.
+Part of the construction of the `AttachmentPicker` is a bottom-sheet provided by the `OverlayProvider`.
+This bottom-sheet provides a grid of images in a scrollable list that can be lifted up to make selecting images easier.
+The placement of the `AttachmentPicker` is dependant on two values, the `bottomInset` and the `topInset`.
+
+### Top Inset
+
+`topInset` is used to determine how high the scrollable bottom-sheet can go when opened.
+`topInset` defaults to 0 and covers the entire screen, or it can be set to the [top safe area inset](https://reactnavigation.org/docs/handling-safe-area/#use-the-hook-for-more-control) if desired.
+The most common choice when using React Navigation is to get the header height using the `useHeaderHeight` hook from `@react-navigation/stack` and set the top inset to the given height for a nice visual result where the picker open to the header.
+
+```tsx
+const headerHeight = useHeaderHeight();
+const { setTopInset } = useAttachmentPickerContext();
+
+useEffect(() => {
+  setTopInset(headerHeight);
+}, [headerHeight]);
+```
+
+:::note
+
+`topInset` can be set via props on the `OverlayProvider`, or set via the `setTopInset` function provided by the `useAttachmentPickerContext` hook.
+
+:::
+
+### Bottom Inset
+
+`bottomInset` is used to adjust the height of the `AttachmentPicker` menu to align properly with the bottom-sheet when open.
+This is the height between the bottom of the <!-- TODO: Change to new docs for links -->`MessageInput` container and the bottom of the screen.
+If you are displaying the chat screen without a tab-bar it is most likely the bottom inset is the [bottom safe area inset](https://reactnavigation.org/docs/handling-safe-area/#use-the-hook-for-more-control).
+If you are using a bottom tab-bar you can utilize the `useBottomTabBarHeight` hook from `@react-navigation/bottom-tabs` to get the appropriate height to use.
+
+```tsx {11,15}
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Chat, OverlayProvider } from 'stream-chat-react-native';
+
+const client = StreamChat.getInstance('api_key');
+const Stack = createStackNavigator<{ home: undefined }>();
+
+export const Nav = () => {
+  const { bottom } = useSafeAreaInsets();
+
+  return (
+    <NavigationContainer>
+      <OverlayProvider bottomInset={bottom}>
+        <Chat client={client}>
+          <Stack.Navigator>
+            <Stack.Screen component={() => {/** App components */})} name='home' />
+          </Stack.Navigator>
+        </Chat>
+      </OverlayProvider>
+    </NavigationContainer>
+  );
+};
+```
+
+```tsx
+import React from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Nav } from './Nav';
+
+export const App = () => (
+  <SafeAreaProvider>
+    <Nav />
+  </SafeAreaProvider>
+);
+```
+
+:::note
+
+`bottomInset` can be set via props on the `OverlayProvider`, or set via the `setBottomInset` function provided by the `useAttachmentPickerContext` hook.
+
+:::
+
+### Resetting Selected Images
+
+The selected images in the `AttachmentPicker` are tightly coupled to the `MessageInput`.
+As there is only one `AttachmentPicker` in the navigation stack, but multiple `MessageInput`'s can exist, there are details around the setup that must be implemented correctly.
+For the typical navigation setup clearing the selected images is handled out of the box.
+For this to function properly your usage of the `Channel` component must include the usage of `thread` when appropriate.
+Failing to do this will result in unintentional behavior, such as excess image uploads as the selected images will be uploaded twice when selected if the `thread` state is not properly kept.
+
+In more complex scenarios where more than one `Channel` could potentially be rendered in multiple tabs a different approach would be necessary.
+It is suggested that you architect an approach best for your specific scenario.
+
+The `setSelectedImages` function can be pulled off of the `useAttachmentPickerContext` for granular control of the `AttachmentPicker` images.
+
+## Image Gallery
+
+The `ImageGallery` is populated by the <!-- TODO: Change to new docs for links -->`MessageList` component.
+`MessageList` utilizes information provided by both the `ThreadContext` and `threadList` prop to determine if the `ImageGallery` should be updated.
+If there is both a `thread` provided by the `ThreadContext` and the `threadList` prop is `true` on `MessageList`, or both values are falsy, the `ImageGallery` is updated appropriately.
+
+In practice this means that if you implement a screen for the main `Channel`, and another for `Thread` that is navigated to `onThreadSelect`, you need to indicate to the main `Channel` it should not update the `ImageGallery` while the `Thread` screen is present.
+To do this the main `Channel` component should be given the appropriate `thread` when the `Thread` screen shown, then the `thread` removed when navigating back to the main `Channel` screen.
+
+This can be done by keeping the current `thread` in a `context` and setting it `onThreadSelect`, then removing it `onThreadDismount`.
+Alternatively if a user only has a single path to and from the `Channel` screen to the `Thread` screen and back you can accomplish the same result using a local state and the [`useFocusEffect`](https://reactnavigation.org/docs/use-focus-effect/) hook from React Navigation.
+
+<Tabs
+  defaultValue='context'
+  values={[
+    { label: 'context', value: 'context' },
+    { label: 'useFocusEffect', value: 'useFocusEffect' },
+  ]}
+>
+<TabItem value='context'>
+
+```tsx
+export const ThreadScreen = () => {
+  const { channel } = useAppChannel();
+  const { setThread, thread } = useAppThread();
+
+  return (
+    <Channel channel={channel} thread={thread} threadList>
+      <Thread onThreadDismount={() => setThread(undefined)} />
+    </Channel>
+  );
+};
+```
+
+```tsx
+export const ChannelScreen = () => {
+  const { channel } = useAppChannel();
+  const { setThread, thread } = useAppThread();
+
+  return (
+    <Channel channel={channel} thread={thread}>
+      <MessageList
+        onThreadSelect={selectedThread => {
+          setThread(selectedThread);
+          navigation.navigate('ThreadScreen');
+        }}
+      />
+      <MessageInput />
+    </Channel>
+  );
+};
+```
+
+</TabItem>
+<TabItem value='useFocusEffect'>
+
+```tsx
+export const ChannelScreen = () => {
+  const { channel } = useAppChannel();
+  const [selectedThread, setSelectedThread] = useState<MessageType>();
+
+  useFocusEffect(() => {
+    setSelectedThread(undefined);
+  });
+
+  return (
+    <Channel channel={channel} thread={selectedThread}>
+      <MessageList
+        onThreadSelect={thread => {
+          setSelectedThread(thread);
+          navigation.navigate('ThreadScreen', { thread });
+        }}
+      />
+      <MessageInput />
+    </Channel>
+  );
+};
+```
+
+</TabItem>
+</Tabs>

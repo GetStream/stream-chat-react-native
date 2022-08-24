@@ -261,7 +261,7 @@ export const renderText = <
   );
 
   const customRules = {
-    link: { link },
+    link: { react: link },
     list: { react: list },
     // Truncate long text content in the message overlay
     paragraph: messageTextNumberOfLines ? { react: paragraphText } : {},

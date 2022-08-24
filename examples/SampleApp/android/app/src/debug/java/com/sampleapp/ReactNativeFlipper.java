@@ -12,6 +12,8 @@ import com.facebook.flipper.android.utils.FlipperUtils;
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin;
 import com.facebook.flipper.plugins.databases.DatabasesFlipperPlugin;
+import com.facebook.flipper.plugins.databases.impl.SqliteDatabaseDriver;
+import com.facebook.flipper.plugins.databases.impl.SqliteDatabaseProvider;
 import com.facebook.flipper.plugins.fresco.FrescoFlipperPlugin;
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
@@ -22,7 +24,13 @@ import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPl
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.modules.network.NetworkingModule;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import okhttp3.OkHttpClient;
+import com.facebook.react.ReactInstanceEventListener;
 
 public class ReactNativeFlipper {
   public static void initializeFlipper(Context context, ReactInstanceManager reactInstanceManager) {
@@ -31,7 +39,19 @@ public class ReactNativeFlipper {
 
       client.addPlugin(new InspectorFlipperPlugin(context, DescriptorMapping.withDefaults()));
       client.addPlugin(new ReactFlipperPlugin());
-      client.addPlugin(new DatabasesFlipperPlugin(context));
+      client.addPlugin(new DatabasesFlipperPlugin(new SqliteDatabaseDriver(context, new SqliteDatabaseProvider() {
+          @Override
+          public List<File> getDatabaseFiles() {
+              List<File> databaseFiles = new ArrayList<>();
+              for (String databaseName : context.databaseList()) {
+                databaseFiles.add(context.getDatabasePath(databaseName));
+              }
+              
+              //stream-chat-react-native does not save the database file in the regular databases folder, but in the files one
+              databaseFiles.add(new File(context.getFilesDir(), "databases/stream-chat-react-native"));
+              return databaseFiles;
+          }
+      })));
       client.addPlugin(new SharedPreferencesFlipperPlugin(context));
       client.addPlugin(CrashReporterPlugin.getInstance());
 
@@ -51,7 +71,7 @@ public class ReactNativeFlipper {
       ReactContext reactContext = reactInstanceManager.getCurrentReactContext();
       if (reactContext == null) {
         reactInstanceManager.addReactInstanceEventListener(
-            new ReactInstanceManager.ReactInstanceEventListener() {
+            new ReactInstanceEventListener() {
               @Override
               public void onReactContextInitialized(ReactContext reactContext) {
                 reactInstanceManager.removeReactInstanceEventListener(this);

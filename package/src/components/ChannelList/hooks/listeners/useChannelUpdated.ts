@@ -46,7 +46,7 @@ export const useChannelUpdated = <
       }
     };
 
-    client.on('channel.updated', handleEvent);
-    return () => client.off('channel.updated', handleEvent);
+    const listener = client?.on('channel.updated', handleEvent);
+    return () => listener?.unsubscribe();
   }, []);
 };

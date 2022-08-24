@@ -1,0 +1,11 @@
+Override for [Event Listener](#event-listeners) behavior when a message is received on a channel that is not being watched.
+The default behavior adds the channel to the list.
+
+| Type     |
+| -------- |
+| function |
+
+| Parameter   | Description                                                                                                                 |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------- |
+| setChannels | Setter function for the internal `channels` state                                                                           |
+| event       | [Event object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `notification.message_new` |
