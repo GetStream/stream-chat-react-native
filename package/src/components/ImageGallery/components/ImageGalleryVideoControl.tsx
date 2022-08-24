@@ -53,7 +53,7 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
 
     const {
       theme: {
-        colors: { accent_blue, static_black, static_white },
+        colors: { accent_blue, black, static_black, static_white },
         imageGallery: {
           videoControl: { durationTextStyle, roundedView, videoContainer },
         },
@@ -83,7 +83,7 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
         </TouchableOpacity>
         <Text
           accessibilityLabel='Progress Duration'
-          style={[styles.durationTextStyle, durationTextStyle, { color: static_white }]}
+          style={[styles.durationTextStyle, durationTextStyle, { color: black }]}
         >
           {progressDuration ? progressDuration : '00:00'}
         </Text>
@@ -97,7 +97,7 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
         />
         <Text
           accessibilityLabel='Video Duration'
-          style={[styles.durationTextStyle, durationTextStyle, { color: static_white }]}
+          style={[styles.durationTextStyle, durationTextStyle, { color: black }]}
         >
           {videoDuration ? videoDuration : '00:00'}
         </Text>
