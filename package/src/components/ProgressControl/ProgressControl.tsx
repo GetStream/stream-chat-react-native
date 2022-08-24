@@ -115,7 +115,7 @@ export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
           testID={testID}
         >
           <Animated.View style={[thumbStyles]}>
-            <ProgressControlThumb />
+            {onProgressDrag && <ProgressControlThumb />}
           </Animated.View>
         </PanGestureHandler>
       </View>

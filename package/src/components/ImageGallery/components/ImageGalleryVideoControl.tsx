@@ -53,7 +53,7 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
 
     const {
       theme: {
-        colors: { static_black, static_white },
+        colors: { accent_blue, static_black, static_white },
         imageGallery: {
           videoControl: { durationTextStyle, roundedView, videoContainer },
         },
@@ -89,7 +89,7 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
         </Text>
         <ProgressControl
           duration={duration}
-          filledColor={static_white}
+          filledColor={accent_blue}
           onPlayPause={onPlayPause}
           progress={progress}
           testID={'progress-control'}
