@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { AppSettingsAPIResponse, Channel, Mute, StreamChat } from 'stream-chat';
+import type { AppSettingsAPIResponse, Channel, EventHandler, Mute, StreamChat } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
@@ -33,6 +33,7 @@ export type ChatContextValue<
    * */
   client: StreamChat<StreamChatGenerics>;
   connectionRecovering: boolean;
+  enableOfflineSupport: boolean;
   isOnline: boolean;
   mutedUsers: Mute<StreamChatGenerics>[];
   /**
@@ -41,6 +42,7 @@ export type ChatContextValue<
    * @overrideType Function
    */
   setActiveChannel: (newChannel?: Channel<StreamChatGenerics>) => void;
+  subscribeConnectionRecoveredCallback: (callback: EventHandler<StreamChatGenerics>) => () => void;
   /**
    * Instance of channel object from stream-chat package.
    *

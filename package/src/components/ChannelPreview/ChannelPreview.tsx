@@ -104,8 +104,8 @@ const ChannelPreviewWithContext = <
       }
     };
 
-    channel.on('message.read', handleReadEvent);
-    return () => channel.off('message.read', handleReadEvent);
+    const listener = channel.on('message.read', handleReadEvent);
+    return () => listener.unsubscribe();
   }, []);
 
   return <Preview channel={channel} latestMessagePreview={latestMessagePreview} unread={unread} />;

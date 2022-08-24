@@ -40,7 +40,7 @@ export const useChannelDeleted = <
       }
     };
 
-    client.on('channel.deleted', handleEvent);
-    return () => client.off('channel.deleted', handleEvent);
+    const listener = client?.on('channel.deleted', handleEvent);
+    return () => listener?.unsubscribe();
   }, []);
 };

@@ -8,7 +8,7 @@ can get access to context as following:
 import { useChannelsContext } from 'stream-chat-react-native';
 
 const SomeChildComponent = () => {
-  const { image, setImage, setImages } = useImageGalleryContext();
+  const { selectedMessage, setSelectedMessage, setMessages } = useImageGalleryContext();
 
   return (
     <View />

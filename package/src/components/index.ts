@@ -48,7 +48,6 @@ export * from './ChannelList/hooks/listeners/useChannelDeleted';
 export * from './ChannelList/hooks/listeners/useChannelHidden';
 export * from './ChannelList/hooks/listeners/useChannelTruncated';
 export * from './ChannelList/hooks/listeners/useChannelUpdated';
-export * from './ChannelList/hooks/listeners/useConnectionRecovered';
 export * from './ChannelList/hooks/listeners/useNewMessage';
 export * from './ChannelList/hooks/listeners/useNewMessageNotification';
 export * from './ChannelList/hooks/listeners/useRemovedFromChannelNotification';
@@ -73,6 +72,8 @@ export * from './Chat/Chat';
 export * from './Chat/hooks/useCreateChatContext';
 export * from './Chat/hooks/useIsOnline';
 export * from './Chat/hooks/useMutedUsers';
+export * from './Chat/hooks/useConnectionRecovered';
+export * from './Chat/hooks/useSyncDatabase';
 
 export * from './ImageGallery/ImageGallery';
 export * from './ImageGallery/components/AnimatedGalleryImage';

@@ -127,9 +127,29 @@ Timestamp of when current user marked the channel as read - [`channel.markRead()
 | --------------------------------------------------------------------------------------------- |
 | [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) |
 
+### loadChannelAroundMessage
+
+Function to load channel with messages around a particular message in history.
+
+```tsx
+loadChannelAroundMessage({
+  messageId,
+});
+```
+
+| Type     |
+| -------- |
+| function |
+
 ### loadChannelAtMessage
 
 Function to reload channel at particular message in history.
+
+:::caution
+
+This function is deprecated. Use [loadChannelAroundMessage](#loadchannelaroundmessage) instead.
+
+:::
 
 ```tsx
 loadChannelAtMessage({
@@ -223,7 +243,7 @@ Setter function for react state [`targetedMessage`](#targetedmessage) of Channel
 
 ### targetedMessage
 
-Id of message, which is highlighted currently. This value gets set when you load a channel at particular message in history, using [loadChannelAtMessage](#loadchannelatmessage).
+Id of message, which is highlighted currently. This value gets set when you load a channel at particular message in history, using [loadChannelAroundMessage](#loadchannelaroundmessage).
 
 | Type   |
 | ------ |

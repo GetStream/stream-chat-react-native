@@ -40,7 +40,7 @@ export const useChannelHidden = <
       }
     };
 
-    client.on('channel.hidden', handleEvent);
-    return () => client.off('channel.hidden', handleEvent);
+    const listener = client?.on('channel.hidden', handleEvent);
+    return () => listener?.unsubscribe();
   }, []);
 };

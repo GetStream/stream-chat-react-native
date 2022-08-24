@@ -26,7 +26,6 @@ import { ImageSelectorIcon as DefaultImageSelectorIcon } from '../../components/
 import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
 import { MessageOverlay } from '../../components/MessageOverlay/MessageOverlay';
 import { OverlayBackdrop } from '../../components/MessageOverlay/OverlayBackdrop';
-import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
 import { useStreami18n } from '../../hooks/useStreami18n';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
@@ -167,9 +166,6 @@ export const OverlayProvider = <
     }
   }, [overlay]);
 
-  // Setup translators
-  useStreami18n({ i18nInstance, setTranslators });
-
   const attachmentPickerContext = {
     attachmentPickerBottomSheetHeight,
     attachmentSelectionBarHeight,
@@ -204,7 +200,7 @@ export const OverlayProvider = <
         <MessageOverlayProvider<StreamChatGenerics>>
           <AttachmentPickerProvider value={attachmentPickerContext}>
             <ImageGalleryProvider>
-              <ChannelsStateProvider<StreamChatGenerics>>{children}</ChannelsStateProvider>
+              {children}
               <ThemeProvider style={overlayContext.style}>
                 <Animated.View
                   pointerEvents={overlay === 'none' ? 'none' : 'auto'}

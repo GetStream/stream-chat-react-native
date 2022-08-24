@@ -9,6 +9,7 @@ export const useCreatePaginatedMessageListContext = <
 >({
   channelId,
   hasMore,
+  hasNoMoreRecentMessagesToLoad,
   loadingMore,
   loadingMoreRecent,
   loadMore,
@@ -24,6 +25,7 @@ export const useCreatePaginatedMessageListContext = <
   const paginatedMessagesContext: PaginatedMessageListContextValue<StreamChatGenerics> = useMemo(
     () => ({
       hasMore,
+      hasNoMoreRecentMessagesToLoad,
       loadingMore,
       loadingMoreRecent,
       loadMore,

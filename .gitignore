@@ -4,3 +4,5 @@ artifacts
 e2e/.env
 *.log
 .DS_STORE
+*.db
+.idea
