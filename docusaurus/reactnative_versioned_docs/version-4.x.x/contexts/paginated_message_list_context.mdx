@@ -1,0 +1,91 @@
+---
+id: paginated-message-list-context
+title: PaginatedMessageListContext
+---
+
+`PaginatedMessageListContext` is provided by [`Channel`](../core-components/channel.mdx) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
+
+## Basic Usage
+
+`PaginatedMessageListContext` can be consumed by any of the child component of `Channel` component as following:
+
+```tsx
+import { useContext } from 'react';
+import { PaginatedMessageListContext } from 'stream-chat-react-native';
+
+const { loadingMore, loadMoreRecent, messages } = useContext(PaginatedMessageListContext);
+```
+
+Alternatively, you can also use `usePaginatedMessageListContext` hook provided by library to consume PaginatedMessageListContext.
+
+```tsx
+import { usePaginatedMessageListContext } from 'stream-chat-react-native';
+
+const { loadingMore, loadMoreRecent, messages } = usePaginatedMessageListContext();
+```
+
+## Value
+
+### hasMore
+
+False if `Channel` has loaded all the messages in history, via pagination. Channel component uses this value to decide if more messages should be queried from server when user reaches top of the `MessageList`.
+
+| Type    |
+| ------- |
+| boolean |
+
+### loadingMore
+
+True if `Channel` is querying more messages in the past from server, as part of pagination logic. `MessageList` component uses this value to display or hide inline loading indicator at top of the list.
+
+| Type    |
+| ------- |
+| boolean |
+
+### loadingMoreRecent
+
+True if `Channel` is querying more recent messages from server, as part of pagination logic. `MessageList` component uses this value to display or hide inline loading indicator at bottom of the list.
+
+| Type    |
+| ------- |
+| boolean |
+
+### loadMore
+
+Function to load more messages before the top message in list. This function gets called from `onScroll` handler of underlying `FlatList`, when scroll reaches top of the list and [`hasMore`](#hasmore) is true.
+
+| Type     |
+| -------- |
+| function |
+
+### loadMoreRecent
+
+Function to load more messages before the top message in list. This function gets called from `onScroll` handler of underlying `FlatList`, when scroll reaches top of the list and [`hasMoreRecent`](#hasmorerecent) is true.
+
+| Type     |
+| -------- |
+| function |
+
+### messages
+
+List of messages currently loading in channel.
+
+| Type  |
+| ----- |
+| array |
+
+### setLoadingMore
+
+Setter function for [`loadingMore`](#loadingmore)
+
+| Type                    |
+| ----------------------- |
+| `(loadingMore) => void` |
+
+### setLoadingMoreRecent
+
+Setter function for [`loadingMoreRecent`](#loadingmorerecent)
+
+| Type                          |
+| ----------------------------- |
+| `(loadingMoreRecent) => void` |

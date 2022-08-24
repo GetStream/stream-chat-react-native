@@ -71,6 +71,21 @@ export type ChannelContextValue<
    * Returns true if the current user is a owner
    */
   isOwner: boolean;
+  /**
+   * Loads channel around a specific message
+   *
+   * @param messageId If undefined, channel will be loaded at most recent message.
+   */
+  loadChannelAroundMessage: ({ messageId }: { messageId?: string }) => Promise<void>;
+  /**
+   * @deprecated use loadChannelAroundMessage instead
+   *
+   * Loads channel at specific message
+   *
+   * @param messageId If undefined, channel will be loaded at most recent message.
+   * @param before Number of message to query before messageId
+   * @param after Number of message to query after messageId
+   */
   loadChannelAtMessage: ({
     after,
     before,

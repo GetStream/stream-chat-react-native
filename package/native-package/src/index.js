@@ -8,7 +8,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import ImageResizer from 'react-native-image-resizer';
 import RNShare from 'react-native-share';
 
-import CameraRoll from '@react-native-community/cameraroll';
+import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import NetInfo from '@react-native-community/netinfo';
 import { FlatList } from '@stream-io/flat-list-mvcp';
 import { registerNativeHandlers } from 'stream-chat-react-native-core';

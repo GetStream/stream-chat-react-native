@@ -48,7 +48,7 @@ export const useNewMessage = <
       });
     };
 
-    client.on('message.new', handleEvent);
-    return () => client.off('message.new', handleEvent);
+    const listener = client?.on('message.new', handleEvent);
+    return () => listener?.unsubscribe();
   }, []);
 };

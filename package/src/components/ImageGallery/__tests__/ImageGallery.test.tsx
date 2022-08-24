@@ -48,7 +48,7 @@ describe('ImageGallery', () => {
   it('render image gallery component', () => {
     const { queryAllByA11yLabel } = render(
       getComponent({
-        images: [
+        messages: [
           generateMessage({
             attachments: [
               generateImageAttachment(),
@@ -70,7 +70,7 @@ describe('ImageGallery', () => {
     });
     const { getByA11yLabel } = render(
       getComponent({
-        images: [message] as unknown as MessageType<DefaultStreamChatGenerics>[],
+        messages: [message] as unknown as MessageType<DefaultStreamChatGenerics>[],
       }),
     );
 
@@ -92,7 +92,7 @@ describe('ImageGallery', () => {
   it('handle handleLoad function when video item present and payload duration is undefined', () => {
     const { getByA11yLabel } = render(
       getComponent({
-        images: [
+        messages: [
           generateMessage({
             attachments: [generateVideoAttachment({ type: 'video' })],
           }),
@@ -120,7 +120,7 @@ describe('ImageGallery', () => {
 
     const { getByA11yLabel } = render(
       getComponent({
-        images: [message] as unknown as MessageType<DefaultStreamChatGenerics>[],
+        messages: [message] as unknown as MessageType<DefaultStreamChatGenerics>[],
       }),
     );
 
@@ -149,7 +149,7 @@ describe('ImageGallery', () => {
   it('handle handleProgress function when video item present and payload is not defined', () => {
     const { getByA11yLabel } = render(
       getComponent({
-        images: [
+        messages: [
           generateMessage({
             attachments: [generateVideoAttachment({ type: 'video' })],
           }),
@@ -181,7 +181,7 @@ describe('ImageGallery', () => {
     });
     const { getByA11yLabel } = render(
       getComponent({
-        images: [message] as unknown as MessageType<DefaultStreamChatGenerics>[],
+        messages: [message] as unknown as MessageType<DefaultStreamChatGenerics>[],
       }),
     );
 
