@@ -173,7 +173,7 @@ const ImageUploadPreviewWithContext = <
   ) : null;
 };
 
-type DismissUploadProps = {} & Pick<TouchableOpacityProps, 'onPress'>;
+type DismissUploadProps = Pick<TouchableOpacityProps, 'onPress'>;
 
 const DismissUpload = ({ onPress }: DismissUploadProps) => {
   const {
