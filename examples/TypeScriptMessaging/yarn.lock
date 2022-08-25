@@ -7119,25 +7119,6 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-stream-chat-react-native-core@4.15.0:
-  version "4.15.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-4.15.0.tgz#b3bfe53c3595f923c254a5f69230b3d699d80ba6"
-  integrity sha512-35Y3ZNhN+12AmSi802pt1MNogH8GLef6AeDc3248uIqL4tzi9w3czSEFzKCX8Pb0/mCxXwpJNQnNMlcudGXoBQ==
-  dependencies:
-    "@babel/runtime" "^7.12.5"
-    "@gorhom/bottom-sheet" "^4.1.6"
-    dayjs "1.10.5"
-    file-loader "6.2.0"
-    i18next "20.2.4"
-    lodash-es "4.17.21"
-    metro-react-native-babel-preset "0.66.2"
-    mime-types "^2.1.34"
-    path "0.12.7"
-    react-art "^17.0.2"
-    react-native-markdown-package "1.8.2"
-    react-native-url-polyfill "^1.3.0"
-    stream-chat "~6.7.3"
-
 stream-chat-react-native-core@5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.0.0.tgz#e8ac37c627b58baaedf19084eee4cbdde6033aac"
@@ -7161,17 +7142,10 @@ stream-chat-react-native-core@5.0.0:
   version "0.0.0"
   uid ""
 
-"stream-chat-react-native-devtools@link:../../../stream-chat-react-native-devtools":
-  version "0.0.0"
-  uid ""
-
-stream-chat-react-native@^4.14.0:
-  version "4.15.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native/-/stream-chat-react-native-4.15.0.tgz#1952f770dcf5db31e0b8434e2cdea1a007fd78ef"
-  integrity sha512-K7alb8LDFxAUfENDHe8CwSbLhbaLehssS8mkrJ0XRKoZBIX7PkkAxMk+ltzVveaapewu95GTKPdXf0/wQMGjfg==
-  dependencies:
-    es6-symbol "^3.1.3"
-    stream-chat-react-native-core "4.15.0"
+stream-chat-react-native-devtools@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-devtools/-/stream-chat-react-native-devtools-1.0.4.tgz#35069095f43d762db763a4363137817c3796412c"
+  integrity sha512-u2aFClmCBVuz+wZNJKtKKxVxijraMsQcC85Sv3AW8dxAS7Mz1eWteSs4h6goXNXHQc5ClSf/bZ7H5xNnwtg1wg==
 
 "stream-chat-react-native@link:../../package/native-package":
   version "0.0.0"
@@ -7181,21 +7155,6 @@ stream-chat@7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-7.0.0.tgz#c4021cafda96752ebc21f85e3e306bc3f5b1cfcc"
   integrity sha512-l1+pANK//Rp6MJm5CZAA0L3Rx0jr4n7TEcUQrkXjqm5oxryo95tuRb7LkMs4kUnqJB7/jHuS0CTjW0v5vLvPoA==
-  dependencies:
-    "@babel/runtime" "^7.16.3"
-    "@types/jsonwebtoken" "^8.5.6"
-    "@types/ws" "^7.4.0"
-    axios "^0.22.0"
-    base64-js "^1.5.1"
-    form-data "^4.0.0"
-    isomorphic-ws "^4.0.1"
-    jsonwebtoken "^8.5.1"
-    ws "^7.4.4"
-
-stream-chat@~6.7.3:
-  version "6.7.3"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-6.7.3.tgz#5d3a0f1678c5bcac6241e15882230bf71b56d06d"
-  integrity sha512-O2gBocLG4rgAMOHq4PlXDkexfgkXFp1ZEGF+W3lllFXBC2/e52KbbojQNMhyoQPv82n2JQCGpkychUP4jdpn9Q==
   dependencies:
     "@babel/runtime" "^7.16.3"
     "@types/jsonwebtoken" "^8.5.6"
