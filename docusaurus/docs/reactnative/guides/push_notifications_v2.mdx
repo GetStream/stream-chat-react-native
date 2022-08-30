@@ -27,7 +27,6 @@ Easiest way to integrate push notifications in your Chat applications is using F
 
 :::note
 
-- If you would like to get push notifications only when users are offline, please contact support@getstream.io.
 - Push notifications require membership. Watching a channel isn't enough.
 
 :::
@@ -462,6 +461,11 @@ notifee.onBackgroundEvent(async ({ detail, type }) => {
 :::info
 
 The `notification_template` is a JSON object that includes the keys relevant to push notifications for Android. See the [AndroidNotification](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#AndroidNotification) type in the firebase documentation for all the supported keys.
+
+:::
+:::caution
+
+We do not recommend doing this. If `notification_template` is added, then notifications will be shown in the foreground for Android. iOS will, by default, not show any notifications in the foreground. Generally, chat applications do not show push notifications in the foreground. This is why we do not recommend it. However, if you want foreground notifications in both platforms, please follow the steps mentioned in the [display-notification-in-foreground](#display-notification-in-foreground) section.
 
 :::
 
