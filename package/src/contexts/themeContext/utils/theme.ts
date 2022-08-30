@@ -267,6 +267,7 @@ export type Theme = {
     };
     imageUploadPreview: {
       dismiss: ViewStyle;
+      dismissIconColor: Color;
       flatList: ViewStyle;
       itemContainer: ViewStyle;
       upload: ImageStyle;
@@ -766,6 +767,7 @@ export const defaultTheme: Theme = {
     },
     imageUploadPreview: {
       dismiss: {},
+      dismissIconColor: '',
       flatList: {},
       itemContainer: {},
       upload: {},
