@@ -4,10 +4,46 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Stream Chat React Native - Docs</title>
+    <title>DEPRECATED Stream Chat React Native - Docs DEPRECATED</title>
     <link rel="icon" type="image/x-icon" href="https://getstream.imgix.net/images/favicons/favicon-96x96.png">
+    <style>
+      .deprecationBanner {
+          position: fixed;
+          right: 0;
+          left: 210px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          background-color: #ae423f;
+      }
+
+      .deprecationText, a {
+          color: #fff;
+          font-weight: bold;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif
+      }
+
+      a {
+          color: #78d4fc;
+          font-size: 1.5rem;
+          padding: 20px 0;
+      }
+
+
+      @media only screen and (max-width: 600px){
+          .deprecationBanner {
+              left: 0;
+          }
+
+      }
+    </style>
   </head>
   <body>
+    <div class='deprecationBanner'>
+      <h1 class='deprecationText'>⚠️ This Documentation is Deprecated ⚠️</h1>
+      <a href='https://getstream.io/chat/docs/sdk/reactnative/'>Click here to consult our new docs</a>
+    </div>
     <div id="rsg-root"></div>
     <script src="build/bundle.38535de9.js"></script>
   </body>

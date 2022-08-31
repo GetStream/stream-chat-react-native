@@ -1,5 +1,21 @@
 # Change Log
 
+### [1.11.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.11.2...sampleapp@v1.11.3) (2022-08-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* offline support (#1670)
+
+### Features
+
+* offline support ([#1670](https://github.com/GetStream/stream-chat-react-native/issues/1670)) ([038ae45](https://github.com/GetStream/stream-chat-react-native/commit/038ae459b41697f1436d113ed22cbf95f9217fdd)), closes [#1596](https://github.com/GetStream/stream-chat-react-native/issues/1596) [#1605](https://github.com/GetStream/stream-chat-react-native/issues/1605) [#1527](https://github.com/GetStream/stream-chat-react-native/issues/1527) [#1585](https://github.com/GetStream/stream-chat-react-native/issues/1585) [#1639](https://github.com/GetStream/stream-chat-react-native/issues/1639)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.11.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.11.1...sampleapp@v1.11.2) (2022-08-17)
 
 
