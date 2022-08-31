@@ -118,7 +118,6 @@ export type MessagePropsWithContext<
   ChannelContextValue<StreamChatGenerics>,
   'channel' | 'disabled' | 'enforceUniqueReaction' | 'members'
 > &
-  Pick<ChatContextValue<StreamChatGenerics>, 'client' | 'mutedUsers'> &
   Pick<KeyboardContextValue, 'dismissKeyboard'> &
   Partial<Omit<MessageContextValue<StreamChatGenerics>, 'groupStyles' | 'message'>> &
   Pick<MessageContextValue<StreamChatGenerics>, 'groupStyles' | 'message'> &
@@ -157,6 +156,7 @@ export type MessagePropsWithContext<
   Pick<OverlayContextValue, 'setOverlay'> &
   Pick<ThreadContextValue<StreamChatGenerics>, 'openThread'> &
   Pick<TranslationContextValue, 't'> & {
+    chatContext: ChatContextValue<StreamChatGenerics>;
     messagesContext: MessagesContextValue<StreamChatGenerics>;
     /**
      * Whether or not users are able to long press messages.
@@ -218,7 +218,6 @@ const MessageWithContext = <
 
   const {
     channel,
-    client,
     disabled,
     dismissKeyboard,
     dismissKeyboardOnMessageTouch,
@@ -238,6 +237,7 @@ const MessageWithContext = <
     handleReaction: handleReactionProp,
     handleRetry,
     handleThreadReply,
+    chatContext,
     lastReceivedId,
     members,
     message,
@@ -272,7 +272,7 @@ const MessageWithContext = <
     threadList = false,
     updateMessage,
   } = props;
-
+  const { client } = chatContext;
   const {
     theme: {
       colors: { bg_gradient_start, targetedMessageBackground },
@@ -547,6 +547,7 @@ const MessageWithContext = <
 
     setData({
       alignment,
+      chatContext,
       clientId: client.userID,
       files: attachments.files,
       groupStyles,
@@ -719,23 +720,23 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   nextProps: MessagePropsWithContext<StreamChatGenerics>,
 ) => {
   const {
+    chatContext: { mutedUsers: prevMutedUsers },
     goToMessage: prevGoToMessage,
     isAttachmentEqual,
     isTargetedMessage: prevIsTargetedMessage,
     lastReceivedId: prevLastReceivedId,
     members: prevMembers,
     message: prevMessage,
-    mutedUsers: prevMutedUsers,
     showUnreadUnderlay: prevShowUnreadUnderlay,
     t: prevT,
   } = prevProps;
   const {
+    chatContext: { mutedUsers: nextMutedUsers },
     goToMessage: nextGoToMessage,
     isTargetedMessage: nextIsTargetedMessage,
     lastReceivedId: nextLastReceivedId,
     members: nextMembers,
     message: nextMessage,
-    mutedUsers: nextMutedUsers,
     showUnreadUnderlay: nextShowUnreadUnderlay,
     t: nextT,
   } = nextProps;
@@ -857,7 +858,7 @@ export const Message = <
 ) => {
   const { channel, disabled, enforceUniqueReaction, members } =
     useChannelContext<StreamChatGenerics>();
-  const { client, mutedUsers } = useChatContext<StreamChatGenerics>();
+  const chatContext = useChatContext<StreamChatGenerics>();
   const { dismissKeyboard } = useKeyboardContext();
   const { setData } = useMessageOverlayContext<StreamChatGenerics>();
   const messagesContext = useMessagesContext<StreamChatGenerics>();
@@ -870,13 +871,12 @@ export const Message = <
       {...messagesContext}
       {...{
         channel,
-        client,
+        chatContext,
         disabled,
         dismissKeyboard,
         enforceUniqueReaction,
         members,
         messagesContext,
-        mutedUsers,
         openThread,
         setData,
         setOverlay,

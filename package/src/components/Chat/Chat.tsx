@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
-import { Platform } from 'react-native';
+import { Image, Platform } from 'react-native';
 
 import Dayjs from 'dayjs';
 
@@ -36,7 +36,7 @@ init();
 
 export type ChatProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChatContextValue<StreamChatGenerics>, 'client'> & {
+> = Pick<ChatContextValue<StreamChatGenerics>, 'client' | 'ImageComponent'> & {
   /**
    * When false, ws connection won't be disconnection upon backgrounding the app.
    * To receive push notifications, its necessary that user doesn't have active
@@ -142,6 +142,7 @@ const ChatWithContext = <
     closeConnectionOnBackground = true,
     enableOfflineSupport = false,
     i18nInstance,
+    ImageComponent = Image,
     style,
   } = props;
 
@@ -193,6 +194,7 @@ const ChatWithContext = <
     client,
     connectionRecovering,
     enableOfflineSupport,
+    ImageComponent,
     isOnline,
     mutedUsers,
     setActiveChannel,

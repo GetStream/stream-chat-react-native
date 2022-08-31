@@ -1,5 +1,13 @@
 import React from 'react';
-import { Image, ImageStyle, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import {
+  Image,
+  ImageProps,
+  ImageStyle,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
 import Svg, { Circle, CircleProps } from 'react-native-svg';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -38,6 +46,7 @@ export type AvatarProps = {
   containerStyle?: StyleProp<ViewStyle>;
   /** image url */
   image?: string;
+  ImageComponent?: React.ComponentType<ImageProps>;
   /** name of the picture, used for fallback */
   imageStyle?: StyleProp<ImageStyle>;
   name?: string;
@@ -53,6 +62,7 @@ export type AvatarProps = {
 export const Avatar: React.FC<AvatarProps> = (props) => {
   const {
     containerStyle,
+    ImageComponent = Image,
     image: imageProp,
     imageStyle,
     name,
@@ -95,7 +105,7 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
             }}
           />
         ) : (
-          <Image
+          <ImageComponent
             accessibilityLabel={testID || 'Avatar Image'}
             onError={() => setLoadingImageError(true)}
             source={{
