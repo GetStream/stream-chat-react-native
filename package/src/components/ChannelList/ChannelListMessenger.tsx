@@ -125,7 +125,9 @@ const ChannelListMessengerWithContext = <
     }
   }, [loading, loadingChannels]);
 
-  if (debugRef && debugRef.current) {
+  const isDebugModeEnabled = __DEV__ && debugRef && debugRef.current;
+
+  if (isDebugModeEnabled) {
     if (debugRef.current.setEventType) debugRef.current.setEventType('send');
     if (debugRef.current.setSendEventParams)
       debugRef.current.setSendEventParams({

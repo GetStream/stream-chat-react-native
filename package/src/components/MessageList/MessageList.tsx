@@ -940,22 +940,15 @@ const MessageListWithContext = <
 
   const debugRef = useDebugContext();
 
-  if (debugRef && debugRef.current) {
-    if (!thread) {
-      if (debugRef.current.setEventType) debugRef.current.setEventType('send');
-      if (debugRef.current.setSendEventParams)
-        debugRef.current.setSendEventParams({
-          action: 'Messages',
-          data: messageList,
-        });
-    } else {
-      if (debugRef.current.setEventType) debugRef.current.setEventType('send');
-      if (debugRef.current.setSendEventParams)
-        debugRef.current.setSendEventParams({
-          action: 'ThreadList',
-          data: messageList,
-        });
-    }
+  const isDebugModeEnabled = __DEV__ && debugRef && debugRef.current;
+
+  if (isDebugModeEnabled) {
+    if (debugRef.current.setEventType) debugRef.current.setEventType('send');
+    if (debugRef.current.setSendEventParams)
+      debugRef.current.setSendEventParams({
+        action: thread ? 'ThreadList' : 'Messages',
+        data: messageList,
+      });
   }
 
   const renderListEmptyComponent = () => (

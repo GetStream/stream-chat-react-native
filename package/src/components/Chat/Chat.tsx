@@ -172,6 +172,7 @@ const ChatWithContext = <
   const mutedUsers = useMutedUsers<StreamChatGenerics>(client);
 
   const debugRef = useDebugContext();
+  const isDebugModeEnabled = __DEV__ && debugRef && debugRef.current;
 
   useEffect(() => {
     if (client) {
@@ -180,7 +181,8 @@ const ChatWithContext = <
       client.recoverStateOnReconnect = false;
       client.persistUserOnConnectionFailure = enableOfflineSupport;
     }
-    if (debugRef && debugRef.current) {
+
+    if (isDebugModeEnabled) {
       if (debugRef.current.setEventType) debugRef.current.setEventType('send');
       if (debugRef.current.setSendEventParams)
         debugRef.current.setSendEventParams({
