@@ -12,12 +12,12 @@
     "clean-all": "yarn clean && rm -rf node_modules && rm -rf ios/Pods && rm -rf vendor && bundle install && yarn install && cd ios && bundle exec pod install && cd -"
   },
   "dependencies": {
+    "@react-native-camera-roll/camera-roll": "^5.0.0",
     "@react-native-community/masked-view": "0.1.11",
     "@react-native-community/netinfo": "9.3.0",
     "@react-navigation/native": "^6.0.11",
     "@react-navigation/stack": "^6.2.2",
     "@stream-io/flat-list-mvcp": "0.10.2",
-    "@react-native-camera-roll/camera-roll": "^5.0.0",
     "react": "18.2.0",
     "react-native": "0.69.3",
     "react-native-document-picker": "5.0.4",
@@ -50,7 +50,9 @@
     "fbjs": "^3.0.4",
     "jest": "26.6.3",
     "metro-react-native-babel-preset": "0.66.2",
+    "react-native-flipper": "^0.158.0",
     "react-test-renderer": "17.0.2",
+    "stream-chat-react-native-devtools": "^1.0.4",
     "typescript": "4.2.4"
   },
   "jest": {
