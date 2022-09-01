@@ -78,7 +78,7 @@ describe('ImageGallery', () => {
 
     act(() => {
       fireEvent(videoComponent, 'onEnd');
-      fireEvent(videoComponent, 'onProgress');
+      fireEvent(videoComponent, 'onProgress', { currentTime: 10, seekableDuration: 60 });
     });
 
     expect(handleEndMock).toHaveBeenCalled();
@@ -127,7 +127,7 @@ describe('ImageGallery', () => {
     const spinnerComponent = queryByA11yLabel('Spinner');
 
     act(() => {
-      fireEvent(videoComponent, 'onLoad');
+      fireEvent(videoComponent, 'onLoad', { duration: 10 });
     });
 
     expect(handleLoadMock).toHaveBeenCalled();

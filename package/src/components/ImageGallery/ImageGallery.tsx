@@ -55,12 +55,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import {
-  isVideoPackageAvailable,
-  VideoPayloadData,
-  VideoProgressData,
-  VideoType,
-} from '../../native';
+import { isVideoPackageAvailable, VideoType } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
@@ -151,9 +146,9 @@ export const ImageGallery = <
     numberOfImageGalleryGridColumns,
     overlayOpacity,
   } = props;
-  const [paused, setPaused] = useState<boolean>(false);
-  const [progress, setProgress] = useState<number>(0);
-  const [duration, setDuration] = useState<number>(0);
+  const [imageGalleryAttachments, setImageGalleryAttachments] = useState<
+    Photo<StreamChatGenerics>[]
+  >([]);
   const {
     theme: {
       colors: { white_snow },
@@ -282,11 +277,14 @@ export const ImageGallery = <
       return {
         channelId: cur.cid,
         created_at: cur.created_at,
+        duration: 0,
         id: `photoId-${cur.id}-${imageUrl}`,
         messageId: cur.id,
         mime_type: a.type === 'giphy' ? getGiphyMimeType(giphyURL ?? '') : a.mime_type,
         original_height: a.original_height,
         original_width: a.original_width,
+        paused: true,
+        progress: 0,
         type: a.type,
         uri:
           a.type === 'giphy'
@@ -311,6 +309,10 @@ export const ImageGallery = <
    * inside the gesture handler as it will have an array as a dependency
    */
   const photoLength = photos.length;
+
+  useEffect(() => {
+    setImageGalleryAttachments(photos);
+  }, []);
 
   /**
    * The URL for the images may differ because of dimensions passed as
@@ -338,10 +340,6 @@ export const ImageGallery = <
         stripQueryFromUrl(photo.uri) === stripQueryFromUrl(selectedMessage?.url || ''),
     );
 
-    if (photoLength > 1) {
-      setPaused(true);
-    }
-
     runOnUI(updatePosition)(newIndex);
   }, [selectedMessage, photoLength]);
 
@@ -351,10 +349,11 @@ export const ImageGallery = <
    * to the proper scaled height based on the width being restricted to the
    * screen width when the dimensions are received.
    */
-  const uriForCurrentImage = photos[selectedIndex]?.uri;
+  const uriForCurrentImage = imageGalleryAttachments[selectedIndex]?.uri;
+
   useEffect(() => {
     setCurrentImageHeight(screenHeight);
-    const photo = photos[index.value];
+    const photo = imageGalleryAttachments[index.value];
     const height = photo?.original_height;
     const width = photo?.original_width;
 
@@ -463,53 +462,69 @@ export const ImageGallery = <
   const openGridView = () => {
     if (bottomSheetModalRef.current?.present) {
       bottomSheetModalRef.current.present();
-      setGridPhotos(photos);
+      setGridPhotos(imageGalleryAttachments);
     }
+  };
+
+  const handleEnd = () => {
+    handlePlayPause(imageGalleryAttachments[selectedIndex].id, true);
+    handleProgress(imageGalleryAttachments[selectedIndex].id, 1, true);
   };
 
   const videoRef = useRef<VideoType>(null);
 
-  const handleEnd = () => {
-    setPaused(true);
-    setProgress(1);
+  const handleLoad = (index: string, duration: number) => {
+    setImageGalleryAttachments((prevImageGalleryAttachment) =>
+      prevImageGalleryAttachment.map((imageGalleryAttachment) => ({
+        ...imageGalleryAttachment,
+        duration: imageGalleryAttachment.id === index ? duration : imageGalleryAttachment.duration,
+      })),
+    );
   };
 
-  const handleLoad = (payload: VideoPayloadData) => {
-    if (payload.duration) setDuration(payload.duration);
+  const handleProgress = (index: string, progress: number, hasEnd?: boolean) => {
+    setImageGalleryAttachments((prevImageGalleryAttachments) =>
+      prevImageGalleryAttachments.map((imageGalleryAttachment) => ({
+        ...imageGalleryAttachment,
+        progress:
+          imageGalleryAttachment.id === index
+            ? hasEnd
+              ? 1
+              : progress
+            : imageGalleryAttachment.progress,
+      })),
+    );
   };
 
-  const handleProgress = (data: VideoProgressData) => {
-    if (data.currentTime && data.seekableDuration) {
-      setProgress(data.currentTime / data.seekableDuration);
-    }
-  };
-
-  const handlePlayPause = (status?: boolean) => {
-    if (status === undefined) {
-      // React Native Video for RN CLI has seek as an API to move to a particular location in the video
-      if (progress === 1 && videoRef.current && videoRef.current.seek) {
-        videoRef.current.seek(0);
-      }
-      // Expo AV for Expo has replayAsync as an API to move to a starting of the video
-      if (progress === 1 && videoRef.current && videoRef.current.replayAsync) {
-        videoRef.current.replayAsync();
-      }
-
-      setPaused((state) => !state);
+  const handlePlayPause = (index: string, pausedStatus?: boolean) => {
+    if (pausedStatus === false) {
+      // If the status is false we set the audio with the index as playing and the others as paused.
+      setImageGalleryAttachments((prevImageGalleryAttachment) =>
+        prevImageGalleryAttachment.map((imageGalleryAttachment) => ({
+          ...imageGalleryAttachment,
+          paused: imageGalleryAttachment.id === index ? false : true,
+        })),
+      );
     } else {
-      setPaused(status);
+      // If the status is true we simply set all the audio's paused state as true.
+      setImageGalleryAttachments((prevImageGalleryAttachment) =>
+        prevImageGalleryAttachment.map((imageGalleryAttachment) => ({
+          ...imageGalleryAttachment,
+          paused: true,
+        })),
+      );
     }
   };
 
-  const onProgressDrag = (progress: number) => {
-    // React Native Video for RN CLI has seek as an API to move to a particular location in the video
-    if (videoRef.current && videoRef.current.seek) {
-      videoRef.current.seek(progress);
-    }
-
-    // Expo AV for Expo has setPositionAsync as an API to move to a particular location of the video
-    if (videoRef.current && videoRef.current.setPositionAsync) {
-      videoRef.current.setPositionAsync(progress * 1000);
+  const onPlayPause = (status?: boolean) => {
+    if (status === undefined) {
+      if (imageGalleryAttachments[selectedIndex].paused) {
+        handlePlayPause(imageGalleryAttachments[selectedIndex].id, false);
+      } else {
+        handlePlayPause(imageGalleryAttachments[selectedIndex].id, true);
+      }
+    } else {
+      handlePlayPause(imageGalleryAttachments[selectedIndex].id, status);
     }
   };
 
@@ -568,17 +583,19 @@ export const ImageGallery = <
                           },
                         ]}
                       >
-                        {photos.map((photo, i) =>
+                        {imageGalleryAttachments.map((photo, i) =>
                           photo.type === 'video' ? (
                             <AnimatedGalleryVideo
+                              attachmentId={photo.id}
                               handleEnd={handleEnd}
                               handleLoad={handleLoad}
                               handleProgress={handleProgress}
                               index={i}
                               key={`${photo.uri}-${i}`}
                               offsetScale={offsetScale}
-                              paused={paused}
+                              paused={photo.paused || false}
                               previous={selectedIndex > i}
+                              repeat={true}
                               scale={scale}
                               screenHeight={screenHeight}
                               selected={selectedIndex === i}
@@ -632,25 +649,27 @@ export const ImageGallery = <
       </TapGestureHandler>
       <ImageGalleryHeader<StreamChatGenerics>
         opacity={headerFooterOpacity}
-        photo={photos[selectedIndex]}
+        photo={imageGalleryAttachments[selectedIndex]}
         visible={headerFooterVisible}
         {...imageGalleryCustomComponents?.header}
       />
-      <ImageGalleryFooter<StreamChatGenerics>
-        accessibilityLabel={'Image Gallery Footer'}
-        duration={duration}
-        onPlayPause={handlePlayPause}
-        onProgressDrag={onProgressDrag}
-        opacity={headerFooterOpacity}
-        openGridView={openGridView}
-        paused={paused}
-        photo={photos[selectedIndex]}
-        photoLength={photoLength}
-        progress={progress}
-        selectedIndex={selectedIndex}
-        visible={headerFooterVisible}
-        {...imageGalleryCustomComponents?.footer}
-      />
+
+      {imageGalleryAttachments.length > 0 && (
+        <ImageGalleryFooter<StreamChatGenerics>
+          accessibilityLabel={'Image Gallery Footer'}
+          duration={imageGalleryAttachments[selectedIndex].duration || 0}
+          onPlayPause={onPlayPause}
+          opacity={headerFooterOpacity}
+          openGridView={openGridView}
+          paused={imageGalleryAttachments[selectedIndex].paused || false}
+          photo={imageGalleryAttachments[selectedIndex]}
+          photoLength={imageGalleryAttachments.length}
+          progress={imageGalleryAttachments[selectedIndex].progress || 0}
+          selectedIndex={selectedIndex}
+          visible={headerFooterVisible}
+          {...imageGalleryCustomComponents?.footer}
+        />
+      )}
 
       <ImageGalleryOverlay
         animatedBottomSheetIndex={animatedBottomSheetIndex}
@@ -708,10 +727,13 @@ export type Photo<
   uri: string;
   channelId?: string;
   created_at?: string | Date;
+  duration?: number;
   messageId?: string;
   mime_type?: string;
   original_height?: number;
   original_width?: number;
+  paused?: boolean;
+  progress?: number;
   type?: string;
   user?: UserResponse<StreamChatGenerics> | null;
   user_id?: string;

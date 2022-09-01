@@ -1,5 +1,13 @@
 import React from 'react';
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableOpacityProps,
+  View,
+} from 'react-native';
 
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
@@ -87,9 +95,8 @@ const ImageUploadPreviewWithContext = <
 
   const {
     theme: {
-      colors: { overlay, white },
       messageInput: {
-        imageUploadPreview: { dismiss, flatList, itemContainer, upload },
+        imageUploadPreview: { flatList, itemContainer, upload },
       },
     },
   } = useTheme();
@@ -140,15 +147,11 @@ const ImageUploadPreviewWithContext = <
             style={[styles.upload, upload]}
           />
         </UploadProgressIndicator>
-        <TouchableOpacity
+        <DismissUpload
           onPress={() => {
             removeImage(item.id);
           }}
-          style={[styles.dismiss, { backgroundColor: overlay }, dismiss]}
-          testID='remove-image-upload-preview'
-        >
-          <Close pathFill={white} />
-        </TouchableOpacity>
+        />
         <UnsupportedImageTypeIndicator indicatorType={indicatorType} />
       </View>
     );
@@ -168,6 +171,29 @@ const ImageUploadPreviewWithContext = <
       style={[styles.flatList, flatList]}
     />
   ) : null;
+};
+
+type DismissUploadProps = Pick<TouchableOpacityProps, 'onPress'>;
+
+const DismissUpload = ({ onPress }: DismissUploadProps) => {
+  const {
+    theme: {
+      colors: { overlay, white },
+      messageInput: {
+        imageUploadPreview: { dismiss, dismissIconColor },
+      },
+    },
+  } = useTheme();
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={[styles.dismiss, { backgroundColor: overlay }, dismiss]}
+      testID='remove-image-upload-preview'
+    >
+      <Close pathFill={dismissIconColor || white} />
+    </TouchableOpacity>
+  );
 };
 
 const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
