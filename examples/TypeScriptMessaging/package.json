@@ -47,7 +47,6 @@
     "@typescript-eslint/parser": "4.24.0",
     "babel-jest": "26.6.3",
     "eslint": "7.26.0",
-    "fbjs": "^3.0.4",
     "jest": "26.6.3",
     "metro-react-native-babel-preset": "0.66.2",
     "react-native-flipper": "^0.158.0",
