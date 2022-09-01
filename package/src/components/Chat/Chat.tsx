@@ -15,6 +15,7 @@ import { useSyncDatabase } from './hooks/useSyncDatabase';
 
 import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
 import { ChatContextValue, ChatProvider } from '../../contexts/chatContext/ChatContext';
+import { useDebugContext } from '../../contexts/debugContext/DebugContext';
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
 import { DeepPartial, ThemeProvider } from '../../contexts/themeContext/ThemeContext';
 import type { Theme } from '../../contexts/themeContext/utils/theme';
@@ -170,12 +171,24 @@ const ChatWithContext = <
    */
   const mutedUsers = useMutedUsers<StreamChatGenerics>(client);
 
+  const debugRef = useDebugContext();
+  const isDebugModeEnabled = __DEV__ && debugRef && debugRef.current;
+
   useEffect(() => {
     if (client) {
       client.setUserAgent(`${SDK}-${Platform.OS}-${version}`);
       // This is to disable recovery related logic in js client, since we handle it in this SDK
       client.recoverStateOnReconnect = false;
       client.persistUserOnConnectionFailure = enableOfflineSupport;
+    }
+
+    if (isDebugModeEnabled) {
+      if (debugRef.current.setEventType) debugRef.current.setEventType('send');
+      if (debugRef.current.setSendEventParams)
+        debugRef.current.setSendEventParams({
+          action: 'Client',
+          data: client.user,
+        });
     }
   }, [client]);
 

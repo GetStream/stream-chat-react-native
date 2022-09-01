@@ -1,5 +1,12 @@
 # Change Log
 
+## [5.1.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.0.0...v5.1.0) (2022-08-31)
+
+
+### Features
+
+* allow customization of the close icon for uploads ([#1668](https://github.com/GetStream/stream-chat-react-native/issues/1668)) ([9a7cfa9](https://github.com/GetStream/stream-chat-react-native/commit/9a7cfa9963d2f0cb0b1675bfc4b6db0d0ad27824))
+
 ## [4.15.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.14.0...v4.15.0) (2022-08-17)
 
 

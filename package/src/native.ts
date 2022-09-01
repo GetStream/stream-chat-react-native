@@ -164,9 +164,9 @@ export type SoundType = {
 export let Sound: SoundType;
 
 export type VideoProgressData = {
-  currentTime?: number;
+  currentTime: number;
+  seekableDuration: number;
   playableDuration?: number;
-  seekableDuration?: number;
 };
 
 export type VideoPayloadData = {
@@ -196,6 +196,7 @@ export type VideoType = {
   onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void;
   onProgress?: (data: VideoProgressData) => void;
   onReadyForDisplay?: () => void;
+  repeat?: boolean;
   replayAsync?: () => void;
   resizeMode?: string;
   seek?: (progress: number) => void;

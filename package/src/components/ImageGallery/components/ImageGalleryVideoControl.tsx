@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
 
 export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlProps> = React.memo(
   (props) => {
-    const { duration, onPlayPause, onProgressDrag, paused, progress } = props;
+    const { duration, onPlayPause, paused, progress } = props;
 
     const videoDuration = duration
       ? duration / 3600 >= 1
@@ -53,7 +53,7 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
 
     const {
       theme: {
-        colors: { static_black, static_white },
+        colors: { accent_blue, black, static_black, static_white },
         imageGallery: {
           videoControl: { durationTextStyle, roundedView, videoContainer },
         },
@@ -83,22 +83,21 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
         </TouchableOpacity>
         <Text
           accessibilityLabel='Progress Duration'
-          style={[styles.durationTextStyle, durationTextStyle, { color: static_white }]}
+          style={[styles.durationTextStyle, durationTextStyle, { color: black }]}
         >
           {progressDuration ? progressDuration : '00:00'}
         </Text>
         <ProgressControl
           duration={duration}
-          filledColor={static_white}
+          filledColor={accent_blue}
           onPlayPause={onPlayPause}
-          onProgressDrag={onProgressDrag}
           progress={progress}
           testID={'progress-control'}
           width={180}
         />
         <Text
           accessibilityLabel='Video Duration'
-          style={[styles.durationTextStyle, durationTextStyle, { color: static_white }]}
+          style={[styles.durationTextStyle, durationTextStyle, { color: black }]}
         >
           {videoDuration ? videoDuration : '00:00'}
         </Text>

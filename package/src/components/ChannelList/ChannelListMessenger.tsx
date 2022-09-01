@@ -10,6 +10,7 @@ import {
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useDebugContext } from '../../contexts/debugContext/DebugContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
@@ -116,11 +117,27 @@ const ChannelListMessengerWithContext = <
    * change to loadingChannels is registered.
    */
   const [loading, setLoading] = useState(true);
+  const debugRef = useDebugContext();
+
   useEffect(() => {
     if (!!loadingChannels !== loading) {
       setLoading(!!loadingChannels);
     }
   }, [loading, loadingChannels]);
+
+  const isDebugModeEnabled = __DEV__ && debugRef && debugRef.current;
+
+  if (isDebugModeEnabled) {
+    if (debugRef.current.setEventType) debugRef.current.setEventType('send');
+    if (debugRef.current.setSendEventParams)
+      debugRef.current.setSendEventParams({
+        action: 'Channels',
+        data: channels.map((channel) => ({
+          data: channel.data,
+          members: channel.state.members,
+        })),
+      });
+  }
 
   if (error && !refreshing && !loadingChannels && !channels?.length) {
     return (
