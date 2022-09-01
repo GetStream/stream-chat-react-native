@@ -7,6 +7,8 @@ import Alignment from '../common-content/contexts/message-context/alignment.mdx'
 import MessageProp from '../common-content/contexts/message-context/message.mdx';
 import LastGroupMessage from '../common-content/contexts/message-context/last_group_message.mdx';
 
+import ImageComponent from '../common-content/core-components/chat/props/image_component.mdx';
+
 Component to render the avatar of the sender (user) of a message within the [`MessageList`](./message_list.mdx).
 
 ## Basic Usage
@@ -59,3 +61,7 @@ const theme = {
 | Type   | Default |
 | ------ | ------- |
 | number | 32      |
+
+### <div class="label description">_overrides the value from [ChatContext](../contexts/chat_context.mdx#imagecomponent)_</div> ImageComponent {#imagecomponent}
+
+<ImageComponent />
