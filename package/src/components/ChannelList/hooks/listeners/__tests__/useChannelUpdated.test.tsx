@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text } from 'react-native';
+import { Image, Text } from 'react-native';
 
 import { act } from 'react-test-renderer';
 
@@ -59,6 +59,7 @@ describe('useChannelUpdated', () => {
             client: mockClient,
             connectionRecovering: false,
             enableOfflineSupport: false,
+            ImageComponent: Image,
             isOnline: true,
             mutedUsers: [],
             setActiveChannel: () => null,
