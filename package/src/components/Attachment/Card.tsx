@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Image,
   ImageStyle,
   StyleProp,
   StyleSheet,
@@ -120,7 +121,7 @@ const CardWithContext = <
     CardCover,
     CardFooter,
     CardHeader,
-    ImageComponent,
+    ImageComponent = Image,
     image_url,
     og_scrape_url,
     onLongPress,

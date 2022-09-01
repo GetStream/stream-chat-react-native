@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import type { Attachment } from 'stream-chat';
 
@@ -168,7 +168,7 @@ const GiphyWithContext = <
     attachment,
     giphyVersion,
     handleAction,
-    ImageComponent,
+    ImageComponent = Image,
     ImageLoadingFailedIndicator,
     ImageLoadingIndicator,
     isMyMessage,
