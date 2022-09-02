@@ -4,9 +4,14 @@ sidebar_position: 2
 title: Debug Stream Chat Application using Flipper plugin
 ---
 
+import FlipperBanner from '../assets/guides/debug-mode-using-flipper-plugin/flipper_stream_chat_react_native_banner.png';
+import FlipperDesktopGuide from '../assets/guides/debug-mode-using-flipper-plugin/flipper_desktop_guide.png';
+
 ## Overview
 
 Flipper is a platform for debugging iOS, Android and React Native apps. You can debug Stream Chat within your application by using our interface within the Flipper Desktop app. This will help you analyze multiple parameters of the application which are a part of Stream Chat React Native interface.
+
+<img src={FlipperBanner} />
 
 ## Features:
 
@@ -24,6 +29,8 @@ These features are part of the 1st version of this plugin. More features will be
   - After downloading the desktop app, move to **Plugin Manager** section of the app and then select the **Install Plugins** tab.
   - Search for **stream-chat-react-native** and you will find this plugin.
   - Click on Install to install it.
+
+  <img src={FlipperDesktopGuide} />
 
 - Next, we will need to install `stream-chat-react-native-devtools` to your application as a dev dependency. This dependency will make communication possible between the RN Stream Chat SDK and the flipper plugin.
 
