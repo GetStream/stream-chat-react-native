@@ -1949,7 +1949,7 @@ art@^0.10.1:
   resolved "https://registry.yarnpkg.com/art/-/art-0.10.3.tgz#b01d84a968ccce6208df55a733838c96caeeaea2"
   integrity sha512-HXwbdofRTiJT6qZX/FnchtldzJjS3vkLJxQilc3Xj+ma2MXjY4UAyQ0ls1XZYVnDvVIBiFZbC6QsvtW86TD6tQ==
 
-asap@~2.0.3, asap@~2.0.6:
+asap@~2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
   integrity sha512-BSHWgDSAiKs50o2Re8ppvp3seVHXSRM44cdSsT9FfNEUUZLOGWVCsiWaRPWM1Znn+mqZ1OfVZ3z3DWEzSp7hRA==
@@ -2596,13 +2596,6 @@ create-react-class@^15.6.2:
   dependencies:
     loose-envify "^1.3.1"
     object-assign "^4.1.1"
-
-cross-fetch@^3.1.5:
-  version "3.1.5"
-  resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-3.1.5.tgz#e1389f44d9e7ba767907f7af8454787952ab534f"
-  integrity sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==
-  dependencies:
-    node-fetch "2.6.7"
 
 cross-spawn@^6.0.0:
   version "6.0.5"
@@ -3407,24 +3400,6 @@ fb-watchman@^2.0.0:
   integrity sha512-DkPJKQeY6kKwmuMretBhr7G6Vodr7bFwDYTXIkfG1gjvNpaxBTQV3PbXg6bR1c1UP4jPOX0jHUbbHANL9vRjVg==
   dependencies:
     bser "2.1.1"
-
-fbjs-css-vars@^1.0.0:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/fbjs-css-vars/-/fbjs-css-vars-1.0.2.tgz#216551136ae02fe255932c3ec8775f18e2c078b8"
-  integrity sha512-b2XGFAFdWZWg0phtAWLHCk836A1Xann+I+Dgd3Gk64MHKZO44FfoD1KxyvbSh0qZsIoXQGGlVztIY+oitJPpRQ==
-
-fbjs@^3.0.4:
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-3.0.4.tgz#e1871c6bd3083bac71ff2da868ad5067d37716c6"
-  integrity sha512-ucV0tDODnGV3JCnnkmoszb5lf4bNpzjv80K41wd4k798Etq+UYD0y0TIfalLjZoKgjive6/adkRnszwapiDgBQ==
-  dependencies:
-    cross-fetch "^3.1.5"
-    fbjs-css-vars "^1.0.0"
-    loose-envify "^1.0.0"
-    object-assign "^4.1.0"
-    promise "^7.1.1"
-    setimmediate "^1.0.5"
-    ua-parser-js "^0.7.30"
 
 file-entry-cache@^6.0.1:
   version "6.0.1"
@@ -5645,7 +5620,7 @@ node-dir@^0.1.17:
   dependencies:
     minimatch "^3.0.2"
 
-node-fetch@2.6.7, node-fetch@^2.2.0, node-fetch@^2.6.0:
+node-fetch@^2.2.0, node-fetch@^2.6.0:
   version "2.6.7"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.7.tgz#24de9fba827e3b4ae44dc8b20256a379160052ad"
   integrity sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==
@@ -5744,7 +5719,7 @@ ob1@0.70.3:
   resolved "https://registry.yarnpkg.com/ob1/-/ob1-0.70.3.tgz#f48cd5a5abf54b0c423b1b06b6d4ff4d049816cb"
   integrity sha512-Vy9GGhuXgDRY01QA6kdhToPd8AkLdLpX9GjH5kpqluVqTu70mgOm7tpGoJDZGaNbr9nJlJgnipqHJQRPORixIQ==
 
-object-assign@^4.1.0, object-assign@^4.1.1:
+object-assign@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
   integrity sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==
@@ -6142,13 +6117,6 @@ progress@^2.0.0:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
-
-promise@^7.1.1:
-  version "7.3.1"
-  resolved "https://registry.yarnpkg.com/promise/-/promise-7.3.1.tgz#064b72602b18f90f29192b8b1bc418ffd1ebd3bf"
-  integrity sha512-nolQXZ/4L+bP/UGlkfaIujX9BKxGwmQ9OT4mOt5yvy8iK1h3wqTEJCijzGANTCCl9nWjY41juyAn2K3Q1hLLTg==
-  dependencies:
-    asap "~2.0.3"
 
 promise@^8.0.3:
   version "8.1.0"
@@ -7129,10 +7097,10 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-stream-chat-react-native-core@5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.0.0.tgz#e8ac37c627b58baaedf19084eee4cbdde6033aac"
-  integrity sha512-2IWVRICko95poQZJPVWhbQ8rlFD2nWqMfRG+YYUEc3657/uw3gf5sKJq95DMbGd6R8xPSNZVE542YgBTWSGL+g==
+stream-chat-react-native-core@5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.1.0.tgz#65a867ad684add2fc6ec702a65d57010434f550b"
+  integrity sha512-jWIB5tjCPqFsnPOkB+yKD2bW18NYlt6AFMjrHIurKkdR08+8E4/wtCutZztTCTqyiJ3RXA2NL8d8vDWfBzV4zg==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "^4.1.6"
@@ -7544,11 +7512,6 @@ typescript@4.2.4:
   version "4.2.4"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.2.4.tgz#8610b59747de028fda898a8aef0e103f156d0961"
   integrity sha512-V+evlYHZnQkaz8TRBuxTA92yZBPotr5H+WhQ7bD3hZUndx5tGOa1fuCgeSjxAzM1RiN5IzvadIXTVefuuwZCRg==
-
-ua-parser-js@^0.7.30:
-  version "0.7.31"
-  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.31.tgz#649a656b191dffab4f21d5e053e27ca17cbff5c6"
-  integrity sha512-qLK/Xe9E2uzmYI3qLeOmI0tEOt+TBBQyUIAh4aAgU05FVYzeZrKUdkAZfBNVGRaHVgV0TDkdEngJSw/SyQchkQ==
 
 uglify-es@^3.1.9:
   version "3.3.9"
