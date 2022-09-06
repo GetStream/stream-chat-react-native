@@ -101,11 +101,10 @@ level.
 
 ## How To Cache Images
 
-Chat React Native SDK replies on default caching provided by react-native (avatars, image attachments, url preview etc) by default.
-Although its not really perfect and you might see a lot of images missing while operating app in offline mode.
-But its easy to replace all the underlying usage of [`Image`](https://reactnative.dev/docs/next/image) component using one
-simple prop on `Chat` component - `ImageComponent`
-You can provide a custom component to display image which handles caching and has the same API as react-native's `Image` component.
+Our SDK relies on the default caching provided by React Native (avatars, image attachments, URL preview, etc.).
+This default solution is far from perfect, and you might see a lot of images missing while operating the app in offline mode.
+We provide a convenient solution to replace all the underlying usage of the [`Image`](https://reactnative.dev/docs/next/image) component using the `ImageComponent` prop on the `Chat` component.
+Use the `ImageComponent` prop to provide a custom component that handles caching and has the same API as react-native's `Image` component.
 
 There are plenty of libraries available for this purpose:
 
