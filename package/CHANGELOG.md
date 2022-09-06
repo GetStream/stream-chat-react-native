@@ -1,5 +1,23 @@
 # Change Log
 
+## [5.2.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.1.0...v5.2.0) (2022-09-06)
+
+
+### Features
+
+* add debugcontext to send/receive data to/from the flipper plugin ([14d1e35](https://github.com/GetStream/stream-chat-react-native/commit/14d1e350c6db75fb630f3d737eed4149b4438fe7))
+* debug mode for SDK using Flipper plugin ([c5fc2a3](https://github.com/GetStream/stream-chat-react-native/commit/c5fc2a36894f2ab8c67673cb15b44460afee4e6b))
+* send client data to the desktop plugin ([268c99c](https://github.com/GetStream/stream-chat-react-native/commit/268c99cd88b5740e6e1f5eeb6a4d7e731d21289b))
+
+
+### Bug Fixes
+
+* erroneous usage of AudioAttachment and its props from message input context ([9331343](https://github.com/GetStream/stream-chat-react-native/commit/93313432ae3e9f068a29b8715532e1dc0aa5e41c))
+* multiple video controls in ImageGallery ([29aab59](https://github.com/GetStream/stream-chat-react-native/commit/29aab59cbe51907e79f4a6523af74862e70ca789))
+* repeat memoization and support of new version of rn-video on android ([d0cd043](https://github.com/GetStream/stream-chat-react-native/commit/d0cd043c4f5e18199f7b2d9ebe664e55f0567346))
+* theming colors of image gallery video control's progress and duration text ([b6dcec6](https://github.com/GetStream/stream-chat-react-native/commit/b6dcec640e449750c463eab82a86ed10b0b059b6))
+* video controls for multiple videos in image gallery ([c5981df](https://github.com/GetStream/stream-chat-react-native/commit/c5981df9d139f4bab8d17835e8d3068753177f2d))
+
 ## [5.1.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.0.0...v5.1.0) (2022-08-31)
 
 
