@@ -314,12 +314,13 @@ export const ChannelList = <
     setChannels,
   });
 
-  const channelIdsStr = channels.reduce((acc, channel) => `${acc}${channel.cid}`, '');
+  const channelIdsStr = channels?.reduce((acc, channel) => `${acc}${channel.cid}`, '');
 
   useEffect(() => {
-    if (staticChannelsActive || !enableOfflineSupport) {
+    if (channels === null || staticChannelsActive || !enableOfflineSupport) {
       return;
     }
+
     upsertCidsForQuery({
       cids: channels.map((c) => c.cid),
       filters,

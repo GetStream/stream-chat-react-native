@@ -38,7 +38,7 @@ export const useCreateChannelsContext = <
   Skeleton,
 }: ChannelsContextValue<StreamChatGenerics>) => {
   const channelValueString = channels
-    .map(
+    ?.map(
       (channel) =>
         `${channel.data?.name ?? ''}${channel.id ?? ''}${Object.values(channel.state.members)
           .map((member) => member.user?.online)

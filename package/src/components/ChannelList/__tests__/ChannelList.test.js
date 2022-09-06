@@ -43,7 +43,7 @@ const ChannelListComponent = (props) => {
   const { channels, onSelect } = useChannelsContext();
   return (
     <View testID='channel-list'>
-      {channels.map((channel) => (
+      {channels?.map((channel) => (
         <ChannelPreviewComponent
           {...props}
           channel={channel}
