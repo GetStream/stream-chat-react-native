@@ -14,7 +14,9 @@ Flipper is a platform for debugging iOS, Android, and React Native apps. You can
 <img src={FlipperBanner} />
 
 ## Features
+
 The plugin supports the following features:
+
 - Viewing the authenticated client in the Chat.
 - Viewing the Channels, Message, and Thread list data as you navigate the app.
 - Copying and visualizing all the data.
@@ -25,47 +27,48 @@ These features are part of the 1st version of this plugin; more features will be
 
 1. First, install the Flipper plugin within your Desktop client. To do so, follow these steps:
 
-  - Download the Flipper Desktop app from [here](https://fbflipper.com/).
-  - After downloading the desktop app, move to the **Plugin Manager** section of the app and select the **Install Plugins** tab.
-  - Search for **stream-chat-react-native**, and you will find the plugin.
-  - Click on **Install** to install it.
+- Download the Flipper Desktop app from [here](https://fbflipper.com/).
+- After downloading the desktop app, move to the **Plugin Manager** section of the app and select the **Install Plugins** tab.
+- Search for **stream-chat-react-native**, and you will find the plugin.
+- Click on **Install** to install it.
 
-  <img src={FlipperDesktopGuide} />
+{' '}
+<img src={FlipperDesktopGuide} />
 
 2. Next, install `stream-chat-react-native-devtools` to your application as a dev dependency. This dependency will make communication possible between the RN Stream Chat SDK and the Flipper plugin.
 
-  ```
-  yarn add --dev stream-chat-react-native-devtools
-  ```
+```
+yarn add --dev stream-chat-react-native-devtools
+```
 
-  or
+or
 
-  ```
-  npm install --save-dev stream-chat-react-native-devtools
-  ```
+```
+npm install --save-dev stream-chat-react-native-devtools
+```
 
 3. To interact with the Flipper Plugin you need an additional dependency `react-native-flipper`. You can install it as a dev dependency, as:
 
-  ```
-  yarn add --dev react-native-flipper
-  ```
+```
+yarn add --dev react-native-flipper
+```
 
-  or
+or
 
-  ```
-  npm install --save-dev react-native-flipper
-  ```
+```
+npm install --save-dev react-native-flipper
+```
 
 4. Wrap the root of the component tree with `DebugContextProvider` and pass the `useFlipper` function.
 
-  ```tsx
-  import { DebugContextProvider } from 'stream-chat-react-native';
-  import { useFlipper } from 'stream-chat-react-native-devtools';
-  ...
+```tsx
+import { DebugContextProvider } from 'stream-chat-react-native';
+import { useFlipper } from 'stream-chat-react-native-devtools';
+...
 
-  <DebugContextProvider useFlipper={useFlipper}>
-    {/* All other elements of the App component comes here */}
-  </DebugContextProvider>
-  ```
+<DebugContextProvider useFlipper={useFlipper}>
+  {/* All other elements of the App component comes here */}
+</DebugContextProvider>
+```
 
 Kudos 🎉, everything else is handled by our SDK, the package [stream-chat-react-native-devtools](https://www.npmjs.com/package/stream-chat-react-native-devtools), and the [Flipper Plugin](https://www.npmjs.com/package/flipper-plugin-stream-chat-react-native).
