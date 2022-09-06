@@ -24,6 +24,7 @@ import { MessageActionList as DefaultMessageActionList } from './MessageActionLi
 import { OverlayReactionList as OverlayReactionListDefault } from './OverlayReactionList';
 import { OverlayReactionsAvatar as OverlayReactionsAvatarDefault } from './OverlayReactionsAvatar';
 
+import { ChatProvider } from '../../contexts/chatContext/ChatContext';
 import { MessageProvider } from '../../contexts/messageContext/MessageContext';
 import {
   MessageOverlayContextValue,
@@ -118,6 +119,7 @@ const MessageOverlayWithContext = <
     groupStyles,
     handleReaction,
     images,
+    chatContext,
     message,
     messageActions,
     MessageActionList = DefaultMessageActionList,
@@ -301,219 +303,222 @@ const MessageOverlayWithContext = <
   const { Attachment, FileAttachmentGroup, Gallery, MessageAvatar, Reply } = messagesContext || {};
 
   return (
-    <MessagesProvider value={messagesContext}>
-      <MessageProvider value={messageContext}>
-        <ThemeProvider mergedStyle={wrapMessageInTheme ? modifiedTheme : theme}>
-          <Animated.View
-            pointerEvents={'auto'}
-            style={[StyleSheet.absoluteFillObject, containerStyle]}
-          >
-            <PanGestureHandler
-              enabled={overlay === 'message'}
-              maxPointers={1}
-              minDist={10}
-              onGestureEvent={onPan}
+    <ChatProvider value={chatContext}>
+      <MessagesProvider value={messagesContext}>
+        <MessageProvider value={messageContext}>
+          <ThemeProvider mergedStyle={wrapMessageInTheme ? modifiedTheme : theme}>
+            <Animated.View
+              pointerEvents={'auto'}
+              style={[StyleSheet.absoluteFillObject, containerStyle]}
             >
-              <Animated.View style={[StyleSheet.absoluteFillObject]}>
-                <SafeAreaView style={styles.flex}>
-                  <TapGestureHandler
-                    maxDist={32}
-                    onHandlerStateChange={({ nativeEvent: { state } }) => {
-                      if (state === State.END) {
-                        setOverlay('none');
-                      }
-                    }}
-                  >
-                    <Animated.View style={[styles.flex, panStyle]}>
-                      {message && (
-                        <View
-                          style={[
-                            styles.center,
-                            styles.overlayPadding,
-                            { padding: overlayPadding },
-                            alignment === 'left' ? styles.alignStart : styles.alignEnd,
-                          ]}
-                        >
-                          {handleReaction && ownCapabilities?.sendReaction ? (
-                            <OverlayReactionList
-                              messageLayout={messageLayout}
-                              ownReactionTypes={
-                                message?.own_reactions?.map((reaction) => reaction.type) || []
-                              }
-                              showScreen={showScreen}
-                            />
-                          ) : null}
-                          <Animated.View
-                            onLayout={({
-                              nativeEvent: {
-                                layout: { height: layoutHeight, width: layoutWidth, x, y },
-                              },
-                            }) => {
-                              messageLayout.value = {
-                                x: alignment === 'left' ? x + layoutWidth : x,
-                                y,
-                              };
-                              messageWidth.value = layoutWidth;
-                              messageHeight.value = layoutHeight;
-                            }}
-                            style={[styles.alignEnd, styles.row, showScreenStyle]}
+              <PanGestureHandler
+                enabled={overlay === 'message'}
+                maxPointers={1}
+                minDist={10}
+                onGestureEvent={onPan}
+              >
+                <Animated.View style={[StyleSheet.absoluteFillObject]}>
+                  <SafeAreaView style={styles.flex}>
+                    <TapGestureHandler
+                      maxDist={32}
+                      onHandlerStateChange={({ nativeEvent: { state } }) => {
+                        if (state === State.END) {
+                          setOverlay('none');
+                        }
+                      }}
+                    >
+                      <Animated.View style={[styles.flex, panStyle]}>
+                        {message && (
+                          <View
+                            style={[
+                              styles.center,
+                              styles.overlayPadding,
+                              { padding: overlayPadding },
+                              alignment === 'left' ? styles.alignStart : styles.alignEnd,
+                            ]}
                           >
-                            {alignment === 'left' && MessageAvatar && (
-                              <MessageAvatar {...{ alignment, message, showAvatar: true }} />
-                            )}
-                            <View
-                              pointerEvents='none'
-                              style={[
-                                styles.containerInner,
-                                {
-                                  backgroundColor:
-                                    onlyEmojis && !message.quoted_message
-                                      ? transparent
-                                      : otherAttachments?.length
-                                      ? otherAttachments[0].type === 'giphy'
-                                        ? !message.quoted_message
-                                          ? transparent
-                                          : grey_gainsboro
-                                        : blue_alice
-                                      : alignment === 'left'
-                                      ? white_smoke
-                                      : grey_gainsboro,
-                                  borderBottomLeftRadius:
-                                    (groupStyle === 'left_bottom' ||
-                                      groupStyle === 'left_single') &&
-                                    (!hasThreadReplies || threadList)
-                                      ? borderRadiusS
-                                      : borderRadiusL,
-                                  borderBottomRightRadius:
-                                    (groupStyle === 'right_bottom' ||
-                                      groupStyle === 'right_single') &&
-                                    (!hasThreadReplies || threadList)
-                                      ? borderRadiusS
-                                      : borderRadiusL,
-                                  borderColor: grey_whisper,
+                            {handleReaction && ownCapabilities?.sendReaction ? (
+                              <OverlayReactionList
+                                messageLayout={messageLayout}
+                                ownReactionTypes={
+                                  message?.own_reactions?.map((reaction) => reaction.type) || []
+                                }
+                                showScreen={showScreen}
+                              />
+                            ) : null}
+                            <Animated.View
+                              onLayout={({
+                                nativeEvent: {
+                                  layout: { height: layoutHeight, width: layoutWidth, x, y },
                                 },
-                                (onlyEmojis && !message.quoted_message) || otherAttachments?.length
-                                  ? { borderWidth: 0 }
-                                  : {},
-                                containerInner,
-                              ]}
+                              }) => {
+                                messageLayout.value = {
+                                  x: alignment === 'left' ? x + layoutWidth : x,
+                                  y,
+                                };
+                                messageWidth.value = layoutWidth;
+                                messageHeight.value = layoutHeight;
+                              }}
+                              style={[styles.alignEnd, styles.row, showScreenStyle]}
                             >
-                              {messagesContext?.messageContentOrder?.map(
-                                (messageContentType, messageContentOrderIndex) => {
-                                  switch (messageContentType) {
-                                    case 'quoted_reply':
-                                      return (
-                                        message.quoted_message &&
-                                        Reply && (
-                                          <View
-                                            key={`quoted_reply_${messageContentOrderIndex}`}
-                                            style={[styles.replyContainer, replyContainer]}
-                                          >
-                                            <Reply
-                                              quotedMessage={
-                                                message.quoted_message as ReplyProps<StreamChatGenerics>['quotedMessage']
-                                              }
-                                              styles={{
-                                                messageContainer: {
-                                                  maxWidth: vw(60),
-                                                },
-                                              }}
-                                            />
-                                          </View>
-                                        )
-                                      );
-                                    case 'attachments':
-                                      return otherAttachments?.map(
-                                        (attachment, attachmentIndex) =>
-                                          Attachment && (
-                                            <Attachment
-                                              attachment={attachment}
-                                              key={`${message.id}-${attachmentIndex}`}
-                                            />
-                                          ),
-                                      );
-                                    case 'files':
-                                      return (
-                                        FileAttachmentGroup && (
-                                          <FileAttachmentGroup
-                                            files={files}
-                                            key={`file_attachment_group_${messageContentOrderIndex}`}
-                                            messageId={message.id}
-                                          />
-                                        )
-                                      );
-                                    case 'gallery':
-                                      return (
-                                        Gallery && (
-                                          <Gallery
-                                            alignment={alignment}
-                                            groupStyles={groupStyles}
-                                            hasThreadReplies={!!message?.reply_count}
-                                            images={images}
-                                            key={`gallery_${messageContentOrderIndex}`}
-                                            message={message}
-                                            threadList={threadList}
-                                            videos={videos}
-                                          />
-                                        )
-                                      );
-                                    case 'text':
-                                    default:
-                                      return otherAttachments?.length &&
-                                        otherAttachments[0].actions ? null : (
-                                        <MessageTextContainer<StreamChatGenerics>
-                                          key={`message_text_container_${messageContentOrderIndex}`}
-                                          message={message}
-                                          messageOverlay
-                                          messageTextNumberOfLines={messageTextNumberOfLines}
-                                          onlyEmojis={onlyEmojis}
-                                        />
-                                      );
-                                  }
-                                },
+                              {alignment === 'left' && MessageAvatar && (
+                                <MessageAvatar {...{ alignment, message, showAvatar: true }} />
                               )}
-                            </View>
-                          </Animated.View>
-                          {messageActions && (
-                            <MessageActionList
-                              MessageActionListItem={MessageActionListItem}
-                              showScreen={showScreen}
-                              {...messageActionProps}
-                              message={message}
-                            />
-                          )}
-                          {!!messageReactionTitle &&
-                          message.latest_reactions &&
-                          message.latest_reactions.length > 0 ? (
-                            <OverlayReactions
-                              alignment={alignment}
-                              OverlayReactionsAvatar={OverlayReactionsAvatar}
-                              reactions={
-                                message.latest_reactions.map((reaction) => ({
-                                  alignment:
-                                    clientId && clientId === reaction.user?.id ? 'right' : 'left',
-                                  id: reaction?.user?.id || '',
-                                  image: reaction?.user?.image,
-                                  name: reaction?.user?.name || reaction.user_id || '',
-                                  type: reaction.type,
-                                })) as Reaction[]
-                              }
-                              showScreen={showScreen}
-                              supportedReactions={messagesContext?.supportedReactions}
-                              title={messageReactionTitle}
-                            />
-                          ) : null}
-                        </View>
-                      )}
-                    </Animated.View>
-                  </TapGestureHandler>
-                </SafeAreaView>
-              </Animated.View>
-            </PanGestureHandler>
-          </Animated.View>
-        </ThemeProvider>
-      </MessageProvider>
-    </MessagesProvider>
+                              <View
+                                pointerEvents='none'
+                                style={[
+                                  styles.containerInner,
+                                  {
+                                    backgroundColor:
+                                      onlyEmojis && !message.quoted_message
+                                        ? transparent
+                                        : otherAttachments?.length
+                                        ? otherAttachments[0].type === 'giphy'
+                                          ? !message.quoted_message
+                                            ? transparent
+                                            : grey_gainsboro
+                                          : blue_alice
+                                        : alignment === 'left'
+                                        ? white_smoke
+                                        : grey_gainsboro,
+                                    borderBottomLeftRadius:
+                                      (groupStyle === 'left_bottom' ||
+                                        groupStyle === 'left_single') &&
+                                      (!hasThreadReplies || threadList)
+                                        ? borderRadiusS
+                                        : borderRadiusL,
+                                    borderBottomRightRadius:
+                                      (groupStyle === 'right_bottom' ||
+                                        groupStyle === 'right_single') &&
+                                      (!hasThreadReplies || threadList)
+                                        ? borderRadiusS
+                                        : borderRadiusL,
+                                    borderColor: grey_whisper,
+                                  },
+                                  (onlyEmojis && !message.quoted_message) ||
+                                  otherAttachments?.length
+                                    ? { borderWidth: 0 }
+                                    : {},
+                                  containerInner,
+                                ]}
+                              >
+                                {messagesContext?.messageContentOrder?.map(
+                                  (messageContentType, messageContentOrderIndex) => {
+                                    switch (messageContentType) {
+                                      case 'quoted_reply':
+                                        return (
+                                          message.quoted_message &&
+                                          Reply && (
+                                            <View
+                                              key={`quoted_reply_${messageContentOrderIndex}`}
+                                              style={[styles.replyContainer, replyContainer]}
+                                            >
+                                              <Reply
+                                                quotedMessage={
+                                                  message.quoted_message as ReplyProps<StreamChatGenerics>['quotedMessage']
+                                                }
+                                                styles={{
+                                                  messageContainer: {
+                                                    maxWidth: vw(60),
+                                                  },
+                                                }}
+                                              />
+                                            </View>
+                                          )
+                                        );
+                                      case 'attachments':
+                                        return otherAttachments?.map(
+                                          (attachment, attachmentIndex) =>
+                                            Attachment && (
+                                              <Attachment
+                                                attachment={attachment}
+                                                key={`${message.id}-${attachmentIndex}`}
+                                              />
+                                            ),
+                                        );
+                                      case 'files':
+                                        return (
+                                          FileAttachmentGroup && (
+                                            <FileAttachmentGroup
+                                              files={files}
+                                              key={`file_attachment_group_${messageContentOrderIndex}`}
+                                              messageId={message.id}
+                                            />
+                                          )
+                                        );
+                                      case 'gallery':
+                                        return (
+                                          Gallery && (
+                                            <Gallery
+                                              alignment={alignment}
+                                              groupStyles={groupStyles}
+                                              hasThreadReplies={!!message?.reply_count}
+                                              images={images}
+                                              key={`gallery_${messageContentOrderIndex}`}
+                                              message={message}
+                                              threadList={threadList}
+                                              videos={videos}
+                                            />
+                                          )
+                                        );
+                                      case 'text':
+                                      default:
+                                        return otherAttachments?.length &&
+                                          otherAttachments[0].actions ? null : (
+                                          <MessageTextContainer<StreamChatGenerics>
+                                            key={`message_text_container_${messageContentOrderIndex}`}
+                                            message={message}
+                                            messageOverlay
+                                            messageTextNumberOfLines={messageTextNumberOfLines}
+                                            onlyEmojis={onlyEmojis}
+                                          />
+                                        );
+                                    }
+                                  },
+                                )}
+                              </View>
+                            </Animated.View>
+                            {messageActions && (
+                              <MessageActionList
+                                MessageActionListItem={MessageActionListItem}
+                                showScreen={showScreen}
+                                {...messageActionProps}
+                                message={message}
+                              />
+                            )}
+                            {!!messageReactionTitle &&
+                            message.latest_reactions &&
+                            message.latest_reactions.length > 0 ? (
+                              <OverlayReactions
+                                alignment={alignment}
+                                OverlayReactionsAvatar={OverlayReactionsAvatar}
+                                reactions={
+                                  message.latest_reactions.map((reaction) => ({
+                                    alignment:
+                                      clientId && clientId === reaction.user?.id ? 'right' : 'left',
+                                    id: reaction?.user?.id || '',
+                                    image: reaction?.user?.image,
+                                    name: reaction?.user?.name || reaction.user_id || '',
+                                    type: reaction.type,
+                                  })) as Reaction[]
+                                }
+                                showScreen={showScreen}
+                                supportedReactions={messagesContext?.supportedReactions}
+                                title={messageReactionTitle}
+                              />
+                            ) : null}
+                          </View>
+                        )}
+                      </Animated.View>
+                    </TapGestureHandler>
+                  </SafeAreaView>
+                </Animated.View>
+              </PanGestureHandler>
+            </Animated.View>
+          </ThemeProvider>
+        </MessageProvider>
+      </MessagesProvider>
+    </ChatProvider>
   );
 };
 

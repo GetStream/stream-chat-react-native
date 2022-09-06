@@ -1,10 +1,9 @@
 import React from 'react';
-import { Image, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { Image, ImageProps, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useLoadingImage } from '../../hooks/useLoadingImage';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
-
 const randomImageBaseUrl = 'https://getstream.io/random_png/';
 const randomSvgBaseUrl = 'https://getstream.io/random_svg/';
 const streamCDN = 'stream-io-cdn.com';
@@ -27,6 +26,7 @@ export type GroupAvatarProps = {
   /** total size in pixels */
   size: number;
   containerStyle?: StyleProp<ViewStyle>;
+  ImageComponent?: React.ComponentType<ImageProps>;
   /** image urls */
   images?: string[];
   /** name of the users, used for fallback */
@@ -38,7 +38,7 @@ export type GroupAvatarProps = {
  * GroupAvatar - A round group of avatar images with fallbacks to users' initials
  */
 export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
-  const { containerStyle, images, names, size, testID } = props;
+  const { containerStyle, ImageComponent = Image, images, names, size, testID } = props;
   const {
     theme: {
       groupAvatar: { container, image },
@@ -136,7 +136,7 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
             ]}
           >
             {column.map(({ height, name, url, width }, rowIndex) => (
-              <Image
+              <ImageComponent
                 accessibilityLabel={testID || 'Avatar Image'}
                 key={`avatar-${url}-${rowIndex}`}
                 onError={() => setLoadingImageError(true)}

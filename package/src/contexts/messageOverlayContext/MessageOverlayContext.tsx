@@ -1,5 +1,7 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
+import type { ImageProps } from 'react-native';
+
 import type { Attachment, TranslationLanguages } from 'stream-chat';
 
 import { useResettableState } from './hooks/useResettableState';
@@ -15,6 +17,7 @@ import type { OverlayReactionsProps } from '../../components/MessageOverlay/Over
 import type { OverlayReactionsAvatarProps } from '../../components/MessageOverlay/OverlayReactionsAvatar';
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
+import type { ChatContextValue } from '../chatContext/ChatContext';
 import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
 import type { MessagesContextValue } from '../messagesContext/MessagesContext';
 import type { OwnCapabilitiesContextValue } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
@@ -27,10 +30,12 @@ export type MessageOverlayData<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   alignment?: Alignment;
+  chatContext?: ChatContextValue<StreamChatGenerics>;
   clientId?: string;
   files?: Attachment<StreamChatGenerics>[];
   groupStyles?: GroupType[];
   handleReaction?: (reactionType: string) => Promise<void>;
+  ImageComponent?: React.ComponentType<ImageProps>;
   images?: Attachment<StreamChatGenerics>[];
   message?: MessageType<StreamChatGenerics>;
   messageActions?: MessageActionType[];
@@ -89,7 +94,9 @@ export const MessageOverlayProvider = <
 }>) => {
   const messageOverlayContext = useResettableState(value);
   return (
-    <MessageOverlayContext.Provider value={messageOverlayContext as MessageOverlayContextValue}>
+    <MessageOverlayContext.Provider
+      value={messageOverlayContext as unknown as MessageOverlayContextValue}
+    >
       {children}
     </MessageOverlayContext.Provider>
   );
