@@ -6,9 +6,11 @@ title: Upgrading from V4
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
+This guide highlights the changes introduced from v4 to v5.
+
 ## Prop or Context Changes
 
-Following values in [`ImageGalleryContext`](https://getstream.io/chat/docs/sdk/reactnative/v5/contexts/image-gallery-context/#value) have been renamed
+The following values in [`ImageGalleryContext`](https://getstream.io/chat/docs/sdk/reactnative/v5/contexts/image-gallery-context/#value) have been renamed:
 
 - `image` -> `selectedMessage`
 - `setImage` -> `setSelectedMessage`
@@ -17,27 +19,25 @@ Following values in [`ImageGalleryContext`](https://getstream.io/chat/docs/sdk/r
 
 ## Dependency Changes
 
-- If you have installed `stream-chat` dependency explicitly on your application, then upgrade it to v7
+- If you have installed `stream-chat` dependency explicitly in your application, then upgrade it to v7:
 
   ```bash
   yarn add stream-chat@7.0.0
   ```
 
-- Replace [`@react-native-community/cameraroll`](https://github.com/react-native-cameraroll/react-native-cameraroll) dependency with [`@react-native-camera-roll/camera-roll`](https://www.npmjs.com/package/@react-native-camera-roll/camera-roll)
+- Replace [`@react-native-community/cameraroll`](https://github.com/react-native-cameraroll/react-native-cameraroll) dependency with [`@react-native-camera-roll/camera-roll`](https://www.npmjs.com/package/@react-native-camera-roll/camera-roll):
 
   ```bash
   yarn remove @react-native-community/cameraroll
   yarn add @react-native-camera-roll/camera-roll
   ```
 
-## Offline Support
+## Unique Chat Component Instance
 
-Offline Support is a major opt-in feature introduced in v5 of SDK.
+Until v4, you could provide a separate `Chat` component for each usage of `Channel` component or `ChannelList` component.
+But from v5, you must provide only one instance of the `Chat` component within your application.
+This component needs to be a parent for all the chat-related components such as `ChannelList`, `Channel` or `Thread`.
 
-This feature allows users to:
-
-- access to chat when internet is disabled
-- faster loading of chat since chat gets loaded from offline storage first before loading data from network
-- syncing of database using websocket events and sync api.
+## Enable Offline Support
 
 To enable offline support please check the [Offline Support](./offline_support.mdx) guide.
