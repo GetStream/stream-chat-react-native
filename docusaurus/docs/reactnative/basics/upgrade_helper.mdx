@@ -31,6 +31,12 @@ The following values in [`ImageGalleryContext`](https://getstream.io/chat/docs/s
   yarn remove @react-native-community/cameraroll
   yarn add @react-native-camera-roll/camera-roll
   ```
+  
+## Unique Chat Component Instance
+
+  Until v4, you could provide a separate `Chat` component for each usage of `Channel` component or `ChannelList` component.
+  But from v5, you must provide only one instance of the `Chat` component within your application.
+  This component needs to be a parent for all the chat-related components such as `ChannelList`, `Channel` or `Thread`.
 
 ## Enable Offline Support
 
@@ -67,13 +73,7 @@ To enable offline support, please follow the given steps:
   npx pod-install
   ```
 
-3. **Ensure a unique instance of Chat component**
-
-  Until v4, you could provide a separate `Chat` component for each usage of `Channel` component or `ChannelList` component.
-  But from v5, you must provide only one instance of the `Chat` component within your application.
-  This component needs to be a parent for all the chat-related components such as `ChannelList`, `Channel` or `Thread`.
-
-4. **Do not wait for `connectUser` call to succeed**
+3. **Do not wait for `connectUser` call to succeed**
 
   It is important that you call the `connectUser` method on the chat client, before you render Chat components.
   But you don't need to wait for `connectUser` to succeed before rendering Chat components. This is to ensure:
@@ -107,7 +107,7 @@ To enable offline support, please follow the given steps:
   };
   ```
 
-5. **Add `enableOfflineSupport` prop on Chat component**
+4. **Add `enableOfflineSupport` prop on Chat component**
 
   ```tsx
   import { Chat } from 'stream-chat-react-native';
@@ -117,7 +117,7 @@ To enable offline support, please follow the given steps:
   </Chat>;
   ```
 
-6. **Reset the database when signing out the user**
+5. **Reset the database when signing out the user**
 
   Since the SDK doesn't handle app-level authentication logic, it's the application's responsibility
   to ensure the database is reset when a user gets logged out. This should generally be done before you
