@@ -96,6 +96,7 @@ const reactionData: ReactionData[] = [
 
 export type Reaction = {
   alignment: Alignment;
+  id: string;
   name: string;
   type: string;
   image?: string;
