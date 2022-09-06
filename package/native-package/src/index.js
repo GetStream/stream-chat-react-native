@@ -275,7 +275,7 @@ registerNativeHandlers({
   },
   // eslint-disable-next-line react/display-name
   Video: AudioVideoPlayer
-    ? ({ onBuffer, onEnd, onLoad, onProgress, paused, style, uri, videoRef }) => (
+    ? ({ onBuffer, onEnd, onLoad, onProgress, paused, repeat, style, uri, videoRef }) => (
         <AudioVideoPlayer
           ignoreSilentSwitch={'ignore'}
           onBuffer={onBuffer}
@@ -287,6 +287,7 @@ registerNativeHandlers({
           onProgress={onProgress}
           paused={paused}
           ref={videoRef}
+          repeat={repeat}
           source={{
             uri,
           }}

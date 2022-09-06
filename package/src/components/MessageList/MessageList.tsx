@@ -30,6 +30,7 @@ import {
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useDebugContext } from '../../contexts/debugContext/DebugContext';
 import {
   ImageGalleryContextValue,
   useImageGalleryContext,
@@ -936,6 +937,20 @@ const MessageListWithContext = <
       setFlatListRef(ref);
     }
   };
+
+  const debugRef = useDebugContext();
+
+  const isDebugModeEnabled = __DEV__ && debugRef && debugRef.current;
+
+  if (isDebugModeEnabled) {
+    if (debugRef.current.setEventType) debugRef.current.setEventType('send');
+    if (debugRef.current.setSendEventParams)
+      debugRef.current.setSendEventParams({
+        action: thread ? 'ThreadList' : 'Messages',
+        data: messageList,
+      });
+  }
+
   const renderListEmptyComponent = () => (
     <View style={[styles.flex, styles.invert]} testID='empty-state'>
       <EmptyStateIndicator listType='message' />

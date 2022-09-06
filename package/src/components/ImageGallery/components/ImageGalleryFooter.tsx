@@ -65,7 +65,6 @@ export type ImageGalleryFooterCustomComponent<
 export type ImageGalleryFooterVideoControlProps = {
   duration: number;
   onPlayPause: (status?: boolean) => void;
-  onProgressDrag: (progress: number) => void;
   paused: boolean;
   progress: number;
 };
@@ -73,7 +72,6 @@ export type ImageGalleryFooterVideoControlProps = {
 export type ImageGalleryFooterVideoControlComponent = ({
   duration,
   onPlayPause,
-  onProgressDrag,
   paused,
   progress,
 }: ImageGalleryFooterVideoControlProps) => React.ReactElement | null;
@@ -95,7 +93,6 @@ type ImageGalleryFooterPropsWithContext<
   accessibilityLabel: string;
   duration: number;
   onPlayPause: () => void;
-  onProgressDrag: (progress: number) => void;
   opacity: Animated.SharedValue<number>;
   openGridView: () => void;
   paused: boolean;
@@ -118,7 +115,6 @@ export const ImageGalleryFooterWithContext = <
     GridIcon,
     leftElement,
     onPlayPause,
-    onProgressDrag,
     opacity,
     openGridView,
     paused,
@@ -192,12 +188,11 @@ export const ImageGalleryFooterWithContext = <
       <ReanimatedSafeAreaView style={[container, footerStyle, { backgroundColor: white }]}>
         {photo.type === 'video' ? (
           videoControlElement ? (
-            videoControlElement({ duration, onPlayPause, onProgressDrag, paused, progress })
+            videoControlElement({ duration, onPlayPause, paused, progress })
           ) : (
             <ImageGalleryVideoControl
               duration={duration}
               onPlayPause={onPlayPause}
-              onProgressDrag={onProgressDrag}
               paused={paused}
               progress={progress}
             />

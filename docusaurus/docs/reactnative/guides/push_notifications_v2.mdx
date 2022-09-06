@@ -59,7 +59,13 @@ Follow the steps below to setup your apps with Firebase:
 
 ### Expo
 
-For bare workflow, all of the installation steps above will suffice. For custom managed workflow, please see [the expo installation docs at React Native Firebase](https://rnfirebase.io/#expo). React Native Firebase cannot be used in the "Expo Go" app because [it is not possible to include custom native code](https://docs.expo.dev/bare/using-expo-client/). If you are using "Expo Go" app and want notifications, you can achieve this using [Webhooks](https://getstream.io/chat/docs/react-native/webhooks_overview/?language=javascript) and a third-party push provider. See [this article](https://support.getstream.io/hc/en-us/articles/1500006478421-How-can-I-use-the-Stream-Webhook-to-send-customers-emails-based-on-Chat-events-) for an example.
+:::note
+
+If you're using Bare Workflow, please follow the installation steps above.
+
+:::
+
+React Native Firebase library is not available in the [Expo Go](https://expo.dev/client) app by default due to including much-needed native code. However, you can get things working via the [expo-dev-client](https://docs.expo.dev/development/getting-started/) library and adding [config plugins](https://docs.expo.dev/guides/config-plugins/). Please follow the [expo installation docs at React Native Firebase](https://rnfirebase.io/#installation-1) for the details.
 
 ## Get Google Service Account Credentials
 
