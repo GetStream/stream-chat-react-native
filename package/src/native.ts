@@ -157,7 +157,7 @@ export type SoundType = {
     source?: { uri: string },
     initialStatus?: Partial<AVPlaybackStatusToSet>,
     onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void,
-  ) => SoundReturnType | null;
+  ) => Promise<SoundReturnType | null>;
   Player: React.ComponentType<SoundReturnType> | null;
 };
 
