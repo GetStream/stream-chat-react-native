@@ -48,7 +48,7 @@ export type ChannelsContextValue<
   /**
    * Channels can be either an array of channels or a promise which resolves to an array of channels
    */
-  channels: Channel<StreamChatGenerics>[];
+  channels: Channel<StreamChatGenerics>[] | null;
   /**
    * Custom indicator to use when channel list is empty
    *

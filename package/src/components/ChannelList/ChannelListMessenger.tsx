@@ -132,14 +132,14 @@ const ChannelListMessengerWithContext = <
     if (debugRef.current.setSendEventParams)
       debugRef.current.setSendEventParams({
         action: 'Channels',
-        data: channels.map((channel) => ({
+        data: channels?.map((channel) => ({
           data: channel.data,
           members: channel.state.members,
         })),
       });
   }
 
-  if (error && !refreshing && !loadingChannels && !channels?.length) {
+  if (error && !refreshing && !loadingChannels && channels === null) {
     return (
       <LoadingErrorIndicator
         error={error}
@@ -157,7 +157,7 @@ const ChannelListMessengerWithContext = <
   };
 
   const ListFooterComponent = () =>
-    channels.length && ListHeaderComponent ? <ListHeaderComponent /> : null;
+    channels?.length && ListHeaderComponent ? <ListHeaderComponent /> : null;
 
   if (loadingChannels) {
     return <LoadingIndicator listType='channel' />;
