@@ -16,7 +16,7 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 export type ChannelPreviewPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
-  Pick<ChannelsContextValue<StreamChatGenerics>, 'Preview'> & {
+  Pick<ChannelsContextValue<StreamChatGenerics>, 'Preview' | 'onSelect'> & {
     /**
      * The previewed channel
      */
@@ -32,7 +32,7 @@ const ChannelPreviewWithContext = <
 >(
   props: ChannelPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { channel, client, Preview } = props;
+  const { channel, client, onSelect, Preview } = props;
 
   const [lastMessage, setLastMessage] = useState<
     | ReturnType<ChannelState<StreamChatGenerics>['formatMessage']>
@@ -108,13 +108,20 @@ const ChannelPreviewWithContext = <
     return () => listener.unsubscribe();
   }, []);
 
-  return <Preview channel={channel} latestMessagePreview={latestMessagePreview} unread={unread} />;
+  return (
+    <Preview
+      channel={channel}
+      latestMessagePreview={latestMessagePreview}
+      onSelect={onSelect}
+      unread={unread}
+    />
+  );
 };
 
 export type ChannelPreviewProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<Omit<ChannelPreviewPropsWithContext<StreamChatGenerics>, 'channel'>> &
-  Pick<ChannelPreviewPropsWithContext<StreamChatGenerics>, 'channel'>;
+> = Partial<Omit<ChannelPreviewPropsWithContext<StreamChatGenerics>, 'channel' | 'onSelect'>> &
+  Pick<ChannelPreviewPropsWithContext<StreamChatGenerics>, 'channel' | 'onSelect'>;
 
 export const ChannelPreview = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -122,7 +129,7 @@ export const ChannelPreview = <
   props: ChannelPreviewProps<StreamChatGenerics>,
 ) => {
   const { client } = useChatContext<StreamChatGenerics>();
-  const { Preview } = useChannelsContext<StreamChatGenerics>();
+  const { onSelect, Preview } = useChannelsContext<StreamChatGenerics>();
 
-  return <ChannelPreviewWithContext {...{ client, Preview }} {...props} />;
+  return <ChannelPreviewWithContext {...{ client, onSelect, Preview }} {...props} />;
 };
