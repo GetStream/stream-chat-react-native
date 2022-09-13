@@ -1,5 +1,18 @@
 # Change Log
 
+## [5.3.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.2.0...v5.3.0) (2022-09-13)
+
+
+### Features
+
+* capability to cache images locally ([#1692](https://github.com/GetStream/stream-chat-react-native/issues/1692)) ([c89a3e7](https://github.com/GetStream/stream-chat-react-native/commit/c89a3e7574bd49789a4ec6bc37c9ea848734364b))
+
+
+### Bug Fixes
+
+* handling of empty channels corresponding to filters/sort in offline support ([#1708](https://github.com/GetStream/stream-chat-react-native/issues/1708)) ([51381fd](https://github.com/GetStream/stream-chat-react-native/commit/51381fd81c3bb0f6560f4f51b74dad090064240c))
+* typescript definition was wrong for getLocalAssetUri and initializeSound ([#1714](https://github.com/GetStream/stream-chat-react-native/issues/1714)) ([d66e6bb](https://github.com/GetStream/stream-chat-react-native/commit/d66e6bb2e1080f3cda552e5a6128580b192b6c82))
+
 ## [5.2.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.1.0...v5.2.0) (2022-09-06)
 
 
