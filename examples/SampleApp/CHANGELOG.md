@@ -1,5 +1,17 @@
 # Change Log
 
+## [1.13.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.12.0...sampleapp@v1.13.0) (2022-09-13)
+
+
+### Features
+
+* capability to cache images locally ([#1692](https://github.com/GetStream/stream-chat-react-native/issues/1692)) ([c89a3e7](https://github.com/GetStream/stream-chat-react-native/commit/c89a3e7574bd49789a4ec6bc37c9ea848734364b))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ## [1.12.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.11.3...sampleapp@v1.12.0) (2022-09-06)
 
 
