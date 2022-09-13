@@ -22,7 +22,6 @@ The following features are currently **NOT** implemented. They will be implement
 
 - Optimistically update offline database during chat interactions, such as send message, add reaction, etc.
 - Access to threads in offline mode.
-- Offline caching of attachment images and profile images.
 
 ## How To Enable Offline Support
 
@@ -103,6 +102,8 @@ chatClient.disconnectUser();
 ```
 
 ## How To Cache Images
+
+> Available since version 5.3.0
 
 Our SDK relies on the default caching provided by React Native (avatars, image attachments, URL preview, etc.).
 This default solution is far from perfect, and you might see a lot of images missing while operating the app in offline mode.
