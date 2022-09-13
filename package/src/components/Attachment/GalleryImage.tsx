@@ -1,17 +1,20 @@
 import React from 'react';
-import { ImageBackground, ImageProps } from 'react-native';
+import { Image, ImageProps } from 'react-native';
 
-import { makeImageCompatibleUrl } from '../../utils/utils';
+import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 
-export const GalleryImage: React.FC<
-  Omit<ImageProps, 'height' | 'source'> & {
-    uri: string;
-  }
-> = (props) => {
-  const { uri, ...rest } = props;
+import type { DefaultStreamChatGenerics } from '../../types/types';
+import { getUrlWithoutParams, makeImageCompatibleUrl } from '../../utils/utils';
+
+export type GalleryImageWithContextProps<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = GalleryImageProps & Pick<ChatContextValue<StreamChatGenerics>, 'ImageComponent'>;
+
+export const GalleryImageWithContext: React.FC<GalleryImageWithContextProps> = (props) => {
+  const { ImageComponent = Image, uri, ...rest } = props;
 
   return (
-    <ImageBackground
+    <ImageComponent
       {...rest}
       accessibilityLabel='Gallery Image'
       source={{
@@ -19,4 +22,23 @@ export const GalleryImage: React.FC<
       }}
     />
   );
+};
+
+export const MemoizedGalleryImage = React.memo(
+  GalleryImageWithContext,
+  (prevProps, nextProps) =>
+    getUrlWithoutParams(prevProps.uri) === getUrlWithoutParams(nextProps.uri),
+);
+export type GalleryImageProps = Omit<ImageProps, 'height' | 'source'> & {
+  uri: string;
+};
+
+export const GalleryImage = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  props: GalleryImageProps,
+) => {
+  const { ImageComponent } = useChatContext<StreamChatGenerics>();
+
+  return <MemoizedGalleryImage ImageComponent={ImageComponent} {...props} />;
 };

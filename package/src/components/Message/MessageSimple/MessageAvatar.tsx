@@ -1,6 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 
+import { ChatContextValue, useChatContext } from '../../../contexts/chatContext/ChatContext';
 import {
   MessageContextValue,
   useMessageContext,
@@ -16,6 +17,7 @@ export type MessageAvatarPropsWithContext<
   MessageContextValue<StreamChatGenerics>,
   'alignment' | 'lastGroupMessage' | 'message' | 'showAvatar'
 > &
+  Pick<ChatContextValue<StreamChatGenerics>, 'ImageComponent'> &
   Partial<Pick<AvatarProps, 'size'>>;
 
 const MessageAvatarWithContext = <
@@ -23,7 +25,7 @@ const MessageAvatarWithContext = <
 >(
   props: MessageAvatarPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { alignment, lastGroupMessage, message, showAvatar, size } = props;
+  const { alignment, ImageComponent, lastGroupMessage, message, showAvatar, size } = props;
   const {
     theme: {
       avatar: { BASE_AVATAR_SIZE },
@@ -43,6 +45,7 @@ const MessageAvatarWithContext = <
       {visible ? (
         <Avatar
           image={message.user?.image}
+          ImageComponent={ImageComponent}
           name={message.user?.name || message.user?.id}
           size={size || BASE_AVATAR_SIZE}
         />
@@ -88,11 +91,12 @@ export const MessageAvatar = <
 ) => {
   const { alignment, lastGroupMessage, message, showAvatar } =
     useMessageContext<StreamChatGenerics>();
-
+  const { ImageComponent } = useChatContext<StreamChatGenerics>();
   return (
     <MemoizedMessageAvatar
       {...{
         alignment,
+        ImageComponent,
         lastGroupMessage,
         message,
         showAvatar,

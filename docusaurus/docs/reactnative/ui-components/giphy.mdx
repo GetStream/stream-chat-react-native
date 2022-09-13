@@ -13,6 +13,8 @@ import SetMessages from '../common-content/contexts/image-gallery-context/set_me
 import AdditionalTouchableProps from '../common-content/core-components/channel/props/additional_touchable_props.mdx';
 import SetOverlay from '../common-content/contexts/overlay-context/set_overlay.mdx';
 
+import ImageComponent from '../common-content/core-components/chat/props/image_component.mdx';
+
 Component to render giphy attachments within the [`MessageList`](./message_list.mdx).
 
 This is the default component provided to the prop [`Giphy`](../core-components/channel.mdx#giphy) on the `Channel` component.
@@ -58,3 +60,7 @@ Attachment object for `giphy` type attachment.
 ### <div class="label description">_overrides the value from [OverlayContext](../contexts/overlay_context.mdx#setoverlay)_</div> setOverlay {#setoverlay}
 
 <SetOverlay />
+
+### <div class="label description">_overrides the value from [ChatContext](../contexts/chat_context.mdx#imagecomponent)_</div> ImageComponent {#imagecomponent}
+
+<ImageComponent />

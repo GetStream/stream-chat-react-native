@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  ImageBackground,
+  Image,
   ImageStyle,
   StyleProp,
   StyleSheet,
@@ -15,6 +15,8 @@ import type { Attachment } from 'stream-chat';
 
 import { openUrlSafely } from './utils/openUrlSafely';
 
+import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+
 import {
   MessageContextValue,
   useMessageContext,
@@ -27,6 +29,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Play } from '../../icons/Play';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { makeImageCompatibleUrl } from '../../utils/utils';
+import { ImageBackground } from '../ImageBackground';
 
 const styles = StyleSheet.create({
   authorName: { fontSize: 14.5, fontWeight: '600' },
@@ -82,6 +85,7 @@ const styles = StyleSheet.create({
 export type CardPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Attachment<StreamChatGenerics> &
+  Pick<ChatContextValue, 'ImageComponent'> &
   Pick<
     MessageContextValue<StreamChatGenerics>,
     'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
@@ -117,6 +121,7 @@ const CardWithContext = <
     CardCover,
     CardFooter,
     CardHeader,
+    ImageComponent = Image,
     image_url,
     og_scrape_url,
     onLongPress,
@@ -198,6 +203,7 @@ const CardWithContext = <
       {uri && !CardCover && (
         <View>
           <ImageBackground
+            ImageComponent={ImageComponent}
             imageStyle={styles.cardCover}
             resizeMode='cover'
             source={{ uri: makeImageCompatibleUrl(uri) }}
@@ -287,7 +293,8 @@ export type CardProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Attachment<StreamChatGenerics> &
   Partial<
-    Pick<MessageContextValue<StreamChatGenerics>, 'onLongPress' | 'onPress' | 'onPressIn'> &
+    Pick<ChatContextValue<StreamChatGenerics>, 'ImageComponent'> &
+      Pick<MessageContextValue<StreamChatGenerics>, 'onLongPress' | 'onPress' | 'onPressIn'> &
       Pick<
         MessagesContextValue<StreamChatGenerics>,
         'additionalTouchableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
@@ -302,6 +309,7 @@ export const Card = <
 >(
   props: CardProps<StreamChatGenerics>,
 ) => {
+  const { ImageComponent } = useChatContext<StreamChatGenerics>();
   const { message, onLongPress, onPress, onPressIn, preventPress } =
     useMessageContext<StreamChatGenerics>();
   const { additionalTouchableProps, CardCover, CardFooter, CardHeader } =
@@ -316,6 +324,7 @@ export const Card = <
         CardFooter,
         CardHeader,
         channelId: message.cid,
+        ImageComponent,
         messageId: message.id,
         onLongPress,
         onPress,

@@ -41,6 +41,7 @@ import type {
 } from './src/types';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { navigateToChannel, RootNavigationRef } from './src/utils/RootNavigation';
+import FastImage from 'react-native-fast-image';
 
 LogBox.ignoreAllLogs(true);
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']);
@@ -168,7 +169,11 @@ const DrawerNavigatorWrapper: React.FC<{
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <OverlayProvider<StreamChatGenerics> bottomInset={bottom} value={{ style: streamChatTheme }}>
-        <Chat<StreamChatGenerics> client={chatClient} enableOfflineSupport>
+        <Chat<StreamChatGenerics>
+          client={chatClient}
+          enableOfflineSupport
+          ImageComponent={FastImage}
+        >
           <AppOverlayProvider>
             <UserSearchProvider>
               <DrawerNavigator />

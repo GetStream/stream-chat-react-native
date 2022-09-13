@@ -27,7 +27,7 @@ export let compressImage: CompressImage = fail;
 type DeleteFile = ({ uri }: { uri: string }) => Promise<boolean> | never;
 export let deleteFile: DeleteFile = fail;
 
-type GetLocalAssetUri = (uriOrAssetId: string) => never;
+type GetLocalAssetUri = (uriOrAssetId: string) => Promise<string> | never;
 export let getLocalAssetUri: GetLocalAssetUri = fail;
 
 type GetPhotos = ({ after, first }: { first: number; after?: string }) =>
@@ -157,7 +157,7 @@ export type SoundType = {
     source?: { uri: string },
     initialStatus?: Partial<AVPlaybackStatusToSet>,
     onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void,
-  ) => SoundReturnType | null;
+  ) => Promise<SoundReturnType | null>;
   Player: React.ComponentType<SoundReturnType> | null;
 };
 

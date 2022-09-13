@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { ChatContextValue, useChatContext } from '../../../contexts/chatContext/ChatContext';
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
@@ -23,12 +24,12 @@ export type MessageRepliesAvatarsProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<MessageContextValue<StreamChatGenerics>, 'alignment' | 'message'>;
 
-export const MessageRepliesAvatars = <
+export const MessageRepliesAvatarsWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageRepliesAvatarsProps<StreamChatGenerics>,
+  props: MessageRepliesAvatarsProps<StreamChatGenerics> & Pick<ChatContextValue, 'ImageComponent'>,
 ) => {
-  const { alignment, message } = props;
+  const { alignment, ImageComponent, message } = props;
 
   const {
     theme: {
@@ -77,6 +78,7 @@ export const MessageRepliesAvatars = <
               avatar,
             ]}
             image={user.image}
+            ImageComponent={ImageComponent}
             name={user.name}
             size={avatarSize ? avatarSize : i === 1 ? 18 : 16}
           />
@@ -84,4 +86,14 @@ export const MessageRepliesAvatars = <
       ))}
     </View>
   );
+};
+
+export const MessageRepliesAvatars = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  props: MessageRepliesAvatarsProps<StreamChatGenerics>,
+) => {
+  const { ImageComponent } = useChatContext();
+
+  return <MessageRepliesAvatarsWithContext {...props} ImageComponent={ImageComponent} />;
 };

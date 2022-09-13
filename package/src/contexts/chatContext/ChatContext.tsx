@@ -1,4 +1,5 @@
 import React, { PropsWithChildren, useContext } from 'react';
+import type { ImageProps } from 'react-native';
 
 import type { AppSettingsAPIResponse, Channel, EventHandler, Mute, StreamChat } from 'stream-chat';
 
@@ -34,6 +35,7 @@ export type ChatContextValue<
   client: StreamChat<StreamChatGenerics>;
   connectionRecovering: boolean;
   enableOfflineSupport: boolean;
+  ImageComponent: React.ComponentType<ImageProps>;
   isOnline: boolean;
   mutedUsers: Mute<StreamChatGenerics>[];
   /**
@@ -71,7 +73,7 @@ export const ChatProvider = <
   children,
   value,
 }: PropsWithChildren<{
-  value: ChatContextValue<StreamChatGenerics>;
+  value?: ChatContextValue<StreamChatGenerics>;
 }>) => (
   <ChatContext.Provider value={value as unknown as ChatContextValue}>
     {children}

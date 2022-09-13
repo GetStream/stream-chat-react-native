@@ -187,6 +187,15 @@ PODS:
   - GoogleUtilities/UserDefaults (7.7.0):
     - GoogleUtilities/Logger
   - libevent (2.1.12)
+  - libwebp (1.2.1):
+    - libwebp/demux (= 1.2.1)
+    - libwebp/mux (= 1.2.1)
+    - libwebp/webp (= 1.2.1)
+  - libwebp/demux (1.2.1):
+    - libwebp/webp
+  - libwebp/mux (1.2.1):
+    - libwebp/demux
+  - libwebp/webp (1.2.1)
   - nanopb (2.30908.0):
     - nanopb/decode (= 2.30908.0)
     - nanopb/encode (= 2.30908.0)
@@ -194,8 +203,6 @@ PODS:
   - nanopb/encode (2.30908.0)
   - OpenSSL-Universal (1.1.1100)
   - PromisesObjC (2.1.1)
-  - PromisesSwift (2.1.1):
-    - PromisesObjC (= 2.1.1)
   - RCT-Folly (2021.06.28.00-v2):
     - boost
     - DoubleConversion
@@ -419,11 +426,10 @@ PODS:
     - React-Core
   - react-native-safe-area-context (3.2.0):
     - React-Core
-  - react-native-video (6.0.0-alpha.1):
+  - react-native-video (5.2.0):
     - React-Core
-    - react-native-video/Video (= 6.0.0-alpha.1)
-  - react-native-video/Video (6.0.0-alpha.1):
-    - PromisesSwift
+    - react-native-video/Video (= 5.2.0)
+  - react-native-video/Video (5.2.0):
     - React-Core
   - React-perflogger (0.69.4)
   - React-RCTActionSheet (0.69.4):
@@ -495,6 +501,10 @@ PODS:
     - React-Core
   - RNCMaskedView (0.1.11):
     - React
+  - RNFastImage (8.6.0):
+    - React-Core
+    - SDWebImage (~> 5.11.1)
+    - SDWebImageWebPCoder (~> 0.8.4)
   - RNFBApp (14.7.0):
     - Firebase/CoreOnly (= 8.14.0)
     - React-Core
@@ -555,6 +565,12 @@ PODS:
     - React-Core
   - RNSVG (12.1.1):
     - React
+  - SDWebImage (5.11.1):
+    - SDWebImage/Core (= 5.11.1)
+  - SDWebImage/Core (5.11.1)
+  - SDWebImageWebPCoder (0.8.5):
+    - libwebp (~> 1.0)
+    - SDWebImage/Core (~> 5.10)
   - SocketRocket (0.6.0)
   - TOCropViewController (2.6.1)
   - Yoga (1.14.0)
@@ -629,6 +645,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
+  - RNFastImage (from `../node_modules/react-native-fast-image`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
   - RNFS (from `../node_modules/react-native-fs`)
@@ -667,10 +684,12 @@ SPEC REPOS:
     - GoogleDataTransport
     - GoogleUtilities
     - libevent
+    - libwebp
     - nanopb
     - OpenSSL-Universal
     - PromisesObjC
-    - PromisesSwift
+    - SDWebImage
+    - SDWebImageWebPCoder
     - SocketRocket
     - TOCropViewController
     - YogaKit
@@ -756,6 +775,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   RNCMaskedView:
     :path: "../node_modules/@react-native-community/masked-view"
+  RNFastImage:
+    :path: "../node_modules/react-native-fast-image"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBMessaging:
@@ -784,7 +805,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost: a7c83b31436843459a1961bfd74b96033dc77234
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
-  DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
+  DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   FBLazyVector: c71b8c429a8af2aff1013934a7152e9d9d0c937d
   FBReactNativeSpec: cb0df4f0084281b394f76bb9b4d1d9540f35963f
   Firebase: 7e8fe528c161b9271d365217a74c16aaf834578e
@@ -805,16 +826,16 @@ SPEC CHECKSUMS:
   Flipper-RSocket: d9d9ade67cbecf6ac10730304bf5607266dd2541
   FlipperKit: cbdee19bdd4e7f05472a66ce290f1b729ba3cb86
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 85ecdd10ee8d8ec362ef519a6a45ff9aa27b2e85
+  glog: 3d02b25ca00c2d456734d0bcff864cbc62f6ae1a
   GoogleAppMeasurement: 71156240babd3cc6ced03e0d54816f01a880c730
   GoogleDataTransport: 5fffe35792f8b96ec8d6775f5eccd83c998d5a3b
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
+  libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   PromisesObjC: ab77feca74fa2823e7af4249b8326368e61014cb
-  PromisesSwift: 99fddfe4a0ec88a56486644c0da106694c92a604
-  RCT-Folly: 803a9cfd78114b2ec0f140cfa6fa2a6bafb2d685
+  RCT-Folly: b9d9fe1fc70114b751c076104e52f3b1b5e5a95a
   RCTRequired: bd9d2ab0fda10171fcbcf9ba61a7df4dc15a28f4
   RCTTypeSafety: e44e139bf6ec8042db396201834fc2372f6a21cd
   React: 482cd1ba23c471be1aed3800180be2427418d7be
@@ -834,7 +855,7 @@ SPEC CHECKSUMS:
   react-native-netinfo: e849fc21ca2f4128a5726c801a82fc6f4a6db50d
   react-native-quick-sqlite: 780b181b94055cbda7c421aa7befeb97214767ed
   react-native-safe-area-context: f0906bf8bc9835ac9a9d3f97e8bde2a997d8da79
-  react-native-video: bb6f12a7198db53b261fefb5d609dc77417acc8b
+  react-native-video: a4c2635d0802f983594b7057e1bce8f442f0ad28
   React-perflogger: cb386fd44c97ec7f8199c04c12b22066b0f2e1e0
   React-RCTActionSheet: f803a85e46cf5b4066c2ac5e122447f918e9c6e5
   React-RCTAnimation: 19c80fa950ccce7f4db76a2a7f2cf79baae07fc7
@@ -849,6 +870,7 @@ SPEC CHECKSUMS:
   ReactCommon: 8f67bd7e0a6afade0f20718f859dc8c2275f2e83
   RNCAsyncStorage: 6bd5a7ba3dde1c3facba418aa273f449bdc5437a
   RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
+  RNFastImage: 72a2d5802adef70f8e42fce486f78878f8b47dae
   RNFBApp: 097a31d372b3db15b41c7a1a5c429433b0609e12
   RNFBMessaging: 06a7a73883f3f43da61507dbfcf4db2245c22869
   RNFS: 3ab21fa6c56d65566d1fb26c2228e2b6132e5e32
@@ -860,6 +882,8 @@ SPEC CHECKSUMS:
   RNScreens: c277bfc4b5bb7c2fe977d19635df6f974f95dfd6
   RNShare: 755de6bac084428f8fd8fb54c376f126f40e560c
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
+  SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
+  SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   Yoga: ff994563b2fd98c982ca58e8cd9db2cdaf4dda74

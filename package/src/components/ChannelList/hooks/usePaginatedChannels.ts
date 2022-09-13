@@ -44,11 +44,8 @@ export const usePaginatedChannels = <
   sort = {},
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
-  const initialChannelsStateRef = useRef([]);
-  const [channels, setChannels] = useState<Channel<StreamChatGenerics>[]>(
-    initialChannelsStateRef.current,
-  );
-  const [staticChannelsActive, setStaticChannelsActive] = useState<boolean>(true);
+  const [channels, setChannels] = useState<Channel<StreamChatGenerics>[] | null>(null);
+  const [staticChannelsActive, setStaticChannelsActive] = useState<boolean>(false);
   const activeChannels = useActiveChannelsRefContext();
 
   const [error, setError] = useState<Error>();
@@ -95,7 +92,8 @@ export const usePaginatedChannels = <
 
     const newOptions = {
       limit: options?.limit ?? MAX_QUERY_CHANNELS_LIMIT,
-      offset: queryType === 'loadChannels' && !staticChannelsActive ? channels.length : 0,
+      offset:
+        queryType === 'loadChannels' && !staticChannelsActive && channels ? channels.length : 0,
       ...options,
     };
 
@@ -108,7 +106,7 @@ export const usePaginatedChannels = <
         return;
       }
       const newChannels =
-        queryType === 'loadChannels' && !staticChannelsActive
+        queryType === 'loadChannels' && !staticChannelsActive && channels
           ? [...channels, ...channelQueryResponse]
           : channelQueryResponse;
 
@@ -195,6 +193,7 @@ export const usePaginatedChannels = <
                 offlineMode: true,
               }),
             );
+            setStaticChannelsActive(true);
           }
         } catch (e) {
           console.warn('Failed to get channels from database: ', e);
@@ -212,15 +211,17 @@ export const usePaginatedChannels = <
     error,
     hasNextPage,
     loadingChannels:
-      activeQueryType === 'queryLocalDB'
-        ? true
-        : activeQueryType === 'reload' && channels === initialChannelsStateRef.current,
+      activeQueryType === 'queryLocalDB' ? true : activeQueryType === 'reload' && channels === null,
     loadingNextPage: activeQueryType === 'loadChannels',
     loadNextPage,
     refreshing: activeQueryType === 'refresh',
     refreshList,
     reloadList,
-    setChannels,
+    // Although channels can be null, there is no practical case where channels will be null
+    // when setChannels is used. setChannels is only recommended to be used for overriding
+    // event handler. Thus instead of adding if check for channels === null, its better to
+    // simply reassign types here.
+    setChannels: setChannels as React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     staticChannelsActive,
   };
 };

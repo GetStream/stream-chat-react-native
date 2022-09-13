@@ -34,12 +34,6 @@ import { isVideoPackageAvailable } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getUrlWithoutParams } from '../../utils/utils';
 
-const MemoizedGalleryImage = React.memo(
-  GalleryImage,
-  (prevProps, nextProps) =>
-    getUrlWithoutParams(prevProps.uri) === getUrlWithoutParams(nextProps.uri),
-) as typeof GalleryImage;
-
 const styles = StyleSheet.create({
   errorTextSize: { fontSize: 10 },
   galleryContainer: {
@@ -476,7 +470,7 @@ const GalleryImageThumbnail = <
         <ImageLoadingFailedIndicator style={[styles.imageLoadingErrorIndicatorStyle]} />
       ) : (
         <>
-          <MemoizedGalleryImage
+          <GalleryImage
             onError={(error) => {
               console.warn(error);
               setLoadingImage(false);

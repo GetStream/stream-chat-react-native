@@ -88,7 +88,7 @@ import { Chat } from 'stream-chat-react-native';
 </Chat>;
 ```
 
--5. **Reset the database when signing out the user**
+5. **Reset the database when signing out the user**
 
 Since the SDK doesn't handle app-level authentication logic, it's the application's responsibility
 to ensure the database is reset when a user gets logged out. This should generally be done before you
@@ -100,4 +100,33 @@ import { QuickSqliteClient } from 'stream-chat-react-native';
 // Sign out logic
 QuickSqliteClient.resetDB();
 chatClient.disconnectUser();
+```
+
+## How To Cache Images
+
+Our SDK relies on the default caching provided by React Native (avatars, image attachments, URL preview, etc.).
+This default solution is far from perfect, and you might see a lot of images missing while operating the app in offline mode.
+We provide a convenient solution to replace all the underlying usage of the [`Image`](https://reactnative.dev/docs/next/image) component using the `ImageComponent` prop on the `Chat` component.
+Use the `ImageComponent` prop to provide a custom component that handles caching and has the same API as react-native's `Image` component.
+
+There are plenty of libraries available for this purpose:
+
+- [`react-native-fast-image`](https://www.npmjs.com/package/react-native-fast-image)
+- [`react-native-progressive-fast-image`](https://www.npmjs.com/package/@freakycoder/react-native-progressive-fast-image)
+- [`react-native-cached-image`](https://www.npmjs.com/package/react-native-cached-image)
+
+> **NOTE**: Due to technical limitations, viewing images in full screen (image viewer) in offline mode is not currently supported.
+
+The following example demonstrates the usage of `react-native-fast-image` library to handle the caching of images in chat:
+
+```tsx
+import FastImage from 'react-native-fast-image';
+
+...
+
+<Chat
+  client={chatClient}
+  enableOfflineSupport
+  ImageComponent={FastImage}
+/>
 ```

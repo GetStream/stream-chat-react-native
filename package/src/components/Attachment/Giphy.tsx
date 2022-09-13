@@ -3,6 +3,8 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import type { Attachment } from 'stream-chat';
 
+import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+
 import {
   ImageGalleryContextValue,
   useImageGalleryContext,
@@ -145,6 +147,7 @@ export type GiphyPropsWithContext<
     | 'onPressIn'
     | 'preventPress'
   > &
+  Pick<ChatContextValue<StreamChatGenerics>, 'ImageComponent'> &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
     | 'giphyVersion'
@@ -165,6 +168,7 @@ const GiphyWithContext = <
     attachment,
     giphyVersion,
     handleAction,
+    ImageComponent = Image,
     ImageLoadingFailedIndicator,
     ImageLoadingIndicator,
     isMyMessage,
@@ -241,7 +245,7 @@ const GiphyWithContext = <
         >{`/giphy ${title}`}</Text>
       </View>
       <View style={styles.selectionImageContainer}>
-        <Image
+        <ImageComponent
           onError={(error) => {
             console.warn(error);
             setLoadingImage(false);
@@ -339,7 +343,7 @@ const GiphyWithContext = <
           container,
         ]}
       >
-        <Image
+        <ImageComponent
           accessibilityLabel='Giphy Attachment Image'
           onError={(error) => {
             console.warn(error);
@@ -446,6 +450,7 @@ export const Giphy = <
 ) => {
   const { handleAction, isMyMessage, message, onLongPress, onPress, onPressIn, preventPress } =
     useMessageContext<StreamChatGenerics>();
+  const { ImageComponent } = useChatContext<StreamChatGenerics>();
   const { additionalTouchableProps, giphyVersion } = useMessagesContext<StreamChatGenerics>();
   const { setMessages, setSelectedMessage } = useImageGalleryContext<StreamChatGenerics>();
   const { setOverlay } = useOverlayContext();
@@ -464,6 +469,7 @@ export const Giphy = <
         additionalTouchableProps,
         giphyVersion,
         handleAction,
+        ImageComponent,
         ImageLoadingFailedIndicator,
         ImageLoadingIndicator,
         isMyMessage,
