@@ -108,4 +108,10 @@ getstream.io
 
     expect(result).toHaveLength(0);
   });
+
+  it.each([['@user'], ['@user.name']])('does not parse %p as a URL', (input) => {
+    const result = parseLinksFromText(input);
+
+    expect(result).toHaveLength(0);
+  });
 });
