@@ -31,11 +31,8 @@ export const UnreadCountBadge: React.FC = () => {
   const [count, setCount] = useState<number>();
 
   useEffect(() => {
-    const user = chatClient?.user;
-    const unreadCount = isOwnUser(user) ? user.total_unread_count : undefined;
-    setCount(unreadCount);
     const listener = chatClient?.on((e) => {
-      if (e.total_unread_count) {
+      if (e.total_unread_count !== undefined) {
         setCount(e.total_unread_count);
       }
     });
