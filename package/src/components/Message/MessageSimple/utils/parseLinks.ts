@@ -43,10 +43,19 @@ interface Link {
  * */
 const removeMarkdownLinksFromText = (input: string) => input.replace(/\[[\w\s]+\]\(.*\)/g, '');
 
+/**
+ * Hermes doesn't support lookbehind, so this is done separately to avoid
+ * parsing user names as links.
+ * */
+const removeUserNamesFromText = (input: string) => input.replace(/^@\w+\.?\w/, '');
+
 export const parseLinksFromText = (input: string): Link[] => {
   let matches;
 
-  const inputWithoutMarkdownLinks = removeMarkdownLinksFromText(input);
+  const strippedInput = [removeMarkdownLinksFromText, removeUserNamesFromText].reduce(
+    (acc, fn) => fn(acc),
+    input,
+  );
 
   const results: Link[] = [];
 
@@ -61,7 +70,7 @@ export const parseLinksFromText = (input: string): Link[] => {
    * to avoid overlapping matches being duplicated in the output.
    * */
   const linkRegex = new RegExp(`${fqdnLinkPattern}|${schemePrefixedLinkPattern}`, 'gi');
-  while ((matches = linkRegex.exec(inputWithoutMarkdownLinks)) !== null) {
+  while ((matches = linkRegex.exec(strippedInput)) !== null) {
     const [
       raw,
       fqdnScheme = '',
