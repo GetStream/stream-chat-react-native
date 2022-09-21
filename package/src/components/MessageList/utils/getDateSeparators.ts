@@ -1,3 +1,4 @@
+import type { DeletedMessagesVisibilityType } from '../../../contexts/messagesContext/MessagesContext';
 import type { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
@@ -8,6 +9,7 @@ export type GetDateSeparatorsParams<
   messages:
     | PaginatedMessageListContextValue<StreamChatGenerics>['messages']
     | ThreadContextValue<StreamChatGenerics>['threadMessages'];
+  deletedMessagesVisibilityType?: DeletedMessagesVisibilityType;
   hideDateSeparators?: boolean;
   userId?: string;
 };
@@ -21,7 +23,7 @@ export const getDateSeparators = <
 >(
   params: GetDateSeparatorsParams<StreamChatGenerics>,
 ) => {
-  const { hideDateSeparators, messages, userId } = params;
+  const { deletedMessagesVisibilityType, hideDateSeparators, messages, userId } = params;
   const dateSeparators: DateSeparators = {};
 
   if (hideDateSeparators) {
@@ -30,7 +32,13 @@ export const getDateSeparators = <
 
   const messagesWithoutDeleted = messages.filter((message) => {
     const isMessageTypeDeleted = message.type === 'deleted';
-    return !isMessageTypeDeleted || userId === message.user?.id;
+
+    const isDeletedMessageVisibleToSender =
+      deletedMessagesVisibilityType === 'sender' || deletedMessagesVisibilityType === 'always';
+
+    return (
+      !isMessageTypeDeleted || (userId === message.user?.id && isDeletedMessageVisibleToSender)
+    );
   });
 
   for (let i = 0; i < messagesWithoutDeleted.length; i++) {
