@@ -120,6 +120,10 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
     setTopInset(headerHeight);
   }, [headerHeight]);
 
+  if (channel === undefined) {
+    return null;
+  }
+
   return (
     <SafeAreaView>
       <Chat client={chatClient} i18nInstance={streami18n}>
