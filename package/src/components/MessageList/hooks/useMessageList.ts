@@ -5,6 +5,10 @@ import {
   useChannelContext,
 } from '../../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import {
+  DeletedMessagesVisibilityType,
+  useMessagesContext,
+} from '../../../contexts/messagesContext/MessagesContext';
 import { usePaginatedMessageListContext } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
@@ -13,7 +17,7 @@ import { getGroupStyles } from '../utils/getGroupStyles';
 import { getReadStates } from '../utils/getReadStates';
 
 export type UseMessageListParams = {
-  deletedMessagesVisibilityType?: 'always' | 'never' | 'receiver' | 'sender';
+  deletedMessagesVisibilityType?: DeletedMessagesVisibilityType;
   inverted?: boolean;
   noGroupByUser?: boolean;
   threadList?: boolean;
@@ -48,10 +52,11 @@ export const useMessageList = <
 >(
   params: UseMessageListParams,
 ) => {
-  const { deletedMessagesVisibilityType, inverted, noGroupByUser, threadList } = params;
+  const { inverted, noGroupByUser, threadList } = params;
   const { client } = useChatContext<StreamChatGenerics>();
   const { hideDateSeparators, maxTimeBetweenGroupedMessages, read } =
     useChannelContext<StreamChatGenerics>();
+  const { deletedMessagesVisibilityType } = useMessagesContext<StreamChatGenerics>();
   const { messages } = usePaginatedMessageListContext<StreamChatGenerics>();
   const { threadMessages } = useThreadContext<StreamChatGenerics>();
 
@@ -61,6 +66,7 @@ export const useMessageList = <
     : read;
 
   const dateSeparators = getDateSeparators<StreamChatGenerics>({
+    deletedMessagesVisibilityType,
     hideDateSeparators,
     messages: messageList,
     userId: client.userID,
