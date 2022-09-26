@@ -1,5 +1,15 @@
 # Change Log
 
+### [5.3.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.3.0...v5.3.1) (2022-09-22)
+
+
+### Bug Fixes
+
+* display date separators before visible messages ([#1733](https://github.com/GetStream/stream-chat-react-native/issues/1733)) ([a5ff69d](https://github.com/GetStream/stream-chat-react-native/commit/a5ff69d04f45173106e2affdb20e188735b03221))
+* don't parse [@user](https://github.com/user).name as URLs ([ed05ebc](https://github.com/GetStream/stream-chat-react-native/commit/ed05ebc996562fb4952d05653ff254f8b529bf39))
+* don't parse [@user](https://github.com/user).name as URLs ([758d938](https://github.com/GetStream/stream-chat-react-native/commit/758d93817b951457e244a7fade73d510612d81dd))
+* remove lookbehind, strip user names from the input instead ([2ccb577](https://github.com/GetStream/stream-chat-react-native/commit/2ccb5773e7dfca30ebeb5d8ec77bbf6de834459a))
+
 ## [5.3.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.2.0...v5.3.0) (2022-09-13)
 
 

@@ -133,7 +133,6 @@ type MessageListPropsWithContext<
   Pick<OverlayContextValue, 'overlay'> &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
-    | 'deletedMessagesVisibilityType'
     | 'DateHeader'
     | 'disableTypingIndicator'
     | 'FlatList'
@@ -236,7 +235,6 @@ const MessageListWithContext = <
     client,
     closePicker,
     DateHeader,
-    deletedMessagesVisibilityType,
     disabled,
     disableTypingIndicator,
     EmptyStateIndicator,
@@ -296,7 +294,6 @@ const MessageListWithContext = <
   );
 
   const messageList = useMessageList<StreamChatGenerics>({
-    deletedMessagesVisibilityType,
     inverted,
     noGroupByUser,
     threadList,
@@ -1062,7 +1059,6 @@ export const MessageList = <
   const { setMessages } = useImageGalleryContext<StreamChatGenerics>();
   const {
     DateHeader,
-    deletedMessagesVisibilityType,
     disableTypingIndicator,
     FlatList,
     initialScrollToFirstUnreadMessage,
@@ -1089,7 +1085,6 @@ export const MessageList = <
         client,
         closePicker,
         DateHeader,
-        deletedMessagesVisibilityType,
         disabled,
         disableTypingIndicator,
         EmptyStateIndicator,

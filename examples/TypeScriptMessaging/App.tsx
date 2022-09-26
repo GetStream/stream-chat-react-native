@@ -84,19 +84,17 @@ const ChannelListScreen: React.FC<ChannelListScreenProps> = ({ navigation }) => 
   const memoizedFilters = useMemo(() => filters, []);
 
   return (
-    <Chat client={chatClient} i18nInstance={streami18n}>
-      <View style={{ height: '100%' }}>
-        <ChannelList<StreamChatGenerics>
-          filters={memoizedFilters}
-          onSelect={(channel) => {
-            setChannel(channel);
-            navigation.navigate('Channel');
-          }}
-          options={options}
-          sort={sort}
-        />
-      </View>
-    </Chat>
+    <View style={{ height: '100%' }}>
+      <ChannelList<StreamChatGenerics>
+        filters={memoizedFilters}
+        onSelect={(channel) => {
+          setChannel(channel);
+          navigation.navigate('Channel');
+        }}
+        options={options}
+        sort={sort}
+      />
+    </View>
   );
 };
 
@@ -120,23 +118,25 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
     setTopInset(headerHeight);
   }, [headerHeight]);
 
+  if (channel === undefined) {
+    return null;
+  }
+
   return (
     <SafeAreaView>
-      <Chat client={chatClient} i18nInstance={streami18n}>
-        <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread}>
-          <View style={{ flex: 1 }}>
-            <MessageList<StreamChatGenerics>
-              onThreadSelect={(thread) => {
-                setThread(thread);
-                if (channel?.id) {
-                  navigation.navigate('Thread');
-                }
-              }}
-            />
-            <MessageInput />
-          </View>
-        </Channel>
-      </Chat>
+      <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread}>
+        <View style={{ flex: 1 }}>
+          <MessageList<StreamChatGenerics>
+            onThreadSelect={(thread) => {
+              setThread(thread);
+              if (channel?.id) {
+                navigation.navigate('Thread');
+              }
+            }}
+          />
+          <MessageInput />
+        </View>
+      </Channel>
     </SafeAreaView>
   );
 };
@@ -159,18 +159,16 @@ const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView>
-      <Chat client={chatClient} i18nInstance={streami18n}>
-        <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread} threadList>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'flex-start',
-            }}
-          >
-            <Thread<StreamChatGenerics> onThreadDismount={() => setThread(null)} />
-          </View>
-        </Channel>
-      </Chat>
+      <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread} threadList>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'flex-start',
+          }}
+        >
+          <Thread<StreamChatGenerics> onThreadDismount={() => setThread(null)} />
+        </View>
+      </Channel>
     </SafeAreaView>
   );
 };
@@ -230,34 +228,36 @@ const App = () => {
               i18nInstance={streami18n}
               value={{ style: theme }}
             >
-              {clientReady && (
-                <Stack.Navigator
-                  initialRouteName='ChannelList'
-                  screenOptions={{
-                    headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
-                  }}
-                >
-                  <Stack.Screen
-                    component={ChannelScreen}
-                    name='Channel'
-                    options={() => ({
-                      headerBackTitle: 'Back',
-                      headerRight: () => <></>,
-                      headerTitle: channel?.data?.name,
-                    })}
-                  />
-                  <Stack.Screen
-                    component={ChannelListScreen}
-                    name='ChannelList'
-                    options={{ headerTitle: 'Channel List' }}
-                  />
-                  <Stack.Screen
-                    component={ThreadScreen}
-                    name='Thread'
-                    options={() => ({ headerLeft: () => <></> })}
-                  />
-                </Stack.Navigator>
-              )}
+              <Chat client={chatClient} i18nInstance={streami18n}>
+                {clientReady && (
+                  <Stack.Navigator
+                    initialRouteName='ChannelList'
+                    screenOptions={{
+                      headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
+                    }}
+                  >
+                    <Stack.Screen
+                      component={ChannelScreen}
+                      name='Channel'
+                      options={() => ({
+                        headerBackTitle: 'Back',
+                        headerRight: () => <></>,
+                        headerTitle: channel?.data?.name,
+                      })}
+                    />
+                    <Stack.Screen
+                      component={ChannelListScreen}
+                      name='ChannelList'
+                      options={{ headerTitle: 'Channel List' }}
+                    />
+                    <Stack.Screen
+                      component={ThreadScreen}
+                      name='Thread'
+                      options={() => ({ headerLeft: () => <></> })}
+                    />
+                  </Stack.Navigator>
+                )}
+              </Chat>
             </OverlayProvider>
           </GestureHandlerRootView>
         </AppContext.Provider>

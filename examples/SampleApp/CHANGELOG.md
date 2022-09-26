@@ -1,5 +1,17 @@
 # Change Log
 
+### [1.13.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.13.0...sampleapp@v1.13.1) (2022-09-22)
+
+
+### Bug Fixes
+
+* wrong unread count issue in the SampleApp ([#1728](https://github.com/GetStream/stream-chat-react-native/issues/1728)) ([2d44d17](https://github.com/GetStream/stream-chat-react-native/commit/2d44d172163f2a185d33c2b8faa8ff3311142dc6))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ## [1.13.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.12.0...sampleapp@v1.13.0) (2022-09-13)
 
 

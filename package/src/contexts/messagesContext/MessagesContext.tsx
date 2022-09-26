@@ -59,6 +59,7 @@ import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type MessageContentType = 'attachments' | 'files' | 'gallery' | 'quoted_reply' | 'text';
+export type DeletedMessagesVisibilityType = 'always' | 'never' | 'receiver' | 'sender';
 
 export type MessagesContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -281,7 +282,7 @@ export type MessagesContextValue<
    */
 
   /** Control if the deleted message is visible to both the send and reciever, either of them or none  */
-  deletedMessagesVisibilityType?: 'always' | 'never' | 'receiver' | 'sender';
+  deletedMessagesVisibilityType?: DeletedMessagesVisibilityType;
 
   disableTypingIndicator?: boolean;
 
