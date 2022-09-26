@@ -48,7 +48,7 @@
     "react-native-image-resizer": "1.4.5",
     "react-native-markdown-package": "1.8.2",
     "react-native-quick-sqlite": "^4.0.7",
-    "react-native-reanimated": "^2.9.1",
+    "react-native-reanimated": "^2.10.0",
     "react-native-safe-area-context": "3.2.0",
     "react-native-screens": "3.2.0",
     "react-native-share": "6.0.1",
