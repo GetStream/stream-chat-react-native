@@ -248,13 +248,13 @@ describe('Gallery', () => {
     const { queryAllByTestId } = render(component);
 
     await waitFor(() => {
-      expect(queryAllByTestId('gallery-column-0').length).toBe(1);
-      expect(queryAllByTestId('gallery-column-1').length).toBe(1);
+      expect(queryAllByTestId('gallery-row-0').length).toBe(1);
+      expect(queryAllByTestId('gallery-row-1').length).toBe(1);
 
-      expect(queryAllByTestId('gallery-column-0-item-0').length).toBe(1);
-      expect(queryAllByTestId('gallery-column-0-item-1').length).toBe(1);
-      expect(queryAllByTestId('gallery-column-1-item-0').length).toBe(1);
-      expect(queryAllByTestId('gallery-column-1-item-1').length).toBe(1);
+      expect(queryAllByTestId('gallery-row-0-item-0').length).toBe(1);
+      expect(queryAllByTestId('gallery-row-0-item-1').length).toBe(1);
+      expect(queryAllByTestId('gallery-row-1-item-0').length).toBe(1);
+      expect(queryAllByTestId('gallery-row-1-item-1').length).toBe(1);
     });
   });
 
