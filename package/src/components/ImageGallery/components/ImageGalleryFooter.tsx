@@ -202,15 +202,7 @@ export const ImageGalleryFooterWithContext = <
           {leftElement ? (
             leftElement({ openGridView, photo, share, shareMenuOpen })
           ) : (
-            <TouchableOpacity
-              accessibilityLabel='Share Button'
-              disabled={shareMenuOpen}
-              onPress={share}
-            >
-              <View style={[styles.leftContainer, leftContainer]}>
-                {ShareIcon ? ShareIcon : <ShareIconDefault pathFill={black} />}
-              </View>
-            </TouchableOpacity>
+            <ShareButton share={share} shareMenuOpen={shareMenuOpen} ShareIcon={ShareIcon} />
           )}
           {centerElement ? (
             centerElement({ openGridView, photo, share, shareMenuOpen })
@@ -236,6 +228,35 @@ export const ImageGalleryFooterWithContext = <
         </View>
       </ReanimatedSafeAreaView>
     </Animated.View>
+  );
+};
+
+type ShareButtonProps = {
+  share: () => Promise<void>;
+  shareMenuOpen: boolean;
+  ShareIcon?: React.ReactElement;
+};
+
+const ShareButton = ({ share, shareMenuOpen, ShareIcon }: ShareButtonProps) => {
+  if (shareImage === null) {
+    return null;
+  }
+
+  const {
+    theme: {
+      colors: { black },
+      imageGallery: {
+        footer: { leftContainer },
+      },
+    },
+  } = useTheme();
+
+  return (
+    <TouchableOpacity accessibilityLabel='Share Button' disabled={shareMenuOpen} onPress={share}>
+      <View style={[styles.leftContainer, leftContainer]}>
+        {ShareIcon ? ShareIcon : <ShareIconDefault pathFill={black} />}
+      </View>
+    </TouchableOpacity>
   );
 };
 
