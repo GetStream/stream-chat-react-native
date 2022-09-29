@@ -1,4 +1,23 @@
-let AudioVideoComponent;
+import { StyleProp, ViewStyle } from 'react-native';
+
+let AudioVideoComponent:
+  | React.ComponentType<{
+      audioOnly?: boolean;
+      ignoreSilentSwitch?: 'ignore' | 'obey';
+      repeat?: boolean;
+      onBuffer: () => void;
+      onEnd: () => void;
+      onError: (error: Error) => void;
+      onLoad: () => void;
+      onProgress: () => void;
+      paused: boolean;
+      ref: React.RefObject<any>;
+      source: {
+        uri: string;
+      };
+      style: StyleProp<ViewStyle>;
+    }>
+  | undefined;
 try {
   // eslint-disable-next-line no-undef
   const videoPackage = require('react-native-video');
