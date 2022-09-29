@@ -6,12 +6,12 @@ import { registerNativeHandlers } from 'stream-chat-react-native-core';
 import {
   compressImage,
   deleteFile,
+  NetInfo,
   getLocalAssetUri,
   getPhotos,
-  NetInfo,
   pickDocument,
-  shareImage,
   saveFile,
+  shareImage,
   Sound,
   takePhoto,
   triggerHaptic,
@@ -32,7 +32,6 @@ registerNativeHandlers({
   Sound,
   takePhoto,
   triggerHaptic,
-  // eslint-disable-next-line react/display-name
   Video,
 });
 

@@ -1,11 +1,11 @@
-import NetInfo, { NetInfoState } from '@react-native-community/netinfo';
+import { default as OriginalNetInfo, NetInfoState } from '@react-native-community/netinfo';
 
-export default {
+export const NetInfo = {
   addEventListener(listener) {
     let unsubscribe;
     // For NetInfo >= 3.x.x
-    if (NetInfo.fetch && typeof NetInfo.fetch === 'function') {
-      unsubscribe = NetInfo.addEventListener(({ isConnected, isInternetReachable }) => {
+    if (OriginalNetInfo.fetch && typeof OriginalNetInfo.fetch === 'function') {
+      unsubscribe = OriginalNetInfo.addEventListener(({ isConnected, isInternetReachable }) => {
         // Initialize with truthy value when internetReachable is still loading
         // if it resolves to false, listener is triggered with false value and network
         // status is updated
@@ -14,9 +14,9 @@ export default {
       return unsubscribe;
     } else {
       // For NetInfo < 3.x.x
-      unsubscribe = NetInfo.addEventListener('connectionChange', () => {
+      unsubscribe = OriginalNetInfo.addEventListener('connectionChange', () => {
         // @ts-ignore
-        NetInfo.isConnected.fetch().then((isConnected: NetInfoState) => {
+        OriginalNetInfo.isConnected.fetch().then((isConnected: NetInfoState) => {
           listener(isConnected);
         });
       });
@@ -24,18 +24,17 @@ export default {
       return unsubscribe.remove;
     }
   },
-
   fetch() {
     return new Promise((resolve, reject) => {
       // For NetInfo >= 3.x.x
-      if (NetInfo.fetch && typeof NetInfo.fetch === 'function') {
-        NetInfo.fetch().then(({ isConnected }) => {
+      if (OriginalNetInfo.fetch && typeof OriginalNetInfo.fetch === 'function') {
+        OriginalNetInfo.fetch().then(({ isConnected }) => {
           resolve(isConnected);
         }, reject);
       } else {
         // For NetInfo < 3.x.x
         // @ts-ignore
-        NetInfo.isConnected.fetch().then((isConnected: NetInfoState) => {
+        OriginalNetInfo.isConnected.fetch().then((isConnected: NetInfoState) => {
           resolve(isConnected);
         }, reject);
       }
