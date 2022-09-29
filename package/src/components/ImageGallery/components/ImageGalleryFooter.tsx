@@ -134,14 +134,7 @@ export const ImageGalleryFooterWithContext = <
     theme: {
       colors: { black, white },
       imageGallery: {
-        footer: {
-          centerContainer,
-          container,
-          imageCountText,
-          innerContainer,
-          leftContainer,
-          rightContainer,
-        },
+        footer: { centerContainer, container, imageCountText, innerContainer, rightContainer },
       },
     },
   } = useTheme();
