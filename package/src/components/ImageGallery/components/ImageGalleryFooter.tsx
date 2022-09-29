@@ -195,7 +195,7 @@ export const ImageGalleryFooterWithContext = <
           {leftElement ? (
             leftElement({ openGridView, photo, share, shareMenuOpen })
           ) : (
-            <ShareButton share={share} shareMenuOpen={shareMenuOpen} ShareIcon={ShareIcon} />
+            <ShareButton share={share} ShareIcon={ShareIcon} shareMenuOpen={shareMenuOpen} />
           )}
           {centerElement ? (
             centerElement({ openGridView, photo, share, shareMenuOpen })
@@ -230,11 +230,7 @@ type ShareButtonProps = {
   ShareIcon?: React.ReactElement;
 };
 
-const ShareButton = ({ share, shareMenuOpen, ShareIcon }: ShareButtonProps) => {
-  if (shareImage === null) {
-    return null;
-  }
-
+const ShareButton = ({ share, ShareIcon, shareMenuOpen }: ShareButtonProps) => {
   const {
     theme: {
       colors: { black },
@@ -243,6 +239,10 @@ const ShareButton = ({ share, shareMenuOpen, ShareIcon }: ShareButtonProps) => {
       },
     },
   } = useTheme();
+
+  if (shareImage === null) {
+    return null;
+  }
 
   return (
     <TouchableOpacity accessibilityLabel='Share Button' disabled={shareMenuOpen} onPress={share}>
