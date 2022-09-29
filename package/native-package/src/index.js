@@ -16,7 +16,7 @@ import {
   takePhoto,
   triggerHaptic,
   Video,
-} from './packages';
+} from './handlers';
 
 registerNativeHandlers({
   compressImage,
