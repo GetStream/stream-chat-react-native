@@ -40,10 +40,10 @@ export const useIsOnline = <
   }, [closeConnectionOnBackground, client, clientExists]);
 
   const onForeground = useCallback(() => {
-    if (!closeConnectionOnBackground || !clientExists) return;
+    if (!clientExists) return;
 
     client.openConnection();
-  }, [closeConnectionOnBackground, client, clientExists]);
+  }, [client, clientExists]);
 
   useAppStateListener(onForeground, onBackground);
 
