@@ -5,7 +5,6 @@ let RNShare;
 
 try {
   RNShare = require('react-native-share').default;
-  console.log('RNShare is available');
 } catch (e) {
   console.log('react-native-share is not installed');
 }
