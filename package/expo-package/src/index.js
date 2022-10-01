@@ -5,10 +5,10 @@ import { FlatList, Image, Platform } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
-import * as Haptics from 'expo-haptics';
+// import * as Haptics from 'expo-haptics';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
-import * as MediaLibrary from 'expo-media-library';
+// import * as MediaLibrary from 'expo-media-library';
 import * as Sharing from 'expo-sharing';
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
 
@@ -32,39 +32,38 @@ registerNativeHandlers({
   },
   FlatList,
   getLocalAssetUri: async (assetId) => {
-    try {
-      const { localUri } = await MediaLibrary.getAssetInfoAsync(assetId);
-      return localUri;
-    } catch {
-      throw new Error('getLocalAssetUri Error');
-    }
+    // try {
+    //   const { localUri } = await MediaLibrary.getAssetInfoAsync(assetId);
+    //   return localUri;
+    // } catch {
+    //   throw new Error('getLocalAssetUri Error');
+    // }
   },
   getPhotos: async ({ after, first }) => {
     try {
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-      if (status !== 'granted') {
-        throw new Error('getPhotos Error');
-      }
-      const results = await MediaLibrary.getAssetsAsync({
-        after,
-        first,
-        mediaType: [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video],
-        sortBy: [MediaLibrary.SortBy.modificationTime],
-      });
-      const assets = results.assets.map((asset) => ({
-        duration: asset.duration,
-        filename: asset.filename,
-        height: asset.height,
-        id: asset.id,
-        source: 'picker',
-        type: asset.mediaType,
-        uri: asset.uri,
-        width: asset.width,
-      }));
-
-      const hasNextPage = results.hasNextPage;
-      const endCursor = results.endCursor;
-      return { assets, endCursor, hasNextPage };
+      // const { status } = await MediaLibrary.requestPermissionsAsync();
+      // if (status !== 'granted') {
+      //   throw new Error('getPhotos Error');
+      // }
+      // const results = await MediaLibrary.getAssetsAsync({
+      //   after,
+      //   first,
+      //   mediaType: [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video],
+      //   sortBy: [MediaLibrary.SortBy.modificationTime],
+      // });
+      // const assets = results.assets.map((asset) => ({
+      //   duration: asset.duration,
+      //   filename: asset.filename,
+      //   height: asset.height,
+      //   id: asset.id,
+      //   source: 'picker',
+      //   type: asset.mediaType,
+      //   uri: asset.uri,
+      //   width: asset.width,
+      // }));
+      // const hasNextPage = results.hasNextPage;
+      // const endCursor = results.endCursor;
+      // return { assets, endCursor, hasNextPage };
     } catch {
       throw new Error('getPhotos Error');
     }
@@ -211,28 +210,28 @@ registerNativeHandlers({
     return { cancelled: true };
   },
   triggerHaptic: (method) => {
-    switch (method) {
-      case 'impactHeavy':
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        break;
-      case 'impactLight':
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        break;
-      case 'impactMedium':
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-        break;
-      case 'notificationError':
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-        break;
-      case 'notificationSuccess':
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        break;
-      case 'notificationWarning':
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-        break;
-      default:
-        Haptics.selectionAsync();
-    }
+    // switch (method) {
+    //   case 'impactHeavy':
+    //     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    //     break;
+    //   case 'impactLight':
+    //     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    //     break;
+    //   case 'impactMedium':
+    //     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    //     break;
+    //   case 'notificationError':
+    //     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    //     break;
+    //   case 'notificationSuccess':
+    //     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    //     break;
+    //   case 'notificationWarning':
+    //     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    //     break;
+    //   default:
+    //     Haptics.selectionAsync();
+    // }
   },
   // eslint-disable-next-line react/display-name
   Video: VideoComponent
