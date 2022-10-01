@@ -16,10 +16,18 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaView as SafeAreaViewWeb, Button } from 'react-native-web';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { ChannelList, Chat, OverlayProvider } from 'stream-chat-expo';
+import {
+  Channel,
+  ChannelList,
+  Chat,
+  MessageInput,
+  MessageList,
+  OverlayProvider,
+} from 'stream-chat-expo';
 import { chatApiKey, chatUserId } from './chatConfig';
 import { StreamChat } from 'stream-chat';
 import { useChatClient } from './useChatClient';
+import { AppProvider, useAppContext } from './AppContext';
 
 const Stack = createStackNavigator();
 
@@ -45,6 +53,7 @@ const NavigationStack = () => {
       <Chat client={chatClient} enableOfflineSupport={false}>
         <Stack.Navigator>
           <Stack.Screen name='ChannelList' component={ChannelListScreen} />
+          <Stack.Screen name='ChannelScreen' component={ChannelScreen} />
           <Stack.Screen name='Home' component={HomeScreen} />
         </Stack.Navigator>
       </Chat>
@@ -56,13 +65,15 @@ const SafeAreaView = Platform.OS === 'web' ? SafeAreaViewWeb : SafeAreaViewMobil
 
 export default () => {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={{ flex: 1 }}>
-        <NavigationContainer>
-          <NavigationStack />
-        </NavigationContainer>
-      </SafeAreaView>
-    </GestureHandlerRootView>
+    <AppProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1 }}>
+          <NavigationContainer>
+            <NavigationStack />
+          </NavigationContainer>
+        </SafeAreaView>
+      </GestureHandlerRootView>
+    </AppProvider>
   );
 };
 
@@ -110,6 +121,29 @@ function HomeScreen() {
   );
 }
 
-const ChannelListScreen = () => {
-  return <ChannelList filters={filters} sort={sort} />;
+const ChannelListScreen = (props) => {
+  const { setChannel } = useAppContext();
+
+  return (
+    <ChannelList
+      filters={filters}
+      sort={sort}
+      onSelect={(channel) => {
+        const { navigation } = props;
+        setChannel(channel);
+        navigation.navigate('ChannelScreen');
+      }}
+    />
+  );
+};
+
+const ChannelScreen = (props) => {
+  const { channel } = useAppContext();
+
+  return (
+    <Channel channel={channel}>
+      {/* <MessageList /> */}
+      <MessageInput />
+    </Channel>
+  );
 };
