@@ -19,24 +19,6 @@ exports[`UploadProgressIndicator should render an active UploadProgressIndicator
           "alignItems": "center",
           "height": "100%",
           "justifyContent": "center",
-          "opacity": 0,
-          "position": "absolute",
-          "width": "100%",
-        },
-        Object {
-          "backgroundColor": "#000000CC",
-        },
-        Object {},
-      ]
-    }
-  />
-  <View
-    style={
-      Array [
-        Object {
-          "alignItems": "center",
-          "height": "100%",
-          "justifyContent": "center",
           "position": "absolute",
           "width": "100%",
         },
@@ -82,24 +64,6 @@ exports[`UploadProgressIndicator should render an active UploadProgressIndicator
   }
   testID="active-upload-progress-indicator"
 >
-  <View
-    style={
-      Array [
-        Object {
-          "alignItems": "center",
-          "height": "100%",
-          "justifyContent": "center",
-          "opacity": 0,
-          "position": "absolute",
-          "width": "100%",
-        },
-        Object {
-          "backgroundColor": "#000000CC",
-        },
-        Object {},
-      ]
-    }
-  />
   <View
     style={
       Array [
@@ -156,24 +120,6 @@ exports[`UploadProgressIndicator should render an active UploadProgressIndicator
     style={
       Array [
         Object {
-          "alignItems": "center",
-          "height": "100%",
-          "justifyContent": "center",
-          "opacity": 0,
-          "position": "absolute",
-          "width": "100%",
-        },
-        Object {
-          "backgroundColor": "#000000CC",
-        },
-        Object {},
-      ]
-    }
-  />
-  <View
-    style={
-      Array [
-        Object {
           "overflow": "hidden",
         },
         Object {
@@ -199,24 +145,6 @@ exports[`UploadProgressIndicator should render an active UploadProgressIndicator
   }
   testID="active-upload-progress-indicator"
 >
-  <View
-    style={
-      Array [
-        Object {
-          "alignItems": "center",
-          "height": "100%",
-          "justifyContent": "center",
-          "opacity": 0,
-          "position": "absolute",
-          "width": "100%",
-        },
-        Object {
-          "backgroundColor": "#000000CC",
-        },
-        Object {},
-      ]
-    }
-  />
   <View
     style={
       Array [
