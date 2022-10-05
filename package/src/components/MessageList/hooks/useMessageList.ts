@@ -1,15 +1,11 @@
 import type { ChannelState, MessageResponse } from 'stream-chat';
 
-import {
-  ChannelContextValue,
-  useChannelContext,
-} from '../../../contexts/channelContext/ChannelContext';
+import { ChannelContextValue, useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { DeletedMessagesVisibilityType, useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
 import {
-  DeletedMessagesVisibilityType,
-  useMessagesContext,
-} from '../../../contexts/messagesContext/MessagesContext';
-import { usePaginatedMessageListContext } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
+  usePaginatedMessageListContext,
+} from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { getDateSeparators } from '../utils/getDateSeparators';
@@ -18,7 +14,6 @@ import { getReadStates } from '../utils/getReadStates';
 
 export type UseMessageListParams = {
   deletedMessagesVisibilityType?: DeletedMessagesVisibilityType;
-  inverted?: boolean;
   noGroupByUser?: boolean;
   threadList?: boolean;
 };
@@ -52,7 +47,7 @@ export const useMessageList = <
 >(
   params: UseMessageListParams,
 ) => {
-  const { inverted, noGroupByUser, threadList } = params;
+  const { noGroupByUser, threadList } = params;
   const { client } = useChatContext<StreamChatGenerics>();
   const { hideDateSeparators, maxTimeBetweenGroupedMessages, read } =
     useChannelContext<StreamChatGenerics>();
@@ -103,9 +98,5 @@ export const useMessageList = <
       readBy: msg.id ? readData[msg.id] || false : false,
     }));
 
-  return (
-    inverted
-      ? messagesWithStylesReadByAndDateSeparator.reverse()
-      : messagesWithStylesReadByAndDateSeparator
-  ) as MessageType<StreamChatGenerics>[];
+  return messagesWithStylesReadByAndDateSeparator.reverse() as MessageType<StreamChatGenerics>[];
 };
