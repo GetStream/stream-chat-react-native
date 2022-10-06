@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { isOwnUser } from 'stream-chat';
 import { useTheme } from 'stream-chat-react-native';
 
 import { useAppContext } from '../context/AppContext';

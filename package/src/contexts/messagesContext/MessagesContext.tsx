@@ -42,6 +42,7 @@ import type { InlineDateSeparatorProps } from '../../components/MessageList/Inli
 import type { MessageListProps } from '../../components/MessageList/MessageList';
 import type { MessageSystemProps } from '../../components/MessageList/MessageSystem';
 import type { ScrollToBottomButtonProps } from '../../components/MessageList/ScrollToBottomButton';
+import type { getGroupStyles } from '../../components/MessageList/utils/getGroupStyles';
 import type { MessageActionType } from '../../components/MessageOverlay/MessageActionListItem';
 import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
 import type { ReplyProps } from '../../components/Reply/Reply';
@@ -296,6 +297,7 @@ export type MessagesContextValue<
    * Optional function to custom format the message date
    */
   formatDate?: (date: TDateTimeParserInput) => string;
+  getMessagesGroupStyles?: typeof getGroupStyles;
   handleBlock?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
   /** Handler to access when a copy message action is invoked */
   handleCopy?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
