@@ -134,14 +134,7 @@ export const ImageGalleryFooterWithContext = <
     theme: {
       colors: { black, white },
       imageGallery: {
-        footer: {
-          centerContainer,
-          container,
-          imageCountText,
-          innerContainer,
-          leftContainer,
-          rightContainer,
-        },
+        footer: { centerContainer, container, imageCountText, innerContainer, rightContainer },
       },
     },
   } = useTheme();
@@ -202,15 +195,7 @@ export const ImageGalleryFooterWithContext = <
           {leftElement ? (
             leftElement({ openGridView, photo, share, shareMenuOpen })
           ) : (
-            <TouchableOpacity
-              accessibilityLabel='Share Button'
-              disabled={shareMenuOpen}
-              onPress={share}
-            >
-              <View style={[styles.leftContainer, leftContainer]}>
-                {ShareIcon ? ShareIcon : <ShareIconDefault pathFill={black} />}
-              </View>
-            </TouchableOpacity>
+            <ShareButton share={share} ShareIcon={ShareIcon} shareMenuOpen={shareMenuOpen} />
           )}
           {centerElement ? (
             centerElement({ openGridView, photo, share, shareMenuOpen })
@@ -236,6 +221,35 @@ export const ImageGalleryFooterWithContext = <
         </View>
       </ReanimatedSafeAreaView>
     </Animated.View>
+  );
+};
+
+type ShareButtonProps = {
+  share: () => Promise<void>;
+  shareMenuOpen: boolean;
+  ShareIcon?: React.ReactElement;
+};
+
+const ShareButton = ({ share, ShareIcon, shareMenuOpen }: ShareButtonProps) => {
+  const {
+    theme: {
+      colors: { black },
+      imageGallery: {
+        footer: { leftContainer },
+      },
+    },
+  } = useTheme();
+
+  if (shareImage === null) {
+    return null;
+  }
+
+  return (
+    <TouchableOpacity accessibilityLabel='Share Button' disabled={shareMenuOpen} onPress={share}>
+      <View style={[styles.leftContainer, leftContainer]}>
+        {ShareIcon ? ShareIcon : <ShareIconDefault pathFill={black} />}
+      </View>
+    </TouchableOpacity>
   );
 };
 

@@ -259,7 +259,7 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     SDK = handlers.SDK;
   }
 
-  if (handlers.shareImage) {
+  if (handlers.shareImage !== undefined) {
     shareImage = handlers.shareImage;
   }
 
