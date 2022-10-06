@@ -4,6 +4,7 @@ export * from './compressImage';
 export * from './getLocalAssetUri';
 export * from './getPhotos';
 export * from './NetInfo';
+export * from './pickDocument';
 export * from './saveFile';
 export * from './takePhoto';
 export * from './triggerHaptic';
