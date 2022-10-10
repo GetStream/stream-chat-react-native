@@ -1,5 +1,17 @@
 # Change Log
 
+## [1.14.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.13.1...sampleapp@v1.14.0) (2022-10-10)
+
+
+### Features
+
+* added support for prop 'getMessagesGroupStyles' on Channel ([#1749](https://github.com/GetStream/stream-chat-react-native/issues/1749)) ([206c898](https://github.com/GetStream/stream-chat-react-native/commit/206c89832d5fdfb67c9d82f05764315699f60b8e))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.13.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.13.0...sampleapp@v1.13.1) (2022-09-22)
 
 
