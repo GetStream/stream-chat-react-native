@@ -1,5 +1,25 @@
 # Change Log
 
+## [5.4.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.3.1...v5.4.0) (2022-10-10)
+
+
+### Features
+
+* added support for prop 'getMessagesGroupStyles' on Channel ([#1749](https://github.com/GetStream/stream-chat-react-native/issues/1749)) ([206c898](https://github.com/GetStream/stream-chat-react-native/commit/206c89832d5fdfb67c9d82f05764315699f60b8e))
+* always open connection when app goes to foreground ([a168336](https://github.com/GetStream/stream-chat-react-native/commit/a168336fe38655dbd431513b2023fbbedc40d641))
+* always open connection when app goes to foreground ([437f9d7](https://github.com/GetStream/stream-chat-react-native/commit/437f9d7f46e8d3665b800ecdc9c599a952bdd109))
+* make react-native-share and react-native-haptic-feedback optional ([#1744](https://github.com/GetStream/stream-chat-react-native/issues/1744)) ([7e5e874](https://github.com/GetStream/stream-chat-react-native/commit/7e5e87445fa601fbe0f34f78ed692ed761614562))
+
+
+### Bug Fixes
+
+* add memoization in ReactionList to update MessageOverlay in Real time ([#1737](https://github.com/GetStream/stream-chat-react-native/issues/1737)) ([eb9a3d8](https://github.com/GetStream/stream-chat-react-native/commit/eb9a3d8d75d1ed6ea8422730b3c8ae415a83795f))
+* auto focus on input box on mount and command selection ([60f8194](https://github.com/GetStream/stream-chat-react-native/commit/60f819495a407b5b932500dbb7d1e65ccd0f4ba2))
+* auto focus on input box on mount and command selection ([41035ad](https://github.com/GetStream/stream-chat-react-native/commit/41035ad46d75f35a499d9c62d329c7261ee61934))
+* export pickDocument from the handler dir ([#1752](https://github.com/GetStream/stream-chat-react-native/issues/1752)) ([9d4e1eb](https://github.com/GetStream/stream-chat-react-native/commit/9d4e1eb2b917ae37102dc5cd6348ee855e22fa7a))
+* unresponsive clear button when the file type is not supported ([5ff90fa](https://github.com/GetStream/stream-chat-react-native/commit/5ff90fae60bdec385befa3d9e4640f6b3dbe81e5))
+* unresponsve clear button when the file type is not supported ([1f4e439](https://github.com/GetStream/stream-chat-react-native/commit/1f4e439baf44dfe54661b6ab62979cba30e727fa))
+
 ### [5.3.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.3.0...v5.3.1) (2022-09-22)
 
 
