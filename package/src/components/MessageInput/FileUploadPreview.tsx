@@ -100,6 +100,7 @@ const UnsupportedFileTypeOrFileSizeIndicator = ({
   } = useTheme();
 
   const { t } = useTranslationContext();
+
   return indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
     <View style={styles.unsupportedFile}>
       <Warning

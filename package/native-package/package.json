@@ -28,5 +28,12 @@
   "scripts": {
     "prepack": " cp ../../README.md .",
     "postpack": "rm README.md"
+  },
+  "devDependencies": {
+    "@react-native-camera-roll/camera-roll": "^5.0.2",
+    "@types/react-native-share": "^3.3.3",
+    "react-native-document-picker": "^8.1.1",
+    "react-native-haptic-feedback": "^1.14.0",
+    "react-native-image-crop-picker": "^0.38.0"
   }
 }

@@ -389,6 +389,7 @@ const AutoCompleteInputWithContext = <
 
   return (
     <TextInput
+      autoFocus={true}
       maxLength={maxMessageLength}
       multiline
       onChangeText={(newText) => {

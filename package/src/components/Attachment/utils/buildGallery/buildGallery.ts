@@ -71,7 +71,7 @@ export function buildGallery<
       [1, 1],
     ],
     images: images.slice(0, 4),
-    invertedDirections: false,
+    invertedDirections: true,
     sizeConfig,
   });
 }

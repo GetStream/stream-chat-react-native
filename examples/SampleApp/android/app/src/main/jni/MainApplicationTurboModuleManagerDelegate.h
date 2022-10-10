@@ -1,45 +1,41 @@
-#include "MainApplicationTurboModuleManagerDelegate.h"
-#include "MainApplicationModuleProvider.h"
+#include <memory>
+#include <string>
 
-namespace facebook {
-namespace react {
+#include <ReactCommon/TurboModuleManagerDelegate.h>
+#include <fbjni/fbjni.h>
 
-jni::local_ref<MainApplicationTurboModuleManagerDelegate::jhybriddata>
-MainApplicationTurboModuleManagerDelegate::initHybrid(
-    jni::alias_ref<jhybridobject>) {
-  return makeCxxInstance();
-}
+namespace facebook
+{
+  namespace react
+  {
 
-void MainApplicationTurboModuleManagerDelegate::registerNatives() {
-  registerHybrid({
-      makeNativeMethod(
-          "initHybrid", MainApplicationTurboModuleManagerDelegate::initHybrid),
-      makeNativeMethod(
-          "canCreateTurboModule",
-          MainApplicationTurboModuleManagerDelegate::canCreateTurboModule),
-  });
-}
+    class MainApplicationTurboModuleManagerDelegate
+        : public jni::HybridClass<
+              MainApplicationTurboModuleManagerDelegate,
+              TurboModuleManagerDelegate>
+    {
+    public:
+      // Adapt it to the package you used for your Java class.
+      static constexpr auto kJavaDescriptor =
+          "Lcom/sampleapp/newarchitecture/modules/MainApplicationTurboModuleManagerDelegate;";
 
-std::shared_ptr<TurboModule>
-MainApplicationTurboModuleManagerDelegate::getTurboModule(
-    const std::string name,
-    const std::shared_ptr<CallInvoker> jsInvoker) {
-  // Not implemented yet: provide pure-C++ NativeModules here.
-  return nullptr;
-}
+      static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject>);
 
-std::shared_ptr<TurboModule>
-MainApplicationTurboModuleManagerDelegate::getTurboModule(
-    const std::string name,
-    const JavaTurboModule::InitParams &params) {
-  return MainApplicationModuleProvider(name, params);
-}
+      static void registerNatives();
 
-bool MainApplicationTurboModuleManagerDelegate::canCreateTurboModule(
-    std::string name) {
-  return getTurboModule(name, nullptr) != nullptr ||
-      getTurboModule(name, {.moduleName = name}) != nullptr;
-}
+      std::shared_ptr<TurboModule> getTurboModule(
+          const std::string &name,
+          const std::shared_ptr<CallInvoker> &jsInvoker) override;
+      std::shared_ptr<TurboModule> getTurboModule(
+          const std::string &name,
+          const JavaTurboModule::InitParams &params) override;
 
-} // namespace react
+      /**
+       * Test-only method. Allows user to verify whether a TurboModule can be
+       * created by instances of this class.
+       */
+      bool canCreateTurboModule(const std::string &name);
+    };
+
+  } // namespace react
 } // namespace facebook

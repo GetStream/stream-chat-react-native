@@ -239,6 +239,7 @@ export type ChannelPropsWithContext<
       | 'forceAlignMessages'
       | 'formatDate'
       | 'Gallery'
+      | 'getMessagesGroupStyles'
       | 'Giphy'
       | 'giphyVersion'
       | 'handleBlock'
@@ -430,6 +431,7 @@ const ChannelWithContext = <
     forceAlignMessages,
     formatDate,
     Gallery = GalleryDefault,
+    getMessagesGroupStyles,
     Giphy = GiphyDefault,
     giphyEnabled,
     giphyVersion = 'fixed_height',
@@ -1662,6 +1664,7 @@ const ChannelWithContext = <
     forceAlignMessages,
     formatDate,
     Gallery,
+    getMessagesGroupStyles,
     Giphy,
     giphyVersion,
     handleBlock,
