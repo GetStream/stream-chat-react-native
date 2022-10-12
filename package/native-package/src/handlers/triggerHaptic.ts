@@ -1,7 +1,7 @@
 let ReactNativeHapticFeedback;
 
 try {
-  ReactNativeHapticFeedback = require('react-native-haptic-feedback');
+  ReactNativeHapticFeedback = require('react-native-haptic-feedback').default;
 } catch (e) {
   console.warn('react-native-haptic-feedback is not installed.');
 }
