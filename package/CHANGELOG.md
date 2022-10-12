@@ -1,5 +1,12 @@
 # Change Log
 
+### [5.4.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.4.0...v5.4.1) (2022-10-12)
+
+
+### Bug Fixes
+
+* use the default export of haptic feedback ([#1754](https://github.com/GetStream/stream-chat-react-native/issues/1754)) ([e3788a7](https://github.com/GetStream/stream-chat-react-native/commit/e3788a7d53ea2eb34da039626cc7607fe7458c2c))
+
 ## [5.4.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.3.1...v5.4.0) (2022-10-10)
 
 
