@@ -123,6 +123,7 @@ export type MessagePropsWithContext<
   Pick<MessageContextValue<StreamChatGenerics>, 'groupStyles' | 'message'> &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
+    | 'addReaction'
     | 'dismissKeyboardOnMessageTouch'
     | 'forceAlignMessages'
     | 'handleBlock'
@@ -145,6 +146,7 @@ export type MessagePropsWithContext<
     | 'onPressMessage'
     | 'OverlayReactionList'
     | 'removeMessage'
+    | 'removeReaction'
     | 'retrySendMessage'
     | 'selectReaction'
     | 'setEditingState'
@@ -217,6 +219,7 @@ const MessageWithContext = <
   const isMessageTypeDeleted = props.message.type === 'deleted';
 
   const {
+    addReaction,
     channel,
     disabled,
     dismissKeyboard,
@@ -256,6 +259,7 @@ const MessageWithContext = <
     OverlayReactionList,
     preventPress,
     removeMessage,
+    removeReaction,
     retrySendMessage,
     selectReaction,
     setData,
@@ -458,11 +462,13 @@ const MessageWithContext = <
     handleTogglePinMessage,
     handleToggleReaction,
   } = useMessageActionHandlers({
+    addReaction,
     channel,
     client,
     enforceUniqueReaction,
     message,
     removeMessage,
+    removeReaction,
     retrySendMessage,
     setEditingState,
     setQuotedMessageState,
@@ -484,6 +490,7 @@ const MessageWithContext = <
     threadReply,
     unpinMessage,
   } = useMessageActions({
+    addReaction,
     channel,
     client,
     enforceUniqueReaction,
@@ -502,6 +509,7 @@ const MessageWithContext = <
     onThreadSelect,
     openThread,
     removeMessage,
+    removeReaction,
     retrySendMessage,
     selectReaction,
     setEditingState,

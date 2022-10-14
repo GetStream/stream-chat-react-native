@@ -65,6 +65,7 @@ export type DeletedMessagesVisibilityType = 'always' | 'never' | 'receiver' | 's
 export type MessagesContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
+  addReaction: (type: string, messageId: string) => void;
   /**
    * UI component for Attachment.
    * Defaults to: [Attachment](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Attachment.tsx)
@@ -87,7 +88,6 @@ export type MessagesContextValue<
    * Defaults to: [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)
    **/
   DateHeader: React.ComponentType<DateHeaderProps>;
-
   /** Should keyboard be dismissed when messaged is touched */
   dismissKeyboardOnMessageTouch: boolean;
 
@@ -98,6 +98,7 @@ export type MessagesContextValue<
    * Defaults to: [FileAttachment](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/FileAttachment.tsx)
    */
   FileAttachment: React.ComponentType<FileAttachmentProps<StreamChatGenerics>>;
+
   /**
    * UI component to display group of File type attachments or multiple file attachments (in single message).
    * Defaults to: [FileAttachmentGroup](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/FileAttachmentGroup.tsx)
@@ -123,7 +124,6 @@ export type MessagesContextValue<
    * The giphy version to render - check the keys of the [Image Object](https://developers.giphy.com/docs/api/schema#image-object) for possible values. Uses 'fixed_height' by default
    * */
   giphyVersion: keyof NonNullable<Attachment['giphy']>;
-
   /**
    * The indicator rendered when loading an image fails.
    */
@@ -138,6 +138,7 @@ export type MessagesContextValue<
    * When true, messageList will be scrolled at first unread message, when opened.
    */
   initialScrollToFirstUnreadMessage: boolean;
+
   /**
    * UI component for Message Date Separator Component
    * Defaults to: [InlineDateSeparator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/InlineDateSeparator.tsx)
@@ -148,8 +149,8 @@ export type MessagesContextValue<
    * Defaults to: [InlineUnreadIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/InlineUnreadIndicator.tsx)
    **/
   InlineUnreadIndicator: React.ComponentType;
-
   Message: React.ComponentType<MessageProps<StreamChatGenerics>>;
+
   /**
    * UI component for MessageAvatar
    * Defaults to: [MessageAvatar](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageAvatar.tsx)
@@ -180,8 +181,8 @@ export type MessagesContextValue<
    * UI component for MessageReplies
    * Defaults to: [MessageReplies](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageSimple/MessageReplies.tsx)
    */
-
   MessageReplies: React.ComponentType<MessageRepliesProps<StreamChatGenerics>>;
+
   /**
    * UI Component for MessageRepliesAvatars
    * Defaults to: [MessageRepliesAvatars](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageSimple/MessageRepliesAvatars.tsx)
@@ -212,6 +213,7 @@ export type MessagesContextValue<
    */
   ReactionList: React.ComponentType<ReactionListProps<StreamChatGenerics>>;
   removeMessage: (message: { id: string; parent_id?: string }) => void;
+  removeReaction: (type: string, messageId: string) => void;
   /**
    * UI component for Reply
    * Defaults to: [Reply](https://getstream.io/chat/docs/sdk/reactnative/ui-components/reply/)

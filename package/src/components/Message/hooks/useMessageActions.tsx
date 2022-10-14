@@ -34,6 +34,7 @@ import { removeReservedFields } from '../utils/removeReservedFields';
 export const useMessageActions = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
+  addReaction,
   channel,
   client,
   enforceUniqueReaction,
@@ -52,6 +53,7 @@ export const useMessageActions = <
   onThreadSelect,
   openThread,
   removeMessage,
+  removeReaction,
   retrySendMessage,
   selectReaction,
   setEditingState,
@@ -62,6 +64,7 @@ export const useMessageActions = <
   updateMessage,
 }: Pick<
   MessagesContextValue<StreamChatGenerics>,
+  | 'addReaction'
   | 'handleBlock'
   | 'handleCopy'
   | 'handleDelete'
@@ -74,6 +77,7 @@ export const useMessageActions = <
   | 'handleReaction'
   | 'handleThreadReply'
   | 'removeMessage'
+  | 'removeReaction'
   | 'retrySendMessage'
   | 'setEditingState'
   | 'setQuotedMessageState'
@@ -104,11 +108,13 @@ export const useMessageActions = <
     handleTogglePinMessage,
     handleToggleReaction,
   } = useMessageActionHandlers({
+    addReaction,
     channel,
     client,
     enforceUniqueReaction,
     message,
     removeMessage,
+    removeReaction,
     retrySendMessage,
     setEditingState,
     setQuotedMessageState,

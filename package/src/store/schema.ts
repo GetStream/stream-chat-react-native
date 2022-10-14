@@ -5,7 +5,6 @@ type Tables = {
     columns: {
       [K in keyof Schema[P]]: string;
     };
-    primaryKey: Array<keyof Schema[P]>;
     foreignKeys?: Array<{
       column: `${Exclude<keyof Schema[P], symbol>}`;
       referenceTable: `${keyof Schema}`;
@@ -18,6 +17,7 @@ type Tables = {
       name: string;
       unique: boolean;
     }>;
+    primaryKey?: Array<keyof Schema[P]>;
   };
 };
 
@@ -120,6 +120,16 @@ export const tables: Tables = {
       },
     ],
     primaryKey: ['id'],
+  },
+  pendingTasks: {
+    columns: {
+      channelId: 'TEXT',
+      channelType: 'TEXT',
+      createdAt: 'TEXT',
+      id: 'INTEGER PRIMARY KEY AUTOINCREMENT',
+      payload: 'TEXT',
+      type: 'TEXT',
+    },
   },
   reactions: {
     columns: {
@@ -251,6 +261,14 @@ export type Schema = {
     updatedAt: string;
     text?: string;
     userId?: string;
+  };
+  pendingTasks: {
+    channelId: string;
+    channelType: string;
+    createdAt: string;
+    id: number;
+    payload: string;
+    type: string;
   };
   reactions: {
     createdAt: string;

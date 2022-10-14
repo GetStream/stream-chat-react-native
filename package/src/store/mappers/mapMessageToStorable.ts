@@ -11,6 +11,10 @@ export const mapMessageToStorable = (message: MessageResponse): TableRow<'messag
     created_at,
     deleted_at,
     id,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    latest_reactions,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    own_reactions,
     reaction_counts,
     text,
     type,

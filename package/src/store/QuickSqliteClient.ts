@@ -20,7 +20,7 @@ import type { PreparedQueries, Table } from './types';
  * This way usage react-native-quick-sqlite package is scoped to a single class/file.
  */
 export class QuickSqliteClient {
-  static dbVersion = 2;
+  static dbVersion = 3;
 
   static dbName = DB_NAME;
   static dbLocation = DB_LOCATION;
@@ -47,6 +47,7 @@ export class QuickSqliteClient {
   };
 
   static executeSqlBatch = (queries: PreparedQueries[]) => {
+    if (!queries || !queries.length) return;
     this.openDB();
 
     const res = sqlite.executeSqlBatch(DB_NAME, queries);

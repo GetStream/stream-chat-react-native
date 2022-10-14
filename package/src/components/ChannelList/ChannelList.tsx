@@ -242,7 +242,8 @@ export const ChannelList = <
   } = props;
 
   const [forceUpdate, setForceUpdate] = useState(0);
-  const { enableOfflineSupport, subscribeConnectionRecoveredCallback } = useChatContext();
+  const { enableOfflineSupport, subscribeConnectionRecoveredCallback } =
+    useChatContext<StreamChatGenerics>();
   const {
     channels,
     error,
@@ -259,7 +260,9 @@ export const ChannelList = <
     enableOfflineSupport,
     filters,
     options,
+    setForceUpdate,
     sort,
+    subscribeConnectionRecoveredCallback,
   });
 
   // Setup event listeners
@@ -327,15 +330,6 @@ export const ChannelList = <
       sort,
     });
   }, [channelIdsStr, staticChannelsActive]);
-
-  useEffect(() => {
-    const unsubscribe = subscribeConnectionRecoveredCallback(() => {
-      refreshList();
-      setForceUpdate((count) => count + 1);
-    });
-
-    return () => unsubscribe();
-  });
 
   const channelsContext = useCreateChannelsContext({
     additionalFlatListProps,

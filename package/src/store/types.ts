@@ -10,3 +10,10 @@ export type TableColumnNames<T extends Table> = keyof Schema[T];
 export type TableColumnValue = string | boolean | number | undefined;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type PreparedQueries = [string] | [string, Array<any>];
+
+export type PendingTask = {
+  channelId: string;
+  channelType: string;
+  payload: Array<unknown>;
+  type: string;
+};

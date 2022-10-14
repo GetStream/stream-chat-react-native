@@ -19,9 +19,10 @@ export const createUpdateQuery = <T extends keyof Schema>(
   whereCondition: Partial<{ [k in TableColumnNames<T>]: TableColumnValue | TableColumnValue[] }>,
 ): PreparedQueries => {
   const fields = Object.keys(set).map((key) => `${key} = ?`);
-  const updateQuery = `UPDATE ${table} SET ${fields.join(',')}`;
+
+  const updateQuery = `UPDATE OR IGNORE ${table} SET ${fields.join(',')}`;
 
   const [updateQueryWithWhere, whereParams] = appendWhereClause(updateQuery, whereCondition);
 
-  return [updateQueryWithWhere, [...Object.values(set), ...(whereParams || [])]];
+  return [`${updateQueryWithWhere}`, [...Object.values(set), ...(whereParams || [])]];
 };

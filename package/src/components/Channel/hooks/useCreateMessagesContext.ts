@@ -7,6 +7,7 @@ export const useCreateMessagesContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   additionalTouchableProps,
+  addReaction,
   Attachment,
   AttachmentActions,
   AudioAttachment,
@@ -72,6 +73,7 @@ export const useCreateMessagesContext = <
   OverlayReactionList,
   ReactionList,
   removeMessage,
+  removeReaction,
   Reply,
   retrySendMessage,
   ScrollToBottomButton,
@@ -99,6 +101,7 @@ export const useCreateMessagesContext = <
   const messagesContext: MessagesContextValue<StreamChatGenerics> = useMemo(
     () => ({
       additionalTouchableProps,
+      addReaction,
       Attachment,
       AttachmentActions,
       AudioAttachment,
@@ -163,6 +166,7 @@ export const useCreateMessagesContext = <
       OverlayReactionList,
       ReactionList,
       removeMessage,
+      removeReaction,
       Reply,
       retrySendMessage,
       ScrollToBottomButton,
@@ -184,6 +188,8 @@ export const useCreateMessagesContext = <
       dismissKeyboardOnMessageTouch,
       initialScrollToFirstUnreadMessage,
       markdownRulesLength,
+      addReaction,
+      removeReaction,
       messageContentOrderValue,
       supportedReactionsLength,
       targetedMessage,

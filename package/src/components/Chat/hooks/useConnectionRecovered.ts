@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import type { Event, EventHandler, StreamChat } from 'stream-chat';
+import type { StreamChat } from 'stream-chat';
 
 import { handleEventToSyncDB } from './handleEventToSyncDB';
 
@@ -10,6 +10,7 @@ import { upsertLastSyncedAt } from '../../../store/apis/upsertLastSyncedAt';
 import { QuickSqliteClient } from '../../../store/QuickSqliteClient';
 import type { PreparedQueries } from '../../../store/types';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
+import { executePendingTasks } from '../../../utils/pendingTaskUtils';
 
 type Params<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> = {
   client: StreamChat<StreamChatGenerics>;
@@ -23,54 +24,65 @@ export const useConnectionRecovered = <
   enableOfflineSupport,
 }: Params<StreamChatGenerics>) => {
   const [connectionRecoveredCallbacks, setConnectionRecoveredCallbacks] = useState<
-    EventHandler<StreamChatGenerics>[]
+    Array<() => void>
   >([]);
+  const onLoadExecuted = useRef(false);
+
+  const sync = async () => {
+    if (!client?.user) return;
+
+    const lastSyncedAt = getLastSyncedAt({
+      currentUserId: client.user.id,
+    });
+    const cids = getAllChannelIds();
+
+    if (lastSyncedAt) {
+      try {
+        const result = await client.sync(cids, new Date(lastSyncedAt).toISOString());
+        const queries = result.events.reduce<PreparedQueries[]>((queries, event) => {
+          queries = queries.concat(handleEventToSyncDB(event, false));
+          return queries;
+        }, []);
+
+        if (queries.length) {
+          QuickSqliteClient.executeSqlBatch(queries);
+        }
+      } catch (e) {
+        // Error will be raised by the sync API if there are too many events.
+        // In that case reset the entire DB and start fresh.
+        QuickSqliteClient.resetDB();
+      }
+    }
+    upsertLastSyncedAt({
+      currentUserId: client.user.id,
+      lastSyncedAt: new Date().toString(),
+    });
+  };
 
   useEffect(() => {
-    const sync = async () => {
-      if (!client?.user) return;
-
-      const lastSyncedAt = getLastSyncedAt({
-        currentUserId: client.user.id,
-      });
-      const cids = getAllChannelIds();
-
-      if (lastSyncedAt) {
-        try {
-          const result = await client.sync(cids, new Date(lastSyncedAt).toISOString());
-          const queries = result.events.reduce<PreparedQueries[]>((queries, event) => {
-            queries = queries.concat(handleEventToSyncDB(event, false));
-            return queries;
-          }, []);
-
-          if (queries.length) {
-            QuickSqliteClient.executeSqlBatch(queries);
-          }
-        } catch (e) {
-          // do nothing
-          QuickSqliteClient.resetDB();
-        }
-      }
-      upsertLastSyncedAt({
-        currentUserId: client.user.id,
-        lastSyncedAt: new Date().toString(),
-      });
+    const syncAndExecutePendingTasks = async () => {
+      onLoadExecuted.current = true;
+      await sync();
+      await executePendingTasks(client);
+      connectionRecoveredCallbacks.forEach((c) => c());
     };
 
-    const handleEvent = async (event: Event<StreamChatGenerics>) => {
-      if (enableOfflineSupport) {
-        await sync();
-      }
-
-      connectionRecoveredCallbacks.forEach((c) => c(event));
-    };
+    if (
+      client?.wsConnection?.isHealthy &&
+      enableOfflineSupport &&
+      client.user?.id &&
+      connectionRecoveredCallbacks.length > 0 &&
+      !onLoadExecuted.current
+    ) {
+      syncAndExecutePendingTasks();
+    }
 
     let connectionChangedListener: ReturnType<StreamChat['on']>;
 
     if (client) {
       connectionChangedListener = client.on('connection.changed', (event) => {
-        if (event.online) {
-          handleEvent(event);
+        if (event.online && enableOfflineSupport) {
+          syncAndExecutePendingTasks();
         }
       });
     }
@@ -81,7 +93,7 @@ export const useConnectionRecovered = <
   }, [client, connectionRecoveredCallbacks.length]);
 
   return {
-    subscribeConnectionRecoveredCallback: (listener: EventHandler<StreamChatGenerics>) => {
+    subscribeConnectionRecoveredCallback: (listener: () => void) => {
       setConnectionRecoveredCallbacks((callbacks) => [...callbacks, listener]);
 
       return () => {

@@ -3,6 +3,7 @@ import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native'
 
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
+
 import {
   ChannelState,
   Channel as ChannelType,
@@ -10,6 +11,7 @@ import {
   EventHandler,
   logChatPromiseExecution,
   MessageResponse,
+  Reaction,
   SendMessageAPIResponse,
   StreamChat,
   Event as StreamEvent,
@@ -73,6 +75,9 @@ import {
 } from '../../icons';
 import { FlatList as FlatListDefault } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
+import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
+import { queueTask } from '../../utils/pendingTaskUtils';
+import { removeReactionFromLocalState } from '../../utils/removeReactionFromLocalState';
 import { generateRandomId, MessageStatusTypes, ReactionData } from '../../utils/utils';
 import { Attachment as AttachmentDefault } from '../Attachment/Attachment';
 import { AttachmentActions as AttachmentActionsDefault } from '../Attachment/AttachmentActions';
@@ -196,7 +201,7 @@ export type ChannelPropsWithContext<
       | 'StickyHeader'
     >
   > &
-  Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
+  Pick<ChatContextValue<StreamChatGenerics>, 'client' | 'enableOfflineSupport' | 'isOnline'> &
   Partial<
     Omit<
       InputMessageInputContextValue<StreamChatGenerics>,
@@ -422,6 +427,7 @@ const ChannelWithContext = <
     doUpdateMessageRequest,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     enableMessageGroupingByUser = true,
+    enableOfflineSupport,
     enforceUniqueReaction = false,
     FileAttachment = FileAttachmentDefault,
     FileAttachmentGroup = FileAttachmentGroupDefault,
@@ -462,6 +468,7 @@ const ChannelWithContext = <
     InputGiphySearch = InputGiphyCommandInputDefault,
     InputReplyStateHeader = InputReplyStateHeaderDefault,
     isAttachmentEqual,
+    isOnline,
     keyboardBehavior,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
     keyboardVerticalOffset,
@@ -760,6 +767,10 @@ const ChannelWithContext = <
         copyReadState();
       } else if (event.type === 'message.new') {
         copyMessagesState();
+      } else if (event.type === 'reaction.new') {
+        if (!enableOfflineSupport || event.reaction?.user_id !== client.user?.id) {
+          copyChannelState();
+        }
       } else if (channel) {
         copyChannelState();
       }
@@ -1471,6 +1482,68 @@ const ChannelWithContext = <
     }
   };
 
+  const addReaction: MessagesContextValue<StreamChatGenerics>['addReaction'] = useCallback(
+    (type, messageId) => {
+      if (!channel?.id || !client.user) return;
+
+      addReactionToLocalState<StreamChatGenerics>({
+        channel,
+        enforceUniqueReaction,
+        messageId,
+        reactionType: type,
+        user: client.user,
+      });
+
+      setMessages(channel.state.messages);
+
+      const payload = [
+        messageId,
+        {
+          type,
+        } as Reaction<StreamChatGenerics>,
+        { enforce_unique: enforceUniqueReaction },
+      ];
+
+      queueTask({
+        client,
+        task: {
+          channelId: channel.id,
+          channelType: channel.type,
+          payload,
+          type: 'send-reaction',
+        },
+      });
+    },
+    [isOnline],
+  );
+
+  const removeReaction: MessagesContextValue<StreamChatGenerics>['removeReaction'] = useCallback(
+    (type: string, messageId: string) => {
+      if (!channel?.id || !client.user) return;
+
+      removeReactionFromLocalState({
+        channel,
+        messageId,
+        reactionType: type,
+        user: client.user,
+      });
+
+      setMessages(channel.state.messages);
+
+      const payload = [messageId, type];
+      queueTask({
+        client,
+        task: {
+          channelId: channel.id,
+          channelType: channel.type,
+          payload,
+          type: 'delete-reaction',
+        },
+      });
+    },
+    [isOnline],
+  );
+
   /**
    * THREAD METHODS
    */
@@ -1644,6 +1717,7 @@ const ChannelWithContext = <
 
   const messagesContext = useCreateMessagesContext({
     additionalTouchableProps,
+    addReaction,
     Attachment,
     AttachmentActions,
     AudioAttachment,
@@ -1709,6 +1783,7 @@ const ChannelWithContext = <
     OverlayReactionList,
     ReactionList,
     removeMessage,
+    removeReaction,
     Reply,
     retrySendMessage,
     ScrollToBottomButton,
@@ -1808,7 +1883,7 @@ export const Channel = <
 >(
   props: PropsWithChildren<ChannelProps<StreamChatGenerics>>,
 ) => {
-  const { client } = useChatContext<StreamChatGenerics>();
+  const { client, enableOfflineSupport, isOnline } = useChatContext<StreamChatGenerics>();
   const { t } = useTranslationContext();
 
   const shouldSyncChannel = props.thread?.id ? !!props.threadList : true;
@@ -1837,6 +1912,8 @@ export const Channel = <
     <ChannelWithContext<StreamChatGenerics>
       {...{
         client,
+        enableOfflineSupport,
+        isOnline,
         t,
       }}
       {...props}

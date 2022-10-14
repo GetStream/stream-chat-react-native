@@ -1,4 +1,4 @@
-import type { MessageResponse, Reaction } from 'stream-chat';
+import type { MessageResponse } from 'stream-chat';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
@@ -14,11 +14,12 @@ import { MessageStatusTypes } from '../../../utils/utils';
 export const useMessageActionHandlers = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
+  addReaction,
   channel,
   client,
-  enforceUniqueReaction,
   message,
   removeMessage,
+  removeReaction,
   retrySendMessage,
   setEditingState,
   setQuotedMessageState,
@@ -26,7 +27,9 @@ export const useMessageActionHandlers = <
   updateMessage,
 }: Pick<
   MessagesContextValue<StreamChatGenerics>,
+  | 'addReaction'
   | 'removeMessage'
+  | 'removeReaction'
   | 'retrySendMessage'
   | 'setEditingState'
   | 'setQuotedMessageState'
@@ -128,15 +131,9 @@ export const useMessageActionHandlers = <
     try {
       if (channel && messageId) {
         if (ownReaction) {
-          await channel.deleteReaction(messageId, reactionType);
+          await removeReaction(reactionType, messageId);
         } else {
-          await channel.sendReaction(
-            messageId,
-            {
-              type: reactionType,
-            } as Reaction<StreamChatGenerics>,
-            { enforce_unique: enforceUniqueReaction },
-          );
+          await addReaction(reactionType, messageId);
         }
       }
     } catch (err) {

@@ -1,5 +1,6 @@
 import type { ChannelAPIResponse, ChannelFilters, ChannelSort } from 'stream-chat';
 
+import { getAllChannelIds } from './getAllChannelIds';
 import { upsertCidsForQuery } from './upsertCidsForQuery';
 import { upsertMembers } from './upsertMembers';
 
@@ -39,6 +40,7 @@ export const upsertChannels = ({
     );
   }
 
+  const currentChannels = getAllChannelIds();
   for (const channel of channels) {
     queries.push(createUpsertQuery('channels', mapChannelDataToStorable(channel.channel)));
 
@@ -61,7 +63,7 @@ export const upsertChannels = ({
       );
     }
 
-    if (isLatestMessagesSet) {
+    if (!currentChannels.includes(channel.channel.cid) && isLatestMessagesSet) {
       queries = queries.concat(
         upsertMessages({
           flush: false,

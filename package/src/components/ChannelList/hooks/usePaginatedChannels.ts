@@ -2,8 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
 
-import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRefContext/ActiveChannelsRefContext';
-import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { ChatContextValue, useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
 import { getChannelsForFilterSort } from '../../../store/apis/getChannelsForFilterSort';
@@ -21,8 +20,9 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
     enableOfflineSupport: boolean;
     filters: ChannelFilters<StreamChatGenerics>;
     options: ChannelOptions;
+    setForceUpdate: React.Dispatch<React.SetStateAction<number>>;
     sort: ChannelSort<StreamChatGenerics>;
-  };
+  } & Pick<ChatContextValue<StreamChatGenerics>, 'subscribeConnectionRecoveredCallback'>;
 
 const DEFAULT_OPTIONS = {
   message_limit: 10,
@@ -42,11 +42,11 @@ export const usePaginatedChannels = <
   filters = {},
   options = DEFAULT_OPTIONS,
   sort = {},
+  subscribeConnectionRecoveredCallback,
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
   const [channels, setChannels] = useState<Channel<StreamChatGenerics>[] | null>(null);
   const [staticChannelsActive, setStaticChannelsActive] = useState<boolean>(false);
-  const activeChannels = useActiveChannelsRefContext();
 
   const [error, setError] = useState<Error>();
   const [hasNextPage, setHasNextPage] = useState(true);
@@ -98,17 +98,34 @@ export const usePaginatedChannels = <
     };
 
     try {
+      const activeChannelIds = [];
+      for (const cid in client.activeChannels) {
+        if (client.activeChannels[cid].id) {
+          activeChannelIds.push(client.activeChannels[cid].id);
+        }
+      }
+
+      // TODO: Think about the implications of this.
       const channelQueryResponse = await client.queryChannels(filters, sort, newOptions, {
-        skipInitialization: activeChannels.current,
+        // @ts-ignore
+        skipInitialization: activeChannelIds,
       });
 
       if (isQueryStale() || !isMountedRef.current) {
         return;
       }
+
       const newChannels =
         queryType === 'loadChannels' && !staticChannelsActive && channels
           ? [...channels, ...channelQueryResponse]
-          : channelQueryResponse;
+          : channelQueryResponse.map((c) => {
+              const existingChannel = client.activeChannels[c.cid];
+              if (existingChannel) {
+                return existingChannel;
+              }
+
+              return c;
+            });
 
       setChannels(newChannels);
       setStaticChannelsActive(false);
@@ -177,7 +194,7 @@ export const usePaginatedChannels = <
   const sortStr = useMemo(() => JSON.stringify(sort), [sort]);
 
   useEffect(() => {
-    const loadChannels = () => {
+    const loadOfflineChannels = () => {
       if (!client?.user?.id) return;
       if (enableOfflineSupport) {
         try {
@@ -199,11 +216,24 @@ export const usePaginatedChannels = <
           console.warn('Failed to get channels from database: ', e);
         }
       }
+    };
 
-      reloadList();
+    let unsubscribe: () => void;
+    const loadChannels = async () => {
+      if (subscribeConnectionRecoveredCallback) {
+        await loadOfflineChannels();
+        setActiveQueryType(null);
+
+        unsubscribe = subscribeConnectionRecoveredCallback(async () => {
+          await loadOfflineChannels();
+          await reloadList();
+        });
+      }
     };
 
     loadChannels();
+
+    return () => unsubscribe?.();
   }, [filterStr, sortStr]);
 
   return {
@@ -211,7 +241,9 @@ export const usePaginatedChannels = <
     error,
     hasNextPage,
     loadingChannels:
-      activeQueryType === 'queryLocalDB' ? true : activeQueryType === 'reload' && channels === null,
+      activeQueryType === 'queryLocalDB'
+        ? true
+        : (activeQueryType === 'reload' || activeQueryType === null) && channels === null,
     loadingNextPage: activeQueryType === 'loadChannels',
     loadNextPage,
     refreshing: activeQueryType === 'refresh',
