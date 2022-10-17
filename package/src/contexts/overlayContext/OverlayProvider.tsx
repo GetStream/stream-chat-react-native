@@ -169,6 +169,17 @@ export const OverlayProvider = <
     return () => backHandler.remove();
   }, [overlay]);
 
+  useEffect(
+    () =>
+      // cleanup the timeout if the component unmounts
+      () => {
+        if (bottomSheetCloseTimeoutRef.current) {
+          clearTimeout(bottomSheetCloseTimeoutRef.current);
+        }
+      },
+    [],
+  );
+
   useEffect(() => {
     closePicker(bottomSheetRef);
     cancelAnimation(overlayOpacity);
