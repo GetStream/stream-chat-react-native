@@ -1,11 +1,15 @@
 import type { ChannelState, MessageResponse } from 'stream-chat';
 
-import { ChannelContextValue, useChannelContext } from '../../../contexts/channelContext/ChannelContext';
-import { useChatContext } from '../../../contexts/chatContext/ChatContext';
-import { DeletedMessagesVisibilityType, useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
 import {
-  usePaginatedMessageListContext,
-} from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
+  ChannelContextValue,
+  useChannelContext,
+} from '../../../contexts/channelContext/ChannelContext';
+import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import {
+  DeletedMessagesVisibilityType,
+  useMessagesContext,
+} from '../../../contexts/messagesContext/MessagesContext';
+import { usePaginatedMessageListContext } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { getDateSeparators } from '../utils/getDateSeparators';

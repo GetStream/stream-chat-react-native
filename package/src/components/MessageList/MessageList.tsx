@@ -294,7 +294,6 @@ const MessageListWithContext = <
   );
 
   const messageList = useMessageList<StreamChatGenerics>({
-    inverted,
     noGroupByUser,
     threadList,
   });
