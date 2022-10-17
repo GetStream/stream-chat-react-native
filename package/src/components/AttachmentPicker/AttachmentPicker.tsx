@@ -383,7 +383,7 @@ export const AttachmentPicker = React.forwardRef(
       const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
       return () => backHandler.remove();
-    }, [selectedPicker]);
+    }, [selectedPicker, closePicker]);
 
     useEffect(() => {
       const hideAttachmentPicker = () => {
