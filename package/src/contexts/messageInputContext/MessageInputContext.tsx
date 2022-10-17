@@ -549,16 +549,8 @@ export const MessageInputProvider = <
   const openAttachmentPicker = () => {
     if (hasImagePicker) {
       Keyboard.dismiss();
-      openPicker();
       setSelectedPicker('images');
-      /**
-       * TODO: Remove this, this is the result of
-       * the bottom sheet now having some keyboard
-       * handling baked in, creating an issue when
-       * we call dismiss and open in short order.
-       * https://github.com/gorhom/react-native-bottom-sheet/issues/446
-       */
-      setTimeout(openPicker, 600);
+      openPicker();
     } else if (hasFilePicker) {
       pickFile();
     }
