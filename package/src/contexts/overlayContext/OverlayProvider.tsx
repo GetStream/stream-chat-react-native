@@ -64,6 +64,7 @@ export const OverlayProvider = <
 >(
   props: PropsWithChildren<OverlayProviderProps<StreamChatGenerics>>,
 ) => {
+  const bottomSheetCloseTimeoutRef = useRef<NodeJS.Timeout>();
   const {
     AttachmentPickerBottomSheetHandle = DefaultAttachmentPickerBottomSheetHandle,
     attachmentPickerBottomSheetHandleHeight,
@@ -78,7 +79,16 @@ export const OverlayProvider = <
     children,
     closePicker = (ref) => {
       if (ref.current) {
-        ref.current.close();
+        if (bottomSheetCloseTimeoutRef.current) {
+          clearTimeout(bottomSheetCloseTimeoutRef.current);
+        }
+        ref.current.forceClose();
+        // Attempt to close the bottomsheet again to circumvent accidental opening on Android.
+        // Details: This to prevent a race condition where the close function is called during the point when a internal container layout happens within the bottomsheet due to keyboard affecting the layout
+        // If the container layout measures a shorter height than previous but if the close snapped to the previous height's position, the bottom sheet will show up
+        // this short delay ensures that close function is always called after a container layout due to keyboard change
+        // NOTE: this timeout has to be above 500 as the keyboardAnimationDuration is 500 in the bottomsheet library - see src/hooks/useKeyboard.ts there for more details
+        bottomSheetCloseTimeoutRef.current = setTimeout(() => ref.current?.forceClose(), 600);
       }
     },
     FileSelectorIcon = DefaultFileSelectorIcon,
@@ -97,6 +107,9 @@ export const OverlayProvider = <
     numberOfImageGalleryGridColumns,
     openPicker = (ref) => {
       if (ref.current?.snapToIndex) {
+        if (bottomSheetCloseTimeoutRef.current) {
+          clearTimeout(bottomSheetCloseTimeoutRef.current);
+        }
         ref.current.snapToIndex(0);
       } else {
         console.warn('bottom and top insets must be set for the image picker to work correctly');
@@ -155,9 +168,7 @@ export const OverlayProvider = <
   }, [overlay]);
 
   useEffect(() => {
-    if (bottomSheetRef.current) {
-      bottomSheetRef.current.close?.();
-    }
+    closePicker(bottomSheetRef);
     cancelAnimation(overlayOpacity);
     if (overlay !== 'none') {
       overlayOpacity.value = withTiming(1);
