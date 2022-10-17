@@ -6,6 +6,7 @@ import { useChatContext } from '../../contexts/chatContext/ChatContext';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 
 const styles = StyleSheet.create({
   errorNotification: {
@@ -33,7 +34,11 @@ export const NetworkDownIndicator = () => {
   } = useTheme();
   const { t } = useTranslationContext();
 
-  if (isOnline && !error) {
+  // when requesting permissions on Android from attachment picker, the app goes to background and foreground in a short time..
+  // to avoid reshowing the network down indicator, we debounce the isOnline value
+  const debouncedIsOnline = useDebouncedValue(isOnline, 1000);
+
+  if (debouncedIsOnline && !error) {
     return null;
   }
 
