@@ -342,9 +342,10 @@ export const AttachmentPicker = React.forwardRef(
     const [hasNextPage, setHasNextPage] = useState(true);
     const [loadingPhotos, setLoadingPhotos] = useState(false);
     const [photos, setPhotos] = useState<Asset[]>([]);
+    const attemptedToLoadPhotosOnOpenRef = useRef(false);
     const bottomSheetCloseOnKeyboardShowTimeout = useRef<NodeJS.Timeout>();
 
-    const getMorePhotos = async () => {
+    const getMorePhotos = useCallback(async () => {
       if (hasNextPage && !loadingPhotos && currentIndex > -1 && selectedPicker === 'images') {
         setLoadingPhotos(true);
         try {
@@ -352,6 +353,7 @@ export const AttachmentPicker = React.forwardRef(
             after: endCursor,
             first: numberOfAttachmentImagesToLoadPerCall ?? 60,
           });
+          setPhotoError(false);
           if (endCursor) {
             setPhotos([...photos, ...results.assets]);
           } else {
@@ -365,7 +367,7 @@ export const AttachmentPicker = React.forwardRef(
         }
         setLoadingPhotos(false);
       }
-    };
+    }, [hasNextPage, loadingPhotos, currentIndex, selectedPicker, endCursor]);
 
     useEffect(() => {
       const backAction = () => {
@@ -427,21 +429,24 @@ export const AttachmentPicker = React.forwardRef(
         if (!loadingPhotos) {
           setEndCursor(undefined);
           setHasNextPage(true);
+          attemptedToLoadPhotosOnOpenRef.current = false;
         }
       }
-    }, [currentIndex]);
+    }, [currentIndex, loadingPhotos]);
 
     useEffect(() => {
       if (
+        !attemptedToLoadPhotosOnOpenRef.current &&
         selectedPicker === 'images' &&
         endCursor === undefined &&
         currentIndex > -1 &&
         !loadingPhotos
       ) {
-        setPhotoError(false);
         getMorePhotos();
+        // we do this only once on open for avoiding to request permissions in rationale dialog again and again on Android
+        attemptedToLoadPhotosOnOpenRef.current = true;
       }
-    }, [currentIndex, selectedPicker]);
+    }, [currentIndex, selectedPicker, endCursor, getMorePhotos, loadingPhotos]);
 
     const selectedPhotos = photos.map((asset) => ({
       asset,
@@ -536,7 +541,7 @@ export const AttachmentPicker = React.forwardRef(
         </BottomSheet>
         {selectedPicker === 'images' && photoError && (
           <AttachmentPickerError
-            attachmentPickerBottomSheetHeight={attachmentPickerBottomSheetHeight}
+            attachmentPickerBottomSheetHeight={initialSnapPoint}
             attachmentPickerErrorButtonText={attachmentPickerErrorButtonText}
             AttachmentPickerErrorImage={AttachmentPickerErrorImage}
             attachmentPickerErrorText={attachmentPickerErrorText}
