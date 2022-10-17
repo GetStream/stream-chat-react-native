@@ -26,7 +26,6 @@
 
 ## Contents
 
-- [React Native Compatibility](#-react-native-compatibility)
 - [React Native Chat Tutorial](#-react-native-chat-tutorial)
 - [Example Apps](#-example-apps)
 - [Keep in mind](#-keep-in-mind)

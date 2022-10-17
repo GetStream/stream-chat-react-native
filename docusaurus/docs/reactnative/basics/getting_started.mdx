@@ -70,14 +70,14 @@ Most if not all of the required packages now support auto-linking so setup shoul
 <TabItem value='yarn'>
 
 ```bash
-yarn add @react-native-camera-roll/camera-roll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-share react-native-svg
+yarn add @react-native-camera-roll/camera-roll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-svg
 ```
 
 </TabItem>
 <TabItem value='npm'>
 
 ```bash
-npm install @react-native-camera-roll/camera-roll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-share react-native-svg
+npm install @react-native-camera-roll/camera-roll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-svg
 ```
 
 </TabItem>
@@ -91,6 +91,7 @@ To be able to use the Stream Chat React Native SDK, a few dependencies must meet
 
 | react-native | stream-chat-react-native (min required) | react-native-reanimated (min required) |
 | ------------ | --------------------------------------- | -------------------------------------- |
+| 0.70         | 5.3.1                                   | 2.10.0                                 |
 | 0.69         | 4.13.0                                  | 2.9.1                                  |
 | 0.68         | 4.11.0                                  | 2.7.0                                  |
 | 0.67         | 4.2.0                                   | 2.4.0                                  |
@@ -197,6 +198,64 @@ We require [exoplayer](https://github.com/google/ExoPlayer) to be the media play
 include ':react-native-video'
 project(':react-native-video').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-video/android-exoplayer')
 ```
+
+#### Sharing attachments
+
+Install `react-native-share` in your React Native project.
+
+Installing this package will allow your users to share attachments from the gallery using the native sharing interface on their devices.
+
+<Tabs
+  defaultValue='yarn'
+  values={[
+    { label: 'Yarn', value: 'yarn' },
+    { label: 'npm', value: 'npm' },
+  ]}
+>
+<TabItem value='yarn'>
+
+```bash
+yarn add react-native-share
+```
+
+</TabItem>
+<TabItem value='npm'>
+
+```bash
+npm install react-native-share
+```
+
+</TabItem>
+</Tabs>
+
+#### Haptic feedback
+
+Install `react-native-haptic-feedback` in your React Native project.
+
+Installing this package will enable haptic feedback when scaling images in the image gallery if the scaling hits the higher or lower limits for its value.
+
+<Tabs
+  defaultValue='yarn'
+  values={[
+    { label: 'Yarn', value: 'yarn' },
+    { label: 'npm', value: 'npm' },
+  ]}
+>
+<TabItem value='yarn'>
+
+```bash
+yarn add react-native-haptic-feedback
+```
+
+</TabItem>
+<TabItem value='npm'>
+
+```bash
+npm install react-native-haptic-feedback
+```
+
+</TabItem>
+</Tabs>
 
 ### AndroidX Support
 

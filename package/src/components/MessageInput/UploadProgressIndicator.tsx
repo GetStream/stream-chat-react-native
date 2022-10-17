@@ -70,7 +70,7 @@ export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (
     theme: {
       colors: { overlay: overlayColor },
       messageInput: {
-        uploadProgressIndicator: { container, overlay },
+        uploadProgressIndicator: { container },
       },
     },
   } = useTheme();
@@ -82,7 +82,6 @@ export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (
   ) : (
     <View style={[styles.overflowHidden, style]} testID='active-upload-progress-indicator'>
       {children}
-      <View style={[styles.overlay, { backgroundColor: overlayColor }, overlay]} />
       <View
         style={[
           type === ProgressIndicatorTypes.NOT_SUPPORTED ? styles.overflowHidden : styles.container,
