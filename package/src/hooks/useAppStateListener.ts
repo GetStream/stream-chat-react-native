@@ -7,10 +7,8 @@ export const useAppStateListener = (onForeground?: () => void, onBackground?: ()
     (nextAppState: AppStateStatus) => {
       const prevAppState = appStateRef.current;
       if (prevAppState.match(/inactive|background/) && nextAppState === 'active') {
-        console.log('App has come to the foreground!');
         onForeground?.();
       } else if (prevAppState === 'active' && nextAppState.match(/inactive|background/)) {
-        console.log('App has come to the background!');
         onBackground?.();
       }
       appStateRef.current = nextAppState;
@@ -22,7 +20,6 @@ export const useAppStateListener = (onForeground?: () => void, onBackground?: ()
     const subscription = AppState.addEventListener('change', handleAppStateChange);
 
     return () => {
-      console.log('remove old listener');
       // Following if-else logic is to support RN >= 0.65 and RN < 0.65 versions.
       // https://github.com/react-native-community/releases/blob/master/CHANGELOG.md#:~:text=EventEmitter%23removeSubscription%20is%20now%20deprecated.%20(cb6cbd12f8%20by%20%40yungsters)
       if (subscription?.remove) {
