@@ -78,7 +78,7 @@ export const OverlayProvider = <
     CameraSelectorIcon = DefaultCameraSelectorIcon,
     children,
     closePicker = (ref) => {
-      if (ref.current) {
+      if (ref.current?.close) {
         if (bottomSheetCloseTimeoutRef.current) {
           clearTimeout(bottomSheetCloseTimeoutRef.current);
         }
