@@ -345,12 +345,15 @@ describe('MessageList', () => {
       </OverlayProvider>,
     );
 
-    await waitFor(() => {
-      expect(queryAllByTestId('message-system')).toHaveLength(0);
-      expect(queryAllByTestId('typing-indicator')).toHaveLength(0);
-      expect(getByTestId('error-notification')).toBeTruthy();
-      expect(getByText('Reconnecting...')).toBeTruthy();
-    });
+    await waitFor(
+      () => {
+        expect(queryAllByTestId('message-system')).toHaveLength(0);
+        expect(queryAllByTestId('typing-indicator')).toHaveLength(0);
+        expect(getByTestId('error-notification')).toBeTruthy();
+        expect(getByText('Reconnecting...')).toBeTruthy();
+      },
+      { timeout: 1100 }, // timeout due to the use of debounce
+    );
 
     registerNativeHandlers({
       NetInfo: {
