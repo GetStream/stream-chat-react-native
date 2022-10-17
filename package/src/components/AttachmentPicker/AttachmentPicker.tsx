@@ -347,13 +347,13 @@ export const AttachmentPicker = React.forwardRef(
 
     const getMorePhotos = useCallback(async () => {
       if (hasNextPage && !loadingPhotos && currentIndex > -1 && selectedPicker === 'images') {
+        setPhotoError(false);
         setLoadingPhotos(true);
         try {
           const results = await getPhotos({
             after: endCursor,
             first: numberOfAttachmentImagesToLoadPerCall ?? 60,
           });
-          setPhotoError(false);
           if (endCursor) {
             setPhotos([...photos, ...results.assets]);
           } else {
@@ -415,6 +415,7 @@ export const AttachmentPicker = React.forwardRef(
         if (!loadingPhotos) {
           setEndCursor(undefined);
           setHasNextPage(true);
+          setPhotoError(false);
           attemptedToLoadPhotosOnOpenRef.current = false;
         }
       }
