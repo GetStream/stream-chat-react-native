@@ -826,19 +826,27 @@ export const MessageInputProvider = <
     }
   };
 
-  const triggerSettings = channel
-    ? value.autoCompleteTriggerSettings
-      ? value.autoCompleteTriggerSettings({
+  const getTriggerSettings = () => {
+    let triggerSettings: TriggerSettings<StreamChatGenerics> = {};
+    if (channel) {
+      if (value.autoCompleteTriggerSettings) {
+        triggerSettings = value.autoCompleteTriggerSettings({
           channel,
           client,
           onMentionSelectItem: onSelectItem,
-        })
-      : ACITriggerSettings<StreamChatGenerics>({
+        });
+      } else {
+        triggerSettings = ACITriggerSettings<StreamChatGenerics>({
           channel,
           client,
           onMentionSelectItem: onSelectItem,
-        })
-    : ({} as TriggerSettings<StreamChatGenerics>);
+        });
+      }
+    }
+    return triggerSettings;
+  };
+
+  const triggerSettings = getTriggerSettings();
 
   const updateMessage = async () => {
     try {
@@ -938,13 +946,15 @@ export const MessageInputProvider = <
        * if the uri includes assets-library, this uses the CameraRoll.save
        * function to also create a local uri.
        */
-      const localUri = file.id
-        ? await getLocalAssetUri(file.id)
-        : file.uri?.match(/assets-library/)
-        ? await getLocalAssetUri(file.uri)
-        : file.uri;
-
-      const uri = file.name || localUri || '';
+      const getLocalUri = async () => {
+        if (file.id) {
+          return await getLocalAssetUri(file.id);
+        } else if (file.uri && file.uri.includes('assets-library')) {
+          return await getLocalAssetUri(file.uri);
+        }
+        return file.uri;
+      };
+      const uri = file.name || getLocalUri() || '';
       /**
        * We skip compression if:
        * - the file is from the camera as that should already be compressed
