@@ -18,7 +18,6 @@ import { getReadStates } from '../utils/getReadStates';
 
 export type UseMessageListParams = {
   deletedMessagesVisibilityType?: DeletedMessagesVisibilityType;
-  inverted?: boolean;
   noGroupByUser?: boolean;
   threadList?: boolean;
 };
@@ -52,7 +51,7 @@ export const useMessageList = <
 >(
   params: UseMessageListParams,
 ) => {
-  const { inverted, noGroupByUser, threadList } = params;
+  const { noGroupByUser, threadList } = params;
   const { client } = useChatContext<StreamChatGenerics>();
   const { hideDateSeparators, maxTimeBetweenGroupedMessages, read } =
     useChannelContext<StreamChatGenerics>();
@@ -104,9 +103,7 @@ export const useMessageList = <
       readBy: msg.id ? readData[msg.id] || false : false,
     }));
 
-  return (
-    inverted
-      ? messagesWithStylesReadByAndDateSeparator.reverse()
-      : messagesWithStylesReadByAndDateSeparator
-  ) as MessageType<StreamChatGenerics>[];
+  return [
+    ...messagesWithStylesReadByAndDateSeparator,
+  ].reverse() as MessageType<StreamChatGenerics>[];
 };

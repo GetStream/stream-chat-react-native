@@ -8,7 +8,7 @@ export const generateMessage = (options = {}) => {
 
   return {
     attachments: [],
-    created_at: timestamp.toString(),
+    created_at: timestamp,
     html: '<p>regular</p>',
     id: uuidv4(),
     text: uuidv4(),
