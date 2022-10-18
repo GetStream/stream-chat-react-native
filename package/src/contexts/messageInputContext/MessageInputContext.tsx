@@ -211,7 +211,7 @@ export type LocalMessageInputContext<
   /** Function for attempting to upload an image */
   uploadImage: ({ newImage }: { newImage: ImageUpload }) => Promise<void>;
   uploadNewFile: (file: File) => Promise<void>;
-  uploadNewImage: (image: Asset) => Promise<void>;
+  uploadNewImage: (image: Partial<Asset>) => Promise<void>;
 };
 
 export type InputMessageInputContextValue<
@@ -1053,7 +1053,7 @@ export const MessageInputProvider = <
     }
   };
 
-  const uploadNewImage = async (image: Asset) => {
+  const uploadNewImage = async (image: Partial<Asset>) => {
     const id = generateRandomId();
 
     const isBlockedImageMimeType = blockedImageMimeTypes?.some((mimeType: string) =>
