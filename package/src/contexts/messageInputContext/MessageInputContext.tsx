@@ -949,12 +949,12 @@ export const MessageInputProvider = <
       const getLocalUri = async () => {
         if (file.id) {
           return await getLocalAssetUri(file.id);
-        } else if (file.uri && file.uri.includes('assets-library')) {
+        } else if (file.uri?.match(/assets-library/)) {
           return await getLocalAssetUri(file.uri);
         }
         return file.uri;
       };
-      const uri = file.name || getLocalUri() || '';
+      const uri = file.name || (await getLocalUri()) || '';
       /**
        * We skip compression if:
        * - the file is from the camera as that should already be compressed
