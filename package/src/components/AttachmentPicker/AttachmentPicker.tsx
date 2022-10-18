@@ -95,37 +95,39 @@ export const AttachmentPicker = React.forwardRef(
     } = useAttachmentPickerContext();
 
     const [currentIndex, setCurrentIndex] = useState(-1);
-    const [endCursor, setEndCursor] = useState<string>();
+    const endCursorRef = useRef<string>();
     const [photoError, setPhotoError] = useState(false);
-    const [hasNextPage, setHasNextPage] = useState(true);
+    const hasNextPageRef = useRef(true);
     const [loadingPhotos, setLoadingPhotos] = useState(false);
     const [photos, setPhotos] = useState<Asset[]>([]);
     const attemptedToLoadPhotosOnOpenRef = useRef(false);
-    const bottomSheetCloseOnKeyboardShowTimeout = useRef<NodeJS.Timeout>();
 
     const getMorePhotos = useCallback(async () => {
-      if (hasNextPage && !loadingPhotos && currentIndex > -1 && selectedPicker === 'images') {
+      if (
+        hasNextPageRef.current &&
+        !loadingPhotos &&
+        currentIndex > -1 &&
+        selectedPicker === 'images'
+      ) {
         setPhotoError(false);
         setLoadingPhotos(true);
+        const endCursor = endCursorRef.current;
         try {
           const results = await getPhotos({
             after: endCursor,
             first: numberOfAttachmentImagesToLoadPerCall ?? 60,
           });
-          if (endCursor) {
-            setPhotos([...photos, ...results.assets]);
-          } else {
-            setPhotos(results.assets);
-          }
-          setEndCursor(results.endCursor);
-          setHasNextPage(results.hasNextPage || false);
+          endCursorRef.current = results.endCursor;
+          setPhotos((prevPhotos) =>
+            endCursor ? [...prevPhotos, ...results.assets] : results.assets,
+          );
+          hasNextPageRef.current = !!results.hasNextPage;
         } catch (error) {
-          console.log(error);
           setPhotoError(true);
         }
         setLoadingPhotos(false);
       }
-    }, [hasNextPage, loadingPhotos, currentIndex, selectedPicker, endCursor]);
+    }, [currentIndex, selectedPicker, loadingPhotos]);
 
     useEffect(() => {
       const backAction = () => {
@@ -144,10 +146,8 @@ export const AttachmentPicker = React.forwardRef(
     }, [selectedPicker, closePicker]);
 
     useEffect(() => {
-      const keyboardSubscription =
-        Platform.OS === 'ios'
-          ? Keyboard.addListener('keyboardWillShow', closePicker)
-          : Keyboard.addListener('keyboardDidShow', closePicker);
+      const keyboardShowEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+      const keyboardSubscription = Keyboard.addListener(keyboardShowEvent, closePicker);
 
       return () => {
         if (keyboardSubscription?.remove) {
@@ -156,14 +156,7 @@ export const AttachmentPicker = React.forwardRef(
         }
 
         // To keep compatibility with older versions of React Native, where `remove()` is not available
-        if (Platform.OS === 'ios') {
-          Keyboard.removeListener('keyboardWillShow', closePicker);
-        } else {
-          Keyboard.removeListener('keyboardDidShow', closePicker);
-        }
-        if (bottomSheetCloseOnKeyboardShowTimeout.current) {
-          clearTimeout(bottomSheetCloseOnKeyboardShowTimeout.current);
-        }
+        Keyboard.removeListener(keyboardShowEvent, closePicker);
       };
     }, [closePicker]);
 
@@ -171,10 +164,10 @@ export const AttachmentPicker = React.forwardRef(
       if (currentIndex < 0) {
         setSelectedPicker(undefined);
         if (!loadingPhotos) {
-          setEndCursor(undefined);
-          setHasNextPage(true);
-          setPhotoError(false);
+          endCursorRef.current = undefined;
+          hasNextPageRef.current = true;
           attemptedToLoadPhotosOnOpenRef.current = false;
+          setPhotoError(false);
         }
       }
     }, [currentIndex, loadingPhotos]);
@@ -183,7 +176,7 @@ export const AttachmentPicker = React.forwardRef(
       if (
         !attemptedToLoadPhotosOnOpenRef.current &&
         selectedPicker === 'images' &&
-        endCursor === undefined &&
+        endCursorRef.current === undefined &&
         currentIndex > -1 &&
         !loadingPhotos
       ) {
@@ -191,7 +184,7 @@ export const AttachmentPicker = React.forwardRef(
         // we do this only once on open for avoiding to request permissions in rationale dialog again and again on Android
         attemptedToLoadPhotosOnOpenRef.current = true;
       }
-    }, [currentIndex, selectedPicker, endCursor, getMorePhotos, loadingPhotos]);
+    }, [currentIndex, selectedPicker, getMorePhotos, loadingPhotos]);
 
     const selectedPhotos = photos.map((asset) => ({
       asset,
