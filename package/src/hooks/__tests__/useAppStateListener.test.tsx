@@ -27,6 +27,14 @@ describe('useAppStateListener', () => {
     await waitFor(() => {
       expect(onBackground).toHaveBeenCalled();
     });
+    appStateOnChangeMockFunc('active');
+    await waitFor(() => {
+      expect(onForeground).toHaveBeenCalled();
+    });
+    appStateOnChangeMockFunc('background');
+    await waitFor(() => {
+      expect(onBackground).toHaveBeenCalled();
+    });
     await waitFor(() => {
       expect(appStateOnChangeSubscriptionRemoveMockFunc).not.toHaveBeenCalled();
     });
