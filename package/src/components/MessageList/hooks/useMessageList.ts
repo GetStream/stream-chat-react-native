@@ -103,5 +103,7 @@ export const useMessageList = <
       readBy: msg.id ? readData[msg.id] || false : false,
     }));
 
-  return messagesWithStylesReadByAndDateSeparator.reverse() as MessageType<StreamChatGenerics>[];
+  return [
+    ...messagesWithStylesReadByAndDateSeparator,
+  ].reverse() as MessageType<StreamChatGenerics>[];
 };
