@@ -9,21 +9,30 @@ describe('useAppStateListener', () => {
   it('detects foreground and background correctly', async () => {
     const onForeground = jest.fn();
     const onBackground = jest.fn();
-    const appStateSpy = jest.spyOn(AppState, 'addEventListener');
+    const addEventListenerSpy = jest.spyOn(AppState, 'addEventListener');
     AppState.currentState = 'active';
-    renderHook(() => useAppStateListener(onForeground, onBackground));
-    const appStateMockCall = appStateSpy.mock.calls[0][1];
-    appStateMockCall('background');
+    const hookResult = renderHook(() => useAppStateListener(onForeground, onBackground));
+    const appStateOnChangeMockFunc = addEventListenerSpy.mock.calls[0][1];
+    const { remove: appStateOnChangeSubscriptionRemoveMockFunc } =
+      addEventListenerSpy.mock.results[0].value;
+    appStateOnChangeMockFunc('background');
     await waitFor(() => {
       expect(onBackground).toHaveBeenCalled();
     });
-    appStateMockCall('active');
+    appStateOnChangeMockFunc('active');
     await waitFor(() => {
       expect(onForeground).toHaveBeenCalled();
     });
-    appStateMockCall('inactive');
+    appStateOnChangeMockFunc('inactive');
     await waitFor(() => {
       expect(onBackground).toHaveBeenCalled();
+    });
+    await waitFor(() => {
+      expect(appStateOnChangeSubscriptionRemoveMockFunc).not.toHaveBeenCalled();
+    });
+    hookResult.unmount();
+    await waitFor(() => {
+      expect(appStateOnChangeSubscriptionRemoveMockFunc).toHaveBeenCalled();
     });
   });
 });
