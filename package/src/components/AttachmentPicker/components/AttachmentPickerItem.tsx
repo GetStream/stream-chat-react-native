@@ -178,6 +178,16 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
   );
 };
 
+const getFileType = (asset: Asset) => {
+  const { filename } = asset;
+  if (filename) {
+    const contentType = lookup(filename) || 'multipart/form-data';
+    return contentType.startsWith('image/') ? 'image' : 'video';
+  } else {
+    return asset.type === 'video' ? 'video' : 'image';
+  }
+};
+
 export const renderAttachmentPickerItem = ({ item }: { item: AttachmentPickerItemType }) => {
   const {
     asset,
@@ -190,15 +200,7 @@ export const renderAttachmentPickerItem = ({ item }: { item: AttachmentPickerIte
     setSelectedImages,
   } = item;
 
-  const contentType = lookup(asset.filename) || 'multipart/form-data';
-
-  const fileType = asset.filename
-    ? contentType.startsWith('image/')
-      ? 'image'
-      : 'video'
-    : asset.type === 'video'
-    ? 'video'
-    : 'image';
+  const fileType = getFileType(asset);
 
   return fileType === 'image' ? (
     <AttachmentImage
