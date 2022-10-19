@@ -3,7 +3,6 @@ import type { StreamChat } from 'stream-chat';
 import { executePendingTasks } from './pendingTaskUtils';
 
 import { handleEventToSyncDB } from '../components/Chat/hooks/handleEventToSyncDB';
-import { NetInfo } from '../native';
 import { getAllChannelIds, getLastSyncedAt, upsertLastSyncedAt } from '../store/apis';
 import { QuickSqliteClient } from '../store/QuickSqliteClient';
 
@@ -47,12 +46,10 @@ export class DBSyncManager {
    */
   static init = async (client: StreamChat) => {
     this.client = client;
-    const hasInternet = await NetInfo.fetch();
-
     // If the websocket connection is already active, then straightaway
     // call the sync api and also execute pending api calls.
     // Otherwise wait for `connection.changed` event.
-    if (client.user?.id && client.wsConnection?.isHealthy && hasInternet) {
+    if (client.user?.id && client.wsConnection?.isHealthy) {
       await this.syncAndExecutePendingTasks();
       this.syncStatus = true;
       this.listeners.forEach((l) => l(true));
@@ -116,7 +113,7 @@ export class DBSyncManager {
   static syncAndExecutePendingTasks = async () => {
     if (!this.client) return;
 
-    await this.sync();
     await executePendingTasks(this.client);
+    await this.sync();
   };
 }

@@ -110,7 +110,6 @@ export const usePaginatedChannels = <
         // @ts-ignore
         skipInitialization: activeChannelIds,
       });
-
       if (isQueryStale() || !isMountedRef.current) {
         return;
       }
