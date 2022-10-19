@@ -33,6 +33,7 @@ export const addReactionToLocalState = <
     user_id: user?.id,
   };
 
+  const hasOwnReaction = message.own_reactions && message.own_reactions.length > 0;
   if (!message.own_reactions) {
     message.own_reactions = [];
   }
@@ -49,8 +50,8 @@ export const addReactionToLocalState = <
     }
     message.latest_reactions = message.latest_reactions.filter((r) => r.user_id !== user.id);
     if (currentReaction && message.reaction_counts) {
-      message.reaction_counts[currentReaction?.type] =
-        message.reaction_counts[currentReaction?.type] - 1;
+      message.reaction_counts[currentReaction.type] =
+        message.reaction_counts[currentReaction.type] - 1;
     }
 
     if (!message.reaction_counts) {
@@ -73,9 +74,8 @@ export const addReactionToLocalState = <
   message.own_reactions = [...message.own_reactions, reaction];
   message.latest_reactions = [...message.latest_reactions, reaction];
 
-  if (enforceUniqueReaction) {
+  if (enforceUniqueReaction && hasOwnReaction) {
     updateReaction({
-      // @ts-ignore
       message,
       reaction,
     });

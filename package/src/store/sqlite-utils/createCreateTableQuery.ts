@@ -8,8 +8,8 @@ export const createCreateTableQuery = (tableName: Table): PreparedQueries[] => {
   });
 
   const primaryKeyConstraints =
-    tables[tableName].primaryKey?.length > 0
-      ? [`PRIMARY KEY (${tables[tableName].primaryKey.join(', ')})`]
+    (tables[tableName].primaryKey || []).length > 0
+      ? [`PRIMARY KEY (${(tables[tableName].primaryKey || []).join(', ')})`]
       : [];
   const foreignKeysConstraints =
     tables[tableName].foreignKeys?.map(

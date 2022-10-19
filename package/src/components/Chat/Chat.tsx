@@ -3,10 +3,9 @@ import { Image, Platform } from 'react-native';
 
 import Dayjs from 'dayjs';
 
-import type { Channel } from 'stream-chat';
+import type { Channel, StreamChat } from 'stream-chat';
 
 import { useAppSettings } from './hooks/useAppSettings';
-import { useConnectionRecovered } from './hooks/useConnectionRecovered';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
 import { useMutedUsers } from './hooks/useMutedUsers';
@@ -30,6 +29,7 @@ import init from '../../init';
 import { SDK } from '../../native';
 import { QuickSqliteClient } from '../../store/QuickSqliteClient';
 import type { DefaultStreamChatGenerics } from '../../types/types';
+import { DBSyncManager } from '../../utils/DBSyncManager';
 import type { Streami18n } from '../../utils/Streami18n';
 import { version } from '../../version.json';
 
@@ -197,10 +197,6 @@ const ChatWithContext = <
   const setActiveChannel = (newChannel?: Channel<StreamChatGenerics>) => setChannel(newChannel);
 
   const appSettings = useAppSettings(client, isOnline);
-  const { subscribeConnectionRecoveredCallback } = useConnectionRecovered<StreamChatGenerics>({
-    client,
-    enableOfflineSupport,
-  });
 
   const chatContext = useCreateChatContext({
     appSettings,
@@ -212,14 +208,14 @@ const ChatWithContext = <
     isOnline,
     mutedUsers,
     setActiveChannel,
-    subscribeConnectionRecoveredCallback,
   });
 
   useEffect(() => {
-    if (enableOfflineSupport) {
+    if (client.user?.id && enableOfflineSupport) {
       QuickSqliteClient.initializeDatabase();
+      DBSyncManager.init(client as unknown as StreamChat);
     }
-  }, []);
+  }, [client?.user?.id]);
 
   useSyncDatabase({
     client,

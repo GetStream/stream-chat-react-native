@@ -2,12 +2,13 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
 
-import { ChatContextValue, useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
 import { getChannelsForFilterSort } from '../../../store/apis/getChannelsForFilterSort';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { ONE_SECOND_IN_MS } from '../../../utils/date';
+import { DBSyncManager } from '../../../utils/DBSyncManager';
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
 const waitSeconds = (seconds: number) =>
@@ -22,7 +23,7 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
     options: ChannelOptions;
     setForceUpdate: React.Dispatch<React.SetStateAction<number>>;
     sort: ChannelSort<StreamChatGenerics>;
-  } & Pick<ChatContextValue<StreamChatGenerics>, 'subscribeConnectionRecoveredCallback'>;
+  };
 
 const DEFAULT_OPTIONS = {
   message_limit: 10,
@@ -42,7 +43,6 @@ export const usePaginatedChannels = <
   filters = {},
   options = DEFAULT_OPTIONS,
   sort = {},
-  subscribeConnectionRecoveredCallback,
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
   const [channels, setChannels] = useState<Channel<StreamChatGenerics>[] | null>(null);
@@ -195,43 +195,38 @@ export const usePaginatedChannels = <
 
   useEffect(() => {
     const loadOfflineChannels = () => {
-      if (!client?.user?.id) return;
-      if (enableOfflineSupport) {
-        try {
-          const channelsFromDB = getChannelsForFilterSort({
-            currentUserId: client.user.id,
-            filters,
-            sort,
-          });
+      if (!enableOfflineSupport || !client?.user?.id) return;
 
-          if (channelsFromDB) {
-            setChannels(
-              client.hydrateActiveChannels(channelsFromDB, {
-                offlineMode: true,
-              }),
-            );
-            setStaticChannelsActive(true);
-          }
-        } catch (e) {
-          console.warn('Failed to get channels from database: ', e);
-        }
-      }
-    };
-
-    let unsubscribe: () => void;
-    const loadChannels = async () => {
-      if (subscribeConnectionRecoveredCallback) {
-        await loadOfflineChannels();
-        setActiveQueryType(null);
-
-        unsubscribe = subscribeConnectionRecoveredCallback(async () => {
-          await loadOfflineChannels();
-          await reloadList();
+      try {
+        const channelsFromDB = getChannelsForFilterSort({
+          currentUserId: client.user.id,
+          filters,
+          sort,
         });
+
+        if (channelsFromDB) {
+          setChannels(
+            client.hydrateActiveChannels(channelsFromDB, {
+              offlineMode: true,
+            }),
+          );
+          setStaticChannelsActive(true);
+        }
+      } catch (e) {
+        console.warn('Failed to get channels from database: ', e);
       }
+
+      setActiveQueryType(null);
     };
 
-    loadChannels();
+    const unsubscribe = DBSyncManager.onSyncStatusChange((syncStatus) => {
+      if (syncStatus) {
+        loadOfflineChannels();
+        reloadList();
+      }
+    });
+
+    loadOfflineChannels();
 
     return () => unsubscribe?.();
   }, [filterStr, sortStr]);

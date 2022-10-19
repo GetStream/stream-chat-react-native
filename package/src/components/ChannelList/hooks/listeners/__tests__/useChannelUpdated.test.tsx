@@ -63,7 +63,6 @@ describe('useChannelUpdated', () => {
             isOnline: true,
             mutedUsers: [],
             setActiveChannel: () => null,
-            subscribeConnectionRecoveredCallback: () => () => null,
           }}
         >
           <TestComponent />

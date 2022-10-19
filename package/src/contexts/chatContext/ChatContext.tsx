@@ -44,7 +44,6 @@ export type ChatContextValue<
    * @overrideType Function
    */
   setActiveChannel: (newChannel?: Channel<StreamChatGenerics>) => void;
-  subscribeConnectionRecoveredCallback: (callback: () => void) => () => void;
   /**
    * Instance of channel object from stream-chat package.
    *

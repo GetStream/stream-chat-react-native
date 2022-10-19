@@ -72,7 +72,6 @@ export * from './Chat/Chat';
 export * from './Chat/hooks/useCreateChatContext';
 export * from './Chat/hooks/useIsOnline';
 export * from './Chat/hooks/useMutedUsers';
-export * from './Chat/hooks/useConnectionRecovered';
 export * from './Chat/hooks/useSyncDatabase';
 
 export * from './ImageGallery/ImageGallery';

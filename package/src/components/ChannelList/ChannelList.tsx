@@ -242,8 +242,7 @@ export const ChannelList = <
   } = props;
 
   const [forceUpdate, setForceUpdate] = useState(0);
-  const { enableOfflineSupport, subscribeConnectionRecoveredCallback } =
-    useChatContext<StreamChatGenerics>();
+  const { enableOfflineSupport } = useChatContext<StreamChatGenerics>();
   const {
     channels,
     error,
@@ -262,7 +261,6 @@ export const ChannelList = <
     options,
     setForceUpdate,
     sort,
-    subscribeConnectionRecoveredCallback,
   });
 
   // Setup event listeners
