@@ -21,9 +21,13 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Installation & Build Package
-        # installation already takes care of calling prepare which calls build
-        # for the sdk package
-        run: yarn --frozen-lockfile && yarn bootstrap-ci
+        run: |
+          cd package
+          yarn
+          cd native-package
+          yarn
+          cd ../../examples/SampleApp
+          yarn
       - name: Lint
         run: yarn lerna-workspaces run lint && cd docusaurus && npx prettier --check '**/*.mdx'
       - name: Test
