@@ -194,7 +194,7 @@ export const usePaginatedChannels = <
 
   useEffect(() => {
     const loadOfflineChannels = () => {
-      if (!enableOfflineSupport || !client?.user?.id) return;
+      if (!client?.user?.id) return;
 
       try {
         const channelsFromDB = getChannelsForFilterSort({
@@ -218,14 +218,18 @@ export const usePaginatedChannels = <
       setActiveQueryType(null);
     };
 
-    const unsubscribe = DBSyncManager.onSyncStatusChange((syncStatus) => {
-      if (syncStatus) {
-        loadOfflineChannels();
-        reloadList();
-      }
-    });
-
-    loadOfflineChannels();
+    let unsubscribe: ReturnType<typeof DBSyncManager.onSyncStatusChange>;
+    if (enableOfflineSupport) {
+      unsubscribe = DBSyncManager.onSyncStatusChange((syncStatus) => {
+        if (syncStatus) {
+          loadOfflineChannels();
+          reloadList();
+        }
+      });
+      loadOfflineChannels();
+    } else {
+      reloadList();
+    }
 
     return () => unsubscribe?.();
   }, [filterStr, sortStr]);
