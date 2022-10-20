@@ -42,6 +42,7 @@ export const usePaginatedChannels = <
   enableOfflineSupport,
   filters = {},
   options = DEFAULT_OPTIONS,
+  setForceUpdate,
   sort = {},
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
@@ -228,6 +229,13 @@ export const usePaginatedChannels = <
       });
       loadOfflineChannels();
     } else {
+      const listener = client.on('connection.changed', async (event) => {
+        if (event.online) {
+          await refreshList();
+          setForceUpdate((u) => u + 1);
+        }
+      });
+      unsubscribe = listener.unsubscribe;
       reloadList();
     }
 
