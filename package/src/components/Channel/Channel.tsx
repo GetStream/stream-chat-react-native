@@ -201,7 +201,7 @@ export type ChannelPropsWithContext<
       | 'StickyHeader'
     >
   > &
-  Pick<ChatContextValue<StreamChatGenerics>, 'client' | 'enableOfflineSupport' | 'isOnline'> &
+  Pick<ChatContextValue<StreamChatGenerics>, 'client' | 'isOnline'> &
   Partial<
     Omit<
       InputMessageInputContextValue<StreamChatGenerics>,
@@ -427,7 +427,6 @@ const ChannelWithContext = <
     doUpdateMessageRequest,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     enableMessageGroupingByUser = true,
-    enableOfflineSupport,
     enforceUniqueReaction = false,
     FileAttachment = FileAttachmentDefault,
     FileAttachmentGroup = FileAttachmentGroupDefault,
@@ -767,10 +766,6 @@ const ChannelWithContext = <
         copyReadState();
       } else if (event.type === 'message.new') {
         copyMessagesState();
-      } else if (event.type === 'reaction.new') {
-        if (!enableOfflineSupport || event.reaction?.user_id !== client.user?.id) {
-          copyChannelState();
-        }
       } else if (channel) {
         copyChannelState();
       }
@@ -1883,7 +1878,7 @@ export const Channel = <
 >(
   props: PropsWithChildren<ChannelProps<StreamChatGenerics>>,
 ) => {
-  const { client, enableOfflineSupport, isOnline } = useChatContext<StreamChatGenerics>();
+  const { client, isOnline } = useChatContext<StreamChatGenerics>();
   const { t } = useTranslationContext();
 
   const shouldSyncChannel = props.thread?.id ? !!props.threadList : true;
@@ -1912,7 +1907,6 @@ export const Channel = <
     <ChannelWithContext<StreamChatGenerics>
       {...{
         client,
-        enableOfflineSupport,
         isOnline,
         t,
       }}
