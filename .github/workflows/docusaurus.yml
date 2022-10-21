@@ -1,4 +1,4 @@
-name: docusaurus
+name: Push docs to Stream Chat Docusaurus and Stream SDK Docs repo
 
 on:
   push:
@@ -7,14 +7,24 @@ on:
       - develop
     paths:
       - docusaurus/**
+      - .github/workflows/docusaurus.yml
+env:
+  branch_map: '{"refs/heads/main": "production", "refs/heads/develop": "staging"}'
 jobs:
   push_docusaurus:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: push
-        uses: GetStream/push-stream-chat-docusaurus-action@main
+        uses: GetStream/push-stream-chat-docusaurus-action@main # Old flow using Docusaurus(https://github.com/GetStream/stream-chat-docusaurus)
         with:
-          target-branch: ${{ 'production' }}
+          target-branch: ${{ fromJson(env.branch_map)[github.ref] }}
         env:
           DOCUSAURUS_GH_TOKEN: ${{ secrets.DOCUSAURUS_GH_TOKEN }}
+      - name: Push SDK Docs to Central Repo
+        uses: GetStream/stream-sdk-docs-push-action@main # New flow using Stream SDK Docs(https://github.com/GetStream/stream-sdk-docs)
+        with:
+          product-directory: ${{ 'chat' }}
+          target-branch: ${{ fromJson(env.branch_map)[github.ref] }}
+        env:
+          SDK_DOCS_GH_TOKEN: ${{ secrets.SDK_DOCS_GH_TOKEN }}
