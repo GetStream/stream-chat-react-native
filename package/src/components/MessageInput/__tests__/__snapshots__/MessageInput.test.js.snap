@@ -265,7 +265,7 @@ Array [
               }
             >
               <TextInput
-                autoFocus={true}
+                autoFocus={false}
                 maxLength={5000}
                 multiline={true}
                 onBlur={[Function]}
