@@ -92,6 +92,9 @@ platform :ios do
         build_number: current_build_number + 1,
         xcodeproj: "./ios/SampleApp.xcodeproj"
       )
+    
+      # https://github.com/fastlane/fastlane/issues/20741
+      ENV['ITMSTRANSPORTER_FORCE_ITMS_PACKAGE_UPLOAD'] = 'true'
 
       gym(
           workspace: "./ios/SampleApp.xcworkspace",

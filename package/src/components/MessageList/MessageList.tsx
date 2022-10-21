@@ -92,13 +92,12 @@ const keyExtractor = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   item: MessageType<StreamChatGenerics>,
-) =>
-  item.id ||
-  (item.created_at
-    ? typeof item.created_at === 'string'
-      ? item.created_at
-      : item.created_at.toISOString()
-    : Date.now().toString());
+) => {
+  if (item.id) return item.id;
+  if (item.created_at)
+    return typeof item.created_at === 'string' ? item.created_at : item.created_at.toISOString();
+  return Date.now().toString();
+};
 
 const flatListViewabilityConfig = {
   viewAreaCoveragePercentThreshold: 1,
@@ -294,7 +293,6 @@ const MessageListWithContext = <
   );
 
   const messageList = useMessageList<StreamChatGenerics>({
-    inverted,
     noGroupByUser,
     threadList,
   });
@@ -911,12 +909,13 @@ const MessageListWithContext = <
     stickyHeaderDate?.getFullYear() === new Date().getFullYear() ? 'MMM D' : 'MMM D, YYYY';
   const tStickyHeaderDate =
     stickyHeaderDate && !hideStickyDateHeader ? tDateTimeParser(stickyHeaderDate) : null;
-  const stickyHeaderDateToRender =
-    tStickyHeaderDate === null || hideStickyDateHeader
-      ? null
-      : isDayOrMoment(tStickyHeaderDate)
-      ? tStickyHeaderDate.format(stickyHeaderFormatDate)
-      : new Date(tStickyHeaderDate).toDateString();
+
+  const stickyHeaderDateString = useMemo(() => {
+    if (tStickyHeaderDate === null || hideStickyDateHeader) return null;
+    if (isDayOrMoment(tStickyHeaderDate)) return tStickyHeaderDate.format(stickyHeaderFormatDate);
+
+    return new Date(tStickyHeaderDate).toDateString();
+  }, [tStickyHeaderDate, stickyHeaderFormatDate, hideStickyDateHeader]);
 
   const dismissImagePicker = () => {
     if (!hasMoved && selectedPicker) {
@@ -964,6 +963,13 @@ const MessageListWithContext = <
     );
   }
 
+  const StickyHeaderComponent = () => {
+    if (!stickyHeaderDateString) return null;
+    if (StickyHeader) return <StickyHeader dateString={stickyHeaderDateString} />;
+    if (messageListLengthAfterUpdate) return <DateHeader dateString={stickyHeaderDateString} />;
+    return null;
+  };
+
   return (
     <View
       style={[styles.container, { backgroundColor: white_snow }, container]}
@@ -1002,12 +1008,7 @@ const MessageListWithContext = <
       {!loading && (
         <>
           <View style={styles.stickyHeader}>
-            {stickyHeaderDateToRender &&
-              (StickyHeader ? (
-                <StickyHeader dateString={stickyHeaderDateToRender} />
-              ) : messageListLengthAfterUpdate ? (
-                <DateHeader dateString={stickyHeaderDateToRender} />
-              ) : null)}
+            <StickyHeaderComponent />
           </View>
           {!disableTypingIndicator && TypingIndicator && (
             <TypingIndicatorContainer>

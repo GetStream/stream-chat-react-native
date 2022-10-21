@@ -33,22 +33,25 @@ export const NetworkDownIndicator = () => {
   } = useTheme();
   const { t } = useTranslationContext();
 
-  if (isOnline && !error) {
-    return null;
-  }
+  const getText = () => {
+    if (!isOnline) {
+      return t('Reconnecting...');
+    } else if (error) {
+      return t('Error loading messages for this channel...');
+    }
+    return '';
+  };
+
+  const indicatorText = getText();
+
+  if (!indicatorText) return null;
 
   return (
     <View
       style={[styles.errorNotification, { backgroundColor: `${grey}E6` }, errorNotification]}
       testID='error-notification'
     >
-      <Text style={[styles.errorNotificationText, errorNotificationText]}>
-        {!isOnline
-          ? t('Reconnecting...')
-          : error
-          ? t('Error loading messages for this channel...')
-          : ''}
-      </Text>
+      <Text style={[styles.errorNotificationText, errorNotificationText]}>{indicatorText}</Text>
     </View>
   );
 };

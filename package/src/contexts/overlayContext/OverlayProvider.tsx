@@ -64,6 +64,7 @@ export const OverlayProvider = <
 >(
   props: PropsWithChildren<OverlayProviderProps<StreamChatGenerics>>,
 ) => {
+  const bottomSheetCloseTimeoutRef = useRef<NodeJS.Timeout>();
   const {
     AttachmentPickerBottomSheetHandle = DefaultAttachmentPickerBottomSheetHandle,
     attachmentPickerBottomSheetHandleHeight,
@@ -77,8 +78,19 @@ export const OverlayProvider = <
     CameraSelectorIcon = DefaultCameraSelectorIcon,
     children,
     closePicker = (ref) => {
-      if (ref.current) {
+      if (ref.current?.close) {
+        if (bottomSheetCloseTimeoutRef.current) {
+          clearTimeout(bottomSheetCloseTimeoutRef.current);
+        }
         ref.current.close();
+        // Attempt to close the bottomsheet again to circumvent accidental opening on Android.
+        // Details: This to prevent a race condition where the close function is called during the point when a internal container layout happens within the bottomsheet due to keyboard affecting the layout
+        // If the container layout measures a shorter height than previous but if the close snapped to the previous height's position, the bottom sheet will show up
+        // this short delay ensures that close function is always called after a container layout due to keyboard change
+        // NOTE: this timeout has to be above 500 as the keyboardAnimationDuration is 500 in the bottomsheet library - see src/hooks/useKeyboard.ts there for more details
+        bottomSheetCloseTimeoutRef.current = setTimeout(() => {
+          ref.current?.close();
+        }, 600);
       }
     },
     FileSelectorIcon = DefaultFileSelectorIcon,
@@ -96,6 +108,9 @@ export const OverlayProvider = <
     numberOfAttachmentPickerImageColumns,
     numberOfImageGalleryGridColumns,
     openPicker = (ref) => {
+      if (bottomSheetCloseTimeoutRef.current) {
+        clearTimeout(bottomSheetCloseTimeoutRef.current);
+      }
       if (ref.current?.snapToIndex) {
         ref.current.snapToIndex(0);
       } else {
@@ -154,10 +169,19 @@ export const OverlayProvider = <
     return () => backHandler.remove();
   }, [overlay]);
 
+  useEffect(
+    () =>
+      // cleanup the timeout if the component unmounts
+      () => {
+        if (bottomSheetCloseTimeoutRef.current) {
+          clearTimeout(bottomSheetCloseTimeoutRef.current);
+        }
+      },
+    [],
+  );
+
   useEffect(() => {
-    if (bottomSheetRef.current) {
-      bottomSheetRef.current.close?.();
-    }
+    closePicker(bottomSheetRef);
     cancelAnimation(overlayOpacity);
     if (overlay !== 'none') {
       overlayOpacity.value = withTiming(1);
