@@ -389,7 +389,7 @@ const AutoCompleteInputWithContext = <
 
   return (
     <TextInput
-      autoFocus={true}
+      autoFocus={giphyActive}
       maxLength={maxMessageLength}
       multiline
       onChangeText={(newText) => {
