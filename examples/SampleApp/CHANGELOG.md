@@ -1,5 +1,19 @@
 # Change Log
 
+### [1.14.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.14.1...sampleapp@v1.14.2) (2022-10-21)
+
+
+### Bug Fixes
+
+* **build:** broken sample app testflight distribution ([0671100](https://github.com/GetStream/stream-chat-react-native/commit/0671100dcae35984ae077cdfee021d3a1631e273))
+* check-pr and next-release GH actions are broken after bottomsheet upgrade ([#1764](https://github.com/GetStream/stream-chat-react-native/issues/1764)) ([affd3c7](https://github.com/GetStream/stream-chat-react-native/commit/affd3c75f4bf63ca2d69d3db3536ea1367354e63))
+* **android:** various attachment picker issues ([#1760](https://github.com/GetStream/stream-chat-react-native/issues/1760)) ([ad25f20](https://github.com/GetStream/stream-chat-react-native/commit/ad25f205797a53c5ee78c8c6fae38d4b949dac75))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.14.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.14.0...sampleapp@v1.14.1) (2022-10-12)
 
 
