@@ -22,4 +22,4 @@ jobs:
           product-directory: ${{ 'chat' }}
           target-branch: ${{ fromJson(env.branch_map)[github.ref] }}
         env:
-          SDK_DOCS_GH_TOKEN: ${{ secrets.DOCUSAURUS_GH_TOKEN }}
+          SDK_DOCS_GH_TOKEN: ${{ secrets.SDK_DOCS_GH_TOKEN }}
