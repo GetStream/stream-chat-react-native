@@ -16,12 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: push
-        uses: GetStream/push-stream-chat-docusaurus-action@main # Old flow using Docusaurus(https://github.com/GetStream/stream-chat-docusaurus)
-        with:
-          target-branch: ${{ fromJson(env.branch_map)[github.ref] }}
-        env:
-          DOCUSAURUS_GH_TOKEN: ${{ secrets.DOCUSAURUS_GH_TOKEN }}
       - name: Push SDK Docs to Central Repo
         uses: GetStream/stream-sdk-docs-push-action@main # New flow using Stream SDK Docs(https://github.com/GetStream/stream-sdk-docs)
         with:
