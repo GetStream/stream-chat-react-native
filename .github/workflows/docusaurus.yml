@@ -5,17 +5,22 @@ on:
     branches:
       - main # default branch name for each repo that docs should be push from
       - develop
-      - khushal87/add-stream-sdk-docs-push-action
     paths:
       - docusaurus/**
       - .github/workflows/docusaurus.yml
 env:
-  branch_map: '{"refs/heads/main": "production", "refs/heads/develop": "staging", "refs/heads/khushal87/add-stream-sdk-docs-push-action": "staging"}'
+  branch_map: '{"refs/heads/main": "production", "refs/heads/develop": "staging"}'
 jobs:
   push_docusaurus:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: push
+        uses: GetStream/push-stream-chat-docusaurus-action@main # Old flow using Docusaurus(https://github.com/GetStream/stream-chat-docusaurus)
+        with:
+          target-branch: ${{ fromJson(env.branch_map)[github.ref] }}
+        env:
+          DOCUSAURUS_GH_TOKEN: ${{ secrets.DOCUSAURUS_GH_TOKEN }}
       - name: Push SDK Docs to Central Repo
         uses: GetStream/stream-sdk-docs-push-action@main # New flow using Stream SDK Docs(https://github.com/GetStream/stream-sdk-docs)
         with:
