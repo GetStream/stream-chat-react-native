@@ -501,6 +501,20 @@ client.updateAppSettings({
 });
 ```
 
+A good practice is to remove the badge count once the app is opened. We can do that using notifee like below:
+
+```js
+function App() {
+  useEffect(() => {
+    const clearBadge = async () => {
+      await notifee.setBadgeCount(0);
+    };
+    clearBadge();
+  }, []);
+  // Rest of your application
+}
+```
+
 ### Make iOS Payload Data Only
 
 If the iOS payload is made to be data only, then `setBackgroundMessageHandler` can be used to display notifications using Notifee. The payload can be customized using the JavaScript SDK like below:
