@@ -1,3 +1,5 @@
+import type { Channel, StreamChat } from 'stream-chat';
+
 import type { Schema } from './schema';
 
 export type Table = keyof Schema;
@@ -11,9 +13,32 @@ export type TableColumnValue = string | boolean | number | undefined;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type PreparedQueries = [string] | [string, Array<any>];
 
+export type PendingTaskTypes = {
+  deleteMessage: 'delete-message';
+  deleteReaction: 'delete-reaction';
+  sendMessage: 'send-message';
+  sendReaction: 'send-reaction';
+};
+
 export type PendingTask = {
   channelId: string;
   channelType: string;
-  payload: Array<unknown>;
-  type: string;
-};
+  id?: number;
+} & (
+  | {
+      payload: Parameters<Channel['sendReaction']>;
+      type: PendingTaskTypes['sendReaction'];
+    }
+  | {
+      payload: Parameters<Channel['sendMessage']>;
+      type: PendingTaskTypes['sendMessage'];
+    }
+  | {
+      payload: Parameters<StreamChat['deleteMessage']>;
+      type: PendingTaskTypes['deleteMessage'];
+    }
+  | {
+      payload: Parameters<Channel['deleteReaction']>;
+      type: PendingTaskTypes['deleteReaction'];
+    }
+);

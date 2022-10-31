@@ -1,4 +1,7 @@
+import type { ValueOf } from 'react-native-gesture-handler/lib/typescript/typeUtils';
 import type { MessageLabel, Role } from 'stream-chat';
+
+import type { PendingTaskTypes } from './types';
 
 type Tables = {
   [P in keyof Schema]: {
@@ -268,7 +271,7 @@ export type Schema = {
     createdAt: string;
     id: number;
     payload: string;
-    type: string;
+    type: ValueOf<PendingTaskTypes>;
   };
   reactions: {
     createdAt: string;

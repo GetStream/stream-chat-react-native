@@ -19,9 +19,11 @@ export const queueTask = async <
 }) => {
   const removeFromApi = addPendingTask(task);
 
-  await executeTask({ client, task });
+  const response = await executeTask({ client, task });
 
   removeFromApi();
+
+  return response;
 };
 
 const executeTask = async <
@@ -34,16 +36,15 @@ const executeTask = async <
   task: PendingTask;
 }) => {
   const channel = client.channel(task.channelType, task.channelId);
+  let response;
 
   switch (task.type) {
     case 'send-reaction':
-      // @ts-ignore
-      await channel.sendReaction(...task.payload);
+      response = await channel.sendReaction(...task.payload);
       break;
     case 'delete-reaction':
       try {
-        // @ts-ignore
-        await channel.deleteReaction(...task.payload);
+        response = await channel.deleteReaction(...task.payload);
       } catch (e) {
         if ((e as AxiosError<APIErrorResponse>)?.response?.data?.code === 16) {
           // Error code 16 - reaction doesn't exist.
@@ -53,9 +54,35 @@ const executeTask = async <
         }
       }
       break;
+    case 'send-message':
+      try {
+        response = await channel.sendMessage(...task.payload);
+      } catch (e) {
+        if ((e as AxiosError<APIErrorResponse>)?.response?.data?.code === 4) {
+          // Error code 16 - message already exists
+          // ignore
+        } else {
+          throw e;
+        }
+      }
+      break;
+    case 'delete-message':
+      try {
+        response = await client.deleteMessage(...task.payload);
+      } catch (e) {
+        if ((e as AxiosError<APIErrorResponse>)?.response?.data?.code === 4) {
+          // Error code 16 - message doesn't exist.
+          // ignore
+        } else {
+          throw e;
+        }
+      }
+      break;
     default:
       break;
   }
+
+  return response;
 };
 
 export const executePendingTasks = async <
@@ -65,7 +92,7 @@ export const executePendingTasks = async <
 ) => {
   const queue = getPendingTasks();
   for (const task of queue) {
-    await executeTask({
+    await executeTask<StreamChatGenerics>({
       client,
       task,
     });

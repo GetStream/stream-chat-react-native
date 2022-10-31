@@ -9,32 +9,29 @@ import type {
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { MessageStatusTypes } from '../../../utils/utils';
 
 export const useMessageActionHandlers = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
-  addReaction,
   channel,
   client,
+  deleteMessage,
+  deleteReaction,
   message,
-  removeMessage,
-  removeReaction,
   retrySendMessage,
+  sendReaction,
   setEditingState,
   setQuotedMessageState,
   supportedReactions,
-  updateMessage,
 }: Pick<
   MessagesContextValue<StreamChatGenerics>,
-  | 'addReaction'
-  | 'removeMessage'
-  | 'removeReaction'
+  | 'sendReaction'
+  | 'deleteMessage'
+  | 'deleteReaction'
   | 'retrySendMessage'
   | 'setEditingState'
   | 'setQuotedMessageState'
   | 'supportedReactions'
-  | 'updateMessage'
 > &
   Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'enforceUniqueReaction'> &
   Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
@@ -50,14 +47,7 @@ export const useMessageActionHandlers = <
     (mute) => mute.user.id === client.userID && mute.target.id === message.user?.id,
   );
 
-  const handleDeleteMessage = async () => {
-    if (message.status === MessageStatusTypes.FAILED) {
-      removeMessage(message);
-    } else {
-      const data = await client.deleteMessage(message.id);
-      updateMessage(data.message);
-    }
-  };
+  const handleDeleteMessage = () => deleteMessage(message as MessageResponse<StreamChatGenerics>);
 
   const handleToggleMuteUser = async () => {
     if (!message.user?.id) {
@@ -131,9 +121,9 @@ export const useMessageActionHandlers = <
     try {
       if (channel && messageId) {
         if (ownReaction) {
-          await removeReaction(reactionType, messageId);
+          await deleteReaction(reactionType, messageId);
         } else {
-          await addReaction(reactionType, messageId);
+          await sendReaction(reactionType, messageId);
         }
       }
     } catch (err) {

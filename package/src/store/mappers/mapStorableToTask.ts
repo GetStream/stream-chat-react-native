@@ -1,6 +1,6 @@
-import type { TableRowJoinedUser } from '../types';
+import type { PendingTask, TableRowJoinedUser } from '../types';
 
-export const mapStorableToTask = (row: TableRowJoinedUser<'pendingTasks'>) => {
+export const mapStorableToTask = (row: TableRowJoinedUser<'pendingTasks'>): PendingTask => {
   const { channelId, channelType, id, type } = row;
   return {
     channelId,

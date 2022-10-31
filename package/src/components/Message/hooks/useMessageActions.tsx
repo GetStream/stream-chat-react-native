@@ -34,9 +34,10 @@ import { removeReservedFields } from '../utils/removeReservedFields';
 export const useMessageActions = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
-  addReaction,
   channel,
   client,
+  deleteMessage: deleteMessageFromContext,
+  deleteReaction,
   enforceUniqueReaction,
   handleBlock,
   handleCopy,
@@ -52,19 +53,18 @@ export const useMessageActions = <
   message,
   onThreadSelect,
   openThread,
-  removeMessage,
-  removeReaction,
   retrySendMessage,
   selectReaction,
+  sendReaction,
   setEditingState,
   setOverlay,
   setQuotedMessageState,
   supportedReactions,
   t,
-  updateMessage,
 }: Pick<
   MessagesContextValue<StreamChatGenerics>,
-  | 'addReaction'
+  | 'deleteMessage'
+  | 'sendReaction'
   | 'handleBlock'
   | 'handleCopy'
   | 'handleDelete'
@@ -77,7 +77,7 @@ export const useMessageActions = <
   | 'handleReaction'
   | 'handleThreadReply'
   | 'removeMessage'
-  | 'removeReaction'
+  | 'deleteReaction'
   | 'retrySendMessage'
   | 'setEditingState'
   | 'setQuotedMessageState'
@@ -108,18 +108,17 @@ export const useMessageActions = <
     handleTogglePinMessage,
     handleToggleReaction,
   } = useMessageActionHandlers({
-    addReaction,
     channel,
     client,
+    deleteMessage: deleteMessageFromContext,
+    deleteReaction,
     enforceUniqueReaction,
     message,
-    removeMessage,
-    removeReaction,
     retrySendMessage,
+    sendReaction,
     setEditingState,
     setQuotedMessageState,
     supportedReactions,
-    updateMessage,
   });
 
   const error = message.type === 'error' || message.status === MessageStatusTypes.FAILED;
