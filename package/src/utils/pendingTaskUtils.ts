@@ -92,6 +92,8 @@ export const executePendingTasks = async <
 ) => {
   const queue = getPendingTasks();
   for (const task of queue) {
+    if (!task.id) continue;
+
     await executeTask<StreamChatGenerics>({
       client,
       task,
