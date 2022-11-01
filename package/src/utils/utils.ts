@@ -21,7 +21,7 @@ import type {
 } from '../contexts/suggestionsContext/SuggestionsContext';
 import { compiledEmojis, Emoji } from '../emoji-data/compiled';
 import type { IconProps } from '../icons/utils/base';
-import type { DefaultStreamChatGenerics } from '../types/types';
+import type { DefaultStreamChatGenerics, ValueOf } from '../types/types';
 
 export type ReactionData = {
   Icon: React.FC<IconProps>;
@@ -59,7 +59,6 @@ export const MessageStatusTypes = {
 
 export type FileStateValue = typeof FileState[keyof typeof FileState];
 
-type ValueOf<T> = T[keyof T];
 type Progress = ValueOf<typeof ProgressIndicatorTypes>;
 type IndicatorStatesMap = Record<ValueOf<typeof FileState>, Progress | null>;
 

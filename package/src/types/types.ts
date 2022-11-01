@@ -47,3 +47,5 @@ export interface DefaultStreamChatGenerics extends ExtendableGenerics {
 }
 
 export type UnknownType = Record<string, unknown>;
+
+export type ValueOf<T> = T[keyof T];

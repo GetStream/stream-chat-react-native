@@ -1,7 +1,8 @@
-import type { ValueOf } from 'react-native-gesture-handler/lib/typescript/typeUtils';
 import type { MessageLabel, Role } from 'stream-chat';
 
 import type { PendingTaskTypes } from './types';
+
+import type { ValueOf } from '../types/types';
 
 type Tables = {
   [P in keyof Schema]: {
