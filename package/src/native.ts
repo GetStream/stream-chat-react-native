@@ -218,8 +218,8 @@ type Handlers = {
   NetInfo?: NetInfo;
   pickDocument?: PickDocument;
   saveFile?: SaveFile;
-  setClipboardString?: SetClipboardString;
   SDK?: string;
+  setClipboardString?: SetClipboardString;
   shareImage?: ShareImage;
   Sound?: SoundType;
   takePhoto?: TakePhoto;

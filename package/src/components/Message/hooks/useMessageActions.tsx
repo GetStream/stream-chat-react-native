@@ -24,13 +24,13 @@ import {
   Unpin,
   UserDelete,
 } from '../../../icons';
+import { setClipboardString } from '../../../native';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { MessageStatusTypes } from '../../../utils/utils';
 
 import type { MessageType } from '../../MessageList/hooks/useMessageList';
 import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
 import { removeReservedFields } from '../utils/removeReservedFields';
-import { setClipboardString } from '../../../native';
 
 export const useMessageActions = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
