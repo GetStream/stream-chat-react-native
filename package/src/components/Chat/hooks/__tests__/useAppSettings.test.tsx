@@ -18,6 +18,7 @@ describe('useAppSettings', () => {
               auto_translation_enabled: true,
             }),
           ),
+          userID: 'some-user-id',
         } as unknown as StreamChat,
         isOnline,
       );
