@@ -66,7 +66,11 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
     params: { channel },
   },
 }) => {
-  const { images, setImage, setImages } = useImageGalleryContext<StreamChatGenerics>();
+  const {
+    messages: images,
+    setMessages: setImages,
+    setSelectedMessage: setImage,
+  } = useImageGalleryContext<StreamChatGenerics>();
   const { setOverlay } = useOverlayContext();
   const { loading, loadMore, messages } = usePaginatedAttachments(channel, 'image');
   const {
