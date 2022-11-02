@@ -150,7 +150,6 @@ export const useMessageActions = <
 
   const copyMessage: MessageActionType | false = setClipboardString !== null && {
     action: () => {
-      console.log({ setClipboardString });
       setOverlay('none');
       if (handleCopy) {
         handleCopy(message);
