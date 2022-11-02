@@ -5,6 +5,7 @@ export * from './getPhotos';
 export * from './NetInfo';
 export * from './pickDocument';
 export * from './saveFile';
+export * from './setClipboardString';
 export * from './shareImage';
 export * from './Sound';
 export * from './takePhoto';
