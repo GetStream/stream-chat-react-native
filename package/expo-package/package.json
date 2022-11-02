@@ -23,6 +23,18 @@
     "expo-media-library": "^12.0.2",
     "expo-sharing": "^9.1.2"
   },
+  "devDependencies": {
+    "@react-native-community/netinfo": "^6.0.0",
+    "expo": ">=44.0.0",
+    "expo-av": "^12.0.4",
+    "expo-document-picker": "^9.1.2",
+    "expo-file-system": "^11.0.2",
+    "expo-haptics": "^10.0.0",
+    "expo-image-manipulator": "^9.1.0",
+    "expo-image-picker": "^10.1.4",
+    "expo-media-library": "^12.0.2",
+    "expo-sharing": "^9.1.2"
+  },
   "scripts": {
     "prepack": " cp ../../README.md .",
     "postpack": "rm README.md"
