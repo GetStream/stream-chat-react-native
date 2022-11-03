@@ -26,7 +26,7 @@ export const useAppSettings = <
       }
     }
 
-    if (isOnline) {
+    if (isOnline && client.userID) {
       getAppSettings();
     }
 
