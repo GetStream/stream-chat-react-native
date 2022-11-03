@@ -1171,7 +1171,6 @@ const ChannelWithContext = <
     extraState = {},
   ) => {
     if (channel) {
-      console.log(updatedMessage);
       channel.state.addMessageSorted(updatedMessage, true);
       if (thread && updatedMessage.parent_id) {
         extraState.threadMessages = channel.state.threads[updatedMessage.parent_id] || [];
@@ -1270,7 +1269,6 @@ const ChannelWithContext = <
       user,
       ...extraFields
     } = message;
-
     if (!channel.id) return;
 
     const messageData = {
