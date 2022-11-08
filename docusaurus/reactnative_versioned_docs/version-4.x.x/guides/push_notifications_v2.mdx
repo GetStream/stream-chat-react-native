@@ -133,11 +133,13 @@ const requestPermission = async () => {
 
 const App = () => {
   const [isReady, setIsReady] = useState(false);
+  const unsubscribeTokenRefreshListenerRef = useRef<() => void>();
 
   useEffect(() => {
-    let unsubscribeTokenRefreshListener;
     // Register FCM token with stream chat server.
     const registerPushToken = async () => {
+      // unsubscribe any previous listener
+      unsubscribeTokenRefreshListenerRef.current?.();
       const token = await messaging().getToken();
       const push_provider = 'firebase';
       const push_provider_name = 'MyRNAppFirebasePush'; // name an alias for your push provider (optional)
@@ -156,7 +158,7 @@ const App = () => {
         }
       };
 
-      unsubscribeTokenRefreshListener = messaging().onTokenRefresh(async newToken => {
+      unsubscribeTokenRefreshListenerRef.current = messaging().onTokenRefresh(async newToken => {
         await Promise.all([
           removeOldToken(),
           client.addDevice(newToken, push_provider, USER_ID, push_provider_name),
@@ -177,7 +179,7 @@ const App = () => {
 
     return async () => {
       await client?.disconnectUser();
-      unsubscribeTokenRefreshListener?.();
+      unsubscribeTokenRefreshListenerRef.current?.();
     };
   }, []);
 

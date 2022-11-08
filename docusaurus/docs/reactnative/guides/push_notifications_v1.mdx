@@ -118,11 +118,13 @@ const requestPermission = async () => {
 
 const App = () => {
   const [isReady, setIsReady] = useState(false);
+  const unsubscribeTokenRefreshListenerRef = useRef<() => void>();
 
   useEffect(() => {
-    let unsubscribeTokenRefreshListener;
     // Register FCM token with stream chat server.
     const registerPushToken = async () => {
+      // unsubscribe any previous listener
+      unsubscribeTokenRefreshListenerRef.current?.();
       const token = await messaging().getToken();
       await client.addDevice(token, 'firebase');
 
@@ -144,7 +146,7 @@ const App = () => {
 
     return async () => {
       await client?.disconnectUser();
-      unsubscribeTokenRefreshListener?.();
+      unsubscribeTokenRefreshListenerRef.current?.();
     };
   }, []);
 
