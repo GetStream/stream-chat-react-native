@@ -491,9 +491,10 @@ export const MessageInputProvider = <
     }
 
     for (const image of imageUploads) {
-      if (!image || image.state === FileState.UPLOAD_FAILED) {
+      if ((!image || image.state === FileState.UPLOAD_FAILED) && !enableOfflineSupport) {
         continue;
       }
+
       if (image.state === FileState.UPLOADING) {
         // TODO: show error to user that they should wait until image is uploaded
         return false;
@@ -503,7 +504,7 @@ export const MessageInputProvider = <
     }
 
     for (const file of fileUploads) {
-      if (!file || file.state === FileState.UPLOAD_FAILED) {
+      if ((!file || file.state === FileState.UPLOAD_FAILED) && !enableOfflineSupport) {
         continue;
       }
       if (file.state === FileState.UPLOADING) {
@@ -1082,9 +1083,11 @@ export const MessageInputProvider = <
 
     const newImage: ImageUpload = {
       file: image,
+      height: image.height,
       id,
       state: imageState,
       url: image.uri,
+      width: image.width,
     };
 
     await Promise.all([
