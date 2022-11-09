@@ -4,7 +4,7 @@ import { Image, ImageProps } from 'react-native';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { getUrlWithoutParams, makeImageCompatibleUrl } from '../../utils/utils';
+import { getUrlWithoutParams, isLocalImageUrl, makeImageCompatibleUrl } from '../../utils/utils';
 
 export type GalleryImageWithContextProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -13,8 +13,20 @@ export type GalleryImageWithContextProps<
 export const GalleryImageWithContext: React.FC<GalleryImageWithContextProps> = (props) => {
   const { ImageComponent = Image, uri, ...rest } = props;
 
+  if (!isLocalImageUrl(uri)) {
+    return (
+      <ImageComponent
+        {...rest}
+        accessibilityLabel='Gallery Image'
+        source={{
+          uri: makeImageCompatibleUrl(uri),
+        }}
+      />
+    );
+  }
+
   return (
-    <ImageComponent
+    <Image
       {...rest}
       accessibilityLabel='Gallery Image'
       source={{

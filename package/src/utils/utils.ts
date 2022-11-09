@@ -509,6 +509,8 @@ export const getUrlWithoutParams = (url?: string) => {
   return url.substring(0, url.indexOf('?'));
 };
 
+export const isLocalImageUrl = (url: string) => url.indexOf('http') !== 0;
+
 export const vw = (percentageWidth: number, rounded = false) => {
   const value = Dimensions.get('window').width * (percentageWidth / 100);
   return rounded ? Math.round(value) : value;
