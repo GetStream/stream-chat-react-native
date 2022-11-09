@@ -211,7 +211,7 @@ export type LocalMessageInputContext<
   /** Function for attempting to upload an image */
   uploadImage: ({ newImage }: { newImage: ImageUpload }) => Promise<void>;
   uploadNewFile: (file: File) => Promise<void>;
-  uploadNewImage: (image: Asset) => Promise<void>;
+  uploadNewImage: (image: Partial<Asset>) => Promise<void>;
 };
 
 export type InputMessageInputContextValue<
@@ -549,16 +549,8 @@ export const MessageInputProvider = <
   const openAttachmentPicker = () => {
     if (hasImagePicker) {
       Keyboard.dismiss();
-      openPicker();
       setSelectedPicker('images');
-      /**
-       * TODO: Remove this, this is the result of
-       * the bottom sheet now having some keyboard
-       * handling baked in, creating an issue when
-       * we call dismiss and open in short order.
-       * https://github.com/gorhom/react-native-bottom-sheet/issues/446
-       */
-      setTimeout(openPicker, 600);
+      openPicker();
     } else if (hasFilePicker) {
       pickFile();
     }
@@ -843,19 +835,27 @@ export const MessageInputProvider = <
     }
   };
 
-  const triggerSettings = channel
-    ? value.autoCompleteTriggerSettings
-      ? value.autoCompleteTriggerSettings({
+  const getTriggerSettings = () => {
+    let triggerSettings: TriggerSettings<StreamChatGenerics> = {};
+    if (channel) {
+      if (value.autoCompleteTriggerSettings) {
+        triggerSettings = value.autoCompleteTriggerSettings({
           channel,
           client,
           onMentionSelectItem: onSelectItem,
-        })
-      : ACITriggerSettings<StreamChatGenerics>({
+        });
+      } else {
+        triggerSettings = ACITriggerSettings<StreamChatGenerics>({
           channel,
           client,
           onMentionSelectItem: onSelectItem,
-        })
-    : ({} as TriggerSettings<StreamChatGenerics>);
+        });
+      }
+    }
+    return triggerSettings;
+  };
+
+  const triggerSettings = getTriggerSettings();
 
   const updateMessage = async () => {
     try {
@@ -955,13 +955,15 @@ export const MessageInputProvider = <
        * if the uri includes assets-library, this uses the CameraRoll.save
        * function to also create a local uri.
        */
-      const localUri = file.id
-        ? await getLocalAssetUri(file.id)
-        : file.uri?.match(/assets-library/)
-        ? await getLocalAssetUri(file.uri)
-        : file.uri;
-
-      const uri = file.name || localUri || '';
+      const getLocalUri = async () => {
+        if (file.id) {
+          return await getLocalAssetUri(file.id);
+        } else if (file.uri?.match(/assets-library/)) {
+          return await getLocalAssetUri(file.uri);
+        }
+        return file.uri;
+      };
+      const uri = file.name || (await getLocalUri()) || '';
       /**
        * We skip compression if:
        * - the file is from the camera as that should already be compressed
@@ -1062,7 +1064,7 @@ export const MessageInputProvider = <
     }
   };
 
-  const uploadNewImage = async (image: Asset) => {
+  const uploadNewImage = async (image: Partial<Asset>) => {
     const id = generateRandomId();
 
     const isBlockedImageMimeType = blockedImageMimeTypes?.some((mimeType: string) =>

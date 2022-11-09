@@ -1,5 +1,16 @@
 # Change Log
 
+### [5.4.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.4.1...v5.4.2) (2022-10-21)
+
+
+### Bug Fixes
+
+* check-pr and next-release GH actions are broken after bottomsheet upgrade ([#1764](https://github.com/GetStream/stream-chat-react-native/issues/1764)) ([affd3c7](https://github.com/GetStream/stream-chat-react-native/commit/affd3c75f4bf63ca2d69d3db3536ea1367354e63))
+* only autofocus when giphy is active ([#1770](https://github.com/GetStream/stream-chat-react-native/issues/1770)) ([3e07b61](https://github.com/GetStream/stream-chat-react-native/commit/3e07b61d73d04bcb5f3a9065d02e689bc4311253))
+* **android:** various attachment picker issues ([#1760](https://github.com/GetStream/stream-chat-react-native/issues/1760)) ([ad25f20](https://github.com/GetStream/stream-chat-react-native/commit/ad25f205797a53c5ee78c8c6fae38d4b949dac75))
+* messages rendered in correct order when message list is not inve… ([#1751](https://github.com/GetStream/stream-chat-react-native/issues/1751)) ([c603cad](https://github.com/GetStream/stream-chat-react-native/commit/c603cade2f72e0a56a208a851538a61441534c09))
+* type of image parameter in MessageInputContext's uploadNewImage prop to Partial<Asset> ([#1762](https://github.com/GetStream/stream-chat-react-native/issues/1762)) ([6d76e3f](https://github.com/GetStream/stream-chat-react-native/commit/6d76e3fccc14d6ca4d0dc061fd8b066b0e45257f))
+
 ### [5.4.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.4.0...v5.4.1) (2022-10-12)
 
 

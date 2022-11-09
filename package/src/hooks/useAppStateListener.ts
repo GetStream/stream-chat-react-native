@@ -1,22 +1,19 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 
 export const useAppStateListener = (onForeground?: () => void, onBackground?: () => void) => {
-  const [appState, setAppState] = useState(AppState.currentState);
+  const appStateRef = useRef(AppState.currentState);
   const handleAppStateChange = useCallback(
     (nextAppState: AppStateStatus) => {
-      if (appState === 'background' && nextAppState === 'active' && onForeground) {
-        onForeground();
-      } else if (
-        appState.match(/active|inactive/) &&
-        nextAppState === 'background' &&
-        onBackground
-      ) {
-        onBackground();
+      const prevAppState = appStateRef.current;
+      if (prevAppState.match(/inactive|background/) && nextAppState === 'active') {
+        onForeground?.();
+      } else if (prevAppState === 'active' && nextAppState.match(/inactive|background/)) {
+        onBackground?.();
       }
-      setAppState(nextAppState);
+      appStateRef.current = nextAppState;
     },
-    [onBackground, onForeground, appState],
+    [onBackground, onForeground],
   );
 
   useEffect(() => {

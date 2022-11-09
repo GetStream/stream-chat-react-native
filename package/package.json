@@ -1,7 +1,7 @@
 {
   "name": "stream-chat-react-native-core",
   "description": "The official React Native and Expo components for Stream Chat, a service for building chat applications",
-  "version": "5.4.1",
+  "version": "5.4.2",
   "author": {
     "company": "Stream.io Inc",
     "name": "Stream.io Inc"
@@ -69,7 +69,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.12.5",
-    "@gorhom/bottom-sheet": "^4.1.6",
+    "@gorhom/bottom-sheet": "4.4.5",
     "dayjs": "1.10.5",
     "file-loader": "6.2.0",
     "i18next": "20.2.4",
