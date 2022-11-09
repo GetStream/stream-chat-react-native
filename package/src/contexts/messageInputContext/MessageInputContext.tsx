@@ -416,7 +416,7 @@ export const MessageInputProvider = <
 }>) => {
   const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
     useAttachmentPickerContext();
-  const { appSettings, client } = useChatContext<StreamChatGenerics>();
+  const { appSettings, client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
 
   const getFileUploadConfig = () => {
     const fileConfig = appSettings?.app?.file_upload_config;
@@ -655,7 +655,7 @@ export const MessageInputProvider = <
 
     const attachments = [] as Attachment<StreamChatGenerics>[];
     for (const image of imageUploads) {
-      if (!image || image.state === FileState.UPLOAD_FAILED) {
+      if ((!image || image.state === FileState.UPLOAD_FAILED) && !enableOfflineSupport) {
         continue;
       }
 
@@ -676,7 +676,11 @@ export const MessageInputProvider = <
       // To get the mime type of the image from the file name and send it as an response for an image
       const mime_type: string | boolean = lookup(image.file.filename as string);
 
-      if (image.state === FileState.UPLOADED || image.state === FileState.FINISHED) {
+      if (
+        image.state === FileState.UPLOADED ||
+        image.state === FileState.FINISHED ||
+        enableOfflineSupport
+      ) {
         attachments.push({
           fallback: image.file.name,
           image_url: image.url,
@@ -689,9 +693,10 @@ export const MessageInputProvider = <
     }
 
     for (const file of fileUploads) {
-      if (!file || file.state === FileState.UPLOAD_FAILED) {
+      if ((!file || file.state === FileState.UPLOAD_FAILED) && !enableOfflineSupport) {
         continue;
       }
+
       if (file.state === FileState.UPLOADING) {
         // TODO: show error to user that they should wait until image is uploaded
         sending.current = false;
@@ -699,7 +704,11 @@ export const MessageInputProvider = <
       }
       const mime_type: string | boolean = lookup(file.file.name as string);
 
-      if (file.state === FileState.UPLOADED || file.state === FileState.FINISHED) {
+      if (
+        file.state === FileState.UPLOADED ||
+        file.state === FileState.FINISHED ||
+        enableOfflineSupport
+      ) {
         if (file.file.type?.startsWith('image/')) {
           attachments.push({
             fallback: file.file.name,
@@ -709,7 +718,7 @@ export const MessageInputProvider = <
           });
         } else if (file.file.type?.startsWith('audio/')) {
           attachments.push({
-            asset_url: file.url,
+            asset_url: file.url || file.file.uri,
             duration: file.file.duration,
             file_size: file.file.size,
             mime_type: file.file.type,
@@ -718,7 +727,7 @@ export const MessageInputProvider = <
           });
         } else if (file.file.type?.startsWith('video/')) {
           attachments.push({
-            asset_url: file.url,
+            asset_url: file.url || file.file.uri,
             duration: file.file.duration,
             file_size: file.file.size,
             mime_type: file.file.type,
@@ -728,7 +737,7 @@ export const MessageInputProvider = <
           });
         } else {
           attachments.push({
-            asset_url: file.url,
+            asset_url: file.url || file.file.uri,
             file_size: file.file.size,
             mime_type: file.file.type,
             title: file.file.name,
@@ -1073,6 +1082,7 @@ export const MessageInputProvider = <
       file: image,
       id,
       state: imageState,
+      url: image.uri,
     };
 
     await Promise.all([

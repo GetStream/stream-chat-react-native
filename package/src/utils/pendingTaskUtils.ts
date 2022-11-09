@@ -19,7 +19,17 @@ export const queueTask = async <
 }) => {
   const removeFromApi = addPendingTask(task);
 
-  const response = await executeTask({ client, task });
+  let response;
+  try {
+    response = await executeTask<StreamChatGenerics>({ client, task });
+  } catch (e) {
+    if ((e as AxiosError<APIErrorResponse>)?.response?.data?.code === 4) {
+      // Error code 16 - message already exists
+      // ignore
+    } else {
+      throw e;
+    }
+  }
 
   removeFromApi();
 
@@ -36,53 +46,45 @@ const executeTask = async <
   task: PendingTask;
 }) => {
   const channel = client.channel(task.channelType, task.channelId);
-  let response;
 
-  switch (task.type) {
-    case 'send-reaction':
-      response = await channel.sendReaction(...task.payload);
-      break;
-    case 'delete-reaction':
-      try {
-        response = await channel.deleteReaction(...task.payload);
-      } catch (e) {
-        if ((e as AxiosError<APIErrorResponse>)?.response?.data?.code === 16) {
-          // Error code 16 - reaction doesn't exist.
-          // ignore
-        } else {
-          throw e;
-        }
-      }
-      break;
-    case 'send-message':
-      try {
-        response = await channel.sendMessage(...task.payload);
-      } catch (e) {
-        if ((e as AxiosError<APIErrorResponse>)?.response?.data?.code === 4) {
-          // Error code 16 - message already exists
-          // ignore
-        } else {
-          throw e;
-        }
-      }
-      break;
-    case 'delete-message':
-      try {
-        response = await client.deleteMessage(...task.payload);
-      } catch (e) {
-        if ((e as AxiosError<APIErrorResponse>)?.response?.data?.code === 4) {
-          // Error code 16 - message doesn't exist.
-          // ignore
-        } else {
-          throw e;
-        }
-      }
-      break;
-    default:
-      break;
+  if (task.type === 'send-reaction') {
+    return await channel.sendReaction(...task.payload);
   }
 
-  return response;
+  if (task.type === 'delete-reaction') {
+    return await channel.deleteReaction(...task.payload);
+  }
+
+  if (task.type === 'delete-message') {
+    return await client.deleteMessage(...task.payload);
+  }
+
+  if (task.type === 'send-message') {
+    const message = task.payload[0];
+    if (message.attachments?.length) {
+      for (let i = 0; i < message.attachments?.length; i++) {
+        const attachment = message.attachments[i];
+        if (attachment.type === 'image' && attachment.image_url) {
+          const response = await channel.sendImage(attachment.image_url);
+          attachment.image_url = response.file;
+        }
+
+        if (
+          (attachment.type === 'file' ||
+            attachment.type === 'audio' ||
+            attachment.type === 'video') &&
+          attachment.asset_url
+        ) {
+          const response = await channel.sendFile(attachment.asset_url);
+          attachment.asset_url = response.file;
+        }
+      }
+    }
+
+    return await channel.sendMessage(...task.payload);
+  }
+
+  throw new Error('Invalid task type');
 };
 
 export const executePendingTasks = async <
@@ -94,10 +96,19 @@ export const executePendingTasks = async <
   for (const task of queue) {
     if (!task.id) continue;
 
-    await executeTask<StreamChatGenerics>({
-      client,
-      task,
-    });
+    try {
+      await executeTask<StreamChatGenerics>({
+        client,
+        task,
+      });
+    } catch (e) {
+      if ((e as AxiosError<APIErrorResponse>)?.response?.data?.code === 4) {
+        // Error code 16 - message already exists
+        // ignore
+      } else {
+        throw e;
+      }
+    }
 
     deletePendingTask({
       id: task.id,

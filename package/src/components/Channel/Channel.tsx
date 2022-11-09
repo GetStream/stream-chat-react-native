@@ -1496,7 +1496,9 @@ const ChannelWithContext = <
     }
   };
 
-  const sendReaction: MessagesContextValue<StreamChatGenerics>['sendReaction'] = (
+  // TODO: Fix the typescript
+  // @ts-ignore
+  const sendReaction: MessagesContextValue<StreamChatGenerics>['sendReaction'] = async (
     type,
     messageId,
   ) => {
@@ -1511,7 +1513,7 @@ const ChannelWithContext = <
     ];
 
     if (!enableOfflineSupport) {
-      return channel.sendReaction(...payload);
+      return await channel.sendReaction(...payload);
     }
 
     addReactionToLocalState<StreamChatGenerics>({
@@ -1524,7 +1526,7 @@ const ChannelWithContext = <
 
     setMessages(channel.state.messages);
 
-    return queueTask({
+    const data = await (queueTask<StreamChatGenerics>({
       client,
       task: {
         channelId: channel.id,
@@ -1532,13 +1534,21 @@ const ChannelWithContext = <
         payload,
         type: 'send-reaction',
       },
-    });
+    }) as ReturnType<ChannelClass<StreamChatGenerics>['sendReaction']>);
+
+    return data;
   };
 
+  // TODO: Fix the typescript
+  // @ts-ignore
   const deleteMessage: MessagesContextValue<StreamChatGenerics>['deleteMessage'] = async (
     message,
   ) => {
     if (!channel.id) return;
+
+    if (!enableOfflineSupport) {
+      return client.deleteMessage(message.id);
+    }
 
     dbApi.updateMessage({
       message: {
@@ -1548,8 +1558,10 @@ const ChannelWithContext = <
         type: 'deleted',
       },
     });
+
     updateMessage({ ...message, deleted_at: new Date().toISOString(), type: 'deleted' });
-    const data = await queueTask({
+
+    const data = await (queueTask<StreamChatGenerics>({
       client,
       task: {
         channelId: channel.id,
@@ -1557,11 +1569,13 @@ const ChannelWithContext = <
         payload: [message.id],
         type: 'delete-message',
       },
-    });
+    }) as ReturnType<ChannelClass<StreamChatGenerics>['sendReaction']>);
 
     if (data?.message) {
       updateMessage({ ...data.message });
     }
+
+    return data;
   };
 
   const deleteReaction: MessagesContextValue<StreamChatGenerics>['deleteReaction'] = (
