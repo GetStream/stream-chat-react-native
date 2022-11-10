@@ -47,7 +47,9 @@ export const useMessageActionHandlers = <
     (mute) => mute.user.id === client.userID && mute.target.id === message.user?.id,
   );
 
-  const handleDeleteMessage = () => deleteMessage(message as MessageResponse<StreamChatGenerics>);
+  const handleDeleteMessage = async () => {
+    await deleteMessage(message as MessageResponse<StreamChatGenerics>);
+  };
 
   const handleToggleMuteUser = async () => {
     if (!message.user?.id) {

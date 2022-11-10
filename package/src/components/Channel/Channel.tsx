@@ -1496,13 +1496,10 @@ const ChannelWithContext = <
     }
   };
 
-  // TODO: Fix the typescript
-  // @ts-ignore
-  const sendReaction: MessagesContextValue<StreamChatGenerics>['sendReaction'] = async (
-    type,
-    messageId,
-  ) => {
-    if (!channel?.id || !client.user) return;
+  const sendReaction = async (type: string, messageId: string) => {
+    if (!channel?.id || !client.user) {
+      throw new Error('Channel has not been initialized');
+    }
 
     const payload: Parameters<ChannelClass<StreamChatGenerics>['sendReaction']> = [
       messageId,
@@ -1539,15 +1536,13 @@ const ChannelWithContext = <
     return data;
   };
 
-  // TODO: Fix the typescript
-  // @ts-ignore
-  const deleteMessage: MessagesContextValue<StreamChatGenerics>['deleteMessage'] = async (
-    message,
-  ) => {
-    if (!channel.id) return;
+  const deleteMessage = async (message: MessageResponse<StreamChatGenerics>) => {
+    if (!channel.id) {
+      throw new Error('Channel has not been initialized yet');
+    }
 
     if (!enableOfflineSupport) {
-      return client.deleteMessage(message.id);
+      return await client.deleteMessage(message.id);
     }
 
     dbApi.updateMessage({
@@ -1569,7 +1564,7 @@ const ChannelWithContext = <
         payload: [message.id],
         type: 'delete-message',
       },
-    }) as ReturnType<ChannelClass<StreamChatGenerics>['sendReaction']>);
+    }) as ReturnType<StreamChat<StreamChatGenerics>['deleteMessage']>);
 
     if (data?.message) {
       updateMessage({ ...data.message });

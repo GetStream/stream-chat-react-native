@@ -89,7 +89,7 @@ export type MessagesContextValue<
   DateHeader: React.ComponentType<DateHeaderProps>;
   deleteMessage: (
     message: MessageResponse<StreamChatGenerics>,
-  ) => Promise<ReturnType<StreamChat<StreamChatGenerics>['deleteMessage']>> | void;
+  ) => ReturnType<StreamChat<StreamChatGenerics>['deleteMessage']>;
   deleteReaction: (type: string, messageId: string) => void;
 
   /** Should keyboard be dismissed when messaged is touched */
