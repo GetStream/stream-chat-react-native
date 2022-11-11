@@ -7,7 +7,7 @@ import type { ImageLoadingIndicatorProps } from 'src/components/Attachment/Image
 
 import type { MessagePinnedHeaderProps } from 'src/components/Message/MessageSimple/MessagePinnedHeader';
 
-import type { Attachment, Channel, ChannelState, MessageResponse, StreamChat } from 'stream-chat';
+import type { Attachment, ChannelState, MessageResponse } from 'stream-chat';
 
 import type { AttachmentProps } from '../../components/Attachment/Attachment';
 import type { AttachmentActionsProps } from '../../components/Attachment/AttachmentActions';
