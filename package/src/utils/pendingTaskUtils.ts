@@ -115,3 +115,15 @@ export const executePendingTasks = async <
     });
   }
 };
+
+export const dropPendingTasks = (conditions: { messageId: string }) => {
+  const tasks = getPendingTasks(conditions);
+
+  for (const task of tasks) {
+    if (!task.id) continue;
+
+    deletePendingTask({
+      id: task.id,
+    });
+  }
+};

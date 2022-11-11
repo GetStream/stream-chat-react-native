@@ -1,20 +1,17 @@
+import { mapTaskToStorable } from '../mappers/mapTaskToStorable';
 import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import type { PendingTask } from '../types';
 
-export const addPendingTask = ({ channelId, channelType, payload, type }: PendingTask) => {
-  const query = createUpsertQuery('pendingTasks', {
-    channelId,
-    channelType,
-    createdAt: new Date().toISOString(),
-    payload: JSON.stringify(payload),
-    type,
-  });
+export const addPendingTask = (task: PendingTask) => {
+  const storable = mapTaskToStorable(task);
+  const query = createUpsertQuery('pendingTasks', storable);
 
   QuickSqliteClient.executeSql.apply(null, query);
 
   return () => {
+    const { channelId, channelType, payload, type } = storable;
     const query = createDeleteQuery('pendingTasks', {
       channelId,
       channelType,

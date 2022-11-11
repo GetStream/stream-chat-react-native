@@ -2,15 +2,10 @@ import { mapStorableToTask } from '../mappers/mapStorableToTask';
 import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
 
-export const getPendingTasks = () => {
-  const query = createSelectQuery(
-    'pendingTasks',
-    ['*'],
-    {},
-    {
-      createdAt: 1,
-    },
-  );
+export const getPendingTasks = (conditions: { messageId?: string } = {}) => {
+  const query = createSelectQuery('pendingTasks', ['*'], conditions, {
+    createdAt: 1,
+  });
 
   const result = QuickSqliteClient.executeSql.apply(null, query);
 

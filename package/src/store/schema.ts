@@ -131,6 +131,7 @@ export const tables: Tables = {
       channelType: 'TEXT',
       createdAt: 'TEXT',
       id: 'INTEGER PRIMARY KEY AUTOINCREMENT',
+      messageId: 'TEXT',
       payload: 'TEXT',
       type: 'TEXT',
     },
@@ -271,6 +272,7 @@ export type Schema = {
     channelType: string;
     createdAt: string;
     id: number;
+    messageId: string;
     payload: string;
     type: ValueOf<PendingTaskTypes>;
   };

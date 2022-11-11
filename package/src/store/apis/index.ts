@@ -1,5 +1,6 @@
 export * from './deleteChannel';
 export * from './deleteMember';
+export * from './deleteMessage';
 export * from './deleteMessagesForChannel';
 export * from './deleteReactions';
 export * from './getAllChannelIds';

@@ -78,7 +78,7 @@ import { FlatList as FlatListDefault } from '../../native';
 import * as dbApi from '../../store/apis';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
-import { queueTask } from '../../utils/pendingTaskUtils';
+import { dropPendingTasks, queueTask } from '../../utils/pendingTaskUtils';
 import { removeReactionFromLocalState } from '../../utils/removeReactionFromLocalState';
 import { generateRandomId, MessageStatusTypes, ReactionData } from '../../utils/utils';
 import { Attachment as AttachmentDefault } from '../Attachment/Attachment';
@@ -1179,6 +1179,12 @@ const ChannelWithContext = <
 
       setMessages([...channel.state.messages]);
     }
+
+    if (enableOfflineSupport) {
+      dbApi.updateMessage({
+        message: updatedMessage,
+      });
+    }
   };
 
   const replaceMessage = (
@@ -1295,6 +1301,8 @@ const ChannelWithContext = <
           task: {
             channelId: channel.id,
             channelType: channel.type,
+            // @ts-ignore
+            messageId: messageData.id,
             payload: [messageData],
             type: 'send-message',
           },
@@ -1494,6 +1502,12 @@ const ChannelWithContext = <
         setThreadMessages(channel.state.threads[thread.id] || []);
       }
     }
+
+    if (enableOfflineSupport) {
+      dbApi.deleteMessage({
+        id: message.id,
+      });
+    }
   };
 
   const sendReaction = async (type: string, messageId: string) => {
@@ -1510,7 +1524,8 @@ const ChannelWithContext = <
     ];
 
     if (!enableOfflineSupport) {
-      return await channel.sendReaction(...payload);
+      await channel.sendReaction(...payload);
+      return;
     }
 
     addReactionToLocalState<StreamChatGenerics>({
@@ -1523,66 +1538,70 @@ const ChannelWithContext = <
 
     setMessages(channel.state.messages);
 
-    const data = await (queueTask<StreamChatGenerics>({
+    await queueTask<StreamChatGenerics>({
       client,
       task: {
         channelId: channel.id,
         channelType: channel.type,
+        messageId,
         payload,
         type: 'send-reaction',
       },
-    }) as ReturnType<ChannelClass<StreamChatGenerics>['sendReaction']>);
-
-    return data;
+    });
   };
-
-  const deleteMessage = async (message: MessageResponse<StreamChatGenerics>) => {
+  const deleteMessage: MessagesContextValue<StreamChatGenerics>['deleteMessage'] = async (
+    message,
+  ) => {
     if (!channel.id) {
       throw new Error('Channel has not been initialized yet');
     }
 
     if (!enableOfflineSupport) {
-      return await client.deleteMessage(message.id);
+      await client.deleteMessage(message.id);
+      return;
     }
 
-    dbApi.updateMessage({
-      message: {
+    if (message.status === MessageStatusTypes.FAILED) {
+      dropPendingTasks({ messageId: message.id });
+      removeMessage(message);
+    } else {
+      updateMessage({
         ...message,
         cid: channel.cid,
         deleted_at: new Date().toISOString(),
         type: 'deleted',
-      },
-    });
+      });
 
-    updateMessage({ ...message, deleted_at: new Date().toISOString(), type: 'deleted' });
+      const data = await queueTask<StreamChatGenerics>({
+        client,
+        task: {
+          channelId: channel.id,
+          channelType: channel.type,
+          messageId: message.id,
+          payload: [message.id],
+          type: 'delete-message',
+        },
+      });
 
-    const data = await (queueTask<StreamChatGenerics>({
-      client,
-      task: {
-        channelId: channel.id,
-        channelType: channel.type,
-        payload: [message.id],
-        type: 'delete-message',
-      },
-    }) as ReturnType<StreamChat<StreamChatGenerics>['deleteMessage']>);
-
-    if (data?.message) {
-      updateMessage({ ...data.message });
+      if (data?.message) {
+        updateMessage({ ...data.message });
+      }
     }
-
-    return data;
   };
 
-  const deleteReaction: MessagesContextValue<StreamChatGenerics>['deleteReaction'] = (
+  const deleteReaction: MessagesContextValue<StreamChatGenerics>['deleteReaction'] = async (
     type: string,
     messageId: string,
   ) => {
-    if (!channel?.id || !client.user) return;
+    if (!channel?.id || !client.user) {
+      throw new Error('Channel has not been initialized');
+    }
 
     const payload: Parameters<ChannelClass['deleteReaction']> = [messageId, type];
 
     if (!enableOfflineSupport) {
-      return channel.deleteReaction(...payload);
+      await channel.deleteReaction(...payload);
+      return;
     }
 
     removeReactionFromLocalState({
@@ -1594,11 +1613,12 @@ const ChannelWithContext = <
 
     setMessages(channel.state.messages);
 
-    return queueTask({
+    await queueTask({
       client,
       task: {
         channelId: channel.id,
         channelType: channel.type,
+        messageId,
         payload,
         type: 'delete-reaction',
       },

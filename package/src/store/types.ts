@@ -23,6 +23,7 @@ export type PendingTaskTypes = {
 export type PendingTask = {
   channelId: string;
   channelType: string;
+  messageId: string;
   id?: number;
 } & (
   | {

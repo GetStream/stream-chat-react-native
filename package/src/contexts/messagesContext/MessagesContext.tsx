@@ -87,10 +87,8 @@ export type MessagesContextValue<
    * Defaults to: [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)
    **/
   DateHeader: React.ComponentType<DateHeaderProps>;
-  deleteMessage: (
-    message: MessageResponse<StreamChatGenerics>,
-  ) => ReturnType<StreamChat<StreamChatGenerics>['deleteMessage']>;
-  deleteReaction: (type: string, messageId: string) => void;
+  deleteMessage: (message: MessageResponse<StreamChatGenerics>) => Promise<void>;
+  deleteReaction: (type: string, messageId: string) => Promise<void>;
 
   /** Should keyboard be dismissed when messaged is touched */
   dismissKeyboardOnMessageTouch: boolean;
@@ -230,10 +228,7 @@ export type MessagesContextValue<
    * Defaults to: [ScrollToBottomButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/scroll-to-bottom-button/)
    */
   ScrollToBottomButton: React.ComponentType<ScrollToBottomButtonProps>;
-  sendReaction: (
-    type: string,
-    messageId: string,
-  ) => ReturnType<Channel<StreamChatGenerics>['sendReaction']> | void;
+  sendReaction: (type: string, messageId: string) => Promise<void>;
   setEditingState: (message: MessageType<StreamChatGenerics>) => void;
   setQuotedMessageState: (message: MessageType<StreamChatGenerics>) => void;
   supportedReactions: ReactionData[];
