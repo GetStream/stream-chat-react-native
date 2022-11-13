@@ -1320,10 +1320,7 @@ const ChannelWithContext = <
     } catch (err) {
       console.log(err);
       message.status = MessageStatusTypes.FAILED;
-      dbApi.upsertMessages({
-        messages: [{ ...message, cid: channel.cid }],
-      });
-      updateMessage(message);
+      updateMessage({ ...message, cid: channel.cid });
     }
   };
 
