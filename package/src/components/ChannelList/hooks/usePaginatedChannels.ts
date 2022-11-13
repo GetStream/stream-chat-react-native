@@ -223,13 +223,13 @@ export const usePaginatedChannels = <
     if (enableOfflineSupport) {
       // Any time DB is synced, we need to update the UI with local DB channels first,
       // and then call queryChannels to ensure any new channels are added to UI.
-      unsubscribe = DBSyncManager.onSyncStatusChange((syncStatus) => {
+      const listener = DBSyncManager.onSyncStatusChange((syncStatus) => {
         if (syncStatus) {
           loadOfflineChannels();
           reloadList();
         }
       });
-
+      unsubscribe = listener.unsubscribe;
       // On start, load the channels from local db.
       loadOfflineChannels();
 

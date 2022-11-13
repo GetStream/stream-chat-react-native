@@ -78,6 +78,7 @@ import { FlatList as FlatListDefault } from '../../native';
 import * as dbApi from '../../store/apis';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
+import { DBSyncManager } from '../../utils/DBSyncManager';
 import { dropPendingTasks, queueTask } from '../../utils/pendingTaskUtils';
 import { removeReactionFromLocalState } from '../../utils/removeReactionFromLocalState';
 import { generateRandomId, MessageStatusTypes, ReactionData } from '../../utils/utils';
@@ -734,17 +735,8 @@ const ChannelWithContext = <
     ),
   ).current;
 
-  const connectionRecoveredHandler = () => {
-    if (channel && shouldSyncChannel) {
-      copyChannelState();
-      if (thread) {
-        setThreadMessages([...channel.state.threads[thread.id]]);
-      }
-    }
-  };
-
-  const connectionChangedHandler = (event: ConnectionChangeEvent) => {
-    if (event.online && shouldSyncChannel) {
+  const connectionChangedHandler = () => {
+    if (shouldSyncChannel) {
       resyncChannel();
     }
   };
@@ -785,8 +777,7 @@ const ChannelWithContext = <
        * The more complex sync logic around internet connectivity (NetInfo) is part of Chat.tsx
        * listen to client.connection.recovered and all channel events
        */
-      clientSubscriptions.push(client.on('connection.recovered', connectionRecoveredHandler));
-      clientSubscriptions.push(client.on('connection.changed', connectionChangedHandler));
+      clientSubscriptions.push(DBSyncManager.onSyncStatusChange(connectionChangedHandler));
       clientSubscriptions.push(
         client.on('channel.deleted', (event) => {
           if (event.cid === channel.cid) {
@@ -803,7 +794,7 @@ const ChannelWithContext = <
       clientSubscriptions.forEach((s) => s.unsubscribe());
       channelSubscriptions.forEach((s) => s.unsubscribe());
     };
-  }, [channelId, connectionChangedHandler, connectionRecoveredHandler, handleEvent]);
+  }, [channelId, connectionChangedHandler, handleEvent]);
 
   const channelQueryCallRef = useRef(
     async (
@@ -914,7 +905,6 @@ const ChannelWithContext = <
 
   const reloadThread = async () => {
     if (!channel || !thread?.id) return;
-
     setThreadLoadingMore(true);
     try {
       const parentID = thread.id;

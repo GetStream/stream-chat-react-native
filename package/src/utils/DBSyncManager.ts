@@ -74,8 +74,10 @@ export class DBSyncManager {
   static onSyncStatusChange = (listener: (status: boolean) => void) => {
     this.listeners.push(listener);
 
-    return () => {
-      this.listeners = this.listeners.filter((el) => el !== listener);
+    return {
+      unsubscribe: () => {
+        this.listeners = this.listeners.filter((el) => el !== listener);
+      },
     };
   };
 
