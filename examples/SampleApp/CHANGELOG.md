@@ -1,5 +1,17 @@
 # Change Log
 
+### [1.14.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.14.2...sampleapp@v1.14.3) (2022-11-15)
+
+
+### Bug Fixes
+
+* **SampleApp:** update references to renamed functions from image gallery context ([#1780](https://github.com/GetStream/stream-chat-react-native/issues/1780)) ([11bbe74](https://github.com/GetStream/stream-chat-react-native/commit/11bbe74741b2a6129f9abbc1e42803e683df1175))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.14.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.14.1...sampleapp@v1.14.2) (2022-10-21)
 
 
