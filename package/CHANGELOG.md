@@ -1,5 +1,12 @@
 # Change Log
 
+### [5.4.3](https://github.com/GetStream/stream-chat-react-native/compare/v5.4.2...v5.4.3) (2022-11-15)
+
+
+### Bug Fixes
+
+* avoid requesting app settings if the client isn't connected ([#1779](https://github.com/GetStream/stream-chat-react-native/issues/1779)) ([0efadaf](https://github.com/GetStream/stream-chat-react-native/commit/0efadaf2bfec0e3dc06add9180cd6098e1a4c729))
+
 ### [5.4.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.4.1...v5.4.2) (2022-10-21)
 
 
