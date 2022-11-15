@@ -148,18 +148,21 @@ export const useMessageActions = <
     title: message.user?.banned ? t('Unblock User') : t('Block User'),
   };
 
-  const copyMessage: MessageActionType | false = setClipboardString !== null && {
-    action: () => {
-      setOverlay('none');
-      if (handleCopy) {
-        handleCopy(message);
-      }
-      setClipboardString(message.text || '');
-    },
-    actionType: 'copyMessage',
-    icon: <Copy pathFill={grey} />,
-    title: t('Copy Message'),
-  };
+  const copyMessage: MessageActionType | undefined =
+    setClipboardString !== null
+      ? {
+          action: () => {
+            setOverlay('none');
+            if (handleCopy) {
+              handleCopy(message);
+            }
+            setClipboardString(message.text || '');
+          },
+          actionType: 'copyMessage',
+          icon: <Copy pathFill={grey} />,
+          title: t('Copy Message'),
+        }
+      : undefined;
 
   const deleteMessage: MessageActionType = {
     action: () => {
