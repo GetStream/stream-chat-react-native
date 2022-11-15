@@ -7,7 +7,6 @@ export type MessageActionsParams<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   blockUser: MessageActionType;
-  copyMessage: MessageActionType;
   deleteMessage: MessageActionType;
   dismissOverlay: () => void;
   editMessage: MessageActionType;
@@ -22,6 +21,7 @@ export type MessageActionsParams<
   retry: MessageActionType;
   threadReply: MessageActionType;
   unpinMessage: MessageActionType;
+  copyMessage?: MessageActionType;
 } & Pick<MessageContextValue<StreamChatGenerics>, 'message' | 'isMyMessage'>;
 
 export type MessageActionsProp<
@@ -73,7 +73,7 @@ export const messageActions = <
     actions.push(editMessage);
   }
 
-  if (message.text && !error) {
+  if (copyMessage !== undefined && message.text && !error) {
     actions.push(copyMessage);
   }
 
