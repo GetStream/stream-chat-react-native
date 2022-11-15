@@ -21,7 +21,6 @@ Easiest way to integrate push notifications in your Chat applications is using F
   - They were mentioned
 - Messages from muted users are not sent.
 - Messages are sent to all registered devices for a user (up to 25).
-- Up to 100 members of a channel will receive push notifications.
 - skip_push is marked as false, as described [here](https://getstream.io/chat/docs/javascript/send_message/?language=javascript#complex-example).
 - push_notifications is enabled (default) on the channel type for the sent message.
 
@@ -138,11 +137,13 @@ const requestPermission = async () => {
 
 const App = () => {
   const [isReady, setIsReady] = useState(false);
+  const unsubscribeTokenRefreshListenerRef = useRef<() => void>();
 
   useEffect(() => {
-    let unsubscribeTokenRefreshListener;
     // Register FCM token with stream chat server.
     const registerPushToken = async () => {
+      // unsubscribe any previous listener
+      unsubscribeTokenRefreshListenerRef.current?.();
       const token = await messaging().getToken();
       const push_provider = 'firebase';
       const push_provider_name = 'MyRNAppFirebasePush'; // name an alias for your push provider (optional)
@@ -161,7 +162,7 @@ const App = () => {
         }
       };
 
-      unsubscribeTokenRefreshListener = messaging().onTokenRefresh(async newToken => {
+      unsubscribeTokenRefreshListenerRef.current = messaging().onTokenRefresh(async newToken => {
         await Promise.all([
           removeOldToken(),
           client.addDevice(newToken, push_provider, USER_ID, push_provider_name),
@@ -182,7 +183,7 @@ const App = () => {
 
     return async () => {
       await client?.disconnectUser();
-      unsubscribeTokenRefreshListener?.();
+      unsubscribeTokenRefreshListenerRef.current?.();
     };
   }, []);
 
