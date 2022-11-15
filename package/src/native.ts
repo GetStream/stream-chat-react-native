@@ -251,7 +251,7 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     getPhotos = handlers.getPhotos;
   }
 
-  if (handlers.pickDocument) {
+  if (handlers.pickDocument !== undefined) {
     pickDocument = handlers.pickDocument;
   }
 

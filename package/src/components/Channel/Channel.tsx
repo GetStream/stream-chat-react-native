@@ -71,7 +71,7 @@ import {
   ThumbsUpReaction,
   WutReaction,
 } from '../../icons';
-import { FlatList as FlatListDefault } from '../../native';
+import { FlatList as FlatListDefault, pickDocument } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { generateRandomId, MessageStatusTypes, ReactionData } from '../../utils/utils';
 import { Attachment as AttachmentDefault } from '../Attachment/Attachment';
@@ -447,7 +447,8 @@ const ChannelWithContext = <
     handleRetry,
     handleThreadReply,
     hasCommands = true,
-    hasFilePicker = true,
+    // If pickDocument isn't available, default to hiding the file picker
+    hasFilePicker = pickDocument !== null,
     hasImagePicker = true,
     hideDateSeparators = false,
     hideStickyDateHeader = false,
@@ -558,8 +559,9 @@ const ChannelWithContext = <
   const [loadingMore, setLoadingMore] = useState(false);
 
   const [loadingMoreRecent, setLoadingMoreRecent] = useState(false);
-  const [quotedMessage, setQuotedMessage] =
-    useState<boolean | MessageType<StreamChatGenerics>>(false);
+  const [quotedMessage, setQuotedMessage] = useState<boolean | MessageType<StreamChatGenerics>>(
+    false,
+  );
   const [thread, setThread] = useState<ThreadContextValue<StreamChatGenerics>['thread']>(
     threadProps || null,
   );
