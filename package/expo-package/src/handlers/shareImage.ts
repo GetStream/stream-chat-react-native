@@ -5,6 +5,6 @@ export const shareImage = async ({ type, url }: { type: string; url: string }) =
     await Sharing.shareAsync(url, { mimeType: type, UTI: type });
     return true;
   } catch (error) {
-    throw new Error('Sharing failed or cancelled...');
+    console.warn('Sharing failed or cancelled...');
   }
 };
