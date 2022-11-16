@@ -35,7 +35,7 @@ export const useConnectionRecovered = <
       });
       const cids = getAllChannelIds();
 
-      if (lastSyncedAt) {
+      if (lastSyncedAt && cids?.length) {
         try {
           const result = await client.sync(cids, new Date(lastSyncedAt).toISOString());
           const queries = result.events.reduce<PreparedQueries[]>((queries, event) => {
