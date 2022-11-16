@@ -37,7 +37,7 @@ export const useNewMessageNotification = <
             id: event.channel.id,
             type: event.channel.type,
           });
-          setChannels((channels) => uniqBy([channel, ...channels], 'cid'));
+          setChannels((channels) => (channels ? uniqBy([channel, ...channels], 'cid') : channels));
         }
       }
     };
