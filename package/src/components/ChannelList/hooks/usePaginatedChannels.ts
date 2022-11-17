@@ -221,7 +221,7 @@ export const usePaginatedChannels = <
     // when setChannels is used. setChannels is only recommended to be used for overriding
     // event handler. Thus instead of adding if check for channels === null, its better to
     // simply reassign types here.
-    setChannels: setChannels as React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
+    setChannels,
     staticChannelsActive,
   };
 };
