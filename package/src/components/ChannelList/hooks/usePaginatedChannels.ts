@@ -119,13 +119,13 @@ export const usePaginatedChannels = <
         queryType === 'loadChannels' && !staticChannelsActive && channels
           ? [...channels, ...channelQueryResponse]
           : channelQueryResponse.map((c) => {
-              const existingChannel = client.activeChannels[c.cid];
-              if (existingChannel) {
-                return existingChannel;
-              }
+            const existingChannel = client.activeChannels[c.cid];
+            if (existingChannel) {
+              return existingChannel;
+            }
 
-              return c;
-            });
+            return c;
+          });
 
       setChannels(newChannels);
       setStaticChannelsActive(false);
@@ -219,17 +219,16 @@ export const usePaginatedChannels = <
       setActiveQueryType(null);
     };
 
-    let unsubscribe: ReturnType<typeof DBSyncManager.onSyncStatusChange>;
+    let listener: ReturnType<typeof DBSyncManager.onSyncStatusChange>;
     if (enableOfflineSupport) {
       // Any time DB is synced, we need to update the UI with local DB channels first,
       // and then call queryChannels to ensure any new channels are added to UI.
-      const listener = DBSyncManager.onSyncStatusChange((syncStatus) => {
+      listener = DBSyncManager.onSyncStatusChange((syncStatus) => {
         if (syncStatus) {
           loadOfflineChannels();
           reloadList();
         }
       });
-      unsubscribe = listener.unsubscribe;
       // On start, load the channels from local db.
       loadOfflineChannels();
 
@@ -240,17 +239,17 @@ export const usePaginatedChannels = <
         reloadList();
       }
     } else {
-      const listener = client.on('connection.changed', async (event) => {
+      listener = client.on('connection.changed', async (event) => {
         if (event.online) {
           await refreshList();
           setForceUpdate((u) => u + 1);
         }
       });
-      unsubscribe = listener.unsubscribe;
+
       reloadList();
     }
 
-    return () => unsubscribe?.();
+    return () => listener?.unsubscribe?.();
   }, [filterStr, sortStr]);
 
   return {

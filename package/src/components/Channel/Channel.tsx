@@ -8,7 +8,6 @@ import {
   Channel as ChannelClass,
   ChannelState,
   Channel as ChannelType,
-  ConnectionChangeEvent,
   EventHandler,
   logChatPromiseExecution,
   MessageResponse,
