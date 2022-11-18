@@ -6623,10 +6623,10 @@ stream-buffers@2.2.x:
   version "0.0.0"
   uid ""
 
-stream-chat-react-native-core@5.4.2:
-  version "5.4.2"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.4.2.tgz#16637e592d1bae78bd4f688858612c689591403e"
-  integrity sha512-qCX7mdHvZBFTvjzTDJEH/RHE9sV1M3ileVZR51fOl9u92Vfj31C1U5WIo+Cdl8bnepSbW8zHLAFCD8MAwnxwsQ==
+stream-chat-react-native-core@5.4.3:
+  version "5.4.3"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.4.3.tgz#0342e0359774f5cf92fa6c581dff953922fab38f"
+  integrity sha512-CmZTrkp4iTNiJ56tM3PbTPOWZWoHLECSanI2UPjcdWvIzk5abgPLRK6HPC3qJW4sXeS2uCYAmwlhY9LCn6prIQ==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "4.4.5"
