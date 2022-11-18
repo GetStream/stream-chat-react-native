@@ -66,6 +66,9 @@ type SaveFileOptions = {
 type SaveFile = (options: SaveFileOptions) => Promise<string> | never;
 export let saveFile: SaveFile = fail;
 
+type SetClipboardString = (text: string) => Promise<void> | never;
+export let setClipboardString: SetClipboardString = fail;
+
 type ShareOptions = {
   type?: string;
   url?: string;
@@ -216,6 +219,7 @@ type Handlers = {
   pickDocument?: PickDocument;
   saveFile?: SaveFile;
   SDK?: string;
+  setClipboardString?: SetClipboardString;
   shareImage?: ShareImage;
   Sound?: SoundType;
   takePhoto?: TakePhoto;
@@ -277,6 +281,10 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 
   if (handlers.Video) {
     Video = handlers.Video;
+  }
+
+  if (handlers.setClipboardString !== undefined) {
+    setClipboardString = handlers.setClipboardString;
   }
 };
 

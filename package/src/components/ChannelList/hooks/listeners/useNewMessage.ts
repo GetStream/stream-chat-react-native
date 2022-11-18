@@ -10,7 +10,7 @@ import { moveChannelUp } from '../../utils';
 type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   {
     lockChannelOrder: boolean;
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>;
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>;
   };
 
 export const useNewMessage = <
@@ -24,6 +24,8 @@ export const useNewMessage = <
   useEffect(() => {
     const handleEvent = (event: Event<StreamChatGenerics>) => {
       setChannels((channels) => {
+        if (!channels) return channels;
+
         if (!lockChannelOrder && event.cid && event.channel_type && event.channel_id) {
           const targetChannelIndex = channels.findIndex((c) => c.cid === event.cid);
 

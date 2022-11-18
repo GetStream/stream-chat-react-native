@@ -17,8 +17,6 @@ import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { useMessageList } from '../hooks/useMessageList';
 
-jest.mock('react-native-fs', () => ({}));
-
 const clientUser = generateUser();
 let chatClient: StreamChat<DefaultGenerics> | StreamChat<DefaultStreamChatGenerics>;
 
