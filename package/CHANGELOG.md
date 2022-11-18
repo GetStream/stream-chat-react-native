@@ -1,5 +1,21 @@
 # Change Log
 
+## [5.5.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.4.3...v5.5.0) (2022-11-18)
+
+
+### Features
+
+* make the clipboard dependency optional ([#1781](https://github.com/GetStream/stream-chat-react-native/issues/1781)) ([1179a94](https://github.com/GetStream/stream-chat-react-native/commit/1179a94bee7b4bcbc9f32c1b51ff4215b3d32c39))
+
+
+### Bug Fixes
+
+* close db function is broken ([1781bbc](https://github.com/GetStream/stream-chat-react-native/commit/1781bbc4c29d385daaa918eef0bdfb28f85c3a97))
+* don't allow empty cids for sync api call ([#1814](https://github.com/GetStream/stream-chat-react-native/issues/1814)) ([a31d899](https://github.com/GetStream/stream-chat-react-native/commit/a31d899025b42cdc0e34c3b21813fa19b59b3cda))
+* drop unnecessary react-art dependency ([#1806](https://github.com/GetStream/stream-chat-react-native/issues/1806)) ([92ba10e](https://github.com/GetStream/stream-chat-react-native/commit/92ba10e9988f5674de03d0c7d7f46d83e32df169))
+* event handlers when channels is null on channel list component ([#1812](https://github.com/GetStream/stream-chat-react-native/issues/1812)) ([be7c6c0](https://github.com/GetStream/stream-chat-react-native/commit/be7c6c03654e81e3d3f5dfbcd739aff6db8935dc))
+* read receipts should not be removed due to message update ([#1808](https://github.com/GetStream/stream-chat-react-native/issues/1808)) ([9da4dba](https://github.com/GetStream/stream-chat-react-native/commit/9da4dba35dd06364cd1c8082b6b010f713508acd))
+
 ### [5.4.3](https://github.com/GetStream/stream-chat-react-native/compare/v5.4.2...v5.4.3) (2022-11-15)
 
 
