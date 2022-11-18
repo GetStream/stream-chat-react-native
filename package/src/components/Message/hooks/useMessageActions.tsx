@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Clipboard } from 'react-native';
+import { Alert } from 'react-native';
 
 import { useMessageActionHandlers } from './useMessageActionHandlers';
 
@@ -24,6 +24,7 @@ import {
   Unpin,
   UserDelete,
 } from '../../../icons';
+import { setClipboardString } from '../../../native';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { MessageStatusTypes } from '../../../utils/utils';
 
@@ -152,19 +153,21 @@ export const useMessageActions = <
     title: message.user?.banned ? t('Unblock User') : t('Block User'),
   };
 
-  const copyMessage: MessageActionType = {
-    // using depreciated Clipboard from react-native until expo supports the community version or their own
-    action: () => {
-      setOverlay('none');
-      if (handleCopy) {
-        handleCopy(message);
-      }
-      Clipboard.setString(message.text || '');
-    },
-    actionType: 'copyMessage',
-    icon: <Copy pathFill={grey} />,
-    title: t('Copy Message'),
-  };
+  const copyMessage: MessageActionType | undefined =
+    setClipboardString !== null
+      ? {
+          action: () => {
+            setOverlay('none');
+            if (handleCopy) {
+              handleCopy(message);
+            }
+            setClipboardString(message.text || '');
+          },
+          actionType: 'copyMessage',
+          icon: <Copy pathFill={grey} />,
+          title: t('Copy Message'),
+        }
+      : undefined;
 
   const deleteMessage: MessageActionType = {
     action: () => {

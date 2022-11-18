@@ -35,11 +35,12 @@ describe('useChannelUpdated', () => {
     } as unknown as StreamChat;
 
     const TestComponent = () => {
-      const [channels, setChannels] = useState<Channel[]>([mockChannel]);
+      const [channels, setChannels] = useState<Channel[] | null>([mockChannel]);
 
       useChannelUpdated({ setChannels });
 
       if (
+        channels &&
         channels[0].data?.own_capabilities &&
         Object.keys(channels[0].data?.own_capabilities as { [key: string]: boolean }).includes(
           'send_messages',

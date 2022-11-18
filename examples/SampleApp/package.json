@@ -1,6 +1,6 @@
 {
   "name": "sampleapp",
-  "version": "1.14.2",
+  "version": "1.14.3",
   "private": true,
   "repository": {
     "type": "git",
@@ -13,7 +13,6 @@
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint-fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
-    "postinstall": "patch-package",
     "extract-changelog": "FILTER_PATH='examples/SampleApp' TAG_FORMAT=$npm_package_name'@v${version}' node ../../release/extract-changelog.js",
     "bootstrap": "yarn install",
     "bootstrap-ci": "yarn install --frozen-lockfile",
@@ -36,7 +35,6 @@
     "@react-navigation/native": "5.9.4",
     "@react-navigation/stack": "5.14.5",
     "@stream-io/flat-list-mvcp": "0.10.2",
-    "patch-package": "6.4.7",
     "react": "18.1.0",
     "react-native": "0.70.1",
     "react-native-document-picker": "5.0.4",

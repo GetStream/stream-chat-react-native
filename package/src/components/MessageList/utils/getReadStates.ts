@@ -66,7 +66,7 @@ export const getReadStates = <
            * to the array of last reads for that message and remove
            * the user from the list of users being checked
            */
-          if (message.updated_at < member.last_read) {
+          if (message.created_at < member.last_read) {
             /**
              * if this is a direct message the length will be 1
              * as we already deleted the current user from the object
