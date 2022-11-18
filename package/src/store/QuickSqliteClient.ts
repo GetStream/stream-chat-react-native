@@ -39,10 +39,10 @@ export class QuickSqliteClient {
   };
 
   static closeDB = () => {
-    const { message, status } = sqlite.open(this.dbName, this.dbLocation);
+    const { message, status } = sqlite.close(this.dbName);
 
     if (status === DB_STATUS_ERROR) {
-      console.error(`Error opening database ${this.dbName}: ${message}`);
+      console.error(`Error closing database ${this.dbName}: ${message}`);
     }
   };
 
