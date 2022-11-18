@@ -1,5 +1,17 @@
 # Change Log
 
+### [1.14.4](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.14.3...sampleapp@v1.14.4) (2022-11-18)
+
+
+### Bug Fixes
+
+* **sample-app:** xcode 14 build issues ([7900ee7](https://github.com/GetStream/stream-chat-react-native/commit/7900ee720dd65684575a776cba6702d48b1bb3eb))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.14.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.14.2...sampleapp@v1.14.3) (2022-11-15)
 
 
