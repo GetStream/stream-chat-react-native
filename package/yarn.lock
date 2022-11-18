@@ -8608,10 +8608,10 @@ react-native-markdown-package@1.8.2:
     react-native-lightbox "^0.7.0"
     simple-markdown "^0.7.1"
 
-react-native-quick-sqlite@^4.0.3:
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/react-native-quick-sqlite/-/react-native-quick-sqlite-4.0.3.tgz#bd10439248cb20b5e773d3a618254bb45ec3be29"
-  integrity sha512-FnHJiQyPM7WXA2I+OiIF5Xrt7LGPjyrrQ68ITqFgblBSpgZaXNgHU3unDQZJS2Bgc6rBwly03eH2z+DTmkgFVg==
+react-native-quick-sqlite@5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-quick-sqlite/-/react-native-quick-sqlite-5.1.0.tgz#70c27df191b2397dcbf0fa112e16d97707e2431f"
+  integrity sha512-OAwMXVqK3sGA9Ez+uKLji6hbSJVg0+vW5rAsZJgnveEpIby9RK5Fq9bhoJ9Yxe8ERmAWMKkLYp4afXNyJGYBBQ==
 
 react-native-reanimated@2.7.0:
   version "2.7.0"
