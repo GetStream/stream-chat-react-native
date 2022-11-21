@@ -249,6 +249,7 @@ export type MessagesContextValue<
       messageInput?: string;
       threadMessages?: ChannelState<StreamChatGenerics>['threads'][string];
     },
+    isNewMessage?: boolean,
   ) => void;
   /**
    * Custom UI component to display enriched url preview.

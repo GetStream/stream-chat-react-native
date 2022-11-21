@@ -174,7 +174,7 @@ export const reactionData: ReactionData[] = [
  */
 const scrollToFirstUnreadThreshold = 4;
 
-const defaultThrottleInterval = 500;
+const defaultThrottleInterval = 0;
 const defaultDebounceInterval = 500;
 const throttleOptions = {
   leading: true,
@@ -1158,9 +1158,10 @@ const ChannelWithContext = <
   const updateMessage: MessagesContextValue<StreamChatGenerics>['updateMessage'] = (
     updatedMessage,
     extraState = {},
+    isNewMessage = false,
   ) => {
     if (channel) {
-      channel.state.addMessageSorted(updatedMessage, true);
+      channel.state.addMessageSorted(updatedMessage, !isNewMessage);
       if (thread && updatedMessage.parent_id) {
         extraState.threadMessages = channel.state.threads[updatedMessage.parent_id] || [];
         setThreadMessages(extraState.threadMessages);
@@ -1170,9 +1171,15 @@ const ChannelWithContext = <
     }
 
     if (enableOfflineSupport) {
-      dbApi.updateMessage({
-        message: updatedMessage,
-      });
+      if (isNewMessage) {
+        dbApi.updateMessage({
+          message: updatedMessage,
+        });
+      } else {
+        dbApi.upsertMessages({
+          messages: [updatedMessage],
+        });
+      }
     }
   };
 
@@ -1282,9 +1289,6 @@ const ChannelWithContext = <
       } else if (!enableOfflineSupport || retrying) {
         messageResponse = await channel.sendMessage(messageData);
       } else if (channel) {
-        dbApi.upsertMessages({
-          messages: [{ ...message, cid: channel.cid }],
-        });
         messageResponse = (await queueTask({
           client,
           task: {
@@ -1329,10 +1333,14 @@ const ChannelWithContext = <
       await reloadChannel();
     }
 
-    updateMessage(messagePreview, {
-      commands: [],
-      messageInput: '',
-    });
+    updateMessage(
+      messagePreview,
+      {
+        commands: [],
+        messageInput: '',
+      },
+      true,
+    );
 
     await sendMessageRequest(messagePreview);
   };
