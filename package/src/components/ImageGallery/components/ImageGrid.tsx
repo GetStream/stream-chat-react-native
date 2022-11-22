@@ -156,7 +156,6 @@ export const ImageGrid = <
   return (
     <BottomSheetFlatList<GridImageItem<StreamChatGenerics>>
       accessibilityLabel='Image Grid'
-      style={container}
       contentContainerStyle={[
         styles.contentContainer,
         { backgroundColor: white },
@@ -166,6 +165,7 @@ export const ImageGrid = <
       keyExtractor={(item, index) => `${item.uri}-${index}`}
       numColumns={numberOfImageGalleryGridColumns || 3}
       renderItem={renderItem}
+      style={container}
     />
   );
 };
