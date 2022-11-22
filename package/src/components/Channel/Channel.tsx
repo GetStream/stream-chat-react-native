@@ -174,7 +174,7 @@ export const reactionData: ReactionData[] = [
  */
 const scrollToFirstUnreadThreshold = 4;
 
-const defaultThrottleInterval = 0;
+const defaultThrottleInterval = 500;
 const defaultDebounceInterval = 500;
 const throttleOptions = {
   leading: true,
@@ -681,14 +681,14 @@ const ChannelWithContext = <
   ).current;
 
   const copyMessagesState = useRef(
-    throttle(
+    debounce(
       () => {
         if (channel) {
           setMessages([...channel.state.messages]);
         }
       },
       newMessageStateUpdateThrottleInterval,
-      throttleOptions,
+      debounceOptions,
     ),
   ).current;
 
