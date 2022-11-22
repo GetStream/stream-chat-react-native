@@ -686,6 +686,7 @@ export const defaultTheme: Theme = {
       rightContainer: {},
     },
     grid: {
+      container: {},
       contentContainer: {},
       gridAvatar: {},
       gridAvatarWrapper: {},

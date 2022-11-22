@@ -137,7 +137,7 @@ export const ImageGrid = <
     theme: {
       colors: { white },
       imageGallery: {
-        grid: { contentContainer },
+        grid: { container, contentContainer },
       },
     },
   } = useTheme();
@@ -156,6 +156,7 @@ export const ImageGrid = <
   return (
     <BottomSheetFlatList<GridImageItem<StreamChatGenerics>>
       accessibilityLabel='Image Grid'
+      style={container}
       contentContainerStyle={[
         styles.contentContainer,
         { backgroundColor: white },
