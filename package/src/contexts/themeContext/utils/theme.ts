@@ -182,6 +182,7 @@ export type Theme = {
       rightContainer: ViewStyle;
     };
     grid: {
+      container: ViewStyle;
       contentContainer: ViewStyle;
       gridAvatar: ImageStyle;
       gridAvatarWrapper: ViewStyle;
