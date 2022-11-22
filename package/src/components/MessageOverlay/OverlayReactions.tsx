@@ -319,7 +319,7 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
         keyExtractor={({ name }, index) => `${name}_${index}`}
         numColumns={numColumns}
         renderItem={renderItem}
-        style={[styles.flatListContainer, flatListContainer, { maxHeight: maxHeight / numColumns }]}
+        style={[styles.flatListContainer, { maxHeight: maxHeight / numColumns }, flatListContainer]}
       />
     </Animated.View>
   );

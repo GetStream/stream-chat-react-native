@@ -552,9 +552,9 @@ const MessageInputWithContext = <
       {triggerType && suggestions ? (
         <View
           style={[
-            suggestionListContainer,
             styles.suggestionsListContainer,
             { backgroundColor: white, bottom: height },
+            suggestionListContainer,
           ]}
         >
           <AutoCompleteSuggestionList

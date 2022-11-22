@@ -87,7 +87,7 @@ const MessageTextContainerWithContext = <
 
   return (
     <View
-      style={[styles.textContainer, textContainer, stylesProp.textContainer]}
+      style={[styles.textContainer, stylesProp.textContainer, textContainer]}
       testID='message-text-container'
     >
       {MessageText ? (

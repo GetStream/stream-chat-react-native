@@ -178,7 +178,7 @@ export const ImageGalleryFooterWithContext = <
       pointerEvents={'box-none'}
       style={styles.wrapper}
     >
-      <ReanimatedSafeAreaView style={[container, footerStyle, { backgroundColor: white }]}>
+      <ReanimatedSafeAreaView style={[container, { backgroundColor: white }, footerStyle]}>
         {photo.type === 'video' ? (
           videoControlElement ? (
             videoControlElement({ duration, onPlayPause, paused, progress })
@@ -191,7 +191,7 @@ export const ImageGalleryFooterWithContext = <
             />
           )
         ) : null}
-        <View style={[styles.innerContainer, innerContainer, { backgroundColor: white }]}>
+        <View style={[styles.innerContainer, { backgroundColor: white }, innerContainer]}>
           {leftElement ? (
             leftElement({ openGridView, photo, share, shareMenuOpen })
           ) : (
