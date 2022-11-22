@@ -178,7 +178,7 @@ export const ImageGalleryFooterWithContext = <
       pointerEvents={'box-none'}
       style={styles.wrapper}
     >
-      <ReanimatedSafeAreaView style={[container, { backgroundColor: white }, footerStyle]}>
+      <ReanimatedSafeAreaView style={[footerStyle, { backgroundColor: white }, container]}>
         {photo.type === 'video' ? (
           videoControlElement ? (
             videoControlElement({ duration, onPlayPause, paused, progress })
