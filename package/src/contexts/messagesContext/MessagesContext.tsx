@@ -250,6 +250,7 @@ export type MessagesContextValue<
       threadMessages?: ChannelState<StreamChatGenerics>['threads'][string];
     },
     isNewMessage?: boolean,
+    skipDBUpdate?: boolean,
   ) => void;
   /**
    * Custom UI component to display enriched url preview.

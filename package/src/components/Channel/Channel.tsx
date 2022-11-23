@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
-import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
+import { Alert, KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
 
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
@@ -181,7 +181,7 @@ const throttleOptions = {
   trailing: true,
 };
 const debounceOptions = {
-  leading: true,
+  leading: false,
   trailing: true,
 };
 
@@ -717,7 +717,7 @@ const ChannelWithContext = <
   ).current;
 
   const copyChannelState = useRef(
-    throttle(
+    debounce(
       () => {
         setLoading(false);
         if (channel) {
@@ -730,7 +730,7 @@ const ChannelWithContext = <
         }
       },
       stateUpdateThrottleInterval,
-      throttleOptions,
+      debounceOptions,
     ),
   ).current;
 
@@ -758,7 +758,10 @@ const ChannelWithContext = <
       } else if (event.type === 'message.read') {
         copyReadState();
       } else if (event.type === 'message.new') {
-        copyMessagesState();
+        const existingMessage = messages.find((m) => m.id === event.message.id);
+        if (!existingMessage) {
+          copyMessagesState();
+        }
       } else if (channel) {
         copyChannelState();
       }
@@ -778,6 +781,12 @@ const ChannelWithContext = <
        */
       clientSubscriptions.push(DBSyncManager.onSyncStatusChange(connectionChangedHandler));
       clientSubscriptions.push(
+        DBSyncManager.onMessageSent((message, status) => {
+          // @ts-ignore
+          updateMessage({ ...message, status }, {}, false, status !== MessageStatusTypes.RECEIVED);
+        }),
+      );
+      clientSubscriptions.push(
         client.on('channel.deleted', (event) => {
           if (event.cid === channel.cid) {
             setDeleted(true);
@@ -793,7 +802,7 @@ const ChannelWithContext = <
       clientSubscriptions.forEach((s) => s.unsubscribe());
       channelSubscriptions.forEach((s) => s.unsubscribe());
     };
-  }, [channelId, connectionChangedHandler, handleEvent]);
+  }, [channelId, connectionChangedHandler, handleEvent, updateMessage]);
 
   const channelQueryCallRef = useRef(
     async (
@@ -1159,6 +1168,7 @@ const ChannelWithContext = <
     updatedMessage,
     extraState = {},
     isNewMessage = false,
+    skipDBUpdate = false,
   ) => {
     if (channel) {
       channel.state.addMessageSorted(updatedMessage, !isNewMessage);
@@ -1170,7 +1180,7 @@ const ChannelWithContext = <
       setMessages([...channel.state.messages]);
     }
 
-    if (enableOfflineSupport) {
+    if (enableOfflineSupport && !skipDBUpdate) {
       if (isNewMessage) {
         dbApi.updateMessage({
           message: updatedMessage,

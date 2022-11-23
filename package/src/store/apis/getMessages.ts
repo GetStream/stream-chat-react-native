@@ -1,24 +1,28 @@
-import type { MessageResponse } from 'stream-chat';
+import type { ChannelMemberResponse, MessageResponse } from 'stream-chat';
 
-import { selectMessagesForChannels } from './queries/selectMessagesForChannels';
+import { selectMembersForChannels } from './queries/selectMembersForChannels';
+
+import { selectMessages } from './queries/selectMessages';
 
 import { selectReactionsForMessages } from './queries/selectReactionsForMessages';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
+import { mapStorableToMember } from '../mappers/mapStorableToMember';
 import { mapStorableToMessage } from '../mappers/mapStorableToMessage';
+import { QuickSqliteClient } from '../QuickSqliteClient';
+import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
 import type { TableRowJoinedUser } from '../types';
 
-export const getChannelMessages = <
+export const getMessages = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
-  channelIds,
   currentUserId,
+  messageIds,
 }: {
-  channelIds: string[];
   currentUserId: string;
+  messageIds: string[];
 }) => {
-  const messageRows = selectMessagesForChannels(channelIds);
-  const messageIds = messageRows.map(({ id }) => id);
+  const messageRows = selectMessages(messageIds);
 
   // Populate the message reactions.
   const reactionRows = selectReactionsForMessages(messageIds);
@@ -31,20 +35,11 @@ export const getChannelMessages = <
   });
 
   // Populate the messages.
-  const cidVsMessages: Record<string, MessageResponse<StreamChatGenerics>[]> = {};
-  messageRows.forEach((m) => {
-    if (!cidVsMessages[m.cid]) {
-      cidVsMessages[m.cid] = [];
-    }
-
-    cidVsMessages[m.cid].push(
-      mapStorableToMessage<StreamChatGenerics>({
-        currentUserId,
-        messageRow: m,
-        reactionRows: messageIdVsReactions[m.id],
-      }),
-    );
-  });
-
-  return cidVsMessages;
+  return messageRows.map((m) =>
+    mapStorableToMessage<StreamChatGenerics>({
+      currentUserId,
+      messageRow: m,
+      reactionRows: messageIdVsReactions[m.id],
+    }),
+  );
 };

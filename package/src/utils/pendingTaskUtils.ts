@@ -87,6 +87,7 @@ const executeTask = async <
   throw new Error('Invalid task type');
 };
 
+const restBeforeNextTask = () => new Promise((resolve) => setTimeout(resolve, 500));
 export const executePendingTasks = async <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
@@ -113,6 +114,7 @@ export const executePendingTasks = async <
     deletePendingTask({
       id: task.id,
     });
+    await restBeforeNextTask();
   }
 };
 
