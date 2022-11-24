@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View } from 'react-native';
 
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
@@ -8,12 +8,11 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Channel } from '../components/Channel/Channel';
 import { Chat } from '../components/Chat/Chat';
-import { MessageInputContext, MessagesContext } from '../contexts';
+import { MessagesContext } from '../contexts';
 import { deleteMessageApi } from '../mock-builders/api/deleteMessage';
 import { deleteReactionApi } from '../mock-builders/api/deleteReaction';
-import { erroredPostApi } from '../mock-builders/api/error';
+import { erroredDeleteApi, erroredPostApi } from '../mock-builders/api/error';
 import { getOrCreateChannelApi } from '../mock-builders/api/getOrCreateChannel';
-import { sendMessageApi } from '../mock-builders/api/sendMessage';
 import { sendReactionApi } from '../mock-builders/api/sendReaction';
 import { useMockedApis } from '../mock-builders/api/useMockedApis';
 import dispatchConnectionChangedEvent from '../mock-builders/event/connectionChanged';
@@ -123,86 +122,36 @@ describe('Optimistic Updates', () => {
   // the effect is called every time channelContext changes
   const CallbackEffectWithContext = ({ callback, children, context }) => {
     const ctx = useContext(context);
+    const [ready, setReady] = useState(false);
     useEffect(() => {
-      callback(ctx);
+      const call = async () => {
+        await callback(ctx);
+        setReady(true);
+      };
+
+      call();
     }, []);
+
+    if (!ready) return null;
 
     return children;
   };
-
-  describe('sending message', () => {
-    it('pending task should exist if sendMessage request fails', async () => {
-      const message = generateMessage();
-
-      // Just to suppress the log of error from api call, since we are expecting it to fails.
-      // There is no point in cluttering the test logs with those errors.
-      console.log = jest.fn();
-
-      const { getByTestId } = render(
-        <Chat client={chatClient} enableOfflineSupport>
-          <Channel channel={channel} initialValue={message.text}>
-            <CallbackEffectWithContext
-              callback={({ sendMessage }) => {
-                useMockedApis(chatClient, [erroredPostApi()]);
-                sendMessage(message);
-              }}
-              context={MessageInputContext}
-            >
-              <View testID='children' />
-            </CallbackEffectWithContext>
-          </Channel>
-        </Chat>,
-      );
-      await waitFor(() => expect(getByTestId('children')).toBeTruthy());
-      await waitFor(() => {
-        const pendingTasksRows = BetterSqlite.selectFromTable('pendingTasks');
-        const pendingTaskType = pendingTasksRows?.[0]?.type;
-        const pendingTaskPayload = JSON.parse(pendingTasksRows?.[0]?.payload || '{}');
-        expect(pendingTaskType).toBe('send-message');
-        expect(pendingTaskPayload[0].text).toBe(message.text);
-      });
-    });
-
-    it('pending task should be cleared if sendMessage request succeedes', async () => {
-      const message = generateMessage();
-      const { getByTestId } = render(
-        <Chat client={chatClient} enableOfflineSupport>
-          <Channel channel={channel} initialValue={message.text}>
-            <CallbackEffectWithContext
-              callback={({ sendMessage }) => {
-                useMockedApis(chatClient, [sendMessageApi(message)]);
-                sendMessage(message);
-              }}
-              context={MessageInputContext}
-            >
-              <View testID='children' />
-            </CallbackEffectWithContext>
-          </Channel>
-        </Chat>,
-      );
-      await waitFor(() => expect(getByTestId('children')).toBeTruthy());
-      await waitFor(() => {
-        const pendingTasksRows = BetterSqlite.selectFromTable('pendingTasks');
-        expect(pendingTasksRows.length).toBe(0);
-      });
-    });
-  });
 
   describe('delete message', () => {
     it('pending task should exist if deleteMessage request fails', async () => {
       const message = generateMessage();
 
-      // Just to suppress the log of error from api call, since we are expecting it to fails.
-      // There is no point in cluttering the test logs with those errors.
-      console.log = jest.fn();
-
       const { getByTestId } = render(
         <Chat client={chatClient} enableOfflineSupport>
           <Channel channel={channel} initialValue={message.text}>
             <CallbackEffectWithContext
-              callback={({ deleteMessage }) => {
+              callback={async ({ deleteMessage }) => {
                 useMockedApis(chatClient, [erroredPostApi()]);
-                deleteMessage(message);
+                try {
+                  await deleteMessage(message);
+                } catch (e) {
+                  // do nothing
+                }
               }}
               context={MessagesContext}
             >
@@ -250,17 +199,18 @@ describe('Optimistic Updates', () => {
     it('pending task should exist if sendReaction request fails', async () => {
       const reaction = generateReaction();
       const targetMessage = channel.state.messages[0];
-      // Just to suppress the log of error from api call, since we are expecting it to fails.
-      // There is no point in cluttering the test logs with those errors.
-      console.log = jest.fn();
 
       const { getByTestId } = render(
         <Chat client={chatClient} enableOfflineSupport>
           <Channel channel={channel}>
             <CallbackEffectWithContext
-              callback={({ sendReaction }) => {
+              callback={async ({ sendReaction }) => {
                 useMockedApis(chatClient, [erroredPostApi()]);
-                sendReaction(reaction.type, targetMessage.id);
+                try {
+                  await sendReaction(reaction.type, targetMessage.id);
+                } catch (e) {
+                  // do nothing
+                }
               }}
               context={MessagesContext}
             >
@@ -310,17 +260,18 @@ describe('Optimistic Updates', () => {
     it('pending task should exist if deleteReaction request fails', async () => {
       const reaction = generateReaction();
       const targetMessage = channel.state.messages[0];
-      // Just to suppress the log of error from api call, since we are expecting it to fails.
-      // There is no point in cluttering the test logs with those errors.
-      console.log = jest.fn();
 
       const { getByTestId } = render(
         <Chat client={chatClient} enableOfflineSupport>
           <Channel channel={channel}>
             <CallbackEffectWithContext
-              callback={({ deleteReaction }) => {
+              callback={async ({ deleteReaction }) => {
                 useMockedApis(chatClient, [erroredPostApi()]);
-                deleteReaction(reaction.type, targetMessage.id);
+                try {
+                  await deleteReaction(reaction.type, targetMessage.id);
+                } catch (e) {
+                  // do nothing
+                }
               }}
               context={MessagesContext}
             >
@@ -347,9 +298,9 @@ describe('Optimistic Updates', () => {
         <Chat client={chatClient} enableOfflineSupport>
           <Channel channel={channel}>
             <CallbackEffectWithContext
-              callback={({ deleteReaction }) => {
+              callback={async ({ deleteReaction }) => {
                 useMockedApis(chatClient, [deleteReactionApi(targetMessage, reaction)]);
-                deleteReaction(reaction.type, targetMessage.id);
+                await deleteReaction(reaction.type, targetMessage.id);
               }}
               context={MessagesContext}
             >
@@ -359,6 +310,7 @@ describe('Optimistic Updates', () => {
         </Chat>,
       );
       await waitFor(() => expect(getByTestId('children')).toBeTruthy());
+
       await waitFor(() => {
         const pendingTasksRows = BetterSqlite.selectFromTable('pendingTasks');
         expect(pendingTasksRows.length).toBe(0);
@@ -367,32 +319,31 @@ describe('Optimistic Updates', () => {
   });
 
   it('pending task should be executed after connection is recovered', async () => {
-    const message = generateMessage();
+    const message = channel.state.messages[0];
     const reaction = generateReaction();
-
-    // Just to suppress the log of error from api call, since we are expecting it to fails.
-    // There is no point in cluttering the test logs with those errors.
-    console.log = jest.fn();
 
     const { getByTestId } = render(
       <Chat client={chatClient} enableOfflineSupport>
         <Channel channel={channel} initialValue={message.text}>
           <CallbackEffectWithContext
-            callback={async ({ sendMessage }) => {
+            callback={async ({ deleteMessage, sendReaction }) => {
+              useMockedApis(chatClient, [erroredDeleteApi()]);
+              try {
+                await deleteMessage(reaction);
+              } catch (e) {
+                // do nothing
+              }
+
               useMockedApis(chatClient, [erroredPostApi()]);
-              await sendMessage(message);
-            }}
-            context={MessageInputContext}
-          >
-            <CallbackEffectWithContext
-              callback={async ({ sendReaction }) => {
-                useMockedApis(chatClient, [erroredPostApi()]);
+              try {
                 await sendReaction(reaction.type, message.id);
-              }}
-              context={MessagesContext}
-            >
-              <View testID='children' />
-            </CallbackEffectWithContext>
+              } catch (e) {
+                // do nothing
+              }
+            }}
+            context={MessagesContext}
+          >
+            <View testID='children' />
           </CallbackEffectWithContext>
         </Channel>
       </Chat>,
@@ -404,13 +355,13 @@ describe('Optimistic Updates', () => {
       expect(pendingTasksRows.length).toBe(2);
     });
 
-    channel.sendMessage = jest.fn();
+    chatClient.deleteMessage = jest.fn();
     channel.sendReaction = jest.fn();
 
     act(() => dispatchConnectionChangedEvent(chatClient, true));
 
     await waitFor(() => {
-      expect(channel.sendMessage).toHaveBeenCalled();
+      expect(chatClient.deleteMessage).toHaveBeenCalled();
       expect(channel.sendReaction).toHaveBeenCalled();
     });
   });
