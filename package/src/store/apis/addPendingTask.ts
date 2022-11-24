@@ -15,7 +15,7 @@ export const addPendingTask = (task: PendingTask) => {
     const query = createDeleteQuery('pendingTasks', {
       channelId,
       channelType,
-      payload: JSON.stringify(payload),
+      payload,
       type,
     });
 
