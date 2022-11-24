@@ -1,7 +1,5 @@
 import type { AxiosError } from 'axios';
-import type { APIErrorResponse, MessageResponse, StreamChat } from 'stream-chat';
-
-import { executePendingTasks } from './pendingTaskUtils';
+import type { APIErrorResponse, StreamChat } from 'stream-chat';
 
 import { handleEventToSyncDB } from '../components/Chat/hooks/handleEventToSyncDB';
 import { getAllChannelIds, getLastSyncedAt, upsertLastSyncedAt } from '../store/apis';
@@ -9,12 +7,10 @@ import { getAllChannelIds, getLastSyncedAt, upsertLastSyncedAt } from '../store/
 import { addPendingTask } from '../store/apis/addPendingTask';
 
 import { deletePendingTask } from '../store/apis/deletePendingTask';
-import { getMessages } from '../store/apis/getMessages';
 import { getPendingTasks } from '../store/apis/getPendingTasks';
 import { QuickSqliteClient } from '../store/QuickSqliteClient';
 import type { PendingTask, PreparedQueries } from '../store/types';
-import type { DefaultStreamChatGenerics, ValueOf } from '../types/types';
-import { MessageStatusTypes } from '../utils/utils';
+import type { DefaultStreamChatGenerics } from '../types/types';
 /**
  * DBSyncManager has the responsibility to sync the channel states
  * within local database whenever possible.
@@ -39,9 +35,6 @@ const restBeforeNextTask = () => new Promise((resolve) => setTimeout(resolve, 50
 export class DBSyncManager {
   static syncStatus = false;
   static listeners: Array<(status: boolean) => void> = [];
-  static messageSentListeners: Array<
-    (message: MessageResponse, status: ValueOf<typeof MessageStatusTypes>) => void
-  > = [];
   static client: StreamChat | null = null;
 
   /**
@@ -89,18 +82,6 @@ export class DBSyncManager {
     return {
       unsubscribe: () => {
         this.listeners = this.listeners.filter((el) => el !== listener);
-      },
-    };
-  };
-
-  static onMessageSent = (
-    listener: (message: MessageResponse, status: ValueOf<typeof MessageStatusTypes>) => void,
-  ) => {
-    this.messageSentListeners.push(listener);
-
-    return {
-      unsubscribe: () => {
-        this.messageSentListeners = this.messageSentListeners.filter((el) => el !== listener);
       },
     };
   };
@@ -192,48 +173,6 @@ export class DBSyncManager {
 
     if (task.type === 'delete-message') {
       return await client.deleteMessage(...task.payload);
-    }
-
-    if (task.type === 'send-message') {
-      const message = task.payload[0];
-
-      if (!message.id || !this.client?.user?.id) return;
-
-      const messageResponse = getMessages({
-        currentUserId: this.client?.user?.id,
-        messageIds: [message.id],
-      })?.[0];
-      console.log('sending ', messageResponse);
-      // @ts-ignore
-      this.messageSentListeners.forEach((l) => l(messageResponse, MessageStatusTypes.SENDING));
-      try {
-        if (message.attachments?.length) {
-          for (let i = 0; i < message.attachments?.length; i++) {
-            const attachment = message.attachments[i];
-            if (attachment.type === 'image' && attachment.image_url) {
-              const response = await channel.sendImage(attachment.image_url);
-              attachment.image_url = response.file;
-            }
-
-            if (
-              (attachment.type === 'file' ||
-                attachment.type === 'audio' ||
-                attachment.type === 'video') &&
-              attachment.asset_url
-            ) {
-              const response = await channel.sendFile(attachment.asset_url);
-              attachment.asset_url = response.file;
-            }
-          }
-        }
-        const response = await channel.sendMessage(...task.payload);
-        this.messageSentListeners.forEach((l) => l(response.message, MessageStatusTypes.RECEIVED));
-        return response;
-      } catch (e) {
-        // @ts-ignore
-        this.messageSentListeners.forEach((l) => l(messageResponse, MessageStatusTypes.FAILED));
-        throw e;
-      }
     }
 
     throw new Error('Invalid task type');

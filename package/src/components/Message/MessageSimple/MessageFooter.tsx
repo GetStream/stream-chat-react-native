@@ -21,8 +21,8 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import { Eye } from '../../../icons';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
 import { MessageStatusTypes } from '../../../utils/utils';
+import type { MessageType } from '../../MessageList/hooks/useMessageList';
 
 type MessageFooterComponentProps = {
   formattedDate: string | Date;

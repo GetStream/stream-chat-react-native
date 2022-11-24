@@ -1,9 +1,10 @@
 import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
 
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
 
+import { lookup } from 'mime-types';
 import {
   Channel as ChannelClass,
   ChannelState,
@@ -758,10 +759,7 @@ const ChannelWithContext = <
       } else if (event.type === 'message.read') {
         copyReadState();
       } else if (event.type === 'message.new') {
-        const existingMessage = messages.find((m) => m.id === event.message.id);
-        if (!existingMessage) {
-          copyMessagesState();
-        }
+        copyMessagesState();
       } else if (channel) {
         copyChannelState();
       }
@@ -781,12 +779,6 @@ const ChannelWithContext = <
        */
       clientSubscriptions.push(DBSyncManager.onSyncStatusChange(connectionChangedHandler));
       clientSubscriptions.push(
-        DBSyncManager.onMessageSent((message, status) => {
-          // @ts-ignore
-          updateMessage({ ...message, status }, {}, false, status !== MessageStatusTypes.RECEIVED);
-        }),
-      );
-      clientSubscriptions.push(
         client.on('channel.deleted', (event) => {
           if (event.cid === channel.cid) {
             setDeleted(true);
@@ -802,7 +794,7 @@ const ChannelWithContext = <
       clientSubscriptions.forEach((s) => s.unsubscribe());
       channelSubscriptions.forEach((s) => s.unsubscribe());
     };
-  }, [channelId, connectionChangedHandler, handleEvent, updateMessage]);
+  }, [channelId, connectionChangedHandler, handleEvent]);
 
   const channelQueryCallRef = useRef(
     async (
@@ -1167,29 +1159,15 @@ const ChannelWithContext = <
   const updateMessage: MessagesContextValue<StreamChatGenerics>['updateMessage'] = (
     updatedMessage,
     extraState = {},
-    isNewMessage = false,
-    skipDBUpdate = false,
   ) => {
     if (channel) {
-      channel.state.addMessageSorted(updatedMessage, !isNewMessage);
+      channel.state.addMessageSorted(updatedMessage, true);
       if (thread && updatedMessage.parent_id) {
         extraState.threadMessages = channel.state.threads[updatedMessage.parent_id] || [];
         setThreadMessages(extraState.threadMessages);
       }
 
       setMessages([...channel.state.messages]);
-    }
-
-    if (enableOfflineSupport && !skipDBUpdate) {
-      if (isNewMessage) {
-        dbApi.updateMessage({
-          message: updatedMessage,
-        });
-      } else {
-        dbApi.upsertMessages({
-          messages: [updatedMessage],
-        });
-      }
     }
   };
 
@@ -1262,12 +1240,20 @@ const ChannelWithContext = <
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       created_at,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      deleted_at,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       html,
       id,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      latest_reactions,
       mentioned_users,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      own_reactions,
       parent_id,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       quoted_message,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      reaction_counts,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       reactions,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -1285,7 +1271,7 @@ const ChannelWithContext = <
 
     const messageData = {
       attachments,
-      id: retrying ? undefined : id,
+      id,
       mentioned_users: mentioned_users?.map((mentionedUser) => mentionedUser.id) || [],
       parent_id,
       text,
@@ -1296,24 +1282,18 @@ const ChannelWithContext = <
       let messageResponse = {} as SendMessageAPIResponse<StreamChatGenerics>;
       if (doSendMessageRequest) {
         messageResponse = await doSendMessageRequest(channel?.cid || '', messageData);
-      } else if (!enableOfflineSupport || retrying) {
-        messageResponse = await channel.sendMessage(messageData);
       } else if (channel) {
-        messageResponse = (await queueTask({
-          client,
-          task: {
-            channelId: channel.id,
-            channelType: channel.type,
-            // @ts-ignore
-            messageId: messageData.id,
-            payload: [messageData],
-            type: 'send-message',
-          },
-        })) as SendMessageAPIResponse<StreamChatGenerics>;
+        messageResponse = await channel.sendMessage(messageData);
       }
 
       if (messageResponse.message) {
         messageResponse.message.status = MessageStatusTypes.RECEIVED;
+
+        if (enableOfflineSupport) {
+          dbApi.updateMessage({
+            message: { ...messageResponse.message, cid: channel.cid },
+          });
+        }
         if (retrying) {
           replaceMessage(message, messageResponse.message);
         } else {
@@ -1324,6 +1304,12 @@ const ChannelWithContext = <
       console.log(err);
       message.status = MessageStatusTypes.FAILED;
       updateMessage({ ...message, cid: channel.cid });
+
+      if (enableOfflineSupport) {
+        dbApi.updateMessage({
+          message: { ...message, cid: channel.cid },
+        });
+      }
     }
   };
 
@@ -1343,14 +1329,20 @@ const ChannelWithContext = <
       await reloadChannel();
     }
 
-    updateMessage(
-      messagePreview,
-      {
-        commands: [],
-        messageInput: '',
-      },
-      true,
-    );
+    updateMessage(messagePreview, {
+      commands: [],
+      messageInput: '',
+    });
+
+    if (enableOfflineSupport) {
+      // While sending a message, we add the message to local db with failed status, so that
+      // if app gets closed before message gets sent and next time user opens the app
+      // then user can see that message in failed state and can retry.
+      // If succesfull, it will be updated with received status.
+      dbApi.upsertMessages({
+        messages: [{ ...messagePreview, cid: channel.cid, status: MessageStatusTypes.FAILED }],
+      });
+    }
 
     await sendMessageRequest(messagePreview);
   };
@@ -1364,6 +1356,34 @@ const ChannelWithContext = <
     };
 
     updateMessage(statusPendingMessage);
+
+    if (statusPendingMessage.attachments?.length) {
+      for (let i = 0; i < statusPendingMessage.attachments?.length; i++) {
+        // TODO: abstract the following logic to a separate function for DRY within MessageInputContext
+        const attachment = statusPendingMessage.attachments[i];
+        if (attachment.type === 'image' && attachment.image_url) {
+          console.log(attachment.image_url);
+          const filename = attachment.image_url.replace(
+            /^(file:\/\/|content:\/\/|assets-library:\/\/)/,
+            '',
+          );
+          const contentType = lookup(filename) || 'multipart/form-data';
+
+          const response = await channel.sendImage(attachment.image_url, filename, contentType);
+          attachment.image_url = response.file;
+        }
+
+        if (
+          (attachment.type === 'file' ||
+            attachment.type === 'audio' ||
+            attachment.type === 'video') &&
+          attachment.asset_url
+        ) {
+          const response = await channel.sendFile(attachment.asset_url);
+          attachment.asset_url = response.file;
+        }
+      }
+    }
     await sendMessageRequest(statusPendingMessage, true);
   };
 

@@ -119,13 +119,13 @@ export const usePaginatedChannels = <
         queryType === 'loadChannels' && !staticChannelsActive && channels
           ? [...channels, ...channelQueryResponse]
           : channelQueryResponse.map((c) => {
-            const existingChannel = client.activeChannels[c.cid];
-            if (existingChannel) {
-              return existingChannel;
-            }
+              const existingChannel = client.activeChannels[c.cid];
+              if (existingChannel) {
+                return existingChannel;
+              }
 
-            return c;
-          });
+              return c;
+            });
 
       setChannels(newChannels);
       setStaticChannelsActive(false);
