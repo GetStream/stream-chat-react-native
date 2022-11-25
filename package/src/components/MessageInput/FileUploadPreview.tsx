@@ -3,6 +3,7 @@ import { FlatList, I18nManager, StyleSheet, Text, TouchableOpacity, View } from 
 
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
+import { ChatContextValue, useChatContext } from '../../contexts';
 import {
   FileUpload,
   MessageInputContextValue,
@@ -126,7 +127,8 @@ type FileUploadPreviewPropsWithContext<
   MessageInputContextValue<StreamChatGenerics>,
   'fileUploads' | 'removeFile' | 'uploadFile' | 'setFileUploads'
 > &
-  Pick<MessagesContextValue<StreamChatGenerics>, 'AudioAttachment' | 'FileAttachmentIcon'>;
+  Pick<MessagesContextValue<StreamChatGenerics>, 'AudioAttachment' | 'FileAttachmentIcon'> &
+  Pick<ChatContextValue<StreamChatGenerics>, 'isOnline' | 'enableOfflineSupport'>;
 
 const FileUploadPreviewWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -135,8 +137,10 @@ const FileUploadPreviewWithContext = <
 ) => {
   const {
     AudioAttachment,
+    enableOfflineSupport,
     FileAttachmentIcon,
     fileUploads,
+    isOnline,
     removeFile,
     setFileUploads,
     uploadFile,
@@ -211,7 +215,7 @@ const FileUploadPreviewWithContext = <
   } = useTheme();
 
   const renderItem = ({ index, item }: { index: number; item: FileUpload }) => {
-    const indicatorType = getIndicatorTypeForFileState(item.state);
+    const indicatorType = getIndicatorTypeForFileState(item.state, isOnline, enableOfflineSupport);
 
     const lastIndexOfDot = item.file.name.lastIndexOf('.');
 
@@ -389,6 +393,7 @@ export const FileUploadPreview = <
 >(
   props: FileUploadPreviewProps<StreamChatGenerics>,
 ) => {
+  const { enableOfflineSupport, isOnline } = useChatContext<StreamChatGenerics>();
   const { fileUploads, removeFile, setFileUploads, uploadFile } =
     useMessageInputContext<StreamChatGenerics>();
   const { AudioAttachment, FileAttachmentIcon } = useMessagesContext<StreamChatGenerics>();
@@ -403,6 +408,7 @@ export const FileUploadPreview = <
         setFileUploads,
         uploadFile,
       }}
+      {...{ enableOfflineSupport, isOnline }}
       {...props}
     />
   );

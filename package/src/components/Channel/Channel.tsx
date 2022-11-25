@@ -81,7 +81,7 @@ import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
 import { DBSyncManager } from '../../utils/DBSyncManager';
 import { dropPendingTasks, queueTask } from '../../utils/pendingTaskUtils';
 import { removeReactionFromLocalState } from '../../utils/removeReactionFromLocalState';
-import { generateRandomId, MessageStatusTypes, ReactionData } from '../../utils/utils';
+import { generateRandomId, isLocalUrl, MessageStatusTypes, ReactionData } from '../../utils/utils';
 import { Attachment as AttachmentDefault } from '../Attachment/Attachment';
 import { AttachmentActions as AttachmentActionsDefault } from '../Attachment/AttachmentActions';
 import { AudioAttachment as AudioAttachmentDefault } from '../Attachment/AudioAttachment';
@@ -1229,56 +1229,109 @@ const ChannelWithContext = <
     return preview;
   };
 
+  const uploadPendingAttachments = async (message: MessageResponse<StreamChatGenerics>) => {
+    const updatedMessage = { ...message };
+    if (updatedMessage.attachments?.length) {
+      for (let i = 0; i < updatedMessage.attachments?.length; i++) {
+        // TODO: abstract the following logic to a separate function for DRY within MessageInputContext
+        const attachment = updatedMessage.attachments[i];
+        const file = attachment.originalFile;
+        // check if image_url is not a remote url
+        if (
+          attachment.type === 'image' &&
+          file?.uri &&
+          attachment.image_url &&
+          isLocalUrl(attachment.image_url)
+        ) {
+          const filename = file.uri.replace(/^(file:\/\/|content:\/\/|assets-library:\/\/)/, '');
+          const contentType = lookup(filename) || 'multipart/form-data';
+
+          const uploadResponse = doImageUploadRequest
+            ? await doImageUploadRequest(file, channel)
+            : await channel.sendImage(file?.uri, filename, contentType);
+
+          attachment.image_url = uploadResponse.file;
+          delete attachment.originalFile;
+
+          dbApi.updateMessage({
+            message: { ...updatedMessage, cid: channel.cid },
+          });
+        }
+
+        if (
+          (attachment.type === 'file' ||
+            attachment.type === 'audio' ||
+            attachment.type === 'video') &&
+          attachment.asset_url &&
+          isLocalUrl(attachment.asset_url) &&
+          file?.uri
+        ) {
+          const response = doDocUploadRequest
+            ? await doDocUploadRequest(file, channel)
+            : await channel.sendFile(file.uri, file.name, file.type);
+          attachment.asset_url = response.file;
+          delete attachment.originalFile;
+          dbApi.updateMessage({
+            message: { ...updatedMessage, cid: channel.cid },
+          });
+        }
+      }
+    }
+
+    return updatedMessage;
+  };
+
   const sendMessageRequest = async (
     message: MessageResponse<StreamChatGenerics>,
     retrying?: boolean,
   ) => {
-    const {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      __html,
-      attachments,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      created_at,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      deleted_at,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      html,
-      id,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      latest_reactions,
-      mentioned_users,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      own_reactions,
-      parent_id,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      quoted_message,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      reaction_counts,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      reactions,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      status,
-      text,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      type,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      updated_at,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      user,
-      ...extraFields
-    } = message;
-    if (!channel.id) return;
-
-    const messageData = {
-      attachments,
-      id,
-      mentioned_users: mentioned_users?.map((mentionedUser) => mentionedUser.id) || [],
-      parent_id,
-      text,
-      ...extraFields,
-    } as StreamMessage<StreamChatGenerics>;
-
     try {
+      const updatedMessage = await uploadPendingAttachments(message);
+      const {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        __html,
+        attachments,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        created_at,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        deleted_at,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        html,
+        id,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        latest_reactions,
+        mentioned_users,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        own_reactions,
+        parent_id,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        quoted_message,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        reaction_counts,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        reactions,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        status,
+        text,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        type,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        updated_at,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        user,
+        ...extraFields
+      } = updatedMessage;
+      if (!channel.id) return;
+
+      const messageData = {
+        attachments,
+        id,
+        mentioned_users: mentioned_users?.map((mentionedUser) => mentionedUser.id) || [],
+        parent_id,
+        text,
+        ...extraFields,
+      } as StreamMessage<StreamChatGenerics>;
+
       let messageResponse = {} as SendMessageAPIResponse<StreamChatGenerics>;
       if (doSendMessageRequest) {
         messageResponse = await doSendMessageRequest(channel?.cid || '', messageData);
@@ -1357,33 +1410,6 @@ const ChannelWithContext = <
 
     updateMessage(statusPendingMessage);
 
-    if (statusPendingMessage.attachments?.length) {
-      for (let i = 0; i < statusPendingMessage.attachments?.length; i++) {
-        // TODO: abstract the following logic to a separate function for DRY within MessageInputContext
-        const attachment = statusPendingMessage.attachments[i];
-        if (attachment.type === 'image' && attachment.image_url) {
-          console.log(attachment.image_url);
-          const filename = attachment.image_url.replace(
-            /^(file:\/\/|content:\/\/|assets-library:\/\/)/,
-            '',
-          );
-          const contentType = lookup(filename) || 'multipart/form-data';
-
-          const response = await channel.sendImage(attachment.image_url, filename, contentType);
-          attachment.image_url = response.file;
-        }
-
-        if (
-          (attachment.type === 'file' ||
-            attachment.type === 'audio' ||
-            attachment.type === 'video') &&
-          attachment.asset_url
-        ) {
-          const response = await channel.sendFile(attachment.asset_url);
-          attachment.asset_url = response.file;
-        }
-      }
-    }
     await sendMessageRequest(statusPendingMessage, true);
   };
 

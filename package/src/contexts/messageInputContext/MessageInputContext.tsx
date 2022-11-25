@@ -672,14 +672,16 @@ export const MessageInputProvider = <
       if (
         image.state === FileState.UPLOADED ||
         image.state === FileState.FINISHED ||
-        enableOfflineSupport
+        (enableOfflineSupport && image.state === FileState.UPLOAD_FAILED)
       ) {
+        // @ts-ignore
         attachments.push({
           fallback: image.file.name,
           image_url: image.url,
           mime_type: mime_type ? mime_type : undefined,
           original_height: image.height,
           original_width: image.width,
+          originalFile: image.file,
           type: 'image',
         });
       }
@@ -700,13 +702,14 @@ export const MessageInputProvider = <
       if (
         file.state === FileState.UPLOADED ||
         file.state === FileState.FINISHED ||
-        enableOfflineSupport
+        (enableOfflineSupport && file.state === FileState.UPLOAD_FAILED)
       ) {
         if (file.file.type?.startsWith('image/')) {
           attachments.push({
             fallback: file.file.name,
             image_url: file.url,
             mime_type: mime_type ? mime_type : undefined,
+            originalFile: file.file,
             type: 'image',
           });
         } else if (file.file.type?.startsWith('audio/')) {
@@ -715,6 +718,7 @@ export const MessageInputProvider = <
             duration: file.file.duration,
             file_size: file.file.size,
             mime_type: file.file.type,
+            originalFile: file.file,
             title: file.file.name,
             type: 'audio',
           });
@@ -724,6 +728,7 @@ export const MessageInputProvider = <
             duration: file.file.duration,
             file_size: file.file.size,
             mime_type: file.file.type,
+            originalFile: file.file,
             thumb_url: file.thumb_url,
             title: file.file.name,
             type: 'video',
@@ -733,6 +738,7 @@ export const MessageInputProvider = <
             asset_url: file.url || file.file.uri,
             file_size: file.file.size,
             mime_type: file.file.type,
+            originalFile: file.file,
             title: file.file.name,
             type: 'file',
           });

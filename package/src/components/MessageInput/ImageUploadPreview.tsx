@@ -11,6 +11,7 @@ import {
 
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
+import { ChatContextValue, useChatContext } from '../../contexts';
 import {
   ImageUpload,
   MessageInputContextValue,
@@ -78,7 +79,8 @@ type ImageUploadPreviewPropsWithContext<
 > = Pick<
   MessageInputContextValue<StreamChatGenerics>,
   'imageUploads' | 'removeImage' | 'uploadImage'
->;
+> &
+  Pick<ChatContextValue<StreamChatGenerics>, 'isOnline' | 'enableOfflineSupport'>;
 
 export type ImageUploadPreviewProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -91,7 +93,7 @@ const ImageUploadPreviewWithContext = <
 >(
   props: ImageUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { imageUploads, removeImage, uploadImage } = props;
+  const { enableOfflineSupport, imageUploads, isOnline, removeImage, uploadImage } = props;
 
   const {
     theme: {
@@ -129,7 +131,7 @@ const ImageUploadPreviewWithContext = <
   };
 
   const renderItem = ({ index, item }: ImageUploadPreviewItem) => {
-    const indicatorType = getIndicatorTypeForFileState(item.state);
+    const indicatorType = getIndicatorTypeForFileState(item.state, isOnline, enableOfflineSupport);
     const itemMarginForIndex = index === imageUploads.length - 1 ? { marginRight: 8 } : {};
 
     return (
@@ -200,15 +202,40 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   prevProps: ImageUploadPreviewPropsWithContext<StreamChatGenerics>,
   nextProps: ImageUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { imageUploads: prevImageUploads } = prevProps;
-  const { imageUploads: nextImageUploads } = nextProps;
+  const {
+    enableOfflineSupport: prevEnableOfflineSupport,
+    imageUploads: prevImageUploads,
+    isOnline: prevIsOnline,
+  } = prevProps;
+  const {
+    enableOfflineSupport: nextEnableOfflineSupport,
+    imageUploads: nextImageUploads,
+    isOnline: nextIsOnline,
+  } = nextProps;
 
-  return (
+  const isOnlineEqual = prevIsOnline === nextIsOnline;
+
+  if (!isOnlineEqual) {
+    return false;
+  }
+
+  const enableOfflineSupportEqual = prevEnableOfflineSupport === nextEnableOfflineSupport;
+
+  if (!enableOfflineSupportEqual) {
+    return false;
+  }
+
+  const imageUploadsEqual =
     prevImageUploads.length === nextImageUploads.length &&
     prevImageUploads.every(
       (prevImageUpload, index) => prevImageUpload.state === nextImageUploads[index].state,
-    )
-  );
+    );
+
+  if (!imageUploadsEqual) {
+    return false;
+  }
+
+  return true;
 };
 
 const MemoizedImageUploadPreviewWithContext = React.memo(
@@ -224,11 +251,13 @@ export const ImageUploadPreview = <
 >(
   props: ImageUploadPreviewProps<StreamChatGenerics>,
 ) => {
+  const { enableOfflineSupport, isOnline } = useChatContext<StreamChatGenerics>();
   const { imageUploads, removeImage, uploadImage } = useMessageInputContext<StreamChatGenerics>();
 
   return (
     <MemoizedImageUploadPreviewWithContext
       {...{ imageUploads, removeImage, uploadImage }}
+      {...{ enableOfflineSupport, isOnline }}
       {...props}
     />
   );
