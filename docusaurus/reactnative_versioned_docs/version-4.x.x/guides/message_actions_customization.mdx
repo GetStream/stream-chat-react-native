@@ -42,7 +42,7 @@ type MessageAction = {
 };
 ```
 
-You can customize each one of the default actions using props on the [`Channel component`](../) as shown further on this page. The channel component makes these props available in the `MessagesContext` context.
+You can customize each one of the default actions using props on the [`Channel component`](../core-components/channel) as shown further on this page. The channel component makes these props available in the `MessagesContext` context.
 
 The channel component accepts a prop called `messageActions`. You can use this prop as a callback function to render message actions selectively.
 
@@ -148,7 +148,7 @@ import { messageActions as defaultMessageActions, Mute as MuteIcon } from 'strea
 
 ## How to customize message action UI
 
-[`OverlayProvider`](../) component accepts props called - `MessageActionList` and `MessageActionListItem`. They both serve a different purpose.
+[`OverlayProvider`](../../core-components/overlay-provider/) component accepts props called - `MessageActionList` and `MessageActionListItem`. They both serve a different purpose.
 
 - `MessageActionList` - Allows full customizability of the message action list and allows users to add/define their own message action along with the style they prefer for the application.
 - `MessageActionListItem` - Allows customizability of an item in a message action list.
