@@ -1,3 +1,5 @@
+import React from 'react';
+
 import AudioVideoPlayer from '../optionalDependencies/Video';
 
 export const Sound = {
