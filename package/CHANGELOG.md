@@ -1,5 +1,12 @@
 # Change Log
 
+### [5.5.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.5.0...v5.5.1) (2022-11-25)
+
+
+### Bug Fixes
+
+* import React Dependency into Video / Sound files ([#1828](https://github.com/GetStream/stream-chat-react-native/issues/1828)) ([47f2e60](https://github.com/GetStream/stream-chat-react-native/commit/47f2e601595ce5afcf245077a1fdadc9c6832343))
+
 ## [5.5.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.4.3...v5.5.0) (2022-11-18)
 
 
