@@ -197,7 +197,7 @@ const FooterWithSenderName = () => {
 </TabItem>
 </Tabs>
 
-Let's check a similar example for [`ChannelList`](../core-component/channel_list.mdx) component. To customize avatar component of channel, within `ChannelList`, you had to
+Let's check a similar example for [`ChannelList`](../core-components/channel_list.mdx) component. To customize avatar component of channel, within `ChannelList`, you had to
 first customize `Preview` component which renders list item, and then provide avatar component on it. In v3, you can simply pass the `PreviewAvatar`
 component on `ChannelList` without having to go through prop drilling. Additionally you have access to [`ChannelsContext`](../contexts/channels_context.mdx)
 which provides access to all the necessary values and methods which `ChannelList` relies on.
@@ -262,7 +262,7 @@ Rendering of reactions on message and reaction picker has changed as part of v3.
 - Reactions were rendered as simple text emojis in v2, while reactions get rendered as SVG icons in v3.
 - Reaction picker used to show up as popup right above message in v2, on the other hand reaction picker will show up in overlay in v3.
 
-Please check the guide on [Message with custom reactions](../guides/message-customization/#message-with-custom-reactions) for details.
+Please check the guide on [Message with custom reactions](./message-customizations/#message-with-custom-reactions) for details.
 
 Additionally please take a look at following props to customize reactions related components:
 
