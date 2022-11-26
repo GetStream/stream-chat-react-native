@@ -170,13 +170,17 @@ const GalleryWithContext = <
   };
 
   const imagesAndVideos = [...(images || []), ...(videos || [])];
+  const imagesAndVideosValue = `${images?.length}${videos?.length}${images
+    ?.map((i) => `${i.image_url}${i.thumb_url}`)
+    .join('')}${videos?.map((i) => `${i.image_url}${i.thumb_url}`).join('')}`;
+
   const { height, invertedDirections, thumbnailGrid, width } = useMemo(
     () =>
       buildGallery({
         images: imagesAndVideos,
         sizeConfig,
       }),
-    [imagesAndVideos.length],
+    [imagesAndVideosValue],
   );
 
   if (!imagesAndVideos?.length) return null;

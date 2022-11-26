@@ -1270,6 +1270,9 @@ const ChannelWithContext = <
             ? await doDocUploadRequest(file, channel)
             : await channel.sendFile(file.uri, file.name, file.type);
           attachment.asset_url = response.file;
+          if (response.thumb_url) {
+            attachment.thumb_url = response.thumb_url;
+          }
           delete attachment.originalFile;
           dbApi.updateMessage({
             message: { ...updatedMessage, cid: channel.cid },
