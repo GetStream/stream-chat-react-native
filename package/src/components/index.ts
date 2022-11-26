@@ -108,7 +108,7 @@ export * from './Message/MessageSimple/MessageTextContainer';
 export * from './Message/MessageSimple/ReactionList';
 export * from './Message/MessageSimple/utils/renderText';
 export * from './Message/utils/messageActions';
-export * from './Message/utils/removeReservedFields';
+export * from '../utils/removeReservedFields';
 
 export * from './MessageInput/AttachButton';
 export * from './MessageInput/CommandsButton';

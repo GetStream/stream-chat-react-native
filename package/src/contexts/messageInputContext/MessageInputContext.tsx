@@ -38,6 +38,7 @@ import type { UploadProgressIndicatorProps } from '../../components/MessageInput
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import { compressImage, getLocalAssetUri, pickDocument } from '../../native';
 import type { Asset, DefaultStreamChatGenerics, File, UnknownType } from '../../types/types';
+import { removeReservedFields } from '../../utils/removeReservedFields';
 import {
   ACITriggerSettings,
   ACITriggerSettingsParams,
@@ -764,7 +765,12 @@ export const MessageInputProvider = <
       // TODO: Remove this line and show an error when submit fails
       value.clearEditingState();
 
-      const updateMessagePromise = value.editMessage(updatedMessage).then(value.clearEditingState);
+      const updateMessagePromise = value
+        .editMessage(
+          // @ts-ignore
+          removeReservedFields(updatedMessage),
+        )
+        .then(value.clearEditingState);
       resetInput(attachments);
       logChatPromiseExecution(updateMessagePromise, 'update message');
 

@@ -1,5 +1,5 @@
-import type { DefaultStreamChatGenerics } from '../../../types/types';
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
+import type { MessageType } from '../components/MessageList/hooks/useMessageList';
+import type { DefaultStreamChatGenerics } from '../types/types';
 
 export const removeReservedFields = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -12,7 +12,11 @@ export const removeReservedFields = <
     'config',
     'created_at',
     'created_by',
-    'id',
+    'deleted_at',
+    'i18n',
+    'latest_reactions',
+    'own_reactions',
+    'reaction_counts',
     'last_message_at',
     'member_count',
     'type',
