@@ -208,7 +208,7 @@ export class DBSyncManager {
     }
   };
 
-  dropPendingTasks = (conditions: { messageId: string }) => {
+  static dropPendingTasks = (conditions: { messageId: string }) => {
     const tasks = getPendingTasks(conditions);
 
     for (const task of tasks) {

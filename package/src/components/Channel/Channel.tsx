@@ -79,7 +79,6 @@ import * as dbApi from '../../store/apis';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
 import { DBSyncManager } from '../../utils/DBSyncManager';
-import { dropPendingTasks, queueTask } from '../../utils/pendingTaskUtils';
 import { removeReactionFromLocalState } from '../../utils/removeReactionFromLocalState';
 import { generateRandomId, isLocalUrl, MessageStatusTypes, ReactionData } from '../../utils/utils';
 import { Attachment as AttachmentDefault } from '../Attachment/Attachment';
@@ -1591,7 +1590,7 @@ const ChannelWithContext = <
 
     setMessages(channel.state.messages);
 
-    await queueTask<StreamChatGenerics>({
+    await DBSyncManager.queueTask<StreamChatGenerics>({
       client,
       task: {
         channelId: channel.id,
@@ -1615,7 +1614,7 @@ const ChannelWithContext = <
     }
 
     if (message.status === MessageStatusTypes.FAILED) {
-      dropPendingTasks({ messageId: message.id });
+      DBSyncManager.dropPendingTasks({ messageId: message.id });
       removeMessage(message);
     } else {
       updateMessage({
@@ -1625,7 +1624,7 @@ const ChannelWithContext = <
         type: 'deleted',
       });
 
-      const data = await queueTask<StreamChatGenerics>({
+      const data = await DBSyncManager.queueTask<StreamChatGenerics>({
         client,
         task: {
           channelId: channel.id,
@@ -1666,7 +1665,7 @@ const ChannelWithContext = <
 
     setMessages(channel.state.messages);
 
-    await queueTask({
+    await DBSyncManager.queueTask<StreamChatGenerics>({
       client,
       task: {
         channelId: channel.id,
