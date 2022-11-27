@@ -181,7 +181,7 @@ const throttleOptions = {
   trailing: true,
 };
 const debounceOptions = {
-  leading: false,
+  leading: true,
   trailing: true,
 };
 
@@ -681,14 +681,14 @@ const ChannelWithContext = <
   ).current;
 
   const copyMessagesState = useRef(
-    debounce(
+    throttle(
       () => {
         if (channel) {
           setMessages([...channel.state.messages]);
         }
       },
       newMessageStateUpdateThrottleInterval,
-      debounceOptions,
+      throttleOptions,
     ),
   ).current;
 
@@ -717,7 +717,7 @@ const ChannelWithContext = <
   ).current;
 
   const copyChannelState = useRef(
-    debounce(
+    throttle(
       () => {
         setLoading(false);
         if (channel) {
@@ -730,7 +730,7 @@ const ChannelWithContext = <
         }
       },
       stateUpdateThrottleInterval,
-      debounceOptions,
+      throttleOptions,
     ),
   ).current;
 
@@ -1232,7 +1232,6 @@ const ChannelWithContext = <
     const updatedMessage = { ...message };
     if (updatedMessage.attachments?.length) {
       for (let i = 0; i < updatedMessage.attachments?.length; i++) {
-        // TODO: abstract the following logic to a separate function for DRY within MessageInputContext
         const attachment = updatedMessage.attachments[i];
         const file = attachment.originalFile;
         // check if image_url is not a remote url
