@@ -16,7 +16,6 @@ export type PreparedQueries = [string] | [string, Array<any>];
 export type PendingTaskTypes = {
   deleteMessage: 'delete-message';
   deleteReaction: 'delete-reaction';
-  sendMessage: 'send-message';
   sendReaction: 'send-reaction';
 };
 
@@ -29,10 +28,6 @@ export type PendingTask = {
   | {
       payload: Parameters<Channel['sendReaction']>;
       type: PendingTaskTypes['sendReaction'];
-    }
-  | {
-      payload: Parameters<Channel['sendMessage']>;
-      type: PendingTaskTypes['sendMessage'];
     }
   | {
       payload: Parameters<StreamChat['deleteMessage']>;

@@ -59,31 +59,6 @@ const executeTask = async <
     return await client.deleteMessage(...task.payload);
   }
 
-  if (task.type === 'send-message') {
-    const message = task.payload[0];
-    if (message.attachments?.length) {
-      for (let i = 0; i < message.attachments?.length; i++) {
-        const attachment = message.attachments[i];
-        if (attachment.type === 'image' && attachment.image_url) {
-          const response = await channel.sendImage(attachment.image_url);
-          attachment.image_url = response.file;
-        }
-
-        if (
-          (attachment.type === 'file' ||
-            attachment.type === 'audio' ||
-            attachment.type === 'video') &&
-          attachment.asset_url
-        ) {
-          const response = await channel.sendFile(attachment.asset_url);
-          attachment.asset_url = response.file;
-        }
-      }
-    }
-
-    return await channel.sendMessage(...task.payload);
-  }
-
   throw new Error('Invalid task type');
 };
 
