@@ -491,21 +491,20 @@ export const MessageInputProvider = <
       return true;
     }
 
-    for (const image of imageUploads) {
-      if ((!image || image.state === FileState.UPLOAD_FAILED) && !enableOfflineSupport) {
-        continue;
-      }
-
-      if (image.state === FileState.UPLOADING) {
-        // TODO: show error to user that they should wait until image is uploaded
-        return false;
+    const imagesAndFiles = [...imageUploads, ...fileUploads];
+    if (enableOfflineSupport) {
+      // Allow only if none of the attachments have unsupported status
+      for (const file of imagesAndFiles) {
+        if (file.state === FileState.NOT_SUPPORTED) {
+          return false;
+        }
       }
 
       return true;
     }
 
-    for (const file of fileUploads) {
-      if ((!file || file.state === FileState.UPLOAD_FAILED) && !enableOfflineSupport) {
+    for (const file of imagesAndFiles) {
+      if (!file || file.state === FileState.UPLOAD_FAILED) {
         continue;
       }
       if (file.state === FileState.UPLOADING) {

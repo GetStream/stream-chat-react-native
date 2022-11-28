@@ -64,15 +64,16 @@ type IndicatorStatesMap = Record<ValueOf<typeof FileState>, Progress | null>;
 
 export const getIndicatorTypeForFileState = (
   fileState: FileStateValue,
-  isOnline: boolean,
   enableOfflineSupport: boolean,
 ): Progress | null => {
   const indicatorMap: IndicatorStatesMap = {
-    [FileState.UPLOADING]: ProgressIndicatorTypes.IN_PROGRESS,
-    [FileState.UPLOAD_FAILED]:
-      !isOnline && enableOfflineSupport
-        ? ProgressIndicatorTypes.INACTIVE
-        : ProgressIndicatorTypes.RETRY,
+    [FileState.UPLOADING]: enableOfflineSupport
+      ? ProgressIndicatorTypes.INACTIVE
+      : ProgressIndicatorTypes.IN_PROGRESS,
+    // If offline support is disabled, then there is no need
+    [FileState.UPLOAD_FAILED]: enableOfflineSupport
+      ? ProgressIndicatorTypes.INACTIVE
+      : ProgressIndicatorTypes.RETRY,
     [FileState.NOT_SUPPORTED]: ProgressIndicatorTypes.NOT_SUPPORTED,
     [FileState.UPLOADED]: ProgressIndicatorTypes.INACTIVE,
     [FileState.FINISHED]: ProgressIndicatorTypes.INACTIVE,

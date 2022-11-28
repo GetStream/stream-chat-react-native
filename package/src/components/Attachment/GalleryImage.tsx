@@ -13,6 +13,8 @@ export type GalleryImageWithContextProps<
 export const GalleryImageWithContext: React.FC<GalleryImageWithContextProps> = (props) => {
   const { ImageComponent = Image, uri, ...rest } = props;
 
+  // Caching image components such as FastImage will not work with local images.
+  // This for the case of local uris, we use the default Image component.
   if (!isLocalUrl(uri)) {
     return (
       <ImageComponent

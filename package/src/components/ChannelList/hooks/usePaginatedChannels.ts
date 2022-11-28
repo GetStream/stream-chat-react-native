@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
 
+import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRefContext/ActiveChannelsRefContext';
+
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
@@ -48,7 +50,7 @@ export const usePaginatedChannels = <
   const { client } = useChatContext<StreamChatGenerics>();
   const [channels, setChannels] = useState<Channel<StreamChatGenerics>[] | null>(null);
   const [staticChannelsActive, setStaticChannelsActive] = useState<boolean>(false);
-
+  const activeChannels = useActiveChannelsRefContext();
   const [error, setError] = useState<Error>();
   const [hasNextPage, setHasNextPage] = useState(true);
   const lastRefresh = useRef(Date.now());
@@ -99,17 +101,17 @@ export const usePaginatedChannels = <
     };
 
     try {
-      const activeChannelIds = [];
+      const activeChannelIds: string[] = [];
       for (const cid in client.activeChannels) {
         if (client.activeChannels[cid].id) {
+          // @ts-ignore
           activeChannelIds.push(client.activeChannels[cid].id);
         }
       }
 
       // TODO: Think about the implications of this.
       const channelQueryResponse = await client.queryChannels(filters, sort, newOptions, {
-        // @ts-ignore
-        skipInitialization: activeChannelIds,
+        skipInitialization: enableOfflineSupport ? activeChannelIds : activeChannels.current,
       });
       if (isQueryStale() || !isMountedRef.current) {
         return;
