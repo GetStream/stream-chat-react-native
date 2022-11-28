@@ -623,6 +623,62 @@ export const MessageInputProvider = <
     setText('');
   };
 
+  const mapImageUploadToAttachment = (image: ImageUpload) => {
+    const mime_type: string | boolean = lookup(image.file.filename as string);
+    return {
+      fallback: image.file.name,
+      image_url: image.url,
+      mime_type: mime_type ? mime_type : undefined,
+      original_height: image.height,
+      original_width: image.width,
+      originalFile: image.file,
+      type: 'image',
+    } as Attachment;
+  };
+
+  const mapFileUploadToAttachment = (file: FileUpload) => {
+    const mime_type: string | boolean = lookup(file.file.name as string);
+    if (file.file.type?.startsWith('image/')) {
+      return {
+        fallback: file.file.name,
+        image_url: file.url,
+        mime_type: mime_type ? mime_type : undefined,
+        originalFile: file.file,
+        type: 'image',
+      };
+    } else if (file.file.type?.startsWith('audio/')) {
+      return {
+        asset_url: file.url || file.file.uri,
+        duration: file.file.duration,
+        file_size: file.file.size,
+        mime_type: file.file.type,
+        originalFile: file.file,
+        title: file.file.name,
+        type: 'audio',
+      };
+    } else if (file.file.type?.startsWith('video/')) {
+      return {
+        asset_url: file.url || file.file.uri,
+        duration: file.file.duration,
+        file_size: file.file.size,
+        mime_type: file.file.type,
+        originalFile: file.file,
+        thumb_url: file.thumb_url,
+        title: file.file.name,
+        type: 'video',
+      };
+    } else {
+      return {
+        asset_url: file.url || file.file.uri,
+        file_size: file.file.size,
+        mime_type: file.file.type,
+        originalFile: file.file,
+        title: file.file.name,
+        type: 'file',
+      };
+    }
+  };
+
   // TODO: Figure out why this is async, as it doesn't await any promise.
   // eslint-disable-next-line require-await
   const sendMessage = async () => {
@@ -648,6 +704,14 @@ export const MessageInputProvider = <
 
     const attachments = [] as Attachment<StreamChatGenerics>[];
     for (const image of imageUploads) {
+      if (enableOfflineSupport) {
+        if (image.state === FileState.NOT_SUPPORTED) {
+          return;
+        }
+        attachments.push(mapImageUploadToAttachment(image));
+        continue;
+      }
+
       if ((!image || image.state === FileState.UPLOAD_FAILED) && !enableOfflineSupport) {
         continue;
       }
@@ -667,28 +731,21 @@ export const MessageInputProvider = <
       }
 
       // To get the mime type of the image from the file name and send it as an response for an image
-      const mime_type: string | boolean = lookup(image.file.filename as string);
-
-      if (
-        image.state === FileState.UPLOADED ||
-        image.state === FileState.FINISHED ||
-        (enableOfflineSupport && image.state === FileState.UPLOAD_FAILED)
-      ) {
-        // @ts-ignore
-        attachments.push({
-          fallback: image.file.name,
-          image_url: image.url,
-          mime_type: mime_type ? mime_type : undefined,
-          original_height: image.height,
-          original_width: image.width,
-          originalFile: image.file,
-          type: 'image',
-        });
+      if (image.state === FileState.UPLOADED || image.state === FileState.FINISHED) {
+        attachments.push(mapImageUploadToAttachment(image));
       }
     }
 
     for (const file of fileUploads) {
-      if ((!file || file.state === FileState.UPLOAD_FAILED) && !enableOfflineSupport) {
+      if (enableOfflineSupport) {
+        if (file.state === FileState.NOT_SUPPORTED) {
+          return;
+        }
+        attachments.push(mapFileUploadToAttachment(file));
+        continue;
+      }
+
+      if (!file || file.state === FileState.UPLOAD_FAILED) {
         continue;
       }
 
@@ -697,52 +754,9 @@ export const MessageInputProvider = <
         sending.current = false;
         return;
       }
-      const mime_type: string | boolean = lookup(file.file.name as string);
 
-      if (
-        file.state === FileState.UPLOADED ||
-        file.state === FileState.FINISHED ||
-        (enableOfflineSupport && file.state === FileState.UPLOAD_FAILED)
-      ) {
-        if (file.file.type?.startsWith('image/')) {
-          attachments.push({
-            fallback: file.file.name,
-            image_url: file.url,
-            mime_type: mime_type ? mime_type : undefined,
-            originalFile: file.file,
-            type: 'image',
-          });
-        } else if (file.file.type?.startsWith('audio/')) {
-          attachments.push({
-            asset_url: file.url || file.file.uri,
-            duration: file.file.duration,
-            file_size: file.file.size,
-            mime_type: file.file.type,
-            originalFile: file.file,
-            title: file.file.name,
-            type: 'audio',
-          });
-        } else if (file.file.type?.startsWith('video/')) {
-          attachments.push({
-            asset_url: file.url || file.file.uri,
-            duration: file.file.duration,
-            file_size: file.file.size,
-            mime_type: file.file.type,
-            originalFile: file.file,
-            thumb_url: file.thumb_url,
-            title: file.file.name,
-            type: 'video',
-          });
-        } else {
-          attachments.push({
-            asset_url: file.url || file.file.uri,
-            file_size: file.file.size,
-            mime_type: file.file.type,
-            originalFile: file.file,
-            title: file.file.name,
-            type: 'file',
-          });
-        }
+      if (file.state === FileState.UPLOADED || file.state === FileState.FINISHED) {
+        attachments.push(mapFileUploadToAttachment(file));
       }
     }
 
