@@ -83,13 +83,12 @@ export class QuickSqliteClient {
   };
 
   static executeSql = (query: string, params?: string[]) => {
-    this.openDB();
-
     if (this.isQuickSqliteV4) {
       return QuickSqliteClient_v4.executeSql(query, params);
     }
 
     try {
+      this.openDB();
       const { rows } = sqlite.execute(DB_NAME, query, params);
       this.closeDB();
 
