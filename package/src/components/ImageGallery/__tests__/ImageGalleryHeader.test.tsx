@@ -90,9 +90,12 @@ describe('ImageGalleryHeader', () => {
         </ImageGalleryContext.Provider>
       </OverlayProvider>,
     );
-    expect(queryAllByText('Left element')).toHaveLength(1);
-    expect(queryAllByText('Right element')).toHaveLength(1);
-    expect(queryAllByText('Center element')).toHaveLength(1);
+
+    await waitFor(() => {
+      expect(queryAllByText('Left element')).toHaveLength(1);
+      expect(queryAllByText('Right element')).toHaveLength(1);
+      expect(queryAllByText('Center element')).toHaveLength(1);
+    });
   });
 
   it('render image gallery header component with custom Close Icon component', async () => {
@@ -132,7 +135,9 @@ describe('ImageGalleryHeader', () => {
         </ImageGalleryContext.Provider>
       </OverlayProvider>,
     );
-    expect(queryAllByText('Close Icon element')).toHaveLength(1);
+    await waitFor(() => {
+      expect(queryAllByText('Close Icon element')).toHaveLength(1);
+    });
   });
 
   it('should trigger the hideOverlay function on button onPress', async () => {

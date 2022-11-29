@@ -4,6 +4,7 @@ import type { TextInput } from 'react-native';
 
 import { act, renderHook } from '@testing-library/react-hooks';
 
+import { waitFor } from '@testing-library/react-native';
 import type { AppSettingsAPIResponse, StreamChat } from 'stream-chat';
 
 import { ChatContextValue, ChatProvider } from '../../../contexts/chatContext/ChatContext';
@@ -167,7 +168,7 @@ describe('MessageInputContext', () => {
     expect(result.current.text).toBe('/');
   });
 
-  it('openMentionPicker works', () => {
+  it('openMentionPicker works', async () => {
     const { result } = renderHook(() => useMessageInputContext(), {
       initialProps: {
         editing: true,
@@ -180,7 +181,9 @@ describe('MessageInputContext', () => {
       result.current.openMentionsPicker();
     });
 
-    expect(result.current.text).toBe('@');
+    await waitFor(() => {
+      expect(result.current.text).toBe('@');
+    });
   });
 
   it('openAttachmentPicker works', async () => {
@@ -203,6 +206,8 @@ describe('MessageInputContext', () => {
       result.current.openAttachmentPicker();
     });
 
-    expect(await result.current.pickFile()).toBe(undefined);
+    await waitFor(async () => {
+      expect(await result.current.pickFile()).toBe(undefined);
+    });
   });
 });

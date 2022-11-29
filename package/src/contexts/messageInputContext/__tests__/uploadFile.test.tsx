@@ -3,6 +3,8 @@ import { act } from 'react-test-renderer';
 
 import { renderHook } from '@testing-library/react-hooks';
 
+import { waitFor } from '@testing-library/react-native';
+
 import { generateFileUploadPreview } from '../../../mock-builders/generator/attachment';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import {
@@ -31,7 +33,7 @@ const Wrapper = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultS
 );
 
 describe("MessageInputContext's uploadFile", () => {
-  it('uploadFile works', () => {
+  it('uploadFile works', async () => {
     const doDocUploadRequestMock = jest.fn().mockResolvedValue({
       file: {
         url: '',
@@ -46,16 +48,20 @@ describe("MessageInputContext's uploadFile", () => {
       wrapper: Wrapper,
     });
 
-    expect(result.current.fileUploads).toHaveLength(0);
+    await waitFor(() => {
+      expect(result.current.fileUploads).toHaveLength(0);
+    });
 
     act(() => {
       result.current.uploadFile({ newFile: generateFileUploadPreview({ state: '' }) });
     });
 
-    expect(doDocUploadRequestMock).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(doDocUploadRequestMock).toHaveBeenCalled();
+    });
   });
 
-  it('uploadFile catch block gets executed', () => {
+  it('uploadFile catch block gets executed', async () => {
     const doDocUploadRequestMock = jest.fn().mockResolvedValue(new Error('This is an error'));
     const { result } = renderHook(() => useMessageInputContext(), {
       initialProps: {
@@ -65,12 +71,16 @@ describe("MessageInputContext's uploadFile", () => {
       wrapper: Wrapper,
     });
 
-    expect(result.current.fileUploads).toHaveLength(0);
+    await waitFor(() => {
+      expect(result.current.fileUploads).toHaveLength(0);
+    });
 
     act(() => {
       result.current.uploadFile({ newFile: generateFileUploadPreview({ state: '' }) });
     });
 
-    expect(result.current.fileUploads.length).toBe(0);
+    await waitFor(() => {
+      expect(result.current.fileUploads.length).toBe(0);
+    });
   });
 });
