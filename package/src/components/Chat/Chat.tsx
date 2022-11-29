@@ -196,7 +196,7 @@ const ChatWithContext = <
 
   const setActiveChannel = (newChannel?: Channel<StreamChatGenerics>) => setChannel(newChannel);
 
-  const appSettings = useAppSettings(client, isOnline);
+  const appSettings = useAppSettings(client, isOnline, enableOfflineSupport);
 
   const chatContext = useCreateChatContext({
     appSettings,
