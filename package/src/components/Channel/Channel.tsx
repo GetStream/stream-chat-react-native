@@ -1192,6 +1192,13 @@ const ChannelWithContext = <
     text,
     ...extraFields
   }: Partial<StreamMessage<StreamChatGenerics>>) => {
+    // Exclude following properties from message.user within message preview,
+    // since they could be long arrays and have no meaning as sender of message.
+    // Storing such large value within user's table may cause sqlite queries to crash.
+    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { channel_mutes, devices, mutes, ...messageUser } = client.user;
+
     const preview = {
       __html: text,
       attachments,
@@ -1209,7 +1216,7 @@ const ChannelWithContext = <
       type: 'regular',
       user: {
         id: client.userID,
-        ...client.user,
+        ...messageUser,
       },
       ...extraFields,
     } as unknown as MessageResponse<StreamChatGenerics>;
