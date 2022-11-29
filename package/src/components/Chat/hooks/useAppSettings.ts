@@ -8,7 +8,7 @@ export const useAppSettings = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   client: StreamChat<StreamChatGenerics>,
-  isOnline: boolean,
+  isOnline: boolean | null,
 ): AppSettingsAPIResponse | null => {
   const [appSettings, setAppSettings] = useState<AppSettingsAPIResponse | null>(null);
   const isMounted = useRef(true);

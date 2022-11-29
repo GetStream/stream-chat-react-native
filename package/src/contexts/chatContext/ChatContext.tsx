@@ -36,7 +36,7 @@ export type ChatContextValue<
   connectionRecovering: boolean;
   enableOfflineSupport: boolean;
   ImageComponent: React.ComponentType<ImageProps>;
-  isOnline: boolean;
+  isOnline: boolean | null;
   mutedUsers: Mute<StreamChatGenerics>[];
   /**
    * @param newChannel Channel to set as active.
