@@ -201,6 +201,7 @@ export const tables: Tables = {
   },
   userSyncStatus: {
     columns: {
+      appSettings: 'TEXT',
       lastSyncedAt: 'TEXT',
       userId: 'TEXT',
     },
@@ -302,6 +303,7 @@ export type Schema = {
     updatedAt?: string;
   };
   userSyncStatus: {
+    appSettings: string;
     lastSyncedAt: string;
     userId: string;
   };

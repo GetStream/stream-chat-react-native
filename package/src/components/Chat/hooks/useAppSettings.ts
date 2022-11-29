@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 
 import type { AppSettingsAPIResponse, StreamChat } from 'stream-chat';
-import type { DefaultStreamChatGenerics } from 'stream-chat-react-native';
 
+import * as dbApi from '../../../store/apis';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 export const useAppSettings = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
@@ -13,11 +14,23 @@ export const useAppSettings = <
   const isMounted = useRef(true);
 
   useEffect(() => {
-    async function getAppSettings() {
+    async function enforeAppSettings() {
+      if (!client.userID) return;
+
+      if (!isOnline) {
+        const appSettings = dbApi.getAppSettings({ currentUserId: client.userID });
+        setAppSettings(appSettings);
+        return;
+      }
+
       try {
         const appSettings = await client.getAppSettings();
         if (isMounted.current) {
           setAppSettings(appSettings);
+          dbApi.upsertAppSettings({
+            appSettings,
+            currentUserId: client.userID as string,
+          });
         }
       } catch (error: unknown) {
         if (error instanceof Error) {
@@ -26,9 +39,7 @@ export const useAppSettings = <
       }
     }
 
-    if (isOnline && client.userID) {
-      getAppSettings();
-    }
+    enforeAppSettings();
 
     return () => {
       isMounted.current = false;
