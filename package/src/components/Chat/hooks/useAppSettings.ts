@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 
 import type { AppSettingsAPIResponse, StreamChat } from 'stream-chat';
-import type { DefaultStreamChatGenerics } from 'stream-chat-react-native';
+
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useAppSettings = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
