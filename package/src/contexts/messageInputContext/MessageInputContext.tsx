@@ -575,6 +575,13 @@ export const MessageInputProvider = <
   };
 
   const pickFile = async () => {
+    if (pickDocument === null) {
+      console.log(
+        'The file picker is not installed. Check our Getting Started documentation to install it.',
+      );
+      return;
+    }
+
     if (numberOfUploads >= value.maxNumberOfFiles) {
       Alert.alert('Maximum number of files reached');
       return;

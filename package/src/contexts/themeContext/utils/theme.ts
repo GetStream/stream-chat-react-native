@@ -182,6 +182,7 @@ export type Theme = {
       rightContainer: ViewStyle;
     };
     grid: {
+      container: ViewStyle;
       contentContainer: ViewStyle;
       gridAvatar: ImageStyle;
       gridAvatarWrapper: ViewStyle;
@@ -685,6 +686,7 @@ export const defaultTheme: Theme = {
       rightContainer: {},
     },
     grid: {
+      container: {},
       contentContainer: {},
       gridAvatar: {},
       gridAvatarWrapper: {},
