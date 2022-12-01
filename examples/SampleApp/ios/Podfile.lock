@@ -440,7 +440,7 @@ PODS:
     - React-Core
   - react-native-netinfo (6.0.0):
     - React-Core
-  - react-native-quick-sqlite (4.0.7):
+  - react-native-quick-sqlite (5.1.0):
     - React
     - React-callinvoker
     - React-Core
@@ -885,7 +885,7 @@ SPEC CHECKSUMS:
   react-native-document-picker: 1a7518132d4a06b67f459be9bb1464a567d2b3b4
   react-native-image-resizer: d9fb629a867335bdc13230ac2a58702bb8c8828f
   react-native-netinfo: e849fc21ca2f4128a5726c801a82fc6f4a6db50d
-  react-native-quick-sqlite: 1207a3a3c184b059a78385d206f3e6e2436730f7
+  react-native-quick-sqlite: a7bd4139fb07194ef8534d1cc14c1aec6daa4d84
   react-native-safe-area-context: f0906bf8bc9835ac9a9d3f97e8bde2a997d8da79
   react-native-video: bb6f12a7198db53b261fefb5d609dc77417acc8b
   React-perflogger: 48c6b363e867d64b682e84f80ca45636bd65e19c
@@ -921,6 +921,6 @@ SPEC CHECKSUMS:
   Yoga: 6c8252e38d65aa387daee699eacf027e055e0b31
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 29a2b01e336727d3fdffe3e322924f2e5fdc30fd
+PODFILE CHECKSUM: dcdf2b600767187da4a87e0aec4e799785d74855
 
 COCOAPODS: 1.11.2

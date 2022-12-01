@@ -3,13 +3,16 @@ import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native'
 
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
+
+import { lookup } from 'mime-types';
 import {
+  Channel as ChannelClass,
   ChannelState,
   Channel as ChannelType,
-  ConnectionChangeEvent,
   EventHandler,
   logChatPromiseExecution,
   MessageResponse,
+  Reaction,
   SendMessageAPIResponse,
   StreamChat,
   Event as StreamEvent,
@@ -72,8 +75,12 @@ import {
   WutReaction,
 } from '../../icons';
 import { FlatList as FlatListDefault, pickDocument } from '../../native';
+import * as dbApi from '../../store/apis';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { generateRandomId, MessageStatusTypes, ReactionData } from '../../utils/utils';
+import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
+import { DBSyncManager } from '../../utils/DBSyncManager';
+import { removeReactionFromLocalState } from '../../utils/removeReactionFromLocalState';
+import { generateRandomId, isLocalUrl, MessageStatusTypes, ReactionData } from '../../utils/utils';
 import { Attachment as AttachmentDefault } from '../Attachment/Attachment';
 import { AttachmentActions as AttachmentActionsDefault } from '../Attachment/AttachmentActions';
 import { AudioAttachment as AudioAttachmentDefault } from '../Attachment/AudioAttachment';
@@ -196,7 +203,7 @@ export type ChannelPropsWithContext<
       | 'StickyHeader'
     >
   > &
-  Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
+  Pick<ChatContextValue<StreamChatGenerics>, 'client' | 'enableOfflineSupport'> &
   Partial<
     Omit<
       InputMessageInputContextValue<StreamChatGenerics>,
@@ -422,6 +429,7 @@ const ChannelWithContext = <
     doUpdateMessageRequest,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     enableMessageGroupingByUser = true,
+    enableOfflineSupport,
     enforceUniqueReaction = false,
     FileAttachment = FileAttachmentDefault,
     FileAttachmentGroup = FileAttachmentGroupDefault,
@@ -727,17 +735,8 @@ const ChannelWithContext = <
     ),
   ).current;
 
-  const connectionRecoveredHandler = () => {
-    if (channel && shouldSyncChannel) {
-      copyChannelState();
-      if (thread) {
-        setThreadMessages([...channel.state.threads[thread.id]]);
-      }
-    }
-  };
-
-  const connectionChangedHandler = (event: ConnectionChangeEvent) => {
-    if (event.online && shouldSyncChannel) {
+  const connectionChangedHandler = () => {
+    if (shouldSyncChannel) {
       resyncChannel();
     }
   };
@@ -778,8 +777,7 @@ const ChannelWithContext = <
        * The more complex sync logic around internet connectivity (NetInfo) is part of Chat.tsx
        * listen to client.connection.recovered and all channel events
        */
-      clientSubscriptions.push(client.on('connection.recovered', connectionRecoveredHandler));
-      clientSubscriptions.push(client.on('connection.changed', connectionChangedHandler));
+      clientSubscriptions.push(DBSyncManager.onSyncStatusChange(connectionChangedHandler));
       clientSubscriptions.push(
         client.on('channel.deleted', (event) => {
           if (event.cid === channel.cid) {
@@ -796,7 +794,7 @@ const ChannelWithContext = <
       clientSubscriptions.forEach((s) => s.unsubscribe());
       channelSubscriptions.forEach((s) => s.unsubscribe());
     };
-  }, [channelId, connectionChangedHandler, connectionRecoveredHandler, handleEvent]);
+  }, [channelId, connectionChangedHandler, handleEvent]);
 
   const channelQueryCallRef = useRef(
     async (
@@ -907,7 +905,6 @@ const ChannelWithContext = <
 
   const reloadThread = async () => {
     if (!channel || !thread?.id) return;
-
     setThreadLoadingMore(true);
     try {
       const parentID = thread.id;
@@ -1196,6 +1193,13 @@ const ChannelWithContext = <
     text,
     ...extraFields
   }: Partial<StreamMessage<StreamChatGenerics>>) => {
+    // Exclude following properties from message.user within message preview,
+    // since they could be long arrays and have no meaning as sender of message.
+    // Storing such large value within user's table may cause sqlite queries to crash.
+    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { channel_mutes, devices, mutes, ...messageUser } = client.user;
+
     const preview = {
       __html: text,
       attachments,
@@ -1213,7 +1217,7 @@ const ChannelWithContext = <
       type: 'regular',
       user: {
         id: client.userID,
-        ...client.user,
+        ...messageUser,
       },
       ...extraFields,
     } as unknown as MessageResponse<StreamChatGenerics>;
@@ -1232,56 +1236,126 @@ const ChannelWithContext = <
     return preview;
   };
 
+  const uploadPendingAttachments = async (message: MessageResponse<StreamChatGenerics>) => {
+    const updatedMessage = { ...message };
+    if (updatedMessage.attachments?.length) {
+      for (let i = 0; i < updatedMessage.attachments?.length; i++) {
+        const attachment = updatedMessage.attachments[i];
+        const file = attachment.originalFile;
+        // check if image_url is not a remote url
+        if (
+          attachment.type === 'image' &&
+          file?.uri &&
+          attachment.image_url &&
+          isLocalUrl(attachment.image_url)
+        ) {
+          const filename = file.uri.replace(/^(file:\/\/|content:\/\/|assets-library:\/\/)/, '');
+          const contentType = lookup(filename) || 'multipart/form-data';
+
+          const uploadResponse = doImageUploadRequest
+            ? await doImageUploadRequest(file, channel)
+            : await channel.sendImage(file?.uri, filename, contentType);
+
+          attachment.image_url = uploadResponse.file;
+          delete attachment.originalFile;
+
+          dbApi.updateMessage({
+            message: { ...updatedMessage, cid: channel.cid },
+          });
+        }
+
+        if (
+          (attachment.type === 'file' ||
+            attachment.type === 'audio' ||
+            attachment.type === 'video') &&
+          attachment.asset_url &&
+          isLocalUrl(attachment.asset_url) &&
+          file?.uri
+        ) {
+          const response = doDocUploadRequest
+            ? await doDocUploadRequest(file, channel)
+            : await channel.sendFile(file.uri, file.name, file.type);
+          attachment.asset_url = response.file;
+          if (response.thumb_url) {
+            attachment.thumb_url = response.thumb_url;
+          }
+          delete attachment.originalFile;
+          dbApi.updateMessage({
+            message: { ...updatedMessage, cid: channel.cid },
+          });
+        }
+      }
+    }
+
+    return updatedMessage;
+  };
+
   const sendMessageRequest = async (
     message: MessageResponse<StreamChatGenerics>,
     retrying?: boolean,
   ) => {
-    const {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      __html,
-      attachments,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      created_at,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      html,
-      id,
-      mentioned_users,
-      parent_id,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      quoted_message,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      reactions,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      status,
-      text,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      type,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      updated_at,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      user,
-      ...extraFields
-    } = message;
-
-    const messageData = {
-      attachments,
-      id: retrying ? undefined : id,
-      mentioned_users: mentioned_users?.map((mentionedUser) => mentionedUser.id) || [],
-      parent_id,
-      text,
-      ...extraFields,
-    } as StreamMessage<StreamChatGenerics>;
-
     try {
-      let messageResponse = {} as SendMessageAPIResponse<StreamChatGenerics>;
+      const updatedMessage = await uploadPendingAttachments(message);
+      const {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        __html,
+        attachments,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        created_at,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        deleted_at,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        html,
+        id,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        latest_reactions,
+        mentioned_users,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        own_reactions,
+        parent_id,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        quoted_message,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        reaction_counts,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        reactions,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        status,
+        text,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        type,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        updated_at,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        user,
+        ...extraFields
+      } = updatedMessage;
+      if (!channel.id) return;
 
+      const messageData = {
+        attachments,
+        id,
+        mentioned_users: mentioned_users?.map((mentionedUser) => mentionedUser.id) || [],
+        parent_id,
+        text,
+        ...extraFields,
+      } as StreamMessage<StreamChatGenerics>;
+
+      let messageResponse = {} as SendMessageAPIResponse<StreamChatGenerics>;
       if (doSendMessageRequest) {
         messageResponse = await doSendMessageRequest(channel?.cid || '', messageData);
       } else if (channel) {
         messageResponse = await channel.sendMessage(messageData);
       }
+
       if (messageResponse.message) {
         messageResponse.message.status = MessageStatusTypes.RECEIVED;
+
+        if (enableOfflineSupport) {
+          dbApi.updateMessage({
+            message: { ...messageResponse.message, cid: channel.cid },
+          });
+        }
         if (retrying) {
           replaceMessage(message, messageResponse.message);
         } else {
@@ -1291,7 +1365,13 @@ const ChannelWithContext = <
     } catch (err) {
       console.log(err);
       message.status = MessageStatusTypes.FAILED;
-      updateMessage(message);
+      updateMessage({ ...message, cid: channel.cid });
+
+      if (enableOfflineSupport) {
+        dbApi.updateMessage({
+          message: { ...message, cid: channel.cid },
+        });
+      }
     }
   };
 
@@ -1316,6 +1396,16 @@ const ChannelWithContext = <
       messageInput: '',
     });
 
+    if (enableOfflineSupport) {
+      // While sending a message, we add the message to local db with failed status, so that
+      // if app gets closed before message gets sent and next time user opens the app
+      // then user can see that message in failed state and can retry.
+      // If succesfull, it will be updated with received status.
+      dbApi.upsertMessages({
+        messages: [{ ...messagePreview, cid: channel.cid, status: MessageStatusTypes.FAILED }],
+      });
+    }
+
     await sendMessageRequest(messagePreview);
   };
 
@@ -1328,6 +1418,7 @@ const ChannelWithContext = <
     };
 
     updateMessage(statusPendingMessage);
+
     await sendMessageRequest(statusPendingMessage, true);
   };
 
@@ -1470,6 +1561,127 @@ const ChannelWithContext = <
         setThreadMessages(channel.state.threads[thread.id] || []);
       }
     }
+
+    if (enableOfflineSupport) {
+      dbApi.deleteMessage({
+        id: message.id,
+      });
+    }
+  };
+
+  const sendReaction = async (type: string, messageId: string) => {
+    if (!channel?.id || !client.user) {
+      throw new Error('Channel has not been initialized');
+    }
+
+    const payload: Parameters<ChannelClass<StreamChatGenerics>['sendReaction']> = [
+      messageId,
+      {
+        type,
+      } as Reaction<StreamChatGenerics>,
+      { enforce_unique: enforceUniqueReaction },
+    ];
+
+    if (!enableOfflineSupport) {
+      await channel.sendReaction(...payload);
+      return;
+    }
+
+    addReactionToLocalState<StreamChatGenerics>({
+      channel,
+      enforceUniqueReaction,
+      messageId,
+      reactionType: type,
+      user: client.user,
+    });
+
+    setMessages(channel.state.messages);
+
+    await DBSyncManager.queueTask<StreamChatGenerics>({
+      client,
+      task: {
+        channelId: channel.id,
+        channelType: channel.type,
+        messageId,
+        payload,
+        type: 'send-reaction',
+      },
+    });
+  };
+  const deleteMessage: MessagesContextValue<StreamChatGenerics>['deleteMessage'] = async (
+    message,
+  ) => {
+    if (!channel.id) {
+      throw new Error('Channel has not been initialized yet');
+    }
+
+    if (!enableOfflineSupport) {
+      await client.deleteMessage(message.id);
+      return;
+    }
+
+    if (message.status === MessageStatusTypes.FAILED) {
+      DBSyncManager.dropPendingTasks({ messageId: message.id });
+      removeMessage(message);
+    } else {
+      updateMessage({
+        ...message,
+        cid: channel.cid,
+        deleted_at: new Date().toISOString(),
+        type: 'deleted',
+      });
+
+      const data = await DBSyncManager.queueTask<StreamChatGenerics>({
+        client,
+        task: {
+          channelId: channel.id,
+          channelType: channel.type,
+          messageId: message.id,
+          payload: [message.id],
+          type: 'delete-message',
+        },
+      });
+
+      if (data?.message) {
+        updateMessage({ ...data.message });
+      }
+    }
+  };
+
+  const deleteReaction: MessagesContextValue<StreamChatGenerics>['deleteReaction'] = async (
+    type: string,
+    messageId: string,
+  ) => {
+    if (!channel?.id || !client.user) {
+      throw new Error('Channel has not been initialized');
+    }
+
+    const payload: Parameters<ChannelClass['deleteReaction']> = [messageId, type];
+
+    if (!enableOfflineSupport) {
+      await channel.deleteReaction(...payload);
+      return;
+    }
+
+    removeReactionFromLocalState({
+      channel,
+      messageId,
+      reactionType: type,
+      user: client.user,
+    });
+
+    setMessages(channel.state.messages);
+
+    await DBSyncManager.queueTask<StreamChatGenerics>({
+      client,
+      task: {
+        channelId: channel.id,
+        channelType: channel.type,
+        messageId,
+        payload,
+        type: 'delete-reaction',
+      },
+    });
   };
 
   /**
@@ -1655,6 +1867,8 @@ const ChannelWithContext = <
     channelId,
     DateHeader,
     deletedMessagesVisibilityType,
+    deleteMessage,
+    deleteReaction,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch,
     enableMessageGroupingByUser,
@@ -1714,6 +1928,7 @@ const ChannelWithContext = <
     retrySendMessage,
     ScrollToBottomButton,
     selectReaction,
+    sendReaction,
     setEditingState,
     setQuotedMessageState,
     supportedReactions,
@@ -1809,7 +2024,7 @@ export const Channel = <
 >(
   props: PropsWithChildren<ChannelProps<StreamChatGenerics>>,
 ) => {
-  const { client } = useChatContext<StreamChatGenerics>();
+  const { client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
   const { t } = useTranslationContext();
 
   const shouldSyncChannel = props.thread?.id ? !!props.threadList : true;
@@ -1838,6 +2053,7 @@ export const Channel = <
     <ChannelWithContext<StreamChatGenerics>
       {...{
         client,
+        enableOfflineSupport,
         t,
       }}
       {...props}

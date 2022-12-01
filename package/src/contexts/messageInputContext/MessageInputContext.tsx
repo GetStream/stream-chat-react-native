@@ -38,6 +38,7 @@ import type { UploadProgressIndicatorProps } from '../../components/MessageInput
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import { compressImage, getLocalAssetUri, pickDocument } from '../../native';
 import type { Asset, DefaultStreamChatGenerics, File, UnknownType } from '../../types/types';
+import { removeReservedFields } from '../../utils/removeReservedFields';
 import {
   ACITriggerSettings,
   ACITriggerSettingsParams,
@@ -416,7 +417,7 @@ export const MessageInputProvider = <
 }>) => {
   const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
     useAttachmentPickerContext();
-  const { appSettings, client } = useChatContext<StreamChatGenerics>();
+  const { appSettings, client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
 
   const getFileUploadConfig = () => {
     const fileConfig = appSettings?.app?.file_upload_config;
@@ -490,19 +491,19 @@ export const MessageInputProvider = <
       return true;
     }
 
-    for (const image of imageUploads) {
-      if (!image || image.state === FileState.UPLOAD_FAILED) {
-        continue;
-      }
-      if (image.state === FileState.UPLOADING) {
-        // TODO: show error to user that they should wait until image is uploaded
-        return false;
+    const imagesAndFiles = [...imageUploads, ...fileUploads];
+    if (enableOfflineSupport) {
+      // Allow only if none of the attachments have unsupported status
+      for (const file of imagesAndFiles) {
+        if (file.state === FileState.NOT_SUPPORTED) {
+          return false;
+        }
       }
 
       return true;
     }
 
-    for (const file of fileUploads) {
+    for (const file of imagesAndFiles) {
       if (!file || file.state === FileState.UPLOAD_FAILED) {
         continue;
       }
@@ -629,6 +630,62 @@ export const MessageInputProvider = <
     setText('');
   };
 
+  const mapImageUploadToAttachment = (image: ImageUpload) => {
+    const mime_type: string | boolean = lookup(image.file.filename as string);
+    return {
+      fallback: image.file.name,
+      image_url: image.url,
+      mime_type: mime_type ? mime_type : undefined,
+      original_height: image.height,
+      original_width: image.width,
+      originalFile: image.file,
+      type: 'image',
+    } as Attachment;
+  };
+
+  const mapFileUploadToAttachment = (file: FileUpload) => {
+    const mime_type: string | boolean = lookup(file.file.name as string);
+    if (file.file.type?.startsWith('image/')) {
+      return {
+        fallback: file.file.name,
+        image_url: file.url,
+        mime_type: mime_type ? mime_type : undefined,
+        originalFile: file.file,
+        type: 'image',
+      };
+    } else if (file.file.type?.startsWith('audio/')) {
+      return {
+        asset_url: file.url || file.file.uri,
+        duration: file.file.duration,
+        file_size: file.file.size,
+        mime_type: file.file.type,
+        originalFile: file.file,
+        title: file.file.name,
+        type: 'audio',
+      };
+    } else if (file.file.type?.startsWith('video/')) {
+      return {
+        asset_url: file.url || file.file.uri,
+        duration: file.file.duration,
+        file_size: file.file.size,
+        mime_type: file.file.type,
+        originalFile: file.file,
+        thumb_url: file.thumb_url,
+        title: file.file.name,
+        type: 'video',
+      };
+    } else {
+      return {
+        asset_url: file.url || file.file.uri,
+        file_size: file.file.size,
+        mime_type: file.file.type,
+        originalFile: file.file,
+        title: file.file.name,
+        type: 'file',
+      };
+    }
+  };
+
   // TODO: Figure out why this is async, as it doesn't await any promise.
   // eslint-disable-next-line require-await
   const sendMessage = async () => {
@@ -654,7 +711,15 @@ export const MessageInputProvider = <
 
     const attachments = [] as Attachment<StreamChatGenerics>[];
     for (const image of imageUploads) {
-      if (!image || image.state === FileState.UPLOAD_FAILED) {
+      if (enableOfflineSupport) {
+        if (image.state === FileState.NOT_SUPPORTED) {
+          return;
+        }
+        attachments.push(mapImageUploadToAttachment(image));
+        continue;
+      }
+
+      if ((!image || image.state === FileState.UPLOAD_FAILED) && !enableOfflineSupport) {
         continue;
       }
 
@@ -673,67 +738,32 @@ export const MessageInputProvider = <
       }
 
       // To get the mime type of the image from the file name and send it as an response for an image
-      const mime_type: string | boolean = lookup(image.file.filename as string);
-
       if (image.state === FileState.UPLOADED || image.state === FileState.FINISHED) {
-        attachments.push({
-          fallback: image.file.name,
-          image_url: image.url,
-          mime_type: mime_type ? mime_type : undefined,
-          original_height: image.height,
-          original_width: image.width,
-          type: 'image',
-        });
+        attachments.push(mapImageUploadToAttachment(image));
       }
     }
 
     for (const file of fileUploads) {
+      if (enableOfflineSupport) {
+        if (file.state === FileState.NOT_SUPPORTED) {
+          return;
+        }
+        attachments.push(mapFileUploadToAttachment(file));
+        continue;
+      }
+
       if (!file || file.state === FileState.UPLOAD_FAILED) {
         continue;
       }
+
       if (file.state === FileState.UPLOADING) {
         // TODO: show error to user that they should wait until image is uploaded
         sending.current = false;
         return;
       }
-      const mime_type: string | boolean = lookup(file.file.name as string);
 
       if (file.state === FileState.UPLOADED || file.state === FileState.FINISHED) {
-        if (file.file.type?.startsWith('image/')) {
-          attachments.push({
-            fallback: file.file.name,
-            image_url: file.url,
-            mime_type: mime_type ? mime_type : undefined,
-            type: 'image',
-          });
-        } else if (file.file.type?.startsWith('audio/')) {
-          attachments.push({
-            asset_url: file.url,
-            duration: file.file.duration,
-            file_size: file.file.size,
-            mime_type: file.file.type,
-            title: file.file.name,
-            type: 'audio',
-          });
-        } else if (file.file.type?.startsWith('video/')) {
-          attachments.push({
-            asset_url: file.url,
-            duration: file.file.duration,
-            file_size: file.file.size,
-            mime_type: file.file.type,
-            thumb_url: file.thumb_url,
-            title: file.file.name,
-            type: 'video',
-          });
-        } else {
-          attachments.push({
-            asset_url: file.url,
-            file_size: file.file.size,
-            mime_type: file.file.type,
-            title: file.file.name,
-            type: 'file',
-          });
-        }
+        attachments.push(mapFileUploadToAttachment(file));
       }
     }
 
@@ -755,7 +785,12 @@ export const MessageInputProvider = <
       // TODO: Remove this line and show an error when submit fails
       value.clearEditingState();
 
-      const updateMessagePromise = value.editMessage(updatedMessage).then(value.clearEditingState);
+      const updateMessagePromise = value
+        .editMessage(
+          // @ts-ignore
+          removeReservedFields(updatedMessage),
+        )
+        .then(value.clearEditingState);
       resetInput(attachments);
       logChatPromiseExecution(updateMessagePromise, 'update message');
 
@@ -1080,8 +1115,11 @@ export const MessageInputProvider = <
 
     const newImage: ImageUpload = {
       file: image,
+      height: image.height,
       id,
       state: imageState,
+      url: image.uri,
+      width: image.width,
     };
 
     await Promise.all([

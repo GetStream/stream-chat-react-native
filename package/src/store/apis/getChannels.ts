@@ -1,6 +1,6 @@
 import type { ChannelAPIResponse } from 'stream-chat';
 
-import { getMessages } from './getChannelMessages';
+import { getChannelMessages } from './getChannelMessages';
 import { getMembers } from './getMembers';
 import { getReads } from './getReads';
 import { selectChannels } from './queries/selectChannels';
@@ -30,7 +30,7 @@ export const getChannels = <
 
   const cidVsMembers = getMembers<StreamChatGenerics>({ channelIds });
   const cidVsReads = getReads<StreamChatGenerics>({ channelIds });
-  const cidVsMessages = getMessages<StreamChatGenerics>({
+  const cidVsMessages = getChannelMessages<StreamChatGenerics>({
     channelIds,
     currentUserId,
   });

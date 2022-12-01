@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+      - feat/optimistic-db-updates
 
 concurrency:
   group: sample-distribution
