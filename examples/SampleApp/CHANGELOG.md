@@ -1,5 +1,17 @@
 # Change Log
 
+## [1.15.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.14.4...sampleapp@v1.15.0) (2022-12-01)
+
+
+### Features
+
+* optimistic DB and UI updates for reactions and messages ([#1758](https://github.com/GetStream/stream-chat-react-native/issues/1758)) ([abe2b70](https://github.com/GetStream/stream-chat-react-native/commit/abe2b70d91bcfb689daa2b7bbf6be205c038fe57))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.14.4](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.14.3...sampleapp@v1.14.4) (2022-11-18)
 
 
