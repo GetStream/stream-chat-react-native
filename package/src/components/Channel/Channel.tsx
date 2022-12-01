@@ -559,9 +559,8 @@ const ChannelWithContext = <
   const [loadingMore, setLoadingMore] = useState(false);
 
   const [loadingMoreRecent, setLoadingMoreRecent] = useState(false);
-  const [quotedMessage, setQuotedMessage] = useState<boolean | MessageType<StreamChatGenerics>>(
-    false,
-  );
+  const [quotedMessage, setQuotedMessage] =
+    useState<boolean | MessageType<StreamChatGenerics>>(false);
   const [thread, setThread] = useState<ThreadContextValue<StreamChatGenerics>['thread']>(
     threadProps || null,
   );
