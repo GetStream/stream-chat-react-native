@@ -1,5 +1,20 @@
 # Change Log
 
+## [5.6.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.5.1...v5.6.0) (2022-12-01)
+
+
+### Features
+
+* Make the DocumentPicker dependency optional ([#1809](https://github.com/GetStream/stream-chat-react-native/issues/1809)) ([8b1eff9](https://github.com/GetStream/stream-chat-react-native/commit/8b1eff9583ad0e6a6892f8037e3e40e0a972968c))
+* optimistic DB and UI updates for reactions and messages ([#1758](https://github.com/GetStream/stream-chat-react-native/issues/1758)) ([abe2b70](https://github.com/GetStream/stream-chat-react-native/commit/abe2b70d91bcfb689daa2b7bbf6be205c038fe57))
+
+
+### Bug Fixes
+
+* Add theme config for BottomSheetFlatList in ImageGrid ([#1831](https://github.com/GetStream/stream-chat-react-native/issues/1831)) ([8411df9](https://github.com/GetStream/stream-chat-react-native/commit/8411df9d5b34359a9bf2a3866cae5a339ce35482))
+* remove the unnecessary remapping of chat-core import ([#1837](https://github.com/GetStream/stream-chat-react-native/issues/1837)) ([25815d5](https://github.com/GetStream/stream-chat-react-native/commit/25815d5cd950d954b3130e448ccc70dbee74c924))
+* unmatched border radius for attachment picker ([#1829](https://github.com/GetStream/stream-chat-react-native/issues/1829)) ([32d9af8](https://github.com/GetStream/stream-chat-react-native/commit/32d9af84b379b238b34074618b2f085f78d6f7a4))
+
 ### [5.5.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.5.0...v5.5.1) (2022-11-25)
 
 
