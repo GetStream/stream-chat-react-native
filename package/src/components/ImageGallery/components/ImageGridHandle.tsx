@@ -13,8 +13,8 @@ const styles = StyleSheet.create({
   },
   handle: {
     alignItems: 'center',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
     flexDirection: 'row',
     height: 40,
     justifyContent: 'center',
