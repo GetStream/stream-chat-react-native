@@ -5,6 +5,7 @@ import type { UserResponse } from 'stream-chat';
 
 import { useCountdown } from './hooks/useCountdown';
 
+import { ChatContextValue, useChatContext } from '../../contexts';
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import {
   ChannelContextValue,
@@ -78,7 +79,8 @@ const styles = StyleSheet.create({
 
 type MessageInputPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled' | 'members' | 'watchers'> &
+> = Pick<ChatContextValue<StreamChatGenerics>, 'isOnline'> &
+  Pick<ChannelContextValue<StreamChatGenerics>, 'disabled' | 'members' | 'watchers'> &
   Pick<
     MessageInputContextValue<StreamChatGenerics>,
     | 'additionalTextInputProps'
@@ -159,6 +161,7 @@ const MessageInputWithContext = <
     InputEditingStateHeader,
     InputGiphySearch,
     InputReplyStateHeader,
+    isOnline,
     isValidMessage,
     maxNumberOfFiles,
     members,
@@ -526,7 +529,7 @@ const MessageInputWithContext = <
                 ) : null}
                 {fileUploads.length ? <FileUploadPreview /> : null}
                 {giphyActive ? (
-                  <InputGiphySearch />
+                  <InputGiphySearch disabled={!isOnline} />
                 ) : (
                   <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
                     <AutoCompleteInput<StreamChatGenerics>
@@ -540,7 +543,11 @@ const MessageInputWithContext = <
                 {cooldownRemainingSeconds ? (
                   <CooldownTimer seconds={cooldownRemainingSeconds} />
                 ) : (
-                  <SendButton disabled={disabled || sending.current || !isValidMessage()} />
+                  <SendButton
+                    disabled={
+                      disabled || sending.current || !isValidMessage() || (giphyActive && !isOnline)
+                    }
+                  />
                 )}
               </View>
             </>
@@ -598,6 +605,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     fileUploads: prevFileUploads,
     giphyActive: prevGiphyActive,
     imageUploads: prevImageUploads,
+    isOnline: prevIsOnline,
     isValidMessage: prevIsValidMessage,
     mentionedUsers: prevMentionedUsers,
     quotedMessage: prevQuotedMessage,
@@ -616,6 +624,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     fileUploads: nextFileUploads,
     giphyActive: nextGiphyActive,
     imageUploads: nextImageUploads,
+    isOnline: nextIsOnline,
     isValidMessage: nextIsValidMessage,
     mentionedUsers: nextMentionedUsers,
     quotedMessage: nextQuotedMessage,
@@ -660,6 +669,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const showMoreOptionsEqual = prevShowMoreOptions === nextShowMoreOptions;
   if (!showMoreOptionsEqual) return false;
+
+  const isOnlineEqual = prevIsOnline === nextIsOnline;
+  if (!isOnlineEqual) return false;
 
   const isValidMessageEqual = prevIsValidMessage() === nextIsValidMessage();
   if (!isValidMessageEqual) return false;
@@ -719,6 +731,7 @@ export const MessageInput = <
 >(
   props: MessageInputProps<StreamChatGenerics>,
 ) => {
+  const { isOnline } = useChatContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
   const { disabled = false, members, watchers } = useChannelContext<StreamChatGenerics>();
@@ -809,6 +822,7 @@ export const MessageInput = <
         InputEditingStateHeader,
         InputGiphySearch,
         InputReplyStateHeader,
+        isOnline,
         isValidMessage,
         maxNumberOfFiles,
         members,

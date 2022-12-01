@@ -3,14 +3,15 @@ import type { QuickSQLite } from 'react-native-quick-sqlite';
 let sqlite: typeof QuickSQLite;
 
 try {
-  sqlite = require('react-native-quick-sqlite')?.QuickSQLite;
+  sqlite = require('react-native-quick-sqlite').QuickSQLite;
 } catch (e) {
   // Failed for one of the reason
   // 1. Running on expo, where we don't support offline storage yet.
   // 2. Offline support is disabled, in which case this library is not installed.
 }
 
-import { DB_LOCATION, DB_NAME, DB_STATUS_ERROR } from './constants';
+import { DB_LOCATION, DB_NAME } from './constants';
+import { QuickSqliteClient_v4 } from './QuickSqliteClient_v4';
 import { tables } from './schema';
 import { createCreateTableQuery } from './sqlite-utils/createCreateTableQuery';
 import type { PreparedQueries, Table } from './types';
@@ -18,9 +19,11 @@ import type { PreparedQueries, Table } from './types';
 /**
  * QuickSqliteClient takes care of any direct interaction with sqlite.
  * This way usage react-native-quick-sqlite package is scoped to a single class/file.
+ *
+ * TODO: Drop the support for v4 of react-native-quick-sqlite in the next major release.
  */
 export class QuickSqliteClient {
-  static dbVersion = 2;
+  static dbVersion = 3;
 
   static dbName = DB_NAME;
   static dbLocation = DB_LOCATION;
@@ -29,47 +32,71 @@ export class QuickSqliteClient {
   // Force a specific db version. This is mainly useful for testsuit.
   static setDbVersion = (version: number) => (this.dbVersion = version);
 
-  static openDB = () => {
-    const { message, status } = sqlite.open(this.dbName, this.dbLocation);
-    sqlite.executeSql(this.dbName, `PRAGMA foreign_keys = ON`, []);
+  // @ts-ignore
+  static isQuickSqliteV4 = sqlite.executeSql ? true : false;
 
-    if (status === DB_STATUS_ERROR) {
-      console.error(`Error opening database ${this.dbName}: ${message}`);
+  // print if legacy version
+  static openDB = () => {
+    if (this.isQuickSqliteV4) {
+      QuickSqliteClient_v4.openDB();
+      return;
+    }
+
+    try {
+      sqlite.open(this.dbName, this.dbLocation);
+      sqlite.execute(this.dbName, `PRAGMA foreign_keys = ON`, []);
+    } catch (e) {
+      console.error(`Error opening database ${this.dbName}: ${e}`);
     }
   };
 
   static closeDB = () => {
-    const { message, status } = sqlite.close(this.dbName);
+    if (this.isQuickSqliteV4) {
+      QuickSqliteClient_v4.closeDB();
+      return;
+    }
 
-    if (status === DB_STATUS_ERROR) {
-      console.error(`Error closing database ${this.dbName}: ${message}`);
+    try {
+      sqlite.close(this.dbName);
+    } catch (e) {
+      console.error(`Error closing database ${this.dbName}: ${e}`);
     }
   };
 
   static executeSqlBatch = (queries: PreparedQueries[]) => {
-    this.openDB();
+    if (!queries || !queries.length) return;
 
-    const res = sqlite.executeSqlBatch(DB_NAME, queries);
-
-    if (res.status === 1) {
-      console.error(`Query/queries failed: ${res.message} ${JSON.stringify(res)}`);
+    if (this.isQuickSqliteV4) {
+      QuickSqliteClient_v4.executeSqlBatch(queries);
+      return;
     }
 
-    this.closeDB();
+    this.openDB();
+    try {
+      sqlite.executeBatch(DB_NAME, queries);
+
+      this.closeDB();
+    } catch (e) {
+      this.closeDB();
+      throw new Error(`Query/queries failed: ${e}`);
+    }
   };
 
   static executeSql = (query: string, params?: string[]) => {
-    this.openDB();
-
-    const { message, rows, status } = sqlite.executeSql(DB_NAME, query, params);
-
-    this.closeDB();
-
-    if (status === 1) {
-      console.error(`Query/queries failed: ${message}: `, query);
+    if (this.isQuickSqliteV4) {
+      return QuickSqliteClient_v4.executeSql(query, params);
     }
 
-    return rows ? rows._array : [];
+    try {
+      this.openDB();
+      const { rows } = sqlite.execute(DB_NAME, query, params);
+      this.closeDB();
+
+      return rows ? rows._array : [];
+    } catch (e) {
+      this.closeDB();
+      throw new Error(`Query/queries failed: ${e}: `);
+    }
   };
 
   static dropTables = () => {
@@ -82,9 +109,14 @@ export class QuickSqliteClient {
   };
 
   static deleteDatabase = () => {
-    const { message, status } = sqlite.delete(this.dbName, this.dbLocation);
-    if (status === DB_STATUS_ERROR) {
-      throw new Error(`Error deleting DB: ${message}`);
+    if (this.isQuickSqliteV4) {
+      return QuickSqliteClient_v4.deleteDatabase();
+    }
+
+    try {
+      sqlite.delete(this.dbName, this.dbLocation);
+    } catch (e) {
+      throw new Error(`Error deleting DB: ${e}`);
     }
 
     return true;
@@ -95,6 +127,14 @@ export class QuickSqliteClient {
     if (sqlite === undefined) {
       throw new Error(
         'Please install "react-native-quick-sqlite" package to enable offline support',
+      );
+    }
+
+    if (this.isQuickSqliteV4) {
+      console.warn(
+        'You seem to be using an older version of "react-native-quick-sqlite" dependency,',
+        'and we are going to drop support for it in the next major release.',
+        'Please upgrade to the version v5 of "react-native-quick-sqlite" to avoid any issues.',
       );
     }
 
@@ -116,25 +156,31 @@ export class QuickSqliteClient {
   };
 
   static updateUserPragmaVersion = (version: number) => {
+    if (this.isQuickSqliteV4) {
+      QuickSqliteClient_v4.updateUserPragmaVersion(version);
+      return;
+    }
+
     this.openDB();
-
-    sqlite.executeSql(DB_NAME, `PRAGMA user_version = ${version}`, []);
-
+    sqlite.execute(DB_NAME, `PRAGMA user_version = ${version}`, []);
     this.closeDB();
   };
 
   static getUserPragmaVersion = () => {
-    this.openDB();
-
-    const { message, rows, status } = sqlite.executeSql(DB_NAME, `PRAGMA user_version`, []);
-
-    this.closeDB();
-    if (status === 1) {
-      console.error(`Querying for user_version failed: ${message}`);
+    if (this.isQuickSqliteV4) {
+      return QuickSqliteClient_v4.getUserPragmaVersion();
     }
 
-    const result = rows ? rows._array : [];
-    return result[0].user_version as number;
+    this.openDB();
+    try {
+      const { rows } = sqlite.execute(DB_NAME, `PRAGMA user_version`, []);
+      const result = rows ? rows._array : [];
+      this.closeDB();
+      return result[0].user_version as number;
+    } catch (e) {
+      this.closeDB();
+      throw new Error(`Querying for user_version failed: ${e}`);
+    }
   };
 
   static resetDB = () => {

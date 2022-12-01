@@ -21,6 +21,7 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import { Eye } from '../../../icons';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
+import { MessageStatusTypes } from '../../../utils/utils';
 import type { MessageType } from '../../MessageList/hooks/useMessageList';
 
 type MessageFooterComponentProps = {
@@ -109,7 +110,7 @@ const MessageFooterWithContext = <
     );
   }
 
-  if (lastGroupMessage === false) {
+  if (lastGroupMessage === false && message.status === MessageStatusTypes.RECEIVED) {
     return null;
   }
 

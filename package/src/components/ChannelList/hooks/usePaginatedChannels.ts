@@ -3,12 +3,14 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
 
 import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRefContext/ActiveChannelsRefContext';
+
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
 import { getChannelsForFilterSort } from '../../../store/apis/getChannelsForFilterSort';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { ONE_SECOND_IN_MS } from '../../../utils/date';
+import { DBSyncManager } from '../../../utils/DBSyncManager';
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
 const waitSeconds = (seconds: number) =>
@@ -21,6 +23,7 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
     enableOfflineSupport: boolean;
     filters: ChannelFilters<StreamChatGenerics>;
     options: ChannelOptions;
+    setForceUpdate: React.Dispatch<React.SetStateAction<number>>;
     sort: ChannelSort<StreamChatGenerics>;
   };
 
@@ -41,13 +44,13 @@ export const usePaginatedChannels = <
   enableOfflineSupport,
   filters = {},
   options = DEFAULT_OPTIONS,
+  setForceUpdate,
   sort = {},
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
   const [channels, setChannels] = useState<Channel<StreamChatGenerics>[] | null>(null);
   const [staticChannelsActive, setStaticChannelsActive] = useState<boolean>(false);
   const activeChannels = useActiveChannelsRefContext();
-
   const [error, setError] = useState<Error>();
   const [hasNextPage, setHasNextPage] = useState(true);
   const lastRefresh = useRef(Date.now());
@@ -98,17 +101,33 @@ export const usePaginatedChannels = <
     };
 
     try {
-      const channelQueryResponse = await client.queryChannels(filters, sort, newOptions, {
-        skipInitialization: activeChannels.current,
-      });
+      const activeChannelIds: string[] = [];
+      for (const cid in client.activeChannels) {
+        if (client.activeChannels[cid].id) {
+          // @ts-ignore
+          activeChannelIds.push(client.activeChannels[cid].id);
+        }
+      }
 
+      // TODO: Think about the implications of this.
+      const channelQueryResponse = await client.queryChannels(filters, sort, newOptions, {
+        skipInitialization: enableOfflineSupport ? activeChannelIds : activeChannels.current,
+      });
       if (isQueryStale() || !isMountedRef.current) {
         return;
       }
+
       const newChannels =
         queryType === 'loadChannels' && !staticChannelsActive && channels
           ? [...channels, ...channelQueryResponse]
-          : channelQueryResponse;
+          : channelQueryResponse.map((c) => {
+              const existingChannel = client.activeChannels[c.cid];
+              if (existingChannel) {
+                return existingChannel;
+              }
+
+              return c;
+            });
 
       setChannels(newChannels);
       setStaticChannelsActive(false);
@@ -177,33 +196,62 @@ export const usePaginatedChannels = <
   const sortStr = useMemo(() => JSON.stringify(sort), [sort]);
 
   useEffect(() => {
-    const loadChannels = () => {
+    const loadOfflineChannels = () => {
       if (!client?.user?.id) return;
-      if (enableOfflineSupport) {
-        try {
-          const channelsFromDB = getChannelsForFilterSort({
-            currentUserId: client.user.id,
-            filters,
-            sort,
-          });
 
-          if (channelsFromDB) {
-            setChannels(
-              client.hydrateActiveChannels(channelsFromDB, {
-                offlineMode: true,
-              }),
-            );
-            setStaticChannelsActive(true);
-          }
-        } catch (e) {
-          console.warn('Failed to get channels from database: ', e);
+      try {
+        const channelsFromDB = getChannelsForFilterSort({
+          currentUserId: client.user.id,
+          filters,
+          sort,
+        });
+
+        if (channelsFromDB) {
+          setChannels(
+            client.hydrateActiveChannels(channelsFromDB, {
+              offlineMode: true,
+            }),
+          );
+          setStaticChannelsActive(true);
         }
+      } catch (e) {
+        console.warn('Failed to get channels from database: ', e);
       }
 
-      reloadList();
+      setActiveQueryType(null);
     };
 
-    loadChannels();
+    let listener: ReturnType<typeof DBSyncManager.onSyncStatusChange>;
+    if (enableOfflineSupport) {
+      // Any time DB is synced, we need to update the UI with local DB channels first,
+      // and then call queryChannels to ensure any new channels are added to UI.
+      listener = DBSyncManager.onSyncStatusChange((syncStatus) => {
+        if (syncStatus) {
+          loadOfflineChannels();
+          reloadList();
+        }
+      });
+      // On start, load the channels from local db.
+      loadOfflineChannels();
+
+      // If db is already synced (sync api and pending api calls), then
+      // right away call queryChannels.
+      const dbSyncStatus = DBSyncManager.getSyncStatus();
+      if (dbSyncStatus) {
+        reloadList();
+      }
+    } else {
+      listener = client.on('connection.changed', async (event) => {
+        if (event.online) {
+          await refreshList();
+          setForceUpdate((u) => u + 1);
+        }
+      });
+
+      reloadList();
+    }
+
+    return () => listener?.unsubscribe?.();
   }, [filterStr, sortStr]);
 
   return {
@@ -211,7 +259,9 @@ export const usePaginatedChannels = <
     error,
     hasNextPage,
     loadingChannels:
-      activeQueryType === 'queryLocalDB' ? true : activeQueryType === 'reload' && channels === null,
+      activeQueryType === 'queryLocalDB'
+        ? true
+        : (activeQueryType === 'reload' || activeQueryType === null) && channels === null,
     loadingNextPage: activeQueryType === 'loadChannels',
     loadNextPage,
     refreshing: activeQueryType === 'refresh',

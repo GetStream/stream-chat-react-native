@@ -1,4 +1,4 @@
-import type { MessageResponse, Reaction } from 'stream-chat';
+import type { MessageResponse } from 'stream-chat';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
@@ -9,29 +9,29 @@ import type {
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { MessageStatusTypes } from '../../../utils/utils';
 
 export const useMessageActionHandlers = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channel,
   client,
-  enforceUniqueReaction,
+  deleteMessage,
+  deleteReaction,
   message,
-  removeMessage,
   retrySendMessage,
+  sendReaction,
   setEditingState,
   setQuotedMessageState,
   supportedReactions,
-  updateMessage,
 }: Pick<
   MessagesContextValue<StreamChatGenerics>,
-  | 'removeMessage'
+  | 'sendReaction'
+  | 'deleteMessage'
+  | 'deleteReaction'
   | 'retrySendMessage'
   | 'setEditingState'
   | 'setQuotedMessageState'
   | 'supportedReactions'
-  | 'updateMessage'
 > &
   Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'enforceUniqueReaction'> &
   Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
@@ -48,12 +48,7 @@ export const useMessageActionHandlers = <
   );
 
   const handleDeleteMessage = async () => {
-    if (message.status === MessageStatusTypes.FAILED) {
-      removeMessage(message);
-    } else {
-      const data = await client.deleteMessage(message.id);
-      updateMessage(data.message);
-    }
+    await deleteMessage(message as MessageResponse<StreamChatGenerics>);
   };
 
   const handleToggleMuteUser = async () => {
@@ -128,15 +123,9 @@ export const useMessageActionHandlers = <
     try {
       if (channel && messageId) {
         if (ownReaction) {
-          await channel.deleteReaction(messageId, reactionType);
+          await deleteReaction(reactionType, messageId);
         } else {
-          await channel.sendReaction(
-            messageId,
-            {
-              type: reactionType,
-            } as Reaction<StreamChatGenerics>,
-            { enforce_unique: enforceUniqueReaction },
-          );
+          await sendReaction(reactionType, messageId);
         }
       }
     } catch (err) {

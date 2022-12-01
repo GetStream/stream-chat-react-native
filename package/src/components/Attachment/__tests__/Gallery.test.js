@@ -265,7 +265,10 @@ describe('Gallery', () => {
     });
 
     const component = await getComponent([image1]);
-    const { getByA11yLabel, getByAccessibilityHint } = render(component);
+    const { getByA11yLabel, getByAccessibilityHint, queryAllByTestId } = render(component);
+    await waitFor(() => {
+      expect(queryAllByTestId('gallery-container').length).toBe(1);
+    });
 
     fireEvent(getByA11yLabel('Gallery Image'), 'error');
     expect(getByAccessibilityHint('image-loading-error')).toBeTruthy();
@@ -278,7 +281,11 @@ describe('Gallery', () => {
     });
 
     const component = await getComponent([image1]);
-    const { getByA11yLabel, getByAccessibilityHint } = render(component);
+    const { getByA11yLabel, getByAccessibilityHint, queryAllByTestId } = render(component);
+
+    await waitFor(() => {
+      expect(queryAllByTestId('gallery-container').length).toBe(1);
+    });
 
     fireEvent(getByA11yLabel('Gallery Image'), 'onLoadStart');
     expect(getByAccessibilityHint('image-loading')).toBeTruthy();

@@ -55,7 +55,7 @@ describe('Chat', () => {
     await waitFor(() => expect(netInfoFetch).toHaveBeenCalledTimes(1));
 
     const { connectionRecovering } = context;
-    act(() => dispatchConnectionChangedEvent(chatClient));
+    act(() => dispatchConnectionChangedEvent(chatClient, false));
     await waitFor(() => {
       expect(context.connectionRecovering).toStrictEqual(!connectionRecovering);
       expect(context.isOnline).toBeFalsy();

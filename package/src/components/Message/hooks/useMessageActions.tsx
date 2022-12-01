@@ -26,17 +26,19 @@ import {
 } from '../../../icons';
 import { setClipboardString } from '../../../native';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
+import { removeReservedFields } from '../../../utils/removeReservedFields';
 import { MessageStatusTypes } from '../../../utils/utils';
 
 import type { MessageType } from '../../MessageList/hooks/useMessageList';
 import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
-import { removeReservedFields } from '../utils/removeReservedFields';
 
 export const useMessageActions = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channel,
   client,
+  deleteMessage: deleteMessageFromContext,
+  deleteReaction,
   enforceUniqueReaction,
   handleBlock,
   handleCopy,
@@ -52,17 +54,18 @@ export const useMessageActions = <
   message,
   onThreadSelect,
   openThread,
-  removeMessage,
   retrySendMessage,
   selectReaction,
+  sendReaction,
   setEditingState,
   setOverlay,
   setQuotedMessageState,
   supportedReactions,
   t,
-  updateMessage,
 }: Pick<
   MessagesContextValue<StreamChatGenerics>,
+  | 'deleteMessage'
+  | 'sendReaction'
   | 'handleBlock'
   | 'handleCopy'
   | 'handleDelete'
@@ -75,6 +78,7 @@ export const useMessageActions = <
   | 'handleReaction'
   | 'handleThreadReply'
   | 'removeMessage'
+  | 'deleteReaction'
   | 'retrySendMessage'
   | 'setEditingState'
   | 'setQuotedMessageState'
@@ -107,14 +111,15 @@ export const useMessageActions = <
   } = useMessageActionHandlers({
     channel,
     client,
+    deleteMessage: deleteMessageFromContext,
+    deleteReaction,
     enforceUniqueReaction,
     message,
-    removeMessage,
     retrySendMessage,
+    sendReaction,
     setEditingState,
     setQuotedMessageState,
     supportedReactions,
-    updateMessage,
   });
 
   const error = message.type === 'error' || message.status === MessageStatusTypes.FAILED;

@@ -274,8 +274,8 @@ describe('Giphy', () => {
     });
   });
 
-  it('should render a error indicator in giphy image', () => {
-    const { getByA11yLabel, getByAccessibilityHint } = render(
+  it('should render a error indicator in giphy image', async () => {
+    const { getByA11yLabel, getByAccessibilityHint, queryByTestId } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel}>
@@ -284,12 +284,15 @@ describe('Giphy', () => {
         </Chat>
       </OverlayProvider>,
     );
+    await waitFor(() => {
+      expect(queryByTestId('giphy-attachment')).toBeTruthy();
+    });
 
     fireEvent(getByA11yLabel('Giphy Attachment Image'), 'error');
     expect(getByAccessibilityHint('image-loading-error')).toBeTruthy();
   });
 
-  it('should render a loading indicator in giphy image and when successful render the image', () => {
+  it('should render a loading indicator in giphy image and when successful render the image', async () => {
     const { getByA11yLabel, getByAccessibilityHint } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
@@ -299,8 +302,9 @@ describe('Giphy', () => {
         </Chat>
       </OverlayProvider>,
     );
-
-    expect(getByAccessibilityHint('image-loading')).toBeTruthy();
+    await waitFor(() => {
+      expect(getByAccessibilityHint('image-loading')).toBeTruthy();
+    });
 
     fireEvent(getByA11yLabel('Giphy Attachment Image'), 'onLoadStart');
 
