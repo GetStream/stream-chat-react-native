@@ -63,8 +63,10 @@ export class DBSyncManager {
     this.client.on('connection.changed', async (event) => {
       if (event.online) {
         await this.syncAndExecutePendingTasks();
+        this.syncStatus = true;
         this.listeners.forEach((l) => l(true));
       } else {
+        this.syncStatus = false;
         this.listeners.forEach((l) => l(false));
       }
     });
