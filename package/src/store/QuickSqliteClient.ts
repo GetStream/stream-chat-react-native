@@ -33,7 +33,7 @@ export class QuickSqliteClient {
   static setDbVersion = (version: number) => (this.dbVersion = version);
 
   // @ts-ignore
-  static isQuickSqliteV4 = sqlite.executeSql ? true : false;
+  static isQuickSqliteV4 = sqlite?.executeSql ? true : false;
 
   // print if legacy version
   static openDB = () => {
