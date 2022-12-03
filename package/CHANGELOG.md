@@ -1,5 +1,13 @@
 # Change Log
 
+### [5.6.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.6.0...v5.6.1) (2022-12-03)
+
+
+### Bug Fixes
+
+* expo app crashes due to sqlite being null ([#1845](https://github.com/GetStream/stream-chat-react-native/issues/1845)) ([718e28d](https://github.com/GetStream/stream-chat-react-native/commit/718e28df043e8cdfe051106d9299c60ddcbe8fc3))
+* syncStatus of DBSyncManager is not updated correctly ([#1842](https://github.com/GetStream/stream-chat-react-native/issues/1842)) ([92be75a](https://github.com/GetStream/stream-chat-react-native/commit/92be75a563080bb9ebf4a3a91106a2de658d0779))
+
 ## [5.6.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.5.1...v5.6.0) (2022-12-01)
 
 
