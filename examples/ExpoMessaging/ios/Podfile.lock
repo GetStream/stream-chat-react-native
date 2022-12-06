@@ -370,9 +370,9 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.69.6)
   - RNCMaskedView (0.2.7):
     - React-Core
-  - RNGestureHandler (2.8.0):
+  - RNGestureHandler (2.5.0):
     - React-Core
-  - RNReanimated (2.12.0):
+  - RNReanimated (2.9.1):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -640,8 +640,8 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 0af71c94f968fa10015bf0119951bccd2e4d8865
   ReactCommon: fe7580b9d10f00249facf25659e0ec051320cc8a
   RNCMaskedView: cb9670ea9239998340eaab21df13fa12a1f9de15
-  RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
-  RNReanimated: c3e58924b9418883b0bde9e78c4c957302f02435
+  RNGestureHandler: bad495418bcbd3ab47017a38d93d290ebd406f50
+  RNReanimated: 2cf7451318bb9cc430abeec8d67693f9cf4e039c
   RNScreens: 4a1af06327774490d97342c00aee0c2bafb497b7
   RNSVG: 302bfc9905bd8122f08966dc2ce2d07b7b52b9f8
   Yoga: 75bf4b0131cfb46a659cd0c13309b79a6fcff66d
