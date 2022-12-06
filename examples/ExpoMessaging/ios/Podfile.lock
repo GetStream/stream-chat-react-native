@@ -23,7 +23,7 @@ PODS:
   - EXMediaLibrary (14.2.0):
     - ExpoModulesCore
     - React-Core
-  - Expo (46.0.16):
+  - Expo (46.0.17):
     - ExpoModulesCore
   - ExpoClipboard (3.1.0):
     - ExpoModulesCore
@@ -34,9 +34,9 @@ PODS:
     - ExpoModulesCore
   - ExpoImagePicker (13.3.1):
     - ExpoModulesCore
-  - ExpoKeepAwake (10.2.0):
+  - ExpoKeepAwake (10.2.1):
     - ExpoModulesCore
-  - ExpoModulesCore (0.11.8):
+  - ExpoModulesCore (0.11.9):
     - React-Core
     - ReactCommon/turbomodule/core
   - EXSharing (10.3.0):
@@ -370,9 +370,9 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.69.6)
   - RNCMaskedView (0.2.7):
     - React-Core
-  - RNGestureHandler (2.5.0):
+  - RNGestureHandler (2.8.0):
     - React-Core
-  - RNReanimated (2.9.1):
+  - RNReanimated (2.12.0):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -598,13 +598,13 @@ SPEC CHECKSUMS:
   EXFont: 06df627203afcb8a3b3152ec06eb2f11f46f0cff
   EXImageLoader: b88e053d760f85a82405b1db2de4abf11978fc9f
   EXMediaLibrary: e8c8a365701629b7b21dd29769b86e8320610f18
-  Expo: 7ac824960a6059d6c68e73f432c8e6bf6d92a0ef
+  Expo: 4de8a31146bb0480353b3ed1850e015c4862625f
   ExpoClipboard: 7a5a26a3119bd1d0337ee065db3bf5d8a40e23a1
   ExpoHaptics: efe9e68e9dfe0d15c183c0c70a25f3874124ab9e
   ExpoImageManipulator: f4e286afa83c1c618de8701b0812ee0b647895fc
   ExpoImagePicker: ca4207f2952a78e6dac2d7852d7e170dd2eaf1d0
-  ExpoKeepAwake: 0e8f18142e71bbf2c7f6aa66ebed249ba1420320
-  ExpoModulesCore: 39ec590ce622289c060183aba57f77b1e73b4e11
+  ExpoKeepAwake: 8b47e5358d54ea4922b630a74f2acb026ab7a28b
+  ExpoModulesCore: f9d1730cc2dde38e46b0becb97628b3ebbd29f21
   EXSharing: 8530ef08cb899328a7c61de7f4836af6208b567b
   EXSplashScreen: 799bece80089219b2c989c1082d70f3b00995cda
   FBLazyVector: 739d2f9719faecb463c7aa191591af31c8c94182
@@ -640,12 +640,12 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 0af71c94f968fa10015bf0119951bccd2e4d8865
   ReactCommon: fe7580b9d10f00249facf25659e0ec051320cc8a
   RNCMaskedView: cb9670ea9239998340eaab21df13fa12a1f9de15
-  RNGestureHandler: bad495418bcbd3ab47017a38d93d290ebd406f50
-  RNReanimated: 2cf7451318bb9cc430abeec8d67693f9cf4e039c
+  RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
+  RNReanimated: c3e58924b9418883b0bde9e78c4c957302f02435
   RNScreens: 4a1af06327774490d97342c00aee0c2bafb497b7
   RNSVG: 302bfc9905bd8122f08966dc2ce2d07b7b52b9f8
   Yoga: 75bf4b0131cfb46a659cd0c13309b79a6fcff66d
 
 PODFILE CHECKSUM: ba58f5057a2bc8cca77f31cfdefd4cd4410686ae
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.11.3
