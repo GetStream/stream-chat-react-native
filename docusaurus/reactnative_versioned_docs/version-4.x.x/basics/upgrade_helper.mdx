@@ -204,7 +204,7 @@ prop as mentioned in [example](../guides/message_actions_customization.mdx#how-t
 ## Update The Dependencies
 
 - Since v4, peer dependency `react-native-blur` has been removed from the SDK. Blur background of overlay has been
-  replaced with opacity based background instead. So unless this dependency is used explicitely within application, it
+  replaced with opacity based background instead. So unless this dependency is used explicitly within application, it
   can be safely removed.
 
 ```sh
@@ -212,7 +212,7 @@ yarn remove react-native-blur
 npx pod-install
 ```
 
-- Minimum required version of `stream-chat` is 6.0.0. So if you have installed `stream-chat` dependency explicitely,
+- Minimum required version of `stream-chat` is 6.0.0. So if you have installed `stream-chat` dependency explicitly,
   please make sure to upgrade it to [`v6.0.0`](https://github.com/GetStream/stream-chat-js/releases/tag/v6.0.0)
 
 ## Refactor Typescript Generics
@@ -420,7 +420,7 @@ You can override these capabilities on UI level by providing [`overrideOwnCapabi
 ### Replaced next/prev Giphy Navigation With Shuffle
 
 Next and previous buttons on giphy message have been replaced with shuffle button, since Giphy
-api doesn't support pagination and it resulted into confusing user experience.
+API doesn't support pagination and it resulted into confusing user experience.
 
 ### Dropped BlurView Package
 
@@ -509,7 +509,7 @@ You can customize the truncation length of message text by providing a prop [`me
 <OverlayProvider messageTextNumberOfLines={300}>{/** child components */}</OverlayProvider>
 ```
 
-#### ChannelList ignores updated filters if api call is in progress
+#### ChannelList ignores updated filters if API call is in progress
 
 https://github.com/GetStream/stream-chat-react-native/issues/678
 

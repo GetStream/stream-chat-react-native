@@ -58,7 +58,7 @@ We don't recommend using `ChannelContext` at message level, since changes to its
 
 ### error
 
-True if any api call to `channel.query()` during first load or pagination fails.
+True if any API call to `channel.query()` during first load or pagination fails.
 
 | Type                    |
 | ----------------------- |
@@ -177,7 +177,7 @@ Function to mark current channel as read, for current user. This function intern
 
 <!-- TODO: Change to new docs -->
 
-Read statuses of members of current channel. This value is received from backend when you query a channel, either using [`client.queryChannels()`](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript&q=members) or [`channel.watch()`](https://getstream.io/chat/docs/javascript/watch_channel/?language=javascript&q=members) api call.
+Read statuses of members of current channel. This value is received from backend when you query a channel, either using [`client.queryChannels()`](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript&q=members) or [`channel.watch()`](https://getstream.io/chat/docs/javascript/watch_channel/?language=javascript&q=members) API call.
 
 ```tsx
 Record<

@@ -4,5 +4,10 @@ SDKs
 100ms
 Giphy
 Angular
-SDK's
+React
+API
+timeframe
+APNs
 Telehealth
+Xcode
+UI

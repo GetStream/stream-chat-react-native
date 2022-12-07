@@ -108,7 +108,7 @@ export type GalleryPropsWithContext<
      * of minor release, we are keeping those props.
      *
      * Also `message` type should ideally be imported from MessageContextValue and not be explicitely mentioned
-     * here, but due to some circular dependencies within the SDK, it causes "exccesive deep nesting" issue with
+     * here, but due to some circular dependencies within the SDK, it causes "excessive deep nesting" issue with
      * typescript within Channel component. We should take it as a mini-project and resolve all these circular imports.
      *
      * TODO: Fix circular dependencies of imports
