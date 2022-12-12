@@ -19,6 +19,7 @@ import koTranslations from '../i18n/ko.json';
 import nlTranslations from '../i18n/nl.json';
 import ruTranslations from '../i18n/ru.json';
 import trTranslations from '../i18n/tr.json';
+import zhCNTranslations from '../i18n/zh-cn.json';
 
 import 'dayjs/locale/fr';
 import 'dayjs/locale/hi';
@@ -29,6 +30,7 @@ import 'dayjs/locale/nl';
 import 'dayjs/locale/ru';
 import 'dayjs/locale/tr';
 import 'dayjs/locale/he';
+import 'dayjs/locale/zh-cn';
 
 /**
  * These locale imports also set these locales globally.
@@ -357,17 +359,18 @@ export class Streami18n {
       [key: string]: Partial<typeof enTranslations> | DefaultStreamChatGenerics;
     };
   } = {
-    en: { [defaultNS]: enTranslations },
-    fr: { [defaultNS]: frTranslations },
-    he: { [defaultNS]: heTranslations },
-    hi: { [defaultNS]: hiTranslations },
-    it: { [defaultNS]: itTranslations },
-    ja: { [defaultNS]: jaTranslations },
-    ko: { [defaultNS]: koTranslations },
-    nl: { [defaultNS]: nlTranslations },
-    ru: { [defaultNS]: ruTranslations },
-    tr: { [defaultNS]: trTranslations },
-  };
+      en: { [defaultNS]: enTranslations },
+      fr: { [defaultNS]: frTranslations },
+      he: { [defaultNS]: heTranslations },
+      hi: { [defaultNS]: hiTranslations },
+      it: { [defaultNS]: itTranslations },
+      ja: { [defaultNS]: jaTranslations },
+      ko: { [defaultNS]: koTranslations },
+      nl: { [defaultNS]: nlTranslations },
+      ru: { [defaultNS]: ruTranslations },
+      tr: { [defaultNS]: trTranslations },
+      zhCN: { [defaultNS]: zhCNTranslations },
+    };
 
   /**
    * dayjs.defineLanguage('nl') also changes the global locale. We don't want to do that
@@ -450,11 +453,11 @@ export class Streami18n {
       this.translations[this.currentLanguage] = {
         [defaultNS]:
           this.translations[this.currentLanguage] &&
-          this.translations[this.currentLanguage][defaultNS]
+            this.translations[this.currentLanguage][defaultNS]
             ? {
-                ...this.translations[this.currentLanguage][defaultNS],
-                ...translationsForLanguage,
-              }
+              ...this.translations[this.currentLanguage][defaultNS],
+              ...translationsForLanguage,
+            }
             : translationsForLanguage,
       };
     }
@@ -493,8 +496,8 @@ export class Streami18n {
     } else if (!this.localeExists(this.currentLanguage)) {
       this.logger(
         `Streami18n: Streami18n(...) - Locale config for ${this.currentLanguage} does not exist in momentjs.` +
-          `Please import the locale file using "import 'moment/locale/${this.currentLanguage}';" in your app or ` +
-          `register the locale config with Streami18n using registerTranslation(language, translation, customDayjsLocale)`,
+        `Please import the locale file using "import 'moment/locale/${this.currentLanguage}';" in your app or ` +
+        `register the locale config with Streami18n using registerTranslation(language, translation, customDayjsLocale)`,
       );
     }
 
@@ -549,8 +552,8 @@ export class Streami18n {
     if (availableLanguages.indexOf(this.currentLanguage) === -1) {
       this.logger(
         `Streami18n: '${this.currentLanguage}' language is not registered.` +
-          ` Please make sure to call streami18n.registerTranslation('${this.currentLanguage}', {...}) or ` +
-          `use one the built-in supported languages - ${this.getAvailableLanguages()}`,
+        ` Please make sure to call streami18n.registerTranslation('${this.currentLanguage}', {...}) or ` +
+        `use one the built-in supported languages - ${this.getAvailableLanguages()}`,
       );
 
       this.currentLanguage = defaultLng;
@@ -609,9 +612,9 @@ export class Streami18n {
     } else if (!this.localeExists(language)) {
       this.logger(
         `Streami18n: registerTranslation(language, translation, customDayjsLocale) - ` +
-          `Locale config for ${language} does not exist in Dayjs.` +
-          `Please import the locale file using "import 'dayjs/locale/${language}';" in your app or ` +
-          `register the locale config with Streami18n using registerTranslation(language, translation, customDayjsLocale)`,
+        `Locale config for ${language} does not exist in Dayjs.` +
+        `Please import the locale file using "import 'dayjs/locale/${language}';" in your app or ` +
+        `register the locale config with Streami18n using registerTranslation(language, translation, customDayjsLocale)`,
       );
     }
 
