@@ -501,6 +501,7 @@ export type Theme = {
       statusContainer: ViewStyle;
       timeIcon: IconProps;
     };
+    targetedMessageContainer: ViewStyle;
     targetedMessageUnderlay: ViewStyle;
     videoThumbnail: {
       container: ViewStyle;
@@ -1042,6 +1043,7 @@ export const defaultTheme: Theme = {
         width: DEFAULT_STATUS_ICON_SIZE,
       },
     },
+    targetedMessageContainer: {},
     targetedMessageUnderlay: {},
     videoThumbnail: {
       container: {},
