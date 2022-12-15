@@ -63,9 +63,8 @@ const ChannelPreviewWithContext = <
 
     const newUnreadCount = channel.countUnread();
 
-    if (newUnreadCount !== unread) {
-      setUnread(newUnreadCount);
-    }
+
+    setUnread(newUnreadCount);
   }, [channelLastMessageString]);
 
   useEffect(() => {
