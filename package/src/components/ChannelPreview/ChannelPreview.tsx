@@ -62,8 +62,6 @@ const ChannelPreviewWithContext = <
     }
 
     const newUnreadCount = channel.countUnread();
-
-
     setUnread(newUnreadCount);
   }, [channelLastMessageString]);
 
