@@ -700,8 +700,8 @@ const MessageWithContext = <
     <View
       style={[
         message.pinned && {
-          backgroundColor: targetedMessageBackground,
           ...targetedMessageContainer,
+          backgroundColor: targetedMessageBackground,
         },
       ]}
       testID='message-wrapper'
