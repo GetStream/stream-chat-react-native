@@ -21,8 +21,8 @@ Easiest way to integrate push notifications in your Chat applications is using F
   - They were mentioned
 - Messages from muted users are not sent.
 - Messages are sent to all registered devices for a user (up to 25).
-- skip_push is marked as false, as described [here](https://getstream.io/chat/docs/javascript/send_message/?language=javascript#complex-example).
-- push_notifications is enabled (default) on the channel type for the sent message.
+- `skip_push` is marked as false, as described [here](https://getstream.io/chat/docs/javascript/send_message/?language=javascript#complex-example).
+- `push_notifications` is enabled (default) on the channel type for the sent message.
 
 :::note
 
@@ -502,7 +502,7 @@ client.updateAppSettings({
 });
 ```
 
-A good practice is to remove the badge count once the app is opened. We can do that using notifee like below:
+A good practice is to remove the badge count once the app is opened. We can do that using Notifee like below:
 
 ```js
 function App() {

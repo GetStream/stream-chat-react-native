@@ -169,7 +169,7 @@ export type MarkdownStyle = Partial<{
 
 ## Message bubble with full width
 
-Because of richness of default message bubble (reactions, attachments, etc), we didn't want to add support this feature OOTB for the simplicity of maintainance. This is something that needs to themed on app level. Here is how you can implement full width message:
+Because of richness of default message bubble (reactions, attachments, etc), we didn't want to add support this feature OOTB for the simplicity of maintenance. This is something that needs to themed on app level. Here is how you can implement full width message:
 
 ```jsx
 import { vw } from 'stream-chat-react-native';
@@ -429,7 +429,7 @@ If you wanted to move the information about the sender to the top of the message
 
 To add swipe controls to your messages it is suggested that you create a custom `Message` component to replace the default one. An easy solution is to wrap the standard exported message component from `stream-chat-react-native` in a `Swipeable` from `react-native-gesture-handler/Swipeable`. You can then use the functions provided by `Swipeable` to fine tune to functionality to your liking.
 
-You can add reply functionality by calling `setQuotedMessageState`, available from the `useMessagesContext` hook. Or you can delete the message using a combination of `client.deleteMessage` and `updateMessage`, the latter of which is also available from the `useMessagesContext` hook. You can find the internal implementation of these functions in the `Message` component; or you can add any other functionality you like. It is suggested to add custom logic when implementing swipeable messages to ensure you only can swipe appropriate messages, **i.e.** you can only swipe to delete messages you have the ability to delete and have not yet been deleted. Using `Message` props and contexts this is easily achievable.
+You can add reply functionality by calling `setQuotedMessageState`, available from the `useMessagesContext` hook. Or you can delete the message using a combination of `client.deleteMessage` and `updateMessage`, the latter of which is also available from the `useMessagesContext` hook. You can find the internal implementation of these functions in the `Message` component; or you can add any other functionality you like. It is suggested to add custom logic when implementing swipe-able messages to ensure you only can swipe appropriate messages, **i.e.** you can only swipe to delete messages you have the ability to delete and have not yet been deleted. Using `Message` props and contexts this is easily achievable.
 
 ```tsx
 const SwipeableMessage = (

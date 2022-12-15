@@ -33,3 +33,6 @@ iCloud
 jetifier
 npm
 Notifee
+colorScheme
+performant
+virtualized
