@@ -11,7 +11,7 @@ import MessageProp from '../common-content/contexts/message-context/message.mdx'
 import OtherAttachments from '../common-content/contexts/message-context/other_attachments.mdx';
 import ShowMessageStatus from '../common-content/contexts/message-context/show_message_status.mdx';
 
-Component to render footer of message, which consists of read receipts, timestamp of message etc. This component uses [`MessageStatus`](./message_status.mdx) for rendering read recipts internally.
+Component to render footer of message, which consists of read receipts, timestamp of message etc. This component uses [`MessageStatus`](./message_status.mdx) for rendering read receipts internally.
 
 ## Basic Usage
 
@@ -34,15 +34,15 @@ const CustomMessageFooter = ({ message }) => {
 
 ## Props
 
-### <div class="label required">required</div> **formattedDate**
+### <div class="label required">required</div> `**formattedDate**`
 
-Datetime stamp to be shown in footer for deleted message.
+DateTime stamp to be shown in footer for deleted message.
 
 | Type   |
 | ------ |
 | string |
 
-### <div class="label required">required</div> **isDeleted**
+### <div class="label required">required</div> `**isDeleted**`
 
 Weather message is deleted or not. In case of deleted message, `'Only visible to you'` subtext will be rendered in this component.
 
@@ -66,7 +66,7 @@ Weather message is deleted or not. In case of deleted message, `'Only visible to
 
 <MessageProp />
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#otherattachments)_</div> otherAttachments {#otherattachments}
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#otherattachments)_</div> `otherAttachments` {#otherattachments}
 
 <OtherAttachments />
 
