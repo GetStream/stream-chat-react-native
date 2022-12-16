@@ -738,7 +738,7 @@ Following props have been renamed:
       defaultHandler, // () => void
       event, // any event object corresponding to touchable feedback
       emitter, // which component trigged this touchable feedback e.g. card, fileAttachment, gallery, message ... etc
-      message // message object on which longPress occured
+      message // message object on which longPress occurred
     }) => {
       /** Your custom action */
     }}
