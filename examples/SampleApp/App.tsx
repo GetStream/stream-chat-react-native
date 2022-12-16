@@ -65,7 +65,7 @@ const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator<StackNavigatorParamList>();
 const UserSelectorStack = createStackNavigator<UserSelectorParamList>();
 const App = () => {
-  const { chatClient, isConnecting, loginUser, logout, switchUser } = useChatClient();
+  const { chatClient, isConnecting, loginUser, logout, switchUser, unreadCount } = useChatClient();
   const colorScheme = useColorScheme();
   const streamChatTheme = useStreamChatTheme();
 
@@ -131,7 +131,7 @@ const App = () => {
             dark: colorScheme === 'dark',
           }}
         >
-          <AppContext.Provider value={{ chatClient, loginUser, logout, switchUser }}>
+          <AppContext.Provider value={{ chatClient, loginUser, logout, switchUser, unreadCount }}>
             {isConnecting && !chatClient ? (
               <LoadingScreen />
             ) : chatClient ? (
