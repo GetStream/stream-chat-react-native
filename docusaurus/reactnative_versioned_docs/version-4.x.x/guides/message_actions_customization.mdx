@@ -7,7 +7,7 @@ title: Customize Message Actions
 import messageActions from '../assets/guides/message-actions-customization/message_actions.png';
 import myMessageActions from '../assets/guides/message-actions-customization/my_message_actions.png';
 
-Message actions pop up in message overlay, when you longpress a message. We have provided a granular control over these actions.
+Message actions pop up in message overlay, when you long-press a message. We have provided a granular control over these actions.
 By default we render the following actions (as shown in screenshots)
 
 <table>
@@ -30,7 +30,7 @@ By default we render the following actions (as shown in screenshots)
   </tr>
 </table>
 
-Every message action that you see in UI, is represented by [`MessageAction`](../object-types/message_action.mdx) object for that action. And `MessageAction` object provides all the necessary inputs (title, icon, action handler, actionType) for rendering the action button.
+Every message action that you see in UI, is represented by [`MessageAction`](../object-types/message_action.mdx) object for that action. And `MessageAction` object provides all the necessary inputs (`title`, `icon`, action handler, `actionType`) for rendering the action button.
 
 ```tsx
 type MessageAction = {
@@ -194,11 +194,11 @@ const CustomMessageActionList = () => {
 </OverlayProvider>;
 ```
 
-Notice that the `MessageActionList` is a simple prop which just accepts your own component for the messge action overlay. The content, styles and the action logic are all defined by the user itself.
+Notice that the `MessageActionList` is a simple prop which just accepts your own component for the message action overlay. The content, styles and the action logic are all defined by the user itself.
 
 ### Customize Message Action list item
 
-Suppose you want to customise `pinMessage` and `muteUser` actions, you just need to add a condition for that particular action type and return a component which you want to render for that actionType.
+Suppose you want to customise `pinMessage` and `muteUser` actions, you just need to add a condition for that particular action type and return a component which you want to render for that `actionType`.
 
 The types of actions which are available by default are as follows:
 
@@ -253,7 +253,7 @@ const CustomMessageActionListItem = ({ action, actionType, ...rest }) => {
 </OverlayProvider>;
 ```
 
-Note: The `useMessageActionAnimation` hook takes in the `action` for the message action and this would give some utitilites like `ontap`, `animatedStyle` and the `opacity` value which would be helpful with the Animated View which can be used in support of the package `react-native-reanimated`.
+Note: The `useMessageActionAnimation` hook takes in the `action` for the message action and this would give some utilities like `ontap`, `animatedStyle` and the `opacity` value which would be helpful with the Animated View which can be used in support of the package `react-native-reanimated`.
 
 Please continue reading further to see different use cases.
 
@@ -277,7 +277,7 @@ Please note that these intercepts will neither change the standard functions nor
 - `handleRetry`
 - `handleThreadReply`
 
-Following example demostrates how to add analytics tracking to "Copy Message" action.
+Following example demonstrates how to add analytics tracking to "Copy Message" action.
 
 ```tsx
 <Channel handleCopy={() => trackCopyAction()} />

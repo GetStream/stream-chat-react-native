@@ -53,7 +53,7 @@ Ensure the `keyboardVerticalOffset` prop passed to `Channel` is correct and acco
 
 ### Android
 
-On Android if the StatusBar is set to translucent, i.e. `StatusBar.setTranslucent(true)` then there may be some inaccurate layout calculations occurring.
+On Android if the StatusBar is set to translucent, that is `StatusBar.setTranslucent(true)` then there may be some inaccurate layout calculations occurring.
 
 If you are using the standard React Native Android keyboard setting of `android:windowSoftInputMode="adjustResize"`, you can disable to layout adjustments on Android using the prop `disableKeyboardCompatibleView` and this will ignore the incorrect measurements.
 
@@ -108,7 +108,7 @@ Both `bottomInset` & `topInset` can be set via the appropriate functions, `setBo
 
 ### Android
 
-On Android if the StatusBar is set to translucent, i.e. `StatusBar.setTranslucent(true)` then you need to provide the prop `translucentStatusBar` to the `OverlayProvider`.
+On Android if the StatusBar is set to translucent, that is `StatusBar.setTranslucent(true)` then you need to provide the prop `translucentStatusBar` to the `OverlayProvider`.
 This prop is a `boolean` that adjusts for differences in the measurements of the screen height when the StatusBar on Android is translucent.
 It is important to note that since Expo 38 `true` is the default for transparent on Android.
 
@@ -250,7 +250,7 @@ dependencies {
 }
 ```
 
-## Touchables not working
+## `Touchables` not working
 
 If you are having trouble with pressing, swiping, or otherwise interacting with components it is likely the result of [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/docs/) not being properly setup.
 Be sure to follow all needed [additional steps](https://docs.swmansion.com/react-native-gesture-handler/docs/) to complete the installation.
@@ -291,7 +291,7 @@ public class MainActivity extends ReactActivity {
 ## Custom touchable not working
 
 If you find that a customization that includes a touchable is not working, or the wrong element is receiving the touch event, this is likely related to [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/docs/).
-Your component may be being rendered inside of a gesture handler; nested gesture handlers and touchables need special treatment and can act differently on iOS & Android.
+Your component may be being rendered inside of a gesture handler; nested gesture handlers and `touchables` need special treatment and can act differently on iOS & Android.
 
 There are solutions available for almost all use cases so looking into your specific use case in relation to React Native Gesture Handler is suggested.
 The solution may require using a different touchable from React Native Gesture Handler and React Native depending on the platform.
@@ -300,7 +300,7 @@ The solution may require using a different touchable from React Native Gesture H
 
 We rely on Reanimated 2 heavily for gesture based interactions and animations. It is vital you follow the [Reanimated 2 installation instructions](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation/) for the library to work properly.
 
-### Failed to create a worklet
+### Failed to create a Worklet
 
 If you are encountering errors related to `Reanimated 2 failed to create a worklet` you must likely forgot to add the `react-native-reanimated/plugin` to your `babel.config.js` file.
 
