@@ -1,10 +1,16 @@
 import React, { useEffect } from 'react';
-import { LogBox, Platform, useColorScheme } from 'react-native';
+import { DevSettings, LogBox, Platform, useColorScheme } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Chat, OverlayProvider, ThemeProvider, useOverlayContext } from 'stream-chat-react-native';
+import {
+  Chat,
+  OverlayProvider,
+  QuickSqliteClient,
+  ThemeProvider,
+  useOverlayContext,
+} from 'stream-chat-react-native';
 import messaging from '@react-native-firebase/messaging';
 import notifee, { EventType } from '@notifee/react-native';
 import { AppContext } from './src/context/AppContext';
@@ -33,6 +39,11 @@ import type { StreamChat } from 'stream-chat';
 
 LogBox.ignoreLogs(["Seems like you're using an old API"]);
 LogBox.ignoreLogs(['Each child in a list should have a unique']);
+
+DevSettings.addMenuItem('Reset local DB (offline storage)', () => {
+  QuickSqliteClient.resetDB();
+  console.info('Local DB reset');
+});
 
 import type {
   StackNavigatorParamList,
