@@ -8,7 +8,7 @@ import channelSettings from '../assets/guides/performance-guide/channel_settings
 
 React Native Chat SDK provides feature-rich components which cater to all types of chat messaging applications.
 Some of the features or components may come with a performance cost you will want to avoid for high
-concurrency applications such as livestreaming. In this guide, we have noted down some tips for improving the performance of your
+concurrency applications such as live-streaming. In this guide, we have noted down some tips for improving the performance of your
 chat application if you are expecting heavy traffic on your chat.
 
 ## Channel Settings
@@ -18,14 +18,14 @@ Among these settings is the ability to enable or disable each event type.
 While disabled, an event of a selected type will not be passed through to a client's open WebSocket connection in the channel type it has been set.
 It's also important to note that increasing the number of enabled events for a channel type also increases the load on clients in those channels.
 
-- For the Livestream channel type, we recommend disabling Connect, Read Events, and Typing Events. These will cause performance issues and don't generally add to the user experience in these use cases.
-- Also consider using [Slow Mode](https://getstream.io/chat/docs/slow_mode/?language=js#channel-slow-mode) for Livestream events.
+- For the `Livestream` channel type, we recommend disabling Connect, Read Events, and Typing Events. These will cause performance issues and don't generally add to the user experience in these use cases.
+- Also consider using [Slow Mode](https://getstream.io/chat/docs/slow_mode/?language=js#channel-slow-mode) for `Livestream` events.
 
 <img src={channelSettings} />
 
 ## State update throttling
 
-The [Channel](../core-components/channel.mdx) component updates its internal react state based on chat related events received from the websocket.
+The [Channel](../core-components/channel.mdx) component updates its internal react state based on chat related events received from the WebSocket.
 
 By default, these state updates are throttled to once per 500 ms. For high-traffic applications, you may want to adjust the throttling interval to a higher number. You can configure throttle interval via the following props on the Channel component:
 
@@ -58,7 +58,7 @@ These props are available in version >= v3.9.0
 By default, the MessageList component renders a sticky date header at the top of the list, and date separators between messages from different dates.
 Computation and insertion of these dates can be heavy for a message list when there are a lot of messages in the channel since it involves iterating through the entire list.
 
-For livestream applications, we would recommend disabling these features using the following two props on a Channel component:
+For live-stream applications, we would recommend disabling these features using the following two props on a Channel component:
 
 ```tsx
 <Channel hideDateSeparators={true} hideStickyDateHeader={true} />

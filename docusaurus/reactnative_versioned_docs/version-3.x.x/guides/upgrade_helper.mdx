@@ -59,7 +59,7 @@ yarn remove react-native-get-random-values
 And deleting the import statement for `react-native-get-random-values` from your root (`index.js`/`index.ts`) file:
 
 ```tsx {1}
-import * from react-native-get-random-values; // <-- REMOVE THIS
+import * from r`eact-native-get-random-values; // <-- REMOVE THIS
 import { AppRegistry } from 'react-native';
 
 import App from './App';
@@ -105,13 +105,13 @@ export const Screen = () => <OverlayProvider>{/** App components */}</OverlayPro
 
 ### Theme changes
 
-v2 of SDK used [Styled Components](https://styled-components.com/) for theming purpose, which we have abondoned in v3 in favor of using the default approach for React Native style sheets. We've published a separate [guide](../customization/theming.mdx) for how to apply custom theme on chat components.
+v2 of SDK used [Styled Components](https://styled-components.com/) for theming purpose, which we have abandoned in v3 in favor of using the default approach for React Native style sheets. We've published a separate [guide](../customization/theming.mdx) for how to apply custom theme on chat components.
 
 At this point if you launch the application, it should be working fine (assuming all the component customizations have been commented out) 🎉.
 
 ### Message customization prop change
 
-Message UI is the most common usecase for customization. In v2 of the library, you could provide a `Message` prop to `MessageList` component
+Message UI is the most common use-case for customization. In v2 of the library, you could provide a `Message` prop to `MessageList` component
 to customize message UI. But in v3, you need to provide `MessageSimple` prop on the [`Channel`](../core-components/channel.mdx#messagesimple) component instead.
 
 <table>
@@ -141,7 +141,7 @@ which shows how to render message sender's name at bottom of the message:
 To customize `MessageFooter`, you had to create a separate component to render a `MessageSimple` component and then provide `MessageFooter` as a prop to `MessageSimple`. This is what the prop drilling looked like in v2 of the SDK. This approach was rigid and made updating components a chore.
 
 In v3, we're using React contexts to simplify this process. Now, thanks to contexts, you can customize each of these deeply nested components
-by providing a relevant prop to one of the following 3 core components (depending on which component needs to be customized). React contexts will will provide the prop to all of the child components in nested in the core components as global-like data.
+by providing a relevant prop to one of the following 3 core components (depending on which component needs to be customized). React contexts will provide the prop to all of the child components in nested in the core components as global-like data.
 
 - [`OverlayProvider`](../core-components/overlay_provider.mdx#props)
 - [`Channel`](../core-components/channel.mdx#props)
@@ -251,7 +251,7 @@ const PreviewWithCustomAvatar = props => {
 
 ### Message action changes
 
-In v2 of the library, message actions such as "Copy Message", "Edit Message" etc, were rendered in actionsheet. In v3 of the library these
+In v2 of the library, message actions such as "Copy Message" or "Edit Message" etc, were rendered in `ActionSheet`. In v3 of the library these
 actions get rendered within the overlay when a user long-presses the message. Also, we have provided finer control over customizing these actions
 according to your use case. Please take a look at guide for [customizing message actions](./message_actions_customization.mdx) for reference.
 
@@ -272,9 +272,9 @@ Additionally please take a look at following props to customize reactions relate
 
 ### Attachment picker changes
 
-In v2 of the library, attachment picker was rendendered as actionsheet containing option for picking files from of native image and file picker.
-We've modified this UX in v3. In the new version, attachment picker gets rendered as built-in bottomsheet.
+In v2 of the library, attachment picker was rendered as `ActionSheet` containing option for picking files from of native image and file picker.
+We've modified this UX in v3. In the new version, attachment picker gets rendered as built-in `BottomSheet`.
 
 <img src={attachmentPicker} />
 
-Its possible to use actionsheet based attachment picker (similar to v2 implementation). Please check the docs on [implementation of native image picker](../guides/message_input_customization.mdx#replacing-attachmentpicker-with-native-image-picker)
+Its possible to use `ActionSheet` based attachment picker (similar to v2 implementation). Please check the docs on [implementation of native image picker](../guides/message_input_customization.mdx#replacing-attachmentpicker-with-native-image-picker)

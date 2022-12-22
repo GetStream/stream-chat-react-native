@@ -125,13 +125,13 @@ streami18n.setLanguage(userPreferredLocales[0].languageCode);
 
 ### Overriding DateTime format
 
-React Native SDK uses [dayjs](https://day.js.org/en/) internally by default to format datetime stamp.
-Dayjs is a lightweight alternative to Momentjs with the same modern API and has [locale support](https://day.js.org/docs/en/i18n/i18n) as well.
+React Native SDK uses [Day.js](https://day.js.org/en/) internally by default to format DateTime stamp.
+Day.js is a lightweight alternative to Moment.js with the same modern API and has [locale support](https://day.js.org/docs/en/i18n/i18n) as well.
 
-Dayjs provides locale config for plenty of languages, you can check the whole list of locale configs [here](https://github.com/iamkun/dayjs/tree/dev/src/locale)
+Day.js provides locale config for plenty of languages, you can check the whole list of locale configs [here](https://github.com/iamkun/dayjs/tree/dev/src/locale)
 
-You can either provide the dayjs locale config while registering
-language with `Streami18n` (either via constructor or `registerTranslation()`) or you can provide your own Dayjs or Moment instance
+You can either provide the Day.js locale config while registering
+language with `Streami18n` (either via constructor or `registerTranslation()`) or you can provide your own Day.js or Moment.js instance
 to Streami18n constructor, which will be then used internally (using the language locale) in components.
 
 ```tsx
@@ -185,7 +185,7 @@ const i18n = new Streami18n({
 });
 ```
 
-Or by providing your own [Dayjs](https://day.js.org/docs/en/installation/installation) object:
+Or by providing your own [Day.js](https://day.js.org/docs/en/installation/installation) object:
 
 ```tsx
 import Dayjs from 'dayjs';
@@ -205,7 +205,7 @@ If you would like to stick with English language for date-times in Stream compon
 
 ### Translating messages
 
-If your application has a userbase that speaks more than one language, Stream's Chat Client provides the option to automatically translate messages. For more information on using automatic machine translation for messages, see the [Chat Client Guide on Translation](https://getstream.io/chat/docs/react-native/translation/?language=javascript).
+If your application has a user-base that speaks more than one language, Stream's Chat Client provides the option to automatically translate messages. For more information on using automatic machine translation for messages, see the [Chat Client Guide on Translation](https://getstream.io/chat/docs/react-native/translation/?language=javascript).
 
 ## Options
 
@@ -215,7 +215,7 @@ If your application has a userbase that speaks more than one language, Stream's 
 
 Used for translating dates and times into the desired local format.
 Either [Day.js](https://day.js.org/) or [Moment](https://momentjs.com/) can be used.
-Day.js is a dependency of the repo and used by default.
+Day.js is a dependency of the repository and used by default.
 
 | TYPE            | DEFAULT |
 | --------------- | ------- |
@@ -224,7 +224,7 @@ Day.js is a dependency of the repo and used by default.
 ### dayjsLocaleConfigForLanguage
 
 You can [customize and create](https://day.js.org/docs/en/customization/customization) new locales using Day.js.
-To allow accessability to this option when using the default Day.js instance you can pass these customizations via the `dayjsLocaleConfigForLanguage` key.
+To allow accessibility to this option when using the default Day.js instance you can pass these customizations via the `dayjsLocaleConfigForLanguage` key.
 
 | TYPE   |
 | ------ |
@@ -305,9 +305,9 @@ This overrides the [`debug` key on options](#debug) if provided.
 | ------- |
 | boolean |
 
-### fallbackLng
+### `fallbackLng`
 
-Fallback language setting for for i18next.
+Fallback language setting for i18next.
 
 | TYPE                                                                  |
 | --------------------------------------------------------------------- |
@@ -321,7 +321,7 @@ i18next interpolation setting for integrating dynamic values into translations.
 | ------------------------------------------------------------------------------------ | ------------------------ |
 | [`object`](https://www.i18next.com/translation-function/interpolation#interpolation) | `{ escapeValue: false }` |
 
-### keySeparator
+### `keySeparator`
 
 Override character to separate keys.
 
@@ -329,7 +329,7 @@ Override character to separate keys.
 | ----------------- | ------- |
 | string \| boolean | `false` |
 
-### lng
+### `lng`
 
 Override language to use.
 
@@ -337,7 +337,7 @@ Override language to use.
 | ------ |
 | string |
 
-### nsSeparator
+### `nsSeparator`
 
 Override character to split namespace from key.
 
@@ -371,7 +371,7 @@ Returns instance of i18next used within the `Streami18n` instance.
 const i18n = streami18n.geti18Instance();
 ```
 
-### getTranslations
+### `getTranslations`
 
 Returns the current translations dictionaries for all languages.
 
@@ -379,7 +379,7 @@ Returns the current translations dictionaries for all languages.
 const translations = streami18n.getTranslations();
 ```
 
-### getTranslators
+### `getTranslators`
 
 Asynchronous function that returns the current translator functions.
 
@@ -387,12 +387,12 @@ Asynchronous function that returns the current translator functions.
 const { t, tDateTimeParser } = await streami18n.getTranslators();
 ```
 
-### registerTranslation
+### `registerTranslation`
 
 Allows you to register a custom translation, this will override a translation if one already exists for the given language code.
 The third parameter, which is optional, is a Day.js locale, which is structured the same as [dayjsLocaleConfigForLanguage](#dayjslocaleconfigforlanguage).
 
-It is suggested you look at the [`enTranslations` json file](https://github.com/GetStream/stream-chat-react-native/tree/main/src/i18n) exported from `stream-chat-react-native` for a current list of used translation keys.
+It is suggested you look at the [`enTranslations`.json file](https://github.com/GetStream/stream-chat-react-native/tree/main/src/i18n) exported from `stream-chat-react-native` for a current list of used translation keys.
 
 ```ts
 streami18n.registerTranslation('mr', {
@@ -409,7 +409,7 @@ streami18n.registerTranslation('mr', {
 | translation       | object | :heavy_check_mark: |
 | customDayjsLocale | object |                    |
 
-### setLanguage
+### `setLanguage`
 
 Asynchronous function that changes the current language and returns the new translation function.
 If not initialized `undefined` will be returned.
