@@ -282,7 +282,7 @@ const MessageWithContext = <
   const {
     theme: {
       colors: { bg_gradient_start, targetedMessageBackground },
-      messageSimple: { targetedMessageUnderlay },
+      messageSimple: { targetedMessageContainer, targetedMessageUnderlay },
     },
   } = useTheme();
 
@@ -698,7 +698,12 @@ const MessageWithContext = <
 
   return (
     <View
-      style={[message.pinned && { backgroundColor: targetedMessageBackground }]}
+      style={[
+        message.pinned && {
+          ...targetedMessageContainer,
+          backgroundColor: targetedMessageBackground,
+        },
+      ]}
       testID='message-wrapper'
     >
       <View

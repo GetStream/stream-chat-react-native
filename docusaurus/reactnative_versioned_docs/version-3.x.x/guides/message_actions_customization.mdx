@@ -7,7 +7,7 @@ title: Customize Message Actions
 import messageActions from '../assets/guides/message-actions-customization/message_actions.png';
 import myMessageActions from '../assets/guides/message-actions-customization/my_message_actions.png';
 
-Message actions pop up in message overlay, when you longpress a message. We have provided a granular control over these actions.
+Message actions pop up in message overlay, when you long press a message. We have provided a granular control over these actions.
 By default we render the following actions (as shown in screenshots)
 
 <table>
@@ -79,7 +79,7 @@ Please continue reading further to difference use cases.
 
 Following example demonstrates how to:
 
-- Only show "Copy Message", "Edit Message" actions from default action set.
+- Only show "Copy Message" or "Edit Message" actions from default action set.
 - Show "Edit Message" messages from current user.
 
 Additionally, the following example demonstrates how you can add custom styles for a message action title.
@@ -110,7 +110,7 @@ Additionally, the following example demonstrates how you can add custom styles f
 
 Following example demonstrates how to introduce a new/custom message action:
 
-- Add a new custom action - "Poke User", which simply sends a new message (👉) to screen and dismisses the overlay.
+- Add a new custom action - "Poke User" which simply sends a new message (👉) to screen and dismisses the overlay.
 - Show "Poke User" action only for messages from other user.
 
   ```jsx
@@ -151,7 +151,7 @@ Please note that these intercepts will neither change the standard functions nor
 - `handleRetry`
 - `handleThreadReply`
 
-Following example demostrates how to add analytics tracking to "Copy Message" action.
+Following example demonstrates how to add analytics tracking to "Copy Message" action.
 
 ```tsx
 <Channel handleCopy={() => trackCopyAction()} />
@@ -175,7 +175,7 @@ You can provide `null` value for the props corresponding to action, which you wa
 
 <!-- With the exception of `selectReaction`, all of the functions are provided the `message` (as parameter) they are called on and must return a `MessageAction` for use in the context menu. `selectReaction` is also provided the `message` but should return an async function that takes a `reactionType`. This is called with the selected reaction type when a reaction is selected in the context menu. -->
 
-Following example demostrates how to disable/remove "Delete Message" action.
+Following example demonstrates how to disable/remove "Delete Message" action.
 
 ```tsx
 <Channel deleteMessage={null} />

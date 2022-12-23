@@ -3,7 +3,7 @@ id: message-touchable-handler-payload
 title: MessageTouchableHandlerPayload
 ---
 
-`MessageTouchableHandlerPayload` object is provided as param to callback handlers such as `onLongPressMessage`, `onPressMessage`
+`MessageTouchableHandlerPayload` object is provided as a parameter to callback handlers such as `onLongPressMessage`, `onPressMessage`
 for user interaction with message.
 
 ## Example
@@ -29,7 +29,7 @@ for user interaction with message.
 
 ## Keys and values
 
-### defaultHandler
+### `defaultHandler`
 
 Default handler function for corresponding interaction.
 
@@ -39,7 +39,7 @@ Default handler function for corresponding interaction.
 
 ### emitter
 
-Location within message, where the interaction occured.
+Location within message, where the interaction occurred.
 
 | Type                                                                                                                                         |
 | -------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -53,9 +53,9 @@ Native event object which could either be coming from TouchableOpacity or react-
 | ------ |
 | object |
 
-### actionHandlers
+### `actionHandlers`
 
-Set of action handler functions for various message actions. You can use these functions to perform any action when give interaction occures.
+Set of action handler functions for various message actions. You can use these functions to perform any action when give interaction occurs.
 
 - `deleteMessage`
 - `editMessage`
@@ -64,7 +64,7 @@ Set of action handler functions for various message actions. You can use these f
 - `showMessageOverlay`
 - `toggleBanUser`
 - `toggleMuteUser`
-- `toggleReaction` (takes reactionType as param)
+- `toggleReaction` (takes `reactionType` as a parameter)
 
 ```tsx
 <Channel onLongPressMessage={({ defaultHandlers }) => defaultHandlers.quotedReply()}
@@ -76,7 +76,7 @@ Set of action handler functions for various message actions. You can use these f
 
 ### message
 
-Message object, on which interaction occured.
+Message object, on which interaction occurred.
 
 ```tsx
 <Channel onLongPressMessage={({ message }) => console.log(message.id, message.text)}

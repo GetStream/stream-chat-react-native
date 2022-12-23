@@ -1,10 +1,10 @@
-Watchers of current channel. This value is received from backend when you query a channel, either using [`client.queryChannels()`](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript&q=members) or [`channel.watch()`](https://getstream.io/chat/docs/javascript/watch_channel/?language=javascript&q=members) api call.
+Watchers of current channel. This value is received from backend when you query a channel, either using [`client.queryChannels()`](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript&q=members) or [`channel.watch()`](https://getstream.io/chat/docs/javascript/watch_channel/?language=javascript&q=members) API call.
 
 :::caution
 
 <!-- TODO: Change to new docs -->
 
-`client.queryChannels()` or `channel.watch()` returns only upto 100 watchers for channel. So if you expect total number of watchers to be > 100, you should request them explicitely using [Channel Pagination](https://getstream.io/chat/docs/javascript/channel_pagination/?language=javascript&q=members)
+`client.queryChannels()` or `channel.watch()` returns only up to 100 watchers for channel. So if you expect total number of watchers to be > 100, you should request them explicitly using [Channel Pagination](https://getstream.io/chat/docs/javascript/channel_pagination/?language=javascript&q=members)
 :::
 
 ```tsx

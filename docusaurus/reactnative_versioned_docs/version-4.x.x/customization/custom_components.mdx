@@ -16,20 +16,20 @@ But if more modification is needed, or functionality beyond what is provided out
 ## When to use a custom component
 
 Understanding what is customizable is helpful in determining when to build a custom component.
-If you want to insert your component(s) into another component, you need to create a custom component.
+If you want to insert your on or more components into another component, you need to create a custom component.
 If you want to change the layout of a component significantly, you need to create a custom component.
 If you want to change the internal functionality of a component, you need to create a custom component.
 A good way to think about it is, with few exceptions, what you see is what you get.
-The library can't account for every possible use case out of the box, but don't worry building and using custom components is easy!
+The library can't account for every possible use case out of the box, but don't worry building and using custom components is easy.
 
 ### Exceptions
 
-- Paddings, fonts, colors, borders, etc. can all be altered from the [the theme](./theming.mdx) as styles are passed to most components and sub-components.
+- Padding, fonts, colors, borders, etc. can all be altered from [the theme](./theming.mdx) as styles are passed to most components and sub-components.
 - Messages can be aligned to one side using the `forceAlignMessages` prop on the `Channel` component.
 - Message content can be reordered using the `messageContentOrder` prop on `Channel`; but you may want to adjust the theming to account for changes to border alignments if you alter this order.
 
 Changes to content beyond these tweaks will require custom components.
-If your goal is simply to remove a UI feature you can always replace the component with one that returns `null` to achieve this, i.e. `() => null`.
+If your goal is simply to remove a UI feature you can always replace the component with one that returns `null` to achieve this, that is `() => null`.
 
 ## How to use a custom component
 
