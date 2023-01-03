@@ -1,5 +1,18 @@
 # Change Log
 
+## [5.7.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.6.1...v5.7.0) (2022-12-23)
+
+
+### Features
+
+* allow theming the container for pinned messages ([#1867](https://github.com/GetStream/stream-chat-react-native/issues/1867)) ([f6ee974](https://github.com/GetStream/stream-chat-react-native/commit/f6ee974274d8bd7fb2db4336293dd8647e7b2ab1))
+* initial unread count example ([#1868](https://github.com/GetStream/stream-chat-react-native/issues/1868)) ([d283267](https://github.com/GetStream/stream-chat-react-native/commit/d283267db8bd3d577a9c46d02d0e2894b8341915))
+
+
+### Bug Fixes
+
+* expo module version incompatibilities ([#1855](https://github.com/GetStream/stream-chat-react-native/issues/1855)) ([a2c0357](https://github.com/GetStream/stream-chat-react-native/commit/a2c0357dd676dc3b91eae2fb57157e971db209b5))
+
 ### [5.6.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.6.0...v5.6.1) (2022-12-03)
 
 

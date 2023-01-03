@@ -1,5 +1,23 @@
 # Change Log
 
+## [1.16.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.15.1...sampleapp@v1.16.0) (2022-12-23)
+
+
+### Features
+
+* **SampleApp:** Add dev menu item to clear the local DB ([#1874](https://github.com/GetStream/stream-chat-react-native/issues/1874)) ([2d727ac](https://github.com/GetStream/stream-chat-react-native/commit/2d727ac556e49eef00c8da08b8d1450e50684ffb))
+* initial unread count example ([#1868](https://github.com/GetStream/stream-chat-react-native/issues/1868)) ([d283267](https://github.com/GetStream/stream-chat-react-native/commit/d283267db8bd3d577a9c46d02d0e2894b8341915))
+
+
+### Bug Fixes
+
+* always watch channel before passing to channel component ([#1869](https://github.com/GetStream/stream-chat-react-native/issues/1869)) ([4ae9dce](https://github.com/GetStream/stream-chat-react-native/commit/4ae9dceb418c75176277ce285e861549cafcd6b6))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.15.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.15.0...sampleapp@v1.15.1) (2022-12-03)
 
 
