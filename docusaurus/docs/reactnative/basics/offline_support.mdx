@@ -17,10 +17,10 @@ The offline storage implementation currently offers the following features:
 - Access to chat when Internet connection is disabled or low.
 - Faster startup times and loading, since initial data is loaded from offline storage before performing any network requests.
 - Syncing of the offline database using WebSocket events and Sync API.
+- Optimistically update offline database during chat interactions, such as send message, add reaction, etc.
 
 The following features are currently **NOT** implemented. They will be implemented gradually as part of minor releases in v5.
 
-- Optimistically update offline database during chat interactions, such as send message, add reaction, etc.
 - Access to threads in offline mode.
 
 ## How To Enable Offline Support
@@ -30,19 +30,18 @@ To enable offline support, please follow the given steps:
 
 1. **Upgrade stream-chat dependency (optional)**
 
-If you have installed `stream-chat` dependency explicitly on your application, then upgrade it to v7:
+If you have installed `stream-chat` dependency explicitly on your application, then please make sure to upgrade it to v7 or higher.
 
 ```bash
-yarn add stream-chat@7.0.0
+yarn add stream-chat
 ```
 
 2. **Add `react-native-quick-sqlite` dependency**
 
-> At the moment, support for only v4 of `react-native-quick-sqlite` is available.
-> Support for v5 of `react-native-quick-sqlite` will be introduced in one of the upcoming minor release.
+> If you are using v5.5.1 or lower version of `stream-chat-react-native`, then please install v4 of `react-native-quick-sqlite` instead.
 
 ```bash
-  yarn add react-native-quick-sqlite@4.0.8
+  yarn add react-native-quick-sqlite@5.1.0
   npx pod-install
 ```
 
