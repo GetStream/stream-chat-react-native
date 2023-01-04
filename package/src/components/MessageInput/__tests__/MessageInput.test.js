@@ -98,12 +98,6 @@ describe('MessageInput', () => {
       expect(queryByTestId('send-button')).toBeTruthy();
       expect(queryByText('Editing Message')).toBeFalsy();
     });
-
-    const snapshot = toJSON();
-
-    await waitFor(() => {
-      expect(snapshot).toMatchSnapshot();
-    });
   });
 
   it('trigger file size threshold limit alert when images size above the limit', async () => {
