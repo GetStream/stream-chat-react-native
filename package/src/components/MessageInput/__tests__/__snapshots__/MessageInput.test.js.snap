@@ -113,7 +113,7 @@ Array [
                     meetOrSlice={0}
                     minX={0}
                     minY={0}
-                    pathFill="#005FFF"
+                    pathFill="#7A7A7A"
                     style={
                       Array [
                         Object {
@@ -135,7 +135,7 @@ Array [
                       <RNSVGPath
                         clipRule={0}
                         d="M13.468 2.888a5.07 5.07 0 012.983.635 5.07 5.07 0 012.041 2.265c.45 1.01.546 2.254-.144 3.449l-4.5 7.794a3.232 3.232 0 01-1.427 1.294c-.757.342-1.696.367-2.671-.196-.975-.563-1.422-1.389-1.506-2.215a3.233 3.233 0 01.408-1.883l4-6.928a1 1 0 011.732 1l-4 6.928c-.087.15-.176.425-.15.682.02.196.105.447.516.684.41.237.671.185.85.105.236-.107.43-.32.516-.47l4.5-7.795c.31-.538.29-1.093.049-1.636a3.072 3.072 0 00-1.214-1.346 3.072 3.072 0 00-1.773-.378c-.591.062-1.082.322-1.392.86l-5 8.66c-.654 1.133-.286 3.3 1.964 4.598 2.25 1.3 4.31.535 4.964-.598l3.5-6.062a1 1 0 111.732 1l-3.5 6.062c-1.345 2.33-4.75 3.031-7.696 1.33-2.946-1.7-4.042-5-2.696-7.33l5-8.66c.69-1.195 1.815-1.733 2.914-1.85z"
-                        fill={4278214655}
+                        fill={4286216826}
                         fillRule={0}
                         propList={
                           Array [
@@ -251,6 +251,1048 @@ Array [
               ]
             }
           >
+            <RCTScrollView
+              data={
+                Array [
+                  Object {
+                    "file": Object {
+                      "file": Object {
+                        "height": 100,
+                        "uri": "https://picsum.photos/200/300",
+                        "width": 100,
+                      },
+                      "fileSize": 10000001,
+                      "id": "acf0c1a5-7062-411d-a2c9-5201768c43fe",
+                      "image_url": "4deabe1d-dae2-480c-a0a0-f9621f2d64ea",
+                      "title": "3d07e2ff-7db2-4435-94b5-c98126cf13a4",
+                      "type": "image",
+                      "uri": "https://picsum.photos/200/300",
+                    },
+                    "height": undefined,
+                    "id": "28481960-e68a-44b2-226c-9e3897d59c9f",
+                    "state": "uploading",
+                    "url": "https://picsum.photos/200/300",
+                    "width": undefined,
+                  },
+                  Object {
+                    "file": Object {
+                      "file": Object {
+                        "height": 100,
+                        "uri": "https://picsum.photos/200/300",
+                        "width": 100,
+                      },
+                      "fileSize": 10000001,
+                      "id": "1ef691dc-daf4-4fd9-bd93-70c4fc13a6cf",
+                      "image_url": "901953f0-34da-4e1c-b56d-818ca752f56a",
+                      "title": "b89eb191-cbdf-4619-bc08-ff1d26686413",
+                      "type": "image",
+                      "uri": "https://picsum.photos/200/300",
+                    },
+                    "height": undefined,
+                    "id": "bb14e6db-76fa-45e2-08e6-c72b72163f76",
+                    "state": "uploading",
+                    "url": "https://picsum.photos/200/300",
+                    "width": undefined,
+                  },
+                ]
+              }
+              getItem={[Function]}
+              getItemCount={[Function]}
+              getItemLayout={[Function]}
+              horizontal={true}
+              keyExtractor={[Function]}
+              onContentSizeChange={[Function]}
+              onLayout={[Function]}
+              onMomentumScrollBegin={[Function]}
+              onMomentumScrollEnd={[Function]}
+              onScroll={[Function]}
+              onScrollBeginDrag={[Function]}
+              onScrollEndDrag={[Function]}
+              removeClippedSubviews={false}
+              renderItem={[Function]}
+              scrollEventThrottle={50}
+              stickyHeaderIndices={Array []}
+              style={
+                Array [
+                  Object {
+                    "paddingBottom": 12,
+                  },
+                  Object {},
+                ]
+              }
+              viewabilityConfigCallbackPairs={Array []}
+            >
+              <View>
+                <View
+                  style={
+                    Array [
+                      Object {
+                        "flexDirection": "row",
+                      },
+                      null,
+                    ]
+                  }
+                >
+                  <View
+                    style={
+                      Array [
+                        Object {
+                          "flexDirection": "row",
+                          "height": 100,
+                          "marginLeft": 8,
+                        },
+                        Object {},
+                        Object {},
+                      ]
+                    }
+                  >
+                    <View
+                      style={
+                        Array [
+                          Object {
+                            "overflow": "hidden",
+                          },
+                          Object {
+                            "borderRadius": 10,
+                            "height": 100,
+                            "width": 100,
+                          },
+                        ]
+                      }
+                      testID="active-upload-progress-indicator"
+                    >
+                      <Image
+                        resizeMode="cover"
+                        source={
+                          Object {
+                            "uri": "https://picsum.photos/200/300",
+                          }
+                        }
+                        style={
+                          Array [
+                            Object {
+                              "borderRadius": 10,
+                              "height": 100,
+                              "width": 100,
+                            },
+                            Object {},
+                          ]
+                        }
+                      />
+                      <View
+                        style={
+                          Array [
+                            Object {
+                              "alignItems": "center",
+                              "height": "100%",
+                              "justifyContent": "center",
+                              "position": "absolute",
+                              "width": "100%",
+                            },
+                            Object {
+                              "backgroundColor": "#000000CC",
+                            },
+                            Object {},
+                          ]
+                        }
+                        testID="not-supported-upload-progress-indicator"
+                      >
+                        <View
+                          style={
+                            Object {
+                              "alignItems": "center",
+                              "bottom": 0,
+                              "justifyContent": "center",
+                              "left": 0,
+                              "position": "absolute",
+                              "right": 0,
+                              "top": 0,
+                            }
+                          }
+                        >
+                          <ActivityIndicator
+                            color="#F2F2F2"
+                            testID="upload-progress-indicator"
+                          />
+                        </View>
+                      </View>
+                    </View>
+                    <View
+                      accessible={true}
+                      collapsable={false}
+                      focusable={true}
+                      onClick={[Function]}
+                      onResponderGrant={[Function]}
+                      onResponderMove={[Function]}
+                      onResponderRelease={[Function]}
+                      onResponderTerminate={[Function]}
+                      onResponderTerminationRequest={[Function]}
+                      onStartShouldSetResponder={[Function]}
+                      style={
+                        Object {
+                          "backgroundColor": "#000000CC",
+                          "borderRadius": 24,
+                          "opacity": 1,
+                          "position": "absolute",
+                          "right": 8,
+                          "top": 8,
+                        }
+                      }
+                      testID="remove-image-upload-preview"
+                    >
+                      <RNSVGSvgView
+                        align="xMidYMid"
+                        bbHeight={24}
+                        bbWidth={24}
+                        focusable={false}
+                        height={24}
+                        meetOrSlice={0}
+                        minX={0}
+                        minY={0}
+                        pathFill="#FFFFFF"
+                        style={
+                          Array [
+                            Object {
+                              "backgroundColor": "transparent",
+                              "borderWidth": 0,
+                            },
+                            Object {
+                              "flex": 0,
+                              "height": 24,
+                              "width": 24,
+                            },
+                          ]
+                        }
+                        vbHeight={24}
+                        vbWidth={24}
+                        width={24}
+                      >
+                        <RNSVGGroup>
+                          <RNSVGPath
+                            clipRule={0}
+                            d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+                            fill={4294967295}
+                            fillRule={0}
+                            propList={
+                              Array [
+                                "fill",
+                                "fillRule",
+                              ]
+                            }
+                          />
+                        </RNSVGGroup>
+                      </RNSVGSvgView>
+                    </View>
+                  </View>
+                </View>
+                <View
+                  style={
+                    Array [
+                      Object {
+                        "flexDirection": "row",
+                      },
+                      null,
+                    ]
+                  }
+                >
+                  <View
+                    style={
+                      Array [
+                        Object {
+                          "flexDirection": "row",
+                          "height": 100,
+                          "marginLeft": 8,
+                        },
+                        Object {
+                          "marginRight": 8,
+                        },
+                        Object {},
+                      ]
+                    }
+                  >
+                    <View
+                      style={
+                        Array [
+                          Object {
+                            "overflow": "hidden",
+                          },
+                          Object {
+                            "borderRadius": 10,
+                            "height": 100,
+                            "width": 100,
+                          },
+                        ]
+                      }
+                      testID="active-upload-progress-indicator"
+                    >
+                      <Image
+                        resizeMode="cover"
+                        source={
+                          Object {
+                            "uri": "https://picsum.photos/200/300",
+                          }
+                        }
+                        style={
+                          Array [
+                            Object {
+                              "borderRadius": 10,
+                              "height": 100,
+                              "width": 100,
+                            },
+                            Object {},
+                          ]
+                        }
+                      />
+                      <View
+                        style={
+                          Array [
+                            Object {
+                              "alignItems": "center",
+                              "height": "100%",
+                              "justifyContent": "center",
+                              "position": "absolute",
+                              "width": "100%",
+                            },
+                            Object {
+                              "backgroundColor": "#000000CC",
+                            },
+                            Object {},
+                          ]
+                        }
+                        testID="not-supported-upload-progress-indicator"
+                      >
+                        <View
+                          style={
+                            Object {
+                              "alignItems": "center",
+                              "bottom": 0,
+                              "justifyContent": "center",
+                              "left": 0,
+                              "position": "absolute",
+                              "right": 0,
+                              "top": 0,
+                            }
+                          }
+                        >
+                          <ActivityIndicator
+                            color="#F2F2F2"
+                            testID="upload-progress-indicator"
+                          />
+                        </View>
+                      </View>
+                    </View>
+                    <View
+                      accessible={true}
+                      collapsable={false}
+                      focusable={true}
+                      onClick={[Function]}
+                      onResponderGrant={[Function]}
+                      onResponderMove={[Function]}
+                      onResponderRelease={[Function]}
+                      onResponderTerminate={[Function]}
+                      onResponderTerminationRequest={[Function]}
+                      onStartShouldSetResponder={[Function]}
+                      style={
+                        Object {
+                          "backgroundColor": "#000000CC",
+                          "borderRadius": 24,
+                          "opacity": 1,
+                          "position": "absolute",
+                          "right": 8,
+                          "top": 8,
+                        }
+                      }
+                      testID="remove-image-upload-preview"
+                    >
+                      <RNSVGSvgView
+                        align="xMidYMid"
+                        bbHeight={24}
+                        bbWidth={24}
+                        focusable={false}
+                        height={24}
+                        meetOrSlice={0}
+                        minX={0}
+                        minY={0}
+                        pathFill="#FFFFFF"
+                        style={
+                          Array [
+                            Object {
+                              "backgroundColor": "transparent",
+                              "borderWidth": 0,
+                            },
+                            Object {
+                              "flex": 0,
+                              "height": 24,
+                              "width": 24,
+                            },
+                          ]
+                        }
+                        vbHeight={24}
+                        vbWidth={24}
+                        width={24}
+                      >
+                        <RNSVGGroup>
+                          <RNSVGPath
+                            clipRule={0}
+                            d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+                            fill={4294967295}
+                            fillRule={0}
+                            propList={
+                              Array [
+                                "fill",
+                                "fillRule",
+                              ]
+                            }
+                          />
+                        </RNSVGGroup>
+                      </RNSVGSvgView>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </RCTScrollView>
+            <View
+              style={
+                Array [
+                  Object {
+                    "borderBottomWidth": 1,
+                    "marginBottom": 10,
+                  },
+                  Object {
+                    "borderBottomColor": "#ECEBEB",
+                    "marginHorizontal": 12,
+                  },
+                ]
+              }
+            />
+            <RCTScrollView
+              data={
+                Array [
+                  Object {
+                    "duration": 0,
+                    "file": Object {
+                      "asset_url": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+                      "description": "c91f1a35-a7d5-4552-9e37-9df62d93b8cf",
+                      "file_size": 1337,
+                      "mime_type": "68ced16f-08dc-4567-9a01-4f7078703d9a",
+                      "name": "Dummy.png",
+                      "size": 20000000,
+                      "text": "cef22a94-5b5c-49d9-8409-934c6cf94c5f",
+                      "title": "0974e010-e535-4e91-9035-bf4b0499ffd3",
+                      "type": "image/png",
+                    },
+                    "id": "a5310942-af71-4fac-1fe1-79fc4fd64e25",
+                    "paused": true,
+                    "progress": 0,
+                    "state": "uploaded",
+                    "thumb_url": undefined,
+                    "url": undefined,
+                  },
+                  Object {
+                    "duration": 0,
+                    "file": Object {
+                      "asset_url": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+                      "description": "60f94028-661a-4597-a447-b6a8cbf24c77",
+                      "file_size": 1337,
+                      "mime_type": "60e55596-6ebc-4c05-8f16-4476b10de08a",
+                      "name": "Dummy.png",
+                      "size": 20000000,
+                      "text": "f3879dff-df65-4570-bb5a-661c2d848b76",
+                      "title": "635ab088-a97f-405c-9de6-93a7389fea34",
+                      "type": "image/png",
+                    },
+                    "id": "5bd575df-58a7-4874-310e-0fb6c38b3abf",
+                    "paused": true,
+                    "progress": 0,
+                    "state": "uploaded",
+                    "thumb_url": undefined,
+                    "url": undefined,
+                  },
+                ]
+              }
+              getItem={[Function]}
+              getItemCount={[Function]}
+              getItemLayout={[Function]}
+              keyExtractor={[Function]}
+              onContentSizeChange={[Function]}
+              onLayout={[Function]}
+              onMomentumScrollBegin={[Function]}
+              onMomentumScrollEnd={[Function]}
+              onScroll={[Function]}
+              onScrollBeginDrag={[Function]}
+              onScrollEndDrag={[Function]}
+              removeClippedSubviews={false}
+              renderItem={[Function]}
+              scrollEventThrottle={50}
+              stickyHeaderIndices={Array []}
+              style={
+                Array [
+                  Object {
+                    "marginBottom": 12,
+                    "maxHeight": 166,
+                  },
+                  Object {},
+                ]
+              }
+              viewabilityConfigCallbackPairs={Array []}
+            >
+              <View>
+                <View
+                  style={null}
+                >
+                  <View
+                    style={
+                      Array [
+                        Object {
+                          "overflow": "hidden",
+                        },
+                        Object {
+                          "borderRadius": 12,
+                          "marginLeft": 8,
+                          "marginRight": 8,
+                        },
+                      ]
+                    }
+                    testID="inactive-upload-progress-indicator"
+                  >
+                    <View
+                      style={
+                        Array [
+                          Object {
+                            "borderRadius": 12,
+                            "borderWidth": 1,
+                            "flexDirection": "row",
+                            "height": 60,
+                            "justifyContent": "space-between",
+                            "marginBottom": 8,
+                            "paddingLeft": 8,
+                            "paddingRight": 8,
+                          },
+                          Object {},
+                          Object {
+                            "borderColor": "#ECEBEB",
+                            "width": -16,
+                          },
+                          Object {},
+                        ]
+                      }
+                    >
+                      <View
+                        style={
+                          Array [
+                            Object {
+                              "flexDirection": "row",
+                            },
+                            Object {},
+                          ]
+                        }
+                      >
+                        <View
+                          style={
+                            Object {
+                              "alignItems": "center",
+                              "alignSelf": "center",
+                              "justifyContent": "center",
+                            }
+                          }
+                        >
+                          <RNSVGSvgView
+                            align="xMidYMid"
+                            bbHeight={40}
+                            bbWidth={34}
+                            focusable={false}
+                            height={40}
+                            meetOrSlice={0}
+                            minX={0}
+                            minY={0}
+                            style={
+                              Array [
+                                Object {
+                                  "backgroundColor": "transparent",
+                                  "borderWidth": 0,
+                                },
+                                Object {
+                                  "flex": 0,
+                                  "height": 40,
+                                  "width": 34,
+                                },
+                              ]
+                            }
+                            vbHeight={40}
+                            vbWidth={34}
+                            width={34}
+                          >
+                            <RNSVGGroup>
+                              <RNSVGPath
+                                clipRule={0}
+                                d="M0 3.99A3.99 3.99 0 013.99 0h19.285l9.975 9.975V35.91a3.99 3.99 0 01-3.99 3.99H3.99A3.99 3.99 0 010 35.91V3.99z"
+                                fill={
+                                  Array [
+                                    1,
+                                    "gradient",
+                                  ]
+                                }
+                                fillRule={0}
+                                propList={
+                                  Array [
+                                    "fill",
+                                    "fillRule",
+                                  ]
+                                }
+                              />
+                              <RNSVGPath
+                                clipRule={0}
+                                d="M7.98 14.131v-1.66h14.962v1.661H7.98zm9.976 1.663H7.98v1.662h9.976v-1.662zM7.98 20.78h14.962v-1.66H7.98v1.662-.002z"
+                                fill={4291809231}
+                                fillRule={0}
+                                propList={
+                                  Array [
+                                    "fill",
+                                    "fillRule",
+                                  ]
+                                }
+                              />
+                              <RNSVGPath
+                                clipRule={0}
+                                d="M26.624 9.965a3.298 3.298 0 01-3.298-3.299V.058l9.92 9.907h-6.622z"
+                                fill={4292598747}
+                                fillRule={0}
+                                propList={
+                                  Array [
+                                    "fill",
+                                    "fillRule",
+                                  ]
+                                }
+                              />
+                              <RNSVGDefs>
+                                <RNSVGLinearGradient
+                                  gradient={
+                                    Array [
+                                      0,
+                                      -1,
+                                      1,
+                                      -2368549,
+                                    ]
+                                  }
+                                  gradientTransform={null}
+                                  gradientUnits={1}
+                                  name="gradient"
+                                  x1={0}
+                                  x2={0}
+                                  y1={0}
+                                  y2={40}
+                                />
+                              </RNSVGDefs>
+                            </RNSVGGroup>
+                          </RNSVGSvgView>
+                        </View>
+                        <View
+                          style={
+                            Array [
+                              Object {
+                                "height": "100%",
+                                "justifyContent": "space-around",
+                              },
+                              Object {},
+                            ]
+                          }
+                        >
+                          <Text
+                            numberOfLines={1}
+                            style={
+                              Array [
+                                Object {
+                                  "fontSize": 14,
+                                  "fontWeight": "bold",
+                                  "paddingHorizontal": 10,
+                                },
+                                Object {
+                                  "color": "#000000",
+                                  "width": -104,
+                                },
+                                Object {
+                                  "writingDirection": "ltr",
+                                },
+                                Object {},
+                              ]
+                            }
+                          >
+                            Dummy.png....png
+                          </Text>
+                          <Text
+                            style={
+                              Array [
+                                Array [
+                                  Object {
+                                    "fontSize": 12,
+                                    "paddingHorizontal": 10,
+                                  },
+                                  Object {
+                                    "color": "#7A7A7A",
+                                  },
+                                  Object {},
+                                ],
+                                Object {
+                                  "writingDirection": "ltr",
+                                },
+                              ]
+                            }
+                          >
+                            20 MB
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                    <View
+                      accessible={true}
+                      collapsable={false}
+                      focusable={true}
+                      onClick={[Function]}
+                      onResponderGrant={[Function]}
+                      onResponderMove={[Function]}
+                      onResponderRelease={[Function]}
+                      onResponderTerminate={[Function]}
+                      onResponderTerminationRequest={[Function]}
+                      onStartShouldSetResponder={[Function]}
+                      style={
+                        Object {
+                          "backgroundColor": "#DBDBDB",
+                          "borderRadius": 24,
+                          "height": 24,
+                          "opacity": 1,
+                          "position": "absolute",
+                          "right": 8,
+                          "top": 8,
+                          "width": 24,
+                        }
+                      }
+                      testID="remove-file-upload-preview"
+                    >
+                      <RNSVGSvgView
+                        align="xMidYMid"
+                        bbHeight={24}
+                        bbWidth={24}
+                        focusable={false}
+                        height={24}
+                        meetOrSlice={0}
+                        minX={0}
+                        minY={0}
+                        pathFill="#72767E"
+                        style={
+                          Array [
+                            Object {
+                              "backgroundColor": "transparent",
+                              "borderWidth": 0,
+                            },
+                            Object {
+                              "flex": 0,
+                              "height": 24,
+                              "width": 24,
+                            },
+                          ]
+                        }
+                        vbHeight={24}
+                        vbWidth={24}
+                        width={24}
+                      >
+                        <RNSVGGroup>
+                          <RNSVGPath
+                            clipRule={0}
+                            d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+                            fill={4285691518}
+                            fillRule={0}
+                            propList={
+                              Array [
+                                "fill",
+                                "fillRule",
+                              ]
+                            }
+                          />
+                        </RNSVGGroup>
+                      </RNSVGSvgView>
+                    </View>
+                  </View>
+                </View>
+                <View
+                  style={null}
+                >
+                  <View
+                    style={
+                      Array [
+                        Object {
+                          "overflow": "hidden",
+                        },
+                        Object {
+                          "borderRadius": 12,
+                          "marginLeft": 8,
+                          "marginRight": 8,
+                        },
+                      ]
+                    }
+                    testID="inactive-upload-progress-indicator"
+                  >
+                    <View
+                      style={
+                        Array [
+                          Object {
+                            "borderRadius": 12,
+                            "borderWidth": 1,
+                            "flexDirection": "row",
+                            "height": 60,
+                            "justifyContent": "space-between",
+                            "marginBottom": 8,
+                            "paddingLeft": 8,
+                            "paddingRight": 8,
+                          },
+                          Object {
+                            "marginBottom": 0,
+                          },
+                          Object {
+                            "borderColor": "#ECEBEB",
+                            "width": -16,
+                          },
+                          Object {},
+                        ]
+                      }
+                    >
+                      <View
+                        style={
+                          Array [
+                            Object {
+                              "flexDirection": "row",
+                            },
+                            Object {},
+                          ]
+                        }
+                      >
+                        <View
+                          style={
+                            Object {
+                              "alignItems": "center",
+                              "alignSelf": "center",
+                              "justifyContent": "center",
+                            }
+                          }
+                        >
+                          <RNSVGSvgView
+                            align="xMidYMid"
+                            bbHeight={40}
+                            bbWidth={34}
+                            focusable={false}
+                            height={40}
+                            meetOrSlice={0}
+                            minX={0}
+                            minY={0}
+                            style={
+                              Array [
+                                Object {
+                                  "backgroundColor": "transparent",
+                                  "borderWidth": 0,
+                                },
+                                Object {
+                                  "flex": 0,
+                                  "height": 40,
+                                  "width": 34,
+                                },
+                              ]
+                            }
+                            vbHeight={40}
+                            vbWidth={34}
+                            width={34}
+                          >
+                            <RNSVGGroup>
+                              <RNSVGPath
+                                clipRule={0}
+                                d="M0 3.99A3.99 3.99 0 013.99 0h19.285l9.975 9.975V35.91a3.99 3.99 0 01-3.99 3.99H3.99A3.99 3.99 0 010 35.91V3.99z"
+                                fill={
+                                  Array [
+                                    1,
+                                    "gradient",
+                                  ]
+                                }
+                                fillRule={0}
+                                propList={
+                                  Array [
+                                    "fill",
+                                    "fillRule",
+                                  ]
+                                }
+                              />
+                              <RNSVGPath
+                                clipRule={0}
+                                d="M7.98 14.131v-1.66h14.962v1.661H7.98zm9.976 1.663H7.98v1.662h9.976v-1.662zM7.98 20.78h14.962v-1.66H7.98v1.662-.002z"
+                                fill={4291809231}
+                                fillRule={0}
+                                propList={
+                                  Array [
+                                    "fill",
+                                    "fillRule",
+                                  ]
+                                }
+                              />
+                              <RNSVGPath
+                                clipRule={0}
+                                d="M26.624 9.965a3.298 3.298 0 01-3.298-3.299V.058l9.92 9.907h-6.622z"
+                                fill={4292598747}
+                                fillRule={0}
+                                propList={
+                                  Array [
+                                    "fill",
+                                    "fillRule",
+                                  ]
+                                }
+                              />
+                              <RNSVGDefs>
+                                <RNSVGLinearGradient
+                                  gradient={
+                                    Array [
+                                      0,
+                                      -1,
+                                      1,
+                                      -2368549,
+                                    ]
+                                  }
+                                  gradientTransform={null}
+                                  gradientUnits={1}
+                                  name="gradient"
+                                  x1={0}
+                                  x2={0}
+                                  y1={0}
+                                  y2={40}
+                                />
+                              </RNSVGDefs>
+                            </RNSVGGroup>
+                          </RNSVGSvgView>
+                        </View>
+                        <View
+                          style={
+                            Array [
+                              Object {
+                                "height": "100%",
+                                "justifyContent": "space-around",
+                              },
+                              Object {},
+                            ]
+                          }
+                        >
+                          <Text
+                            numberOfLines={1}
+                            style={
+                              Array [
+                                Object {
+                                  "fontSize": 14,
+                                  "fontWeight": "bold",
+                                  "paddingHorizontal": 10,
+                                },
+                                Object {
+                                  "color": "#000000",
+                                  "width": -104,
+                                },
+                                Object {
+                                  "writingDirection": "ltr",
+                                },
+                                Object {},
+                              ]
+                            }
+                          >
+                            Dummy.png....png
+                          </Text>
+                          <Text
+                            style={
+                              Array [
+                                Array [
+                                  Object {
+                                    "fontSize": 12,
+                                    "paddingHorizontal": 10,
+                                  },
+                                  Object {
+                                    "color": "#7A7A7A",
+                                  },
+                                  Object {},
+                                ],
+                                Object {
+                                  "writingDirection": "ltr",
+                                },
+                              ]
+                            }
+                          >
+                            20 MB
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                    <View
+                      accessible={true}
+                      collapsable={false}
+                      focusable={true}
+                      onClick={[Function]}
+                      onResponderGrant={[Function]}
+                      onResponderMove={[Function]}
+                      onResponderRelease={[Function]}
+                      onResponderTerminate={[Function]}
+                      onResponderTerminationRequest={[Function]}
+                      onStartShouldSetResponder={[Function]}
+                      style={
+                        Object {
+                          "backgroundColor": "#DBDBDB",
+                          "borderRadius": 24,
+                          "height": 24,
+                          "opacity": 1,
+                          "position": "absolute",
+                          "right": 8,
+                          "top": 8,
+                          "width": 24,
+                        }
+                      }
+                      testID="remove-file-upload-preview"
+                    >
+                      <RNSVGSvgView
+                        align="xMidYMid"
+                        bbHeight={24}
+                        bbWidth={24}
+                        focusable={false}
+                        height={24}
+                        meetOrSlice={0}
+                        minX={0}
+                        minY={0}
+                        pathFill="#72767E"
+                        style={
+                          Array [
+                            Object {
+                              "backgroundColor": "transparent",
+                              "borderWidth": 0,
+                            },
+                            Object {
+                              "flex": 0,
+                              "height": 24,
+                              "width": 24,
+                            },
+                          ]
+                        }
+                        vbHeight={24}
+                        vbWidth={24}
+                        width={24}
+                      >
+                        <RNSVGGroup>
+                          <RNSVGPath
+                            clipRule={0}
+                            d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+                            fill={4285691518}
+                            fillRule={0}
+                            propList={
+                              Array [
+                                "fill",
+                                "fillRule",
+                              ]
+                            }
+                          />
+                        </RNSVGGroup>
+                      </RNSVGSvgView>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </RCTScrollView>
             <View
               style={
                 Array [
@@ -376,280 +1418,6 @@ Array [
           </View>
         </View>
       </View>
-      <View
-        style={
-          Array [
-            Object {
-              "backgroundColor": "#F2F2F2",
-              "height": 360,
-            },
-            Object {},
-          ]
-        }
-      >
-        <View
-          style={
-            Array [
-              Object {
-                "alignItems": "center",
-                "flexDirection": "row",
-                "paddingHorizontal": 6,
-              },
-              Object {},
-              Object {
-                "height": 52,
-              },
-            ]
-          }
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            hitSlop={
-              Object {
-                "bottom": 15,
-                "top": 15,
-              }
-            }
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              Object {
-                "opacity": 1,
-              }
-            }
-            testID="upload-photo-touchable"
-          >
-            <View
-              style={
-                Array [
-                  Object {
-                    "marginHorizontal": 12,
-                  },
-                  Object {},
-                ]
-              }
-            >
-              <RNSVGSvgView
-                align="xMidYMid"
-                bbHeight={24}
-                bbWidth={24}
-                focusable={false}
-                height={24}
-                meetOrSlice={0}
-                minX={0}
-                minY={0}
-                pathFill="#005FFF"
-                style={
-                  Array [
-                    Object {
-                      "backgroundColor": "transparent",
-                      "borderWidth": 0,
-                    },
-                    Object {
-                      "flex": 0,
-                      "height": 24,
-                      "width": 24,
-                    },
-                  ]
-                }
-                vbHeight={24}
-                vbWidth={24}
-                width={24}
-              >
-                <RNSVGGroup>
-                  <RNSVGPath
-                    clipRule={0}
-                    d="M2 8a3 3 0 013-3h14a3 3 0 013 3v8a3 3 0 01-3 3H5a3 3 0 01-3-3V8zm3-1a1 1 0 00-1 1v8a1 1 0 001 1h14a1 1 0 001-1V8a1 1 0 00-1-1H5z"
-                    fill={4278214655}
-                    fillRule={0}
-                    propList={
-                      Array [
-                        "fill",
-                        "fillRule",
-                      ]
-                    }
-                  />
-                  <RNSVGPath
-                    clipRule={0}
-                    d="M15.99 9a1 1 0 01.778.36l5 6a1 1 0 11-1.536 1.28l-4.216-5.059-3.235 4.044a1 1 0 01-1.381.175l-3.306-2.48-3.387 3.387a1 1 0 01-1.414-1.414l4-4A1 1 0 018.6 11.2l3.225 2.418 3.394-4.243A1 1 0 0115.99 9z"
-                    fill={4278214655}
-                    fillRule={0}
-                    propList={
-                      Array [
-                        "fill",
-                        "fillRule",
-                      ]
-                    }
-                  />
-                </RNSVGGroup>
-              </RNSVGSvgView>
-            </View>
-          </View>
-          <View
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            hitSlop={
-              Object {
-                "bottom": 15,
-                "top": 15,
-              }
-            }
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              Object {
-                "opacity": 1,
-              }
-            }
-            testID="upload-file-touchable"
-          >
-            <View
-              style={
-                Array [
-                  Object {
-                    "marginHorizontal": 12,
-                  },
-                  Object {},
-                ]
-              }
-            >
-              <RNSVGSvgView
-                align="xMidYMid"
-                bbHeight={24}
-                bbWidth={24}
-                focusable={false}
-                height={24}
-                meetOrSlice={0}
-                minX={0}
-                minY={0}
-                pathFill="#7A7A7A"
-                style={
-                  Array [
-                    Object {
-                      "backgroundColor": "transparent",
-                      "borderWidth": 0,
-                    },
-                    Object {
-                      "flex": 0,
-                      "height": 24,
-                      "width": 24,
-                    },
-                  ]
-                }
-                vbHeight={24}
-                vbWidth={24}
-                width={24}
-              >
-                <RNSVGGroup>
-                  <RNSVGPath
-                    clipRule={0}
-                    d="M21 5h-8.586l-2-2H3a1 1 0 00-1 1v16a1 1 0 001 1h18a1 1 0 001-1V6a1 1 0 00-1-1zM4 19V7h16v12H4z"
-                    fill={4286216826}
-                    fillRule={0}
-                    propList={
-                      Array [
-                        "fill",
-                        "fillRule",
-                      ]
-                    }
-                  />
-                </RNSVGGroup>
-              </RNSVGSvgView>
-            </View>
-          </View>
-          <View
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            hitSlop={
-              Object {
-                "bottom": 15,
-                "top": 15,
-              }
-            }
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              Object {
-                "opacity": 1,
-              }
-            }
-            testID="take-photo-touchable"
-          >
-            <View
-              style={
-                Array [
-                  Object {
-                    "marginHorizontal": 12,
-                  },
-                  Object {},
-                ]
-              }
-            >
-              <RNSVGSvgView
-                align="xMidYMid"
-                bbHeight={24}
-                bbWidth={24}
-                focusable={false}
-                height={24}
-                meetOrSlice={0}
-                minX={0}
-                minY={0}
-                pathFill="#7A7A7A"
-                style={
-                  Array [
-                    Object {
-                      "backgroundColor": "transparent",
-                      "borderWidth": 0,
-                    },
-                    Object {
-                      "flex": 0,
-                      "height": 24,
-                      "width": 24,
-                    },
-                  ]
-                }
-                vbHeight={24}
-                vbWidth={24}
-                width={24}
-              >
-                <RNSVGGroup>
-                  <RNSVGPath
-                    clipRule={0}
-                    d="M15 3H9L7 5H3a1 1 0 00-1 1v14a1 1 0 001 1h18a1 1 0 001-1V6a1 1 0 00-1-1h-4l-2-2zM7.828 7l2-2h4.344l2 2H20v12H4V7h3.828zM12 18a5.5 5.5 0 110-11 5.5 5.5 0 010 11zm3.5-5.5a3.5 3.5 0 11-7 0 3.5 3.5 0 017 0z"
-                    fill={4286216826}
-                    fillRule={0}
-                    propList={
-                      Array [
-                        "fill",
-                        "fillRule",
-                      ]
-                    }
-                  />
-                </RNSVGGroup>
-              </RNSVGSvgView>
-            </View>
-          </View>
-        </View>
-      </View>
     </View>
   </View>,
   <View
@@ -702,7 +1470,7 @@ Array [
     snapPoints={
       Array [
         308,
-        1334,
+        NaN,
       ]
     }
   >
