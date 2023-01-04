@@ -4,7 +4,7 @@ import { act } from 'react-test-renderer';
 
 import { renderHook } from '@testing-library/react-hooks';
 
-import { generateFileAttachment } from 'src/mock-builders/generator/attachment';
+import { generateFileAttachment } from '../../../mock-builders/generator/attachment';
 
 import * as NativeUtils from '../../../native';
 
