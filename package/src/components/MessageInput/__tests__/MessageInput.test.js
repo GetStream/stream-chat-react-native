@@ -85,7 +85,7 @@ describe('MessageInput', () => {
   it('should render MessageInput', async () => {
     await initializeChannel(generateChannelResponse());
 
-    const { getByTestId, queryByTestId, queryByText, toJSON } = render(getComponent());
+    const { getByTestId, queryByTestId, queryByText } = render(getComponent());
 
     await waitFor(() => {
       expect(queryByTestId('attach-button')).toBeTruthy();
