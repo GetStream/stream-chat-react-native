@@ -81,6 +81,8 @@ export type ImageUpload = {
   width?: number;
 };
 
+const MegaByesToBytes = 1024 * 1024;
+
 export type MentionAllAppUsersQuery<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
@@ -379,6 +381,10 @@ export type InputMessageInputContextValue<
    * - toggleAttachmentPicker
    */
   InputButtons?: React.ComponentType<InputButtonsProps<StreamChatGenerics>>;
+  /**
+   * Limit for maximum size of the file that can be attached to a message while uploading.
+   */
+  maxFileSizeToUploadInMb?: number;
   maxMessageLength?: number;
   mentionAllAppUsersEnabled?: boolean;
   /** Object containing filters/sort/options overrides for an @mention user query */
@@ -590,17 +596,26 @@ export const MessageInputProvider = <
     const result = await pickDocument({
       maxNumberOfFiles: value.maxNumberOfFiles - numberOfUploads,
     });
+
     if (!result.cancelled && result.docs) {
-      result.docs.forEach((doc) => {
-        /**
-         * TODO: The current tight coupling of images to the image
-         * picker does not allow images picked from the file picker
-         * to be rendered in a preview via the uploadNewImage call.
-         * This should be updated alongside allowing image a file
-         * uploads together.
-         */
-        uploadNewFile(doc);
-      });
+      const totalFileSize = result.docs.reduce((acc, doc) => acc + Number(doc.size), 0);
+      if (
+        value.maxFileSizeToUploadInMb &&
+        totalFileSize / MegaByesToBytes > value.maxFileSizeToUploadInMb
+      ) {
+        Alert.alert('Maximum file size upload limit reached, please upload files below 100MB.');
+      } else {
+        result.docs.forEach((doc) => {
+          /**
+           * TODO: The current tight coupling of images to the image
+           * picker does not allow images picked from the file picker
+           * to be rendered in a preview via the uploadNewImage call.
+           * This should be updated alongside allowing image a file
+           * uploads together.
+           */
+          uploadNewFile(doc);
+        });
+      }
     }
   };
 
