@@ -3230,14 +3230,14 @@ expo-application@~4.2.2:
   resolved "https://registry.yarnpkg.com/expo-application/-/expo-application-4.2.2.tgz#c9500819723c59eaee5ca9832bf17d1fd4139f74"
   integrity sha512-bFEaFRUdV6aK2iBd+HzkHNPYsyj88EAhaQW5leznmO0qQMJxpAQ3eoUXMey1hfDBh1qgkkHgSyCZ9BIgMAGJ1g==
 
-expo-asset@~8.6.1:
-  version "8.6.2"
-  resolved "https://registry.yarnpkg.com/expo-asset/-/expo-asset-8.6.2.tgz#607dbbed988f7fc54a6f37cd33f86a2388264b4b"
-  integrity sha512-XqlXjkuUCEiojbHwbHPjQs1oboRz6w3eV96+9NBD+wb3EUqgAAYY2Do+IWyVCAl8UIFbFi3xzMiqk0Xm9+H8uQ==
+expo-asset@~8.6.3:
+  version "8.6.3"
+  resolved "https://registry.yarnpkg.com/expo-asset/-/expo-asset-8.6.3.tgz#fd8e8e8d9a7bbbe3c202459a17746b923fb9bdda"
+  integrity sha512-AOuB0FBbwYUfuLKtQtIsKUvm08d9OAPWZu9NZjUyIvAxmmdVKPUdN5tFUZQXXLRy3SYmk2z76JVQCoaHgJ5wvw==
   dependencies:
     blueimp-md5 "^2.10.0"
-    expo-constants "~14.0.0"
-    expo-file-system "~15.1.0"
+    expo-constants "~13.2.2"
+    expo-file-system "~14.1.0"
     invariant "^2.2.4"
     md5-file "^3.2.3"
     path-browserify "^1.0.0"
@@ -3260,20 +3260,12 @@ expo-clipboard@^3.1.0:
   resolved "https://registry.yarnpkg.com/expo-clipboard/-/expo-clipboard-3.1.0.tgz#ff4b7a2a796488d3784ca8a40229a37bbcb7b65e"
   integrity sha512-0cnmySP43VnpSWONn+1yIvPT0dwJWzCaPZcOZVxuH5mLhNi4p3UDLJFZt94tu4+bnyvDKjWxCK2/LoCM0XdwwQ==
 
-expo-constants@~13.2.4:
+expo-constants@~13.2.2, expo-constants@~13.2.4:
   version "13.2.4"
   resolved "https://registry.yarnpkg.com/expo-constants/-/expo-constants-13.2.4.tgz#eab4a553f074b2c60ad7a158d3b82e3484a94606"
   integrity sha512-Zobau8EuTk2GgafwkfGnWM6CmSLB7X8qnQXVuXe0nd3v92hfQUmRWGhJwH88uxXj3LrfqctM6PaJ8taG1vxfBw==
   dependencies:
     "@expo/config" "~7.0.0"
-    uuid "^3.3.2"
-
-expo-constants@~14.0.0:
-  version "14.0.2"
-  resolved "https://registry.yarnpkg.com/expo-constants/-/expo-constants-14.0.2.tgz#2cb1dec8f41a64c2fc5b4eecaf77d7661cad01cc"
-  integrity sha512-wzV3nrzTXTI8yG0tfas3fnqCfKV6YE+1GphEREyVDAShEB6mBInX1b6HgtpHFy2wOtnml+lPVmTCeGtjjLnZhA==
-  dependencies:
-    "@expo/config" "~7.0.2"
     uuid "^3.3.2"
 
 expo-document-picker@~10.3.0:
@@ -3295,13 +3287,6 @@ expo-file-system@~14.1.0:
   integrity sha512-lJcPGQ8yKXVknVkD5TmcJnR/TpQbEL0JP8hknLejfq3FIqPqI/LBFn31YiP37grxW8lITz1al8pq5T6CSUjAzQ==
   dependencies:
     "@expo/config-plugins" "~5.0.0"
-    uuid "^3.4.0"
-
-expo-file-system@~15.1.0:
-  version "15.1.1"
-  resolved "https://registry.yarnpkg.com/expo-file-system/-/expo-file-system-15.1.1.tgz#724090f83ff1e6378cadc0a64b83552f769eb16b"
-  integrity sha512-MYYDKxjLo9VOkvGHqym5EOAUS+ero9O66X5zI+EXJzqNznKvnfScdXeeAaQzShmWtmLkdVDCoYFGOaTvTA1wTQ==
-  dependencies:
     uuid "^3.4.0"
 
 expo-font@~10.2.1:
@@ -3360,10 +3345,10 @@ expo-modules-autolinking@0.10.3:
     find-up "^5.0.0"
     fs-extra "^9.1.0"
 
-expo-modules-core@0.11.9:
-  version "0.11.9"
-  resolved "https://registry.yarnpkg.com/expo-modules-core/-/expo-modules-core-0.11.9.tgz#43763bca72b72f268ad5d7f1f0fc1c7cc75a6e9f"
-  integrity sha512-6AlOE4KHN3/WWbY8hH7W6ceuIFj0qbk1N+UhmMhiCEUas3NvXA6wcH3xjO+8JZ+BRcIB9M4QEeX72j6vDDuExg==
+expo-modules-core@0.11.10:
+  version "0.11.10"
+  resolved "https://registry.yarnpkg.com/expo-modules-core/-/expo-modules-core-0.11.10.tgz#84800ea62431a3842661966276747260f7e33b37"
+  integrity sha512-wn7bdL1AXMNuuDEFhuIeE65A+dlvBL+6nC5fGy4NO7x3TXPBR1xCgL28i8d8WWyK5evI4z4TVvJp3YYzdapbqQ==
   dependencies:
     compare-versions "^3.4.0"
     invariant "^2.2.4"
@@ -3386,10 +3371,10 @@ expo-status-bar@~1.4.0:
   resolved "https://registry.yarnpkg.com/expo-status-bar/-/expo-status-bar-1.4.2.tgz#14f2b9a6dc7d550578421f07e0046f5fafc2b403"
   integrity sha512-ZWjO6D4ARGYfAd3SWDD3STNudHDhyBZDZjhhseqoEmsf7bS9ykny8KKOhlzJW24qIQNPhkgdvHhaw9fQwMJy3Q==
 
-expo@~46.0.17:
-  version "46.0.17"
-  resolved "https://registry.yarnpkg.com/expo/-/expo-46.0.17.tgz#d558aa11056007269d2a38481982f1ebbe0852f3"
-  integrity sha512-rB+KMvjU3lFMkec5LcVFFn0Q2iJUEIoyB9TckKMirA15H5mW4yZMao0ilR7239fJ5ytVoDC8SIf7ZAvTmiMuMw==
+expo@~46.0.19:
+  version "46.0.19"
+  resolved "https://registry.yarnpkg.com/expo/-/expo-46.0.19.tgz#85fe0aa047bdee4ee01fa0f934b28d03166a813d"
+  integrity sha512-nOMwWd54Y5awLYMo7Skf0jFyD83xeLph8Vb9z0awsTctlAhxPulHFHD/nzN2LxvzfCOQORUctvtX+qknL7MEDQ==
   dependencies:
     "@babel/runtime" "^7.14.0"
     "@expo/cli" "0.3.2"
@@ -3397,13 +3382,13 @@ expo@~46.0.17:
     babel-preset-expo "~9.2.0"
     cross-spawn "^6.0.5"
     expo-application "~4.2.2"
-    expo-asset "~8.6.1"
+    expo-asset "~8.6.3"
     expo-constants "~13.2.4"
     expo-file-system "~14.1.0"
     expo-font "~10.2.1"
     expo-keep-awake "~10.2.0"
     expo-modules-autolinking "0.10.3"
-    expo-modules-core "0.11.9"
+    expo-modules-core "0.11.10"
     fbemitter "^3.0.0"
     getenv "^1.0.0"
     invariant "^2.2.4"
@@ -6709,10 +6694,10 @@ stream-buffers@2.2.x:
   version "0.0.0"
   uid ""
 
-stream-chat-react-native-core@5.5.0:
-  version "5.5.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.5.0.tgz#e42551b9714d0ccbfe9e888eb145f03c716b2d2f"
-  integrity sha512-V9gS8FDyS6p5J8VVwtTIraTlAA3qMhOdWkDguu/yP6QL/T3Jl6jWCxf8aPEma/6Q+rNBpLL+hyTN6913J+jd0A==
+stream-chat-react-native-core@5.7.0:
+  version "5.7.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.7.0.tgz#45c93b2ec011120f88363644d033afa1a7f953f6"
+  integrity sha512-LUHj1tzL67bWqShpBfzd4kbShOVfl5mnRs7fAVoqFNT2C+ZpxBqw891jsC2mLME4H7p0p5F/x4v+QCw+S9PxiQ==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "4.4.5"
@@ -6725,16 +6710,16 @@ stream-chat-react-native-core@5.5.0:
     path "0.12.7"
     react-native-markdown-package "1.8.2"
     react-native-url-polyfill "^1.3.0"
-    stream-chat "7.0.0"
+    stream-chat "8.1.2"
 
 "stream-chat-react-native-core@link:../../package":
   version "0.0.0"
   uid ""
 
-stream-chat@7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-7.0.0.tgz#c4021cafda96752ebc21f85e3e306bc3f5b1cfcc"
-  integrity sha512-l1+pANK//Rp6MJm5CZAA0L3Rx0jr4n7TEcUQrkXjqm5oxryo95tuRb7LkMs4kUnqJB7/jHuS0CTjW0v5vLvPoA==
+stream-chat@8.1.2:
+  version "8.1.2"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.1.2.tgz#a730072346ae5c96ee0ba0cb334da8ad8d19246c"
+  integrity sha512-C5Xlx+fTGl7fEndcNk1z+t7xYhR9d4FaUPcyoSqq90Gt98SqGFnSZXVbm1MUGfn9Ld31S2W4XBRb8HkDHGoZhg==
   dependencies:
     "@babel/runtime" "^7.16.3"
     "@types/jsonwebtoken" "^8.5.6"
