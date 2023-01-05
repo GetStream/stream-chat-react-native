@@ -16,6 +16,9 @@ import {
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { CameraSelectorIcon } from '../../AttachmentPicker/components/CameraSelectorIcon';
+import { FileSelectorIcon } from '../../AttachmentPicker/components/FileSelectorIcon';
+import { ImageSelectorIcon } from '../../AttachmentPicker/components/ImageSelectorIcon';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { MessageInput } from '../MessageInput';
@@ -24,7 +27,10 @@ describe('MessageInput', () => {
   jest.spyOn(Alert, 'alert');
   jest.spyOn(AttachmentPickerUtils, 'useAttachmentPickerContext').mockImplementation(
     jest.fn(() => ({
+      CameraSelectorIcon,
       closePicker: jest.fn(),
+      FileSelectorIcon,
+      ImageSelectorIcon,
       openPicker: jest.fn(),
       selectedFiles: [
         generateFileAttachment({ name: 'Dummy.png', size: 20000000 }),
@@ -42,6 +48,7 @@ describe('MessageInput', () => {
           uri: 'https://picsum.photos/200/300',
         }),
       ],
+      selectedPicker: 'images',
       setBottomInset: jest.fn(),
       setMaxNumberOfFiles: jest.fn(),
       setSelectedFiles: jest.fn(),
@@ -85,18 +92,29 @@ describe('MessageInput', () => {
   it('should render MessageInput', async () => {
     await initializeChannel(generateChannelResponse());
 
-    const { getByTestId, queryByTestId, queryByText } = render(getComponent());
+    const openPicker = jest.fn();
+    const closePicker = jest.fn();
+    const attachmentValue = { closePicker, openPicker };
 
-    await waitFor(() => {
-      expect(queryByTestId('attach-button')).toBeTruthy();
-    });
+    const { getByTestId, queryByTestId, queryByText, toJSON } = render(
+      getComponent({ attachmentValue }),
+    );
 
     fireEvent.press(getByTestId('attach-button'));
 
     await waitFor(() => {
+      expect(queryByTestId('upload-photo-touchable')).toBeTruthy();
+      expect(queryByTestId('upload-file-touchable')).toBeTruthy();
+      expect(queryByTestId('take-photo-touchable')).toBeTruthy();
       expect(queryByTestId('auto-complete-text-input')).toBeTruthy();
       expect(queryByTestId('send-button')).toBeTruthy();
       expect(queryByText('Editing Message')).toBeFalsy();
+    });
+
+    const snapshot = toJSON();
+
+    await waitFor(() => {
+      expect(snapshot).toMatchSnapshot();
     });
   });
 
