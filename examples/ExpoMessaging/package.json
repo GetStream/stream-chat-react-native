@@ -9,8 +9,8 @@
   "dependencies": {
     "@react-native-community/netinfo": "9.3.5",
     "@react-native-masked-view/masked-view": "0.2.8",
-    "@react-navigation/native": "5.8.10",
-    "@react-navigation/stack": "5.12.8",
+    "@react-navigation/native": "6.1.1",
+    "@react-navigation/stack": "6.3.10",
     "expo": "~47.0.9",
     "expo-av": "~13.0.2",
     "expo-blur": "~12.0.1",
@@ -35,9 +35,6 @@
     "react-native-web": "~0.18.7",
     "stream-chat-expo": "link:../../package/expo-package",
     "stream-chat-react-native-core": "link:../../package"
-  },
-  "resolutions": {
-    "react-native-gesture-handler": "~2.8.0"
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",
