@@ -1,6 +1,5 @@
-import org.apache.tools.ant.taskdefs.condition.Os
-
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+
 buildscript {
     ext {
         buildToolsVersion = findProperty('android.buildToolsVersion') ?: '31.0.0'
@@ -25,7 +24,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath('com.android.tools.build:gradle:7.1.1')
+        classpath('com.android.tools.build:gradle:7.2.1')
         classpath('com.facebook.react:react-native-gradle-plugin')
         classpath('de.undercouch:gradle-download-task:5.0.1')
         // NOTE: Do not place your application dependencies here; they belong
@@ -33,7 +32,7 @@ buildscript {
     }
 }
 
-def REACT_NATIVE_VERSION = new File(['node', '--print',"JSON.parse(require('fs').readFileSync(require.resolve('react-native/package.json'), 'utf-8')).version"].execute(null, rootDir).text.trim())
+def REACT_NATIVE_VERSION = new File(['node', '--print', "JSON.parse(require('fs').readFileSync(require.resolve('react-native/package.json'), 'utf-8')).version"].execute(null, rootDir).text.trim())
 
 allprojects {
     configurations.all {
@@ -63,10 +62,4 @@ allprojects {
         }
         maven { url 'https://www.jitpack.io' }
     }
-}
-
-configurations.all {
-  resolutionStrategy {
-    force 'com.facebook.react:react-native:0.69.6'
-  }
 }
