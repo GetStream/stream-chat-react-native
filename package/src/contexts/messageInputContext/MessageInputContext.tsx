@@ -58,6 +58,7 @@ import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
+import { patchMessageTextCommand } from '../utils/patchMessageTextCommand';
 
 export type FileUpload = {
   file: File;
@@ -805,7 +806,7 @@ export const MessageInputProvider = <
           quoted_message_id:
             typeof value.quotedMessage === 'boolean' ? undefined : value.quotedMessage.id,
           show_in_channel: sendThreadMessageInChannel || undefined,
-          text: prevText,
+          text: patchMessageTextCommand(prevText, mentionedUsers),
         } as unknown as StreamMessage<StreamChatGenerics>);
 
         value.clearQuotedMessageState();
