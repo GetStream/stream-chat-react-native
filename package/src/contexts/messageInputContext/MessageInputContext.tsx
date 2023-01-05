@@ -382,7 +382,7 @@ export type InputMessageInputContextValue<
    */
   InputButtons?: React.ComponentType<InputButtonsProps<StreamChatGenerics>>;
   /**
-   * Limit for maximum size of the file that can be attached to a message while uploading.
+   * Limit for maximum size of the file that can be attached to a message while uploading. The upper limit is 100 MB.
    */
   maxFileSizeToUploadInMb?: number;
   maxMessageLength?: number;
