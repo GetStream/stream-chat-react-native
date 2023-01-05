@@ -3,7 +3,8 @@ import 'react-native-gesture-handler';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { LogBox, SafeAreaView, StatusBar, useColorScheme, View } from 'react-native';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator, useHeaderHeight } from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StreamChat } from 'stream-chat';
 import {
