@@ -27,7 +27,7 @@ export function patchMessageTextCommand(messageText: string, mentionedUserIds: s
    * The required format is "/ban @userid reason"
    */
   if (trimmedMessageText.startsWith('/ban ')) {
-    const reasonText = trimmedMessageText.match(/\w+$/g)?.[0] ?? '';
+    const reasonText = trimmedMessageText.split(' ').pop() ?? '';
     return `/ban @${mentionedUserIds[0]} ${reasonText}`.trim();
   }
 
