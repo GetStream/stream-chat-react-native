@@ -261,6 +261,8 @@ export const renderText = <
   );
 
   const customRules = {
+    // do not render images, we will scrape them out of the message and show on attachment card component
+    image: { match: () => null },
     link: { react: link },
     list: { react: list },
     // Truncate long text content in the message overlay
