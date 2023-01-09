@@ -40,10 +40,12 @@ import type { StreamChat } from 'stream-chat';
 LogBox.ignoreLogs(["Seems like you're using an old API"]);
 LogBox.ignoreLogs(['Each child in a list should have a unique']);
 
-DevSettings.addMenuItem('Reset local DB (offline storage)', () => {
-  QuickSqliteClient.resetDB();
-  console.info('Local DB reset');
-});
+if (__DEV__) {
+  DevSettings.addMenuItem('Reset local DB (offline storage)', () => {
+    QuickSqliteClient.resetDB();
+    console.info('Local DB reset');
+  });
+}
 
 import type {
   StackNavigatorParamList,
