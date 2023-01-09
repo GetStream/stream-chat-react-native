@@ -1,11 +1,11 @@
 import { VideoComponent } from '../optionalDependencies/Video';
 
 export const Video = VideoComponent
-  ? ({ onPlaybackStatusUpdate, paused, style, uri, videoRef }) => (
+  ? ({ onPlaybackStatusUpdate, paused, resizeMode, style, uri, videoRef }) => (
       <VideoComponent
         onPlaybackStatusUpdate={onPlaybackStatusUpdate}
         ref={videoRef}
-        resizeMode='contain'
+        resizeMode={resizeMode}
         shouldPlay={!paused}
         source={{
           uri,
