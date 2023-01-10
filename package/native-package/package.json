@@ -14,7 +14,7 @@
     "stream-chat-react-native-core": "5.7.0"
   },
   "peerDependencies": {
-    "@react-native-camera-roll/camera-roll": "^5.0.0",
+    "@react-native-camera-roll/camera-roll": ">=5.0.0",
     "@react-native-community/netinfo": ">=2.0.7",
     "@stream-io/flat-list-mvcp": "^0.10.2",
     "react-native": ">=0.60.0",
