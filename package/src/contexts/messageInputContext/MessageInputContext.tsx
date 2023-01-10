@@ -597,7 +597,9 @@ export const MessageInputProvider = <
     if (!result.cancelled && result.docs) {
       const totalFileSize = result.docs.reduce((acc, doc) => acc + Number(doc.size), 0);
       if (totalFileSize / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB) {
-        Alert.alert('Maximum file size upload limit reached, please upload files below 100MB.');
+        Alert.alert(
+          `Maximum file size upload limit reached, please upload files below ${MAX_FILE_SIZE_TO_UPLOAD_IN_MB}MB.`,
+        );
       } else {
         result.docs.forEach((doc) => {
           /**

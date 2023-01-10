@@ -289,7 +289,9 @@ const MessageInputWithContext = <
       imageToUpload &&
       Number(imageToUpload.fileSize) / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB
     ) {
-      Alert.alert('Maximum file size upload limit reached, please upload an image below 100MB.');
+      Alert.alert(
+        `Maximum file size upload limit reached, please upload an image below ${MAX_FILE_SIZE_TO_UPLOAD_IN_MB}MB.`,
+      );
       setSelectedImages(
         selectedImages.filter((selectedImage) => selectedImage.uri !== imageToUpload.uri),
       );
@@ -336,7 +338,9 @@ const MessageInputWithContext = <
         fileToUpload &&
         Number(fileToUpload.size) / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB
       ) {
-        Alert.alert('Maximum file size upload limit reached, please upload a file below 100MB.');
+        Alert.alert(
+          `Maximum file size upload limit reached, please upload a file below ${MAX_FILE_SIZE_TO_UPLOAD_IN_MB}MB.`,
+        );
         setSelectedFiles(
           selectedFiles.filter((selectedFile) => selectedFile.uri !== fileToUpload.uri),
         );
