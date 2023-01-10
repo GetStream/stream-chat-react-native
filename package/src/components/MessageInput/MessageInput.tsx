@@ -104,7 +104,6 @@ type MessageInputPropsWithContext<
     | 'InputGiphySearch'
     | 'InputReplyStateHeader'
     | 'isValidMessage'
-    | 'maxFileSizeToUploadInMb'
     | 'maxNumberOfFiles'
     | 'mentionedUsers'
     | 'numberOfUploads'
@@ -164,7 +163,6 @@ const MessageInputWithContext = <
     InputReplyStateHeader,
     isOnline,
     isValidMessage,
-    maxFileSizeToUploadInMb,
     maxNumberOfFiles,
     members,
     mentionedUsers,
@@ -275,10 +273,11 @@ const MessageInputWithContext = <
     }
   }, [imagesForInput]);
 
-  const MegaByesToBytes = 1024 * 1024;
+  const MEGA_BYTES_TO_BYTES = 1024 * 1024;
+  const MAX_FILE_SIZE_TO_UPLOAD_IN_MB = 100;
 
   const uploadImagesHandler = () => {
-    const imagesToUpload = selectedImages.filter((selectedImage) => {
+    const imageToUpload = selectedImages.find((selectedImage) => {
       const uploadedImage = imageUploads.find(
         (imageUpload) =>
           imageUpload.file.uri === selectedImage.uri || imageUpload.url === selectedImage.uri,
@@ -287,16 +286,15 @@ const MessageInputWithContext = <
     });
     // Check if the file size of the image exceeds the threshold of 100MB
     if (
-      maxFileSizeToUploadInMb &&
-      imagesToUpload[0].fileSize &&
-      Number(imagesToUpload[0].fileSize) / MegaByesToBytes > maxFileSizeToUploadInMb
+      imageToUpload &&
+      Number(imageToUpload.fileSize) / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB
     ) {
       Alert.alert('Maximum file size upload limit reached, please upload an image below 100MB.');
       setSelectedImages(
-        selectedImages.filter((selectedImage) => selectedImage.uri !== imagesToUpload[0].uri),
+        selectedImages.filter((selectedImage) => selectedImage.uri !== imageToUpload.uri),
       );
     } else {
-      imagesToUpload.forEach((image) => uploadNewImage(image));
+      if (imageToUpload) uploadNewImage(imageToUpload);
     }
   };
 
@@ -326,7 +324,7 @@ const MessageInputWithContext = <
   useEffect(() => {
     if (selectedFilesLength > fileUploadsLength) {
       /** User selected a video in bottom sheet attachment picker */
-      const filesToUpload = selectedFiles.filter((selectedFile) => {
+      const fileToUpload = selectedFiles.find((selectedFile) => {
         const uploadedFile = fileUploads.find(
           (fileUpload) =>
             fileUpload.file.uri === selectedFile.uri || fileUpload.url === selectedFile.uri,
@@ -335,16 +333,15 @@ const MessageInputWithContext = <
       });
       // Check if the file size exceeds the threshold of 100MB
       if (
-        maxFileSizeToUploadInMb &&
-        filesToUpload[0].size &&
-        Number(filesToUpload[0].size) / MegaByesToBytes > maxFileSizeToUploadInMb
+        fileToUpload &&
+        Number(fileToUpload.size) / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB
       ) {
         Alert.alert('Maximum file size upload limit reached, please upload a file below 100MB.');
         setSelectedFiles(
-          selectedFiles.filter((selectedFile) => selectedFile.uri !== filesToUpload[0].uri),
+          selectedFiles.filter((selectedFile) => selectedFile.uri !== fileToUpload.uri),
         );
       } else {
-        filesToUpload.forEach((file) => uploadNewFile(file));
+        if (fileToUpload) uploadNewFile(fileToUpload);
       }
     } else {
       /** User de-selected a video in bottom sheet attachment picker */
@@ -786,7 +783,6 @@ export const MessageInput = <
     InputGiphySearch,
     InputReplyStateHeader,
     isValidMessage,
-    maxFileSizeToUploadInMb,
     maxNumberOfFiles,
     mentionedUsers,
     numberOfUploads,
@@ -853,7 +849,6 @@ export const MessageInput = <
         InputReplyStateHeader,
         isOnline,
         isValidMessage,
-        maxFileSizeToUploadInMb,
         maxNumberOfFiles,
         members,
         mentionedUsers,

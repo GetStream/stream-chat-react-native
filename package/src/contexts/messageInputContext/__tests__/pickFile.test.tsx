@@ -42,15 +42,14 @@ describe("MessageInputContext's pickFile", () => {
     jest.fn().mockResolvedValue({
       cancelled: false,
       docs: [
-        generateFileAttachment({ size: 20000000 }),
-        generateFileAttachment({ size: 20000000 }),
+        generateFileAttachment({ size: 500000000 }),
+        generateFileAttachment({ size: 600000000 }),
       ],
     }),
   );
 
   const initialProps = {
     editing: true,
-    maxFileSizeToUploadInMb: 1,
     maxNumberOfFiles: 2,
   };
 
@@ -69,7 +68,7 @@ describe("MessageInputContext's pickFile", () => {
         result.current.setNumberOfUploads(numberOfUploads);
       });
 
-      rerender({ editing: false, maxFileSizeToUploadInMb: 1, maxNumberOfFiles: 2 });
+      rerender({ editing: false, maxNumberOfFiles: 2 });
 
       act(() => {
         result.current.pickFile();

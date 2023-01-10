@@ -33,18 +33,18 @@ describe('MessageInput', () => {
       ImageSelectorIcon,
       openPicker: jest.fn(),
       selectedFiles: [
-        generateFileAttachment({ name: 'Dummy.png', size: 20000000 }),
-        generateFileAttachment({ name: 'Dummy.png', size: 20000000 }),
+        generateFileAttachment({ name: 'Dummy.pdf', size: 500000000 }),
+        generateFileAttachment({ name: 'Dummy.pdf', size: 600000000 }),
       ],
       selectedImages: [
         generateImageAttachment({
           file: { height: 100, uri: 'https://picsum.photos/200/300', width: 100 },
-          fileSize: 10000001,
+          fileSize: 500000000,
           uri: 'https://picsum.photos/200/300',
         }),
         generateImageAttachment({
           file: { height: 100, uri: 'https://picsum.photos/200/300', width: 100 },
-          fileSize: 10000001,
+          fileSize: 600000000,
           uri: 'https://picsum.photos/200/300',
         }),
       ],
@@ -113,21 +113,17 @@ describe('MessageInput', () => {
   it('trigger file size threshold limit alert when images size above the limit', async () => {
     await initializeChannel(generateChannelResponse());
 
-    const initialProps = {
-      maxFileSizeToUploadInMb: 1,
-    };
-
     render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel}>
-            <MessageInput {...initialProps} />
+            <MessageInput />
           </Channel>
         </Chat>
       </OverlayProvider>,
     );
 
     // Both for files and for images triggered in one test itself.
-    expect(Alert.alert).toHaveBeenCalledTimes(2);
+    expect(Alert.alert).toHaveBeenCalledTimes(4);
   });
 });

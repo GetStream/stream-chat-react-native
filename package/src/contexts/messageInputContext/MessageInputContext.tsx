@@ -81,8 +81,6 @@ export type ImageUpload = {
   width?: number;
 };
 
-const MegaByesToBytes = 1024 * 1024;
-
 export type MentionAllAppUsersQuery<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
@@ -381,10 +379,6 @@ export type InputMessageInputContextValue<
    * - toggleAttachmentPicker
    */
   InputButtons?: React.ComponentType<InputButtonsProps<StreamChatGenerics>>;
-  /**
-   * Limit for maximum size of the file that can be attached to a message while uploading. The upper limit is 100 MB.
-   */
-  maxFileSizeToUploadInMb?: number;
   maxMessageLength?: number;
   mentionAllAppUsersEnabled?: boolean;
   /** Object containing filters/sort/options overrides for an @mention user query */
@@ -597,12 +591,12 @@ export const MessageInputProvider = <
       maxNumberOfFiles: value.maxNumberOfFiles - numberOfUploads,
     });
 
+    const MEGA_BYTES_TO_BYTES = 1024 * 1024;
+    const MAX_FILE_SIZE_TO_UPLOAD_IN_MB = 100;
+
     if (!result.cancelled && result.docs) {
       const totalFileSize = result.docs.reduce((acc, doc) => acc + Number(doc.size), 0);
-      if (
-        value.maxFileSizeToUploadInMb &&
-        totalFileSize / MegaByesToBytes > value.maxFileSizeToUploadInMb
-      ) {
+      if (totalFileSize / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB) {
         Alert.alert('Maximum file size upload limit reached, please upload files below 100MB.');
       } else {
         result.docs.forEach((doc) => {
