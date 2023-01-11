@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 
 import type { UserResponse } from 'stream-chat';
 
@@ -273,15 +273,31 @@ const MessageInputWithContext = <
     }
   }, [imagesForInput]);
 
+  const MEGA_BYTES_TO_BYTES = 1024 * 1024;
+  const MAX_FILE_SIZE_TO_UPLOAD_IN_MB = 100;
+
   const uploadImagesHandler = () => {
-    const imagesToUpload = selectedImages.filter((selectedImage) => {
+    const imageToUpload = selectedImages.find((selectedImage) => {
       const uploadedImage = imageUploads.find(
         (imageUpload) =>
           imageUpload.file.uri === selectedImage.uri || imageUpload.url === selectedImage.uri,
       );
       return !uploadedImage;
     });
-    imagesToUpload.forEach((image) => uploadNewImage(image));
+    // Check if the file size of the image exceeds the threshold of 100MB
+    if (
+      imageToUpload &&
+      Number(imageToUpload.fileSize) / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB
+    ) {
+      Alert.alert(
+        `Maximum file size upload limit reached, please upload an image below ${MAX_FILE_SIZE_TO_UPLOAD_IN_MB}MB.`,
+      );
+      setSelectedImages(
+        selectedImages.filter((selectedImage) => selectedImage.uri !== imageToUpload.uri),
+      );
+    } else {
+      if (imageToUpload) uploadNewImage(imageToUpload);
+    }
   };
 
   const removeImagesHandler = () => {
@@ -310,14 +326,27 @@ const MessageInputWithContext = <
   useEffect(() => {
     if (selectedFilesLength > fileUploadsLength) {
       /** User selected a video in bottom sheet attachment picker */
-      const filesToUpload = selectedFiles.filter((selectedFile) => {
+      const fileToUpload = selectedFiles.find((selectedFile) => {
         const uploadedFile = fileUploads.find(
           (fileUpload) =>
             fileUpload.file.uri === selectedFile.uri || fileUpload.url === selectedFile.uri,
         );
         return !uploadedFile;
       });
-      filesToUpload.forEach((file) => uploadNewFile(file));
+      // Check if the file size exceeds the threshold of 100MB
+      if (
+        fileToUpload &&
+        Number(fileToUpload.size) / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB
+      ) {
+        Alert.alert(
+          `Maximum file size upload limit reached, please upload a file below ${MAX_FILE_SIZE_TO_UPLOAD_IN_MB}MB.`,
+        );
+        setSelectedFiles(
+          selectedFiles.filter((selectedFile) => selectedFile.uri !== fileToUpload.uri),
+        );
+      } else {
+        if (fileToUpload) uploadNewFile(fileToUpload);
+      }
     } else {
       /** User de-selected a video in bottom sheet attachment picker */
       const filesToRemove = fileUploads.filter(

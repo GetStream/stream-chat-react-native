@@ -590,17 +590,28 @@ export const MessageInputProvider = <
     const result = await pickDocument({
       maxNumberOfFiles: value.maxNumberOfFiles - numberOfUploads,
     });
+
+    const MEGA_BYTES_TO_BYTES = 1024 * 1024;
+    const MAX_FILE_SIZE_TO_UPLOAD_IN_MB = 100;
+
     if (!result.cancelled && result.docs) {
-      result.docs.forEach((doc) => {
-        /**
-         * TODO: The current tight coupling of images to the image
-         * picker does not allow images picked from the file picker
-         * to be rendered in a preview via the uploadNewImage call.
-         * This should be updated alongside allowing image a file
-         * uploads together.
-         */
-        uploadNewFile(doc);
-      });
+      const totalFileSize = result.docs.reduce((acc, doc) => acc + Number(doc.size), 0);
+      if (totalFileSize / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB) {
+        Alert.alert(
+          `Maximum file size upload limit reached, please upload files below ${MAX_FILE_SIZE_TO_UPLOAD_IN_MB}MB.`,
+        );
+      } else {
+        result.docs.forEach((doc) => {
+          /**
+           * TODO: The current tight coupling of images to the image
+           * picker does not allow images picked from the file picker
+           * to be rendered in a preview via the uploadNewImage call.
+           * This should be updated alongside allowing image a file
+           * uploads together.
+           */
+          uploadNewFile(doc);
+        });
+      }
     }
   };
 

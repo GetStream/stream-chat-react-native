@@ -82,7 +82,7 @@
     "stream-chat": "8.1.2"
   },
   "peerDependencies": {
-    "react-native-svg": "^12.1.0"
+    "react-native-svg": ">=12.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.17",
