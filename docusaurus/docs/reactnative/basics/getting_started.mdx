@@ -111,7 +111,7 @@ For some of the packages listed below, there are additional steps required to se
 
 - `react-native-reanimated` - [additional installation steps](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation)
 
-  Add Reanimated's babel plugin to your babel.config.js:
+  Add the Reanimated babel plugin to your babel.config.js:
 
   ```js
     module.exports = {
@@ -197,7 +197,7 @@ npm install react-native-video
 </TabItem>
 </Tabs>
 
-We require [exoplayer](https://github.com/google/ExoPlayer) to be the media player on Android. To make `react-native-video` to use exoplayer, add the following in `android/settings.gradle`:
+We require [ExoPlayer](https://github.com/google/ExoPlayer) to be the media player on Android. To make `react-native-video` use ExoPlayer, add the following in `android/settings.gradle`:
 
 ```
 include ':react-native-video'
@@ -262,6 +262,33 @@ npm install react-native-haptic-feedback
 </TabItem>
 </Tabs>
 
+#### Copying messages
+
+Install `@react-native-clipboard/clipboard` to be able to copy messages to the clipboard.
+
+<Tabs
+  defaultValue='yarn'
+  values={[
+    { label: 'Yarn', value: 'yarn' },
+    { label: 'npm', value: 'npm' },
+  ]}
+>
+<TabItem value='yarn'>
+
+```bash
+yarn add @react-native-clipboard/clipboard
+```
+
+</TabItem>
+<TabItem value='npm'>
+
+```bash
+npm install @react-native-clipboard/clipboard
+```
+
+</TabItem>
+</Tabs>
+
 ### AndroidX Support
 
 > AndroidX is a major step forward in the Android ecosystem, and the old support library artifacts are being deprecated.
@@ -280,8 +307,8 @@ Stream Chat for React Native is set up for parity on Expo, expo requires a diffe
 ### Add Required Dependencies
 
 ```bash
-expo install stream-chat-expo
-expo install @react-native-community/netinfo expo-document-picker expo-file-system expo-haptics expo-image-manipulator expo-image-picker expo-media-library expo-sharing react-native-gesture-handler react-native-reanimated react-native-svg
+npx expo install stream-chat-expo
+npx expo install @react-native-community/netinfo expo-document-picker expo-file-system expo-haptics expo-image-manipulator expo-image-picker expo-media-library expo-sharing react-native-gesture-handler react-native-reanimated react-native-svg
 ```
 
 ### Additional Steps
@@ -290,7 +317,7 @@ For some of the packages listed below, there are additional steps required to se
 
 - `react-native-reanimated` - [additional installation steps](https://docs.expo.dev/versions/latest/sdk/reanimated/#installation)
 
-  Add Reanimated's babel plugin to your babel.config.js:
+  Add the Reanimated babel plugin to your babel.config.js:
 
   ```js
     module.exports = {
@@ -343,4 +370,12 @@ Installing this package allows you to play the video files/attachments in the ch
 
 ```bash
 expo install expo-av
+```
+
+#### Copying messages
+
+Install `expo-clipboard` to be able to copy messages to the clipboard.
+
+```bash
+expo install expo-clipboard
 ```

@@ -29,5 +29,5 @@ export const selectReactionsForMessages = (
     messageIds,
   );
 
-  return result.map((r) => JSON.parse(r.value));
+  return result.map((r: { value: string }) => JSON.parse(r.value));
 };

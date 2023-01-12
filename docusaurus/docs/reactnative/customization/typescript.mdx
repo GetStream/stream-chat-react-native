@@ -73,7 +73,7 @@ The seven customizable fields these generics extend are provided via `stream-cha
 6. [`Reaction`](https://github.com/GetStream/stream-chat-js/blob/0e29bea1e773f15599564b5174d4fabbd3bcb495/src/types.ts#L1854)
 7. [`User`](https://github.com/GetStream/stream-chat-js/blob/0e29bea1e773f15599564b5174d4fabbd3bcb495/src/types.ts#L2004)
 
-All seven generics contain defaults in the `stream-chat-react-native` repo that you can extend for custom data such as custom types for Channels, Messages, etc.
+All seven generics contain defaults in the `stream-chat-react-native` repository that you can extend for custom data such as custom types for Channels, Messages, etc.
 
 ```tsx
 type DefaultAttachmentType = Record<string, unknown>;
@@ -89,7 +89,7 @@ type DefaultUserType = Record<string, unknown> & {
 };
 ```
 
-Additional fields on the defaults, i.e. `image`, are custom fields used by `stream-chat-react-native` already within the SDK.
+Additional fields on the defaults, for example `image`, are custom fields used by `stream-chat-react-native` already within the SDK.
 When wanting to set a subset of generics, the preceding and interceding generics must also be set for the TypeScript compiler to understand intent correctly.
 
 ```tsx
@@ -110,7 +110,7 @@ const client = StreamChat.getInstance<StreamChatGenerics>('YOUR_API_KEY');
 
 :::note
 
-`DefaultCommandType` is set to `string & {}` instead of `string` to maintain intellisense for the included commands.
+`DefaultCommandType` is set to `string & {}` instead of `string` to maintain IntelliSense for the included commands.
 In use a string union such as `'poll' | 'question'` could be used to extend them.
 
 :::

@@ -13,8 +13,8 @@ Version 1 (legacy) of push notifications won't be removed immediately but there 
 ## Requirements
 
 - Only [members](https://getstream.io/chat/docs/javascript/channel_members/?language=javascript&q=addMember) of channel receive Push Notifications
-- We only send push notifications, when the user doesn't have any active websocket connection (which is established when you call `client.connectUser`).
-- If you are using components from [React Native Chat SDK](https://github.com/GetStream/stream-chat-react-native), we automatically drop the websocket connection when app goes to background. To disable this behaviour, you can set prop closeConnectionOnBackground={false} on Chat component, in which case websocket will stay active for approximately 15-20 seconds when app goes to background.
+- We only send push notifications, when the user doesn't have any active WebSocket connection (which is established when you call `client.connectUser`).
+- If you are using components from [React Native Chat SDK](https://github.com/GetStream/stream-chat-react-native), we automatically drop the WebSocket connection when app goes to background. To disable this behaviour, you can set prop closeConnectionOnBackground={false} on Chat component, in which case WebSocket will stay active for approximately 15-20 seconds when app goes to background.
 
 ## Firebase Setup
 
@@ -267,6 +267,6 @@ function App() {
 ## Troubleshooting
 
 If you are having trouble receiving push notifications, please use our [Push Notification Test Application](https://github.com/GetStream/chat-push-test/tree/master/react-native) to check if you have setup Push Configuration correctly.
-Please follow the steps mentioned in [Readme](https://github.com/GetStream/chat-push-test/tree/master/react-native) for further instructions
+Please follow the steps mentioned in [README](https://github.com/GetStream/chat-push-test/tree/master/react-native) for further instructions
 
 If you are still having trouble with Push Notifications, please contact [support@getstream.io](mailto:support@getstream.io)

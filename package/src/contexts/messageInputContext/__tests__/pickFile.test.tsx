@@ -4,6 +4,10 @@ import { act } from 'react-test-renderer';
 
 import { renderHook } from '@testing-library/react-hooks';
 
+import { generateFileAttachment } from '../../../mock-builders/generator/attachment';
+
+import * as NativeUtils from '../../../native';
+
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import {
   InputMessageInputContextValue,
@@ -34,6 +38,15 @@ afterEach(jest.clearAllMocks);
 
 describe("MessageInputContext's pickFile", () => {
   jest.spyOn(Alert, 'alert');
+  jest.spyOn(NativeUtils, 'pickDocument').mockImplementation(
+    jest.fn().mockResolvedValue({
+      cancelled: false,
+      docs: [
+        generateFileAttachment({ size: 500000000 }),
+        generateFileAttachment({ size: 600000000 }),
+      ],
+    }),
+  );
 
   const initialProps = {
     editing: true,
@@ -64,4 +77,17 @@ describe("MessageInputContext's pickFile", () => {
       expect(Alert.alert).toHaveBeenCalledTimes(numberOfTimesCalled);
     },
   );
+
+  it('trigger file size threshold limit alert when file size above the limit', () => {
+    const { result } = renderHook(() => useMessageInputContext(), {
+      initialProps,
+      wrapper: Wrapper,
+    });
+
+    act(() => {
+      result.current.pickFile();
+    });
+
+    expect(Alert.alert).toHaveBeenCalledTimes(1);
+  });
 });

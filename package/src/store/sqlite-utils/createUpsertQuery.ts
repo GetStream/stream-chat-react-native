@@ -30,7 +30,7 @@ export const createUpsertQuery = <T extends keyof Schema>(
   const fields = Object.keys(filteredRow) as (keyof typeof row)[];
 
   const questionMarks = Array(Object.keys(fields).length).fill('?').join(',');
-  const conflictKeys = conflictCheckKeys || tables[table].primaryKey;
+  const conflictKeys = conflictCheckKeys || tables[table].primaryKey || [];
   const conflictMatchersWithoutPK: string[] = (fields as string[])
     .filter((f) => !(conflictKeys as string[]).includes(f))
     .map((f) => `${f}=excluded.${f}`);

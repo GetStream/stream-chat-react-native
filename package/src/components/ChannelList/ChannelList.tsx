@@ -88,7 +88,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onAddedToChannel?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -100,7 +100,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelDeleted?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -112,7 +112,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelHidden?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -124,7 +124,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelTruncated?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -136,7 +136,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelUpdated?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -148,7 +148,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelVisible?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -161,7 +161,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onMessageNew?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -173,7 +173,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onRemovedFromChannel?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -242,7 +242,7 @@ export const ChannelList = <
   } = props;
 
   const [forceUpdate, setForceUpdate] = useState(0);
-  const { enableOfflineSupport, subscribeConnectionRecoveredCallback } = useChatContext();
+  const { enableOfflineSupport } = useChatContext<StreamChatGenerics>();
   const {
     channels,
     error,
@@ -259,6 +259,7 @@ export const ChannelList = <
     enableOfflineSupport,
     filters,
     options,
+    setForceUpdate,
     sort,
   });
 
@@ -327,15 +328,6 @@ export const ChannelList = <
       sort,
     });
   }, [channelIdsStr, staticChannelsActive]);
-
-  useEffect(() => {
-    const unsubscribe = subscribeConnectionRecoveredCallback(() => {
-      refreshList();
-      setForceUpdate((count) => count + 1);
-    });
-
-    return () => unsubscribe();
-  });
 
   const channelsContext = useCreateChannelsContext({
     additionalFlatListProps,

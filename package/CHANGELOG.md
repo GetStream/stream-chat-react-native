@@ -1,5 +1,71 @@
 # Change Log
 
+## [5.7.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.6.1...v5.7.0) (2022-12-23)
+
+
+### Features
+
+* allow theming the container for pinned messages ([#1867](https://github.com/GetStream/stream-chat-react-native/issues/1867)) ([f6ee974](https://github.com/GetStream/stream-chat-react-native/commit/f6ee974274d8bd7fb2db4336293dd8647e7b2ab1))
+* initial unread count example ([#1868](https://github.com/GetStream/stream-chat-react-native/issues/1868)) ([d283267](https://github.com/GetStream/stream-chat-react-native/commit/d283267db8bd3d577a9c46d02d0e2894b8341915))
+
+
+### Bug Fixes
+
+* expo module version incompatibilities ([#1855](https://github.com/GetStream/stream-chat-react-native/issues/1855)) ([a2c0357](https://github.com/GetStream/stream-chat-react-native/commit/a2c0357dd676dc3b91eae2fb57157e971db209b5))
+
+### [5.6.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.6.0...v5.6.1) (2022-12-03)
+
+
+### Bug Fixes
+
+* expo app crashes due to sqlite being null ([#1845](https://github.com/GetStream/stream-chat-react-native/issues/1845)) ([718e28d](https://github.com/GetStream/stream-chat-react-native/commit/718e28df043e8cdfe051106d9299c60ddcbe8fc3))
+* syncStatus of DBSyncManager is not updated correctly ([#1842](https://github.com/GetStream/stream-chat-react-native/issues/1842)) ([92be75a](https://github.com/GetStream/stream-chat-react-native/commit/92be75a563080bb9ebf4a3a91106a2de658d0779))
+
+## [5.6.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.5.1...v5.6.0) (2022-12-01)
+
+
+### Features
+
+* Make the DocumentPicker dependency optional ([#1809](https://github.com/GetStream/stream-chat-react-native/issues/1809)) ([8b1eff9](https://github.com/GetStream/stream-chat-react-native/commit/8b1eff9583ad0e6a6892f8037e3e40e0a972968c))
+* optimistic DB and UI updates for reactions and messages ([#1758](https://github.com/GetStream/stream-chat-react-native/issues/1758)) ([abe2b70](https://github.com/GetStream/stream-chat-react-native/commit/abe2b70d91bcfb689daa2b7bbf6be205c038fe57))
+
+
+### Bug Fixes
+
+* Add theme config for BottomSheetFlatList in ImageGrid ([#1831](https://github.com/GetStream/stream-chat-react-native/issues/1831)) ([8411df9](https://github.com/GetStream/stream-chat-react-native/commit/8411df9d5b34359a9bf2a3866cae5a339ce35482))
+* remove the unnecessary remapping of chat-core import ([#1837](https://github.com/GetStream/stream-chat-react-native/issues/1837)) ([25815d5](https://github.com/GetStream/stream-chat-react-native/commit/25815d5cd950d954b3130e448ccc70dbee74c924))
+* unmatched border radius for attachment picker ([#1829](https://github.com/GetStream/stream-chat-react-native/issues/1829)) ([32d9af8](https://github.com/GetStream/stream-chat-react-native/commit/32d9af84b379b238b34074618b2f085f78d6f7a4))
+
+### [5.5.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.5.0...v5.5.1) (2022-11-25)
+
+
+### Bug Fixes
+
+* import React Dependency into Video / Sound files ([#1828](https://github.com/GetStream/stream-chat-react-native/issues/1828)) ([47f2e60](https://github.com/GetStream/stream-chat-react-native/commit/47f2e601595ce5afcf245077a1fdadc9c6832343))
+
+## [5.5.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.4.3...v5.5.0) (2022-11-18)
+
+
+### Features
+
+* make the clipboard dependency optional ([#1781](https://github.com/GetStream/stream-chat-react-native/issues/1781)) ([1179a94](https://github.com/GetStream/stream-chat-react-native/commit/1179a94bee7b4bcbc9f32c1b51ff4215b3d32c39))
+
+
+### Bug Fixes
+
+* close db function is broken ([1781bbc](https://github.com/GetStream/stream-chat-react-native/commit/1781bbc4c29d385daaa918eef0bdfb28f85c3a97))
+* don't allow empty cids for sync api call ([#1814](https://github.com/GetStream/stream-chat-react-native/issues/1814)) ([a31d899](https://github.com/GetStream/stream-chat-react-native/commit/a31d899025b42cdc0e34c3b21813fa19b59b3cda))
+* drop unnecessary react-art dependency ([#1806](https://github.com/GetStream/stream-chat-react-native/issues/1806)) ([92ba10e](https://github.com/GetStream/stream-chat-react-native/commit/92ba10e9988f5674de03d0c7d7f46d83e32df169))
+* event handlers when channels is null on channel list component ([#1812](https://github.com/GetStream/stream-chat-react-native/issues/1812)) ([be7c6c0](https://github.com/GetStream/stream-chat-react-native/commit/be7c6c03654e81e3d3f5dfbcd739aff6db8935dc))
+* read receipts should not be removed due to message update ([#1808](https://github.com/GetStream/stream-chat-react-native/issues/1808)) ([9da4dba](https://github.com/GetStream/stream-chat-react-native/commit/9da4dba35dd06364cd1c8082b6b010f713508acd))
+
+### [5.4.3](https://github.com/GetStream/stream-chat-react-native/compare/v5.4.2...v5.4.3) (2022-11-15)
+
+
+### Bug Fixes
+
+* avoid requesting app settings if the client isn't connected ([#1779](https://github.com/GetStream/stream-chat-react-native/issues/1779)) ([0efadaf](https://github.com/GetStream/stream-chat-react-native/commit/0efadaf2bfec0e3dc06add9180cd6098e1a4c729))
+
 ### [5.4.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.4.1...v5.4.2) (2022-10-21)
 
 
@@ -685,7 +751,7 @@ Following props have been renamed:
       defaultHandler, // () => void
       event, // any event object corresponding to touchable feedback
       emitter, // which component trigged this touchable feedback e.g. card, fileAttachment, gallery, message ... etc
-      message // message object on which longPress occured
+      message // message object on which longPress occurred
     }) => {
       /** Your custom action */
     }}

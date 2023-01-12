@@ -204,7 +204,7 @@ prop as mentioned in [example](../guides/message_actions_customization.mdx#how-t
 ## Update The Dependencies
 
 - Since v4, peer dependency `react-native-blur` has been removed from the SDK. Blur background of overlay has been
-  replaced with opacity based background instead. So unless this dependency is used explicitely within application, it
+  replaced with opacity based background instead. So unless this dependency is used explicitly within application, it
   can be safely removed.
 
 ```sh
@@ -212,7 +212,7 @@ yarn remove react-native-blur
 npx pod-install
 ```
 
-- Minimum required version of `stream-chat` is 6.0.0. So if you have installed `stream-chat` dependency explicitely,
+- Minimum required version of `stream-chat` is 6.0.0. So if you have installed `stream-chat` dependency explicitly,
   please make sure to upgrade it to [`v6.0.0`](https://github.com/GetStream/stream-chat-js/releases/tag/v6.0.0)
 
 ## Refactor Typescript Generics
@@ -336,7 +336,7 @@ type StreamChatGenerics = {
 ```
 
 :::note
-`LocalAttachmentType`, `LocalChannelType` etc. are type deifinitions for their respective key as per your application types necessities.
+`LocalAttachmentType`, `LocalChannelType` etc. are type definitions for their respective key as per your application types necessities.
 
 Eg:
 
@@ -357,20 +357,20 @@ type LocalUserType = {
 
 :::
 
-A seperate guide has been added to documentation for details of [Generics](../customization/typescript.mdx#generics)
+A separate guide has been added to documentation for details of [Generics](../customization/typescript.mdx#generics)
 
 ### Slow Mode Feature
 
-Slow mode helps reduce noise on a channel by limiting users to a maximum of 1 message per cooldown interval.
+Slow mode helps reduce noise on a channel by limiting users to a maximum of 1 message per cool-down interval.
 Slow mode is disabled by default and can be enabled/disabled via the Dashboard, using the Chat Explorer.
 
 For more details, please check the documentation for [slow mode](https://getstream.io/chat/docs/javascript/slow_mode/?language=javascript#channel-slow-mode)
 
-When cooldown interval kicks in, `SendButton` (to send message) will be replaced with a countdown timer
+When cool-down interval kicks in, `SendButton` (to send message) will be replaced with a countdown timer
 This countdown timer can be customized using a prop on Channel component - [`CooldownTimer`](../core-components/channel.mdx#cooldowntimer)
 
 <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-  <img src={slowMode} alt='Unthemed' width='280' style={{ objectFit: 'contain', paddingBottom: '8px' }} />
+  <img src={slowMode} alt='Un-themed' width='280' style={{ objectFit: 'contain', paddingBottom: '8px' }} />
 </div>
 
 ### Pin Message Feature
@@ -385,11 +385,11 @@ To read more about how to retrieve pinned messages or search pinned messages, pl
 [Pinned Messages](https://getstream.io/chat/docs/javascript/pinned_messages/).
 
 <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-  <img src={pinMessageAction} alt='Unthemed' width='280' style={{ objectFit: 'contain', paddingBottom: '8px' }} />
+  <img src={pinMessageAction} alt='Un-themed' width='280' style={{ objectFit: 'contain', paddingBottom: '8px' }} />
   <img src={pinnedMessage} alt='Themed' width='280' style={{ objectFit: 'contain', paddingBottom: '8px' }} />
 </div>
 
-### Better Handlings Of User Capabilities on Channel
+### Better Handling Of User Capabilities on Channel
 
 Features and UI components have been configured to use the `own_capabilities` returned by backend, improving the consistency
 between SDK features and permissions/config/settings applied on application. To read more about these capabilities, please follow the documentation - https://getstream.io/chat/docs/javascript/channel_capabilities/
@@ -419,8 +419,8 @@ You can override these capabilities on UI level by providing [`overrideOwnCapabi
 
 ### Replaced next/prev Giphy Navigation With Shuffle
 
-Next and previous buttons on giphy message have been replaced with shuffle button, since Giphy
-api doesn't support pagination and it resulted into confusing user experience.
+Next and previous buttons on Giphy message have been replaced with shuffle button, since Giphy
+API doesn't support pagination and it resulted into confusing user experience.
 
 ### Dropped BlurView Package
 
@@ -434,7 +434,7 @@ api doesn't support pagination and it resulted into confusing user experience.
 - `react-native-reanimated` based animations have been removed from Message component for performance reason [#987](https://github.com/GetStream/stream-chat-react-native/pull/987).
   - Long press animation on message UI has been removed
   - `animatedLongPress` prop has been removed from `Channel` component.
-- Redundant http requests for downloading image attachments have been fixed [#1010](https://github.com/GetStream/stream-chat-react-native/pull/1010)
+- Redundant HTTP requests for downloading image attachments have been fixed [#1010](https://github.com/GetStream/stream-chat-react-native/pull/1010)
 - Performance intensive legacy image viewer behaviour has been turned off by default [#1006](https://github.com/GetStream/stream-chat-react-native/pull/1006).
   Please take a look at description of the prop [legacyImageViewerSwipeBehaviour](../core-components/channel.mdx#legacyimageviewerswipebehaviour) for details.
 
@@ -469,7 +469,7 @@ overlay: {
 }
 ```
 
-A seperate guide has been added to documentation for details of [How To Customize Message Actions UI](../guides/message_actions_customization.mdx#how-to-customize-message-action-ui)
+A separate guide has been added to documentation for details of [How To Customize Message Actions UI](../guides/message_actions_customization.mdx#how-to-customize-message-action-ui)
 
 #### Deleted Messages
 
@@ -493,15 +493,15 @@ using a prop on `OverlayProvide` component - [`OverlayReactionsAvatar`](../core-
 
 ### Fixes Issues
 
-#### Warning about Virtualized List wrapped inside ScrollView
+#### Warning about virtualized List wrapped inside ScrollView
 
 Following warning from v3 of SDK has been fixed now.
 
 <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-  <img src={scrollViewWarning} alt='Unthemed' width='100%' style={{ objectFit: 'contain', paddingBottom: '8px' }} />
+  <img src={scrollViewWarning} alt='Un-themed' width='100%' style={{ objectFit: 'contain', paddingBottom: '8px' }} />
 </div>
 
-This warning was a result of `ScrollView` wrapped around `FlatList` inside overlay. Purpose of the wrapping ScrollView was to make overlay scrollable in case
+This warning was a result of `ScrollView` wrapped around `FlatList` inside overlay. Purpose of the wrapping ScrollView was to make overlay scroll-able in case
 message text content is too long. The UX and this warning has been fixed by removing the ScrollView and truncating the text content of message within overlay.
 You can customize the truncation length of message text by providing a prop [`messageTextNumberOfLines`](../core-components/overlay_provider.mdx#messagetextnumberoflines) (number) on `OverlayProvider`.
 
@@ -509,7 +509,7 @@ You can customize the truncation length of message text by providing a prop [`me
 <OverlayProvider messageTextNumberOfLines={300}>{/** child components */}</OverlayProvider>
 ```
 
-#### ChannelList ignores updated filters if api call is in progress
+#### ChannelList ignores updated filters if API call is in progress
 
 https://github.com/GetStream/stream-chat-react-native/issues/678
 
@@ -525,7 +525,7 @@ Delete action on failed message would result in error previously, which has been
 
 https://github.com/GetStream/stream-chat-react-native/issues/1023
 
-#### Url parsing crashes the app when text contains special character
+#### URL parsing crashes the app when text contains special character
 
 Application would crash if the message text contains special character and someone
 replies to the message. This has been fixed in this release.

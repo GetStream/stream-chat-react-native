@@ -1,11 +1,14 @@
 import type { MessageLabel, Role } from 'stream-chat';
 
+import type { PendingTaskTypes } from './types';
+
+import type { ValueOf } from '../types/types';
+
 type Tables = {
   [P in keyof Schema]: {
     columns: {
       [K in keyof Schema[P]]: string;
     };
-    primaryKey: Array<keyof Schema[P]>;
     foreignKeys?: Array<{
       column: `${Exclude<keyof Schema[P], symbol>}`;
       referenceTable: `${keyof Schema}`;
@@ -18,6 +21,7 @@ type Tables = {
       name: string;
       unique: boolean;
     }>;
+    primaryKey?: Array<keyof Schema[P]>;
   };
 };
 
@@ -121,6 +125,17 @@ export const tables: Tables = {
     ],
     primaryKey: ['id'],
   },
+  pendingTasks: {
+    columns: {
+      channelId: 'TEXT',
+      channelType: 'TEXT',
+      createdAt: 'TEXT',
+      id: 'INTEGER PRIMARY KEY AUTOINCREMENT',
+      messageId: 'TEXT',
+      payload: 'TEXT',
+      type: 'TEXT',
+    },
+  },
   reactions: {
     columns: {
       createdAt: 'TEXT',
@@ -186,6 +201,7 @@ export const tables: Tables = {
   },
   userSyncStatus: {
     columns: {
+      appSettings: 'TEXT',
       lastSyncedAt: 'TEXT',
       userId: 'TEXT',
     },
@@ -252,6 +268,15 @@ export type Schema = {
     text?: string;
     userId?: string;
   };
+  pendingTasks: {
+    channelId: string;
+    channelType: string;
+    createdAt: string;
+    id: number;
+    messageId: string;
+    payload: string;
+    type: ValueOf<PendingTaskTypes>;
+  };
   reactions: {
     createdAt: string;
     messageId: string;
@@ -278,6 +303,7 @@ export type Schema = {
     updatedAt?: string;
   };
   userSyncStatus: {
+    appSettings: string;
     lastSyncedAt: string;
     userId: string;
   };

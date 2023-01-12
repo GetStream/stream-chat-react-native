@@ -11,9 +11,9 @@ import { getChannel } from '../../utils';
 
 type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   {
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>;
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>;
     onMessageNew?: (
-      setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
+      setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
       event: Event<StreamChatGenerics>,
     ) => void;
   };
@@ -37,7 +37,7 @@ export const useNewMessageNotification = <
             id: event.channel.id,
             type: event.channel.type,
           });
-          setChannels((channels) => uniqBy([channel, ...channels], 'cid'));
+          setChannels((channels) => (channels ? uniqBy([channel, ...channels], 'cid') : channels));
         }
       }
     };

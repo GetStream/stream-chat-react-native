@@ -25,6 +25,7 @@ export type File = {
 export type DefaultAttachmentType = UnknownType & {
   file_size?: number | string;
   mime_type?: string;
+  originalFile?: File;
 };
 
 interface DefaultUserType extends UnknownType {
@@ -37,7 +38,7 @@ interface DefaultChannelType extends UnknownType {
 }
 
 export interface DefaultStreamChatGenerics extends ExtendableGenerics {
-  attachmentType: UnknownType;
+  attachmentType: DefaultAttachmentType;
   channelType: DefaultChannelType;
   commandType: LiteralStringForUnion;
   eventType: UnknownType;
@@ -47,3 +48,5 @@ export interface DefaultStreamChatGenerics extends ExtendableGenerics {
 }
 
 export type UnknownType = Record<string, unknown>;
+
+export type ValueOf<T> = T[keyof T];

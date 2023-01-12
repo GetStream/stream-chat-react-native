@@ -6,6 +6,7 @@ export * from './getPhotos';
 export * from './NetInfo';
 export * from './pickDocument';
 export * from './saveFile';
+export * from './setClipboardString';
 export * from './takePhoto';
 export * from './triggerHaptic';
 export * from './Sound';

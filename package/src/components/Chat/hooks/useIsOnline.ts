@@ -22,7 +22,7 @@ export const useIsOnline = <
   client: StreamChat<StreamChatGenerics>,
   closeConnectionOnBackground = true,
 ) => {
-  const [isOnline, setIsOnline] = useState(true);
+  const [isOnline, setIsOnline] = useState<boolean | null>(null);
   const [connectionRecovering, setConnectionRecovering] = useState(false);
   const isMounted = useIsMountedRef();
   const clientExists = !!client;

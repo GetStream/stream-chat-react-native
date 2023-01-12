@@ -182,6 +182,7 @@ export type Theme = {
       rightContainer: ViewStyle;
     };
     grid: {
+      container: ViewStyle;
       contentContainer: ViewStyle;
       gridAvatar: ImageStyle;
       gridAvatarWrapper: ViewStyle;
@@ -500,6 +501,7 @@ export type Theme = {
       statusContainer: ViewStyle;
       timeIcon: IconProps;
     };
+    targetedMessageContainer: ViewStyle;
     targetedMessageUnderlay: ViewStyle;
     videoThumbnail: {
       container: ViewStyle;
@@ -685,6 +687,7 @@ export const defaultTheme: Theme = {
       rightContainer: {},
     },
     grid: {
+      container: {},
       contentContainer: {},
       gridAvatar: {},
       gridAvatarWrapper: {},
@@ -1040,6 +1043,7 @@ export const defaultTheme: Theme = {
         width: DEFAULT_STATUS_ICON_SIZE,
       },
     },
+    targetedMessageContainer: {},
     targetedMessageUnderlay: {},
     videoThumbnail: {
       container: {},

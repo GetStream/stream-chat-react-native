@@ -127,7 +127,7 @@ The code above would render the red `View` and not `null` as the props take prec
 You can modify `MessageInput` in a large variety of ways. The type definitions for the props give clear insight into all of the options.
 You can replace the `Input` wholesale, as above, or create you own `MessageInput` component using the provided hooks to access context.
 
-**NOTE:** The `additionalTextInputProps` prop of both `Channel` and `MessageInput` is passed the the internal [`TextInput`](https://reactnative.dev/docs/textinput) component from `react-native`. If you want to change the `TextInput` component props directly this can be done using this prop.
+**NOTE:** The `additionalTextInputProps` prop of both `Channel` and `MessageInput` is passed the internal [`TextInput`](https://reactnative.dev/docs/textinput) component from `react-native`. If you want to change the `TextInput` component props directly this can be done using this prop.
 
 ## Customizing nested components within MessageInput
 
@@ -224,7 +224,7 @@ But you can choose to upload attachments to your own CDN using following two pro
 :::note
 
 Usage of `chatClient?.sendFile` is optional in above examples. You may choose to use any HTTP client for uploading the file.
-But make sure to return a promise that is resolved to an object with the key `file` that is the url of the uploaded file.
+But make sure to return a promise that is resolved to an object with the key `file` that is the URL of the uploaded file.
 
 For example:
 
@@ -242,7 +242,7 @@ There are three ways to disable file or image uploads from RN app:
 
 ### From Dashboard
 
-This is recommended option, if you want to allow neigher image or file uploads in your chat application. You can find a toggle to disable Uploads in Chat Overview page
+This is recommended option, if you want to allow neither image or file uploads in your chat application. You can find a toggle to disable Uploads in Chat Overview page
 
 ![](https://user-images.githubusercontent.com/11586388/117064212-308f6b00-ad26-11eb-8313-63931b3cac35.png)
 
@@ -250,8 +250,8 @@ This is recommended option, if you want to allow neigher image or file uploads i
 
 If you want to restrict uploads to either images or only files, you can do so by providing one of the following two props to Channel component:
 
-- `hasFilePicker` (boolean)
-- `hasImagePicker` (boolean)
+- `hasFilePicker` (`boolean`)
+- `hasImagePicker` (`boolean`)
 
 ## Disable autocomplete feature on input (mentions and commands)
 
@@ -302,7 +302,7 @@ The default behavior can be easily replaced with the device's native image picke
   </tr>
   <tr></tr>
   <tr>
-    <td align='center'>Attachment Picker actionsheet</td>
+    <td align='center'>Attachment Picker ActionSheet</td>
     <td align='center'>Photo library</td>
   </tr>
 </table>
@@ -325,7 +325,7 @@ const CustomAttachButton = () => {
 <Channel AttachButton={CustomAttachButton} />;
 ```
 
-In order to make the `onPressHandler` open the actionsheet and show the options to choose attachments from Photo Library, Camera or Files,
+In order to make the `onPressHandler` open the `ActionSheet` and show the options to choose attachments from Photo Library, Camera or Files,
 you can use [`@expo/react-native-action-sheet`](https://github.com/expo/react-native-action-sheet) package for the action sheet implemented in this example.
 
 ```sh
@@ -372,14 +372,14 @@ const CustomAttachButton = () => {
 </ActionSheetProvider>;
 ```
 
-Now let's hook the relevant action handlers for buttons within actionsheet.
+Now let's hook the relevant action handlers for buttons within `ActionSheet`.
 [`react-native-image-crop-picker`](https://github.com/ivpusic/react-native-image-crop-picker) provides an image picker functionality
 with good support for configurable compression, multiple images and cropping. And selected images from image picker or camera can be wired in
 with upload previews ([`ImageUploadPreview`](../ui-components/image_upload_preview.mdx)) within `MessageInput` component
 by using a function `uploadNewImage` provided by [`MessageInputContext`](../contexts/message_input_context.mdx#uploadnewimage).
 
 For file attachments, the SDK defaults to the native file picker. That can be reused by adding the `pickFile` function
-provided by the [`MessageInputContext`](../contexts/message_input_context.mdx#pickfile) as action handler within actionsheet.
+provided by the [`MessageInputContext`](../contexts/message_input_context.mdx#pickfile) as action handler within `ActionSheet`.
 
 ```tsx {4,10,12-21,23-30,43,46,49}
 import { AttachButton, Channel, useMessageInputContext } from 'stream-chat-react-native';
