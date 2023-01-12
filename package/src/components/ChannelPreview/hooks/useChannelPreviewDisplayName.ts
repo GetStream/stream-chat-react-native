@@ -41,27 +41,35 @@ export const getChannelPreviewDisplayName = <
   const createChannelNameSuffix = (remainingNumberOfMembers: number) =>
     remainingNumberOfMembers <= 1 ? `${ELLIPSIS}` : `,${ELLIPSIS}+${remainingNumberOfMembers}`;
 
-  const name = otherMembers.reduce((result, currentMember, index, originalArray) => {
-    if (result.length >= characterLimit) {
-      return result;
+    if (otherMembers.length === 1) {
+      const name = getMemberName(otherMembers[0]);
+      return name.length > characterLimit
+        ? `${name.slice(0, characterLimit - ELLIPSIS.length)}${ELLIPSIS}`
+        : name;
     }
-
-    const currentMemberName = getMemberName(currentMember);
-
-    const resultHasSpaceForCurrentMemberName =
-      result.length + (currentMemberName.length + ELLIPSIS.length) < characterLimit;
-    if (resultHasSpaceForCurrentMemberName) {
-      return result.length > 0 ? `${result}, ${currentMemberName}` : currentMemberName;
-    } else {
-      const remainingNumberOfMembers = originalArray.length - index;
-      const truncateLimit = characterLimit - (ELLIPSIS.length + result.length);
-      const tuncatedCurrentMemberName = `${currentMemberName.slice(0, truncateLimit)}`;
-
-      const channelNameSuffix = createChannelNameSuffix(remainingNumberOfMembers);
-
-      return `${result}${tuncatedCurrentMemberName}${channelNameSuffix}`;
-    }
-  }, '');
+  
+    const name = otherMembers.reduce((result, currentMember, index, originalArray) => {
+      if (result.length >= characterLimit) {
+        return result;
+      }
+  
+      const currentMemberName = getMemberName(currentMember);
+  
+      const resultHasSpaceForCurrentMemberName =
+        result.length + (currentMemberName.length + ELLIPSIS.length) < characterLimit;
+  
+      if (resultHasSpaceForCurrentMemberName) {
+        return result.length > 0 ? `${result}, ${currentMemberName}` : `${currentMemberName}`;
+      } else {
+        const remainingNumberOfMembers = originalArray.length - index;
+        const truncateLimit = characterLimit - (ELLIPSIS.length + result.length);
+        const tuncatedCurrentMemberName = `, ${currentMemberName.slice(0, truncateLimit)}`;
+  
+        const channelNameSuffix = createChannelNameSuffix(remainingNumberOfMembers);
+  
+        return `${result}${tuncatedCurrentMemberName}${channelNameSuffix}`;
+      }
+    }, '');
 
   return name;
 };
