@@ -18,7 +18,10 @@ export const selectChannels = ({
   const result = QuickSqliteClient.executeSql.apply(null, query);
 
   if (channelIds) {
-    return result.sort((a, b) => channelIds.indexOf(a.cid) - channelIds.indexOf(b.cid));
+    return result.sort(
+      (a: { cid: string }, b: { cid: string }) =>
+        channelIds.indexOf(a.cid) - channelIds.indexOf(b.cid),
+    );
   } else {
     return result;
   }

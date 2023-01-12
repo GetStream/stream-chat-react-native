@@ -97,10 +97,13 @@ describe('ImageGalleryFooter', () => {
         </ImageGalleryContext.Provider>
       </OverlayProvider>,
     );
-    expect(queryAllByText('Left element')).toHaveLength(1);
-    expect(queryAllByText('Right element')).toHaveLength(1);
-    expect(queryAllByText('Center element')).toHaveLength(1);
-    expect(queryAllByText('Video Control element')).toHaveLength(1);
+
+    await waitFor(() => {
+      expect(queryAllByText('Left element')).toHaveLength(1);
+      expect(queryAllByText('Right element')).toHaveLength(1);
+      expect(queryAllByText('Center element')).toHaveLength(1);
+      expect(queryAllByText('Video Control element')).toHaveLength(1);
+    });
   });
 
   it('render image gallery footer component with custom component footer Grid Icon and Share Icon component', async () => {
@@ -147,8 +150,11 @@ describe('ImageGalleryFooter', () => {
         </ImageGalleryContext.Provider>
       </OverlayProvider>,
     );
-    expect(queryAllByText('Share Icon element')).toHaveLength(1);
-    expect(queryAllByText('Grid Icon element')).toHaveLength(1);
+
+    await waitFor(() => {
+      expect(queryAllByText('Share Icon element')).toHaveLength(1);
+      expect(queryAllByText('Grid Icon element')).toHaveLength(1);
+    });
   });
 
   it('should trigger the share button onPress Handler', async () => {

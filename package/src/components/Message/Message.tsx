@@ -123,6 +123,8 @@ export type MessagePropsWithContext<
   Pick<MessageContextValue<StreamChatGenerics>, 'groupStyles' | 'message'> &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
+    | 'sendReaction'
+    | 'deleteMessage'
     | 'dismissKeyboardOnMessageTouch'
     | 'forceAlignMessages'
     | 'handleBlock'
@@ -145,6 +147,7 @@ export type MessagePropsWithContext<
     | 'onPressMessage'
     | 'OverlayReactionList'
     | 'removeMessage'
+    | 'deleteReaction'
     | 'retrySendMessage'
     | 'selectReaction'
     | 'setEditingState'
@@ -217,7 +220,9 @@ const MessageWithContext = <
   const isMessageTypeDeleted = props.message.type === 'deleted';
 
   const {
+    sendReaction,
     channel,
+    deleteMessage: deleteMessageFromContext,
     disabled,
     dismissKeyboard,
     dismissKeyboardOnMessageTouch,
@@ -256,6 +261,7 @@ const MessageWithContext = <
     OverlayReactionList,
     preventPress,
     removeMessage,
+    deleteReaction,
     retrySendMessage,
     selectReaction,
     setData,
@@ -276,7 +282,7 @@ const MessageWithContext = <
   const {
     theme: {
       colors: { bg_gradient_start, targetedMessageBackground },
-      messageSimple: { targetedMessageUnderlay },
+      messageSimple: { targetedMessageContainer, targetedMessageUnderlay },
     },
   } = useTheme();
 
@@ -460,14 +466,15 @@ const MessageWithContext = <
   } = useMessageActionHandlers({
     channel,
     client,
+    deleteMessage: deleteMessageFromContext,
+    deleteReaction,
     enforceUniqueReaction,
     message,
-    removeMessage,
     retrySendMessage,
+    sendReaction,
     setEditingState,
     setQuotedMessageState,
     supportedReactions,
-    updateMessage,
   });
 
   const {
@@ -486,6 +493,8 @@ const MessageWithContext = <
   } = useMessageActions({
     channel,
     client,
+    deleteMessage: deleteMessageFromContext,
+    deleteReaction,
     enforceUniqueReaction,
     handleBlock,
     handleCopy,
@@ -504,6 +513,7 @@ const MessageWithContext = <
     removeMessage,
     retrySendMessage,
     selectReaction,
+    sendReaction,
     setEditingState,
     setOverlay,
     setQuotedMessageState,
@@ -688,7 +698,12 @@ const MessageWithContext = <
 
   return (
     <View
-      style={[message.pinned && { backgroundColor: targetedMessageBackground }]}
+      style={[
+        message.pinned && {
+          ...targetedMessageContainer,
+          backgroundColor: targetedMessageBackground,
+        },
+      ]}
       testID='message-wrapper'
     >
       <View
@@ -722,6 +737,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const {
     chatContext: { mutedUsers: prevMutedUsers },
     goToMessage: prevGoToMessage,
+    groupStyles: prevGroupStyles,
     isAttachmentEqual,
     isTargetedMessage: prevIsTargetedMessage,
     lastReceivedId: prevLastReceivedId,
@@ -733,6 +749,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const {
     chatContext: { mutedUsers: nextMutedUsers },
     goToMessage: nextGoToMessage,
+    groupStyles: nextGroupStyles,
     isTargetedMessage: nextIsTargetedMessage,
     lastReceivedId: nextLastReceivedId,
     members: nextMembers,
@@ -760,6 +777,10 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     nextMessage.quoted_message_id && prevGoToMessage !== nextGoToMessage;
 
   if (goToMessageChangedAndMatters) return false;
+
+  const groupStylesEqual =
+    prevGroupStyles.length === nextGroupStyles.length && prevGroupStyles[0] === nextGroupStyles[0];
+  if (!groupStylesEqual) return false;
 
   const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
   const isNextMessageTypeDeleted = nextMessage.type === 'deleted';

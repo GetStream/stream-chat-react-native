@@ -67,6 +67,7 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
 export const useChatClient = () => {
   const [chatClient, setChatClient] = useState<StreamChat<StreamChatGenerics> | null>(null);
   const [isConnecting, setIsConnecting] = useState(true);
+  const [unreadCount, setUnreadCount] = useState<number>();
 
   const unsubscribePushListenersRef = useRef<() => void>();
 
@@ -81,15 +82,16 @@ export const useChatClient = () => {
       timeout: 6000,
       // logger: (type, msg) => console.log(type, msg)
     });
+    setChatClient(client);
 
     const user = {
       id: config.userId,
       image: config.userImage,
       name: config.userName,
     };
-    const promise = client.connectUser(user, config.userToken);
-    setChatClient(client);
-    await promise;
+    const connectedUser = await client.connectUser(user, config.userToken);
+    const initialUnreadCount = connectedUser?.me?.total_unread_count;
+    setUnreadCount(initialUnreadCount);
     await AsyncStore.setItem('@stream-rn-sampleapp-login-config', config);
 
     const permissionAuthStatus = await messaging().hasPermission();
@@ -189,11 +191,29 @@ export const useChatClient = () => {
     return unsubscribePushListenersRef.current;
   }, []);
 
+  /**
+   * Listen to changes in unread counts and update the badge count
+   */
+  useEffect(() => {
+    const listener = chatClient?.on((e) => {
+      if (e.total_unread_count !== undefined) {
+        setUnreadCount(e.total_unread_count);
+      }
+    });
+
+    return () => {
+      if (listener) {
+        listener.unsubscribe();
+      }
+    };
+  }, [chatClient]);
+
   return {
     chatClient,
     isConnecting,
     loginUser,
     logout,
     switchUser,
+    unreadCount,
   };
 };

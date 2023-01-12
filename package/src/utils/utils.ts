@@ -21,7 +21,7 @@ import type {
 } from '../contexts/suggestionsContext/SuggestionsContext';
 import { compiledEmojis, Emoji } from '../emoji-data/compiled';
 import type { IconProps } from '../icons/utils/base';
-import type { DefaultStreamChatGenerics } from '../types/types';
+import type { DefaultStreamChatGenerics, ValueOf } from '../types/types';
 
 export type ReactionData = {
   Icon: React.FC<IconProps>;
@@ -59,14 +59,21 @@ export const MessageStatusTypes = {
 
 export type FileStateValue = typeof FileState[keyof typeof FileState];
 
-type ValueOf<T> = T[keyof T];
 type Progress = ValueOf<typeof ProgressIndicatorTypes>;
 type IndicatorStatesMap = Record<ValueOf<typeof FileState>, Progress | null>;
 
-export const getIndicatorTypeForFileState = (fileState: FileStateValue): Progress | null => {
+export const getIndicatorTypeForFileState = (
+  fileState: FileStateValue,
+  enableOfflineSupport: boolean,
+): Progress | null => {
   const indicatorMap: IndicatorStatesMap = {
-    [FileState.UPLOADING]: ProgressIndicatorTypes.IN_PROGRESS,
-    [FileState.UPLOAD_FAILED]: ProgressIndicatorTypes.RETRY,
+    [FileState.UPLOADING]: enableOfflineSupport
+      ? ProgressIndicatorTypes.INACTIVE
+      : ProgressIndicatorTypes.IN_PROGRESS,
+    // If offline support is disabled, then there is no need
+    [FileState.UPLOAD_FAILED]: enableOfflineSupport
+      ? ProgressIndicatorTypes.INACTIVE
+      : ProgressIndicatorTypes.RETRY,
     [FileState.NOT_SUPPORTED]: ProgressIndicatorTypes.NOT_SUPPORTED,
     [FileState.UPLOADED]: ProgressIndicatorTypes.INACTIVE,
     [FileState.FINISHED]: ProgressIndicatorTypes.INACTIVE,
@@ -509,6 +516,8 @@ export const getUrlWithoutParams = (url?: string) => {
 
   return url.substring(0, url.indexOf('?'));
 };
+
+export const isLocalUrl = (url: string) => url.indexOf('http') !== 0;
 
 export const vw = (percentageWidth: number, rounded = false) => {
   const value = Dimensions.get('window').width * (percentageWidth / 100);

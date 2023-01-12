@@ -38,7 +38,7 @@ const SendButtonWithContext = <
       style={[sendButton]}
       testID='send-button'
     >
-      {giphyActive && <Search pathFill={accent_blue} />}
+      {giphyActive && <Search pathFill={disabled ? grey_gainsboro : accent_blue} />}
       {!giphyActive && disabled && <SendRight pathFill={grey_gainsboro} />}
       {!giphyActive && !disabled && <SendUp pathFill={accent_blue} />}
     </TouchableOpacity>

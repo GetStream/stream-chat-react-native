@@ -1,3 +1,4 @@
+import { appendOrderByClause } from './appendOrderByClause';
 import { appendWhereClause } from './appendWhereCluase';
 
 import type { Schema } from '../schema';
@@ -17,9 +18,11 @@ export const createSelectQuery = <T extends keyof Schema>(
   table: T,
   fields: Array<'*'> | Array<TableColumnNames<T>> = ['*'],
   whereCondition?: Partial<{ [k in TableColumnNames<T>]: TableColumnValue | TableColumnValue[] }>,
+  orderBy?: Partial<{ [k in TableColumnNames<T>]: 1 | -1 }>,
 ): PreparedQueries => {
   const selectQuery = `SELECT ${fields.join(', ')} FROM ${table}`;
   const [selectQueryWithWhere, whereParams] = appendWhereClause(selectQuery, whereCondition);
+  const [selectQueryWithOrderBy] = appendOrderByClause(selectQueryWithWhere, orderBy);
 
-  return [`${selectQueryWithWhere}`, whereParams || []];
+  return [`${selectQueryWithOrderBy}`, whereParams || []];
 };

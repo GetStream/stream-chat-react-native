@@ -12,7 +12,7 @@ export const sqliteMock = {
       status: 0,
     };
   },
-  executeSql: (dbName: string, queryInput: string, params: unknown[]) => {
+  execute: (dbName: string, queryInput: string, params: unknown[]) => {
     const query = queryInput.trim().toLowerCase();
     const stmt = db.prepare(query);
     let result: unknown[] = [];
@@ -72,7 +72,7 @@ export const sqliteMock = {
       status: 0,
     };
   },
-  executeSqlBatch: (dbName: string, queriesArr: PreparedQueries[]) => {
+  executeBatch: (dbName: string, queriesArr: PreparedQueries[]) => {
     queriesArr.forEach((queryAndParams) => {
       const query = queryAndParams[0];
       const params = queryAndParams[1];

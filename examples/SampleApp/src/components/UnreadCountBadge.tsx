@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from 'stream-chat-react-native';
 
@@ -26,26 +26,13 @@ export const UnreadCountBadge: React.FC = () => {
     },
   } = useTheme();
 
-  const { chatClient } = useAppContext();
-  const [count, setCount] = useState<number>();
-
-  useEffect(() => {
-    const listener = chatClient?.on((e) => {
-      if (e.total_unread_count !== undefined) {
-        setCount(e.total_unread_count);
-      }
-    });
-
-    return () => {
-      if (listener) {
-        listener.unsubscribe();
-      }
-    };
-  }, [chatClient]);
+  const { unreadCount } = useAppContext();
 
   return (
     <View style={[styles.unreadContainer, { backgroundColor: accent_red }]}>
-      {!!count && <Text style={styles.unreadText}>{count > 99 ? '99+' : count}</Text>}
+      {!!unreadCount && (
+        <Text style={styles.unreadText}>{unreadCount > 99 ? '99+' : unreadCount}</Text>
+      )}
     </View>
   );
 };

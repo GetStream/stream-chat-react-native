@@ -21,8 +21,8 @@ Easiest way to integrate push notifications in your Chat applications is using F
   - They were mentioned
 - Messages from muted users are not sent.
 - Messages are sent to all registered devices for a user (up to 25).
-- skip_push is marked as false, as described [here](https://getstream.io/chat/docs/javascript/send_message/?language=javascript#complex-example).
-- push_notifications is enabled (default) on the channel type for the sent message.
+- `skip_push` is marked as false, as described [here](https://getstream.io/chat/docs/javascript/send_message/?language=javascript#complex-example).
+- `push_notifications` is enabled (default) on the channel type for the sent message.
 
 :::note
 
@@ -80,7 +80,7 @@ This JSON file contains the credentials which needs to be uploaded to Stream ser
 
 ## Upload Firebase Credentials
 
-You can upload your JSON file containing your Firebase credentials either using dashboard or using the app settings api:
+You can upload your JSON file containing your Firebase credentials either using dashboard or using the app settings API:
 
 ### Using Dashboard
 
@@ -96,7 +96,7 @@ You can upload your JSON file containing your Firebase credentials either using 
 
 ### Using API
 
-You can also enable Firebase notifications and upload the Firebase credentials using api:
+You can also enable Firebase notifications and upload the Firebase credentials using API:
 
 ```js
 const client = StreamChat.getInstance('api_key', 'api_secret');
@@ -502,7 +502,7 @@ client.updateAppSettings({
 });
 ```
 
-A good practice is to remove the badge count once the app is opened. We can do that using notifee like below:
+A good practice is to remove the badge count once the app is opened. We can do that using Notifee like below:
 
 ```js
 function App() {
@@ -552,7 +552,7 @@ The `content-available` key is essential to inform iOS that it is a [silent back
 
 As mentioned before, the Firebase SDK automatically displays the message to the user on iOS using the `notification` property when the app is not in the foreground. And on Android, you can use [`setBackgroundMessageHandler`](https://rnfirebase.io/messaging/usage#background--quit-state-messages) method to display notifications in the background.
 
-However, if you do want to display the notification in the foreground, you can listen to messages using the [`onMessage`](https://rnfirebase.io/messaging/usage#foreground-state-messages) callback inside of your application code and display a notification to end user. Code executed via this handler has access to React context and is able to interact with your application (e.g., updating the state or UI).
+However, if you do want to display the notification in the foreground, you can listen to messages using the [`onMessage`](https://rnfirebase.io/messaging/usage#foreground-state-messages) callback inside of your application code and display a notification to end user. Code executed via this handler has access to React context and is able to interact with your application (for example updating the state or UI).
 
 :::note
 

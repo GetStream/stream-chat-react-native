@@ -31,7 +31,7 @@ By default, we have following built-in views for rendering attachments:
 - attachment type `image` - [Gallery](../ui-components/gallery.mdx) (single or multiple images)
 - attachment type `giphy` - [Giphy](../ui-components/giphy.mdx)
 - attachment type `file` - [FileAttachment](../ui-components/file_attachment.mdx)
-- attachment with url - [Card](../ui-components/card.mdx)
+- attachment with URL - [Card](../ui-components/card.mdx)
 
 <table>
   <tr>
@@ -126,7 +126,7 @@ const CustomCardComponent = ({ type, ...otherProperties }) => {
 <Channel Card={CustomCardComponent} />
 ```
 
-Let's try to build location sharing functionlity, using custom attachment:
+Let's try to build location sharing functionality, using custom attachment:
 
 ## Location sharing example
 
@@ -153,9 +153,9 @@ Lets build an example of location sharing option in the app:
 
   For our example, we are going to use [react-native-geolocation](https://github.com/react-native-geolocation/react-native-geolocation) library. Please check their [setup instruction](https://github.com/react-native-geolocation/react-native-geolocation#getting-started) on their docs.
 
-  > **NOTE** If you are testing on iOS simulator, you will need to set some dummy coordinates, as mentioned [here](https://stackoverflow.com/a/31238119/7489541). Also don't forget to enable "location update" capability in background mode, from xcode
+  > **NOTE** If you are testing on iOS simulator, you will need to set some dummy coordinates, as mentioned [here](https://stackoverflow.com/a/31238119/7489541). Also don't forget to enable "location update" capability in background mode, from Xcode
 
-- On the receiver end, `location` type attachment should be rendered in map view, in message list. We are going to use [google static maps api](https://developers.google.com/maps/documentation/maps-static/overview) to render map in message. You can use other libraries as well such as [react-native-maps](https://github.com/react-native-maps/react-native-maps)
+- On the receiver end, `location` type attachment should be rendered in map view, in message list. We are going to use [google static maps API](https://developers.google.com/maps/documentation/maps-static/overview) to render map in message. You can use other libraries as well such as [react-native-maps](https://github.com/react-native-maps/react-native-maps)
 
 > **NOTE**: Before you start using the Maps Static API, you need a project with a billing account and the Maps Static API enabled. To learn more, see [Set up in Cloud Console](https://developers.google.com/maps/documentation/maps-static/get-api-key)
 
@@ -199,12 +199,12 @@ const channel = chatClient.channel('messaging', CHANNEL_ID);
 
 // Basic utilities required for location sharing
 
-// Given the location coordinates, this function generates url for google map,
+// Given the location coordinates, this function generates URL for google map,
 // and opens this Url using Linking module of react-native.
 // Please check documentation of `Linking` module from react-native, for details:
 // https://reactnative.dev/docs/linking
 //
-// Generally this url will be opened in google maps application.
+// Generally this URL will be opened in google maps application.
 // https://developers.google.com/maps/documentation/urls/get-started
 const goToGoogleMaps = (lat, long) => {
   const url = `https://www.google.com/maps/search/?api=1&query=${lat},${long}`;
@@ -218,7 +218,7 @@ const goToGoogleMaps = (lat, long) => {
   });
 };
 
-// Generates static map url for given location coordinates.
+// Generates static map URL for given location coordinates.
 // For reference, please check - https://developers.google.com/maps/documentation/maps-static/overview
 const prepareStaticMapUrl = (lat, long) => {
   let baseURL = 'https://maps.googleapis.com/maps/api/staticmap?';

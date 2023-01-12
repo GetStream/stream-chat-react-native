@@ -250,8 +250,8 @@ Disabling uploads from the Dashboard is the recommended option to disallow image
 
 If you want to restrict uploads to either only images or only files, you can do so by providing one of the following two props to the `Channel` component:
 
-- `hasFilePicker` (boolean)
-- `hasImagePicker` (boolean)
+- `hasFilePicker` (`boolean`)
+- `hasImagePicker` (`boolean`)
 
 ## Disable autocomplete features on input (mentions and commands)
 
@@ -312,7 +312,7 @@ The default CooldownTimer can have it's styles altered through the theme, using 
 
 If a channel has slow mode enabled, the send button will be disabled when a user has sent a message, and a countdown will be displayed in its place. The built-in CooldownTimer component is styled to look like the disabled variant of the built-in send button, but you can replace the CooldownTimer to fit it to your needs.
 
-To do so, first create your custom CooldownTimer component that accepts `{ seconds: number }` as a prop, which is the current amount of seconds left until the cooldown finishes.
+To do so, first create your custom CooldownTimer component that accepts `{ seconds: number }` as a prop, which is the current amount of seconds left until the cool-down finishes.
 
 ```jsx
 import { CooldownTimerProps } from 'stream-chat-react-native';
@@ -348,7 +348,7 @@ The default behavior can be easily replaced with the device's native image picke
   </tr>
   <tr></tr>
   <tr>
-    <td align='center'>Attachment Picker actionsheet</td>
+    <td align='center'>Attachment Picker ActionSheet</td>
     <td align='center'>Photo library</td>
   </tr>
 </table>
@@ -418,7 +418,7 @@ const CustomAttachButton = () => {
 </ActionSheetProvider>;
 ```
 
-Now let's hook the relevant action handlers for buttons within actionsheet.
+Now let's hook the relevant action handlers for buttons within ActionSheet.
 [`react-native-image-crop-picker`](https://github.com/ivpusic/react-native-image-crop-picker) provides an image picker functionality
 with good support for configurable compression, multiple images and cropping. And selected images from image picker or camera can be wired in
 with upload previews ([`ImageUploadPreview`](../ui-components/image_upload_preview.mdx)) within `MessageInput` component
@@ -548,9 +548,9 @@ const CustomInputReplyStateHeader = () => {
 </Channel>;
 ```
 
-## Creating a custom giphy search input inside MessageInput
+## Creating a custom Giphy search input inside MessageInput
 
-To make a custom giphy search input, you can use the [Channel](../core-components/channel.mdx) component with a custom Giphy Search component and pass it inside [InputGiphySearch](../core-components/channel.mdx#inputgiphysearch) prop.
+To make a custom Giphy search input, you can use the [Channel](../core-components/channel.mdx) component with a custom Giphy Search component and pass it inside [InputGiphySearch](../core-components/channel.mdx#inputgiphysearch) prop.
 
 ```tsx
 import { Button, Text, View } from 'react-native';

@@ -8,7 +8,7 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 import { mapStorableToMessage } from '../mappers/mapStorableToMessage';
 import type { TableRowJoinedUser } from '../types';
 
-export const getMessages = <
+export const getChannelMessages = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channelIds,

@@ -21,6 +21,7 @@ describe('useAppSettings', () => {
           userID: 'some-user-id',
         } as unknown as StreamChat,
         isOnline,
+        false,
       );
 
       return <Text>{JSON.stringify(appSettings)}</Text>;

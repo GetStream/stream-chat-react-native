@@ -137,7 +137,7 @@ export const ImageGrid = <
     theme: {
       colors: { white },
       imageGallery: {
-        grid: { contentContainer },
+        grid: { container, contentContainer },
       },
     },
   } = useTheme();
@@ -165,6 +165,7 @@ export const ImageGrid = <
       keyExtractor={(item, index) => `${item.uri}-${index}`}
       numColumns={numberOfImageGalleryGridColumns || 3}
       renderItem={renderItem}
+      style={container}
     />
   );
 };

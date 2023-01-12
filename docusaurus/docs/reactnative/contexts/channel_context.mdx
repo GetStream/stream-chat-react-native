@@ -58,7 +58,7 @@ We don't recommend using `ChannelContext` at message level, since changes to its
 
 ### error
 
-True if any api call to `channel.query()` during first load or pagination fails.
+True if any API call to `channel.query()` during first load or pagination fails.
 
 | Type                    |
 | ----------------------- |
@@ -66,7 +66,7 @@ True if any api call to `channel.query()` during first load or pagination fails.
 
 ### giphyEnabled
 
-True if giphy command is enabled on [channel type](https://getstream.io/chat/docs/javascript/channel_features/?language=javascript&q=command#edit-a-channel-type).
+True if Giphy command is enabled on [channel type](https://getstream.io/chat/docs/javascript/channel_features/?language=javascript&q=command#edit-a-channel-type).
 
 | Type    |
 | ------- |
@@ -80,7 +80,7 @@ True if giphy command is enabled on [channel type](https://getstream.io/chat/doc
 
 <HideStickyDateHeader />
 
-### isAdmin
+### `isAdmin`
 
 True if current user (connected to chat client) has `admin` role on application level or channel level. Please read more about [User Roles](https://getstream.io/chat/docs/javascript/channel_user_role/) for details.
 
@@ -92,7 +92,7 @@ const isAdmin = client?.user?.role === 'admin' || channel?.state.membership.role
 | ------- |
 | boolean |
 
-### isModerator
+### `isModerator`
 
 True if current user (connected to chat client) has `moderator` role on application level or channel level. Please read more about [User Roles](https://getstream.io/chat/docs/javascript/channel_user_role/) for details.
 
@@ -105,7 +105,7 @@ const isModerator =
 | ------- |
 | boolean |
 
-### isOwner
+### `isOwner`
 
 True if current user (connected to chat client) has `owner` level permissions for current channel type. Please read [User Permission](https://getstream.io/chat/docs/javascript/chat_permission_policies/) section for details.
 
@@ -117,7 +117,7 @@ const isOwner = channel?.state.membership.role === 'owner';
 | ------- |
 | boolean |
 
-### lastRead
+### `lastRead`
 
 <!-- TODO: Change to new docs -->
 
@@ -175,7 +175,7 @@ True if channel is loading messages during first load.
 
 <LoadingIndicator />
 
-### markRead
+### `markRead`
 
 <!-- TODO: Change to new docs -->
 
@@ -197,7 +197,7 @@ Function to mark current channel as read, for current user. This function intern
 
 <!-- TODO: Change to new docs -->
 
-Read statuses of members of current channel. This value is received from backend when you query a channel, either using [`client.queryChannels()`](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript&q=members) or [`channel.watch()`](https://getstream.io/chat/docs/javascript/watch_channel/?language=javascript&q=members) api call.
+Read statuses of members of current channel. This value is received from backend when you query a channel, either using [`client.queryChannels()`](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript&q=members) or [`channel.watch()`](https://getstream.io/chat/docs/javascript/watch_channel/?language=javascript&q=members) API call.
 
 ```tsx
 Record<
@@ -213,7 +213,7 @@ Record<
 | ------ |
 | object |
 
-### reloadChannel
+### `reloadChannel`
 
 Function to reload a channel at most recent message. Promise returned by this function will be resolved, when the channel has finished reloading.
 
@@ -241,7 +241,7 @@ Setter function for react state [`targetedMessage`](#targetedmessage) of Channel
 | ----------------------------- |
 | `(messageId: string) => void` |
 
-### targetedMessage
+### `targetedMessage`
 
 Id of message, which is highlighted currently. This value gets set when you load a channel at particular message in history, using [loadChannelAroundMessage](#loadchannelaroundmessage).
 
@@ -253,7 +253,7 @@ Id of message, which is highlighted currently. This value gets set when you load
 
 <Watchers />
 
-### watcherCount
+### `watcherCount`
 
 Total number of users, currently watching a channel.
 

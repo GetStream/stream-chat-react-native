@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Clipboard } from 'react-native';
+import { Alert } from 'react-native';
 
 import { useMessageActionHandlers } from './useMessageActionHandlers';
 
@@ -24,18 +24,21 @@ import {
   Unpin,
   UserDelete,
 } from '../../../icons';
+import { setClipboardString } from '../../../native';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
+import { removeReservedFields } from '../../../utils/removeReservedFields';
 import { MessageStatusTypes } from '../../../utils/utils';
 
 import type { MessageType } from '../../MessageList/hooks/useMessageList';
 import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
-import { removeReservedFields } from '../utils/removeReservedFields';
 
 export const useMessageActions = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channel,
   client,
+  deleteMessage: deleteMessageFromContext,
+  deleteReaction,
   enforceUniqueReaction,
   handleBlock,
   handleCopy,
@@ -51,17 +54,18 @@ export const useMessageActions = <
   message,
   onThreadSelect,
   openThread,
-  removeMessage,
   retrySendMessage,
   selectReaction,
+  sendReaction,
   setEditingState,
   setOverlay,
   setQuotedMessageState,
   supportedReactions,
   t,
-  updateMessage,
 }: Pick<
   MessagesContextValue<StreamChatGenerics>,
+  | 'deleteMessage'
+  | 'sendReaction'
   | 'handleBlock'
   | 'handleCopy'
   | 'handleDelete'
@@ -74,6 +78,7 @@ export const useMessageActions = <
   | 'handleReaction'
   | 'handleThreadReply'
   | 'removeMessage'
+  | 'deleteReaction'
   | 'retrySendMessage'
   | 'setEditingState'
   | 'setQuotedMessageState'
@@ -106,14 +111,15 @@ export const useMessageActions = <
   } = useMessageActionHandlers({
     channel,
     client,
+    deleteMessage: deleteMessageFromContext,
+    deleteReaction,
     enforceUniqueReaction,
     message,
-    removeMessage,
     retrySendMessage,
+    sendReaction,
     setEditingState,
     setQuotedMessageState,
     supportedReactions,
-    updateMessage,
   });
 
   const error = message.type === 'error' || message.status === MessageStatusTypes.FAILED;
@@ -147,19 +153,21 @@ export const useMessageActions = <
     title: message.user?.banned ? t('Unblock User') : t('Block User'),
   };
 
-  const copyMessage: MessageActionType = {
-    // using depreciated Clipboard from react-native until expo supports the community version or their own
-    action: () => {
-      setOverlay('none');
-      if (handleCopy) {
-        handleCopy(message);
-      }
-      Clipboard.setString(message.text || '');
-    },
-    actionType: 'copyMessage',
-    icon: <Copy pathFill={grey} />,
-    title: t('Copy Message'),
-  };
+  const copyMessage: MessageActionType | undefined =
+    setClipboardString !== null
+      ? {
+          action: () => {
+            setOverlay('none');
+            if (handleCopy) {
+              handleCopy(message);
+            }
+            setClipboardString(message.text || '');
+          },
+          actionType: 'copyMessage',
+          icon: <Copy pathFill={grey} />,
+          title: t('Copy Message'),
+        }
+      : undefined;
 
   const deleteMessage: MessageActionType = {
     action: () => {
