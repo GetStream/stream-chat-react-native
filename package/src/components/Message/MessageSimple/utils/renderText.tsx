@@ -233,6 +233,7 @@ export const renderText = <
         });
       }
     };
+    console.log(node);
 
     const onLongPress = (event: GestureResponderEvent) => {
       if (!preventPress && onLongPressParam) {
@@ -246,7 +247,7 @@ export const renderText = <
     return (
       <Text key={state.key} onLongPress={onLongPress} onPress={onPress} style={styles.mentions}>
         {Array.isArray(node.content)
-          ? node.content.reduce((acc, current) => (acc += current.content), '') || ''
+          ? node.content.reduce((acc, current) => acc + current.content, '') || ''
           : output(node.content, state)}
       </Text>
     );
