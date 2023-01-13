@@ -233,7 +233,6 @@ export const renderText = <
         });
       }
     };
-    console.log(node);
 
     const onLongPress = (event: GestureResponderEvent) => {
       if (!preventPress && onLongPressParam) {
