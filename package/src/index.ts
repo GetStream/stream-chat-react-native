@@ -8,6 +8,7 @@ export * from './icons';
 
 export * from './types/types';
 
+export * from './utils/patchMessageTextCommand';
 export * from './utils/Streami18n';
 export * from './utils/utils';
 

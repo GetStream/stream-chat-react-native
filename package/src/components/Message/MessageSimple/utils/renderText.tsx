@@ -245,7 +245,9 @@ export const renderText = <
 
     return (
       <Text key={state.key} onLongPress={onLongPress} onPress={onPress} style={styles.mentions}>
-        {Array.isArray(node.content) ? node.content[0].content || '' : output(node.content, state)}
+        {Array.isArray(node.content)
+          ? node.content.reduce((acc, current) => acc + current.content, '') || ''
+          : output(node.content, state)}
       </Text>
     );
   };
@@ -261,6 +263,8 @@ export const renderText = <
   );
 
   const customRules = {
+    // do not render images, we will scrape them out of the message and show on attachment card component
+    image: { match: () => null },
     link: { react: link },
     list: { react: list },
     // Truncate long text content in the message overlay
