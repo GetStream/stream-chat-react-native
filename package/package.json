@@ -135,7 +135,7 @@
     "react-dom": "17.0.2",
     "react-native": "0.67.3",
     "react-native-builder-bob": "0.18.1",
-    "react-native-gesture-handler": "2.3.1",
+    "react-native-gesture-handler": "~2.8.0",
     "react-native-quick-sqlite": "5.1.0",
     "react-native-reanimated": "2.7.0",
     "react-native-svg": "12.1.1",
@@ -144,5 +144,9 @@
     "typescript": "4.4.3",
     "uuid": "^8.3.2",
     "webpack": "4.44.2"
+  },
+  "resolutions": {
+    "@types/react": "17.0.5",
+    "@types/react-native": "0.67.3"
   }
 }
