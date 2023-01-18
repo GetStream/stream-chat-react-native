@@ -397,7 +397,7 @@ PODS:
     - React
   - RNFS (2.20.0):
     - React-Core
-  - RNGestureHandler (2.5.0):
+  - RNGestureHandler (2.8.0):
     - React-Core
   - RNImageCropPicker (0.38.0):
     - React-Core
@@ -708,7 +708,7 @@ SPEC CHECKSUMS:
   ReactCommon: 7f86326b92009925c6dcf93f8e825060171c379f
   RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
-  RNGestureHandler: bad495418bcbd3ab47017a38d93d290ebd406f50
+  RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
   RNImageCropPicker: ffbba608264885c241cbf3a8f78eb7aeeb978241
   RNReactNativeHapticFeedback: 1e3efeca9628ff9876ee7cdd9edec1b336913f8c
   RNReanimated: ce445c233a6ff5600223484a88ad5704945d972a

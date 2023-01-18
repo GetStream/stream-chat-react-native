@@ -245,7 +245,9 @@ export const renderText = <
 
     return (
       <Text key={state.key} onLongPress={onLongPress} onPress={onPress} style={styles.mentions}>
-        {Array.isArray(node.content) ? node.content[0].content || '' : output(node.content, state)}
+        {Array.isArray(node.content)
+          ? node.content.reduce((acc, current) => acc + current.content, '') || ''
+          : output(node.content, state)}
       </Text>
     );
   };
