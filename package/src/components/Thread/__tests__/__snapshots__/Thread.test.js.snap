@@ -1410,6 +1410,8 @@ exports[`Thread should match thread snapshot 1`] = `
           >
             <RNGestureHandlerButton
               collapsable={false}
+              delayLongPress={600}
+              enabled={true}
               exclusive={true}
               handlerTag={4}
               handlerType="NativeViewGestureHandler"
@@ -1427,6 +1429,7 @@ exports[`Thread should match thread snapshot 1`] = `
               onHandlerStateChange={[Function]}
               rippleColor={0}
               testID="attach-button"
+              touchSoundDisabled={false}
             >
               <View
                 accessible={true}
@@ -1495,6 +1498,8 @@ exports[`Thread should match thread snapshot 1`] = `
           >
             <RNGestureHandlerButton
               collapsable={false}
+              delayLongPress={600}
+              enabled={true}
               exclusive={true}
               handlerTag={5}
               handlerType="NativeViewGestureHandler"
@@ -1512,6 +1517,7 @@ exports[`Thread should match thread snapshot 1`] = `
               onHandlerStateChange={[Function]}
               rippleColor={0}
               testID="commands-button"
+              touchSoundDisabled={false}
             >
               <View
                 accessible={true}
@@ -1652,6 +1658,8 @@ exports[`Thread should match thread snapshot 1`] = `
         >
           <RNGestureHandlerButton
             collapsable={false}
+            delayLongPress={600}
+            enabled={false}
             exclusive={true}
             handlerTag={6}
             handlerType="NativeViewGestureHandler"
@@ -1661,6 +1669,7 @@ exports[`Thread should match thread snapshot 1`] = `
             onHandlerStateChange={[Function]}
             rippleColor={0}
             testID="send-button"
+            touchSoundDisabled={false}
           >
             <View
               accessible={true}
