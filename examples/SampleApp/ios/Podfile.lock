@@ -535,7 +535,7 @@ PODS:
     - RNFBApp
   - RNFS (2.18.0):
     - React
-  - RNGestureHandler (2.3.1):
+  - RNGestureHandler (2.8.0):
     - React-Core
   - RNImageCropPicker (0.38.0):
     - React-Core
@@ -834,7 +834,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost: a7c83b31436843459a1961bfd74b96033dc77234
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
-  DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
+  DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
   FBLazyVector: d3cdc05875c89782840d2f38e1d6174fab24e4d2
   FBReactNativeSpec: 0612c8f2dbd774414bb778247c6ec6cb05aa4c50
   Firebase: 7e8fe528c161b9271d365217a74c16aaf834578e
@@ -855,7 +855,7 @@ SPEC CHECKSUMS:
   Flipper-RSocket: d9d9ade67cbecf6ac10730304bf5607266dd2541
   FlipperKit: cbdee19bdd4e7f05472a66ce290f1b729ba3cb86
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
+  glog: 85ecdd10ee8d8ec362ef519a6a45ff9aa27b2e85
   GoogleAppMeasurement: 71156240babd3cc6ced03e0d54816f01a880c730
   GoogleDataTransport: 1c8145da7117bd68bbbed00cf304edb6a24de00f
   GoogleUtilities: 1d20a6ad97ef46f67bbdec158ce00563a671ebb7
@@ -906,7 +906,7 @@ SPEC CHECKSUMS:
   RNFBApp: 097a31d372b3db15b41c7a1a5c429433b0609e12
   RNFBMessaging: 06a7a73883f3f43da61507dbfcf4db2245c22869
   RNFS: 3ab21fa6c56d65566d1fb26c2228e2b6132e5e32
-  RNGestureHandler: 68f660f1080d3300936a67ce5c6879bd8f26ecc2
+  RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
   RNImageCropPicker: ffbba608264885c241cbf3a8f78eb7aeeb978241
   RNNotifee: 83b475b2fdf7e9191a39ebd591f153713930eb7d
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
@@ -921,6 +921,6 @@ SPEC CHECKSUMS:
   Yoga: 6c8252e38d65aa387daee699eacf027e055e0b31
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: dcdf2b600767187da4a87e0aec4e799785d74855
+PODFILE CHECKSUM: 9720443c719d321d4ab8c67cc813d2ae17f34423
 
 COCOAPODS: 1.11.2

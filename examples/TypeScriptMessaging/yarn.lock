@@ -6294,10 +6294,10 @@ react-native-fs@2.20.0:
     base-64 "^0.1.0"
     utf8 "^3.0.0"
 
-react-native-gesture-handler@^2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.5.0.tgz#61385583570ed0a45a9ed142425e35f8fe8274fb"
-  integrity sha512-djZdcprFf08PZC332D+AeG5wcGeAPhzfCJtB3otUgOgTlvjVXmg/SLFdPJSpzLBqkRAmrC77tM79QgKbuLxkfw==
+react-native-gesture-handler@~2.8.0:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.8.0.tgz#ef9857871c10663c95a51546225b6e00cd4740cf"
+  integrity sha512-poOSfz/w0IyD6Qwq7aaIRRfEaVTl1ecQFoyiIbpOpfNTjm2B1niY2FLrdVQIOtIOe+K9nH55Qal04nr4jGkHdQ==
   dependencies:
     "@egjs/hammerjs" "^2.0.17"
     hoist-non-react-statics "^3.3.0"
@@ -7120,10 +7120,10 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-stream-chat-react-native-core@5.6.1:
-  version "5.6.1"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.6.1.tgz#76b8f882eabac03cced9b9081e865b2af45b7b67"
-  integrity sha512-RUfiu9wjuaJ3UTJtmENMGPdbhKyWmYxkAGIFdI22uf4fTnOGJpu+jhfCo31Co+kMRW0bdCdKW4bfX2DE9EIiaw==
+stream-chat-react-native-core@5.7.0:
+  version "5.7.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.7.0.tgz#45c93b2ec011120f88363644d033afa1a7f953f6"
+  integrity sha512-LUHj1tzL67bWqShpBfzd4kbShOVfl5mnRs7fAVoqFNT2C+ZpxBqw891jsC2mLME4H7p0p5F/x4v+QCw+S9PxiQ==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "4.4.5"
