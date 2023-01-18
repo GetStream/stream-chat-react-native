@@ -40,7 +40,6 @@
     "get-version": "echo $npm_package_version",
     "version": "bash ./bin/before-tag.sh",
     "bootstrap": "yarn install",
-    "bootstrap-ci": "yarn install --frozen-lockfile",
     "extract-changelog": "FILTER_PATH='package' TAG_FORMAT='v${version}' node ../release/extract-changelog.js",
     "release": "FILTER_PATH='package' TAG_FORMAT='v${version}' node ../release/prod",
     "release-next": "FILTER_PATH='package' TAG_FORMAT='v${version}' node ../release/next",
