@@ -27,8 +27,7 @@
   },
   "scripts": {
     "prepack": " cp ../../README.md .",
-    "postpack": "rm README.md",
-    "bootstrap-ci": "yarn install --frozen-lockfile"
+    "postpack": "rm README.md"
   },
   "devDependencies": {
     "@react-native-camera-roll/camera-roll": "^5.0.2",
