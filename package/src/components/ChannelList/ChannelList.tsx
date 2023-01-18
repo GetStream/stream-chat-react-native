@@ -177,6 +177,21 @@ export type ChannelListProps<
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
+   * Override the default listener/handler for event `message.new`
+   * This event is received on channel, when a new message is added on a channel.
+   *
+   * @param lockChannelOrder If set to true, channels won't dynamically sort by most recent message, defaults to false
+   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
+   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `message.new` event
+   *
+   * @overrideType Function
+   * */
+  onWhateverMessageNew?: (
+    lockChannelOrder: boolean,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    event: Event<StreamChatGenerics>,
+  ) => void;
+  /**
    * Object containing channel query options
    * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available option fields
    * */
@@ -229,6 +244,7 @@ export const ChannelList = <
     onMessageNew,
     onRemovedFromChannel,
     onSelect,
+    onWhateverMessageNew,
     options = DEFAULT_OPTIONS,
     Preview = ChannelPreviewMessenger,
     PreviewAvatar,
@@ -298,6 +314,7 @@ export const ChannelList = <
 
   useNewMessage({
     lockChannelOrder,
+    onWhateverMessageNew,
     setChannels,
   });
 
