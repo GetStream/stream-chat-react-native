@@ -1,5 +1,27 @@
 # Change Log
 
+## [1.17.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.16.0...sampleapp@v1.17.0) (2023-01-19)
+
+
+### Features
+
+* add max file upload size limit of 100MB ([#1888](https://github.com/GetStream/stream-chat-react-native/issues/1888)) ([7ff1698](https://github.com/GetStream/stream-chat-react-native/commit/7ff169818e66cf9bbdf4b4de28fa804f48ea076b))
+* update expo example app to expo 47 ([#1892](https://github.com/GetStream/stream-chat-react-native/issues/1892)) ([e396ec0](https://github.com/GetStream/stream-chat-react-native/commit/e396ec09e281f659f63efa55a3f2499d6ce0d310))
+* upgrading stream-chat to v8.2.1 ([25e94e9](https://github.com/GetStream/stream-chat-react-native/commit/25e94e9b902e267ffd55bb6788d6b5d0cc2d5610))
+* upgrading stream-chat tov8.2.1 ([679bcc1](https://github.com/GetStream/stream-chat-react-native/commit/679bcc1df6cda9fa73564fb5aebcfdae4223fb26))
+
+
+### Bug Fixes
+
+* react-native-gesture-handler:assertNoMultipleInstances ([#1915](https://github.com/GetStream/stream-chat-react-native/issues/1915)) ([788902d](https://github.com/GetStream/stream-chat-react-native/commit/788902dee560da5ee517599027cd5fd59564cb47))
+* **sampleApp:** crash on load due to import of devsettings module ([e0184b6](https://github.com/GetStream/stream-chat-react-native/commit/e0184b6cb52632578f69e8598623cb4d4e3f5205))
+* **sampleApp:** crash on load due to import of devsettings module in production ([18702bc](https://github.com/GetStream/stream-chat-react-native/commit/18702bc0ed946669bfb8a1852d47a3a0b01d264c))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ## [1.16.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.15.1...sampleapp@v1.16.0) (2022-12-23)
 
 
