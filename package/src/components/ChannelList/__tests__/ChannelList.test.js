@@ -297,11 +297,11 @@ describe('ChannelList', () => {
           expect(within(items[2]).getByText(newMessage.text)).toBeTruthy();
         });
       });
-      it('should call the `onWhateverMessageNew` function prop, if provided', async () => {
-        const onWhateverMessageNew = jest.fn();
+      it('should call the `onNewMessageEvent` function prop, if provided', async () => {
+        const onNewMessageEvent = jest.fn();
         const { getByTestId } = render(
           <Chat client={chatClient}>
-            <ChannelList {...props} onWhateverMessageNew={onWhateverMessageNew} />
+            <ChannelList {...props} onNewMessageEvent={onNewMessageEvent} />
           </Chat>,
         );
 
@@ -312,7 +312,7 @@ describe('ChannelList', () => {
         act(() => dispatchMessageNewEvent(chatClient, testChannel2.channel));
 
         await waitFor(() => {
-          expect(onWhateverMessageNew).toHaveBeenCalledTimes(1);
+          expect(onNewMessageEvent).toHaveBeenCalledTimes(1);
         });
       });
     });
@@ -362,6 +362,25 @@ describe('ChannelList', () => {
 
         await waitFor(() => {
           expect(onMessageNew).toHaveBeenCalledTimes(1);
+        });
+      });
+
+      it('should call the `onNewMessageNotification` function prop, if provided', async () => {
+        const onNewMessageNotification = jest.fn();
+        const { getByTestId } = render(
+          <Chat client={chatClient}>
+            <ChannelList {...props} onNewMessageNotification={onNewMessageNotification} />
+          </Chat>,
+        );
+
+        await waitFor(() => {
+          expect(getByTestId('channel-list')).toBeTruthy();
+        });
+
+        act(() => dispatchNotificationMessageNewEvent(chatClient, testChannel2.channel));
+
+        await waitFor(() => {
+          expect(onNewMessageNotification).toHaveBeenCalledTimes(1);
         });
       });
     });

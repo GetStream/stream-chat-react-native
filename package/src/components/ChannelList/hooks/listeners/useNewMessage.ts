@@ -11,7 +11,7 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
   {
     lockChannelOrder: boolean;
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>;
-    onWhateverMessageNew?: (
+    onNewMessageEvent?: (
       lockChannelOrder: boolean,
       setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
       event: Event<StreamChatGenerics>,
@@ -22,15 +22,15 @@ export const useNewMessage = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   lockChannelOrder,
-  onWhateverMessageNew,
+  onNewMessageEvent,
   setChannels,
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
 
   useEffect(() => {
     const handleEvent = (event: Event<StreamChatGenerics>) => {
-      if (typeof onWhateverMessageNew === 'function') {
-        onWhateverMessageNew(lockChannelOrder, setChannels, event);
+      if (typeof onNewMessageEvent === 'function') {
+        onNewMessageEvent(lockChannelOrder, setChannels, event);
       } else {
         setChannels((channels) => {
           if (!channels) return channels;
