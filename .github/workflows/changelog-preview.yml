@@ -23,7 +23,15 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://registry.npmjs.org'
       - name: Installation
-        run: yarn --frozen-lockfile && yarn bootstrap-ci
+        run: |
+          yarn --frozen-lockfile
+          cd package/
+          yarn --frozen-lockfile
+          cd native-package/
+          yarn --frozen-lockfile
+          cd ../../examples/SampleApp/
+          yarn --frozen-lockfile
+
       - name: Generate Changelog
         id: generate_changelog
         run: |

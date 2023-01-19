@@ -62,9 +62,9 @@ describe('useChannelPreviewDisplayName', () => {
   });
 
   it.each([
-    [CHARACTER_LENGTH, GROUP_CHANNEL_MEMBERS_MOCK, 'okechukwu nwagba', 'ben, nick, q,...+2'],
+    [CHARACTER_LENGTH, GROUP_CHANNEL_MEMBERS_MOCK, 'okechukwu nwagba', 'ben, nick, qat,...+2'],
     [CHARACTER_LENGTH, ONE_CHANNEL_MEMBER_MOCK, 'okechukwu nwagba', 'okechukwu nw...'],
-    [CHARACTER_LENGTH, ONE_MEMBER_WITH_EMPTY_USER_MOCK, 'okechukwu nwagba', 'Unknown User...'],
+    [CHARACTER_LENGTH, ONE_MEMBER_WITH_EMPTY_USER_MOCK, 'okechukwu nwagba', 'Unknown User'],
   ])(
     'getChannelPreviewDisplayName(%i, %p, %s) result in %s',
     (characterLength, members, currentUserId, expected) => {

@@ -79,6 +79,7 @@ import * as dbApi from '../../store/apis';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
 import { DBSyncManager } from '../../utils/DBSyncManager';
+import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
 import { removeReactionFromLocalState } from '../../utils/removeReactionFromLocalState';
 import { generateRandomId, isLocalUrl, MessageStatusTypes, ReactionData } from '../../utils/utils';
 import { Attachment as AttachmentDefault } from '../Attachment/Attachment';
@@ -1332,12 +1333,14 @@ const ChannelWithContext = <
       } = updatedMessage;
       if (!channel.id) return;
 
+      const mentionedUserIds = mentioned_users?.map((user) => user.id) || [];
+
       const messageData = {
         attachments,
         id,
-        mentioned_users: mentioned_users?.map((mentionedUser) => mentionedUser.id) || [],
+        mentioned_users: mentionedUserIds,
         parent_id,
-        text,
+        text: patchMessageTextCommand(text ?? '', mentionedUserIds),
         ...extraFields,
       } as StreamMessage<StreamChatGenerics>;
 
