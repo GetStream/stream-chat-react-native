@@ -1,5 +1,28 @@
 # Change Log
 
+## [5.8.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.7.0...v5.8.0) (2023-01-19)
+
+
+### Features
+
+* add max file upload size limit of 100MB ([#1888](https://github.com/GetStream/stream-chat-react-native/issues/1888)) ([7ff1698](https://github.com/GetStream/stream-chat-react-native/commit/7ff169818e66cf9bbdf4b4de28fa804f48ea076b))
+* add resizeMode prop to the Video component and update native_handlers docs ([878caf0](https://github.com/GetStream/stream-chat-react-native/commit/878caf095995dfc391d2ea827d51b267f9bd0a5d))
+* add resizeMode prop to the Video component and update native_handlers docs ([b7379b9](https://github.com/GetStream/stream-chat-react-native/commit/b7379b9e67e85e023d342c491fa684c80be93264))
+* update expo example app to expo 47 ([#1892](https://github.com/GetStream/stream-chat-react-native/issues/1892)) ([e396ec0](https://github.com/GetStream/stream-chat-react-native/commit/e396ec09e281f659f63efa55a3f2499d6ce0d310))
+* upgrading stream-chat to v8.2.1 ([25e94e9](https://github.com/GetStream/stream-chat-react-native/commit/25e94e9b902e267ffd55bb6788d6b5d0cc2d5610))
+* upgrading stream-chat tov8.2.1 ([679bcc1](https://github.com/GetStream/stream-chat-react-native/commit/679bcc1df6cda9fa73564fb5aebcfdae4223fb26))
+* upgrading stream-chat tov8.2.1 ([6febba9](https://github.com/GetStream/stream-chat-react-native/commit/6febba919c06d9f70bda145e44e9861d02cf8177))
+
+
+### Bug Fixes
+
+* add resizeMode support in expo package handlers ([715540f](https://github.com/GetStream/stream-chat-react-native/commit/715540ffe8d590d7c783e240999a9299f1eb7d05))
+* avoid double commas in generated channel names ([#1800](https://github.com/GetStream/stream-chat-react-native/issues/1800)) ([99dfee5](https://github.com/GetStream/stream-chat-react-native/commit/99dfee56b3078cc3937180fc34372081614e7b99))
+* commands with username must be replaced with userId ([#1890](https://github.com/GetStream/stream-chat-react-native/issues/1890)) ([8001e4d](https://github.com/GetStream/stream-chat-react-native/commit/8001e4dcb0436e4dc0c6402b98246945098ac3ea))
+* do not fixate on unnecessary peer dependency versions ([#1903](https://github.com/GetStream/stream-chat-react-native/issues/1903)) ([6cc5bde](https://github.com/GetStream/stream-chat-react-native/commit/6cc5bdebd00860e581f6c8432763424f6137be1f))
+* do render images twice on markdown ([#1897](https://github.com/GetStream/stream-chat-react-native/issues/1897)) ([72c80f6](https://github.com/GetStream/stream-chat-react-native/commit/72c80f61fff48df7a500abdc6b845a6dc98dad02))
+* trimmed mentioned user text in messages when special characters used ([#1909](https://github.com/GetStream/stream-chat-react-native/issues/1909)) ([e64b1d6](https://github.com/GetStream/stream-chat-react-native/commit/e64b1d6b4abac8fcf5c6002d7657ab6dd6b53417))
+
 ## [5.7.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.6.1...v5.7.0) (2022-12-23)
 
 
