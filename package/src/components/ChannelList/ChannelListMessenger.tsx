@@ -83,7 +83,7 @@ const ChannelListMessengerWithContext = <
 >(
   props: ChannelListMessengerPropsWithContext<StreamChatGenerics>,
 ) => {
-  const onEndReachedCalledDuringMomentumRef = useRef<boolean>(false);
+  const onEndReachedCalledDuringCurrentScrollRef = useRef<boolean>(false);
   const {
     additionalFlatListProps,
     channels,
@@ -152,9 +152,9 @@ const ChannelListMessengerWithContext = <
   }
 
   const onEndReached = () => {
-    if (!onEndReachedCalledDuringMomentumRef.current && hasNextPage) {
+    if (!onEndReachedCalledDuringCurrentScrollRef.current && hasNextPage) {
       loadNextPage();
-      onEndReachedCalledDuringMomentumRef.current = true;
+      onEndReachedCalledDuringCurrentScrollRef.current = true;
     }
   };
 
@@ -184,7 +184,7 @@ const ChannelListMessengerWithContext = <
         ListHeaderComponent={ListHeaderComponent}
         onEndReached={onEndReached}
         onEndReachedThreshold={loadMoreThreshold}
-        onMomentumScrollBegin={() => (onEndReachedCalledDuringMomentumRef.current = false)}
+        onMomentumScrollBegin={() => (onEndReachedCalledDuringCurrentScrollRef.current = false)}
         ref={setFlatListRef}
         refreshControl={<RefreshControl onRefresh={refreshList} refreshing={refreshing} />}
         renderItem={renderItem}

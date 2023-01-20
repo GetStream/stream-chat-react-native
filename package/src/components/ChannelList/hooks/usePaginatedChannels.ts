@@ -50,7 +50,7 @@ export const usePaginatedChannels = <
   const [channels, setChannels] = useState<Channel<StreamChatGenerics>[] | null>(null);
   const [error, setError] = useState<Error | undefined>(undefined);
   const [staticChannelsActive, setStaticChannelsActive] = useState<boolean>(false);
-  const [activeQueryType, setActiveQueryType] = useState<QueryType | null>(null);
+  const [activeQueryType, setActiveQueryType] = useState<QueryType | null>('queryLocalDB');
   const [hasNextPage, setHasNextPage] = useState<boolean>(false);
 
   const activeChannels = useActiveChannelsRefContext();
