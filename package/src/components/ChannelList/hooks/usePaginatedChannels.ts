@@ -90,6 +90,7 @@ export const usePaginatedChannels = <
     filtersRef.current = filters;
     sortRef.current = sort;
     isQueryingRef.current = true;
+    setError(undefined);
     activeRequestId.current++;
     const currentRequestId = activeRequestId.current;
     setActiveQueryType(queryType);
@@ -133,7 +134,6 @@ export const usePaginatedChannels = <
       setChannels(newChannels);
       setStaticChannelsActive(false);
       setHasNextPage(channelQueryResponse.length >= newOptions.limit);
-      setError(undefined);
       isQueryingRef.current = false;
     } catch (err: unknown) {
       isQueryingRef.current = false;
