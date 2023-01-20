@@ -1,14 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import {
-  LogBox,
-  Platform,
-  SafeAreaView,
-  View,
-  useColorScheme,
-  I18nManager,
-  FlatList,
-  Text,
-} from 'react-native';
+import { LogBox, Platform, SafeAreaView, View, useColorScheme, I18nManager } from 'react-native';
 import { DarkTheme, DefaultTheme, NavigationContainer, RouteProp } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import { useHeaderHeight } from '@react-navigation/elements';
