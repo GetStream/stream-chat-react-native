@@ -68,8 +68,6 @@ export const usePaginatedChannels = <
     retryCount = 0,
   ): Promise<void> => {
     if (!client || !isMountedRef.current) return;
-    console.log('queryChannels', queryType, retryCount);
-
     const hasUpdatedData = [
       JSON.stringify(filtersRef.current) !== JSON.stringify(filters),
       JSON.stringify(sortRef.current) !== JSON.stringify(sort),
