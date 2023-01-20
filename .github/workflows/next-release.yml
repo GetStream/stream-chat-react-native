@@ -25,10 +25,18 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - name: Prepare git
         run: |
-          git config --global user.name "Vishal Narkhede"
-          git config --global user.email "vishal@getstream.io"
+          git config --global user.name "Steve Galili"
+          git config --global user.email "steve.galili@getstream.io"
       - name: Installation && Build SDK
-        run: yarn --frozen-lockfile && yarn bootstrap-ci
+        run: |
+          yarn --frozen-lockfile
+          cd package/
+          yarn --frozen-lockfile
+          cd native-package/
+          yarn --frozen-lockfile
+          cd ../../examples/SampleApp/
+          yarn --frozen-lockfile
+
       - name: Lint
         run: yarn lerna-workspaces run lint && (cd docusaurus; npx prettier --check '**/*.mdx')
       - name: Test

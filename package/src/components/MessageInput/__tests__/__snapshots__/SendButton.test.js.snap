@@ -3,6 +3,8 @@
 exports[`SendButton should render a non-editing disabled SendButton 1`] = `
 <RNGestureHandlerButton
   collapsable={false}
+  delayLongPress={600}
+  enabled={false}
   exclusive={true}
   handlerTag={2}
   handlerType="NativeViewGestureHandler"
@@ -12,6 +14,7 @@ exports[`SendButton should render a non-editing disabled SendButton 1`] = `
   onHandlerStateChange={[Function]}
   rippleColor={0}
   testID="send-button"
+  touchSoundDisabled={false}
 >
   <View
     accessible={true}
@@ -71,6 +74,8 @@ exports[`SendButton should render a non-editing disabled SendButton 1`] = `
 exports[`SendButton should render a non-editing enabled SendButton 1`] = `
 <RNGestureHandlerButton
   collapsable={false}
+  delayLongPress={600}
+  enabled={true}
   exclusive={true}
   handlerTag={1}
   handlerType="NativeViewGestureHandler"
@@ -80,6 +85,7 @@ exports[`SendButton should render a non-editing enabled SendButton 1`] = `
   onHandlerStateChange={[Function]}
   rippleColor={0}
   testID="send-button"
+  touchSoundDisabled={false}
 >
   <View
     accessible={true}
@@ -139,6 +145,8 @@ exports[`SendButton should render a non-editing enabled SendButton 1`] = `
 exports[`SendButton should render an editing disabled SendButton 1`] = `
 <RNGestureHandlerButton
   collapsable={false}
+  delayLongPress={600}
+  enabled={false}
   exclusive={true}
   handlerTag={4}
   handlerType="NativeViewGestureHandler"
@@ -148,6 +156,7 @@ exports[`SendButton should render an editing disabled SendButton 1`] = `
   onHandlerStateChange={[Function]}
   rippleColor={0}
   testID="send-button"
+  touchSoundDisabled={false}
 >
   <View
     accessible={true}
@@ -207,6 +216,8 @@ exports[`SendButton should render an editing disabled SendButton 1`] = `
 exports[`SendButton should render an editing enabled SendButton 1`] = `
 <RNGestureHandlerButton
   collapsable={false}
+  delayLongPress={600}
+  enabled={true}
   exclusive={true}
   handlerTag={3}
   handlerType="NativeViewGestureHandler"
@@ -216,6 +227,7 @@ exports[`SendButton should render an editing enabled SendButton 1`] = `
   onHandlerStateChange={[Function]}
   rippleColor={0}
   testID="send-button"
+  touchSoundDisabled={false}
 >
   <View
     accessible={true}
