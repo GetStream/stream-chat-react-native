@@ -47,33 +47,33 @@ export const usePaginatedChannels = <
   setForceUpdate,
   sort = {},
 }: Parameters<StreamChatGenerics>) => {
-  const { client } = useChatContext<StreamChatGenerics>();
   const [channels, setChannels] = useState<Channel<StreamChatGenerics>[] | null>(null);
+  const [error, setError] = useState<Error | undefined>(undefined);
   const [staticChannelsActive, setStaticChannelsActive] = useState<boolean>(false);
+  const [activeQueryType, setActiveQueryType] = useState<QueryType | null>(null);
+  const [hasNextPage, setHasNextPage] = useState<boolean>(false);
+
   const activeChannels = useActiveChannelsRefContext();
-  const [error, setError] = useState<Error>();
-  const [hasNextPage, setHasNextPage] = useState(true);
-  const lastRefresh = useRef(Date.now());
-  const isQueryingRef = useRef(false);
-  const [activeQueryType, setActiveQueryType] = useState<QueryType | null>('queryLocalDB');
   const isMountedRef = useIsMountedRef();
+  const { client } = useChatContext<StreamChatGenerics>();
+
   const filtersRef = useRef<typeof filters | null>(null);
   const sortRef = useRef<typeof sort | null>(null);
   const activeRequestId = useRef<number>(0);
+  const isQueryingRef = useRef(false);
+  const lastRefresh = useRef(Date.now());
 
   const queryChannels: QueryChannels = async (
     queryType: QueryType = 'loadChannels',
     retryCount = 0,
   ): Promise<void> => {
     if (!client || !isMountedRef.current) return;
+    console.log('queryChannels', queryType, retryCount);
 
-    const hasUpdatedData =
-      queryType === 'loadChannels' ||
-      queryType === 'refresh' ||
-      [
-        JSON.stringify(filtersRef.current) !== JSON.stringify(filters),
-        JSON.stringify(sortRef.current) !== JSON.stringify(sort),
-      ].some(Boolean);
+    const hasUpdatedData = [
+      JSON.stringify(filtersRef.current) !== JSON.stringify(filters),
+      JSON.stringify(sortRef.current) !== JSON.stringify(sort),
+    ].some(Boolean);
 
     const isQueryStale = () => !isMountedRef || activeRequestId.current !== currentRequestId;
 
@@ -88,7 +88,6 @@ export const usePaginatedChannels = <
     filtersRef.current = filters;
     sortRef.current = sort;
     isQueryingRef.current = true;
-    setError(undefined);
     activeRequestId.current++;
     const currentRequestId = activeRequestId.current;
     setActiveQueryType(queryType);
@@ -162,9 +161,7 @@ export const usePaginatedChannels = <
     setActiveQueryType(null);
   };
 
-  const loadNextPage = hasNextPage ? queryChannels : undefined;
-
-  const refreshList = () => {
+  const refreshList = async () => {
     const now = Date.now();
     // Only allow pull-to-refresh 5 seconds after last successful refresh.
     if (now - lastRefresh.current < RETRY_INTERVAL_IN_MS && error === undefined) {
@@ -172,7 +169,7 @@ export const usePaginatedChannels = <
     }
 
     lastRefresh.current = Date.now();
-    return queryChannels('refresh');
+    await queryChannels('refresh');
   };
 
   const reloadList = () => queryChannels('reload');
@@ -263,7 +260,7 @@ export const usePaginatedChannels = <
         ? true
         : (activeQueryType === 'reload' || activeQueryType === null) && channels === null,
     loadingNextPage: activeQueryType === 'loadChannels',
-    loadNextPage,
+    loadNextPage: queryChannels,
     refreshing: activeQueryType === 'refresh',
     refreshList,
     reloadList,

@@ -1,5 +1,14 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { LogBox, Platform, SafeAreaView, View, useColorScheme, I18nManager } from 'react-native';
+import {
+  LogBox,
+  Platform,
+  SafeAreaView,
+  View,
+  useColorScheme,
+  I18nManager,
+  FlatList,
+  Text,
+} from 'react-native';
 import { DarkTheme, DefaultTheme, NavigationContainer, RouteProp } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import { useHeaderHeight } from '@react-navigation/elements';
@@ -73,6 +82,32 @@ const options = {
 const streami18n = new Streami18n({
   language: 'en',
 });
+
+const renderItem = ({ item }) => (
+  <View style={{ margin: 40 }}>
+    <Text>{item.title}</Text>
+  </View>
+);
+
+const ChannelListHeader = () => {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    fetch('https://dummyjson.com/products')
+      .then((res) => res.json())
+      .then((response) => setData(response.products))
+      .catch((err) => console.log(err));
+  }, []);
+
+  return (
+    <FlatList
+      keyExtractor={(item) => item.id}
+      renderItem={renderItem}
+      data={data}
+      horizontal={true}
+    />
+  );
+};
 
 type ChannelListScreenProps = {
   navigation: StackNavigationProp<NavigationParamsList, 'ChannelList'>;

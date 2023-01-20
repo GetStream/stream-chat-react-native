@@ -26,7 +26,6 @@ export type ChannelListMessengerPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Omit<
   ChannelsContextValue<StreamChatGenerics>,
-  | 'hasNextPage'
   | 'HeaderErrorIndicator'
   | 'HeaderNetworkDownIndicator'
   | 'maxUnreadCount'
@@ -91,6 +90,7 @@ const ChannelListMessengerWithContext = <
     error,
     FooterLoadingIndicator,
     forceUpdate,
+    hasNextPage,
     ListHeaderComponent,
     loadingChannels,
     LoadingErrorIndicator,
@@ -151,13 +151,10 @@ const ChannelListMessengerWithContext = <
   }
 
   const onEndReached = () => {
-    if (loadNextPage) {
+    if (hasNextPage) {
       loadNextPage();
     }
   };
-
-  const ListFooterComponent = () =>
-    channels?.length && ListHeaderComponent ? <ListHeaderComponent /> : null;
 
   if (loadingChannels) {
     return <LoadingIndicator listType='channel' />;
@@ -182,7 +179,7 @@ const ChannelListMessengerWithContext = <
           )
         }
         ListFooterComponent={loadingNextPage ? <FooterLoadingIndicator /> : undefined}
-        ListHeaderComponent={ListFooterComponent}
+        ListHeaderComponent={ListHeaderComponent}
         onEndReached={onEndReached}
         onEndReachedThreshold={loadMoreThreshold}
         ref={setFlatListRef}
