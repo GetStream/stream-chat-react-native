@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 import uniqBy from 'lodash/uniqBy';
 
-import type { Channel, Event } from 'stream-chat';
+import type { Channel, ChannelFilters, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
@@ -12,6 +12,7 @@ import { getChannel } from '../../utils';
 type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   {
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>;
+    filters?: ChannelFilters<StreamChatGenerics>;
     onMessageNew?: (
       setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
       event: Event<StreamChatGenerics>,
@@ -21,6 +22,7 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
 export const useNewMessageNotification = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
+  filters,
   onMessageNew,
   setChannels,
 }: Parameters<StreamChatGenerics>) => {
@@ -31,7 +33,7 @@ export const useNewMessageNotification = <
       if (typeof onMessageNew === 'function') {
         onMessageNew(setChannels, event);
       } else {
-        if (event.channel?.id && event.channel?.type) {
+        if (event.channel?.id && event.channel?.type && event.channel?.type === filters?.type) {
           const channel = await getChannel({
             client,
             id: event.channel.id,
