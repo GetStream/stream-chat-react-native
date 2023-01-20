@@ -302,6 +302,7 @@ export const ChannelList = <
   });
 
   useNewMessageNotification({
+    filters,
     onMessageNew,
     setChannels,
   });
