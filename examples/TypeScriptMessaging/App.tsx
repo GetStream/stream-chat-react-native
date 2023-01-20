@@ -83,32 +83,6 @@ const streami18n = new Streami18n({
   language: 'en',
 });
 
-const renderItem = ({ item }) => (
-  <View style={{ margin: 40 }}>
-    <Text>{item.title}</Text>
-  </View>
-);
-
-const ChannelListHeader = () => {
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    fetch('https://dummyjson.com/products')
-      .then((res) => res.json())
-      .then((response) => setData(response.products))
-      .catch((err) => console.log(err));
-  }, []);
-
-  return (
-    <FlatList
-      keyExtractor={(item) => item.id}
-      renderItem={renderItem}
-      data={data}
-      horizontal={true}
-    />
-  );
-};
-
 type ChannelListScreenProps = {
   navigation: StackNavigationProp<NavigationParamsList, 'ChannelList'>;
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 // RNGR's FlatList ist currently breaking the pull-to-refresh behaviour on Android
 // See https://github.com/software-mansion/react-native-gesture-handler/issues/598
 import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
@@ -83,6 +83,7 @@ const ChannelListMessengerWithContext = <
 >(
   props: ChannelListMessengerPropsWithContext<StreamChatGenerics>,
 ) => {
+  const onEndReachedCalledDuringMomentumRef = useRef<boolean>(false);
   const {
     additionalFlatListProps,
     channels,
@@ -151,8 +152,9 @@ const ChannelListMessengerWithContext = <
   }
 
   const onEndReached = () => {
-    if (hasNextPage) {
+    if (!onEndReachedCalledDuringMomentumRef.current && hasNextPage) {
       loadNextPage();
+      onEndReachedCalledDuringMomentumRef.current = true;
     }
   };
 
@@ -182,6 +184,7 @@ const ChannelListMessengerWithContext = <
         ListHeaderComponent={ListHeaderComponent}
         onEndReached={onEndReached}
         onEndReachedThreshold={loadMoreThreshold}
+        onMomentumScrollBegin={() => (onEndReachedCalledDuringMomentumRef.current = false)}
         ref={setFlatListRef}
         refreshControl={<RefreshControl onRefresh={refreshList} refreshing={refreshing} />}
         renderItem={renderItem}
@@ -216,6 +219,7 @@ export const ChannelListMessenger = <
     error,
     FooterLoadingIndicator,
     forceUpdate,
+    hasNextPage,
     ListHeaderComponent,
     loadingChannels,
     LoadingErrorIndicator,
@@ -238,6 +242,7 @@ export const ChannelListMessenger = <
         error,
         FooterLoadingIndicator,
         forceUpdate,
+        hasNextPage,
         ListHeaderComponent,
         loadingChannels,
         LoadingErrorIndicator,
