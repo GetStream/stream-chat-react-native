@@ -47,19 +47,21 @@ export const usePaginatedChannels = <
   setForceUpdate,
   sort = {},
 }: Parameters<StreamChatGenerics>) => {
-  const { client } = useChatContext<StreamChatGenerics>();
   const [channels, setChannels] = useState<Channel<StreamChatGenerics>[] | null>(null);
+  const [error, setError] = useState<Error | undefined>(undefined);
   const [staticChannelsActive, setStaticChannelsActive] = useState<boolean>(false);
-  const activeChannels = useActiveChannelsRefContext();
-  const [error, setError] = useState<Error>();
-  const [hasNextPage, setHasNextPage] = useState(true);
-  const lastRefresh = useRef(Date.now());
-  const isQueryingRef = useRef(false);
   const [activeQueryType, setActiveQueryType] = useState<QueryType | null>('queryLocalDB');
+  const [hasNextPage, setHasNextPage] = useState<boolean>(false);
+
+  const activeChannels = useActiveChannelsRefContext();
   const isMountedRef = useIsMountedRef();
+  const { client } = useChatContext<StreamChatGenerics>();
+
   const filtersRef = useRef<typeof filters | null>(null);
   const sortRef = useRef<typeof sort | null>(null);
   const activeRequestId = useRef<number>(0);
+  const isQueryingRef = useRef(false);
+  const lastRefresh = useRef(Date.now());
 
   const queryChannels: QueryChannels = async (
     queryType: QueryType = 'loadChannels',
@@ -132,7 +134,6 @@ export const usePaginatedChannels = <
       setChannels(newChannels);
       setStaticChannelsActive(false);
       setHasNextPage(channelQueryResponse.length >= newOptions.limit);
-      setError(undefined);
       isQueryingRef.current = false;
     } catch (err: unknown) {
       isQueryingRef.current = false;
@@ -162,9 +163,7 @@ export const usePaginatedChannels = <
     setActiveQueryType(null);
   };
 
-  const loadNextPage = hasNextPage ? queryChannels : undefined;
-
-  const refreshList = () => {
+  const refreshList = async () => {
     const now = Date.now();
     // Only allow pull-to-refresh 5 seconds after last successful refresh.
     if (now - lastRefresh.current < RETRY_INTERVAL_IN_MS && error === undefined) {
@@ -172,7 +171,7 @@ export const usePaginatedChannels = <
     }
 
     lastRefresh.current = Date.now();
-    return queryChannels('refresh');
+    await queryChannels('refresh');
   };
 
   const reloadList = () => queryChannels('reload');
@@ -263,7 +262,7 @@ export const usePaginatedChannels = <
         ? true
         : (activeQueryType === 'reload' || activeQueryType === null) && channels === null,
     loadingNextPage: activeQueryType === 'loadChannels',
-    loadNextPage,
+    loadNextPage: queryChannels,
     refreshing: activeQueryType === 'refresh',
     refreshList,
     reloadList,
