@@ -27,9 +27,11 @@ export const upsertMessages = ({
       usersToUpsert.push(createUpsertQuery('users', mapUserToStorable(message.user)));
       if (message.cid) {
         const channel = getChannels({ channelIds: [message.cid], currentUserId: message.user.id });
-        channelsToUpsert.push(
-          createUpsertQuery('channels', mapChannelDataToStorable(channel[0].channel)),
-        );
+        if (channel && channel.length > 0 && channel[0].channel) {
+          channelsToUpsert.push(
+            createUpsertQuery('channels', mapChannelDataToStorable(channel[0].channel)),
+          );
+        }
       }
     }
 
