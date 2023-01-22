@@ -1,4 +1,6 @@
 import type { MessageResponse } from 'stream-chat';
+import { getChannels } from '../apis';
+import { mapChannelDataToStorable } from '../mappers/mapChannelDataToStorable';
 
 import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
@@ -14,6 +16,7 @@ export const upsertMessages = ({
   messages: MessageResponse[];
   flush?: boolean;
 }) => {
+  const channelsToUpsert: PreparedQueries[] = [];
   const usersToUpsert: PreparedQueries[] = [];
   const messagesToUpsert: PreparedQueries[] = [];
   const reactionsToUpsert: PreparedQueries[] = [];
@@ -22,6 +25,12 @@ export const upsertMessages = ({
     messagesToUpsert.push(createUpsertQuery('messages', mapMessageToStorable(message)));
     if (message.user) {
       usersToUpsert.push(createUpsertQuery('users', mapUserToStorable(message.user)));
+      if (message.cid) {
+        const channel = getChannels({ channelIds: [message.cid], currentUserId: message.user.id });
+        channelsToUpsert.push(
+          createUpsertQuery('channels', mapChannelDataToStorable(channel[0].channel)),
+        );
+      }
     }
 
     [...(message.latest_reactions || []), ...(message.own_reactions || [])].forEach((r) => {
@@ -33,9 +42,15 @@ export const upsertMessages = ({
     });
   });
 
-  const finalQueries = [...messagesToUpsert, ...reactionsToUpsert, ...usersToUpsert];
+  const finalQueries = [
+    ...channelsToUpsert,
+    ...usersToUpsert,
+    ...reactionsToUpsert,
+    ...messagesToUpsert,
+  ];
 
   if (flush) {
+    // console.log(finalQueries, QuickSqliteClient.dbName);
     QuickSqliteClient.executeSqlBatch(finalQueries);
   }
 
