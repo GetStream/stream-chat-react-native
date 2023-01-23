@@ -297,11 +297,13 @@ export const ChannelList = <
   });
 
   useNewMessage({
+    filters,
     lockChannelOrder,
     setChannels,
   });
 
   useNewMessageNotification({
+    filters,
     onMessageNew,
     setChannels,
   });
