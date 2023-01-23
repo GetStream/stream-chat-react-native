@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 
+import { isEmpty } from 'lodash';
 import uniqBy from 'lodash/uniqBy';
 
 import type { Channel, ChannelFilters, Event } from 'stream-chat';
@@ -33,7 +34,10 @@ export const useNewMessageNotification = <
       if (typeof onMessageNew === 'function') {
         onMessageNew(setChannels, event);
       } else {
-        if (event.channel?.id && event.channel?.type && event.channel?.type === filters?.type) {
+        const areFiltersTypeMatchingToEventChannelType =
+          isEmpty(filters) || event.channel?.type === filters?.type;
+
+        if (event.channel?.id && event.channel?.type && areFiltersTypeMatchingToEventChannelType) {
           const channel = await getChannel({
             client,
             id: event.channel.id,

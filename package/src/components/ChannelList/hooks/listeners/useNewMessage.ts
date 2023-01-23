@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 
-import type { Channel, Event } from 'stream-chat';
+import { isEmpty } from 'lodash';
+import type { Channel, ChannelFilters, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
@@ -11,11 +12,13 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
   {
     lockChannelOrder: boolean;
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>;
+    filters?: ChannelFilters<StreamChatGenerics>;
   };
 
 export const useNewMessage = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
+  filters,
   lockChannelOrder,
   setChannels,
 }: Parameters<StreamChatGenerics>) => {
@@ -26,7 +29,16 @@ export const useNewMessage = <
       setChannels((channels) => {
         if (!channels) return channels;
 
-        if (!lockChannelOrder && event.cid && event.channel_type && event.channel_id) {
+        const areFiltersTypeMatchingToEventChannelType =
+          isEmpty(filters) || event.channel_type === filters?.type;
+
+        if (
+          !lockChannelOrder &&
+          event.cid &&
+          event.channel_type &&
+          event.channel_id &&
+          areFiltersTypeMatchingToEventChannelType
+        ) {
           const targetChannelIndex = channels.findIndex((c) => c.cid === event.cid);
 
           if (targetChannelIndex >= 0) {

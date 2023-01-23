@@ -297,6 +297,7 @@ export const ChannelList = <
   });
 
   useNewMessage({
+    filters,
     lockChannelOrder,
     setChannels,
   });
