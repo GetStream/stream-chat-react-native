@@ -215,8 +215,8 @@ export const ChannelList = <
     ListHeaderComponent,
     LoadingErrorIndicator = LoadingErrorIndicatorDefault,
     LoadingIndicator = ChannelListLoadingIndicator,
-    // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
-    loadMoreThreshold = 2,
+    // https://stackoverflow.com/a/60666252/10826415
+    loadMoreThreshold = 0.1,
     lockChannelOrder = false,
     maxUnreadCount = 255,
     numberOfSkeletons = 6,
