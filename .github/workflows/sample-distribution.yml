@@ -27,9 +27,14 @@ jobs:
           timeout_minutes: 10
           max_attempts: 3
           command: |
-            yarn && yarn bootstrap-ci;
-            cd package/native-package
-            yarn;
+            yarn --frozen-lockfile
+            cd package/
+            yarn --frozen-lockfile
+            cd native-package/
+            yarn --frozen-lockfile
+            cd ../../examples/SampleApp/
+            yarn --frozen-lockfile
+
       - name: Cache iOS pods
         uses: actions/cache@v2
         with:
@@ -73,9 +78,14 @@ jobs:
           max_attempts: 3
           command: |
             yarn add global react-native-cli;
-            yarn && yarn bootstrap-ci;
-            cd package/native-package
-            yarn;
+            yarn --frozen-lockfile
+            cd package/
+            yarn --frozen-lockfile
+            cd native-package/
+            yarn --frozen-lockfile
+            cd ../../examples/SampleApp/
+            yarn --frozen-lockfile
+
       - name: Build
         run: |
           cd examples/SampleApp

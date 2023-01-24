@@ -108,7 +108,7 @@ export type ChannelsContextValue<
   /**
    * Loads the next page of `channels`, which is present as a required prop
    */
-  loadNextPage: QueryChannels | undefined;
+  loadNextPage: QueryChannels;
   /**
    * Max number to display within notification badge. Default: 255 and it cannot be higher than that for now due to backend limitations
    */

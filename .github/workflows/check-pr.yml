@@ -11,19 +11,30 @@ on:
 jobs:
   check_pr:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 16.x ]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           # Disabling shallow clone is recommended for improving relevancy of reporting
           fetch-depth: 0
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - name: Installation & Build Package
         # installation already takes care of calling prepare which calls build
         # for the sdk package
-        run: yarn --frozen-lockfile && yarn bootstrap-ci
+        run: | 
+          yarn --frozen-lockfile
+          cd package/
+          yarn --frozen-lockfile
+          cd native-package/
+          yarn --frozen-lockfile
+          cd ../../examples/SampleApp/
+          yarn --frozen-lockfile
+
       - name: Lint
         run: yarn lerna-workspaces run lint && cd docusaurus && npx prettier --check '**/*.mdx'
       - name: Test
