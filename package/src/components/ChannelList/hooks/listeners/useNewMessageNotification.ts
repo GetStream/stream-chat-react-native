@@ -35,6 +35,9 @@ export const useNewMessageNotification = <
     const handleEvent = async (event: Event<StreamChatGenerics>) => {
       if (typeof onMessageNew === 'function') {
         onMessageNew(setChannels, event);
+        console.warn(
+          'onMessageNew is deprecated and will be removed in future release. Please use onNewMessageNotification to establish the same behaviour',
+        );
       } else if (typeof onNewMessageNotification === 'function') {
         onNewMessageNotification(setChannels, event);
       } else {

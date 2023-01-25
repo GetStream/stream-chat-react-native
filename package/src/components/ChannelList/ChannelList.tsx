@@ -176,7 +176,7 @@ export type ChannelListProps<
    *
    * @overrideType Function
    * */
-  onNewMessageEvent?: (
+  onNewMessage?: (
     lockChannelOrder: boolean,
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
     event: Event<StreamChatGenerics>,
@@ -259,7 +259,7 @@ export const ChannelList = <
     onMessageNew,
     onRemovedFromChannel,
     onSelect,
-    onNewMessageEvent,
+    onNewMessage,
     onNewMessageNotification,
     options = DEFAULT_OPTIONS,
     Preview = ChannelPreviewMessenger,
@@ -330,7 +330,7 @@ export const ChannelList = <
 
   useNewMessage({
     lockChannelOrder,
-    onNewMessageEvent,
+    onNewMessage,
     setChannels,
   });
 

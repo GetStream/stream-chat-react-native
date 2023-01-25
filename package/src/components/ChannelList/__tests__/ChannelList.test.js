@@ -297,11 +297,11 @@ describe('ChannelList', () => {
           expect(within(items[2]).getByText(newMessage.text)).toBeTruthy();
         });
       });
-      it('should call the `onNewMessageEvent` function prop, if provided', async () => {
-        const onNewMessageEvent = jest.fn();
+      it('should call the `onNewMessage` function prop, if provided', async () => {
+        const onNewMessage = jest.fn();
         const { getByTestId } = render(
           <Chat client={chatClient}>
-            <ChannelList {...props} onNewMessageEvent={onNewMessageEvent} />
+            <ChannelList {...props} onNewMessage={onNewMessage} />
           </Chat>,
         );
 
@@ -312,7 +312,7 @@ describe('ChannelList', () => {
         act(() => dispatchMessageNewEvent(chatClient, testChannel2.channel));
 
         await waitFor(() => {
-          expect(onNewMessageEvent).toHaveBeenCalledTimes(1);
+          expect(onNewMessage).toHaveBeenCalledTimes(1);
         });
       });
     });
