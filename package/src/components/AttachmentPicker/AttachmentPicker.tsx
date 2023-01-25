@@ -194,7 +194,7 @@ export const AttachmentPicker = React.forwardRef(
       numberOfUploads: selectedFiles.length + selectedImages.length,
       selected:
         selectedImages.some((image) => image.uri === asset.uri) ||
-        selectedFiles.some((file) => file.uri === asset.uri),
+        selectedFiles.some((file) => file.id === asset.id),
       setSelectedFiles,
       setSelectedImages,
     }));

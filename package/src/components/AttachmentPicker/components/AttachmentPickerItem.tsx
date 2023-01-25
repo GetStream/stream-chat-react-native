@@ -68,7 +68,7 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
     // For the case of expo messaging app where you need to fetch the asset uri from asset id
     const localAssetURI = asset.id && (await getLocalAssetUri(asset.id));
     if (selected) {
-      setSelectedFiles((files) => files.filter((file) => file.uri !== asset.uri));
+      setSelectedFiles((files) => files.filter((file) => file.id !== asset.id));
     } else {
       setSelectedFiles((files) => {
         if (numberOfUploads >= maxNumberOfFiles) {
@@ -79,6 +79,7 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
           ...files,
           {
             duration: durationLabel,
+            id: asset.id,
             name: asset.filename,
             size: asset.fileSize,
             type: 'video',
