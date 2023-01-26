@@ -8,7 +8,6 @@ import { lookup } from 'mime-types';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { Recorder } from '../../../icons';
-import { getLocalAssetUri } from '../../../native';
 import type { Asset, File } from '../../../types/types';
 import { vw } from '../../../utils/utils';
 
@@ -64,9 +63,7 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 
-  const onPressVideo = async () => {
-    // For the case of expo messaging app where you need to fetch the asset uri from asset id
-    const localAssetURI = asset.id && (await getLocalAssetUri(asset.id));
+  const onPressVideo = () => {
     if (selected) {
       setSelectedFiles((files) => files.filter((file) => file.uri !== asset.uri));
     } else {
@@ -79,10 +76,11 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
           ...files,
           {
             duration: durationLabel,
+            id: asset.id,
             name: asset.filename,
             size: asset.fileSize,
             type: 'video',
-            uri: localAssetURI || asset.uri,
+            uri: asset.uri,
           },
         ];
       });

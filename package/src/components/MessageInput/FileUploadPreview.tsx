@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginLeft: 8,
     marginRight: 8,
+    marginTop: 2,
   },
   unsupportedFile: {
     flexDirection: 'row',
