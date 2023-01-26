@@ -64,7 +64,6 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 
   const onPressVideo = () => {
-    // For the case of expo messaging app where you need to fetch the asset uri from asset id
     if (selected) {
       setSelectedFiles((files) => files.filter((file) => file.uri !== asset.uri));
     } else {
