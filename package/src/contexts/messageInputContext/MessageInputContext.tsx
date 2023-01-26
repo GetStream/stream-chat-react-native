@@ -327,12 +327,7 @@ export type InputMessageInputContextValue<
    * @overrideType Function
    */
   doDocUploadRequest?: (
-    file: {
-      name: string;
-      size?: string | number;
-      type?: string;
-      uri?: string;
-    },
+    file: File,
     channel: ChannelContextValue<StreamChatGenerics>['channel'],
   ) => Promise<SendFileAPIResponse>;
   /**
@@ -972,7 +967,9 @@ export const MessageInputProvider = <
       if (value.doDocUploadRequest) {
         response = await value.doDocUploadRequest(file, channel);
       } else if (channel && file.uri) {
-        response = await channel.sendFile(file.uri, file.name, file.type);
+        // For the case of expo messaging app where you need to fetch the asset uri from asset id
+        const localAssetURI = file.id && (await getLocalAssetUri(file.id));
+        response = await channel.sendFile(localAssetURI || file.uri, file.name, file.type);
       }
       const extraData: Partial<FileUpload> = { thumb_url: response.thumb_url, url: response.file };
       setFileUploads(getUploadSetStateAction(id, FileState.UPLOADED, extraData));
@@ -1068,12 +1065,7 @@ export const MessageInputProvider = <
     }
   };
 
-  const uploadNewFile = async (file: {
-    name: string;
-    size?: number | string;
-    type?: string;
-    uri?: string;
-  }) => {
+  const uploadNewFile = async (file: File) => {
     const id: string = generateRandomId();
     const mimeType: string | boolean = lookup(file.name);
 
@@ -1092,7 +1084,7 @@ export const MessageInputProvider = <
     const newFile: FileUpload = {
       duration: 0,
       file: { ...file, type: mimeType || file?.type },
-      id,
+      id: file.id || id,
       paused: true,
       progress: 0,
       state: fileState,
