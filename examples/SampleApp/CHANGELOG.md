@@ -1,5 +1,17 @@
 # Change Log
 
+### [1.17.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.17.0...sampleapp@v1.17.1) (2023-01-26)
+
+
+### Bug Fixes
+
+* improve ChannelList performance by improving threshold calls and rerenders of Header ([#1919](https://github.com/GetStream/stream-chat-react-native/issues/1919)) ([6ebabb6](https://github.com/GetStream/stream-chat-react-native/commit/6ebabb609f1cea748762ce01f472a84109b0efdf))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ## [1.17.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.16.0...sampleapp@v1.17.0) (2023-01-19)
 
 
