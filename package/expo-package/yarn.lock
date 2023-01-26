@@ -2998,10 +2998,10 @@ stream-buffers@2.2.x:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha512-uyQK/mx5QjHun80FLJTfaWE7JtwfRMKBLkMne6udYOmvH0CawotVa7TfgYHzAnpphn4+TweIx1QKMnRIbipmUg==
 
-stream-chat-react-native-core@5.8.0:
-  version "5.8.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.8.0.tgz#650e224be1663be363044bad0f1244582f8c7d4f"
-  integrity sha512-YhnWeVwdYCpoyFdbYwizDKFWdIU8DgMUduA/mA1tvaSkFRQqFIAoJeIEqd5TeMjQnAPLXvZXkdhqAXy9FjVhjw==
+stream-chat-react-native-core@5.9.0:
+  version "5.9.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.9.0.tgz#a226a1f9d629d1f3e212df1f2a46312c544bc0bb"
+  integrity sha512-goG9dyDpVopspGt3gq31ILkwEzdolo0+CdhcpVeGmOB2CZ0tF9X78uByrj4/7VsqpCkC0hi4uMSEsERM3DZdbg==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "4.4.5"
@@ -3094,9 +3094,9 @@ ts-interface-checker@^0.1.9:
   integrity sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==
 
 ua-parser-js@^0.7.30:
-  version "0.7.32"
-  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.32.tgz#cd8c639cdca949e30fa68c44b7813ef13e36d211"
-  integrity sha512-f9BESNVhzlhEFf2CHMSj40NWOjYPl1YKYbrvIr/hFTDEmLq7SRbWvm7FcdcpCYT95zrOhC7gZSxjdnnTpBcwVw==
+  version "0.7.33"
+  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.33.tgz#1d04acb4ccef9293df6f70f2c3d22f3030d8b532"
+  integrity sha512-s8ax/CeZdK9R/56Sui0WM6y9OFREJarMRHqLB2EwkovemBxNQ+Bqu8GAsUnVcXKgphb++ghr/B2BZx4mahujPw==
 
 unicode-canonical-property-names-ecmascript@^2.0.0:
   version "2.0.0"
