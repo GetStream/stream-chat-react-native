@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
 
-import { Alert, Keyboard } from 'react-native';
+import { Alert, Keyboard, Platform } from 'react-native';
 
 import type { TextInput, TextInputProps } from 'react-native';
 
@@ -967,8 +967,8 @@ export const MessageInputProvider = <
       if (value.doDocUploadRequest) {
         response = await value.doDocUploadRequest(file, channel);
       } else if (channel && file.uri) {
-        // For the case of expo messaging app where you need to fetch the asset uri from asset id
-        const localAssetURI = file.id && (await getLocalAssetUri(file.id));
+        // For the case of expo messaging app where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
+        const localAssetURI = Platform.OS === 'ios' && file.id && (await getLocalAssetUri(file.id));
         response = await channel.sendFile(localAssetURI || file.uri, file.name, file.type);
       }
       const extraData: Partial<FileUpload> = { thumb_url: response.thumb_url, url: response.file };
@@ -988,23 +988,9 @@ export const MessageInputProvider = <
     let response = {} as SendFileAPIResponse;
 
     try {
-      /**
-       * Expo now uses the assets-library which is also how remote
-       * native files are presented. We now return a file id from Expo
-       * only, if that file id exits we call getLocalAssetUri to download
-       * the asset for expo before uploading it. We do the same for native
-       * if the uri includes assets-library, this uses the CameraRoll.save
-       * function to also create a local uri.
-       */
-      const getLocalUri = async () => {
-        if (file.id) {
-          return await getLocalAssetUri(file.id);
-        } else if (file.uri?.match(/assets-library/)) {
-          return await getLocalAssetUri(file.uri);
-        }
-        return file.uri;
-      };
-      const uri = file.name || (await getLocalUri()) || '';
+      // For the case of expo messaging app where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
+      const localAssetURI = Platform.OS === 'ios' && file.id && (await getLocalAssetUri(file.id));
+      const uri = localAssetURI || file.uri || '';
       /**
        * We skip compression if:
        * - the file is from the camera as that should already be compressed
