@@ -6662,13 +6662,14 @@ stream-buffers@2.2.x:
   integrity sha512-uyQK/mx5QjHun80FLJTfaWE7JtwfRMKBLkMne6udYOmvH0CawotVa7TfgYHzAnpphn4+TweIx1QKMnRIbipmUg==
 
 "stream-chat-expo@link:../../package/expo-package":
-  version "0.0.0"
-  uid ""
+  version "5.9.0"
+  dependencies:
+    stream-chat-react-native-core "5.9.0"
 
-stream-chat-react-native-core@5.8.0:
-  version "5.8.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.8.0.tgz#650e224be1663be363044bad0f1244582f8c7d4f"
-  integrity sha512-YhnWeVwdYCpoyFdbYwizDKFWdIU8DgMUduA/mA1tvaSkFRQqFIAoJeIEqd5TeMjQnAPLXvZXkdhqAXy9FjVhjw==
+stream-chat-react-native-core@5.9.0:
+  version "5.9.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.9.0.tgz#a226a1f9d629d1f3e212df1f2a46312c544bc0bb"
+  integrity sha512-goG9dyDpVopspGt3gq31ILkwEzdolo0+CdhcpVeGmOB2CZ0tF9X78uByrj4/7VsqpCkC0hi4uMSEsERM3DZdbg==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "4.4.5"
@@ -6684,8 +6685,20 @@ stream-chat-react-native-core@5.8.0:
     stream-chat "8.2.1"
 
 "stream-chat-react-native-core@link:../../package":
-  version "0.0.0"
-  uid ""
+  version "5.9.0"
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+    "@gorhom/bottom-sheet" "4.4.5"
+    dayjs "1.10.5"
+    file-loader "6.2.0"
+    i18next "20.2.4"
+    lodash-es "4.17.21"
+    metro-react-native-babel-preset "0.66.2"
+    mime-types "^2.1.34"
+    path "0.12.7"
+    react-native-markdown-package "1.8.2"
+    react-native-url-polyfill "^1.3.0"
+    stream-chat "8.2.1"
 
 stream-chat@8.2.1:
   version "8.2.1"
@@ -7045,9 +7058,9 @@ typescript@^4.6.3:
   integrity sha512-Uz+dTXYzxXXbsFpM86Wh3dKCxrQqUcVMxwU54orwlJjOpO3ao8L7j5lH+dWfTwgCwIuM9GQ2kvVotzYJMXTBZg==
 
 ua-parser-js@^0.7.30:
-  version "0.7.32"
-  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.32.tgz#cd8c639cdca949e30fa68c44b7813ef13e36d211"
-  integrity sha512-f9BESNVhzlhEFf2CHMSj40NWOjYPl1YKYbrvIr/hFTDEmLq7SRbWvm7FcdcpCYT95zrOhC7gZSxjdnnTpBcwVw==
+  version "0.7.33"
+  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.33.tgz#1d04acb4ccef9293df6f70f2c3d22f3030d8b532"
+  integrity sha512-s8ax/CeZdK9R/56Sui0WM6y9OFREJarMRHqLB2EwkovemBxNQ+Bqu8GAsUnVcXKgphb++ghr/B2BZx4mahujPw==
 
 uglify-es@^3.1.9:
   version "3.3.9"
