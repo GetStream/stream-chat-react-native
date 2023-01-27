@@ -1,5 +1,24 @@
 # Change Log
 
+## [5.9.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.8.0...v5.9.0) (2023-01-26)
+
+
+### Features
+
+* Override `message.new` event function ([#1913](https://github.com/GetStream/stream-chat-react-native/issues/1913)) ([77f218a](https://github.com/GetStream/stream-chat-react-native/commit/77f218abb022dfa0c1f2cc0273f4557eeefbbd8a))
+
+
+### Bug Fixes
+
+* improve ChannelList performance by improving threshold calls and rerenders of Header ([#1919](https://github.com/GetStream/stream-chat-react-native/issues/1919)) ([6ebabb6](https://github.com/GetStream/stream-chat-react-native/commit/6ebabb609f1cea748762ce01f472a84109b0efdf))
+* messageAction type ([#1924](https://github.com/GetStream/stream-chat-react-native/issues/1924)) ([b90cabf](https://github.com/GetStream/stream-chat-react-native/commit/b90cabf64d0b62bea946472112af219bb71f0d95))
+* selected video attachment in attachment picker isn't recognized as selected and upload issues on android ([#1931](https://github.com/GetStream/stream-chat-react-native/issues/1931)) ([f1603ff](https://github.com/GetStream/stream-chat-react-native/commit/f1603ff2d7f127fa688d59494fe621854fc46eec))
+
+
+### Reverts
+
+* Revert "fix: show appropriate channel according to filter type defined when new message received (#1920)" (#1926) ([a73fa86](https://github.com/GetStream/stream-chat-react-native/commit/a73fa8676a2070e3e7131273fdc46ff47fa98140)), closes [#1920](https://github.com/GetStream/stream-chat-react-native/issues/1920) [#1926](https://github.com/GetStream/stream-chat-react-native/issues/1926)
+
 ## [5.8.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.7.0...v5.8.0) (2023-01-19)
 
 

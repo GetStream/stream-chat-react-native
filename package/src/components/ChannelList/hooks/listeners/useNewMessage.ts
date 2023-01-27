@@ -11,43 +11,53 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
   {
     lockChannelOrder: boolean;
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>;
+    onNewMessage?: (
+      lockChannelOrder: boolean,
+      setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+      event: Event<StreamChatGenerics>,
+    ) => void;
   };
 
 export const useNewMessage = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   lockChannelOrder,
+  onNewMessage,
   setChannels,
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
 
   useEffect(() => {
     const handleEvent = (event: Event<StreamChatGenerics>) => {
-      setChannels((channels) => {
-        if (!channels) return channels;
+      if (typeof onNewMessage === 'function') {
+        onNewMessage(lockChannelOrder, setChannels, event);
+      } else {
+        setChannels((channels) => {
+          if (!channels) return channels;
 
-        if (!lockChannelOrder && event.cid && event.channel_type && event.channel_id) {
-          const targetChannelIndex = channels.findIndex((c) => c.cid === event.cid);
+          if (!lockChannelOrder && event.cid && event.channel_type && event.channel_id) {
+            const targetChannelIndex = channels.findIndex((c) => c.cid === event.cid);
 
-          if (targetChannelIndex >= 0) {
-            return moveChannelUp<StreamChatGenerics>({
-              channels,
-              cid: event.cid,
-            });
+            if (targetChannelIndex >= 0) {
+              return moveChannelUp<StreamChatGenerics>({
+                channels,
+                cid: event.cid,
+              });
+            }
+
+            // If channel doesn't exist in existing list, check in activeChannels as well.
+            // It may happen that channel was hidden using channel.hide(). In that case
+            // We remove it from `channels` state, but its still being watched and exists in client.activeChannels.
+            const channel = client.channel(event.channel_type, event.channel_id);
+
+            if (channel.initialized) {
+              return [channel, ...channels];
+            }
           }
 
-          // If channel doesn't exist in existing list, check in activeChannels as well.
-          // It may happen that channel was hidden using channel.hide(). In that case
-          // We remove it from `channels` state, but its still being watched and exists in client.activeChannels.
-          const channel = client.channel(event.channel_type, event.channel_id);
-
-          if (channel.initialized) {
-            return [channel, ...channels];
-          }
-        }
-
-        return [...channels];
-      });
+          return [...channels];
+        });
+      }
     };
 
     const listener = client?.on('message.new', handleEvent);
