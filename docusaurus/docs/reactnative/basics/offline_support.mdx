@@ -28,12 +28,14 @@ The following features are currently **NOT** implemented. They will be implement
 First and foremost make sure to follow all steps from [Migrating to v5](./upgrade_helper.mdx) guide.
 To enable offline support, please follow the given steps:
 
-1. **Upgrade stream-chat dependency (optional)**
+1. **Remove stream-chat dependency (when applicable)**
 
-If you have installed `stream-chat` dependency explicitly on your application, then please make sure to upgrade it to v7 or higher.
+If you have installed `stream-chat` dependency explicitly on your application, then please make sure you remove it.
+Our Chat SDK (`stream-chat-react-native`) has `stream-chat` as a dependency (not peer dependency).
+Therefore, having `stream-chat` in your app's package.json is discouraged and will probably cause random issues that will disturb the chat functionalities.
 
 ```bash
-yarn add stream-chat
+yarn remove stream-chat
 ```
 
 2. **Add `react-native-quick-sqlite` dependency**
