@@ -35,8 +35,8 @@ import { useCreateTypingContext } from './hooks/useCreateTypingContext';
 import { useTargetedMessage } from './hooks/useTargetedMessage';
 
 import { ChannelContextValue, ChannelProvider } from '../../contexts/channelContext/ChannelContext';
-import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
 import type { UseChannelStateValue } from '../../contexts/channelsStateContext/useChannelState';
+import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
   InputMessageInputContextValue,
@@ -771,25 +771,29 @@ const ChannelWithContext = <
     const channelSubscriptions: Array<ReturnType<ChannelType['on']>> = [];
     const clientSubscriptions: Array<ReturnType<StreamChat['on']>> = [];
 
-    const subscribe = () => {
-      if (!channel) return;
+    if (!channel) return;
 
-      /**
-       * The more complex sync logic around internet connectivity (NetInfo) is part of Chat.tsx
-       * listen to client.connection.recovered and all channel events
-       */
+    clientSubscriptions.push(
+      client.on('channel.deleted', (event) => {
+        if (event.cid === channel.cid) {
+          setDeleted(true);
+        }
+      }),
+    );
+
+    if (enableOfflineSupport) {
       clientSubscriptions.push(DBSyncManager.onSyncStatusChange(connectionChangedHandler));
+    } else {
       clientSubscriptions.push(
-        client.on('channel.deleted', (event) => {
-          if (event.cid === channel.cid) {
-            setDeleted(true);
+        client.on('connection.changed', (event) => {
+          if (event.online) {
+            connectionChangedHandler();
           }
         }),
       );
-      channelSubscriptions.push(channel.on(handleEvent));
-    };
+    }
 
-    subscribe();
+    channelSubscriptions.push(channel.on(handleEvent));
 
     return () => {
       clientSubscriptions.forEach((s) => s.unsubscribe());
