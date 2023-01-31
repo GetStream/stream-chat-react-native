@@ -23,7 +23,13 @@
     "react-native-haptic-feedback": ">=1.11.0",
     "react-native-image-crop-picker": ">=0.33.2",
     "react-native-image-resizer": ">=1.4.2",
-    "react-native-share": ">=4.1.0"
+    "react-native-share": ">=4.1.0",
+    "@react-native-clipboard/clipboard": "^1.11.1"
+  },
+  "peerDependenciesMeta": {
+    "@react-native-clipboard/clipboard": {
+      "optional": true
+    }
   },
   "scripts": {
     "prepack": " cp ../../README.md .",
@@ -41,8 +47,5 @@
     "react-native-image-crop-picker": "^0.38.0",
     "react-native-image-resizer": ">=1.4.2",
     "react-native-share": ">=4.1.0"
-  },
-  "optionalDependencies": {
-    "@react-native-clipboard/clipboard": "^1.11.1"
   }
 }
