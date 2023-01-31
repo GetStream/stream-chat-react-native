@@ -185,6 +185,7 @@ const DrawerNavigatorWrapper: React.FC<{
         <Chat<StreamChatGenerics>
           client={chatClient}
           enableOfflineSupport
+          // @ts-expect-error
           ImageComponent={FastImage}
         >
           <AppOverlayProvider>
