@@ -18,9 +18,11 @@ import { BottomSheetOverlayProvider } from './BottomSheetOverlayContext';
 import { ChannelInfoOverlayProvider } from './ChannelInfoOverlayContext';
 import { UserInfoOverlayProvider } from './UserInfoOverlayContext';
 
-export const AppOverlayProvider: React.FC<{
-  value?: Partial<AppOverlayContextValue>;
-}> = (props) => {
+export const AppOverlayProvider = (
+  props: React.PropsWithChildren<{
+    value?: Partial<AppOverlayContextValue>;
+  }>,
+) => {
   const { children, value } = props;
 
   const [overlay, setOverlay] = useState(value?.overlay || 'none');

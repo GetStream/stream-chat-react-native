@@ -879,11 +879,6 @@
   resolved "https://registry.yarnpkg.com/@react-native-camera-roll/camera-roll/-/camera-roll-5.2.1.tgz#3cffbe2a368e47f14578bda2b244790a7119f662"
   integrity sha512-axWwlLj/3E5PIjXcN2y2XZzK/hYTx73kDlQJpHpcurejmQR9sU22w3cs+YltaNkZGl3y7Eu/LbiPEkGIwNVQow==
 
-"@react-native-clipboard/clipboard@^1.11.1":
-  version "1.11.1"
-  resolved "https://registry.yarnpkg.com/@react-native-clipboard/clipboard/-/clipboard-1.11.1.tgz#d3a9e685ce2383b1e92b89a334896c5575cc103d"
-  integrity sha512-nvSIIHzybVWqYxcJE5hpT17ekxAAg383Ggzw5WrYHtkKX61N1AwaKSNmXs5xHV7pmKSOe/yWjtSwxIzfW51I5Q==
-
 "@react-native-community/cli-clean@^10.1.1":
   version "10.1.1"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-clean/-/cli-clean-10.1.1.tgz#4c73ce93a63a24d70c0089d4025daac8184ff504"
@@ -4408,10 +4403,10 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-stream-chat-react-native-core@5.8.0:
-  version "5.8.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.8.0.tgz#650e224be1663be363044bad0f1244582f8c7d4f"
-  integrity sha512-YhnWeVwdYCpoyFdbYwizDKFWdIU8DgMUduA/mA1tvaSkFRQqFIAoJeIEqd5TeMjQnAPLXvZXkdhqAXy9FjVhjw==
+stream-chat-react-native-core@5.9.0:
+  version "5.9.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.9.0.tgz#a226a1f9d629d1f3e212df1f2a46312c544bc0bb"
+  integrity sha512-goG9dyDpVopspGt3gq31ILkwEzdolo0+CdhcpVeGmOB2CZ0tF9X78uByrj4/7VsqpCkC0hi4uMSEsERM3DZdbg==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "4.4.5"

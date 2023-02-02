@@ -19,11 +19,15 @@ The following values in [`ImageGalleryContext`](../../contexts/image-gallery-con
 
 ## Dependency Changes
 
-- If you have installed `stream-chat` dependency explicitly in your application, then upgrade it to v7:
+## Remove stream-chat dependency (when applicable)
 
-  ```bash
-  yarn add stream-chat@7.0.0
-  ```
+If you have installed `stream-chat` dependency explicitly on your application, then please make sure you remove it.
+Our Chat SDK (`stream-chat-react-native`) has `stream-chat` as a dependency (not peer dependency).
+Therefore, having `stream-chat` in your app's package.json is discouraged and will probably cause random issues that will disturb the chat functionalities.
+
+```bash
+yarn remove stream-chat
+```
 
 - Replace [`@react-native-community/cameraroll`](https://github.com/react-native-cameraroll/react-native-cameraroll) dependency with [`@react-native-camera-roll/camera-roll`](https://www.npmjs.com/package/@react-native-camera-roll/camera-roll):
 
