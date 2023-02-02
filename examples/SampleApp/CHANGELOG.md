@@ -1,5 +1,18 @@
 # Change Log
 
+### [1.17.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.17.1...sampleapp@v1.17.2) (2023-02-02)
+
+
+### Bug Fixes
+
+* fixes clipboard detection on android when not installed ([#1936](https://github.com/GetStream/stream-chat-react-native/issues/1936)) ([a9ce8b3](https://github.com/GetStream/stream-chat-react-native/commit/a9ce8b303f93ae58d392c3cfed937571955639b1))
+* typing issues in sample app ([#1942](https://github.com/GetStream/stream-chat-react-native/issues/1942)) ([e2d34be](https://github.com/GetStream/stream-chat-react-native/commit/e2d34be61be16ec278b2d46ad0e314d57801b3b7))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.17.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.17.0...sampleapp@v1.17.1) (2023-01-26)
 
 
