@@ -2,8 +2,8 @@ import { parseLinksFromText } from './parseLinks';
 
 describe('parseLinksFromText', () => {
   it.each([
-    ['www.getstream.io', 'http://www.getstream.io'],
-    ['getstream.io', 'http://getstream.io'],
+    ['www.getstream.io', 'https://www.getstream.io'],
+    ['getstream.io', 'https://getstream.io'],
     ['scrn://team-chat', undefined],
     ['https://localhost', 'https://localhost'],
     [
@@ -26,8 +26,8 @@ describe('parseLinksFromText', () => {
     ['127.0.0.1/local_(development)_server', undefined],
     ['https://a.co:8999/ab.php?p=12', 'https://a.co:8999/ab.php?p=12'],
     [
-      'http://help.apple.com/xcode/mac/current/#/devba7f53ad4',
-      'http://help.apple.com/xcode/mac/current/#/devba7f53ad4',
+      'https://help.apple.com/xcode/mac/current/#/devba7f53ad4',
+      'https://help.apple.com/xcode/mac/current/#/devba7f53ad4',
     ],
   ])('Returns the encoded value of %p as %p', (link, expected) => {
     const result = parseLinksFromText(link);
@@ -80,10 +80,10 @@ describe('parseLinksFromText', () => {
     expect(result).toHaveLength(2);
   });
   it('Encodes incomplete emoji unicode', () => {
-    const input = 'getstream.io/�';
+    const input = 'https://getstream.io/�';
     const result = parseLinksFromText(input);
     expect(result[0]).toEqual({
-      encodedUrl: 'http://getstream.io/%EF%BF%BD',
+      encodedUrl: 'https://getstream.io/%EF%BF%BD',
       raw: input,
     });
   });
