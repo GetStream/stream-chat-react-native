@@ -15,12 +15,9 @@ The reason that a channel will automatically be bumped to the top of a list even
 By using the `channelRenderFilterFn` prop we can apply custom filtering logic to the list of channels that are rendered. Since we have access to the entire channel object, we can filter on type, custom fields, or others.
 
 ```tsx
-    const customChannelFilterFunction = (channels: Channel[]) => {
-      return channels.filter(/** your custom filter logic */);
-    };
+const customChannelFilterFunction = (channels: Channel[]) => {
+  return channels.filter(/** your custom filter logic */);
+};
 
-    <ChannelList
-      channelRenderFilterFn={customChannelFilterFunction}
-      filters={filters}
-  />
+<ChannelList channelRenderFilterFn={customChannelFilterFunction} filters={filters} />;
 ```
