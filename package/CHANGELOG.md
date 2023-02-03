@@ -1,5 +1,13 @@
 # Change Log
 
+### [5.9.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.9.0...v5.9.1) (2023-02-02)
+
+
+### Bug Fixes
+
+* fixes clipboard detection on android when not installed ([#1936](https://github.com/GetStream/stream-chat-react-native/issues/1936)) ([a9ce8b3](https://github.com/GetStream/stream-chat-react-native/commit/a9ce8b303f93ae58d392c3cfed937571955639b1))
+* users can receive/send message after returning to app ([#1943](https://github.com/GetStream/stream-chat-react-native/issues/1943)) ([d5059a6](https://github.com/GetStream/stream-chat-react-native/commit/d5059a64f97367c548699a2d3d1407f0c3f9e0fb))
+
 ## [5.9.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.8.0...v5.9.0) (2023-01-26)
 
 
