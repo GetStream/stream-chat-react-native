@@ -61,6 +61,10 @@ export type ChannelListProps<
     | 'numberOfSkeletons'
   >
 > & {
+  /** Optional function to filter channels prior to rendering the list. Do not use any complex logic that would delay the loading of the ChannelList. We recommend using a pure function with array methods like filter/sort/reduce. */
+  channelRenderFilterFn?: (
+    channels: Array<Channel<StreamChatGenerics>>,
+  ) => Array<Channel<StreamChatGenerics>>;
   /**
    * Object containing channel query filters
    *
@@ -236,6 +240,7 @@ export const ChannelList = <
 ) => {
   const {
     additionalFlatListProps = {},
+    channelRenderFilterFn,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     FooterLoadingIndicator = ChannelListFooterLoadingIndicator,
     filters = DEFAULT_FILTERS,
@@ -365,7 +370,7 @@ export const ChannelList = <
 
   const channelsContext = useCreateChannelsContext({
     additionalFlatListProps,
-    channels,
+    channels: channelRenderFilterFn ? channelRenderFilterFn(channels ?? []) : channels,
     EmptyStateIndicator,
     error,
     FooterLoadingIndicator,
