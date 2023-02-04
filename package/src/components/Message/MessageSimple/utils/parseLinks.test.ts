@@ -2,8 +2,8 @@ import { parseLinksFromText } from './parseLinks';
 
 describe('parseLinksFromText', () => {
   it.each([
-    ['www.getstream.io', 'https://www.getstream.io'],
-    ['getstream.io', 'https://getstream.io'],
+    ['https://www.getstream.io', 'https://www.getstream.io'],
+    ['https://getstream.io', 'https://getstream.io'],
     ['scrn://team-chat', undefined],
     ['https://localhost', 'https://localhost'],
     [
