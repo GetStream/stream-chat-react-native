@@ -23,7 +23,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - uses: ./.github/actions/install-and-build-sdk
+      - name: Install && Build - SDK and Sample App
+        uses: ./.github/actions/install-and-build-sdk
       - name: Lint
         run: yarn lerna-workspaces run lint && cd docusaurus && npx prettier --check '**/*.mdx'
       - name: Test
