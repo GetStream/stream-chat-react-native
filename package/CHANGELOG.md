@@ -1,5 +1,17 @@
 # Change Log
 
+## [5.10.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.9.1...v5.10.0) (2023-02-09)
+
+
+### Features
+
+* add prop for helping multiple channel list implementation ([#1951](https://github.com/GetStream/stream-chat-react-native/issues/1951)) ([e6f700c](https://github.com/GetStream/stream-chat-react-native/commit/e6f700cd91e4a8ad308e18560b37536e282f6e61))
+
+
+### Bug Fixes
+
+* do not report invalid tlds as valid urls ([#1950](https://github.com/GetStream/stream-chat-react-native/issues/1950)) ([6917dcd](https://github.com/GetStream/stream-chat-react-native/commit/6917dcd9a547ecdbf0574aa50865bfc01c590122))
+
 ### [5.9.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.9.0...v5.9.1) (2023-02-02)
 
 
