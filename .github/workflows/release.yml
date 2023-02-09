@@ -36,7 +36,7 @@ jobs:
         run: yarn release
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-          GH_TOKEN: ${{ secrets.VERSION_BUMP_TOKEN }}
+          GH_TOKEN: ${{ secrets.STREAM_CI_GITHUB_BOT_TOKEN }}
       - name: Merge back changes
         run: |
           git stash
