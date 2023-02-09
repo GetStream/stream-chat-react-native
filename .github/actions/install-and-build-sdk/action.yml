@@ -1,4 +1,5 @@
 name: 'Install and Build SDK'
+description: 'Runs yarn install for all the packages and sample and fails if yarn lock has a change that is not committed'
 runs:
   using: 'composite'
   steps:
