@@ -1,5 +1,17 @@
 # Change Log
 
+## [5.11.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.10.0...v5.11.0) (2023-02-10)
+
+
+### Features
+
+* **build:** add shared github action to install and build SDK ([#1962](https://github.com/GetStream/stream-chat-react-native/issues/1962)) ([3bd0fcc](https://github.com/GetStream/stream-chat-react-native/commit/3bd0fccf4e4e91979795cd5c66ef224d53cd0d4c))
+
+
+### Bug Fixes
+
+* apply workaround for android anr ([#1964](https://github.com/GetStream/stream-chat-react-native/issues/1964)) ([a356cef](https://github.com/GetStream/stream-chat-react-native/commit/a356cef0fc5b21d95066d7ef05e70d5b367015b7))
+
 ## [5.10.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.9.1...v5.10.0) (2023-02-09)
 
 
