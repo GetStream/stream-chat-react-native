@@ -162,6 +162,7 @@ exports[`Thread should match thread snapshot 1`] = `
         renderItem={[Function]}
         scrollEnabled={false}
         scrollEventThrottle={50}
+        showsVerticalScrollIndicator={true}
         stickyHeaderIndices={Array []}
         style={
           Array [
@@ -178,6 +179,7 @@ exports[`Thread should match thread snapshot 1`] = `
                 "width": "100%",
               },
               Object {},
+              undefined,
             ],
           ]
         }
