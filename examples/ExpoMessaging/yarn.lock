@@ -6672,16 +6672,17 @@ stream-buffers@2.2.x:
   version "0.0.0"
   uid ""
 
-stream-chat-react-native-core@5.9.1:
-  version "5.9.1"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.9.1.tgz#c496feb6905e391505adca37c2eef25712a6e6d7"
-  integrity sha512-3zWEaoOHNpGAHy7qEI1PFqdx3dq3oHSpEs+PBrHYuUi8Xj7NisKWYkXkK3sa0BSn0hwcduSMZmNGOO9oo9lj2g==
+stream-chat-react-native-core@5.10.0:
+  version "5.10.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.10.0.tgz#6539a878e93e56d9e04d6bb7dde63925984e5285"
+  integrity sha512-lJ1ON2tbSc80obGAdDHcSqzA5dtctcBy4sZ/s9AJYBOAfrQ6fw3HZhnft1YFoDg6tGJ0tOeDrwODSjlA3C4cNw==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "4.4.5"
     dayjs "1.10.5"
     file-loader "6.2.0"
     i18next "20.2.4"
+    linkify-it "^4.0.1"
     lodash-es "4.17.21"
     metro-react-native-babel-preset "0.66.2"
     mime-types "^2.1.34"

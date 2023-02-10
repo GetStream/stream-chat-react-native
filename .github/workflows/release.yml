@@ -1,54 +1,46 @@
 name: Release
 
 on:
- push:
-   branches:
-     - main
+  push:
+    branches:
+      - main
 
 jobs:
- publish-release:
-   runs-on: ubuntu-latest
-   strategy:
-     matrix:
-       node-version: [16.x]
-   steps:
-     - uses: actions/checkout@v2
-       with:
-         token: ${{ secrets.VERSION_BUMP_TOKEN }}
-         # pulls all commits (needed for semantic release to correctly version)
-         fetch-depth: '0'
-     # pulls all tags (needed for semantic release to correctly version)
-     - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
-     - name: Use Node.js ${{ matrix.node-version }}
-       uses: actions/setup-node@v2
-       with:
-         node-version: ${{ matrix.node-version }}
-         registry-url: 'https://registry.npmjs.org'
-     - name: Prepare git
-       run: |
-         git config --global user.name "Steve Galili"
-         git config --global user.email "steve.galili@getstream.io"
-     - name: Installation && Build SDK
-       run: |
-        yarn --frozen-lockfile
-        cd package/
-        yarn --frozen-lockfile
-        cd native-package/
-        yarn --frozen-lockfile
-        cd ../../examples/SampleApp/
-        yarn --frozen-lockfile
-
-     - name: Lint
-       run: yarn lerna-workspaces run lint && cd docusaurus && npx prettier --check '**/*.mdx'
-     - name: Publish Release
-       run: yarn release
-       env:
-         NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-         GH_TOKEN: ${{ secrets.VERSION_BUMP_TOKEN }}
-     - name: Merge back changes
-       run: |
-         git stash
-         git checkout develop
-         git pull origin develop
-         git merge main -m "chore: merge back release [skip ci]"
-         git push origin develop
+  publish-release:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.VERSION_BUMP_TOKEN }}
+          # pulls all commits (needed for semantic release to correctly version)
+          fetch-depth: '0'
+      # pulls all tags (needed for semantic release to correctly version)
+      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: 'https://registry.npmjs.org'
+      - name: Prepare git
+        run: |
+          git config --global user.name "Steve Galili"
+          git config --global user.email "steve.galili@getstream.io"
+      - name: Install && Build - SDK and Sample App
+        uses: ./.github/actions/install-and-build-sdk
+      - name: Lint
+        run: yarn lerna-workspaces run lint && cd docusaurus && npx prettier --check '**/*.mdx'
+      - name: Publish Release
+        run: yarn release
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+          GH_TOKEN: ${{ secrets.STREAM_CI_GITHUB_BOT_TOKEN }}
+      - name: Merge back changes
+        run: |
+          git stash
+          git checkout develop
+          git pull origin develop
+          git merge main -m "chore: merge back release [skip ci]"
+          git push origin develop
