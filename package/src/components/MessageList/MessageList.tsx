@@ -75,6 +75,11 @@ const styles = StyleSheet.create({
   },
   flex: { flex: 1 },
   invert: { transform: [{ scaleY: -1 }] },
+  invertAndroid: {
+    // Invert the Y AND X axis to prevent a react native issue that can lead to ANRs on android 13
+    // details: https://github.com/Expensify/App/pull/12820
+    transform: [{ scaleX: -1 }, { scaleY: -1 }],
+  },
   listContainer: {
     flex: 1,
     width: '100%',
@@ -87,6 +92,10 @@ const styles = StyleSheet.create({
     top: 0,
   },
 });
+
+const InvertedCellRendererComponent = (props: React.PropsWithChildren<unknown>) => (
+  <View {...props} style={styles.invertAndroid} />
+);
 
 const keyExtractor = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -970,17 +979,23 @@ const MessageListWithContext = <
     return null;
   };
 
+  const shouldApplyAndroidWorkaround =
+    inverted && Platform.OS === 'android' && Platform.Version >= 33;
+
   return (
     <View
       style={[styles.container, { backgroundColor: white_snow }, container]}
       testID='message-flat-list-wrapper'
     >
       <FlatList
+        CellRendererComponent={
+          shouldApplyAndroidWorkaround ? InvertedCellRendererComponent : undefined
+        }
         contentContainerStyle={[styles.contentContainer, contentContainer]}
         data={messageList}
         /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
         extraData={disabled || !hasNoMoreRecentMessagesToLoad}
-        inverted={inverted}
+        inverted={shouldApplyAndroidWorkaround ? false : inverted}
         keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}
         ListEmptyComponent={renderListEmptyComponent}
@@ -1000,7 +1015,12 @@ const MessageListWithContext = <
         ref={refCallback}
         renderItem={renderItem}
         scrollEnabled={overlay === 'none'}
-        style={[styles.listContainer, listContainer]}
+        showsVerticalScrollIndicator={!shouldApplyAndroidWorkaround}
+        style={[
+          styles.listContainer,
+          listContainer,
+          shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined,
+        ]}
         testID='message-flat-list'
         viewabilityConfig={flatListViewabilityConfig}
         {...additionalFlatListProps}
