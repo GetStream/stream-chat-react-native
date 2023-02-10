@@ -93,10 +93,8 @@ const styles = StyleSheet.create({
   },
 });
 
-const CustomCellRendererComponent = ({ children, ...props }: React.PropsWithChildren<unknown>) => (
-  <View {...props} style={styles.invertAndroid}>
-    {children}
-  </View>
+const InvertedCellRendererComponent = (props: React.PropsWithChildren<unknown>) => (
+  <View {...props} style={styles.invertAndroid} />
 );
 
 const keyExtractor = <
@@ -991,7 +989,7 @@ const MessageListWithContext = <
     >
       <FlatList
         CellRendererComponent={
-          shouldApplyAndroidWorkaround ? CustomCellRendererComponent : undefined
+          shouldApplyAndroidWorkaround ? InvertedCellRendererComponent : undefined
         }
         contentContainerStyle={[styles.contentContainer, contentContainer]}
         data={messageList}
