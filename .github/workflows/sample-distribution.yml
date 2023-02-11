@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          token: ${{ secrets.VERSION_BUMP_TOKEN }}
+          token: ${{ secrets.STREAM_CI_GITHUB_BOT_TOKEN }}
       - name: Install Ruby and Gems
         uses: ruby/setup-ruby@v1
         with:
