@@ -956,10 +956,19 @@ const MessageListWithContext = <
       });
   }
 
-  const renderListEmptyComponent = () => (
-    <View style={[styles.flex, styles.invert]} testID='empty-state'>
-      <EmptyStateIndicator listType='message' />
-    </View>
+  const shouldApplyAndroidWorkaround =
+    inverted && Platform.OS === 'android' && Platform.Version >= 33;
+
+  const renderListEmptyComponent = useCallback(
+    () => (
+      <View
+        style={[styles.flex, shouldApplyAndroidWorkaround ? styles.invertAndroid : styles.invert]}
+        testID='empty-state'
+      >
+        <EmptyStateIndicator listType='message' />
+      </View>
+    ),
+    [EmptyStateIndicator, shouldApplyAndroidWorkaround],
   );
 
   if (!FlatList) return null;
@@ -978,9 +987,6 @@ const MessageListWithContext = <
     if (messageListLengthAfterUpdate) return <DateHeader dateString={stickyHeaderDateString} />;
     return null;
   };
-
-  const shouldApplyAndroidWorkaround =
-    inverted && Platform.OS === 'android' && Platform.Version >= 33;
 
   return (
     <View
