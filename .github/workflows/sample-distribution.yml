@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          token: ${{ secrets.STREAM_CI_GITHUB_BOT_TOKEN }}
+          token: ${{ secrets.DOCUSAURUS_GH_TOKEN }}
       - name: Install Ruby and Gems
         uses: ruby/setup-ruby@v1
         with:
