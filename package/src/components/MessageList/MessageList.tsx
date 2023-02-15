@@ -528,8 +528,7 @@ const MessageListWithContext = <
     setAutoscrollToTop(hasNoMoreRecentMessagesToLoad);
   }, [messageList, hasNoMoreRecentMessagesToLoad]);
 
-  const shouldApplyAndroidWorkaround =
-    inverted && Platform.OS === 'android' && Platform.Version >= 33;
+  const shouldApplyAndroidWorkaround = inverted && Platform.OS === 'android';
 
   const renderItem = ({
     index,
@@ -977,6 +976,24 @@ const MessageListWithContext = <
     [EmptyStateIndicator, shouldApplyAndroidWorkaround],
   );
 
+  const ListFooterComponent = useCallback(
+    () => (
+      <View style={shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined}>
+        <FooterComponent />
+      </View>
+    ),
+    [shouldApplyAndroidWorkaround, FooterComponent],
+  );
+
+  const ListHeaderComponent = useCallback(
+    () => (
+      <View style={shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined}>
+        <HeaderComponent />
+      </View>
+    ),
+    [shouldApplyAndroidWorkaround, HeaderComponent],
+  );
+
   if (!FlatList) return null;
 
   if (loading) {
@@ -1011,8 +1028,8 @@ const MessageListWithContext = <
         keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}
         ListEmptyComponent={renderListEmptyComponent}
-        ListFooterComponent={FooterComponent}
-        ListHeaderComponent={HeaderComponent}
+        ListFooterComponent={ListFooterComponent}
+        ListHeaderComponent={ListHeaderComponent}
         maintainVisibleContentPosition={{
           autoscrollToTopThreshold: autoscrollToTop ? 10 : undefined,
           minIndexForVisible: 1,
