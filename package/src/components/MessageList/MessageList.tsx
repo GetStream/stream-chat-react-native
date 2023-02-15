@@ -528,6 +528,8 @@ const MessageListWithContext = <
     setAutoscrollToTop(hasNoMoreRecentMessagesToLoad);
   }, [messageList, hasNoMoreRecentMessagesToLoad]);
 
+  const shouldApplyAndroidWorkaround = inverted && Platform.OS === 'android';
+
   const renderItem = ({
     index,
     item: message,
@@ -560,6 +562,9 @@ const MessageListWithContext = <
     const wrapMessageInTheme = client.userID === message.user?.id && !!myMessageTheme;
     return wrapMessageInTheme ? (
       <>
+        {shouldApplyAndroidWorkaround &&
+          isMessageWithStylesReadByAndDateSeparator(message) &&
+          message.dateSeparator && <InlineDateSeparator date={message.dateSeparator} />}
         <ThemeProvider mergedStyle={modifiedTheme}>
           <View testID={`message-list-item-${index}`}>
             <Message
@@ -577,15 +582,18 @@ const MessageListWithContext = <
             />
           </View>
         </ThemeProvider>
-        {isMessageWithStylesReadByAndDateSeparator(message) && message.dateSeparator && (
-          <InlineDateSeparator date={message.dateSeparator} />
-        )}
+        {!shouldApplyAndroidWorkaround &&
+          isMessageWithStylesReadByAndDateSeparator(message) &&
+          message.dateSeparator && <InlineDateSeparator date={message.dateSeparator} />}
         {/* Adding indicator below the messages, since the list is inverted */}
         {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
       </>
     ) : (
       <>
         <View testID={`message-list-item-${index}`}>
+          {shouldApplyAndroidWorkaround &&
+            isMessageWithStylesReadByAndDateSeparator(message) &&
+            message.dateSeparator && <InlineDateSeparator date={message.dateSeparator} />}
           <Message
             goToMessage={goToMessage}
             groupStyles={
@@ -604,9 +612,9 @@ const MessageListWithContext = <
             threadList={threadList}
           />
         </View>
-        {isMessageWithStylesReadByAndDateSeparator(message) && message.dateSeparator && (
-          <InlineDateSeparator date={message.dateSeparator} />
-        )}
+        {!shouldApplyAndroidWorkaround &&
+          isMessageWithStylesReadByAndDateSeparator(message) &&
+          message.dateSeparator && <InlineDateSeparator date={message.dateSeparator} />}
         {/* Adding indicator below the messages, since the list is inverted */}
         {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
       </>
@@ -956,9 +964,6 @@ const MessageListWithContext = <
       });
   }
 
-  const shouldApplyAndroidWorkaround =
-    inverted && Platform.OS === 'android' && Platform.Version >= 33;
-
   const renderListEmptyComponent = useCallback(
     () => (
       <View
@@ -969,6 +974,24 @@ const MessageListWithContext = <
       </View>
     ),
     [EmptyStateIndicator, shouldApplyAndroidWorkaround],
+  );
+
+  const ListFooterComponent = useCallback(
+    () => (
+      <View style={shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined}>
+        <FooterComponent />
+      </View>
+    ),
+    [shouldApplyAndroidWorkaround, FooterComponent],
+  );
+
+  const ListHeaderComponent = useCallback(
+    () => (
+      <View style={shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined}>
+        <HeaderComponent />
+      </View>
+    ),
+    [shouldApplyAndroidWorkaround, HeaderComponent],
   );
 
   if (!FlatList) return null;
@@ -1005,8 +1028,8 @@ const MessageListWithContext = <
         keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}
         ListEmptyComponent={renderListEmptyComponent}
-        ListFooterComponent={FooterComponent}
-        ListHeaderComponent={HeaderComponent}
+        ListFooterComponent={ListFooterComponent}
+        ListHeaderComponent={ListHeaderComponent}
         maintainVisibleContentPosition={{
           autoscrollToTopThreshold: autoscrollToTop ? 10 : undefined,
           minIndexForVisible: 1,
