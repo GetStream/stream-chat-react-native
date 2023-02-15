@@ -737,29 +737,6 @@ const ChannelWithContext = <
   ).current;
 
   useEffect(() => {
-    const connectionChangedHandler = () => {
-      if (shouldSyncChannel) {
-        resyncChannel();
-      }
-    };
-    let connectionChangedSubscription: ReturnType<ChannelType['on']>;
-
-    if (enableOfflineSupport) {
-      connectionChangedSubscription = DBSyncManager.onSyncStatusChange(connectionChangedHandler);
-    } else {
-      connectionChangedSubscription = client.on('connection.changed', (event) => {
-        if (event.online) {
-          connectionChangedHandler();
-        }
-      });
-    }
-    return () => {
-      connectionChangedSubscription.unsubscribe();
-    };
-    // TODO:  FIXME - resyncChannel changes on every render, so this effect will run on every render
-  }, [enableOfflineSupport, shouldSyncChannel, resyncChannel]);
-
-  useEffect(() => {
     const channelSubscriptions: Array<ReturnType<ChannelType['on']>> = [];
     if (channel && shouldSyncChannel) {
       channelSubscriptions.push(channel.on('message.new', copyMessagesState));
@@ -1061,6 +1038,29 @@ const ChannelWithContext = <
 
     setSyncingChannel(false);
   };
+
+  useEffect(() => {
+    const connectionChangedHandler = () => {
+      if (shouldSyncChannel) {
+        resyncChannel();
+      }
+    };
+    let connectionChangedSubscription: ReturnType<ChannelType['on']>;
+
+    if (enableOfflineSupport) {
+      connectionChangedSubscription = DBSyncManager.onSyncStatusChange(connectionChangedHandler);
+    } else {
+      connectionChangedSubscription = client.on('connection.changed', (event) => {
+        if (event.online) {
+          connectionChangedHandler();
+        }
+      });
+    }
+    return () => {
+      connectionChangedSubscription.unsubscribe();
+    };
+    // TODO:  FIXME - resyncChannel changes on every render, so this effect will run on every render
+  }, [enableOfflineSupport, shouldSyncChannel, resyncChannel]);
 
   const reloadChannel = () =>
     channelQueryCallRef.current(async () => {
