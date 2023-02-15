@@ -1,5 +1,17 @@
 # Change Log
 
+## [1.19.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.18.0...sampleapp@v1.19.0) (2023-02-14)
+
+
+### Features
+
+* **build:** add shared github action to install and build SDK ([#1962](https://github.com/GetStream/stream-chat-react-native/issues/1962)) ([3bd0fcc](https://github.com/GetStream/stream-chat-react-native/commit/3bd0fccf4e4e91979795cd5c66ef224d53cd0d4c))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ## [1.18.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.17.2...sampleapp@v1.18.0) (2023-02-09)
 
 
