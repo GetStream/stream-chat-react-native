@@ -1,5 +1,12 @@
 # Change Log
 
+### [5.11.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.11.0...v5.11.1) (2023-02-14)
+
+
+### Bug Fixes
+
+* empty state component was falsely inverted ([#1971](https://github.com/GetStream/stream-chat-react-native/issues/1971)) ([14b667a](https://github.com/GetStream/stream-chat-react-native/commit/14b667a57f7cea040f55c4fbf37b87c3cb8eee69))
+
 ## [5.11.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.10.0...v5.11.0) (2023-02-10)
 
 
