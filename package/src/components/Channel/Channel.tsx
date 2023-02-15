@@ -736,70 +736,80 @@ const ChannelWithContext = <
     ),
   ).current;
 
-  const connectionChangedHandler = () => {
-    if (shouldSyncChannel) {
-      resyncChannel();
+  useEffect(() => {
+    const connectionChangedHandler = () => {
+      if (shouldSyncChannel) {
+        resyncChannel();
+      }
+    };
+    let connectionChangedSubscription: ReturnType<ChannelType['on']>;
+
+    if (enableOfflineSupport) {
+      connectionChangedSubscription = DBSyncManager.onSyncStatusChange(connectionChangedHandler);
+    } else {
+      connectionChangedSubscription = client.on('connection.changed', (event) => {
+        if (event.online) {
+          connectionChangedHandler();
+        }
+      });
     }
-  };
-
-  const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
-    if (shouldSyncChannel) {
-      if (thread) {
-        const updatedThreadMessages =
-          (thread.id && channel && channel.state.threads[thread.id]) || threadMessages;
-        setThreadMessages(updatedThreadMessages);
-      }
-
-      if (channel && thread && event.message?.id === thread.id) {
-        const updatedThread = channel.state.formatMessage(event.message);
-        setThread(updatedThread);
-      }
-
-      if (event.type === 'typing.start' || event.type === 'typing.stop') {
-        copyTypingState();
-      } else if (event.type === 'message.read') {
-        copyReadState();
-      } else if (event.type === 'message.new') {
-        copyMessagesState();
-      } else if (channel) {
-        copyChannelState();
-      }
-    }
-  };
+    return () => {
+      connectionChangedSubscription.unsubscribe();
+    };
+    // TODO:  FIXME - resyncChannel changes on every render, so this effect will run on every render
+  }, [enableOfflineSupport, shouldSyncChannel, resyncChannel]);
 
   useEffect(() => {
     const channelSubscriptions: Array<ReturnType<ChannelType['on']>> = [];
-    const clientSubscriptions: Array<ReturnType<StreamChat['on']>> = [];
-
-    if (!channel) return;
-
-    clientSubscriptions.push(
-      client.on('channel.deleted', (event) => {
-        if (event.cid === channel.cid) {
-          setDeleted(true);
-        }
-      }),
-    );
-
-    if (enableOfflineSupport) {
-      clientSubscriptions.push(DBSyncManager.onSyncStatusChange(connectionChangedHandler));
-    } else {
-      clientSubscriptions.push(
-        client.on('connection.changed', (event) => {
-          if (event.online) {
-            connectionChangedHandler();
-          }
-        }),
-      );
+    if (channel && shouldSyncChannel) {
+      channelSubscriptions.push(channel.on('message.new', copyMessagesState));
+      channelSubscriptions.push(channel.on('message.read', copyReadState));
+      channelSubscriptions.push(channel.on('typing.start', copyTypingState));
+      channelSubscriptions.push(channel.on('typing.stop', copyTypingState));
     }
-
-    channelSubscriptions.push(channel.on(handleEvent));
-
     return () => {
-      clientSubscriptions.forEach((s) => s.unsubscribe());
       channelSubscriptions.forEach((s) => s.unsubscribe());
     };
-  }, [channelId, connectionChangedHandler, handleEvent]);
+  }, [channelId, shouldSyncChannel]);
+
+  useEffect(() => {
+    const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
+      if (shouldSyncChannel) {
+        if (thread) {
+          const updatedThreadMessages =
+            (thread.id && channel && channel.state.threads[thread.id]) || threadMessages;
+          setThreadMessages(updatedThreadMessages);
+        }
+
+        if (channel && thread && event.message?.id === thread.id) {
+          const updatedThread = channel.state.formatMessage(event.message);
+          setThread(updatedThread);
+        }
+
+        if (
+          channel &&
+          event.type !== 'message.new' &&
+          event.type !== 'message.read' &&
+          event.type !== 'typing.start' &&
+          event.type !== 'typing.stop'
+        ) {
+          copyChannelState();
+        }
+      }
+    };
+    const { unsubscribe } = channel.on(handleEvent);
+    return unsubscribe;
+  }, [channelId, thread?.id, shouldSyncChannel]);
+
+  useEffect(() => {
+    const { unsubscribe } = client.on('channel.deleted', (event) => {
+      if (event.cid === channel?.cid) {
+        setDeleted(true);
+      }
+    });
+
+    return unsubscribe;
+  }, [channelId]);
 
   const channelQueryCallRef = useRef(
     async (
