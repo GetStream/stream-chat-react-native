@@ -1,5 +1,44 @@
 # Change Log
 
+### [5.11.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.11.0...v5.11.1) (2023-02-14)
+
+
+### Bug Fixes
+
+* empty state component was falsely inverted ([#1971](https://github.com/GetStream/stream-chat-react-native/issues/1971)) ([14b667a](https://github.com/GetStream/stream-chat-react-native/commit/14b667a57f7cea040f55c4fbf37b87c3cb8eee69))
+
+## [5.11.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.10.0...v5.11.0) (2023-02-10)
+
+
+### Features
+
+* **build:** add shared github action to install and build SDK ([#1962](https://github.com/GetStream/stream-chat-react-native/issues/1962)) ([3bd0fcc](https://github.com/GetStream/stream-chat-react-native/commit/3bd0fccf4e4e91979795cd5c66ef224d53cd0d4c))
+
+
+### Bug Fixes
+
+* apply workaround for android anr ([#1964](https://github.com/GetStream/stream-chat-react-native/issues/1964)) ([a356cef](https://github.com/GetStream/stream-chat-react-native/commit/a356cef0fc5b21d95066d7ef05e70d5b367015b7))
+
+## [5.10.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.9.1...v5.10.0) (2023-02-09)
+
+
+### Features
+
+* add prop for helping multiple channel list implementation ([#1951](https://github.com/GetStream/stream-chat-react-native/issues/1951)) ([e6f700c](https://github.com/GetStream/stream-chat-react-native/commit/e6f700cd91e4a8ad308e18560b37536e282f6e61))
+
+
+### Bug Fixes
+
+* do not report invalid tlds as valid urls ([#1950](https://github.com/GetStream/stream-chat-react-native/issues/1950)) ([6917dcd](https://github.com/GetStream/stream-chat-react-native/commit/6917dcd9a547ecdbf0574aa50865bfc01c590122))
+
+### [5.9.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.9.0...v5.9.1) (2023-02-02)
+
+
+### Bug Fixes
+
+* fixes clipboard detection on android when not installed ([#1936](https://github.com/GetStream/stream-chat-react-native/issues/1936)) ([a9ce8b3](https://github.com/GetStream/stream-chat-react-native/commit/a9ce8b303f93ae58d392c3cfed937571955639b1))
+* users can receive/send message after returning to app ([#1943](https://github.com/GetStream/stream-chat-react-native/issues/1943)) ([d5059a6](https://github.com/GetStream/stream-chat-react-native/commit/d5059a64f97367c548699a2d3d1407f0c3f9e0fb))
+
 ## [5.9.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.8.0...v5.9.0) (2023-01-26)
 
 

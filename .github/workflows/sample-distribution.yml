@@ -15,26 +15,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          token: ${{ secrets.VERSION_BUMP_TOKEN }}
+          token: ${{ secrets.DOCUSAURUS_GH_TOKEN }}
       - name: Install Ruby and Gems
         uses: ruby/setup-ruby@v1
         with:
           working-directory: examples/SampleApp
           bundler-cache: true
-      - name: RN setup
-        uses: nick-invision/retry@v2
-        with:
-          timeout_minutes: 10
-          max_attempts: 3
-          command: |
-            yarn --frozen-lockfile
-            cd package/
-            yarn --frozen-lockfile
-            cd native-package/
-            yarn --frozen-lockfile
-            cd ../../examples/SampleApp/
-            yarn --frozen-lockfile
-
+      - name: Install && Build - SDK and Sample App
+        uses: ./.github/actions/install-and-build-sdk
       - name: Cache iOS pods
         uses: actions/cache@v2
         with:
@@ -71,21 +59,8 @@ jobs:
           distribution: 'zulu'
           java-version: '11'
           check-latest: true
-      - name: RN setup
-        uses: nick-invision/retry@v2
-        with:
-          timeout_minutes: 10
-          max_attempts: 3
-          command: |
-            yarn add global react-native-cli;
-            yarn --frozen-lockfile
-            cd package/
-            yarn --frozen-lockfile
-            cd native-package/
-            yarn --frozen-lockfile
-            cd ../../examples/SampleApp/
-            yarn --frozen-lockfile
-
+      - name: Install && Build - SDK and Sample App
+        uses: ./.github/actions/install-and-build-sdk
       - name: Build
         run: |
           cd examples/SampleApp

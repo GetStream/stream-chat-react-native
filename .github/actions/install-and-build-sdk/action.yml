@@ -1,0 +1,28 @@
+name: 'Install and Build SDK'
+description: 'Runs yarn install for all the packages and sample and fails if yarn lock has a change that is not committed'
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Root repo dependencies
+      run: yarn --frozen-lockfile
+      shell: bash
+    - name: Install & Build the Core Package
+      run: |
+        cd package/
+        yarn --frozen-lockfile
+      shell: bash
+    - name: Install & Build the Native Package
+      run: |
+        cd package/native-package/
+        yarn --frozen-lockfile
+      shell: bash
+    - name: Install & Build the Expo Package
+      run: |
+        cd package/expo-package/
+        yarn --frozen-lockfile
+      shell: bash
+    - name: Install & Build the Sample App
+      run: |
+        cd examples/SampleApp/
+        yarn --frozen-lockfile
+      shell: bash

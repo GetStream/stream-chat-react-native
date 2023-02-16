@@ -109,15 +109,15 @@ export const renderText = <
   if (!text) return null;
 
   let newText = text.trim();
-  const urls = parseLinksFromText(newText);
+  const linkInfos = parseLinksFromText(newText);
 
-  for (const urlInfo of urls) {
-    const displayLink = truncate(urlInfo.encoded, {
+  for (const linkInfo of linkInfos) {
+    const displayLink = truncate(linkInfo.raw, {
       length: 200,
       omission: '...',
     });
-    const markdown = `[${displayLink}](${urlInfo.scheme}${urlInfo.encoded})`;
-    newText = newText.replace(urlInfo.raw, markdown);
+    const markdown = `[${displayLink}](${linkInfo.encodedUrl})`;
+    newText = newText.replace(linkInfo.raw, markdown);
   }
 
   newText = newText.replace(/[<&"'>]/g, '\\$&');

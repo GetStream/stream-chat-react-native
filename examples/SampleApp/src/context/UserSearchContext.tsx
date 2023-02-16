@@ -6,9 +6,10 @@ export type UserSearchContextValue = PaginatedUsers;
 
 export const UserSearchContext = React.createContext({} as UserSearchContextValue);
 
-export const UserSearchProvider: React.FC<{
-  value?: UserSearchContextValue;
-}> = ({ children, value }) => {
+export const UserSearchProvider = (
+  props: React.PropsWithChildren<{ value?: UserSearchContextValue }>,
+) => {
+  const { children, value } = props;
   const paginatedUsers = usePaginatedUsers();
 
   const userSearchContext = { ...paginatedUsers, ...value };

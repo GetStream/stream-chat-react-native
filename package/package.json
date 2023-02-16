@@ -1,7 +1,7 @@
 {
   "name": "stream-chat-react-native-core",
   "description": "The official React Native and Expo components for Stream Chat, a service for building chat applications",
-  "version": "5.9.0",
+  "version": "5.11.1",
   "author": {
     "company": "Stream.io Inc",
     "name": "Stream.io Inc"
@@ -72,6 +72,7 @@
     "dayjs": "1.10.5",
     "file-loader": "6.2.0",
     "i18next": "20.2.4",
+    "linkify-it": "^4.0.1",
     "lodash-es": "4.17.21",
     "metro-react-native-babel-preset": "0.66.2",
     "mime-types": "^2.1.34",
@@ -106,6 +107,7 @@
     "@types/react": "17.0.5",
     "@types/react-native": "0.67.3",
     "@types/react-test-renderer": "17.0.1",
+    "@types/linkify-it": "3.0.2",
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.7.0",
     "@typescript-eslint/parser": "^5.7.0",
