@@ -1,5 +1,12 @@
 # Change Log
 
+### [5.11.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.11.1...v5.11.2) (2023-02-17)
+
+
+### Bug Fixes
+
+* misplaced date header, header/footer component in messageList on android 33 ([#1977](https://github.com/GetStream/stream-chat-react-native/issues/1977)) ([#1978](https://github.com/GetStream/stream-chat-react-native/issues/1978)) ([17908b1](https://github.com/GetStream/stream-chat-react-native/commit/17908b15fa7be070935e34e003d23015b7b8395f))
+
 ### [5.11.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.11.0...v5.11.1) (2023-02-14)
 
 
