@@ -1,5 +1,17 @@
 # Change Log
 
+### [1.19.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.19.0...sampleapp@v1.19.1) (2023-02-17)
+
+
+### Bug Fixes
+
+* misplaced date header, header/footer component in messageList on android 33 ([#1977](https://github.com/GetStream/stream-chat-react-native/issues/1977)) ([#1978](https://github.com/GetStream/stream-chat-react-native/issues/1978)) ([17908b1](https://github.com/GetStream/stream-chat-react-native/commit/17908b15fa7be070935e34e003d23015b7b8395f))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ## [1.19.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.18.0...sampleapp@v1.19.0) (2023-02-14)
 
 
