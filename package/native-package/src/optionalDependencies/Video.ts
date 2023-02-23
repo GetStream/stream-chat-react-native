@@ -2,9 +2,6 @@ import { StyleProp, ViewStyle } from 'react-native';
 
 let AudioVideoComponent:
   | React.ComponentType<{
-      audioOnly?: boolean;
-      ignoreSilentSwitch?: 'ignore' | 'obey';
-      repeat?: boolean;
       onBuffer: () => void;
       onEnd: () => void;
       onError: (error: Error) => void;
@@ -16,6 +13,9 @@ let AudioVideoComponent:
         uri: string;
       };
       style: StyleProp<ViewStyle>;
+      audioOnly?: boolean;
+      ignoreSilentSwitch?: 'ignore' | 'obey';
+      repeat?: boolean;
     }>
   | undefined;
 try {
