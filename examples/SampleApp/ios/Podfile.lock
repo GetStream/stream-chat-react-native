@@ -143,6 +143,7 @@ PODS:
     - FlipperKit/FlipperKitNetworkPlugin
   - fmt (6.2.1)
   - glog (0.3.5)
+  - GoogleAds-IMA-iOS-SDK (3.18.4)
   - GoogleAppMeasurement (8.15.0):
     - GoogleAppMeasurement/AdIdSupport (= 8.15.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.7)
@@ -186,7 +187,7 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (7.11.0):
     - GoogleUtilities/Logger
-  - hermes-engine (0.70.1)
+  - hermes-engine (0.70.7)
   - libevent (2.1.12)
   - libwebp (1.2.4):
     - libwebp/demux (= 1.2.4)
@@ -432,7 +433,7 @@ PODS:
   - React-jsinspector (0.70.7)
   - React-logger (0.70.7):
     - glog
-  - react-native-cameraroll (5.2.1):
+  - react-native-cameraroll (5.2.4):
     - React-Core
   - react-native-document-picker (5.0.4):
     - React-Core
@@ -446,10 +447,12 @@ PODS:
     - React-Core
   - react-native-safe-area-context (3.2.0):
     - React-Core
-  - react-native-video (6.0.0-alpha.4):
+  - react-native-video (6.0.0-alpha.5):
     - React-Core
-    - react-native-video/Video (= 6.0.0-alpha.4)
-  - react-native-video/Video (6.0.0-alpha.4):
+    - react-native-video/Video (= 6.0.0-alpha.5)
+  - react-native-video/Video (6.0.0-alpha.5):
+    - GoogleAds-IMA-iOS-SDK (~> 3.18.1)
+    - GoogleAds-IMA-tvOS-SDK (~> 4.2)
     - PromisesSwift
     - React-Core
   - React-perflogger (0.70.7)
@@ -704,6 +707,7 @@ SPEC REPOS:
     - Flipper-RSocket
     - FlipperKit
     - fmt
+    - GoogleAds-IMA-iOS-SDK
     - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleUtilities
@@ -856,10 +860,11 @@ SPEC CHECKSUMS:
   FlipperKit: cbdee19bdd4e7f05472a66ce290f1b729ba3cb86
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
+  GoogleAds-IMA-iOS-SDK: b01284e3bf3d64ba948de6692ffda531452c3713
   GoogleAppMeasurement: 4c19f031220c72464d460c9daa1fb5d1acce958e
   GoogleDataTransport: 1c8145da7117bd68bbbed00cf304edb6a24de00f
   GoogleUtilities: c2bdc4cf2ce786c4d2e6b3bcfd599a25ca78f06f
-  hermes-engine: 9cd393f741bfa14d1d0cd90cc373e3619c0bc7ea
+  hermes-engine: 566e656aa95456a3f3f739fd76ea9a9656f2633f
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
@@ -881,13 +886,13 @@ SPEC CHECKSUMS:
   React-jsiexecutor: e95cdd036e7947ddf87f3049319ac3064deb76b5
   React-jsinspector: 1c34fea1868136ecde647bc11fae9266d4143693
   React-logger: e9f407f9fdf3f3ce7749ae6f88affe63e8446019
-  react-native-cameraroll: f94bf9f46c998963ecd2bb6e9a3f9cca59b6d9f1
+  react-native-cameraroll: cb752fda6d5268f1646b4390bd5be1f27706b9a0
   react-native-document-picker: 1a7518132d4a06b67f459be9bb1464a567d2b3b4
   react-native-image-resizer: d9fb629a867335bdc13230ac2a58702bb8c8828f
   react-native-netinfo: e849fc21ca2f4128a5726c801a82fc6f4a6db50d
   react-native-quick-sqlite: a7bd4139fb07194ef8534d1cc14c1aec6daa4d84
   react-native-safe-area-context: f0906bf8bc9835ac9a9d3f97e8bde2a997d8da79
-  react-native-video: b2a6434fa0cc7a5381985ca2af8f8c570f110743
+  react-native-video: a38e0a394fd8884fef4a48d866f1ed9a930f8385
   React-perflogger: 52a94f38c19a518d05726624b49bfc192639374d
   React-RCTActionSheet: 7b89fe64a852bc3ae39b91dbd142ef09931ef3f7
   React-RCTAnimation: ad84bfbf8c5f6f77e65092d0c2b0506b80b5cf99
