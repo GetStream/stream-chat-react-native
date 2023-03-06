@@ -1,4 +1,5 @@
 import { PermissionsAndroid, Platform } from 'react-native';
+
 import { CameraRoll, GetPhotosParams } from '@react-native-camera-roll/camera-roll';
 
 export const getPhotos = async ({ after, first }: Pick<GetPhotosParams, 'after' | 'first'>) => {

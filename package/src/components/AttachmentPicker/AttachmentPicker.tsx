@@ -11,7 +11,7 @@ import { renderAttachmentPickerItem } from './components/AttachmentPickerItem';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { getPhotos } from '../../native';
+import { getPhotos, oniOS14LibrarySelectionChange } from '../../native';
 import type { Asset } from '../../types/types';
 import { vh } from '../../utils/utils';
 
@@ -103,12 +103,7 @@ export const AttachmentPicker = React.forwardRef(
     const attemptedToLoadPhotosOnOpenRef = useRef(false);
 
     const getMorePhotos = useCallback(async () => {
-      if (
-        hasNextPageRef.current &&
-        !loadingPhotos &&
-        currentIndex > -1 &&
-        selectedPicker === 'images'
-      ) {
+      if (!loadingPhotos && currentIndex > -1 && selectedPicker === 'images') {
         setPhotoError(false);
         setLoadingPhotos(true);
         const endCursor = endCursorRef.current;
@@ -128,6 +123,24 @@ export const AttachmentPicker = React.forwardRef(
         setLoadingPhotos(false);
       }
     }, [currentIndex, selectedPicker, loadingPhotos]);
+
+    // we need to use ref here to avoid running effect when getMorePhotos changes
+    const getMorePhotosRef = useRef(getMorePhotos);
+    getMorePhotosRef.current = getMorePhotos;
+
+    useEffect(() => {
+      if (selectedPicker !== 'images') return;
+      // ios 14 library selection change event is fired when user reselects the images that are permitted to be readable by the app
+      const { unsubscribe } = oniOS14LibrarySelectionChange(() => {
+        // we reset the cursor and has next page to true to facilitate fetching of the first page of photos again
+        hasNextPageRef.current = true;
+        endCursorRef.current = undefined;
+        hasNextPageRef.current = true;
+        // fetch the first page of photos again
+        getMorePhotosRef.current();
+      });
+      return unsubscribe;
+    }, [selectedPicker]);
 
     useEffect(() => {
       const backAction = () => {
