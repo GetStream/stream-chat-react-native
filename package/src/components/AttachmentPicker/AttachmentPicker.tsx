@@ -135,7 +135,6 @@ export const AttachmentPicker = React.forwardRef(
         // we reset the cursor and has next page to true to facilitate fetching of the first page of photos again
         hasNextPageRef.current = true;
         endCursorRef.current = undefined;
-        hasNextPageRef.current = true;
         // fetch the first page of photos again
         getMorePhotosRef.current();
       });
