@@ -17,7 +17,7 @@ export const useAppSettings = <
 
   useEffect(() => {
     async function enforeAppSettings() {
-      if (!initialisingDatabase) return;
+      if (initialisingDatabase) return;
       if (!client.userID) return;
 
       if (!isOnline && enableOfflineSupport) {
