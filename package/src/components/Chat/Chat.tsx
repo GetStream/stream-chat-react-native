@@ -167,6 +167,8 @@ const ChatWithContext = <
     closeConnectionOnBackground,
   );
 
+  const [initialisingDatabase, setInitialisingDatabase] = useState(enableOfflineSupport);
+
   /**
    * Setup muted user listener
    * TODO: reimplement
@@ -196,7 +198,16 @@ const ChatWithContext = <
 
   const setActiveChannel = (newChannel?: Channel<StreamChatGenerics>) => setChannel(newChannel);
 
-  const appSettings = useAppSettings(client, isOnline, enableOfflineSupport);
+  useEffect(() => {
+    if (client.user?.id && enableOfflineSupport) {
+      setInitialisingDatabase(true);
+      QuickSqliteClient.initializeDatabase();
+      DBSyncManager.init(client as unknown as StreamChat);
+      setInitialisingDatabase(false);
+    }
+  }, [client?.user?.id, enableOfflineSupport]);
+
+  const appSettings = useAppSettings(client, isOnline, enableOfflineSupport, initialisingDatabase);
 
   const chatContext = useCreateChatContext({
     appSettings,
@@ -210,19 +221,12 @@ const ChatWithContext = <
     setActiveChannel,
   });
 
-  useEffect(() => {
-    if (client.user?.id && enableOfflineSupport) {
-      QuickSqliteClient.initializeDatabase();
-      DBSyncManager.init(client as unknown as StreamChat);
-    }
-  }, [client?.user?.id]);
-
   useSyncDatabase({
     client,
     enableOfflineSupport,
   });
 
-  if (loadingTranslators) return null;
+  if (loadingTranslators || initialisingDatabase) return null;
 
   return (
     <ChatProvider<StreamChatGenerics> value={chatContext}>
