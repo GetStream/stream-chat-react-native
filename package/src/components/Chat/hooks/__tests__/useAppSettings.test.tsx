@@ -22,6 +22,7 @@ describe('useAppSettings', () => {
         } as unknown as StreamChat,
         isOnline,
         false,
+        false,
       );
 
       return <Text>{JSON.stringify(appSettings)}</Text>;
