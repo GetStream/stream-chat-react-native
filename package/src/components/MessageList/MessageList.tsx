@@ -367,6 +367,7 @@ const MessageListWithContext = <
     ) => message && lastRead && message.created_at && lastRead < message.created_at,
   );
 
+  // ref for channel to use in useEffect without triggering it on channel change
   const channelRef = useRef(channel);
   channelRef.current = channel;
 
