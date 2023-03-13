@@ -541,14 +541,20 @@ const MessageListWithContext = <
 
     const lastMessage = messageList?.[index + 1];
 
-    const isFirstUnreadMessage =
-      countUnread > scrollToFirstUnreadThreshold && index === countUnread - 1;
+    const isLatestMessageSetShown = channel.state.messageSets.find(
+      (set) => set.isCurrent && set.isLatest,
+    );
+
+    const isMessageIndexUnread = (i: number) => isLatestMessageSetShown && i <= countUnread - 1;
+    const isUnreadMessage =
+      isMessageIndexUnread(index) || !!isUnreadMessageRef.current(message, lastRead);
+    const isLastMessageUnread =
+      isMessageIndexUnread(index + 1) || !!isUnreadMessageRef.current(lastMessage, lastRead);
 
     const showUnreadUnderlay =
-      isFirstUnreadMessage ||
+      isUnreadMessage ||
       (!!isUnreadMessageRef.current(message, lastRead) && scrollToBottomButtonVisible);
-    const insertInlineUnreadIndicator =
-      showUnreadUnderlay && !isUnreadMessageRef.current(lastMessage, lastRead);
+    const insertInlineUnreadIndicator = showUnreadUnderlay && !isLastMessageUnread;
 
     if (message.type === 'system') {
       return (
