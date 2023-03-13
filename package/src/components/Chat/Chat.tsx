@@ -167,7 +167,7 @@ const ChatWithContext = <
     closeConnectionOnBackground,
   );
 
-  const [initialisingDatabase, setInitialisingDatabase] = useState(enableOfflineSupport);
+  const [initialisedDatabase, setInitialisedDatabase] = useState(false);
 
   /**
    * Setup muted user listener
@@ -194,20 +194,20 @@ const ChatWithContext = <
           data: client.user,
         });
     }
-  }, [client]);
+  }, [client, enableOfflineSupport]);
 
   const setActiveChannel = (newChannel?: Channel<StreamChatGenerics>) => setChannel(newChannel);
 
   useEffect(() => {
     if (client.user?.id && enableOfflineSupport) {
-      setInitialisingDatabase(true);
+      setInitialisedDatabase(false);
       QuickSqliteClient.initializeDatabase();
       DBSyncManager.init(client as unknown as StreamChat);
-      setInitialisingDatabase(false);
+      setInitialisedDatabase(true);
     }
   }, [client?.user?.id, enableOfflineSupport]);
 
-  const appSettings = useAppSettings(client, isOnline, enableOfflineSupport, initialisingDatabase);
+  const appSettings = useAppSettings(client, isOnline, enableOfflineSupport, initialisedDatabase);
 
   const chatContext = useCreateChatContext({
     appSettings,
@@ -226,7 +226,7 @@ const ChatWithContext = <
     enableOfflineSupport,
   });
 
-  if (loadingTranslators || initialisingDatabase) return null;
+  if (loadingTranslators) return null;
 
   return (
     <ChatProvider<StreamChatGenerics> value={chatContext}>
