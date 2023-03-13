@@ -167,7 +167,7 @@ const ChatWithContext = <
     closeConnectionOnBackground,
   );
 
-  const [initialisedDatabase, setInitialisedDatabase] = useState(!enableOfflineSupport);
+  const [initialisedDatabase, setInitialisedDatabase] = useState(false);
 
   /**
    * Setup muted user listener
