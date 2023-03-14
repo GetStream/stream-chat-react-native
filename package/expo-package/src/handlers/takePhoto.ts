@@ -1,9 +1,10 @@
 import { Image, Platform } from 'react-native';
+
 import * as ImagePicker from 'expo-image-picker';
 
 type Size = {
-  width?: number;
   height?: number;
+  width?: number;
 };
 
 export const takePhoto = async ({ compressImageQuality = 1 }) => {
