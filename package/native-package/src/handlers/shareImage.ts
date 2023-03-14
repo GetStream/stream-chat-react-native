@@ -1,5 +1,5 @@
-import RNFS from 'react-native-fs';
 import { Platform } from 'react-native';
+import RNFS from 'react-native-fs';
 
 let RNShare;
 

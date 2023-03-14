@@ -5,14 +5,14 @@
  * */
 type ResponseValue = {
   name: string;
-  uri: string;
   size: number;
   type: string;
+  uri: string;
 };
 
 let DocumentPicker: {
-  types: { allFiles: string };
   pickMultiple: (opts?: { type: string[] }) => Promise<ResponseValue[]>;
+  types: { allFiles: string };
 };
 
 try {
