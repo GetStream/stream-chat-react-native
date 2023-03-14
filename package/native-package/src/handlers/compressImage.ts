@@ -24,7 +24,7 @@ export const compressImage = async ({
       0,
       undefined,
       false,
-      'cover',
+      { mode: 'cover' },
     );
     return compressedUri;
   } catch (error) {
