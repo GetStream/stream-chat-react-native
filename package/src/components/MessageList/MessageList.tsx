@@ -850,7 +850,7 @@ const MessageListWithContext = <
         countUnread > scrollToFirstUnreadThreshold
       ) {
         // find the first unread message, if we have to initially scroll to an unread message
-        if (messageList.length > countUnread) {
+        if (messageList.length >= countUnread) {
           messageIdToScroll = messageList[countUnread - 1].id;
         }
       } else if (targetedMessage && messageIdLastScrolledToRef.current !== targetedMessage) {
