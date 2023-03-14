@@ -540,21 +540,20 @@ const MessageListWithContext = <
     const lastRead = channel.lastRead();
     const countUnread = channel.countUnread();
 
-    const lastMessage = messageList?.[index + 1];
+    function isMessageUnread(messageArrayIndex: number) {
+      if (lastRead) {
+        return message.created_at && lastRead < message.created_at;
+      } else {
+        const isLatestMessageSetShown = channel.state.messageSets.find(
+          (set) => set.isCurrent && set.isLatest,
+        );
+        return isLatestMessageSetShown && messageArrayIndex <= countUnread - 1;
+      }
+    }
+    const isCurrentMessageUnread = isMessageUnread(index);
+    const isLastMessageUnread = isMessageUnread(index + 1);
 
-    const isLatestMessageSetShown = channel.state.messageSets.find(
-      (set) => set.isCurrent && set.isLatest,
-    );
-
-    const isMessageIndexUnread = (i: number) => isLatestMessageSetShown && i <= countUnread - 1;
-    const isUnreadMessage =
-      isMessageIndexUnread(index) || !!isUnreadMessageRef.current(message, lastRead);
-    const isLastMessageUnread =
-      isMessageIndexUnread(index + 1) || !!isUnreadMessageRef.current(lastMessage, lastRead);
-
-    const showUnreadUnderlay =
-      isUnreadMessage ||
-      (!!isUnreadMessageRef.current(message, lastRead) && scrollToBottomButtonVisible);
+    const showUnreadUnderlay = isCurrentMessageUnread && scrollToBottomButtonVisible;
     const insertInlineUnreadIndicator = showUnreadUnderlay && !isLastMessageUnread;
 
     if (message.type === 'system') {
