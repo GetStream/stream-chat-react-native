@@ -7130,10 +7130,10 @@ stream-chat-react-native-core@5.11.2:
   version "0.0.0"
   uid ""
 
-stream-chat-react-native-devtools@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-devtools/-/stream-chat-react-native-devtools-1.0.4.tgz#35069095f43d762db763a4363137817c3796412c"
-  integrity sha512-u2aFClmCBVuz+wZNJKtKKxVxijraMsQcC85Sv3AW8dxAS7Mz1eWteSs4h6goXNXHQc5ClSf/bZ7H5xNnwtg1wg==
+stream-chat-react-native-devtools@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-devtools/-/stream-chat-react-native-devtools-1.1.0.tgz#43e618bb70a665d44403dbacb49a153031e803cf"
+  integrity sha512-r2f8YyM9ZtCUYKtyIvUcsYDiWD0Dx9mdUMzjNGL+dn15RkM84k4ZWaFmuT/FLEdUCUZE/fSy2XoxrbRq5smIpQ==
 
 "stream-chat-react-native@link:../../package/native-package":
   version "0.0.0"

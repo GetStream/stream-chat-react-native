@@ -10,6 +10,7 @@ export const useAppSettings = <
   client: StreamChat<StreamChatGenerics>,
   isOnline: boolean | null,
   enableOfflineSupport: boolean,
+  initialisedDatabase: boolean,
 ): AppSettingsAPIResponse | null => {
   const [appSettings, setAppSettings] = useState<AppSettingsAPIResponse | null>(null);
   const isMounted = useRef(true);
@@ -18,7 +19,7 @@ export const useAppSettings = <
     async function enforeAppSettings() {
       if (!client.userID) return;
 
-      if (!isOnline && enableOfflineSupport) {
+      if (!isOnline && enableOfflineSupport && initialisedDatabase) {
         const appSettings = dbApi.getAppSettings({ currentUserId: client.userID });
         setAppSettings(appSettings);
         return;
@@ -46,7 +47,7 @@ export const useAppSettings = <
     return () => {
       isMounted.current = false;
     };
-  }, [client, isOnline]);
+  }, [client, isOnline, initialisedDatabase]);
 
   return appSettings;
 };
