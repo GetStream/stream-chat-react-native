@@ -360,13 +360,6 @@ const MessageListWithContext = <
   const [stickyHeaderDate, setStickyHeaderDate] = useState<Date | undefined>();
   const stickyHeaderDateRef = useRef<Date | undefined>();
 
-  const isUnreadMessageRef = useRef(
-    (
-      message: MessageType<StreamChatGenerics> | undefined,
-      lastRead?: ReturnType<StreamChannel<StreamChatGenerics>['lastRead']>,
-    ) => message && lastRead && message.created_at && lastRead < message.created_at,
-  );
-
   // ref for channel to use in useEffect without triggering it on channel change
   const channelRef = useRef(channel);
   channelRef.current = channel;
@@ -540,11 +533,11 @@ const MessageListWithContext = <
     const lastRead = channel.lastRead();
     const countUnread = channel.countUnread();
 
-    function isMessageUnread(messageArrayIndex: number) {
-      if (lastRead) {
-        return message.created_at && lastRead < message.created_at;
+    function isMessageUnread(messageArrayIndex: number): boolean {
+      if (lastRead && message.created_at) {
+        return lastRead < message.created_at;
       } else {
-        const isLatestMessageSetShown = channel.state.messageSets.find(
+        const isLatestMessageSetShown = !!channel.state.messageSets.find(
           (set) => set.isCurrent && set.isLatest,
         );
         return isLatestMessageSetShown && messageArrayIndex <= countUnread - 1;
