@@ -9,8 +9,6 @@ import {
   ViewToken,
 } from 'react-native';
 
-import type { Channel as StreamChannel } from 'stream-chat';
-
 import {
   isMessageWithStylesReadByAndDateSeparator,
   MessageType,
