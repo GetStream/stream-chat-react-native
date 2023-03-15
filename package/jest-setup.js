@@ -7,7 +7,7 @@ import { registerNativeHandlers } from './src/native';
 
 // eslint-disable-next-line no-underscore-dangle
 
-console.warn = () => { };
+console.warn = () => {};
 
 export let netInfoFetch = jest.fn();
 
@@ -28,6 +28,9 @@ registerNativeHandlers({
         netInfoFetch();
       }),
   },
+  oniOS14GalleryLibrarySelectionChange: () => ({
+    unsubscribe: () => {},
+  }),
   pickDocument: () => null,
   saveFile: () => null,
   SDK: 'stream-chat-react-native',
@@ -59,6 +62,6 @@ jest.mock('react-native-quick-sqlite', () => {
   const { sqliteMock } = require('./src/mock-builders/DB/mock');
 
   return {
-    QuickSQLite: sqliteMock
+    QuickSQLite: sqliteMock,
   };
 });

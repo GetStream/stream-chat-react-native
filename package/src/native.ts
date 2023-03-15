@@ -30,6 +30,9 @@ export let deleteFile: DeleteFile = fail;
 type GetLocalAssetUri = (uriOrAssetId: string) => Promise<string> | never;
 export let getLocalAssetUri: GetLocalAssetUri = fail;
 
+type OniOS14LibrarySelectionChange = (callback: () => void) => { unsubscribe: () => void };
+export let oniOS14GalleryLibrarySelectionChange: OniOS14LibrarySelectionChange = fail;
+
 type GetPhotos = ({ after, first }: { first: number; after?: string }) =>
   | Promise<{
       assets: Array<Omit<Asset, 'source'> & { source: 'picker' }>;
@@ -241,6 +244,7 @@ type Handlers = {
   getLocalAssetUri?: GetLocalAssetUri;
   getPhotos?: GetPhotos;
   NetInfo?: NetInfo;
+  oniOS14GalleryLibrarySelectionChange?: OniOS14LibrarySelectionChange;
   pickDocument?: PickDocument;
   saveFile?: SaveFile;
   SDK?: string;
@@ -278,6 +282,10 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 
   if (handlers.getPhotos) {
     getPhotos = handlers.getPhotos;
+  }
+
+  if (handlers.oniOS14GalleryLibrarySelectionChange) {
+    oniOS14GalleryLibrarySelectionChange = handlers.oniOS14GalleryLibrarySelectionChange;
   }
 
   if (handlers.pickDocument !== undefined) {
