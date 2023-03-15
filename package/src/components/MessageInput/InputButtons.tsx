@@ -12,6 +12,7 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   attachButtonContainer: { paddingRight: 10 },
+  micButtonContainer: { paddingRight: 10 },
 });
 
 export type InputButtonsProps<
@@ -28,8 +29,10 @@ export type InputButtonsWithContextProps<
   | 'hasCommands'
   | 'hasFilePicker'
   | 'hasImagePicker'
+  | 'MicButton'
   | 'MoreOptionsButton'
   | 'openCommandsPicker'
+  | 'openVoiceUI'
   | 'selectedPicker'
   | 'setShowMoreOptions'
   | 'showMoreOptions'
@@ -49,8 +52,10 @@ export const InputButtonsWithContext = <
     hasCommands,
     hasFilePicker,
     hasImagePicker,
+    MicButton,
     MoreOptionsButton,
     openCommandsPicker,
+    openVoiceUI,
     setShowMoreOptions,
     showMoreOptions,
     text,
@@ -59,7 +64,7 @@ export const InputButtonsWithContext = <
 
   const {
     theme: {
-      messageInput: { attachButtonContainer, commandsButtonContainer },
+      messageInput: { attachButtonContainer, commandsButtonContainer, micButtonContainer },
     },
   } = useTheme();
 
@@ -73,6 +78,9 @@ export const InputButtonsWithContext = <
     <MoreOptionsButton handleOnPress={() => setShowMoreOptions(true)} />
   ) : (
     <>
+      <View style={[styles.micButtonContainer, micButtonContainer]}>
+        <MicButton handleOnPress={openVoiceUI} />
+      </View>
       {(hasImagePicker || hasFilePicker) && ownCapabilities.uploadFile && (
         <View
           style={[hasCommands ? styles.attachButtonContainer : undefined, attachButtonContainer]}
@@ -88,6 +96,7 @@ export const InputButtonsWithContext = <
     </>
   );
 };
+
 const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: InputButtonsWithContextProps<StreamChatGenerics>,
   nextProps: InputButtonsWithContextProps<StreamChatGenerics>,
@@ -160,8 +169,10 @@ export const InputButtons = <
     hasCommands,
     hasFilePicker,
     hasImagePicker,
+    MicButton,
     MoreOptionsButton,
     openCommandsPicker,
+    openVoiceUI,
     selectedPicker,
     setShowMoreOptions,
     showMoreOptions,
@@ -178,8 +189,10 @@ export const InputButtons = <
         hasCommands,
         hasFilePicker,
         hasImagePicker,
+        MicButton,
         MoreOptionsButton,
         openCommandsPicker,
+        openVoiceUI,
         selectedPicker,
         setShowMoreOptions,
         showMoreOptions,

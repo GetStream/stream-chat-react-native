@@ -3,6 +3,7 @@ import { FlatList } from 'react-native';
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
 
 import {
+  Audio,
   compressImage,
   deleteFile,
   getLocalAssetUri,
@@ -19,6 +20,7 @@ import {
 } from './handlers';
 
 registerNativeHandlers({
+  Audio,
   compressImage,
   deleteFile,
   FlatList,

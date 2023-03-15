@@ -275,6 +275,7 @@ export type Theme = {
     };
     inputBox: TextStyle;
     inputBoxContainer: ViewStyle;
+    micButtonContainer: ViewStyle;
     moreOptionsButton: ViewStyle;
     optionsContainer: ViewStyle;
     replyContainer: ViewStyle;
@@ -777,6 +778,7 @@ export const defaultTheme: Theme = {
     },
     inputBox: {},
     inputBoxContainer: {},
+    micButtonContainer: {},
     moreOptionsButton: {},
     optionsContainer: {},
     replyContainer: {},

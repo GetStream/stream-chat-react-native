@@ -124,6 +124,8 @@ import { CooldownTimer as CooldownTimerDefault } from '../MessageInput/CooldownT
 import { FileUploadPreview as FileUploadPreviewDefault } from '../MessageInput/FileUploadPreview';
 import { ImageUploadPreview as ImageUploadPreviewDefault } from '../MessageInput/ImageUploadPreview';
 import { InputButtons as InputButtonsDefault } from '../MessageInput/InputButtons';
+import { MicButton as MicButtonDefault } from '../MessageInput/MicButton';
+import { MicInput as MicInputDefault } from '../MessageInput/MicInput';
 import { MoreOptionsButton as MoreOptionsButtonDefault } from '../MessageInput/MoreOptionsButton';
 import { SendButton as SendButtonDefault } from '../MessageInput/SendButton';
 import { SendMessageDisallowedIndicator as SendMessageDisallowedIndicatorDefault } from '../MessageInput/SendMessageDisallowedIndicator';
@@ -507,6 +509,8 @@ const ChannelWithContext = <
     MessageStatus = MessageStatusDefault,
     MessageSystem = MessageSystemDefault,
     MessageText,
+    MicButton = MicButtonDefault,
+    MicInput = MicInputDefault,
     MoreOptionsButton = MoreOptionsButtonDefault,
     myMessageTheme,
     newMessageStateUpdateThrottleInterval = defaultThrottleInterval,
@@ -1834,6 +1838,8 @@ const ChannelWithContext = <
     maxNumberOfFiles,
     mentionAllAppUsersEnabled,
     mentionAllAppUsersQuery,
+    MicButton,
+    MicInput,
     MoreOptionsButton,
     numberOfLines,
     onChangeText,

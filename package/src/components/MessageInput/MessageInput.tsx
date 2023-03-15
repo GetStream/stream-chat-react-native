@@ -106,6 +106,7 @@ type MessageInputPropsWithContext<
     | 'isValidMessage'
     | 'maxNumberOfFiles'
     | 'mentionedUsers'
+    | 'MicInput'
     | 'numberOfUploads'
     | 'quotedMessage'
     | 'resetInput'
@@ -114,7 +115,9 @@ type MessageInputPropsWithContext<
     | 'sendMessageAsync'
     | 'setShowMoreOptions'
     | 'setGiphyActive'
+    | 'setShowVoiceUI'
     | 'showMoreOptions'
+    | 'showVoiceUI'
     | 'ShowThreadMessageInChannelButton'
     | 'removeFile'
     | 'removeImage'
@@ -166,6 +169,7 @@ const MessageInputWithContext = <
     maxNumberOfFiles,
     members,
     mentionedUsers,
+    MicInput,
     numberOfUploads,
     quotedMessage,
     removeFile,
@@ -176,6 +180,7 @@ const MessageInputWithContext = <
     sending,
     sendMessageAsync,
     ShowThreadMessageInChannelButton,
+    showVoiceUI,
     suggestions,
     thread,
     threadList,
@@ -518,70 +523,77 @@ const MessageInputWithContext = <
       >
         {editing && <InputEditingStateHeader />}
         {quotedMessage && <InputReplyStateHeader />}
-        <View style={[styles.composerContainer, composerContainer]}>
-          {Input ? (
-            <Input
-              additionalTextInputProps={additionalTextInputContainerProps}
-              getUsers={getUsers}
-            />
-          ) : (
-            <>
-              <View style={[styles.optionsContainer, optionsContainer]}>
-                {InputButtons && <InputButtons />}
-              </View>
-              <View
-                style={[
-                  styles.inputBoxContainer,
-                  {
-                    borderColor: grey_whisper,
-                    paddingVertical: giphyActive ? 8 : 12,
-                  },
-                  inputBoxContainer,
-                ]}
-              >
-                {((typeof editing !== 'boolean' && editing?.quoted_message) || quotedMessage) && (
-                  <View style={[styles.replyContainer, replyContainer]}>
-                    <Reply />
-                  </View>
-                )}
-                {imageUploads.length ? <ImageUploadPreview /> : null}
-                {imageUploads.length && fileUploads.length ? (
-                  <View
-                    style={[
-                      styles.attachmentSeparator,
-                      {
-                        borderBottomColor: grey_whisper,
-                        marginHorizontal: giphyActive ? 8 : 12,
-                      },
-                    ]}
-                  />
-                ) : null}
-                {fileUploads.length ? <FileUploadPreview /> : null}
-                {giphyActive ? (
-                  <InputGiphySearch disabled={!isOnline} />
-                ) : (
-                  <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
-                    <AutoCompleteInput<StreamChatGenerics>
-                      additionalTextInputProps={additionalTextInputProps}
-                      cooldownActive={!!cooldownRemainingSeconds}
+        {showVoiceUI ? (
+          <MicInput />
+        ) : (
+          <View style={[styles.composerContainer, composerContainer]}>
+            {Input ? (
+              <Input
+                additionalTextInputProps={additionalTextInputContainerProps}
+                getUsers={getUsers}
+              />
+            ) : (
+              <>
+                <View style={[styles.optionsContainer, optionsContainer]}>
+                  {InputButtons && <InputButtons />}
+                </View>
+                <View
+                  style={[
+                    styles.inputBoxContainer,
+                    {
+                      borderColor: grey_whisper,
+                      paddingVertical: giphyActive ? 8 : 12,
+                    },
+                    inputBoxContainer,
+                  ]}
+                >
+                  {((typeof editing !== 'boolean' && editing?.quoted_message) || quotedMessage) && (
+                    <View style={[styles.replyContainer, replyContainer]}>
+                      <Reply />
+                    </View>
+                  )}
+                  {imageUploads.length ? <ImageUploadPreview /> : null}
+                  {imageUploads.length && fileUploads.length ? (
+                    <View
+                      style={[
+                        styles.attachmentSeparator,
+                        {
+                          borderBottomColor: grey_whisper,
+                          marginHorizontal: giphyActive ? 8 : 12,
+                        },
+                      ]}
                     />
-                  </View>
-                )}
-              </View>
-              <View style={[styles.sendButtonContainer, sendButtonContainer]}>
-                {cooldownRemainingSeconds ? (
-                  <CooldownTimer seconds={cooldownRemainingSeconds} />
-                ) : (
-                  <SendButton
-                    disabled={
-                      disabled || sending.current || !isValidMessage() || (giphyActive && !isOnline)
-                    }
-                  />
-                )}
-              </View>
-            </>
-          )}
-        </View>
+                  ) : null}
+                  {fileUploads.length ? <FileUploadPreview /> : null}
+                  {giphyActive ? (
+                    <InputGiphySearch disabled={!isOnline} />
+                  ) : (
+                    <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
+                      <AutoCompleteInput<StreamChatGenerics>
+                        additionalTextInputProps={additionalTextInputProps}
+                        cooldownActive={!!cooldownRemainingSeconds}
+                      />
+                    </View>
+                  )}
+                </View>
+                <View style={[styles.sendButtonContainer, sendButtonContainer]}>
+                  {cooldownRemainingSeconds ? (
+                    <CooldownTimer seconds={cooldownRemainingSeconds} />
+                  ) : (
+                    <SendButton
+                      disabled={
+                        disabled ||
+                        sending.current ||
+                        !isValidMessage() ||
+                        (giphyActive && !isOnline)
+                      }
+                    />
+                  )}
+                </View>
+              </>
+            )}
+          </View>
+        )}
         <ShowThreadMessageInChannelButton threadList={threadList} />
       </View>
 
@@ -640,6 +652,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     quotedMessage: prevQuotedMessage,
     sending: prevSending,
     showMoreOptions: prevShowMoreOptions,
+    showVoiceUI: prevShowVoiceUI,
     suggestions: prevSuggestions,
     t: prevT,
     thread: prevThread,
@@ -659,6 +672,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     quotedMessage: nextQuotedMessage,
     sending: nextSending,
     showMoreOptions: nextShowMoreOptions,
+    showVoiceUI: nextShowVoiceUI,
     suggestions: nextSuggestions,
     t: nextT,
     thread: nextThread,
@@ -698,6 +712,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const showMoreOptionsEqual = prevShowMoreOptions === nextShowMoreOptions;
   if (!showMoreOptionsEqual) return false;
+
+  const showVoiceUIEqual = prevShowVoiceUI === nextShowVoiceUI;
+  if (!showVoiceUIEqual) return false;
 
   const isOnlineEqual = prevIsOnline === nextIsOnline;
   if (!isOnlineEqual) return false;
@@ -789,6 +806,7 @@ export const MessageInput = <
     isValidMessage,
     maxNumberOfFiles,
     mentionedUsers,
+    MicInput,
     numberOfUploads,
     quotedMessage,
     removeFile,
@@ -800,8 +818,10 @@ export const MessageInput = <
     SendMessageDisallowedIndicator,
     setGiphyActive,
     setShowMoreOptions,
+    setShowVoiceUI,
     showMoreOptions,
     ShowThreadMessageInChannelButton,
+    showVoiceUI,
     uploadNewFile,
     uploadNewImage,
   } = useMessageInputContext<StreamChatGenerics>();
@@ -856,6 +876,7 @@ export const MessageInput = <
         maxNumberOfFiles,
         members,
         mentionedUsers,
+        MicInput,
         numberOfUploads,
         quotedMessage,
         removeFile,
@@ -867,8 +888,10 @@ export const MessageInput = <
         sendMessageAsync,
         setGiphyActive,
         setShowMoreOptions,
+        setShowVoiceUI,
         showMoreOptions,
         ShowThreadMessageInChannelButton,
+        showVoiceUI,
         suggestions,
         t,
         thread,

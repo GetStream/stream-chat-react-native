@@ -32,6 +32,8 @@ import { useCooldown } from '../../components/MessageInput/hooks/useCooldown';
 import type { ImageUploadPreviewProps } from '../../components/MessageInput/ImageUploadPreview';
 import type { InputButtonsProps } from '../../components/MessageInput/InputButtons';
 import type { MessageInputProps } from '../../components/MessageInput/MessageInput';
+import type { MicButtonProps } from '../../components/MessageInput/MicButton';
+import type { MicInputProps } from '../../components/MessageInput/MicInput';
 import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreOptionsButton';
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
@@ -156,6 +158,7 @@ export type LocalMessageInputContext<
   openCommandsPicker: () => void;
   openFilePicker: () => void;
   openMentionsPicker: () => void;
+  openVoiceUI: () => void;
   pickFile: () => Promise<void>;
   /**
    * Function for removing a file from the upload preview
@@ -195,8 +198,10 @@ export type LocalMessageInputContext<
   setNumberOfUploads: React.Dispatch<React.SetStateAction<number>>;
   setSendThreadMessageInChannel: React.Dispatch<React.SetStateAction<boolean>>;
   setShowMoreOptions: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowVoiceUI: React.Dispatch<React.SetStateAction<boolean>>;
   setText: React.Dispatch<React.SetStateAction<string>>;
   showMoreOptions: boolean;
+  showVoiceUI: boolean;
   /**
    * Text value of the TextInput
    */
@@ -266,6 +271,18 @@ export type InputMessageInputContextValue<
   InputReplyStateHeader: React.ComponentType<InputReplyStateHeaderProps<StreamChatGenerics>>;
   /** Limit on allowed number of files to attach at a time. */
   maxNumberOfFiles: number;
+  /**
+   * Custom UI component for mic button.
+   *
+   * Defaults to and accepts same props as: [MicButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/mic-button/)
+   */
+  MicButton: React.ComponentType<MicButtonProps<StreamChatGenerics>>;
+  /**
+   * Custom UI component for mic input.
+   *
+   * Defaults to and accepts same props as: [MicInput](https://getstream.io/chat/docs/sdk/reactnative/ui-components/mic-input/)
+   */
+  MicInput: React.ComponentType<MicInputProps<StreamChatGenerics>>;
   /**
    * Custom UI component for more options button.
    *
@@ -465,8 +482,10 @@ export const MessageInputProvider = <
     setMentionedUsers,
     setNumberOfUploads,
     setShowMoreOptions,
+    setShowVoiceUI,
     setText,
     showMoreOptions,
+    showVoiceUI,
     text,
   } = useMessageDetailsForState<StreamChatGenerics>(editing, initialValue);
   const { endsAt: cooldownEndsAt, start: startCooldown } = useCooldown<StreamChatGenerics>();
@@ -533,6 +552,10 @@ export const MessageInputProvider = <
     if (inputBoxRef.current) {
       inputBoxRef.current.focus();
     }
+  };
+
+  const openVoiceUI = () => {
+    setShowVoiceUI(true);
   };
 
   const openMentionsPicker = () => {
@@ -628,6 +651,7 @@ export const MessageInputProvider = <
     setFileUploads([]);
     setGiphyActive(false);
     setShowMoreOptions(true);
+    setShowVoiceUI(false);
     setImageUploads([]);
     setMentionedUsers([]);
     setNumberOfUploads(
@@ -1140,6 +1164,7 @@ export const MessageInputProvider = <
     openCommandsPicker,
     openFilePicker: pickFile,
     openMentionsPicker,
+    openVoiceUI,
     pickFile,
     removeFile,
     removeImage,
@@ -1158,8 +1183,10 @@ export const MessageInputProvider = <
     setNumberOfUploads,
     setSendThreadMessageInChannel,
     setShowMoreOptions,
+    setShowVoiceUI,
     setText,
     showMoreOptions,
+    showVoiceUI,
     text,
     thread,
     toggleAttachmentPicker,

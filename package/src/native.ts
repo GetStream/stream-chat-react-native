@@ -164,6 +164,30 @@ export type SoundType = {
   Player: React.ComponentType<SoundReturnType> | null;
 };
 
+type RecordingStatus = {
+  canRecord: boolean;
+  durationMillis: number;
+  isDoneRecording: boolean;
+  isRecording: boolean;
+  mediaServicesDidReset?: boolean;
+  metering?: number;
+  uri?: string | null;
+};
+
+export type AudioReturnType = {
+  getStatusAsync: () => Promise<RecordingStatus>;
+  getURI: () => string | null;
+  pauseAsync: () => Promise<RecordingStatus>;
+  stopAndUnloadAsync: () => Promise<RecordingStatus>;
+};
+
+export type AudioType = {
+  startRecording: () => Promise<AudioReturnType>;
+  stopRecording: () => Promise<void>;
+};
+
+export let Audio: AudioType;
+
 export let Sound: SoundType;
 
 export type VideoProgressData = {
@@ -210,6 +234,7 @@ export type VideoType = {
 export let Video: React.ComponentType<VideoType>;
 
 type Handlers = {
+  Audio?: AudioType;
   compressImage?: CompressImage;
   deleteFile?: DeleteFile;
   FlatList?: typeof DefaultFlatList;
@@ -228,6 +253,10 @@ type Handlers = {
 };
 
 export const registerNativeHandlers = (handlers: Handlers) => {
+  if (handlers.Audio) {
+    Audio = handlers.Audio;
+  }
+
   if (handlers.compressImage) {
     compressImage = handlers.compressImage;
   }

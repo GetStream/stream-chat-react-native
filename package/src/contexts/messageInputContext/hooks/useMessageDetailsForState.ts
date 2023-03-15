@@ -22,6 +22,8 @@ export const useMessageDetailsForState = <
   const [mentionedUsers, setMentionedUsers] = useState<string[]>([]);
   const [numberOfUploads, setNumberOfUploads] = useState(0);
   const [showMoreOptions, setShowMoreOptions] = useState(true);
+  const [showVoiceUI, setShowVoiceUI] = useState(false);
+
   const initialTextValue = initialValue || '';
   const [text, setText] = useState(initialTextValue);
 
@@ -108,8 +110,10 @@ export const useMessageDetailsForState = <
     setMentionedUsers,
     setNumberOfUploads,
     setShowMoreOptions,
+    setShowVoiceUI,
     setText,
     showMoreOptions,
+    showVoiceUI,
     text,
   };
 };

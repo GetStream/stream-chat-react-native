@@ -112,6 +112,8 @@ export * from '../utils/removeReservedFields';
 
 export * from './MessageInput/AttachButton';
 export * from './MessageInput/CommandsButton';
+export * from './MessageInput/MicButton';
+export * from './MessageInput/MicInput';
 export * from './MessageInput/CooldownTimer';
 export * from './MessageInput/FileUploadPreview';
 export * from './MessageInput/ImageUploadPreview';
