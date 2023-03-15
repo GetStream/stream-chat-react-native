@@ -1,4 +1,4 @@
-import { default as OriginalNetInfo, NetInfoState } from '@react-native-community/netinfo';
+import { NetInfoState, default as OriginalNetInfo } from '@react-native-community/netinfo';
 
 export const NetInfo = {
   addEventListener(listener) {

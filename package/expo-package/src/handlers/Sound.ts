@@ -1,5 +1,6 @@
-import { AudioComponent } from '../optionalDependencies/Video';
 import type { AVPlaybackSource, AVPlaybackStatus, AVPlaybackStatusToSet } from 'expo-av';
+
+import { AudioComponent } from '../optionalDependencies/Video';
 
 export const Sound = {
   initializeSound: AudioComponent

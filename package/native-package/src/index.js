@@ -10,15 +10,18 @@ import {
   getPhotos,
   NetInfo,
   oniOS14GalleryLibrarySelectionChange,
-  pickDocument,
   saveFile,
-  setClipboardString,
-  shareImage,
   Sound,
   takePhoto,
-  triggerHaptic,
   Video,
 } from './handlers';
+
+import {
+  pickDocument,
+  setClipboardString,
+  shareImage,
+  triggerHaptic,
+} from './optionalDependencies';
 
 registerNativeHandlers({
   compressImage,
@@ -30,8 +33,8 @@ registerNativeHandlers({
   oniOS14GalleryLibrarySelectionChange,
   pickDocument,
   saveFile,
-  setClipboardString,
   SDK: 'stream-chat-react-native',
+  setClipboardString,
   shareImage,
   Sound,
   takePhoto,
