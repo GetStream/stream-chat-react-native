@@ -9,8 +9,6 @@ import {
   ViewToken,
 } from 'react-native';
 
-import type { Channel as StreamChannel } from 'stream-chat';
-
 import {
   isMessageWithStylesReadByAndDateSeparator,
   MessageType,
@@ -360,18 +358,9 @@ const MessageListWithContext = <
   const [stickyHeaderDate, setStickyHeaderDate] = useState<Date | undefined>();
   const stickyHeaderDateRef = useRef<Date | undefined>();
 
-  const isUnreadMessageRef = useRef(
-    (
-      message: MessageType<StreamChatGenerics> | undefined,
-      lastRead?: ReturnType<StreamChannel<StreamChatGenerics>['lastRead']>,
-    ) => message && lastRead && message.created_at && lastRead < message.created_at,
-  );
-
-  const channelLastReadRef = useRef(channel?.initialized ? channel.lastRead() : undefined);
-
-  useEffect(() => {
-    channelLastReadRef.current = channel?.initialized ? channel.lastRead() : undefined;
-  }, [channel]);
+  // ref for channel to use in useEffect without triggering it on channel change
+  const channelRef = useRef(channel);
+  channelRef.current = channel;
 
   const updateStickyHeaderDateIfNeeded = (viewableItems: ViewToken[]) => {
     if (viewableItems.length) {
@@ -540,13 +529,23 @@ const MessageListWithContext = <
     if (!channel || (!channel.initialized && !channel.offlineMode)) return null;
 
     const lastRead = channel.lastRead();
+    const countUnread = channel.countUnread();
 
-    const lastMessage = messageList?.[index + 1];
+    function isMessageUnread(messageArrayIndex: number): boolean {
+      if (lastRead && message.created_at) {
+        return lastRead < message.created_at;
+      } else {
+        const isLatestMessageSetShown = !!channel.state.messageSets.find(
+          (set) => set.isCurrent && set.isLatest,
+        );
+        return isLatestMessageSetShown && messageArrayIndex <= countUnread - 1;
+      }
+    }
+    const isCurrentMessageUnread = isMessageUnread(index);
+    const isLastMessageUnread = isMessageUnread(index + 1);
 
-    const showUnreadUnderlay =
-      !!isUnreadMessageRef.current(message, lastRead) && scrollToBottomButtonVisible;
-    const insertInlineUnreadIndicator =
-      showUnreadUnderlay && !isUnreadMessageRef.current(lastMessage, lastRead);
+    const showUnreadUnderlay = isCurrentMessageUnread && scrollToBottomButtonVisible;
+    const insertInlineUnreadIndicator = showUnreadUnderlay && !isLastMessageUnread;
 
     if (message.type === 'system') {
       return (
@@ -834,13 +833,15 @@ const MessageListWithContext = <
     scrollToDebounceTimeoutRef.current = setTimeout(() => {
       // goToMessage method might have requested to scroll to a message
       let messageIdToScroll: string | undefined = messageIdToScrollToRef.current;
-      if (!initialScrollSet.current && initialScrollToFirstUnreadMessage) {
+      const countUnread = channelRef.current?.countUnread();
+      if (
+        !initialScrollSet.current &&
+        initialScrollToFirstUnreadMessage &&
+        countUnread > scrollToFirstUnreadThreshold
+      ) {
         // find the first unread message, if we have to initially scroll to an unread message
-        for (let index = messageList.length - 1; index >= 0; index--) {
-          if (isUnreadMessageRef.current(messageList[index], channelLastReadRef.current)) {
-            messageIdToScroll = messageList[index].id;
-            break;
-          }
+        if (messageList.length >= countUnread) {
+          messageIdToScroll = messageList[countUnread - 1].id;
         }
       } else if (targetedMessage && messageIdLastScrolledToRef.current !== targetedMessage) {
         // if some messageId was targeted but not scrolledTo yet
@@ -868,7 +869,7 @@ const MessageListWithContext = <
         }
       }
     }, 150);
-  }, [messageList, targetedMessage, initialScrollToFirstUnreadMessage]);
+  }, [channel.initialized, messageList, targetedMessage, initialScrollToFirstUnreadMessage]);
 
   const messagesWithImages =
     legacyImageViewerSwipeBehaviour &&

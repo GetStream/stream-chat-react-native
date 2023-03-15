@@ -327,7 +327,10 @@ export const ListOutput = ({ node, output, state, styles }: ListOutputProps) => 
         if (item === null) {
           return (
             <ListRow key={index} style={styles?.listRow} testID='list-item'>
-              <Bullet index={node.ordered && indexAfterStart} />
+              <Bullet
+                index={node.ordered && indexAfterStart}
+                style={node.ordered ? styles?.listItemNumber : styles?.listItemBullet}
+              />
             </ListRow>
           );
         }
@@ -338,7 +341,10 @@ export const ListOutput = ({ node, output, state, styles }: ListOutputProps) => 
 
         return (
           <ListRow key={index} style={styles?.listRow} testID='list-item'>
-            <Bullet index={node.ordered && indexAfterStart} />
+            <Bullet
+              index={node.ordered && indexAfterStart}
+              style={node.ordered ? styles?.listItemNumber : styles?.listItemBullet}
+            />
             <ListItem key={1} style={[styles?.listItemText, style]}>
               {output(item, state)}
             </ListItem>
@@ -354,13 +360,13 @@ interface BulletProps extends TextProps {
 }
 
 const Bullet = ({ index, style }: BulletProps) => (
-  <Text key={0} style={[style, defaultMarkdownStyles.listItemNumber]}>
+  <Text key={0} style={style}>
     {index ? `${index}. ` : '\u2022 '}
   </Text>
 );
 
-const ListRow = (props: PropsWithChildren<ViewProps>) => (
-  <Text style={[props.style, defaultMarkdownStyles.listRow]}>{props.children}</Text>
+const ListRow = ({ children, style }: PropsWithChildren<ViewProps>) => (
+  <Text style={style}>{children}</Text>
 );
 
 const ListItem = ({ children, style }: PropsWithChildren<TextProps>) => (

@@ -6,18 +6,21 @@ import { registerNativeHandlers } from 'stream-chat-react-native-core';
 import {
   compressImage,
   deleteFile,
-  NetInfo,
   getLocalAssetUri,
   getPhotos,
-  pickDocument,
+  NetInfo,
   saveFile,
-  setClipboardString,
-  shareImage,
   Sound,
   takePhoto,
-  triggerHaptic,
   Video,
 } from './handlers';
+
+import {
+  pickDocument,
+  setClipboardString,
+  shareImage,
+  triggerHaptic,
+} from './optionalDependencies';
 
 registerNativeHandlers({
   compressImage,
@@ -28,8 +31,8 @@ registerNativeHandlers({
   NetInfo,
   pickDocument,
   saveFile,
-  setClipboardString,
   SDK: 'stream-chat-react-native',
+  setClipboardString,
   shareImage,
   Sound,
   takePhoto,
