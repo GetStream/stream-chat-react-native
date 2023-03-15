@@ -693,7 +693,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 1c34fea1868136ecde647bc11fae9266d4143693
   React-logger: e9f407f9fdf3f3ce7749ae6f88affe63e8446019
   react-native-cameraroll: cb752fda6d5268f1646b4390bd5be1f27706b9a0
-  react-native-document-picker: 1a7518132d4a06b67f459be9bb1464a567d2b3b4
+  react-native-document-picker: 958e2bc82e128be69055be261aeac8d872c8d34c
   react-native-flipper: bbe3c862a02dab5e0f71b639855a180b699a590a
   react-native-image-resizer: d9fb629a867335bdc13230ac2a58702bb8c8828f
   react-native-netinfo: 129bd99f607a2dc5bb096168f3e5c150fd1f1c95
@@ -719,7 +719,7 @@ SPEC CHECKSUMS:
   RNReactNativeHapticFeedback: 1e3efeca9628ff9876ee7cdd9edec1b336913f8c
   RNReanimated: 6668b0587bebd4b15dd849b99e5a9c70fc12ed95
   RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
-  RNShare: a5dc3b9c53ddc73e155b8cd9a94c70c91913c43c
+  RNShare: b089c33619bbfb0a32bc4069c858b9274e694187
   RNSVG: d7d7bc8229af3842c9cfc3a723c815a52cdd1105
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
