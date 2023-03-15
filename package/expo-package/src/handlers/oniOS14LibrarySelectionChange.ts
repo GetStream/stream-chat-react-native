@@ -4,7 +4,9 @@ import * as MediaLibrary from 'expo-media-library';
 
 const isAboveIOS14 = Platform.OS === 'ios' && parseInt(Platform.Version as string, 10) >= 14;
 
-export function oniOS14LibrarySelectionChange(callback: () => void): { unsubscribe: () => void } {
+export function oniOS14GalleryLibrarySelectionChange(callback: () => void): {
+  unsubscribe: () => void;
+} {
   if (isAboveIOS14) {
     const subscription = MediaLibrary.addListener(callback);
     return {

@@ -31,7 +31,7 @@ type GetLocalAssetUri = (uriOrAssetId: string) => Promise<string> | never;
 export let getLocalAssetUri: GetLocalAssetUri = fail;
 
 type OniOS14LibrarySelectionChange = (callback: () => void) => { unsubscribe: () => void };
-export let oniOS14LibrarySelectionChange: OniOS14LibrarySelectionChange = fail;
+export let oniOS14GalleryLibrarySelectionChange: OniOS14LibrarySelectionChange = fail;
 
 type GetPhotos = ({ after, first }: { first: number; after?: string }) =>
   | Promise<{
@@ -219,7 +219,7 @@ type Handlers = {
   getLocalAssetUri?: GetLocalAssetUri;
   getPhotos?: GetPhotos;
   NetInfo?: NetInfo;
-  oniOS14LibrarySelectionChange?: OniOS14LibrarySelectionChange;
+  oniOS14GalleryLibrarySelectionChange?: OniOS14LibrarySelectionChange;
   pickDocument?: PickDocument;
   saveFile?: SaveFile;
   SDK?: string;
@@ -255,8 +255,8 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     getPhotos = handlers.getPhotos;
   }
 
-  if (handlers.oniOS14LibrarySelectionChange) {
-    oniOS14LibrarySelectionChange = handlers.oniOS14LibrarySelectionChange;
+  if (handlers.oniOS14GalleryLibrarySelectionChange) {
+    oniOS14GalleryLibrarySelectionChange = handlers.oniOS14GalleryLibrarySelectionChange;
   }
 
   if (handlers.pickDocument !== undefined) {

@@ -11,4 +11,4 @@ export * from './takePhoto';
 export * from './triggerHaptic';
 export * from './Sound';
 export * from './Video';
-export * from './oniOS14LibrarySelectionChange';
+export * from './oniOS14GalleryLibrarySelectionChange';

@@ -28,7 +28,7 @@ registerNativeHandlers({
         netInfoFetch();
       }),
   },
-  oniOS14LibrarySelectionChange: () => ({
+  oniOS14GalleryLibrarySelectionChange: () => ({
     unsubscribe: () => {},
   }),
   pickDocument: () => null,

@@ -11,7 +11,7 @@ import { renderAttachmentPickerItem } from './components/AttachmentPickerItem';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { getPhotos, oniOS14LibrarySelectionChange } from '../../native';
+import { getPhotos, oniOS14GalleryLibrarySelectionChange } from '../../native';
 import type { Asset } from '../../types/types';
 import { vh } from '../../utils/utils';
 
@@ -131,7 +131,7 @@ export const AttachmentPicker = React.forwardRef(
     useEffect(() => {
       if (selectedPicker !== 'images') return;
       // ios 14 library selection change event is fired when user reselects the images that are permitted to be readable by the app
-      const { unsubscribe } = oniOS14LibrarySelectionChange(() => {
+      const { unsubscribe } = oniOS14GalleryLibrarySelectionChange(() => {
         // we reset the cursor and has next page to true to facilitate fetching of the first page of photos again
         hasNextPageRef.current = true;
         endCursorRef.current = undefined;
