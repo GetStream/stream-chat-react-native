@@ -483,11 +483,11 @@ const GalleryImageThumbnail = <
     >
       {isLoadingImageError ? (
         <>
+          <ImageLoadingFailedIndicator style={styles.imageLoadingErrorIndicatorStyle} />
           <ImageReloadIndicator
             onReloadImage={onReloadImage}
             style={styles.imageReloadContainerStyle}
           />
-          <ImageLoadingFailedIndicator style={styles.imageLoadingErrorIndicatorStyle} />
         </>
       ) : (
         <>
