@@ -640,9 +640,10 @@ const ChannelWithContext = <
   }, [threadPropsExists]);
 
   const handleAppBackground = useCallback(() => {
-    type ChannelDataType = Extract<typeof channel.data, { own_capabilities?: string[] }>;
-    const channelDefaultCapabilties = (channel?.data as ChannelDataType)?.own_capabilities;
-    if (channel && channelDefaultCapabilties?.includes('send-typing-events')) {
+    const channelDefaultCapabilties = channel.data as
+      | Extract<typeof channel.data, { own_capabilities: string[] }>
+      | undefined;
+    if (channel && channelDefaultCapabilties?.own_capabilities?.includes('send-typing-events')) {
       channel.sendEvent({
         parent_id: thread?.id,
         type: 'typing.stop',
