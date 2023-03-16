@@ -49,6 +49,7 @@ import {
 import {
   OwnCapabilitiesContextValue,
   OwnCapabilitiesProvider,
+  useOwnCapabilitiesContext,
 } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import {
   PaginatedMessageListContextValue,
@@ -577,6 +578,7 @@ const ChannelWithContext = <
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
 
   const [syncingChannel, setSyncingChannel] = useState(false);
+  const ownCapabilities = useOwnCapabilitiesContext();
 
   /**
    * Flag to track if we know for sure that there are no more recent messages to load.
@@ -640,7 +642,7 @@ const ChannelWithContext = <
   }, [threadPropsExists]);
 
   const handleAppBackground = useCallback(() => {
-    if (channel) {
+    if (channel && ownCapabilities.sendTypingEvents) {
       channel.sendEvent({
         parent_id: thread?.id,
         type: 'typing.stop',
