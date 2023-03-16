@@ -167,7 +167,7 @@ export type SoundType = {
   Player: React.ComponentType<SoundReturnType> | null;
 };
 
-type RecordingStatus = {
+export type RecordingStatus = {
   canRecord: boolean;
   durationMillis: number;
   isDoneRecording: boolean;
@@ -185,8 +185,10 @@ export type AudioReturnType = {
 };
 
 export type AudioType = {
-  startRecording: () => Promise<AudioReturnType>;
-  stopRecording: () => Promise<void>;
+  startRecording: (
+    onRecordingStatusUpdate?: (recordingStatus: RecordingStatus) => void,
+  ) => Promise<AudioReturnType> | Promise<string>;
+  stopRecording: () => Promise<void> | Promise<string>;
 };
 
 export let Audio: AudioType;

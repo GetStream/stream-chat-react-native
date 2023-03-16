@@ -17,6 +17,7 @@ import {
 } from './handlers';
 
 import {
+  Audio,
   pickDocument,
   setClipboardString,
   shareImage,
@@ -24,6 +25,7 @@ import {
 } from './optionalDependencies';
 
 registerNativeHandlers({
+  Audio,
   compressImage,
   deleteFile,
   FlatList,

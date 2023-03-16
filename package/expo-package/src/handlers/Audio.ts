@@ -1,7 +1,7 @@
 import { AudioComponent } from '../optionalDependencies/Video';
 
 export const Audio = {
-  startRecording: async () => {
+  startRecording: async (onRecordingStatusUpdate) => {
     try {
       console.log('Requesting permissions..');
       await AudioComponent.requestPermissionsAsync();
@@ -12,6 +12,7 @@ export const Audio = {
       console.log('Starting recording..');
       const { recording } = await AudioComponent.Recording.createAsync(
         AudioComponent.RecordingOptionsPresets.HIGH_QUALITY,
+        onRecordingStatusUpdate,
       );
       return recording;
     } catch (error) {

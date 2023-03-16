@@ -59,5 +59,8 @@
 		<string>$(PRODUCT_NAME) would like to save photos to your photo gallery</string>
 		<key>NSMicrophoneUsageDescription</key>
 		<string>$(PRODUCT_NAME) would like to use your microphone (for videos)</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>Give $(PRODUCT_NAME) permission to use your microphone. Your record wont be shared
+			without your permission.</string>
 	</dict>
 </plist>

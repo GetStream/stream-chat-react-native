@@ -24,7 +24,8 @@
     "react-native-haptic-feedback": ">=1.11.0",
     "react-native-image-crop-picker": ">=0.33.2",
     "react-native-image-resizer": ">=1.4.2",
-    "react-native-share": ">=4.1.0"
+    "react-native-share": ">=4.1.0",
+    "react-native-audio-recorder-player": ">=3.5.3"
   },
   "peerDependenciesMeta": {
     "@react-native-clipboard/clipboard": {
@@ -37,6 +38,9 @@
       "optional": true
     },
     "react-native-haptic-feedback": {
+      "optional": true
+    },
+    "react-native-audio-recorder-player": {
       "optional": true
     }
   },
