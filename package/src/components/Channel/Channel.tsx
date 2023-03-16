@@ -637,7 +637,7 @@ const ChannelWithContext = <
     } else {
       setThread(null);
     }
-  }, [threadPropsExists]);
+  }, [threadPropsExists, shouldSyncChannel]);
 
   const handleAppBackground = useCallback(() => {
     if (channel) {
@@ -736,6 +736,7 @@ const ChannelWithContext = <
     ),
   ).current;
 
+  // subscribe to specific channel events
   useEffect(() => {
     const channelSubscriptions: Array<ReturnType<ChannelType['on']>> = [];
     if (channel && shouldSyncChannel) {
@@ -749,6 +750,7 @@ const ChannelWithContext = <
     };
   }, [channelId, shouldSyncChannel]);
 
+  // subscribe to the generic all channel event
   useEffect(() => {
     const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
       if (shouldSyncChannel) {
@@ -763,6 +765,7 @@ const ChannelWithContext = <
           setThread(updatedThread);
         }
 
+        // only update channel state if the events are not the previously subscribed useEffect's subscription events
         if (
           channel &&
           event.type !== 'message.new' &&
@@ -778,6 +781,7 @@ const ChannelWithContext = <
     return unsubscribe;
   }, [channelId, thread?.id, shouldSyncChannel]);
 
+  // subscribe to channel.deleted event
   useEffect(() => {
     const { unsubscribe } = client.on('channel.deleted', (event) => {
       if (event.cid === channel?.cid) {
@@ -1039,10 +1043,14 @@ const ChannelWithContext = <
     setSyncingChannel(false);
   };
 
+  // resync channel is added to ref so that it can be used in useEffect without adding it as a dependency
+  const resyncChannelRef = useRef(resyncChannel);
+  resyncChannelRef.current = resyncChannel;
+
   useEffect(() => {
     const connectionChangedHandler = () => {
       if (shouldSyncChannel) {
-        resyncChannel();
+        resyncChannelRef.current();
       }
     };
     let connectionChangedSubscription: ReturnType<ChannelType['on']>;
@@ -1059,8 +1067,7 @@ const ChannelWithContext = <
     return () => {
       connectionChangedSubscription.unsubscribe();
     };
-    // TODO:  FIXME - resyncChannel changes on every render, so this effect will run on every render
-  }, [enableOfflineSupport, shouldSyncChannel, resyncChannel]);
+  }, [enableOfflineSupport, shouldSyncChannel]);
 
   const reloadChannel = () =>
     channelQueryCallRef.current(async () => {
