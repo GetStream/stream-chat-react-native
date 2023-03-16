@@ -4,6 +4,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { Attachment } from 'stream-chat';
 
 import { GalleryImage } from './GalleryImage';
+import { ImageReloadIndicator } from './ImageReloadIndicator';
 import { buildGallery } from './utils/buildGallery/buildGallery';
 
 import type { Thumbnail } from './utils/buildGallery/types';
@@ -66,6 +67,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
+  },
+  imageReloadContainerStyle: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   moreImagesContainer: {
     alignItems: 'center',
@@ -452,8 +458,13 @@ const GalleryImageThumbnail = <
   GalleryThumbnailProps<StreamChatGenerics>,
   'ImageLoadingFailedIndicator' | 'ImageLoadingIndicator' | 'thumbnail' | 'borderRadius'
 >) => {
-  const { isLoadingImage, isLoadingImageError, setLoadingImage, setLoadingImageError } =
-    useLoadingImage();
+  const {
+    isLoadingImage,
+    isLoadingImageError,
+    onReloadImage,
+    setLoadingImage,
+    setLoadingImageError,
+  } = useLoadingImage();
 
   const {
     theme: {
@@ -471,11 +482,17 @@ const GalleryImageThumbnail = <
       }}
     >
       {isLoadingImageError ? (
-        <ImageLoadingFailedIndicator style={[styles.imageLoadingErrorIndicatorStyle]} />
+        <>
+          <ImageLoadingFailedIndicator style={styles.imageLoadingErrorIndicatorStyle} />
+          <ImageReloadIndicator
+            onReloadImage={onReloadImage}
+            style={styles.imageReloadContainerStyle}
+          />
+        </>
       ) : (
         <>
           <GalleryImage
-            onError={(error) => {
+            onError={({ nativeEvent: { error } }) => {
               console.warn(error);
               setLoadingImage(false);
               setLoadingImageError(true);
@@ -494,7 +511,7 @@ const GalleryImageThumbnail = <
             uri={thumbnail.url}
           />
           {isLoadingImage && (
-            <View style={[styles.imageLoadingIndicatorContainer]}>
+            <View style={styles.imageLoadingIndicatorContainer}>
               <ImageLoadingIndicator style={styles.imageLoadingIndicatorStyle} />
             </View>
           )}
