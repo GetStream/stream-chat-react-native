@@ -1012,6 +1012,17 @@ const MessageListWithContext = <
     return null;
   };
 
+  // We need to omit the style related props from the additionalFlatListProps and add them directly instead of spreading
+  let additionalFlatListPropsExcludingStyle:
+    | Omit<NonNullable<typeof additionalFlatListProps>, 'style' | 'contentContainerStyle'>
+    | undefined;
+
+  if (additionalFlatListProps) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { contentContainerStyle, style, ...rest } = additionalFlatListProps;
+    additionalFlatListPropsExcludingStyle = rest;
+  }
+
   return (
     <View
       style={[styles.container, { backgroundColor: white_snow }, container]}
@@ -1021,7 +1032,11 @@ const MessageListWithContext = <
         CellRendererComponent={
           shouldApplyAndroidWorkaround ? InvertedCellRendererComponent : undefined
         }
-        contentContainerStyle={[styles.contentContainer, contentContainer]}
+        contentContainerStyle={[
+          styles.contentContainer,
+          additionalFlatListProps?.contentContainerStyle,
+          contentContainer,
+        ]}
         data={messageList}
         /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
         extraData={disabled || !hasNoMoreRecentMessagesToLoad}
@@ -1049,11 +1064,12 @@ const MessageListWithContext = <
         style={[
           styles.listContainer,
           listContainer,
+          additionalFlatListProps?.style,
           shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined,
         ]}
         testID='message-flat-list'
         viewabilityConfig={flatListViewabilityConfig}
-        {...additionalFlatListProps}
+        {...additionalFlatListPropsExcludingStyle}
       />
       {!loading && (
         <>
