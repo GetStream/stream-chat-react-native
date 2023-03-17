@@ -38,7 +38,7 @@ import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreO
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
-import { compressImage, getLocalAssetUri, pickDocument } from '../../native';
+import { AudioReturnType, compressImage, getLocalAssetUri, pickDocument } from '../../native';
 import type { Asset, DefaultStreamChatGenerics, File, UnknownType } from '../../types/types';
 import { removeReservedFields } from '../../utils/removeReservedFields';
 import {
@@ -160,6 +160,7 @@ export type LocalMessageInputContext<
   openMentionsPicker: () => void;
   openVoiceUI: () => void;
   pickFile: () => Promise<void>;
+  recording: AudioReturnType | string | undefined;
   /**
    * Function for removing a file from the upload preview
    *
@@ -196,6 +197,7 @@ export type LocalMessageInputContext<
   setInputBoxRef: (ref: TextInput | null) => void;
   setMentionedUsers: React.Dispatch<React.SetStateAction<string[]>>;
   setNumberOfUploads: React.Dispatch<React.SetStateAction<number>>;
+  setRecording: React.Dispatch<React.SetStateAction<AudioReturnType | string | undefined>>;
   setSendThreadMessageInChannel: React.Dispatch<React.SetStateAction<boolean>>;
   setShowMoreOptions: React.Dispatch<React.SetStateAction<boolean>>;
   setShowVoiceUI: React.Dispatch<React.SetStateAction<boolean>>;
@@ -477,10 +479,12 @@ export const MessageInputProvider = <
     imageUploads,
     mentionedUsers,
     numberOfUploads,
+    recording,
     setFileUploads,
     setImageUploads,
     setMentionedUsers,
     setNumberOfUploads,
+    setRecording,
     setShowMoreOptions,
     setShowVoiceUI,
     setText,
@@ -1166,6 +1170,7 @@ export const MessageInputProvider = <
     openMentionsPicker,
     openVoiceUI,
     pickFile,
+    recording,
     removeFile,
     removeImage,
     resetInput,
@@ -1181,6 +1186,7 @@ export const MessageInputProvider = <
     setInputBoxRef,
     setMentionedUsers,
     setNumberOfUploads,
+    setRecording,
     setSendThreadMessageInChannel,
     setShowMoreOptions,
     setShowVoiceUI,
