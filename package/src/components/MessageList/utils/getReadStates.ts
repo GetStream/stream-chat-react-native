@@ -6,7 +6,7 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
 export const getReadStates = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  _clientUserId: string | undefined,
+  clientUserId: string | undefined,
   messages:
     | PaginatedMessageListContextValue<StreamChatGenerics>['messages']
     | ThreadContextValue<StreamChatGenerics>['threadMessages'],
@@ -26,7 +26,7 @@ export const getReadStates = <
      * Channel read state is stored by user and we only care about users who aren't the client
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { _clientUserId: ignore, ...filteredRead } = read;
+    const { [clientUserId ?? '']: _ignore, ...filteredRead } = read;
     const members = Object.values(filteredRead);
 
     /**
