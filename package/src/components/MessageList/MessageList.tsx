@@ -839,6 +839,12 @@ const MessageListWithContext = <
    */
   useEffect(() => {
     scrollToDebounceTimeoutRef.current = setTimeout(() => {
+      if (initialScrollToFirstUnreadMessage) {
+        initialScrollSettingTimeoutRef.current = setTimeout(() => {
+          // small timeout to ensure that handleScroll is called after scrollToIndex to set this flag
+          setInitialScrollDone(true);
+        }, 500);
+      }
       // goToMessage method might have requested to scroll to a message
       let messageIdToScroll: string | undefined = messageIdToScrollToRef.current;
       if (targetedMessage && messageIdLastScrolledToRef.current !== targetedMessage) {
@@ -856,12 +862,6 @@ const MessageListWithContext = <
           index: indexOfParentInMessageList,
           viewPosition: 0.5, // try to place message in the center of the screen
         });
-        if (initialScrollToFirstUnreadMessage) {
-          initialScrollSettingTimeoutRef.current = setTimeout(() => {
-            // small timeout to ensure that handleScroll is called after scrollToIndex to set this flag
-            setInitialScrollDone(true);
-          }, 500);
-        }
         // reset the messageId tracker to not scroll to that again
         messageIdToScrollToRef.current = undefined;
         // keep track of this messageId, so that we dont scroll to again for targeted message change
