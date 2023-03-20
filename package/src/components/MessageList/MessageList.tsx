@@ -364,9 +364,6 @@ const MessageListWithContext = <
   // ref for channel to use in useEffect without triggering it on channel change
   const channelRef = useRef(channel);
   channelRef.current = channel;
-  // ref for messageList to use in useEffect without triggering it on channel change
-  const messageListRef = useRef(messageList);
-  messageListRef.current = messageList;
 
   const updateStickyHeaderDateIfNeeded = (viewableItems: ViewToken[]) => {
     if (viewableItems.length) {
@@ -850,7 +847,7 @@ const MessageListWithContext = <
         messageIdToScroll = targetedMessage;
       }
       if (!messageIdToScroll) return;
-      const indexOfParentInMessageList = messageListRef.current.findIndex(
+      const indexOfParentInMessageList = messageList.findIndex(
         (message) => message?.id === messageIdToScroll,
       );
       if (indexOfParentInMessageList !== -1 && flatListRef.current) {
@@ -875,7 +872,7 @@ const MessageListWithContext = <
       clearTimeout(scrollToDebounceTimeoutRef.current);
       clearTimeout(initialScrollSettingTimeoutRef.current);
     };
-  }, [targetedMessage, initialScrollToFirstUnreadMessage]);
+  }, [targetedMessage, initialScrollToFirstUnreadMessage, messageList]);
 
   const messagesWithImages =
     legacyImageViewerSwipeBehaviour &&
