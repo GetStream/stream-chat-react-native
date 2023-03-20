@@ -831,8 +831,6 @@ const MessageListWithContext = <
     [messageList],
   );
 
-  // console.log({ lastRead: channel.lastRead()?.toLocaleString() });
-
   /**
    * Check if a messageId needs to be scrolled to after list loads, and scroll to it
    * Note: This effect fires on every list change with a small debounce so that scrolling isnt abrupted by an immediate rerender
