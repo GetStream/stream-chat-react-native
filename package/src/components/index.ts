@@ -123,6 +123,8 @@ export * from './MessageInput/MoreOptionsButton';
 export * from './MessageInput/SendButton';
 export * from './MessageInput/ShowThreadMessageInChannelButton';
 export * from './MessageInput/UploadProgressIndicator';
+export * from './MessageInput/VoiceRecording';
+export * from './MessageInput/VoiceRecordingPlayback';
 
 export * from './MessageList/DateHeader';
 export * from './MessageList/hooks/useMessageList';

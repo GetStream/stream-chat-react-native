@@ -131,6 +131,8 @@ import { SendButton as SendButtonDefault } from '../MessageInput/SendButton';
 import { SendMessageDisallowedIndicator as SendMessageDisallowedIndicatorDefault } from '../MessageInput/SendMessageDisallowedIndicator';
 import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDefault } from '../MessageInput/ShowThreadMessageInChannelButton';
 import { UploadProgressIndicator as UploadProgressIndicatorDefault } from '../MessageInput/UploadProgressIndicator';
+import { VoiceRecording as VoiceRecordingDefault } from '../MessageInput/VoiceRecording';
+import { VoiceRecordingPlayback as VoiceRecordingPlaybackDefault } from '../MessageInput/VoiceRecordingPlayback';
 import { DateHeader as DateHeaderDefault } from '../MessageList/DateHeader';
 import type { MessageType } from '../MessageList/hooks/useMessageList';
 import { InlineDateSeparator as InlineDateSeparatorDefault } from '../MessageList/InlineDateSeparator';
@@ -553,6 +555,8 @@ const ChannelWithContext = <
     UploadProgressIndicator = UploadProgressIndicatorDefault,
     UrlPreview = CardDefault,
     VideoThumbnail = VideoThumbnailDefault,
+    VoiceRecording = VoiceRecordingDefault,
+    VoiceRecordingPlayback = VoiceRecordingPlaybackDefault,
     watcherCount,
     watchers,
   } = props;
@@ -1852,6 +1856,8 @@ const ChannelWithContext = <
     setQuotedMessageState,
     ShowThreadMessageInChannelButton,
     UploadProgressIndicator,
+    VoiceRecording,
+    VoiceRecordingPlayback,
   });
 
   const messageListContext = useCreatePaginatedMessageListContext({

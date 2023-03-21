@@ -49,6 +49,8 @@ export const useCreateInputMessageInputContext = <
   setQuotedMessageState,
   ShowThreadMessageInChannelButton,
   UploadProgressIndicator,
+  VoiceRecording,
+  VoiceRecordingPlayback,
 }: InputMessageInputContextValue<StreamChatGenerics> & {
   /**
    * To ensure we allow re-render, when channel is changed
@@ -106,6 +108,8 @@ export const useCreateInputMessageInputContext = <
       setQuotedMessageState,
       ShowThreadMessageInChannelButton,
       UploadProgressIndicator,
+      VoiceRecording,
+      VoiceRecordingPlayback,
     }),
     [
       compressImageQuality,

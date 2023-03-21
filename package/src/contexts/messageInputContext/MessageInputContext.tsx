@@ -37,6 +37,8 @@ import type { MicInputProps } from '../../components/MessageInput/MicInput';
 import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreOptionsButton';
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
+import type { VoiceRecordingProps } from '../../components/MessageInput/VoiceRecording';
+import type { VoiceRecodingPlaybackProps } from '../../components/MessageInput/VoiceRecordingPlayback';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import {
   Audio,
@@ -325,6 +327,18 @@ export type InputMessageInputContextValue<
    * **Default** [UploadProgressIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/UploadProgressIndicator.tsx)
    */
   UploadProgressIndicator: React.ComponentType<UploadProgressIndicatorProps>;
+  /**
+   * Custom UI component to render voice recording status.
+   *
+   * **Default** [VoiceRecording](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/VoiceRecording.tsx)
+   */
+  VoiceRecording: React.ComponentType<VoiceRecordingProps>;
+  /**
+   * Custom UI component to render voice recording playback status.
+   *
+   * **Default** [VoiceRecordingPlayback](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/VoiceRecordingPlayback.tsx)
+   */
+  VoiceRecordingPlayback: React.ComponentType<VoiceRecodingPlaybackProps>;
   /**
    * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
    *

@@ -19,7 +19,7 @@ export const Audio = AudioRecorderPackage
         console.log('Resume Player..');
         await audioRecorderPlayer.resumePlayer();
       },
-      startPlayer: async (uri, onPlaybackStatusUpdate) => {
+      startPlayer: async (uri, initialStatus, onPlaybackStatusUpdate) => {
         try {
           console.log('Starting player..');
           const playback = await audioRecorderPlayer.startPlayer(uri);

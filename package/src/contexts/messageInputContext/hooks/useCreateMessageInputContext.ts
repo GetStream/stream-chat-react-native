@@ -103,6 +103,8 @@ export const useCreateMessageInputContext = <
   uploadNewFile,
   uploadNewImage,
   UploadProgressIndicator,
+  VoiceRecording,
+  VoiceRecordingPlayback,
 }: MessageInputContextValue<StreamChatGenerics> &
   Pick<ThreadContextValue<StreamChatGenerics>, 'thread'>) => {
   const editingExists = !!editing;
@@ -214,6 +216,8 @@ export const useCreateMessageInputContext = <
       uploadNewFile,
       uploadNewImage,
       UploadProgressIndicator,
+      VoiceRecording,
+      VoiceRecordingPlayback,
     }),
     [
       cooldownEndsAt,

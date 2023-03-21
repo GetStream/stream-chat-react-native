@@ -189,17 +189,18 @@ export type AudioReturnType = {
 };
 
 export type AudioType = {
-  pausePlayer: () => Promise<void>;
-  resumePlayer: () => Promise<void>;
-  startPlayer: (
-    uri?: string,
-    onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void,
-  ) => Promise<void>;
   startRecording: (
     onRecordingStatusUpdate?: (recordingStatus: RecordingStatus) => void,
   ) => Promise<AudioReturnType> | Promise<string>;
-  stopPlayer: () => Promise<void>;
   stopRecording: () => Promise<void>;
+  pausePlayer?: () => Promise<void>;
+  resumePlayer?: () => Promise<void>;
+  startPlayer?: (
+    uri?: string,
+    initialStatus?: Partial<AVPlaybackStatusToSet>,
+    onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void,
+  ) => Promise<void>;
+  stopPlayer?: () => Promise<void>;
 };
 
 export let Audio: AudioType;
