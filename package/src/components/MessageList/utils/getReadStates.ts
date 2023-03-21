@@ -25,10 +25,9 @@ export const getReadStates = <
     /**
      * Channel read state is stored by user and we only care about users who aren't the client
      */
-    if (clientUserId) {
-      delete read[clientUserId];
-    }
-    const members = Object.values(read);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { [clientUserId ?? '']: _ignore, ...filteredRead } = read;
+    const members = Object.values(filteredRead);
 
     /**
      * Track number of members who have read previous messages

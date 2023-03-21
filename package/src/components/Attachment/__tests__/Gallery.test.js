@@ -270,7 +270,9 @@ describe('Gallery', () => {
       expect(queryAllByTestId('gallery-container').length).toBe(1);
     });
 
-    fireEvent(getByA11yLabel('Gallery Image'), 'error');
+    fireEvent(getByA11yLabel('Gallery Image'), 'error', {
+      nativeEvent: { error: 'error loading image' },
+    });
     expect(getByAccessibilityHint('image-loading-error')).toBeTruthy();
   });
 
