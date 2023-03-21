@@ -32,7 +32,7 @@ export type InputButtonsWithContextProps<
   | 'MicButton'
   | 'MoreOptionsButton'
   | 'openCommandsPicker'
-  | 'openVoiceUI'
+  | 'startVoiceRecording'
   | 'selectedPicker'
   | 'setShowMoreOptions'
   | 'showMoreOptions'
@@ -55,9 +55,9 @@ export const InputButtonsWithContext = <
     MicButton,
     MoreOptionsButton,
     openCommandsPicker,
-    openVoiceUI,
     setShowMoreOptions,
     showMoreOptions,
+    startVoiceRecording,
     text,
     toggleAttachmentPicker,
   } = props;
@@ -79,7 +79,7 @@ export const InputButtonsWithContext = <
   ) : (
     <>
       <View style={[styles.micButtonContainer, micButtonContainer]}>
-        <MicButton handleOnPress={openVoiceUI} />
+        <MicButton handleOnPress={startVoiceRecording} />
       </View>
       {(hasImagePicker || hasFilePicker) && ownCapabilities.uploadFile && (
         <View
@@ -172,10 +172,10 @@ export const InputButtons = <
     MicButton,
     MoreOptionsButton,
     openCommandsPicker,
-    openVoiceUI,
     selectedPicker,
     setShowMoreOptions,
     showMoreOptions,
+    startVoiceRecording,
     text,
     toggleAttachmentPicker,
   } = useMessageInputContext<StreamChatGenerics>();
@@ -192,10 +192,10 @@ export const InputButtons = <
         MicButton,
         MoreOptionsButton,
         openCommandsPicker,
-        openVoiceUI,
         selectedPicker,
         setShowMoreOptions,
         showMoreOptions,
+        startVoiceRecording,
         text,
         toggleAttachmentPicker,
       }}

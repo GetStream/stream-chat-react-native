@@ -100,12 +100,15 @@ type TriggerHaptic = (method: HapticFeedbackMethod) => void | never;
 export let triggerHaptic: TriggerHaptic = fail;
 
 export type PlaybackStatus = {
+  currentPosition: number;
   didJustFinish: boolean;
+  duration: number;
   durationMillis: number;
   error: string;
   isBuffering: boolean;
   isLoaded: boolean;
   isLooping: boolean;
+  isMuted: boolean;
   isPlaying: boolean;
   positionMillis: number;
 };
@@ -169,6 +172,7 @@ export type SoundType = {
 
 export type RecordingStatus = {
   canRecord: boolean;
+  currentPosition: number;
   durationMillis: number;
   isDoneRecording: boolean;
   isRecording: boolean;
@@ -185,10 +189,17 @@ export type AudioReturnType = {
 };
 
 export type AudioType = {
+  pausePlayer: () => Promise<void>;
+  resumePlayer: () => Promise<void>;
+  startPlayer: (
+    uri?: string,
+    onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void,
+  ) => Promise<void>;
   startRecording: (
     onRecordingStatusUpdate?: (recordingStatus: RecordingStatus) => void,
   ) => Promise<AudioReturnType> | Promise<string>;
-  stopRecording: () => Promise<void> | Promise<string>;
+  stopPlayer: () => Promise<void>;
+  stopRecording: () => Promise<void>;
 };
 
 export let Audio: AudioType;

@@ -1,6 +1,5 @@
 import React from 'react';
-import type { GestureResponderEvent } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Alert, GestureResponderEvent, Pressable } from 'react-native';
 
 import {
   ChannelContextValue,
@@ -37,16 +36,20 @@ const MicButtonWithContext = <
     },
   } = useTheme();
 
+  const onPressHandler = () => {
+    Alert.alert('Hold to start recording');
+  };
+
   return (
-    <TouchableOpacity
+    <Pressable
       disabled={disabled}
-      hitSlop={{ bottom: 15, left: 5, right: 15, top: 15 }}
-      onPress={handleOnPress}
+      onLongPress={handleOnPress}
+      onPress={onPressHandler}
       style={[commandsButton]}
       testID='audio-button'
     >
       <Mic height={25} pathFill={grey} width={19} />
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

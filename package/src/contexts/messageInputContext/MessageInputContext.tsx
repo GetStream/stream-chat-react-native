@@ -38,7 +38,14 @@ import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreO
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
-import { AudioReturnType, compressImage, getLocalAssetUri, pickDocument } from '../../native';
+import {
+  Audio,
+  AudioReturnType,
+  compressImage,
+  getLocalAssetUri,
+  pickDocument,
+  RecordingStatus,
+} from '../../native';
 import type { Asset, DefaultStreamChatGenerics, File, UnknownType } from '../../types/types';
 import { removeReservedFields } from '../../utils/removeReservedFields';
 import {
@@ -158,9 +165,9 @@ export type LocalMessageInputContext<
   openCommandsPicker: () => void;
   openFilePicker: () => void;
   openMentionsPicker: () => void;
-  openVoiceUI: () => void;
   pickFile: () => Promise<void>;
   recording: AudioReturnType | string | undefined;
+  recordingStatus: RecordingStatus | undefined;
   /**
    * Function for removing a file from the upload preview
    *
@@ -198,6 +205,7 @@ export type LocalMessageInputContext<
   setMentionedUsers: React.Dispatch<React.SetStateAction<string[]>>;
   setNumberOfUploads: React.Dispatch<React.SetStateAction<number>>;
   setRecording: React.Dispatch<React.SetStateAction<AudioReturnType | string | undefined>>;
+  setRecordingStatus: React.Dispatch<React.SetStateAction<RecordingStatus | undefined>>;
   setSendThreadMessageInChannel: React.Dispatch<React.SetStateAction<boolean>>;
   setShowMoreOptions: React.Dispatch<React.SetStateAction<boolean>>;
   setShowVoiceUI: React.Dispatch<React.SetStateAction<boolean>>;
@@ -207,6 +215,7 @@ export type LocalMessageInputContext<
   /**
    * Text value of the TextInput
    */
+  startVoiceRecording: () => Promise<void>;
   text: string;
   toggleAttachmentPicker: () => void;
   /**
@@ -480,11 +489,13 @@ export const MessageInputProvider = <
     mentionedUsers,
     numberOfUploads,
     recording,
+    recordingStatus,
     setFileUploads,
     setImageUploads,
     setMentionedUsers,
     setNumberOfUploads,
     setRecording,
+    setRecordingStatus,
     setShowMoreOptions,
     setShowVoiceUI,
     setText,
@@ -558,8 +569,18 @@ export const MessageInputProvider = <
     }
   };
 
-  const openVoiceUI = () => {
+  const onRecordingStatusUpdate = (status: RecordingStatus) => {
+    setRecordingStatus(status);
+  };
+
+  const startRecording = async () => {
+    const recording = await Audio.startRecording(onRecordingStatusUpdate);
+    setRecording(recording);
+  };
+
+  const startVoiceRecording = async () => {
     setShowVoiceUI(true);
+    await startRecording();
   };
 
   const openMentionsPicker = () => {
@@ -1168,9 +1189,9 @@ export const MessageInputProvider = <
     openCommandsPicker,
     openFilePicker: pickFile,
     openMentionsPicker,
-    openVoiceUI,
     pickFile,
     recording,
+    recordingStatus,
     removeFile,
     removeImage,
     resetInput,
@@ -1187,12 +1208,14 @@ export const MessageInputProvider = <
     setMentionedUsers,
     setNumberOfUploads,
     setRecording,
+    setRecordingStatus,
     setSendThreadMessageInChannel,
     setShowMoreOptions,
     setShowVoiceUI,
     setText,
     showMoreOptions,
     showVoiceUI,
+    startVoiceRecording,
     text,
     thread,
     toggleAttachmentPicker,

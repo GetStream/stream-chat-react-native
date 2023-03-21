@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import type { AudioReturnType } from '../../../native';
+import type { AudioReturnType, RecordingStatus } from '../../../native';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { generateRandomId } from '../../../utils/utils';
 
@@ -25,6 +25,7 @@ export const useMessageDetailsForState = <
   const [showMoreOptions, setShowMoreOptions] = useState(true);
   const [showVoiceUI, setShowVoiceUI] = useState(false);
   const [recording, setRecording] = useState<AudioReturnType | string | undefined>(undefined);
+  const [recordingStatus, setRecordingStatus] = useState<RecordingStatus | undefined>(undefined);
 
   const initialTextValue = initialValue || '';
   const [text, setText] = useState(initialTextValue);
@@ -108,11 +109,13 @@ export const useMessageDetailsForState = <
     mentionedUsers,
     numberOfUploads,
     recording,
+    recordingStatus,
     setFileUploads,
     setImageUploads,
     setMentionedUsers,
     setNumberOfUploads,
     setRecording,
+    setRecordingStatus,
     setShowMoreOptions,
     setShowVoiceUI,
     setText,
