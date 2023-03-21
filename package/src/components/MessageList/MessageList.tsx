@@ -272,7 +272,6 @@ const MessageListWithContext = <
     overlay,
     reloadChannel,
     ScrollToBottomButton,
-    scrollToFirstUnreadThreshold,
     selectedPicker,
     setFlatListRef,
     setMessages,
@@ -332,14 +331,18 @@ const MessageListWithContext = <
    * If the prop `initialScrollToFirstUnreadMessage` was enabled, then we scroll to the unread msg and set it to true
    * If not, the default offset of 0 for flatList means that it has been set already
    */
-  const initialScrollSet = useRef<boolean>(!initialScrollToFirstUnreadMessage);
-
+  const [isInitialScrollDone, setInitialScrollDone] = useState(!initialScrollToFirstUnreadMessage);
   const channelResyncScrollSet = useRef<boolean>(true);
 
   /**
    * The timeout id used to debounce our scrollToIndex calls on messageList updates
    */
   const scrollToDebounceTimeoutRef = useRef<NodeJS.Timeout>();
+
+  /**
+   * The timeout id used to lazier load the initial scroll set flag
+   */
+  const initialScrollSettingTimeoutRef = useRef<NodeJS.Timeout>();
 
   /**
    * If a messageId was requested to scroll to but was unloaded,
@@ -423,29 +426,39 @@ const MessageListWithContext = <
   }, [disabled]);
 
   useEffect(() => {
-    /**
-     * 1. !initialScrollToFirstUnreadMessage && channel.countUnread() > 0
-     *
-     *    In this case MessageList won't scroll to first unread message when opened, so we can mark
-     *    the channel as read right after opening.
-     *
-     * 2. initialScrollToFirstUnreadMessage && channel.countUnread() <= scrollToFirstUnreadThreshold
-     *
-     *    In this case MessageList will be opened to first unread message.
-     *    But if there are not enough (scrollToFirstUnreadThreshold) unread messages, then MessageList
-     *    won't need to scroll up. So we can safely mark the channel as read right after opening.
-     */
-    const shouldMarkReadOnFirstLoad =
-      !loading &&
-      channel &&
-      ((!initialScrollToFirstUnreadMessage && channel.countUnread() > 0) ||
-        (initialScrollToFirstUnreadMessage &&
-          channel.countUnread() <= scrollToFirstUnreadThreshold));
+    const getShouldMarkReadAutomatically = (): boolean => {
+      if (loading || !channel) {
+        // nothing to do
+        return false;
+      } else if (channel.countUnread() > 0) {
+        if (!initialScrollToFirstUnreadMessage) {
+          /*
+           * In this case MessageList won't scroll to first unread message when opened, so we can mark
+           * the channel as read right after opening.
+           * */
+          return true;
+        } else {
+          /*
+           * In this case MessageList will be opened to first unread message.
+           * But if there are were not enough unread messages, so that scrollToBottom button was not shown
+           * then MessageList won't need to scroll up. So we can safely mark the channel as read right after opening.
+           *
+           * NOTE: we must ensure that initial scroll is done, otherwise we do not wait till the unread scroll is finished
+           * */
+          if (scrollToBottomButtonVisible) return false;
+          /* if scrollToBottom button was not visible, wait till
+           * - initial scroll is done (indicates that if scrolling to index was needed it was triggered)
+           * */
+          return isInitialScrollDone;
+        }
+      }
+      return false;
+    };
 
-    if (shouldMarkReadOnFirstLoad) {
+    if (getShouldMarkReadAutomatically()) {
       markRead();
     }
-  }, [loading]);
+  }, [loading, scrollToBottomButtonVisible, isInitialScrollDone]);
 
   useEffect(() => {
     const lastReceivedMessage = getLastReceivedMessage(messageList);
@@ -492,7 +505,7 @@ const MessageListWithContext = <
 
     if (threadList || hasNoMoreRecentMessagesToLoad) {
       scrollToBottomIfNeeded();
-    } else if (!scrollToBottomButtonVisible) {
+    } else {
       setScrollToBottomButtonVisible(true);
     }
 
@@ -529,23 +542,17 @@ const MessageListWithContext = <
     if (!channel || (!channel.initialized && !channel.offlineMode)) return null;
 
     const lastRead = channel.lastRead();
-    const countUnread = channel.countUnread();
 
     function isMessageUnread(messageArrayIndex: number): boolean {
-      if (lastRead && message.created_at) {
-        return lastRead < message.created_at;
-      } else {
-        const isLatestMessageSetShown = !!channel.state.messageSets.find(
-          (set) => set.isCurrent && set.isLatest,
-        );
-        return isLatestMessageSetShown && messageArrayIndex <= countUnread - 1;
+      const msg = messageList?.[messageArrayIndex];
+      if (lastRead && msg?.created_at) {
+        return lastRead < msg.created_at;
       }
+      return false;
     }
     const isCurrentMessageUnread = isMessageUnread(index);
-    const isLastMessageUnread = isMessageUnread(index + 1);
-
     const showUnreadUnderlay = isCurrentMessageUnread && scrollToBottomButtonVisible;
-    const insertInlineUnreadIndicator = showUnreadUnderlay && !isLastMessageUnread;
+    const insertInlineUnreadIndicator = showUnreadUnderlay && !isMessageUnread(index + 1); // show only if previous message is read
 
     if (message.type === 'system') {
       return (
@@ -742,8 +749,8 @@ const MessageListWithContext = <
       maybeCallOnEndReached();
     }
 
-    // Show scrollToBottom button once scroll position goes beyond 300.
-    const isScrollAtBottom = offset <= 300;
+    // Show scrollToBottom button once scroll position goes beyond 150.
+    const isScrollAtBottom = offset <= 150;
     const showScrollToBottomButton = !isScrollAtBottom || !hasNoMoreRecentMessagesToLoad;
 
     const shouldMarkRead =
@@ -829,21 +836,16 @@ const MessageListWithContext = <
    * Note: This effect fires on every list change with a small debounce so that scrolling isnt abrupted by an immediate rerender
    */
   useEffect(() => {
-    if (scrollToDebounceTimeoutRef.current) clearTimeout(scrollToDebounceTimeoutRef.current);
     scrollToDebounceTimeoutRef.current = setTimeout(() => {
+      if (initialScrollToFirstUnreadMessage) {
+        initialScrollSettingTimeoutRef.current = setTimeout(() => {
+          // small timeout to ensure that handleScroll is called after scrollToIndex to set this flag
+          setInitialScrollDone(true);
+        }, 500);
+      }
       // goToMessage method might have requested to scroll to a message
       let messageIdToScroll: string | undefined = messageIdToScrollToRef.current;
-      const countUnread = channelRef.current?.countUnread();
-      if (
-        !initialScrollSet.current &&
-        initialScrollToFirstUnreadMessage &&
-        countUnread > scrollToFirstUnreadThreshold
-      ) {
-        // find the first unread message, if we have to initially scroll to an unread message
-        if (messageList.length >= countUnread) {
-          messageIdToScroll = messageList[countUnread - 1].id;
-        }
-      } else if (targetedMessage && messageIdLastScrolledToRef.current !== targetedMessage) {
+      if (targetedMessage && messageIdLastScrolledToRef.current !== targetedMessage) {
         // if some messageId was targeted but not scrolledTo yet
         // we have scroll to there after loading completes
         messageIdToScroll = targetedMessage;
@@ -862,14 +864,13 @@ const MessageListWithContext = <
         messageIdToScrollToRef.current = undefined;
         // keep track of this messageId, so that we dont scroll to again for targeted message change
         messageIdLastScrolledToRef.current = messageIdToScroll;
-        if (!initialScrollSet.current && initialScrollToFirstUnreadMessage) {
-          initialScrollSet.current = true;
-        } else {
-          setTargetedMessage(messageIdToScroll);
-        }
       }
     }, 150);
-  }, [channel.initialized, messageList, targetedMessage, initialScrollToFirstUnreadMessage]);
+    return () => {
+      clearTimeout(scrollToDebounceTimeoutRef.current);
+      clearTimeout(initialScrollSettingTimeoutRef.current);
+    };
+  }, [targetedMessage, initialScrollToFirstUnreadMessage, messageList]);
 
   const messagesWithImages =
     legacyImageViewerSwipeBehaviour &&
