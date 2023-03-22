@@ -43,6 +43,7 @@ exports[`Thread should match thread snapshot 1`] = `
               "flexGrow": 1,
               "paddingBottom": 4,
             },
+            undefined,
             Object {},
           ]
         }
@@ -179,6 +180,7 @@ exports[`Thread should match thread snapshot 1`] = `
                 "width": "100%",
               },
               Object {},
+              undefined,
               undefined,
             ],
           ]

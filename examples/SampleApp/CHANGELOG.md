@@ -1,5 +1,21 @@
 # Change Log
 
+### [1.19.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.19.1...sampleapp@v1.19.2) (2023-03-21)
+
+
+### Bug Fixes
+
+* listen to ios more photos selection in gallery ([#1994](https://github.com/GetStream/stream-chat-react-native/issues/1994)) ([2b47ee3](https://github.com/GetStream/stream-chat-react-native/commit/2b47ee3f1357843b4ada8eb98732bef3eddfb5c2))
+* misplaced date header, header/footer component in messageList on android 33 ([#1977](https://github.com/GetStream/stream-chat-react-native/issues/1977)) ([e0386be](https://github.com/GetStream/stream-chat-react-native/commit/e0386be1aaca0a9d773b84dfa5f8e0a7aa6410bd))
+* rendering the URL Preview for appropriate attachments in message list ([2469075](https://github.com/GetStream/stream-chat-react-native/commit/2469075f65aadd982411ea5cf6fe157355e78367))
+* update podlock file of SampleApp ([2faa9d4](https://github.com/GetStream/stream-chat-react-native/commit/2faa9d4a599e78529e68fb679b144f22a6a79365))
+* update yarn.lock file of the root, packages and the example apps ([#1986](https://github.com/GetStream/stream-chat-react-native/issues/1986)) ([e7089ac](https://github.com/GetStream/stream-chat-react-native/commit/e7089ac065edf85782c2b7ca1b0b2d86ec4df787))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.19.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.19.0...sampleapp@v1.19.1) (2023-02-17)
 
 

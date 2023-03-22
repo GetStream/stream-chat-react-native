@@ -833,22 +833,42 @@ const ChannelWithContext = <
    */
   const loadChannelAtFirstUnreadMessage = () => {
     if (!channel) return;
-    const unreadCount = channel.countUnread();
-    if (unreadCount <= scrollToFirstUnreadThreshold) return;
-    // temporarily clear existing messages so that messageList component gets a list change and does not scroll to any unread message first before loading completes
-    setMessages([]);
+    let unreadMessageIdToScrollTo: string | undefined;
     // query for messages around the last read date
-    return channelQueryCallRef.current(async () => {
-      setLoading(true);
-      const lastReadDate = channel.lastRead() || new Date(0);
-      await channel.query({
-        messages: {
-          created_at_around: lastReadDate,
-          limit: 25,
-        },
-      });
-      setLoading(false);
-    });
+    return channelQueryCallRef.current(
+      async () => {
+        setLoading(true);
+        const lastReadDate = channel.lastRead();
+        // if last read date is present we can just fetch messages around that date
+        // last read date not being present is an edge case if somewhere the user of SDK deletes the read state (this will usually never happen)
+        if (lastReadDate) {
+          setHasNoMoreRecentMessagesToLoad(false); // we are jumping to a message, hence we do not know for sure anymore if there are no more recent messages
+          // get totally 30 messages... max 15 before last read date and max 15 after last read date
+          // ref: https://github.com/GetStream/chat/pull/2588
+          await channel.query(
+            {
+              messages: {
+                created_at_around: lastReadDate,
+                limit: 30,
+              },
+            },
+            'new',
+          );
+          unreadMessageIdToScrollTo = channel.state.messages.find(
+            (m) => lastReadDate < m.created_at,
+          )?.id;
+        } else {
+          // we just load the latest messages (25 is the default) and we cant scroll to first unread message
+          await channel.state.loadMessageIntoState('latest');
+        }
+        setLoading(false);
+      },
+      () => {
+        if (unreadMessageIdToScrollTo) {
+          setTargetedMessage(unreadMessageIdToScrollTo);
+        }
+      },
+    );
   };
 
   /**

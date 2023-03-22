@@ -1,5 +1,29 @@
 # Change Log
 
+## [5.12.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.11.2...v5.12.0) (2023-03-21)
+
+
+### Features
+
+* add retry ability for image load failure ([#2011](https://github.com/GetStream/stream-chat-react-native/issues/2011)) ([3b5a315](https://github.com/GetStream/stream-chat-react-native/commit/3b5a3153dd2689609453e1a8bc03c311d06ca178))
+
+
+### Bug Fixes
+
+* Add style prop to Bullet component ([#2008](https://github.com/GetStream/stream-chat-react-native/issues/2008)) ([59b4b64](https://github.com/GetStream/stream-chat-react-native/commit/59b4b64eae7b2efe025072a1b3dd86bc7b8c6c5f))
+* android list is inverted when custom flatlist style is used ([#2016](https://github.com/GetStream/stream-chat-react-native/issues/2016)) ([edabea1](https://github.com/GetStream/stream-chat-react-native/commit/edabea13afa1398f7d0cc8865ac80941088a6c06))
+* blank screen on offline support if user id is lazily set ([#2003](https://github.com/GetStream/stream-chat-react-native/issues/2003)) ([2cc2d4a](https://github.com/GetStream/stream-chat-react-native/commit/2cc2d4a7618adeb26f83425e2bff9b418fc2edf0))
+* eslint sort errors and mode cover in compressImage.ts of native-package ([#2005](https://github.com/GetStream/stream-chat-react-native/issues/2005)) ([107cfef](https://github.com/GetStream/stream-chat-react-native/commit/107cfeff6e30345355da2103ce861a8b0d0c0380))
+* initial scroll to first unread message was broken when there more than 55 unread messages ([#2020](https://github.com/GetStream/stream-chat-react-native/issues/2020)) ([76f9ee3](https://github.com/GetStream/stream-chat-react-native/commit/76f9ee3ed2da1e71725d236e64c511d714fcd37b))
+* listen to ios more photos selection in gallery ([#1994](https://github.com/GetStream/stream-chat-react-native/issues/1994)) ([2b47ee3](https://github.com/GetStream/stream-chat-react-native/commit/2b47ee3f1357843b4ada8eb98732bef3eddfb5c2))
+* misplaced date header, header/footer component in messageList on android 33 ([#1977](https://github.com/GetStream/stream-chat-react-native/issues/1977)) ([e0386be](https://github.com/GetStream/stream-chat-react-native/commit/e0386be1aaca0a9d773b84dfa5f8e0a7aa6410bd))
+* missing userSyncStatus db table upon clean install ([#2001](https://github.com/GetStream/stream-chat-react-native/issues/2001)) ([36eb866](https://github.com/GetStream/stream-chat-react-native/commit/36eb866288002853baa34f063a08cdb8eb35c71f))
+* rendering the URL Preview for appropriate attachments in message list ([2469075](https://github.com/GetStream/stream-chat-react-native/commit/2469075f65aadd982411ea5cf6fe157355e78367))
+* rendering the URL Preview for appropriate attachments in message list ([ee721f0](https://github.com/GetStream/stream-chat-react-native/commit/ee721f0ea438da2cfe5900ed510a62c765d46921))
+* scrollToFirstUnreadMessage not working ([#2004](https://github.com/GetStream/stream-chat-react-native/issues/2004)) ([973c21b](https://github.com/GetStream/stream-chat-react-native/commit/973c21bd1031ff79b2e711a9e2e231b29302784e))
+* stop sending typing events when the event is not enabled on dashboard ([#2014](https://github.com/GetStream/stream-chat-react-native/issues/2014)) ([04c2206](https://github.com/GetStream/stream-chat-react-native/commit/04c220689f85f96f6ed09c1e781bab8a35ae3828))
+* update yarn.lock file of the root, packages and the example apps ([#1986](https://github.com/GetStream/stream-chat-react-native/issues/1986)) ([e7089ac](https://github.com/GetStream/stream-chat-react-native/commit/e7089ac065edf85782c2b7ca1b0b2d86ec4df787))
+
 ### [5.11.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.11.1...v5.11.2) (2023-02-17)
 
 

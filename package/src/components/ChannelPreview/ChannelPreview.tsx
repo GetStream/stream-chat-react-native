@@ -53,6 +53,13 @@ const ChannelPreviewWithContext = <
   const channelLastMessageString = `${channelLastMessage?.id}${channelLastMessage?.updated_at}`;
 
   useEffect(() => {
+    const { unsubscribe } = client.on('notification.mark_read', () => {
+      setUnread(channel.countUnread());
+    });
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
     if (
       channelLastMessage &&
       (channelLastMessage.id !== lastMessage?.id ||
