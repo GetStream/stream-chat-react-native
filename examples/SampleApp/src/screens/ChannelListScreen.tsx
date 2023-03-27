@@ -192,7 +192,14 @@ export const ChannelListScreen: React.FC = () => {
                 });
               }}
               options={options}
-              Preview={ChannelPreview}
+              // Preview={ChannelPreview}
+              Preview={({ channel }) => (
+                <Text style={{ fontSize: 30 }}>
+                  {channel.state.messages[channel.state.messages.length - 1]
+                    ? channel.state.messages[channel.state.messages.length - 1].text
+                    : Object.keys(channel.state.members).join(',')}
+                </Text>
+              )}
               setFlatListRef={setScrollRef}
               sort={sort}
             />
