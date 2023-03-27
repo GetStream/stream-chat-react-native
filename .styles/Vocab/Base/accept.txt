@@ -36,3 +36,4 @@ Notifee
 colorScheme
 performant
 virtualized
+rncli
