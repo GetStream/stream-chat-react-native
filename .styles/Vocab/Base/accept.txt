@@ -37,3 +37,4 @@ colorScheme
 performant
 virtualized
 rncli
+RNCLI
