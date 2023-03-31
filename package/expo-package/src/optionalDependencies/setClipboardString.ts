@@ -8,5 +8,5 @@ try {
 }
 
 export const setClipboardString = Clipboard
-  ? (string: string) => (Clipboard ? Clipboard.setString(string) : {})
+  ? (string: string) => Clipboard?.setString(string)
   : null;
