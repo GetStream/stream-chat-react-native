@@ -19,7 +19,7 @@
     "expo-file-system": "*",
     "expo-haptics": "*",
     "expo-image-manipulator": "*",
-    "expo-image-picker": "*",
+    "expo-image-picker": ">=14.1.0",
     "expo-media-library": "*",
     "expo-sharing": "*"
   },
@@ -32,7 +32,7 @@
     "expo-file-system": "^11.0.2",
     "expo-haptics": "^10.0.0",
     "expo-image-manipulator": "^9.1.0",
-    "expo-image-picker": "^10.1.4",
+    "expo-image-picker": "14.1.1",
     "expo-media-library": "^12.0.2",
     "expo-sharing": "^9.1.2"
   },
