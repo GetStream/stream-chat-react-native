@@ -10,7 +10,7 @@ import TabItem from '@theme/TabItem';
 
 The Basics section of this documentation introduces the fundamentals of Stream Chat for React Native.
 It will cover installing Stream Chat within your project, give you some troubleshooting tips, and provide an overview of what is possible using the library.
-This should be considered a primer before delving into the UI and Core Components or Customization sections.
+This should be considered a primer before delving into the UI and Core Components or Customization sections. We support creating apps both using [RN CLI](https://reactnative.dev/docs/environment-setup) and [Expo CLI](https://docs.expo.dev/get-started/installation/).
 
 ## Installation
 
@@ -21,23 +21,25 @@ Your [environment should be setup](https://reactnative.dev/docs/environment-setu
 Install the required packages in your React Native project.
 
 <Tabs
-  defaultValue='yarn'
+  defaultValue='rncli'
   values={[
-    { label: 'Yarn', value: 'yarn' },
-    { label: 'npm', value: 'npm' },
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
   ]}
 >
-<TabItem value='yarn'>
+<TabItem value='rncli'>
 
 ```bash
   yarn add stream-chat-react-native
+  # or
+  npm install stream-chat-react-native
 ```
 
 </TabItem>
-<TabItem value='npm'>
+<TabItem value='expo'>
 
 ```bash
-  npm install stream-chat-react-native
+npx expo install stream-chat-expo
 ```
 
 </TabItem>
@@ -47,58 +49,82 @@ Stream Chat has a number of peer dependencies that are required to take advantag
 It is suggested you follow the install instructions for each package to ensure it is properly setup.
 Most if not all of the required packages now support auto-linking so setup should be minimal. Those with known [additional steps](#additional-steps) have been noted.
 
+<Tabs
+  defaultValue='rncli'
+  values={[
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
+  ]}
+>
+<TabItem value='rncli'>
+
 - [`@react-native-camera-roll/camera-roll`](https://github.com/react-native-cameraroll/react-native-cameraroll)
 - [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo)
 - [`@stream-io/flat-list-mvcp`](https://github.com/GetStream/flat-list-mvcp)
-- [`react-native-document-picker`](https://github.com/rnmods/react-native-document-picker)
 - [`react-native-fs`](https://github.com/itinance/react-native-fs)
 - [`react-native-gesture-handler`](https://github.com/software-mansion/react-native-gesture-handler)
-- [`react-native-haptic-feedback`](https://github.com/junina-de/react-native-haptic-feedback)
 - [`react-native-image-crop-picker`](https://github.com/ivpusic/react-native-image-crop-picker)
 - [`react-native-image-resizer`](https://github.com/bamlab/react-native-image-resizer)
 - [`react-native-reanimated`](https://github.com/software-mansion/react-native-reanimated)
-- [`react-native-share`](https://github.com/react-native-share/react-native-share)
 - [`react-native-svg`](https://github.com/react-native-svg/react-native-svg)
 
+</TabItem>
+<TabItem value='expo'>
+
+- [`expo-media-library`](https://docs.expo.dev/versions/latest/sdk/media-library/)
+- [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo)
+- [`@stream-io/flat-list-mvcp`](https://github.com/GetStream/flat-list-mvcp)
+- [`expo-file-system`](https://docs.expo.dev/versions/latest/sdk/filesystem/)
+- [`react-native-gesture-handler`](https://github.com/software-mansion/react-native-gesture-handler)
+- [`expo-image-picker`](https://docs.expo.dev/versions/latest/sdk/imagepicker/)
+- [`expo-image-manipulator`](https://docs.expo.dev/versions/latest/sdk/imagemanipulator/)
+- [`react-native-reanimated`](https://github.com/software-mansion/react-native-reanimated)
+- [`react-native-svg`](https://docs.expo.dev/versions/latest/sdk/svg/)
+
+</TabItem>
+</Tabs>
+
 <Tabs
-  defaultValue='yarn'
+  defaultValue='rncli'
   values={[
-    { label: 'Yarn', value: 'yarn' },
-    { label: 'npm', value: 'npm' },
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
   ]}
 >
-<TabItem value='yarn'>
+<TabItem value='rncli'>
 
 ```bash
-yarn add @react-native-camera-roll/camera-roll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-svg
+yarn add @react-native-camera-roll/camera-roll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-fs react-native-gesture-handler react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-svg
+# or
+npm install @react-native-camera-roll/camera-roll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-fs react-native-gesture-handler react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-svg
 ```
 
 </TabItem>
-<TabItem value='npm'>
+<TabItem value='expo'>
 
 ```bash
-npm install @react-native-camera-roll/camera-roll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-svg
+npx expo install @react-native-community/netinfo expo-file-system expo-image-manipulator expo-image-picker expo-media-library react-native-gesture-handler react-native-reanimated react-native-svg
 ```
 
 </TabItem>
 </Tabs>
 
-For iOS on a Mac install the pods `npx pod-install ios`.
+For RNCLI, on iOS on a Mac install the pods `npx pod-install ios`.
 
 #### Version compatibilities
 
 To be able to use the Stream Chat React Native SDK, a few dependencies must meet the following version requirements:
 
-| react-native | stream-chat-react-native (min required) | react-native-reanimated (min required) |
-| ------------ | --------------------------------------- | -------------------------------------- |
-| 0.70         | 5.3.1                                   | 2.10.0                                 |
-| 0.69         | 4.13.0                                  | 2.9.1                                  |
-| 0.68         | 4.11.0                                  | 2.7.0                                  |
-| 0.67         | 4.2.0                                   | 2.4.0                                  |
-| 0.66         | 3.9.0                                   | 2.2.3                                  |
-| 0.65         | 3.9.0                                   | 2.2.1                                  |
-| 0.64         | 3.6.2                                   | 2.2.0                                  |
-| 0.63         | 3.0.0                                   | 2.2.0                                  |
+| react-native | stream-chat-react-native/stream-chat-expo (min required) | react-native-reanimated (min required) |
+| ------------ | -------------------------------------------------------- | -------------------------------------- |
+| 0.70         | 5.3.1                                                    | 2.10.0                                 |
+| 0.69         | 4.13.0                                                   | 2.9.1                                  |
+| 0.68         | 4.11.0                                                   | 2.7.0                                  |
+| 0.67         | 4.2.0                                                    | 2.4.0                                  |
+| 0.66         | 3.9.0                                                    | 2.2.3                                  |
+| 0.65         | 3.9.0                                                    | 2.2.1                                  |
+| 0.64         | 3.6.2                                                    | 2.2.0                                  |
+| 0.63         | 3.0.0                                                    | 2.2.0                                  |
 
 #### Platform compatibilities
 
@@ -168,30 +194,32 @@ If you are planning to use file picker functionality, make sure you enable iClou
 
 #### Video playing support
 
-Install `react-native-video` in your React Native project.
+Install [`react-native-video`](https://github.com/react-native-video/react-native-video) for RN CLI or [`expo-av`](https://docs.expo.dev/versions/latest/sdk/av/) for Expo CLI in your React Native project.
 
 > Available in stream-chat-react-native >= v4.7.0
 
-Installing this package allows you to play the video files/attachments in the chat. Otherwise by default, video files will be opened in default browser of the device.
+Installing this package allows you to play the video and audio files/attachments in the chat. Otherwise by default, video and audio files will be opened and downloaded through the default browser of the device.
 
 <Tabs
-  defaultValue='yarn'
+  defaultValue='rncli'
   values={[
-    { label: 'Yarn', value: 'yarn' },
-    { label: 'npm', value: 'npm' },
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
   ]}
 >
-<TabItem value='yarn'>
+<TabItem value='rncli'>
 
 ```bash
 yarn add react-native-video
+# or
+npm install react-native-video
 ```
 
 </TabItem>
-<TabItem value='npm'>
+<TabItem value='expo'>
 
 ```bash
-npm install react-native-video
+npx expo install expo-av
 ```
 
 </TabItem>
@@ -206,28 +234,30 @@ project(':react-native-video').projectDir = new File(rootProject.projectDir, '..
 
 #### Sharing attachments
 
-Install `react-native-share` in your React Native project.
+Install [`react-native-share`](https://github.com/react-native-share/react-native-share) for RN CLI or [`expo-sharing`](https://docs.expo.dev/versions/latest/sdk/sharing/) in your React Native project.
 
 Installing this package will allow your users to share attachments from the gallery using the native sharing interface on their devices.
 
 <Tabs
-  defaultValue='yarn'
+  defaultValue='rncli'
   values={[
-    { label: 'Yarn', value: 'yarn' },
-    { label: 'npm', value: 'npm' },
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
   ]}
 >
-<TabItem value='yarn'>
+<TabItem value='rncli'>
 
 ```bash
 yarn add react-native-share
+# or
+npm install react-native-share
 ```
 
 </TabItem>
-<TabItem value='npm'>
+<TabItem value='expo'>
 
 ```bash
-npm install react-native-share
+npx expo install expo-sharing
 ```
 
 </TabItem>
@@ -235,28 +265,30 @@ npm install react-native-share
 
 #### Haptic feedback
 
-Install `react-native-haptic-feedback` in your React Native project.
+Install [`react-native-haptic-feedback`](https://github.com/junina-de/react-native-haptic-feedback) for RN CLI or [`expo-haptics`](https://docs.expo.dev/versions/latest/sdk/haptics/) for Expo CLI in your React Native project.
 
 Installing this package will enable haptic feedback when scaling images in the image gallery if the scaling hits the higher or lower limits for its value.
 
 <Tabs
-  defaultValue='yarn'
+  defaultValue='rncli'
   values={[
-    { label: 'Yarn', value: 'yarn' },
-    { label: 'npm', value: 'npm' },
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
   ]}
 >
-<TabItem value='yarn'>
+<TabItem value='rncli'>
 
 ```bash
 yarn add react-native-haptic-feedback
+# or
+npm install react-native-haptic-feedback
 ```
 
 </TabItem>
-<TabItem value='npm'>
+<TabItem value='expo'>
 
 ```bash
-npm install react-native-haptic-feedback
+npx expo install expo-haptics
 ```
 
 </TabItem>
@@ -264,26 +296,57 @@ npm install react-native-haptic-feedback
 
 #### Copying messages
 
-Install `@react-native-clipboard/clipboard` to be able to copy messages to the clipboard.
+Install [`@react-native-clipboard/clipboard`](https://github.com/react-native-clipboard/clipboard) for RN CLI or [`expo-clipboard`](https://docs.expo.dev/versions/latest/sdk/clipboard/) for Expo ClI to be able to copy messages to the clipboard.
 
 <Tabs
-  defaultValue='yarn'
+  defaultValue='rncli'
   values={[
-    { label: 'Yarn', value: 'yarn' },
-    { label: 'npm', value: 'npm' },
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
   ]}
 >
-<TabItem value='yarn'>
+<TabItem value='rncli'>
 
 ```bash
 yarn add @react-native-clipboard/clipboard
+# or
+npm install @react-native-clipboard/clipboard
 ```
 
 </TabItem>
-<TabItem value='npm'>
+<TabItem value='expo'>
 
 ```bash
-npm install @react-native-clipboard/clipboard
+npx expo install expo-clipboard
+```
+
+</TabItem>
+</Tabs>
+
+#### File Uploads through file picker
+
+Install [`react-native-document-picker`](https://github.com/rnmods/react-native-document-picker) for RN CLI or [`expo-document-picker`](https://docs.expo.dev/versions/latest/sdk/document-picker/) for Expo CLI to access the file picker and upload the file.
+
+<Tabs
+  defaultValue='rncli'
+  values={[
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
+  ]}
+>
+<TabItem value='rncli'>
+
+```bash
+yarn add react-native-document-picker
+# or
+npm install react-native-document-picker
+```
+
+</TabItem>
+<TabItem value='expo'>
+
+```bash
+npx expo install expo-document-picker
 ```
 
 </TabItem>
@@ -299,83 +362,3 @@ npm install @react-native-clipboard/clipboard
 
 Dependencies such as `react-native-document-picker`, `react-native-gesture-handler`, and `react-native-reanimated` don't have AndroidX support.
 But an awesome tool named [jetifier](https://github.com/mikehardy/jetifier) is quite useful to patch these dependencies with AndroidX support.
-
-## Expo Installation
-
-Stream Chat for React Native is set up for parity on Expo, expo requires a different set of dependencies than bare React Native, in your project directory run.
-
-### Add Required Dependencies
-
-```bash
-npx expo install stream-chat-expo
-npx expo install @react-native-community/netinfo expo-document-picker expo-file-system expo-haptics expo-image-manipulator expo-image-picker expo-media-library expo-sharing react-native-gesture-handler react-native-reanimated react-native-svg
-```
-
-### Additional Steps
-
-For some of the packages listed below, there are additional steps required to setup the package:
-
-- `react-native-reanimated` - [additional installation steps](https://docs.expo.dev/versions/latest/sdk/reanimated/#installation)
-
-  Add the Reanimated babel plugin to your babel.config.js:
-
-  ```js
-    module.exports = {
-        ...
-        plugins: [
-            ...
-            'react-native-reanimated/plugin',
-        ],
-    };
-  ```
-
-- `react-native-gesture-handler` - [additional installation steps](https://docs.expo.dev/versions/latest/sdk/gesture-handler/#api)
-
-  RNGH requires the package to be imported at the **top of the entry file** before anything else, this is usually your `App.js` or `index.js` file.
-
-  ```tsx
-  import 'react-native-gesture-handler';
-  import { AppRegistry } from 'react-native';
-
-  import App from './App';
-  import { name as appName } from './app.json';
-
-  AppRegistry.registerComponent(appName, () => App);
-  ```
-
-  Also wrap your entry point with `<GestureHandlerRootView>` or `gestureHandlerRootHO`
-
-  ```jsx
-  import { GestureHandlerRootView } from 'react-native-gesture-handler';
-  import { OverlayProvider } from 'stream-chat-react-native';
-
-  export default function App() {
-    return (
-      <GestureHandlerRootView>
-        <OverlayProvider>{/* Your app code goes here */}</OverlayProvider>
-      </GestureHandlerRootView>
-    );
-  }
-  ```
-
-### Add Optional Dependencies
-
-#### Video playing support
-
-Install `expo-av` in your React Native project.
-
-> Available in stream-chat-expo >= v4.7.0
-
-Installing this package allows you to play the video files/attachments in the chat. Otherwise by default, video files will be opened in default browser of the device.
-
-```bash
-expo install expo-av
-```
-
-#### Copying messages
-
-Install `expo-clipboard` to be able to copy messages to the clipboard.
-
-```bash
-expo install expo-clipboard
-```

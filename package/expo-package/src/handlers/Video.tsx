@@ -1,4 +1,4 @@
-import { VideoComponent } from '../optionalDependencies/Video';
+import { VideoComponent } from '../optionalDependencies';
 
 export const Video = VideoComponent
   ? ({ onPlaybackStatusUpdate, paused, resizeMode, style, uri, videoRef }) => (

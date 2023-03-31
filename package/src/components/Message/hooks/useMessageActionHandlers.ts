@@ -2,10 +2,7 @@ import type { MessageResponse } from 'stream-chat';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
-import type {
-  MessageContextValue,
-  Reactions,
-} from '../../../contexts/messageContext/MessageContext';
+import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
@@ -22,7 +19,6 @@ export const useMessageActionHandlers = <
   sendReaction,
   setEditingState,
   setQuotedMessageState,
-  supportedReactions,
 }: Pick<
   MessagesContextValue<StreamChatGenerics>,
   | 'sendReaction'
@@ -89,41 +85,26 @@ export const useMessageActionHandlers = <
     setEditingState(message);
   };
 
-  const clientId = client.userID;
-  const isMessageTypeDeleted = message.type === 'deleted';
-
-  const hasReactions =
-    !isMessageTypeDeleted && !!message.latest_reactions && message.latest_reactions.length > 0;
-
-  const reactions = hasReactions
-    ? supportedReactions.reduce((acc, cur) => {
-        const reactionType = cur.type;
-        const reactionsOfReactionType = message.latest_reactions?.filter(
-          (reaction) => reaction.type === reactionType,
-        );
-
-        if (reactionsOfReactionType?.length) {
-          const hasOwnReaction = reactionsOfReactionType.some(
-            (reaction) => reaction.user_id === clientId,
-          );
-          acc.push({ own: hasOwnReaction, type: reactionType });
-        }
-
-        return acc;
-      }, [] as Reactions)
-    : [];
-
   const handleToggleReaction = async (reactionType: string) => {
     const messageId = message.id;
-    const ownReaction = !!reactions.find(
-      (reaction) => reaction.own && reaction.type === reactionType,
-    );
-
+    const own_reactions = message.own_reactions ?? [];
+    const userExistingReaction = own_reactions.find((reaction) => {
+      // own user should only ever contain the current user id
+      // just in case we check to prevent bugs with message updates from breaking reactions
+      if (reaction.user && client.userID === reaction.user.id && reaction.type === reactionType) {
+        return true;
+      } else if (reaction.user && client.userID !== reaction.user.id) {
+        console.warn(
+          `message.own_reactions contained reactions from a different user, this indicates a bug`,
+        );
+      }
+      return false;
+    });
     // Change reaction in local state, make API call in background, revert to old message if fails
     try {
       if (channel && messageId) {
-        if (ownReaction) {
-          await deleteReaction(reactionType, messageId);
+        if (userExistingReaction) {
+          await deleteReaction(userExistingReaction.type, messageId);
         } else {
           await sendReaction(reactionType, messageId);
         }
