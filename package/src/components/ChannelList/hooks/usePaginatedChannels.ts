@@ -112,9 +112,7 @@ export const usePaginatedChannels = <
       }
 
       // TODO: Think about the implications of this.
-      const channelQueryResponse = await client.queryChannels(filters, sort, newOptions, {
-        skipInitialization: enableOfflineSupport ? activeChannelIds : activeChannels.current,
-      });
+      const channelQueryResponse = await client.queryChannels(filters, sort, newOptions);
       if (isQueryStale() || !isMountedRef.current) {
         return;
       }
