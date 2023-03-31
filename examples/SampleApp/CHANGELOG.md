@@ -1,5 +1,17 @@
 # Change Log
 
+### [1.19.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.19.2...sampleapp@v1.19.3) (2023-03-31)
+
+
+### Bug Fixes
+
+* removing a reaction outside of the latest reactions causes to add it ([#2028](https://github.com/GetStream/stream-chat-react-native/issues/2028)) ([87cf045](https://github.com/GetStream/stream-chat-react-native/commit/87cf045adde463b7b0a044ab3bd50dbc676f0122))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.19.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.19.1...sampleapp@v1.19.2) (2023-03-21)
 
 
