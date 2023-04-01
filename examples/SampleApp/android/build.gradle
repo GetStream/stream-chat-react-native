@@ -3,10 +3,10 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 buildscript {
     ext {
-        buildToolsVersion = "33.0.1"
+        buildToolsVersion = "31.0.0"
         minSdkVersion = 21
-        compileSdkVersion = 33
-        targetSdkVersion = 33
+        compileSdkVersion = 31
+        targetSdkVersion = 31
         androidXCore = "1.0.2"
         ndkVersion = "21.4.7075529"
         kotlinVersion = '1.5.30'
@@ -24,7 +24,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:7.3.1")
+        classpath("com.android.tools.build:gradle:7.2.1")
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("de.undercouch:gradle-download-task:5.0.1")
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
