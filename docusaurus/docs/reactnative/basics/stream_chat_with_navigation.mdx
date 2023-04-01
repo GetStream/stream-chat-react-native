@@ -44,7 +44,7 @@ You can choose whatever suits your needs best, theming, connection handling, and
 
 Having it higher in the _stack_ helps to ensure it is not unmounted at times when a connection is present.
 If `Chat` is unmounted with a connection present you may have to implement some connection handling functions yourself to ensure you reconnect when the app is, for instance, reopened from the background.
-The WebSocket connection closes on it's own approximately 15 seconds after the app is backgrounded.
+The WebSocket connection closes on it's own approximately 15 seconds after the app is put into background.
 Not handling the connection on [`appState`](https://reactnative.dev/docs/appstate) changes will also effect [how Stream Chat handles Push Notifications](../guides/push_notifications_v2.mdx).
 
 :::
@@ -130,12 +130,12 @@ This can be accessed from React Navigation using the `useHeaderHeight` hook from
 
 The `AttachmentPicker` is a keyboard-esk view that allows a user to attach photos and files.
 Part of the construction of the `AttachmentPicker` is a bottom-sheet provided by the `OverlayProvider`.
-This bottom-sheet provides a grid of images in a scrollable list that can be lifted up to make selecting images easier.
+This bottom-sheet provides a grid of images in a scroll-able list that can be lifted up to make selecting images easier.
 The placement of the `AttachmentPicker` is dependant on two values, the `bottomInset` and the `topInset`.
 
 ### Top Inset
 
-`topInset` is used to determine how high the scrollable bottom-sheet can go when opened.
+`topInset` is used to determine how high the scroll-able bottom-sheet can go when opened.
 `topInset` defaults to 0 and covers the entire screen, or it can be set to the [top safe area inset](https://reactnavigation.org/docs/handling-safe-area/#use-the-hook-for-more-control) if desired.
 The most common choice when using React Navigation is to get the header height using the `useHeaderHeight` hook from `@react-navigation/stack` and set the top inset to the given height for a nice visual result where the picker open to the header.
 

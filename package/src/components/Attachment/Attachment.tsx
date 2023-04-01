@@ -58,10 +58,7 @@ const AttachmentWithContext = <
     return <Giphy attachment={attachment} giphyVersion={giphyVersion} />;
   }
 
-  if (
-    (attachment.title_link || attachment.og_scrape_url) &&
-    (attachment.image_url || attachment.thumb_url)
-  ) {
+  if (attachment.og_scrape_url || attachment.title_link) {
     return <UrlPreview {...attachment} />;
   }
 

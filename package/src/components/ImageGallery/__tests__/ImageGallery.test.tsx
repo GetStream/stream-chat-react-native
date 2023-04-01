@@ -4,7 +4,7 @@ import type { SharedValue } from 'react-native-reanimated';
 
 import { act } from 'react-test-renderer';
 
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import {
   ImageGalleryContext,
@@ -45,7 +45,7 @@ const getComponent = (props: Partial<ImageGalleryContextValue>) => (
 );
 
 describe('ImageGallery', () => {
-  it('render image gallery component', () => {
+  it('render image gallery component', async () => {
     const { queryAllByA11yLabel } = render(
       getComponent({
         messages: [
@@ -59,11 +59,14 @@ describe('ImageGallery', () => {
         ] as unknown as MessageType<DefaultStreamChatGenerics>[],
       }),
     );
-    expect(queryAllByA11yLabel('Image Item')).toHaveLength(2);
-    expect(queryAllByA11yLabel('Image Gallery Video')).toHaveLength(1);
+
+    await waitFor(() => {
+      expect(queryAllByA11yLabel('Image Item')).toHaveLength(2);
+      expect(queryAllByA11yLabel('Image Gallery Video')).toHaveLength(1);
+    });
   });
 
-  it('handle handleLoad function when video item present and payload duration is available', () => {
+  it('handle handleLoad function when video item present and payload duration is available', async () => {
     const attachment = generateVideoAttachment({ type: 'video' });
     const message = generateMessage({
       attachments: [attachment],
@@ -86,10 +89,13 @@ describe('ImageGallery', () => {
     });
 
     const videoDurationComponent = getByA11yLabel('Video Duration');
-    expect(videoDurationComponent.children[0]).toBe('00:10');
+
+    await waitFor(() => {
+      expect(videoDurationComponent.children[0]).toBe('00:10');
+    });
   });
 
-  it('handle handleLoad function when video item present and payload duration is undefined', () => {
+  it('handle handleLoad function when video item present and payload duration is undefined', async () => {
     const { getByA11yLabel } = render(
       getComponent({
         messages: [
@@ -109,10 +115,12 @@ describe('ImageGallery', () => {
     });
 
     const videoDurationComponent = getByA11yLabel('Video Duration');
-    expect(videoDurationComponent.children[0]).toBe('00:00');
+    await waitFor(() => {
+      expect(videoDurationComponent.children[0]).toBe('00:00');
+    });
   });
 
-  it('handle handleProgress function when video item present and payload is well defined', () => {
+  it('handle handleProgress function when video item present and payload is well defined', async () => {
     const attachment = generateVideoAttachment({ type: 'video' });
     const message = generateMessage({
       attachments: [attachment],
@@ -143,10 +151,12 @@ describe('ImageGallery', () => {
 
     const progressDurationComponent = getByA11yLabel('Progress Duration');
 
-    expect(progressDurationComponent.children[0]).toBe('00:03');
+    await waitFor(() => {
+      expect(progressDurationComponent.children[0]).toBe('00:03');
+    });
   });
 
-  it('handle handleProgress function when video item present and payload is not defined', () => {
+  it('handle handleProgress function when video item present and payload is not defined', async () => {
     const { getByA11yLabel } = render(
       getComponent({
         messages: [
@@ -171,10 +181,12 @@ describe('ImageGallery', () => {
 
     const progressDurationComponent = getByA11yLabel('Progress Duration');
 
-    expect(progressDurationComponent.children[0]).toBe('00:00');
+    await waitFor(() => {
+      expect(progressDurationComponent.children[0]).toBe('00:00');
+    });
   });
 
-  it('handle handleEnd function when video item present', () => {
+  it('handle handleEnd function when video item present', async () => {
     const attachment = generateVideoAttachment({ type: 'video' });
     const message = generateMessage({
       attachments: [attachment],
@@ -198,7 +210,9 @@ describe('ImageGallery', () => {
     });
 
     const progressDurationComponent = getByA11yLabel('Progress Duration');
-    expect(getByA11yLabel('Play Icon')).not.toBeUndefined();
-    expect(progressDurationComponent.children[0]).toBe('00:10');
+    await waitFor(() => {
+      expect(getByA11yLabel('Play Icon')).not.toBeUndefined();
+      expect(progressDurationComponent.children[0]).toBe('00:10');
+    });
   });
 });

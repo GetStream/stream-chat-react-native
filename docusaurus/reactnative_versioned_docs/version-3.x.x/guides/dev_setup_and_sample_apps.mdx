@@ -8,7 +8,7 @@ If you're thinking about contributing to our SDK, you may want to test your chan
 A good starting point its setting up our SampleApp application: A project which implements all of our main features.
 The following steps can be used to run all our internal sample projects like
 
-### Cloning the SDK repo
+### Cloning the SDK repository
 
 You can start by [forking our repository](https://docs.github.com/en/github/getting-started-with-github/quickstart/fork-a-repo) and then
 cloning your fork into your local machine:
@@ -26,7 +26,7 @@ cd stream-chat-react-native;
 yarn install;
 ```
 
-Now, navitate to the SampleApp folder and install its dependencies as well:
+Now, navigate to the SampleApp folder and install its dependencies as well:
 
 ```
 cd examples/SampleApp;
@@ -75,7 +75,7 @@ Replace the `stream-chat-react-native` dependency with following:
 "stream-chat-expo": "link:../stream-chat-react-native/package/expo-package", // If youre using expo
 ```
 
-Here I am assuming that the clone of `stream-chat-react-native` and your app are under common directory. e.g.,
+Here I am assuming that the clone of `stream-chat-react-native` and your app are under common directory. For example,
 
 ```
 -- project-dir
@@ -83,10 +83,10 @@ Here I am assuming that the clone of `stream-chat-react-native` and your app are
     -- my-chat-app
 ```
 
-### Metro config
+### Metro configuration
 
 If you run your app at this point, you will run into some issues related to `dependency collision`.
-Since metro bundler will have node_module dependencies from your `app` folder, `stream-chat-react-native`
+Since metro bundler will have `node_module` dependencies from your `app` folder, `stream-chat-react-native`
 folder and `stream-chat-react-native/native-package` folder. And it doesn't know how to resolve those
 dependencies.
 
@@ -138,10 +138,10 @@ watchman watch-del-all
 yarn start --reset-cache
 ```
 
-And thats all! If you make code changes in `stream-chat-react-native`, they should reflect in your application.
+And that's all. If you make code changes in `stream-chat-react-native`, they should reflect in your application.
 
 ## Samples repository
 
 Apart from the samples we use for internal development, we also provide some other
 small clone projects like a Slack clone and an iMessage clone. You can check out the code
-in [our repository](https://github.com/GetStream/react-native-samples) and even run the apps yourself!
+in [our repository](https://github.com/GetStream/react-native-samples) and even run the apps yourself.

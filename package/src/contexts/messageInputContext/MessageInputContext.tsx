@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
 
-import { Alert, Keyboard } from 'react-native';
+import { Alert, Keyboard, Platform } from 'react-native';
 
 import type { TextInput, TextInputProps } from 'react-native';
 
@@ -38,6 +38,7 @@ import type { UploadProgressIndicatorProps } from '../../components/MessageInput
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import { compressImage, getLocalAssetUri, pickDocument } from '../../native';
 import type { Asset, DefaultStreamChatGenerics, File, UnknownType } from '../../types/types';
+import { removeReservedFields } from '../../utils/removeReservedFields';
 import {
   ACITriggerSettings,
   ACITriggerSettingsParams,
@@ -326,12 +327,7 @@ export type InputMessageInputContextValue<
    * @overrideType Function
    */
   doDocUploadRequest?: (
-    file: {
-      name: string;
-      size?: string | number;
-      type?: string;
-      uri?: string;
-    },
+    file: File,
     channel: ChannelContextValue<StreamChatGenerics>['channel'],
   ) => Promise<SendFileAPIResponse>;
   /**
@@ -416,7 +412,7 @@ export const MessageInputProvider = <
 }>) => {
   const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
     useAttachmentPickerContext();
-  const { appSettings, client } = useChatContext<StreamChatGenerics>();
+  const { appSettings, client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
 
   const getFileUploadConfig = () => {
     const fileConfig = appSettings?.app?.file_upload_config;
@@ -490,19 +486,19 @@ export const MessageInputProvider = <
       return true;
     }
 
-    for (const image of imageUploads) {
-      if (!image || image.state === FileState.UPLOAD_FAILED) {
-        continue;
-      }
-      if (image.state === FileState.UPLOADING) {
-        // TODO: show error to user that they should wait until image is uploaded
-        return false;
+    const imagesAndFiles = [...imageUploads, ...fileUploads];
+    if (enableOfflineSupport) {
+      // Allow only if none of the attachments have unsupported status
+      for (const file of imagesAndFiles) {
+        if (file.state === FileState.NOT_SUPPORTED) {
+          return false;
+        }
       }
 
       return true;
     }
 
-    for (const file of fileUploads) {
+    for (const file of imagesAndFiles) {
       if (!file || file.state === FileState.UPLOAD_FAILED) {
         continue;
       }
@@ -574,6 +570,13 @@ export const MessageInputProvider = <
   };
 
   const pickFile = async () => {
+    if (pickDocument === null) {
+      console.log(
+        'The file picker is not installed. Check our Getting Started documentation to install it.',
+      );
+      return;
+    }
+
     if (numberOfUploads >= value.maxNumberOfFiles) {
       Alert.alert('Maximum number of files reached');
       return;
@@ -582,17 +585,28 @@ export const MessageInputProvider = <
     const result = await pickDocument({
       maxNumberOfFiles: value.maxNumberOfFiles - numberOfUploads,
     });
+
+    const MEGA_BYTES_TO_BYTES = 1024 * 1024;
+    const MAX_FILE_SIZE_TO_UPLOAD_IN_MB = 100;
+
     if (!result.cancelled && result.docs) {
-      result.docs.forEach((doc) => {
-        /**
-         * TODO: The current tight coupling of images to the image
-         * picker does not allow images picked from the file picker
-         * to be rendered in a preview via the uploadNewImage call.
-         * This should be updated alongside allowing image a file
-         * uploads together.
-         */
-        uploadNewFile(doc);
-      });
+      const totalFileSize = result.docs.reduce((acc, doc) => acc + Number(doc.size), 0);
+      if (totalFileSize / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB) {
+        Alert.alert(
+          `Maximum file size upload limit reached, please upload files below ${MAX_FILE_SIZE_TO_UPLOAD_IN_MB}MB.`,
+        );
+      } else {
+        result.docs.forEach((doc) => {
+          /**
+           * TODO: The current tight coupling of images to the image
+           * picker does not allow images picked from the file picker
+           * to be rendered in a preview via the uploadNewImage call.
+           * This should be updated alongside allowing image a file
+           * uploads together.
+           */
+          uploadNewFile(doc);
+        });
+      }
     }
   };
 
@@ -622,6 +636,62 @@ export const MessageInputProvider = <
     setText('');
   };
 
+  const mapImageUploadToAttachment = (image: ImageUpload) => {
+    const mime_type: string | boolean = lookup(image.file.filename as string);
+    return {
+      fallback: image.file.name,
+      image_url: image.url,
+      mime_type: mime_type ? mime_type : undefined,
+      original_height: image.height,
+      original_width: image.width,
+      originalFile: image.file,
+      type: 'image',
+    } as Attachment;
+  };
+
+  const mapFileUploadToAttachment = (file: FileUpload) => {
+    const mime_type: string | boolean = lookup(file.file.name as string);
+    if (file.file.type?.startsWith('image/')) {
+      return {
+        fallback: file.file.name,
+        image_url: file.url,
+        mime_type: mime_type ? mime_type : undefined,
+        originalFile: file.file,
+        type: 'image',
+      };
+    } else if (file.file.type?.startsWith('audio/')) {
+      return {
+        asset_url: file.url || file.file.uri,
+        duration: file.file.duration,
+        file_size: file.file.size,
+        mime_type: file.file.type,
+        originalFile: file.file,
+        title: file.file.name,
+        type: 'audio',
+      };
+    } else if (file.file.type?.startsWith('video/')) {
+      return {
+        asset_url: file.url || file.file.uri,
+        duration: file.file.duration,
+        file_size: file.file.size,
+        mime_type: file.file.type,
+        originalFile: file.file,
+        thumb_url: file.thumb_url,
+        title: file.file.name,
+        type: 'video',
+      };
+    } else {
+      return {
+        asset_url: file.url || file.file.uri,
+        file_size: file.file.size,
+        mime_type: file.file.type,
+        originalFile: file.file,
+        title: file.file.name,
+        type: 'file',
+      };
+    }
+  };
+
   // TODO: Figure out why this is async, as it doesn't await any promise.
   // eslint-disable-next-line require-await
   const sendMessage = async () => {
@@ -647,7 +717,15 @@ export const MessageInputProvider = <
 
     const attachments = [] as Attachment<StreamChatGenerics>[];
     for (const image of imageUploads) {
-      if (!image || image.state === FileState.UPLOAD_FAILED) {
+      if (enableOfflineSupport) {
+        if (image.state === FileState.NOT_SUPPORTED) {
+          return;
+        }
+        attachments.push(mapImageUploadToAttachment(image));
+        continue;
+      }
+
+      if ((!image || image.state === FileState.UPLOAD_FAILED) && !enableOfflineSupport) {
         continue;
       }
 
@@ -666,67 +744,32 @@ export const MessageInputProvider = <
       }
 
       // To get the mime type of the image from the file name and send it as an response for an image
-      const mime_type: string | boolean = lookup(image.file.filename as string);
-
       if (image.state === FileState.UPLOADED || image.state === FileState.FINISHED) {
-        attachments.push({
-          fallback: image.file.name,
-          image_url: image.url,
-          mime_type: mime_type ? mime_type : undefined,
-          original_height: image.height,
-          original_width: image.width,
-          type: 'image',
-        });
+        attachments.push(mapImageUploadToAttachment(image));
       }
     }
 
     for (const file of fileUploads) {
+      if (enableOfflineSupport) {
+        if (file.state === FileState.NOT_SUPPORTED) {
+          return;
+        }
+        attachments.push(mapFileUploadToAttachment(file));
+        continue;
+      }
+
       if (!file || file.state === FileState.UPLOAD_FAILED) {
         continue;
       }
+
       if (file.state === FileState.UPLOADING) {
         // TODO: show error to user that they should wait until image is uploaded
         sending.current = false;
         return;
       }
-      const mime_type: string | boolean = lookup(file.file.name as string);
 
       if (file.state === FileState.UPLOADED || file.state === FileState.FINISHED) {
-        if (file.file.type?.startsWith('image/')) {
-          attachments.push({
-            fallback: file.file.name,
-            image_url: file.url,
-            mime_type: mime_type ? mime_type : undefined,
-            type: 'image',
-          });
-        } else if (file.file.type?.startsWith('audio/')) {
-          attachments.push({
-            asset_url: file.url,
-            duration: file.file.duration,
-            file_size: file.file.size,
-            mime_type: file.file.type,
-            title: file.file.name,
-            type: 'audio',
-          });
-        } else if (file.file.type?.startsWith('video/')) {
-          attachments.push({
-            asset_url: file.url,
-            duration: file.file.duration,
-            file_size: file.file.size,
-            mime_type: file.file.type,
-            thumb_url: file.thumb_url,
-            title: file.file.name,
-            type: 'video',
-          });
-        } else {
-          attachments.push({
-            asset_url: file.url,
-            file_size: file.file.size,
-            mime_type: file.file.type,
-            title: file.file.name,
-            type: 'file',
-          });
-        }
+        attachments.push(mapFileUploadToAttachment(file));
       }
     }
 
@@ -748,7 +791,12 @@ export const MessageInputProvider = <
       // TODO: Remove this line and show an error when submit fails
       value.clearEditingState();
 
-      const updateMessagePromise = value.editMessage(updatedMessage).then(value.clearEditingState);
+      const updateMessagePromise = value
+        .editMessage(
+          // @ts-ignore
+          removeReservedFields(updatedMessage),
+        )
+        .then(value.clearEditingState);
       resetInput(attachments);
       logChatPromiseExecution(updateMessagePromise, 'update message');
 
@@ -919,7 +967,9 @@ export const MessageInputProvider = <
       if (value.doDocUploadRequest) {
         response = await value.doDocUploadRequest(file, channel);
       } else if (channel && file.uri) {
-        response = await channel.sendFile(file.uri, file.name, file.type);
+        // For the case of expo messaging app where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
+        const localAssetURI = Platform.OS === 'ios' && file.id && (await getLocalAssetUri(file.id));
+        response = await channel.sendFile(localAssetURI || file.uri, file.name, file.type);
       }
       const extraData: Partial<FileUpload> = { thumb_url: response.thumb_url, url: response.file };
       setFileUploads(getUploadSetStateAction(id, FileState.UPLOADED, extraData));
@@ -938,23 +988,9 @@ export const MessageInputProvider = <
     let response = {} as SendFileAPIResponse;
 
     try {
-      /**
-       * Expo now uses the assets-library which is also how remote
-       * native files are presented. We now return a file id from Expo
-       * only, if that file id exits we call getLocalAssetUri to download
-       * the asset for expo before uploading it. We do the same for native
-       * if the uri includes assets-library, this uses the CameraRoll.save
-       * function to also create a local uri.
-       */
-      const getLocalUri = async () => {
-        if (file.id) {
-          return await getLocalAssetUri(file.id);
-        } else if (file.uri?.match(/assets-library/)) {
-          return await getLocalAssetUri(file.uri);
-        }
-        return file.uri;
-      };
-      const uri = file.name || (await getLocalUri()) || '';
+      // For the case of expo messaging app where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
+      const localAssetURI = Platform.OS === 'ios' && file.id && (await getLocalAssetUri(file.id));
+      const uri = localAssetURI || file.uri || '';
       /**
        * We skip compression if:
        * - the file is from the camera as that should already be compressed
@@ -1015,12 +1051,7 @@ export const MessageInputProvider = <
     }
   };
 
-  const uploadNewFile = async (file: {
-    name: string;
-    size?: number | string;
-    type?: string;
-    uri?: string;
-  }) => {
+  const uploadNewFile = async (file: File) => {
     const id: string = generateRandomId();
     const mimeType: string | boolean = lookup(file.name);
 
@@ -1039,7 +1070,7 @@ export const MessageInputProvider = <
     const newFile: FileUpload = {
       duration: 0,
       file: { ...file, type: mimeType || file?.type },
-      id,
+      id: file.id || id,
       paused: true,
       progress: 0,
       state: fileState,
@@ -1073,8 +1104,11 @@ export const MessageInputProvider = <
 
     const newImage: ImageUpload = {
       file: image,
+      height: image.height,
       id,
       state: imageState,
+      url: image.uri,
+      width: image.width,
     };
 
     await Promise.all([

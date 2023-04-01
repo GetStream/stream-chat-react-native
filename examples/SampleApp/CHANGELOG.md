@@ -1,5 +1,158 @@
 # Change Log
 
+### [1.19.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.19.2...sampleapp@v1.19.3) (2023-03-31)
+
+
+### Bug Fixes
+
+* removing a reaction outside of the latest reactions causes to add it ([#2028](https://github.com/GetStream/stream-chat-react-native/issues/2028)) ([87cf045](https://github.com/GetStream/stream-chat-react-native/commit/87cf045adde463b7b0a044ab3bd50dbc676f0122))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.19.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.19.1...sampleapp@v1.19.2) (2023-03-21)
+
+
+### Bug Fixes
+
+* listen to ios more photos selection in gallery ([#1994](https://github.com/GetStream/stream-chat-react-native/issues/1994)) ([2b47ee3](https://github.com/GetStream/stream-chat-react-native/commit/2b47ee3f1357843b4ada8eb98732bef3eddfb5c2))
+* misplaced date header, header/footer component in messageList on android 33 ([#1977](https://github.com/GetStream/stream-chat-react-native/issues/1977)) ([e0386be](https://github.com/GetStream/stream-chat-react-native/commit/e0386be1aaca0a9d773b84dfa5f8e0a7aa6410bd))
+* rendering the URL Preview for appropriate attachments in message list ([2469075](https://github.com/GetStream/stream-chat-react-native/commit/2469075f65aadd982411ea5cf6fe157355e78367))
+* update podlock file of SampleApp ([2faa9d4](https://github.com/GetStream/stream-chat-react-native/commit/2faa9d4a599e78529e68fb679b144f22a6a79365))
+* update yarn.lock file of the root, packages and the example apps ([#1986](https://github.com/GetStream/stream-chat-react-native/issues/1986)) ([e7089ac](https://github.com/GetStream/stream-chat-react-native/commit/e7089ac065edf85782c2b7ca1b0b2d86ec4df787))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.19.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.19.0...sampleapp@v1.19.1) (2023-02-17)
+
+
+### Bug Fixes
+
+* misplaced date header, header/footer component in messageList on android 33 ([#1977](https://github.com/GetStream/stream-chat-react-native/issues/1977)) ([#1978](https://github.com/GetStream/stream-chat-react-native/issues/1978)) ([17908b1](https://github.com/GetStream/stream-chat-react-native/commit/17908b15fa7be070935e34e003d23015b7b8395f))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+## [1.19.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.18.0...sampleapp@v1.19.0) (2023-02-14)
+
+
+### Features
+
+* **build:** add shared github action to install and build SDK ([#1962](https://github.com/GetStream/stream-chat-react-native/issues/1962)) ([3bd0fcc](https://github.com/GetStream/stream-chat-react-native/commit/3bd0fccf4e4e91979795cd5c66ef224d53cd0d4c))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+## [1.18.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.17.2...sampleapp@v1.18.0) (2023-02-09)
+
+
+### Features
+
+* add prop for helping multiple channel list implementation ([#1951](https://github.com/GetStream/stream-chat-react-native/issues/1951)) ([e6f700c](https://github.com/GetStream/stream-chat-react-native/commit/e6f700cd91e4a8ad308e18560b37536e282f6e61))
+
+
+### Bug Fixes
+
+* do not report invalid tlds as valid urls ([#1950](https://github.com/GetStream/stream-chat-react-native/issues/1950)) ([6917dcd](https://github.com/GetStream/stream-chat-react-native/commit/6917dcd9a547ecdbf0574aa50865bfc01c590122))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.17.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.17.1...sampleapp@v1.17.2) (2023-02-02)
+
+
+### Bug Fixes
+
+* fixes clipboard detection on android when not installed ([#1936](https://github.com/GetStream/stream-chat-react-native/issues/1936)) ([a9ce8b3](https://github.com/GetStream/stream-chat-react-native/commit/a9ce8b303f93ae58d392c3cfed937571955639b1))
+* typing issues in sample app ([#1942](https://github.com/GetStream/stream-chat-react-native/issues/1942)) ([e2d34be](https://github.com/GetStream/stream-chat-react-native/commit/e2d34be61be16ec278b2d46ad0e314d57801b3b7))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.17.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.17.0...sampleapp@v1.17.1) (2023-01-26)
+
+
+### Bug Fixes
+
+* improve ChannelList performance by improving threshold calls and rerenders of Header ([#1919](https://github.com/GetStream/stream-chat-react-native/issues/1919)) ([6ebabb6](https://github.com/GetStream/stream-chat-react-native/commit/6ebabb609f1cea748762ce01f472a84109b0efdf))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+## [1.17.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.16.0...sampleapp@v1.17.0) (2023-01-19)
+
+
+### Features
+
+* add max file upload size limit of 100MB ([#1888](https://github.com/GetStream/stream-chat-react-native/issues/1888)) ([7ff1698](https://github.com/GetStream/stream-chat-react-native/commit/7ff169818e66cf9bbdf4b4de28fa804f48ea076b))
+* update expo example app to expo 47 ([#1892](https://github.com/GetStream/stream-chat-react-native/issues/1892)) ([e396ec0](https://github.com/GetStream/stream-chat-react-native/commit/e396ec09e281f659f63efa55a3f2499d6ce0d310))
+* upgrading stream-chat to v8.2.1 ([25e94e9](https://github.com/GetStream/stream-chat-react-native/commit/25e94e9b902e267ffd55bb6788d6b5d0cc2d5610))
+* upgrading stream-chat tov8.2.1 ([679bcc1](https://github.com/GetStream/stream-chat-react-native/commit/679bcc1df6cda9fa73564fb5aebcfdae4223fb26))
+
+
+### Bug Fixes
+
+* react-native-gesture-handler:assertNoMultipleInstances ([#1915](https://github.com/GetStream/stream-chat-react-native/issues/1915)) ([788902d](https://github.com/GetStream/stream-chat-react-native/commit/788902dee560da5ee517599027cd5fd59564cb47))
+* **sampleApp:** crash on load due to import of devsettings module ([e0184b6](https://github.com/GetStream/stream-chat-react-native/commit/e0184b6cb52632578f69e8598623cb4d4e3f5205))
+* **sampleApp:** crash on load due to import of devsettings module in production ([18702bc](https://github.com/GetStream/stream-chat-react-native/commit/18702bc0ed946669bfb8a1852d47a3a0b01d264c))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+## [1.16.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.15.1...sampleapp@v1.16.0) (2022-12-23)
+
+
+### Features
+
+* **SampleApp:** Add dev menu item to clear the local DB ([#1874](https://github.com/GetStream/stream-chat-react-native/issues/1874)) ([2d727ac](https://github.com/GetStream/stream-chat-react-native/commit/2d727ac556e49eef00c8da08b8d1450e50684ffb))
+* initial unread count example ([#1868](https://github.com/GetStream/stream-chat-react-native/issues/1868)) ([d283267](https://github.com/GetStream/stream-chat-react-native/commit/d283267db8bd3d577a9c46d02d0e2894b8341915))
+
+
+### Bug Fixes
+
+* always watch channel before passing to channel component ([#1869](https://github.com/GetStream/stream-chat-react-native/issues/1869)) ([4ae9dce](https://github.com/GetStream/stream-chat-react-native/commit/4ae9dceb418c75176277ce285e861549cafcd6b6))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.15.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.15.0...sampleapp@v1.15.1) (2022-12-03)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+## [1.15.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.14.4...sampleapp@v1.15.0) (2022-12-01)
+
+
+### Features
+
+* optimistic DB and UI updates for reactions and messages ([#1758](https://github.com/GetStream/stream-chat-react-native/issues/1758)) ([abe2b70](https://github.com/GetStream/stream-chat-react-native/commit/abe2b70d91bcfb689daa2b7bbf6be205c038fe57))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.14.4](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.14.3...sampleapp@v1.14.4) (2022-11-18)
 
 

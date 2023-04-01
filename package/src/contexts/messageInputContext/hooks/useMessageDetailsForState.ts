@@ -84,6 +84,7 @@ export const useMessageDetailsForState = <
             },
             id,
             state: 'finished',
+            thumb_url: attachment.thumb_url,
             url: attachment.asset_url,
           });
         }

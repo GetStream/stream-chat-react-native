@@ -1,22 +1,25 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 
 export const useAppStateListener = (onForeground?: () => void, onBackground?: () => void) => {
   const appStateRef = useRef(AppState.currentState);
-  const handleAppStateChange = useCallback(
-    (nextAppState: AppStateStatus) => {
-      const prevAppState = appStateRef.current;
-      if (prevAppState.match(/inactive|background/) && nextAppState === 'active') {
-        onForeground?.();
-      } else if (prevAppState === 'active' && nextAppState.match(/inactive|background/)) {
-        onBackground?.();
-      }
-      appStateRef.current = nextAppState;
-    },
-    [onBackground, onForeground],
-  );
+  const onForegroundRef = useRef(onForeground);
+  const onBackgroundRef = useRef(onBackground);
+
+  // setting refs to avoid passing the functions as dependencies to useEffect
+  onForegroundRef.current = onForeground;
+  onBackgroundRef.current = onBackground;
 
   useEffect(() => {
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      const prevAppState = appStateRef.current;
+      if (prevAppState.match(/inactive|background/) && nextAppState === 'active') {
+        onForegroundRef.current?.();
+      } else if (prevAppState === 'active' && nextAppState.match(/inactive|background/)) {
+        onBackgroundRef.current?.();
+      }
+      appStateRef.current = nextAppState;
+    };
     const subscription = AppState.addEventListener('change', handleAppStateChange);
 
     return () => {
@@ -28,5 +31,5 @@ export const useAppStateListener = (onForeground?: () => void, onBackground?: ()
         AppState.removeEventListener('change', handleAppStateChange);
       }
     };
-  }, [handleAppStateChange]);
+  }, []);
 };

@@ -61,6 +61,10 @@ export type ChannelListProps<
     | 'numberOfSkeletons'
   >
 > & {
+  /** Optional function to filter channels prior to rendering the list. Do not use any complex logic that would delay the loading of the ChannelList. We recommend using a pure function with array methods like filter/sort/reduce. */
+  channelRenderFilterFn?: (
+    channels: Array<Channel<StreamChatGenerics>>,
+  ) => Array<Channel<StreamChatGenerics>>;
   /**
    * Object containing channel query filters
    *
@@ -152,6 +156,8 @@ export type ChannelListProps<
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
+   * @deprecated use onNewMessageNotification instead
+   *
    * Override the default listener/handler for event `notification.message_new`
    * This event is received on channel, which is not being watched.
    *
@@ -161,6 +167,34 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onMessageNew?: (
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    event: Event<StreamChatGenerics>,
+  ) => void;
+  /**
+   * Override the default listener/handler for event `message.new`
+   * This event is received on channel, when a new message is added on a channel.
+   *
+   * @param lockChannelOrder If set to true, channels won't dynamically sort by most recent message, defaults to false
+   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
+   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `message.new` event
+   *
+   * @overrideType Function
+   * */
+  onNewMessage?: (
+    lockChannelOrder: boolean,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    event: Event<StreamChatGenerics>,
+  ) => void;
+  /**
+   * Override the default listener/handler for event `notification.message_new`
+   * This event is received on channel, which is not being watched.
+   *
+   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
+   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.message_new` event
+   *
+   * @overrideType Function
+   * */
+  onNewMessageNotification?: (
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
     event: Event<StreamChatGenerics>,
   ) => void;
@@ -206,6 +240,7 @@ export const ChannelList = <
 ) => {
   const {
     additionalFlatListProps = {},
+    channelRenderFilterFn,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     FooterLoadingIndicator = ChannelListFooterLoadingIndicator,
     filters = DEFAULT_FILTERS,
@@ -215,8 +250,8 @@ export const ChannelList = <
     ListHeaderComponent,
     LoadingErrorIndicator = LoadingErrorIndicatorDefault,
     LoadingIndicator = ChannelListLoadingIndicator,
-    // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
-    loadMoreThreshold = 2,
+    // https://stackoverflow.com/a/60666252/10826415
+    loadMoreThreshold = 0.1,
     lockChannelOrder = false,
     maxUnreadCount = 255,
     numberOfSkeletons = 6,
@@ -229,6 +264,8 @@ export const ChannelList = <
     onMessageNew,
     onRemovedFromChannel,
     onSelect,
+    onNewMessage,
+    onNewMessageNotification,
     options = DEFAULT_OPTIONS,
     Preview = ChannelPreviewMessenger,
     PreviewAvatar,
@@ -242,7 +279,7 @@ export const ChannelList = <
   } = props;
 
   const [forceUpdate, setForceUpdate] = useState(0);
-  const { enableOfflineSupport, subscribeConnectionRecoveredCallback } = useChatContext();
+  const { enableOfflineSupport } = useChatContext<StreamChatGenerics>();
   const {
     channels,
     error,
@@ -259,6 +296,7 @@ export const ChannelList = <
     enableOfflineSupport,
     filters,
     options,
+    setForceUpdate,
     sort,
   });
 
@@ -297,11 +335,13 @@ export const ChannelList = <
 
   useNewMessage({
     lockChannelOrder,
+    onNewMessage,
     setChannels,
   });
 
   useNewMessageNotification({
     onMessageNew,
+    onNewMessageNotification,
     setChannels,
   });
 
@@ -328,18 +368,9 @@ export const ChannelList = <
     });
   }, [channelIdsStr, staticChannelsActive]);
 
-  useEffect(() => {
-    const unsubscribe = subscribeConnectionRecoveredCallback(() => {
-      refreshList();
-      setForceUpdate((count) => count + 1);
-    });
-
-    return () => unsubscribe();
-  });
-
   const channelsContext = useCreateChannelsContext({
     additionalFlatListProps,
-    channels,
+    channels: channelRenderFilterFn ? channelRenderFilterFn(channels ?? []) : channels,
     EmptyStateIndicator,
     error,
     FooterLoadingIndicator,

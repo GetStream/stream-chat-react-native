@@ -4,6 +4,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { Attachment } from 'stream-chat';
 
 import { GalleryImage } from './GalleryImage';
+import { ImageReloadIndicator } from './ImageReloadIndicator';
 import { buildGallery } from './utils/buildGallery/buildGallery';
 
 import type { Thumbnail } from './utils/buildGallery/types';
@@ -67,6 +68,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'absolute',
   },
+  imageReloadContainerStyle: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   moreImagesContainer: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -108,7 +114,7 @@ export type GalleryPropsWithContext<
      * of minor release, we are keeping those props.
      *
      * Also `message` type should ideally be imported from MessageContextValue and not be explicitely mentioned
-     * here, but due to some circular dependencies within the SDK, it causes "exccesive deep nesting" issue with
+     * here, but due to some circular dependencies within the SDK, it causes "excessive deep nesting" issue with
      * typescript within Channel component. We should take it as a mini-project and resolve all these circular imports.
      *
      * TODO: Fix circular dependencies of imports
@@ -170,13 +176,17 @@ const GalleryWithContext = <
   };
 
   const imagesAndVideos = [...(images || []), ...(videos || [])];
+  const imagesAndVideosValue = `${images?.length}${videos?.length}${images
+    ?.map((i) => `${i.image_url}${i.thumb_url}`)
+    .join('')}${videos?.map((i) => `${i.image_url}${i.thumb_url}`).join('')}`;
+
   const { height, invertedDirections, thumbnailGrid, width } = useMemo(
     () =>
       buildGallery({
         images: imagesAndVideos,
         sizeConfig,
       }),
-    [imagesAndVideos.length],
+    [imagesAndVideosValue],
   );
 
   if (!imagesAndVideos?.length) return null;
@@ -448,8 +458,13 @@ const GalleryImageThumbnail = <
   GalleryThumbnailProps<StreamChatGenerics>,
   'ImageLoadingFailedIndicator' | 'ImageLoadingIndicator' | 'thumbnail' | 'borderRadius'
 >) => {
-  const { isLoadingImage, isLoadingImageError, setLoadingImage, setLoadingImageError } =
-    useLoadingImage();
+  const {
+    isLoadingImage,
+    isLoadingImageError,
+    onReloadImage,
+    setLoadingImage,
+    setLoadingImageError,
+  } = useLoadingImage();
 
   const {
     theme: {
@@ -467,11 +482,17 @@ const GalleryImageThumbnail = <
       }}
     >
       {isLoadingImageError ? (
-        <ImageLoadingFailedIndicator style={[styles.imageLoadingErrorIndicatorStyle]} />
+        <>
+          <ImageLoadingFailedIndicator style={styles.imageLoadingErrorIndicatorStyle} />
+          <ImageReloadIndicator
+            onReloadImage={onReloadImage}
+            style={styles.imageReloadContainerStyle}
+          />
+        </>
       ) : (
         <>
           <GalleryImage
-            onError={(error) => {
+            onError={({ nativeEvent: { error } }) => {
               console.warn(error);
               setLoadingImage(false);
               setLoadingImageError(true);
@@ -490,7 +511,7 @@ const GalleryImageThumbnail = <
             uri={thumbnail.url}
           />
           {isLoadingImage && (
-            <View style={[styles.imageLoadingIndicatorContainer]}>
+            <View style={styles.imageLoadingIndicatorContainer}>
               <ImageLoadingIndicator style={styles.imageLoadingIndicatorStyle} />
             </View>
           )}

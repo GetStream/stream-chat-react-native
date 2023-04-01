@@ -3,6 +3,8 @@
 exports[`AttachButton should render a disabled AttachButton 1`] = `
 <RNGestureHandlerButton
   collapsable={false}
+  delayLongPress={600}
+  enabled={false}
   exclusive={true}
   handlerTag={2}
   handlerType="NativeViewGestureHandler"
@@ -20,6 +22,7 @@ exports[`AttachButton should render a disabled AttachButton 1`] = `
   onHandlerStateChange={[Function]}
   rippleColor={0}
   testID="attach-button"
+  touchSoundDisabled={false}
 >
   <View
     accessible={true}
@@ -87,6 +90,8 @@ exports[`AttachButton should render a disabled AttachButton 1`] = `
 exports[`AttachButton should render an enabled AttachButton 1`] = `
 <RNGestureHandlerButton
   collapsable={false}
+  delayLongPress={600}
+  enabled={true}
   exclusive={true}
   handlerTag={1}
   handlerType="NativeViewGestureHandler"
@@ -104,6 +109,7 @@ exports[`AttachButton should render an enabled AttachButton 1`] = `
   onHandlerStateChange={[Function]}
   rippleColor={0}
   testID="attach-button"
+  touchSoundDisabled={false}
 >
   <View
     accessible={true}

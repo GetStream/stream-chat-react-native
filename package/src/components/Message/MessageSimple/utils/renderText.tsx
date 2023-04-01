@@ -109,15 +109,15 @@ export const renderText = <
   if (!text) return null;
 
   let newText = text.trim();
-  const urls = parseLinksFromText(newText);
+  const linkInfos = parseLinksFromText(newText);
 
-  for (const urlInfo of urls) {
-    const displayLink = truncate(urlInfo.encoded, {
+  for (const linkInfo of linkInfos) {
+    const displayLink = truncate(linkInfo.raw, {
       length: 200,
       omission: '...',
     });
-    const markdown = `[${displayLink}](${urlInfo.scheme}${urlInfo.encoded})`;
-    newText = newText.replace(urlInfo.raw, markdown);
+    const markdown = `[${displayLink}](${linkInfo.encodedUrl})`;
+    newText = newText.replace(linkInfo.raw, markdown);
   }
 
   newText = newText.replace(/[<&"'>]/g, '\\$&');
@@ -245,7 +245,9 @@ export const renderText = <
 
     return (
       <Text key={state.key} onLongPress={onLongPress} onPress={onPress} style={styles.mentions}>
-        {Array.isArray(node.content) ? node.content[0].content || '' : output(node.content, state)}
+        {Array.isArray(node.content)
+          ? node.content.reduce((acc, current) => acc + current.content, '') || ''
+          : output(node.content, state)}
       </Text>
     );
   };
@@ -261,6 +263,8 @@ export const renderText = <
   );
 
   const customRules = {
+    // do not render images, we will scrape them out of the message and show on attachment card component
+    image: { match: () => null },
     link: { react: link },
     list: { react: list },
     // Truncate long text content in the message overlay
@@ -323,7 +327,10 @@ export const ListOutput = ({ node, output, state, styles }: ListOutputProps) => 
         if (item === null) {
           return (
             <ListRow key={index} style={styles?.listRow} testID='list-item'>
-              <Bullet index={node.ordered && indexAfterStart} />
+              <Bullet
+                index={node.ordered && indexAfterStart}
+                style={node.ordered ? styles?.listItemNumber : styles?.listItemBullet}
+              />
             </ListRow>
           );
         }
@@ -334,7 +341,10 @@ export const ListOutput = ({ node, output, state, styles }: ListOutputProps) => 
 
         return (
           <ListRow key={index} style={styles?.listRow} testID='list-item'>
-            <Bullet index={node.ordered && indexAfterStart} />
+            <Bullet
+              index={node.ordered && indexAfterStart}
+              style={node.ordered ? styles?.listItemNumber : styles?.listItemBullet}
+            />
             <ListItem key={1} style={[styles?.listItemText, style]}>
               {output(item, state)}
             </ListItem>
@@ -350,13 +360,13 @@ interface BulletProps extends TextProps {
 }
 
 const Bullet = ({ index, style }: BulletProps) => (
-  <Text key={0} style={[style, defaultMarkdownStyles.listItemNumber]}>
+  <Text key={0} style={style}>
     {index ? `${index}. ` : '\u2022 '}
   </Text>
 );
 
-const ListRow = (props: PropsWithChildren<ViewProps>) => (
-  <Text style={[props.style, defaultMarkdownStyles.listRow]}>{props.children}</Text>
+const ListRow = ({ children, style }: PropsWithChildren<ViewProps>) => (
+  <Text style={style}>{children}</Text>
 );
 
 const ListItem = ({ children, style }: PropsWithChildren<TextProps>) => (

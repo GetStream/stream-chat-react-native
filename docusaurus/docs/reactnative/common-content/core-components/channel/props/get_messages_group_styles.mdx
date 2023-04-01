@@ -1,7 +1,7 @@
-Messages with message list are grouped with some smart logic e.g., avatar of sender only appears for last message of the group.
+Messages with message list are grouped with some smart logic for example avatar of sender only appears for last message of the group.
 Messages are grouped together on UI if they are sent back to back by a user within certain timeframe (this timeframe can be controlled by
 a prop `MaxTimeBetweenGroupedMessages` on Channel component). `getMessagesGroupStyles` prop can be used to override the logic
-which determines the position of particular message within a group of messages e.g., top, bottom, middle, single etc. And depending
+which determines the position of particular message within a group of messages for example top, bottom, middle, single etc. And depending
 on value, certain UI elements are hidden or shown on UI e.g, message timestamp, user avatar etc.
 You can find the default logic in [`getGroupStyles`](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/MessageList/utils/getGroupStyles.ts) function.
 

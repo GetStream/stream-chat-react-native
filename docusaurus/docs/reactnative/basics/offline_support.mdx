@@ -5,7 +5,7 @@ title: Offline Support
 ---
 
 React Native Chat SDK provides OOTB support for offline mode, which means user will be able to access and interact
-with chat even when the network is off. This is an opt-in feature that needs to be explicitely enabled on application
+with chat even when the network is off. This is an opt-in feature that needs to be explicitly enabled on application
 level.
 
 > Offline support is currently not implemented for Expo package (stream-chat-expo).
@@ -17,10 +17,10 @@ The offline storage implementation currently offers the following features:
 - Access to chat when Internet connection is disabled or low.
 - Faster startup times and loading, since initial data is loaded from offline storage before performing any network requests.
 - Syncing of the offline database using WebSocket events and Sync API.
+- Optimistically update offline database during chat interactions, such as send message, add reaction, etc.
 
 The following features are currently **NOT** implemented. They will be implemented gradually as part of minor releases in v5.
 
-- Optimistically update offline database during chat interactions, such as send message, add reaction, etc.
 - Access to threads in offline mode.
 
 ## How To Enable Offline Support
@@ -28,25 +28,26 @@ The following features are currently **NOT** implemented. They will be implement
 First and foremost make sure to follow all steps from [Migrating to v5](./upgrade_helper.mdx) guide.
 To enable offline support, please follow the given steps:
 
-1. **Upgrade stream-chat dependency (optional)**
+1. **Remove stream-chat dependency (when applicable)**
 
-If you have installed `stream-chat` dependency explicitly on your application, then upgrade it to v7:
+If you have installed `stream-chat` dependency explicitly on your application, then please make sure you remove it.
+Our Chat SDK (`stream-chat-react-native`) has `stream-chat` as a dependency (not peer dependency).
+Therefore, having `stream-chat` in your app's package.json is discouraged and will probably cause random issues that will disturb the chat functionalities.
 
 ```bash
-yarn add stream-chat@7.0.0
+yarn remove stream-chat
 ```
 
 2. **Add `react-native-quick-sqlite` dependency**
 
-> At the moment, support for only v4 of `react-native-quick-sqlite` is available.
-> Support for v5 of `react-native-quick-sqlite` will be introduced in one of the upcoming minor release.
+> If you are using v5.5.1 or lower version of `stream-chat-react-native`, then please install v4 of `react-native-quick-sqlite` instead.
 
 ```bash
-  yarn add react-native-quick-sqlite@4.0.8
+  yarn add react-native-quick-sqlite@5.1.0
   npx pod-install
 ```
 
-3. **Do not wait for `connectUser` call to succeed**
+3. **Do not wait for connectUser call to succeed**
 
 It is important that you call the `connectUser` method on the chat client, before you render Chat components.
 But you don't need to wait for `connectUser` to succeed before rendering Chat components. This is to ensure:

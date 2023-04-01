@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 // RNGR's FlatList ist currently breaking the pull-to-refresh behaviour on Android
 // See https://github.com/software-mansion/react-native-gesture-handler/issues/598
 import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
@@ -26,7 +26,6 @@ export type ChannelListMessengerPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Omit<
   ChannelsContextValue<StreamChatGenerics>,
-  | 'hasNextPage'
   | 'HeaderErrorIndicator'
   | 'HeaderNetworkDownIndicator'
   | 'maxUnreadCount'
@@ -84,6 +83,7 @@ const ChannelListMessengerWithContext = <
 >(
   props: ChannelListMessengerPropsWithContext<StreamChatGenerics>,
 ) => {
+  const onEndReachedCalledDuringCurrentScrollRef = useRef<boolean>(false);
   const {
     additionalFlatListProps,
     channels,
@@ -91,6 +91,7 @@ const ChannelListMessengerWithContext = <
     error,
     FooterLoadingIndicator,
     forceUpdate,
+    hasNextPage,
     ListHeaderComponent,
     loadingChannels,
     LoadingErrorIndicator,
@@ -151,13 +152,11 @@ const ChannelListMessengerWithContext = <
   }
 
   const onEndReached = () => {
-    if (loadNextPage) {
+    if (!onEndReachedCalledDuringCurrentScrollRef.current && hasNextPage) {
       loadNextPage();
+      onEndReachedCalledDuringCurrentScrollRef.current = true;
     }
   };
-
-  const ListFooterComponent = () =>
-    channels?.length && ListHeaderComponent ? <ListHeaderComponent /> : null;
 
   if (loadingChannels) {
     return <LoadingIndicator listType='channel' />;
@@ -182,9 +181,10 @@ const ChannelListMessengerWithContext = <
           )
         }
         ListFooterComponent={loadingNextPage ? <FooterLoadingIndicator /> : undefined}
-        ListHeaderComponent={ListFooterComponent}
+        ListHeaderComponent={ListHeaderComponent}
         onEndReached={onEndReached}
         onEndReachedThreshold={loadMoreThreshold}
+        onMomentumScrollBegin={() => (onEndReachedCalledDuringCurrentScrollRef.current = false)}
         ref={setFlatListRef}
         refreshControl={<RefreshControl onRefresh={refreshList} refreshing={refreshing} />}
         renderItem={renderItem}
@@ -219,6 +219,7 @@ export const ChannelListMessenger = <
     error,
     FooterLoadingIndicator,
     forceUpdate,
+    hasNextPage,
     ListHeaderComponent,
     loadingChannels,
     LoadingErrorIndicator,
@@ -241,6 +242,7 @@ export const ChannelListMessenger = <
         error,
         FooterLoadingIndicator,
         forceUpdate,
+        hasNextPage,
         ListHeaderComponent,
         loadingChannels,
         LoadingErrorIndicator,

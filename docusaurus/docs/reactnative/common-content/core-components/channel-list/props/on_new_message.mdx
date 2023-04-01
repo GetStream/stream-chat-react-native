@@ -1,0 +1,12 @@
+Override for [Event Listener](#event-listeners) behavior when a message is received on a channel that is being watched.
+The default behavior moves the channel to the top of the list.
+
+| Type     |
+| -------- |
+| function |
+
+| Parameter        | Description                                                                                                                             |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| lockChannelOrder | Locks the order of the channels in the list so they will not dynamically reorder by most recent message when a new message is received. |
+| setChannels      | Setter function for the internal `channels` state                                                                                       |
+| event            | [Event object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `message.new`                          |

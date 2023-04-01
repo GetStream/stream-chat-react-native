@@ -14,6 +14,7 @@ import { queryChannelsApi } from '../mock-builders/api/queryChannels';
 import { useMockedApis } from '../mock-builders/api/useMockedApis';
 import dispatchChannelTruncatedEvent from '../mock-builders/event/channelTruncated';
 import dispatchChannelUpdatedEvent from '../mock-builders/event/channelUpdated';
+import dispatchConnectionChangedEvent from '../mock-builders/event/connectionChanged';
 import dispatchMemberAddedEvent from '../mock-builders/event/memberAdded';
 import dispatchMemberRemovedEvent from '../mock-builders/event/memberRemoved';
 import dispatchMemberUpdatedEvent from '../mock-builders/event/memberUpdated';
@@ -206,7 +207,6 @@ describe('Offline support is enabled', () => {
 
     const channelQueriesRows = BetterSqlite.selectFromTable('channelQueries');
     const cidsInDB = JSON.parse(channelQueriesRows[0].cids);
-
     const filterSortQueryInDB = channelQueriesRows[0].id;
     const actualFilterSortQueryInDB = convertFilterSortToQuery({ filters, sort });
 
@@ -285,8 +285,10 @@ describe('Offline support is enabled', () => {
 
   it('should store filter-sort query and cids on ChannelList in channelQueries table', async () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
-
     const { getByTestId, queryAllByA11yRole } = renderComponent();
+    act(() => dispatchConnectionChangedEvent(chatClient));
+    // await waiter();
+    act(() => dispatchConnectionChangedEvent(chatClient));
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
 
     expectCIDsOnUIToBeInDB(queryAllByA11yRole);
@@ -296,6 +298,7 @@ describe('Offline support is enabled', () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
     const { getByTestId, queryAllByA11yRole } = renderComponent();
+    act(() => dispatchConnectionChangedEvent(chatClient));
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
 
     expectAllChannelsWithStateToBeInDB(queryAllByA11yRole);
@@ -305,6 +308,7 @@ describe('Offline support is enabled', () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
     const { getByTestId } = renderComponent();
+    act(() => dispatchConnectionChangedEvent(chatClient));
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
     const newMessage = generateMessage({
       cid: channels[0].channel.cid,
@@ -322,6 +326,7 @@ describe('Offline support is enabled', () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
     const { getByTestId, queryAllByA11yRole } = renderComponent();
+    act(() => dispatchConnectionChangedEvent(chatClient));
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
 
     const newChannel = createChannel();
@@ -343,6 +348,7 @@ describe('Offline support is enabled', () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
     const { getByTestId } = renderComponent();
+    act(() => dispatchConnectionChangedEvent(chatClient));
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
 
     const updatedMessage = { ...channels[0].messages[0] };
@@ -361,6 +367,7 @@ describe('Offline support is enabled', () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
     const { getByTestId, queryAllByA11yRole } = renderComponent();
+    act(() => dispatchConnectionChangedEvent(chatClient));
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
     const removedChannel = channels[getRandomInt(0, channels.length - 1)].channel;
     act(() => dispatchNotificationRemovedFromChannel(chatClient, removedChannel));
@@ -387,6 +394,7 @@ describe('Offline support is enabled', () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
     const { getByTestId, queryAllByA11yRole } = renderComponent();
+    act(() => dispatchConnectionChangedEvent(chatClient));
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
 
     const newChannel = createChannel();
@@ -416,6 +424,7 @@ describe('Offline support is enabled', () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
     const { getByTestId, queryAllByA11yRole } = renderComponent();
+    act(() => dispatchConnectionChangedEvent(chatClient));
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
 
     const channelToTruncate = channels[getRandomInt(0, channels.length - 1)].channel;
@@ -440,6 +449,7 @@ describe('Offline support is enabled', () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
     const { getByTestId } = renderComponent();
+    act(() => dispatchConnectionChangedEvent(chatClient));
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
 
     const targetChannel = channels[getRandomInt(0, channels.length - 1)];
@@ -481,6 +491,7 @@ describe('Offline support is enabled', () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
     const { getByTestId } = renderComponent();
+    act(() => dispatchConnectionChangedEvent(chatClient));
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
 
     const targetChannel = channels[getRandomInt(0, channels.length - 1)];
@@ -528,6 +539,7 @@ describe('Offline support is enabled', () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
     const { getByTestId } = renderComponent();
+    act(() => dispatchConnectionChangedEvent(chatClient));
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
 
     const targetChannel = channels[getRandomInt(0, channels.length - 1)];
@@ -561,6 +573,7 @@ describe('Offline support is enabled', () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
     const { getByTestId } = renderComponent();
+    act(() => dispatchConnectionChangedEvent(chatClient));
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
 
     const targetChannel = channels[getRandomInt(0, channels.length - 1)];
@@ -579,6 +592,7 @@ describe('Offline support is enabled', () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
     const { getByTestId } = renderComponent();
+    act(() => dispatchConnectionChangedEvent(chatClient));
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
 
     const targetChannel = channels[getRandomInt(0, channels.length - 1)];
@@ -597,6 +611,7 @@ describe('Offline support is enabled', () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
     const { getByTestId } = renderComponent();
+    act(() => dispatchConnectionChangedEvent(chatClient));
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
 
     const targetChannel = channels[getRandomInt(0, channels.length - 1)];
@@ -620,6 +635,7 @@ describe('Offline support is enabled', () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
     const { getByTestId } = renderComponent();
+    act(() => dispatchConnectionChangedEvent(chatClient));
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
 
     const targetChannel = channels[getRandomInt(0, channels.length - 1)];
@@ -640,6 +656,7 @@ describe('Offline support is enabled', () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
     const { getByTestId } = renderComponent();
+    act(() => dispatchConnectionChangedEvent(chatClient));
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
     const targetChannel = channels[getRandomInt(0, channels.length - 1)];
     const targetMember = targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];

@@ -52,7 +52,7 @@ export const messageActions = <
     return undefined;
   }
 
-  const actions: Array<MessageActionType | null> = [];
+  const actions: Array<MessageActionType> = [];
 
   if (error && isMyMessage) {
     actions.push(retry);
