@@ -12,8 +12,16 @@ env:
 jobs:
   push_docusaurus:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
     steps:
       - uses: actions/checkout@v2
+      - name: Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
       - name: Push to stream-chat-docusaurus
         uses: GetStream/push-stream-chat-docusaurus-action@main
         with:

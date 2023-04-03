@@ -1,5 +1,13 @@
 # Change Log
 
+### [5.12.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.12.0...v5.12.1) (2023-03-31)
+
+
+### Bug Fixes
+
+* make takePhoto native handler compatible with latest expo versions ([#2029](https://github.com/GetStream/stream-chat-react-native/issues/2029)) ([6c447dd](https://github.com/GetStream/stream-chat-react-native/commit/6c447ddf650f9154d70d9b43e5afbc0f7d2c81d5))
+* removing a reaction outside of the latest reactions causes to add it ([#2028](https://github.com/GetStream/stream-chat-react-native/issues/2028)) ([87cf045](https://github.com/GetStream/stream-chat-react-native/commit/87cf045adde463b7b0a044ab3bd50dbc676f0122))
+
 ## [5.12.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.11.2...v5.12.0) (2023-03-21)
 
 

@@ -1,4 +1,4 @@
-let Clipboard: { setString: (string: string) => void };
+let Clipboard: { setString: (string: string) => void } | undefined;
 
 try {
   Clipboard = require('@react-native-clipboard/clipboard').default;
@@ -8,5 +8,5 @@ try {
 }
 
 export const setClipboardString = Clipboard
-  ? (string: string) => Clipboard.setString(string)
+  ? (string: string) => (Clipboard ? Clipboard.setString(string) : {})
   : null;
