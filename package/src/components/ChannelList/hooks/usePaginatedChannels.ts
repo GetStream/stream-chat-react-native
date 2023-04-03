@@ -2,8 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
 
-import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRefContext/ActiveChannelsRefContext';
-
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
