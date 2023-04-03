@@ -5,16 +5,12 @@ import { useIsMountedRef } from './useIsMountedRef';
 import type { TranslatorFunctions } from '../contexts/translationContext/TranslationContext';
 import { Streami18n } from '../utils/Streami18n';
 
-export const useStreami18n = ({
-  i18nInstance,
-  setTranslators,
-}: {
-  setTranslators: React.Dispatch<React.SetStateAction<TranslatorFunctions>>;
-  i18nInstance?: Streami18n;
-}) => {
+export const useStreami18n = (
+  setTranslators: React.Dispatch<React.SetStateAction<TranslatorFunctions>>,
+  i18nInstance?: Streami18n,
+) => {
   const [loadingTranslators, setLoadingTranslators] = useState(true);
   const isMounted = useIsMountedRef();
-  const i18nInstanceExists = !!i18nInstance;
   useEffect(() => {
     let streami18n: Streami18n;
 
@@ -24,15 +20,28 @@ export const useStreami18n = ({
       streami18n = new Streami18n({ language: 'en' });
     }
 
-    streami18n.registerSetLanguageCallback((t: (key: string) => string) =>
-      setTranslators((prevTranslator) => ({ ...prevTranslator, t })),
-    );
+    const updateTFunction = (t: TranslatorFunctions['t']) => {
+      setTranslators((prevTranslator) => ({ ...prevTranslator, t }));
+    };
+
+    const { unsubscribe: unsubscribeOnLanguageChangeListener } =
+      streami18n.addOnLanguageChangeListener((t) => {
+        updateTFunction(t);
+      });
+    const { unsubscribe: unsubscribeOnTFuncOverrideListener } =
+      streami18n.addOnTFunctionOverrideListener((t) => {
+        updateTFunction(t);
+      });
     streami18n.getTranslators().then((translator) => {
       if (translator && isMounted.current) setTranslators(translator);
     });
 
     setLoadingTranslators(false);
-  }, [i18nInstanceExists, i18nInstance]);
+    return () => {
+      unsubscribeOnTFuncOverrideListener();
+      unsubscribeOnLanguageChangeListener();
+    };
+  }, [i18nInstance]);
 
   return loadingTranslators;
 };
