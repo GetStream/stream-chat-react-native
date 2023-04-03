@@ -676,7 +676,9 @@ export class Streami18n {
     this.onLanguageChangeListeners.push(callback);
     return {
       unsubscribe: () => {
-        this.onLanguageChangeListeners.filter((listener) => listener !== callback);
+        this.onLanguageChangeListeners = this.onLanguageChangeListeners.filter(
+          (listener) => listener !== callback,
+        );
       },
     };
   }
@@ -685,7 +687,9 @@ export class Streami18n {
     this.onTFunctionOverrideListeners.push(callback);
     return {
       unsubscribe: () => {
-        this.onTFunctionOverrideListeners.filter((listener) => listener !== callback);
+        this.onTFunctionOverrideListeners = this.onTFunctionOverrideListeners.filter(
+          (listener) => listener !== callback,
+        );
       },
     };
   }
