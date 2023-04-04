@@ -152,7 +152,7 @@ export const OverlayProvider = <
   const { height, width } = Dimensions.get('screen');
 
   // Setup translators
-  const loadingTranslators = useStreami18n({ i18nInstance, setTranslators });
+  useStreami18n({ i18nInstance, setTranslators });
 
   useEffect(() => {
     const backAction = () => {
@@ -215,8 +215,6 @@ export const OverlayProvider = <
     style: value?.style,
     translucentStatusBar,
   };
-
-  if (loadingTranslators) return null;
 
   return (
     <TranslationProvider value={{ ...translators, userLanguage: DEFAULT_USER_LANGUAGE }}>

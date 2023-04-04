@@ -154,10 +154,8 @@ const ChatWithContext = <
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
   });
 
-  /**
-   * Setup translators
-   */
-  const loadingTranslators = useStreami18n({ i18nInstance, setTranslators });
+  // Setup translators
+  useStreami18n({ i18nInstance, setTranslators });
 
   /**
    * Setup connection event listeners
@@ -225,8 +223,6 @@ const ChatWithContext = <
     client,
     enableOfflineSupport,
   });
-
-  if (loadingTranslators) return null;
 
   return (
     <ChatProvider<StreamChatGenerics> value={chatContext}>
