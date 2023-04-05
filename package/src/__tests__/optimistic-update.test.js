@@ -139,6 +139,16 @@ describe('Optimistic Updates', () => {
   };
 
   describe('delete message', () => {
+    beforeEach(async () => {
+      jest.clearAllMocks();
+      chatClient = await getTestClientWithUser({ id: 'dan' });
+      BetterSqlite.dropAllTables();
+    });
+
+    afterEach(() => {
+      BetterSqlite.dropAllTables();
+      cleanup();
+    });
     it('pending task should exist if deleteMessage request fails', async () => {
       const message = generateMessage();
 
@@ -197,6 +207,16 @@ describe('Optimistic Updates', () => {
   });
 
   describe('send reaction', () => {
+    beforeEach(async () => {
+      jest.clearAllMocks();
+      chatClient = await getTestClientWithUser({ id: 'dan' });
+      BetterSqlite.dropAllTables();
+    });
+
+    afterEach(() => {
+      BetterSqlite.dropAllTables();
+      cleanup();
+    });
     it('pending task should exist if sendReaction request fails', async () => {
       const reaction = generateReaction();
       const targetMessage = channel.state.messages[0];
@@ -258,6 +278,16 @@ describe('Optimistic Updates', () => {
   });
 
   describe('delete reaction', () => {
+    beforeEach(async () => {
+      // jest.clearAllMocks();
+      chatClient = await getTestClientWithUser({ id: 'dan' });
+      BetterSqlite.dropAllTables();
+    });
+
+    afterEach(() => {
+      BetterSqlite.dropAllTables();
+      cleanup();
+    });
     it('pending task should exist if deleteReaction request fails', async () => {
       const reaction = generateReaction();
       const targetMessage = channel.state.messages[0];

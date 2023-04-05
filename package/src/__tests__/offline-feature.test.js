@@ -179,6 +179,7 @@ describe('Offline support is enabled', () => {
       .map(() => createChannel());
 
     chatClient = await getTestClientWithUser({ id: 'dan' });
+    BetterSqlite.dropAllTables();
   });
 
   afterEach(() => {
