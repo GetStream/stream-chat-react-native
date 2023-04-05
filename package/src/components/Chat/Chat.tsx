@@ -1,8 +1,6 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { Image, Platform } from 'react-native';
 
-import Dayjs from 'dayjs';
-
 import type { Channel, StreamChat } from 'stream-chat';
 
 import { useAppSettings } from './hooks/useAppSettings';
@@ -21,7 +19,6 @@ import type { Theme } from '../../contexts/themeContext/utils/theme';
 import {
   DEFAULT_USER_LANGUAGE,
   TranslationProvider,
-  TranslatorFunctions,
 } from '../../contexts/translationContext/TranslationContext';
 import { useStreami18n } from '../../hooks/useStreami18n';
 import init from '../../init';
@@ -149,13 +146,9 @@ const ChatWithContext = <
   } = props;
 
   const [channel, setChannel] = useState<Channel<StreamChatGenerics>>();
-  const [translators, setTranslators] = useState<TranslatorFunctions>({
-    t: (key: string) => key,
-    tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
-  });
 
   // Setup translators
-  useStreami18n(setTranslators, i18nInstance);
+  const translators = useStreami18n(i18nInstance);
 
   /**
    * Setup connection event listeners
