@@ -34,6 +34,7 @@ import { generateReaction } from '../mock-builders/generator/reaction';
 import { generateUser } from '../mock-builders/generator/user';
 import { getTestClientWithUser } from '../mock-builders/mock';
 import { convertFilterSortToQuery } from '../store/apis/utils/convertFilterSortToQuery';
+import { QuickSqliteClient } from '../store/QuickSqliteClient';
 import { tables } from '../store/schema';
 import { BetterSqlite } from '../test-utils/BetterSqlite';
 
@@ -72,12 +73,15 @@ describe('Offline support is disabled', () => {
   let chatClient;
 
   beforeEach(async () => {
+    jest.clearAllMocks();
     chatClient = await getTestClientWithUser({ id: 'dan' });
-    BetterSqlite.dropAllTables();
+    QuickSqliteClient.dropTables();
+    QuickSqliteClient.closeDB();
   });
 
   afterEach(() => {
-    BetterSqlite.dropAllTables();
+    QuickSqliteClient.dropTables();
+    QuickSqliteClient.closeDB();
     cleanup();
   });
 
