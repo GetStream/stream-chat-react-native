@@ -152,7 +152,7 @@ export const OverlayProvider = <
   const { height, width } = Dimensions.get('screen');
 
   // Setup translators
-  const loadingTranslators = useStreami18n({ i18nInstance, setTranslators });
+  const loadingTranslators = useStreami18n(setTranslators, i18nInstance);
 
   useEffect(() => {
     const backAction = () => {
