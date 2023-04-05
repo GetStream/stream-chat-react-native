@@ -112,7 +112,8 @@ describe('Optimistic Updates', () => {
   });
 
   afterEach(() => {
-    BetterSqlite.dropAllTables();
+    QuickSqliteClient.dropTables();
+    QuickSqliteClient.closeDB();
     cleanup();
   });
 
