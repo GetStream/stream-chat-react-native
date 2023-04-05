@@ -155,7 +155,7 @@ const ChatWithContext = <
   });
 
   // Setup translators
-  useStreami18n({ i18nInstance, setTranslators });
+  useStreami18n(setTranslators, i18nInstance);
 
   /**
    * Setup connection event listeners
