@@ -124,23 +124,21 @@ Add the `NSPhotoLibraryAddUsageDescription` key in your `Info.plist` with a desc
 
 ### Android
 
-The standard storage permissions are required for the image picker to work on Android, and must be included in the `AndroidManifest.xml` file.
+The following permissions are required for the image picker to work on Android, and must be included in the `AndroidManifest.xml` file.
 
 ```xml
-<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+<uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+<uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+                android:maxSdkVersion="32" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 ```
 
-In addition, and often overlooked, within the `application` tag you must included the `requestLegacyExternalStorage` attribute.
+:::note
 
-```xml
-<application
-  android:requestLegacyExternalStorage="true"
-  ...
-/>
-```
+If your Android app is using targetSdkVersion of 33 or above. We expect that you are using React Native version 0.71 to ask for the media permissions instead of storage permissions. Please ensure that your app has this combination.
 
-Without this some Android devices will fail to load images despite permissions being granted within the settings.
+:::
 
 ## Camera not working
 
