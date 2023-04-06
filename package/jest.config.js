@@ -14,13 +14,7 @@ module.exports = {
     require.resolve('./jest-setup.js'),
   ],
   testEnvironment: 'jsdom',
-  testPathIgnorePatterns: [
-    '/node_modules/',
-    '/examples/',
-    '__snapshots__',
-    '/lib/',
-    '<rootDir>/src/__tests__/',
-  ],
+  testPathIgnorePatterns: ['/node_modules/', '/examples/', '__snapshots__', '/lib/'],
   testRegex: [
     /**
      * If you want to test single file, mention it here
