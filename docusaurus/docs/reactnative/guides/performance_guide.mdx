@@ -88,6 +88,7 @@ have known to a cause memory leak. So we would recommend not to add any animatio
 message component to avoid any performance issue.
 
 ### Usage of ChannelContext within Customized Components
+
 The [ChannelContext](../contexts/channel_context.mdx) is a React Context that provides a set of useful methods and data to its children.
-Yet when used in a message level (in a custom component) it might cause unnecessary re-renders of the message list.
+Yet when used in a message level, or anywhere deeper in the element tree (i.e. in a custom component) it might cause unnecessary re-renders of the message list.
 More information can be found in the [Performance Section](../../customization/custom_components/#performance) of how to customize our components.
