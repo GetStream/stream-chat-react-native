@@ -72,7 +72,6 @@ end
 
 platform :ios do
   desc "Deploy build to TestFlight QA"
-  xcversion(version: "14.0")
   lane :deploy_to_testflight_qa do
       app_store_connect_api_key()
 
