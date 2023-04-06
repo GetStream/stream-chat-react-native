@@ -157,7 +157,8 @@ describe('ChannelList', () => {
       </Chat>,
     );
 
-    expect(spy).toHaveBeenCalledWith(
+    expect(spy).toHaveBeenNthCalledWith(
+      1,
       staleFilter,
       expect.anything(),
       expect.anything(),
@@ -174,7 +175,8 @@ describe('ChannelList', () => {
       </Chat>,
     );
 
-    expect(spy).toHaveBeenCalledWith(
+    expect(spy).toHaveBeenNthCalledWith(
+      2,
       freshFilter,
       expect.anything(),
       expect.anything(),

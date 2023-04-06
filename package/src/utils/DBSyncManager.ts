@@ -80,7 +80,6 @@ export class DBSyncManager {
    */
   static onSyncStatusChange = (listener: (status: boolean) => void) => {
     this.listeners.push(listener);
-    listener(this.syncStatus);
 
     return {
       unsubscribe: () => {
