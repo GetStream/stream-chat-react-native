@@ -50,7 +50,7 @@ export const useNewMessage = <
             // We remove it from `channels` state, but its still being watched and exists in client.activeChannels.
             const channel = client.channel(event.channel_type, event.channel_id);
 
-            if (channel.initialized) {
+            if (channel.initialized && channel.data?.hidden) {
               return [channel, ...channels];
             }
           }
