@@ -41,7 +41,6 @@ const CommandsButtonWithContext = <
   return (
     <Pressable
       disabled={disabled}
-      hitSlop={{ bottom: 15, left: 5, right: 15, top: 15 }}
       onPress={handleOnPress}
       style={[commandsButton]}
       testID='commands-button'

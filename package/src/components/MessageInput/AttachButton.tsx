@@ -36,7 +36,6 @@ const AttachButtonWithContext = <
   return (
     <Pressable
       disabled={disabled}
-      hitSlop={{ bottom: 15, left: 15, right: 5, top: 15 }}
       onPress={disabled ? () => null : handleOnPress}
       style={[attachButton]}
       testID='attach-button'
