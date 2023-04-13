@@ -1,5 +1,21 @@
 # Change Log
 
+## [5.13.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.12.1...v5.13.0) (2023-04-13)
+
+
+### Features
+
+* allow to use different i18n library ([#2038](https://github.com/GetStream/stream-chat-react-native/issues/2038)) ([42e9c67](https://github.com/GetStream/stream-chat-react-native/commit/42e9c6749fc278b43cb6ee4a116c50d921840795))
+
+
+### Bug Fixes
+
+* do not skip initialisation when querying channels ([#2034](https://github.com/GetStream/stream-chat-react-native/issues/2034)) ([f639ffb](https://github.com/GetStream/stream-chat-react-native/commit/f639ffbb5393daa896031d9ad814fc1725aeded8))
+* failing optimistic update tests ([ac334ae](https://github.com/GetStream/stream-chat-react-native/commit/ac334aee7211fb378c7e4bcf3073eff46cc8a63b))
+* getPhotos doesn't work if you use android targetSdkVersion 33 ([#2036](https://github.com/GetStream/stream-chat-react-native/issues/2036)) ([a17957d](https://github.com/GetStream/stream-chat-react-native/commit/a17957da62111ececf5eb943ed01caec4ac50f3a))
+* offline support tests break randomly as they run parallel by default ([#2046](https://github.com/GetStream/stream-chat-react-native/issues/2046)) ([ab2a335](https://github.com/GetStream/stream-chat-react-native/commit/ab2a33598db6a75f32cfd8d0fc3f5d08a27ccd54))
+* using Pressable over TouchableOpacity of gesture handle due to unreli… ([#2052](https://github.com/GetStream/stream-chat-react-native/issues/2052)) ([3da078c](https://github.com/GetStream/stream-chat-react-native/commit/3da078cc6db1e8119cc59becbc7ca9d7fc31f894))
+
 ### [5.12.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.12.0...v5.12.1) (2023-03-31)
 
 

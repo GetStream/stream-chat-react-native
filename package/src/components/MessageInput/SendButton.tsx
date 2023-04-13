@@ -1,5 +1,6 @@
 import React from 'react';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+
+import { Pressable } from 'react-native';
 
 import {
   MessageInputContextValue,
@@ -32,7 +33,7 @@ const SendButtonWithContext = <
   } = useTheme();
 
   return (
-    <TouchableOpacity
+    <Pressable
       disabled={disabled}
       onPress={disabled ? () => null : sendMessage}
       style={[sendButton]}
@@ -41,7 +42,7 @@ const SendButtonWithContext = <
       {giphyActive && <Search pathFill={disabled ? grey_gainsboro : accent_blue} />}
       {!giphyActive && disabled && <SendRight pathFill={grey_gainsboro} />}
       {!giphyActive && !disabled && <SendUp pathFill={accent_blue} />}
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
