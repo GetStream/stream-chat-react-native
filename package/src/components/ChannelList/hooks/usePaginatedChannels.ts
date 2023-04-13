@@ -3,7 +3,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
 
 import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRefContext/ActiveChannelsRefContext';
-
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
@@ -52,7 +51,6 @@ export const usePaginatedChannels = <
   const [staticChannelsActive, setStaticChannelsActive] = useState<boolean>(false);
   const [activeQueryType, setActiveQueryType] = useState<QueryType | null>('queryLocalDB');
   const [hasNextPage, setHasNextPage] = useState<boolean>(false);
-
   const activeChannels = useActiveChannelsRefContext();
   const isMountedRef = useIsMountedRef();
   const { client } = useChatContext<StreamChatGenerics>();
@@ -111,9 +109,13 @@ export const usePaginatedChannels = <
         }
       }
 
-      // TODO: Think about the implications of this.
+      /**
+       * We skipInitialization here for handling race condition between ChannelList, Channel (and Thread)
+       * when they all (may) update the channel state at the same time (when connection state recovers)
+       * TODO: if we move the channel state to a single context and share it between ChannelList, Channel and Thread we can remove this
+       */
       const channelQueryResponse = await client.queryChannels(filters, sort, newOptions, {
-        skipInitialization: enableOfflineSupport ? activeChannelIds : activeChannels.current,
+        skipInitialization: activeChannels.current,
       });
       if (isQueryStale() || !isMountedRef.current) {
         return;

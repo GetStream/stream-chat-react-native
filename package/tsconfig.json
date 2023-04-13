@@ -37,6 +37,6 @@
     "babel.config.js",
     "metro.config.js",
     "jest.config.js",
-    "**/__tests__/*.test.js"
+    "**/__tests__"
   ]
 }
