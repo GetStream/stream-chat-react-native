@@ -1,6 +1,6 @@
 import React from 'react';
 import type { GestureResponderEvent } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Pressable } from 'react-native';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import {
@@ -34,15 +34,14 @@ const AttachButtonWithContext = <
   } = useTheme();
 
   return (
-    <TouchableOpacity
+    <Pressable
       disabled={disabled}
-      hitSlop={{ bottom: 15, left: 15, right: 5, top: 15 }}
       onPress={disabled ? () => null : handleOnPress}
       style={[attachButton]}
       testID='attach-button'
     >
       <Attach pathFill={selectedPicker === 'images' ? accent_blue : grey} />
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
