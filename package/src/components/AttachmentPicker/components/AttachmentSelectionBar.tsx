@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { useAttachmentPickerContext } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
@@ -55,6 +55,14 @@ export const AttachmentSelectionBar: React.FC = () => {
 
   const takeAndUploadImage = async () => {
     setSelectedPicker(undefined);
+    Alert.alert('Alert Title', 'My Alert Msg', [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {text: 'OK', onPress: () => console.log('OK Pressed')},
+    ]);
     closePicker();
     const photo = await takePhoto({ compressImageQuality });
     if (!photo.cancelled) {
