@@ -54,8 +54,9 @@ export const AttachmentSelectionBar: React.FC = () => {
   };
 
   const takeAndUploadImage = async () => {
-    setSelectedPicker(undefined);
     console.log('camera opened');
+
+    setSelectedPicker(undefined);
     Alert.alert('Alert Title', 'My Alert Msg', [
       {
         text: 'Cancel',
