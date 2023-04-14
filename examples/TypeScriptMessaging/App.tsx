@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { LogBox, Platform, SafeAreaView, View, useColorScheme, I18nManager } from 'react-native';
+import { I18nManager, LogBox, Platform, SafeAreaView, useColorScheme, View } from 'react-native';
 import { DarkTheme, DefaultTheme, NavigationContainer, RouteProp } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ChannelSort, Channel as ChannelType, StreamChat } from 'stream-chat';
+import { Channel as ChannelType, ChannelSort, StreamChat } from 'stream-chat';
 import {
   Channel,
   ChannelList,
@@ -23,6 +23,7 @@ import {
 import { useStreamChatTheme } from './useStreamChatTheme';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFlipper } from 'stream-chat-react-native-devtools';
+import { StreamChatRN } from 'package/src/utils/getResizedImageUrl';
 
 LogBox.ignoreAllLogs(true);
 
@@ -44,27 +45,32 @@ type StreamChatGenerics = {
   userType: LocalUserType;
 };
 
-I18nManager.forceRTL(false);
-
-const chatClient = StreamChat.getInstance<StreamChatGenerics>('q95x9hkbyd6p');
-const userToken =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoicm9uIn0.eRVjxLvd4aqCEHY_JRa97g6k7WpHEhxL7Z4K4yTot1c';
-const user = {
-  id: 'ron',
-};
-
-const filters = {
-  example: 'example-apps',
-  members: { $in: ['ron'] },
-  type: 'messaging',
-};
-const sort: ChannelSort<StreamChatGenerics> = { last_message_at: -1 };
 const options = {
   presence: true,
   state: true,
   watch: true,
   limit: 30,
 };
+
+I18nManager.forceRTL(false);
+
+StreamChatRN.setConfig({
+  resizableCDNHosts: ['https://getstream.io.my'],
+});
+
+const chatClient = StreamChat.getInstance<StreamChatGenerics>('q95x9hkbyd6p');
+const userToken =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoicm9uIn0.eRVjxLvd4aqCEHY_JRa97g6k7WpHEhxL7Z4K4yTot1c';
+
+const user = {
+  id: 'ron',
+};
+const filters = {
+  example: 'example-apps',
+  members: { $in: ['ron'] },
+  type: 'messaging',
+};
+const sort: ChannelSort<StreamChatGenerics> = { last_message_at: -1 };
 
 /**
  * Start playing with streami18n instance here:
@@ -156,6 +162,8 @@ const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation }) => {
       gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
     });
   }, [overlay]);
+
+  if (!channel) return;
 
   return (
     <SafeAreaView>

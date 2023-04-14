@@ -1,5 +1,19 @@
 import { PixelRatio } from 'react-native';
 
+type StreamConfig = {
+  resizableCDNHosts: string[];
+};
+const DEFAULT_GLOBAL_STREAM_CONFIG = {
+  resizableCDNHosts: ['.stream-io-cdn.com'],
+};
+
+export class StreamChatRN {
+  static config: StreamConfig = DEFAULT_GLOBAL_STREAM_CONFIG;
+  static setConfig(streamConfig: Partial<StreamConfig>) {
+    this.config = { ...this.config, ...streamConfig };
+  }
+}
+
 type GetResizedImageUrlParams = {
   url: string;
   height?: string | number;
@@ -34,7 +48,10 @@ export function getResizedImageUrl({
     // If url is not from new cloudfront CDN (which offers fast image resizing), then return the url as it is.
     // Check for oh and ow parameters in the url, is just to differentiate between old and new CDN.
     // In case of old CDN we don't want to do any kind of resizing.
-    const isResizableUrl = url.includes('.stream-io-cdn.com') && originalHeight && originalWidth;
+    const isResizableUrl =
+      StreamChatRN.config.resizableCDNHosts.some((rCDNh) => url.includes(rCDNh)) &&
+      originalHeight &&
+      originalWidth;
 
     if (!isResizableUrl || (!height && !width)) return url;
 
