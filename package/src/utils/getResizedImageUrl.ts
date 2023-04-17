@@ -1,20 +1,8 @@
 import { PixelRatio } from 'react-native';
 
-type StreamConfig = {
-  resizableCDNHosts: string[];
-};
-const DEFAULT_GLOBAL_STREAM_CONFIG = {
-  resizableCDNHosts: ['.stream-io-cdn.com'],
-};
+import { StreamChatRN } from './StreamChatRN';
 
-export class StreamChatRN {
-  static config: StreamConfig = DEFAULT_GLOBAL_STREAM_CONFIG;
-  static setConfig(streamConfig: Partial<StreamConfig>) {
-    this.config = { ...this.config, ...streamConfig };
-  }
-}
-
-type GetResizedImageUrlParams = {
+export type GetResizedImageUrlParams = {
   url: string;
   height?: string | number;
   resize?: 'clip' | 'crop' | 'fill' | 'scale';
