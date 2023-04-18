@@ -1,25 +1,5 @@
 # Change Log
 
-## [1.20.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.19.3...sampleapp@v1.20.0) (2023-04-13)
-
-
-### Features
-
-* allow to use different i18n library ([#2038](https://github.com/GetStream/stream-chat-react-native/issues/2038)) ([42e9c67](https://github.com/GetStream/stream-chat-react-native/commit/42e9c6749fc278b43cb6ee4a116c50d921840795))
-
-
-### Bug Fixes
-
-* getPhotos doesn't work if you use android targetSdkVersion 33 ([#2036](https://github.com/GetStream/stream-chat-react-native/issues/2036)) ([a17957d](https://github.com/GetStream/stream-chat-react-native/commit/a17957da62111ececf5eb943ed01caec4ac50f3a))
-* pinning xcode version to 14 ([#2045](https://github.com/GetStream/stream-chat-react-native/issues/2045)) ([f864bf3](https://github.com/GetStream/stream-chat-react-native/commit/f864bf3bbcc069a3a325204c6ac1e4252befe718))
-* pushing up to date Podfile.lock ([75acd87](https://github.com/GetStream/stream-chat-react-native/commit/75acd87cd48c8ed7c0308894b93aa74957076d1d))
-* Xcode 14.3 (14E222b) Build Failed with React Native 0.70.7 ([#2042](https://github.com/GetStream/stream-chat-react-native/issues/2042)) ([378620d](https://github.com/GetStream/stream-chat-react-native/commit/378620d3d3476dd39f4fb60a22b914e16820eeb3))
-
-
-### Workspaces
-
-* Following linked packages updated: [stream-chat-react-native]
-
 ### [1.19.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.19.2...sampleapp@v1.19.3) (2023-03-31)
 
 
