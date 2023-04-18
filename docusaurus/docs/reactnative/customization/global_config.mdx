@@ -7,14 +7,16 @@ title: Global Config
 The core of Stream Chat for React Native is it's ability to be customized to your needs.
 The new `Global Config` feature allows you to enable and disable features of the library and alter the default behavior of the SDK.
 
-We will be gradually adding more features/options to the Global Config.
+We will be gradually adding more features/options to the global config.
 In the future this will be the main way to alter the default behavior of the SDK and it's components.
 
 ## When to use a Global Configt
+
 When you want to alter the default behavior of the SDK or it's components.
 Please check the available options below to see if there is a config option that fits your needs.
 
-## How to use and alter the Global Config
+## How to use and alter the global config
+
 Altering the global config can be done by calling the `setConfig` function on the `StreamChatRN` object.
 Make sure to call this function before any other components are rendered at the root of your application (App.tsx in most cases).
 
@@ -27,10 +29,12 @@ StreamChatRN.setConfig({
 });
 ```
 
-## Available Config features/Options
-### `resizableCDNHosts`
-This option allows you to specify a list of CDN's that offer image resizing.
+## Available config features/Options
 
-| Type     | Default |
-| -------- | ------- |
-| `string[]` | `['.stream-io-cdn.com']`      |
+### `resizableCDNHosts`
+
+This option allows you to specify a list of CDNs that offer image resizing.
+
+| Type       | Default                  |
+| ---------- | ------------------------ |
+| `string[]` | `['.stream-io-cdn.com']` |
