@@ -23,7 +23,6 @@ import {
 import { useStreamChatTheme } from './useStreamChatTheme';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFlipper } from 'stream-chat-react-native-devtools';
-import { StreamChatRN } from 'package/src/utils/getResizedImageUrl';
 
 LogBox.ignoreAllLogs(true);
 
@@ -53,10 +52,6 @@ const options = {
 };
 
 I18nManager.forceRTL(false);
-
-StreamChatRN.setConfig({
-  resizableCDNHosts: ['https://getstream.io.my'],
-});
 
 const chatClient = StreamChat.getInstance<StreamChatGenerics>('q95x9hkbyd6p');
 const userToken =
