@@ -78,9 +78,9 @@ PODS:
   - hermes-engine/Pre-built (0.71.6)
   - libevent (2.1.12)
   - OpenSSL-Universal (1.1.1100)
-  - PromisesObjC (2.1.1)
-  - PromisesSwift (2.1.1):
-    - PromisesObjC (= 2.1.1)
+  - PromisesObjC (2.2.0)
+  - PromisesSwift (2.2.0):
+    - PromisesObjC (= 2.2.0)
   - RCT-Folly (2021.07.22.00):
     - boost
     - DoubleConversion
@@ -491,7 +491,7 @@ PODS:
   - RNScreens (3.20.0):
     - React-Core
     - React-RCTImage
-  - RNShare (8.2.1):
+  - RNShare (8.2.2):
     - React-Core
   - RNSVG (12.5.1):
     - React-Core
@@ -727,8 +727,8 @@ SPEC CHECKSUMS:
   hermes-engine: b434cea529ad0152c56c7cb6486b0c4c0b23b5de
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
-  PromisesObjC: ab77feca74fa2823e7af4249b8326368e61014cb
-  PromisesSwift: 99fddfe4a0ec88a56486644c0da106694c92a604
+  PromisesObjC: 09985d6d70fbe7878040aa746d78236e6946d2ef
+  PromisesSwift: cf9eb58666a43bbe007302226e510b16c1e10959
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: 5c6fd63b03abb06947d348dadac51c93e3485bd8
   RCTTypeSafety: 1c66daedd66f674e39ce9f40782f0d490c78b175
@@ -772,7 +772,7 @@ SPEC CHECKSUMS:
   RNReactNativeHapticFeedback: 1e3efeca9628ff9876ee7cdd9edec1b336913f8c
   RNReanimated: 29295af754cdd6f8e4428427d4195e02ea8766e0
   RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
-  RNShare: eaee3dd5a06dad397c7d3b14762007035c5de405
+  RNShare: d82e10f6b7677f4b0048c23709bd04098d5aee6c
   RNSVG: d7d7bc8229af3842c9cfc3a723c815a52cdd1105
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863

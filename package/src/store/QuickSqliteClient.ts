@@ -8,7 +8,7 @@ try {
   // We want to throw the original error when remote debugger (e.g. Chrome) is enabled.
   // QuickSQLite can only be used when synchronous method invocations (JSI) are possible.
   // e.g on-device debugger (e.g. Flipper).
-  const isRemoteDebuggerError = e.message.includes('Failed to install');
+  const isRemoteDebuggerError = e instanceof Error && e.message.includes('Failed to install');
   if (isRemoteDebuggerError) {
     throw e;
   }
@@ -33,9 +33,9 @@ export class QuickSqliteClient {
   static dbName = DB_NAME;
   static dbLocation = DB_LOCATION;
 
-  static getDbVersion = () => this.dbVersion;
+  static getDbVersion = () => QuickSqliteClient.dbVersion;
   // Force a specific db version. This is mainly useful for testsuit.
-  static setDbVersion = (version: number) => (this.dbVersion = version);
+  static setDbVersion = (version: number) => (QuickSqliteClient.dbVersion = version);
 
   // @ts-ignore
   static isQuickSqliteV4 = !!sqlite?.executeSql;
@@ -43,44 +43,44 @@ export class QuickSqliteClient {
   // print if legacy version
   static openDB = () => {
     try {
-      sqlite.open(this.dbName, this.dbLocation);
-      sqlite.execute(this.dbName, `PRAGMA foreign_keys = ON`, []);
+      sqlite.open(QuickSqliteClient.dbName, QuickSqliteClient.dbLocation);
+      sqlite.execute(QuickSqliteClient.dbName, `PRAGMA foreign_keys = ON`, []);
     } catch (e) {
-      console.error(`Error opening database ${this.dbName}: ${e}`);
+      console.error(`Error opening database ${QuickSqliteClient.dbName}: ${e}`);
     }
   };
 
   static closeDB = () => {
     try {
-      sqlite.close(this.dbName);
+      sqlite.close(QuickSqliteClient.dbName);
     } catch (e) {
-      console.error(`Error closing database ${this.dbName}: ${e}`);
+      console.error(`Error closing database ${QuickSqliteClient.dbName}: ${e}`);
     }
   };
 
   static executeSqlBatch = (queries: PreparedQueries[]) => {
     if (!queries || !queries.length) return;
 
-    this.openDB();
+    QuickSqliteClient.openDB();
     try {
       sqlite.executeBatch(DB_NAME, queries);
 
-      this.closeDB();
+      QuickSqliteClient.closeDB();
     } catch (e) {
-      this.closeDB();
+      QuickSqliteClient.closeDB();
       throw new Error(`Query/queries failed: ${e}`);
     }
   };
 
   static executeSql = (query: string, params?: string[]) => {
     try {
-      this.openDB();
+      QuickSqliteClient.openDB();
       const { rows } = sqlite.execute(DB_NAME, query, params);
-      this.closeDB();
+      QuickSqliteClient.closeDB();
 
       return rows ? rows._array : [];
     } catch (e) {
-      this.closeDB();
+      QuickSqliteClient.closeDB();
       throw new Error(`Query/queries failed: ${e}: `);
     }
   };
@@ -91,12 +91,12 @@ export class QuickSqliteClient {
       [],
     ]);
 
-    this.executeSqlBatch(queries);
+    QuickSqliteClient.executeSqlBatch(queries);
   };
 
   static deleteDatabase = () => {
     try {
-      sqlite.delete(this.dbName, this.dbLocation);
+      sqlite.delete(QuickSqliteClient.dbName, QuickSqliteClient.dbLocation);
     } catch (e) {
       throw new Error(`Error deleting DB: ${e}`);
     }
@@ -111,18 +111,18 @@ export class QuickSqliteClient {
       );
     }
 
-    if (this.isQuickSqliteV4) {
+    if (QuickSqliteClient.isQuickSqliteV4) {
       console.error(
         'You seem to be using an older version of "react-native-quick-sqlite" dependency.',
         'Please upgrade to the version v5 (or higher) of "react-native-quick-sqlite" to avoid any issues.',
       );
     }
 
-    const version = this.getUserPragmaVersion();
+    const version = QuickSqliteClient.getUserPragmaVersion();
 
-    if (version !== this.dbVersion) {
-      this.dropTables();
-      this.updateUserPragmaVersion(this.dbVersion);
+    if (version !== QuickSqliteClient.dbVersion) {
+      QuickSqliteClient.dropTables();
+      QuickSqliteClient.updateUserPragmaVersion(QuickSqliteClient.dbVersion);
     }
     const q = (Object.keys(tables) as Table[]).reduce<PreparedQueries[]>(
       (queriesSoFar, tableName) => {
@@ -132,30 +132,30 @@ export class QuickSqliteClient {
       [],
     );
 
-    this.executeSqlBatch(q);
+    QuickSqliteClient.executeSqlBatch(q);
   };
 
   static updateUserPragmaVersion = (version: number) => {
-    this.openDB();
+    QuickSqliteClient.openDB();
     sqlite.execute(DB_NAME, `PRAGMA user_version = ${version}`, []);
-    this.closeDB();
+    QuickSqliteClient.closeDB();
   };
 
   static getUserPragmaVersion = () => {
-    this.openDB();
+    QuickSqliteClient.openDB();
     try {
       const { rows } = sqlite.execute(DB_NAME, `PRAGMA user_version`, []);
       const result = rows ? rows._array : [];
-      this.closeDB();
+      QuickSqliteClient.closeDB();
       return result[0].user_version as number;
     } catch (e) {
-      this.closeDB();
+      QuickSqliteClient.closeDB();
       throw new Error(`Querying for user_version failed: ${e}`);
     }
   };
 
   static resetDB = () => {
-    this.dropTables();
-    this.initializeDatabase();
+    QuickSqliteClient.dropTables();
+    QuickSqliteClient.initializeDatabase();
   };
 }
