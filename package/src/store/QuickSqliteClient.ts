@@ -11,7 +11,6 @@ try {
 }
 
 import { DB_LOCATION, DB_NAME } from './constants';
-import { QuickSqliteClient_v4 } from './QuickSqliteClient_v4';
 import { tables } from './schema';
 import { createCreateTableQuery } from './sqlite-utils/createCreateTableQuery';
 import type { PreparedQueries, Table } from './types';
@@ -20,7 +19,6 @@ import type { PreparedQueries, Table } from './types';
  * QuickSqliteClient takes care of any direct interaction with sqlite.
  * This way usage react-native-quick-sqlite package is scoped to a single class/file.
  *
- * TODO: Drop the support for v4 of react-native-quick-sqlite in the next major release.
  */
 export class QuickSqliteClient {
   static dbVersion = 3;
@@ -33,15 +31,10 @@ export class QuickSqliteClient {
   static setDbVersion = (version: number) => (this.dbVersion = version);
 
   // @ts-ignore
-  static isQuickSqliteV4 = sqlite?.executeSql ? true : false;
+  static isQuickSqliteV4 = !!sqlite?.executeSql;
 
   // print if legacy version
   static openDB = () => {
-    if (this.isQuickSqliteV4) {
-      QuickSqliteClient_v4.openDB();
-      return;
-    }
-
     try {
       sqlite.open(this.dbName, this.dbLocation);
       sqlite.execute(this.dbName, `PRAGMA foreign_keys = ON`, []);
@@ -51,11 +44,6 @@ export class QuickSqliteClient {
   };
 
   static closeDB = () => {
-    if (this.isQuickSqliteV4) {
-      QuickSqliteClient_v4.closeDB();
-      return;
-    }
-
     try {
       sqlite.close(this.dbName);
     } catch (e) {
@@ -65,11 +53,6 @@ export class QuickSqliteClient {
 
   static executeSqlBatch = (queries: PreparedQueries[]) => {
     if (!queries || !queries.length) return;
-
-    if (this.isQuickSqliteV4) {
-      QuickSqliteClient_v4.executeSqlBatch(queries);
-      return;
-    }
 
     this.openDB();
     try {
@@ -83,10 +66,6 @@ export class QuickSqliteClient {
   };
 
   static executeSql = (query: string, params?: string[]) => {
-    if (this.isQuickSqliteV4) {
-      return QuickSqliteClient_v4.executeSql(query, params);
-    }
-
     try {
       this.openDB();
       const { rows } = sqlite.execute(DB_NAME, query, params);
@@ -109,10 +88,6 @@ export class QuickSqliteClient {
   };
 
   static deleteDatabase = () => {
-    if (this.isQuickSqliteV4) {
-      return QuickSqliteClient_v4.deleteDatabase();
-    }
-
     try {
       sqlite.delete(this.dbName, this.dbLocation);
     } catch (e) {
@@ -131,10 +106,9 @@ export class QuickSqliteClient {
     }
 
     if (this.isQuickSqliteV4) {
-      console.warn(
-        'You seem to be using an older version of "react-native-quick-sqlite" dependency,',
-        'and we are going to drop support for it in the next major release.',
-        'Please upgrade to the version v5 of "react-native-quick-sqlite" to avoid any issues.',
+      console.error(
+        'You seem to be using an older version of "react-native-quick-sqlite" dependency.',
+        'Please upgrade to the version v5 (or higher) of "react-native-quick-sqlite" to avoid any issues.',
       );
     }
 
@@ -156,21 +130,12 @@ export class QuickSqliteClient {
   };
 
   static updateUserPragmaVersion = (version: number) => {
-    if (this.isQuickSqliteV4) {
-      QuickSqliteClient_v4.updateUserPragmaVersion(version);
-      return;
-    }
-
     this.openDB();
     sqlite.execute(DB_NAME, `PRAGMA user_version = ${version}`, []);
     this.closeDB();
   };
 
   static getUserPragmaVersion = () => {
-    if (this.isQuickSqliteV4) {
-      return QuickSqliteClient_v4.getUserPragmaVersion();
-    }
-
     this.openDB();
     try {
       const { rows } = sqlite.execute(DB_NAME, `PRAGMA user_version`, []);
