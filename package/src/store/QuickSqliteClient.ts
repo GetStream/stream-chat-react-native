@@ -5,8 +5,15 @@ let sqlite: typeof QuickSQLite;
 try {
   sqlite = require('react-native-quick-sqlite').QuickSQLite;
 } catch (e) {
-  // Failed for one of the reason
-  // 1. Running on expo, where we don't support offline storage yet.
+  // We want to throw the original error when remote debugger (e.g. Chrome) is enabled.
+  // QuickSQLite can only be used when synchronous method invocations (JSI) are possible.
+  // e.g on-device debugger (e.g. Flipper).
+  const isRemoteDebuggerError = e.message.includes('Failed to install');
+  if (isRemoteDebuggerError) {
+    throw e;
+  }
+  // Reaching here will mean that QuickSQLite is not installed for one of the reasons
+  // 1. Running on regular expo, where we don't support offline storage yet.
   // 2. Offline support is disabled, in which case this library is not installed.
 }
 
@@ -98,7 +105,6 @@ export class QuickSqliteClient {
   };
 
   static initializeDatabase = () => {
-    // @ts-ignore
     if (sqlite === undefined) {
       throw new Error(
         'Please install "react-native-quick-sqlite" package to enable offline support',
