@@ -82,7 +82,13 @@
     "stream-chat": "8.2.1"
   },
   "peerDependencies": {
-    "react-native-svg": ">=12.1.0"
+    "react-native-svg": ">=12.1.0",
+    "react-native-quick-sqlite": ">=5.1.0"
+  },
+  "peerDependenciesMeta": {
+    "react-native-quick-sqlite": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@babel/cli": "^7.12.17",

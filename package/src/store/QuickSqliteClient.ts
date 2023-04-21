@@ -37,10 +37,6 @@ export class QuickSqliteClient {
   // Force a specific db version. This is mainly useful for testsuit.
   static setDbVersion = (version: number) => (QuickSqliteClient.dbVersion = version);
 
-  // @ts-ignore
-  static isQuickSqliteV4 = !!sqlite?.executeSql;
-
-  // print if legacy version
   static openDB = () => {
     try {
       sqlite.open(QuickSqliteClient.dbName, QuickSqliteClient.dbLocation);
@@ -108,13 +104,6 @@ export class QuickSqliteClient {
     if (sqlite === undefined) {
       throw new Error(
         'Please install "react-native-quick-sqlite" package to enable offline support',
-      );
-    }
-
-    if (QuickSqliteClient.isQuickSqliteV4) {
-      console.error(
-        'You seem to be using an older version of "react-native-quick-sqlite" dependency.',
-        'Please upgrade to the version v5 (or higher) of "react-native-quick-sqlite" to avoid any issues.',
       );
     }
 
