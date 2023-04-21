@@ -5,8 +5,6 @@ on:
     branches:
       - main # default branch name for each repo that docs should be push from
       - develop
-    paths:
-      - docusaurus/**
 env:
   branch_map: '{"refs/heads/main": "production", "refs/heads/develop": "staging"}'
 jobs:
