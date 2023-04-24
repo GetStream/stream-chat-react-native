@@ -1,4 +1,3 @@
-/* eslint-disable react/display-name */
 import { useHeaderHeight } from '@react-navigation/elements';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -7,7 +6,7 @@ import { LogBox, SafeAreaView, useColorScheme, View } from 'react-native';
 import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { StreamChat } from 'stream-chat';
+import { Channel as ChannelType, ChannelSort, StreamChat } from 'stream-chat';
 import {
   Channel,
   ChannelList,
@@ -17,12 +16,40 @@ import {
   OverlayProvider,
   Streami18n,
   Thread,
+  ThreadContextValue,
   useAttachmentPickerContext,
 } from 'stream-chat-expo';
 
 import { useStreamChatTheme } from './useStreamChatTheme';
 
 LogBox.ignoreAllLogs(true);
+
+type LocalAttachmentType = Record<string, unknown>;
+type LocalChannelType = Record<string, unknown>;
+type LocalCommandType = string;
+type LocalEventType = Record<string, unknown>;
+type LocalMessageType = Record<string, unknown>;
+type LocalReactionType = Record<string, unknown>;
+type LocalUserType = Record<string, unknown>;
+
+type StreamChatGenerics = {
+  attachmentType: LocalAttachmentType;
+  channelType: LocalChannelType;
+  commandType: LocalCommandType;
+  eventType: LocalEventType;
+  messageType: LocalMessageType;
+  reactionType: LocalReactionType;
+  userType: LocalUserType;
+};
+
+type AppContextType = {
+  channel: ChannelType<StreamChatGenerics> | undefined;
+  setChannel: React.Dispatch<React.SetStateAction<ChannelType<StreamChatGenerics> | undefined>>;
+  setThread: React.Dispatch<
+    React.SetStateAction<ThreadContextValue<StreamChatGenerics>['thread'] | undefined>
+  >;
+  thread: ThreadContextValue<StreamChatGenerics>['thread'] | undefined;
+};
 
 const chatClient = StreamChat.getInstance('q95x9hkbyd6p');
 const userToken =
@@ -36,7 +63,7 @@ const filters = {
   members: { $in: ['ron'] },
   type: 'messaging',
 };
-const sort = { last_message_at: -1 };
+const sort: ChannelSort<StreamChatGenerics> = { last_message_at: -1 };
 const options = {
   state: true,
   watch: true,
@@ -118,14 +145,19 @@ const ThreadScreen = () => {
 
 const Stack = createStackNavigator();
 
-const AppContext = React.createContext();
+const AppContext = React.createContext<AppContextType>({
+  channel: undefined,
+  setChannel: undefined,
+  setThread: undefined,
+  thread: undefined,
+});
 
 const App = () => {
   const colorScheme = useColorScheme();
   const { bottom } = useSafeAreaInsets();
   const theme = useStreamChatTheme();
 
-  const [channel, setChannel] = useState();
+  const [channel, setChannel] = useState<ChannelType<StreamChatGenerics>>();
   const [clientReady, setClientReady] = useState(false);
   const [thread, setThread] = useState();
 
