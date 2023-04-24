@@ -157,7 +157,7 @@ const App = () => {
             translucentStatusBar
             value={{ style: theme }}
           >
-            <Chat client={chatClient} i18nInstance={streami18n} enableOfflineSupport={false}>
+            <Chat client={chatClient} i18nInstance={streami18n} enableOfflineSupport>
               {clientReady && (
                 <Stack.Navigator
                   initialRouteName='ChannelList'
