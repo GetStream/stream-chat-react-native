@@ -205,9 +205,9 @@ const App = () => {
 
   useEffect(() => {
     const setupClient = async () => {
-      await chatClient.connectUser(user, userToken);
-
-      return setClientReady(true);
+      const connectPromise = chatClient.connectUser(user, userToken);
+      setClientReady(true);
+      await connectPromise;
     };
 
     setupClient();
@@ -231,7 +231,7 @@ const App = () => {
               i18nInstance={streami18n}
               value={{ style: theme }}
             >
-              <Chat client={chatClient} i18nInstance={streami18n}>
+              <Chat client={chatClient} i18nInstance={streami18n} enableOfflineSupport>
                 {clientReady && (
                   <Stack.Navigator
                     initialRouteName='ChannelList'

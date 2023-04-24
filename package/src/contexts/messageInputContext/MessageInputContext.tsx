@@ -487,6 +487,8 @@ export const MessageInputProvider = <
     }
 
     const imagesAndFiles = [...imageUploads, ...fileUploads];
+    if (imagesAndFiles.length === 0) return false;
+
     if (enableOfflineSupport) {
       // Allow only if none of the attachments have unsupported status
       for (const file of imagesAndFiles) {
