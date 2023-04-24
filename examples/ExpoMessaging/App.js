@@ -1,10 +1,11 @@
 /* eslint-disable react/display-name */
-import 'react-native-gesture-handler';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { LogBox, SafeAreaView, StatusBar, useColorScheme, View } from 'react-native';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { useHeaderHeight } from '@react-navigation/elements';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { LogBox, SafeAreaView, useColorScheme, View } from 'react-native';
+import 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StreamChat } from 'stream-chat';
 import {
@@ -20,7 +21,6 @@ import {
 } from 'stream-chat-expo';
 
 import { useStreamChatTheme } from './useStreamChatTheme';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 LogBox.ignoreAllLogs(true);
 
@@ -56,19 +56,17 @@ const ChannelListScreen = ({ navigation }) => {
   const memoizedFilters = useMemo(() => filters, []);
 
   return (
-    <Chat client={chatClient} i18nInstance={streami18n}>
-      <View style={{ height: '100%' }}>
-        <ChannelList
-          filters={memoizedFilters}
-          onSelect={(channel) => {
-            setChannel(channel);
-            navigation.navigate('Channel');
-          }}
-          options={options}
-          sort={sort}
-        />
-      </View>
-    </Chat>
+    <View style={{ height: '100%' }}>
+      <ChannelList
+        filters={memoizedFilters}
+        onSelect={(channel) => {
+          setChannel(channel);
+          navigation.navigate('Channel');
+        }}
+        options={options}
+        sort={sort}
+      />
+    </View>
   );
 };
 
@@ -83,19 +81,17 @@ const ChannelScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView>
-      <Chat client={chatClient} i18nInstance={streami18n}>
-        <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread}>
-          <View style={{ flex: 1 }}>
-            <MessageList
-              onThreadSelect={(thread) => {
-                setThread(thread);
-                navigation.navigate('Thread');
-              }}
-            />
-            <MessageInput />
-          </View>
-        </Channel>
-      </Chat>
+      <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread}>
+        <View style={{ flex: 1 }}>
+          <MessageList
+            onThreadSelect={(thread) => {
+              setThread(thread);
+              navigation.navigate('Thread');
+            }}
+          />
+          <MessageInput />
+        </View>
+      </Channel>
     </SafeAreaView>
   );
 };
@@ -106,18 +102,16 @@ const ThreadScreen = () => {
 
   return (
     <SafeAreaView>
-      <Chat client={chatClient} i18nInstance={streami18n}>
-        <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread} threadList>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'flex-start',
-            }}
-          >
-            <Thread onThreadDismount={() => setThread(null)} />
-          </View>
-        </Channel>
-      </Chat>
+      <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread} threadList>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'flex-start',
+          }}
+        >
+          <Thread onThreadDismount={() => setThread(null)} />
+        </View>
+      </Channel>
     </SafeAreaView>
   );
 };
@@ -137,9 +131,9 @@ const App = () => {
 
   useEffect(() => {
     const setupClient = async () => {
-      await chatClient.connectUser(user, userToken);
-
+      const connectPromise = chatClient.connectUser(user, userToken);
       setClientReady(true);
+      await connectPromise;
     };
 
     setupClient();
@@ -163,34 +157,36 @@ const App = () => {
             translucentStatusBar
             value={{ style: theme }}
           >
-            {clientReady && (
-              <Stack.Navigator
-                initialRouteName='ChannelList'
-                screenOptions={{
-                  headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
-                }}
-              >
-                <Stack.Screen
-                  component={ChannelScreen}
-                  name='Channel'
-                  options={() => ({
-                    headerBackTitle: 'Back',
-                    headerRight: () => <></>,
-                    headerTitle: channel?.data?.name,
-                  })}
-                />
-                <Stack.Screen
-                  component={ChannelListScreen}
-                  name='ChannelList'
-                  options={{ headerTitle: 'Channel List' }}
-                />
-                <Stack.Screen
-                  component={ThreadScreen}
-                  name='Thread'
-                  options={() => ({ headerLeft: () => <></> })}
-                />
-              </Stack.Navigator>
-            )}
+            <Chat client={chatClient} i18nInstance={streami18n} enableOfflineSupport>
+              {clientReady && (
+                <Stack.Navigator
+                  initialRouteName='ChannelList'
+                  screenOptions={{
+                    headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
+                  }}
+                >
+                  <Stack.Screen
+                    component={ChannelScreen}
+                    name='Channel'
+                    options={() => ({
+                      headerBackTitle: 'Back',
+                      headerRight: () => <></>,
+                      headerTitle: channel?.data?.name,
+                    })}
+                  />
+                  <Stack.Screen
+                    component={ChannelListScreen}
+                    name='ChannelList'
+                    options={{ headerTitle: 'Channel List' }}
+                  />
+                  <Stack.Screen
+                    component={ThreadScreen}
+                    name='Thread'
+                    options={() => ({ headerLeft: () => <></> })}
+                  />
+                </Stack.Navigator>
+              )}
+            </Chat>
           </OverlayProvider>
         </GestureHandlerRootView>
       </AppContext.Provider>
