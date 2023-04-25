@@ -19,7 +19,6 @@ import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
 import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
-import com.facebook.flipper.plugins.react.ReactFlipperPlugin;
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.ReactContext;
@@ -32,13 +31,16 @@ import java.util.List;
 import okhttp3.OkHttpClient;
 import com.facebook.react.ReactInstanceEventListener;
 
+/**
+ * Class responsible of loading Flipper inside your React Native application. This is the debug
+ * flavor of it. Here you can add your own plugins and customize the Flipper setup.
+ */
 public class ReactNativeFlipper {
   public static void initializeFlipper(Context context, ReactInstanceManager reactInstanceManager) {
     if (FlipperUtils.shouldEnableFlipper(context)) {
       final FlipperClient client = AndroidFlipperClient.getInstance(context);
 
       client.addPlugin(new InspectorFlipperPlugin(context, DescriptorMapping.withDefaults()));
-      client.addPlugin(new ReactFlipperPlugin());
       client.addPlugin(new DatabasesFlipperPlugin(new SqliteDatabaseDriver(context, new SqliteDatabaseProvider() {
           @Override
           public List<File> getDatabaseFiles() {
@@ -46,7 +48,7 @@ public class ReactNativeFlipper {
               for (String databaseName : context.databaseList()) {
                 databaseFiles.add(context.getDatabasePath(databaseName));
               }
-              
+
               //stream-chat-react-native does not save the database file in the regular databases folder, but in the files one
               databaseFiles.add(new File(context.getFilesDir(), "databases/stream-chat-react-native"));
               return databaseFiles;
