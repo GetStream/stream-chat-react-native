@@ -22,11 +22,11 @@
     "clean-all": "yarn clean && rm -rf node_modules && rm -rf ios/Pods && rm -rf vendor && bundle install && yarn install && cd ios && bundle exec pod install && cd -"
   },
   "dependencies": {
-    "@notifee/react-native": "^5.0.3",
-    "@react-native-async-storage/async-storage": "1.15.17",
-    "@react-native-camera-roll/camera-roll": "^5.0.0",
+    "@notifee/react-native": "^7.7.1",
+    "@react-native-async-storage/async-storage": "1.18.1",
+    "@react-native-camera-roll/camera-roll": "^5.3.1",
     "@react-native-community/masked-view": "0.1.11",
-    "@react-native-community/netinfo": "6.0.0",
+    "@react-native-community/netinfo": "9.3.9",
     "@react-native-firebase/app": "^14.7.0",
     "@react-native-firebase/messaging": "^14.7.0",
     "@react-navigation/bottom-tabs": "5.11.11",
