@@ -1,20 +1,18 @@
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
+# We create this static linkage to use use_frameworks with Hermes
+# See Notes section in https://rnfirebase.io/#altering-cocoapods-to-use-frameworks
+use_frameworks! :linkage => :static
+$RNFirebaseAsStaticFramework = true
+
 platform :ios, min_ios_version_supported
 
 prepare_react_native_project!
 
-# If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
-# because `react-native-flipper` depends on (FlipperKit,...) that will be excluded
-#
-# To fix this you can also exclude `react-native-flipper` using a `react-native.config.js`
-# ```js
-# module.exports = {
-#   dependencies: {
-#     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
-# ```
-flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
+# We must disable flipper due to not being compatible with firebase
+# See Notes section in https://rnfirebase.io/#altering-cocoapods-to-use-frameworks
+flipper_config = FlipperConfiguration.disabled
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
   Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
