@@ -6908,10 +6908,10 @@ react-native-markdown-package@1.8.2:
     react-native-lightbox "^0.7.0"
     simple-markdown "^0.7.1"
 
-react-native-quick-sqlite@8.0.2:
-  version "8.0.2"
-  resolved "https://registry.yarnpkg.com/react-native-quick-sqlite/-/react-native-quick-sqlite-8.0.2.tgz#67ad0a330ede647f9cd02c83115810722d5bd828"
-  integrity sha512-w5m4y0q5ggaiVS8vHmN0ihynD9hMPgLNAZJA7ZRcXs6WwR+VSW9WXUlEn1N0fgIrmoYRLNXyU5TjXx/IiKPlMA==
+react-native-quick-sqlite@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-quick-sqlite/-/react-native-quick-sqlite-4.0.0.tgz#e38aa73d32a3f83580d9b9870285584e45911efa"
+  integrity sha512-aokOkdyt58wZXp+jhEaNA2KUCTLOB6lssqhiJY93M2nBUWFGG9N0ani3fHocDkd01eeWjKF8AYFvTVnnVTCbMg==
 
 react-native-reanimated@^3.1.0:
   version "3.1.0"
@@ -7729,33 +7729,18 @@ stream-chat-react-native-core@5.13.0:
     react-native-url-polyfill "^1.3.0"
     stream-chat "8.2.1"
 
-"stream-chat-react-native-core@link:../../package":
-  version "0.0.0"
-  uid ""
-
-"stream-chat-react-native@link:../../package/native-package":
-  version "0.0.0"
-  uid ""
+stream-chat-react-native@5.13.0:
+  version "5.13.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native/-/stream-chat-react-native-5.13.0.tgz#ff5b18e8bda213eef254da921864a0139e43bdaf"
+  integrity sha512-jjA1ntAqmywljRRuE/iI7wto/zaB4Ua+jQnf0TKJucgpaPuGFCIooQa5ciAZ1E8TfKdIa8z0tL+Dcb6BJ1mmCw==
+  dependencies:
+    es6-symbol "^3.1.3"
+    stream-chat-react-native-core "5.13.0"
 
 stream-chat@8.2.1:
   version "8.2.1"
   resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.2.1.tgz#578015b7ba738b46e7a68e596a9c63b8625dc61d"
   integrity sha512-8f+Zkcz2JmSOSw3Q+1ZyC7JLFnB7HezE8TGTY4oeLG54g5r4cCwV0MVGlPaWERZ5darG987xasbOx6eU1Jjesg==
-  dependencies:
-    "@babel/runtime" "^7.16.3"
-    "@types/jsonwebtoken" "~9.0.0"
-    "@types/ws" "^7.4.0"
-    axios "^0.22.0"
-    base64-js "^1.5.1"
-    form-data "^4.0.0"
-    isomorphic-ws "^4.0.1"
-    jsonwebtoken "~9.0.0"
-    ws "^7.4.4"
-
-stream-chat@8.6.0:
-  version "8.6.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.6.0.tgz#a686a11337d7d0176f6881874cad73dac86de803"
-  integrity sha512-DsVN1D1nr5rLYMc1+LDJt2f+wUrqR0Nv9o71zrSvSQIVWaBtmq/nMqZXie2SV4ndT9sbWExXay5FVGxjOTtucQ==
   dependencies:
     "@babel/runtime" "^7.16.3"
     "@types/jsonwebtoken" "~9.0.0"

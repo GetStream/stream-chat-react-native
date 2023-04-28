@@ -44,7 +44,7 @@
     "react-native-image-crop-picker": "0.39.0",
     "react-native-image-resizer": "1.4.5",
     "react-native-markdown-package": "1.8.2",
-    "react-native-quick-sqlite": "8.0.2",
+    "react-native-quick-sqlite": "4.0.0",
     "react-native-reanimated": "^3.1.0",
     "react-native-safe-area-context": "4.5.1",
     "react-native-screens": "3.20.0",
