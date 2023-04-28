@@ -11,8 +11,12 @@ concurrency:
 
 jobs:
   build_and_deploy_ios_testflight_qa:
-    runs-on: [macos-latest]
+    runs-on: macos-12
     steps:
+      - name: Install Bot SSH Key
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.BOT_SSH_PRIVATE_KEY }}
       - uses: actions/checkout@v2
         with:
           token: ${{ secrets.DOCUSAURUS_GH_TOKEN }}
@@ -42,7 +46,6 @@ jobs:
       - name: Build and release Testflight QA
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.DOCUSAURUS_GH_TOKEN }}
           APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
           APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}

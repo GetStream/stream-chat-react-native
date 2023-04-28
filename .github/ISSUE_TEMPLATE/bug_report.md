@@ -28,6 +28,7 @@ A clear and concise description of what the bug is.
 - Package version (stream-chat-react-native/stream-chat-expo)
 - react-native or expo version
 - Device/Emulator (android/ios) and OS version
+- Offline support enabled (yes/no)
 
 **To Reproduce**
 Steps to reproduce the behavior:
