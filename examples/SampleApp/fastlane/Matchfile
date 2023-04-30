@@ -3,8 +3,6 @@ git_url("https://github.com/GetStream/ios-certificates")
 
 storage_mode("git")
 
-username("vishal@getstream.io")
-
 team_id("EHV7XZLAHA")
 
 # app_identifier(["tools.fastlane.app", "tools.fastlane.app2"])

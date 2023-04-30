@@ -1,22 +1,21 @@
 name: sample-distribution
 
+concurrency:
+  group: sample-distribution-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
-    branches:
-      - develop
-
-concurrency:
-  group: sample-distribution
-  cancel-in-progress: true
+    paths:
+      - '.github/workflows/sample-distribution.yml'
+      - 'package/**'
+      - 'packages/examples/SampleApp/**'
 
 jobs:
   build_and_deploy_ios_testflight_qa:
-    runs-on: macos-12
+    name: Build SampleApp iOS and Deploy-${{ github.ref == 'refs/heads/develop' }}
+    runs-on: [macos-12]
     steps:
-      - name: Install Bot SSH Key
-        uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: ${{ secrets.BOT_SSH_PRIVATE_KEY }}
       - uses: actions/checkout@v2
         with:
           token: ${{ secrets.DOCUSAURUS_GH_TOKEN }}
@@ -46,14 +45,16 @@ jobs:
       - name: Build and release Testflight QA
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
           APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
           APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
         run: |
           cd examples/SampleApp
-          bundle exec fastlane deploy_to_testflight_qa
+          bundle exec fastlane deploy_to_testflight_qa deploy:${{ github.ref == 'refs/heads/develop' }};
 
   build_and_deploy_android_s3:
+    name: Build SampleApp Android and Deploy-${{ github.ref == 'refs/heads/develop' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -75,11 +76,13 @@ jobs:
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
+        if: ${{ github.ref == 'refs/heads/develop' }}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - name: Upload APK
+        if: ${{ github.ref == 'refs/heads/develop' }}
         # https://getstream.io/downloads/rn-sample-app.apk
         run: |
           cp examples/SampleApp/android/app/build/outputs/apk/release/app-release.apk rn-sample-app.apk
