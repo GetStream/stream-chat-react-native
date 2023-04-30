@@ -72,7 +72,7 @@ end
 
 platform :ios do
   desc "Deploy build to TestFlight QA"
-  lane :deploy_to_testflight_qa do
+  lane :deploy_to_testflight_qa do |options|
       app_store_connect_api_key()
 
       match_appstore
