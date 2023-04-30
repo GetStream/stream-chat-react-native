@@ -4,6 +4,13 @@ concurrency:
   group: sample-distribution-${{ github.ref }}
   cancel-in-progress: true
 
+on:
+  push:
+    paths:
+      - '.github/workflows/sample-distribution.yml'
+      - 'package/**'
+      - 'packages/examples/SampleApp/**'
+
 jobs:
   build_and_deploy_ios_testflight_qa:
     name: Build SampleApp iOS and Deploy-${{ github.ref == 'refs/heads/develop' }}
