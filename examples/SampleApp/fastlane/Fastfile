@@ -105,17 +105,19 @@ platform :ios do
           output_directory: "./dist",
       )
 
-      begin
-        upload_to_testflight(
-            groups: ['Testers'],
-            changelog: "Lots of amazing new features to test out!",
-            reject_build_waiting_for_review: false
-        )
-      rescue Exception => e
-        if e.message.include? "Another build is in review"
-          UI.important("Another build is already in beta review. Skipping beta review submission")
-        else
-          raise
+      if options[:deploy]
+        begin
+          upload_to_testflight(
+              groups: ['Testers'],
+              changelog: "Lots of amazing new features to test out!",
+              reject_build_waiting_for_review: false
+          )
+        rescue Exception => e
+          if e.message.include? "Another build is in review"
+            UI.important("Another build is already in beta review. Skipping beta review submission")
+          else
+            raise
+          end
         end
       end
 
