@@ -2948,10 +2948,10 @@ stream-buffers@2.2.x:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha512-uyQK/mx5QjHun80FLJTfaWE7JtwfRMKBLkMne6udYOmvH0CawotVa7TfgYHzAnpphn4+TweIx1QKMnRIbipmUg==
 
-stream-chat-react-native-core@5.13.0:
-  version "5.13.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.13.0.tgz#9425b3aec314e2183bdff5ed0141ddae0fbfaff3"
-  integrity sha512-dqdq4nInUPIDOXyK55vk4mrOgZTox/aRr7rRxZnQBAivuGOLnrcrv2d2RqWdVG6fC1YX7iatXKDLTThCBH2dUQ==
+stream-chat-react-native-core@5.14.0:
+  version "5.14.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.14.0.tgz#81f7890b083fc550d6d5f2e848d96847381df435"
+  integrity sha512-osgLHxqmLynXqOC5cuXRFDcFf45OtjMgHj00LQG0SiM86LTx/T3cIHhYl4VWLIvoRMuuaubwmhhmBXSnGPU+2w==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "4.4.5"
@@ -2965,12 +2965,12 @@ stream-chat-react-native-core@5.13.0:
     path "0.12.7"
     react-native-markdown-package "1.8.2"
     react-native-url-polyfill "^1.3.0"
-    stream-chat "8.2.1"
+    stream-chat "8.6.0"
 
-stream-chat@8.2.1:
-  version "8.2.1"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.2.1.tgz#578015b7ba738b46e7a68e596a9c63b8625dc61d"
-  integrity sha512-8f+Zkcz2JmSOSw3Q+1ZyC7JLFnB7HezE8TGTY4oeLG54g5r4cCwV0MVGlPaWERZ5darG987xasbOx6eU1Jjesg==
+stream-chat@8.6.0:
+  version "8.6.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.6.0.tgz#a686a11337d7d0176f6881874cad73dac86de803"
+  integrity sha512-DsVN1D1nr5rLYMc1+LDJt2f+wUrqR0Nv9o71zrSvSQIVWaBtmq/nMqZXie2SV4ndT9sbWExXay5FVGxjOTtucQ==
   dependencies:
     "@babel/runtime" "^7.16.3"
     "@types/jsonwebtoken" "~9.0.0"
