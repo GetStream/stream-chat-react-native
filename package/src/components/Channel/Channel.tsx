@@ -997,6 +997,8 @@ const ChannelWithContext = <
         channel.state.clearMessages();
         channel.state.setIsUpToDate(true);
         channel.state.addMessagesSorted(state.messages);
+        channel.state.addPinnedMessages(state.pinned_messages);
+
         copyChannelState();
         return;
       }
@@ -1045,10 +1047,9 @@ const ChannelWithContext = <
 
       setHasNoMoreRecentMessagesToLoad(true);
       channel.state.setIsUpToDate(true);
-
       channel.state.clearMessages();
       channel.state.addMessagesSorted(finalMessages);
-
+      channel.state.addPinnedMessages(state.pinned_messages);
       setHasMore(true);
       copyChannelState();
 

@@ -5,7 +5,7 @@
     "es6": true
   },
   "extends": ["eslint:recommended", "plugin:react/recommended", "plugin:jest/recommended"],
-  "parser": "babel-eslint",
+  "parser": "@babel/eslint-parser",
   "parserOptions": {
     "ecmaFeatures": {
       "modules": true
@@ -13,7 +13,7 @@
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
-  "plugins": ["babel", "markdown", "better-styled-components", "sort-destructure-keys"],
+  "plugins": ["@babel", "markdown", "better-styled-components", "sort-destructure-keys"],
   "rules": {
     "array-callback-return": 2,
     "arrow-body-style": 2,
