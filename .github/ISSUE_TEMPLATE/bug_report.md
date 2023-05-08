@@ -60,7 +60,6 @@ Steps to reproduce the behavior:
 <details><summary>Click To Expand</summary>
 <p>
 
-#### `package.json`:
 <!-- If applicable to the issue, provide the contents of key UI components that were customized which will help to debug -->
 <!--     For Example: -->
 <!--        - Chat -->
