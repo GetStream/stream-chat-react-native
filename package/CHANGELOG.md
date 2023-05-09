@@ -1,5 +1,27 @@
 # Change Log
 
+## [5.14.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.13.0...v5.14.0) (2023-05-02)
+
+
+### Features
+
+* enabling offline support with RNQS v8 and removing support for v4 ([#2067](https://github.com/GetStream/stream-chat-react-native/issues/2067)) ([22a541c](https://github.com/GetStream/stream-chat-react-native/commit/22a541c13d35188157ccf0d0442ef18142b35086))
+* resizable cdn hosts ([#2058](https://github.com/GetStream/stream-chat-react-native/issues/2058)) ([d90a49c](https://github.com/GetStream/stream-chat-react-native/commit/d90a49cc46df1f7f097c95d2473689b818f3d4a8))
+
+
+### Bug Fixes
+
+* addPinnedMessages after clearing a channel's state ([#2054](https://github.com/GetStream/stream-chat-react-native/issues/2054)) ([1af97ba](https://github.com/GetStream/stream-chat-react-native/commit/1af97babb123a9b3b2957417c19df6b77f70dc91))
+* disable send button if enableOfflineSupport is on and images and files are not uploaded ([#2070](https://github.com/GetStream/stream-chat-react-native/issues/2070)) ([832c377](https://github.com/GetStream/stream-chat-react-native/commit/832c3772a1f642fe4b2363a30b4b030a9e371eba))
+* missing translation for pinned by ([#2051](https://github.com/GetStream/stream-chat-react-native/issues/2051)) ([478167b](https://github.com/GetStream/stream-chat-react-native/commit/478167b080b8ced93eb41b0ecf30741e8ad63801))
+* remove return null check from OverlayProvider and Chat component ([#2039](https://github.com/GetStream/stream-chat-react-native/issues/2039)) ([c3ceb8c](https://github.com/GetStream/stream-chat-react-native/commit/c3ceb8c8d33f5198eba8274c837b91373d84e080))
+* upgrade stream-chat version to 8.6.0 to solve offline support update channel preview issue ([4ebf23c](https://github.com/GetStream/stream-chat-react-native/commit/4ebf23cb53005522d58f06d8156ee8897a352da1))
+
+
+### Reverts
+
+* Revert "chore: upgrade stream-chat version to 8.6.0 (#2077)" (#2078) ([bffe460](https://github.com/GetStream/stream-chat-react-native/commit/bffe460670efa173710930a06e18ffcd0b7d8a05)), closes [#2077](https://github.com/GetStream/stream-chat-react-native/issues/2077) [#2078](https://github.com/GetStream/stream-chat-react-native/issues/2078)
+
 ## [5.13.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.12.1...v5.13.0) (2023-04-13)
 
 

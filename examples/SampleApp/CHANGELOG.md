@@ -1,5 +1,27 @@
 # Change Log
 
+## [1.21.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.20.0...sampleapp@v1.21.0) (2023-05-02)
+
+
+### Features
+
+* enabling offline support with RNQS v8 and removing support for v4 ([#2067](https://github.com/GetStream/stream-chat-react-native/issues/2067)) ([22a541c](https://github.com/GetStream/stream-chat-react-native/commit/22a541c13d35188157ccf0d0442ef18142b35086))
+
+
+### Bug Fixes
+
+* upgrade stream-chat version to 8.6.0 to solve offline support update channel preview issue ([4ebf23c](https://github.com/GetStream/stream-chat-react-native/commit/4ebf23cb53005522d58f06d8156ee8897a352da1))
+
+
+### Reverts
+
+* Revert "chore: upgrade stream-chat version to 8.6.0 (#2077)" (#2078) ([bffe460](https://github.com/GetStream/stream-chat-react-native/commit/bffe460670efa173710930a06e18ffcd0b7d8a05)), closes [#2077](https://github.com/GetStream/stream-chat-react-native/issues/2077) [#2078](https://github.com/GetStream/stream-chat-react-native/issues/2078)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ## [1.20.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.19.3...sampleapp@v1.20.0) (2023-04-13)
 
 
