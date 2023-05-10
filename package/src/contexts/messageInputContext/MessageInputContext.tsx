@@ -1,8 +1,8 @@
 import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
 
-import { Alert, Keyboard, Platform } from 'react-native';
-
+import type { LegacyRef } from 'react';
 import type { TextInput, TextInputProps } from 'react-native';
+import { Alert, Keyboard, Platform } from 'react-native';
 
 import uniq from 'lodash/uniq';
 import { lookup } from 'mime-types';
@@ -190,7 +190,7 @@ export type LocalMessageInputContext<
   /**
    * Ref callback to set reference on input box
    */
-  setInputBoxRef: (ref: TextInput | null) => void;
+  setInputBoxRef: LegacyRef<TextInput> | undefined;
   setMentionedUsers: React.Dispatch<React.SetStateAction<string[]>>;
   setNumberOfUploads: React.Dispatch<React.SetStateAction<number>>;
   setSendThreadMessageInChannel: React.Dispatch<React.SetStateAction<boolean>>;
