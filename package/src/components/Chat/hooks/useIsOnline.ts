@@ -40,7 +40,8 @@ export const useIsOnline = <
   }, [closeConnectionOnBackground, client, clientExists]);
 
   const onForeground = useCallback(() => {
-    if (!clientExists) return;
+    // If the user id is not set, we should not open the connection, as it will raise an unneded error
+    if (!clientExists || !client.userID) return;
 
     client.openConnection();
   }, [client, clientExists]);
