@@ -1,5 +1,13 @@
 # Change Log
 
+### [5.14.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.14.0...v5.14.1) (2023-05-15)
+
+
+### Bug Fixes
+
+* AutoCompleteInput setInputBoxRef typing ([#2095](https://github.com/GetStream/stream-chat-react-native/issues/2095)) ([9fd7cfc](https://github.com/GetStream/stream-chat-react-native/commit/9fd7cfcbc554ef5d813541b53e018cdf16201238))
+* make ws connection more robust when user is not set yet ([#2098](https://github.com/GetStream/stream-chat-react-native/issues/2098)) ([548e5ae](https://github.com/GetStream/stream-chat-react-native/commit/548e5ae719870b3bc5fffe851395bc2547227acb))
+
 ## [5.14.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.13.0...v5.14.0) (2023-05-02)
 
 
