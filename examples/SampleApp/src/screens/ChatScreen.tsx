@@ -23,7 +23,7 @@ type Props = {
 
 export const ChatScreen: React.FC<Props> = () => (
   <Tab.Navigator tabBar={(props) => <BottomTabs {...props} />}>
-    <Tab.Screen component={ChannelListScreen} name='ChatScreen' />
-    <Tab.Screen component={MentionsScreen} name='MentionsScreen' />
+    <Tab.Screen component={ChannelListScreen} name='ChatScreen' options={{ headerShown: false }} />
+    <Tab.Screen component={MentionsScreen} name='MentionsScreen' options={{ headerShown: false }} />
   </Tab.Navigator>
 );
