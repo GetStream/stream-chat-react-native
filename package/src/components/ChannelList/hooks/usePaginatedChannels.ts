@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
+import type {
+  Channel,
+  ChannelFilters,
+  ChannelOptions,
+  ChannelSort,
+  MessageResponse,
+} from 'stream-chat';
 
 import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRefContext/ActiveChannelsRefContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
@@ -10,6 +16,7 @@ import { getChannelsForFilterSort } from '../../../store/apis/getChannelsForFilt
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { ONE_SECOND_IN_MS } from '../../../utils/date';
 import { DBSyncManager } from '../../../utils/DBSyncManager';
+import { MessageStatusTypes } from '../../../utils/utils';
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
 const waitSeconds = (seconds: number) =>
@@ -101,11 +108,13 @@ export const usePaginatedChannels = <
     };
 
     try {
-      const activeChannelIds: string[] = [];
-      for (const cid in client.activeChannels) {
-        if (client.activeChannels[cid].id) {
-          // @ts-ignore
-          activeChannelIds.push(client.activeChannels[cid].id);
+      // If failed messages were present in DB it would be in the channel state now and be overwritten by the queryChannels call
+      // So we store them in a separate object and add them back to the channel state after the queryChannels call
+      const failedMessagesInDb: Map<string, MessageResponse<StreamChatGenerics>[]> = new Map();
+      if (enableOfflineSupport) {
+        for (const cid in client.activeChannels) {
+          const failedMessages = getFailedMessages(client.activeChannels[cid]);
+          if (failedMessages) failedMessagesInDb.set(cid, failedMessages);
         }
       }
 
@@ -119,6 +128,13 @@ export const usePaginatedChannels = <
       });
       if (isQueryStale() || !isMountedRef.current) {
         return;
+      }
+
+      if (failedMessagesInDb.size) {
+        for (const cid in client.activeChannels) {
+          const msgsToAdd = failedMessagesInDb.get(cid);
+          if (msgsToAdd) client.activeChannels[cid].state.addMessagesSorted(msgsToAdd);
+        }
       }
 
       const newChannels =
@@ -276,3 +292,21 @@ export const usePaginatedChannels = <
     staticChannelsActive,
   };
 };
+
+function getFailedMessages<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(channel: Channel<StreamChatGenerics>): MessageResponse<StreamChatGenerics>[] | undefined {
+  const failedMsgs = channel.state.messages.filter((m) => m.status === MessageStatusTypes.FAILED);
+  if (failedMsgs.length) {
+    return failedMsgs.map(
+      (m) =>
+        ({
+          ...m,
+          created_at: m.created_at.toISOString(),
+          pinned_at: m.pinned_at ? m.pinned_at.toISOString() : null,
+          updated_at: m.updated_at.toISOString(),
+        } as MessageResponse<StreamChatGenerics>),
+    );
+  }
+  return undefined;
+}
