@@ -2,8 +2,14 @@ let Sharing;
 
 try {
   Sharing = require('expo-sharing').default;
-} catch (error) {
-  console.log('expo-sharing is not installed');
+} catch (e) {
+  // do nothing
+}
+
+if (!Sharing) {
+  console.log(
+    'expo-sharing is not installed. Installing this package will allow your users to share attachments from the gallery using the native sharing interface on their devices.',
+  );
 }
 
 export const shareImage = Sharing
