@@ -1,12 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import type {
-  Channel,
-  ChannelFilters,
-  ChannelOptions,
-  ChannelSort,
-  MessageResponse,
-} from 'stream-chat';
+import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
 
 import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRefContext/ActiveChannelsRefContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
@@ -16,7 +10,6 @@ import { getChannelsForFilterSort } from '../../../store/apis/getChannelsForFilt
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { ONE_SECOND_IN_MS } from '../../../utils/date';
 import { DBSyncManager } from '../../../utils/DBSyncManager';
-import { MessageStatusTypes } from '../../../utils/utils';
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
 const waitSeconds = (seconds: number) =>
