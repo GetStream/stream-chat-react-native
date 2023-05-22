@@ -1,8 +1,9 @@
 import type { AxiosError } from 'axios';
+import { isEmpty } from 'lodash';
 import type { APIErrorResponse, StreamChat } from 'stream-chat';
 
 import { handleEventToSyncDB } from '../components/Chat/hooks/handleEventToSyncDB';
-import { getAllChannelIds, getLastSyncedAt, upsertLastSyncedAt } from '../store/apis';
+import { getAllChannelIds, getLastSyncedAt, upsertUserSyncStatus } from '../store/apis';
 
 import { addPendingTask } from '../store/apis/addPendingTask';
 
@@ -95,6 +96,8 @@ export class DBSyncManager {
       currentUserId: this.client.user.id,
     });
     const cids = getAllChannelIds();
+    // If there are no channels, then there is no need to sync.
+    if (!isEmpty(cids)) return;
 
     if (lastSyncedAt) {
       try {
@@ -113,7 +116,7 @@ export class DBSyncManager {
         QuickSqliteClient.resetDB();
       }
     }
-    upsertLastSyncedAt({
+    upsertUserSyncStatus({
       currentUserId: this.client.user.id,
       lastSyncedAt: new Date().toString(),
     });

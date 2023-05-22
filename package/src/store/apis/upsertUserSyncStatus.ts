@@ -1,7 +1,7 @@
 import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 
-export const upsertLastSyncedAt = ({
+export const upsertUserSyncStatus = ({
   currentUserId,
   lastSyncedAt,
 }: {
