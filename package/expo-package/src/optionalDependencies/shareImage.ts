@@ -1,7 +1,7 @@
 let Sharing;
 
 try {
-  Sharing = require('expo-sharing').default;
+  Sharing = require('expo-sharing');
 } catch (e) {
   // do nothing
 }
