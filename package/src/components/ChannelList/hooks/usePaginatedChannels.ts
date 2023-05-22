@@ -108,33 +108,16 @@ export const usePaginatedChannels = <
     };
 
     try {
-      // If failed messages were present in DB it would be in the channel state now and be overwritten by the queryChannels call
-      // So we store them in a separate object and add them back to the channel state after the queryChannels call
-      const failedMessagesInDb: Map<string, MessageResponse<StreamChatGenerics>[]> = new Map();
-      if (enableOfflineSupport) {
-        for (const cid in client.activeChannels) {
-          const failedMessages = getFailedMessages(client.activeChannels[cid]);
-          if (failedMessages) failedMessagesInDb.set(cid, failedMessages);
-        }
-      }
-
       /**
        * We skipInitialization here for handling race condition between ChannelList, Channel (and Thread)
        * when they all (may) update the channel state at the same time (when connection state recovers)
        * TODO: if we move the channel state to a single context and share it between ChannelList, Channel and Thread we can remove this
        */
       const channelQueryResponse = await client.queryChannels(filters, sort, newOptions, {
-        skipInitialization: activeChannels.current,
+        skipInitialization: enableOfflineSupport ? undefined : activeChannels.current,
       });
       if (isQueryStale() || !isMountedRef.current) {
         return;
-      }
-
-      if (failedMessagesInDb.size) {
-        for (const cid in client.activeChannels) {
-          const msgsToAdd = failedMessagesInDb.get(cid);
-          if (msgsToAdd) client.activeChannels[cid].state.addMessagesSorted(msgsToAdd);
-        }
       }
 
       const newChannels =
@@ -224,11 +207,12 @@ export const usePaginatedChannels = <
         });
 
         if (channelsFromDB) {
-          setChannels(
-            client.hydrateActiveChannels(channelsFromDB, {
-              offlineMode: true,
-            }),
-          );
+          const offlineChannels = client.hydrateActiveChannels(channelsFromDB, {
+            offlineMode: true,
+            skipInitialization: [], // passing empty array will clear out the existing messages from channel state, this removes the possibility of duplicate messages
+          });
+
+          setChannels(offlineChannels);
           setStaticChannelsActive(true);
         }
       } catch (e) {
@@ -292,21 +276,3 @@ export const usePaginatedChannels = <
     staticChannelsActive,
   };
 };
-
-function getFailedMessages<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(channel: Channel<StreamChatGenerics>): MessageResponse<StreamChatGenerics>[] | undefined {
-  const failedMsgs = channel.state.messages.filter((m) => m.status === MessageStatusTypes.FAILED);
-  if (failedMsgs.length) {
-    return failedMsgs.map(
-      (m) =>
-        ({
-          ...m,
-          created_at: m.created_at.toISOString(),
-          pinned_at: m.pinned_at ? m.pinned_at.toISOString() : null,
-          updated_at: m.updated_at.toISOString(),
-        } as MessageResponse<StreamChatGenerics>),
-    );
-  }
-  return undefined;
-}
