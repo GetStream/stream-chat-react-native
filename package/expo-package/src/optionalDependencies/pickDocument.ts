@@ -2,8 +2,14 @@ let DocumentPicker;
 
 try {
   DocumentPicker = require('expo-document-picker');
-} catch (error) {
-  console.log('expo-document-picker is not installed');
+} catch (e) {
+  // do nothing
+}
+
+if (!DocumentPicker) {
+  console.log(
+    'expo-document-picker is not installed. Install this library if you want to enable file picker support.',
+  );
 }
 
 export const pickDocument = DocumentPicker
