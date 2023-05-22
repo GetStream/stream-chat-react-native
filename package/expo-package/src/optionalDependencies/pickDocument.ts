@@ -1,7 +1,7 @@
 let DocumentPicker;
 
 try {
-  DocumentPicker = require('expo-document-picker').default;
+  DocumentPicker = require('expo-document-picker');
 } catch (error) {
   console.log('expo-document-picker is not installed');
 }
