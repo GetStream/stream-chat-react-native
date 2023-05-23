@@ -1,5 +1,4 @@
 import type { AxiosError } from 'axios';
-import { isEmpty } from 'lodash';
 import type { APIErrorResponse, StreamChat } from 'stream-chat';
 
 import { handleEventToSyncDB } from '../components/Chat/hooks/handleEventToSyncDB';
@@ -12,6 +11,7 @@ import { getPendingTasks } from '../store/apis/getPendingTasks';
 import { QuickSqliteClient } from '../store/QuickSqliteClient';
 import type { PendingTask, PreparedQueries } from '../store/types';
 import type { DefaultStreamChatGenerics } from '../types/types';
+
 /**
  * DBSyncManager has the responsibility to sync the channel states
  * within local database whenever possible.
@@ -97,7 +97,7 @@ export class DBSyncManager {
     });
     const cids = getAllChannelIds();
     // If there are no channels, then there is no need to sync.
-    if (!isEmpty(cids)) return;
+    if (cids.length === 0) return;
 
     if (lastSyncedAt) {
       try {
