@@ -1,8 +1,6 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { Image, Platform } from 'react-native';
 
-import Dayjs from 'dayjs';
-
 import type { Channel, StreamChat } from 'stream-chat';
 
 import { useAppSettings } from './hooks/useAppSettings';
@@ -21,7 +19,6 @@ import type { Theme } from '../../contexts/themeContext/utils/theme';
 import {
   DEFAULT_USER_LANGUAGE,
   TranslationProvider,
-  TranslatorFunctions,
 } from '../../contexts/translationContext/TranslationContext';
 import { useStreami18n } from '../../hooks/useStreami18n';
 import init from '../../init';
@@ -149,15 +146,9 @@ const ChatWithContext = <
   } = props;
 
   const [channel, setChannel] = useState<Channel<StreamChatGenerics>>();
-  const [translators, setTranslators] = useState<TranslatorFunctions>({
-    t: (key: string) => key,
-    tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
-  });
 
-  /**
-   * Setup translators
-   */
-  const loadingTranslators = useStreami18n({ i18nInstance, setTranslators });
+  // Setup translators
+  const translators = useStreami18n(i18nInstance);
 
   /**
    * Setup connection event listeners
@@ -166,6 +157,8 @@ const ChatWithContext = <
     client,
     closeConnectionOnBackground,
   );
+
+  const [initialisedDatabase, setInitialisedDatabase] = useState(false);
 
   /**
    * Setup muted user listener
@@ -192,11 +185,20 @@ const ChatWithContext = <
           data: client.user,
         });
     }
-  }, [client]);
+  }, [client, enableOfflineSupport]);
 
   const setActiveChannel = (newChannel?: Channel<StreamChatGenerics>) => setChannel(newChannel);
 
-  const appSettings = useAppSettings(client, isOnline, enableOfflineSupport);
+  useEffect(() => {
+    if (client.user?.id && enableOfflineSupport) {
+      setInitialisedDatabase(false);
+      QuickSqliteClient.initializeDatabase();
+      DBSyncManager.init(client as unknown as StreamChat);
+      setInitialisedDatabase(true);
+    }
+  }, [client?.user?.id, enableOfflineSupport]);
+
+  const appSettings = useAppSettings(client, isOnline, enableOfflineSupport, initialisedDatabase);
 
   const chatContext = useCreateChatContext({
     appSettings,
@@ -210,19 +212,10 @@ const ChatWithContext = <
     setActiveChannel,
   });
 
-  useEffect(() => {
-    if (client.user?.id && enableOfflineSupport) {
-      QuickSqliteClient.initializeDatabase();
-      DBSyncManager.init(client as unknown as StreamChat);
-    }
-  }, [client?.user?.id]);
-
   useSyncDatabase({
     client,
     enableOfflineSupport,
   });
-
-  if (loadingTranslators) return null;
 
   return (
     <ChatProvider<StreamChatGenerics> value={chatContext}>

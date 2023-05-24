@@ -86,3 +86,9 @@ So it's recommended to only use this prop in case you don't render message avata
 Animations (using reanimated hooks) or gesture handlers such as PanGestureHandler or TapGestureHandler on dynamic list items (such as MessageList),
 have known to a cause memory leak. So we would recommend not to add any animations or gesture handlers as part of custom
 message component to avoid any performance issue.
+
+### Usage of ChannelContext within Customized Components
+
+The [ChannelContext](../contexts/channel_context.mdx) is a React Context that provides a set of useful methods and data to its children.
+Yet when used in a message level, or anywhere deeper in the element tree (For example: in a custom component) it might cause unnecessary re-renders of the message list.
+More information can be found in the [Performance Section](../../customization/custom_components/#performance) of how to customize our components.

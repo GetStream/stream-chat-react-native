@@ -14,7 +14,7 @@ export const useTargetedMessage = (messageId?: string) => {
     };
   }, []);
 
-  const setTargetedMessageTimeout = (messageId: string) => {
+  const setTargetedMessageTimeoutRef = useRef((messageId: string) => {
     clearTargetedMessageCall.current && clearTimeout(clearTargetedMessageCall.current);
 
     clearTargetedMessageCall.current = setTimeout(() => {
@@ -22,10 +22,10 @@ export const useTargetedMessage = (messageId?: string) => {
     }, 3000);
 
     setTargetedMessage(messageId);
-  };
+  });
 
   return {
-    setTargetedMessage: setTargetedMessageTimeout,
+    setTargetedMessage: setTargetedMessageTimeoutRef.current,
     targetedMessage,
   };
 };

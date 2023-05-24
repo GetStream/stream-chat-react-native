@@ -1,5 +1,94 @@
 # Change Log
 
+### [1.21.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.21.0...sampleapp@v1.21.1) (2023-05-15)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+## [1.21.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.20.0...sampleapp@v1.21.0) (2023-05-02)
+
+
+### Features
+
+* enabling offline support with RNQS v8 and removing support for v4 ([#2067](https://github.com/GetStream/stream-chat-react-native/issues/2067)) ([22a541c](https://github.com/GetStream/stream-chat-react-native/commit/22a541c13d35188157ccf0d0442ef18142b35086))
+
+
+### Bug Fixes
+
+* upgrade stream-chat version to 8.6.0 to solve offline support update channel preview issue ([4ebf23c](https://github.com/GetStream/stream-chat-react-native/commit/4ebf23cb53005522d58f06d8156ee8897a352da1))
+
+
+### Reverts
+
+* Revert "chore: upgrade stream-chat version to 8.6.0 (#2077)" (#2078) ([bffe460](https://github.com/GetStream/stream-chat-react-native/commit/bffe460670efa173710930a06e18ffcd0b7d8a05)), closes [#2077](https://github.com/GetStream/stream-chat-react-native/issues/2077) [#2078](https://github.com/GetStream/stream-chat-react-native/issues/2078)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+## [1.20.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.19.3...sampleapp@v1.20.0) (2023-04-13)
+
+
+### Features
+
+* allow to use different i18n library ([#2038](https://github.com/GetStream/stream-chat-react-native/issues/2038)) ([42e9c67](https://github.com/GetStream/stream-chat-react-native/commit/42e9c6749fc278b43cb6ee4a116c50d921840795))
+
+
+### Bug Fixes
+
+* getPhotos doesn't work if you use android targetSdkVersion 33 ([#2036](https://github.com/GetStream/stream-chat-react-native/issues/2036)) ([a17957d](https://github.com/GetStream/stream-chat-react-native/commit/a17957da62111ececf5eb943ed01caec4ac50f3a))
+* pinning xcode version to 14 ([#2045](https://github.com/GetStream/stream-chat-react-native/issues/2045)) ([f864bf3](https://github.com/GetStream/stream-chat-react-native/commit/f864bf3bbcc069a3a325204c6ac1e4252befe718))
+* pushing up to date Podfile.lock ([75acd87](https://github.com/GetStream/stream-chat-react-native/commit/75acd87cd48c8ed7c0308894b93aa74957076d1d))
+* Xcode 14.3 (14E222b) Build Failed with React Native 0.70.7 ([#2042](https://github.com/GetStream/stream-chat-react-native/issues/2042)) ([378620d](https://github.com/GetStream/stream-chat-react-native/commit/378620d3d3476dd39f4fb60a22b914e16820eeb3))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.19.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.19.2...sampleapp@v1.19.3) (2023-03-31)
+
+
+### Bug Fixes
+
+* removing a reaction outside of the latest reactions causes to add it ([#2028](https://github.com/GetStream/stream-chat-react-native/issues/2028)) ([87cf045](https://github.com/GetStream/stream-chat-react-native/commit/87cf045adde463b7b0a044ab3bd50dbc676f0122))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.19.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.19.1...sampleapp@v1.19.2) (2023-03-21)
+
+
+### Bug Fixes
+
+* listen to ios more photos selection in gallery ([#1994](https://github.com/GetStream/stream-chat-react-native/issues/1994)) ([2b47ee3](https://github.com/GetStream/stream-chat-react-native/commit/2b47ee3f1357843b4ada8eb98732bef3eddfb5c2))
+* misplaced date header, header/footer component in messageList on android 33 ([#1977](https://github.com/GetStream/stream-chat-react-native/issues/1977)) ([e0386be](https://github.com/GetStream/stream-chat-react-native/commit/e0386be1aaca0a9d773b84dfa5f8e0a7aa6410bd))
+* rendering the URL Preview for appropriate attachments in message list ([2469075](https://github.com/GetStream/stream-chat-react-native/commit/2469075f65aadd982411ea5cf6fe157355e78367))
+* update podlock file of SampleApp ([2faa9d4](https://github.com/GetStream/stream-chat-react-native/commit/2faa9d4a599e78529e68fb679b144f22a6a79365))
+* update yarn.lock file of the root, packages and the example apps ([#1986](https://github.com/GetStream/stream-chat-react-native/issues/1986)) ([e7089ac](https://github.com/GetStream/stream-chat-react-native/commit/e7089ac065edf85782c2b7ca1b0b2d86ec4df787))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.19.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.19.0...sampleapp@v1.19.1) (2023-02-17)
+
+
+### Bug Fixes
+
+* misplaced date header, header/footer component in messageList on android 33 ([#1977](https://github.com/GetStream/stream-chat-react-native/issues/1977)) ([#1978](https://github.com/GetStream/stream-chat-react-native/issues/1978)) ([17908b1](https://github.com/GetStream/stream-chat-react-native/commit/17908b15fa7be070935e34e003d23015b7b8395f))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ## [1.19.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.18.0...sampleapp@v1.19.0) (2023-02-14)
 
 

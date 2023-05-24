@@ -22,6 +22,7 @@ serializable
 Upserts
 Unsets
 SDK's
+SDKs
 Worklet
 aiba
 (nl)
@@ -36,3 +37,6 @@ Notifee
 colorScheme
 performant
 virtualized
+rncli
+RNCLI
+CDNs

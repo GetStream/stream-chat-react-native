@@ -8,7 +8,8 @@ React Native Chat SDK provides OOTB support for offline mode, which means user w
 with chat even when the network is off. This is an opt-in feature that needs to be explicitly enabled on application
 level.
 
-> Offline support is currently not implemented for Expo package (stream-chat-expo).
+> Integration with Expo is possible using the [expo-dev-client](https://docs.expo.dev/development/getting-started/) library.
+> Offline support cannot be used in the "Expo Go" app, because [it requires custom native code](https://docs.expo.io/workflow/customizing/).
 
 ## Features
 
@@ -40,10 +41,10 @@ yarn remove stream-chat
 
 2. **Add `react-native-quick-sqlite` dependency**
 
-> If you are using v5.5.1 or lower version of `stream-chat-react-native`, then please install v4 of `react-native-quick-sqlite` instead.
+> Contemplate our dependency version compatibility [table](./getting_started.mdx#version-compatibilities) to make sure your `react-native-quick-sqlite` version is compatible with your `stream-chat-react-native` version.
 
 ```bash
-  yarn add react-native-quick-sqlite@5.1.0
+  yarn add react-native-quick-sqlite
   npx pod-install
 ```
 

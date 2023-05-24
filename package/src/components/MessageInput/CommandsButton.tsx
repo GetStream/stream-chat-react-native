@@ -1,6 +1,6 @@
 import React from 'react';
 import type { GestureResponderEvent } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Pressable } from 'react-native';
 
 import {
   ChannelContextValue,
@@ -39,9 +39,8 @@ const CommandsButtonWithContext = <
   } = useTheme();
 
   return (
-    <TouchableOpacity
+    <Pressable
       disabled={disabled}
-      hitSlop={{ bottom: 15, left: 5, right: 15, top: 15 }}
       onPress={handleOnPress}
       style={[commandsButton]}
       testID='commands-button'
@@ -53,7 +52,7 @@ const CommandsButtonWithContext = <
             : grey
         }
       />
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

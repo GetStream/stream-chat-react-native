@@ -346,8 +346,20 @@ const defaultStreami18nOptions = {
 export class Streami18n {
   i18nInstance = i18n.createInstance();
   Dayjs = null;
-  setLanguageCallback: (t: TFunction) => void = () => null;
   initialized = false;
+  /* this promise is used to prevent simultaneous calls to init (happens in Overlay and Chat) */
+  private waitForInitializing: Promise<void> | undefined;
+  /* This is the callback to be fired when the language is changed */
+  private onLanguageChangeListeners: ((t: TFunction) => void)[] = [];
+  /* This is the callback to be fired when the tFunc is overridden
+   * This is useful when a different i18n library needs to be used
+   * The SDK uses this in useStreami18n hook to set the tFunc in the context
+   */
+  private onTFunctionOverrideListeners: ((t: TFunction) => void)[] = [];
+  /* We need to queue the overridden tFunction
+   * if the tFunction is overridden before the SDK has initialized the translations
+   */
+  private queuedTFunctionOverride: TFunction | undefined;
 
   t: TFunction = (key: string) => key;
   tDateTimeParser: TDateTimeParser;
@@ -518,7 +530,7 @@ export class Streami18n {
   /**
    * Initializes the i18next instance with configuration (which enables natural language as default keys)
    */
-  async init() {
+  private async init() {
     this.validateCurrentLanguage();
 
     try {
@@ -527,15 +539,17 @@ export class Streami18n {
         lng: this.currentLanguage,
         resources: this.translations,
       });
+      if (this.queuedTFunctionOverride) {
+        // special case where we have a override for tFunc before initialization
+        this.t = this.queuedTFunctionOverride;
+        this.queuedTFunctionOverride = undefined;
+        this.onTFunctionOverrideListeners.forEach((listener) => listener(this.t));
+      }
       this.initialized = true;
     } catch (error) {
       this.logger(`Something went wrong with init: ${JSON.stringify(error)}`);
     }
-
-    return {
-      t: this.t,
-      tDateTimeParser: this.tDateTimeParser,
-    };
+    this.waitForInitializing = undefined;
   }
 
   localeExists = (language: string) => {
@@ -571,16 +585,21 @@ export class Streami18n {
    */
   async getTranslators() {
     if (!this.initialized) {
-      if (this.dayjsLocales[this.currentLanguage]) {
-        this.addOrUpdateLocale(this.currentLanguage, this.dayjsLocales[this.currentLanguage]);
+      if (this.waitForInitializing) {
+        await this.waitForInitializing;
+      } else {
+        if (this.dayjsLocales[this.currentLanguage]) {
+          this.addOrUpdateLocale(this.currentLanguage, this.dayjsLocales[this.currentLanguage]);
+        }
+        const initPromise = this.init();
+        this.waitForInitializing = initPromise;
+        await initPromise;
       }
-      return await this.init();
-    } else {
-      return {
-        t: this.t,
-        tDateTimeParser: this.tDateTimeParser,
-      };
     }
+    return {
+      t: this.t,
+      tDateTimeParser: this.tDateTimeParser,
+    };
   }
 
   /**
@@ -631,6 +650,7 @@ export class Streami18n {
 
   /**
    * Changes the language.
+   * Note: if you are using overrideTFunction, you will need to call the override again after changing the language.
    */
   async setLanguage(language: string) {
     this.currentLanguage = language;
@@ -642,7 +662,8 @@ export class Streami18n {
       if (this.dayjsLocales[language]) {
         this.addOrUpdateLocale(this.currentLanguage, this.dayjsLocales[this.currentLanguage]);
       }
-      this.setLanguageCallback(t);
+      this.t = t;
+      this.onLanguageChangeListeners.forEach((listener) => listener(t));
 
       return t;
     } catch (error) {
@@ -651,7 +672,34 @@ export class Streami18n {
     }
   }
 
-  registerSetLanguageCallback(callback: (t: TFunction) => void) {
-    this.setLanguageCallback = callback;
+  addOnLanguageChangeListener(callback: (t: TFunction) => void) {
+    this.onLanguageChangeListeners.push(callback);
+    return {
+      unsubscribe: () => {
+        this.onLanguageChangeListeners = this.onLanguageChangeListeners.filter(
+          (listener) => listener !== callback,
+        );
+      },
+    };
+  }
+
+  addOnTFunctionOverrideListener(callback: (t: TFunction) => void) {
+    this.onTFunctionOverrideListeners.push(callback);
+    return {
+      unsubscribe: () => {
+        this.onTFunctionOverrideListeners = this.onTFunctionOverrideListeners.filter(
+          (listener) => listener !== callback,
+        );
+      },
+    };
+  }
+
+  overrideTFunction(tFunction: TFunction) {
+    if (!this.initialized) {
+      this.queuedTFunctionOverride = tFunction;
+    } else {
+      this.t = tFunction;
+      this.onTFunctionOverrideListeners.forEach((listener) => listener(tFunction));
+    }
   }
 }
