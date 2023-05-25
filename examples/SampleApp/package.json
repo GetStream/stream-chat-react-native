@@ -33,7 +33,7 @@
     "@react-navigation/drawer": "6.6.2",
     "@react-navigation/native": "6.1.6",
     "@react-navigation/stack": "6.3.16",
-    "@stream-io/flat-list-mvcp": "0.10.2",
+    "@stream-io/flat-list-mvcp": "0.10.3",
     "react": "18.2.0",
     "react-native": "0.71.7",
     "react-native-document-picker": "8.2.0",

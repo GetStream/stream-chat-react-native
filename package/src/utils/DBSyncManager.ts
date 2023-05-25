@@ -2,7 +2,7 @@ import type { AxiosError } from 'axios';
 import type { APIErrorResponse, StreamChat } from 'stream-chat';
 
 import { handleEventToSyncDB } from '../components/Chat/hooks/handleEventToSyncDB';
-import { getAllChannelIds, getLastSyncedAt, upsertLastSyncedAt } from '../store/apis';
+import { getAllChannelIds, getLastSyncedAt, upsertUserSyncStatus } from '../store/apis';
 
 import { addPendingTask } from '../store/apis/addPendingTask';
 
@@ -11,6 +11,7 @@ import { getPendingTasks } from '../store/apis/getPendingTasks';
 import { QuickSqliteClient } from '../store/QuickSqliteClient';
 import type { PendingTask, PreparedQueries } from '../store/types';
 import type { DefaultStreamChatGenerics } from '../types/types';
+
 /**
  * DBSyncManager has the responsibility to sync the channel states
  * within local database whenever possible.
@@ -95,6 +96,8 @@ export class DBSyncManager {
       currentUserId: this.client.user.id,
     });
     const cids = getAllChannelIds();
+    // If there are no channels, then there is no need to sync.
+    if (cids.length === 0) return;
 
     if (lastSyncedAt) {
       try {
@@ -113,7 +116,7 @@ export class DBSyncManager {
         QuickSqliteClient.resetDB();
       }
     }
-    upsertLastSyncedAt({
+    upsertUserSyncStatus({
       currentUserId: this.client.user.id,
       lastSyncedAt: new Date().toString(),
     });

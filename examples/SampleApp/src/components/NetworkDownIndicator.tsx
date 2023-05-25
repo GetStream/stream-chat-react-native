@@ -8,11 +8,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   networkDownText: {
-    marginLeft: 10,
+    fontSize: 12,
+    marginLeft: 4,
   },
   networkDownTextLarge: {
     fontSize: 16,
     fontWeight: '700',
+  },
+  spinner: {
+    backgroundColor: 'white',
   },
 });
 
@@ -27,7 +31,7 @@ export const NetworkDownIndicator: React.FC<{ titleSize: 'small' | 'large' }> = 
 
   return (
     <View style={styles.networkDownContainer} testID='network-down-indicator'>
-      <Spinner />
+      <Spinner height={12} style={styles.spinner} width={12} />
       <Text
         style={[
           styles.networkDownText,

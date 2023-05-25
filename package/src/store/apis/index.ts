@@ -17,7 +17,7 @@ export * from './upsertAppSettings';
 export * from './upsertChannelData';
 export * from './upsertChannels';
 export * from './upsertCidsForQuery';
-export * from './upsertLastSyncedAt';
+export * from './upsertUserSyncStatus';
 export * from './upsertMembers';
 export * from './upsertMessages';
 export * from './upsertReads';

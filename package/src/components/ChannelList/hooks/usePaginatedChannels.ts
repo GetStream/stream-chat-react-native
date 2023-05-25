@@ -101,21 +101,13 @@ export const usePaginatedChannels = <
     };
 
     try {
-      const activeChannelIds: string[] = [];
-      for (const cid in client.activeChannels) {
-        if (client.activeChannels[cid].id) {
-          // @ts-ignore
-          activeChannelIds.push(client.activeChannels[cid].id);
-        }
-      }
-
       /**
        * We skipInitialization here for handling race condition between ChannelList, Channel (and Thread)
        * when they all (may) update the channel state at the same time (when connection state recovers)
        * TODO: if we move the channel state to a single context and share it between ChannelList, Channel and Thread we can remove this
        */
       const channelQueryResponse = await client.queryChannels(filters, sort, newOptions, {
-        skipInitialization: activeChannels.current,
+        skipInitialization: enableOfflineSupport ? undefined : activeChannels.current,
       });
       if (isQueryStale() || !isMountedRef.current) {
         return;
@@ -208,11 +200,12 @@ export const usePaginatedChannels = <
         });
 
         if (channelsFromDB) {
-          setChannels(
-            client.hydrateActiveChannels(channelsFromDB, {
-              offlineMode: true,
-            }),
-          );
+          const offlineChannels = client.hydrateActiveChannels(channelsFromDB, {
+            offlineMode: true,
+            skipInitialization: [], // passing empty array will clear out the existing messages from channel state, this removes the possibility of duplicate messages
+          });
+
+          setChannels(offlineChannels);
           setStaticChannelsActive(true);
         }
       } catch (e) {

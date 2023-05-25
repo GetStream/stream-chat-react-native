@@ -1,9 +1,15 @@
 let Haptics;
 
 try {
-  Haptics = require('expo-haptics').default;
-} catch (error) {
-  console.log('expo-haptics is not installed');
+  Haptics = require('expo-haptics');
+} catch (e) {
+  // do nothing
+}
+
+if (!Haptics) {
+  console.log(
+    'expo-haptics is not installed. Installing this package will enable haptic feedback when scaling images in the image gallery if the scaling hits the higher or lower limits for its value.',
+  );
 }
 
 type HapticFeedbackTypes =
@@ -39,4 +45,5 @@ export const triggerHaptic = Haptics
           Haptics.selectionAsync();
       }
     }
-  : () => {};
+  : // eslint-disable-next-line @typescript-eslint/no-empty-function
+    () => {};
