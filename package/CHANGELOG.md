@@ -1,5 +1,22 @@
 # Change Log
 
+## [5.15.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.14.1...v5.15.0) (2023-05-25)
+
+
+### Features
+
+* upgrading flatlist mvcp dep. ([#2112](https://github.com/GetStream/stream-chat-react-native/issues/2112)) ([3039600](https://github.com/GetStream/stream-chat-react-native/commit/30396003bc7c8736b54138488dbbd0cd2b5287b3))
+
+
+### Bug Fixes
+
+* do not sync when there are no channels ([#2117](https://github.com/GetStream/stream-chat-react-native/issues/2117)) ([91162ef](https://github.com/GetStream/stream-chat-react-native/commit/91162ef61f58f9173d0540d753ef4c2550b1c540))
+* duplicate failed messages on offline support ([fd14657](https://github.com/GetStream/stream-chat-react-native/commit/fd14657175a0fbfea028d638bdea318a5b612356))
+* expo optional dependencies import ([#2118](https://github.com/GetStream/stream-chat-react-native/issues/2118)) ([ac3dbf9](https://github.com/GetStream/stream-chat-react-native/commit/ac3dbf9b3b89ccdc886887a5b043f31ff2a20a1a))
+* remove default require in expo sharing ([cc549d9](https://github.com/GetStream/stream-chat-react-native/commit/cc549d9763000591fe6e0d6bd30246fe1b433932))
+* require expo-document-picker  v11 ([#2100](https://github.com/GetStream/stream-chat-react-native/issues/2100)) ([f0def5c](https://github.com/GetStream/stream-chat-react-native/commit/f0def5cebd824a8767ffbde582685a1cbac3fe4f))
+* restore failed messages present in db ([#2111](https://github.com/GetStream/stream-chat-react-native/issues/2111)) ([4eb0e16](https://github.com/GetStream/stream-chat-react-native/commit/4eb0e167ea8280e6cd4426500aa6feb956231104))
+
 ### [5.14.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.14.0...v5.14.1) (2023-05-15)
 
 
