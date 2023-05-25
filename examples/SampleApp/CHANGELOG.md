@@ -1,5 +1,22 @@
 # Change Log
 
+## [1.22.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.21.1...sampleapp@v1.22.0) (2023-05-25)
+
+
+### Features
+
+* upgrading flatlist mvcp dep. ([#2112](https://github.com/GetStream/stream-chat-react-native/issues/2112)) ([3039600](https://github.com/GetStream/stream-chat-react-native/commit/30396003bc7c8736b54138488dbbd0cd2b5287b3))
+
+
+### Bug Fixes
+
+* network down spinner was invisible in sample app ([b7fd437](https://github.com/GetStream/stream-chat-react-native/commit/b7fd4376252a50c3f13c3326d50e0d3dd628b92d))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.21.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.21.0...sampleapp@v1.21.1) (2023-05-15)
 
 
