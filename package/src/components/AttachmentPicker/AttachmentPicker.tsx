@@ -304,7 +304,7 @@ export const AttachmentPicker = React.forwardRef(
             data={selectedPhotos}
             keyExtractor={(item) => item.asset.uri}
             numColumns={numberOfAttachmentPickerImageColumns ?? 3}
-            onEndReached={getMorePhotos}
+            onEndReached={photoError ? undefined : getMorePhotos}
             renderItem={renderAttachmentPickerItem}
           />
         </BottomSheet>
