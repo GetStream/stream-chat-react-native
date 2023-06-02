@@ -356,6 +356,9 @@ const GalleryThumbnail = <
   };
 
   const defaultOnPress = () => {
+    if (!thumbnail.url || !thumbnail.thumb_url) {
+      return;
+    }
     if (thumbnail.type === 'video' && !isVideoPackageAvailable()) {
       // This condition is kinda unreachable, since we render videos as file attachment if the video
       // library is not installed. But doesn't hurt to have extra safeguard, in case of some customizations.
