@@ -334,7 +334,7 @@ PODS:
     - glog
   - react-native-cameraroll (5.6.0):
     - React-Core
-  - react-native-document-picker (8.2.1):
+  - react-native-document-picker (9.0.1):
     - React-Core
   - react-native-flipper (0.158.0):
     - React-Core
@@ -744,7 +744,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 9885f6f94d231b95a739ef7bb50536fb87ce7539
   React-logger: 3f8ebad1be1bf3299d1ab6d7f971802d7395c7ef
   react-native-cameraroll: 755bcc628148a90a7c9cf3f817a252be3a601bc5
-  react-native-document-picker: 69ca2094d8780cfc1e7e613894d15290fdc54bba
+  react-native-document-picker: 2b8f18667caee73a96708a82b284a4f40b30a156
   react-native-flipper: bbe3c862a02dab5e0f71b639855a180b699a590a
   react-native-image-resizer: d9fb629a867335bdc13230ac2a58702bb8c8828f
   react-native-netinfo: 22c082970cbd99071a4e5aa7a612ac20d66b08f0
