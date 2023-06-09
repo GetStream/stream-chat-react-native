@@ -98,7 +98,7 @@ const ChannelListScreen = ({ navigation }) => {
 };
 
 const ChannelScreen = ({ navigation }) => {
-  const { channel, setThread, thread } = useContext(AppContext);
+  const { channel, setThread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
   const { setTopInset } = useAttachmentPickerContext();
 
@@ -108,7 +108,7 @@ const ChannelScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView>
-      <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread}>
+      <Channel channel={channel} keyboardVerticalOffset={headerHeight}>
         <View style={{ flex: 1 }}>
           <MessageList
             onThreadSelect={(thread) => {

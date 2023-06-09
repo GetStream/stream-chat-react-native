@@ -3550,7 +3550,7 @@ expo-status-bar@~1.4.2:
   resolved "https://registry.yarnpkg.com/expo-status-bar/-/expo-status-bar-1.4.4.tgz#6874ccfda5a270d66f123a9f220735a76692d114"
   integrity sha512-5DV0hIEWgatSC3UgQuAZBoQeaS9CqeWRZ3vzBR9R/+IUD87Adbi4FGhU10nymRqFXOizGsureButGZIXPs7zEA==
 
-expo@~48.0.15:
+expo@~48.0.18:
   version "48.0.19"
   resolved "https://registry.yarnpkg.com/expo/-/expo-48.0.19.tgz#0f13be65d3cac99922666e5939388fc22b147e6a"
   integrity sha512-Pmz2HEwcDdjWPq5fM3vF++je0hjZIBX9aTZEkm6sBv09Vfhe4+CuiuKDq3iE+N6G9l2+eFYoRCApDwLqcRMiPA==
@@ -6867,10 +6867,10 @@ stream-buffers@2.2.x:
   version "0.0.0"
   uid ""
 
-stream-chat-react-native-core@5.14.1:
-  version "5.14.1"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.14.1.tgz#6947961a56bc1fc4233547b005f4e056c8b01104"
-  integrity sha512-Jm5uIWAkZ1NpeLOD0/fAvY8YRxEgnlrHwcaG0Etdx1bjDXMWMCfC1UWHWHypocMHZ01CM3IJXnFEhMkigLavUw==
+stream-chat-react-native-core@5.15.0:
+  version "5.15.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.15.0.tgz#e4d52ca3b492b7a3f2550049fccd85e025bfed2e"
+  integrity sha512-MJf9qV1MZf0r4HTt0afZGxF5/HytbY+Sap/8QTDNE6OucWmxa44kOY7SfHmfdkxOLTUPHMeK7Glc+wCmYZVVLA==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "4.4.5"
