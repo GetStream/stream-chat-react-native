@@ -1,6 +1,13 @@
 import { PermissionsAndroid, Platform } from 'react-native';
 
 import { CameraRoll, GetPhotosParams } from '@react-native-camera-roll/camera-roll';
+import type { Asset } from 'stream-chat-react-native-core';
+
+type ReturnType = {
+  assets: Array<Omit<Asset, 'source'> & { source: 'picker' }>;
+  endCursor: string | undefined;
+  hasNextPage: boolean;
+};
 
 const verifyAndroidPermissions = async () => {
   const isRN71orAbove = Platform.constants.reactNativeVersion?.minor >= 71;
@@ -49,7 +56,10 @@ const verifyAndroidPermissions = async () => {
   return true;
 };
 
-export const getPhotos = async ({ after, first }: Pick<GetPhotosParams, 'after' | 'first'>) => {
+export const getPhotos = async ({
+  after,
+  first,
+}: Pick<GetPhotosParams, 'after' | 'first'>): Promise<ReturnType> => {
   try {
     if (Platform.OS === 'android') {
       const granted = await verifyAndroidPermissions();
@@ -65,7 +75,9 @@ export const getPhotos = async ({ after, first }: Pick<GetPhotosParams, 'after' 
     });
     const assets = results.edges.map((edge) => ({
       ...edge.node.image,
+      duration: edge.node.image.playableDuration,
       source: 'picker',
+      type: edge.node.type,
     }));
     const hasNextPage = results.page_info.has_next_page;
     const endCursor = results.page_info.end_cursor;

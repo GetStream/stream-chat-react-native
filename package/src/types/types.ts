@@ -2,8 +2,8 @@ import type { ExtendableGenerics, LiteralStringForUnion } from 'stream-chat';
 
 export type Asset = {
   duration: number | null;
-  filename: string;
-  fileSize: string;
+  filename: string | null;
+  fileSize: string | null | undefined;
   height: number;
   playableDuration: number | null;
   source: 'camera' | 'picker';

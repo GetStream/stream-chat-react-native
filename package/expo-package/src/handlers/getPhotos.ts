@@ -1,6 +1,16 @@
 import * as MediaLibrary from 'expo-media-library';
+import type { Asset } from 'stream-chat-react-native-core';
 
-export const getPhotos = async ({ after, first }: MediaLibrary.AssetsOptions) => {
+type ReturnType = {
+  assets: Array<Omit<Asset, 'source'> & { source: 'picker' }>;
+  endCursor: string | undefined;
+  hasNextPage: boolean;
+};
+
+export const getPhotos = async ({
+  after,
+  first,
+}: MediaLibrary.AssetsOptions): Promise<ReturnType> => {
   try {
     const { status } = await MediaLibrary.requestPermissionsAsync();
     if (status !== 'granted') {
