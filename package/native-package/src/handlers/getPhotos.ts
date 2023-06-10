@@ -76,7 +76,10 @@ export const getPhotos = async ({
     const assets = results.edges.map((edge) => ({
       ...edge.node.image,
       duration: edge.node.image.playableDuration,
-      source: 'picker',
+      // since we include filename, fileSize in the query, we can safely assume it will be defined
+      filename: edge.node.image.filename as string,
+      fileSize: edge.node.image.fileSize as number,
+      source: 'picker' as const,
       type: edge.node.type,
     }));
     const hasNextPage = results.page_info.has_next_page;

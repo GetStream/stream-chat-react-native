@@ -27,7 +27,7 @@ export const getPhotos = async ({
       filename: asset.filename,
       height: asset.height,
       id: asset.id,
-      source: 'picker',
+      source: 'picker' as const,
       type: asset.mediaType,
       uri: asset.uri,
       width: asset.width,
