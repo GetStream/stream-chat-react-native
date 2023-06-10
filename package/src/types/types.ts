@@ -5,7 +5,6 @@ export type Asset = {
   filename: string;
   fileSize: number | undefined;
   height: number;
-  playableDuration: number | null;
   source: 'camera' | 'picker';
   type: string;
   uri: string;
