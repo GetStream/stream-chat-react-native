@@ -3,12 +3,12 @@ import type { ExtendableGenerics, LiteralStringForUnion } from 'stream-chat';
 export type Asset = {
   duration: number | null;
   filename: string;
-  fileSize?: number;
   height: number;
   source: 'camera' | 'picker';
   type: string;
   uri: string;
   width: number;
+  fileSize?: number;
   id?: string;
   size?: number | string;
 };
