@@ -3,7 +3,7 @@ import type { ExtendableGenerics, LiteralStringForUnion } from 'stream-chat';
 export type Asset = {
   duration: number | null;
   filename: string;
-  fileSize: number | undefined;
+  fileSize?: number;
   height: number;
   source: 'camera' | 'picker';
   type: string;
