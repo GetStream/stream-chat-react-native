@@ -55,6 +55,7 @@ import {
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
+const WAIT_FOR_SCROLL_TO_OFFSET_TIMEOUT = 150;
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
@@ -784,27 +785,47 @@ const MessageListWithContext = <
   };
 
   const onScrollToIndexFailedRef = useRef<
-    FlatListProps<MessageType<StreamChatGenerics>>['onScrollToIndexFailed']
-  >((info) => {
+    (
+      info: {
+        averageItemLength: number;
+        highestMeasuredFrameIndex: number;
+        index: number;
+      },
+      count?: number,
+    ) => Promise<void>
+  >(async (info, count = 0) => {
     // We got a failure as we tried to scroll to an item that was outside the render length
-    if (flatListRef.current) {
-      // we dont know the actual size of all items but we can see the average, so scroll to the closest offset
-      flatListRef.current.scrollToOffset({
-        animated: false,
-        offset: info.averageItemLength * info.index,
-      });
-      // since we used only an average offset.. we wont go to the center of the item yet
-      // with a little delay to wait for scroll to offset to complete, we can then scroll to the index
-      setTimeout(() => {
-        flatListRef.current?.scrollToIndex({
-          animated: false,
-          index: info.index,
-          viewPosition: 0.5, // try to place message in the center of the screen
-        });
-        if (messageIdLastScrolledToRef.current) {
-          setTargetedMessage(messageIdLastScrolledToRef.current);
-        }
-      }, 150);
+    if (!flatListRef.current) return;
+    // we don't know the actual size of all items but we can see the average, so scroll to the closest offset
+    flatListRef.current.scrollToOffset({
+      animated: false,
+      offset: info.averageItemLength * info.index,
+    });
+    // since we used only an average offset... we won't go to the center of the item yet
+    // with a little delay to wait for scroll to offset to complete, we can then scroll to the index
+    await new Promise((resolve) => setTimeout(resolve, WAIT_FOR_SCROLL_TO_OFFSET_TIMEOUT));
+
+    // We're checking if the index we're trying to scroll to, already exists in the messageList
+    // If it doesn't, we retry by calling onScrollToIndexFailedRef again
+    // Not doing this will result a crash that won't call onScrollToIndexFailed
+    if (
+      info.index > messageListLengthAfterUpdate - 1 &&
+      count < 5 &&
+      onScrollToIndexFailedRef.current
+    ) {
+      onScrollToIndexFailedRef.current(info, count + 1);
+      return;
+    }
+
+    // Only when index is greater than 0 and in range of items in FlatList
+    // this onScrollToIndexFailed will be called again
+    flatListRef.current?.scrollToIndex({
+      animated: false,
+      index: info.index,
+      viewPosition: 0.5, // try to place message in the center of the screen
+    });
+    if (messageIdLastScrolledToRef.current) {
+      setTargetedMessage(messageIdLastScrolledToRef.current);
     }
   });
 
