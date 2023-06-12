@@ -3,13 +3,8 @@ import { Chat, OverlayProvider, Streami18n } from 'stream-chat-expo';
 import { useChatClient } from '../hooks/useChatClient';
 import { AuthProgressLoader } from './AuthProgressLoader';
 import { StreamChatGenerics } from '../types';
+import { STREAM_API_KEY, user, userToken } from '../constants';
 
-const STREAM_API_KEY = 'q95x9hkbyd6p';
-const userToken =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoicm9uIn0.eRVjxLvd4aqCEHY_JRa97g6k7WpHEhxL7Z4K4yTot1c';
-const user = {
-  id: 'ron',
-};
 const streami18n = new Streami18n({
   language: 'en',
 });
