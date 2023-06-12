@@ -1,7 +1,7 @@
 module.exports = function (api) {
   api.cache(true);
   return {
-    plugins: ['react-native-reanimated/plugin'],
     presets: ['babel-preset-expo'],
+    plugins: [require.resolve('expo-router/babel'), 'react-native-reanimated/plugin'],
   };
 };
