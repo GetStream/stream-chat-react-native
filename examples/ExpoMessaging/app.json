@@ -3,11 +3,6 @@
     "name": "ExpoMessaging",
     "slug": "ExpoMessaging",
     "privacy": "public",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -19,19 +14,26 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "usesIcloudStorage": true,
       "bundleIdentifier": "io.stream.expomessaging"
     },
+    "android": {
+      "package": "io.stream.expomessaging",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
     "experiments": {
       "turboModules": true
     },
-    "android": {
-      "package": "io.stream.expomessaging"
-    }
+    "scheme": "ExpoMessaging"
   }
 }
