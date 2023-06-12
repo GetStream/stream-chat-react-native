@@ -969,7 +969,7 @@ export const MessageInputProvider = <
       if (value.doDocUploadRequest) {
         response = await value.doDocUploadRequest(file, channel);
       } else if (channel && file.uri) {
-        // For the case of expo messaging app where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
+        // For the case of Expo CLI where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
         const localAssetURI = Platform.OS === 'ios' && file.id && (await getLocalAssetUri(file.id));
         response = await channel.sendFile(localAssetURI || file.uri, file.name, file.type);
       }
@@ -990,7 +990,7 @@ export const MessageInputProvider = <
     let response = {} as SendFileAPIResponse;
 
     try {
-      // For the case of expo messaging app where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
+      // For the case of Expo CLI where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
       const localAssetURI = Platform.OS === 'ios' && file.id && (await getLocalAssetUri(file.id));
       const uri = localAssetURI || file.uri || '';
       /**
