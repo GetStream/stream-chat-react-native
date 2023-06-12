@@ -1,5 +1,13 @@
 # Change Log
 
+### [5.15.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.15.0...v5.15.1) (2023-06-12)
+
+
+### Bug Fixes
+
+* incorrect typing of getPhotos between expo and native ([#2146](https://github.com/GetStream/stream-chat-react-native/issues/2146)) ([0fa3d94](https://github.com/GetStream/stream-chat-react-native/commit/0fa3d9480a2a044ecda15e970266a62c942695b8))
+* use ChannelPreviewMutedStatus prop in the ChannelList ([#2128](https://github.com/GetStream/stream-chat-react-native/issues/2128)) ([4b3010a](https://github.com/GetStream/stream-chat-react-native/commit/4b3010a0100d00c5f4229369ad2d45c60e64d090))
+
 ## [5.15.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.14.1...v5.15.0) (2023-05-25)
 
 
