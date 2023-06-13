@@ -817,7 +817,7 @@ const MessageListWithContext = <
         !onScrollToIndexFailedRef.current ||
         scrollToIndexFailedRetryCountRef.current > MAX_RETRIES_AFTER_SCROLL_FAILURE
       ) {
-        throw e;
+        console.log('Scrolling to index failed after 10 retries', e);
       }
       // At some cases the index we're trying to scroll to, doesn't exist yet in the messageList
       // Scrolling to an index not in range of the Flatlist's data will result in a crash that
