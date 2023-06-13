@@ -817,7 +817,7 @@ const MessageListWithContext = <
         !onScrollToIndexFailedRef.current ||
         scrollToIndexFailedRetryCountRef.current > MAX_RETRIES_AFTER_SCROLL_FAILURE
       ) {
-        console.log('Scrolling to index failed after 10 retries', e);
+        console.log(`Scrolling to index failed after ${MAX_RETRIES_AFTER_SCROLL_FAILURE} retries`, e);
         return;
       }
       // At some cases the index we're trying to scroll to, doesn't exist yet in the messageList
