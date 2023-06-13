@@ -808,16 +808,20 @@ const MessageListWithContext = <
         index: info.index,
         viewPosition: 0.5, // try to place message in the center of the screen
       });
-
       if (messageIdLastScrolledToRef.current) {
         setTargetedMessage(messageIdLastScrolledToRef.current);
       }
+      scrollToIndexFailedRetryCountRef.current = 0;
     } catch (e) {
       if (
         !onScrollToIndexFailedRef.current ||
         scrollToIndexFailedRetryCountRef.current > MAX_RETRIES_AFTER_SCROLL_FAILURE
       ) {
-        console.log(`Scrolling to index failed after ${MAX_RETRIES_AFTER_SCROLL_FAILURE} retries`, e);
+        console.log(
+          `Scrolling to index failed after ${MAX_RETRIES_AFTER_SCROLL_FAILURE} retries`,
+          e,
+        );
+        scrollToIndexFailedRetryCountRef.current = 0;
         return;
       }
       // At some cases the index we're trying to scroll to, doesn't exist yet in the messageList
