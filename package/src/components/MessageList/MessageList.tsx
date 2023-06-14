@@ -900,6 +900,7 @@ const MessageListWithContext = <
       }
     }, 150);
     return () => {
+      clearTimeout(failScrollTimeoutId.current);
       clearTimeout(scrollToDebounceTimeoutRef.current);
       clearTimeout(initialScrollSettingTimeoutRef.current);
     };
