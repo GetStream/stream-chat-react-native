@@ -33,7 +33,7 @@
 
 ## 📖 React Native Chat Tutorial
 
-The best place to start is the [React Native Chat Tutorial](https://staging.getstream.io/chat/react-native-chat/tutorial/). It teaches you how to use this SDK and also shows how to make frequently required changes.
+The best place to start is the [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/). It teaches you how to use this SDK and also shows how to make frequently required changes.
 
 ## Free for Makers
 
