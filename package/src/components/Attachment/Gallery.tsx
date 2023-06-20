@@ -356,7 +356,7 @@ const GalleryThumbnail = <
   };
 
   const defaultOnPress = () => {
-    if (!thumbnail.url || !thumbnail.thumb_url) {
+    if ((thumbnail.type === 'video' && !thumbnail.thumb_url) || !thumbnail.url) {
       return;
     }
     if (thumbnail.type === 'video' && !isVideoPackageAvailable()) {
