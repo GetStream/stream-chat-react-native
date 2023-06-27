@@ -1,5 +1,5 @@
 import type { AxiosError } from 'axios';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import type { APIErrorResponse, StreamChat } from 'stream-chat';
 
 import { handleEventToSyncDB } from '../components/Chat/hooks/handleEventToSyncDB';
