@@ -178,7 +178,7 @@ export const ImageGalleryHeader = <
           ) : (
             <View style={[styles.centerContainer, centerContainer]}>
               <Text style={[styles.userName, { color: black }, usernameText]}>
-                {photo?.user?.name || t('Unknown User')}
+                {photo?.user?.id || t('Unknown User')}
               </Text>
               {date && <Text style={[styles.date, { color: black }, dateText]}>{date}</Text>}
             </View>
