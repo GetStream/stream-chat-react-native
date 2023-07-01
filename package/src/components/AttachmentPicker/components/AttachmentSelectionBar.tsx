@@ -54,17 +54,7 @@ export const AttachmentSelectionBar: React.FC = () => {
   };
 
   const takeAndUploadImage = async () => {
-    console.log('camera opened');
-
     setSelectedPicker(undefined);
-    Alert.alert('Alert Title', 'My Alert Msg', [
-      {
-        text: 'Cancel',
-        onPress: () => console.log('Cancel Pressed'),
-        style: 'cancel',
-      },
-      {text: 'OK', onPress: () => console.log('OK Pressed')},
-    ]);
     closePicker();
     const photo = await takePhoto({ compressImageQuality });
     if (!photo.cancelled) {
