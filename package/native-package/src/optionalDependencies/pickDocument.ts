@@ -10,10 +10,12 @@ type ResponseValue = {
   uri: string;
 };
 
-let DocumentPicker: {
-  pickMultiple: (opts?: { type: string[] }) => Promise<ResponseValue[]>;
-  types: { allFiles: string };
-};
+let DocumentPicker:
+  | {
+      pick: (opts?: { allowMultiSelection: boolean; type: string[] }) => Promise<ResponseValue[]>;
+      types: { allFiles: string };
+    }
+  | undefined;
 
 try {
   DocumentPicker = require('react-native-document-picker').default;
@@ -24,7 +26,9 @@ try {
 export const pickDocument = DocumentPicker
   ? async ({ maxNumberOfFiles }: { maxNumberOfFiles: number }) => {
       try {
-        let res = await DocumentPicker.pickMultiple({
+        if (!DocumentPicker) return { cancelled: true };
+        let res: ResponseValue[] = await DocumentPicker.pick({
+          allowMultiSelection: true,
           type: [DocumentPicker.types.allFiles],
         });
 

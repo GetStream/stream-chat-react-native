@@ -637,7 +637,7 @@ const ChannelWithContext = <
     } else {
       setThread(null);
     }
-  }, [threadPropsExists]);
+  }, [threadPropsExists, shouldSyncChannel]);
 
   const handleAppBackground = useCallback(() => {
     const channelData = channel.data as
@@ -739,70 +739,61 @@ const ChannelWithContext = <
     ),
   ).current;
 
-  const connectionChangedHandler = () => {
-    if (shouldSyncChannel) {
-      resyncChannel();
-    }
-  };
-
-  const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
-    if (shouldSyncChannel) {
-      if (thread) {
-        const updatedThreadMessages =
-          (thread.id && channel && channel.state.threads[thread.id]) || threadMessages;
-        setThreadMessages(updatedThreadMessages);
-      }
-
-      if (channel && thread && event.message?.id === thread.id) {
-        const updatedThread = channel.state.formatMessage(event.message);
-        setThread(updatedThread);
-      }
-
-      if (event.type === 'typing.start' || event.type === 'typing.stop') {
-        copyTypingState();
-      } else if (event.type === 'message.read') {
-        copyReadState();
-      } else if (event.type === 'message.new') {
-        copyMessagesState();
-      } else if (channel) {
-        copyChannelState();
-      }
-    }
-  };
-
+  // subscribe to specific channel events
   useEffect(() => {
     const channelSubscriptions: Array<ReturnType<ChannelType['on']>> = [];
-    const clientSubscriptions: Array<ReturnType<StreamChat['on']>> = [];
-
-    if (!channel) return;
-
-    clientSubscriptions.push(
-      client.on('channel.deleted', (event) => {
-        if (event.cid === channel.cid) {
-          setDeleted(true);
-        }
-      }),
-    );
-
-    if (enableOfflineSupport) {
-      clientSubscriptions.push(DBSyncManager.onSyncStatusChange(connectionChangedHandler));
-    } else {
-      clientSubscriptions.push(
-        client.on('connection.changed', (event) => {
-          if (event.online) {
-            connectionChangedHandler();
-          }
-        }),
-      );
+    if (channel && shouldSyncChannel) {
+      channelSubscriptions.push(channel.on('message.new', copyMessagesState));
+      channelSubscriptions.push(channel.on('message.read', copyReadState));
+      channelSubscriptions.push(channel.on('typing.start', copyTypingState));
+      channelSubscriptions.push(channel.on('typing.stop', copyTypingState));
     }
-
-    channelSubscriptions.push(channel.on(handleEvent));
-
     return () => {
-      clientSubscriptions.forEach((s) => s.unsubscribe());
       channelSubscriptions.forEach((s) => s.unsubscribe());
     };
-  }, [channelId, connectionChangedHandler, handleEvent]);
+  }, [channelId, shouldSyncChannel]);
+
+  // subscribe to the generic all channel event
+  useEffect(() => {
+    const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
+      if (shouldSyncChannel) {
+        if (thread) {
+          const updatedThreadMessages =
+            (thread.id && channel && channel.state.threads[thread.id]) || threadMessages;
+          setThreadMessages(updatedThreadMessages);
+        }
+
+        if (channel && thread && event.message?.id === thread.id) {
+          const updatedThread = channel.state.formatMessage(event.message);
+          setThread(updatedThread);
+        }
+
+        // only update channel state if the events are not the previously subscribed useEffect's subscription events
+        if (
+          channel &&
+          event.type !== 'message.new' &&
+          event.type !== 'message.read' &&
+          event.type !== 'typing.start' &&
+          event.type !== 'typing.stop'
+        ) {
+          copyChannelState();
+        }
+      }
+    };
+    const { unsubscribe } = channel.on(handleEvent);
+    return unsubscribe;
+  }, [channelId, thread?.id, shouldSyncChannel]);
+
+  // subscribe to channel.deleted event
+  useEffect(() => {
+    const { unsubscribe } = client.on('channel.deleted', (event) => {
+      if (event.cid === channel?.cid) {
+        setDeleted(true);
+      }
+    });
+
+    return unsubscribe;
+  }, [channelId]);
 
   const channelQueryCallRef = useRef(
     async (
@@ -997,6 +988,8 @@ const ChannelWithContext = <
         channel.state.clearMessages();
         channel.state.setIsUpToDate(true);
         channel.state.addMessagesSorted(state.messages);
+        channel.state.addPinnedMessages(state.pinned_messages);
+
         copyChannelState();
         return;
       }
@@ -1045,10 +1038,9 @@ const ChannelWithContext = <
 
       setHasNoMoreRecentMessagesToLoad(true);
       channel.state.setIsUpToDate(true);
-
       channel.state.clearMessages();
       channel.state.addMessagesSorted(finalMessages);
-
+      channel.state.addPinnedMessages(state.pinned_messages);
       setHasMore(true);
       copyChannelState();
 
@@ -1074,6 +1066,32 @@ const ChannelWithContext = <
 
     setSyncingChannel(false);
   };
+
+  // resync channel is added to ref so that it can be used in useEffect without adding it as a dependency
+  const resyncChannelRef = useRef(resyncChannel);
+  resyncChannelRef.current = resyncChannel;
+
+  useEffect(() => {
+    const connectionChangedHandler = () => {
+      if (shouldSyncChannel) {
+        resyncChannelRef.current();
+      }
+    };
+    let connectionChangedSubscription: ReturnType<ChannelType['on']>;
+
+    if (enableOfflineSupport) {
+      connectionChangedSubscription = DBSyncManager.onSyncStatusChange(connectionChangedHandler);
+    } else {
+      connectionChangedSubscription = client.on('connection.changed', (event) => {
+        if (event.online) {
+          connectionChangedHandler();
+        }
+      });
+    }
+    return () => {
+      connectionChangedSubscription.unsubscribe();
+    };
+  }, [enableOfflineSupport, shouldSyncChannel]);
 
   const reloadChannel = () =>
     channelQueryCallRef.current(async () => {

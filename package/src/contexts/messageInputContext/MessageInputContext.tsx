@@ -1,8 +1,8 @@
 import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
 
-import { Alert, Keyboard, Platform } from 'react-native';
-
+import type { LegacyRef } from 'react';
 import type { TextInput, TextInputProps } from 'react-native';
+import { Alert, Keyboard, Platform } from 'react-native';
 
 import uniq from 'lodash/uniq';
 import { lookup } from 'mime-types';
@@ -190,7 +190,7 @@ export type LocalMessageInputContext<
   /**
    * Ref callback to set reference on input box
    */
-  setInputBoxRef: (ref: TextInput | null) => void;
+  setInputBoxRef: LegacyRef<TextInput> | undefined;
   setMentionedUsers: React.Dispatch<React.SetStateAction<string[]>>;
   setNumberOfUploads: React.Dispatch<React.SetStateAction<number>>;
   setSendThreadMessageInChannel: React.Dispatch<React.SetStateAction<boolean>>;
@@ -487,6 +487,8 @@ export const MessageInputProvider = <
     }
 
     const imagesAndFiles = [...imageUploads, ...fileUploads];
+    if (imagesAndFiles.length === 0) return false;
+
     if (enableOfflineSupport) {
       // Allow only if none of the attachments have unsupported status
       for (const file of imagesAndFiles) {
@@ -967,7 +969,7 @@ export const MessageInputProvider = <
       if (value.doDocUploadRequest) {
         response = await value.doDocUploadRequest(file, channel);
       } else if (channel && file.uri) {
-        // For the case of expo messaging app where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
+        // For the case of Expo CLI where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
         const localAssetURI = Platform.OS === 'ios' && file.id && (await getLocalAssetUri(file.id));
         response = await channel.sendFile(localAssetURI || file.uri, file.name, file.type);
       }
@@ -988,7 +990,7 @@ export const MessageInputProvider = <
     let response = {} as SendFileAPIResponse;
 
     try {
-      // For the case of expo messaging app where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
+      // For the case of Expo CLI where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
       const localAssetURI = Platform.OS === 'ios' && file.id && (await getLocalAssetUri(file.id));
       const uri = localAssetURI || file.uri || '';
       /**

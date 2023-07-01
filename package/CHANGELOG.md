@@ -1,5 +1,60 @@
 # Change Log
 
+### [5.15.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.15.0...v5.15.1) (2023-06-12)
+
+
+### Bug Fixes
+
+* incorrect typing of getPhotos between expo and native ([#2146](https://github.com/GetStream/stream-chat-react-native/issues/2146)) ([0fa3d94](https://github.com/GetStream/stream-chat-react-native/commit/0fa3d9480a2a044ecda15e970266a62c942695b8))
+* use ChannelPreviewMutedStatus prop in the ChannelList ([#2128](https://github.com/GetStream/stream-chat-react-native/issues/2128)) ([4b3010a](https://github.com/GetStream/stream-chat-react-native/commit/4b3010a0100d00c5f4229369ad2d45c60e64d090))
+
+## [5.15.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.14.1...v5.15.0) (2023-05-25)
+
+
+### Features
+
+* upgrading flatlist mvcp dep. ([#2112](https://github.com/GetStream/stream-chat-react-native/issues/2112)) ([3039600](https://github.com/GetStream/stream-chat-react-native/commit/30396003bc7c8736b54138488dbbd0cd2b5287b3))
+
+
+### Bug Fixes
+
+* do not sync when there are no channels ([#2117](https://github.com/GetStream/stream-chat-react-native/issues/2117)) ([91162ef](https://github.com/GetStream/stream-chat-react-native/commit/91162ef61f58f9173d0540d753ef4c2550b1c540))
+* duplicate failed messages on offline support ([fd14657](https://github.com/GetStream/stream-chat-react-native/commit/fd14657175a0fbfea028d638bdea318a5b612356))
+* expo optional dependencies import ([#2118](https://github.com/GetStream/stream-chat-react-native/issues/2118)) ([ac3dbf9](https://github.com/GetStream/stream-chat-react-native/commit/ac3dbf9b3b89ccdc886887a5b043f31ff2a20a1a))
+* remove default require in expo sharing ([cc549d9](https://github.com/GetStream/stream-chat-react-native/commit/cc549d9763000591fe6e0d6bd30246fe1b433932))
+* require expo-document-picker  v11 ([#2100](https://github.com/GetStream/stream-chat-react-native/issues/2100)) ([f0def5c](https://github.com/GetStream/stream-chat-react-native/commit/f0def5cebd824a8767ffbde582685a1cbac3fe4f))
+* restore failed messages present in db ([#2111](https://github.com/GetStream/stream-chat-react-native/issues/2111)) ([4eb0e16](https://github.com/GetStream/stream-chat-react-native/commit/4eb0e167ea8280e6cd4426500aa6feb956231104))
+
+### [5.14.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.14.0...v5.14.1) (2023-05-15)
+
+
+### Bug Fixes
+
+* AutoCompleteInput setInputBoxRef typing ([#2095](https://github.com/GetStream/stream-chat-react-native/issues/2095)) ([9fd7cfc](https://github.com/GetStream/stream-chat-react-native/commit/9fd7cfcbc554ef5d813541b53e018cdf16201238))
+* make ws connection more robust when user is not set yet ([#2098](https://github.com/GetStream/stream-chat-react-native/issues/2098)) ([548e5ae](https://github.com/GetStream/stream-chat-react-native/commit/548e5ae719870b3bc5fffe851395bc2547227acb))
+
+## [5.14.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.13.0...v5.14.0) (2023-05-02)
+
+
+### Features
+
+* enabling offline support with RNQS v8 and removing support for v4 ([#2067](https://github.com/GetStream/stream-chat-react-native/issues/2067)) ([22a541c](https://github.com/GetStream/stream-chat-react-native/commit/22a541c13d35188157ccf0d0442ef18142b35086))
+* resizable cdn hosts ([#2058](https://github.com/GetStream/stream-chat-react-native/issues/2058)) ([d90a49c](https://github.com/GetStream/stream-chat-react-native/commit/d90a49cc46df1f7f097c95d2473689b818f3d4a8))
+
+
+### Bug Fixes
+
+* addPinnedMessages after clearing a channel's state ([#2054](https://github.com/GetStream/stream-chat-react-native/issues/2054)) ([1af97ba](https://github.com/GetStream/stream-chat-react-native/commit/1af97babb123a9b3b2957417c19df6b77f70dc91))
+* disable send button if enableOfflineSupport is on and images and files are not uploaded ([#2070](https://github.com/GetStream/stream-chat-react-native/issues/2070)) ([832c377](https://github.com/GetStream/stream-chat-react-native/commit/832c3772a1f642fe4b2363a30b4b030a9e371eba))
+* missing translation for pinned by ([#2051](https://github.com/GetStream/stream-chat-react-native/issues/2051)) ([478167b](https://github.com/GetStream/stream-chat-react-native/commit/478167b080b8ced93eb41b0ecf30741e8ad63801))
+* remove return null check from OverlayProvider and Chat component ([#2039](https://github.com/GetStream/stream-chat-react-native/issues/2039)) ([c3ceb8c](https://github.com/GetStream/stream-chat-react-native/commit/c3ceb8c8d33f5198eba8274c837b91373d84e080))
+* upgrade stream-chat version to 8.6.0 to solve offline support update channel preview issue ([4ebf23c](https://github.com/GetStream/stream-chat-react-native/commit/4ebf23cb53005522d58f06d8156ee8897a352da1))
+
+
+### Reverts
+
+* Revert "chore: upgrade stream-chat version to 8.6.0 (#2077)" (#2078) ([bffe460](https://github.com/GetStream/stream-chat-react-native/commit/bffe460670efa173710930a06e18ffcd0b7d8a05)), closes [#2077](https://github.com/GetStream/stream-chat-react-native/issues/2077) [#2078](https://github.com/GetStream/stream-chat-react-native/issues/2078)
+
 ## [5.13.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.12.1...v5.13.0) (2023-04-13)
 
 

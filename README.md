@@ -9,8 +9,8 @@
 
 
 [![NPM](https://img.shields.io/npm/v/stream-chat-react-native.svg)](https://www.npmjs.com/package/stream-chat-react-native)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=GetStream_stream-chat-react-native&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=GetStream_stream-chat-react-native)
 [![Build Status](https://github.com/GetStream/stream-chat-react-native/workflows/build/badge.svg)](https://github.com/GetStream/stream-chat-react-native/actions)
-[![Test Status](https://github.com/GetStream/stream-chat-react-native/workflows/test/badge.svg)](https://github.com/GetStream/stream-chat-react-native/actions)
 [![Component Reference](https://img.shields.io/badge/docs-component%20reference-blue.svg)](https://getstream.io/chat/docs/sdk/reactnative)
 
 <img align="right" src="https://getstream.imgix.net/images/ios-chat-tutorial/iphone_chat_art@3x.png?auto=format,enhance" width="50%" />
@@ -33,7 +33,7 @@
 
 ## 📖 React Native Chat Tutorial
 
-The best place to start is the [React Native Chat Tutorial](https://github.com/GetStream/stream-chat-react-native/wiki/Tutorial-v3.0). It teaches you how to use this SDK and also shows how to make frequently required changes.
+The best place to start is the [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/). It teaches you how to use this SDK and also shows how to make frequently required changes.
 
 ## Free for Makers
 

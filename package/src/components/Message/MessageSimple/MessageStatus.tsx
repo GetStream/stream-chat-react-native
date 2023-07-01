@@ -56,7 +56,9 @@ const MessageStatusWithContext = <
     );
   }
 
-  if (isMessageWithStylesReadByAndDateSeparator(message) && !threadList) {
+  if (threadList || message.status === MessageStatusTypes.FAILED) return null;
+
+  if (isMessageWithStylesReadByAndDateSeparator(message)) {
     return (
       <View style={[styles.statusContainer, statusContainer]}>
         {typeof message.readBy === 'number' ? (
@@ -76,11 +78,7 @@ const MessageStatusWithContext = <
     );
   }
 
-  if (
-    message.status === MessageStatusTypes.RECEIVED &&
-    message.type !== 'ephemeral' &&
-    !threadList
-  ) {
+  if (message.status === MessageStatusTypes.RECEIVED && message.type !== 'ephemeral') {
     return (
       <View style={[styles.statusContainer, statusContainer]} testID='delivered-container'>
         <Check pathFill={grey_dark} {...checkIcon} />
