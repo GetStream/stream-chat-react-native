@@ -1,5 +1,14 @@
 # Change Log
 
+### [5.15.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.15.1...v5.15.2) (2023-07-03)
+
+
+### Bug Fixes
+
+* do not sync if last sync is too old ([#2161](https://github.com/GetStream/stream-chat-react-native/issues/2161)) ([3b5e2ff](https://github.com/GetStream/stream-chat-react-native/commit/3b5e2ffe0e836bba86e186ca642317e5626de811))
+* double check whether we scroll to an existing index when messageId is… ([#2148](https://github.com/GetStream/stream-chat-react-native/issues/2148)) ([a87b095](https://github.com/GetStream/stream-chat-react-native/commit/a87b0951dc3a8868ec4481f438d312bedaaad4a5))
+* message status failed shows sent check mark ([#2127](https://github.com/GetStream/stream-chat-react-native/issues/2127)) ([00941e7](https://github.com/GetStream/stream-chat-react-native/commit/00941e776cfcb6d82d5e444fa3cc4295e40435b5))
+
 ### [5.15.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.15.0...v5.15.1) (2023-06-12)
 
 
