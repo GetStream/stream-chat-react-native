@@ -15,45 +15,6 @@ import { ProgressIndicatorTypes } from '../../utils/utils';
 
 const REFRESH_ICON_SIZE = 18;
 
-const styles = StyleSheet.create({
-  activityIndicatorContainer: {
-    alignItems: 'center',
-    bottom: 0,
-    justifyContent: 'center',
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-  },
-  container: {
-    alignItems: 'center',
-    height: '100%',
-    justifyContent: 'center',
-    position: 'absolute',
-    width: '100%',
-  },
-  overflowHidden: {
-    overflow: 'hidden',
-  },
-  overlay: {
-    alignItems: 'center',
-    height: '100%',
-    justifyContent: 'center',
-    opacity: 0,
-    position: 'absolute',
-    width: '100%',
-  },
-  retryButtonContainer: {
-    alignItems: 'center',
-    bottom: 0,
-    justifyContent: 'center',
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-  },
-});
-
 export type UploadProgressIndicatorProps = {
   /** Action triggered when clicked indicator */
   action?: (event: GestureResponderEvent) => void;
@@ -129,6 +90,45 @@ const RetryIndicator = ({ action }: Pick<UploadProgressIndicatorProps, 'action'>
     </TouchableOpacity>
   );
 };
+
+const styles = StyleSheet.create({
+  activityIndicatorContainer: {
+    alignItems: 'center',
+    bottom: 0,
+    justifyContent: 'center',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  container: {
+    alignItems: 'center',
+    height: '100%',
+    justifyContent: 'center',
+    position: 'absolute',
+    width: '100%',
+  },
+  overflowHidden: {
+    overflow: 'hidden',
+  },
+  overlay: {
+    alignItems: 'center',
+    height: '100%',
+    justifyContent: 'center',
+    opacity: 0,
+    position: 'absolute',
+    width: '100%',
+  },
+  retryButtonContainer: {
+    alignItems: 'center',
+    bottom: 0,
+    justifyContent: 'center',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+});
 
 UploadProgressIndicator.displayName =
   'UploadProgressIndicator{messageInput{uploadProgressIndicator}}';
