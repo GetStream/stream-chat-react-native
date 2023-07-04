@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
-import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingViewProps, Platform, StyleSheet, Text, View } from 'react-native';
 
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
@@ -74,7 +74,7 @@ import {
   ThumbsUpReaction,
   WutReaction,
 } from '../../icons';
-import { FlatList as FlatListDefault, pickDocument } from '../../native';
+import { FlatList as FlatListDefault, getLocalAssetUri, pickDocument } from '../../native';
 import * as dbApi from '../../store/apis';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
@@ -1295,12 +1295,17 @@ const ChannelWithContext = <
           attachment.image_url &&
           isLocalUrl(attachment.image_url)
         ) {
-          const filename = file.uri.replace(/^(file:\/\/|content:\/\/|assets-library:\/\/)/, '');
-          const contentType = lookup(filename) || 'multipart/form-data';
+          // For the case of Expo CLI where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
+          const localAssetURI =
+            Platform.OS === 'ios' && file.id && (await getLocalAssetUri(file.id));
+          const uri = localAssetURI || file.uri || '';
+
+          const filename = uri.replace(/^(file:\/\/|content:\/\/|assets-library:\/\/)/, '');
+          const contentType = lookup(file.name ?? filename) || 'multipart/form-data';
 
           const uploadResponse = doImageUploadRequest
             ? await doImageUploadRequest(file, channel)
-            : await channel.sendImage(file?.uri, filename, contentType);
+            : await channel.sendImage(uri, filename, contentType);
 
           attachment.image_url = uploadResponse.file;
           delete attachment.originalFile;

@@ -1011,8 +1011,9 @@ export const MessageInputProvider = <
             uri,
             width: file.width,
           }));
-      const filename = uri.replace(/^(file:\/\/|content:\/\/|assets-library:\/\/)/, '');
-      const contentType = lookup(filename) || 'multipart/form-data';
+      const contentType =
+        lookup(file.filename ?? uri.replace(/^(file:\/\/|content:\/\/)/, '')) ||
+        'multipart/form-data';
       if (value.doImageUploadRequest) {
         response = await value.doImageUploadRequest(file, channel);
       } else if (compressedUri && channel) {
