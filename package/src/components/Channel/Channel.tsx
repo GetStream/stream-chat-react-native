@@ -1299,9 +1299,8 @@ const ChannelWithContext = <
           const localAssetURI =
             Platform.OS === 'ios' && file.id && (await getLocalAssetUri(file.id));
           const uri = localAssetURI || file.uri || '';
-
-          const filename = uri.replace(/^(file:\/\/|content:\/\/|assets-library:\/\/)/, '');
-          const contentType = lookup(file.name ?? filename) || 'multipart/form-data';
+          const filename = file.name ?? uri.replace(/^(file:\/\/|content:\/\/)/, '');
+          const contentType = lookup(filename) || 'multipart/form-data';
 
           const uploadResponse = doImageUploadRequest
             ? await doImageUploadRequest(file, channel)

@@ -1011,14 +1011,13 @@ export const MessageInputProvider = <
             uri,
             width: file.width,
           }));
-      const contentType =
-        lookup(file.filename ?? uri.replace(/^(file:\/\/|content:\/\/)/, '')) ||
-        'multipart/form-data';
+      const filename = file.filename ?? uri.replace(/^(file:\/\/|content:\/\/)/, '');
+      const contentType = lookup(filename) || 'multipart/form-data';
       if (value.doImageUploadRequest) {
         response = await value.doImageUploadRequest(file, channel);
       } else if (compressedUri && channel) {
         if (value.sendImageAsync) {
-          channel.sendImage(compressedUri, file.filename, contentType).then((res) => {
+          channel.sendImage(compressedUri, filename, contentType).then((res) => {
             if (asyncIds.includes(id)) {
               // Evaluates to true if user hit send before image successfully uploaded
               setAsyncUploads((prevAsyncUploads) => {
@@ -1037,7 +1036,7 @@ export const MessageInputProvider = <
             }
           });
         } else {
-          response = await channel.sendImage(compressedUri, file.filename, contentType);
+          response = await channel.sendImage(compressedUri, filename, contentType);
         }
       }
 
