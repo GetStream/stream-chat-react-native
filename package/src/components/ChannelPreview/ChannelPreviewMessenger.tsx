@@ -142,7 +142,7 @@ const ChannelPreviewMessengerWithContext = <
 
     client.on('notification.channel_mutes_updated', handleEvent);
     return () => client.off('notification.channel_mutes_updated', handleEvent);
-  }, []);
+  }, [client]);
 
   return (
     <TouchableOpacity
