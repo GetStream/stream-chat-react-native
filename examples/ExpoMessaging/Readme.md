@@ -36,3 +36,14 @@
      ```bash
      yarn android
      ```
+
+**Note:**
+
+If your Android build fails please add the following snippet on the `android/gradle.properties` to make it work.
+
+```
+hermesEnabled=true
+# disables the check for multiple instances for gesture handler
+# this is needed for react-native-gesture-handler to be both a devDep of core and be a dep on the expo sample app
+disableMultipleInstancesCheck=true
+```
