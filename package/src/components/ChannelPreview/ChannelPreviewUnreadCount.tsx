@@ -7,22 +7,6 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
-const styles = StyleSheet.create({
-  unreadContainer: {
-    alignItems: 'center',
-    borderRadius: 8,
-    flexShrink: 1,
-    justifyContent: 'center',
-  },
-  unreadText: {
-    color: '#FFFFFF',
-    fontSize: 11,
-    fontWeight: '700',
-    paddingHorizontal: 5,
-    paddingVertical: 1,
-  },
-});
-
 export type ChannelPreviewUnreadCountProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChannelPreviewProps<StreamChatGenerics>, 'channel'> & {
@@ -53,3 +37,19 @@ export const ChannelPreviewUnreadCount = <
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  unreadContainer: {
+    alignItems: 'center',
+    borderRadius: 8,
+    flexShrink: 1,
+    justifyContent: 'center',
+  },
+  unreadText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '700',
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+  },
+});
