@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -17,6 +17,7 @@ import {
   ChannelsContextValue,
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { vw } from '../../utils/utils';
@@ -127,12 +128,21 @@ const ChannelPreviewMessengerWithContext = <
     },
   } = useTheme();
 
+  const { client } = useChatContext<StreamChatGenerics>();
+
   const displayName = useChannelPreviewDisplayName(
     channel,
     Math.floor(maxWidth / ((title.fontSize || styles.title.fontSize) / 2)),
   );
 
-  const isChannelMuted = channel.muteStatus().muted;
+  const [isChannelMuted, setIsChannelMuted] = useState(() => channel.muteStatus().muted);
+
+  useEffect(() => {
+    const handleEvent = () => setIsChannelMuted(channel.muteStatus().muted);
+
+    client.on('notification.channel_mutes_updated', handleEvent);
+    return () => client.off('notification.channel_mutes_updated', handleEvent);
+  }, [client]);
 
   return (
     <TouchableOpacity
