@@ -196,6 +196,12 @@ const styles = StyleSheet.create({
 });
 ```
 
+:::note
+
+Please note that `client.setLocalDevice` should be made before `client.connectUser` in code.
+
+:::
+
 ## The Push Notification Message Payload
 
 When a message is received by the Chat API, if the [requirements](#requirements) are met, it kicks a job to send a notification message to Firebase.
