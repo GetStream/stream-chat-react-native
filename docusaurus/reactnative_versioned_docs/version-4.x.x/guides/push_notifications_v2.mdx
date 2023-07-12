@@ -112,13 +112,6 @@ client.updateAppSettings({
 
 Once you configure the Firebase server key and set it up on the Stream dashboard, a device that is supposed to receive push notifications needs to be registered at the Stream backend. This is usually done by listening for the Firebase device token.
 
-:::caution
-
-Please note that, `client.addDevice` call requires a user token to be set on the client.
-So `client.addDevice` call should be made after `client.connectUser` in code.
-
-:::
-
 ```js
 // Request Push Notification permission from device.
 const requestPermission = async () => {
