@@ -43,13 +43,13 @@ export const ChannelPreviewUnreadCount = <
     },
   } = useTheme();
 
+  if (!unread) return null;
+
   return (
     <View style={[styles.unreadContainer, { backgroundColor: accent_red }, unreadContainer]}>
-      {!!unread && (
-        <Text numberOfLines={1} style={[styles.unreadText, unreadText]}>
-          {unread > maxUnreadCount ? `${maxUnreadCount}+` : unread}
-        </Text>
-      )}
+      <Text numberOfLines={1} style={[styles.unreadText, unreadText]}>
+        {unread > maxUnreadCount ? `${maxUnreadCount}+` : unread}
+      </Text>
     </View>
   );
 };
