@@ -1,5 +1,16 @@
 # Change Log
 
+### [5.15.3](https://github.com/GetStream/stream-chat-react-native/compare/v5.15.2...v5.15.3) (2023-07-18)
+
+
+### Bug Fixes
+
+* do not render message list items when channel is disconnected ([#2179](https://github.com/GetStream/stream-chat-react-native/issues/2179)) ([53d29c2](https://github.com/GetStream/stream-chat-react-native/commit/53d29c2281c41ad57ccbb78d2dcd27b074832b25))
+* hmr issue due to disconnect ([#2169](https://github.com/GetStream/stream-chat-react-native/issues/2169)) ([9c8150f](https://github.com/GetStream/stream-chat-react-native/commit/9c8150fcc08f84a7c5ecbd892e6b327f66729382))
+* image upload issue for expo apps ([#2166](https://github.com/GetStream/stream-chat-react-native/issues/2166)) ([84b8a13](https://github.com/GetStream/stream-chat-react-native/commit/84b8a1377a712250fb76a67a0ec7a2fd3c657fb8))
+* message action list border overflow ([#2167](https://github.com/GetStream/stream-chat-react-native/issues/2167)) ([ec515b6](https://github.com/GetStream/stream-chat-react-native/commit/ec515b6e80cba456855311143054b4ea1b093bd8))
+* ui issue when customizing unread count when there is no count ([#2180](https://github.com/GetStream/stream-chat-react-native/issues/2180)) ([7254bb6](https://github.com/GetStream/stream-chat-react-native/commit/7254bb6cc6a2b5e715f163e5b28e3b98098cbef1))
+
 ### [5.15.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.15.1...v5.15.2) (2023-07-03)
 
 
