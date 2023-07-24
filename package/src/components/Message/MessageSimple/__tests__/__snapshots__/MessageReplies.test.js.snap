@@ -9,6 +9,11 @@ exports[`MessageReplies should render message replies 1`] = `
   }
 >
   <View
+    style={
+      Object {
+        "flexDirection": "row",
+      }
+    }
     testID="message-replies-left"
   >
     <View
@@ -18,7 +23,6 @@ exports[`MessageReplies should render message replies 1`] = `
             "borderColor": undefined,
           },
           Object {
-            "borderTopColor": "transparent",
             "borderTopWidth": 0,
             "borderWidth": 1,
             "height": 16,
@@ -26,7 +30,7 @@ exports[`MessageReplies should render message replies 1`] = `
           },
           Object {
             "borderBottomLeftRadius": 16,
-            "borderRightColor": "transparent",
+            "borderRightWidth": 0,
           },
           Object {},
         ]
@@ -40,7 +44,9 @@ exports[`MessageReplies should render message replies 1`] = `
             "flexDirection": "row",
             "paddingTop": 2,
           },
-          Object {},
+          Object {
+            "marginLeft": 8,
+          },
         ]
       }
     />
@@ -73,7 +79,7 @@ exports[`MessageReplies should render message replies 1`] = `
             "fontSize": 12,
             "fontWeight": "700",
             "paddingBottom": 5,
-            "paddingLeft": 8,
+            "paddingHorizontal": 8,
           },
           Object {
             "color": "#005FFF",
