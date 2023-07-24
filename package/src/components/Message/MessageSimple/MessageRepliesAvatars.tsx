@@ -54,7 +54,9 @@ export const MessageRepliesAvatarsWithContext = <
     <View
       style={[
         styles.avatarContainer,
-        alignment === 'right' ? { marginLeft: 8, ...rightAvatarsContainer } : leftAvatarsContainer,
+        alignment === 'right'
+          ? { marginRight: 8, ...rightAvatarsContainer }
+          : { marginLeft: 8, ...leftAvatarsContainer },
       ]}
     >
       {avatars.map((user, i) => (

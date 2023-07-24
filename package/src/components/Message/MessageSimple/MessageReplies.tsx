@@ -1,5 +1,5 @@
 import React from 'react';
-import { ColorValue, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ColorValue, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import {
   MessageContextValue,
@@ -22,21 +22,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     marginTop: 8,
+    paddingBottom: 5,
   },
   curveContainer: {
     flexDirection: 'row',
   },
   leftMessageRepliesCurve: {
     borderBottomLeftRadius: 16,
-    borderRightColor: 'transparent',
-    ...Platform.select({
-      android: {
-        borderRightWidth: 0,
-      },
-    }),
+    borderRightWidth: 0,
   },
   messageRepliesCurve: {
-    borderTopColor: 'transparent',
     borderTopWidth: 0,
     borderWidth: 1,
     height: 16,
@@ -45,17 +40,11 @@ const styles = StyleSheet.create({
   messageRepliesText: {
     fontSize: 12,
     fontWeight: '700',
-    paddingBottom: 5,
-    paddingLeft: 8,
+    paddingHorizontal: 8,
   },
   rightMessageRepliesCurve: {
     borderBottomRightRadius: 16,
-    borderLeftColor: 'transparent',
-    ...Platform.select({
-      android: {
-        borderLeftWidth: 0,
-      },
-    }),
+    borderLeftWidth: 0,
   },
 });
 
@@ -123,7 +112,6 @@ const MessageRepliesWithContext = <
               ]}
             />
           )}
-          <MessageRepliesAvatars alignment={alignment} message={message} />
         </View>
       )}
       <TouchableOpacity
@@ -157,6 +145,7 @@ const MessageRepliesWithContext = <
         style={[styles.container, container]}
         testID='message-replies'
       >
+        {alignment === 'left' && <MessageRepliesAvatars alignment={alignment} message={message} />}
         <Text style={[styles.messageRepliesText, { color: accent_blue }, messageRepliesText]}>
           {message.reply_count === 1
             ? t('1 Thread Reply')
@@ -164,10 +153,10 @@ const MessageRepliesWithContext = <
                 replyCount: message.reply_count,
               })}
         </Text>
+        {alignment === 'right' && <MessageRepliesAvatars alignment={alignment} message={message} />}
       </TouchableOpacity>
       {alignment === 'right' && (
         <View testID='message-replies-right'>
-          <MessageRepliesAvatars alignment={alignment} message={message} />
           {!noBorder && (
             <View
               style={[
