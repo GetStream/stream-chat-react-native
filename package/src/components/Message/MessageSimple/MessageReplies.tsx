@@ -22,7 +22,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     marginTop: 8,
-    paddingBottom: 5,
   },
   curveContainer: {
     flexDirection: 'row',
@@ -40,6 +39,7 @@ const styles = StyleSheet.create({
   messageRepliesText: {
     fontSize: 12,
     fontWeight: '700',
+    paddingBottom: 5,
     paddingHorizontal: 8,
   },
   rightMessageRepliesCurve: {
