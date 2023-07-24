@@ -101,7 +101,7 @@ const MessageRepliesWithContext = <
   return (
     <View style={styles.curveContainer}>
       {alignment === 'left' && (
-        <View testID='message-replies-left'>
+        <View style={styles.curveContainer} testID='message-replies-left'>
           {!noBorder && (
             <View
               style={[
@@ -112,6 +112,7 @@ const MessageRepliesWithContext = <
               ]}
             />
           )}
+          <MessageRepliesAvatars alignment={alignment} message={message} />
         </View>
       )}
       <TouchableOpacity
@@ -145,7 +146,6 @@ const MessageRepliesWithContext = <
         style={[styles.container, container]}
         testID='message-replies'
       >
-        {alignment === 'left' && <MessageRepliesAvatars alignment={alignment} message={message} />}
         <Text style={[styles.messageRepliesText, { color: accent_blue }, messageRepliesText]}>
           {message.reply_count === 1
             ? t('1 Thread Reply')
@@ -153,10 +153,10 @@ const MessageRepliesWithContext = <
                 replyCount: message.reply_count,
               })}
         </Text>
-        {alignment === 'right' && <MessageRepliesAvatars alignment={alignment} message={message} />}
       </TouchableOpacity>
       {alignment === 'right' && (
-        <View testID='message-replies-right'>
+        <View style={styles.curveContainer} testID='message-replies-right'>
+          <MessageRepliesAvatars alignment={alignment} message={message} />
           {!noBorder && (
             <View
               style={[
