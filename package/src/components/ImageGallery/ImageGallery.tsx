@@ -131,6 +131,7 @@ type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamC
       | 'imageGalleryGridSnapPoints'
       | 'imageGalleryGridHandleHeight'
       | 'numberOfImageGalleryGridColumns'
+      | 'autoPlayVideo'
     >;
 
 export const ImageGallery = <
@@ -139,6 +140,7 @@ export const ImageGallery = <
   props: Props<StreamChatGenerics>,
 ) => {
   const {
+    autoPlayVideo = false,
     giphyVersion = 'fixed_height',
     imageGalleryCustomComponents,
     imageGalleryGridHandleHeight,
@@ -273,6 +275,7 @@ export const ImageGallery = <
     const attachmentPhotos = attachmentImages.map((a) => {
       const imageUrl = getUrlOfImageAttachment(a) as string;
       const giphyURL = a.giphy?.[giphyVersion]?.url || a.thumb_url || a.image_url;
+      const isInitiallyPaused = !autoPlayVideo;
 
       return {
         channelId: cur.cid,
@@ -283,7 +286,7 @@ export const ImageGallery = <
         mime_type: a.type === 'giphy' ? getGiphyMimeType(giphyURL ?? '') : a.mime_type,
         original_height: a.original_height,
         original_width: a.original_width,
-        paused: true,
+        paused: isInitiallyPaused,
         progress: 0,
         type: a.type,
         uri:
