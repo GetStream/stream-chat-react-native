@@ -1090,7 +1090,7 @@ export const defaultTheme: Theme = {
       image: {},
     },
   },
-  screenPadding: 32,
+  screenPadding: 8,
   spinner: {},
   thread: {
     newThread: {
