@@ -338,6 +338,7 @@ export type Theme = {
       text: TextStyle;
     };
     listContainer: ViewStyle;
+    messageContainer: ViewStyle;
     messageSystem: {
       container: ViewStyle;
       dateText: TextStyle;
@@ -840,6 +841,7 @@ export const defaultTheme: Theme = {
       text: {},
     },
     listContainer: {},
+    messageContainer: {},
     messageSystem: {
       container: {},
       dateText: {},
@@ -1088,7 +1090,7 @@ export const defaultTheme: Theme = {
       image: {},
     },
   },
-  screenPadding: 8,
+  screenPadding: 32,
   spinner: {},
   thread: {
     newThread: {
