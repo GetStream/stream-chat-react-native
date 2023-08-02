@@ -178,6 +178,7 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
 
 const getFileType = (asset: Asset) => {
   const { filename } = asset;
+  // Since Expo MediaLibrary doesn't return the mimetype of the image/video, we have to derive the mimeType from filename.
   if (filename) {
     const contentType = lookup(filename) || 'multipart/form-data';
     return contentType.startsWith('image/') ? 'image' : 'video';
