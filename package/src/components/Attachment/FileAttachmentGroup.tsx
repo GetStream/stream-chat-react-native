@@ -157,7 +157,7 @@ const FileAttachmentGroupWithContext = <
               <AudioAttachment
                 item={{
                   duration: file.duration,
-                  file: { name: file.title as string, uri: file.asset_url as string },
+                  file: { name: file.title as string, uri: file.asset_url },
                   id: index.toString(),
                   paused: file.paused,
                   progress: file.progress,
