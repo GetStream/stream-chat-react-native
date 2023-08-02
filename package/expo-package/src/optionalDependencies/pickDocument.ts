@@ -16,14 +16,12 @@ export const pickDocument = DocumentPicker
   ? async () => {
       try {
         const result = await DocumentPicker.getDocumentAsync();
-        const {
-          // New data from latest version of expo-document-picker
-          assets,
-          canceled,
-          // Old data from older version of expo-document-picker
-          type,
-          ...rest
-        } = result;
+
+        // New data from latest version of expo-document-picker
+        const { assets, canceled } = result;
+
+        // Old data from older version of expo-document-picker
+        const { type, ...rest } = result;
 
         // Applicable to latest version of expo-document-picker
         if (canceled) {
