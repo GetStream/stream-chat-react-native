@@ -70,11 +70,14 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
           Alert.alert('Maximum number of files reached');
           return files;
         }
+        // Since Expo MediaLibrary doesn't return the mimetype of the image/video, we have to derive the mimeType.
+        const mimeType = lookup(asset.filename) || 'multipart/form-data';
         return [
           ...files,
           {
             duration: durationLabel,
             id: asset.id,
+            mimeType,
             name: asset.filename,
             size: asset.fileSize,
             type: 'video',
