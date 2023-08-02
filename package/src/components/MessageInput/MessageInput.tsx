@@ -406,15 +406,15 @@ const MessageInputWithContext = <
     } else if (fileUploadsLength > selectedFilesLength) {
       /**
        * User is editing some message which contains video attachments OR
-       * video attachment is added from custom image picker (other than the default bottomsheet image picker)
+       * video attachment is added from custom image picker (other than the default bottom-sheet image picker)
        * using `uploadNewFile` function from `MessageInputContext`.
        **/
       setSelectedFiles(
         fileUploads.map((fileUpload) => ({
           duration: fileUpload.file.duration,
+          mimeType: fileUpload.file.mimeType,
           name: fileUpload.file.name,
           size: fileUpload.file.size,
-          type: fileUpload.file.type,
           uri: fileUpload.file.uri,
         })),
       );

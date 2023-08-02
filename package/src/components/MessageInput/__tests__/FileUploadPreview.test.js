@@ -318,8 +318,8 @@ describe('FileUploadPreview', () => {
     const fileUploads = [
       generateFileUploadPreview({
         id: 'file-upload-id-1',
+        mimeType: 'audio/mp3',
         state: FileState.UPLOADED,
-        type: 'audio/mp3',
       }),
     ];
     const removeFile = jest.fn();

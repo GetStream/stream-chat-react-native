@@ -37,13 +37,13 @@ export const pickDocument = DocumentPicker
         }
 
         return {
-          cancelled: false,
-          docs: res.map(({ name, size, type, uri }) => ({
+          assets: res.map(({ name, size, type, uri }) => ({
+            mimeType: type,
             name,
             size,
-            type,
             uri,
           })),
+          cancelled: false,
         };
       } catch (err) {
         return {
