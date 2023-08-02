@@ -80,7 +80,6 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
             mimeType,
             name: asset.filename,
             size: asset.fileSize,
-            type: 'video',
             uri: asset.uri,
           },
         ];
