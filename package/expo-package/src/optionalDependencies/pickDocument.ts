@@ -43,12 +43,10 @@ export const pickDocument = DocumentPicker
           };
         }
         // Applicable to older version of expo-document-picker
-        else {
-          return {
-            assets: [rest],
-            cancelled: false,
-          };
-        }
+        return {
+          assets: [rest],
+          cancelled: false,
+        };
       } catch (err) {
         return {
           cancelled: true,
