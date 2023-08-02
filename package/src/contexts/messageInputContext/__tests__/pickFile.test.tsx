@@ -40,11 +40,11 @@ describe("MessageInputContext's pickFile", () => {
   jest.spyOn(Alert, 'alert');
   jest.spyOn(NativeUtils, 'pickDocument').mockImplementation(
     jest.fn().mockResolvedValue({
-      cancelled: false,
-      docs: [
+      assets: [
         generateFileAttachment({ size: 500000000 }),
         generateFileAttachment({ size: 600000000 }),
       ],
+      cancelled: false,
     }),
   );
 

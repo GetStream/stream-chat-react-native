@@ -104,7 +104,7 @@ const FileAttachmentGroupWithContext = <
       setFilesToDisplay((prevFileUploads) =>
         prevFileUploads.map((fileUpload, id) => ({
           ...fileUpload,
-          paused: id.toString() === index ? false : true,
+          paused: id.toString() !== index,
         })),
       );
     } else {
@@ -157,7 +157,7 @@ const FileAttachmentGroupWithContext = <
               <AudioAttachment
                 item={{
                   duration: file.duration,
-                  file: { name: file.title as string, uri: file.asset_url },
+                  file: { name: file.title as string, uri: file.asset_url as string },
                   id: index.toString(),
                   paused: file.paused,
                   progress: file.progress,

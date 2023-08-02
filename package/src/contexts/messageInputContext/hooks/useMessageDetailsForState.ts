@@ -54,9 +54,9 @@ export const useMessageDetailsForState = <
           const id = generateRandomId();
           newFileUploads.push({
             file: {
+              mimeType: attachment.mime_type,
               name: attachment.title || '',
               size: attachment.file_size,
-              type: attachment.mime_type,
             },
             id,
             state: 'finished',
@@ -78,9 +78,9 @@ export const useMessageDetailsForState = <
           const id = generateRandomId();
           newFileUploads.push({
             file: {
+              mimeType: attachment.mime_type,
               name: attachment.title || '',
               size: attachment.file_size,
-              type: attachment.mime_type,
             },
             id,
             state: 'finished',
