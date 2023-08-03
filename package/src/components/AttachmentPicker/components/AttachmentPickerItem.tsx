@@ -70,14 +70,16 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
           Alert.alert('Maximum number of files reached');
           return files;
         }
+        // We need a mime-type to upload a video file.
+        const mimeType = lookup(asset.filename) || 'multipart/form-data';
         return [
           ...files,
           {
             duration: durationLabel,
             id: asset.id,
+            mimeType,
             name: asset.filename,
             size: asset.fileSize,
-            type: 'video',
             uri: asset.uri,
           },
         ];
@@ -174,16 +176,6 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
   );
 };
 
-const getFileType = (asset: Asset) => {
-  const { filename } = asset;
-  if (filename) {
-    const contentType = lookup(filename) || 'multipart/form-data';
-    return contentType.startsWith('image/') ? 'image' : 'video';
-  } else {
-    return asset.type === 'video' ? 'video' : 'image';
-  }
-};
-
 export const renderAttachmentPickerItem = ({ item }: { item: AttachmentPickerItemType }) => {
   const {
     asset,
@@ -196,9 +188,29 @@ export const renderAttachmentPickerItem = ({ item }: { item: AttachmentPickerIte
     setSelectedImages,
   } = item;
 
-  const fileType = getFileType(asset);
+  /**
+   * Expo Media Library - Result of asset type
+   * Native Android - Gives mime type(Eg: image/jpeg, video/mp4, etc.)
+   * Native iOS - Gives `image` or `video`
+   * Expo Android/iOS - Gives `photo` or `video`
+   **/
+  const isVideoType = asset.type.includes('video');
 
-  return fileType === 'image' ? (
+  if (isVideoType) {
+    return (
+      <AttachmentVideo
+        asset={asset}
+        ImageOverlaySelectedComponent={ImageOverlaySelectedComponent}
+        maxNumberOfFiles={maxNumberOfFiles}
+        numberOfAttachmentPickerImageColumns={numberOfAttachmentPickerImageColumns}
+        numberOfUploads={numberOfUploads}
+        selected={selected}
+        setSelectedFiles={setSelectedFiles}
+      />
+    );
+  }
+
+  return (
     <AttachmentImage
       asset={asset}
       ImageOverlaySelectedComponent={ImageOverlaySelectedComponent}
@@ -207,16 +219,6 @@ export const renderAttachmentPickerItem = ({ item }: { item: AttachmentPickerIte
       numberOfUploads={numberOfUploads}
       selected={selected}
       setSelectedImages={setSelectedImages}
-    />
-  ) : (
-    <AttachmentVideo
-      asset={asset}
-      ImageOverlaySelectedComponent={ImageOverlaySelectedComponent}
-      maxNumberOfFiles={maxNumberOfFiles}
-      numberOfAttachmentPickerImageColumns={numberOfAttachmentPickerImageColumns}
-      numberOfUploads={numberOfUploads}
-      selected={selected}
-      setSelectedFiles={setSelectedFiles}
     />
   );
 };
