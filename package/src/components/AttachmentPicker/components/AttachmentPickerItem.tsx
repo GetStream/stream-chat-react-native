@@ -189,6 +189,7 @@ export const renderAttachmentPickerItem = ({ item }: { item: AttachmentPickerIte
   } = item;
 
   /**
+   * Expo Media Library - Result of asset type
    * Native Android - Gives mime type(Eg: image/jpeg, video/mp4, etc.)
    * Native iOS - Gives `image` or `video`
    * Expo Android/iOS - Gives `photo` or `video`
