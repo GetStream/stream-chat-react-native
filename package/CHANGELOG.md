@@ -1,5 +1,20 @@
 # Change Log
 
+## [5.16.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.15.3...v5.16.0) (2023-08-07)
+
+
+### Features
+
+* add ability to autoplay videos in gallery ([#2195](https://github.com/GetStream/stream-chat-react-native/issues/2195)) ([88dca0c](https://github.com/GetStream/stream-chat-react-native/commit/88dca0c5da13b05a1e07566d0d805169f765a248))
+
+
+### Bug Fixes
+
+* android picker loop on refuse permission ([#2130](https://github.com/GetStream/stream-chat-react-native/issues/2130)) ([133affc](https://github.com/GetStream/stream-chat-react-native/commit/133affc427c5a9efb49304bbea6edd29c8d4bedf))
+* date separators were not visible if previous message was same day of the week ([#2200](https://github.com/GetStream/stream-chat-react-native/issues/2200)) ([e359465](https://github.com/GetStream/stream-chat-react-native/commit/e3594656cf7bdb655831dfdc5de6f8554acc45a5))
+* issue with picking files through filePicker with recent version of expo-document-picker ([#2203](https://github.com/GetStream/stream-chat-react-native/issues/2203)) ([b7d1fa6](https://github.com/GetStream/stream-chat-react-native/commit/b7d1fa690a5138e89cfacf63b11be6af28d45747))
+* video upload issue through image picker ([#2204](https://github.com/GetStream/stream-chat-react-native/issues/2204)) ([8dbd9a8](https://github.com/GetStream/stream-chat-react-native/commit/8dbd9a868873f4b64ae3772a0af73c2a1daef719))
+
 ### [5.15.3](https://github.com/GetStream/stream-chat-react-native/compare/v5.15.2...v5.15.3) (2023-07-18)
 
 
