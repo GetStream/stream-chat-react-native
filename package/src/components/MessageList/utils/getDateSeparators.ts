@@ -45,9 +45,11 @@ export const getDateSeparators = <
     const previousMessage = messagesWithoutDeleted[i - 1];
     const message = messagesWithoutDeleted[i];
 
-    const messageDate = message.created_at.getDay();
+    const messageDate = message.created_at.toDateString();
 
-    const prevMessageDate = previousMessage ? previousMessage.created_at.getDay() : messageDate;
+    const prevMessageDate = previousMessage
+      ? previousMessage.created_at.toDateString()
+      : messageDate;
 
     if (i === 0 || messageDate !== prevMessageDate) {
       dateSeparators[message.id] = message.created_at;

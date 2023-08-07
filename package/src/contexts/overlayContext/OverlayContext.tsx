@@ -58,6 +58,7 @@ export type OverlayProviderProps<
     >
   > &
   Pick<OverlayContextValue, 'translucentStatusBar'> & {
+    autoPlayVideo?: boolean;
     /**
      * The giphy version to render - check the keys of the [Image Object](https://developers.giphy.com/docs/api/schema#image-object) for possible values. Uses 'fixed_height' by default
      * */

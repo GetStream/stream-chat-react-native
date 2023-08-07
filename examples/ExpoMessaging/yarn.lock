@@ -3513,10 +3513,10 @@ expo-constants@~14.2.0, expo-constants@~14.2.1:
     "@expo/config" "~8.0.0"
     uuid "^3.3.2"
 
-expo-document-picker@~11.2.2:
-  version "11.2.2"
-  resolved "https://registry.yarnpkg.com/expo-document-picker/-/expo-document-picker-11.2.2.tgz#707ff994a1c0b38505e12b2c9fe6b67715e6f41c"
-  integrity sha512-EeonRKxkK9E20LEAh93IvlwFjNkUCJKnhBEama9PmIDYWW7RyANZ8eP9C2PupThTDbivzRDNp7Ec7dIeyDAWjw==
+expo-document-picker@~11.5.4:
+  version "11.5.4"
+  resolved "https://registry.yarnpkg.com/expo-document-picker/-/expo-document-picker-11.5.4.tgz#11c274d1a2f4aa1f0ca7c0403ca02017a20d832e"
+  integrity sha512-4lpRixi33kjoQQy9lfrGs48yFRMOgBgdnqjYWVFe85WFy/WkEoFC2E8usxcFdrIigtfy9Z+HY3/je4lHEYqyLg==
 
 expo-file-system@~15.2.0, expo-file-system@~15.2.2:
   version "15.2.2"
@@ -7105,10 +7105,10 @@ stream-buffers@2.2.x:
   version "0.0.0"
   uid ""
 
-stream-chat-react-native-core@5.15.2:
-  version "5.15.2"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.15.2.tgz#26c982907728eb3ad7d3bc34f68764935596c230"
-  integrity sha512-sFH/Ed667lJksHBG1VQjeJdcukWfT8qINhCKEw6WfFbog0XeFmHzs6juuT8mjcJ9SSyo0hYAKNRE34lT8p/t1Q==
+stream-chat-react-native-core@5.15.3:
+  version "5.15.3"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.15.3.tgz#c8312bc7d374587f1f023abaffc746620b7396a4"
+  integrity sha512-d6cNXTW9vMP/yjyHteAGHze6/ye/rLsUedPyhXyFGewdm3wz2zJPEDlKrUjR8QAbDwmUnttLSKELVdt98WhSHw==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "4.4.5"

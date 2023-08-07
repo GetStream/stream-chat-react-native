@@ -15,15 +15,37 @@ if (!DocumentPicker) {
 export const pickDocument = DocumentPicker
   ? async () => {
       try {
-        const { type, ...rest } = await DocumentPicker.getDocumentAsync();
+        const result = await DocumentPicker.getDocumentAsync();
+
+        // New data from latest version of expo-document-picker
+        const { assets, canceled } = result;
+
+        // Old data from older version of expo-document-picker
+        const { type, ...rest } = result;
+
+        // Applicable to latest version of expo-document-picker
+        if (canceled) {
+          return {
+            cancelled: true,
+          };
+        }
+        // Applicable to older version of expo-document-picker
         if (type === 'cancel') {
           return {
             cancelled: true,
           };
         }
+        // Applicable to latest version of expo-document-picker
+        if (assets) {
+          return {
+            assets,
+            cancelled: false,
+          };
+        }
+        // Applicable to older version of expo-document-picker
         return {
+          assets: [rest],
           cancelled: false,
-          docs: [rest],
         };
       } catch (err) {
         return {

@@ -57,7 +57,7 @@ export let NetInfo: NetInfo = {
 type PickDocument = ({ maxNumberOfFiles }: { maxNumberOfFiles?: number }) =>
   | Promise<{
       cancelled: boolean;
-      docs?: File[];
+      assets?: File[];
     }>
   | never;
 export let pickDocument: PickDocument = fail;

@@ -13,13 +13,17 @@ export type Asset = {
   size?: number | string;
 };
 
-export type File = {
+export type FileAssetType = {
   name: string;
+  mimeType?: string;
+  size?: number | string;
+  // The uri should be of type `string`. But is `string|undefined` because the same type is used for the response from Stream's Attachment. This shall be fixed.
+  uri?: string;
+};
+
+export type File = FileAssetType & {
   duration?: string | null;
   id?: string;
-  size?: number | string;
-  type?: string;
-  uri?: string;
 };
 
 export type DefaultAttachmentType = UnknownType & {
@@ -34,6 +38,7 @@ interface DefaultUserType extends UnknownType {
 
 interface DefaultChannelType extends UnknownType {
   [key: string]: unknown;
+
   image?: string;
 }
 

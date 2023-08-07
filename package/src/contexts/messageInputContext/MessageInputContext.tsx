@@ -1,6 +1,5 @@
-import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
-
 import type { LegacyRef } from 'react';
+import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
 import type { TextInput, TextInputProps } from 'react-native';
 import { Alert, Keyboard, Platform } from 'react-native';
 
@@ -591,14 +590,14 @@ export const MessageInputProvider = <
     const MEGA_BYTES_TO_BYTES = 1024 * 1024;
     const MAX_FILE_SIZE_TO_UPLOAD_IN_MB = 100;
 
-    if (!result.cancelled && result.docs) {
-      const totalFileSize = result.docs.reduce((acc, doc) => acc + Number(doc.size), 0);
+    if (!result.cancelled && result.assets) {
+      const totalFileSize = result.assets.reduce((acc, asset) => acc + Number(asset.size), 0);
       if (totalFileSize / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB) {
         Alert.alert(
           `Maximum file size upload limit reached, please upload files below ${MAX_FILE_SIZE_TO_UPLOAD_IN_MB}MB.`,
         );
       } else {
-        result.docs.forEach((doc) => {
+        result.assets.forEach((asset) => {
           /**
            * TODO: The current tight coupling of images to the image
            * picker does not allow images picked from the file picker
@@ -606,7 +605,7 @@ export const MessageInputProvider = <
            * This should be updated alongside allowing image a file
            * uploads together.
            */
-          uploadNewFile(doc);
+          uploadNewFile(asset);
         });
       }
     }
@@ -652,31 +651,30 @@ export const MessageInputProvider = <
   };
 
   const mapFileUploadToAttachment = (file: FileUpload) => {
-    const mime_type: string | boolean = lookup(file.file.name as string);
-    if (file.file.type?.startsWith('image/')) {
+    if (file.file.mimeType?.startsWith('image/')) {
       return {
         fallback: file.file.name,
         image_url: file.url,
-        mime_type: mime_type ? mime_type : undefined,
+        mime_type: file.file.mimeType,
         originalFile: file.file,
         type: 'image',
       };
-    } else if (file.file.type?.startsWith('audio/')) {
+    } else if (file.file.mimeType?.startsWith('audio/')) {
       return {
         asset_url: file.url || file.file.uri,
         duration: file.file.duration,
         file_size: file.file.size,
-        mime_type: file.file.type,
+        mime_type: file.file.mimeType,
         originalFile: file.file,
         title: file.file.name,
         type: 'audio',
       };
-    } else if (file.file.type?.startsWith('video/')) {
+    } else if (file.file.mimeType?.startsWith('video/')) {
       return {
         asset_url: file.url || file.file.uri,
         duration: file.file.duration,
         file_size: file.file.size,
-        mime_type: file.file.type,
+        mime_type: file.file.mimeType,
         originalFile: file.file,
         thumb_url: file.thumb_url,
         title: file.file.name,
@@ -686,7 +684,7 @@ export const MessageInputProvider = <
       return {
         asset_url: file.url || file.file.uri,
         file_size: file.file.size,
-        mime_type: file.file.type,
+        mime_type: file.file.mimeType,
         originalFile: file.file,
         title: file.file.name,
         type: 'file',
@@ -915,14 +913,15 @@ export const MessageInputProvider = <
     }
   };
 
-  const regExcondition = /File (extension \.\w{2,4}|type \S+) is not supported/;
+  const regexCondition = /File (extension \.\w{2,4}|type \S+) is not supported/;
 
-  const getUploadSetStateAction = <UploadType extends ImageUpload | FileUpload>(
-    id: string,
-    fileState: FileStateValue,
-    extraData: Partial<UploadType> = {},
-  ): React.SetStateAction<UploadType[]> => {
-    const uploads: (prevUploads: UploadType[]) => UploadType[] = (prevUploads: UploadType[]) =>
+  const getUploadSetStateAction =
+    <UploadType extends ImageUpload | FileUpload>(
+      id: string,
+      fileState: FileStateValue,
+      extraData: Partial<UploadType> = {},
+    ): React.SetStateAction<UploadType[]> =>
+    (prevUploads: UploadType[]) =>
       prevUploads.map((prevUpload) => {
         if (prevUpload.id === id) {
           return {
@@ -934,14 +933,11 @@ export const MessageInputProvider = <
         return prevUpload;
       });
 
-    return uploads;
-  };
-
   const handleFileOrImageUploadError = (error: unknown, isImageError: boolean, id: string) => {
     if (isImageError) {
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
       if (error instanceof Error) {
-        if (regExcondition.test(error.message)) {
+        if (regexCondition.test(error.message)) {
           return setImageUploads(getUploadSetStateAction(id, FileState.NOT_SUPPORTED));
         }
 
@@ -951,7 +947,7 @@ export const MessageInputProvider = <
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
 
       if (error instanceof Error) {
-        if (regExcondition.test(error.message)) {
+        if (regexCondition.test(error.message)) {
           return setFileUploads(getUploadSetStateAction(id, FileState.NOT_SUPPORTED));
         }
         return setFileUploads(getUploadSetStateAction(id, FileState.UPLOAD_FAILED));
@@ -969,9 +965,7 @@ export const MessageInputProvider = <
       if (value.doDocUploadRequest) {
         response = await value.doDocUploadRequest(file, channel);
       } else if (channel && file.uri) {
-        // For the case of Expo CLI where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
-        const localAssetURI = Platform.OS === 'ios' && file.id && (await getLocalAssetUri(file.id));
-        response = await channel.sendFile(localAssetURI || file.uri, file.name, file.type);
+        response = await channel.sendFile(file.uri, file.name, file.mimeType);
       }
       const extraData: Partial<FileUpload> = { thumb_url: response.thumb_url, url: response.file };
       setFileUploads(getUploadSetStateAction(id, FileState.UPLOADED, extraData));
@@ -996,7 +990,7 @@ export const MessageInputProvider = <
       /**
        * We skip compression if:
        * - the file is from the camera as that should already be compressed
-       * - the file has not height/width value to maintain for compression
+       * - the file has no height/width value to maintain for compression
        * - the compressImageQuality number is not present or is 1 (meaning no compression)
        */
       const compressedUri = await (file.source === 'camera' ||
@@ -1055,7 +1049,6 @@ export const MessageInputProvider = <
 
   const uploadNewFile = async (file: File) => {
     const id: string = generateRandomId();
-    const mimeType: string | boolean = lookup(file.name);
 
     const isBlockedFileExtension: boolean | undefined = blockedFileExtensionTypes?.some(
       (fileExtensionType: string) => file.name?.includes(fileExtensionType),
@@ -1071,7 +1064,7 @@ export const MessageInputProvider = <
 
     const newFile: FileUpload = {
       duration: 0,
-      file: { ...file, type: mimeType || file?.type },
+      file,
       id: file.id || id,
       paused: true,
       progress: 0,
