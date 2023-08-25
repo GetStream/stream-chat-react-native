@@ -1673,6 +1673,7 @@ const ChannelWithContext = <
     if (!enableOfflineSupport) {
       if (message.status === MessageStatusTypes.FAILED) {
         removeMessage(message);
+        return;
       }
       await client.deleteMessage(message.id);
       return;
