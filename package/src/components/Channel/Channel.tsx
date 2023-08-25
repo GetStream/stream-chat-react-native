@@ -1605,6 +1605,9 @@ const ChannelWithContext = <
   const clearQuotedMessageState: InputMessageInputContextValue<StreamChatGenerics>['clearQuotedMessageState'] =
     () => setQuotedMessage(false);
 
+  /**
+   * Removes the message from local state
+   */
   const removeMessage: MessagesContextValue<StreamChatGenerics>['removeMessage'] = (message) => {
     if (channel) {
       channel.state.removeMessage(message);
