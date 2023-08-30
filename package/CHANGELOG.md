@@ -1,5 +1,17 @@
 # Change Log
 
+## [5.17.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.16.0...v5.17.0) (2023-08-30)
+
+
+### Features
+
+* introduce ability to add theme for the gallery image thumbnail ([#2216](https://github.com/GetStream/stream-chat-react-native/issues/2216)) ([5ea9a76](https://github.com/GetStream/stream-chat-react-native/commit/5ea9a761e76f1e9e7881152286e50dc7342550b2))
+
+
+### Bug Fixes
+
+* remove message from local state when the status is failed ([#2214](https://github.com/GetStream/stream-chat-react-native/issues/2214)) ([8c00f62](https://github.com/GetStream/stream-chat-react-native/commit/8c00f624171da52d72557d97064669af6ca00dea)), closes [#2215](https://github.com/GetStream/stream-chat-react-native/issues/2215)
+
 ## [5.16.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.15.3...v5.16.0) (2023-08-07)
 
 
