@@ -448,6 +448,7 @@ export type Theme = {
       minWidth: number;
       moreImagesContainer: ViewStyle;
       moreImagesText: TextStyle;
+      thumbnail: ViewStyle;
     };
     giphy: {
       buttonContainer: ViewStyle;
@@ -982,6 +983,7 @@ export const defaultTheme: Theme = {
       minWidth: 170,
       moreImagesContainer: {},
       moreImagesText: {},
+      thumbnail: {},
     },
     giphy: {
       buttonContainer: {},

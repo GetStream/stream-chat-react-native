@@ -1605,6 +1605,9 @@ const ChannelWithContext = <
   const clearQuotedMessageState: InputMessageInputContextValue<StreamChatGenerics>['clearQuotedMessageState'] =
     () => setQuotedMessage(false);
 
+  /**
+   * Removes the message from local state
+   */
   const removeMessage: MessagesContextValue<StreamChatGenerics>['removeMessage'] = (message) => {
     if (channel) {
       channel.state.removeMessage(message);
@@ -1668,6 +1671,10 @@ const ChannelWithContext = <
     }
 
     if (!enableOfflineSupport) {
+      if (message.status === MessageStatusTypes.FAILED) {
+        removeMessage(message);
+        return;
+      }
       await client.deleteMessage(message.id);
       return;
     }
