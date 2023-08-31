@@ -151,13 +151,11 @@ const GalleryWithContext = <
       style={[
         styles.galleryContainer,
         {
+          flexDirection: invertedDirections ? 'column' : 'row',
           height,
           width,
         },
         galleryContainer,
-        {
-          flexDirection: invertedDirections ? 'column' : 'row',
-        },
       ]}
       testID='gallery-container'
     >
