@@ -365,11 +365,11 @@ const GalleryThumbnail = <
         <VideoThumbnail
           style={[
             borderRadius,
-            image,
             {
               height: thumbnail.height - 1,
               width: thumbnail.width - 1,
             },
+            image,
           ]}
           thumb_url={thumbnail.thumb_url}
         />
@@ -457,11 +457,11 @@ const GalleryImageThumbnail = <
             resizeMode={thumbnail.resizeMode}
             style={[
               borderRadius,
-              gallery.image,
               {
                 height: thumbnail.height - 1,
                 width: thumbnail.width - 1,
               },
+              gallery.image,
             ]}
             uri={thumbnail.url}
           />
