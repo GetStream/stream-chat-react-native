@@ -158,7 +158,7 @@ const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation }) => {
     });
   }, [overlay]);
 
-  if (!channel) return;
+  if (!channel) return null;
 
   return (
     <SafeAreaView>

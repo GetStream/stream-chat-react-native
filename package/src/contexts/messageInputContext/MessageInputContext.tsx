@@ -1,7 +1,7 @@
 import type { LegacyRef } from 'react';
 import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
 import type { TextInput, TextInputProps } from 'react-native';
-import { Alert, Keyboard, Platform } from 'react-native';
+import { Alert, Keyboard } from 'react-native';
 
 import uniq from 'lodash/uniq';
 import { lookup } from 'mime-types';
@@ -35,7 +35,7 @@ import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreO
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
-import { compressImage, getLocalAssetUri, pickDocument } from '../../native';
+import { compressImage, pickDocument } from '../../native';
 import type { Asset, DefaultStreamChatGenerics, File, UnknownType } from '../../types/types';
 import { removeReservedFields } from '../../utils/removeReservedFields';
 import {
@@ -984,9 +984,7 @@ export const MessageInputProvider = <
     let response = {} as SendFileAPIResponse;
 
     try {
-      // For the case of Expo CLI where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
-      const localAssetURI = Platform.OS === 'ios' && file.id && (await getLocalAssetUri(file.id));
-      const uri = localAssetURI || file.uri || '';
+      const uri = file.uri || '';
       /**
        * We skip compression if:
        * - the file is from the camera as that should already be compressed

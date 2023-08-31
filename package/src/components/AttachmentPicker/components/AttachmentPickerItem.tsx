@@ -1,30 +1,32 @@
 import React from 'react';
 
-import { Alert, ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { Alert, ImageBackground, Platform, StyleSheet, Text, View } from 'react-native';
 
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import dayjs from 'dayjs';
 import { lookup } from 'mime-types';
 
+import type { AttachmentPickerContextValue } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { Recorder } from '../../../icons';
+import { getLocalAssetUri } from '../../../native';
 import type { Asset, File } from '../../../types/types';
 import { vw } from '../../../utils/utils';
 
-type AttachmentPickerItemType = {
+type AttachmentPickerItemType = Pick<
+  AttachmentPickerContextValue,
+  'selectedFiles' | 'setSelectedFiles' | 'setSelectedImages' | 'selectedImages' | 'maxNumberOfFiles'
+> & {
   asset: Asset;
   ImageOverlaySelectedComponent: React.ComponentType;
-  maxNumberOfFiles: number;
   numberOfUploads: number;
   selected: boolean;
-  setSelectedFiles: React.Dispatch<React.SetStateAction<File[]>>;
-  setSelectedImages: React.Dispatch<React.SetStateAction<Asset[]>>;
   numberOfAttachmentPickerImageColumns?: number;
 };
 
-type AttachmentImageProps = Omit<AttachmentPickerItemType, 'setSelectedFiles'>;
+type AttachmentImageProps = Omit<AttachmentPickerItemType, 'setSelectedFiles' | 'selectedFiles'>;
 
-type AttachmentVideoProps = Omit<AttachmentPickerItemType, 'setSelectedImages'>;
+type AttachmentVideoProps = Omit<AttachmentPickerItemType, 'setSelectedImages' | 'selectedImages'>;
 
 const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
   const {
@@ -34,6 +36,7 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
     numberOfAttachmentPickerImageColumns,
     numberOfUploads,
     selected,
+    selectedFiles,
     setSelectedFiles,
   } = props;
 
@@ -61,29 +64,42 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 
+  const fetchUpdatedFiles = async (files: File[]) => {
+    // For the case of Expo CLI where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
+    const localAssetURI = Platform.OS === 'ios' && asset.id && (await getLocalAssetUri(asset.id));
+    const uri = localAssetURI || asset.uri || '';
+    // We need a mime-type to upload a video file.
+    const mimeType = lookup(asset.filename) || 'multipart/form-data';
+    if (numberOfUploads >= maxNumberOfFiles) {
+      Alert.alert('Maximum number of files reached');
+      return files;
+    }
+    return [
+      ...files,
+      {
+        duration: durationLabel,
+        id: asset.id,
+        mimeType,
+        name: asset.filename,
+        size: asset.fileSize,
+        uri,
+      },
+    ];
+  };
+
+  const updateSelectedFiles = async () => {
+    const files = await fetchUpdatedFiles(selectedFiles);
+    setSelectedFiles(files);
+  };
+
   const onPressVideo = () => {
     if (selected) {
-      setSelectedFiles((files) => files.filter((file) => file.uri !== asset.uri));
+      setSelectedFiles((files) =>
+        // `id` is available for Expo MediaLibrary while Cameraroll doesn't share id therefore we use `uri`
+        files.filter((file) => (file.id ? file.id !== asset.id : file.uri !== asset.uri)),
+      );
     } else {
-      setSelectedFiles((files) => {
-        if (numberOfUploads >= maxNumberOfFiles) {
-          Alert.alert('Maximum number of files reached');
-          return files;
-        }
-        // We need a mime-type to upload a video file.
-        const mimeType = lookup(asset.filename) || 'multipart/form-data';
-        return [
-          ...files,
-          {
-            duration: durationLabel,
-            id: asset.id,
-            mimeType,
-            name: asset.filename,
-            size: asset.fileSize,
-            uri: asset.uri,
-          },
-        ];
-      });
+      updateSelectedFiles();
     }
   };
 
@@ -126,6 +142,7 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
     numberOfAttachmentPickerImageColumns,
     numberOfUploads,
     selected,
+    selectedImages,
     setSelectedImages,
   } = props;
   const {
@@ -139,17 +156,36 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
 
   const { uri } = asset;
 
+  const fetchUpdatedImages = async (images: Asset[]) => {
+    // For the case of Expo CLI where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
+    const localAssetURI = Platform.OS === 'ios' && asset.id && (await getLocalAssetUri(asset.id));
+    const uri = localAssetURI || asset.uri || '';
+    if (numberOfUploads >= maxNumberOfFiles) {
+      Alert.alert('Maximum number of files reached');
+      return images;
+    }
+    return [
+      ...images,
+      {
+        ...asset,
+        uri,
+      },
+    ];
+  };
+
+  const updateSelectedImages = async () => {
+    const images = await fetchUpdatedImages(selectedImages);
+    setSelectedImages(images);
+  };
+
   const onPressImage = () => {
     if (selected) {
-      setSelectedImages((images) => images.filter((image) => image.uri !== asset.uri));
+      // `id` is available for Expo MediaLibrary while Cameraroll doesn't share id therefore we use `uri`
+      setSelectedImages((images) =>
+        images.filter((image) => (image.id ? image.id !== asset.id : image.uri !== asset.uri)),
+      );
     } else {
-      setSelectedImages((images) => {
-        if (numberOfUploads >= maxNumberOfFiles) {
-          Alert.alert('Maximum number of files reached');
-          return images;
-        }
-        return [...images, asset];
-      });
+      updateSelectedImages();
     }
   };
 
@@ -184,6 +220,8 @@ export const renderAttachmentPickerItem = ({ item }: { item: AttachmentPickerIte
     numberOfAttachmentPickerImageColumns,
     numberOfUploads,
     selected,
+    selectedFiles,
+    selectedImages,
     setSelectedFiles,
     setSelectedImages,
   } = item;
@@ -205,6 +243,7 @@ export const renderAttachmentPickerItem = ({ item }: { item: AttachmentPickerIte
         numberOfAttachmentPickerImageColumns={numberOfAttachmentPickerImageColumns}
         numberOfUploads={numberOfUploads}
         selected={selected}
+        selectedFiles={selectedFiles}
         setSelectedFiles={setSelectedFiles}
       />
     );
@@ -218,6 +257,7 @@ export const renderAttachmentPickerItem = ({ item }: { item: AttachmentPickerIte
       numberOfAttachmentPickerImageColumns={numberOfAttachmentPickerImageColumns}
       numberOfUploads={numberOfUploads}
       selected={selected}
+      selectedImages={selectedImages}
       setSelectedImages={setSelectedImages}
     />
   );
