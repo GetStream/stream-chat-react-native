@@ -64,16 +64,13 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 
-  const fetchUpdatedFiles = async (files: File[]) => {
+  /* Patches video files with uri and mimetype */
+  const patchVideoFile = async (files: File[]) => {
     // For the case of Expo CLI where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
     const localAssetURI = Platform.OS === 'ios' && asset.id && (await getLocalAssetUri(asset.id));
     const uri = localAssetURI || asset.uri || '';
     // We need a mime-type to upload a video file.
     const mimeType = lookup(asset.filename) || 'multipart/form-data';
-    if (numberOfUploads >= maxNumberOfFiles) {
-      Alert.alert('Maximum number of files reached');
-      return files;
-    }
     return [
       ...files,
       {
@@ -88,7 +85,11 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
   };
 
   const updateSelectedFiles = async () => {
-    const files = await fetchUpdatedFiles(selectedFiles);
+    if (numberOfUploads >= maxNumberOfFiles) {
+      Alert.alert('Maximum number of files reached');
+      return;
+    }
+    const files = await patchVideoFile(selectedFiles);
     setSelectedFiles(files);
   };
 
@@ -156,14 +157,11 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
 
   const { uri } = asset;
 
-  const fetchUpdatedImages = async (images: Asset[]) => {
+  /* Patches image files with uri */
+  const patchImageFile = async (images: Asset[]) => {
     // For the case of Expo CLI where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
     const localAssetURI = Platform.OS === 'ios' && asset.id && (await getLocalAssetUri(asset.id));
     const uri = localAssetURI || asset.uri || '';
-    if (numberOfUploads >= maxNumberOfFiles) {
-      Alert.alert('Maximum number of files reached');
-      return images;
-    }
     return [
       ...images,
       {
@@ -174,7 +172,11 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
   };
 
   const updateSelectedImages = async () => {
-    const images = await fetchUpdatedImages(selectedImages);
+    if (numberOfUploads >= maxNumberOfFiles) {
+      Alert.alert('Maximum number of files reached');
+      return;
+    }
+    const images = await patchImageFile(selectedImages);
     setSelectedImages(images);
   };
 
