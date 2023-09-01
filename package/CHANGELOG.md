@@ -1,5 +1,13 @@
 # Change Log
 
+### [5.17.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.17.0...v5.17.1) (2023-09-01)
+
+
+### Bug Fixes
+
+* image/video picker upload issue from expo apps and getLocalAssetURI improvements ([#2220](https://github.com/GetStream/stream-chat-react-native/issues/2220)) ([6bd6ecd](https://github.com/GetStream/stream-chat-react-native/commit/6bd6ecd82702e620efbc95b28da2b01aa6d0252d))
+* order of application of theme for gallery images ([#2221](https://github.com/GetStream/stream-chat-react-native/issues/2221)) ([64ef4e3](https://github.com/GetStream/stream-chat-react-native/commit/64ef4e318bd7959d394f569b75ff1d6d4c4f8e4d))
+
 ## [5.17.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.16.0...v5.17.0) (2023-08-30)
 
 
