@@ -105,7 +105,7 @@ const ReactionListWithContext = <
     strokeSize: propStrokeSize,
     supportedReactions,
     targetedMessage,
-    reactionCounterColor = 'white'
+    reactionCounterColor = 'white',
   } = props;
 
   const {
@@ -178,26 +178,36 @@ const ReactionListWithContext = <
       ? width - screenPadding * 2 - reactionSize * reactions.length - strokeSize
       : x2 - (reactionSize * reactions.length) / 2 - strokeSize;
 
-  const reactionsData = reactions.reduce((acc, reaction) => {
-    const hasMoreThanOneReaction = !!message?.reaction_counts?.[reaction.type] && message.reaction_counts[reaction.type] > 1;
+  const reactionsData = reactions.reduce(
+    (acc, reaction) => {
+      const hasMoreThanOneReaction =
+        !!message?.reaction_counts?.[reaction.type] && message.reaction_counts[reaction.type] > 1;
 
-    if (hasMoreThanOneReaction) {
-      acc.extraSpace += 15;
-    }
+      if (hasMoreThanOneReaction) {
+        acc.extraSpace += 15;
+      }
 
-    acc.reactionData.push( <>
-      <Icon
-      key={reaction.type}
-      pathFill={reaction.own ? accent_blue : grey}
-      size={reactionSize / 2}
-      style={middleIcon}
-      supportedReactions={supportedReactions}
-      type={reaction.type}
-      />
-      {hasMoreThanOneReaction && <Text key={`${reaction.type}_counter`} style={{color: reactionCounterColor}}>{message.reaction_counts?.[reaction.type]}</Text>}
-      </>);
-    return acc;
-  }, {extraSpace: 0, reactionData: [] as React.ReactElement[]});
+      acc.reactionData.push(
+        <>
+          <Icon
+            key={reaction.type}
+            pathFill={reaction.own ? accent_blue : grey}
+            size={reactionSize / 2}
+            style={middleIcon}
+            supportedReactions={supportedReactions}
+            type={reaction.type}
+          />
+          {hasMoreThanOneReaction && (
+            <Text key={`${reaction.type}_counter`} style={{ color: reactionCounterColor }}>
+              {message.reaction_counts?.[reaction.type]}
+            </Text>
+          )}
+        </>,
+      );
+      return acc;
+    },
+    { extraSpace: 0, reactionData: [] as React.ReactElement[] },
+  );
 
   return (
     <View
@@ -277,7 +287,7 @@ const ReactionListWithContext = <
                 height: reactionSize - strokeSize * 2,
                 left: left + strokeSize,
                 top: strokeSize,
-                width: ((reactionSize * reactions.length + reactionsData.extraSpace) - strokeSize * 2),
+                width: reactionSize * reactions.length + reactionsData.extraSpace - strokeSize * 2,
               },
               reactionBubble,
             ]}
