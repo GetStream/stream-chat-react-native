@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 
 import Svg, { Circle } from 'react-native-svg';
 
@@ -80,6 +80,7 @@ export type ReactionListPropsWithContext<
     reactionSize?: number;
     stroke?: string;
     strokeSize?: number; // not recommended to change this
+    reactionCounterColor?: string;
   };
 
 const ReactionListWithContext = <
@@ -104,6 +105,7 @@ const ReactionListWithContext = <
     strokeSize: propStrokeSize,
     supportedReactions,
     targetedMessage,
+    reactionCounterColor = 'white'
   } = props;
 
   const {
@@ -175,6 +177,27 @@ const ReactionListWithContext = <
       : !insideRightBound
       ? width - screenPadding * 2 - reactionSize * reactions.length - strokeSize
       : x2 - (reactionSize * reactions.length) / 2 - strokeSize;
+
+  const reactionsData = reactions.reduce((acc, reaction) => {
+    const hasMoreThanOneReaction = !!message?.reaction_counts?.[reaction.type] && message.reaction_counts[reaction.type] > 1;
+
+    if (hasMoreThanOneReaction) {
+      acc.extraSpace += 15;
+    }
+
+    acc.reactionData.push( <>
+      <Icon
+      key={reaction.type}
+      pathFill={reaction.own ? accent_blue : grey}
+      size={reactionSize / 2}
+      style={middleIcon}
+      supportedReactions={supportedReactions}
+      type={reaction.type}
+      />
+      {hasMoreThanOneReaction && <Text key={`${reaction.type}_counter`} style={{color: reactionCounterColor}}>{message.reaction_counts?.[reaction.type]}</Text>}
+      </>);
+    return acc;
+  }, {extraSpace: 0, reactionData: [] as React.ReactElement[]});
 
   return (
     <View
@@ -250,25 +273,16 @@ const ReactionListWithContext = <
               styles.reactionBubble,
               {
                 backgroundColor: alignmentLeft ? fill : white,
-                borderRadius: reactionSize - strokeSize * 2,
+                borderRadius: reactionsData.extraSpace ? 5 : reactionSize,
                 height: reactionSize - strokeSize * 2,
                 left: left + strokeSize,
                 top: strokeSize,
-                width: reactionSize * reactions.length - strokeSize * 2,
+                width: ((reactionSize * reactions.length + reactionsData.extraSpace) - strokeSize * 2),
               },
               reactionBubble,
             ]}
           >
-            {reactions.map((reaction) => (
-              <Icon
-                key={reaction.type}
-                pathFill={reaction.own ? accent_blue : grey}
-                size={reactionSize / 2}
-                style={middleIcon}
-                supportedReactions={supportedReactions}
-                type={reaction.type}
-              />
-            ))}
+            {reactionsData.reactionData}
           </TouchableOpacity>
         </View>
       ) : null}
@@ -284,11 +298,13 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     message: prevMessage,
     messageContentWidth: prevMessageContentWidth,
     targetedMessage: prevTargetedMessage,
+    reactionCounterColor: prevReactionCounterColor,
   } = prevProps;
   const {
     message: nextMessage,
     messageContentWidth: nextMessageContentWidth,
     targetedMessage: nextTargetedMessage,
+    reactionCounterColor: nextReactionCounterColor,
   } = nextProps;
 
   const messageContentWidthEqual = prevMessageContentWidth === nextMessageContentWidth;
@@ -301,6 +317,10 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const targetedMessageEqual = prevTargetedMessage === nextTargetedMessage;
 
   if (!targetedMessageEqual) return false;
+
+  const reactionCounterColorEqual = prevReactionCounterColor === nextReactionCounterColor;
+
+  if (!reactionCounterColorEqual) return false;
 
   const latestReactionsEqual =
     Array.isArray(prevMessage.latest_reactions) && Array.isArray(nextMessage.latest_reactions)
