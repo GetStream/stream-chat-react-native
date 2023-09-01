@@ -30,4 +30,4 @@ jobs:
       - name: Test
         run: yarn test:coverage
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.DOCUSAURUS_GH_TOKEN }}
