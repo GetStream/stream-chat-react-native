@@ -26,8 +26,8 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - name: Prepare git
         run: |
-          git config --global user.name 'github-actions' 
-          git config --global user.email 'release@getstream.io'
+          git config --global user.name 'stream-ci-bot' 
+          git config --global user.email 'stream-bot@getstream.io'
       - name: Install && Build - SDK and Sample App
         uses: ./.github/actions/install-and-build-sdk
       - name: Lint
