@@ -151,13 +151,11 @@ const GalleryWithContext = <
       style={[
         styles.galleryContainer,
         {
+          flexDirection: invertedDirections ? 'column' : 'row',
           height,
           width,
         },
         galleryContainer,
-        {
-          flexDirection: invertedDirections ? 'column' : 'row',
-        },
       ]}
       testID='gallery-container'
     >
@@ -365,11 +363,11 @@ const GalleryThumbnail = <
         <VideoThumbnail
           style={[
             borderRadius,
-            image,
             {
               height: thumbnail.height - 1,
               width: thumbnail.width - 1,
             },
+            image,
           ]}
           thumb_url={thumbnail.thumb_url}
         />
@@ -457,11 +455,11 @@ const GalleryImageThumbnail = <
             resizeMode={thumbnail.resizeMode}
             style={[
               borderRadius,
-              gallery.image,
               {
                 height: thumbnail.height - 1,
                 width: thumbnail.width - 1,
               },
+              gallery.image,
             ]}
             uri={thumbnail.url}
           />

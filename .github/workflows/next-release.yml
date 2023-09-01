@@ -25,8 +25,8 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - name: Prepare git
         run: |
-          git config --global user.name "Steve Galili"
-          git config --global user.email "steve.galili@getstream.io"
+          git config --global user.name 'stream-ci-bot' 
+          git config --global user.email 'stream-bot@getstream.io'
       - name: Install && Build - SDK and Sample App
         uses: ./.github/actions/install-and-build-sdk
       - name: Lint
@@ -34,7 +34,7 @@ jobs:
       - name: Test
         run: yarn test:coverage
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.DOCUSAURUS_GH_TOKEN }}
       - name: Publish Next Release
         run: GITHUB_SHORT_SHA="$(git rev-parse --short $GITHUB_SHA)" yarn release-next
         env:
