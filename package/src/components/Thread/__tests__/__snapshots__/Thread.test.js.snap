@@ -248,9 +248,12 @@ exports[`Thread should match thread snapshot 1`] = `
                 <View
                   style={
                     Array [
-                      Object {
-                        "paddingHorizontal": 8,
-                      },
+                      Array [
+                        Object {
+                          "paddingHorizontal": 8,
+                        },
+                        Object {},
+                      ],
                       Object {
                         "backgroundColor": undefined,
                       },
@@ -497,9 +500,12 @@ exports[`Thread should match thread snapshot 1`] = `
                 <View
                   style={
                     Array [
-                      Object {
-                        "paddingHorizontal": 8,
-                      },
+                      Array [
+                        Object {
+                          "paddingHorizontal": 8,
+                        },
+                        Object {},
+                      ],
                       Object {
                         "backgroundColor": undefined,
                       },
@@ -746,9 +752,12 @@ exports[`Thread should match thread snapshot 1`] = `
                 <View
                   style={
                     Array [
-                      Object {
-                        "paddingHorizontal": 8,
-                      },
+                      Array [
+                        Object {
+                          "paddingHorizontal": 8,
+                        },
+                        Object {},
+                      ],
                       Object {
                         "backgroundColor": undefined,
                       },
