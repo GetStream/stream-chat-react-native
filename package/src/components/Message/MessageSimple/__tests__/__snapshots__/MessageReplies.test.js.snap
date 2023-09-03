@@ -44,9 +44,7 @@ exports[`MessageReplies should render message replies 1`] = `
             "flexDirection": "row",
             "paddingTop": 2,
           },
-          Object {
-            "marginLeft": 8,
-          },
+          Object {},
         ]
       }
     />
