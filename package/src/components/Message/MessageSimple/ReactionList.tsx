@@ -200,7 +200,6 @@ const ReactionListWithContext = <
             <Circle cx={x2} cy={y2} fill={alignmentLeft ? fill : white} r={radius * 2} />
           </Svg>
           <View
-            pointerEvents='none'
             style={[
               styles.reactionBubbleBackground,
               {
