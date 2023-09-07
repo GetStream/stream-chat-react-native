@@ -283,7 +283,7 @@ const ReactionListWithContext = <
               styles.reactionBubble,
               {
                 backgroundColor: alignmentLeft ? fill : white,
-                borderRadius: reactionsData.extraSpace ? 5 : reactionSize,
+                borderRadius: reactionSize - strokeSize * 2,
                 height: reactionSize - strokeSize * 2,
                 left: left + strokeSize,
                 top: strokeSize,
