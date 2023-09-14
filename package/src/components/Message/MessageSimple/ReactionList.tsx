@@ -147,7 +147,7 @@ const ReactionListWithContext = <
   }
 
   const alignmentLeft = alignment === 'left';
-  const fill = propFill || alignmentLeft ? grey_gainsboro : grey_whisper;
+  const fill = propFill || (alignmentLeft ? grey_gainsboro : grey_whisper);
   const radius = propRadius || themeRadius;
   const reactionSize = propReactionSize || themeReactionSize;
   const highlighted = message.pinned || targetedMessage === message.id;
