@@ -553,7 +553,8 @@ const MessageListWithContext = <
     }
 
     const isCurrentMessageUnread = isMessageUnread(index);
-    const showUnreadUnderlay = isCurrentMessageUnread && scrollToBottomButtonVisible;
+    const showUnreadUnderlay =
+      !channel.muteStatus().muted && isCurrentMessageUnread && scrollToBottomButtonVisible;
     const insertInlineUnreadIndicator = showUnreadUnderlay && !isMessageUnread(index + 1); // show only if previous message is read
 
     if (message.type === 'system') {
