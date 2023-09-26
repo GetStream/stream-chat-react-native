@@ -1,5 +1,5 @@
 import React from 'react';
-import { ColorValue, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ColorValue, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import {
   MessageContextValue,
@@ -28,15 +28,9 @@ const styles = StyleSheet.create({
   },
   leftMessageRepliesCurve: {
     borderBottomLeftRadius: 16,
-    borderRightColor: 'transparent',
-    ...Platform.select({
-      android: {
-        borderRightWidth: 0,
-      },
-    }),
+    borderRightWidth: 0,
   },
   messageRepliesCurve: {
-    borderTopColor: 'transparent',
     borderTopWidth: 0,
     borderWidth: 1,
     height: 16,
@@ -46,16 +40,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     paddingBottom: 5,
-    paddingLeft: 8,
+    paddingHorizontal: 8,
   },
   rightMessageRepliesCurve: {
     borderBottomRightRadius: 16,
-    borderLeftColor: 'transparent',
-    ...Platform.select({
-      android: {
-        borderLeftWidth: 0,
-      },
-    }),
+    borderLeftWidth: 0,
   },
 });
 
@@ -112,7 +101,7 @@ const MessageRepliesWithContext = <
   return (
     <View style={styles.curveContainer}>
       {alignment === 'left' && (
-        <View testID='message-replies-left'>
+        <View style={styles.curveContainer} testID='message-replies-left'>
           {!noBorder && (
             <View
               style={[
@@ -166,7 +155,7 @@ const MessageRepliesWithContext = <
         </Text>
       </TouchableOpacity>
       {alignment === 'right' && (
-        <View testID='message-replies-right'>
+        <View style={styles.curveContainer} testID='message-replies-right'>
           <MessageRepliesAvatars alignment={alignment} message={message} />
           {!noBorder && (
             <View

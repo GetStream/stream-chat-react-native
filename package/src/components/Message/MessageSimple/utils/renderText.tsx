@@ -210,7 +210,7 @@ export const renderText = <
         if (userName) {
           acc += `${acc.length ? '|' : ''}@${userName}`;
         }
-        return acc;
+        return acc.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&');
       }, '')
     : '';
 

@@ -147,7 +147,7 @@ const ReactionListWithContext = <
   }
 
   const alignmentLeft = alignment === 'left';
-  const fill = propFill || alignmentLeft ? grey_gainsboro : grey_whisper;
+  const fill = propFill || (alignmentLeft ? grey_gainsboro : grey_whisper);
   const radius = propRadius || themeRadius;
   const reactionSize = propReactionSize || themeReactionSize;
   const highlighted = message.pinned || targetedMessage === message.id;
@@ -178,6 +178,7 @@ const ReactionListWithContext = <
 
   return (
     <View
+      pointerEvents='box-none'
       style={[
         styles.container,
         {
@@ -189,8 +190,8 @@ const ReactionListWithContext = <
       testID='reaction-list'
     >
       {reactions.length ? (
-        <View style={[StyleSheet.absoluteFill]}>
-          <Svg>
+        <View pointerEvents='box-none' style={[StyleSheet.absoluteFill]}>
+          <Svg pointerEvents='none'>
             <Circle cx={x1} cy={y1} fill={stroke} r={radius + strokeSize * 3} />
             <Circle cx={x2} cy={y2} fill={stroke} r={radius * 2 + strokeSize * 3} />
             <Circle cx={x1} cy={y1} fill={fill} r={radius + strokeSize} />
@@ -213,7 +214,7 @@ const ReactionListWithContext = <
               reactionBubbleBackground,
             ]}
           />
-          <View style={[StyleSheet.absoluteFill]}>
+          <View pointerEvents='none' style={[StyleSheet.absoluteFill]}>
             <Svg>
               <Circle cx={x2} cy={y2} fill={alignmentLeft ? fill : white} r={radius * 2} />
             </Svg>

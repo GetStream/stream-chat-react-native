@@ -84,9 +84,6 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
   },
-  messagePadding: {
-    paddingHorizontal: 8,
-  },
   stickyHeader: {
     position: 'absolute',
     top: 0,
@@ -292,7 +289,8 @@ const MessageListWithContext = <
 
   const {
     colors: { white_snow },
-    messageList: { container, contentContainer, listContainer },
+    messageList: { container, contentContainer, listContainer, messageContainer },
+    screenPadding,
   } = theme;
 
   const modifiedTheme = useMemo(
@@ -555,14 +553,18 @@ const MessageListWithContext = <
     }
 
     const isCurrentMessageUnread = isMessageUnread(index);
-    const showUnreadUnderlay = isCurrentMessageUnread && scrollToBottomButtonVisible;
+    const showUnreadUnderlay =
+      !channel.muteStatus().muted && isCurrentMessageUnread && scrollToBottomButtonVisible;
     const insertInlineUnreadIndicator = showUnreadUnderlay && !isMessageUnread(index + 1); // show only if previous message is read
 
     if (message.type === 'system') {
       return (
         <>
           <View testID={`message-list-item-${index}`}>
-            <MessageSystem message={message} style={styles.messagePadding} />
+            <MessageSystem
+              message={message}
+              style={[{ paddingHorizontal: screenPadding }, messageContainer]}
+            />
           </View>
           {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
         </>
@@ -587,7 +589,7 @@ const MessageListWithContext = <
               message={message}
               onThreadSelect={onThreadSelect}
               showUnreadUnderlay={showUnreadUnderlay}
-              style={styles.messagePadding}
+              style={[{ paddingHorizontal: screenPadding }, messageContainer]}
               threadList={threadList}
             />
           </View>
@@ -618,7 +620,7 @@ const MessageListWithContext = <
             message={message}
             onThreadSelect={onThreadSelect}
             showUnreadUnderlay={showUnreadUnderlay}
-            style={styles.messagePadding}
+            style={[{ paddingHorizontal: screenPadding }, messageContainer]}
             threadList={threadList}
           />
         </View>

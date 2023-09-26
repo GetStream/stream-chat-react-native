@@ -72,7 +72,7 @@
     "dayjs": "1.10.5",
     "file-loader": "6.2.0",
     "i18next": "20.2.4",
-    "linkify-it": "^4.0.1",
+    "linkifyjs": "^4.1.1",
     "lodash-es": "4.17.21",
     "metro-react-native-babel-preset": "0.66.2",
     "mime-types": "^2.1.34",
