@@ -1,4 +1,4 @@
-import Linkify from 'linkify-it';
+import { find } from 'linkifyjs';
 
 interface LinkInfo {
   encodedUrl: string;
@@ -23,13 +23,13 @@ export const parseLinksFromText = (input: string): LinkInfo[] => {
     input,
   );
 
-  const linkify = Linkify();
-  const matches = linkify.match(strippedInput) ?? [];
+  const links = find(strippedInput, 'url');
+  const emails = find(strippedInput, 'email');
 
-  const result: LinkInfo[] = matches.map((match) => {
-    const { raw, url } = match;
-    return { encodedUrl: encodeURI(url), raw };
-  });
+  const result: LinkInfo[] = [...links, ...emails].map(({ href, value }) => ({
+    encodedUrl: encodeURI(href),
+    raw: value,
+  }));
 
   return result;
 };
