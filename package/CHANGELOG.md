@@ -1,5 +1,23 @@
 # Change Log
 
+## [5.18.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.17.1...v5.18.0) (2023-09-26)
+
+
+### Features
+
+* customize message padding ([#2202](https://github.com/GetStream/stream-chat-react-native/issues/2202)) ([b2f3708](https://github.com/GetStream/stream-chat-react-native/commit/b2f37084e50d5d3232cf5348c90a083fd5211048))
+
+
+### Bug Fixes
+
+* add pointerEvents to ReactionList ([#2196](https://github.com/GetStream/stream-chat-react-native/issues/2196)) ([f559a0f](https://github.com/GetStream/stream-chat-react-native/commit/f559a0f304f69b1f04613e646a4887bda170b1f9))
+* fix reply border style ([#2197](https://github.com/GetStream/stream-chat-react-native/issues/2197)) ([0e84191](https://github.com/GetStream/stream-chat-react-native/commit/0e84191525ab33b713ddd065e3a3933f6000a540))
+* inline unread count indicator flickering on muted channels ([#2232](https://github.com/GetStream/stream-chat-react-native/issues/2232)) ([b55d561](https://github.com/GetStream/stream-chat-react-native/commit/b55d56147e387f2efebc4cc33aed16c02c528d65))
+* iPad landscape mode broke the height reactions list ([#2226](https://github.com/GetStream/stream-chat-react-native/issues/2226)) ([4449c1d](https://github.com/GetStream/stream-chat-react-native/commit/4449c1dd87d3a63b7cec0d5bac4f9f7cdf61e900))
+* parsing the links with unconventional tlds ([#2241](https://github.com/GetStream/stream-chat-react-native/issues/2241)) ([a69d73f](https://github.com/GetStream/stream-chat-react-native/commit/a69d73fadd208d54932e328367970a4f62c330ef))
+* special character in mentioned user name causes crash ([#2229](https://github.com/GetStream/stream-chat-react-native/issues/2229)) ([1144c5b](https://github.com/GetStream/stream-chat-react-native/commit/1144c5be0c22fa2a0eed41a9c38b40143e0c3ed2))
+* unable to apply reaction list fill color ([#2231](https://github.com/GetStream/stream-chat-react-native/issues/2231)) ([0e1659e](https://github.com/GetStream/stream-chat-react-native/commit/0e1659ebc9775a863aa977a3a8785f2d1c794c3a))
+
 ### [5.17.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.17.0...v5.17.1) (2023-09-01)
 
 
