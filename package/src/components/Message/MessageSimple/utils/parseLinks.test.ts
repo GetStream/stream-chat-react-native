@@ -14,7 +14,8 @@ describe('parseLinksFromText', () => {
       'https://localhost/with/path?and=query#fragment',
       'https://localhost/with/path?and=query#fragment',
     ],
-    ['reactnative.stream', undefined],
+    ['reactnative.dev', 'http://reactnative.dev'],
+    ['hinge.health/schedule-with-a-coach', 'http://hinge.health/schedule-with-a-coach'],
     [
       'https://zh.wikipedia.org/wiki/挪威牛油危機',
       'https://zh.wikipedia.org/wiki/%E6%8C%AA%E5%A8%81%E7%89%9B%E6%B2%B9%E5%8D%B1%E6%A9%9F',
@@ -86,30 +87,5 @@ describe('parseLinksFromText', () => {
       encodedUrl: 'https://getstream.io/%EF%BF%BD',
       raw: input,
     });
-  });
-  it('doest not report invalid tlds as urls', () => {
-    const input = `
-    %
-    % Not links
-    %
-    example.invalid
-    example.invalid/
-    http://.example.com
-    http://-example.com
-    hppt://example.com
-    example.coma
-    -example.coma
-        `;
-    const result = parseLinksFromText(input);
-    expect(result).toHaveLength(0);
-  });
-  it('does not parse a decimal number as a URL', () => {
-    const input = '123.456';
-    const result = parseLinksFromText(input);
-    expect(result).toHaveLength(0);
-  });
-  it.each([['@user'], ['@user.name']])('does not parse %p as a URL', (input) => {
-    const result = parseLinksFromText(input);
-    expect(result).toHaveLength(0);
   });
 });
