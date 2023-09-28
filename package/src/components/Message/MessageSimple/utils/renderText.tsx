@@ -198,11 +198,27 @@ export const renderText = <
     );
   };
 
-  const paragraphText: ReactNodeOutput = (node, output, { ...state }) => (
-    <Text key={state.key} numberOfLines={messageTextNumberOfLines} style={styles.paragraph}>
-      {output(node.content, state)}
-    </Text>
-  );
+  const paragraphText: ReactNodeOutput = (node, output, { ...state }) => {
+    if (messageTextNumberOfLines !== undefined) {
+      // If we want to truncate the message text, lets only truncate the first paragraph
+      // and simply not render rest of the paragraphs.
+      if (state.key === '0' || state.key === 0) {
+        return (
+          <Text key={state.key} numberOfLines={messageTextNumberOfLines} style={styles.paragraph}>
+            {output(node.content, state)}
+          </Text>
+        );
+      } else {
+        return null;
+      }
+    }
+
+    return (
+      <Text key={state.key} style={styles.paragraph}>
+        {output(node.content, state)}
+      </Text>
+    );
+  };
 
   const mentionedUsers = Array.isArray(mentioned_users)
     ? mentioned_users.reduce((acc, cur) => {
