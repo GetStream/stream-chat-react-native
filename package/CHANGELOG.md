@@ -1,5 +1,14 @@
 # Change Log
 
+### [5.18.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.18.0...v5.18.1) (2023-10-04)
+
+
+### Bug Fixes
+
+* long message content overflowing issue in overlay ([#2244](https://github.com/GetStream/stream-chat-react-native/issues/2244)) ([0e37670](https://github.com/GetStream/stream-chat-react-native/commit/0e37670063fdda71680fc64e119ec0533150459c))
+* missing Japanese translation ([#2243](https://github.com/GetStream/stream-chat-react-native/issues/2243)) ([ed2754f](https://github.com/GetStream/stream-chat-react-native/commit/ed2754f9fc011eb91f007789308950b50b66363b))
+* url param serialisation issue on iOS 17 ([#2246](https://github.com/GetStream/stream-chat-react-native/issues/2246)) ([0f23d93](https://github.com/GetStream/stream-chat-react-native/commit/0f23d93079c18301aa5717e9140c247e15e307dd))
+
 ## [5.18.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.17.1...v5.18.0) (2023-09-26)
 
 
