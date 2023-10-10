@@ -64,7 +64,7 @@ const ThreadFooterComponentWithContext = <
   return (
     <View style={styles.threadHeaderContainer} testID='thread-footer-component'>
       <View style={styles.messagePadding}>
-        <Message groupStyles={['single']} message={thread} preventPress threadList />
+        <Message groupStyles={['single']} message={thread} threadList />
       </View>
       <View style={[styles.newThread, newThread]}>
         <Svg height={newThread.height ?? 24} style={styles.absolute} width={vw(100)}>
