@@ -1,5 +1,13 @@
 # Change Log
 
+## [5.19.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.18.1...v5.19.0) (2023-10-11)
+
+
+### Features
+
+* upgrade bottom-sheet to 4.4.8 ([#2255](https://github.com/GetStream/stream-chat-react-native/issues/2255)) ([52b69b0](https://github.com/GetStream/stream-chat-react-native/commit/52b69b0c5081ac0e18d83fa5b8d11f90f2683c75))
+* upgrade bottom-sheet to 4.4.8 ([#2255](https://github.com/GetStream/stream-chat-react-native/issues/2255)) ([e5760e9](https://github.com/GetStream/stream-chat-react-native/commit/e5760e9a62474b52efe7a9ebafb2c4e717ba749c))
+
 ### [5.18.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.18.0...v5.18.1) (2023-10-04)
 
 
