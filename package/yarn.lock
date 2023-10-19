@@ -9499,10 +9499,10 @@ stream-buffers@2.2.x:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha512-uyQK/mx5QjHun80FLJTfaWE7JtwfRMKBLkMne6udYOmvH0CawotVa7TfgYHzAnpphn4+TweIx1QKMnRIbipmUg==
 
-stream-chat@~8.12.2:
-  version "8.12.2"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.12.2.tgz#c1906a15280ce8114639b0ee338d2e3722d1f572"
-  integrity sha512-Fn13nh1g2ZkW94tzH3BF0E87hS8cI6nBIH1UlgkUodRx4zmcNKH8L7dvuEFEWzsxb5ZBA4j3rwKCQfLynMuUsQ==
+stream-chat@~8.13.1:
+  version "8.13.1"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.13.1.tgz#9781a456487f376d7c9c98271a4f4c926a9e6cf8"
+  integrity sha512-k0tOmtlLsvVxpZ2EuR+Z/qQiyCHOIjACqwnBZnT1ERA1t3549U2vzkUE6l2tN2VGAgUP1tDl00FhZO5JrAkMKw==
   dependencies:
     "@babel/runtime" "^7.16.3"
     "@types/jsonwebtoken" "~9.0.0"
