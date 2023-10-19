@@ -1315,10 +1315,10 @@
     lodash.pick "^4.4.0"
     lodash.template "^4.5.0"
 
-"@gorhom/bottom-sheet@4.4.5":
-  version "4.4.5"
-  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-4.4.5.tgz#b9041b01ce1af9a936e7c0fc1d78f026d759eebe"
-  integrity sha512-Z5Z20wshLUB8lIdtMKoJaRnjd64wBR/q8EeVPThrg+skrcBwBPHfUwZJ2srB0rEszA/01ejSJy/ixyd7Ra7vUA==
+"@gorhom/bottom-sheet@4.4.8":
+  version "4.4.8"
+  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-4.4.8.tgz#cfc1b342e9151acecbb846bd67638211382a350e"
+  integrity sha512-5QgM91NJjbqKxI8RjZ9ujjynaPzAM1iQKExK3+L+ZbEnziIq8tgOekhiBUut9sBZAQA4nhLxWV6Rt/HGpgCldQ==
   dependencies:
     "@gorhom/portal" "1.0.14"
     invariant "^2.2.4"
@@ -3034,13 +3034,13 @@ stream-buffers@2.2.x:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha512-uyQK/mx5QjHun80FLJTfaWE7JtwfRMKBLkMne6udYOmvH0CawotVa7TfgYHzAnpphn4+TweIx1QKMnRIbipmUg==
 
-stream-chat-react-native-core@5.18.1:
-  version "5.18.1"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.18.1.tgz#7645d0ec6414369b9ee0fcf81b875255db843407"
-  integrity sha512-N+qAsjkquOr/mnwWAomxCCBc7YoIRsgc8dxbpT+XnGnhXDwNnyTxxKoY3ViGh6B6OSHLXizxcNIAxdgB/mSsKA==
+stream-chat-react-native-core@5.19.0:
+  version "5.19.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.19.0.tgz#8408f64c7d4eb97fc315e865b0759092e17c09ca"
+  integrity sha512-p/+Rdo18JIoBkt+BovFnNezh18DXq+/k6WClx1JPgjcJg35OkqXx/W47WLLWuurBw/NR/Il9orFj7JRO/Ebddg==
   dependencies:
     "@babel/runtime" "^7.12.5"
-    "@gorhom/bottom-sheet" "4.4.5"
+    "@gorhom/bottom-sheet" "4.4.8"
     dayjs "1.10.5"
     file-loader "6.2.0"
     i18next "20.2.4"

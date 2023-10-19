@@ -1,5 +1,12 @@
 # Change Log
 
+### [5.19.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.19.0...v5.19.1) (2023-10-19)
+
+
+### Bug Fixes
+
+* update stream-chat to fix failing get requests with undefined param ([#2269](https://github.com/GetStream/stream-chat-react-native/issues/2269)) ([a85d71a](https://github.com/GetStream/stream-chat-react-native/commit/a85d71af17c87aaa0703a6d71bce0d4bd704266e))
+
 ## [5.19.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.18.1...v5.19.0) (2023-10-11)
 
 
