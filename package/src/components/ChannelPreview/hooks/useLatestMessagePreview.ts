@@ -63,7 +63,9 @@ const getMentionUsers = <
     }, '');
 
     // escape special characters
-    return mentionUserString.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return mentionUserString.replace(/[.*+?^${}()|[\]\\]/g, function (match) {
+      return '\\' + match;
+    });
   }
 
   return '';
