@@ -1,5 +1,12 @@
 # Change Log
 
+### [5.19.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.19.1...v5.19.2) (2023-10-20)
+
+
+### Bug Fixes
+
+* issue with String.replaceAll being undefined function ([#2271](https://github.com/GetStream/stream-chat-react-native/issues/2271)) ([af9050a](https://github.com/GetStream/stream-chat-react-native/commit/af9050a3fb46346ed5d0ba387b42d5a85d937e93))
+
 ### [5.19.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.19.0...v5.19.1) (2023-10-19)
 
 
