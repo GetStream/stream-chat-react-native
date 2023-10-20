@@ -405,3 +405,19 @@ This is likely due to ProGuard removing reanimated 2 related classes. If you're 
 On newer MacBooks with the Apple M1 SoC, there are a few required steps that need to be followed for an app to build. The user [aiba](https://github.com/aiba) has written [a guide](https://github.com/aiba/react-native-m1) to make the necessary changes to your project.
 
 The iOS build version can be changed to suit your needs, but keep in mind to change the version to the same major and minor version consistently throughout the guide.
+
+## React Native Video failing with Xcode 17
+
+Following error is a known issue with using xcode 17 and react-native-video dependency.
+
+```
+The compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+```
+
+To temporarily fix this, you can follow the solution as per mentioned in the description of [this issue on GitHub](https://github.com/react-native-video/react-native-video/issues/3154).
+
+Alternatively, you can apply [this patch](https://github.com/react-native-video/react-native-video/files/11932302/react-native-video%2B6.0.0-alpha.6.patch) using the [patch-package](https://www.npmjs.com/package/patch-package) library to the package `react-native-video`.
+
+:::note
+This shall be fixed soon with the new alpha release of the package `react-native-video`.
+:::
