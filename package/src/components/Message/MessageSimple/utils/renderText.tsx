@@ -226,7 +226,10 @@ export const renderText = <
         if (userName) {
           acc += `${acc.length ? '|' : ''}@${userName}`;
         }
-        return acc.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+        return acc.replace(/[.*+?^${}()|[\]\\]/g, function (match) {
+          return '\\' + match;
+        });
       }, '')
     : '';
 
