@@ -92,7 +92,7 @@
         "browser": true
       },
       "extends": [
-        "@react-native-community",
+        "@react-native",
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:jest/recommended",
