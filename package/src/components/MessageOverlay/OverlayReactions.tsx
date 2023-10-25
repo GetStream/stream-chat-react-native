@@ -273,7 +273,9 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
           </View>
         </View>
         <View style={styles.avatarNameContainer}>
-          <Text style={[styles.avatarName, { color: black }, avatarName]}>{name}</Text>
+          <Text numberOfLines={2} style={[styles.avatarName, { color: black }, avatarName]}>
+            {name}
+          </Text>
         </View>
       </View>
     );
@@ -322,13 +324,14 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
           keyExtractor={({ name }, index) => `${name}_${index}`}
           numColumns={numColumns}
           renderItem={renderItem}
+          scrollEnabled={filteredReactions.length / numColumns > 1}
           style={[
             styles.flatListContainer,
             flatListContainer,
             {
               // we show the item height plus a little extra to tease for scrolling if there are more than one row
               maxHeight:
-                itemHeight + (filteredReactions.length / numColumns > 1 ? itemHeight / 8 : 0),
+                itemHeight + (filteredReactions.length / numColumns > 1 ? itemHeight / 4 : 8),
             },
           ]}
         />
