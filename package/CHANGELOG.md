@@ -1,5 +1,12 @@
 # Change Log
 
+### [5.19.3](https://github.com/GetStream/stream-chat-react-native/compare/v5.19.2...v5.19.3) (2023-10-26)
+
+
+### Bug Fixes
+
+* overlay reactions got cut off when it was not scrollable ([6cfdfbc](https://github.com/GetStream/stream-chat-react-native/commit/6cfdfbc6df3d6b7aa17b471ccd596f130f7914a9))
+
 ### [5.19.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.19.1...v5.19.2) (2023-10-20)
 
 
