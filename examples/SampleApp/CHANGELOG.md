@@ -1,5 +1,17 @@
 # Change Log
 
+## [1.23.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.22.11...sampleapp@v1.23.0) (2023-10-26)
+
+
+### Features
+
+* upgrade version of React Native in Sample App to 0.72.6 ([#2259](https://github.com/GetStream/stream-chat-react-native/issues/2259)) ([2bb0094](https://github.com/GetStream/stream-chat-react-native/commit/2bb0094cbea88b1635e01c9aa0d51396d2e78613))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.22.11](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.22.10...sampleapp@v1.22.11) (2023-10-20)
 
 
