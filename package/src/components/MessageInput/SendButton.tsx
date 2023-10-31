@@ -28,7 +28,7 @@ const SendButtonWithContext = <
   const {
     theme: {
       colors: { accent_blue, grey_gainsboro },
-      messageInput: { sendButton },
+      messageInput: { searchIcon, sendButton, sendRightIcon, sendUpIcon },
     },
   } = useTheme();
 
@@ -39,9 +39,9 @@ const SendButtonWithContext = <
       style={[sendButton]}
       testID='send-button'
     >
-      {giphyActive && <Search pathFill={disabled ? grey_gainsboro : accent_blue} />}
-      {!giphyActive && disabled && <SendRight pathFill={grey_gainsboro} />}
-      {!giphyActive && !disabled && <SendUp pathFill={accent_blue} />}
+      {giphyActive && <Search pathFill={disabled ? grey_gainsboro : accent_blue} {...searchIcon} />}
+      {!giphyActive && disabled && <SendRight pathFill={grey_gainsboro} {...sendUpIcon} />}
+      {!giphyActive && !disabled && <SendUp pathFill={accent_blue} {...sendRightIcon} />}
     </Pressable>
   );
 };
