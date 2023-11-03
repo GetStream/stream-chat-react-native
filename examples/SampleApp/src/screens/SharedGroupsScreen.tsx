@@ -191,7 +191,7 @@ export const SharedGroupsScreen: React.FC<SharedGroupsScreenProps> = ({
         }}
         Preview={CustomPreview}
         sort={{
-          last_message_at: -1,
+          last_updated: -1,
         }}
       />
     </View>

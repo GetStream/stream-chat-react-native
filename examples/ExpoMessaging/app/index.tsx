@@ -11,7 +11,7 @@ const filters = {
   members: { $in: [user.id] },
   type: 'messaging',
 };
-const sort: ChannelSort<StreamChatGenerics> = { last_message_at: -1 };
+const sort: ChannelSort<StreamChatGenerics> = { last_updated: -1 };
 const options = {
   state: true,
   watch: true,
