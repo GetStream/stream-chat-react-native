@@ -12,9 +12,16 @@ export const getPhotos = async ({
   first,
 }: MediaLibrary.AssetsOptions): Promise<ReturnType> => {
   try {
-    const { status } = await MediaLibrary.requestPermissionsAsync();
+    // NOTE:
+    // should always check first before requesting permission
+    // because always requesting permission will cause
+    // the app to go to background even if it was granted
+    const { status } = await MediaLibrary.getPermissionsAsync();
     if (status !== 'granted') {
-      throw new Error('getPhotos Error');
+      const { status: newStatus } = await MediaLibrary.requestPermissionsAsync();
+      if (newStatus !== 'granted') {
+        throw new Error('getPhotos Error');
+      }
     }
     const results = await MediaLibrary.getAssetsAsync({
       after,
