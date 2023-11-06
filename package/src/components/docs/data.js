@@ -33,7 +33,7 @@ export const suggestionsContext = {
 };
 
 const filters = { example: 1, type: 'team' };
-const sort = { last_message_at: -1 };
+const sort = { last_updated: -1 };
 
 export const channels = client.queryChannels(filters, sort, {
   subscribe: true,
