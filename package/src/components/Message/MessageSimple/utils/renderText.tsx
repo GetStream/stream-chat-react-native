@@ -160,7 +160,7 @@ export const renderText = <
       : Linking.canOpenURL(url).then((canOpenUrl) => canOpenUrl && Linking.openURL(url));
   };
 
-  const link: ReactNodeOutput = (node, output, { ...state }) => {
+  const linkReact: ReactNodeOutput = (node, output, { ...state }) => {
     const url = node.target;
     const onPress = (event: GestureResponderEvent) => {
       if (!preventPress && onPressParam) {
@@ -198,7 +198,7 @@ export const renderText = <
     );
   };
 
-  const paragraphText: ReactNodeOutput = (node, output, { ...state }) => {
+  const paragraphTextReact: ReactNodeOutput = (node, output, { ...state }) => {
     if (messageTextNumberOfLines !== undefined) {
       // If we want to truncate the message text, lets only truncate the first paragraph
       // and simply not render rest of the paragraphs.
@@ -224,12 +224,15 @@ export const renderText = <
     ? mentioned_users.reduce((acc, cur) => {
         const userName = cur.name || cur.id || '';
         if (userName) {
-          acc += `${acc.length ? '|' : ''}@${userName}`;
+          acc += `${acc.length ? '|' : ''}@${userName.replace(
+            /[.*+?^${}()|[\]\\]/g,
+            function (match) {
+              return '\\' + match;
+            },
+          )}`;
         }
 
-        return acc.replace(/[.*+?^${}()|[\]\\]/g, function (match) {
-          return '\\' + match;
-        });
+        return acc;
       }, '')
     : '';
 
@@ -271,7 +274,7 @@ export const renderText = <
     );
   };
 
-  const list: ReactNodeOutput = (node, output, state) => (
+  const listReact: ReactNodeOutput = (node, output, state) => (
     <ListOutput
       key={`list-${state.key}`}
       node={node}
@@ -284,13 +287,13 @@ export const renderText = <
   const customRules = {
     // do not render images, we will scrape them out of the message and show on attachment card component
     image: { match: () => null },
-    link: { react: link },
-    list: { react: list },
+    link: { react: linkReact },
+    list: { react: listReact },
     // Truncate long text content in the message overlay
-    paragraph: messageTextNumberOfLines ? { react: paragraphText } : {},
+    paragraph: messageTextNumberOfLines ? { react: paragraphTextReact } : {},
     // we have no react rendering support for reflinks
     reflink: { match: () => null },
-    sublist: { react: list },
+    sublist: { react: listReact },
     ...(mentionedUsers
       ? {
           mentions: {
