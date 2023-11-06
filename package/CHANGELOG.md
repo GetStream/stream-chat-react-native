@@ -1,5 +1,20 @@
 # Change Log
 
+## [5.20.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.19.3...v5.20.0) (2023-11-06)
+
+
+### Features
+
+* apply theme to SendButton internal icons ([#2280](https://github.com/GetStream/stream-chat-react-native/issues/2280)) ([c884bf2](https://github.com/GetStream/stream-chat-react-native/commit/c884bf2a9d1df0ede204c03adbd12124fe2ef6f4))
+* upgrade axios to v1 ([#2281](https://github.com/GetStream/stream-chat-react-native/issues/2281)) ([ec7767c](https://github.com/GetStream/stream-chat-react-native/commit/ec7767c3e83abe117c0dd052939eac437a3522a4))
+
+
+### Bug Fixes
+
+* **expo:** do not show reconnecting status while showing gallery ([63f5a8a](https://github.com/GetStream/stream-chat-react-native/commit/63f5a8a337a7366c7094aa37022c21d04e6aba47))
+* crash when opening null url ([#2134](https://github.com/GetStream/stream-chat-react-native/issues/2134)) ([660c19d](https://github.com/GetStream/stream-chat-react-native/commit/660c19d20d007268d18bebd75c6f9328fdf48e16))
+* multiple mentions render in message text ([#2286](https://github.com/GetStream/stream-chat-react-native/issues/2286)) ([97e9c46](https://github.com/GetStream/stream-chat-react-native/commit/97e9c46260d141d0d98ec5681eb30be992a41374))
+
 ### [5.19.3](https://github.com/GetStream/stream-chat-react-native/compare/v5.19.2...v5.19.3) (2023-10-26)
 
 
