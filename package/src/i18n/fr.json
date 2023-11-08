@@ -66,5 +66,6 @@
   "{{ replyCount }} Replies": "{{ replyCount }} Réponses",
   "{{ replyCount }} Thread Replies": "{{replyCount}} Réponses à la discussion",
   "{{ user }} is typing": "{{ user }} est en train d'écrire",
+  "Select More Photos": "Sélectionner plus de photos",
   "🏙 Attachment...": "🏙 Pièce jointe..."
 }

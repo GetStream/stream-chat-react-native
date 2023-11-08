@@ -66,5 +66,6 @@
   "{{ replyCount }} Replies": "{{ replyCount }} Cevap",
   "{{ replyCount }} Thread Replies": "{{responseCount}} Konu Cevapı",
   "{{ user }} is typing": "{{ user }} yazıyor",
+  "Select More Photos": "Daha Fazla Fotoğraf Seçin",
   "🏙 Attachment...": "🏙 Ek..."
 }

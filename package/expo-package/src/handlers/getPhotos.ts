@@ -5,6 +5,7 @@ type ReturnType = {
   assets: Array<Omit<Asset, 'source'> & { source: 'picker' }>;
   endCursor: string | undefined;
   hasNextPage: boolean;
+  iOSLimited: boolean;
 };
 
 export const getPhotos = async ({
@@ -16,7 +17,7 @@ export const getPhotos = async ({
     // should always check first before requesting permission
     // because always requesting permission will cause
     // the app to go to background even if it was granted
-    const { status } = await MediaLibrary.getPermissionsAsync();
+    const { accessPrivileges, status } = await MediaLibrary.getPermissionsAsync();
     if (status !== 'granted') {
       const { status: newStatus } = await MediaLibrary.requestPermissionsAsync();
       if (newStatus !== 'granted') {
@@ -42,7 +43,7 @@ export const getPhotos = async ({
 
     const hasNextPage = results.hasNextPage;
     const endCursor = results.endCursor;
-    return { assets, endCursor, hasNextPage };
+    return { assets, endCursor, hasNextPage, iOSLimited: accessPrivileges === 'limited' };
   } catch {
     throw new Error('getPhotos Error');
   }

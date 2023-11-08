@@ -66,5 +66,6 @@
   "{{ replyCount }} Replies": "{{ replyCount }} रिप्लाई",
   "{{ replyCount }} Thread Replies": "{{ replyCount }}} थ्रेड उत्तर",
   "{{ user }} is typing": "{{ user }} टाइप कर रहा है",
+  "Select More Photos": "अधिक फ़ोटो चुनें",
   "🏙 Attachment...": "🏙 अटैचमेंट..."
 }

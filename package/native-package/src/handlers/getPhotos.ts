@@ -7,6 +7,7 @@ type ReturnType = {
   assets: Array<Omit<Asset, 'source'> & { source: 'picker' }>;
   endCursor: string | undefined;
   hasNextPage: boolean;
+  iOSLimited: boolean;
 };
 
 const verifyAndroidPermissions = async () => {
@@ -84,7 +85,7 @@ export const getPhotos = async ({
     }));
     const hasNextPage = results.page_info.has_next_page;
     const endCursor = results.page_info.end_cursor;
-    return { assets, endCursor, hasNextPage };
+    return { assets, endCursor, hasNextPage, iOSLimited: !!results.limited };
   } catch (_error) {
     throw new Error('getPhotos Error');
   }

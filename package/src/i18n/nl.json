@@ -66,5 +66,6 @@
   "{{ replyCount }} Replies": "{{ replyCount }} Antwoorden",
   "{{ replyCount }} Thread Replies": "{{replyCount}} Discussiereacties",
   "{{ user }} is typing": "{{ user }} is aan het typen",
+  "Select More Photos": "Selecteer Meer foto's",
   "🏙 Attachment...": "🏙 Bijlage..."
 }

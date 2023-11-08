@@ -66,5 +66,6 @@
   "{{ replyCount }} Replies": "{{ replyCount }} Ответов",
   "{{ replyCount }} Thread Replies": "{{replyCount}} Ответы в темах",
   "{{ user }} is typing": "{{ user }} пишет",
+  "Select More Photos": "Выбрать больше фотографий",
   "🏙 Attachment...": "🏙 Вложение..."
 }
