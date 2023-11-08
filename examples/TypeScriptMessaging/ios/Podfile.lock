@@ -78,9 +78,9 @@ PODS:
   - hermes-engine/Pre-built (0.71.7)
   - libevent (2.1.12)
   - OpenSSL-Universal (1.1.1100)
-  - PromisesObjC (2.2.0)
-  - PromisesSwift (2.2.0):
-    - PromisesObjC (= 2.2.0)
+  - PromisesObjC (2.3.1)
+  - PromisesSwift (2.3.1):
+    - PromisesObjC (= 2.3.1)
   - RCT-Folly (2021.07.22.00):
     - boost
     - DoubleConversion
@@ -495,7 +495,7 @@ PODS:
     - React-Core
   - RNSVG (13.9.0):
     - React-Core
-  - SocketRocket (0.6.0)
+  - SocketRocket (0.6.1)
   - TOCropViewController (2.6.1)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
@@ -727,8 +727,8 @@ SPEC CHECKSUMS:
   hermes-engine: 4438d2b8bf8bebaba1b1ac0451160bab59e491f8
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
-  PromisesObjC: 09985d6d70fbe7878040aa746d78236e6946d2ef
-  PromisesSwift: cf9eb58666a43bbe007302226e510b16c1e10959
+  PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
+  PromisesSwift: 28dca69a9c40779916ac2d6985a0192a5cb4a265
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: 5a4a30ac20c86eeadd6844a9328f78d4168cf9b2
   RCTTypeSafety: 279fc5861a89f0f37db3a585f27f971485b4b734
@@ -774,7 +774,7 @@ SPEC CHECKSUMS:
   RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
   RNShare: d82e10f6b7677f4b0048c23709bd04098d5aee6c
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
-  SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
+  SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   Yoga: d56980c8914db0b51692f55533409e844b66133c
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
