@@ -67,5 +67,6 @@
   "{{ replyCount }} Thread Replies": "{{ replyCount }} תגובות שרשור",
   "{{ user }} is typing": "{{ user }} מקליד/ה",
   "Select More Photos": "בחר עוד תמונות",
-  "🏙 Attachment...": "🏙 קובץ מצורף..."
+  "🏙 Attachment...": "🏙 קובץ מצורף...",
+  "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.": "הגעת למגבלת העלאת גודל הקובץ המקסימלית. אנא העלה קובץ מתחת ל-{{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB"
 }

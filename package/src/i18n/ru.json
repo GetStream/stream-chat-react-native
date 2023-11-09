@@ -67,5 +67,6 @@
   "{{ replyCount }} Thread Replies": "{{replyCount}} Ответы в темах",
   "{{ user }} is typing": "{{ user }} пишет",
   "Select More Photos": "Выбрать больше фотографий",
-  "🏙 Attachment...": "🏙 Вложение..."
+  "🏙 Attachment...": "🏙 Вложение...",
+  "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.": "Достигнут предел максимального размера файла для загрузки. Загрузите файл размером менее {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} МБ."
 }

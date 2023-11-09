@@ -1,5 +1,17 @@
 # Change Log
 
+### [1.23.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.23.0...sampleapp@v1.23.1) (2023-11-06)
+
+
+### Bug Fixes
+
+* multiple mentions render in message text ([#2286](https://github.com/GetStream/stream-chat-react-native/issues/2286)) ([97e9c46](https://github.com/GetStream/stream-chat-react-native/commit/97e9c46260d141d0d98ec5681eb30be992a41374))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ## [1.23.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.22.11...sampleapp@v1.23.0) (2023-10-26)
 
 

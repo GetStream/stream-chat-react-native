@@ -557,9 +557,10 @@ const stringifyMessage = <
   latest_reactions,
   reply_count,
   status,
+  type,
   updated_at,
 }: FormatMessageResponse<StreamChatGenerics>): string =>
-  `${deleted_at}${
+  `${type}${deleted_at}${
     latest_reactions ? latest_reactions.map(({ type }) => type).join() : ''
   }${reply_count}${status}${updated_at?.toISOString?.() || updated_at}`;
 

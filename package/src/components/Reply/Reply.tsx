@@ -223,25 +223,26 @@ const ReplyWithContext = <
         ) : null}
         <MessageTextContainer<StreamChatGenerics>
           markdownStyles={
-            quotedMessage.deleted_at
+            quotedMessage.type === 'deleted'
               ? merge({ em: { color: grey } }, deletedText)
               : { text: styles.text, ...markdownStyles }
           }
           message={{
             ...quotedMessage,
-            text: quotedMessage.deleted_at
-              ? `_${t('Message deleted')}_`
-              : quotedMessage.text
-              ? quotedMessage.text.length > 170
-                ? `${quotedMessage.text.slice(0, 170)}...`
+            text:
+              quotedMessage.type === 'deleted'
+                ? `_${t('Message deleted')}_`
                 : quotedMessage.text
-              : messageType === 'image'
-              ? t('Photo')
-              : messageType === 'video'
-              ? t('Video')
-              : messageType === 'file'
-              ? lastAttachment?.title || ''
-              : '',
+                ? quotedMessage.text.length > 170
+                  ? `${quotedMessage.text.slice(0, 170)}...`
+                  : quotedMessage.text
+                : messageType === 'image'
+                ? t('Photo')
+                : messageType === 'video'
+                ? t('Video')
+                : messageType === 'file'
+                ? lastAttachment?.title || ''
+                : '',
           }}
           onlyEmojis={onlyEmojis}
           styles={{
@@ -308,7 +309,8 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     typeof prevQuotedMessage !== 'boolean' &&
     typeof nextQuotedMessage !== 'boolean'
       ? prevQuotedMessage.id === nextQuotedMessage.id &&
-        prevQuotedMessage.deleted_at === nextQuotedMessage.deleted_at
+        prevQuotedMessage.deleted_at === nextQuotedMessage.deleted_at &&
+        prevQuotedMessage.type === nextQuotedMessage.type
       : !!prevQuotedMessage === !!nextQuotedMessage;
 
   if (!quotedMessageEqual) return false;

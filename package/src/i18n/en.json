@@ -67,5 +67,6 @@
   "{{ replyCount }} Thread Replies": "{{ replyCount }} Thread Replies",
   "{{ user }} is typing": "{{ user }} is typing",
   "Select More Photos": "Select More Photos",
-  "🏙 Attachment...": "🏙 Attachment..."
+  "🏙 Attachment...": "🏙 Attachment...",
+  "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.": "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB."
 }

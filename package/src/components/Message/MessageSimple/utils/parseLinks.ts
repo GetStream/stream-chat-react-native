@@ -12,13 +12,13 @@ interface LinkInfo {
 const removeMarkdownLinksFromText = (input: string) => input.replace(/\[[\w\s]+\]\(.*\)/g, '');
 
 /**
- * Hermes doesn't support lookbehind, so this is done separately to avoid
- * parsing user names as links.
- * */
-const removeUserNamesFromText = (input: string) => input.replace(/^@\w+\.?\w/, '');
+ * This is done to avoid parsing usernames with dot as well as an email address in it.
+ */
+const removeUserNamesWithEmailFromText = (input: string) =>
+  input.replace(/@(\w+(\.\w+)?)(@\w+\.\w+)/g, '');
 
 export const parseLinksFromText = (input: string): LinkInfo[] => {
-  const strippedInput = [removeMarkdownLinksFromText, removeUserNamesFromText].reduce(
+  const strippedInput = [removeMarkdownLinksFromText, removeUserNamesWithEmailFromText].reduce(
     (acc, fn) => fn(acc),
     input,
   );

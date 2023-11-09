@@ -594,7 +594,10 @@ export const MessageInputProvider = <
       const totalFileSize = result.assets.reduce((acc, asset) => acc + Number(asset.size), 0);
       if (totalFileSize / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB) {
         Alert.alert(
-          `Maximum file size upload limit reached, please upload files below ${MAX_FILE_SIZE_TO_UPLOAD_IN_MB}MB.`,
+          t(
+            `Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.`,
+            { MAX_FILE_SIZE_TO_UPLOAD_IN_MB },
+          ),
         );
       } else {
         result.assets.forEach((asset) => {
