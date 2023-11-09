@@ -4,6 +4,7 @@ export * from './getLocalAssetUri';
 export * from './getPhotos';
 export * from './iOS14RefreshGallerySelection';
 export * from './NetInfo';
+export * from './oniOS14GalleryLibrarySelectionChange';
 export * from './saveFile';
 export * from './Sound';
 export * from './takePhoto';
