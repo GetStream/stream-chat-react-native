@@ -1542,12 +1542,14 @@ at-least-node@^1.0.0:
   resolved "https://registry.yarnpkg.com/at-least-node/-/at-least-node-1.0.0.tgz#602cd4b46e844ad4effc92a8011a3c46e0238dc2"
   integrity sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==
 
-axios@^0.22.0:
-  version "0.22.0"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.22.0.tgz#bf702c41fb50fbca4539589d839a077117b79b25"
-  integrity sha512-Z0U3uhqQeg1oNcihswf4ZD57O3NrR1+ZXhxaROaWpDmsDTx7T2HNBV2ulBtie2hwJptu8UvgnJoK+BIqdzh/1w==
+axios@^1.6.0:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.1.tgz#76550d644bf0a2d469a01f9244db6753208397d7"
+  integrity sha512-vfBmhDpKafglh0EldBEbVuoe7DyAavGSLWhuSm5ZSEKQnHhBf0xAAwybbNH1IkrJNGnS/VG4I5yxig1pCEXE4g==
   dependencies:
-    follow-redirects "^1.14.4"
+    follow-redirects "^1.15.0"
+    form-data "^4.0.0"
+    proxy-from-env "^1.1.0"
 
 babel-plugin-module-resolver@^4.1.0:
   version "4.1.0"
@@ -2076,10 +2078,10 @@ find-up@^5.0.0, find-up@~5.0.0:
     locate-path "^6.0.0"
     path-exists "^4.0.0"
 
-follow-redirects@^1.14.4:
-  version "1.15.2"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.2.tgz#b460864144ba63f2681096f274c4e57026da2c13"
-  integrity sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==
+follow-redirects@^1.15.0:
+  version "1.15.3"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.3.tgz#fe2f3ef2690afce7e82ed0b44db08165b207123a"
+  integrity sha512-1VzOtuEM8pC9SFU1E+8KfTjZyMztRsgEfwQl44z8A25uy13jSzTj6dyK2Df52iV0vgHCfBwLhDWevLn95w5v6Q==
 
 fontfaceobserver@^2.1.0:
   version "2.3.0"
@@ -2798,6 +2800,11 @@ prop-types@^15.5.10:
     object-assign "^4.1.1"
     react-is "^16.13.1"
 
+proxy-from-env@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/proxy-from-env/-/proxy-from-env-1.1.0.tgz#e102f16ca355424865755d2c9e8ea4f24d58c3e2"
+  integrity sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==
+
 punycode@^2.1.0, punycode@^2.1.1:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.3.0.tgz#f67fa67c94da8f4d0cfff981aee4118064199b8f"
@@ -3034,10 +3041,10 @@ stream-buffers@2.2.x:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha512-uyQK/mx5QjHun80FLJTfaWE7JtwfRMKBLkMne6udYOmvH0CawotVa7TfgYHzAnpphn4+TweIx1QKMnRIbipmUg==
 
-stream-chat-react-native-core@5.19.3:
-  version "5.19.3"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.19.3.tgz#6f99af372bce8414998d4cce13ce0855a1a20386"
-  integrity sha512-uOJC1tq9VqzaPdv5TL6PWbLar2mCGQ1nYKQ3tdcnQhL3T/3130oizoP0rh/3LB2HUqn19NcngfnzE2FBXTI++w==
+stream-chat-react-native-core@5.20.0:
+  version "5.20.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.20.0.tgz#d8e6bb07d9f6c68dc28b106abf571d2c24ac044c"
+  integrity sha512-mNooiZsV9ZV/7EcpeekoDLr9BN/rYvAq3Ni0/VfXqh511mWEB0WcCBWVnBBy+qaeki/cga+eqHm3jpzV8u2P0w==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "4.4.8"
@@ -3051,17 +3058,17 @@ stream-chat-react-native-core@5.19.3:
     path "0.12.7"
     react-native-markdown-package "1.8.2"
     react-native-url-polyfill "^1.3.0"
-    stream-chat "~8.13.1"
+    stream-chat "~8.14.0"
 
-stream-chat@~8.13.1:
-  version "8.13.1"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.13.1.tgz#9781a456487f376d7c9c98271a4f4c926a9e6cf8"
-  integrity sha512-k0tOmtlLsvVxpZ2EuR+Z/qQiyCHOIjACqwnBZnT1ERA1t3549U2vzkUE6l2tN2VGAgUP1tDl00FhZO5JrAkMKw==
+stream-chat@~8.14.0:
+  version "8.14.1"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.14.1.tgz#f6560c2aa2ce754928d41d6059c61d7cfe770e0a"
+  integrity sha512-7ersgzFLrUlnV5q09SLcJSEkKMEFNl3E7C5Pk48hzzKuY/eRt8+ojka7t17/cRtF84g3XSW0dSl7C/yB9J5ieQ==
   dependencies:
     "@babel/runtime" "^7.16.3"
     "@types/jsonwebtoken" "~9.0.0"
     "@types/ws" "^7.4.0"
-    axios "^0.22.0"
+    axios "^1.6.0"
     base64-js "^1.5.1"
     form-data "^4.0.0"
     isomorphic-ws "^4.0.1"

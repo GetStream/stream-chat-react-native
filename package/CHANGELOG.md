@@ -1,5 +1,20 @@
 # Change Log
 
+## [5.21.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.20.0...v5.21.0) (2023-11-09)
+
+
+### Features
+
+* add ability to customize the message error component ([#2296](https://github.com/GetStream/stream-chat-react-native/issues/2296)) ([cf1734b](https://github.com/GetStream/stream-chat-react-native/commit/cf1734bd6492c105633a43954a1d7b1798e90b04))
+* add maximum file size limit release translations ([#2294](https://github.com/GetStream/stream-chat-react-native/issues/2294)) ([357c77a](https://github.com/GetStream/stream-chat-react-native/commit/357c77aab8fda5a72282fc3d40087515c8008ff9))
+* support refreshing photo selection on iOS ([#2291](https://github.com/GetStream/stream-chat-react-native/issues/2291)) ([5613dfd](https://github.com/GetStream/stream-chat-react-native/commit/5613dfd28eaac32ad15167cfd3d2f61f534508f4))
+
+
+### Bug Fixes
+
+* apply max file size limit translations ([#2295](https://github.com/GetStream/stream-chat-react-native/issues/2295)) ([20bbaed](https://github.com/GetStream/stream-chat-react-native/commit/20bbaedcdd728d268a723e5dbbacdc46f09adb48))
+* resolve mentioned user as user rather than link ([#2289](https://github.com/GetStream/stream-chat-react-native/issues/2289)) ([ff07769](https://github.com/GetStream/stream-chat-react-native/commit/ff077693c96bcd87633f0d47e5240fe947abd8ed))
+
 ## [5.20.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.19.3...v5.20.0) (2023-11-06)
 
 
