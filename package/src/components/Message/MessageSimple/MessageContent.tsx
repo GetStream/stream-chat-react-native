@@ -19,7 +19,6 @@ import {
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
 
-import { Error } from '../../../icons';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { MessageStatusTypes, vw } from '../../../utils/utils';
 
@@ -88,6 +87,7 @@ export type MessageContentPropsWithContext<
     | 'MessageFooter'
     | 'MessageHeader'
     | 'MessageDeleted'
+    | 'MessageError'
     | 'MessageReplies'
     | 'MessageStatus'
     | 'onPressInMessage'
@@ -121,6 +121,7 @@ const MessageContentWithContext = <
     message,
     messageContentOrder,
     MessageDeleted,
+    MessageError,
     MessageFooter,
     MessageHeader,
     MessageReplies,
@@ -140,7 +141,7 @@ const MessageContentWithContext = <
 
   const {
     theme: {
-      colors: { accent_red, blue_alice, grey_gainsboro, grey_whisper, transparent, white },
+      colors: { blue_alice, grey_gainsboro, grey_whisper, transparent, white },
       messageSimple: {
         content: {
           container: {
@@ -155,8 +156,6 @@ const MessageContentWithContext = <
           },
           containerInner,
           errorContainer,
-          errorIcon,
-          errorIconContainer,
           replyBorder,
           replyContainer,
           wrapper,
@@ -395,13 +394,7 @@ const MessageContentWithContext = <
             }
           })}
         </View>
-        {error && (
-          <View style={StyleSheet.absoluteFill} testID='message-error'>
-            <View style={errorIconContainer}>
-              <Error pathFill={accent_red} {...errorIcon} />
-            </View>
-          </View>
-        )}
+        {error && <MessageError />}
       </View>
       <MessageReplies noBorder={noBorder} repliesCurveColor={repliesCurveColor} />
       <MessageFooter formattedDate={getDateText(formatDate)} isDeleted={!!isMessageTypeDeleted} />
@@ -580,6 +573,7 @@ export const MessageContent = <
     Gallery,
     isAttachmentEqual,
     MessageDeleted,
+    MessageError,
     MessageFooter,
     MessageHeader,
     MessageReplies,
@@ -609,6 +603,7 @@ export const MessageContent = <
         message,
         messageContentOrder,
         MessageDeleted,
+        MessageError,
         MessageFooter,
         MessageHeader,
         MessageReplies,

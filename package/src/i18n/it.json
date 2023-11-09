@@ -66,5 +66,7 @@
   "{{ replyCount }} Replies": "{{ replyCount }} Risposte",
   "{{ replyCount }} Thread Replies": "{{replyCount}} Risposte alle Conversazione",
   "{{ user }} is typing": "{{ user }} sta scrivendo",
-  "🏙 Attachment...": "🏙 Allegato..."
+  "Select More Photos": "Seleziona Altre foto",
+  "🏙 Attachment...": "🏙 Allegato...",
+  "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.": "È stato raggiunto il limite massimo di caricamento delle dimensioni del file. Carica un file inferiore a {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB."
 }

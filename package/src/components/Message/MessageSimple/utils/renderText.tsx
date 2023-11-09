@@ -4,7 +4,6 @@ import { GestureResponderEvent, Linking, Text, TextProps, View, ViewProps } from
 // @ts-expect-error
 import Markdown from 'react-native-markdown-package';
 
-import truncate from 'lodash/truncate';
 import {
   DefaultRules,
   defaultRules,
@@ -19,7 +18,7 @@ import {
 
 import type { UserResponse } from 'stream-chat';
 
-import { parseLinksFromText } from './parseLinks';
+import { generateMarkdownText } from './generateMarkdownText';
 
 import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
 import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
@@ -62,7 +61,7 @@ const defaultMarkdownStyles: MarkdownStyle = {
   },
 };
 
-const parse: ParseFunction = (capture, parse, state) => ({
+const mentionsParseFunction: ParseFunction = (capture, parse, state) => ({
   content: parseInline(parse, capture[0], state),
 });
 
@@ -102,25 +101,7 @@ export const renderText = <
     preventPress,
   } = params;
 
-  // take the @ mentions and turn them into markdown?
-  // translate links
-  const { mentioned_users, text } = message;
-
-  if (!text) return null;
-
-  let newText = text.trim();
-  const linkInfos = parseLinksFromText(newText);
-
-  for (const linkInfo of linkInfos) {
-    const displayLink = truncate(linkInfo.raw, {
-      length: 200,
-      omission: '...',
-    });
-    const markdown = `[${displayLink}](${linkInfo.encodedUrl})`;
-    newText = newText.replace(linkInfo.raw, markdown);
-  }
-
-  newText = newText.replace(/[<&"'>]/g, '\\$&');
+  const markdownText = generateMarkdownText<StreamChatGenerics>(message);
 
   const styles: MarkdownStyle = {
     ...defaultMarkdownStyles,
@@ -220,6 +201,9 @@ export const renderText = <
     );
   };
 
+  // take the @ mentions and turn them into markdown?
+  // translate links
+  const { mentioned_users } = message;
   const mentionedUsers = Array.isArray(mentioned_users)
     ? mentioned_users.reduce((acc, cur) => {
         const userName = cur.name || cur.id || '';
@@ -237,7 +221,7 @@ export const renderText = <
     : '';
 
   const regEx = new RegExp(`^\\B(${mentionedUsers})`, 'g');
-  const match: MatchFunction = (source) => regEx.exec(source);
+  const mentionsMatchFunction: MatchFunction = (source) => regEx.exec(source);
 
   const mentionsReact: ReactNodeOutput = (node, output, { ...state }) => {
     /**removes the @ prefix of username */
@@ -297,9 +281,9 @@ export const renderText = <
     ...(mentionedUsers
       ? {
           mentions: {
-            match,
+            match: mentionsMatchFunction,
             order: defaultRules.text.order - 0.5,
-            parse,
+            parse: mentionsParseFunction,
             react: mentionsReact,
           },
         }
@@ -318,7 +302,7 @@ export const renderText = <
       }}
       styles={styles}
     >
-      {newText}
+      {markdownText}
     </Markdown>
   );
 };

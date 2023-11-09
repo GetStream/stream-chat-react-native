@@ -1,5 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { BackHandler, Dimensions, Keyboard, Platform, StatusBar, StyleSheet } from 'react-native';
+import {
+  BackHandler,
+  Button,
+  Dimensions,
+  Keyboard,
+  Platform,
+  StatusBar,
+  StyleSheet,
+} from 'react-native';
 
 import BottomSheet, { BottomSheetFlatList, BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import dayjs from 'dayjs';
@@ -11,7 +19,12 @@ import { renderAttachmentPickerItem } from './components/AttachmentPickerItem';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { getPhotos, oniOS14GalleryLibrarySelectionChange } from '../../native';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import {
+  getPhotos,
+  iOS14RefreshGallerySelection,
+  oniOS14GalleryLibrarySelectionChange,
+} from '../../native';
 import type { Asset } from '../../types/types';
 import { vh } from '../../utils/utils';
 
@@ -97,10 +110,12 @@ export const AttachmentPicker = React.forwardRef(
     const [currentIndex, setCurrentIndex] = useState(-1);
     const endCursorRef = useRef<string>();
     const [photoError, setPhotoError] = useState(false);
+    const [iOSLimited, setIosLimited] = useState(false);
     const hasNextPageRef = useRef(true);
     const [loadingPhotos, setLoadingPhotos] = useState(false);
     const [photos, setPhotos] = useState<Asset[]>([]);
     const attemptedToLoadPhotosOnOpenRef = useRef(false);
+    const { t } = useTranslationContext();
 
     const getMorePhotos = useCallback(async () => {
       if (
@@ -121,6 +136,7 @@ export const AttachmentPicker = React.forwardRef(
           setPhotos((prevPhotos) =>
             endCursor ? [...prevPhotos, ...results.assets] : results.assets,
           );
+          setIosLimited(results.iOSLimited);
           hasNextPageRef.current = !!results.hasNextPage;
         } catch (error) {
           setPhotoError(true);
@@ -299,6 +315,9 @@ export const AttachmentPicker = React.forwardRef(
           ref={ref}
           snapPoints={snapPoints}
         >
+          {iOSLimited && (
+            <Button onPress={iOS14RefreshGallerySelection} title={t('Select More Photos')} />
+          )}
           <BottomSheetFlatList
             contentContainerStyle={[
               styles.container,

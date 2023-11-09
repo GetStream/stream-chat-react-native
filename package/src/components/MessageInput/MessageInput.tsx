@@ -186,6 +186,7 @@ const MessageInputWithContext = <
   } = props;
 
   const [height, setHeight] = useState(0);
+  const { t } = useTranslationContext();
 
   const {
     theme: {
@@ -290,7 +291,10 @@ const MessageInputWithContext = <
       Number(imageToUpload.fileSize) / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB
     ) {
       Alert.alert(
-        `Maximum file size upload limit reached, please upload an image below ${MAX_FILE_SIZE_TO_UPLOAD_IN_MB}MB.`,
+        t(
+          `Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.`,
+          { MAX_FILE_SIZE_TO_UPLOAD_IN_MB },
+        ),
       );
       setSelectedImages(
         selectedImages.filter((selectedImage) => selectedImage.uri !== imageToUpload.uri),
@@ -339,7 +343,10 @@ const MessageInputWithContext = <
         Number(fileToUpload.size) / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB
       ) {
         Alert.alert(
-          `Maximum file size upload limit reached, please upload a file below ${MAX_FILE_SIZE_TO_UPLOAD_IN_MB}MB.`,
+          t(
+            `Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.`,
+            { MAX_FILE_SIZE_TO_UPLOAD_IN_MB },
+          ),
         );
         setSelectedFiles(
           selectedFiles.filter((selectedFile) => selectedFile.uri !== fileToUpload.uri),

@@ -33,11 +33,15 @@ export let getLocalAssetUri: GetLocalAssetUri = fail;
 type OniOS14LibrarySelectionChange = (callback: () => void) => { unsubscribe: () => void };
 export let oniOS14GalleryLibrarySelectionChange: OniOS14LibrarySelectionChange = fail;
 
+type iOS14RefreshGallerySelection = () => Promise<void>;
+export let iOS14RefreshGallerySelection: iOS14RefreshGallerySelection = fail;
+
 type GetPhotos = ({ after, first }: { first: number; after?: string }) =>
   | Promise<{
       assets: Array<Omit<Asset, 'source'> & { source: 'picker' }>;
       endCursor: string;
       hasNextPage: boolean;
+      iOSLimited: boolean;
     }>
   | never;
 export let getPhotos: GetPhotos = fail;
@@ -213,6 +217,7 @@ export type VideoType = {
 export let Video: React.ComponentType<VideoType>;
 
 type Handlers = {
+  iOS14RefreshGallerySelection: iOS14RefreshGallerySelection;
   compressImage?: CompressImage;
   deleteFile?: DeleteFile;
   FlatList?: typeof DefaultFlatList;
@@ -253,6 +258,10 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 
   if (handlers.getPhotos) {
     getPhotos = handlers.getPhotos;
+  }
+
+  if (handlers.iOS14RefreshGallerySelection) {
+    iOS14RefreshGallerySelection = handlers.iOS14RefreshGallerySelection;
   }
 
   if (handlers.oniOS14GalleryLibrarySelectionChange) {
