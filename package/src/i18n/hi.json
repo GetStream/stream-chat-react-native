@@ -66,6 +66,7 @@
   "{{ replyCount }} Replies": "{{ replyCount }} रिप्लाई",
   "{{ replyCount }} Thread Replies": "{{ replyCount }}} थ्रेड उत्तर",
   "{{ user }} is typing": "{{ user }} टाइप कर रहा है",
+  "Select More Photos": "अधिक फ़ोटो चुनें",
   "🏙 Attachment...": "🏙 अटैचमेंट...",
   "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.": "अधिकतम फ़ाइल आकार अपलोड सीमा पूरी हो गई। कृपया {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} एमबी से नीचे की फ़ाइल अपलोड करें।"
 }

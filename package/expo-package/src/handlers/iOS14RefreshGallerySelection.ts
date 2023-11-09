@@ -20,3 +20,10 @@ export function oniOS14GalleryLibrarySelectionChange(callback: () => void): {
     unsubscribe: () => {},
   };
 }
+
+export const iOS14RefreshGallerySelection = (): Promise<void> => {
+  if (isAboveIOS14) {
+    return MediaLibrary.presentPermissionsPickerAsync();
+  }
+  return Promise.resolve();
+};

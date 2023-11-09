@@ -69,6 +69,7 @@
   "Reply to Message": "メッセージに返信",
   "🏙 Attachment...": "🏙 アタッチメント...",
   "Not supported": "サポートしていません",
+  "Select More Photos": "さらに写真を選択",
   "File type not supported": "サポートされていないファイルです",
   "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.": "最大ファイル サイズのアップロード制限に達しました。 {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB 以下のファイルをアップロードしてください"
 }

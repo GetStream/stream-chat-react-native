@@ -66,6 +66,7 @@
   "{{ replyCount }} Replies": "{{ replyCount }} Cevap",
   "{{ replyCount }} Thread Replies": "{{responseCount}} Konu Cevapı",
   "{{ user }} is typing": "{{ user }} yazıyor",
+  "Select More Photos": "Daha Fazla Fotoğraf Seçin",
   "🏙 Attachment...": "🏙 Ek...",
   "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.": "Maksimum dosya boyutu yükleme sınırına ulaşıldı. Lütfen {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB'ın altında bir dosya yükleyin."
 }
