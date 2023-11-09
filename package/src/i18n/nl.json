@@ -66,5 +66,6 @@
   "{{ replyCount }} Replies": "{{ replyCount }} Antwoorden",
   "{{ replyCount }} Thread Replies": "{{replyCount}} Discussiereacties",
   "{{ user }} is typing": "{{ user }} is aan het typen",
-  "🏙 Attachment...": "🏙 Bijlage..."
+  "🏙 Attachment...": "🏙 Bijlage...",
+  "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.": "Maximale uploadlimiet voor bestandsgrootte bereikt. Upload een bestand van minder dan {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB."
 }
