@@ -26,6 +26,7 @@ import type {
 import type { MessageAvatarProps } from '../../components/Message/MessageSimple/MessageAvatar';
 import type { MessageContentProps } from '../../components/Message/MessageSimple/MessageContent';
 import type { MessageDeletedProps } from '../../components/Message/MessageSimple/MessageDeleted';
+import type { MessageErrorProps } from '../../components/Message/MessageSimple/MessageError';
 import type { MessageFooterProps } from '../../components/Message/MessageSimple/MessageFooter';
 
 import type { MessageRepliesProps } from '../../components/Message/MessageSimple/MessageReplies';
@@ -169,6 +170,10 @@ export type MessagesContextValue<
    * Defaults to: [MessageDeleted](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageSimple/MessageDeleted.tsx)
    */
   MessageDeleted: React.ComponentType<MessageDeletedProps<StreamChatGenerics>>;
+  /**
+   * UI component for the MessageError.
+   */
+  MessageError: React.ComponentType<MessageErrorProps>;
   /**
    * Custom message footer component
    */

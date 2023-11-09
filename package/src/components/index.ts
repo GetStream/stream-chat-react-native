@@ -98,6 +98,7 @@ export * from './Message/Message';
 export * from './Message/MessageSimple/MessageAvatar';
 export * from './Message/MessageSimple/MessageContent';
 export * from './Message/MessageSimple/MessageDeleted';
+export * from './Message/MessageSimple/MessageError';
 export * from './Message/MessageSimple/MessageFooter';
 export * from './Message/MessageSimple/MessagePinnedHeader';
 export * from './Message/MessageSimple/MessageReplies';

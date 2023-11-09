@@ -108,6 +108,7 @@ import { Message as MessageDefault } from '../Message/Message';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
 import { MessageContent as MessageContentDefault } from '../Message/MessageSimple/MessageContent';
 import { MessageDeleted as MessageDeletedDefault } from '../Message/MessageSimple/MessageDeleted';
+import { MessageError as MessageErrorDefault } from '../Message/MessageSimple/MessageError';
 import { MessageFooter as MessageFooterDefault } from '../Message/MessageSimple/MessageFooter';
 import { MessagePinnedHeader as MessagePinnedHeaderDefault } from '../Message/MessageSimple/MessagePinnedHeader';
 import { MessageReplies as MessageRepliesDefault } from '../Message/MessageSimple/MessageReplies';
@@ -274,6 +275,7 @@ export type ChannelPropsWithContext<
       | 'MessageContent'
       | 'messageContentOrder'
       | 'MessageDeleted'
+      | 'MessageError'
       | 'MessageFooter'
       | 'MessageHeader'
       | 'MessageList'
@@ -495,6 +497,7 @@ const ChannelWithContext = <
     MessageContent = MessageContentDefault,
     messageContentOrder = ['quoted_reply', 'gallery', 'files', 'text', 'attachments'],
     MessageDeleted = MessageDeletedDefault,
+    MessageError = MessageErrorDefault,
     MessageFooter = MessageFooterDefault,
     MessageHeader,
     messageId,
@@ -1962,6 +1965,7 @@ const ChannelWithContext = <
     MessageContent,
     messageContentOrder,
     MessageDeleted,
+    MessageError,
     MessageFooter,
     MessageHeader,
     MessageList,
