@@ -2373,17 +2373,10 @@ atob@^2.1.2:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
-axios@^0.22.0:
-  version "0.22.0"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.22.0.tgz#bf702c41fb50fbca4539589d839a077117b79b25"
-  integrity sha512-Z0U3uhqQeg1oNcihswf4ZD57O3NrR1+ZXhxaROaWpDmsDTx7T2HNBV2ulBtie2hwJptu8UvgnJoK+BIqdzh/1w==
-  dependencies:
-    follow-redirects "^1.14.4"
-
 axios@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.0.tgz#f1e5292f26b2fd5c2e66876adc5b06cdbd7d2102"
-  integrity sha512-EZ1DYihju9pwVB+jg67ogm+Tmqc6JmhamRN6I4Zt8DfZu5lbcQGw3ozH9lFejSJgs/ibaef3A9PMXPLeefFGJg==
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.1.tgz#76550d644bf0a2d469a01f9244db6753208397d7"
+  integrity sha512-vfBmhDpKafglh0EldBEbVuoe7DyAavGSLWhuSm5ZSEKQnHhBf0xAAwybbNH1IkrJNGnS/VG4I5yxig1pCEXE4g==
   dependencies:
     follow-redirects "^1.15.0"
     form-data "^4.0.0"
@@ -3872,11 +3865,6 @@ flow-parser@^0.185.0:
   version "0.185.2"
   resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.185.2.tgz#cb7ee57f77377d6c5d69a469e980f6332a15e492"
   integrity sha512-2hJ5ACYeJCzNtiVULov6pljKOLygy0zddoqSI1fFetM+XRPpRshFdGEijtqlamA1XwyZ+7rhryI6FQFzvtLWUQ==
-
-follow-redirects@^1.14.4:
-  version "1.15.2"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.2.tgz#b460864144ba63f2681096f274c4e57026da2c13"
-  integrity sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==
 
 follow-redirects@^1.15.0:
   version "1.15.3"
@@ -7119,13 +7107,14 @@ stream-buffers@2.2.x:
   integrity sha512-uyQK/mx5QjHun80FLJTfaWE7JtwfRMKBLkMne6udYOmvH0CawotVa7TfgYHzAnpphn4+TweIx1QKMnRIbipmUg==
 
 "stream-chat-expo@link:../../package/expo-package":
-  version "0.0.0"
-  uid ""
+  version "5.21.0"
+  dependencies:
+    stream-chat-react-native-core "5.21.0"
 
-stream-chat-react-native-core@5.19.3:
-  version "5.19.3"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.19.3.tgz#6f99af372bce8414998d4cce13ce0855a1a20386"
-  integrity sha512-uOJC1tq9VqzaPdv5TL6PWbLar2mCGQ1nYKQ3tdcnQhL3T/3130oizoP0rh/3LB2HUqn19NcngfnzE2FBXTI++w==
+stream-chat-react-native-core@5.21.0:
+  version "5.21.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.21.0.tgz#de8b5eca351eb7e5905b48b09a90eb5357c321cb"
+  integrity sha512-JOa7giYrQMUHdCqu8rPlSgtWQZyi/oG3EhdOArkUB2WUAFlKScmOfcYEIFRJCGYmKOsihBqqIwF6xPckJ+bpcQ==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "4.4.8"
@@ -7139,26 +7128,24 @@ stream-chat-react-native-core@5.19.3:
     path "0.12.7"
     react-native-markdown-package "1.8.2"
     react-native-url-polyfill "^1.3.0"
-    stream-chat "~8.13.1"
+    stream-chat "~8.14.0"
 
 "stream-chat-react-native-core@link:../../package":
-  version "0.0.0"
-  uid ""
-
-stream-chat@~8.13.1:
-  version "8.13.1"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.13.1.tgz#9781a456487f376d7c9c98271a4f4c926a9e6cf8"
-  integrity sha512-k0tOmtlLsvVxpZ2EuR+Z/qQiyCHOIjACqwnBZnT1ERA1t3549U2vzkUE6l2tN2VGAgUP1tDl00FhZO5JrAkMKw==
+  version "5.21.0"
   dependencies:
-    "@babel/runtime" "^7.16.3"
-    "@types/jsonwebtoken" "~9.0.0"
-    "@types/ws" "^7.4.0"
-    axios "^0.22.0"
-    base64-js "^1.5.1"
-    form-data "^4.0.0"
-    isomorphic-ws "^4.0.1"
-    jsonwebtoken "~9.0.0"
-    ws "^7.4.4"
+    "@babel/runtime" "^7.12.5"
+    "@gorhom/bottom-sheet" "4.4.8"
+    dayjs "1.10.5"
+    file-loader "6.2.0"
+    i18next "20.2.4"
+    linkifyjs "^4.1.1"
+    lodash-es "4.17.21"
+    metro-react-native-babel-preset "0.66.2"
+    mime-types "^2.1.34"
+    path "0.12.7"
+    react-native-markdown-package "1.8.2"
+    react-native-url-polyfill "^1.3.0"
+    stream-chat "~8.14.0"
 
 stream-chat@~8.14.0:
   version "8.14.1"
