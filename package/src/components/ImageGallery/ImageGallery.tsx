@@ -669,6 +669,7 @@ export const ImageGallery = <
           photoLength={imageGalleryAttachments.length}
           progress={imageGalleryAttachments[selectedIndex].progress || 0}
           selectedIndex={selectedIndex}
+          videoRef={videoRef}
           visible={headerFooterVisible}
           {...imageGalleryCustomComponents?.footer}
         />
