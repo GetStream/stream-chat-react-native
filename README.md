@@ -9,7 +9,7 @@
 
 
 [![NPM](https://img.shields.io/npm/v/stream-chat-react-native.svg)](https://www.npmjs.com/package/stream-chat-react-native)
-[![Build Status](https://github.com/GetStream/stream-chat-react-native/workflows/build/badge.svg)](https://github.com/GetStream/stream-chat-react-native/actions)
+[![Build Status](https://github.com/GetStream/stream-chat-react-native/actions/workflows/release.yml/badge.svg)](https://github.com/GetStream/stream-chat-react-native/actions)
 [![Component Reference](https://img.shields.io/badge/docs-component%20reference-blue.svg)](https://getstream.io/chat/docs/sdk/reactnative)
 
 <img align="right" src="https://getstream.imgix.net/images/ios-chat-tutorial/iphone_chat_art@3x.png?auto=format,enhance" width="50%" />
@@ -25,10 +25,15 @@
 
 ## Contents
 
-- [React Native Chat Tutorial](#-react-native-chat-tutorial)
-- [Example Apps](#-example-apps)
-- [Keep in mind](#-keep-in-mind)
-- [Contributing](#-contributing)
+- [Official React Native SDK for Stream Chat](#official-react-native-sdk-for-stream-chat)
+  - [Contents](#contents)
+  - [📖 React Native Chat Tutorial](#-react-native-chat-tutorial)
+  - [Free for Makers](#free-for-makers)
+  - [🔮 Example Apps](#-example-apps)
+  - [💬 Keep in mind](#-keep-in-mind)
+  - [👏 Contributing](#-contributing)
+  - [Git flow \& Release process](#git-flow--release-process)
+  - [We are hiring](#we-are-hiring)
 
 ## 📖 React Native Chat Tutorial
 
