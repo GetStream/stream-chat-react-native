@@ -121,6 +121,7 @@ const ReactionListWithContext = <
         avatarWrapper: { leftAlign, spacer },
         reactionList: {
           container,
+          iconFillColor,
           middleIcon,
           radius: themeRadius,
           reactionBubble,
@@ -263,7 +264,7 @@ const ReactionListWithContext = <
             {reactions.map((reaction) => (
               <Icon
                 key={reaction.type}
-                pathFill={reaction.own ? accent_blue : grey}
+                pathFill={reaction.own ? iconFillColor || accent_blue : grey}
                 size={reactionSize / 2}
                 style={middleIcon}
                 supportedReactions={supportedReactions}
