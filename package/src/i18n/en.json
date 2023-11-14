@@ -68,5 +68,7 @@
   "{{ user }} is typing": "{{ user }} is typing",
   "Select More Photos": "Select More Photos",
   "🏙 Attachment...": "🏙 Attachment...",
-  "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.": "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB."
+  "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.": "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.",
+  "Let's start chatting!": "Let's start chatting!",
+  "How about sending your first message to a friend?": "How about sending your first message to a friend?"
 }

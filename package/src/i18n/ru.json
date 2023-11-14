@@ -68,5 +68,7 @@
   "{{ user }} is typing": "{{ user }} пишет",
   "Select More Photos": "Выбрать больше фотографий",
   "🏙 Attachment...": "🏙 Вложение...",
-  "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.": "Достигнут предел максимального размера файла для загрузки. Загрузите файл размером менее {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} МБ."
+  "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.": "Достигнут предел максимального размера файла для загрузки. Загрузите файл размером менее {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} МБ.",
+  "Let's start chatting!": "Давайте начнем общаться!",
+  "How about sending your first message to a friend?": "Как насчет отправки первого сообщения другу?"
 }

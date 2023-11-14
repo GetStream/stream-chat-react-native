@@ -70,5 +70,7 @@
   "File type not supported": "지원하지 않는 파일입니다.",
   "Select More Photos": "추가 사진 선택",
   "Not supported": "지원하지 않습니다",
-  "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.": "최대 파일 크기 업로드 제한에 도달했습니다. {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}}MB 미만의 파일을 업로드하세요."
+  "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.": "최대 파일 크기 업로드 제한에 도달했습니다. {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}}MB 미만의 파일을 업로드하세요.",
+  "Let's start chatting!": "채팅을 시작합시다!",
+  "How about sending your first message to a friend?": "친구에게 첫 번째 메시지를 보내는 것은 어떻습니까?"
 }
