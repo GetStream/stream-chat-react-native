@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Dimensions } from 'react-native';
 
+/**
+ * A custom hook that provides functions to calculate dimensions based on
+ * a percentage of the viewport height (vh) and viewport width (vw). It
+ * dynamically updates dimensions on changes in device orientation.
+ *
+ * @returns {Object} An object containing functions vh and vw.
+ */
 export const useViewport = (rounded?: boolean) => {
   const [viewportDimensions, setViewportDimensions] = useState(Dimensions.get('window'));
 
