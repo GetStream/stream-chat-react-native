@@ -2,7 +2,6 @@ import type { ImageStyle, TextStyle, ViewStyle } from 'react-native';
 import type { CircleProps, Color, StopProps } from 'react-native-svg';
 
 import type { IconProps } from '../../../icons/utils/base';
-import { vh } from '../../../utils/utils';
 
 export const DEFAULT_STATUS_ICON_SIZE = 16;
 
@@ -301,9 +300,6 @@ export type Theme = {
         container: ViewStyle;
         iconContainer: ViewStyle;
         title: TextStyle;
-      };
-      container: ViewStyle & {
-        maxHeight: number;
       };
       emoji: {
         container: ViewStyle;
@@ -809,9 +805,6 @@ export const defaultTheme: Theme = {
         container: {},
         iconContainer: {},
         title: {},
-      },
-      container: {
-        maxHeight: vh(25),
       },
       emoji: {
         container: {},

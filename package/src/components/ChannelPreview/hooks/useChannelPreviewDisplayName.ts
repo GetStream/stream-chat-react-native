@@ -3,11 +3,9 @@ import { useEffect, useState } from 'react';
 import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { useViewport } from '../../../hooks/useViewport';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { vw } from '../../../utils/utils';
-
-const DEFAULT_MAX_CHARACTER_LENGTH = (vw(100) - 16) / 6;
 
 const ELLIPSIS = `...`;
 
@@ -81,6 +79,9 @@ export const useChannelPreviewDisplayName = <
   characterLength?: number,
 ) => {
   const { client } = useChatContext<StreamChatGenerics>();
+  const { vw } = useViewport();
+
+  const DEFAULT_MAX_CHARACTER_LENGTH = (vw(100) - 16) / 6;
 
   const currentUserId = client?.userID;
   const members = channel?.state?.members;
