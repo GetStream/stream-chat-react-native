@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Dimensions } from 'react-native';
 
 /**
@@ -12,9 +12,15 @@ export const useViewport = (rounded?: boolean) => {
   const [viewportDimensions, setViewportDimensions] = useState(Dimensions.get('window'));
 
   useEffect(() => {
-    const subscriptions = Dimensions.addEventListener('change', ({ window }) =>
-      setViewportDimensions(window),
-    );
+    const subscriptions = Dimensions.addEventListener('change', ({ window }) => {
+      setViewportDimensions((prev) => {
+        const { height, width } = window;
+        if (prev.height !== height || prev.width !== width) {
+          return window;
+        }
+        return prev;
+      });
+    });
 
     return () => subscriptions?.remove();
   }, []);
@@ -29,5 +35,7 @@ export const useViewport = (rounded?: boolean) => {
     return rounded ? Math.round(value) : value;
   };
 
-  return { vh, vw };
+  const viewportFunctions = useMemo(() => ({ vh, vw }), [vh, vw]);
+
+  return viewportFunctions;
 };
