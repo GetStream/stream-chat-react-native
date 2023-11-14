@@ -19,8 +19,9 @@ import {
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
 
+import { useViewport } from '../../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { MessageStatusTypes, vw } from '../../../utils/utils';
+import { MessageStatusTypes } from '../../../utils/utils';
 
 const styles = StyleSheet.create({
   containerInner: {
@@ -164,6 +165,7 @@ const MessageContentWithContext = <
       },
     },
   } = useTheme();
+  const { vw } = useViewport();
 
   const getDateText = (formatter?: (date: TDateTimeParserInput) => string) => {
     if (!message.created_at) return '';

@@ -3,6 +3,7 @@ import { StyleSheet, View, ViewStyle } from 'react-native';
 import type { StyleProp } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
+import { useViewport } from '../../../hooks/useViewport';
 import {
   isVideoPackageAvailable,
   PlaybackStatus,
@@ -12,11 +13,8 @@ import {
   VideoType,
 } from '../../../native';
 
-import { vw } from '../../../utils/utils';
 import { Spinner } from '../../Spinner/Spinner';
 
-const screenWidth = vw(100);
-const halfScreenWidth = vw(50);
 const oneEighth = 1 / 8;
 
 export type AnimatedGalleryVideoType = {
@@ -74,6 +72,10 @@ export const AnimatedGalleryVideo: React.FC<AnimatedGalleryVideoType> = React.me
       translateY,
       videoRef,
     } = props;
+    const { vw } = useViewport();
+
+    const screenWidth = vw(100);
+    const halfScreenWidth = vw(50);
 
     const onLoadStart = () => {
       setOpacity(1);

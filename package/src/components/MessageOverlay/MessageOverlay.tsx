@@ -41,8 +41,8 @@ import {
 } from '../../contexts/overlayContext/OverlayContext';
 import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
 
+import { useViewport } from '../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { vh, vw } from '../../utils/utils';
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
 import {
   OverlayReactions as DefaultOverlayReactions,
@@ -78,8 +78,6 @@ const styles = StyleSheet.create({
   scrollView: { overflow: Platform.OS === 'ios' ? 'visible' : 'scroll' },
 });
 
-const screenHeight = vh(100);
-const halfScreenHeight = vh(50);
 const DefaultMessageTextNumberOfLines = 5;
 
 export type MessageOverlayPropsWithContext<
@@ -154,6 +152,10 @@ const MessageOverlayWithContext = <
   };
 
   const { theme } = useTheme();
+  const { vh, vw } = useViewport();
+
+  const screenHeight = vh(100);
+  const halfScreenHeight = vh(50);
 
   const myMessageTheme = messagesContext?.myMessageTheme;
   const wrapMessageInTheme = clientId === message?.user?.id && !!myMessageTheme;

@@ -2,10 +2,9 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { MessageIcon } from '../../icons/MessageIcon';
-import { vw } from '../../utils/utils';
+import { useViewport } from '../../hooks/useViewport';
 
-const width = vw(33);
+import { MessageIcon } from '../../icons/MessageIcon';
 
 const styles = StyleSheet.create({
   channelContainer: {
@@ -16,7 +15,6 @@ const styles = StyleSheet.create({
   channelDetails: {
     fontSize: 14,
     textAlign: 'center',
-    width: vw(66),
   },
   channelTitle: {
     fontSize: 16,
@@ -36,6 +34,8 @@ export const EmptyStateIndicator: React.FC<EmptyStateProps> = ({ listType }) => 
       emptyStateIndicator: { channelContainer, channelDetails, channelTitle },
     },
   } = useTheme();
+  const { vw } = useViewport();
+  const width = vw(33);
 
   switch (listType) {
     case 'channel':
@@ -49,7 +49,7 @@ export const EmptyStateIndicator: React.FC<EmptyStateProps> = ({ listType }) => 
             {"Let's start chatting!"}
           </Text>
           <Text
-            style={[styles.channelDetails, { color: grey }, channelDetails]}
+            style={[styles.channelDetails, { color: grey, width: vw(66) }, channelDetails]}
             testID='empty-channel-state-details'
           >
             {'How about sending your first message to a friend?'}

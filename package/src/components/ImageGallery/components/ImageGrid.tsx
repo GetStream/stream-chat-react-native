@@ -5,8 +5,8 @@ import { BottomSheetFlatList, TouchableOpacity } from '@gorhom/bottom-sheet';
 
 import { VideoThumbnail } from '../../../components/Attachment/VideoThumbnail';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { useViewport } from '../../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { vw } from '../../../utils/utils';
 
 import type { Photo } from '../ImageGallery';
 
@@ -71,6 +71,7 @@ const GridImage = <
       },
     },
   } = useTheme();
+  const { vw } = useViewport();
   const { imageComponent, ...restItem } = item;
 
   const { numberOfImageGalleryGridColumns, selectAndClose, type, uri } = restItem;

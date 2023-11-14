@@ -10,8 +10,8 @@ import {
 } from '../../contexts/messageOverlayContext/MessageOverlayContext';
 import type { OverlayProviderProps } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useViewport } from '../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { vw } from '../../utils/utils';
 
 export type MessageActionListPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -52,6 +52,7 @@ const MessageActionListWithContext = <
     message,
     messageReactions,
   };
+  const { vw } = useViewport();
 
   const {
     theme: {
@@ -89,7 +90,7 @@ const MessageActionListWithContext = <
         width.value = layout.width;
         height.value = layout.height;
       }}
-      style={[styles.container, { backgroundColor: white_snow }, showScreenStyle]}
+      style={[styles.container, { backgroundColor: white_snow, minWidth: vw(65) }, showScreenStyle]}
       testID='message-action-list'
     >
       {messageActions?.map((messageAction, index) => (
@@ -154,16 +155,7 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 16,
     marginTop: 8,
-    minWidth: vw(65),
     overflow: 'hidden',
-  },
-  row: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    minWidth: vw(65),
-    paddingHorizontal: 20,
-    paddingVertical: 10,
   },
   titleStyle: {
     paddingLeft: 20,

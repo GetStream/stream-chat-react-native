@@ -8,10 +8,10 @@ import { lookup } from 'mime-types';
 
 import type { AttachmentPickerContextValue } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { useViewport } from '../../../hooks/useViewport';
 import { Recorder } from '../../../icons';
 import { getLocalAssetUri } from '../../../native';
 import type { Asset, File } from '../../../types/types';
-import { vw } from '../../../utils/utils';
 
 type AttachmentPickerItemType = Pick<
   AttachmentPickerContextValue,
@@ -39,6 +39,7 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
     selectedFiles,
     setSelectedFiles,
   } = props;
+  const { vw } = useViewport();
 
   const {
     theme: {
@@ -152,6 +153,7 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
       colors: { overlay },
     },
   } = useTheme();
+  const { vw } = useViewport();
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 

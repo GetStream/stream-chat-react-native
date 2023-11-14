@@ -20,13 +20,13 @@ import { renderAttachmentPickerItem } from './components/AttachmentPickerItem';
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { useViewport } from '../../hooks/useViewport';
 import {
   getPhotos,
   iOS14RefreshGallerySelection,
   oniOS14GalleryLibrarySelectionChange,
 } from '../../native';
 import type { Asset } from '../../types/types';
-import { vh } from '../../utils/utils';
 
 dayjs.extend(duration);
 
@@ -36,7 +36,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const screenHeight = vh(100);
 const fullScreenHeight = Dimensions.get('window').height;
 
 export type AttachmentPickerProps = {
@@ -106,6 +105,9 @@ export const AttachmentPicker = React.forwardRef(
       setSelectedPicker,
       topInset,
     } = useAttachmentPickerContext();
+    const { vh } = useViewport();
+
+    const screenHeight = vh(100);
 
     const [currentIndex, setCurrentIndex] = useState(-1);
     const endCursorRef = useRef<string>();

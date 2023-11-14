@@ -1,5 +1,4 @@
 import type React from 'react';
-import { Dimensions } from 'react-native';
 
 import type { DebouncedFunc } from 'lodash';
 import debounce from 'lodash/debounce';
@@ -518,18 +517,6 @@ export const getUrlWithoutParams = (url?: string) => {
 };
 
 export const isLocalUrl = (url: string) => url.indexOf('http') !== 0;
-
-export const vw = (percentageWidth: number, rounded = false) => {
-  const value = Dimensions.get('window').width * (percentageWidth / 100);
-  return rounded ? Math.round(value) : value;
-};
-
-export const vh = (percentageHeight: number, rounded = false) => {
-  const height = Dimensions.get('window').height;
-
-  const value = height * (percentageHeight / 100);
-  return rounded ? Math.round(value) : value;
-};
 
 export const generateRandomId = (a = ''): string =>
   a
