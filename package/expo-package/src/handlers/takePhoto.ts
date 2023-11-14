@@ -12,12 +12,14 @@ export const takePhoto = async ({ compressImageQuality = 1 }) => {
     const permissionCheck = await ImagePicker.getCameraPermissionsAsync();
     const canRequest = permissionCheck.canAskAgain;
     let permissionGranted = permissionCheck.granted;
-    if (!canRequest && !permissionGranted) {
-      Linking.openSettings();
-      return { cancelled: true };
-    } else if (canRequest && !permissionGranted) {
-      const response = await ImagePicker.requestCameraPermissionsAsync();
-      permissionGranted = response.granted;
+    if (!permissionGranted) {
+      if (canRequest) {
+        const response = await ImagePicker.requestCameraPermissionsAsync();
+        permissionGranted = response.granted;
+      } else {
+        Linking.openSettings();
+        return { cancelled: true };
+      }
     }
 
     if (permissionGranted) {
