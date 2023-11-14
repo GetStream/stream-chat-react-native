@@ -480,6 +480,7 @@ export type Theme = {
     };
     reactionList: {
       container: ViewStyle;
+      iconFillColor: Color;
       middleIcon: ViewStyle;
       radius: number;
       reactionBubble: ViewStyle;
@@ -1019,6 +1020,7 @@ export const defaultTheme: Theme = {
     },
     reactionList: {
       container: {},
+      iconFillColor: '',
       middleIcon: {},
       radius: 2, // not recommended to change this
       reactionBubble: {},
