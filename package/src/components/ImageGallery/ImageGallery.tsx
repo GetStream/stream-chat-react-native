@@ -575,21 +575,7 @@ export const ImageGallery = <
                     simultaneousHandlers={[pinchRef]}
                   >
                     <Animated.View style={StyleSheet.absoluteFill}>
-                      <Animated.View
-                        style={[
-                          styles.animatedContainer,
-                          pagerStyle,
-                          pager,
-                          {
-                            transform: [
-                              { scaleX: -1 }, // Also only here for opening, wrong direction when not included
-                              {
-                                translateX: translationX.value, // Only here for opening, wrong index when this is not included
-                              },
-                            ],
-                          },
-                        ]}
-                      >
+                      <Animated.View style={[styles.animatedContainer, pagerStyle, pager]}>
                         {imageGalleryAttachments.map((photo, i) =>
                           photo.type === 'video' ? (
                             <AnimatedGalleryVideo
