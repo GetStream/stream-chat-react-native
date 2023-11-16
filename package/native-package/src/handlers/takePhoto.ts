@@ -1,6 +1,8 @@
 import { AppState, Image, Linking, PermissionsAndroid, Platform } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 
+let hadNeverAskAgainAndroidPermission = false;
+
 export const takePhoto = async ({ compressImageQuality = Platform.OS === 'ios' ? 0.8 : 1 }) => {
   if (Platform.OS === 'android') {
     const cameraPermissions = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.CAMERA);
@@ -11,7 +13,10 @@ export const takePhoto = async ({ compressImageQuality = Platform.OS === 'ios' ?
       if (androidPermissionStatus === PermissionsAndroid.RESULTS.DENIED) {
         return { cancelled: true };
       } else if (androidPermissionStatus === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
-        Linking.openSettings();
+        if (hadNeverAskAgainAndroidPermission) {
+          await Linking.openSettings();
+        }
+        hadNeverAskAgainAndroidPermission = true;
         return { cancelled: true };
       }
     }
