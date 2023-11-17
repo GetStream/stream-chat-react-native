@@ -100,8 +100,9 @@ export const renderText = <
     onPress: onPressParam,
     preventPress,
   } = params;
+  const { text } = message;
 
-  const markdownText = generateMarkdownText<StreamChatGenerics>(message);
+  const markdownText = generateMarkdownText(text);
 
   const styles: MarkdownStyle = {
     ...defaultMarkdownStyles,
