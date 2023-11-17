@@ -80,6 +80,8 @@ export type ImageUpload = {
   width?: number;
 };
 
+export type CustomAttributes = { [key: string]: any };
+
 export type MentionAllAppUsersQuery<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
@@ -102,6 +104,7 @@ export type LocalMessageInputContext<
   closeAttachmentPicker: () => void;
   /** The time at which the active cooldown will end */
   cooldownEndsAt: Date;
+  customAttributes: CustomAttributes | undefined;
   /**
    * An array of file objects which are set for upload. It has the following structure:
    *
@@ -183,6 +186,7 @@ export type LocalMessageInputContext<
       };
     }>
   >;
+  setCustomAttributes: React.Dispatch<React.SetStateAction<CustomAttributes | undefined>>;
   setFileUploads: React.Dispatch<React.SetStateAction<FileUpload[]>>;
   setGiphyActive: React.Dispatch<React.SetStateAction<boolean>>;
   setImageUploads: React.Dispatch<React.SetStateAction<ImageUpload[]>>;
@@ -455,10 +459,12 @@ export const MessageInputProvider = <
   const [sendThreadMessageInChannel, setSendThreadMessageInChannel] = useState(false);
   const { editing, hasFilePicker, hasImagePicker, initialValue } = value;
   const {
+    customAttributes,
     fileUploads,
     imageUploads,
     mentionedUsers,
     numberOfUploads,
+    setCustomAttributes,
     setFileUploads,
     setImageUploads,
     setMentionedUsers,
@@ -785,6 +791,7 @@ export const MessageInputProvider = <
     if (value.editing && !isEditingBoolean(value.editing)) {
       const updatedMessage = {
         ...value.editing,
+        ...(customAttributes ? customAttributes : {}),
         attachments,
         mentioned_users: mentionedUsers,
         quoted_message: undefined,
@@ -806,7 +813,10 @@ export const MessageInputProvider = <
       sending.current = false;
     } else {
       try {
+        console.log('CUSTOM ATTRIBUTES', customAttributes);
+
         value.sendMessage({
+          ...(customAttributes ? customAttributes : {}),
           attachments,
           mentioned_users: uniq(mentionedUsers),
           /** Parent message id - in case of thread */
@@ -1123,6 +1133,7 @@ export const MessageInputProvider = <
     asyncUploads,
     closeAttachmentPicker,
     cooldownEndsAt,
+    customAttributes,
     fileUploads,
     giphyActive,
     imageUploads,
@@ -1146,6 +1157,7 @@ export const MessageInputProvider = <
     sendThreadMessageInChannel,
     setAsyncIds,
     setAsyncUploads,
+    setCustomAttributes,
     setFileUploads,
     setGiphyActive,
     setImageUploads,

@@ -3,7 +3,12 @@ import { useEffect, useState } from 'react';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { generateRandomId } from '../../../utils/utils';
 
-import type { FileUpload, ImageUpload, MessageInputContextValue } from '../MessageInputContext';
+import type {
+  CustomAttributes,
+  FileUpload,
+  ImageUpload,
+  MessageInputContextValue,
+} from '../MessageInputContext';
 
 export const isEditingBoolean = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -24,6 +29,7 @@ export const useMessageDetailsForState = <
   const [showMoreOptions, setShowMoreOptions] = useState(true);
   const initialTextValue = initialValue || '';
   const [text, setText] = useState(initialTextValue);
+  const [customAttributes, setCustomAttributes] = useState<CustomAttributes | undefined>();
 
   useEffect(() => {
     if (text !== initialTextValue) {
@@ -99,10 +105,12 @@ export const useMessageDetailsForState = <
   }, [messageValue]);
 
   return {
+    customAttributes,
     fileUploads,
     imageUploads,
     mentionedUsers,
     numberOfUploads,
+    setCustomAttributes,
     setFileUploads,
     setImageUploads,
     setMentionedUsers,
