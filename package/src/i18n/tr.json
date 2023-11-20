@@ -70,5 +70,8 @@
   "🏙 Attachment...": "🏙 Ek...",
   "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.": "Maksimum dosya boyutu yükleme sınırına ulaşıldı. Lütfen {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB'ın altında bir dosya yükleyin.",
   "Let's start chatting!": "Haydi sohbete başlayalım!",
-  "How about sending your first message to a friend?": "İlk mesajınızı bir arkadaşınıza göndermeye ne dersiniz?"
+  "How about sending your first message to a friend?": "İlk mesajınızı bir arkadaşınıza göndermeye ne dersiniz?",
+  "Allow camera access in device settings": "Cihaz ayarlarında kamera erişimine izin ver",
+  "Device camera is used to take photos or videos.": "Cihaz kamerası fotoğraf veya video çekmek için kullanılır.",
+  "Open Settings": "Ayarları aç"
 }

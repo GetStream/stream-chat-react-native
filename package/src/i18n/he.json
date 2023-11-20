@@ -70,5 +70,8 @@
   "🏙 Attachment...": "🏙 קובץ מצורף...",
   "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.": "הגעת למגבלת העלאת גודל הקובץ המקסימלית. אנא העלה קובץ מתחת ל-{{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB",
   "Let's start chatting!": "בואו נתחיל לשוחח!",
-  "How about sending your first message to a friend?": "מה דעתך לשלוח את ההודעה הראשונה שלך לחבר?"
+  "How about sending your first message to a friend?": "מה דעתך לשלוח את ההודעה הראשונה שלך לחבר?",
+  "Allow camera access in device settings": "אפשר גישה למצלמה בהגדרות המכשיר",
+  "Device camera is used to take photos or videos.": "מצלמת המכשיר משמשת לצילום תמונות או סרטונים.",
+  "Open Settings": "פתח את ההגדרות"
 }
