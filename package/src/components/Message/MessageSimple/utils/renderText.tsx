@@ -141,8 +141,15 @@ export const renderText = <
       : Linking.canOpenURL(url).then((canOpenUrl) => canOpenUrl && Linking.openURL(url));
   };
 
+  let previousLink: string;
   const linkReact: ReactNodeOutput = (node, output, { ...state }) => {
-    const url = node.target;
+    let url: string;
+    if (state?.withinLink) {
+      url = previousLink;
+    } else {
+      url = node.target;
+      previousLink = node.target;
+    }
     const onPress = (event: GestureResponderEvent) => {
       if (!preventPress && onPressParam) {
         onPressParam({
