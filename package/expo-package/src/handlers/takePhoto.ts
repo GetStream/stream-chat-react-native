@@ -1,4 +1,4 @@
-import { Image, Linking, Platform } from 'react-native';
+import { Image, Platform } from 'react-native';
 
 import * as ImagePicker from 'expo-image-picker';
 
@@ -17,8 +17,7 @@ export const takePhoto = async ({ compressImageQuality = 1 }) => {
         const response = await ImagePicker.requestCameraPermissionsAsync();
         permissionGranted = response.granted;
       } else {
-        Linking.openSettings();
-        return { cancelled: true };
+        return { askToOpenSettings: true, cancelled: true };
       }
     }
 

@@ -1,7 +1,5 @@
-import { AppState, Image, Linking, PermissionsAndroid, Platform } from 'react-native';
+import { AppState, Image, PermissionsAndroid, Platform } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
-
-let hadDeniedAndroidPermission = false;
 
 export const takePhoto = async ({ compressImageQuality = Platform.OS === 'ios' ? 0.8 : 1 }) => {
   if (Platform.OS === 'android') {
@@ -11,13 +9,9 @@ export const takePhoto = async ({ compressImageQuality = Platform.OS === 'ios' ?
         PermissionsAndroid.PERMISSIONS.CAMERA,
       );
       if (androidPermissionStatus === PermissionsAndroid.RESULTS.DENIED) {
-        hadDeniedAndroidPermission = true;
         return { cancelled: true };
       } else if (androidPermissionStatus === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
-        if (!hadDeniedAndroidPermission) {
-          Linking.openSettings();
-        }
-        return { cancelled: true };
+        return { askToOpenSettings: true, cancelled: true };
       }
     }
   }
@@ -62,9 +56,15 @@ export const takePhoto = async ({ compressImageQuality = Platform.OS === 'ios' ?
       };
     }
   } catch (e: unknown) {
-    // on iOS: if it was in inactive state, then the user had just denied the permissions
-    if (Platform.OS === 'ios' && AppState.currentState === 'active') {
-      await Linking.openSettings();
+    if (e instanceof Error) {
+      // on iOS: if it was in inactive state, then the user had just denied the permissions
+      if (Platform.OS === 'ios' && AppState.currentState === 'active') {
+        const cameraPermissionDeniedMsg = 'User did not grant camera permission.';
+        // Open settings when the user did not allow camera permissions
+        if (e.message === cameraPermissionDeniedMsg) {
+          return { askToOpenSettings: true, cancelled: true };
+        }
+      }
     }
   }
 

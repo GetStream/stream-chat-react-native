@@ -70,5 +70,8 @@
   "🏙 Attachment...": "🏙 Bijlage...",
   "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.": "Maximale uploadlimiet voor bestandsgrootte bereikt. Upload een bestand van minder dan {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.",
   "Let's start chatting!": "Laten we beginnen met chatten!",
-  "How about sending your first message to a friend?": "Wat dacht je ervan om je eerste bericht naar een vriend te sturen?"
+  "How about sending your first message to a friend?": "Wat dacht je ervan om je eerste bericht naar een vriend te sturen?",
+  "Allow camera access in device settings": "Sta cameratoegang toe in de apparaatinstellingen",
+  "Device camera is used to take photos or videos.": "De camera van het apparaat wordt gebruikt om foto's of video's te maken.",
+  "Open Settings": "Open instellingen"
 }

@@ -70,5 +70,8 @@
   "🏙 Attachment...": "🏙 Adjunto...",
   "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.": "El archivo supera el tamaño máximo permitido. Por favor, selecciona un archivo menor a {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.",
   "Let's start chatting!": "¡Empecemos a charlar!",
-  "How about sending your first message to a friend?": "¿Qué tal enviar tu primer mensaje a un amigo?"
+  "How about sending your first message to a friend?": "¿Qué tal enviar tu primer mensaje a un amigo?",
+  "Allow camera access in device settings": "Permitir el acceso a la cámara en la configuración del dispositivo",
+  "Device camera is used to take photos or videos.": "La cámara del dispositivo se utiliza para tomar fotografías o vídeos.",
+  "Open Settings": "Configuración abierta"
 }
