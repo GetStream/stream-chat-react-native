@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
-import { Check, generateRandomId, useTheme, vw } from 'stream-chat-react-native';
+import { Check, generateRandomId, useTheme, useViewport } from 'stream-chat-react-native';
 
 import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -89,6 +89,7 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
       colors: { bg_gradient_end, bg_gradient_start, black, border, grey, white_snow },
     },
   } = useTheme();
+  const { vw } = useViewport();
 
   const [groupName, setGroupName] = useState('');
 
