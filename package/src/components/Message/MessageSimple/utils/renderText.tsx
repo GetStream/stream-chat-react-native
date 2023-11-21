@@ -141,10 +141,12 @@ export const renderText = <
       : Linking.canOpenURL(url).then((canOpenUrl) => canOpenUrl && Linking.openURL(url));
   };
 
-  let previousLink: string;
+  let previousLink: string | undefined;
   const linkReact: ReactNodeOutput = (node, output, { ...state }) => {
     let url: string;
-    if (state?.withinLink) {
+    // Some long URLs with `&` separated parameters are trimmed and the url only until first param is taken.
+    // This is done because of internal link been taken from the original URL in react-native-markdown-package. So, we check for `withinLink` and take the previous full URL.
+    if (state?.withinLink && previousLink) {
       url = previousLink;
     } else {
       url = node.target;
