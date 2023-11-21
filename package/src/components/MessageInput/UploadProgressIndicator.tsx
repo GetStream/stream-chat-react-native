@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import {
   ActivityIndicator,
   GestureResponderEvent,
@@ -24,7 +24,7 @@ export type UploadProgressIndicatorProps = {
   type?: 'in_progress' | 'retry' | 'not_supported' | 'inactive' | null;
 };
 
-export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (props) => {
+export const UploadProgressIndicator = (props: PropsWithChildren<UploadProgressIndicatorProps>) => {
   const { action, children, style, type } = props;
 
   const {
