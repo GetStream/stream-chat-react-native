@@ -138,6 +138,11 @@ export type ChannelContextValue<
   setLastRead: React.Dispatch<React.SetStateAction<Date | undefined>>;
   setTargetedMessage: (messageId: string) => void;
   /**
+   * Abort controller for cancelling async requests made for uploading images/files
+   * Its a map of filename and AbortController
+   */
+  uploadAbortControllerRef: React.MutableRefObject<Map<string, AbortController>>;
+  /**
    *
    * ```json
    * {

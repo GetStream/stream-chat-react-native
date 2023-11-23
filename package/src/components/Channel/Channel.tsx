@@ -589,6 +589,13 @@ const ChannelWithContext = <
 
   const { setTargetedMessage, targetedMessage } = useTargetedMessage();
 
+  /**
+   * This ref will hold the abort controllers for
+   * requests made for uploading images/files in the messageInputContext
+   * Its a map of filename to AbortController
+   */
+  const uploadAbortControllerRef = useRef<Map<string, AbortController>>(new Map());
+
   const channelId = channel?.id || '';
   useEffect(() => {
     const initChannel = () => {
@@ -1299,8 +1306,14 @@ const ChannelWithContext = <
           isLocalUrl(attachment.image_url)
         ) {
           const filename = file.name ?? file.uri.replace(/^(file:\/\/|content:\/\/)/, '');
+          const controller = uploadAbortControllerRef.current.get(filename);
+          if (controller) {
+            controller.abort();
+            uploadAbortControllerRef.current.delete(filename);
+          }
           const contentType = lookup(filename) || 'multipart/form-data';
 
+          // if any upload is in progress, cancel it
           const uploadResponse = doImageUploadRequest
             ? await doImageUploadRequest(file, channel)
             : await channel.sendImage(file.uri, filename, contentType);
@@ -1321,6 +1334,12 @@ const ChannelWithContext = <
           isLocalUrl(attachment.asset_url) &&
           file?.uri
         ) {
+          // if any upload is in progress, cancel it
+          const controller = uploadAbortControllerRef.current.get(file.name);
+          if (controller) {
+            controller.abort();
+            uploadAbortControllerRef.current.delete(file.name);
+          }
           const response = doDocUploadRequest
             ? await doDocUploadRequest(file, channel)
             : await channel.sendFile(file.uri, file.name, file.mimeType);
@@ -1851,6 +1870,7 @@ const ChannelWithContext = <
     StickyHeader,
     targetedMessage,
     threadList,
+    uploadAbortControllerRef,
     watcherCount,
     watchers,
   });

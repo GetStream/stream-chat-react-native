@@ -438,7 +438,8 @@ export const MessageInputProvider = <
 
   const channelCapabities = useOwnCapabilitiesContext();
 
-  const { channel, giphyEnabled } = useChannelContext<StreamChatGenerics>();
+  const { channel, giphyEnabled, uploadAbortControllerRef } =
+    useChannelContext<StreamChatGenerics>();
   const { thread } = useThreadContext<StreamChatGenerics>();
   const { t } = useTranslationContext();
   const inputBoxRef = useRef<TextInput | null>(null);
@@ -968,11 +969,21 @@ export const MessageInputProvider = <
       if (value.doDocUploadRequest) {
         response = await value.doDocUploadRequest(file, channel);
       } else if (channel && file.uri) {
+        uploadAbortControllerRef.current.set(
+          file.name,
+          client.createAbortControllerForNextRequest(),
+        );
         response = await channel.sendFile(file.uri, file.name, file.mimeType);
+        uploadAbortControllerRef.current.delete(file.name);
       }
       const extraData: Partial<FileUpload> = { thumb_url: response.thumb_url, url: response.file };
       setFileUploads(getUploadSetStateAction(id, FileState.UPLOADED, extraData));
     } catch (error: unknown) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        // nothing to do
+        uploadAbortControllerRef.current.delete(file.name);
+        return;
+      }
       handleFileOrImageUploadError(error, false, id);
     }
   };
@@ -986,8 +997,10 @@ export const MessageInputProvider = <
 
     let response = {} as SendFileAPIResponse;
 
+    const uri = file.uri || '';
+    const filename = file.filename ?? uri.replace(/^(file:\/\/|content:\/\/)/, '');
+
     try {
-      const uri = file.uri || '';
       /**
        * We skip compression if:
        * - the file is from the camera as that should already be compressed
@@ -1006,32 +1019,51 @@ export const MessageInputProvider = <
             uri,
             width: file.width,
           }));
-      const filename = file.filename ?? uri.replace(/^(file:\/\/|content:\/\/)/, '');
+
       const contentType = lookup(filename) || 'multipart/form-data';
       if (value.doImageUploadRequest) {
         response = await value.doImageUploadRequest(file, channel);
       } else if (compressedUri && channel) {
         if (value.sendImageAsync) {
-          channel.sendImage(compressedUri, filename, contentType).then((res) => {
-            if (asyncIds.includes(id)) {
-              // Evaluates to true if user hit send before image successfully uploaded
-              setAsyncUploads((prevAsyncUploads) => {
-                prevAsyncUploads[id] = {
-                  ...prevAsyncUploads[id],
-                  state: FileState.UPLOADED,
-                  url: res.file,
-                };
-                return prevAsyncUploads;
-              });
-            } else {
-              const newImageUploads = getUploadSetStateAction<ImageUpload>(id, FileState.UPLOADED, {
-                url: res.file,
-              });
-              setImageUploads(newImageUploads);
-            }
-          });
+          uploadAbortControllerRef.current.set(
+            filename,
+            client.createAbortControllerForNextRequest(),
+          );
+          channel.sendImage(compressedUri, filename, contentType).then(
+            (res) => {
+              uploadAbortControllerRef.current.delete(filename);
+              if (asyncIds.includes(id)) {
+                // Evaluates to true if user hit send before image successfully uploaded
+                setAsyncUploads((prevAsyncUploads) => {
+                  prevAsyncUploads[id] = {
+                    ...prevAsyncUploads[id],
+                    state: FileState.UPLOADED,
+                    url: res.file,
+                  };
+                  return prevAsyncUploads;
+                });
+              } else {
+                const newImageUploads = getUploadSetStateAction<ImageUpload>(
+                  id,
+                  FileState.UPLOADED,
+                  {
+                    url: res.file,
+                  },
+                );
+                setImageUploads(newImageUploads);
+              }
+            },
+            () => {
+              uploadAbortControllerRef.current.delete(filename);
+            },
+          );
         } else {
+          uploadAbortControllerRef.current.set(
+            filename,
+            client.createAbortControllerForNextRequest(),
+          );
           response = await channel.sendImage(compressedUri, filename, contentType);
+          uploadAbortControllerRef.current.delete(filename);
         }
       }
 
@@ -1044,6 +1076,11 @@ export const MessageInputProvider = <
         setImageUploads(newImageUploads);
       }
     } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        // nothing to do
+        uploadAbortControllerRef.current.delete(filename);
+        return;
+      }
       handleFileOrImageUploadError(error, true, id);
     }
   };
