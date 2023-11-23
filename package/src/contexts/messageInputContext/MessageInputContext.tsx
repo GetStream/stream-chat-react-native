@@ -641,20 +641,25 @@ export const MessageInputProvider = <
     setText('');
   };
 
-  const mapImageUploadToAttachment = (image: ImageUpload) => {
+  const mapImageUploadToAttachment = (image: ImageUpload): Attachment<StreamChatGenerics> => {
     const mime_type: string | boolean = lookup(image.file.filename as string);
+    const name = image.file.name ?? (image.file.filename as string);
     return {
-      fallback: image.file.name,
+      fallback: name,
       image_url: image.url,
       mime_type: mime_type ? mime_type : undefined,
       original_height: image.height,
       original_width: image.width,
-      originalFile: image.file,
+      originalFile: {
+        ...image.file,
+        duration: image.file.duration ? `${image.file.duration}` : undefined,
+        name,
+      },
       type: 'image',
-    } as Attachment;
+    };
   };
 
-  const mapFileUploadToAttachment = (file: FileUpload) => {
+  const mapFileUploadToAttachment = (file: FileUpload): Attachment<StreamChatGenerics> => {
     if (file.file.mimeType?.startsWith('image/')) {
       return {
         fallback: file.file.name,

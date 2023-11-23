@@ -1306,6 +1306,7 @@ const ChannelWithContext = <
           isLocalUrl(attachment.image_url)
         ) {
           const filename = file.name ?? file.uri.replace(/^(file:\/\/|content:\/\/)/, '');
+          // if any upload is in progress, cancel it
           const controller = uploadAbortControllerRef.current.get(filename);
           if (controller) {
             controller.abort();
@@ -1313,7 +1314,6 @@ const ChannelWithContext = <
           }
           const contentType = lookup(filename) || 'multipart/form-data';
 
-          // if any upload is in progress, cancel it
           const uploadResponse = doImageUploadRequest
             ? await doImageUploadRequest(file, channel)
             : await channel.sendImage(file.uri, filename, contentType);
