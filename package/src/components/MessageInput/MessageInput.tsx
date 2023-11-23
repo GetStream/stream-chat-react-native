@@ -288,7 +288,7 @@ const MessageInputWithContext = <
     // Check if the file size of the image exceeds the threshold of 100MB
     if (
       imageToUpload &&
-      Number(imageToUpload.fileSize) / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB
+      Number(imageToUpload.size) / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB
     ) {
       Alert.alert(
         t(
