@@ -984,7 +984,10 @@ export const MessageInputProvider = <
       const extraData: Partial<FileUpload> = { thumb_url: response.thumb_url, url: response.file };
       setFileUploads(getUploadSetStateAction(id, FileState.UPLOADED, extraData));
     } catch (error: unknown) {
-      if (error instanceof Error && error.name === 'AbortError') {
+      if (
+        error instanceof Error &&
+        (error.name === 'AbortError' || error.name === 'CanceledError')
+      ) {
         // nothing to do
         uploadAbortControllerRef.current.delete(file.name);
         return;
@@ -1081,7 +1084,10 @@ export const MessageInputProvider = <
         setImageUploads(newImageUploads);
       }
     } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
+      if (
+        error instanceof Error &&
+        (error.name === 'AbortError' || error.name === 'CanceledError')
+      ) {
         // nothing to do
         uploadAbortControllerRef.current.delete(filename);
         return;
