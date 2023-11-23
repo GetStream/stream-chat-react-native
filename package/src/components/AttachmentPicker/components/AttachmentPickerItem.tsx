@@ -75,7 +75,7 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
     return [
       ...files,
       {
-        duration: durationLabel,
+        duration: asset.duration,
         id: asset.id,
         mimeType,
         name: asset.name,

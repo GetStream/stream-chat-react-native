@@ -1,7 +1,7 @@
 import type { ExtendableGenerics, LiteralStringForUnion } from 'stream-chat';
 
 export type Asset = {
-  duration: number | null;
+  duration: number;
   height: number;
   name: string;
   source: 'camera' | 'picker';
@@ -14,7 +14,7 @@ export type Asset = {
 
 export type File = {
   name: string;
-  duration?: string | null;
+  duration?: number;
   id?: string;
   mimeType?: string;
   size?: number;
