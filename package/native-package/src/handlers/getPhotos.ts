@@ -78,8 +78,8 @@ export const getPhotos = async ({
       ...edge.node.image,
       duration: edge.node.image.playableDuration,
       // since we include filename, fileSize in the query, we can safely assume it will be defined
-      filename: edge.node.image.filename as string,
-      fileSize: edge.node.image.fileSize as number,
+      name: edge.node.image.filename as string,
+      size: edge.node.image.fileSize as number,
       source: 'picker' as const,
       type: edge.node.type,
     }));

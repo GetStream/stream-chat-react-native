@@ -641,7 +641,7 @@ export const MessageInputProvider = <
   };
 
   const mapImageUploadToAttachment = (image: ImageUpload) => {
-    const mime_type: string | boolean = lookup(image.file.filename as string);
+    const mime_type: string | boolean = lookup(image.file.name as string);
     return {
       fallback: image.file.name,
       image_url: image.url,
@@ -1006,7 +1006,7 @@ export const MessageInputProvider = <
             uri,
             width: file.width,
           }));
-      const filename = file.filename ?? uri.replace(/^(file:\/\/|content:\/\/)/, '');
+      const filename = file.name ?? uri.replace(/^(file:\/\/|content:\/\/)/, '');
       const contentType = lookup(filename) || 'multipart/form-data';
       if (value.doImageUploadRequest) {
         response = await value.doImageUploadRequest(file, channel);
