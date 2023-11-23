@@ -2,6 +2,7 @@ import truncate from 'lodash/truncate';
 
 import { parseLinksFromText } from './parseLinks';
 
+// If you need to use any of the special characters literally (actually searching for a "*", for instance), you must escape it by putting a backslash in front of it.
 function escapeRegExp(text: string) {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 }
