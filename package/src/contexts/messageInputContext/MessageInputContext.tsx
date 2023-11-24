@@ -642,8 +642,8 @@ export const MessageInputProvider = <
   };
 
   const mapImageUploadToAttachment = (image: ImageUpload): Attachment<StreamChatGenerics> => {
-    const mime_type: string | boolean = lookup(image.file.filename as string);
-    const name = image.file.name ?? (image.file.filename as string);
+    const mime_type: string | boolean = lookup(image.file.name as string);
+    const name = image.file.name as string;
     return {
       fallback: name,
       image_url: image.url,
@@ -652,7 +652,7 @@ export const MessageInputProvider = <
       original_width: image.width,
       originalFile: {
         ...image.file,
-        duration: image.file.duration ? `${image.file.duration}` : undefined,
+        duration: image.file.duration,
         name,
       },
       type: 'image',
@@ -1006,7 +1006,7 @@ export const MessageInputProvider = <
     let response = {} as SendFileAPIResponse;
 
     const uri = file.uri || '';
-    const filename = file.filename ?? uri.replace(/^(file:\/\/|content:\/\/)/, '');
+    const filename = file.name ?? uri.replace(/^(file:\/\/|content:\/\/)/, '');
 
     try {
       /**
@@ -1027,7 +1027,6 @@ export const MessageInputProvider = <
             uri,
             width: file.width,
           }));
-
       const contentType = lookup(filename) || 'multipart/form-data';
       if (value.doImageUploadRequest) {
         response = await value.doImageUploadRequest(file, channel);

@@ -1,33 +1,29 @@
 import type { ExtendableGenerics, LiteralStringForUnion } from 'stream-chat';
 
 export type Asset = {
-  duration: number | null;
-  filename: string;
+  duration: number;
   height: number;
+  name: string;
   source: 'camera' | 'picker';
   type: string;
   uri: string;
   width: number;
-  fileSize?: number;
   id?: string;
-  size?: number | string;
+  size?: number;
 };
 
-export type FileAssetType = {
+export type File = {
   name: string;
+  duration?: number;
+  id?: string;
   mimeType?: string;
-  size?: number | string;
+  size?: number;
   // The uri should be of type `string`. But is `string|undefined` because the same type is used for the response from Stream's Attachment. This shall be fixed.
   uri?: string;
 };
 
-export type File = FileAssetType & {
-  duration?: string | null;
-  id?: string;
-};
-
 export type DefaultAttachmentType = UnknownType & {
-  file_size?: number | string;
+  file_size?: number;
   mime_type?: string;
   originalFile?: File;
 };

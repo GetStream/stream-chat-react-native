@@ -32,9 +32,9 @@ export const getPhotos = async ({
     });
     const assets = results.assets.map((asset) => ({
       duration: asset.duration,
-      filename: asset.filename,
       height: asset.height,
       id: asset.id,
+      name: asset.filename,
       source: 'picker' as const,
       type: asset.mediaType,
       uri: asset.uri,
