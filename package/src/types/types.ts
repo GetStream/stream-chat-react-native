@@ -1,5 +1,7 @@
 import type { ExtendableGenerics, LiteralStringForUnion } from 'stream-chat';
 
+import type { FileStateValue } from '../utils/utils';
+
 export type Asset = {
   duration: number;
   height: number;
@@ -22,10 +24,31 @@ export type File = {
   uri?: string;
 };
 
+export type FileUpload = {
+  file: File;
+  id: string;
+  state: FileStateValue;
+  duration?: number;
+  paused?: boolean;
+  progress?: number;
+  thumb_url?: string;
+  url?: string;
+};
+
+export type ImageUpload = {
+  file: Partial<Asset>;
+  id: string;
+  state: FileStateValue;
+  height?: number;
+  url?: string;
+  width?: number;
+};
+
 export type DefaultAttachmentType = UnknownType & {
   file_size?: number;
   mime_type?: string;
   originalFile?: File;
+  originalImage?: Partial<Asset>;
 };
 
 interface DefaultUserType extends UnknownType {

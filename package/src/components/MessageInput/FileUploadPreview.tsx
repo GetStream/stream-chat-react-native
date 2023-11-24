@@ -7,7 +7,6 @@ import { UploadProgressIndicator } from './UploadProgressIndicator';
 
 import { ChatContextValue, useChatContext } from '../../contexts';
 import {
-  FileUpload,
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
@@ -20,7 +19,7 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 import { Close } from '../../icons/Close';
 import { Warning } from '../../icons/Warning';
 import { isAudioPackageAvailable } from '../../native';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import type { DefaultStreamChatGenerics, FileUpload } from '../../types/types';
 import { FileState, getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../utils/utils';
 import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
 import { WritingDirectionAwareText } from '../RTLComponents/WritingDirectionAwareText';

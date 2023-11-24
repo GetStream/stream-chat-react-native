@@ -4,7 +4,7 @@ import { I18nManager, StyleSheet, Text, TouchableOpacity, View } from 'react-nat
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
-import { FileUpload, useTheme } from '../../contexts';
+import { useTheme } from '../../contexts';
 import { Pause, Play } from '../../icons';
 import {
   PlaybackStatus,
@@ -13,6 +13,7 @@ import {
   VideoPayloadData,
   VideoProgressData,
 } from '../../native';
+import type { FileUpload } from '../../types/types';
 import { ProgressControl } from '../ProgressControl/ProgressControl';
 
 dayjs.extend(duration);

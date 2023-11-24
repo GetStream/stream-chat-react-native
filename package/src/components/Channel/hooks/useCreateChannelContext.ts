@@ -36,6 +36,7 @@ export const useCreateChannelContext = <
   StickyHeader,
   targetedMessage,
   threadList,
+  uploadAbortControllerRef,
   watcherCount,
   watchers,
 }: ChannelContextValue<StreamChatGenerics>) => {
@@ -79,6 +80,7 @@ export const useCreateChannelContext = <
       StickyHeader,
       targetedMessage,
       threadList,
+      uploadAbortControllerRef,
       watcherCount,
       watchers,
     }),

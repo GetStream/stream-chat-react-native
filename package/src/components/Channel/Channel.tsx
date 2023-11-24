@@ -78,6 +78,7 @@ import { FlatList as FlatListDefault, pickDocument } from '../../native';
 import * as dbApi from '../../store/apis';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
+import { compressedImageURI } from '../../utils/compressImage';
 import { DBSyncManager } from '../../utils/DBSyncManager';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
 import { removeReactionFromLocalState } from '../../utils/removeReactionFromLocalState';
@@ -588,6 +589,13 @@ const ChannelWithContext = <
   const [hasNoMoreRecentMessagesToLoad, setHasNoMoreRecentMessagesToLoad] = useState(true);
 
   const { setTargetedMessage, targetedMessage } = useTargetedMessage();
+
+  /**
+   * This ref will hold the abort controllers for
+   * requests made for uploading images/files in the messageInputContext
+   * Its a map of filename to AbortController
+   */
+  const uploadAbortControllerRef = useRef<Map<string, AbortController>>(new Map());
 
   const channelId = channel?.id || '';
   useEffect(() => {
@@ -1290,20 +1298,28 @@ const ChannelWithContext = <
     if (updatedMessage.attachments?.length) {
       for (let i = 0; i < updatedMessage.attachments?.length; i++) {
         const attachment = updatedMessage.attachments[i];
+        const image = attachment.originalImage;
         const file = attachment.originalFile;
         // check if image_url is not a remote url
         if (
           attachment.type === 'image' &&
-          file?.uri &&
+          image?.uri &&
           attachment.image_url &&
           isLocalUrl(attachment.image_url)
         ) {
-          const filename = file.name ?? file.uri.replace(/^(file:\/\/|content:\/\/)/, '');
+          const filename = image.name ?? image.uri.replace(/^(file:\/\/|content:\/\/)/, '');
+          // if any upload is in progress, cancel it
+          const controller = uploadAbortControllerRef.current.get(filename);
+          if (controller) {
+            controller.abort();
+            uploadAbortControllerRef.current.delete(filename);
+          }
+          const compressedUri = await compressedImageURI(image, compressImageQuality);
           const contentType = lookup(filename) || 'multipart/form-data';
 
           const uploadResponse = doImageUploadRequest
-            ? await doImageUploadRequest(file, channel)
-            : await channel.sendImage(file.uri, filename, contentType);
+            ? await doImageUploadRequest(image, channel)
+            : await channel.sendImage(compressedUri, filename, contentType);
 
           attachment.image_url = uploadResponse.file;
           delete attachment.originalFile;
@@ -1321,6 +1337,12 @@ const ChannelWithContext = <
           isLocalUrl(attachment.asset_url) &&
           file?.uri
         ) {
+          // if any upload is in progress, cancel it
+          const controller = uploadAbortControllerRef.current.get(file.name);
+          if (controller) {
+            controller.abort();
+            uploadAbortControllerRef.current.delete(file.name);
+          }
           const response = doDocUploadRequest
             ? await doDocUploadRequest(file, channel)
             : await channel.sendFile(file.uri, file.name, file.mimeType);
@@ -1851,6 +1873,7 @@ const ChannelWithContext = <
     StickyHeader,
     targetedMessage,
     threadList,
+    uploadAbortControllerRef,
     watcherCount,
     watchers,
   });
