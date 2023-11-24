@@ -2,16 +2,12 @@ import truncate from 'lodash/truncate';
 
 import { parseLinksFromText } from './parseLinks';
 
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
-import type { MessageType } from '../../../MessageList/hooks/useMessageList';
+// If you need to use any of the special characters literally (actually searching for a "*", for instance), you must escape it by putting a backslash in front of it.
+function escapeRegExp(text: string) {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+}
 
-export const generateMarkdownText = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  message: MessageType<StreamChatGenerics>,
-) => {
-  const { text } = message;
-
+export const generateMarkdownText = (text?: string) => {
   if (!text) return null;
 
   // Trim the extra spaces from the text.
@@ -26,18 +22,21 @@ export const generateMarkdownText = <
       omission: '...',
     });
     // Convert raw links/emails in the text to respective markdown syntax.
-    // Eg: Hi getstream.io -> Hi [getstream.io](getstream.io).
-    const normalRegEx = new RegExp(linkInfo.raw, 'g');
+    // Eg: Hi @getstream.io -> Hi @[getstream.io](getstream.io).
+    const normalRegEx = new RegExp(escapeRegExp(linkInfo.raw), 'g');
     const markdown = `[${displayLink}](${linkInfo.encodedUrl})`;
     resultText = text.replace(normalRegEx, markdown);
 
     // After previous step, in some cases, the mentioned user after `@` might have a link/email so we convert it back to normal raw text.
     // Eg: Hi, @[test.user@gmail.com](mailto:test.user@gmail.com) to @test.user@gmail.com.
-    const mentionsRegex = new RegExp(`@\\[${displayLink}\\]\\(${linkInfo.encodedUrl}\\)`, 'g');
+    const mentionsRegex = new RegExp(
+      `@\\[${escapeRegExp(displayLink)}\\]\\(${escapeRegExp(linkInfo.encodedUrl)}\\)`,
+      'g',
+    );
     resultText = resultText.replace(mentionsRegex, `@${displayLink}`);
   }
 
-  resultText = resultText.replace(/[<&"'>]/g, '\\$&');
+  resultText = resultText.replace(/[<"'>]/g, '\\$&');
 
   return resultText;
 };
