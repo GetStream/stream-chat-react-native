@@ -694,8 +694,6 @@ export const MessageInputProvider = <
     }
   };
 
-  // TODO: Figure out why this is async, as it doesn't await any promise.
-  // eslint-disable-next-line require-await
   const sendMessage = async () => {
     if (sending.current) {
       return;
@@ -754,7 +752,7 @@ export const MessageInputProvider = <
     for (const file of fileUploads) {
       if (enableOfflineSupport) {
         if (file.state === FileState.NOT_SUPPORTED) {
-          return;
+          continue;
         }
         attachments.push(mapFileUploadToAttachment(file));
         continue;
@@ -805,7 +803,10 @@ export const MessageInputProvider = <
       sending.current = false;
     } else {
       try {
-        value.sendMessage({
+        value.clearQuotedMessageState();
+        sending.current = false;
+        resetInput(attachments);
+        await value.sendMessage({
           attachments,
           mentioned_users: uniq(mentionedUsers),
           /** Parent message id - in case of thread */
@@ -815,10 +816,6 @@ export const MessageInputProvider = <
           show_in_channel: sendThreadMessageInChannel || undefined,
           text: prevText,
         } as unknown as StreamMessage<StreamChatGenerics>);
-
-        value.clearQuotedMessageState();
-        sending.current = false;
-        resetInput(attachments);
       } catch (_error) {
         sending.current = false;
         if (value.quotedMessage && typeof value.quotedMessage !== 'boolean') {
@@ -923,8 +920,12 @@ export const MessageInputProvider = <
       fileState: FileStateValue,
       extraData: Partial<UploadType> = {},
     ): React.SetStateAction<UploadType[]> =>
-    (prevUploads: UploadType[]) =>
-      prevUploads.map((prevUpload) => {
+    (prevUploads: UploadType[]) => {
+      const uploadIndex = prevUploads.findIndex((upload) => upload.id === id);
+      if (uploadIndex === -1) {
+        return prevUploads;
+      }
+      return prevUploads.map((prevUpload) => {
         if (prevUpload.id === id) {
           return {
             ...prevUpload,
@@ -934,6 +935,7 @@ export const MessageInputProvider = <
         }
         return prevUpload;
       });
+    };
 
   const handleFileOrImageUploadError = (error: unknown, isImageError: boolean, id: string) => {
     if (isImageError) {
