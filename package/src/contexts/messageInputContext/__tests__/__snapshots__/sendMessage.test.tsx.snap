@@ -7,7 +7,7 @@ Object {
       "fallback": undefined,
       "image_url": undefined,
       "mime_type": undefined,
-      "originalFile": Object {
+      "originalImage": Object {
         "uri": "http://www.jackblack.com/tenac_iousd.bmp",
       },
       "original_height": undefined,
@@ -106,7 +106,7 @@ Object {
       "fallback": undefined,
       "image_url": undefined,
       "mime_type": undefined,
-      "originalFile": Object {
+      "originalImage": Object {
         "uri": "http://www.jackblack.com/tenac_iousd.bmp",
       },
       "original_height": undefined,
@@ -117,7 +117,7 @@ Object {
       "fallback": undefined,
       "image_url": undefined,
       "mime_type": undefined,
-      "originalFile": Object {
+      "originalImage": Object {
         "uri": "http://www.jackblack.com/tenac_iousd.bmp",
       },
       "original_height": undefined,

@@ -35,7 +35,7 @@ import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreO
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
-import { compressImage, pickDocument } from '../../native';
+import { pickDocument } from '../../native';
 import type {
   Asset,
   DefaultStreamChatGenerics,
@@ -44,6 +44,7 @@ import type {
   ImageUpload,
   UnknownType,
 } from '../../types/types';
+import { compressedImageURI } from '../../utils/compressImage';
 import { removeReservedFields } from '../../utils/removeReservedFields';
 import {
   ACITriggerSettings,
@@ -635,11 +636,7 @@ export const MessageInputProvider = <
       mime_type: mime_type ? mime_type : undefined,
       original_height: image.height,
       original_width: image.width,
-      originalFile: {
-        ...image.file,
-        duration: image.file.duration,
-        name,
-      },
+      originalImage: image.file,
       type: 'image',
     };
   };
@@ -994,24 +991,7 @@ export const MessageInputProvider = <
     const filename = file.name ?? uri.replace(/^(file:\/\/|content:\/\/)/, '');
 
     try {
-      /**
-       * We skip compression if:
-       * - the file is from the camera as that should already be compressed
-       * - the file has no height/width value to maintain for compression
-       * - the compressImageQuality number is not present or is 1 (meaning no compression)
-       */
-      const compressedUri = await (file.source === 'camera' ||
-      !file.height ||
-      !file.width ||
-      typeof value.compressImageQuality !== 'number' ||
-      value.compressImageQuality === 1
-        ? uri
-        : compressImage({
-            compressImageQuality: value.compressImageQuality,
-            height: file.height,
-            uri,
-            width: file.width,
-          }));
+      const compressedUri = await compressedImageURI(file, value.compressImageQuality);
       const contentType = lookup(filename) || 'multipart/form-data';
       if (value.doImageUploadRequest) {
         response = await value.doImageUploadRequest(file, channel);
