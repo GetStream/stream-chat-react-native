@@ -587,6 +587,8 @@ export const MessageInputProvider = <
           ),
         );
       } else {
+        const promises: Array<Promise<void>> = [];
+        const newFileUploads: FileUpload[] = [];
         result.assets.forEach((asset) => {
           /**
            * TODO: The current tight coupling of images to the image
@@ -595,8 +597,17 @@ export const MessageInputProvider = <
            * This should be updated alongside allowing image a file
            * uploads together.
            */
-          uploadNewFile(asset);
+          const { isNotSupported, newFile } = createFileUpload(
+            asset,
+            blockedFileExtensionTypes,
+            blockedFileMimeTypes,
+          );
+          newFileUploads.push(newFile);
+          if (!isNotSupported) promises.push(uploadFile({ newFile }));
         });
+        setFileUploads((prevFileUploads) => prevFileUploads.concat(newFileUploads));
+        setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + newFileUploads.length);
+        await Promise.all(promises);
       }
     }
   };
@@ -1061,36 +1072,17 @@ export const MessageInputProvider = <
   };
 
   const uploadNewFile = async (file: File) => {
-    const id: string = generateRandomId();
-
-    const isBlockedFileExtension: boolean | undefined = blockedFileExtensionTypes?.some(
-      (fileExtensionType: string) => file.name?.includes(fileExtensionType),
-    );
-    const isBlockedFileMimeType: boolean | undefined = blockedFileMimeTypes?.some(
-      (mimeType: string) => file.name?.includes(mimeType),
-    );
-
-    const fileState =
-      isBlockedFileExtension || isBlockedFileMimeType
-        ? FileState.NOT_SUPPORTED
-        : FileState.UPLOADING;
-
-    const newFile: FileUpload = {
-      duration: 0,
+    const { isNotSupported, newFile } = createFileUpload(
       file,
-      id: file.id || id,
-      paused: true,
-      progress: 0,
-      state: fileState,
-    };
+      blockedFileExtensionTypes,
+      blockedFileMimeTypes,
+    );
 
-    await Promise.all([
-      setFileUploads((prevFileUploads) => prevFileUploads.concat([newFile])),
-      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
-    ]);
+    setFileUploads((prevFileUploads) => prevFileUploads.concat([newFile]));
+    setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1);
 
-    if (!isBlockedFileExtension) {
-      uploadFile({ newFile });
+    if (!isNotSupported) {
+      await uploadFile({ newFile });
     }
   };
 
@@ -1105,10 +1097,9 @@ export const MessageInputProvider = <
       image.uri?.includes(imageExtensionType),
     );
 
-    const imageState =
-      isBlockedImageExtension || isBlockedImageMimeType
-        ? FileState.NOT_SUPPORTED
-        : FileState.UPLOADING;
+    const isNotSupported = isBlockedImageExtension || isBlockedImageMimeType;
+
+    const imageState = isNotSupported ? FileState.NOT_SUPPORTED : FileState.UPLOADING;
 
     const newImage: ImageUpload = {
       file: image,
@@ -1119,13 +1110,11 @@ export const MessageInputProvider = <
       width: image.width,
     };
 
-    await Promise.all([
-      setImageUploads((prevImageUploads) => prevImageUploads.concat([newImage])),
-      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
-    ]);
+    setImageUploads((prevImageUploads) => prevImageUploads.concat([newImage]));
+    setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1);
 
-    if (!isBlockedImageExtension) {
-      uploadImage({ newImage });
+    if (!isNotSupported) {
+      await uploadImage({ newImage });
     }
   };
 
@@ -1228,4 +1217,34 @@ export const withMessageInputContext = <
     Component,
   )}`;
   return WithMessageInputContextComponent;
+};
+
+const createFileUpload = (
+  file: File,
+  blockedFileExtensionTypes: string[] | null | undefined,
+  blockedFileMimeTypes: string[] | null | undefined,
+) => {
+  const id: string = generateRandomId();
+
+  const isBlockedFileExtension: boolean | undefined = blockedFileExtensionTypes?.some(
+    (fileExtensionType: string) => file.name?.includes(fileExtensionType),
+  );
+  const isBlockedFileMimeType: boolean | undefined = blockedFileMimeTypes?.some(
+    (mimeType: string) => file.name?.includes(mimeType),
+  );
+
+  const isNotSupported = !!(isBlockedFileExtension || isBlockedFileMimeType);
+
+  const fileState = isNotSupported ? FileState.NOT_SUPPORTED : FileState.UPLOADING;
+
+  const newFile: FileUpload = {
+    duration: 0,
+    file,
+    id: file.id || id,
+    paused: true,
+    progress: 0,
+    state: fileState,
+  };
+
+  return { isNotSupported, newFile };
 };
