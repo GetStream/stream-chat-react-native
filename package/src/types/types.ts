@@ -48,6 +48,7 @@ export type DefaultAttachmentType = UnknownType & {
   file_size?: number;
   mime_type?: string;
   originalFile?: File;
+  originalImage?: Partial<Asset>;
 };
 
 interface DefaultUserType extends UnknownType {
