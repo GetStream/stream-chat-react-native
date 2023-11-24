@@ -234,8 +234,8 @@ export type MessagesContextValue<
    */
   ScrollToBottomButton: React.ComponentType<ScrollToBottomButtonProps>;
   sendReaction: (type: string, messageId: string) => Promise<void>;
-  setEditingState: (message: MessageType<StreamChatGenerics>) => void;
-  setQuotedMessageState: (message: MessageType<StreamChatGenerics>) => void;
+  setEditingState: (message: MessageType<StreamChatGenerics> | boolean) => void;
+  setQuotedMessageState: (message: MessageType<StreamChatGenerics> | boolean) => void;
   supportedReactions: ReactionData[];
   /**
    * UI component for TypingIndicator

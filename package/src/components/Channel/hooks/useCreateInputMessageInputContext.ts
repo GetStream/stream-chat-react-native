@@ -53,7 +53,7 @@ export const useCreateInputMessageInputContext = <
    */
   channelId?: string;
 }) => {
-  const editingExists = !!editing;
+  const editingDep = typeof editing === 'boolean' ? editing : editing?.id;
   const quotedMessageId = quotedMessage
     ? typeof quotedMessage === 'boolean'
       ? ''
@@ -103,14 +103,7 @@ export const useCreateInputMessageInputContext = <
       ShowThreadMessageInChannelButton,
       UploadProgressIndicator,
     }),
-    [
-      compressImageQuality,
-      channelId,
-      editingExists,
-      initialValue,
-      maxMessageLength,
-      quotedMessageId,
-    ],
+    [compressImageQuality, channelId, editingDep, initialValue, maxMessageLength, quotedMessageId],
   );
 
   return inputMessageInputContext;
