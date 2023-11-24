@@ -36,7 +36,14 @@ import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import { compressImage, pickDocument } from '../../native';
-import type { Asset, DefaultStreamChatGenerics, File, UnknownType } from '../../types/types';
+import type {
+  Asset,
+  DefaultStreamChatGenerics,
+  File,
+  FileUpload,
+  ImageUpload,
+  UnknownType,
+} from '../../types/types';
 import { removeReservedFields } from '../../utils/removeReservedFields';
 import {
   ACITriggerSettings,
@@ -57,28 +64,6 @@ import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
-
-export type FileUpload = {
-  file: File;
-  id: string;
-  state: FileStateValue;
-  duration?: number;
-  paused?: boolean;
-  progress?: number;
-  thumb_url?: string;
-  url?: string;
-};
-
-export type ImageUpload = {
-  file: Partial<Asset> & {
-    name?: string;
-  };
-  id: string;
-  state: FileStateValue;
-  height?: number;
-  url?: string;
-  width?: number;
-};
 
 export type MentionAllAppUsersQuery<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

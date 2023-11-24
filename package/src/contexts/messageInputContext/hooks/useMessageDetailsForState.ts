@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+import type { DefaultStreamChatGenerics, FileUpload, ImageUpload } from '../../../types/types';
 import { generateRandomId } from '../../../utils/utils';
 
-import type { FileUpload, ImageUpload, MessageInputContextValue } from '../MessageInputContext';
+import type { MessageInputContextValue } from '../MessageInputContext';
 
 export const isEditingBoolean = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

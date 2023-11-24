@@ -13,7 +13,6 @@ import { UploadProgressIndicator } from './UploadProgressIndicator';
 
 import { ChatContextValue, useChatContext } from '../../contexts';
 import {
-  ImageUpload,
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
@@ -21,7 +20,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { Close } from '../../icons/Close';
 import { Warning } from '../../icons/Warning';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import type { DefaultStreamChatGenerics, ImageUpload } from '../../types/types';
 import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../utils/utils';
 
 const IMAGE_PREVIEW_SIZE = 100;

@@ -5,7 +5,6 @@ import { act } from 'react-test-renderer';
 import { fireEvent, render } from '@testing-library/react-native';
 
 import {
-  FileUpload,
   MessageInputContext,
   MessageInputContextValue,
 } from '../../../contexts/messageInputContext/MessageInputContext';
@@ -13,6 +12,7 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 
 import { generateFileUploadPreview } from '../../../mock-builders/generator/attachment';
+import type { FileUpload } from '../../../types/types';
 import { AudioAttachment, AudioAttachmentProps } from '../../Attachment/AudioAttachment';
 
 jest.mock('../../../native.ts', () => ({
