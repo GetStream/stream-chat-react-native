@@ -1609,15 +1609,16 @@ const ChannelWithContext = <
       : client.updateMessage(updatedMessage);
 
   const setEditingState: MessagesContextValue<StreamChatGenerics>['setEditingState'] = (
-    message,
+    messageOrBoolean,
   ) => {
-    setEditing(message);
+    clearQuotedMessageState();
+    setEditing(messageOrBoolean);
   };
 
   const setQuotedMessageState: MessagesContextValue<StreamChatGenerics>['setQuotedMessageState'] = (
-    message,
+    messageOrBoolean,
   ) => {
-    setQuotedMessage(message);
+    setQuotedMessage(messageOrBoolean);
   };
 
   const clearEditingState: InputMessageInputContextValue<StreamChatGenerics>['clearEditingState'] =

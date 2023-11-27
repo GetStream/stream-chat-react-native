@@ -95,7 +95,7 @@ export const useCreateMessageInputContext = <
   UploadProgressIndicator,
 }: MessageInputContextValue<StreamChatGenerics> &
   Pick<ThreadContextValue<StreamChatGenerics>, 'thread'>) => {
-  const editingExists = !!editing;
+  const editingdep = typeof editing === 'boolean' ? editing : editing?.id;
   const fileUploadsValue = fileUploads
     .map(({ duration, paused, progress, state }) => `${state},${paused},${progress},${duration}`)
     .join();
@@ -198,7 +198,7 @@ export const useCreateMessageInputContext = <
     }),
     [
       cooldownEndsAt,
-      editingExists,
+      editingdep,
       fileUploadsValue,
       giphyActive,
       imageUploadsValue,
