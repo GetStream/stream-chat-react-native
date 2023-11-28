@@ -1,5 +1,23 @@
 # Change Log
 
+## [1.24.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.23.2...sampleapp@v1.24.0) (2023-11-28)
+
+
+### Features
+
+* update stream-chat package to 8.14.3 ([89b5efa](https://github.com/GetStream/stream-chat-react-native/commit/89b5efa4e9afca8880cf1ecd2a3c7f775aad7355))
+
+
+### Bug Fixes
+
+* sample-app crash because of viewport changes ([#2313](https://github.com/GetStream/stream-chat-react-native/issues/2313)) ([be241e1](https://github.com/GetStream/stream-chat-react-native/commit/be241e16690d85fc6d7a123ce304a355ff19e01c))
+* sample-app crash because of viewport changes ([#2323](https://github.com/GetStream/stream-chat-react-native/issues/2323)) ([c9d7d4e](https://github.com/GetStream/stream-chat-react-native/commit/c9d7d4ec5b446dbe9347f2914ea9f6be1832fb98))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.23.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.23.1...sampleapp@v1.23.2) (2023-11-09)
 
 
