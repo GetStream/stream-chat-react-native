@@ -2,7 +2,6 @@ import type { ImageStyle, TextStyle, ViewStyle } from 'react-native';
 import type { CircleProps, Color, StopProps } from 'react-native-svg';
 
 import type { IconProps } from '../../../icons/utils/base';
-import { vh } from '../../../utils/utils';
 
 export const DEFAULT_STATUS_ICON_SIZE = 16;
 
@@ -302,9 +301,6 @@ export type Theme = {
         iconContainer: ViewStyle;
         title: TextStyle;
       };
-      container: ViewStyle & {
-        maxHeight: number;
-      };
       emoji: {
         container: ViewStyle;
         text: TextStyle;
@@ -480,6 +476,7 @@ export type Theme = {
     };
     reactionList: {
       container: ViewStyle;
+      iconFillColor: Color;
       middleIcon: ViewStyle;
       radius: number;
       reactionBubble: ViewStyle;
@@ -809,9 +806,6 @@ export const defaultTheme: Theme = {
         iconContainer: {},
         title: {},
       },
-      container: {
-        maxHeight: vh(25),
-      },
       emoji: {
         container: {},
         text: {},
@@ -1019,6 +1013,7 @@ export const defaultTheme: Theme = {
     },
     reactionList: {
       container: {},
+      iconFillColor: '',
       middleIcon: {},
       radius: 2, // not recommended to change this
       reactionBubble: {},

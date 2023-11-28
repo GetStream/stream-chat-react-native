@@ -4,7 +4,7 @@ import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { vw } from '../../utils/utils';
+import { useViewport } from '../../hooks/useViewport';
 
 const styles = StyleSheet.create({
   container: {
@@ -28,6 +28,7 @@ export const InlineUnreadIndicator: React.FC = () => {
     },
   } = useTheme();
   const { t } = useTranslationContext();
+  const { vw } = useViewport();
 
   return (
     <View style={[styles.container, container]}>

@@ -10,12 +10,18 @@ type Size = {
 export const takePhoto = async ({ compressImageQuality = 1 }) => {
   try {
     const permissionCheck = await ImagePicker.getCameraPermissionsAsync();
-    const permissionGranted =
-      permissionCheck?.status === 'granted'
-        ? permissionCheck
-        : await ImagePicker.requestCameraPermissionsAsync();
+    const canRequest = permissionCheck.canAskAgain;
+    let permissionGranted = permissionCheck.granted;
+    if (!permissionGranted) {
+      if (canRequest) {
+        const response = await ImagePicker.requestCameraPermissionsAsync();
+        permissionGranted = response.granted;
+      } else {
+        return { askToOpenSettings: true, cancelled: true };
+      }
+    }
 
-    if (permissionGranted?.status === 'granted' || permissionGranted?.granted === true) {
+    if (permissionGranted) {
       const imagePickerSuccessResult = await ImagePicker.launchCameraAsync({
         quality: Math.min(Math.max(0, compressImageQuality), 1),
       });

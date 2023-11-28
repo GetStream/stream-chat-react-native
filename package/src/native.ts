@@ -87,8 +87,12 @@ type Photo =
   | (Omit<Asset, 'source'> & {
       cancelled: false;
       source: 'camera';
+      askToOpenSettings?: boolean;
     })
-  | { cancelled: true };
+  | {
+      cancelled: true;
+      askToOpenSettings?: boolean;
+    };
 type TakePhoto = (options: { compressImageQuality?: number }) => Promise<Photo> | never;
 export let takePhoto: TakePhoto = fail;
 

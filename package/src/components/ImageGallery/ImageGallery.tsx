@@ -55,18 +55,16 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useViewport } from '../../hooks/useViewport';
 import { isVideoPackageAvailable, VideoType } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
-import { vh, vw } from '../../utils/utils';
 import { getGiphyMimeType } from '../Attachment/utils/getGiphyMimeType';
 
 const isAndroid = Platform.OS === 'android';
 const fullScreenHeight = Dimensions.get('screen').height;
-const measuredScreenHeight = vh(100);
-const screenWidth = vw(100);
-const halfScreenWidth = vw(50);
+
 const MARGIN = 32;
 
 export enum HasPinched {
@@ -161,6 +159,12 @@ export const ImageGallery = <
   const { overlay, translucentStatusBar } = useOverlayContext();
   const { messages, selectedMessage, setSelectedMessage } =
     useImageGalleryContext<StreamChatGenerics>();
+
+  const { vh, vw } = useViewport();
+
+  const measuredScreenHeight = vh(100);
+  const screenWidth = vw(100);
+  const halfScreenWidth = vw(50);
 
   /**
    * Height constants
@@ -571,21 +575,7 @@ export const ImageGallery = <
                     simultaneousHandlers={[pinchRef]}
                   >
                     <Animated.View style={StyleSheet.absoluteFill}>
-                      <Animated.View
-                        style={[
-                          styles.animatedContainer,
-                          pagerStyle,
-                          pager,
-                          {
-                            transform: [
-                              { scaleX: -1 }, // Also only here for opening, wrong direction when not included
-                              {
-                                translateX: translationX.value, // Only here for opening, wrong index when this is not included
-                              },
-                            ],
-                          },
-                        ]}
-                      >
+                      <Animated.View style={[styles.animatedContainer, pagerStyle, pager]}>
                         {imageGalleryAttachments.map((photo, i) =>
                           photo.type === 'video' ? (
                             <AnimatedGalleryVideo
@@ -669,6 +659,7 @@ export const ImageGallery = <
           photoLength={imageGalleryAttachments.length}
           progress={imageGalleryAttachments[selectedIndex].progress || 0}
           selectedIndex={selectedIndex}
+          videoRef={videoRef}
           visible={headerFooterVisible}
           {...imageGalleryCustomComponents?.footer}
         />

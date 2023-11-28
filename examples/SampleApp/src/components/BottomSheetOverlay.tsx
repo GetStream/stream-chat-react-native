@@ -19,7 +19,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { KeyboardCompatibleView, useTheme, vh } from 'stream-chat-react-native';
+import { KeyboardCompatibleView, useTheme, useViewport } from 'stream-chat-react-native';
 
 import { AddMemberBottomSheet } from './AddMemberBottomSheet';
 import { ConfirmationBottomSheet } from './ConfirmationBottomSheet';
@@ -44,12 +44,12 @@ export type BottomSheetOverlayProps = {
   visible: boolean;
 };
 
-const screenHeight = vh(100);
-
 export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
   const { overlayOpacity, visible } = props;
 
   const { overlay, setOverlay } = useAppOverlayContext();
+  const { vh } = useViewport();
+  const screenHeight = vh(100);
 
   const { reset } = useBottomSheetOverlayContext();
 

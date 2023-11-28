@@ -28,7 +28,7 @@ import {
   User,
   UserMinus,
   useTheme,
-  vh,
+  useViewport,
 } from 'stream-chat-react-native';
 
 import { useAppOverlayContext } from '../context/AppOverlayContext';
@@ -96,9 +96,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const screenHeight = vh(100);
-const halfScreenHeight = vh(50);
-
 export type UserInfoOverlayProps = {
   overlayOpacity: Animated.SharedValue<number>;
   visible?: boolean;
@@ -111,6 +108,10 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
   const { client } = useChatContext<StreamChatGenerics>();
   const { setData } = useBottomSheetOverlayContext();
   const { data, reset } = useUserInfoOverlayContext();
+  const { vh } = useViewport();
+
+  const screenHeight = vh(100);
+  const halfScreenHeight = vh(50);
 
   const { channel, member, navigation } = data || {};
 

@@ -71,5 +71,10 @@
   "Not supported": "サポートしていません",
   "Select More Photos": "さらに写真を選択",
   "File type not supported": "サポートされていないファイルです",
-  "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.": "最大ファイル サイズのアップロード制限に達しました。 {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB 以下のファイルをアップロードしてください"
+  "Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.": "最大ファイル サイズのアップロード制限に達しました。 {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB 以下のファイルをアップロードしてください",
+  "Let's start chatting!": "チャットを始めましょう!",
+  "How about sending your first message to a friend?": "初めてのメッセージを友達に送ってみてはいかがでしょうか?",
+  "Allow camera access in device settings": "デバイス設定でカメラへのアクセスを許可する",
+  "Device camera is used to take photos or videos.": "デバイスのカメラは写真やビデオの撮影に使用されます。",
+  "Open Settings": "設定を開く"
 }

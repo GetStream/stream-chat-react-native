@@ -1,9 +1,10 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { useAttachmentPickerContext } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
 import { takePhoto } from '../../../native';
 
@@ -29,6 +30,7 @@ export const AttachmentSelectionBar: React.FC = () => {
     setSelectedImages,
     setSelectedPicker,
   } = useAttachmentPickerContext();
+  const { t } = useTranslationContext();
 
   const { compressImageQuality, hasFilePicker, imageUploads, pickFile } = useMessageInputContext();
 
@@ -57,6 +59,16 @@ export const AttachmentSelectionBar: React.FC = () => {
     setSelectedPicker(undefined);
     closePicker();
     const photo = await takePhoto({ compressImageQuality });
+    if (photo.askToOpenSettings) {
+      Alert.alert(
+        t('Allow camera access in device settings'),
+        t('Device camera is used to take photos or videos.'),
+        [
+          { style: 'cancel', text: t('Cancel') },
+          { onPress: () => Linking.openSettings(), style: 'default', text: t('Open Settings') },
+        ],
+      );
+    }
     if (!photo.cancelled) {
       setSelectedImages((images) => [...images, photo]);
     }
