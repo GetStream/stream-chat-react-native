@@ -1,5 +1,30 @@
 # Change Log
 
+## [5.22.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.21.0...v5.22.0) (2023-11-28)
+
+
+### Features
+
+* add empty channel list translations ([#2307](https://github.com/GetStream/stream-chat-react-native/issues/2307)) ([e286ce6](https://github.com/GetStream/stream-chat-react-native/commit/e286ce6d59264256ecc7b790ffb70a404bcf6bb2))
+* Add Spanish translations ([#2292](https://github.com/GetStream/stream-chat-react-native/issues/2292)) ([899aaf2](https://github.com/GetStream/stream-chat-react-native/commit/899aaf2219ff8f2d0c536000f93ea584c0ee7a7a))
+* add theme to override the reaction list icon color ([#2306](https://github.com/GetStream/stream-chat-react-native/issues/2306)) ([c30bd36](https://github.com/GetStream/stream-chat-react-native/commit/c30bd361716d94fd8a3b85cb46a5ad63a8211044))
+* update stream-chat package to 8.14.3 ([89b5efa](https://github.com/GetStream/stream-chat-react-native/commit/89b5efa4e9afca8880cf1ecd2a3c7f775aad7355))
+
+
+### Bug Fixes
+
+* app crash when the message links have special characters in it ([#2318](https://github.com/GetStream/stream-chat-react-native/issues/2318)) ([b54afee](https://github.com/GetStream/stream-chat-react-native/commit/b54afeefa5f6cb86a7a84c4d0d9b47c2b60602fc))
+* auto restart video in gallery when end reached on Expo ([#2304](https://github.com/GetStream/stream-chat-react-native/issues/2304)) ([9bfa408](https://github.com/GetStream/stream-chat-react-native/commit/9bfa40873d6996bb5f08818f7a78e02d3b0edc9a))
+* do not send two upload requests when offline support is enabled ([#2328](https://github.com/GetStream/stream-chat-react-native/issues/2328)) ([c05b335](https://github.com/GetStream/stream-chat-react-native/commit/c05b3350c470fcdc553bff50cf97337d95459cea)), closes [#2331](https://github.com/GetStream/stream-chat-react-native/issues/2331)
+* if camera permission cannot be requested go to settings ([#2299](https://github.com/GetStream/stream-chat-react-native/issues/2299)) ([80c2c36](https://github.com/GetStream/stream-chat-react-native/commit/80c2c3677211c6e87c9f697df30034e39ff338a1))
+* inability to handle long URLs with params properly when clicked on message ([#2321](https://github.com/GetStream/stream-chat-react-native/issues/2321)) ([8cbc927](https://github.com/GetStream/stream-chat-react-native/commit/8cbc9279d4440083751602d0d4f5565dcc9ebea7))
+* issue with camera permissions when clicking the camera picker ([#2315](https://github.com/GetStream/stream-chat-react-native/issues/2315)) ([2e39142](https://github.com/GetStream/stream-chat-react-native/commit/2e3914221319917a9f8e3d4b7c18c6810796748e))
+* sample-app crash because of viewport changes ([#2313](https://github.com/GetStream/stream-chat-react-native/issues/2313)) ([be241e1](https://github.com/GetStream/stream-chat-react-native/commit/be241e16690d85fc6d7a123ce304a355ff19e01c))
+* unnecessary reanimated warning ([#2311](https://github.com/GetStream/stream-chat-react-native/issues/2311)) ([e723d16](https://github.com/GetStream/stream-chat-react-native/commit/e723d163be4056ad72d694789ce7fb7c45e2ea0f))
+* update dimensions dynamically in the SDK ([#2310](https://github.com/GetStream/stream-chat-react-native/issues/2310)) ([813cb12](https://github.com/GetStream/stream-chat-react-native/commit/813cb12b82b8f8d6298c9e5e42b788b057c6068e))
+* update editing and quoted state within context correctly ([#2333](https://github.com/GetStream/stream-chat-react-native/issues/2333)) ([2c50dc8](https://github.com/GetStream/stream-chat-react-native/commit/2c50dc89981c1326560acbf51302b23cc8dea032))
+* upload progress indicator component type ([#2325](https://github.com/GetStream/stream-chat-react-native/issues/2325)) ([e0dbfae](https://github.com/GetStream/stream-chat-react-native/commit/e0dbfaed8955280723fd3cc8bc6f0f1b51d849fd))
+
 ## [5.21.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.20.0...v5.21.0) (2023-11-09)
 
 
