@@ -1,5 +1,12 @@
 # Change Log
 
+### [5.22.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.22.0...v5.22.1) (2023-11-29)
+
+
+### Bug Fixes
+
+* upgrade stream-chat to fix uploadFile issue ([#2334](https://github.com/GetStream/stream-chat-react-native/issues/2334)) ([e9f88cc](https://github.com/GetStream/stream-chat-react-native/commit/e9f88cc5278085314978d86619639cdda2c72d8b))
+
 ## [5.22.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.21.0...v5.22.0) (2023-11-28)
 
 
