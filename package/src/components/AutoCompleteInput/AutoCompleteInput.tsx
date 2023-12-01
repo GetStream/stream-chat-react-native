@@ -55,6 +55,7 @@ type AutoCompleteInputPropsWithContext<
     MessageInputContextValue<StreamChatGenerics>,
     | 'additionalTextInputProps'
     | 'autoCompleteSuggestionsLimit'
+    | 'focused'
     | 'giphyActive'
     | 'maxMessageLength'
     | 'mentionAllAppUsersEnabled'
@@ -62,6 +63,7 @@ type AutoCompleteInputPropsWithContext<
     | 'numberOfLines'
     | 'onChange'
     | 'setGiphyActive'
+    | 'setFocused'
     | 'setInputBoxRef'
     | 'setShowMoreOptions'
     | 'text'
@@ -101,6 +103,7 @@ const AutoCompleteInputWithContext = <
     numberOfLines,
     onChange,
     openSuggestions,
+    setFocused,
     setGiphyActive,
     setInputBoxRef,
     setShowMoreOptions,
@@ -429,7 +432,14 @@ const AutoCompleteInputWithContext = <
         if (additionalTextInputProps?.onBlur) {
           additionalTextInputProps?.onBlur(event);
         }
+        if (setFocused) setFocused(false);
         setShowMoreOptions(true);
+      }}
+      onFocus={(event) => {
+        if (additionalTextInputProps?.onFocus) {
+          additionalTextInputProps.onFocus(event);
+        }
+        if (setFocused) setFocused(true);
       }}
     />
   );
@@ -441,12 +451,14 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 ) => {
   const {
     cooldownActive: prevCooldownActive,
+    focused: prevFocused,
     giphyActive: prevGiphyActive,
     t: prevT,
     text: prevText,
   } = prevProps;
   const {
     cooldownActive: nextCooldownActive,
+    focused: nextFocused,
     giphyActive: nextGiphyActive,
     t: nextT,
     text: nextText,
@@ -454,6 +466,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const giphyActiveEqual = prevGiphyActive === nextGiphyActive;
   if (!giphyActiveEqual) return false;
+
+  const focusedEqual = prevFocused === nextFocused;
+  if (!focusedEqual) return false;
 
   const tEqual = prevT === nextT;
   if (!tEqual) return false;
@@ -481,12 +496,14 @@ export const AutoCompleteInput = <
   const {
     additionalTextInputProps,
     autoCompleteSuggestionsLimit,
+    focused,
     giphyActive,
     maxMessageLength,
     mentionAllAppUsersEnabled,
     mentionAllAppUsersQuery,
     numberOfLines,
     onChange,
+    setFocused,
     setGiphyActive,
     setInputBoxRef,
     setShowMoreOptions,
@@ -503,6 +520,7 @@ export const AutoCompleteInput = <
         additionalTextInputProps,
         autoCompleteSuggestionsLimit,
         closeSuggestions,
+        focused,
         giphyActive,
         giphyEnabled,
         maxMessageLength,
@@ -511,6 +529,7 @@ export const AutoCompleteInput = <
         numberOfLines,
         onChange,
         openSuggestions,
+        setFocused,
         setGiphyActive,
         setInputBoxRef,
         setShowMoreOptions,

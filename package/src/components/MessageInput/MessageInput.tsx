@@ -94,6 +94,7 @@ type MessageInputPropsWithContext<
     | 'editing'
     | 'FileUploadPreview'
     | 'fileUploads'
+    | 'focused'
     | 'giphyActive'
     | 'ImageUploadPreview'
     | 'imageUploads'
@@ -152,6 +153,7 @@ const MessageInputWithContext = <
     editing,
     FileUploadPreview,
     fileUploads,
+    focused,
     giphyActive,
     ImageUploadPreview,
     imageUploads,
@@ -196,6 +198,7 @@ const MessageInputWithContext = <
         autoCompleteInputContainer,
         composerContainer,
         container,
+        focusedInputBoxContainer,
         inputBoxContainer,
         optionsContainer,
         replyContainer,
@@ -544,6 +547,7 @@ const MessageInputWithContext = <
                     paddingVertical: giphyActive ? 8 : 12,
                   },
                   inputBoxContainer,
+                  focused ? focusedInputBoxContainer : null,
                 ]}
               >
                 {((typeof editing !== 'boolean' && editing?.quoted_message) || quotedMessage) && (
@@ -639,6 +643,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     disabled: prevDisabled,
     editing: prevEditing,
     fileUploads: prevFileUploads,
+    focused: prevFocused,
     giphyActive: prevGiphyActive,
     imageUploads: prevImageUploads,
     isOnline: prevIsOnline,
@@ -658,6 +663,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     disabled: nextDisabled,
     editing: nextEditing,
     fileUploads: nextFileUploads,
+    focused: nextFocused,
     giphyActive: nextGiphyActive,
     imageUploads: nextImageUploads,
     isOnline: nextIsOnline,
@@ -702,6 +708,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const sendingEqual = prevSending.current === nextSending.current;
   if (!sendingEqual) return false;
+
+  const focusedEqual = prevFocused === nextFocused;
+  if (!focusedEqual) return false;
 
   const showMoreOptionsEqual = prevShowMoreOptions === nextShowMoreOptions;
   if (!showMoreOptionsEqual) return false;
@@ -784,6 +793,7 @@ export const MessageInput = <
     editing,
     FileUploadPreview,
     fileUploads,
+    focused,
     giphyActive,
     ImageUploadPreview,
     imageUploads,
@@ -849,6 +859,7 @@ export const MessageInput = <
         editing,
         FileUploadPreview,
         fileUploads,
+        focused,
         giphyActive,
         ImageUploadPreview,
         imageUploads,
