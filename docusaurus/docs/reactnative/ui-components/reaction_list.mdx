@@ -21,9 +21,9 @@ This is the default component provided to the prop [`ReactionList`](../core-comp
 **Use case**: Override the background color on the reaction list container.
 
 ```tsx
-import { Channel, ReactionList } from 'stream-chat-react-native';
+import { Channel, ReactionList, ReactionListProps } from 'stream-chat-react-native';
 
-const ReactionListWithCustomBackground = () => <ReactionList fill={'#00DDD'} stroke={'#fffff'} />
+const ReactionListWithCustomBackground = (props: ReactionListProps) => <ReactionList {...props} fill={'#00DDD'} stroke={'#fffff'} />
 
 <Channel ReactionList={ReactionListWithCustomBackground} />
 ```
