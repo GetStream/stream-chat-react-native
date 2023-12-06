@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { I18nManager, LogBox, Platform, SafeAreaView, useColorScheme, View } from 'react-native';
 import { DarkTheme, DefaultTheme, NavigationContainer, RouteProp } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
@@ -101,16 +101,12 @@ const ChannelListScreen: React.FC<ChannelListScreenProps> = ({ navigation }) => 
   );
 };
 
-type ChannelScreenProps = {
-  navigation: StackNavigationProp<NavigationParamsList, 'Channel'>;
-};
-
 const doDocUploadRequest: NonNullable<ChannelProps['doDocUploadRequest']> = async (
   file,
   channel,
 ) => {
   if (!file.uri) {
-    throw 'Invalid file provided';
+    throw new Error('Invalid file provided');
   }
   if (file.mimeType?.startsWith('video/')) {
     const result = await VideoCompressor.compress(file.uri, {
@@ -120,6 +116,10 @@ const doDocUploadRequest: NonNullable<ChannelProps['doDocUploadRequest']> = asyn
   }
 
   return await channel.sendFile(file.uri, file.name, file.mimeType);
+};
+
+type ChannelScreenProps = {
+  navigation: StackNavigationProp<NavigationParamsList, 'Channel'>;
 };
 
 const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
