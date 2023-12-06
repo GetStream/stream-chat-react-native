@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { I18nManager, LogBox, Platform, SafeAreaView, useColorScheme, View } from 'react-native';
 import { DarkTheme, DefaultTheme, NavigationContainer, RouteProp } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
@@ -18,7 +18,9 @@ import {
   ThreadContextValue,
   useAttachmentPickerContext,
   useOverlayContext,
+  ChannelProps,
 } from 'stream-chat-react-native';
+import { Video as VideoCompressor } from 'react-native-compressor';
 
 import { useStreamChatTheme } from './useStreamChatTheme';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -103,6 +105,23 @@ type ChannelScreenProps = {
   navigation: StackNavigationProp<NavigationParamsList, 'Channel'>;
 };
 
+const doDocUploadRequest: NonNullable<ChannelProps['doDocUploadRequest']> = async (
+  file,
+  channel,
+) => {
+  if (!file.uri) {
+    throw 'Invalid file provided';
+  }
+  if (file.mimeType?.startsWith('video/')) {
+    const result = await VideoCompressor.compress(file.uri, {
+      compressionMethod: 'auto',
+    });
+    file.uri = result;
+  }
+
+  return await channel.sendFile(file.uri, file.name, file.mimeType);
+};
+
 const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
   const { channel, setThread, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
@@ -125,7 +144,12 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView>
-      <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread}>
+      <Channel
+        channel={channel}
+        doDocUploadRequest={doDocUploadRequest}
+        keyboardVerticalOffset={headerHeight}
+        thread={thread}
+      >
         <View style={{ flex: 1 }}>
           <MessageList<StreamChatGenerics>
             onThreadSelect={(thread) => {
