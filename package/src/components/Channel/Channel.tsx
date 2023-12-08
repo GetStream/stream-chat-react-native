@@ -589,22 +589,11 @@ const ChannelWithContext = <
   const [hasNoMoreRecentMessagesToLoad, setHasNoMoreRecentMessagesToLoad] = useState(true);
 
   /**
-   * hasNoMoreRecentMessagesToLoad flag is tracked in ref so that
-   * functions can be passed to message list context without any change due to dependency
-   */
-  const hasNoMoreRecentMessagesToLoadRef = useRef(true);
-  hasNoMoreRecentMessagesToLoadRef.current = hasNoMoreRecentMessagesToLoad;
-
-  /**
    * messages array is tracked in ref so that
    * functions can be passed to message list context without any change due to dependency
    */
   const messagesRef = useRef(messages);
   messagesRef.current = messages;
-
-  useEffect(() => {
-    hasNoMoreRecentMessagesToLoadRef.current = hasNoMoreRecentMessagesToLoad;
-  }, [hasNoMoreRecentMessagesToLoad]);
 
   const { setTargetedMessage, targetedMessage } = useTargetedMessage();
 
