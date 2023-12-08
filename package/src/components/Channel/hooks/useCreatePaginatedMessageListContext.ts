@@ -34,7 +34,14 @@ export const useCreatePaginatedMessageListContext = <
       setLoadingMore,
       setLoadingMoreRecent,
     }),
-    [channelId, hasMore, loadingMoreRecent, loadingMore, messagesStr],
+    [
+      channelId,
+      hasMore,
+      loadingMoreRecent,
+      loadingMore,
+      hasNoMoreRecentMessagesToLoad,
+      messagesStr,
+    ],
   );
 
   return paginatedMessagesContext;

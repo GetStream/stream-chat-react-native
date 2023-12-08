@@ -524,7 +524,7 @@ const MessageListWithContext = <
 
     messageListLengthBeforeUpdate.current = messageListLengthAfterUpdate;
     topMessageBeforeUpdate.current = topMessageAfterUpdate;
-  }, [messageListLengthAfterUpdate, topMessageAfterUpdate?.id]);
+  }, [hasNoMoreRecentMessagesToLoad, messageListLengthAfterUpdate, topMessageAfterUpdate?.id]);
 
   useEffect(() => {
     setAutoscrollToTop(hasNoMoreRecentMessagesToLoad);
@@ -729,13 +729,13 @@ const MessageListWithContext = <
   };
 
   /**
-   * Following if condition covers following cases:
-   * 1. If I scroll up -> show scrollToBottom button.
-   * 2. If I scroll to bottom of screen
-   *    |-> hide scrollToBottom button.
-   *    |-> if channel is unread, call markRead().
+   * Method used only inside the List to do these things
+   * 1. Mark channel as read if scroll is at the bottom
+   * 2. Call maybeCallOnStartReached if scroll is at the top
+   * 3. Call maybeCallOnEndReached if scroll is at the bottom
+   * 4. Show scrollToBottom button if scroll is at the bottom and messages are not the latest
    */
-  const handleScroll: ScrollViewProps['onScroll'] = (event) => {
+  const onScrollEvent: ScrollViewProps['onScroll'] = (event) => {
     if (!channel || !channelResyncScrollSet.current) {
       return;
     }
@@ -757,6 +757,15 @@ const MessageListWithContext = <
 
     // Show scrollToBottom button once scroll position goes beyond 150.
     const isScrollAtBottom = offset <= 150;
+
+    /**
+     * Following if condition covers following cases:
+     * 1. If I scroll up -> show scrollToBottom button.
+     * 2. If I scroll to bottom of screen
+     *    |-> hide scrollToBottom button.
+     *    |-> if channel is unread, call markRead().
+     */
+
     const showScrollToBottomButton = !isScrollAtBottom || !hasNoMoreRecentMessagesToLoad;
 
     const shouldMarkRead =
@@ -767,6 +776,10 @@ const MessageListWithContext = <
     }
 
     setScrollToBottomButtonVisible(showScrollToBottomButton);
+  };
+
+  const handleScroll: ScrollViewProps['onScroll'] = (event) => {
+    onScrollEvent(event);
 
     if (onListScroll) {
       onListScroll(event);
@@ -979,8 +992,14 @@ const MessageListWithContext = <
       closePicker();
     }
   };
-  const onScrollBeginDrag = () => !hasMoved && selectedPicker && setHasMoved(true);
-  const onScrollEndDrag = () => hasMoved && selectedPicker && setHasMoved(false);
+  const onScrollBeginDrag: ScrollViewProps['onScrollBeginDrag'] = (event) => {
+    !hasMoved && selectedPicker && setHasMoved(true);
+    onScrollEvent(event);
+  };
+  const onScrollEndDrag: ScrollViewProps['onScrollEndDrag'] = (event) => {
+    hasMoved && selectedPicker && setHasMoved(false);
+    onScrollEvent(event);
+  };
 
   const refCallback = (ref: FlatListType<MessageType<StreamChatGenerics>>) => {
     flatListRef.current = ref;

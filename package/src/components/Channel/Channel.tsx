@@ -588,6 +588,13 @@ const ChannelWithContext = <
    */
   const [hasNoMoreRecentMessagesToLoad, setHasNoMoreRecentMessagesToLoad] = useState(true);
 
+  /**
+   * messages array is tracked in ref so that
+   * functions can be passed to message list context without any change due to dependency
+   */
+  const messagesRef = useRef(messages);
+  messagesRef.current = messages;
+
   const { setTargetedMessage, targetedMessage } = useTargetedMessage();
 
   /**
@@ -879,13 +886,14 @@ const ChannelWithContext = <
    * @param messageId If undefined, channel will be loaded at most recent message.
    */
   const loadChannelAroundMessage: ChannelContextValue<StreamChatGenerics>['loadChannelAroundMessage'] =
-    ({ messageId }) =>
+    ({ messageId: messageIdToLoadAround }) =>
       channelQueryCallRef.current(
         async () => {
-          setHasNoMoreRecentMessagesToLoad(false); // we are jumping to a message, hence we do not know for sure anymore if there are no more recent messages
           setLoading(true);
-          if (messageId) {
-            await channel.state.loadMessageIntoState(messageId);
+          if (messageIdToLoadAround) {
+            setHasNoMoreRecentMessagesToLoad(false); // we are jumping to a message, hence we do not know for sure anymore if there are no more recent messages
+            channel.state.setIsUpToDate(false);
+            await channel.state.loadMessageIntoState(messageIdToLoadAround);
           } else {
             await channel.state.loadMessageIntoState('latest');
             channel.state.setIsUpToDate(true);
@@ -893,8 +901,8 @@ const ChannelWithContext = <
           setLoading(false);
         },
         () => {
-          if (messageId) {
-            setTargetedMessage(messageId);
+          if (messageIdToLoadAround) {
+            setTargetedMessage(messageIdToLoadAround);
           }
         },
       );
@@ -1509,55 +1517,70 @@ const ChannelWithContext = <
     ),
   ).current;
 
-  const loadMore: PaginatedMessageListContextValue<StreamChatGenerics>['loadMore'] = async (
-    limit = 20,
-  ) => {
-    if (loadingMore || hasMore === false) {
-      return;
-    }
-    setLoadingMore(true);
-
-    if (!messages.length) {
-      return setLoadingMore(false);
-    }
-
-    const oldestMessage = messages && messages[0];
-
-    if (oldestMessage && oldestMessage.status !== MessageStatusTypes.RECEIVED) {
-      return setLoadingMore(false);
-    }
-
-    const oldestID = oldestMessage && oldestMessage.id;
-
-    try {
-      if (channel) {
-        const queryResponse = await channel.query({
-          messages: { id_lt: oldestID, limit },
-        });
-
-        const updatedHasMore = queryResponse.messages.length === limit;
-        loadMoreFinished(updatedHasMore, channel.state.messages);
+  /**
+   * This function loads more messages before the first message in current channel state.
+   */
+  const loadMore = useCallback<PaginatedMessageListContextValue<StreamChatGenerics>['loadMore']>(
+    async (limit = 20) => {
+      if (loadingMore || hasMore === false) {
+        return;
       }
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err);
-      } else {
-        setError(true);
-      }
-      setLoadingMore(false);
-      throw err;
-    }
-  };
+      setLoadingMore(true);
 
-  const loadMoreRecent: PaginatedMessageListContextValue<StreamChatGenerics>['loadMoreRecent'] =
+      const currentMessages = messagesRef.current;
+
+      if (!currentMessages.length) {
+        return setLoadingMore(false);
+      }
+
+      const oldestMessage = currentMessages && currentMessages[0];
+
+      if (oldestMessage && oldestMessage.status !== MessageStatusTypes.RECEIVED) {
+        return setLoadingMore(false);
+      }
+
+      const oldestID = oldestMessage && oldestMessage.id;
+
+      try {
+        if (channel) {
+          const queryResponse = await channel.query({
+            messages: { id_lt: oldestID, limit },
+          });
+
+          const updatedHasMore = queryResponse.messages.length === limit;
+          loadMoreFinished(updatedHasMore, channel.state.messages);
+        }
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err);
+        } else {
+          setError(true);
+        }
+        setLoadingMore(false);
+        throw err;
+      }
+    },
+    /*
+     * This function is passed to useCreatePaginatedMessageListContext
+     * Where the deps are [channelId, hasMore, loadingMoreRecent, loadingMore]
+     * and only those deps should be used here because of that
+     */
+    [channelId, hasMore, loadingMore],
+  );
+
+  /**
+   * This function loads more messages after the most recent message in current channel state.
+   */
+  const loadMoreRecent = useCallback<
+    PaginatedMessageListContextValue<StreamChatGenerics>['loadMoreRecent']
+  >(
     async (limit = 5) => {
       if (hasNoMoreRecentMessagesToLoad) {
         return;
       }
-
       setLoadingMoreRecent(true);
-
-      const recentMessage = messages[messages.length - 1];
+      const currentMessages = messagesRef.current;
+      const recentMessage = currentMessages[currentMessages.length - 1];
 
       if (recentMessage?.status !== MessageStatusTypes.RECEIVED) {
         setLoadingMoreRecent(false);
@@ -1566,14 +1589,14 @@ const ChannelWithContext = <
 
       try {
         if (channel) {
-          const state = await channel.query({
+          const queryResponse = await channel.query({
             messages: {
               id_gte: recentMessage.id,
               limit,
             },
             watch: true,
           });
-          setHasNoMoreRecentMessagesToLoad(state.messages.length < limit);
+          setHasNoMoreRecentMessagesToLoad(queryResponse.messages.length < limit);
           loadMoreRecentFinished(channel.state.messages);
         }
       } catch (err) {
@@ -1586,7 +1609,14 @@ const ChannelWithContext = <
         setLoadingMoreRecent(false);
         throw err;
       }
-    };
+    },
+    /*
+     * This function is passed to useCreatePaginatedMessageListContext
+     * Where the deps are [channelId, hasMore, loadingMoreRecent, loadingMore, hasNoMoreRecentMessagesToLoad]
+     * and and only those deps should be used here because of that
+     */
+    [channelId, hasNoMoreRecentMessagesToLoad],
+  );
 
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
   const loadMoreRecentFinished = useRef(
