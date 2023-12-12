@@ -1,8 +1,8 @@
 import { find } from 'linkifyjs';
 
 interface LinkInfo {
-  encodedUrl: string;
   raw: string;
+  url: string;
 }
 
 /**
@@ -27,8 +27,8 @@ export const parseLinksFromText = (input: string): LinkInfo[] => {
   const emails = find(strippedInput, 'email');
 
   const result: LinkInfo[] = [...links, ...emails].map(({ href, value }) => ({
-    encodedUrl: encodeURI(href),
     raw: value,
+    url: href,
   }));
 
   return result;
