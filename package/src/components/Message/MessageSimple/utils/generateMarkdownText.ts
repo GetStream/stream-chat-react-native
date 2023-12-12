@@ -21,16 +21,17 @@ export const generateMarkdownText = (text?: string) => {
       length: 200,
       omission: '...',
     });
+    const decodedURL = decodeURI(linkInfo.encodedUrl);
     // Convert raw links/emails in the text to respective markdown syntax.
     // Eg: Hi @getstream.io -> Hi @[getstream.io](getstream.io).
     const normalRegEx = new RegExp(escapeRegExp(linkInfo.raw), 'g');
-    const markdown = `[${displayLink}](${linkInfo.encodedUrl})`;
+    const markdown = `[${displayLink}](${decodedURL})`;
     resultText = text.replace(normalRegEx, markdown);
 
     // After previous step, in some cases, the mentioned user after `@` might have a link/email so we convert it back to normal raw text.
     // Eg: Hi, @[test.user@gmail.com](mailto:test.user@gmail.com) to @test.user@gmail.com.
     const mentionsRegex = new RegExp(
-      `@\\[${escapeRegExp(displayLink)}\\]\\(${escapeRegExp(linkInfo.encodedUrl)}\\)`,
+      `@\\[${escapeRegExp(displayLink)}\\]\\(${escapeRegExp(decodedURL)}\\)`,
       'g',
     );
     resultText = resultText.replace(mentionsRegex, `@${displayLink}`);
