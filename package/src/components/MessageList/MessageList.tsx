@@ -814,6 +814,14 @@ const MessageListWithContext = <
       animated: false,
       offset: info.averageItemLength * info.index,
     });
+    const targetAgain = () => {
+      // in case the target message was cleared out
+      // the state being set again will trigger the highlight again
+      if (messageIdLastScrolledToRef.current) {
+        setTargetedMessage(messageIdLastScrolledToRef.current);
+      }
+    };
+    targetAgain();
     // since we used only an average offset... we won't go to the center of the item yet
     // with a little delay to wait for scroll to offset to complete, we can then scroll to the index
     failScrollTimeoutId.current = setTimeout(() => {
@@ -823,9 +831,7 @@ const MessageListWithContext = <
           index: info.index,
           viewPosition: 0.5, // try to place message in the center of the screen
         });
-        if (messageIdLastScrolledToRef.current) {
-          setTargetedMessage(messageIdLastScrolledToRef.current);
-        }
+        targetAgain();
         scrollToIndexFailedRetryCountRef.current = 0;
       } catch (e) {
         if (
@@ -915,11 +921,6 @@ const MessageListWithContext = <
         messageIdLastScrolledToRef.current = messageIdToScroll;
       }
     }, 150);
-    return () => {
-      clearTimeout(failScrollTimeoutId.current);
-      clearTimeout(scrollToDebounceTimeoutRef.current);
-      clearTimeout(initialScrollSettingTimeoutRef.current);
-    };
   }, [targetedMessage, initialScrollToFirstUnreadMessage, messageList]);
 
   const messagesWithImages =
