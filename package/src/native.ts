@@ -221,12 +221,12 @@ export type VideoType = {
 export let Video: React.ComponentType<VideoType>;
 
 type Handlers = {
-  iOS14RefreshGallerySelection: iOS14RefreshGallerySelection;
   compressImage?: CompressImage;
   deleteFile?: DeleteFile;
   FlatList?: typeof DefaultFlatList;
   getLocalAssetUri?: GetLocalAssetUri;
   getPhotos?: GetPhotos;
+  iOS14RefreshGallerySelection?: iOS14RefreshGallerySelection;
   NetInfo?: NetInfo;
   oniOS14GalleryLibrarySelectionChange?: OniOS14LibrarySelectionChange;
   pickDocument?: PickDocument;
