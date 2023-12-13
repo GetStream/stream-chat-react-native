@@ -891,13 +891,13 @@ const ChannelWithContext = <
         async () => {
           setLoading(true);
           if (messageIdToLoadAround) {
-            setHasNoMoreRecentMessagesToLoad(false); // we are jumping to a message, hence we do not know for sure anymore if there are no more recent messages
-            channel.state.setIsUpToDate(false);
             await channel.state.loadMessageIntoState(messageIdToLoadAround);
           } else {
             await channel.state.loadMessageIntoState('latest');
-            channel.state.setIsUpToDate(true);
           }
+          const areLatestMessages = channel.state.messages === channel.state.latestMessages;
+          setHasNoMoreRecentMessagesToLoad(areLatestMessages);
+          channel.state.setIsUpToDate(areLatestMessages);
           setLoading(false);
         },
         () => {
