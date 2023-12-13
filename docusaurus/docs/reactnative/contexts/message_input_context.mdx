@@ -42,7 +42,6 @@ import CooldownEndsAt from '../common-content/contexts/message-input-context/coo
 import Editing from '../common-content/contexts/message-input-context/editing.mdx';
 import EditMessage from '../common-content/contexts/message-input-context/edit_message.mdx';
 import FileUploads from '../common-content/contexts/message-input-context/file_uploads.mdx';
-import Focused from '../common-content/contexts/message-input-context/focused.mdx';
 import GiphyActive from '../common-content/contexts/message-input-context/giphy_active.mdx';
 import ImageUploads from '../common-content/contexts/message-input-context/image_uploads.mdx';
 import InputBoxRef from '../common-content/contexts/message-input-context/input_box_ref.mdx';
@@ -57,7 +56,6 @@ import QuotedMessage from '../common-content/contexts/message-input-context/quot
 import RemoveFile from '../common-content/contexts/message-input-context/remove_file.mdx';
 import RemoveImage from '../common-content/contexts/message-input-context/remove_image.mdx';
 import ResetInput from '../common-content/contexts/message-input-context/reset_input.mdx';
-import SetFocused from '../common-content/contexts/message-input-context/set_focused.mdx';
 import SetGiphyActive from '../common-content/contexts/message-input-context/set_giphy_active.mdx';
 import SendMessage from '../common-content/contexts/message-input-context/send_message.mdx';
 import SendThreadMessageInChannel from '../common-content/contexts/message-input-context/send_thread_message_in_channel.mdx';
@@ -218,10 +216,6 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 <FileUploads />
 
-### `focused`
-
-<Focused />
-
 ### giphyActive
 
 <GiphyActive />
@@ -299,10 +293,6 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 ### setFileUploads
 
 <SetFileUploads />
-
-### SetFocused
-
-<SetFocused />
 
 ### setGiphyActive
 

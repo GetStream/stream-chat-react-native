@@ -198,8 +198,6 @@ export type LocalMessageInputContext<
   uploadImage: ({ newImage }: { newImage: ImageUpload }) => Promise<void>;
   uploadNewFile: (file: File) => Promise<void>;
   uploadNewImage: (image: Partial<Asset>) => Promise<void>;
-  focused?: boolean;
-  setFocused?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export type InputMessageInputContextValue<
@@ -397,7 +395,6 @@ export const MessageInputProvider = <
 }: PropsWithChildren<{
   value: InputMessageInputContextValue<StreamChatGenerics>;
 }>) => {
-  const [focused, setFocused] = useState<boolean>(false);
   const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
     useAttachmentPickerContext();
   const { appSettings, client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
@@ -1139,7 +1136,6 @@ export const MessageInputProvider = <
     closeAttachmentPicker,
     cooldownEndsAt,
     fileUploads,
-    focused,
     giphyActive,
     imageUploads,
     inputBoxRef,
@@ -1163,7 +1159,6 @@ export const MessageInputProvider = <
     setAsyncIds,
     setAsyncUploads,
     setFileUploads,
-    setFocused,
     setGiphyActive,
     setImageUploads,
     setInputBoxRef,

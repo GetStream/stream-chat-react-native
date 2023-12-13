@@ -1,5 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+  Alert,
+  NativeSyntheticEvent,
+  StyleSheet,
+  TextInputFocusEventData,
+  View,
+} from 'react-native';
 
 import type { UserResponse } from 'stream-chat';
 
@@ -94,7 +100,6 @@ type MessageInputPropsWithContext<
     | 'editing'
     | 'FileUploadPreview'
     | 'fileUploads'
-    | 'focused'
     | 'giphyActive'
     | 'ImageUploadPreview'
     | 'imageUploads'
@@ -153,7 +158,6 @@ const MessageInputWithContext = <
     editing,
     FileUploadPreview,
     fileUploads,
-    focused,
     giphyActive,
     ImageUploadPreview,
     imageUploads,
@@ -177,6 +181,7 @@ const MessageInputWithContext = <
     SendButton,
     sending,
     sendMessageAsync,
+    setShowMoreOptions,
     ShowThreadMessageInChannelButton,
     suggestions,
     thread,
@@ -237,6 +242,7 @@ const MessageInputWithContext = <
 
   const [hasResetImages, setHasResetImages] = useState(false);
   const [hasResetFiles, setHasResetFiles] = useState(false);
+  const [focused, setFocused] = useState(false);
   const selectedImagesLength = hasResetImages ? selectedImages.length : 0;
   const imageUploadsLength = hasResetImages ? imageUploads.length : 0;
   const selectedFilesLength = hasResetFiles ? selectedFiles.length : 0;
@@ -516,6 +522,26 @@ const MessageInputWithContext = <
     ...additionalTextInputProps,
   };
 
+  const memoizedAdditionalTextInputProps = useMemo(
+    () => ({
+      ...additionalTextInputProps,
+      onBlur: (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
+        if (additionalTextInputProps?.onBlur) {
+          additionalTextInputProps?.onBlur(event);
+        }
+        if (setFocused) setFocused(false);
+        setShowMoreOptions(true);
+      },
+      onFocus: (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
+        if (additionalTextInputProps?.onFocus) {
+          additionalTextInputProps.onFocus(event);
+        }
+        if (setFocused) setFocused(true);
+      },
+    }),
+    [additionalTextInputProps],
+  );
+
   return (
     <>
       <View
@@ -573,7 +599,7 @@ const MessageInputWithContext = <
                 ) : (
                   <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
                     <AutoCompleteInput<StreamChatGenerics>
-                      additionalTextInputProps={additionalTextInputProps}
+                      additionalTextInputProps={memoizedAdditionalTextInputProps}
                       cooldownActive={!!cooldownRemainingSeconds}
                     />
                   </View>
@@ -643,7 +669,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     disabled: prevDisabled,
     editing: prevEditing,
     fileUploads: prevFileUploads,
-    focused: prevFocused,
     giphyActive: prevGiphyActive,
     imageUploads: prevImageUploads,
     isOnline: prevIsOnline,
@@ -663,7 +688,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     disabled: nextDisabled,
     editing: nextEditing,
     fileUploads: nextFileUploads,
-    focused: nextFocused,
     giphyActive: nextGiphyActive,
     imageUploads: nextImageUploads,
     isOnline: nextIsOnline,
@@ -708,9 +732,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const sendingEqual = prevSending.current === nextSending.current;
   if (!sendingEqual) return false;
-
-  const focusedEqual = prevFocused === nextFocused;
-  if (!focusedEqual) return false;
 
   const showMoreOptionsEqual = prevShowMoreOptions === nextShowMoreOptions;
   if (!showMoreOptionsEqual) return false;
@@ -793,7 +814,6 @@ export const MessageInput = <
     editing,
     FileUploadPreview,
     fileUploads,
-    focused,
     giphyActive,
     ImageUploadPreview,
     imageUploads,
@@ -859,7 +879,6 @@ export const MessageInput = <
         editing,
         FileUploadPreview,
         fileUploads,
-        focused,
         giphyActive,
         ImageUploadPreview,
         imageUploads,
