@@ -473,10 +473,10 @@ PODS:
     - RCTTypeSafety
     - React-Core
     - ReactCommon/turbomodule/core
-  - react-native-video (6.0.0-alpha.6):
+  - react-native-video (6.0.0-beta.2):
     - React-Core
-    - react-native-video/Video (= 6.0.0-alpha.6)
-  - react-native-video/Video (6.0.0-alpha.6):
+    - react-native-video/Video (= 6.0.0-beta.2)
+  - react-native-video/Video (6.0.0-beta.2):
     - PromisesSwift
     - React-Core
   - React-NativeModulesApple (0.72.6):
@@ -934,7 +934,7 @@ SPEC CHECKSUMS:
   react-native-netinfo: 22c082970cbd99071a4e5aa7a612ac20d66b08f0
   react-native-quick-sqlite: 2b225dadc63b670f027111e58f6f169773f6d755
   react-native-safe-area-context: f5549f36508b1b7497434baa0cd97d7e470920d4
-  react-native-video: fee89269ad07556d960721f3b62e39be6ace3c90
+  react-native-video: 806f18bba69b4bfe02e62679acb6b732c8355ee5
   React-NativeModulesApple: 1802a680a4cd891d2ab97780771bcb2ff11fdc0b
   React-perflogger: e3596db7e753f51766bceadc061936ef1472edc3
   React-RCTActionSheet: 17ab132c748b4471012abbcdcf5befe860660485
