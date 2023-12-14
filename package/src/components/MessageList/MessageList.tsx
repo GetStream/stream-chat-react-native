@@ -345,6 +345,11 @@ const MessageListWithContext = <
   const initialScrollSettingTimeoutRef = useRef<NodeJS.Timeout>();
 
   /**
+   * The timeout id used to temporarily load the initial scroll set flag
+   */
+  const tempDisablePaginationTrackersTimeoutRef = useRef<NodeJS.Timeout>();
+
+  /**
    * If a messageId was requested to scroll to but was unloaded,
    * this flag keeps track of it to scroll to it after loading the message
    */
@@ -419,6 +424,22 @@ const MessageListWithContext = <
   const resetPaginationTrackersRef = useRef(() => {
     onStartReachedTracker.current = {};
     onEndReachedTracker.current = {};
+  });
+
+  /**
+   * Disables the pagination trackers for a second
+   * This is used to prevent the onEndReached and onStartReached from firing
+   * when we scroll to the bottom or top of the list automatically without user interaction
+   * Ex: for targeted message scroll
+   */
+  const tempDisablePaginationTrackersRef = useRef((messageListLength: number) => {
+    clearTimeout(tempDisablePaginationTrackersTimeoutRef.current);
+    onStartReachedTracker.current[messageListLength] = true;
+    onEndReachedTracker.current[messageListLength] = true;
+    tempDisablePaginationTrackersTimeoutRef.current = setTimeout(() => {
+      onStartReachedTracker.current[messageListLength] = false;
+      onEndReachedTracker.current[messageListLength] = false;
+    }, 1000);
   });
 
   useEffect(() => {
@@ -809,29 +830,32 @@ const MessageListWithContext = <
   >((info) => {
     // We got a failure as we tried to scroll to an item that was outside the render length
     if (!flatListRef.current) return;
+    const dataLength = flatListRef.current.props?.data?.length;
+    if (dataLength) {
+      tempDisablePaginationTrackersRef.current(dataLength);
+    }
     // we don't know the actual size of all items but we can see the average, so scroll to the closest offset
     flatListRef.current.scrollToOffset({
       animated: false,
       offset: info.averageItemLength * info.index,
     });
-    const targetAgain = () => {
-      // in case the target message was cleared out
-      // the state being set again will trigger the highlight again
-      if (messageIdLastScrolledToRef.current) {
-        setTargetedMessage(messageIdLastScrolledToRef.current);
-      }
-    };
-    targetAgain();
     // since we used only an average offset... we won't go to the center of the item yet
     // with a little delay to wait for scroll to offset to complete, we can then scroll to the index
     failScrollTimeoutId.current = setTimeout(() => {
       try {
+        if (dataLength) {
+          tempDisablePaginationTrackersRef.current(dataLength);
+        }
         flatListRef.current?.scrollToIndex({
           animated: false,
           index: info.index,
           viewPosition: 0.5, // try to place message in the center of the screen
         });
-        targetAgain();
+        // in case the target message was cleared out
+        // the state being set again will trigger the highlight again
+        if (messageIdLastScrolledToRef.current) {
+          setTargetedMessage(messageIdLastScrolledToRef.current);
+        }
         scrollToIndexFailedRetryCountRef.current = 0;
       } catch (e) {
         if (
@@ -866,6 +890,10 @@ const MessageListWithContext = <
       if (indexOfParentInMessageList !== -1 && flatListRef.current) {
         clearTimeout(failScrollTimeoutId.current);
         scrollToIndexFailedRetryCountRef.current = 0;
+        // we are scrolling automatically to the message instead of user initiating it,
+        // so we don't need to load more older messages
+        tempDisablePaginationTrackersRef.current(messageList.length);
+        // now scroll to it
         flatListRef.current.scrollToIndex({
           animated: true,
           index: indexOfParentInMessageList,
@@ -890,6 +918,7 @@ const MessageListWithContext = <
   useEffect(() => {
     scrollToDebounceTimeoutRef.current = setTimeout(() => {
       if (initialScrollToFirstUnreadMessage) {
+        clearTimeout(initialScrollSettingTimeoutRef.current);
         initialScrollSettingTimeoutRef.current = setTimeout(() => {
           // small timeout to ensure that handleScroll is called after scrollToIndex to set this flag
           setInitialScrollDone(true);
@@ -908,8 +937,14 @@ const MessageListWithContext = <
       );
       if (indexOfParentInMessageList !== -1 && flatListRef.current) {
         // By a fresh scroll we should clear the retries for the previous failed scroll
+        clearTimeout(scrollToDebounceTimeoutRef.current);
         clearTimeout(failScrollTimeoutId.current);
+        // we are scrolling automatically to the message instead of user initiating it,
+        // so we don't need to load more older messages
+        tempDisablePaginationTrackersRef.current(messageList.length);
+        // reset the retry count
         scrollToIndexFailedRetryCountRef.current = 0;
+        // now scroll to it
         flatListRef.current.scrollToIndex({
           animated: false,
           index: indexOfParentInMessageList,

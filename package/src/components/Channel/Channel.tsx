@@ -817,12 +817,43 @@ const ChannelWithContext = <
     async (
       queryCall: () => Promise<void>,
       onAfterQueryCall: (() => void) | undefined = undefined,
+      // if we are targeting a message after the query, pass it here
+      targetMessageId: string | undefined = undefined,
     ) => {
       setError(false);
       try {
         await queryCall();
         setLastRead(new Date());
         setHasMore(true);
+        if (channel && targetMessageId) {
+          // 30 is the maxToRenderPerBatch in MessageList
+          const limit = 30 * 3; // we allow 3 batches of messages to be rendered
+          const currentMessages = channel.state.messages;
+          // number of messages are over the limit, limit the length of messages
+          if (currentMessages.length > limit) {
+            const targetMessageIndex = currentMessages.findIndex(
+              ({ id }) => id === targetMessageId,
+            );
+            let startIndex = Math.max(targetMessageIndex - Math.floor(limit / 2), 0);
+            const endIndex = targetMessageIndex + Math.floor(limit / 2);
+            if (endIndex > currentMessages.length) {
+              startIndex = Math.max(startIndex - (endIndex - currentMessages.length - 1) - 1, 0);
+            }
+            const hadLatestMessages = channel.state.messages === channel.state.latestMessages;
+            const recentMessage = currentMessages[currentMessages.length - 1];
+            channel.state.clearMessages();
+            channel.state.messages = currentMessages.slice(startIndex, endIndex);
+            const stillHasLatestMessages =
+              hadLatestMessages &&
+              channel.state.messages[channel.state.messages.length - 1] === recentMessage;
+            setHasNoMoreRecentMessagesToLoad(stillHasLatestMessages);
+            channel.state.setIsUpToDate(stillHasLatestMessages);
+          }
+        } else {
+          const areLatestMessages = channel.state.messages === channel.state.latestMessages;
+          setHasNoMoreRecentMessagesToLoad(areLatestMessages);
+          channel.state.setIsUpToDate(areLatestMessages);
+        }
         copyChannelState();
         onAfterQueryCall?.();
       } catch (err) {
@@ -851,7 +882,6 @@ const ChannelWithContext = <
         // if last read date is present we can just fetch messages around that date
         // last read date not being present is an edge case if somewhere the user of SDK deletes the read state (this will usually never happen)
         if (lastReadDate) {
-          setHasNoMoreRecentMessagesToLoad(false); // we are jumping to a message, hence we do not know for sure anymore if there are no more recent messages
           // get totally 30 messages... max 15 before last read date and max 15 after last read date
           // ref: https://github.com/GetStream/chat/pull/2588
           await channel.query(
@@ -870,7 +900,6 @@ const ChannelWithContext = <
           // we just load the latest messages (25 is the default) and we cant scroll to first unread message
           await channel.state.loadMessageIntoState('latest');
         }
-        setLoading(false);
       },
       () => {
         if (unreadMessageIdToScrollTo) {
@@ -895,16 +924,13 @@ const ChannelWithContext = <
           } else {
             await channel.state.loadMessageIntoState('latest');
           }
-          const areLatestMessages = channel.state.messages === channel.state.latestMessages;
-          setHasNoMoreRecentMessagesToLoad(areLatestMessages);
-          channel.state.setIsUpToDate(areLatestMessages);
-          setLoading(false);
         },
         () => {
           if (messageIdToLoadAround) {
             setTargetedMessage(messageIdToLoadAround);
           }
         },
+        messageIdToLoadAround,
       );
 
   /**
