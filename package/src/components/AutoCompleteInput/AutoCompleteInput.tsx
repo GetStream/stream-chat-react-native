@@ -481,7 +481,6 @@ export const AutoCompleteInput = <
     onChange,
     setGiphyActive,
     setInputBoxRef,
-    setShowMoreOptions,
     text,
     triggerSettings,
   } = useMessageInputContext<StreamChatGenerics>();
@@ -505,7 +504,6 @@ export const AutoCompleteInput = <
         openSuggestions,
         setGiphyActive,
         setInputBoxRef,
-        setShowMoreOptions,
         t,
         text,
         triggerSettings,
