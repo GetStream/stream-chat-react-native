@@ -598,6 +598,12 @@ const ChannelWithContext = <
   const { setTargetedMessage, targetedMessage } = useTargetedMessage();
 
   /**
+   * If we loaded a channel around message
+   * We may have moved latest message to a new message set in that case mark this ref to avoid fetching
+   */
+  const hasOverlappingRecentMessagesRef = useRef(false);
+
+  /**
    * This ref will hold the abort controllers for
    * requests made for uploading images/files in the messageInputContext
    * Its a map of filename to AbortController
@@ -825,35 +831,54 @@ const ChannelWithContext = <
         await queryCall();
         setLastRead(new Date());
         setHasMore(true);
-        if (channel && targetMessageId) {
+        const hadLatestMessages = channel.state.messages === channel.state.latestMessages;
+        const currentMessages = channel.state.messages;
+        const targetMessageIndex = targetMessageId
+          ? currentMessages.findIndex(({ id }) => id === targetMessageId)
+          : -1;
+        if (channel && targetMessageIndex !== -1) {
           // 30 is the maxToRenderPerBatch in MessageList
-          const limit = 30 * 3; // we allow 3 batches of messages to be rendered
-          const currentMessages = channel.state.messages;
-          // number of messages are over the limit, limit the length of messages
-          if (currentMessages.length > limit) {
-            const targetMessageIndex = currentMessages.findIndex(
-              ({ id }) => id === targetMessageId,
-            );
-            let startIndex = Math.max(targetMessageIndex - Math.floor(limit / 2), 0);
-            const endIndex = targetMessageIndex + Math.floor(limit / 2);
-            if (endIndex > currentMessages.length) {
-              startIndex = Math.max(startIndex - (endIndex - currentMessages.length - 1) - 1, 0);
+          // We assume that on average user sees 5 messages on screen
+          // We dont want new renders to happen while scrolling to the targeted message
+          // hence we limit the number of messages to be rendered after the targeted message to 5 - 1 = 4
+          // NOTE: we have one drawback here, if there were already a split latest and current message set
+          // the previous latest message set will be lost
+          const limitAfter = 4;
+          const currentLength = currentMessages.length;
+          const targetMessageIndex = currentMessages.findIndex(({ id }) => id === targetMessageId);
+          if (targetMessageIndex !== -1) {
+            const noOfMessagesAfter = currentLength - targetMessageIndex - 1;
+            // number of messages are over the limit, limit the length of messages
+            if (noOfMessagesAfter > limitAfter) {
+              const endIndex = targetMessageIndex + limitAfter;
+              channel.state.clearMessages();
+              channel.state.messages = currentMessages.slice(0, endIndex + 1);
+              splitLatestCurrentMessageSetRef.current();
+              const restOfMessages = currentMessages.slice(endIndex + 1);
+              console.log({ endIndex, targetMessageIndex });
+              if (hadLatestMessages) {
+                const latestSet = channel.state.messageSets.find((set) => set.isLatest);
+                if (latestSet) {
+                  latestSet.messages = restOfMessages;
+                  hasOverlappingRecentMessagesRef.current = true;
+                }
+              }
             }
-            const hadLatestMessages = channel.state.messages === channel.state.latestMessages;
-            const recentMessage = currentMessages[currentMessages.length - 1];
-            channel.state.clearMessages();
-            channel.state.messages = currentMessages.slice(startIndex, endIndex);
-            const stillHasLatestMessages =
-              hadLatestMessages &&
-              channel.state.messages[channel.state.messages.length - 1] === recentMessage;
-            setHasNoMoreRecentMessagesToLoad(stillHasLatestMessages);
-            channel.state.setIsUpToDate(stillHasLatestMessages);
           }
-        } else {
-          const areLatestMessages = channel.state.messages === channel.state.latestMessages;
-          setHasNoMoreRecentMessagesToLoad(areLatestMessages);
-          channel.state.setIsUpToDate(areLatestMessages);
         }
+        const areLatestMessages = channel.state.messages === channel.state.latestMessages;
+        console.log('channelQueryCallRef', {
+          areLatestMessages,
+          hadLatestMessages,
+          sets: channel.state.messageSets.map((set) => ({
+            isCurrent: set.isCurrent,
+            isLatest: set.isLatest,
+            length: set.messages.length,
+          })),
+        });
+
+        setHasNoMoreRecentMessagesToLoad(areLatestMessages);
+        channel.state.setIsUpToDate(areLatestMessages);
         copyChannelState();
         onAfterQueryCall?.();
       } catch (err) {
@@ -890,15 +915,30 @@ const ChannelWithContext = <
                 created_at_around: lastReadDate,
                 limit: 30,
               },
+              watch: true,
             },
             'new',
           );
           unreadMessageIdToScrollTo = channel.state.messages.find(
             (m) => lastReadDate < m.created_at,
           )?.id;
+          if (!unreadMessageIdToScrollTo) {
+            // the required message is not in the current set, so switch to it
+            const unreadMessageSet = channel.state.messageSets
+              .filter((set) => !set.isCurrent)
+              .find((set) => {
+                unreadMessageIdToScrollTo = set.messages.find(
+                  (m) => lastReadDate < m.created_at,
+                )?.id;
+                return !!unreadMessageIdToScrollTo;
+              });
+            channel.state.messageSets.forEach((set) => {
+              set.isCurrent = set === unreadMessageSet;
+            });
+          }
         } else {
           // we just load the latest messages (25 is the default) and we cant scroll to first unread message
-          await channel.state.loadMessageIntoState('latest');
+          await loadLatestMessagesRef.current();
         }
       },
       () => {
@@ -920,9 +960,42 @@ const ChannelWithContext = <
         async () => {
           setLoading(true);
           if (messageIdToLoadAround) {
+            setMessages([]);
+            console.log('START - loadChannelAroundMessage', {
+              sets: channel.state.messageSets.map((set) => ({
+                isCurrent: set.isCurrent,
+                isLatest: set.isLatest,
+                length: set.messages.length,
+              })),
+            });
             await channel.state.loadMessageIntoState(messageIdToLoadAround);
+            const currentMessageSet = channel.state.messageSets.find((set) => set.isCurrent);
+            if (currentMessageSet && !currentMessageSet?.isLatest) {
+              // if the current message set is not the latest, we will throw away the latest messages
+              // in order to attempt to not throw away, will attempt to merge it by loading 25 more messages
+              console.log(
+                'attempting to merge current and latest message sets by fetching more recent of current',
+              );
+              const recentCurrentSetMsgId =
+                currentMessageSet.messages[currentMessageSet.messages.length - 1].id;
+              await channel.query({
+                messages: {
+                  id_gte: recentCurrentSetMsgId,
+                  limit: 25,
+                },
+                watch: true,
+              });
+              // if the gap is more than 25, we would unfortunately have to throw away the latest messages
+            }
+            console.log('END - loadChannelAroundMessage', {
+              sets: channel.state.messageSets.map((set) => ({
+                isCurrent: set.isCurrent,
+                isLatest: set.isLatest,
+                length: set.messages.length,
+              })),
+            });
           } else {
-            await channel.state.loadMessageIntoState('latest');
+            await loadLatestMessagesRef.current();
           }
         },
         () => {
@@ -955,16 +1028,84 @@ const ChannelWithContext = <
       }
     });
 
+  /**
+   * Utility method to mark that current set if latest into two.
+   * With an empty latest set
+   * This is useful when we know that we dont know the latest messages anymore
+   * Or if we are loading a channel around a message
+   */
+  const splitLatestCurrentMessageSetRef = useRef(() => {
+    const latestSet = channel.state.messageSets.find((set) => set.isCurrent && set.isLatest);
+    if (!latestSet) return;
+    // unmark the current latest set
+    latestSet.isLatest = false;
+    // create a new set with empty latest messages
+    channel.state.messageSets.push({
+      isCurrent: false,
+      isLatest: true,
+      messages: [],
+    });
+  });
+
+  /**
+   * Utility method to merge current and latest message set.
+   * Returns true if merge was successful, false otherwise.
+   */
+  const mergeOverlappingMessageSetsRef = useRef(() => {
+    if (hasOverlappingRecentMessagesRef.current) {
+      console.log("START - Merge current and latest message set's", {
+        sets: channel.state.messageSets.map((set) => ({
+          isCurrent: set.isCurrent,
+          isLatest: set.isLatest,
+          length: set.messages.length,
+        })),
+      });
+      hasOverlappingRecentMessagesRef.current = false;
+      // merge current and latest sets
+      const latestMessageSet = channel.state.messageSets.find((set) => set.isLatest);
+      const currentMessageSet = channel.state.messageSets.find((set) => set.isCurrent);
+      if (latestMessageSet && currentMessageSet && latestMessageSet !== currentMessageSet) {
+        channel.state.messageSets = channel.state.messageSets.filter((set) => !set.isLatest);
+        currentMessageSet.messages = currentMessageSet.messages.concat(latestMessageSet.messages);
+        currentMessageSet.isLatest = true;
+        console.log("END - Merge current and latest message set's", {
+          sets: channel.state.messageSets.map((set) => ({
+            isCurrent: set.isCurrent,
+            isLatest: set.isLatest,
+            length: set.messages.length,
+          })),
+        });
+        return true;
+      }
+    }
+    return false;
+  });
+
+  const loadLatestMessagesRef = useRef(async (forceLoadRecent = false) => {
+    mergeOverlappingMessageSetsRef.current();
+    if (forceLoadRecent || channel.state.latestMessages.length === 0) {
+      await channel.query({}, 'latest');
+    }
+    console.log('END loadLatestMessagesRef', {
+      sets: channel.state.messageSets.map((set) => ({
+        isCurrent: set.isCurrent,
+        isLatest: set.isLatest,
+        length: set.messages.length,
+      })),
+    });
+    await channel.state.loadMessageIntoState('latest');
+  });
+
   const loadChannel = () =>
     channelQueryCallRef.current(async () => {
       if (!channel?.initialized || !channel.state.isUpToDate) {
         await channel?.watch();
-        setHasNoMoreRecentMessagesToLoad(true);
-        channel?.state.setIsUpToDate(true);
       } else {
-        await channel.state.loadMessageIntoState('latest');
+        await loadLatestMessagesRef.current(true);
       }
-      return;
+      console.log('load channel done');
+      setHasNoMoreRecentMessagesToLoad(true);
+      channel?.state.setIsUpToDate(true);
     });
 
   const reloadThread = async () => {
@@ -1141,7 +1282,7 @@ const ChannelWithContext = <
   const reloadChannel = () =>
     channelQueryCallRef.current(async () => {
       setLoading(true);
-      await channel.state.loadMessageIntoState('latest');
+      await loadLatestMessagesRef.current(true);
       setLoading(false);
       setHasNoMoreRecentMessagesToLoad(true);
       channel?.state.setIsUpToDate(true);
@@ -1163,7 +1304,7 @@ const ChannelWithContext = <
     if (!channel) return;
     channel.state.setIsUpToDate(false);
     channel.state.clearMessages();
-    setMessages([...channel.state.messages]);
+    setMessages([]);
     if (!messageId) {
       await channel.query({
         messages: {
@@ -1219,9 +1360,11 @@ const ChannelWithContext = <
     });
 
     if (state.messages.length < limit) {
+      setHasNoMoreRecentMessagesToLoad(true);
       channel.state.setIsUpToDate(true);
     } else {
       channel.state.setIsUpToDate(false);
+      splitLatestCurrentMessageSetRef.current();
     }
   };
 
@@ -1565,6 +1708,8 @@ const ChannelWithContext = <
         return setLoadingMore(false);
       }
 
+      console.log('loading more older');
+
       const oldestID = oldestMessage && oldestMessage.id;
 
       try {
@@ -1602,17 +1747,30 @@ const ChannelWithContext = <
   >(
     async (limit = 5) => {
       if (hasNoMoreRecentMessagesToLoad) {
+        console.log('loadMoreRecent', "no more recent messages to load, don't fetch");
         return;
       }
-      setLoadingMoreRecent(true);
       const currentMessages = messagesRef.current;
       const recentMessage = currentMessages[currentMessages.length - 1];
 
       if (recentMessage?.status !== MessageStatusTypes.RECEIVED) {
-        setLoadingMoreRecent(false);
         return;
       }
-
+      setLoadingMoreRecent(true);
+      const latestMessageSet = channel.state.messageSets.find((set) => set.isLatest);
+      const didMerge = mergeOverlappingMessageSetsRef.current();
+      if (didMerge) {
+        if (latestMessageSet && latestMessageSet.messages.length >= limit) {
+          // FIXME: not setting setHasNoMoreRecentMessagesToLoad is a hack to prevent autoScrollToTop in message list from scrolling to most recent
+          // Best fix is to remove the autoScrollToTop from message list and let scrollToBottom from useEffect handle it
+          // Downside is that we will do an unnecessary api call to load 5 messages when we reach the bottom again
+          // setHasNoMoreRecentMessagesToLoad(true);
+          loadMoreRecentFinished(channel.state.messages);
+          return;
+        }
+      }
+      // return;
+      // console.log('fetching more recent');
       try {
         if (channel) {
           const queryResponse = await channel.query({
@@ -1622,7 +1780,22 @@ const ChannelWithContext = <
             },
             watch: true,
           });
-          setHasNoMoreRecentMessagesToLoad(queryResponse.messages.length < limit);
+          console.log('fetched more recent', {
+            len: queryResponse.messages.length,
+            sets: channel.state.messageSets.map((set) => ({
+              isCurrent: set.isCurrent,
+              isLatest: set.isLatest,
+              length: set.messages.length,
+            })),
+          });
+          const gotAllRecentMessages = queryResponse.messages.length < limit;
+          if (gotAllRecentMessages) {
+            // make current set as the latest
+            console.log('fetched more recent', 'make current set as the latest');
+            mergeOverlappingMessageSetsRef.current();
+          }
+          setHasNoMoreRecentMessagesToLoad(gotAllRecentMessages);
+          channel.state.setIsUpToDate(gotAllRecentMessages);
           loadMoreRecentFinished(channel.state.messages);
         }
       } catch (err) {
@@ -2190,6 +2363,7 @@ export const Channel = <
 
   return (
     <ChannelWithContext<StreamChatGenerics>
+      key={props.channel?.cid}
       {...{
         client,
         enableOfflineSupport,
