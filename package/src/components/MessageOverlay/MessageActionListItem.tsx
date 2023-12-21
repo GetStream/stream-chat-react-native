@@ -76,7 +76,7 @@ const MessageActionListItemWithContext = <
         testID={`${actionType}-list-item`}
       >
         <View style={messageActions.icon}>{icon}</View>
-        <Text style={[styles.titleStyle, messageActions.title, { color: black }, titleStyle]}>
+        <Text style={[styles.titleStyle, { color: black }, titleStyle, messageActions.title]}>
           {title}
         </Text>
       </Animated.View>
