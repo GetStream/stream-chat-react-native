@@ -960,7 +960,13 @@ export const MessageInputProvider = <
           file.name,
           client.createAbortControllerForNextRequest(),
         );
-        response = await channel.sendFile(file.uri, file.name, file.mimeType);
+        // Compress images selected through file picker when uploading them
+        if (file.mimeType?.includes('image')) {
+          const compressedUri = await compressedImageURI(file, value.compressImageQuality);
+          response = await channel.sendFile(compressedUri, file.name, file.mimeType);
+        } else {
+          response = await channel.sendFile(file.uri, file.name, file.mimeType);
+        }
         uploadAbortControllerRef.current.delete(file.name);
       }
       const extraData: Partial<FileUpload> = { thumb_url: response.thumb_url, url: response.file };
