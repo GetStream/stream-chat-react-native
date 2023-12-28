@@ -18,6 +18,9 @@ const styles = StyleSheet.create({
 export type ChannelPreviewMessageProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
+  /**
+   * Latest message on a channel, formatted for preview.
+   */
   latestMessagePreview: LatestMessagePreview<StreamChatGenerics>;
 };
 
