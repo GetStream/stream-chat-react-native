@@ -1,65 +1,9 @@
----
-id: dev-setup-and-sample-apps
-sidebar_position: 10
-title: Dev Setup & Sample Apps
----
+This directory contains all the example apps that uses our Stream Chat React Native SDK components.
 
-If you're thinking about contributing to our SDK, you may want to test your changes while developing locally.
-A good starting point its setting up our SampleApp application: A project which implements all of our main features.
-The following steps can be used to run all our internal sample projects like
+On RN <= 0.72, symlink was not supported by default so the setup has to be done locally through metro config to run the project within the monorepo. The guide below addresses the same.
 
-### Cloning the SDK repository
-
-You can start by [forking our repository](https://docs.github.com/en/github/getting-started-with-github/quickstart/fork-a-repo) and then
-cloning your fork into your local machine:
-
-```
-git clone https://github.com/{github-user-id}/stream-chat-react-native.git
-```
-
-### Setting up the SampleApp
-
-First things first you should install the SDK dependencies:
-
-```
-cd stream-chat-react-native;
-yarn install;
-```
-
-Now, navigate to the SampleApp folder and install its dependencies as well:
-
-```
-cd examples/SampleApp;
-yarn install;
-```
-
-### Running on iOS
-
-In order to run things on iOS, you need to first install the native dependencies through
-CocoaPods:
-
-```
-cd ios;
-npx pod-install;
-```
-
-Now, go back to the SampleApp folder and finally run the app on the simulator:
-
-```
-npx react-native run-ios
-```
-
-### Running on Android
-
-There is no additional steps to run the application on Android. You can just start the
-app on the emulator:
-
-```
-npx react-native run-android
-```
-
-## Running a local SDK clone on your app
-
+### Running a local SDK clone on your app
+​
 If you're contributing and trying to link the SDK into your own React Native project, you may find
 some challenges on the way once [Metro doesn't follow symlinks](https://github.com/facebook/metro/issues/1).
 Because of that, there is a few specific steps you need to follow in order to run things properly.
