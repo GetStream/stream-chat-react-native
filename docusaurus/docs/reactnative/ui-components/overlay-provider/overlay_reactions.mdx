@@ -13,11 +13,11 @@ This is the default component provided to the prop [`OverlayReactions`](../../ov
 
 ## Props
 
-### alignment
+### `alignment`
 
 <Alignment />
 
-### reactions
+### `reactions`
 
 List of existing reactions which can be extracted from a message.
 
@@ -33,24 +33,24 @@ const reactions = message.latest_reactions.map(reaction => ({
 
 | Type  |
 | ----- |
-| array |
+| Array |
 
-### <div class="label required">required</div> **showScreen** {#showscreen}
+### <div class="label description required">required</div> `showScreen` {#showscreen}
 
 `Shared` value from React Native Reanimated [`useSharedValue`](https://docs.swmansion.com/react-native-reanimated/docs/api/hooks/useSharedValue/) hook.
 
 | Type   |
 | ------ |
-| object |
+| Object |
 
-### <div class="description">overrides the value from [MessagesContext](../../contexts/messages_context.mdx#supportedreactions)</div> supportedReactions {#supportedreactions}
+### <div class="label description">overrides the value from [MessagesContext](../../contexts/messages_context.mdx#supportedreactions)</div> `supportedReactions` {#supportedreactions}
 
 <SupportedReactions />
 
-### <div class="label required">required</div> **title** {#title}
+### <div class="label description required">required</div> `title` {#title}
 
 Title for the component.
 
 | Type   |
 | ------ |
-| string |
+| String |
