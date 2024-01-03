@@ -14,7 +14,7 @@ import I18nInstance from '../common-content/core-components/overlay-provider/pro
 `Chat` is also responsible for tracking the health of the WebSocket connection with Stream Chat server.
 The value `isOnline` provided by the [ChatContext](../contexts/chat_context.mdx#isonline) indicates the status of the connection.
 
-## Basic Usage
+## General Usage
 
 `Chat` should be rendered inside of the `OverlayProvider` at a high level of your application, similar to the `OverlayProvider`.
 
@@ -52,7 +52,7 @@ These can be accessed using the corresponding hooks.
 
 ## Props
 
-### <div class="label required">required</div> `client`
+### <div class="label description required">required</div> `client`
 
 <Client />
 
@@ -65,10 +65,6 @@ By default the WebSocket connection is disconnected when the app goes to the bac
 | Type    | Default |
 | ------- | ------- |
 | Boolean | `true`  |
-
-### `ImageComponent`
-
-<ImageComponent />
 
 ### `i18nInstance`
 
@@ -90,3 +86,9 @@ Themes are not hoisted though, therefore a theme provided to `Chat` will not cha
 | Type   |
 | ------ |
 | Object |
+
+## UI Component Props
+
+### `ImageComponent`
+
+<ImageComponent />
