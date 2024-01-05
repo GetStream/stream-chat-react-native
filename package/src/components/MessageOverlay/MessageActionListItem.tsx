@@ -26,10 +26,26 @@ export type ActionType =
   | 'unpinMessage';
 
 export type MessageActionType = {
+  /**
+   * Callback when user presses the action button.
+   */
   action: () => void;
+  /**
+   * Type of the action performed.
+   * Eg: 'blockUser', 'copyMessage', 'deleteMessage', 'editMessage', 'flagMessage', 'muteUser', 'pinMessage', 'selectReaction', 'reply', 'retry', 'quotedReply', 'threadReply', 'unpinMessage'
+   */
   actionType: ActionType;
+  /**
+   * Title for action button.
+   */
   title: string;
+  /**
+   * Element to render as icon for action button.
+   */
   icon?: React.ReactElement;
+  /**
+   * Styles for underlying Text component of action title.
+   */
   titleStyle?: StyleProp<TextStyle>;
 };
 

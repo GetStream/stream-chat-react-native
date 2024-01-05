@@ -165,16 +165,15 @@ const ChannelPreviewMessengerWithContext = <
         testID={`channel-preview-content-${channel.id}`}
       >
         <View style={[styles.row, row]}>
-          <PreviewTitle channel={channel} displayName={displayName} />
+          <PreviewTitle displayName={displayName} />
           <View style={[styles.statusContainer, row]}>
             {isChannelMuted && <PreviewMutedStatus />}
-            <PreviewUnreadCount channel={channel} maxUnreadCount={maxUnreadCount} unread={unread} />
+            <PreviewUnreadCount maxUnreadCount={maxUnreadCount} unread={unread} />
           </View>
         </View>
         <View style={[styles.row, row]}>
           <PreviewMessage latestMessagePreview={latestMessagePreview} />
           <PreviewStatus
-            channel={channel}
             formatLatestMessageDate={formatLatestMessageDate}
             latestMessagePreview={latestMessagePreview}
           />
