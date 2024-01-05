@@ -5,7 +5,9 @@ title: ScrollToBottomButton
 
 Component to render the floating button, which when pressed scrolls the `MessageList` to the most recent message.
 
-You can replace this default UI component using the `ScrollToBottomButton` prop on [Channel](../core-components/channel.mdx) component.
+## General Usage
+
+You can replace this default UI component using the `ScrollToBottomButton` prop on [Channel](../../core-components/channel.mdx) component.
 
 ```tsx
 <Channel ScrollToBottomButton={CustomScrollToBottomButton} />
@@ -19,15 +21,15 @@ You can replace this default UI component using the `ScrollToBottomButton` prop 
 
 | Type     |
 | -------- |
-| function |
+| Function |
 
 ### `showNotification`
 
-When false, button won't be rendered.
+When `false`, button won't be rendered.
 
 | Type    |
 | ------- |
-| boolean |
+| Boolean |
 
 ### `unreadCount`
 
@@ -35,4 +37,4 @@ Unread count on current channel.
 
 | Type   |
 | ------ |
-| number |
+| Number |
