@@ -3,15 +3,15 @@ id: channel-preview-status
 title: ChannelPreviewStatus
 ---
 
-import LatestMessagePreview from '../common-content/ui-components/channel-preview-messenger/props/latest_message_preview.mdx';
-import FormatLatestMessageDate from '../common-content/ui-components/channel-preview-messenger/props/format_latest_message_date.mdx';
-import Channel from '../common-content/ui-components/channel-preview-messenger/props/channel.mdx';
+import LatestMessagePreview from '../../common-content/ui-components/channel-preview-messenger/props/latest_message_preview.mdx';
+import FormatLatestMessageDate from '../../common-content/ui-components/channel-preview-messenger/props/format_latest_message_date.mdx';
+import Channel from '../../common-content/ui-components/channel-preview-messenger/props/channel.mdx';
 
-Component to render the status of the latest message on a channel within the [`ChannelList`](../core-components/channel_list.mdx).
+Component to render the status of the latest message on a channel within the [`ChannelList`](../../channel-list).
 
-## Basic Usage
+## General Usage
 
-You can customize this component and provide it back to the SDK via the [`PreviewStatus`](../core-components/channel_list.mdx#previewstatus) prop on `ChannelList` if desired.
+You can customize this component and provide it back to the SDK via the [`PreviewStatus`](../../channel-list#previewstatus) prop on `ChannelList` if desired.
 
 <!-- Added the following phrase so users can search for "custom message date" and find this component once it defaults to rendering the last message date  -->
 
@@ -29,19 +29,22 @@ const CustomPreviewStatus = ({ latestMessagePreview }) => {
   const formattedDate = useMemo(() => customDateFormatter(latestMessagePreview), [latestMessagePreview]);
   return <ChannelPreviewStatus formatLatestMessageDate={formattedDate} />;
 };
-<ChannelList PreviewStatus={CustomPreviewStatus} />;
+
+const App = () => {
+  return <ChannelList PreviewStatus={CustomPreviewStatus} />;
+};
 ```
 
 ## Props
 
-### <div class="label required">required</div> **channel**
+### <div class="label description required">required</div> `channel`
 
 <Channel />
 
-### latestMessagePreview
+### `latestMessagePreview`
 
 <LatestMessagePreview />
 
-### formatLatestMessageDate
+### `formatLatestMessageDate`
 
 <FormatLatestMessageDate />
