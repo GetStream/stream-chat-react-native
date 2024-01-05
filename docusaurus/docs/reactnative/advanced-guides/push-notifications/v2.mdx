@@ -1,11 +1,10 @@
 ---
-id: push-notifications-v2
-sidebar_position: 2
-title: Push Notifications (V2)
+id: v2
+title: V2
 ---
 
-import chatOverviewPage from '../assets/guides/push-notifications-v2/chat_overview_page.png';
-import firebaseNotificationsToggle from '../assets/guides/push-notifications-v2/firebase_notifications_toggle.png';
+import chatOverviewPage from '../../assets/advanced-guides/push-notifications/v2/chat_overview_page.png';
+import firebaseNotificationsToggle from '../../assets/advanced-guides/push-notifications/v2/firebase_notifications_toggle.png';
 
 Easiest way to integrate push notifications in your Chat applications is using Firebase. [React Native Firebase](https://rnfirebase.io/) is the officially recommended package to add Firebase to your apps. We also recommend the [Notifee](https://notifee.app/) library for customising push notifications and listening to user interaction events.
 
@@ -25,9 +24,7 @@ Easiest way to integrate push notifications in your Chat applications is using F
 - `push_notifications` is enabled (default) on the channel type for the sent message.
 
 :::note
-
-- Push notifications require membership. Watching a channel isn't enough.
-
+Push notifications require membership. Watching a channel isn't enough.
 :::
 
 ## Firebase Project Setup
@@ -59,9 +56,7 @@ Follow the steps below to setup your apps with Firebase:
 ### Expo
 
 :::note
-
 If you're using Bare Workflow, please follow the installation steps above.
-
 :::
 
 React Native Firebase library is not available in the [Expo Go](https://expo.dev/client) app by default due to including much-needed native code. However, you can get things working via the [expo-dev-client](https://docs.expo.dev/development/getting-started/) library and adding [config plugins](https://docs.expo.dev/guides/config-plugins/). Please follow the [expo installation docs at React Native Firebase](https://rnfirebase.io/#installation-1) for the details.
