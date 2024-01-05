@@ -89,13 +89,13 @@ The image picker opens the gallery to a height based on the location of the `Mes
 To account for this the prop `bottomInset` can be provided to the `OverlayProvider`.
 
 ```tsx
-<OverlayProvider bottomInset={/** number */}>
+<OverlayProvider bottomInset={/** number */}>{/* Inner component */}</OverlayProvider>
 ```
 
 Similarly if the gallery fully open is not at the desired height, this can be adjusted using the `OverlayProvider` prop `topInset`.
 
 ```tsx
-<OverlayProvider topInset={/** number */}>
+<OverlayProvider topInset={/** number */}>{/* Inner component */}</OverlayProvider>
 ```
 
 :::note
@@ -115,7 +115,7 @@ It is important to note that since Expo 38 `true` is the default for transparent
 ## Image picker not working
 
 If the image picker is appearing incorrectly, for instance behind a bottom Tab Bar, it is likely the `OverlayProvider` is not setup in the correct location within the application.
-Please refer to the [Stream Chat with Navigation](./stream_chat_with_navigation.mdx) documentation to properly place the `OverlayProvider` in relation to your navigation solution.
+Please refer to the [Stream Chat with Navigation](../navigation) documentation to properly place the `OverlayProvider` in relation to your navigation solution.
 
 ### iOS
 
@@ -282,7 +282,7 @@ Also do not forget to wrap your component tree(probably above `OverlayProvider`)
 
 ```tsx
 <GestureHandlerRootView style={{ flex: 1 }}>
-  <OverlayProvider>// Other underlying components</OverlayProvider>
+  <OverlayProvider>{/* Other underlying components */}</OverlayProvider>
 </GestureHandlerRootView>
 ```
 
@@ -344,18 +344,13 @@ If you are encountering errors related to `Reanimated 2 failed to create a workl
 ```
 
 :::caution
-
 Reanimated plugin has to be listed last.
-
 :::
 
 ### Blank screen on Android
 
 :::caution
-
-This step is only required for older version of (Reanimated 2).
-If you are using version >=3.0.0, you can skip this step.
-
+This step is only required for older version of (Reanimated 2). If you are using version >=3.0.0, you can skip this step.
 :::
 
 If you are encountering errors on Android and the screen is blank it is likely you forgot to finish the [Reanimated 2 Android setup](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation/#android).

@@ -1,16 +1,16 @@
 ---
 id: typescript
-sidebar_position: 4
-title: TypeScript
+title: Typescript
+sidebar_position: 1
 ---
 
-import explicitTypes from '../assets/customization/typescript/explicit_types.png';
-import inference from '../assets/customization/typescript/inference.png';
+import explicitTypes from '../assets/advanced-guides/typescript/explicit_types.png';
+import inference from '../assets/advanced-guides/typescript/inference.png';
 
-`stream-chat-react-native` as well as the client library `stream-chat-js` are written in TypeScript and therefore provide full TypeScript types and support.
+The `stream-chat-react-native` as well as the client library `stream-chat-js` are written in TypeScript and therefore provide full TypeScript support.
 
 Stream Chat allows for a variety of customizations including custom fields on messages, channels, users, and more.
-The goal of the Stream Chat TypeScript implementation is to provide static type safety not just on the out of the box Stream Chat implementation, but on custom data provided to the API & SDK as well.
+The goal of the Stream Chat TypeScript implementation is to provide static type safety not just on out of the box Stream Chat implementation, but also on custom data provided to the API & SDK as well.
 
 ## Generics
 
@@ -20,7 +20,6 @@ In many cases TypeScript can use [inference](https://www.typescriptlang.org/docs
 ## Client
 
 It is important that the proper generics be applied to the `stream-chat-js` client when it is instantiated.
-The [documentation on `stream-chat-js` TypeScript](https://github.com/GetStream/stream-chat-js#typescript-v2xx) has examples of how this can be done in detail.
 The client a generic type that defines seven customizable fields that currently exist in [`stream-chat-js`](https://github.com/GetStream/stream-chat-js#typescript-v2xx).
 
 ```tsx
