@@ -40,3 +40,4 @@ virtualized
 rncli
 RNCLI
 CDNs
+haptics
