@@ -1,11 +1,11 @@
 ---
 id: customize-message-actions
 sidebar_position: 4
-title: Customize Message Actions
+title: Custom Message Actions
 ---
 
-import messageActions from '../assets/guides/message-actions-customization/message_actions.png';
-import myMessageActions from '../assets/guides/message-actions-customization/my_message_actions.png';
+import messageActions from '../assets/ui-cookbook/custom-message-actions/message_actions.png';
+import myMessageActions from '../assets/ui-cookbook/custom-message-actions/my_message_actions.png';
 
 Message actions pop up in message overlay, when you long-press a message. We have provided a granular control over these actions.
 By default we render the following actions (as shown in screenshots)
@@ -30,7 +30,7 @@ By default we render the following actions (as shown in screenshots)
   </tr>
 </table>
 
-Every message action that you see in UI, is represented by [`MessageAction`](../object-types/message_action.mdx) object for that action. And `MessageAction` object provides all the necessary inputs (title, icon, action handler, `actionType`) for rendering the action button.
+Every message action that you see in UI, is represented by [`MessageAction`](../state-and-offline-support/object-types.mdx#messageaction) object for that action. And `MessageAction` object provides all the necessary inputs (title, icon, action handler, `actionType`) for rendering the action button.
 
 ```tsx
 type MessageAction = {
@@ -46,7 +46,7 @@ You can customize each one of the default actions using props on the [`Channel c
 
 The channel component accepts a prop called `messageActions`. You can use this prop as a callback function to render message actions selectively.
 
-The arguments to this function is an object with all the default message actions as [`MessageAction`](../object-types/message_action.mdx) objects. The function should return an array of MessageAction objects to render in a [MessageActionList](../common-content/core-components/overlay-provider/props/message_action_list.mdx) within the message overlay, that is shown when a user long presses a message in a MessageList.
+The arguments to this function is an object with all the default message actions as [`MessageAction`](../state-and-offline-support/object-types.mdx#messageaction) objects. The function should return an array of MessageAction objects to render in a [MessageActionList](../common-content/core-components/overlay-provider/props/message_action_list.mdx) within the message overlay, that is shown when a user long presses a message in a MessageList.
 
 You can also customize each one of the default actions using the `messageActions` prop passed to the OverlayProvider as shown in the example below. The OverlayProvider component makes these props available in the `MessageOverlayContext` context.
 
@@ -148,7 +148,7 @@ import { messageActions as defaultMessageActions, Mute as MuteIcon } from 'strea
 
 ## How to customize message action UI
 
-[`OverlayProvider`](../core-components/overlay_provider.mdx) component accepts props called - `MessageActionList` and `MessageActionListItem`. They both serve a different purpose.
+[`OverlayProvider`](../ui-components/overlay-provider/overlay-provider.mdx) component accepts props called - `MessageActionList` and `MessageActionListItem`. They both serve a different purpose.
 
 - `MessageActionList` - Allows full customizability of the message action list and allows users to add/define their own message action along with the style they prefer for the application.
 - `MessageActionListItem` - Allows customizability of an item in a message action list.
