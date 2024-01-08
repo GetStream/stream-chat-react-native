@@ -1,11 +1,11 @@
 ---
-id: message-input-customization
+id: custom-message-input
 sidebar_position: 5
-title: Customize Message Input
+title: Custom Message Input
 ---
 
-import nativeAttachmentPickerStep1 from '../assets/guides/message-input-customization/native_attachment_picker_step_1.png';
-import nativeAttachmentPickerStep2 from '../assets/guides/message-input-customization/native_attachment_picker_step_2.png';
+import nativeAttachmentPickerStep1 from '../assets/ui-cookbook/custom-message-input/native_attachment_picker_step_1.png';
+import nativeAttachmentPickerStep2 from '../assets/ui-cookbook/custom-message-input/native_attachment_picker_step_2.png';
 
 We provide the `MessageInput` container out of the box in a fixed configuration with many customizable features. Like other components, it accesses most customizations via contexts, especially the `MessageInputContext`, instantiated in the `Channel` component using its props.
 To customize the entire Input UI part of the `MessageInput` component, you can add a custom UI component as `Input` prop on the `Channel` component.
@@ -134,9 +134,9 @@ You can replace the `Input` in its entirety, as in the example above, or create 
 Suppose you would like to replace a specific internal UI component of `MessageInput`; in that case, you can provide your UI component for the default component you want to replace as a prop to the `Channel` component.
 The following images show the prop names for replacing corresponding components. Within your custom UI implementation, you can access all the stateful information via the available contexts.
 
-![](https://raw.githubusercontent.com/GetStream/stream-chat-react-native/main/screenshots/visualGuide/4.svg)
+![Visual Representation of UI components](https://raw.githubusercontent.com/GetStream/stream-chat-react-native/main/screenshots/visualGuide/4.svg)
 
-![](https://raw.githubusercontent.com/GetStream/stream-chat-react-native/main/screenshots/visualGuide/4.svg)
+![Visual Representation of UI components](https://raw.githubusercontent.com/GetStream/stream-chat-react-native/main/screenshots/visualGuide/4.svg)
 
 ### Custom Send Button
 
@@ -265,15 +265,13 @@ By default, the autocomplete trigger settings include `/`, `@`, and `:` for slas
   keyboardVerticalOffset={headerHeight}
   thread={thread}
 >
+  {/* Underlying components inside */}
+</Channel>
 ```
 
 ## Setting Additional Props on Underlying `TextInput` component
 
 You can provide `additionalTextInputProps` prop to `Channel` or `MessageInput` component for adding additional props to underlying React Native's [TextInput](https://reactnative.dev/docs/textinput) component.
-
-:::caution
-Please make sure to memoize or pass static reference for this object. Please read our [Performance Guide](../customization/custom_components.mdx/#performance) for details
-:::
 
 ```jsx
 const additionalTextInputProps = useMemo(() => {
@@ -306,6 +304,8 @@ The default CooldownTimer can have it's styles altered through the theme, using 
         }
       }
     }}>
+    {/* Underlying components inside */}
+    </ThemeProvider>
 ```
 
 ### Creating a custom CooldownTimer
@@ -421,7 +421,7 @@ const CustomAttachButton = () => {
 Now let's hook the relevant action handlers for buttons within ActionSheet.
 [`react-native-image-crop-picker`](https://github.com/ivpusic/react-native-image-crop-picker) provides an image picker functionality
 with good support for configurable compression, multiple images and cropping. And selected images from image picker or camera can be wired in
-with upload previews ([`ImageUploadPreview`](../ui-components/image_upload_preview.mdx)) within `MessageInput` component
+with upload previews ([`ImageUploadPreview`](../ui-components/message-input/image-upload-preview.mdx)) within `MessageInput` component
 by using a function `uploadNewImage` provided by [`MessageInputContext`](../contexts/message_input_context.mdx#uploadnewimage).
 
 For file attachments, the SDK defaults to the native file picker. That can be reused by adding the `pickFile` function
@@ -577,4 +577,44 @@ const CustomInputGiphySearch = () => {
 <Channel channel={channel} InputGiphySearch={CustomInputGiphySearch}>
   {/* The underlying components */}
 </Channel>;
+```
+
+## Compress File before upload
+
+Stream supports uploading images and files and the maximum size to upload is 100 MB. It can be useful in certain cases to compress a file before upload so that the 100 MB limit is not reached. This is especially true when uploading Video.
+
+You can use the following two props on the Channel component to compress the file before upload:
+
+- [`doImageUploadRequest`](../core-components/channel.mdx#doimageuploadrequest): For images
+- [`doDocUploadRequest`](../core-components/channel.mdx#dodocuploadrequest): For any files other than images
+
+For example, let us look at how to compress a video file before uploading. In the snippet below, we have used the [react-native-compressor](https://github.com/numandev1/react-native-compressor) library to perform video compression before the video file is uploaded.
+
+```tsx
+import { Channel, ChannelProps } from 'stream-chat-react-native';
+import { Video as VideoCompressor } from 'react-native-compressor';
+
+
+const customDoDocUploadRequest: NonNullable<ChannelProps['doDocUploadRequest']> = async (
+  file,
+  channel,
+) => {
+  if (!file.uri) {
+    throw new Error('Invalid file provided');
+  }
+  // check if it is a video file using the MIME type
+  if (file.mimeType?.startsWith('video/')) {
+    const result = await VideoCompressor.compress(file.uri, {
+      compressionMethod: 'auto',
+    });
+    // set the local file uri to the compressed file
+    file.uri = result;
+  }
+
+  // send the file
+  return await channel.sendFile(file.uri, file.name, file.mimeType);
+};
+
+
+<Channel channel={channel} doDocUploadRequest={customDoDocUploadRequest}>
 ```
