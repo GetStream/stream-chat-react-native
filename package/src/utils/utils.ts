@@ -388,22 +388,25 @@ export const ACITriggerSettings = <
 
         if (cur.names.some((name) => name.includes(query))) {
           const emoji = compiledEmojis.emojiLib[cur.name];
-          if (emoji.skin_variations) {
-            acc.push({
-              ...emoji,
-              name: `${emoji.name}-tone-1`,
-              skin_variations: undefined,
-            });
-            emoji.skin_variations.forEach((tone, index) =>
+          // Since there can be no emojiLib for the current name we need to check for it being undefined
+          if (emoji) {
+            if (emoji.skin_variations) {
               acc.push({
                 ...emoji,
-                name: `${emoji.name}-tone-${index + 2}`,
+                name: `${emoji.name}-tone-1`,
                 skin_variations: undefined,
-                unicode: tone,
-              }),
-            );
-          } else {
-            acc.push(emoji);
+              });
+              emoji.skin_variations.forEach((tone, index) =>
+                acc.push({
+                  ...emoji,
+                  name: `${emoji.name}-tone-${index + 2}`,
+                  skin_variations: undefined,
+                  unicode: tone,
+                }),
+              );
+            } else {
+              acc.push(emoji);
+            }
           }
         }
 
