@@ -9,8 +9,6 @@ import {
   ViewToken,
 } from 'react-native';
 
-import debounce from 'lodash/debounce';
-
 import type { FormatMessageResponse } from 'stream-chat';
 
 import {
@@ -108,7 +106,6 @@ const keyExtractor = <
   if (item.id) return item.id;
   if (item.created_at)
     return typeof item.created_at === 'string' ? item.created_at : item.created_at.toISOString();
-  console.log('item key is Date', { item });
   return Date.now().toString();
 };
 
@@ -366,7 +363,7 @@ const MessageListWithContext = <
   /**
    * The timeout id used to temporarily load the initial scroll set flag
    */
-  const tempDisablePaginationTrackersTimeoutRef = useRef<NodeJS.Timeout>();
+  const onScrollEventTimeoutRef = useRef<NodeJS.Timeout>();
 
   /**
    * Last messageID that was scrolled to after loading a new message list,
@@ -442,24 +439,6 @@ const MessageListWithContext = <
     onEndReachedTracker.current = {};
   });
 
-  /**
-   * Disables the pagination trackers for a second
-   * This is used to prevent the onEndReached and onStartReached from firing
-   * when we scroll to the bottom or top of the list automatically without user interaction
-   * Ex: for targeted message scroll
-   */
-  const tempDisablePaginationTrackersRef = useRef((messageListLength: number) => {
-    clearTimeout(tempDisablePaginationTrackersTimeoutRef.current);
-    console.log('tempDisablePaginationTrackersRef SET', { messageListLength });
-    onStartReachedTracker.current[messageListLength] = true;
-    onEndReachedTracker.current[messageListLength] = true;
-    tempDisablePaginationTrackersTimeoutRef.current = setTimeout(() => {
-      onStartReachedTracker.current[messageListLength] = false;
-      onEndReachedTracker.current[messageListLength] = false;
-      console.log('tempDisablePaginationTrackersRef CLEAR', { messageListLength });
-    }, 1000);
-  });
-
   useEffect(() => {
     setScrollToBottomButtonVisible(false);
   }, [disabled]);
@@ -522,15 +501,6 @@ const MessageListWithContext = <
         setScrollToBottomButtonVisible(false);
         resetPaginationTrackersRef.current();
 
-        console.log('scrollToBottomIfNeeded', {
-          'created_at timestamp change':
-            topMessageBeforeUpdate.current?.created_at &&
-            topMessageAfterUpdate?.created_at &&
-            topMessageBeforeUpdate.current.created_at < topMessageAfterUpdate.created_at,
-          newIsSmallerThanPrevious:
-            messageListLengthAfterUpdate < messageListLengthBeforeUpdate.current,
-        });
-
         setTimeout(() => {
           flatListRef.current?.scrollToOffset({
             offset: 0,
@@ -592,8 +562,6 @@ const MessageListWithContext = <
     }
     const didMergeMessageSetsWithNoUpdates =
       latestNonCurrentMessageBeforeUpdate?.id === latestCurrentMessageAfterUpdate.id;
-    if (didMergeMessageSetsWithNoUpdates)
-      console.log({ didMergeMessageSetsWithNoUpdates, len: rawMessageList.length });
     // if didMergeMessageSetsWithNoUpdates=false, we got new messages
     // so we should scroll to bottom if we are near the bottom already
     setAutoscrollToRecent(!didMergeMessageSetsWithNoUpdates);
@@ -603,10 +571,12 @@ const MessageListWithContext = <
       // we should scroll to bottom where ever we are now
       // as we have sent a new own message
       if (shouldScrollToRecentOnNewOwnMessage) {
-        console.log('shouldScrollToRecentOnNewOwnMessage');
-        flatListRef.current?.scrollToOffset({
-          offset: 0,
-        });
+        setTimeout(() => {
+          flatListRef.current?.scrollToOffset({
+            animated: true,
+            offset: 0,
+          });
+        }, 150); // flatlist might take a bit to update, so a small delay is needed
       }
     }
   }, [rawMessageList, threadList]);
@@ -730,7 +700,6 @@ const MessageListWithContext = <
       onStartReachedTracker.current[processedMessageList.length] = true;
     }
 
-    console.log('onstartTracker', onStartReachedTracker.current);
     const callback = () => {
       onStartReachedInPromise.current = null;
 
@@ -743,8 +712,6 @@ const MessageListWithContext = <
         onStartReachedTracker.current = {};
       }, 2000);
     };
-
-    console.log('maybeCallOnStartReached', { len: processedMessageList?.length });
 
     // If onEndReached is in progress, better to wait for it to finish for smooth UX
     if (onEndReachedInPromise.current) {
@@ -782,8 +749,6 @@ const MessageListWithContext = <
       }, 2000);
     };
 
-    console.log('maybeCallOnEndReached', { len: processedMessageList?.length });
-
     // If onStartReached is in progress, better to wait for it to finish for smooth UX
     if (onStartReachedInPromise.current) {
       await onStartReachedInPromise.current;
@@ -797,108 +762,57 @@ const MessageListWithContext = <
     }
   };
 
-  /* START - refs for use in onScrollEvent method */
-  const scrollNativeEventRef =
-    useRef<Parameters<NonNullable<ScrollViewProps['onScroll']>>[0]['nativeEvent']>();
-  const maybeCallOnStartReachedRef = useRef(maybeCallOnStartReached);
-  const maybeCallOnEndReachedRef = useRef(maybeCallOnEndReached);
-  const markReadRef = useRef(markRead);
-  const hasNoMoreRecentMessagesToLoadRef = useRef(hasNoMoreRecentMessagesToLoad);
-  markReadRef.current = markRead;
-  maybeCallOnStartReachedRef.current = maybeCallOnStartReached;
-  maybeCallOnEndReachedRef.current = maybeCallOnEndReached;
-  hasNoMoreRecentMessagesToLoadRef.current = hasNoMoreRecentMessagesToLoad;
+  const onUserScrollEvent: NonNullable<ScrollViewProps['onScroll']> = (event) => {
+    const nativeEvent = event.nativeEvent;
+    clearTimeout(onScrollEventTimeoutRef.current);
+    const offset = nativeEvent.contentOffset.y;
+    const visibleLength = nativeEvent.layoutMeasurement.height;
+    const contentLength = nativeEvent.contentSize.height;
+    if (!channel || !channelResyncScrollSet.current) {
+      return;
+    }
 
-  /**
-   * Method used only inside the List to do these things
-   * 1. Mark channel as read if scroll is at the bottom
-   * 2. Call maybeCallOnStartReached if scroll is at the top
-   * 3. Call maybeCallOnEndReached if scroll is at the bottom
-   * 4. Show scrollToBottom button if scroll is at the bottom and messages are not the latest
-   */
-  const debouncedOnScrollEventRef = useRef(
-    debounce(() => {
-      const nativeEvent = scrollNativeEventRef.current;
-      if (!nativeEvent) return;
-      const offset = nativeEvent.contentOffset.y;
-      const visibleLength = nativeEvent.layoutMeasurement.height;
-      const contentLength = nativeEvent.contentSize.height;
-      if (!channel || !channelResyncScrollSet.current) {
-        console.log('debouncedOnScrollEvent returned');
-        return;
-      }
+    // Check if scroll has reached either start of end of list.
+    const isScrollAtStart = offset < 100;
+    const isScrollAtEnd = contentLength - visibleLength - offset < 100;
 
-      // Check if scroll has reached either start of end of list.
-      const isScrollAtStart = offset < 100;
-      const isScrollAtEnd = contentLength - visibleLength - offset < 100;
+    if (isScrollAtStart) {
+      maybeCallOnStartReached();
+    }
 
-      console.log('debouncedOnScrollEvent', {
-        endCalc: contentLength - visibleLength - offset,
-        isScrollAtEnd,
-        isScrollAtStart,
-        offset,
-        velocity: nativeEvent.velocity,
-      });
-
-      if (isScrollAtStart) {
-        maybeCallOnStartReachedRef.current();
-      }
-
-      if (isScrollAtEnd) {
-        maybeCallOnEndReachedRef.current();
-      }
-
-      // Show scrollToBottom button once scroll position goes beyond 150.
-      const isScrollAtBottom = offset <= 150;
-
-      /**
-       * Following if condition covers following cases:
-       * 1. If I scroll up -> show scrollToBottom button.
-       * 2. If I scroll to bottom of screen
-       *    |-> hide scrollToBottom button.
-       *    |-> if channel is unread, call markRead().
-       */
-
-      const notLatestSet = !threadList && channel.state.messages !== channel.state.latestMessages;
-
-      const showScrollToBottomButton =
-        notLatestSet || !isScrollAtBottom || !hasNoMoreRecentMessagesToLoadRef.current;
-
-      setScrollToBottomButtonVisible((prev) => {
-        if (prev === showScrollToBottomButton) {
-          return prev;
-        }
-        // console.log('debouncedOnScrollEvent showScrollToBottomButton?', {
-        //   hasNoMoreRecent: hasNoMoreRecentMessagesToLoadRef.current,
-        //   isScrollAtBottom,
-        //   notLatestSet,
-        //   showScrollToBottomButton,
-        // });
-        //  LOG  changed showScrollToBottomButton {"hasNoMoreRecent": true, "isScrollAtBottom": true, "notLatestSet": true, "showScrollToBottomButton": false}
-        return showScrollToBottomButton;
-      });
-
-      const shouldMarkRead =
-        !threadList &&
-        !notLatestSet &&
-        offset <= 0 &&
-        hasNoMoreRecentMessagesToLoadRef.current &&
-        channel.countUnread() > 0;
-
-      if (shouldMarkRead) {
-        markReadRef.current();
-      }
-    }, 200),
-  );
-  /* END - refs for use in onScrollEvent method */
-
-  const onScrollEvent = useRef((event: Parameters<NonNullable<ScrollViewProps['onScroll']>>[0]) => {
-    scrollNativeEventRef.current = event.nativeEvent;
-    debouncedOnScrollEventRef.current();
-  }).current;
+    if (isScrollAtEnd) {
+      maybeCallOnEndReached();
+    }
+  };
 
   const handleScroll: ScrollViewProps['onScroll'] = (event) => {
-    onScrollEvent(event);
+    const offset = event.nativeEvent.contentOffset.y;
+    // Show scrollToBottom button once scroll position goes beyond 150.
+    const isScrollAtBottom = offset <= 150;
+
+    const notLatestSet = channel.state.messages !== channel.state.latestMessages;
+
+    const showScrollToBottomButton =
+      (!threadList && notLatestSet) || !isScrollAtBottom || !hasNoMoreRecentMessagesToLoad;
+
+    /**
+     * 1. If I scroll up -> show scrollToBottom button.
+     * 2. If I scroll to bottom of screen
+     *    |-> hide scrollToBottom button.
+     *    |-> if channel is unread, call markRead().
+     */
+    setScrollToBottomButtonVisible(showScrollToBottomButton);
+
+    const shouldMarkRead =
+      !threadList &&
+      !notLatestSet &&
+      offset <= 0 &&
+      hasNoMoreRecentMessagesToLoad &&
+      channel.countUnread() > 0;
+
+    if (shouldMarkRead) {
+      markRead();
+    }
 
     if (onListScroll) {
       onListScroll(event);
@@ -931,11 +845,6 @@ const MessageListWithContext = <
   >((info) => {
     // We got a failure as we tried to scroll to an item that was outside the render length
     if (!flatListRef.current) return;
-    const dataLength = flatListRef.current.props?.data?.length;
-    if (dataLength) {
-      tempDisablePaginationTrackersRef.current(dataLength);
-    }
-    console.log('failed and then scroll to the closest offset', { index: info.index });
     // we don't know the actual size of all items but we can see the average, so scroll to the closest offset
     flatListRef.current.scrollToOffset({
       animated: false,
@@ -945,20 +854,12 @@ const MessageListWithContext = <
     // with a little delay to wait for scroll to offset to complete, we can then scroll to the index
     failScrollTimeoutId.current = setTimeout(() => {
       try {
-        if (dataLength) {
-          tempDisablePaginationTrackersRef.current(dataLength);
-        }
-        console.log('failed and then waiting to scroll to index', { index: info.index });
         flatListRef.current?.scrollToIndex({
           animated: false,
           index: info.index,
           viewPosition: 0.5, // try to place message in the center of the screen
         });
         if (messageIdLastScrolledToRef.current) {
-          console.log('failed COMPLETE', {
-            index: info.index,
-            messageID: messageIdLastScrolledToRef.current,
-          });
           // in case the target message was cleared out
           // the state being set again will trigger the highlight again
           setTargetedMessage(messageIdLastScrolledToRef.current);
@@ -969,17 +870,7 @@ const MessageListWithContext = <
           !onScrollToIndexFailedRef.current ||
           scrollToIndexFailedRetryCountRef.current > MAX_RETRIES_AFTER_SCROLL_FAILURE
         ) {
-          console.log(
-            `Scrolling to index failed after ${MAX_RETRIES_AFTER_SCROLL_FAILURE} retries`,
-            e,
-          );
           scrollToIndexFailedRetryCountRef.current = 0;
-          if (messageIdLastScrolledToRef.current) {
-            console.log('failed with error COMPLETE', {
-              index: info.index,
-              messageID: messageIdLastScrolledToRef.current,
-            });
-          }
           return;
         }
         // At some cases the index we're trying to scroll to, doesn't exist yet in the messageList
@@ -1000,15 +891,11 @@ const MessageListWithContext = <
       (message) => message?.id === messageId,
     );
     if (indexOfParentInMessageList !== -1 && flatListRef.current) {
-      console.log('clearing the timeout - goToMessage');
       clearTimeout(failScrollTimeoutId.current);
       scrollToIndexFailedRetryCountRef.current = 0;
       // keep track of this messageId, so that we dont scroll to again in useEffect for targeted message change
       messageIdLastScrolledToRef.current = messageId;
       setTargetedMessage(messageId);
-      // we are scrolling automatically to the message instead of user initiating it,
-      // so we don't need to load more older messages or newer messages for a while
-      tempDisablePaginationTrackersRef.current(processedMessageList.length);
       // now scroll to it with animated=true (in useEffect animated=false is used)
       flatListRef.current.scrollToIndex({
         animated: true,
@@ -1044,17 +931,12 @@ const MessageListWithContext = <
       const indexOfParentInMessageList = processedMessageList.findIndex(
         (message) => message?.id === messageIdToScroll,
       );
-      console.log({ indexOfParentInMessageList, totalLength: processedMessageList.length });
       if (indexOfParentInMessageList !== -1 && flatListRef.current) {
         // By a fresh scroll we should clear the retries for the previous failed scroll
         clearTimeout(scrollToDebounceTimeoutRef.current);
         clearTimeout(failScrollTimeoutId.current);
         // keep track of this messageId, so that we dont scroll to again for targeted message change
         messageIdLastScrolledToRef.current = messageIdToScroll;
-        // we are scrolling automatically to the message instead of user initiating it,
-        console.log('we are scrolling automatically to the message instead of user initiating it,');
-        // so we don't need to load more older messages or newer messages for a while
-        tempDisablePaginationTrackersRef.current(processedMessageList.length);
         // reset the retry count
         scrollToIndexFailedRetryCountRef.current = 0;
         // now scroll to it
@@ -1139,13 +1021,11 @@ const MessageListWithContext = <
   };
   const onScrollBeginDrag: ScrollViewProps['onScrollBeginDrag'] = (event) => {
     !hasMoved && selectedPicker && setHasMoved(true);
-    console.log('onScrollBeginDrag');
-    onScrollEvent(event);
+    onUserScrollEvent(event);
   };
   const onScrollEndDrag: ScrollViewProps['onScrollEndDrag'] = (event) => {
     hasMoved && selectedPicker && setHasMoved(false);
-    console.log('onScrollEndDrag');
-    onScrollEvent(event);
+    onUserScrollEvent(event);
   };
 
   const refCallback = (ref: FlatListType<MessageType<StreamChatGenerics>>) => {
@@ -1260,7 +1140,7 @@ const MessageListWithContext = <
           minIndexForVisible: 1,
         }}
         maxToRenderPerBatch={30}
-        onMomentumScrollEnd={() => console.log('momentum scroll end')}
+        onMomentumScrollEnd={onUserScrollEvent}
         onScroll={handleScroll}
         onScrollBeginDrag={onScrollBeginDrag}
         onScrollEndDrag={onScrollEndDrag}
