@@ -634,7 +634,7 @@ const MessageListWithContext = <
         lastReceivedId={
           lastReceivedId === message.id || message.quoted_message_id ? lastReceivedId : undefined
         }
-        message={{ ...message, text: index + ' ' + message.text }}
+        message={message}
         onThreadSelect={onThreadSelect}
         showUnreadUnderlay={showUnreadUnderlay}
         style={[{ paddingHorizontal: screenPadding }, messageContainer]}
