@@ -706,7 +706,9 @@ const ChannelWithContext = <
     throttle(
       () => {
         if (channel) {
+          clearInterval(mergeSetsIntervalRef.current);
           setMessages([...channel.state.messages]);
+          restartSetsMergeFuncRef.current();
         }
       },
       newMessageStateUpdateThrottleInterval,
