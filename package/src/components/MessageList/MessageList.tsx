@@ -484,18 +484,16 @@ const MessageListWithContext = <
 
     /**
      * Scroll down when
-     * 1. new message list is small than the one before update - channel has resynced
-     * 2. created_at timestamp of top message before update is lesser than created_at timestamp of top message after update - channel has resynced
+     * created_at timestamp of top message before update is lesser than created_at timestamp of top message after update - channel has resynced
      */
     const scrollToBottomIfNeeded = () => {
       if (!client || !channel || rawMessageList.length === 0) {
         return;
       }
       if (
-        messageListLengthAfterUpdate < messageListLengthBeforeUpdate.current ||
-        (topMessageBeforeUpdate.current?.created_at &&
-          topMessageAfterUpdate?.created_at &&
-          topMessageBeforeUpdate.current.created_at < topMessageAfterUpdate.created_at)
+        topMessageBeforeUpdate.current?.created_at &&
+        topMessageAfterUpdate?.created_at &&
+        topMessageBeforeUpdate.current.created_at < topMessageAfterUpdate.created_at
       ) {
         channelResyncScrollSet.current = false;
         setScrollToBottomButtonVisible(false);
@@ -594,14 +592,27 @@ const MessageListWithContext = <
     if (!channel || channel.disconnected || (!channel.initialized && !channel.offlineMode))
       return null;
 
+    const unreadCount = channel.countUnread();
     const lastRead = channel.lastRead();
 
     function isMessageUnread(messageArrayIndex: number): boolean {
+      const isLatestMessageSetShown = !!channel.state.messageSets.find(
+        (set) => set.isCurrent && set.isLatest,
+      );
       const msg = processedMessageList?.[messageArrayIndex];
-      if (lastRead && msg?.created_at) {
-        return lastRead < msg.created_at;
+      if (!isLatestMessageSetShown) {
+        if (
+          channel.state.latestMessages.length !== 0 &&
+          unreadCount > channel.state.latestMessages.length
+        ) {
+          return messageArrayIndex <= unreadCount - channel.state.latestMessages.length - 1;
+        } else if (lastRead && msg.created_at) {
+          return lastRead < msg.created_at;
+        }
+        return false;
+      } else {
+        return messageArrayIndex <= unreadCount - 1;
       }
-      return false;
     }
 
     const isCurrentMessageUnread = isMessageUnread(index);
@@ -814,6 +825,8 @@ const MessageListWithContext = <
       markRead();
     }
 
+    setInitialScrollDone(false);
+
     if (onListScroll) {
       onListScroll(event);
     }
@@ -919,7 +932,7 @@ const MessageListWithContext = <
         initialScrollSettingTimeoutRef.current = setTimeout(() => {
           // small timeout to ensure that handleScroll is called after scrollToIndex to set this flag
           setInitialScrollDone(true);
-        }, 500);
+        }, 2000);
       }
       let messageIdToScroll: string | undefined;
       if (targetedMessage && messageIdLastScrolledToRef.current !== targetedMessage) {

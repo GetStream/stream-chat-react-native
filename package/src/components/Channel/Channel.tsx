@@ -604,6 +604,7 @@ const ChannelWithContext = <
   const uploadAbortControllerRef = useRef<Map<string, AbortController>>(new Map());
 
   const channelId = channel?.id || '';
+
   useEffect(() => {
     const initChannel = () => {
       if (!channel || !shouldSyncChannel || channel.offlineMode) return;
@@ -814,12 +815,21 @@ const ChannelWithContext = <
     return unsubscribe;
   }, [channelId]);
 
+  useEffect(() => {
+    const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
+      if (channel.cid === event.cid) copyChannelState();
+    };
+
+    const { unsubscribe } = client.on('notification.mark_read', handleEvent);
+    return unsubscribe;
+  }, []);
+
   const channelQueryCallRef = useRef(
     async (
       queryCall: () => Promise<void>,
       onAfterQueryCall: (() => void) | undefined = undefined,
-      // if we are targeting a message after the query, pass it here
-      targetMessageId: string | undefined = undefined,
+      // if we are scrolling to a message after the query, pass it here
+      scrollToMessageId: string | (() => string | undefined) | undefined = undefined,
     ) => {
       setError(false);
       try {
@@ -830,10 +840,13 @@ const ChannelWithContext = <
         const currentMessages = channel.state.messages;
         const hadCurrentLatestMessages =
           currentMessages.length > 0 && currentMessages === channel.state.latestMessages;
-        const targetMessageIndex = targetMessageId
-          ? currentMessages.findIndex(({ id }) => id === targetMessageId)
+        if (typeof scrollToMessageId === 'function') {
+          scrollToMessageId = scrollToMessageId();
+        }
+        const scrollToMessageIndex = scrollToMessageId
+          ? currentMessages.findIndex(({ id }) => id === scrollToMessageId)
           : -1;
-        if (channel && targetMessageIndex !== -1) {
+        if (channel && scrollToMessageIndex !== -1) {
           // We assume that on average user sees 5 messages on screen
           // We dont want new renders to happen while scrolling to the targeted message
           // hence we limit the number of messages to be rendered after the targeted message to 5 - 1 = 4
@@ -841,12 +854,11 @@ const ChannelWithContext = <
           // the previous latest message set will be thrown away as we cannot merge it with the current message set after the target message is set
           const limitAfter = 4;
           const currentLength = currentMessages.length;
-          const targetMessageIndex = currentMessages.findIndex(({ id }) => id === targetMessageId);
-          if (targetMessageIndex !== -1) {
-            const noOfMessagesAfter = currentLength - targetMessageIndex - 1;
+          if (scrollToMessageIndex !== -1) {
+            const noOfMessagesAfter = currentLength - scrollToMessageIndex - 1;
             // number of messages are over the limit, limit the length of messages
             if (noOfMessagesAfter > limitAfter) {
-              const endIndex = targetMessageIndex + limitAfter;
+              const endIndex = scrollToMessageIndex + limitAfter;
               channel.state.clearMessages();
               channel.state.messages = currentMessages.slice(0, endIndex + 1);
               splitLatestCurrentMessageSetRef.current();
@@ -888,14 +900,25 @@ const ChannelWithContext = <
     // query for messages around the last read date
     return channelQueryCallRef.current(
       async () => {
-        setLoading(true);
+        const unreadCount = channel.countUnread();
+        if (unreadCount === 0) return;
+        const isLatestMessageSetShown = !!channel.state.messageSets.find(
+          (set) => set.isCurrent && set.isLatest,
+        );
+        if (isLatestMessageSetShown && unreadCount <= channel.state.messages.length) {
+          unreadMessageIdToScrollTo =
+            channel.state.messages[channel.state.messages.length - unreadCount].id;
+          return;
+        }
         const lastReadDate = channel.lastRead();
+
         // if last read date is present we can just fetch messages around that date
         // last read date not being present is an edge case if somewhere the user of SDK deletes the read state (this will usually never happen)
         if (lastReadDate) {
+          setLoading(true);
           // get totally 30 messages... max 15 before last read date and max 15 after last read date
           // ref: https://github.com/GetStream/chat/pull/2588
-          await channel.query(
+          const res = await channel.query(
             {
               messages: {
                 created_at_around: lastReadDate,
@@ -905,32 +928,18 @@ const ChannelWithContext = <
             },
             'new',
           );
-          unreadMessageIdToScrollTo = channel.state.messages.find(
-            (m) => lastReadDate < m.created_at,
+          unreadMessageIdToScrollTo = res.messages.find(
+            (m) => lastReadDate < (m.created_at ? new Date(m.created_at) : new Date()),
           )?.id;
-          if (!unreadMessageIdToScrollTo) {
-            // the required message is not in the current set, so switch to it
-            const unreadMessageSet = channel.state.messageSets
-              .filter((set) => !set.isCurrent)
-              .find((set) => {
-                unreadMessageIdToScrollTo = set.messages.find(
-                  (m) => lastReadDate < m.created_at,
-                )?.id;
-                return !!unreadMessageIdToScrollTo;
-              });
-            channel.state.messageSets.forEach((set) => {
-              set.isCurrent = set === unreadMessageSet;
-            });
+          if (unreadMessageIdToScrollTo) {
+            channel.state.loadMessageIntoState(unreadMessageIdToScrollTo);
           }
         } else {
           await loadLatestMessagesRef.current();
         }
       },
-      () => {
-        if (unreadMessageIdToScrollTo) {
-          setTargetedMessage(unreadMessageIdToScrollTo);
-        }
-      },
+      undefined,
+      () => unreadMessageIdToScrollTo,
     );
   };
 
