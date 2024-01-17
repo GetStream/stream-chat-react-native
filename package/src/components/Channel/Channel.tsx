@@ -287,7 +287,6 @@ export type ChannelPropsWithContext<
       | 'MessageStatus'
       | 'MessageSystem'
       | 'MessageText'
-      | 'myMessageTheme'
       | 'onLongPressMessage'
       | 'onPressInMessage'
       | 'onPressMessage'
@@ -512,7 +511,6 @@ const ChannelWithContext = <
     MessageSystem = MessageSystemDefault,
     MessageText,
     MoreOptionsButton = MoreOptionsButtonDefault,
-    myMessageTheme,
     newMessageStateUpdateThrottleInterval = defaultThrottleInterval,
     NetworkDownIndicator = NetworkDownIndicatorDefault,
     numberOfLines = 5,
@@ -2056,7 +2054,6 @@ const ChannelWithContext = <
     MessageStatus,
     MessageSystem,
     MessageText,
-    myMessageTheme,
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,

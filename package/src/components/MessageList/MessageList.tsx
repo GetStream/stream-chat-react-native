@@ -45,7 +45,7 @@ import {
   PaginatedMessageListContextValue,
   usePaginatedMessageListContext,
 } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
-import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
+import { ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import {
   isDayOrMoment,
@@ -148,7 +148,6 @@ type MessageListPropsWithContext<
     | 'Message'
     | 'ScrollToBottomButton'
     | 'MessageSystem'
-    | 'myMessageTheme'
     | 'TypingIndicator'
     | 'TypingIndicatorContainer'
   > &
@@ -263,7 +262,6 @@ const MessageListWithContext = <
     markRead,
     Message,
     MessageSystem,
-    myMessageTheme,
     NetworkDownIndicator,
     noGroupByUser,
     onListScroll,
@@ -292,11 +290,6 @@ const MessageListWithContext = <
     messageList: { container, contentContainer, listContainer, messageContainer },
     screenPadding,
   } = theme;
-
-  const modifiedTheme = useMemo(
-    () => mergeThemes({ style: myMessageTheme, theme }),
-    [myMessageTheme, theme],
-  );
 
   const messageList = useMessageList<StreamChatGenerics>({
     noGroupByUser,
@@ -592,13 +585,13 @@ const MessageListWithContext = <
       );
     }
 
-    const wrapMessageInTheme = client.userID === message.user?.id && !!myMessageTheme;
+    const wrapMessageInTheme = client.userID === message.user?.id;
     return wrapMessageInTheme ? (
       <>
         {shouldApplyAndroidWorkaround &&
           isMessageWithStylesReadByAndDateSeparator(message) &&
           message.dateSeparator && <InlineDateSeparator date={message.dateSeparator} />}
-        <ThemeProvider mergedStyle={modifiedTheme}>
+        <ThemeProvider mergedStyle={theme}>
           <View testID={`message-list-item-${index}`}>
             <Message
               goToMessage={goToMessage}
@@ -1227,7 +1220,6 @@ export const MessageList = <
     legacyImageViewerSwipeBehaviour,
     Message,
     MessageSystem,
-    myMessageTheme,
     ScrollToBottomButton,
     TypingIndicator,
     TypingIndicatorContainer,
@@ -1267,7 +1259,6 @@ export const MessageList = <
         markRead,
         Message,
         MessageSystem,
-        myMessageTheme,
         NetworkDownIndicator,
         overlay,
         reloadChannel,

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Keyboard, Platform, SafeAreaView, StyleSheet, View, ViewStyle } from 'react-native';
 import {
   PanGestureHandler,
@@ -39,7 +39,7 @@ import {
   OverlayProviderProps,
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
-import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
+import { ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import { useViewport } from '../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../types/types';
@@ -157,22 +157,7 @@ const MessageOverlayWithContext = <
   const screenHeight = vh(100);
   const halfScreenHeight = vh(50);
 
-  const myMessageTheme = messagesContext?.myMessageTheme;
-  const wrapMessageInTheme = clientId === message?.user?.id && !!myMessageTheme;
-
-  const [myMessageThemeString, setMyMessageThemeString] = useState(JSON.stringify(myMessageTheme));
   const [reactionListHeight, setReactionListHeight] = useState(0);
-
-  useEffect(() => {
-    if (myMessageTheme) {
-      setMyMessageThemeString(JSON.stringify(myMessageTheme));
-    }
-  }, [myMessageTheme]);
-
-  const modifiedTheme = useMemo(
-    () => mergeThemes({ style: myMessageTheme, theme }),
-    [myMessageThemeString, theme],
-  );
 
   const {
     colors: { blue_alice, grey_gainsboro, grey_whisper, transparent, white_smoke },
@@ -184,7 +169,7 @@ const MessageOverlayWithContext = <
       },
     },
     overlay: { container: containerStyle, padding: overlayPadding },
-  } = wrapMessageInTheme ? modifiedTheme : theme;
+  } = theme;
 
   const messageHeight = useSharedValue(0);
   const messageLayout = useSharedValue({ x: 0, y: 0 });
@@ -504,7 +489,7 @@ const MessageOverlayWithContext = <
     <ChatProvider value={chatContext}>
       <MessagesProvider value={messagesContext}>
         <MessageProvider value={messageContext}>
-          <ThemeProvider mergedStyle={wrapMessageInTheme ? modifiedTheme : theme}>
+          <ThemeProvider mergedStyle={theme}>
             <Animated.View
               pointerEvents={'auto'}
               style={[StyleSheet.absoluteFillObject, containerStyle]}

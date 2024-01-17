@@ -52,8 +52,6 @@ import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
 import type { Alignment } from '../messageContext/MessageContext';
 import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
-import type { DeepPartial } from '../themeContext/ThemeContext';
-import type { Theme } from '../themeContext/utils/theme';
 import type { TDateTimeParserInput } from '../translationContext/TranslationContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
@@ -396,10 +394,6 @@ export type MessagesContextValue<
   /** Custom UI component for message text */
   MessageText?: React.ComponentType<MessageTextProps<StreamChatGenerics>>;
 
-  /**
-   * Theme provided only to messages that are the current users
-   */
-  myMessageTheme?: DeepPartial<Theme>;
   /**
    * Override default handler for onLongPress on message. You have access to payload of that handler as param:
    *
