@@ -45,7 +45,7 @@ import {
   PaginatedMessageListContextValue,
   usePaginatedMessageListContext,
 } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
-import { ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import {
   isDayOrMoment,
@@ -591,23 +591,21 @@ const MessageListWithContext = <
         {shouldApplyAndroidWorkaround &&
           isMessageWithStylesReadByAndDateSeparator(message) &&
           message.dateSeparator && <InlineDateSeparator date={message.dateSeparator} />}
-        <ThemeProvider mergedStyle={theme}>
-          <View testID={`message-list-item-${index}`}>
-            <Message
-              goToMessage={goToMessage}
-              groupStyles={
-                isMessageWithStylesReadByAndDateSeparator(message) ? message.groupStyles : []
-              }
-              isTargetedMessage={targetedMessage === message.id}
-              lastReceivedId={lastReceivedId === message.id ? lastReceivedId : undefined}
-              message={message}
-              onThreadSelect={onThreadSelect}
-              showUnreadUnderlay={showUnreadUnderlay}
-              style={[{ paddingHorizontal: screenPadding }, messageContainer]}
-              threadList={threadList}
-            />
-          </View>
-        </ThemeProvider>
+        <View testID={`message-list-item-${index}`}>
+          <Message
+            goToMessage={goToMessage}
+            groupStyles={
+              isMessageWithStylesReadByAndDateSeparator(message) ? message.groupStyles : []
+            }
+            isTargetedMessage={targetedMessage === message.id}
+            lastReceivedId={lastReceivedId === message.id ? lastReceivedId : undefined}
+            message={message}
+            onThreadSelect={onThreadSelect}
+            showUnreadUnderlay={showUnreadUnderlay}
+            style={[{ paddingHorizontal: screenPadding }, messageContainer]}
+            threadList={threadList}
+          />
+        </View>
         {!shouldApplyAndroidWorkaround &&
           isMessageWithStylesReadByAndDateSeparator(message) &&
           message.dateSeparator && <InlineDateSeparator date={message.dateSeparator} />}

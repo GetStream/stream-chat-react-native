@@ -39,8 +39,8 @@ import {
   OverlayProviderProps,
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
-import { ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
 
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useViewport } from '../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
@@ -489,41 +489,39 @@ const MessageOverlayWithContext = <
     <ChatProvider value={chatContext}>
       <MessagesProvider value={messagesContext}>
         <MessageProvider value={messageContext}>
-          <ThemeProvider mergedStyle={theme}>
-            <Animated.View
-              pointerEvents={'auto'}
-              style={[StyleSheet.absoluteFillObject, containerStyle]}
+          <Animated.View
+            pointerEvents={'auto'}
+            style={[StyleSheet.absoluteFillObject, containerStyle]}
+          >
+            <PanGestureHandler
+              enabled={overlay === 'message'}
+              maxPointers={1}
+              minDist={10}
+              onGestureEvent={onPan}
             >
-              <PanGestureHandler
-                enabled={overlay === 'message'}
-                maxPointers={1}
-                minDist={10}
-                onGestureEvent={onPan}
-              >
-                <Animated.View style={[StyleSheet.absoluteFillObject]}>
-                  <SafeAreaView style={styles.flex}>
-                    {isScrollEnabled ? (
-                      <ScrollView
-                        alwaysBounceVertical={false}
-                        contentContainerStyle={[
-                          styles.center,
-                          {
-                            paddingTop: reactionListHeight,
-                          },
-                        ]}
-                        showsVerticalScrollIndicator={false}
-                        style={[styles.flex, styles.scrollView]}
-                      >
-                        {renderContent()}
-                      </ScrollView>
-                    ) : (
-                      renderContent(messageTextNumberOfLines)
-                    )}
-                  </SafeAreaView>
-                </Animated.View>
-              </PanGestureHandler>
-            </Animated.View>
-          </ThemeProvider>
+              <Animated.View style={[StyleSheet.absoluteFillObject]}>
+                <SafeAreaView style={styles.flex}>
+                  {isScrollEnabled ? (
+                    <ScrollView
+                      alwaysBounceVertical={false}
+                      contentContainerStyle={[
+                        styles.center,
+                        {
+                          paddingTop: reactionListHeight,
+                        },
+                      ]}
+                      showsVerticalScrollIndicator={false}
+                      style={[styles.flex, styles.scrollView]}
+                    >
+                      {renderContent()}
+                    </ScrollView>
+                  ) : (
+                    renderContent(messageTextNumberOfLines)
+                  )}
+                </SafeAreaView>
+              </Animated.View>
+            </PanGestureHandler>
+          </Animated.View>
         </MessageProvider>
       </MessagesProvider>
     </ChatProvider>
