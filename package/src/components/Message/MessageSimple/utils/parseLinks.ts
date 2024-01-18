@@ -9,7 +9,7 @@ interface LinkInfo {
  * This is done to avoid parsing section with text []() in message texts.
  * eg: [google.com](https://www.google.com), [Google](https://www.google.com), [https://www.google.com](https://www.google.com)
  * */
-const removeMarkdownLinksFromText = (input: string) => input.replace(/\[.+\]\(.*\)/g, '');
+const removeMarkdownLinksFromText = (input: string) => input.replace(/\[.*\]\(.*\)/g, '');
 
 /**
  * This is done to avoid parsing usernames with dot as well as an email address in it.
