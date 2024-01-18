@@ -1,5 +1,29 @@
 # Change Log
 
+## [5.23.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.22.1...v5.23.0) (2024-01-18)
+
+
+### Features
+
+* compress images selected through file picker while upload ([#2359](https://github.com/GetStream/stream-chat-react-native/issues/2359)) ([71c756d](https://github.com/GetStream/stream-chat-react-native/commit/71c756d41b410650199a70601f254df68fed53d8))
+* introduce focused message input styling using theme ([#2336](https://github.com/GetStream/stream-chat-react-native/issues/2336)) ([e22b8f1](https://github.com/GetStream/stream-chat-react-native/commit/e22b8f116bd3e77853043bbda649a4e34ae85af5))
+* optimise message list scrolling performance ([#2388](https://github.com/GetStream/stream-chat-react-native/issues/2388)) ([09737b8](https://github.com/GetStream/stream-chat-react-native/commit/09737b85fa973c4445bb98ae33061307ce2db3d0)), closes [#2352](https://github.com/GetStream/stream-chat-react-native/issues/2352) [#2348](https://github.com/GetStream/stream-chat-react-native/issues/2348) [#2350](https://github.com/GetStream/stream-chat-react-native/issues/2350) [#2359](https://github.com/GetStream/stream-chat-react-native/issues/2359) [#2355](https://github.com/GetStream/stream-chat-react-native/issues/2355)
+
+
+### Bug Fixes
+
+* do not clear the scroll failure timeouts before the failure scroll completes execution ([#2347](https://github.com/GetStream/stream-chat-react-native/issues/2347)) ([054dcf0](https://github.com/GetStream/stream-chat-react-native/commit/054dcf0ec3a1a73c53dfb39e060a7ead529bc7bb))
+* emoji skin_variations undefined warning when emoji is not found ([#2381](https://github.com/GetStream/stream-chat-react-native/issues/2381)) ([206910d](https://github.com/GetStream/stream-chat-react-native/commit/206910d9be7fb5d0ab16fc095720e59121e183dd))
+* incorrect message list state when non recent messages are loaded ([#2342](https://github.com/GetStream/stream-chat-react-native/issues/2342)) ([11e8b01](https://github.com/GetStream/stream-chat-react-native/commit/11e8b013f9b044444ba16f7f2ce2134dd0810118))
+* limit to max 3 render windows for channel around message method ([c449795](https://github.com/GetStream/stream-chat-react-native/commit/c4497958aaafe9d23fe7fd914033aedc85f432b3))
+* make iOS14RefreshGallerySelection optional ([#2346](https://github.com/GetStream/stream-chat-react-native/issues/2346)) ([ed083e9](https://github.com/GetStream/stream-chat-react-native/commit/ed083e9a5023dc1a1348034e49189f295e9a7377))
+* message action list item title theme ([#2352](https://github.com/GetStream/stream-chat-react-native/issues/2352)) ([615c47c](https://github.com/GetStream/stream-chat-react-native/commit/615c47c48fb1779b56e657b7a18f0c69358628ed))
+* myMessageTheme prop change did not cause a rerender ([#2390](https://github.com/GetStream/stream-chat-react-native/issues/2390)) ([b45417f](https://github.com/GetStream/stream-chat-react-native/commit/b45417fc6b00d57da054178436d5d699ff1eb155))
+* null check attachment duration ([#2348](https://github.com/GetStream/stream-chat-react-native/issues/2348)) ([0f516cd](https://github.com/GetStream/stream-chat-react-native/commit/0f516cdfa5479e0ff0fc9f8fc2d58044d46f67eb))
+* parsing links from message text having links in markdown format ([#2391](https://github.com/GetStream/stream-chat-react-native/issues/2391)) ([0b62d4f](https://github.com/GetStream/stream-chat-react-native/commit/0b62d4fd436c364d2a48d19cdac5240e648a0460))
+* remove url encoding ([#2345](https://github.com/GetStream/stream-chat-react-native/issues/2345)) ([7d33f05](https://github.com/GetStream/stream-chat-react-native/commit/7d33f056892839da5933f8e59cd28569ee9fe02a))
+* width and height passed to ImageResizer were reversed ([#2350](https://github.com/GetStream/stream-chat-react-native/issues/2350)) ([8523efb](https://github.com/GetStream/stream-chat-react-native/commit/8523efb039bea1e080d542d2506c2628f4ca2fa0))
+
 ### [5.22.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.22.0...v5.22.1) (2023-11-29)
 
 
