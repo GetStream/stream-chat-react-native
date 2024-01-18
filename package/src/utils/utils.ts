@@ -388,7 +388,8 @@ export const ACITriggerSettings = <
 
         if (cur.names.some((name) => name.includes(query))) {
           const emoji = compiledEmojis.emojiLib[cur.name];
-          if (emoji.skin_variations) {
+          // Since there can be no emojiLib for the current name we need to check for it being undefined
+          if (emoji?.skin_variations) {
             acc.push({
               ...emoji,
               name: `${emoji.name}-tone-1`,
@@ -402,7 +403,7 @@ export const ACITriggerSettings = <
                 unicode: tone,
               }),
             );
-          } else {
+          } else if (emoji) {
             acc.push(emoji);
           }
         }
