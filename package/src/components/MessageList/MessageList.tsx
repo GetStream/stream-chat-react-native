@@ -297,9 +297,11 @@ const MessageListWithContext = <
     screenPadding,
   } = theme;
 
+  const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
+
   const modifiedTheme = useMemo(
     () => mergeThemes({ style: myMessageTheme, theme }),
-    [myMessageTheme, theme],
+    [myMessageThemeString, theme],
   );
 
   /**
