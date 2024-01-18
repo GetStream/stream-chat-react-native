@@ -198,6 +198,12 @@ export const useChatClient = () => {
     const listener = chatClient?.on((e) => {
       if (e.total_unread_count !== undefined) {
         setUnreadCount(e.total_unread_count);
+      } else {
+        const countUnread = Object.values(chatClient.activeChannels).reduce(
+          (count, channel) => count + channel.countUnread(),
+          0,
+        );
+        setUnreadCount(countUnread);
       }
     });
 
