@@ -27,6 +27,8 @@ describe('parseLinksFromText', () => {
       'https://help.apple.com/xcode/mac/current/#/devba7f53ad4',
       'https://help.apple.com/xcode/mac/current/#/devba7f53ad4',
     ],
+    ['[google.com](https://www.google.com)', undefined],
+    ['[https://www.google.com](https://www.google.com)', undefined],
   ])('Returns the encoded value of %p as %p', (link, expected) => {
     const result = parseLinksFromText(link);
     expect(result[0]?.url).toBe(expected);
