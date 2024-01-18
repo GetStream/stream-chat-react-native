@@ -6,7 +6,7 @@ interface LinkInfo {
 }
 
 /**
- * This is done to avoid parsing section with text []() in message texts.
+ * This is done to remove all markdown formatted links.
  * eg: [google.com](https://www.google.com), [Google](https://www.google.com), [https://www.google.com](https://www.google.com)
  * */
 const removeMarkdownLinksFromText = (input: string) => input.replace(/\[.*\]\(.*\)/g, '');
