@@ -50,7 +50,7 @@
     "react-native-screens": "3.20.0",
     "react-native-share": "8.2.2",
     "react-native-svg": "13.9.0",
-    "react-native-video": "6.0.0-alpha.6",
+    "react-native-video": "6.0.0-beta.2",
     "stream-chat-react-native": "link:../../package/native-package",
     "stream-chat-react-native-core": "link:../../package"
   },
@@ -63,7 +63,7 @@
     "@react-native/eslint-config": "^0.72.2",
     "@react-native/metro-config": "^0.72.11",
     "@tsconfig/react-native": "^3.0.0",
-    "@types/react-native-video": "^5.0.14",
+    "@types/react-native-video": "^5.0.18",
     "@types/react-test-renderer": "18.0.0",
     "@typescript-eslint/parser": "5.59.2",
     "babel-jest": "29.5.0",

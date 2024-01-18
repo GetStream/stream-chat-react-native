@@ -1,15 +1,15 @@
 import { find } from 'linkifyjs';
 
 interface LinkInfo {
-  encodedUrl: string;
   raw: string;
+  url: string;
 }
 
 /**
- * This is done separately because of the version of javascript run
- * for expo
+ * This is done to remove all markdown formatted links.
+ * eg: [google.com](https://www.google.com), [Google](https://www.google.com), [https://www.google.com](https://www.google.com)
  * */
-const removeMarkdownLinksFromText = (input: string) => input.replace(/\[[\w\s]+\]\(.*\)/g, '');
+const removeMarkdownLinksFromText = (input: string) => input.replace(/\[.*\]\(.*\)/g, '');
 
 /**
  * This is done to avoid parsing usernames with dot as well as an email address in it.
@@ -27,8 +27,8 @@ export const parseLinksFromText = (input: string): LinkInfo[] => {
   const emails = find(strippedInput, 'email');
 
   const result: LinkInfo[] = [...links, ...emails].map(({ href, value }) => ({
-    encodedUrl: encodeURI(href),
     raw: value,
+    url: href,
   }));
 
   return result;

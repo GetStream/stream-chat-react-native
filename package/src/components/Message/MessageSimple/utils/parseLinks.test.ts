@@ -16,10 +16,7 @@ describe('parseLinksFromText', () => {
     ],
     ['reactnative.dev', 'http://reactnative.dev'],
     ['hinge.health/schedule-with-a-coach', 'http://hinge.health/schedule-with-a-coach'],
-    [
-      'https://zh.wikipedia.org/wiki/挪威牛油危機',
-      'https://zh.wikipedia.org/wiki/%E6%8C%AA%E5%A8%81%E7%89%9B%E6%B2%B9%E5%8D%B1%E6%A9%9F',
-    ],
+    ['https://zh.wikipedia.org/wiki/挪威牛油危機', 'https://zh.wikipedia.org/wiki/挪威牛油危機'],
     [
       'https://getstream.io/chat/docs/react-native/?language=javascript',
       'https://getstream.io/chat/docs/react-native/?language=javascript',
@@ -30,9 +27,13 @@ describe('parseLinksFromText', () => {
       'https://help.apple.com/xcode/mac/current/#/devba7f53ad4',
       'https://help.apple.com/xcode/mac/current/#/devba7f53ad4',
     ],
+    ['[google.com](https://www.google.com)', undefined],
+    ['[https://www.google.com](https://www.google.com)', undefined],
+    ['[abc]()', undefined],
+    ['[](https://www.google.com)', undefined],
   ])('Returns the encoded value of %p as %p', (link, expected) => {
     const result = parseLinksFromText(link);
-    expect(result[0]?.encodedUrl).toBe(expected);
+    expect(result[0]?.url).toBe(expected);
   });
   it('parses fqdn', () => {
     const input = `We have put the apim bol,
@@ -43,9 +44,8 @@ describe('parseLinksFromText', () => {
     const result = parseLinksFromText(input);
     expect(result).toEqual([
       {
-        encodedUrl:
-          'https://www.contrived-example.com:8080/sub/page.php?p1=1%F0%9F%87%B3%F0%9F%87%B4&p2=2#fragment-identifier',
         raw: 'https://www.contrived-example.com:8080/sub/page.php?p1=1🇳🇴&p2=2#fragment-identifier',
+        url: 'https://www.contrived-example.com:8080/sub/page.php?p1=1🇳🇴&p2=2#fragment-identifier',
       },
     ]);
   });
@@ -56,15 +56,15 @@ describe('parseLinksFromText', () => {
     ['support_rn@getstream.io'],
   ])('Can parse the email address %p', (email) => {
     const result = parseLinksFromText(email);
-    expect(result[0].encodedUrl).toBe('mailto:' + email);
+    expect(result[0].url).toBe('mailto:' + email);
     expect(result[0].raw).toBe(email);
   });
   it("doesn't double the mailto prefix", () => {
     const input = 'mailto:support@getstream.io';
     const result = parseLinksFromText(input);
     expect(result[0]).toEqual({
-      encodedUrl: input,
       raw: input,
+      url: input,
     });
   });
   it('Does not falsely parse LINKs from text content', () => {
@@ -77,15 +77,14 @@ describe('parseLinksFromText', () => {
   getstream.io
   `;
     const result = parseLinksFromText(input);
-    console.log({ result });
     expect(result).toHaveLength(2);
   });
   it('Encodes incomplete emoji unicode', () => {
     const input = 'https://getstream.io/�';
     const result = parseLinksFromText(input);
     expect(result[0]).toEqual({
-      encodedUrl: 'https://getstream.io/%EF%BF%BD',
       raw: input,
+      url: 'https://getstream.io/�',
     });
   });
 });

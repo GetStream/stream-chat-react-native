@@ -160,14 +160,9 @@ const MessageOverlayWithContext = <
   const myMessageTheme = messagesContext?.myMessageTheme;
   const wrapMessageInTheme = clientId === message?.user?.id && !!myMessageTheme;
 
-  const [myMessageThemeString, setMyMessageThemeString] = useState(JSON.stringify(myMessageTheme));
   const [reactionListHeight, setReactionListHeight] = useState(0);
 
-  useEffect(() => {
-    if (myMessageTheme) {
-      setMyMessageThemeString(JSON.stringify(myMessageTheme));
-    }
-  }, [myMessageTheme]);
+  const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
 
   const modifiedTheme = useMemo(
     () => mergeThemes({ style: myMessageTheme, theme }),

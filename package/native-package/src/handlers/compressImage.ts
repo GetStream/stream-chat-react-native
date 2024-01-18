@@ -17,8 +17,8 @@ export const compressImage = async ({
   try {
     const { uri: compressedUri } = await ImageResizer.createResizedImage(
       uri,
-      height,
       width,
+      height,
       'JPEG',
       Math.min(Math.max(0, compressImageQuality), 1) * 100,
       0,

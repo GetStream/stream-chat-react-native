@@ -2283,11 +2283,6 @@
     metro-react-native-babel-transformer "0.76.8"
     metro-runtime "0.76.8"
 
-"@react-native/normalize-color@*":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@react-native/normalize-color/-/normalize-color-2.1.0.tgz#939b87a9849e81687d3640c5efa2a486ac266f91"
-  integrity sha512-Z1jQI2NpdFJCVgpY+8Dq/Bt3d+YUi1928Q+/CZm/oh66fzM0RUl54vvuXlPJKybH4pdCZey1eDTPaLHkMPNgWA==
-
 "@react-native/normalize-colors@*":
   version "0.74.1"
   resolved "https://registry.yarnpkg.com/@react-native/normalize-colors/-/normalize-colors-0.74.1.tgz#6e8ccf99954728dcd3cfe0d56e758ee5050a7bea"
@@ -2524,10 +2519,10 @@
   resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.7.5.tgz#5f19d2b85a98e9558036f6a3cacc8819420f05cf"
   integrity sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==
 
-"@types/react-native-video@^5.0.14":
-  version "5.0.14"
-  resolved "https://registry.yarnpkg.com/@types/react-native-video/-/react-native-video-5.0.14.tgz#275d08f836280ace088462b2cb267925a6a915f3"
-  integrity sha512-KdcyY4HY/Q1l6f5qQA337BNVN+GsdZy836j9CXbWHZ008VVNzSlnJypJQPsnUgI0EPBw/uG/lyJk6cg9Jj1syg==
+"@types/react-native-video@^5.0.18":
+  version "5.0.18"
+  resolved "https://registry.yarnpkg.com/@types/react-native-video/-/react-native-video-5.0.18.tgz#d0cec469e0cdc165e99ad04d500b90726a382253"
+  integrity sha512-z+8hNy7Q3UPU66w7vf9tWhk8s8pfj7eYodOpx4h0j36jfoWXtv7AFFmlT9SZk9u4wqyxDBbIjBOw8Ljj4YuRVA==
   dependencies:
     "@types/react" "*"
     "@types/react-native" "*"
@@ -3657,15 +3652,6 @@ deprecated-react-native-prop-types@4.1.0:
   integrity sha512-WfepZHmRbbdTvhcolb8aOKEvQdcmTMn5tKLbqbXmkBvjFjRVWAYqsXk/DBsV8TZxws8SdGHLuHaJrHSQUPRdfw==
   dependencies:
     "@react-native/normalize-colors" "*"
-    invariant "*"
-    prop-types "*"
-
-deprecated-react-native-prop-types@^2.2.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/deprecated-react-native-prop-types/-/deprecated-react-native-prop-types-2.3.0.tgz#c10c6ee75ff2b6de94bb127f142b814e6e08d9ab"
-  integrity sha512-pWD0voFtNYxrVqvBMYf5gq3NA2GCpfodS1yNynTPc93AYA/KEMGeWDqqeUB6R2Z9ZofVhks2aeJXiuQqKNpesA==
-  dependencies:
-    "@react-native/normalize-color" "*"
     invariant "*"
     prop-types "*"
 
@@ -5575,11 +5561,6 @@ jws@^3.2.2:
     jwa "^1.4.1"
     safe-buffer "^5.0.1"
 
-keymirror@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/keymirror/-/keymirror-0.1.1.tgz#918889ea13f8d0a42e7c557250eee713adc95c35"
-  integrity sha512-vIkZAFWoDijgQT/Nvl2AHCMmnegN2ehgTPYuyy2hWQkQSntI0S7ESYqdLkoSe1HyEBFHHkCgSIvVdSEiWwKvCg==
-
 kind-of@^5.0.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-5.1.0.tgz#729c91e2d857b7a419a1f9aa65685c4c33f5845d"
@@ -6835,14 +6816,10 @@ react-native-url-polyfill@^1.3.0:
   dependencies:
     whatwg-url-without-unicode "8.0.0-3"
 
-react-native-video@6.0.0-alpha.6:
-  version "6.0.0-alpha.6"
-  resolved "https://registry.yarnpkg.com/react-native-video/-/react-native-video-6.0.0-alpha.6.tgz#8acdd70dbb4a213bc92dd9f25852488c46baa4d2"
-  integrity sha512-MCqHfPGuqVokvJOkvidhD5/eGYkWZrDEcSDtlkwVo36V2157L6lZyt3mqb5tPR+e5jSz+c/ht2JpEhP1bCm/Dw==
-  dependencies:
-    deprecated-react-native-prop-types "^2.2.0"
-    keymirror "^0.1.1"
-    prop-types "^15.7.2"
+react-native-video@6.0.0-beta.2:
+  version "6.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/react-native-video/-/react-native-video-6.0.0-beta.2.tgz#b3dce837300a99c2e6db0adf0a1e215906472ad9"
+  integrity sha512-5BHUN82Q3Op9hN8Dwe2tv7xIzVBVYaYOFyS67jdkljVdUBa7V75lMka5ovE4OSycII4vk6p8pF6QuxrkAX+nIg==
 
 react-native@0.72.6:
   version "0.72.6"
@@ -7375,10 +7352,10 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-stream-chat-react-native-core@5.21.0:
-  version "5.21.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.21.0.tgz#de8b5eca351eb7e5905b48b09a90eb5357c321cb"
-  integrity sha512-JOa7giYrQMUHdCqu8rPlSgtWQZyi/oG3EhdOArkUB2WUAFlKScmOfcYEIFRJCGYmKOsihBqqIwF6xPckJ+bpcQ==
+stream-chat-react-native-core@5.22.1:
+  version "5.22.1"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.22.1.tgz#76aad957938a87c601ddd65ee562dd52cdd9422e"
+  integrity sha512-Nx19wFlkJaNz+xXaF8QtQtdqxmabuvVpI60QTH4yUktpOjVQ43/gszofnJsowsBJa/5y0WLxWvmCzGO+rVfoLQ==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "4.4.8"
@@ -7392,7 +7369,7 @@ stream-chat-react-native-core@5.21.0:
     path "0.12.7"
     react-native-markdown-package "1.8.2"
     react-native-url-polyfill "^1.3.0"
-    stream-chat "~8.14.0"
+    stream-chat "8.14.4"
 
 "stream-chat-react-native-core@link:../../package":
   version "0.0.0"
@@ -7402,25 +7379,10 @@ stream-chat-react-native-core@5.21.0:
   version "0.0.0"
   uid ""
 
-stream-chat@~8.14.0:
-  version "8.14.1"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.14.1.tgz#f6560c2aa2ce754928d41d6059c61d7cfe770e0a"
-  integrity sha512-7ersgzFLrUlnV5q09SLcJSEkKMEFNl3E7C5Pk48hzzKuY/eRt8+ojka7t17/cRtF84g3XSW0dSl7C/yB9J5ieQ==
-  dependencies:
-    "@babel/runtime" "^7.16.3"
-    "@types/jsonwebtoken" "~9.0.0"
-    "@types/ws" "^7.4.0"
-    axios "^1.6.0"
-    base64-js "^1.5.1"
-    form-data "^4.0.0"
-    isomorphic-ws "^4.0.1"
-    jsonwebtoken "~9.0.0"
-    ws "^7.4.4"
-
-stream-chat@~8.14.3:
-  version "8.14.3"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.14.3.tgz#165402d2ed6fc4085f0cc0121b28c664159f8976"
-  integrity sha512-GYYf4bfpSdl4Itaw981D7R3OUiSBWUUOQypvUd6tvhs20O76Pu+gR/eOUkpl40jBfYSAFVkbhd/CnDFxJJafug==
+stream-chat@8.14.4:
+  version "8.14.4"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.14.4.tgz#b035fdafc96cc70e36492e7c11d1f6f51a3d878c"
+  integrity sha512-V/yTpNPL6+c1FR8u1woKCKjKXRNQ99WaozLt1WuynL1RMjWI8yDtv1VTz4PWrB2efrXCeXzI6SyfMqBQkR0XIw==
   dependencies:
     "@babel/runtime" "^7.16.3"
     "@types/jsonwebtoken" "~9.0.0"

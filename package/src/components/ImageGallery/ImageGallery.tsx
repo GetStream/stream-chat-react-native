@@ -647,7 +647,7 @@ export const ImageGallery = <
         {...imageGalleryCustomComponents?.header}
       />
 
-      {imageGalleryAttachments.length > 0 && (
+      {imageGalleryAttachments[selectedIndex] && (
         <ImageGalleryFooter<StreamChatGenerics>
           accessibilityLabel={'Image Gallery Footer'}
           duration={imageGalleryAttachments[selectedIndex].duration || 0}
