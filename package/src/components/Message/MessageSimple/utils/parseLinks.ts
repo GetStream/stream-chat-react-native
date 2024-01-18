@@ -6,10 +6,10 @@ interface LinkInfo {
 }
 
 /**
- * This is done separately because of the version of javascript run
- * for expo
+ * This is done to remove all markdown formatted links.
+ * eg: [google.com](https://www.google.com), [Google](https://www.google.com), [https://www.google.com](https://www.google.com)
  * */
-const removeMarkdownLinksFromText = (input: string) => input.replace(/\[[\w\s]+\]\(.*\)/g, '');
+const removeMarkdownLinksFromText = (input: string) => input.replace(/\[.*\]\(.*\)/g, '');
 
 /**
  * This is done to avoid parsing usernames with dot as well as an email address in it.
