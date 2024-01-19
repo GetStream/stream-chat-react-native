@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { Image, ImageStyle, StyleSheet, View, ViewStyle } from 'react-native';
 
 import merge from 'lodash/merge';
@@ -151,6 +151,13 @@ const ReplyWithContext = <
     },
   } = useTheme();
 
+  const messageText = typeof quotedMessage === 'boolean' ? '' : quotedMessage.text || '';
+
+  const emojiOnlyText = useMemo(() => {
+    if (!messageText) return false;
+    return hasOnlyEmojis(messageText);
+  }, [messageText]);
+
   if (typeof quotedMessage === 'boolean') return null;
 
   const lastAttachment = quotedMessage.attachments?.slice(-1)[0] as Attachment<StreamChatGenerics>;
@@ -163,7 +170,7 @@ const ReplyWithContext = <
     messageType !== 'video' &&
     (lastAttachment.image_url || lastAttachment.thumb_url || lastAttachment.og_scrape_url);
 
-  const onlyEmojis = !lastAttachment && !!quotedMessage.text && hasOnlyEmojis(quotedMessage.text);
+  const onlyEmojis = !lastAttachment && emojiOnlyText;
 
   return (
     <View style={[styles.container, container, stylesProp.container]}>
