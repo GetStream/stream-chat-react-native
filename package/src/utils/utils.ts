@@ -525,9 +525,17 @@ export const generateRandomId = (a = ''): string =>
       ((Number(a) ^ (Math.random() * 16)) >> (Number(a) / 4)).toString(16)
     : `${1e7}-${1e3}-${4e3}-${8e3}-${1e11}`.replace(/[018]/g, generateRandomId);
 
+/*
+ * Returns true if the message text only contains emojis
+ */
 export const hasOnlyEmojis = (text: string) => {
   try {
-    return EmojiRegex().test(text);
+    // get all emojis in the string
+    const emojiOnlyString = [...text.matchAll(EmojiRegex())].join('');
+    // remove all spaces from original text
+    const originalTextWithNoSpaces = text.replaceAll(/\s/g, '');
+    // check if both are the same
+    return emojiOnlyString === originalTextWithNoSpaces;
   } catch (e) {
     return false;
   }
