@@ -73,13 +73,8 @@ const styles = StyleSheet.create({
   replyContainer: { paddingBottom: 12, paddingHorizontal: 8 },
   sendButtonContainer: { paddingBottom: 10, paddingLeft: 10 },
   suggestionsListContainer: {
-    borderRadius: 10,
-    elevation: 3,
-    left: 8,
     position: 'absolute',
-    right: 8,
-    shadowOffset: { height: 1, width: 0 },
-    shadowOpacity: 0.15,
+    width: '100%',
   },
 });
 
@@ -624,11 +619,7 @@ const MessageInputWithContext = <
 
       {triggerType && suggestions ? (
         <View
-          style={[
-            suggestionListContainer,
-            styles.suggestionsListContainer,
-            { backgroundColor: white, bottom: height },
-          ]}
+          style={[styles.suggestionsListContainer, suggestionListContainer, { bottom: height }]}
         >
           <AutoCompleteSuggestionList
             active={!!suggestions}
