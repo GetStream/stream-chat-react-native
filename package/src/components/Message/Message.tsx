@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 
 import type { Attachment, UserResponse } from 'stream-chat';
@@ -44,7 +44,7 @@ import {
 
 import { isVideoPackageAvailable, triggerHaptic } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { emojiRegex, MessageStatusTypes } from '../../utils/utils';
+import { hasOnlyEmojis, MessageStatusTypes } from '../../utils/utils';
 
 import {
   isMessageWithStylesReadByAndDateSeparator,
@@ -413,12 +413,16 @@ const MessageWithContext = <
     }
   });
 
+  const emojiOnlyText = useMemo(() => {
+    if (!message.text) return false;
+    return hasOnlyEmojis(message.text);
+  }, [message.text]);
+
   const onlyEmojis =
     !attachments.files.length &&
     !attachments.images.length &&
     !attachments.other.length &&
-    !!message.text &&
-    emojiRegex.test(message.text);
+    emojiOnlyText;
 
   const onOpenThread = () => {
     if (onThreadSelect) {
