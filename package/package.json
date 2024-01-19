@@ -70,6 +70,7 @@
     "@babel/runtime": "^7.12.5",
     "@gorhom/bottom-sheet": "4.4.8",
     "dayjs": "1.10.5",
+    "emoji-regex": "^10.3.0",
     "file-loader": "6.2.0",
     "i18next": "20.2.4",
     "linkifyjs": "^4.1.1",
