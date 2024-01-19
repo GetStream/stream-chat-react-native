@@ -535,7 +535,9 @@ export const hasOnlyEmojis = (text: string) => {
     // remove all spaces from original text
     const originalTextWithNoSpaces = text.replaceAll(/\s/g, '');
     // check if both are the same
-    return emojiOnlyString === originalTextWithNoSpaces;
+    return (
+      emojiOnlyString.length !== 0 && emojiOnlyString.length === originalTextWithNoSpaces.length
+    );
   } catch (e) {
     return false;
   }
