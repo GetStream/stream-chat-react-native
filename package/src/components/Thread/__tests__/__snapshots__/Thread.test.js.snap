@@ -1580,6 +1580,7 @@ exports[`Thread should match thread snapshot 1`] = `
                 "paddingVertical": 12,
               },
               Object {},
+              null,
             ]
           }
         >
@@ -1601,8 +1602,10 @@ exports[`Thread should match thread snapshot 1`] = `
               editable={true}
               maxLength={5000}
               multiline={true}
+              onBlur={[Function]}
               onChangeText={[Function]}
               onContentSizeChange={[Function]}
+              onFocus={[Function]}
               onSelectionChange={[Function]}
               placeholder="Send a message"
               placeholderTextColor="#7A7A7A"
