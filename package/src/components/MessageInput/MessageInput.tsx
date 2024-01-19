@@ -1,11 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import {
-  Alert,
-  NativeSyntheticEvent,
-  StyleSheet,
-  TextInputFocusEventData,
-  View,
-} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Alert, StyleSheet, View } from 'react-native';
 
 import type { UserResponse } from 'stream-chat';
 
@@ -73,13 +67,8 @@ const styles = StyleSheet.create({
   replyContainer: { paddingBottom: 12, paddingHorizontal: 8 },
   sendButtonContainer: { paddingBottom: 10, paddingLeft: 10 },
   suggestionsListContainer: {
-    borderRadius: 10,
-    elevation: 3,
-    left: 8,
     position: 'absolute',
-    right: 8,
-    shadowOffset: { height: 1, width: 0 },
-    shadowOpacity: 0.15,
+    width: '100%',
   },
 });
 
@@ -181,7 +170,6 @@ const MessageInputWithContext = <
     SendButton,
     sending,
     sendMessageAsync,
-    setShowMoreOptions,
     ShowThreadMessageInChannelButton,
     suggestions,
     thread,
@@ -203,7 +191,6 @@ const MessageInputWithContext = <
         autoCompleteInputContainer,
         composerContainer,
         container,
-        focusedInputBoxContainer,
         inputBoxContainer,
         optionsContainer,
         replyContainer,
@@ -242,7 +229,6 @@ const MessageInputWithContext = <
 
   const [hasResetImages, setHasResetImages] = useState(false);
   const [hasResetFiles, setHasResetFiles] = useState(false);
-  const [focused, setFocused] = useState(false);
   const selectedImagesLength = hasResetImages ? selectedImages.length : 0;
   const imageUploadsLength = hasResetImages ? imageUploads.length : 0;
   const selectedFilesLength = hasResetFiles ? selectedFiles.length : 0;
@@ -522,26 +508,6 @@ const MessageInputWithContext = <
     ...additionalTextInputProps,
   };
 
-  const memoizedAdditionalTextInputProps = useMemo(
-    () => ({
-      ...additionalTextInputProps,
-      onBlur: (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
-        if (additionalTextInputProps?.onBlur) {
-          additionalTextInputProps?.onBlur(event);
-        }
-        if (setFocused) setFocused(false);
-        setShowMoreOptions(true);
-      },
-      onFocus: (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
-        if (additionalTextInputProps?.onFocus) {
-          additionalTextInputProps.onFocus(event);
-        }
-        if (setFocused) setFocused(true);
-      },
-    }),
-    [additionalTextInputProps],
-  );
-
   return (
     <>
       <View
@@ -573,7 +539,6 @@ const MessageInputWithContext = <
                     paddingVertical: giphyActive ? 8 : 12,
                   },
                   inputBoxContainer,
-                  focused ? focusedInputBoxContainer : null,
                 ]}
               >
                 {((typeof editing !== 'boolean' && editing?.quoted_message) || quotedMessage) && (
@@ -599,7 +564,7 @@ const MessageInputWithContext = <
                 ) : (
                   <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
                     <AutoCompleteInput<StreamChatGenerics>
-                      additionalTextInputProps={memoizedAdditionalTextInputProps}
+                      additionalTextInputProps={additionalTextInputProps}
                       cooldownActive={!!cooldownRemainingSeconds}
                     />
                   </View>
@@ -624,11 +589,7 @@ const MessageInputWithContext = <
 
       {triggerType && suggestions ? (
         <View
-          style={[
-            suggestionListContainer,
-            styles.suggestionsListContainer,
-            { backgroundColor: white, bottom: height },
-          ]}
+          style={[styles.suggestionsListContainer, suggestionListContainer, { bottom: height }]}
         >
           <AutoCompleteSuggestionList
             active={!!suggestions}
