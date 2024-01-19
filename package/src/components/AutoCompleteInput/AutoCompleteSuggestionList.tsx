@@ -16,7 +16,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { FlatList } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
-const AUTO_COMPLETE_SUGGESTION_LIST_HEADER = 30;
+const AUTO_COMPLETE_SUGGESTION_LIST_HEADER_HEIGHT = 30;
 
 type AutoCompleteSuggestionListComponentProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -77,7 +77,7 @@ export const AutoCompleteSuggestionListWithContext = <
     }
 
     return triggerType === 'emoji' || triggerType === 'command'
-      ? totalItemHeight + AUTO_COMPLETE_SUGGESTION_LIST_HEADER
+      ? totalItemHeight + AUTO_COMPLETE_SUGGESTION_LIST_HEADER_HEIGHT
       : totalItemHeight;
   }, [itemHeight, data.length]);
 
