@@ -21,7 +21,7 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
-import { emojiRegex } from '../../utils/utils';
+import { hasOnlyEmojis } from '../../utils/utils';
 
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
 import { VideoThumbnail } from '../Attachment/VideoThumbnail';
@@ -163,7 +163,7 @@ const ReplyWithContext = <
     messageType !== 'video' &&
     (lastAttachment.image_url || lastAttachment.thumb_url || lastAttachment.og_scrape_url);
 
-  const onlyEmojis = !lastAttachment && !!quotedMessage.text && emojiRegex.test(quotedMessage.text);
+  const onlyEmojis = !lastAttachment && !!quotedMessage.text && hasOnlyEmojis(quotedMessage.text);
 
   return (
     <View style={[styles.container, container, stylesProp.container]}>

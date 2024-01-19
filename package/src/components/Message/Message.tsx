@@ -44,7 +44,7 @@ import {
 
 import { isVideoPackageAvailable, triggerHaptic } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { emojiRegex, MessageStatusTypes } from '../../utils/utils';
+import { hasOnlyEmojis, MessageStatusTypes } from '../../utils/utils';
 
 import {
   isMessageWithStylesReadByAndDateSeparator,
@@ -418,7 +418,7 @@ const MessageWithContext = <
     !attachments.images.length &&
     !attachments.other.length &&
     !!message.text &&
-    emojiRegex.test(message.text);
+    hasOnlyEmojis(message.text);
 
   const onOpenThread = () => {
     if (onThreadSelect) {
