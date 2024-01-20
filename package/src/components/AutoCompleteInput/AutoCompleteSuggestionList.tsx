@@ -79,34 +79,30 @@ export const AutoCompleteSuggestionListWithContext = <
       : totalItemHeight;
   }, [itemHeight, data.length]);
 
-  const renderSuggestionItem = (item: Suggestion<StreamChatGenerics>) => (
-    <SuggestionsItem
-      onLayout={(event: LayoutChangeEvent) => {
-        const { height: newHeight } = event.nativeEvent.layout;
-        setItemHeight((prevHeight) => {
-          if (prevHeight !== newHeight) return newHeight;
-          return prevHeight;
-        });
-      }}
-      onPress={() => {
-        onSelect(item);
-      }}
-      style={itemStyle}
-    >
-      {AutoCompleteSuggestionItem && (
-        <AutoCompleteSuggestionItem itemProps={item} triggerType={triggerType} />
-      )}
-    </SuggestionsItem>
-  );
-
   const renderItem = ({ item }: { item: Suggestion<StreamChatGenerics> }) => {
     switch (triggerType) {
-      case 'mention':
-        return renderSuggestionItem(item);
       case 'command':
-        return renderSuggestionItem(item);
+      case 'mention':
       case 'emoji':
-        return renderSuggestionItem(item);
+        return (
+          <SuggestionsItem
+            onLayout={(event: LayoutChangeEvent) => {
+              const { height: newHeight } = event.nativeEvent.layout;
+              setItemHeight((prevHeight) => {
+                if (prevHeight !== newHeight) return newHeight;
+                return prevHeight;
+              });
+            }}
+            onPress={() => {
+              onSelect(item);
+            }}
+            style={itemStyle}
+          >
+            {AutoCompleteSuggestionItem && (
+              <AutoCompleteSuggestionItem itemProps={item} triggerType={triggerType} />
+            )}
+          </SuggestionsItem>
+        );
       default:
         return null;
     }
