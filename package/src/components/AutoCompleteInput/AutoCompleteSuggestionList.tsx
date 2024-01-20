@@ -5,8 +5,6 @@ import type { AutoCompleteSuggestionHeaderProps } from './AutoCompleteSuggestion
 import type { AutoCompleteSuggestionItemProps } from './AutoCompleteSuggestionItem';
 
 import {
-  isSuggestionCommand,
-  isSuggestionEmoji,
   isSuggestionUser,
   Suggestion,
   SuggestionsContextValue,
@@ -81,73 +79,34 @@ export const AutoCompleteSuggestionListWithContext = <
       : totalItemHeight;
   }, [itemHeight, data.length]);
 
-  const onLayoutHandler = (event: LayoutChangeEvent) => {
-    const { height: newHeight } = event.nativeEvent.layout;
-    setItemHeight((prevHeight) => {
-      if (prevHeight !== newHeight) return newHeight;
-      return prevHeight;
-    });
-  };
+  const renderSuggestionItem = (item: Suggestion<StreamChatGenerics>) => (
+    <SuggestionsItem
+      onLayout={(event: LayoutChangeEvent) => {
+        const { height: newHeight } = event.nativeEvent.layout;
+        setItemHeight((prevHeight) => {
+          if (prevHeight !== newHeight) return newHeight;
+          return prevHeight;
+        });
+      }}
+      onPress={() => {
+        onSelect(item);
+      }}
+      style={itemStyle}
+    >
+      {AutoCompleteSuggestionItem && (
+        <AutoCompleteSuggestionItem itemProps={item} triggerType={triggerType} />
+      )}
+    </SuggestionsItem>
+  );
 
-  const renderItem = ({ index, item }: { index: number; item: Suggestion<StreamChatGenerics> }) => {
+  const renderItem = ({ item }: { item: Suggestion<StreamChatGenerics> }) => {
     switch (triggerType) {
       case 'mention':
-        if (isSuggestionUser(item)) {
-          return (
-            <SuggestionsItem
-              onLayout={onLayoutHandler}
-              onPress={() => {
-                onSelect(item);
-              }}
-              style={[
-                {
-                  paddingBottom: index === data.length - 1 ? 8 : 0,
-                  paddingTop: index === 0 ? 8 : 0,
-                },
-                itemStyle,
-              ]}
-            >
-              {AutoCompleteSuggestionItem && (
-                <AutoCompleteSuggestionItem itemProps={item} triggerType={triggerType} />
-              )}
-            </SuggestionsItem>
-          );
-        }
-        return null;
+        return renderSuggestionItem(item);
       case 'command':
-        if (isSuggestionCommand(item)) {
-          return (
-            <SuggestionsItem
-              onLayout={onLayoutHandler}
-              onPress={() => {
-                onSelect(item);
-              }}
-              style={[itemStyle]}
-            >
-              {AutoCompleteSuggestionItem && (
-                <AutoCompleteSuggestionItem itemProps={item} triggerType={triggerType} />
-              )}
-            </SuggestionsItem>
-          );
-        }
-        return null;
+        return renderSuggestionItem(item);
       case 'emoji':
-        if (isSuggestionEmoji(item)) {
-          return (
-            <SuggestionsItem
-              onLayout={onLayoutHandler}
-              onPress={() => {
-                onSelect(item);
-              }}
-              style={[itemStyle]}
-            >
-              {AutoCompleteSuggestionItem && (
-                <AutoCompleteSuggestionItem itemProps={item} triggerType={triggerType} />
-              )}
-            </SuggestionsItem>
-          );
-        }
-        return null;
+        return renderSuggestionItem(item);
       default:
         return null;
     }
