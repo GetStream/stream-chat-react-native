@@ -1,5 +1,13 @@
 import React, { useMemo, useState } from 'react';
-import { LayoutChangeEvent, Pressable, PressableProps, StyleSheet, View } from 'react-native';
+import {
+  LayoutChangeEvent,
+  Pressable,
+  PressableProps,
+  PressableStateCallbackType,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 import type { AutoCompleteSuggestionHeaderProps } from './AutoCompleteSuggestionHeader';
 import type { AutoCompleteSuggestionItemProps } from './AutoCompleteSuggestionItem';
@@ -33,8 +41,18 @@ export type AutoCompleteSuggestionListPropsWithContext<
   AutoCompleteSuggestionListComponentProps<StreamChatGenerics>;
 
 const SuggestionsItem: React.FC<PressableProps> = (props) => {
-  const { children, ...pressableProps } = props;
-  return <Pressable {...pressableProps}>{children}</Pressable>;
+  const { children, style: propsStyle, ...pressableProps } = props;
+
+  const style = ({ pressed }: PressableStateCallbackType) => [
+    propsStyle as ViewStyle,
+    { opacity: pressed ? 0.2 : 1 },
+  ];
+
+  return (
+    <Pressable {...pressableProps} style={style}>
+      {children}
+    </Pressable>
+  );
 };
 
 SuggestionsItem.displayName = 'SuggestionsHeader{messageInput{suggestions}}';
@@ -86,13 +104,7 @@ export const AutoCompleteSuggestionListWithContext = <
       case 'emoji':
         return (
           <SuggestionsItem
-            onLayout={(event: LayoutChangeEvent) => {
-              const { height: newHeight } = event.nativeEvent.layout;
-              setItemHeight((prevHeight) => {
-                if (prevHeight !== newHeight) return newHeight;
-                return prevHeight;
-              });
-            }}
+            onLayout={(event: LayoutChangeEvent) => setItemHeight(event.nativeEvent.layout.height)}
             onPress={() => {
               onSelect(item);
             }}
