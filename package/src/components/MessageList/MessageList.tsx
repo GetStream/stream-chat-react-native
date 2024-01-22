@@ -768,9 +768,6 @@ const MessageListWithContext = <
     if (onStartReachedInPromise.current) {
       await onStartReachedInPromise.current;
     }
-    if (threadList) {
-      console.log('calling loadMoreThread from onEndReached');
-    }
     onEndReachedInPromise.current = (threadList ? loadMoreThread() : loadMore())
       .then(callback)
       .catch(onError);
