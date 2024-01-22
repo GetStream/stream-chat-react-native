@@ -1,5 +1,12 @@
 # Change Log
 
+### [5.23.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.23.0...v5.23.1) (2024-01-22)
+
+
+### Bug Fixes
+
+* crash when sending a very long emoji ([#2392](https://github.com/GetStream/stream-chat-react-native/issues/2392)) ([e96e9bf](https://github.com/GetStream/stream-chat-react-native/commit/e96e9bfd5e9f150d70f4d89f77c1e5519a4b97fc))
+
 ## [5.23.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.22.1...v5.23.0) (2024-01-18)
 
 
