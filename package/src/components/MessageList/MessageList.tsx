@@ -545,7 +545,11 @@ const MessageListWithContext = <
 
   useEffect(() => {
     if (!rawMessageList.length) return;
-    const notLatestSet = !threadList && channel.state.messages !== channel.state.latestMessages;
+    if (threadList) {
+      setAutoscrollToRecent(true);
+      return;
+    }
+    const notLatestSet = channel.state.messages !== channel.state.latestMessages;
     if (notLatestSet) {
       latestNonCurrentMessageBeforeUpdateRef.current =
         channel.state.latestMessages[channel.state.latestMessages.length - 1];
@@ -729,10 +733,8 @@ const MessageListWithContext = <
     // If onEndReached is in progress, better to wait for it to finish for smooth UX
     if (onEndReachedInPromise.current) {
       await onEndReachedInPromise.current;
-      onStartReachedInPromise.current = loadMoreRecent(limit).then(callback).catch(onError);
-    } else {
-      onStartReachedInPromise.current = loadMoreRecent(limit).then(callback).catch(onError);
     }
+    onStartReachedInPromise.current = loadMoreRecent(limit).then(callback).catch(onError);
   };
 
   /**
@@ -765,14 +767,13 @@ const MessageListWithContext = <
     // If onStartReached is in progress, better to wait for it to finish for smooth UX
     if (onStartReachedInPromise.current) {
       await onStartReachedInPromise.current;
-      onEndReachedInPromise.current = (threadList ? loadMoreThread() : loadMore())
-        .then(callback)
-        .catch(onError);
-    } else {
-      onEndReachedInPromise.current = (threadList ? loadMoreThread() : loadMore())
-        .then(callback)
-        .catch(onError);
     }
+    if (threadList) {
+      console.log('calling loadMoreThread from onEndReached');
+    }
+    onEndReachedInPromise.current = (threadList ? loadMoreThread() : loadMore())
+      .then(callback)
+      .catch(onError);
   };
 
   const onUserScrollEvent: NonNullable<ScrollViewProps['onScroll']> = (event) => {
