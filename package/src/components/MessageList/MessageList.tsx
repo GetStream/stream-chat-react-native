@@ -132,6 +132,7 @@ type MessageListPropsWithContext<
     | 'setTargetedMessage'
     | 'StickyHeader'
     | 'targetedMessage'
+    | 'threadList'
   > &
   Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
   Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setMessages'> &
@@ -215,10 +216,6 @@ type MessageListPropsWithContext<
      * ```
      */
     setFlatListRef?: (ref: FlatListType<MessageType<StreamChatGenerics>> | null) => void;
-    /**
-     * Boolean whether or not the Messages in the MessageList are part of a Thread
-     **/
-    threadList?: boolean;
   };
 
 /**
@@ -1224,6 +1221,7 @@ export const MessageList = <
     setTargetedMessage,
     StickyHeader,
     targetedMessage,
+    threadList,
   } = useChannelContext<StreamChatGenerics>();
   const { client } = useChatContext<StreamChatGenerics>();
   const { setMessages } = useImageGalleryContext<StreamChatGenerics>();
@@ -1292,6 +1290,7 @@ export const MessageList = <
         targetedMessage,
         tDateTimeParser,
         thread,
+        threadList,
         TypingIndicator,
         TypingIndicatorContainer,
       }}
