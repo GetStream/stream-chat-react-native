@@ -1,5 +1,13 @@
 # Change Log
 
+### [5.23.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.23.1...v5.23.2) (2024-01-23)
+
+
+### Bug Fixes
+
+* autocomplete suggestion list scroll issue ([#2394](https://github.com/GetStream/stream-chat-react-native/issues/2394)) ([8c8bfad](https://github.com/GetStream/stream-chat-react-native/commit/8c8bfad564e36c8311ae929b202737484cd8dc59))
+* unnecessary thread reload ([#2397](https://github.com/GetStream/stream-chat-react-native/issues/2397)) ([da7eb56](https://github.com/GetStream/stream-chat-react-native/commit/da7eb56632356600cb6c39da9720d3c5f887ceb9))
+
 ### [5.23.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.23.0...v5.23.1) (2024-01-22)
 
 

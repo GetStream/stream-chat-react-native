@@ -1833,6 +1833,11 @@ electron-to-chromium@^1.4.411:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.414.tgz#f9eedb6fb01b50439d8228d8ee3a6fa5e0108437"
   integrity sha512-RRuCvP6ekngVh2SAJaOKT/hxqc9JAsK+Pe0hP5tGQIfonU2Zy9gMGdJ+mBdyl/vNucMG6gkXYtuM4H/1giws5w==
 
+emoji-regex@^10.3.0:
+  version "10.3.0"
+  resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-10.3.0.tgz#76998b9268409eb3dae3de989254d456e70cfe23"
+  integrity sha512-QpLs9D9v9kArv4lfDEgg1X/gN5XLnf/A6l9cs8SPZLRZR3ZkY9+kwIQTxm+fsSej5UMYGE8fdoaZVIBlqG0XTw==
+
 emojis-list@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/emojis-list/-/emojis-list-3.0.0.tgz#5570662046ad29e2e916e71aae260abdff4f6a78"
@@ -3041,14 +3046,15 @@ stream-buffers@2.2.x:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha512-uyQK/mx5QjHun80FLJTfaWE7JtwfRMKBLkMne6udYOmvH0CawotVa7TfgYHzAnpphn4+TweIx1QKMnRIbipmUg==
 
-stream-chat-react-native-core@5.23.0:
-  version "5.23.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.23.0.tgz#7e8af0df2f38935683bc16611e32a950be3d623e"
-  integrity sha512-ThWT55mtIp+kujKo8cIKeorC2fpmtA6fTfCJ5e+G5NVe7oJBSpgG50RrZ7wQwbFGay4go8MmAPNuVztjwQS0Ug==
+stream-chat-react-native-core@5.23.1:
+  version "5.23.1"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.23.1.tgz#9bccc2c534762b764cb98703db5b6df1c7d1e394"
+  integrity sha512-ls+Tvtcbl+lfMgGlFBtHBfvyAKlY94jD9nhFgSeibV2vZzySvl8me9z3pDSZQVFDtqLbdnxCruGa91+hyrfGAg==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "4.4.8"
     dayjs "1.10.5"
+    emoji-regex "^10.3.0"
     file-loader "6.2.0"
     i18next "20.2.4"
     linkifyjs "^4.1.1"
