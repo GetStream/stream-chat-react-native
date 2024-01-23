@@ -777,15 +777,18 @@ const ChannelWithContext = <
   useEffect(() => {
     const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
       if (shouldSyncChannel) {
-        if (thread) {
-          const updatedThreadMessages =
-            (thread.id && channel && channel.state.threads[thread.id]) || threadMessages;
-          setThreadMessages(updatedThreadMessages);
-        }
+        const isTypingEvent = event.type === 'typing.start' || event.type === 'typing.stop';
+        if (!isTypingEvent) {
+          if (thread?.id) {
+            const updatedThreadMessages =
+              (thread.id && channel && channel.state.threads[thread.id]) || threadMessages;
+            setThreadMessages(updatedThreadMessages);
+          }
 
-        if (channel && thread && event.message?.id === thread.id) {
-          const updatedThread = channel.state.formatMessage(event.message);
-          setThread(updatedThread);
+          if (channel && thread?.id && event.message?.id === thread.id) {
+            const updatedThread = channel.state.formatMessage(event.message);
+            setThread(updatedThread);
+          }
         }
 
         // only update channel state if the events are not the previously subscribed useEffect's subscription events
@@ -1097,11 +1100,11 @@ const ChannelWithContext = <
     channelQueryCallRef.current(async () => {
       if (!channel?.initialized || !channel.state.isUpToDate) {
         await channel?.watch();
+        channel?.state.setIsUpToDate(true);
+        setHasNoMoreRecentMessagesToLoad(true);
       } else {
-        await loadLatestMessagesRef.current(true);
+        await channel.state.loadMessageIntoState('latest');
       }
-      channel?.state.setIsUpToDate(true);
-      setHasNoMoreRecentMessagesToLoad(true);
     });
 
   const reloadThread = async () => {
@@ -1999,11 +2002,14 @@ const ChannelWithContext = <
   /**
    * THREAD METHODS
    */
-  const openThread: ThreadContextValue<StreamChatGenerics>['openThread'] = (message) => {
-    const newThreadMessages = message?.id ? channel?.state?.threads[message.id] || [] : [];
-    setThread(message);
-    setThreadMessages(newThreadMessages);
-  };
+  const openThread: ThreadContextValue<StreamChatGenerics>['openThread'] = useCallback(
+    (message) => {
+      const newThreadMessages = message?.id ? channel?.state?.threads[message.id] || [] : [];
+      setThread(message);
+      setThreadMessages(newThreadMessages);
+    },
+    [setThread, setThreadMessages],
+  );
 
   const closeThread: ThreadContextValue<StreamChatGenerics>['closeThread'] = useCallback(() => {
     setThread(null);
@@ -2365,7 +2371,6 @@ export const Channel = <
 
   return (
     <ChannelWithContext<StreamChatGenerics>
-      key={props.channel?.cid}
       {...{
         client,
         enableOfflineSupport,

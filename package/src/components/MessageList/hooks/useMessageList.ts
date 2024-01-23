@@ -106,11 +106,11 @@ export const useMessageList = <
   const processedMessageList = [
     ...messagesWithStylesReadByAndDateSeparator,
   ].reverse() as MessageType<StreamChatGenerics>[];
-  const rawMessageList = messageList;
+
   return {
     /** Messages enriched with dates/readby/groups and also reversed in order */
     processedMessageList,
     /** Raw messages from the channel state */
-    rawMessageList,
+    rawMessageList: messageList,
   };
 };

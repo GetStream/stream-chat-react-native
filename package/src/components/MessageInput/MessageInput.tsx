@@ -81,7 +81,10 @@ const styles = StyleSheet.create({
 type MessageInputPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChatContextValue<StreamChatGenerics>, 'isOnline'> &
-  Pick<ChannelContextValue<StreamChatGenerics>, 'disabled' | 'members' | 'watchers'> &
+  Pick<
+    ChannelContextValue<StreamChatGenerics>,
+    'disabled' | 'members' | 'threadList' | 'watchers'
+  > &
   Pick<
     MessageInputContextValue<StreamChatGenerics>,
     | 'additionalTextInputProps'
@@ -132,9 +135,7 @@ type MessageInputPropsWithContext<
     | 'triggerType'
   > &
   Pick<ThreadContextValue<StreamChatGenerics>, 'thread'> &
-  Pick<TranslationContextValue, 't'> & {
-    threadList?: boolean;
-  };
+  Pick<TranslationContextValue, 't'>;
 
 const MessageInputWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -791,7 +792,12 @@ export const MessageInput = <
   const { isOnline } = useChatContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
-  const { disabled = false, members, watchers } = useChannelContext<StreamChatGenerics>();
+  const {
+    disabled = false,
+    members,
+    threadList,
+    watchers,
+  } = useChannelContext<StreamChatGenerics>();
 
   const {
     additionalTextInputProps,
@@ -900,6 +906,7 @@ export const MessageInput = <
         suggestions,
         t,
         thread,
+        threadList,
         triggerType,
         uploadNewFile,
         uploadNewImage,
