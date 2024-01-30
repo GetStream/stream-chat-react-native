@@ -197,7 +197,7 @@ export const AttachmentPicker = React.forwardRef(
         }
 
         // To keep compatibility with older versions of React Native, where `remove()` is not available
-        Keyboard.removeListener(keyboardShowEvent, closePicker);
+        Keyboard.removeListener(keyboardShowEvent, onKeyboardOpenHandler);
       };
     }, [closePicker, selectedPicker]);
 
