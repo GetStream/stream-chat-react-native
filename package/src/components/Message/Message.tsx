@@ -44,7 +44,7 @@ import {
 
 import { isVideoPackageAvailable, triggerHaptic } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { hasOnlyEmojis, MessageStatusTypes } from '../../utils/utils';
+import { hasOnlyEmojis, isBlockedMessage, MessageStatusTypes } from '../../utils/utils';
 
 import {
   isMessageWithStylesReadByAndDateSeparator,
@@ -319,6 +319,9 @@ const MessageWithContext = <
     }
     const quotedMessage = message.quoted_message as MessageType<StreamChatGenerics>;
     if (error) {
+      if (isBlockedMessage(message)) {
+        return;
+      }
       showMessageOverlay(false, true);
     } else if (quotedMessage) {
       onPressQuotedMessage(quotedMessage);
@@ -598,7 +601,7 @@ const MessageWithContext = <
   };
 
   const onLongPressMessage =
-    disabled || hasAttachmentActions
+    disabled || hasAttachmentActions || isBlockedMessage(message)
       ? () => null
       : onLongPressMessageProp
       ? (payload?: TouchableHandlerPayload) =>
