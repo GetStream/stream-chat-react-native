@@ -48,7 +48,7 @@ const MessageStatusWithContext = <
     },
   } = useTheme();
 
-  if (message.status === MessageStatusTypes.SENDING) {
+  if (message.status === MessageStatusTypes.SENDING || message.type === 'error') {
     return (
       <View style={[styles.statusContainer, statusContainer]} testID='sending-container'>
         <Time {...timeIcon} />
