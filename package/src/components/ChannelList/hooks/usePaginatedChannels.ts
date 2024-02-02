@@ -168,7 +168,7 @@ export const usePaginatedChannels = <
     await queryChannels('refresh');
   };
 
-  const reloadList = () => queryChannels('reload');
+  const reloadList = async () => { await queryChannels('reload'); }
 
   /**
    * Equality check using stringified filters/sort ensure that we don't make un-necessary queryChannels api calls
@@ -222,7 +222,8 @@ export const usePaginatedChannels = <
       listener = DBSyncManager.onSyncStatusChange((syncStatus) => {
         if (syncStatus) {
           loadOfflineChannels();
-          reloadList();
+          await reloadList();
+          setForceUpdate((u) => u + 1);
         }
       });
       // On start, load the channels from local db.
