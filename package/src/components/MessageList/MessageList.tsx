@@ -489,10 +489,18 @@ const MessageListWithContext = <
       if (!client || !channel || rawMessageList.length === 0) {
         return;
       }
+      /**
+       * Condition to check if a message is removed from MessageList.
+       * Eg: This would happen when giphy search is cancelled, etc.
+       * If such a case arises, we scroll to bottom.
+       */
+      const isMessageRemovedFromMessageList =
+        messageListLengthAfterUpdate < messageListLengthBeforeUpdate.current;
       if (
-        topMessageBeforeUpdate.current?.created_at &&
-        topMessageAfterUpdate?.created_at &&
-        topMessageBeforeUpdate.current.created_at < topMessageAfterUpdate.created_at
+        isMessageRemovedFromMessageList ||
+        (topMessageBeforeUpdate.current?.created_at &&
+          topMessageAfterUpdate?.created_at &&
+          topMessageBeforeUpdate.current.created_at < topMessageAfterUpdate.created_at)
       ) {
         channelResyncScrollSet.current = false;
         setScrollToBottomButtonVisible(false);
