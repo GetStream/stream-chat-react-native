@@ -800,7 +800,8 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
     prevMessage.pinned === nextMessage.pinned &&
-    `${prevMessage?.updated_at}` === `${nextMessage?.updated_at}`;
+    `${prevMessage?.updated_at}` === `${nextMessage?.updated_at}` &&
+    prevMessage.parent_id === nextMessage.parent_id;
 
   if (!messageEqual) return false;
 
