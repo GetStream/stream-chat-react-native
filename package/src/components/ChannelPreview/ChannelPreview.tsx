@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 
-import { Platform } from 'react-native';
-
 import type { Channel, ChannelState, Event, MessageResponse } from 'stream-chat';
 
 import { useLatestMessagePreview } from './hooks/useLatestMessagePreview';
@@ -129,10 +127,6 @@ export const ChannelPreview = <
 ) => {
   const { client } = useChatContext<StreamChatGenerics>();
   const { forceUpdate, Preview } = useChannelsContext<StreamChatGenerics>();
-
-  if (Platform.OS === 'ios') {
-    // console.log({ forceUpdate });
-  }
 
   return <ChannelPreviewWithContext {...{ client, forceUpdate, Preview }} {...props} />;
 };
