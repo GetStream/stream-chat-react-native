@@ -20,6 +20,7 @@ import {
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
 import { isEditingBoolean, useMessageDetailsForState } from './hooks/useMessageDetailsForState';
 
+import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
 import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
 import type { InputEditingStateHeaderProps } from '../../components/MessageInput/components/InputEditingStateHeader';
@@ -53,7 +54,6 @@ import {
   FileStateValue,
   generateRandomId,
   TriggerSettings,
-  urlRegex,
 } from '../../utils/utils';
 import { useAttachmentPickerContext } from '../attachmentPickerContext/AttachmentPickerContext';
 import { ChannelContextValue, useChannelContext } from '../channelContext/ChannelContext';
@@ -689,8 +689,9 @@ export const MessageInputProvider = <
     if (sending.current) {
       return;
     }
+    const linkInfos = parseLinksFromText(text);
 
-    if (!channelCapabities.sendLinks && !!text.match(urlRegex)) {
+    if (!channelCapabities.sendLinks && linkInfos.length > 0) {
       Alert.alert(t('Links are disabled'), t('Sending links is not allowed in this conversation'));
 
       return;

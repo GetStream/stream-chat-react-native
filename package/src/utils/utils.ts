@@ -555,8 +555,6 @@ export const hasOnlyEmojis = (text: string) => {
     return false;
   }
 };
-export const urlRegex =
-  /(?:\s|^)((?:https?:\/\/)?(?:[a-z0-9-]+(?:\.[a-z0-9-]+)+)(?::[0-9]+)?(?:\/(?:[^\s]+)?)?)/g;
 
 /**
  * Stringifies a message object
