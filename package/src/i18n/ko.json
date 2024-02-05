@@ -75,5 +75,8 @@
   "How about sending your first message to a friend?": "친구에게 첫 번째 메시지를 보내는 것은 어떻습니까?",
   "Allow camera access in device settings": "기기 설정에서 카메라 액세스를 허용하세요.",
   "Device camera is used to take photos or videos.": "기기 카메라는 사진이나 동영상을 촬영하는 데 사용됩니다.",
-  "Open Settings": "설정 열기"
+  "Open Settings": "설정 열기",
+  "Send Anyway": "그래도 보내기",
+  "Are you sure?": "확실합니까?",
+  "Consider how your comment might make others feel and be sure to follow our Community Guidelines": "당신의 댓글이 다른 사람들에게 어떤 영향을 줄지 고려하고 반드시 우리의 커뮤니티 가이드라인을 따르십시오"
 }
