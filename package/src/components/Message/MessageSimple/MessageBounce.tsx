@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Alert } from 'react-native';
 
 import {
@@ -20,8 +20,7 @@ export type MessageBouncePropsWithContext<
   'setEditingState' | 'removeMessage' | 'retrySendMessage'
 > &
   Pick<MessageContextValue<StreamChatGenerics>, 'message'> & {
-    isBounceDialogOpen?: boolean;
-    setIsBounceDialogOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsBounceDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   };
 
 export const MessageBounceWithContext = <
@@ -33,26 +32,26 @@ export const MessageBounceWithContext = <
   const { message, removeMessage, retrySendMessage, setEditingState, setIsBounceDialogOpen } =
     props;
 
-  const handleEditMessage = useCallback(() => {
+  const handleEditMessage = () => {
     setEditingState(message);
     if (setIsBounceDialogOpen) {
       setIsBounceDialogOpen(false);
     }
-  }, [message, setEditingState]);
+  };
 
-  const handleResend = useCallback(() => {
+  const handleResend = () => {
     retrySendMessage(message);
     if (setIsBounceDialogOpen) {
       setIsBounceDialogOpen(false);
     }
-  }, [message, retrySendMessage]);
+  };
 
-  const handleRemoveMessage = useCallback(() => {
+  const handleRemoveMessage = () => {
     removeMessage(message);
     if (setIsBounceDialogOpen) {
       setIsBounceDialogOpen(false);
     }
-  }, [message, removeMessage]);
+  };
 
   return (
     <>
@@ -76,15 +75,13 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   prevProps: MessageBouncePropsWithContext<StreamChatGenerics>,
   nextProps: MessageBouncePropsWithContext<StreamChatGenerics>,
 ) => {
-  const { isBounceDialogOpen: prevIsBounceDialogOpen, message: prevMessage } = prevProps;
-  const { isBounceDialogOpen: nextIsBounceDialogOpen, message: nextMessage } = nextProps;
+  const { message: prevMessage } = prevProps;
+  const { message: nextMessage } = nextProps;
   const messageEqual =
     prevMessage.cid === nextMessage.cid &&
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text;
   if (!messageEqual) return false;
-
-  if (prevIsBounceDialogOpen === nextIsBounceDialogOpen) return false;
 
   return true;
 };
@@ -96,7 +93,9 @@ const MemoizedMessageBounce = React.memo(
 
 export type MessageBounceProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<MessageBouncePropsWithContext<StreamChatGenerics>>;
+> = Partial<MessageBouncePropsWithContext<StreamChatGenerics>> & {
+  setIsBounceDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
 export const MessageBounce = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
