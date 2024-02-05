@@ -339,7 +339,7 @@ export const useMessageActions = <
       setOverlay('none');
       const messageWithoutReservedFields = removeReservedFields(message);
       if (handleRetry) {
-        handleRetry(messageWithoutReservedFields);
+        handleRetry(messageWithoutReservedFields as MessageType<StreamChatGenerics>);
       }
 
       await handleResendMessage();

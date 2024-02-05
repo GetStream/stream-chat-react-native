@@ -32,8 +32,7 @@ export const useMessageActionHandlers = <
   Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'enforceUniqueReaction'> &
   Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
   Pick<MessageContextValue<StreamChatGenerics>, 'message'>) => {
-  const handleResendMessage = () =>
-    retrySendMessage(message as MessageResponse<StreamChatGenerics>);
+  const handleResendMessage = () => retrySendMessage(message);
 
   const handleQuotedReplyMessage = () => {
     setQuotedMessageState(message);
