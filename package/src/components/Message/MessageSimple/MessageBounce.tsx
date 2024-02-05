@@ -9,6 +9,7 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../../contexts/messagesContext/MessagesContext';
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
@@ -28,6 +29,7 @@ export const MessageBounceWithContext = <
 >(
   props: MessageBouncePropsWithContext<StreamChatGenerics>,
 ) => {
+  const { t } = useTranslationContext();
   const { message, removeMessage, retrySendMessage, setEditingState, setIsBounceDialogOpen } =
     props;
 
@@ -55,12 +57,14 @@ export const MessageBounceWithContext = <
   return (
     <>
       {Alert.alert(
-        'Are you sure?',
-        'Consider how your comment might make others feel and be sure to follow our Community Guidelines',
+        t('Are you sure?'),
+        t(
+          'Consider how your comment might make others feel and be sure to follow our Community Guidelines',
+        ),
         [
-          { onPress: handleResend, text: 'Send Anyway' },
-          { onPress: handleEditMessage, text: 'Edit Message' },
-          { onPress: handleRemoveMessage, text: 'Delete Message' },
+          { onPress: handleResend, text: t('Send Anyway') },
+          { onPress: handleEditMessage, text: t('Edit Message') },
+          { onPress: handleRemoveMessage, text: t('Delete Message') },
         ],
         { cancelable: true },
       )}
