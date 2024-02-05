@@ -753,12 +753,7 @@ const MessageWithContext = <
         >
           <MessageProvider value={messageContext}>
             <MessageSimple />
-            {isBounceDialogOpen && (
-              <MessageBounce
-                isBounceDialogOpen={isBounceDialogOpen}
-                setIsBounceDialogOpen={setIsBounceDialogOpen}
-              />
-            )}
+            {isBounceDialogOpen && <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />}
           </MessageProvider>
         </View>
       </View>
