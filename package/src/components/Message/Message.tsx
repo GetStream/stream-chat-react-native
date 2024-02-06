@@ -677,6 +677,7 @@ const MessageWithContext = <
     members,
     message,
     messageContentOrder,
+    myMessageThemeString,
     onLongPress: onLongPressMessage,
     onlyEmojis,
     onOpenThread,
@@ -725,7 +726,6 @@ const MessageWithContext = <
     showMessageStatus: typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
     threadList,
     videos: attachments.videos,
-    myMessageThemeString, 
   });
 
   if (!(isMessageTypeDeleted || messageContentOrder.length)) return null;

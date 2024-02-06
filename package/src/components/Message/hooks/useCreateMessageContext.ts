@@ -30,6 +30,7 @@ export const useCreateMessageContext = <
   members,
   message,
   messageContentOrder,
+  myMessageThemeString,
   onLongPress,
   onlyEmojis,
   onOpenThread,
@@ -43,7 +44,7 @@ export const useCreateMessageContext = <
   showMessageStatus,
   threadList,
   videos,
-}: MessageContextValue<StreamChatGenerics>) => {
+}: MessageContextValue<StreamChatGenerics> & { myMessageThemeString: string }) => {
   const groupStylesLength = groupStyles.length;
   const reactionsValue = reactions.map(({ own, type }) => `${own}${type}`).join();
   const latestReactions = message.latest_reactions ? message.latest_reactions : undefined;
@@ -108,6 +109,7 @@ export const useCreateMessageContext = <
       lastReceivedId,
       membersValue,
       messageValue,
+      myMessageThemeString,
       reactionsValue,
       showAvatar,
       showMessageStatus,
