@@ -96,6 +96,7 @@ export * from './Message/hooks/useMessageActions';
 export * from './Message/hooks/useMessageActionHandlers';
 export * from './Message/Message';
 export * from './Message/MessageSimple/MessageAvatar';
+export * from './Message/MessageSimple/MessageBounce';
 export * from './Message/MessageSimple/MessageContent';
 export * from './Message/MessageSimple/MessageDeleted';
 export * from './Message/MessageSimple/MessageError';

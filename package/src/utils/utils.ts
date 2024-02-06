@@ -84,6 +84,11 @@ export const getIndicatorTypeForFileState = (
   return indicatorMap[fileState];
 };
 
+/**
+ * Utility to check if the message is a Blocked message.
+ * @param message
+ * @returns boolean
+ */
 export const isBlockedMessage = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
@@ -93,6 +98,17 @@ export const isBlockedMessage = <
   const pattern = /\bMessage was blocked by moderation policies\b/;
   return message.type === 'error' && message.text && pattern.test(message.text);
 };
+
+/**
+ *  Utility to check if the message is a Bounced message.
+ * @param message
+ * @returns boolean
+ */
+export const isBouncedMessage = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  message: MessageType<StreamChatGenerics>,
+) => message.type === 'error' && message.moderation_details !== undefined;
 
 const defaultAutoCompleteSuggestionsLimit = 10;
 const defaultMentionAllAppUsersQuery = {
