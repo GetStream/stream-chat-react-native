@@ -294,6 +294,9 @@ const MessageWithContext = <
     },
   } = useTheme();
 
+  const myMessageTheme = messagesContext?.myMessageTheme;
+  const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
+
   const actionsEnabled =
     message.type === 'regular' && message.status === MessageStatusTypes.RECEIVED;
 
@@ -722,6 +725,7 @@ const MessageWithContext = <
     showMessageStatus: typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
     threadList,
     videos: attachments.videos,
+    myMessageThemeString, 
   });
 
   if (!(isMessageTypeDeleted || messageContentOrder.length)) return null;
