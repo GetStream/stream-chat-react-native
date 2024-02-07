@@ -10,6 +10,8 @@ import type {
 import type { GroupType, MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
 import type { MessageContentType } from '../../contexts/messagesContext/MessagesContext';
+import type { DeepPartial } from '../../contexts/themeContext/ThemeContext';
+import type { Theme } from '../../contexts/themeContext/utils/theme';
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
@@ -89,7 +91,7 @@ export type MessageContextValue<
   /** The images attached to a message */
   otherAttachments: Attachment<StreamChatGenerics>[];
   reactions: Reactions;
-  showMessageOverlay: (messageReactions?: boolean) => void;
+  showMessageOverlay: (messageReactions?: boolean, error?: boolean) => void;
   showMessageStatus: boolean;
   /** Whether or not the Message is part of a Thread */
   threadList: boolean;
@@ -98,6 +100,10 @@ export type MessageContextValue<
   goToMessage?: (messageId: string) => void;
   /** Latest message id on current channel */
   lastReceivedId?: string;
+  /**
+   * Theme provided only to messages that are the current users
+   */
+  myMessageTheme?: DeepPartial<Theme>;
   /** Prevent message being pressed for image viewer view */
   preventPress?: boolean;
   /** Whether or not the avatar show show next to Message */

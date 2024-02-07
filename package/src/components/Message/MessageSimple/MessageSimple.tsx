@@ -29,6 +29,7 @@ export type MessageSimplePropsWithContext<
   Pick<
     MessagesContextValue<StreamChatGenerics>,
     | 'enableMessageGroupingByUser'
+    | 'myMessageTheme'
     | 'MessageAvatar'
     | 'MessageContent'
     | 'MessagePinnedHeader'
@@ -104,12 +105,14 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     groupStyles: prevGroupStyles,
     hasReactions: prevHasReactions,
     message: prevMessage,
+    myMessageTheme: prevMyMessageTheme,
   } = prevProps;
   const {
     channel: nextChannel,
     groupStyles: nextGroupStyles,
     hasReactions: nextHasReactions,
     message: nextMessage,
+    myMessageTheme: nextMyMessageTheme,
   } = nextProps;
 
   const hasReactionsEqual = prevHasReactions === nextHasReactions;
@@ -169,6 +172,10 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
       : prevMessage.latest_reactions === nextMessage.latest_reactions;
   if (!latestReactionsEqual) return false;
 
+  const messageThemeEqual =
+    JSON.stringify(prevMyMessageTheme) === JSON.stringify(nextMyMessageTheme);
+  if (!messageThemeEqual) return false;
+
   return true;
 };
 
@@ -197,6 +204,7 @@ export const MessageSimple = <
     MessageAvatar,
     MessageContent,
     MessagePinnedHeader,
+    myMessageTheme,
     ReactionList,
   } = useMessagesContext<StreamChatGenerics>();
 
@@ -212,6 +220,7 @@ export const MessageSimple = <
         MessageAvatar,
         MessageContent,
         MessagePinnedHeader,
+        myMessageTheme,
         ReactionList,
       }}
       {...props}
