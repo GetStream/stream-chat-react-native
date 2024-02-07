@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 
 import type { Attachment, UserResponse } from 'stream-chat';
@@ -44,7 +44,12 @@ import {
 
 import { isVideoPackageAvailable, triggerHaptic } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { hasOnlyEmojis, isBlockedMessage, MessageStatusTypes } from '../../utils/utils';
+import {
+  hasOnlyEmojis,
+  isBlockedMessage,
+  isBouncedMessage,
+  MessageStatusTypes,
+} from '../../utils/utils';
 
 import {
   isMessageWithStylesReadByAndDateSeparator,
@@ -141,6 +146,7 @@ export type MessagePropsWithContext<
     | 'isAttachmentEqual'
     | 'messageActions'
     | 'messageContentOrder'
+    | 'MessageBounce'
     | 'MessageSimple'
     | 'onLongPressMessage'
     | 'onPressInMessage'
@@ -217,6 +223,7 @@ const MessageWithContext = <
 >(
   props: MessagePropsWithContext<StreamChatGenerics>,
 ) => {
+  const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
   const isMessageTypeDeleted = props.message.type === 'deleted';
 
   const {
@@ -249,6 +256,7 @@ const MessageWithContext = <
     messageActions: messageActionsProp = defaultMessageActions,
     messageContentOrder: messageContentOrderProp,
     messagesContext,
+    MessageBounce,
     MessageSimple,
     onLongPress: onLongPressProp,
     onLongPressMessage: onLongPressMessageProp,
@@ -319,7 +327,17 @@ const MessageWithContext = <
     }
     const quotedMessage = message.quoted_message as MessageType<StreamChatGenerics>;
     if (error) {
+      /**
+       * If its a Blocked message, we don't do anything as per specs.
+       */
       if (isBlockedMessage(message)) {
+        return;
+      }
+      /**
+       * If its a Bounced message, we open the message bounced options modal.
+       */
+      if (isBouncedMessage(message)) {
+        setIsBounceDialogOpen(true);
         return;
       }
       showMessageOverlay(false, true);
@@ -622,6 +640,11 @@ const MessageWithContext = <
           })
       : enableLongPress
       ? () => {
+          // If a message is bounced, on long press the message bounce options modal should open.
+          if (isBouncedMessage(message)) {
+            setIsBounceDialogOpen(true);
+            return;
+          }
           triggerHaptic('impactMedium');
           showMessageOverlay(false);
         }
@@ -731,6 +754,7 @@ const MessageWithContext = <
         >
           <MessageProvider value={messageContext}>
             <MessageSimple />
+            {isBounceDialogOpen && <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />}
           </MessageProvider>
         </View>
       </View>

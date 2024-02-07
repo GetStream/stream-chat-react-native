@@ -18,8 +18,9 @@ import {
 } from 'stream-chat';
 
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
-import { isEditingBoolean, useMessageDetailsForState } from './hooks/useMessageDetailsForState';
+import { useMessageDetailsForState } from './hooks/useMessageDetailsForState';
 
+import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
 import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
 import type { InputEditingStateHeaderProps } from '../../components/MessageInput/components/InputEditingStateHeader';
@@ -52,12 +53,13 @@ import {
   FileState,
   FileStateValue,
   generateRandomId,
+  isBouncedMessage,
   TriggerSettings,
-  urlRegex,
 } from '../../utils/utils';
 import { useAttachmentPickerContext } from '../attachmentPickerContext/AttachmentPickerContext';
 import { ChannelContextValue, useChannelContext } from '../channelContext/ChannelContext';
 import { useChatContext } from '../chatContext/ChatContext';
+import { useMessagesContext } from '../messagesContext/MessagesContext';
 import { useOwnCapabilitiesContext } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useThreadContext } from '../threadContext/ThreadContext';
 import { useTranslationContext } from '../translationContext/TranslationContext';
@@ -226,7 +228,6 @@ export type InputMessageInputContextValue<
    * **default** [CooldownTimer](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/CooldownTimer.tsx)
    */
   CooldownTimer: React.ComponentType<CooldownTimerProps>;
-  editing: boolean | MessageType<StreamChatGenerics>;
   editMessage: StreamChat<StreamChatGenerics>['updateMessage'];
 
   /**
@@ -331,6 +332,12 @@ export type InputMessageInputContextValue<
     channel: ChannelContextValue<StreamChatGenerics>['channel'],
   ) => Promise<SendFileAPIResponse>;
 
+  /**
+   * Variable that tracks the editing state.
+   * It is defined with message type if the editing state is true, else its undefined.
+   */
+  editing?: MessageType<StreamChatGenerics>;
+
   /** Initial value to set on input */
   initialValue?: string;
   /**
@@ -398,6 +405,7 @@ export const MessageInputProvider = <
   const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
     useAttachmentPickerContext();
   const { appSettings, client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
+  const { removeMessage } = useMessagesContext();
 
   const getFileUploadConfig = () => {
     const fileConfig = appSettings?.app?.file_upload_config;
@@ -625,6 +633,9 @@ export const MessageInputProvider = <
       (prevNumberOfUploads) => prevNumberOfUploads - (pendingAttachments?.length || 0),
     );
     setText('');
+    if (value.editing) {
+      value.clearEditingState();
+    }
   };
 
   const mapImageUploadToAttachment = (image: ImageUpload): Attachment<StreamChatGenerics> => {
@@ -689,8 +700,9 @@ export const MessageInputProvider = <
     if (sending.current) {
       return;
     }
+    const linkInfos = parseLinksFromText(text);
 
-    if (!channelCapabities.sendLinks && !!text.match(urlRegex)) {
+    if (!channelCapabities.sendLinks && linkInfos.length > 0) {
       Alert.alert(t('Links are disabled'), t('Sending links is not allowed in this conversation'));
 
       return;
@@ -770,9 +782,10 @@ export const MessageInputProvider = <
       return;
     }
 
-    if (value.editing && !isEditingBoolean(value.editing)) {
+    const message = value.editing;
+    if (message && message.type !== 'error') {
       const updatedMessage = {
-        ...value.editing,
+        ...message,
         attachments,
         mentioned_users: mentionedUsers,
         quoted_message: undefined,
@@ -794,6 +807,12 @@ export const MessageInputProvider = <
       sending.current = false;
     } else {
       try {
+        /**
+         * If the message is bounced by moderation, we firstly remove the message from message list and then send a new message.
+         */
+        if (message && isBouncedMessage(message as MessageType<StreamChatGenerics>)) {
+          removeMessage(message);
+        }
         value.sendMessage({
           attachments,
           mentioned_users: uniq(mentionedUsers),
@@ -889,7 +908,7 @@ export const MessageInputProvider = <
 
   const updateMessage = async () => {
     try {
-      if (!isEditingBoolean(value.editing)) {
+      if (value.editing) {
         await client.updateMessage({
           ...value.editing,
           quoted_message: undefined,
@@ -897,8 +916,8 @@ export const MessageInputProvider = <
         } as Parameters<StreamChat<StreamChatGenerics>['updateMessage']>[0]);
       }
 
-      resetInput();
       value.clearEditingState();
+      resetInput();
     } catch (error) {
       console.log(error);
     }
