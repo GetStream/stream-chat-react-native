@@ -1,5 +1,17 @@
 # Change Log
 
+### [1.25.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.25.2...sampleapp@v1.25.3) (2024-02-08)
+
+
+### Bug Fixes
+
+* issues with navigation in SampleApp ([4b6ace0](https://github.com/GetStream/stream-chat-react-native/commit/4b6ace014471cd1c6e8aa60bb4b6af4aa028a9f1))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.25.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.25.1...sampleapp@v1.25.2) (2024-01-23)
 
 
