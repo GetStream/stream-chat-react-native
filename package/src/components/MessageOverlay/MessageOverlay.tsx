@@ -548,11 +548,13 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     alignment: prevAlignment,
     message: prevMessage,
     messageReactionTitle: prevMessageReactionTitle,
+    messagesContext: prevMessagesContext,
   } = prevProps;
   const {
     alignment: nextAlignment,
     message: nextMessage,
     messageReactionTitle: nextMessageReactionTitle,
+    messagesContext: nextMessagesContext,
   } = nextProps;
 
   const alignmentEqual = prevAlignment === nextAlignment;
@@ -560,6 +562,12 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const messageReactionTitleEqual = prevMessageReactionTitle === nextMessageReactionTitle;
   if (!messageReactionTitleEqual) return false;
+
+  const prevMyMessageTheme = JSON.stringify(prevMessagesContext?.myMessageTheme);
+  const nextMyMessageTheme = JSON.stringify(nextMessagesContext?.myMessageTheme);
+
+  const myMessageThemeEqual = prevMyMessageTheme === nextMyMessageTheme;
+  if (!myMessageThemeEqual) return false;
 
   const latestReactionsEqual =
     Array.isArray(prevMessage?.latest_reactions) && Array.isArray(nextMessage?.latest_reactions)

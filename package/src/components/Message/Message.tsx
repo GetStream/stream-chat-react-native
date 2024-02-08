@@ -674,6 +674,7 @@ const MessageWithContext = <
     members,
     message,
     messageContentOrder,
+    myMessageTheme: messagesContext.myMessageTheme,
     onLongPress: onLongPressMessage,
     onlyEmojis,
     onOpenThread,
@@ -774,6 +775,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     lastReceivedId: prevLastReceivedId,
     members: prevMembers,
     message: prevMessage,
+    messagesContext: prevMessagesContext,
     showUnreadUnderlay: prevShowUnreadUnderlay,
     t: prevT,
   } = prevProps;
@@ -785,6 +787,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     lastReceivedId: nextLastReceivedId,
     members: nextMembers,
     message: nextMessage,
+    messagesContext: nextMessagesContext,
     showUnreadUnderlay: nextShowUnreadUnderlay,
     t: nextT,
   } = nextProps;
@@ -886,6 +889,12 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const targetedMessageEqual = prevIsTargetedMessage === nextIsTargetedMessage;
   if (!targetedMessageEqual) return false;
+
+  const prevMyMessageTheme = JSON.stringify(prevMessagesContext?.myMessageTheme);
+  const nextMyMessageTheme = JSON.stringify(nextMessagesContext?.myMessageTheme);
+
+  const messageThemeEqual = prevMyMessageTheme === nextMyMessageTheme;
+  if (!messageThemeEqual) return false;
 
   return true;
 };
