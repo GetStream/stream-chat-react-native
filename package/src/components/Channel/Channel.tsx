@@ -82,7 +82,14 @@ import { compressedImageURI } from '../../utils/compressImage';
 import { DBSyncManager } from '../../utils/DBSyncManager';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
 import { removeReactionFromLocalState } from '../../utils/removeReactionFromLocalState';
-import { generateRandomId, isLocalUrl, MessageStatusTypes, ReactionData } from '../../utils/utils';
+import { removeReservedFields } from '../../utils/removeReservedFields';
+import {
+  generateRandomId,
+  isBouncedMessage,
+  isLocalUrl,
+  MessageStatusTypes,
+  ReactionData,
+} from '../../utils/utils';
 import { Attachment as AttachmentDefault } from '../Attachment/Attachment';
 import { AttachmentActions as AttachmentActionsDefault } from '../Attachment/AttachmentActions';
 import { AudioAttachment as AudioAttachmentDefault } from '../Attachment/AudioAttachment';
@@ -107,6 +114,7 @@ import { LoadingIndicator as LoadingIndicatorDefault } from '../Indicators/Loadi
 import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { Message as MessageDefault } from '../Message/Message';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
+import { MessageBounce as MessageBounceDefault } from '../Message/MessageSimple/MessageBounce';
 import { MessageContent as MessageContentDefault } from '../Message/MessageSimple/MessageContent';
 import { MessageDeleted as MessageDeletedDefault } from '../Message/MessageSimple/MessageDeleted';
 import { MessageError as MessageErrorDefault } from '../Message/MessageSimple/MessageError';
@@ -273,6 +281,7 @@ export type ChannelPropsWithContext<
       | 'Message'
       | 'messageActions'
       | 'MessageAvatar'
+      | 'MessageBounce'
       | 'MessageContent'
       | 'messageContentOrder'
       | 'MessageDeleted'
@@ -495,6 +504,7 @@ const ChannelWithContext = <
     Message = MessageDefault,
     messageActions,
     MessageAvatar = MessageAvatarDefault,
+    MessageBounce = MessageBounceDefault,
     MessageContent = MessageContentDefault,
     messageContentOrder = ['quoted_reply', 'gallery', 'files', 'text', 'attachments'],
     MessageDeleted = MessageDeletedDefault,
@@ -564,7 +574,7 @@ const ChannelWithContext = <
     },
   } = useTheme();
   const [deleted, setDeleted] = useState(false);
-  const [editing, setEditing] = useState<boolean | MessageType<StreamChatGenerics>>(false);
+  const [editing, setEditing] = useState<MessageType<StreamChatGenerics> | undefined>(undefined);
   const [error, setError] = useState<Error | boolean>(false);
   const [hasMore, setHasMore] = useState(true);
   const [lastRead, setLastRead] = useState<ChannelContextValue<StreamChatGenerics>['lastRead']>();
@@ -1679,9 +1689,17 @@ const ChannelWithContext = <
       status: MessageStatusTypes.SENDING,
     };
 
-    updateMessage(statusPendingMessage);
+    const messageWithoutReservedFields = removeReservedFields(statusPendingMessage);
 
-    await sendMessageRequest(statusPendingMessage, true);
+    // For bounced messages, we don't need to update the message, instead always send a new message.
+    if (!isBouncedMessage(message)) {
+      updateMessage(messageWithoutReservedFields as MessageResponse<StreamChatGenerics>);
+    }
+
+    await sendMessageRequest(
+      messageWithoutReservedFields as MessageResponse<StreamChatGenerics>,
+      true,
+    );
   };
 
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
@@ -1843,10 +1861,10 @@ const ChannelWithContext = <
       : client.updateMessage(updatedMessage);
 
   const setEditingState: MessagesContextValue<StreamChatGenerics>['setEditingState'] = (
-    messageOrBoolean,
+    message,
   ) => {
     clearQuotedMessageState();
-    setEditing(messageOrBoolean);
+    setEditing(message);
   };
 
   const setQuotedMessageState: MessagesContextValue<StreamChatGenerics>['setQuotedMessageState'] = (
@@ -1856,7 +1874,7 @@ const ChannelWithContext = <
   };
 
   const clearEditingState: InputMessageInputContextValue<StreamChatGenerics>['clearEditingState'] =
-    () => setEditing(false);
+    () => setEditing(undefined);
 
   const clearQuotedMessageState: InputMessageInputContextValue<StreamChatGenerics>['clearQuotedMessageState'] =
     () => setQuotedMessage(false);
@@ -2223,6 +2241,7 @@ const ChannelWithContext = <
     Message,
     messageActions,
     MessageAvatar,
+    MessageBounce,
     MessageContent,
     messageContentOrder,
     MessageDeleted,

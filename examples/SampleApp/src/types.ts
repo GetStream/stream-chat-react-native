@@ -47,10 +47,10 @@ export type StackNavigatorParamList = {
     channelId?: string;
     messageId?: string;
   };
-  ChatScreen: undefined;
   GroupChannelDetailsScreen: {
     channel: Channel<StreamChatGenerics>;
   };
+  MessagingScreen: undefined;
   NewDirectMessagingScreen: undefined;
   NewGroupChannelAddMemberScreen: undefined;
   NewGroupChannelAssignNameScreen: undefined;

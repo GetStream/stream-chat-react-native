@@ -26,7 +26,12 @@ describe('useMessageDetailsForState', () => {
   it('showMoreOptions is true when initialValue and text is same', () => {
     const { result } = renderHook(
       ({ initialValue, message }) => useMessageDetailsForState(message, initialValue),
-      { initialProps: { initialValue: 'Dummy text', message: true } },
+      {
+        initialProps: {
+          initialValue: 'Dummy text',
+          message: generateMessage({ text: 'Dummy text' }) as MessageType,
+        },
+      },
     );
 
     expect(result.current.showMoreOptions).toBe(true);

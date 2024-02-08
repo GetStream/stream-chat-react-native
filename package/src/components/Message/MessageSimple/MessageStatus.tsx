@@ -69,11 +69,13 @@ const MessageStatusWithContext = <
             {message.readBy}
           </Text>
         ) : null}
-        {typeof message.readBy === 'number' || message.readBy === true ? (
-          <CheckAll pathFill={accent_blue} {...checkAllIcon} />
-        ) : (
-          <Check pathFill={grey_dark} {...checkIcon} />
-        )}
+        {message.type !== 'error' ? (
+          typeof message.readBy === 'number' || message.readBy === true ? (
+            <CheckAll pathFill={accent_blue} {...checkAllIcon} />
+          ) : (
+            <Check pathFill={grey_dark} {...checkIcon} />
+          )
+        ) : null}
       </View>
     );
   }

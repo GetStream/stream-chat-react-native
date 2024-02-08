@@ -87,6 +87,6 @@ describe("MessageInputContext's updateMessage", () => {
       await result.current.updateMessage();
     });
 
-    expect(clearEditingStateMock).toHaveBeenCalledTimes(1);
+    expect(clearEditingStateMock).toHaveBeenCalledTimes(2);
   });
 });

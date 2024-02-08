@@ -13,6 +13,7 @@ import type {
   UserResponse,
 } from 'stream-chat';
 
+import type { MessageType } from '../components/MessageList/hooks/useMessageList';
 import type { MentionAllAppUsersQuery } from '../contexts/messageInputContext/MessageInputContext';
 import type {
   SuggestionCommand,
@@ -21,6 +22,7 @@ import type {
 } from '../contexts/suggestionsContext/SuggestionsContext';
 import { compiledEmojis, Emoji } from '../emoji-data/compiled';
 import type { IconProps } from '../icons/utils/base';
+import type { TableRowJoinedUser } from '../store/types';
 import type { DefaultStreamChatGenerics, ValueOf } from '../types/types';
 
 export type ReactionData = {
@@ -81,6 +83,32 @@ export const getIndicatorTypeForFileState = (
 
   return indicatorMap[fileState];
 };
+
+/**
+ * Utility to check if the message is a Blocked message.
+ * @param message
+ * @returns boolean
+ */
+export const isBlockedMessage = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  message: MessageType<StreamChatGenerics> | TableRowJoinedUser<'messages'>,
+) => {
+  // The only indicator for the blocked message is its message type is error and that the message text contains "Message was blocked by moderation policies".
+  const pattern = /\bMessage was blocked by moderation policies\b/;
+  return message.type === 'error' && message.text && pattern.test(message.text);
+};
+
+/**
+ *  Utility to check if the message is a Bounced message.
+ * @param message
+ * @returns boolean
+ */
+export const isBouncedMessage = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  message: MessageType<StreamChatGenerics>,
+) => message.type === 'error' && message.moderation_details !== undefined;
 
 const defaultAutoCompleteSuggestionsLimit = 10;
 const defaultMentionAllAppUsersQuery = {
@@ -543,8 +571,6 @@ export const hasOnlyEmojis = (text: string) => {
     return false;
   }
 };
-export const urlRegex =
-  /(?:\s|^)((?:https?:\/\/)?(?:[a-z0-9-]+(?:\.[a-z0-9-]+)+)(?::[0-9]+)?(?:\/(?:[^\s]+)?)?)/g;
 
 /**
  * Stringifies a message object

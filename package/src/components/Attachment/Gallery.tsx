@@ -57,6 +57,7 @@ export type GalleryPropsWithContext<
     | 'VideoThumbnail'
     | 'ImageLoadingIndicator'
     | 'ImageLoadingFailedIndicator'
+    | 'myMessageTheme'
   > &
   Pick<OverlayContextValue, 'setOverlay'> & {
     channelId: string | undefined;
@@ -486,6 +487,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     hasThreadReplies: prevHasThreadReplies,
     images: prevImages,
     message: prevMessage,
+    myMessageTheme: prevMyMessageTheme,
     videos: prevVideos,
   } = prevProps;
   const {
@@ -493,6 +495,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     hasThreadReplies: nextHasThreadReplies,
     images: nextImages,
     message: nextMessage,
+    myMessageTheme: nextMyMessageTheme,
     videos: nextVideos,
   } = nextProps;
 
@@ -526,6 +529,10 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     );
   if (!videosEqual) return false;
 
+  const messageThemeEqual =
+    JSON.stringify(prevMyMessageTheme) === JSON.stringify(nextMyMessageTheme);
+  if (!messageThemeEqual) return false;
+
   return true;
 };
 
@@ -552,6 +559,7 @@ export const Gallery = <
     ImageLoadingIndicator: PropImageLoadingIndicator,
     images: propImages,
     message: propMessage,
+    myMessageTheme: propMyMessageTheme,
     onLongPress: propOnLongPress,
     onPress: propOnPress,
     onPressIn: propOnPressIn,
@@ -582,6 +590,7 @@ export const Gallery = <
     ImageLoadingFailedIndicator: ContextImageLoadingFailedIndicator,
     ImageLoadingIndicator: ContextImageLoadingIndicator,
     legacyImageViewerSwipeBehaviour,
+    myMessageTheme: contextMyMessageTheme,
     VideoThumbnail: ContextVideoThumnbnail,
   } = useMessagesContext<StreamChatGenerics>();
   const { setOverlay: contextSetOverlay } = useOverlayContext();
@@ -607,6 +616,7 @@ export const Gallery = <
   const ImageLoadingFailedIndicator =
     PropImageLoadingFailedIndicator || ContextImageLoadingFailedIndicator;
   const ImageLoadingIndicator = PropImageLoadingIndicator || ContextImageLoadingIndicator;
+  const myMessageTheme = propMyMessageTheme || contextMyMessageTheme;
 
   return (
     <MemoizedGallery
@@ -621,6 +631,7 @@ export const Gallery = <
         images,
         legacyImageViewerSwipeBehaviour,
         message,
+        myMessageTheme,
         onLongPress,
         onPress,
         onPressIn,

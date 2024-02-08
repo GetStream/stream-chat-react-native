@@ -73,5 +73,8 @@
   "How about sending your first message to a friend?": "Как насчет отправки первого сообщения другу?",
   "Allow camera access in device settings": "Разрешите доступ к камере в настройках устройства.",
   "Device camera is used to take photos or videos.": "Камера устройства используется для съемки фотографий или видео.",
-  "Open Settings": "Открыть настройки"
+  "Open Settings": "Открыть настройки",
+  "Send Anyway": "Всё равно отправить",
+  "Are you sure?": "Вы уверены?",
+  "Consider how your comment might make others feel and be sure to follow our Community Guidelines": "Обдумайте, как ваш комментарий может повлиять на других, и убедитесь, что вы следуете нашим правилам сообщества"
 }

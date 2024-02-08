@@ -24,6 +24,7 @@ import type {
   MessageTouchableHandlerPayload,
 } from '../../components/Message/Message';
 import type { MessageAvatarProps } from '../../components/Message/MessageSimple/MessageAvatar';
+import type { MessageBounceProps } from '../../components/Message/MessageSimple/MessageBounce';
 import type { MessageContentProps } from '../../components/Message/MessageSimple/MessageContent';
 import type { MessageDeletedProps } from '../../components/Message/MessageSimple/MessageDeleted';
 import type { MessageErrorProps } from '../../components/Message/MessageSimple/MessageError';
@@ -159,6 +160,10 @@ export type MessagesContextValue<
    **/
   MessageAvatar: React.ComponentType<MessageAvatarProps<StreamChatGenerics>>;
   /**
+   * UI Component for MessageBounce
+   */
+  MessageBounce: React.ComponentType<MessageBounceProps<StreamChatGenerics>>;
+  /**
    * UI component for MessageContent
    * Defaults to: [MessageContent](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageContent.tsx)
    */
@@ -227,14 +232,14 @@ export type MessagesContextValue<
   /**
    * Override the api request for retry message functionality.
    */
-  retrySendMessage: (message: MessageResponse<StreamChatGenerics>) => Promise<void>;
+  retrySendMessage: (message: MessageType<StreamChatGenerics>) => Promise<void>;
   /**
    * UI component for ScrollToBottomButton
    * Defaults to: [ScrollToBottomButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/scroll-to-bottom-button/)
    */
   ScrollToBottomButton: React.ComponentType<ScrollToBottomButtonProps>;
   sendReaction: (type: string, messageId: string) => Promise<void>;
-  setEditingState: (message: MessageType<StreamChatGenerics> | boolean) => void;
+  setEditingState: (message?: MessageType<StreamChatGenerics>) => void;
   setQuotedMessageState: (message: MessageType<StreamChatGenerics> | boolean) => void;
   supportedReactions: ReactionData[];
   /**

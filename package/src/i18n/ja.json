@@ -76,5 +76,8 @@
   "How about sending your first message to a friend?": "初めてのメッセージを友達に送ってみてはいかがでしょうか?",
   "Allow camera access in device settings": "デバイス設定でカメラへのアクセスを許可する",
   "Device camera is used to take photos or videos.": "デバイスのカメラは写真やビデオの撮影に使用されます。",
-  "Open Settings": "設定を開く"
+  "Open Settings": "設定を開く",
+  "Send Anyway": "とにかく送信",
+  "Are you sure?": "本当によろしいですか？",
+  "Consider how your comment might make others feel and be sure to follow our Community Guidelines": "あなたのコメントが他の人にどのように影響するか考え、必ずコミュニティガイドラインに従ってください"
 }

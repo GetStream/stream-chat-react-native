@@ -29,6 +29,7 @@ export type AttachmentPropsWithContext<
   | 'Giphy'
   | 'isAttachmentEqual'
   | 'UrlPreview'
+  | 'myMessageTheme'
 > & {
   /**
    * The attachment to render
@@ -106,8 +107,12 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   prevProps: AttachmentPropsWithContext<StreamChatGenerics>,
   nextProps: AttachmentPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { attachment: prevAttachment, isAttachmentEqual } = prevProps;
-  const { attachment: nextAttachment } = nextProps;
+  const {
+    attachment: prevAttachment,
+    isAttachmentEqual,
+    myMessageTheme: prevMyMessageTheme,
+  } = prevProps;
+  const { attachment: nextAttachment, myMessageTheme: nextMyMessageTheme } = nextProps;
 
   const attachmentEqual =
     prevAttachment.actions?.length === nextAttachment.actions?.length &&
@@ -118,6 +123,10 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   if (isAttachmentEqual) {
     return isAttachmentEqual(prevAttachment, nextAttachment);
   }
+
+  const messageThemeEqual =
+    JSON.stringify(prevMyMessageTheme) === JSON.stringify(nextMyMessageTheme);
+  if (!messageThemeEqual) return false;
 
   return true;
 };
@@ -138,6 +147,7 @@ export type AttachmentProps<
     | 'Gallery'
     | 'Giphy'
     | 'giphyVersion'
+    | 'myMessageTheme'
     | 'UrlPreview'
     | 'isAttachmentEqual'
   >
@@ -160,6 +170,7 @@ export const Attachment = <
     Gallery: PropGallery,
     Giphy: PropGiphy,
     giphyVersion: PropGiphyVersion,
+    myMessageTheme: PropMyMessageTheme,
     UrlPreview: PropUrlPreview,
   } = props;
 
@@ -171,6 +182,7 @@ export const Attachment = <
     Giphy: ContextGiphy,
     giphyVersion: ContextGiphyVersion,
     isAttachmentEqual,
+    myMessageTheme: ContextMyMessageTheme,
     UrlPreview: ContextUrlPreview,
   } = useMessagesContext<StreamChatGenerics>();
 
@@ -186,6 +198,7 @@ export const Attachment = <
   const Giphy = PropGiphy || ContextGiphy || GiphyDefault;
   const UrlPreview = PropUrlPreview || ContextUrlPreview || CardDefault;
   const giphyVersion = PropGiphyVersion || ContextGiphyVersion;
+  const myMessageTheme = PropMyMessageTheme || ContextMyMessageTheme;
 
   return (
     <MemoizedAttachment
@@ -198,6 +211,7 @@ export const Attachment = <
         Giphy,
         giphyVersion,
         isAttachmentEqual,
+        myMessageTheme,
         UrlPreview,
       }}
     />
