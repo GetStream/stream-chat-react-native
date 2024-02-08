@@ -1,5 +1,22 @@
 # Change Log
 
+## [5.24.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.23.2...v5.24.0) (2024-02-08)
+
+
+### Features
+
+* add ability to handle bounced message ([#2415](https://github.com/GetStream/stream-chat-react-native/issues/2415)) ([a2ed1bd](https://github.com/GetStream/stream-chat-react-native/commit/a2ed1bd83f7605551387d6704fdb689588c6f3e5))
+* Moderation: show Blocked messages in SDK ([#2408](https://github.com/GetStream/stream-chat-react-native/issues/2408)) ([5d76f6e](https://github.com/GetStream/stream-chat-react-native/commit/5d76f6e597be20fc360ec3b179196fa932a6bbac))
+
+
+### Bug Fixes
+
+* keyboard transition issue when switching from attachment picker to keyboard ([#2404](https://github.com/GetStream/stream-chat-react-native/issues/2404)) ([965691f](https://github.com/GetStream/stream-chat-react-native/commit/965691f3f76d60b12844839291256aa5dc28c5cd))
+* my message theme not passed to overlay ([#2416](https://github.com/GetStream/stream-chat-react-native/issues/2416)) ([3589004](https://github.com/GetStream/stream-chat-react-native/commit/3589004df4020ad428675b97d6b2d03b0f6b4bb1))
+* outdated unread count on offline support ([#2412](https://github.com/GetStream/stream-chat-react-native/issues/2412)) ([4d1bf2d](https://github.com/GetStream/stream-chat-react-native/commit/4d1bf2d8ae495b44df8ebc49d2f7e18fe19c0f5b))
+* scroll to bottom when message is removed from message list ([#2411](https://github.com/GetStream/stream-chat-react-native/issues/2411)) ([88238fd](https://github.com/GetStream/stream-chat-react-native/commit/88238fd0f362e83cb4c44d07186121f2bca44909))
+* send button icon theme ([#2417](https://github.com/GetStream/stream-chat-react-native/issues/2417)) ([14ab52f](https://github.com/GetStream/stream-chat-react-native/commit/14ab52f5c3ffdc2076f3a33628d7ff2e2e5c15ee))
+
 ### [5.23.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.23.1...v5.23.2) (2024-01-23)
 
 
