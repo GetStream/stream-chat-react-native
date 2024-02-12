@@ -8,6 +8,7 @@ import { lookup } from 'mime-types';
 import {
   Attachment,
   logChatPromiseExecution,
+  Message,
   SendFileAPIResponse,
   StreamChat,
   Message as StreamMessage,
@@ -159,7 +160,7 @@ export type LocalMessageInputContext<
   resetInput: (pendingAttachments?: Attachment<StreamChatGenerics>[]) => void;
   selectedPicker: string | undefined;
   sending: React.MutableRefObject<boolean>;
-  sendMessage: () => Promise<void>;
+  sendMessage: (customMessageData?: Partial<Message<StreamChatGenerics>>) => Promise<void>;
   sendMessageAsync: (id: string) => void;
   sendThreadMessageInChannel: boolean;
   setAsyncIds: React.Dispatch<React.SetStateAction<string[]>>;
@@ -696,7 +697,7 @@ export const MessageInputProvider = <
 
   // TODO: Figure out why this is async, as it doesn't await any promise.
   // eslint-disable-next-line require-await
-  const sendMessage = async () => {
+  const sendMessage = async (customMessageData?: Message<StreamChatGenerics>) => {
     if (sending.current) {
       return;
     }
@@ -790,6 +791,7 @@ export const MessageInputProvider = <
         mentioned_users: mentionedUsers,
         quoted_message: undefined,
         text: prevText,
+        ...customMessageData,
       } as Parameters<StreamChat<StreamChatGenerics>['updateMessage']>[0];
 
       // TODO: Remove this line and show an error when submit fails
@@ -822,6 +824,7 @@ export const MessageInputProvider = <
             typeof value.quotedMessage === 'boolean' ? undefined : value.quotedMessage.id,
           show_in_channel: sendThreadMessageInChannel || undefined,
           text: prevText,
+          ...customMessageData,
         } as unknown as StreamMessage<StreamChatGenerics>);
 
         value.clearQuotedMessageState();
