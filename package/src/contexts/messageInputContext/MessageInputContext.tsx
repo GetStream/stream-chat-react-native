@@ -697,7 +697,7 @@ export const MessageInputProvider = <
 
   // TODO: Figure out why this is async, as it doesn't await any promise.
   // eslint-disable-next-line require-await
-  const sendMessage = async (customMessageData?: Message<StreamChatGenerics>) => {
+  const sendMessage = async (customMessageData?: Partial<Message<StreamChatGenerics>>) => {
     if (sending.current) {
       return;
     }
