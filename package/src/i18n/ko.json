@@ -72,7 +72,7 @@
   "You can't send messages in this channel": "이 채널에서는 메세지를 전송할 수 없습니다",
   "{{ firstUser }} and {{ nonSelfUserLength }} more are typing": "{{ firstUser }} 외 {{ nonSelfUserLength }}명이 입력 중입니다",
   "{{ index }} of {{ photoLength }}": "{{ index }} / {{ photoLength }}",
-  "{{ replyCount }} Replies": "",
+  "{{ replyCount }} Replies": "{{ replyCount }} 답글",
   "{{ replyCount }} Thread Replies": "{{ replyCount }}　스레드　답글",
   "{{ user }} is typing": "{{ user }} 타이핑 중",
   "🏙 Attachment...": "🏙 부착..."
