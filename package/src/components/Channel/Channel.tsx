@@ -65,6 +65,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 import { TypingProvider } from '../../contexts/typingContext/TypingContext';
+import { compiledEmojis } from '../../emoji-data/compiled';
 import { useAppStateListener } from '../../hooks/useAppStateListener';
 
 import {
@@ -440,6 +441,7 @@ const ChannelWithContext = <
     doMarkReadRequest,
     doSendMessageRequest,
     doUpdateMessageRequest,
+    emojis = compiledEmojis,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     enableMessageGroupingByUser = true,
     enableOfflineSupport,
@@ -2149,6 +2151,7 @@ const ChannelWithContext = <
     doImageUploadRequest,
     editing,
     editMessage,
+    emojis,
     FileUploadPreview,
     hasCommands,
     hasFilePicker,

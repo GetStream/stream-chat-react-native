@@ -36,6 +36,7 @@ import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreO
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
+import type { CompiledEmojis } from '../../emoji-data/compiled';
 import { pickDocument } from '../../native';
 import type {
   Asset,
@@ -337,6 +338,8 @@ export type InputMessageInputContextValue<
    * It is defined with message type if the editing state is true, else its undefined.
    */
   editing?: MessageType<StreamChatGenerics>;
+
+  emojis?: CompiledEmojis;
 
   /** Initial value to set on input */
   initialValue?: string;

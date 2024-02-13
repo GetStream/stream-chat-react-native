@@ -20,7 +20,7 @@ import type {
   SuggestionComponentType,
   SuggestionUser,
 } from '../contexts/suggestionsContext/SuggestionsContext';
-import { compiledEmojis, Emoji } from '../emoji-data/compiled';
+import type { CompiledEmojis, Emoji } from '../emoji-data/compiled';
 import type { IconProps } from '../icons/utils/base';
 import type { TableRowJoinedUser } from '../store/types';
 import type { DefaultStreamChatGenerics, ValueOf } from '../types/types';
@@ -286,6 +286,7 @@ export type TriggerSettings<
     dataProvider: (
       query: Emoji['name'],
       _: string,
+      emojis?: CompiledEmojis,
       onReady?: (data: Emoji[], q: Emoji['name']) => void,
     ) => Emoji[];
     output: (entity: Emoji) => {
@@ -409,26 +410,26 @@ export const ACITriggerSettings = <
     type: 'command',
   },
   ':': {
-    dataProvider: (query, _, onReady) => {
-      if (!query) return [];
+    dataProvider: (query, _, emojis, onReady) => {
+      if (!query || !emojis) return [];
 
-      const result = compiledEmojis.emojiArray.reduce((acc, cur) => {
+      const result = emojis.emojiArray.reduce((acc, cur) => {
         if (acc.length >= 10) return acc;
 
         if (cur.names.some((name) => name.includes(query))) {
-          const emoji = compiledEmojis.emojiLib[cur.name];
+          const emoji = emojis.emojiLib[cur.name];
           // Since there can be no emojiLib for the current name we need to check for it being undefined
-          if (emoji?.skin_variations) {
+          if (emoji?.skins) {
             acc.push({
               ...emoji,
               name: `${emoji.name}-tone-1`,
-              skin_variations: undefined,
+              skins: undefined,
             });
-            emoji.skin_variations.forEach((tone, index) =>
+            emoji.skins.forEach((tone, index) =>
               acc.push({
                 ...emoji,
                 name: `${emoji.name}-tone-${index + 2}`,
-                skin_variations: undefined,
+                skins: undefined,
                 unicode: tone,
               }),
             );
