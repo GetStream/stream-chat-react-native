@@ -13,8 +13,8 @@ import type { BottomTabNavigatorParamList, StackNavigatorParamList } from '../ty
 
 const Tab = createBottomTabNavigator<BottomTabNavigatorParamList>();
 
-type ChatScreenNavigationProp = StackNavigationProp<StackNavigatorParamList, 'ChatScreen'>;
-type ChatScreenRouteProp = RouteProp<StackNavigatorParamList, 'ChatScreen'>;
+type ChatScreenNavigationProp = StackNavigationProp<StackNavigatorParamList, 'MessagingScreen'>;
+type ChatScreenRouteProp = RouteProp<StackNavigatorParamList, 'MessagingScreen'>;
 
 type Props = {
   navigation: ChatScreenNavigationProp;

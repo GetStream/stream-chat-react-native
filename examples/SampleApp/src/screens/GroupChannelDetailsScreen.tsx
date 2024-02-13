@@ -232,7 +232,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
       index: 0,
       routes: [
         {
-          name: 'ChatScreen',
+          name: 'MessagingScreen',
         },
       ],
     });

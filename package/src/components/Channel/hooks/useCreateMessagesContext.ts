@@ -54,6 +54,7 @@ export const useCreateMessagesContext = <
   Message,
   messageActions,
   MessageAvatar,
+  MessageBounce,
   MessageContent,
   messageContentOrder,
   MessageDeleted,
@@ -149,6 +150,7 @@ export const useCreateMessagesContext = <
       Message,
       messageActions,
       MessageAvatar,
+      MessageBounce,
       MessageContent,
       messageContentOrder,
       MessageDeleted,
@@ -194,6 +196,7 @@ export const useCreateMessagesContext = <
       markdownRulesLength,
       messageContentOrderValue,
       supportedReactionsLength,
+      myMessageTheme,
       targetedMessage,
     ],
   );

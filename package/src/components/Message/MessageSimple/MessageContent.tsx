@@ -91,6 +91,7 @@ export type MessageContentPropsWithContext<
     | 'MessageError'
     | 'MessageReplies'
     | 'MessageStatus'
+    | 'myMessageTheme'
     | 'onPressInMessage'
     | 'Reply'
   > &
@@ -417,6 +418,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     members: prevMembers,
     message: prevMessage,
     messageContentOrder: prevMessageContentOrder,
+    myMessageTheme: prevMyMessageTheme,
     onlyEmojis: prevOnlyEmojis,
     otherAttachments: prevOtherAttachments,
     t: prevT,
@@ -430,6 +432,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     members: nextMembers,
     message: nextMessage,
     messageContentOrder: nextMessageContentOrder,
+    myMessageTheme: nextMyMessageTheme,
     onlyEmojis: nextOnlyEmojis,
     otherAttachments: nextOtherAttachments,
     t: nextT,
@@ -525,6 +528,10 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const tDateTimeParserEqual = prevTDateTimeParser === nextTDateTimeParser;
   if (!tDateTimeParserEqual) return false;
 
+  const messageThemeEqual =
+    JSON.stringify(prevMyMessageTheme) === JSON.stringify(nextMyMessageTheme);
+  if (!messageThemeEqual) return false;
+
   return true;
 };
 
@@ -580,6 +587,7 @@ export const MessageContent = <
     MessageHeader,
     MessageReplies,
     MessageStatus,
+    myMessageTheme,
     Reply,
   } = useMessagesContext<StreamChatGenerics>();
   const { t, tDateTimeParser } = useTranslationContext();
@@ -610,6 +618,7 @@ export const MessageContent = <
         MessageHeader,
         MessageReplies,
         MessageStatus,
+        myMessageTheme,
         onLongPress,
         onlyEmojis,
         onPress,

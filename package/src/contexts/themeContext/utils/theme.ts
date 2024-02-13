@@ -261,6 +261,7 @@ export type Theme = {
       fileTextContainer: ViewStyle;
       flatList: ViewStyle;
     };
+    focusedInputBoxContainer: ViewStyle;
     giphyCommandInput: {
       giphyContainer: ViewStyle;
       giphyText: TextStyle;
@@ -766,6 +767,7 @@ export const defaultTheme: Theme = {
       fileTextContainer: {},
       flatList: {},
     },
+    focusedInputBoxContainer: {},
     giphyCommandInput: {
       giphyContainer: {},
       giphyText: {},

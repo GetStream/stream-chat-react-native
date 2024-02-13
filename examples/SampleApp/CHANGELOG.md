@@ -1,5 +1,49 @@
 # Change Log
 
+### [1.25.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.25.2...sampleapp@v1.25.3) (2024-02-08)
+
+
+### Bug Fixes
+
+* issues with navigation in SampleApp ([4b6ace0](https://github.com/GetStream/stream-chat-react-native/commit/4b6ace014471cd1c6e8aa60bb4b6af4aa028a9f1))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.25.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.25.1...sampleapp@v1.25.2) (2024-01-23)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.25.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.25.0...sampleapp@v1.25.1) (2024-01-22)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+## [1.25.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.24.1...sampleapp@v1.25.0) (2024-01-18)
+
+
+### Features
+
+* optimise message list scrolling performance ([#2388](https://github.com/GetStream/stream-chat-react-native/issues/2388)) ([09737b8](https://github.com/GetStream/stream-chat-react-native/commit/09737b85fa973c4445bb98ae33061307ce2db3d0)), closes [#2352](https://github.com/GetStream/stream-chat-react-native/issues/2352) [#2348](https://github.com/GetStream/stream-chat-react-native/issues/2348) [#2350](https://github.com/GetStream/stream-chat-react-native/issues/2350) [#2359](https://github.com/GetStream/stream-chat-react-native/issues/2359) [#2355](https://github.com/GetStream/stream-chat-react-native/issues/2355)
+
+
+### Bug Fixes
+
+* **sample-app:** increase the kotlin version ([a2be522](https://github.com/GetStream/stream-chat-react-native/commit/a2be52217412d337418f754aa0d0af3a2945aa91))
+* do not clear the scroll failure timeouts before the failure scroll completes execution ([#2347](https://github.com/GetStream/stream-chat-react-native/issues/2347)) ([054dcf0](https://github.com/GetStream/stream-chat-react-native/commit/054dcf0ec3a1a73c53dfb39e060a7ead529bc7bb))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.24.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.24.0...sampleapp@v1.24.1) (2023-11-29)
 
 

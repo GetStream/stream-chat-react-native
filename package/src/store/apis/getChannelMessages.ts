@@ -5,6 +5,7 @@ import { selectMessagesForChannels } from './queries/selectMessagesForChannels';
 import { selectReactionsForMessages } from './queries/selectReactionsForMessages';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
+import { isBlockedMessage } from '../../utils/utils';
 import { mapStorableToMessage } from '../mappers/mapStorableToMessage';
 import type { TableRowJoinedUser } from '../types';
 
@@ -37,13 +38,15 @@ export const getChannelMessages = <
       cidVsMessages[m.cid] = [];
     }
 
-    cidVsMessages[m.cid].push(
-      mapStorableToMessage<StreamChatGenerics>({
-        currentUserId,
-        messageRow: m,
-        reactionRows: messageIdVsReactions[m.id],
-      }),
-    );
+    if (!isBlockedMessage(m)) {
+      cidVsMessages[m.cid].push(
+        mapStorableToMessage<StreamChatGenerics>({
+          currentUserId,
+          messageRow: m,
+          reactionRows: messageIdVsReactions[m.id],
+        }),
+      );
+    }
   });
 
   return cidVsMessages;
