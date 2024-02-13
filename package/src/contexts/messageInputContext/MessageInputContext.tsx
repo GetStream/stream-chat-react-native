@@ -339,6 +339,9 @@ export type InputMessageInputContextValue<
    */
   editing?: MessageType<StreamChatGenerics>;
 
+  /**
+   * Prop to override the emojis in auto complete suggestion list.
+   */
   emojis?: CompiledEmojis;
 
   /** Initial value to set on input */
