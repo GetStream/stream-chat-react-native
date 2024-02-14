@@ -3,11 +3,11 @@ id: message-system
 title: MessageSystem
 ---
 
-import FormatDate from '../common-content/core-components/channel/props/format_date.mdx';
+import FormatDate from '../../common-content/core-components/channel/props/format_date.mdx';
 
-import MessageProp from '../common-content/contexts/message-context/message.mdx';
+import MessageProp from '../../common-content/contexts/message-context/message.mdx';
 
-Component to render `system` type messages within the [`MessageList`](./message_list.mdx).
+Component to render `system` type messages within the [`MessageList`](../../message-list).
 
 This is the default component provided to the prop [`MessageSystem`](../core-components/channel.mdx#messagesystem) on the `Channel` component.
 Purpose of system messages is to inform user about changes to channel. System messages are part of message history, and have a property `type` set as `system`.
@@ -23,6 +23,6 @@ You can add system messages within message history in following scenarios:
 
 <FormatDate />
 
-### message
+### `message`
 
 <MessageProp />

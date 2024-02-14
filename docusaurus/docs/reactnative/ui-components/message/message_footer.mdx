@@ -3,13 +3,13 @@ id: message-footer
 title: MessageFooter
 ---
 
-import Alignment from '../common-content/contexts/message-context/alignment.mdx';
-import DeletedMessagesVisibilityType from '../common-content/core-components/channel/props/deleted_messages_visibility_type.mdx';
-import LastGroupMessage from '../common-content/contexts/message-context/last_group_message.mdx';
-import Members from '../common-content/contexts/channel-context/members.mdx';
-import MessageProp from '../common-content/contexts/message-context/message.mdx';
-import OtherAttachments from '../common-content/contexts/message-context/other_attachments.mdx';
-import ShowMessageStatus from '../common-content/contexts/message-context/show_message_status.mdx';
+import Alignment from '../../common-content/contexts/message-context/alignment.mdx';
+import DeletedMessagesVisibilityType from '../../common-content/core-components/channel/props/deleted_messages_visibility_type.mdx';
+import LastGroupMessage from '../../common-content/contexts/message-context/last_group_message.mdx';
+import Members from '../../common-content/contexts/channel-context/members.mdx';
+import MessageProp from '../../common-content/contexts/message-context/message.mdx';
+import OtherAttachments from '../../common-content/contexts/message-context/other_attachments.mdx';
+import ShowMessageStatus from '../../common-content/contexts/message-context/show_message_status.mdx';
 
 Component to render footer of message, which consists of read receipts, timestamp of message etc. This component uses [`MessageStatus`](./message_status.mdx) for rendering read receipts internally.
 
@@ -34,21 +34,21 @@ const CustomMessageFooter = ({ message }) => {
 
 ## Props
 
-### <div class="label required">required</div> **formattedDate**
+### <div class="label description required">required</div> `formattedDate`
 
 DateTime stamp to be shown in footer for deleted message.
 
 | Type   |
 | ------ |
-| string |
+| String |
 
-### <div class="label required">required</div> **isDeleted**
+### <div class="label required">required</div> `isDeleted`
 
 Weather message is deleted or not. In case of deleted message, `'Only visible to you'` subtext will be rendered in this component.
 
 | Type    | Default |
 | ------- | ------- |
-| boolean | false   |
+| Boolean | `false` |
 
 ### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#alignment)_</div> `alignment` {#alignment}
 
