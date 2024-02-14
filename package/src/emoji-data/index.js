@@ -5,14 +5,14 @@ const getEmojis = async () => {
       'https://raw.githubusercontent.com/iamcal/emoji-data/master/emoji.json',
     );
     const emojis = await response.json();
-    const emojiLib = emojis.reduce((acc, cur) => {
-      acc[cur.short_name] = {
-        id: cur.short_name,
-        name: cur.short_name,
-        names: cur.short_names,
-        ...(cur.skin_variations
+    const emojiLib = emojis
+      .map((emoji) => ({
+        id: emoji.short_name,
+        name: emoji.short_name,
+        names: emoji.short_names,
+        ...(emoji.skin_variations
           ? {
-              skins: Object.values(cur.skin_variations).map((skin) =>
+              skins: Object.values(emoji.skin_variations).map((skin) =>
                 String.fromCodePoint.apply(
                   null,
                   skin.unified.split('-').map((unicode) => `0x${unicode}`),
@@ -22,29 +22,12 @@ const getEmojis = async () => {
           : {}),
         unicode: String.fromCodePoint.apply(
           null,
-          cur.unified.split('-').map((unicode) => `0x${unicode}`),
+          emoji.unified.split('-').map((unicode) => `0x${unicode}`),
         ),
-      };
-      return acc;
-    }, {});
-
-    // This is added because our linter takes the emojis in sorted order.
-    const sortedKeys = Object.keys(emojiLib).sort();
-    const sortedEmojiLib = {};
-    sortedKeys.forEach((key) => {
-      sortedEmojiLib[key] = emojiLib[key];
-    });
-
-    const emojiArray = emojis
-      .map(({ short_name, short_names }) => ({
-        name: short_name,
-        names: emojiLib[short_name]?.short_names
-          ? [...new Set([...emojiLib[short_name].short_names, ...short_names])]
-          : short_names,
       }))
       .sort((a, b) => (a.name < b.name ? -1 : 1));
 
-    return { emojiArray, emojiLib: sortedEmojiLib };
+    return { emojiLib };
   } catch (error) {
     console.log(error);
   }

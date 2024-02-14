@@ -36,7 +36,7 @@ import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreO
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
-import type { CompiledEmojis } from '../../emoji-data/compiled';
+import type { Emoji } from '../../emoji-data/compiled';
 import { pickDocument } from '../../native';
 import type {
   Asset,
@@ -68,6 +68,10 @@ import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
+
+export type EmojiSearchIndex = {
+  search: (query: string) => PromiseLike<Array<Emoji>> | Array<Emoji> | null;
+};
 
 export type MentionAllAppUsersQuery<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -340,9 +344,9 @@ export type InputMessageInputContextValue<
   editing?: MessageType<StreamChatGenerics>;
 
   /**
-   * Prop to override the emojis in auto complete suggestion list.
+   * Prop to override the default emoji search index in auto complete suggestion list.
    */
-  emojis?: CompiledEmojis;
+  emojiSearchIndex?: EmojiSearchIndex;
 
   /** Initial value to set on input */
   initialValue?: string;
@@ -897,12 +901,14 @@ export const MessageInputProvider = <
         triggerSettings = value.autoCompleteTriggerSettings({
           channel,
           client,
+          emojiSearchIndex: value.emojiSearchIndex,
           onMentionSelectItem: onSelectItem,
         });
       } else {
         triggerSettings = ACITriggerSettings<StreamChatGenerics>({
           channel,
           client,
+          emojiSearchIndex: value.emojiSearchIndex,
           onMentionSelectItem: onSelectItem,
         });
       }

@@ -55,7 +55,6 @@ type AutoCompleteInputPropsWithContext<
     MessageInputContextValue<StreamChatGenerics>,
     | 'additionalTextInputProps'
     | 'autoCompleteSuggestionsLimit'
-    | 'emojis'
     | 'giphyActive'
     | 'maxMessageLength'
     | 'mentionAllAppUsersEnabled'
@@ -93,7 +92,6 @@ const AutoCompleteInputWithContext = <
     autoCompleteSuggestionsLimit,
     closeSuggestions,
     cooldownActive = false,
-    emojis,
     giphyActive,
     giphyEnabled,
     maxMessageLength,
@@ -201,22 +199,17 @@ const AutoCompleteInputWithContext = <
     } else {
       const triggerSetting = triggerSettings[trigger];
       if (triggerSetting) {
-        await triggerSetting.dataProvider(
-          query as Emoji['name'],
-          text,
-          emojis,
-          (data, queryCallback) => {
-            if (query !== queryCallback) {
-              return;
-            }
+        await triggerSetting.dataProvider(query as Emoji['name'], text, (data, queryCallback) => {
+          if (query !== queryCallback) {
+            return;
+          }
 
-            updateSuggestionsContext({
-              data,
-              onSelect: (item) => onSelectSuggestion({ item, trigger }),
-              queryText: query,
-            });
-          },
-        );
+          updateSuggestionsContext({
+            data,
+            onSelect: (item) => onSelectSuggestion({ item, trigger }),
+            queryText: query,
+          });
+        });
       }
     }
   };
@@ -480,7 +473,6 @@ export const AutoCompleteInput = <
   const {
     additionalTextInputProps,
     autoCompleteSuggestionsLimit,
-    emojis,
     giphyActive,
     maxMessageLength,
     mentionAllAppUsersEnabled,
@@ -502,7 +494,6 @@ export const AutoCompleteInput = <
         additionalTextInputProps,
         autoCompleteSuggestionsLimit,
         closeSuggestions,
-        emojis,
         giphyActive,
         giphyEnabled,
         maxMessageLength,

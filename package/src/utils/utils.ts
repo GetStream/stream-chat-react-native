@@ -14,13 +14,16 @@ import type {
 } from 'stream-chat';
 
 import type { MessageType } from '../components/MessageList/hooks/useMessageList';
-import type { MentionAllAppUsersQuery } from '../contexts/messageInputContext/MessageInputContext';
+import type {
+  EmojiSearchIndex,
+  MentionAllAppUsersQuery,
+} from '../contexts/messageInputContext/MessageInputContext';
 import type {
   SuggestionCommand,
   SuggestionComponentType,
   SuggestionUser,
 } from '../contexts/suggestionsContext/SuggestionsContext';
-import type { CompiledEmojis, Emoji } from '../emoji-data/compiled';
+import { compiledEmojis, Emoji } from '../emoji-data/compiled';
 import type { IconProps } from '../icons/utils/base';
 import type { TableRowJoinedUser } from '../store/types';
 import type { DefaultStreamChatGenerics, ValueOf } from '../types/types';
@@ -286,9 +289,8 @@ export type TriggerSettings<
     dataProvider: (
       query: Emoji['name'],
       _: string,
-      emojis?: CompiledEmojis,
       onReady?: (data: Emoji[], q: Emoji['name']) => void,
-    ) => Emoji[];
+    ) => Emoji[] | Promise<Emoji[]>;
     output: (entity: Emoji) => {
       caretPosition: string;
       key: string;
@@ -326,6 +328,7 @@ export type ACITriggerSettingsParams<
   channel: Channel<StreamChatGenerics>;
   client: StreamChat<StreamChatGenerics>;
   onMentionSelectItem: (item: SuggestionUser<StreamChatGenerics>) => void;
+  emojiSearchIndex?: EmojiSearchIndex;
 };
 
 export type QueryUsersFunction<
@@ -352,6 +355,41 @@ export type QueryMembersFunction<
 ) => Promise<void>;
 
 /**
+ * Default emoji search index for auto complete text input
+ */
+export const defaultEmojiSearchIndex: EmojiSearchIndex = {
+  search: (query) => {
+    const result = compiledEmojis.reduce((acc, cur) => {
+      if (acc.length >= 10) return acc;
+
+      if (cur.names.some((name) => name.includes(query))) {
+        // Since there can be no emojiLib for the current name we need to check for it being undefined
+        if (cur.skins) {
+          acc.push({
+            ...cur,
+            name: `${cur.name}-tone-1`,
+            skins: undefined,
+          });
+          cur.skins.forEach((tone, index) =>
+            acc.push({
+              ...cur,
+              name: `${cur.name}-tone-${index + 2}`,
+              skins: undefined,
+              unicode: tone,
+            }),
+          );
+        } else {
+          acc.push(cur);
+        }
+      }
+
+      return acc;
+    }, [] as Emoji[]);
+    return result;
+  },
+};
+
+/**
  * ACI = AutoCompleteInput
  *
  * DataProvider accepts `onReady` function, which will execute once the data is ready.
@@ -367,6 +405,7 @@ export const ACITriggerSettings = <
 >({
   channel,
   client,
+  emojiSearchIndex,
   onMentionSelectItem,
 }: ACITriggerSettingsParams<StreamChatGenerics>): TriggerSettings<StreamChatGenerics> => ({
   '/': {
@@ -410,42 +449,16 @@ export const ACITriggerSettings = <
     type: 'command',
   },
   ':': {
-    dataProvider: (query, _, emojis, onReady) => {
-      if (!query || !emojis) return [];
+    dataProvider: async (query, _, onReady) => {
+      if (!query) return [];
 
-      const result = emojis.emojiArray.reduce((acc, cur) => {
-        if (acc.length >= 10) return acc;
-
-        if (cur.names.some((name) => name.includes(query))) {
-          const emoji = emojis.emojiLib[cur.name];
-          // Since there can be no emojiLib for the current name we need to check for it being undefined
-          if (emoji?.skins) {
-            acc.push({
-              ...emoji,
-              name: `${emoji.name}-tone-1`,
-              skins: undefined,
-            });
-            emoji.skins.forEach((tone, index) =>
-              acc.push({
-                ...emoji,
-                name: `${emoji.name}-tone-${index + 2}`,
-                skins: undefined,
-                unicode: tone,
-              }),
-            );
-          } else if (emoji) {
-            acc.push(emoji);
-          }
-        }
-
-        return acc;
-      }, [] as Emoji[]);
+      const emojis = (await emojiSearchIndex?.search(query)) ?? [];
 
       if (onReady) {
-        onReady(result, query);
+        onReady(emojis, query);
       }
 
-      return result;
+      return emojis;
     },
     output: (entity) => ({
       caretPosition: 'next',

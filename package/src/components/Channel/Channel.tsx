@@ -65,7 +65,6 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 import { TypingProvider } from '../../contexts/typingContext/TypingContext';
-import { compiledEmojis } from '../../emoji-data/compiled';
 import { useAppStateListener } from '../../hooks/useAppStateListener';
 
 import {
@@ -85,6 +84,7 @@ import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
 import { removeReactionFromLocalState } from '../../utils/removeReactionFromLocalState';
 import { removeReservedFields } from '../../utils/removeReservedFields';
 import {
+  defaultEmojiSearchIndex,
   generateRandomId,
   isBouncedMessage,
   isLocalUrl,
@@ -441,7 +441,7 @@ const ChannelWithContext = <
     doMarkReadRequest,
     doSendMessageRequest,
     doUpdateMessageRequest,
-    emojis = compiledEmojis,
+    emojiSearchIndex = defaultEmojiSearchIndex,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     enableMessageGroupingByUser = true,
     enableOfflineSupport,
@@ -2151,7 +2151,7 @@ const ChannelWithContext = <
     doImageUploadRequest,
     editing,
     editMessage,
-    emojis,
+    emojiSearchIndex,
     FileUploadPreview,
     hasCommands,
     hasFilePicker,
