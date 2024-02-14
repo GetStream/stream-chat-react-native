@@ -14,7 +14,7 @@ import SupportedReactions from '../../common-content/core-components/channel/pro
 
 `ReactionList` component is used to display the reactions added to a message right on top of it.
 
-This is the default component provided to the prop [`ReactionList`](../core-components/channel.mdx#reactionlist) on the `Channel` component.
+This is the default component provided to the prop [`ReactionList`](../../../ui-components/channel#reactionlist) on the `Channel` component.
 
 ## Basic Usage
 
@@ -39,7 +39,7 @@ This value gets computed in [`MessageContent`](./message_content.mdx) once the c
 | ------ |
 | Number |
 
-### <div class="description">overrides the value from [MessageContext](../contexts/message_context.mdx#alignment)</div> `alignment` {#alignment}
+### <div class="description">overrides the value from [MessageContext](../../../state-and-offline-support/contexts/message-context#alignment)</div> `alignment` {#alignment}
 
 <Alignment />
 
@@ -53,19 +53,19 @@ Background color for reaction list container when [`alignment`](#alignment) is `
 
 <!-- ### radius -->
 
-### <div class="description">overrides the value from [MessageContext](../contexts/message_context.mdx#onlongpress)</div> `onLongPress` {#onlongpress}
+### <div class="description">overrides the value from [MessageContext](../../../state-and-offline-support/contexts/message-context#onlongpress)</div> `onLongPress` {#onlongpress}
 
 <OnLongPress />
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#message)_</div> `message` {#message}
+### <div class="label description">_overrides the value from [MessageContext](../../../state-and-offline-support/contexts/message-context#message)_</div> `message` {#message}
 
 <MessageProp />
 
-### <div class="description">overrides the value from [MessageContext](../contexts/message_context.mdx#onpress)</div> `onPress` {#onpress}
+### <div class="description">overrides the value from [MessageContext](../../../state-and-offline-support/contexts/message-context#onpress)</div> `onPress` {#onpress}
 
 <OnPress />
 
-### <div class="description">overrides the value from [MessageContext](../contexts/message_context.mdx#reactions)</div> `reactions` {#reactions}
+### <div class="description">overrides the value from [MessageContext](../../../state-and-offline-support/contexts/message-context#reactions)</div> `reactions` {#reactions}
 
 <Reactions />
 
@@ -77,7 +77,7 @@ Dimensions for each reaction icon.
 | ------ |
 | Number |
 
-### <div class="description">overrides the value from [MessageContext](../contexts/message_context.mdx#showmessageoverlay)</div> `showMessageOverlay` {#showmessageoverlay}
+### <div class="description">overrides the value from [MessageContext](../../../state-and-offline-support/contexts/message-context#showmessageoverlay)</div> `showMessageOverlay` {#showmessageoverlay}
 
 <ShowMessageOverlay />
 
@@ -91,11 +91,11 @@ Background color for reaction list container when [`alignment`](#alignment) is `
 
 <!-- ### strokeSize -->
 
-### <div class="description">overrides the value from [MessagesContext](../contexts/messages_context.mdx#supportedreactions)</div> `supportedReactions` {#supportedreactions}
+### <div class="description">overrides the value from [MessagesContext](../../../state-and-offline-support/contexts/messages-context#supportedreactions)</div> `supportedReactions` {#supportedreactions}
 
 <SupportedReactions />
 
-### <div class="description">overrides the value from [MessagesContext](../contexts/messages_context.mdx#targetedmessage)</div> `targetedMessage` {#targetedmessage}
+### <div class="description">overrides the value from [MessagesContext](../../../state-and-offline-support/contexts/messages-context#targetedmessage)</div> `targetedMessage` {#targetedmessage}
 
 Has the message id of the message which is to be highlighted. By default the value is undefined. As soon as the highlight time is out this is set to `undefined`.
 

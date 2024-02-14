@@ -36,7 +36,7 @@ const App = () => {
 
 ### `additionalMessageInputProps`
 
-Additional [props](./message_input.mdx#props) for underlying `MessageInput` component.
+Additional [props](../message-input#props) for underlying `MessageInput` component.
 
 | Type   |
 | ------ |
@@ -44,7 +44,7 @@ Additional [props](./message_input.mdx#props) for underlying `MessageInput` comp
 
 ### `additionalMessageListProps`
 
-Additional [props](./message_list.mdx#props) for underlying `MessageList` component.
+Additional [props](../message-list#props) for underlying `MessageList` component.
 
 | Type   |
 | ------ |
@@ -66,11 +66,11 @@ Closes thread on dismount, defaults to `true`.
 | ------- | ------- |
 | Boolean | `true`  |
 
-### <div class="label description">overrides the value from [ChatContext](../../contexts/chat_context.mdx#client)</div> `client` {#client}
+### <div class="label description">overrides the value from [ChatContext](../../state-and-offline-support/contexts/chat-context#client)</div> `client` {#client}
 
 <Client />
 
-### <div class="label description">overrides the value from [ThreadContext](../../contexts/thread_context.mdx#closeThread)</div> `closeThread` {#closeThread}
+### <div class="label description">overrides the value from [ThreadContext](../../state-and-offline-support/contexts/thread-context#closeThread)</div> `closeThread` {#closeThread}
 
 <CloseThread />
 
@@ -82,7 +82,7 @@ When true, the underlying input box will be disabled.
 | ------- | ------- |
 | Boolean | `false` |
 
-### <div class="label description">overrides the value from [ThreadContext](../../contexts/thread_context.mdx#loadMoreThread)</div> `loadMoreThread` {#loadMoreThread}
+### <div class="label description">overrides the value from [ThreadContext](../../state-and-offline-support/contexts/thread-context#loadMoreThread)</div> `loadMoreThread` {#loadMoreThread}
 
 <LoadMoreThread />
 
@@ -94,11 +94,11 @@ Function which gets called when Thread component un-mounts.
 | -------- |
 | Function |
 
-### <div class="label description">overrides the value from [ThreadContext](../../contexts/thread_context.mdx#reloadThread)</div> `reloadThread` {#reloadThread}
+### <div class="label description">overrides the value from [ThreadContext](../../state-and-offline-support/contexts/thread-context#reloadThread)</div> `reloadThread` {#reloadThread}
 
 <ReloadThread />
 
-### <div class="label description">overrides the value from [ThreadContext](../../contexts/thread_context.mdx#thread)</div> `thread` {#thread}
+### <div class="label description">overrides the value from [ThreadContext](../../state-and-offline-support/contexts/thread-context#thread)</div> `thread` {#thread}
 
 <Thread />
 
@@ -106,12 +106,12 @@ Function which gets called when Thread component un-mounts.
 
 ### `MessageList`
 
-| Type          | Default                                       |
-| ------------- | --------------------------------------------- |
-| ComponentType | [`MessageList`](../MessageList/message-list/) |
+| Type          | Default                           |
+| ------------- | --------------------------------- |
+| ComponentType | [`MessageList`](../message-list/) |
 
 ### `MessageInput`
 
-| Type          | Default                                           |
-| ------------- | ------------------------------------------------- |
-| ComponentType | [`MessageInput`](../message-input/message-input/) |
+| Type          | Default                             |
+| ------------- | ----------------------------------- |
+| ComponentType | [`MessageInput`](../message-input/) |

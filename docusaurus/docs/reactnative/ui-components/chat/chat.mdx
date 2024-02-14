@@ -8,11 +8,11 @@ import Client from '../../common-content/core-components/chat/props/client.mdx';
 import ImageComponent from '../../common-content/core-components/chat/props/image_component.mdx';
 import I18nInstance from '../../common-content/core-components/overlay-provider/props/i18n_instance.mdx';
 
-`Chat` provides the [ChatContext](../contexts/chat_context.mdx), [TranslationContext](../contexts/translation_context.mdx), and [ThemeContext](../contexts/theme_context.mdx) to its child components.
+`Chat` provides the [ChatContext](../../state-and-offline-support/contexts/chat-context), [TranslationContext](../../../state-and-offline-support/contexts/translation-context), and [ThemeContext](../../../state-and-offline-support/contexts/theme-context) to its child components.
 `Chat` is the second highest level component in the Stream Chat for React Native library with only the [`OverlayProvider`](../overlay-provider) at a higher level.
 
 `Chat` is also responsible for tracking the health of the WebSocket connection with Stream Chat server.
-The value `isOnline` provided by the [ChatContext](../contexts/chat_context.mdx#isonline) indicates the status of the connection.
+The value `isOnline` provided by the [ChatContext](../../state-and-offline-support/contexts/chat-context#isonline) indicates the status of the connection.
 
 ## General Usage
 
@@ -73,7 +73,7 @@ By default the WebSocket connection is disconnected when the app goes to the bac
 ### `style`
 
 A `theme` object to customize the styles of SDK components.
-Detailed information on theming can be found in the [customization documentation](../customization/theming.mdx).
+Detailed information on theming can be found in the [customization documentation](../theme).
 
 :::note
 

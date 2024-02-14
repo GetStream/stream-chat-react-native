@@ -130,12 +130,12 @@ import UrlPreview from '../../common-content/core-components/channel/props/url_p
 
 The `Channel` component is the main entry point for many Stream Chat customizations and contains the majority of the content providers and a significant amount of the logic utilized by Stream Chat for React Native.
 Components, custom and out of the box, channel information, and UI integrated chat functions are disseminated by the contexts contained in `Channel`.
-[MessageList](../ui-components/message_list.mdx), [MessageInput](../ui-components/message_input.mdx), and [Thread](../ui-components/thread.mdx) all rely on `Channel` to function correctly.
+[MessageList](../message-list), [MessageInput](../message-input), and [Thread](../thread) all rely on `Channel` to function correctly.
 
 ## Basic Usage
 
 `Channel` takes an instance of a StreamChat `channel` as a prop.
-You can [create a channel](https://getstream.io/chat/docs/javascript/creating_channels/?language=javascript), or if you are navigating from the [`ChannelList`](./channel_list.mdx), access the selected channel via the parameter passed to the [`onSelect`](./channel_list.mdx#required-onselect) function.
+You can [create a channel](https://getstream.io/chat/docs/javascript/creating_channels/?language=javascript), or if you are navigating from the [`ChannelList`](../channel-list), access the selected channel via the parameter passed to the [`onSelect`](../channel-list#required-onselect) function.
 
 ```tsx {7-17,22,25}
 import { StreamChat } from 'stream-chat';

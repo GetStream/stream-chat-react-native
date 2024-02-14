@@ -11,7 +11,7 @@ Component to render the pinned message label (user) of a message within the [`Me
 
 ## Basic Usage
 
-You can customize the `MessagePinnedHeader` component and provide it back to the SDK via the [`MessagePinnedHeader`](../core-components/channel.mdx#MessagePinnedHeader) prop on `Channel` if desired.
+You can customize the `MessagePinnedHeader` component and provide it back to the SDK via the [`MessagePinnedHeader`](../../../ui-components/channel#MessagePinnedHeader) prop on `Channel` if desired.
 
 ```tsx
 import {Channel, MessageAvatar} from 'stream-chat-react-native';
@@ -23,12 +23,12 @@ const MessagePinnedHeaderComponent = () => <MessagePinnedHeader />
 
 ## Props
 
-This component uses default values for all the following props, from [`MessageContext`](../contexts/message_context.mdx)
+This component uses default values for all the following props, from [`MessageContext`](../../../state-and-offline-support/contexts/message-context)
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#alignment)_</div> `alignment` {#alignment}
+### <div class="label description">_overrides the value from [MessageContext](../../../state-and-offline-support/contexts/message-context#alignment)_</div> `alignment` {#alignment}
 
 <Alignment />
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#message)_</div> `message` {#message}
+### <div class="label description">_overrides the value from [MessageContext](../../../state-and-offline-support/contexts/message-context#message)_</div> `message` {#message}
 
 <MessageProp />

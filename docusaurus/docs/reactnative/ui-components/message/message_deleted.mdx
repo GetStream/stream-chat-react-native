@@ -6,8 +6,8 @@ title: MessageDeleted
 import Alignment from '../../common-content/contexts/message-context/alignment.mdx';
 import MessageProp from '../../common-content/contexts/message-context/message.mdx';
 
-Component to render a deleted message within the [`MessageList`](./message_list.mdx).
-This is the default component provided to the prop [`MessageDeleted`](../core-components/channel.mdx#messagedeleted) on the `Channel` component.
+Component to render a deleted message within the [`MessageList`](../../message-list).
+This is the default component provided to the prop [`MessageDeleted`](../../../ui-components/channel#messagedeleted) on the `Channel` component.
 
 ## Props
 
@@ -21,7 +21,7 @@ DateTime stamp to be shown in footer for deleted message.
 
 ### <div class="label description required">required</div> `groupStyle`
 
-Group styles which is combination of [alignment](../contexts/message_context.mdx#alignment) and [`groupStyles`](../contexts/message_context.mdx#groupstyles)
+Group styles which is combination of [alignment](../../../state-and-offline-support/contexts/message-context#alignment) and [`groupStyles`](../../../state-and-offline-support/contexts/message-context#groupstyles)
 
 for example `left_bottom`, `left_single`, `right_top`
 
@@ -45,10 +45,10 @@ const noBorder = (onlyEmojis && !message.quoted_message) || !!otherAttachments.l
 
 <!-- ### <div class="label description required">required</div> **onLayout** -->
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#alignment)_</div> `alignment` {#alignment}
+### <div class="label description">_overrides the value from [MessageContext](../../../state-and-offline-support/contexts/message-context#alignment)_</div> `alignment` {#alignment}
 
 <Alignment />
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#message)_</div> `message` {#message}
+### <div class="label description">_overrides the value from [MessageContext](../../../state-and-offline-support/contexts/message-context#message)_</div> `message` {#message}
 
 <MessageProp />

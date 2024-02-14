@@ -80,15 +80,15 @@ Similarly, events other than notification.message_new can be handled as per appl
 <div>
 
 `ChannelList` component accepts the [`List`](../ui-components/channel-list/channel-list.mdx#list) prop, which is a component to render the list of channels.
-Default value for this prop is [`ChannelListMessenger`](../ui-components/channel-list/channel-list-messenger.mdx) and it consumes [`ChannelsContext`](../contexts/channels_context.mdx), which provides all the necessary values to implement infinite scroll pagination.
-This component internally uses FlatList from react-native. And [`loadNextPage`](../contexts/channels_context.mdx#loadnextpage) function
+Default value for this prop is [`ChannelListMessenger`](../ui-components/channel-list/channel-list-messenger.mdx) and it consumes [`ChannelsContext`](../../state-and-offline-support/contexts/channels-context), which provides all the necessary values to implement infinite scroll pagination.
+This component internally uses FlatList from react-native. And [`loadNextPage`](../../state-and-offline-support/contexts/channels-context#loadnextpage) function
 from `ChannelsContext` is attached to [onEndReached](https://reactnative.dev/docs/flatlist#onendreached) prop of underlying FlatList to allow infinite scroll pagination.
 
 Its possible to override the props on underlying FlatList by providing [`additionalFlatListProps`](../ui-components/channel-list/channel-list.mdx#additionalflatlistprops) prop to `ChannelList` or `ChannelListMessenger`.
 Thus "Load More" button can be added as [ListFooterComponent](https://reactnative.dev/docs/flatlist#listfootercomponent) for underlying FlatList and infinite scroll pagination can be disabled by overriding
 the [onEndReached](https://reactnative.dev/docs/flatlist#onendreached) prop for FlatList.
 
-"Load More" button should invoke [`loadNextPage`](../contexts/channels_context.mdx#loadnextpage) function, when pressed.
+"Load More" button should invoke [`loadNextPage`](../../state-and-offline-support/contexts/channels-context#loadnextpage) function, when pressed.
 Additionally, you can use pagination related flags such as `loadNextPage`, `hasNextPage`, `loadingChannels` to handle the visibility of this button.
 
 </div>
