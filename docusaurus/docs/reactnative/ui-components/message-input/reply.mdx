@@ -3,8 +3,8 @@ id: reply
 title: Reply
 ---
 
-import FileAttachmentIcon from '../../common-content/core-components/channel/props/file_attachment_icon.mdx';
-import MessageAvatar from '../../common-content/core-components/channel/props/message_avatar.mdx';
+import FileAttachmentIcon from '../../common-content/ui-components/channel/props/file_attachment_icon.mdx';
+import MessageAvatar from '../../common-content/ui-components/channel/props/message-avatar.mdx';
 
 import MessageProp from '../../common-content/contexts/message-context/message.mdx';
 
@@ -13,7 +13,7 @@ import QuotedMessage from '../../common-content/contexts/message-input-context/q
 
 `Reply` is a default UI component for rendering preview of parent message for quoted message, within `MessageList`.
 
-You can replace this default UI component using the `Reply` prop on [Channel](../../../../ui-components/channel) component.
+You can replace this default UI component using the `Reply` prop on [Channel](../channel/channel.mdx) component.
 
 ```tsx
 <Channel Reply={CustomReply} />
