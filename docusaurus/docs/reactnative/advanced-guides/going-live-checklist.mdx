@@ -67,7 +67,7 @@ const MySenderComponent = () => {
 };
 ```
 
-To reduce these re-renders the component can be broken apart into a component that consumes context, and a component that is memoized and takes only props. A custom areEqual check can then be used in the memoization to determine if the component should re-render.
+To reduce these re-renders the component can be broken apart into a component that consumes context, and a component that is memoized and takes only props. A custom `areEqual` check can then be used in the memoization to determine if the component should re-render.
 
 ```tsx
 import React from 'react';
