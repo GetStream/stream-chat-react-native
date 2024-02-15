@@ -421,11 +421,11 @@ const CustomAttachButton = () => {
 Now let's hook the relevant action handlers for buttons within ActionSheet.
 [`react-native-image-crop-picker`](https://github.com/ivpusic/react-native-image-crop-picker) provides an image picker functionality
 with good support for configurable compression, multiple images and cropping. And selected images from image picker or camera can be wired in
-with upload previews ([`ImageUploadPreview`](../ui-components/message-input/image-upload-preview.mdx)) within `MessageInput` component
-by using a function `uploadNewImage` provided by [`MessageInputContext`](../../state-and-offline-support/contexts/message-input-context#uploadnewimage).
+with upload previews ([`ImageUploadPreview`](../ui-components/message-input-components/image-upload-preview.mdx)) within `MessageInput` component
+by using a function `uploadNewImage` provided by [`MessageInputContext`](../../ui-components/contexts/message-input-context#uploadnewimage).
 
 For file attachments, the SDK defaults to the native file picker. That can be reused by adding the `pickFile` function
-provided by the [`MessageInputContext`](../../state-and-offline-support/contexts/message-input-context#pickfile) as an action handler within the action sheet.
+provided by the [`MessageInputContext`](../../ui-components/contexts/message-input-context#pickfile) as an action handler within the action sheet.
 
 ```tsx {4,10,12-21,23-30,43,46,49}
 import { AttachButton, Channel, useMessageInputContext } from 'stream-chat-react-native';

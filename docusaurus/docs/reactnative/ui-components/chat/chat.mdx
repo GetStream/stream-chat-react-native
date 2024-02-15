@@ -8,11 +8,11 @@ import Client from '../../common-content/ui-components/chat/props/client.mdx';
 import ImageComponent from '../../common-content/ui-components/chat/props/image_component.mdx';
 import I18nInstance from '../../common-content/ui-components/overlay-provider/props/i18n_instance.mdx';
 
-`Chat` provides the [ChatContext](../../state-and-offline-support/contexts/chat-context), [TranslationContext](../../state-and-offline-support/contexts/translation-context.mdx), and [ThemeContext](../../state-and-offline-support/contexts/theme-context.mdx) to its child components.
-`Chat` is the second highest level component in the Stream Chat for React Native library with only the [`OverlayProvider`](../overlay-provider) at a higher level.
+`Chat` provides the [ChatContext](../../ui-components/contexts/chat-context), [TranslationContext](../../ui-components/contexts/translation-context.mdx), and [ThemeContext](../../ui-components/contexts/theme-context.mdx) to its child components.
+`Chat` is the second highest level component in the Stream Chat for React Native library with only the [`OverlayProvider`](../overlay-provider-components/overlay-provider.mdx) at a higher level.
 
 `Chat` is also responsible for tracking the health of the WebSocket connection with Stream Chat server.
-The value `isOnline` provided by the [ChatContext](../../state-and-offline-support/contexts/chat-context#isonline) indicates the status of the connection.
+The value `isOnline` provided by the [ChatContext](../../ui-components/contexts/chat-context#isonline) indicates the status of the connection.
 
 ## General Usage
 
@@ -78,7 +78,7 @@ Detailed information on theming can be found in the [customization documentation
 :::note
 
 Themes are inherited from parent providers.
-A [theme provided to the `OverlayProvider`](../overlay-provider#value) will be the base theme `style` is merged into.
+A [theme provided to the `OverlayProvider`](../overlay-provider-components/overlay-provider.mdx#value) will be the base theme `style` is merged into.
 Themes are not hoisted though, therefore a theme provided to `Chat` will not change overlay components such as the attachment picker.
 
 :::
