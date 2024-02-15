@@ -92,7 +92,7 @@ export type CardPropsWithContext<
   > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
-    'additionalTouchableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
+    'additionalTouchableProps' | 'CardCover' | 'CardFooter' | 'CardHeader' | 'myMessageTheme'
   > & {
     channelId: string | undefined;
     messageId: string | undefined;
@@ -287,14 +287,31 @@ const CardWithContext = <
   );
 };
 
-const MemoizedCard = React.memo(CardWithContext, () => true) as typeof CardWithContext;
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: CardPropsWithContext<StreamChatGenerics>,
+  nextProps: CardPropsWithContext<StreamChatGenerics>,
+) => {
+  const { myMessageTheme: prevMyMessageTheme } = prevProps;
+  const { myMessageTheme: nextMyMessageTheme } = nextProps;
+
+  const messageThemeEqual =
+    JSON.stringify(prevMyMessageTheme) === JSON.stringify(nextMyMessageTheme);
+  if (!messageThemeEqual) return false;
+
+  return true;
+};
+
+const MemoizedCard = React.memo(CardWithContext, areEqual) as typeof CardWithContext;
 
 export type CardProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Attachment<StreamChatGenerics> &
   Partial<
     Pick<ChatContextValue<StreamChatGenerics>, 'ImageComponent'> &
-      Pick<MessageContextValue<StreamChatGenerics>, 'onLongPress' | 'onPress' | 'onPressIn'> &
+      Pick<
+        MessageContextValue<StreamChatGenerics>,
+        'onLongPress' | 'onPress' | 'onPressIn' | 'myMessageTheme'
+      > &
       Pick<
         MessagesContextValue<StreamChatGenerics>,
         'additionalTouchableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
@@ -312,7 +329,7 @@ export const Card = <
   const { ImageComponent } = useChatContext<StreamChatGenerics>();
   const { message, onLongPress, onPress, onPressIn, preventPress } =
     useMessageContext<StreamChatGenerics>();
-  const { additionalTouchableProps, CardCover, CardFooter, CardHeader } =
+  const { additionalTouchableProps, CardCover, CardFooter, CardHeader, myMessageTheme } =
     useMessagesContext<StreamChatGenerics>();
 
   return (
@@ -326,6 +343,7 @@ export const Card = <
         channelId: message.cid,
         ImageComponent,
         messageId: message.id,
+        myMessageTheme,
         onLongPress,
         onPress,
         onPressIn,

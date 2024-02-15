@@ -1,5 +1,5 @@
 ---
-id: customize-message-actions
+id: custom-message-actions
 sidebar_position: 4
 title: Custom Message Actions
 ---
@@ -42,11 +42,11 @@ type MessageAction = {
 };
 ```
 
-You can customize each one of the default actions using props on the [`Channel component`](../core-components/channel.mdx) as shown further on this page. The channel component makes these props available in the `MessagesContext` context.
+You can customize each one of the default actions using props on the [`Channel component`](../../ui-components/channel) as shown further on this page. The channel component makes these props available in the `MessagesContext` context.
 
 The channel component accepts a prop called `messageActions`. You can use this prop as a callback function to render message actions selectively.
 
-The arguments to this function is an object with all the default message actions as [`MessageAction`](../state-and-offline-support/object-types.mdx#messageaction) objects. The function should return an array of MessageAction objects to render in a [MessageActionList](../common-content/core-components/overlay-provider/props/message_action_list.mdx) within the message overlay, that is shown when a user long presses a message in a MessageList.
+The arguments to this function is an object with all the default message actions as [`MessageAction`](../state-and-offline-support/object-types.mdx#messageaction) objects. The function should return an array of MessageAction objects to render in a [MessageActionList](../common-content/ui-components/overlay-provider/props/message_action_list.mdx) within the message overlay, that is shown when a user long presses a message in a MessageList.
 
 You can also customize each one of the default actions using the `messageActions` prop passed to the OverlayProvider as shown in the example below. The OverlayProvider component makes these props available in the `MessageOverlayContext` context.
 

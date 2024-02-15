@@ -199,8 +199,8 @@ const StreamButton = () => {
 When you select an image or file from the image picker or file picker, it gets uploaded to Stream's CDN by default.
 You could, however, choose to upload attachments to your own CDN using the following two props on the Channel component:
 
-- [`doImageUploadRequest`](../core-components/channel.mdx#doimageuploadrequest): For images picked from image picker
-- [`doDocUploadRequest`](../core-components/channel.mdx#dodocuploadrequest): For files picked from file picker
+- [`doImageUploadRequest`](../../ui-components/channel#doimageuploadrequest): For images picked from image picker
+- [`doDocUploadRequest`](../../ui-components/channel#dodocuploadrequest): For files picked from file picker
 
 ```tsx
 <Channel
@@ -353,7 +353,7 @@ The default behavior can be easily replaced with the device's native image picke
   </tr>
 </table>
 
-Channel component receives a prop [AttachButton](../core-components/channel.mdx#attachbutton),
+Channel component receives a prop [AttachButton](../../ui-components/channel#attachbutton),
 which can be used to override the default attach button next to the input field as follows. This prop can be used to
 override the default `onPress` handler for the `AttachButton` component.
 
@@ -422,10 +422,10 @@ Now let's hook the relevant action handlers for buttons within ActionSheet.
 [`react-native-image-crop-picker`](https://github.com/ivpusic/react-native-image-crop-picker) provides an image picker functionality
 with good support for configurable compression, multiple images and cropping. And selected images from image picker or camera can be wired in
 with upload previews ([`ImageUploadPreview`](../ui-components/message-input/image-upload-preview.mdx)) within `MessageInput` component
-by using a function `uploadNewImage` provided by [`MessageInputContext`](../contexts/message_input_context.mdx#uploadnewimage).
+by using a function `uploadNewImage` provided by [`MessageInputContext`](../../state-and-offline-support/contexts/message-input-context#uploadnewimage).
 
 For file attachments, the SDK defaults to the native file picker. That can be reused by adding the `pickFile` function
-provided by the [`MessageInputContext`](../contexts/message_input_context.mdx#pickfile) as an action handler within the action sheet.
+provided by the [`MessageInputContext`](../../state-and-offline-support/contexts/message-input-context#pickfile) as an action handler within the action sheet.
 
 ```tsx {4,10,12-21,23-30,43,46,49}
 import { AttachButton, Channel, useMessageInputContext } from 'stream-chat-react-native';
@@ -492,7 +492,7 @@ const CustomAttachButton = () => {
 
 ## Creating a Custom Editing state Header in MessageInput
 
-To make a custom editing state header, you can use the [Channel](../core-components/channel.mdx) component with a custom Editing state header component and pass it inside [InputEditingStateHeader](../core-components/channel.mdx#inputeditingstateheader) prop.
+To make a custom editing state header, you can use the [Channel](../../ui-components/channel) component with a custom Editing state header component and pass it inside [InputEditingStateHeader](../../ui-components/channel#inputeditingstateheader) prop.
 
 ```tsx
 import { Button, Text, View } from 'react-native';
@@ -521,7 +521,7 @@ const CustomInputEditingStateHeader = () => {
 
 ## Creating a Custom reply state Header in MessageInput
 
-To make a custom reply state header, you can use the [Channel](../core-components/channel.mdx) component with a custom Reply state header component and pass it inside [InputReplyStateHeader](../core-components/channel.mdx#inputreplystateheader) prop.
+To make a custom reply state header, you can use the [Channel](../../ui-components/channel) component with a custom Reply state header component and pass it inside [InputReplyStateHeader](../../ui-components/channel#inputreplystateheader) prop.
 
 ```tsx
 import { Button, Text, View } from 'react-native';
@@ -550,7 +550,7 @@ const CustomInputReplyStateHeader = () => {
 
 ## Creating a custom Giphy search input inside MessageInput
 
-To make a custom Giphy search input, you can use the [Channel](../core-components/channel.mdx) component with a custom Giphy Search component and pass it inside [InputGiphySearch](../core-components/channel.mdx#inputgiphysearch) prop.
+To make a custom Giphy search input, you can use the [Channel](../../ui-components/channel) component with a custom Giphy Search component and pass it inside [InputGiphySearch](../../ui-components/channel#inputgiphysearch) prop.
 
 ```tsx
 import { Button, Text, View } from 'react-native';
@@ -585,8 +585,8 @@ Stream supports uploading images and files and the maximum size to upload is 100
 
 You can use the following two props on the Channel component to compress the file before upload:
 
-- [`doImageUploadRequest`](../core-components/channel.mdx#doimageuploadrequest): For images
-- [`doDocUploadRequest`](../core-components/channel.mdx#dodocuploadrequest): For any files other than images
+- [`doImageUploadRequest`](../../ui-components/channel#doimageuploadrequest): For images
+- [`doDocUploadRequest`](../../ui-components/channel#dodocuploadrequest): For any files other than images
 
 For example, let us look at how to compress a video file before uploading. In the snippet below, we have used the [react-native-compressor](https://github.com/numandev1/react-native-compressor) library to perform video compression before the video file is uploaded.
 

@@ -160,14 +160,9 @@ const MessageOverlayWithContext = <
   const myMessageTheme = messagesContext?.myMessageTheme;
   const wrapMessageInTheme = clientId === message?.user?.id && !!myMessageTheme;
 
-  const [myMessageThemeString, setMyMessageThemeString] = useState(JSON.stringify(myMessageTheme));
   const [reactionListHeight, setReactionListHeight] = useState(0);
 
-  useEffect(() => {
-    if (myMessageTheme) {
-      setMyMessageThemeString(JSON.stringify(myMessageTheme));
-    }
-  }, [myMessageTheme]);
+  const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
 
   const modifiedTheme = useMemo(
     () => mergeThemes({ style: myMessageTheme, theme }),
@@ -553,11 +548,13 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     alignment: prevAlignment,
     message: prevMessage,
     messageReactionTitle: prevMessageReactionTitle,
+    messagesContext: prevMessagesContext,
   } = prevProps;
   const {
     alignment: nextAlignment,
     message: nextMessage,
     messageReactionTitle: nextMessageReactionTitle,
+    messagesContext: nextMessagesContext,
   } = nextProps;
 
   const alignmentEqual = prevAlignment === nextAlignment;
@@ -565,6 +562,12 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const messageReactionTitleEqual = prevMessageReactionTitle === nextMessageReactionTitle;
   if (!messageReactionTitleEqual) return false;
+
+  const prevMyMessageTheme = JSON.stringify(prevMessagesContext?.myMessageTheme);
+  const nextMyMessageTheme = JSON.stringify(nextMessagesContext?.myMessageTheme);
+
+  const myMessageThemeEqual = prevMyMessageTheme === nextMyMessageTheme;
+  if (!myMessageThemeEqual) return false;
 
   const latestReactionsEqual =
     Array.isArray(prevMessage?.latest_reactions) && Array.isArray(nextMessage?.latest_reactions)

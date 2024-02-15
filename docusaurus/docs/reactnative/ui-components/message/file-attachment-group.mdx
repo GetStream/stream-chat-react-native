@@ -1,0 +1,24 @@
+---
+id: file-attachment-group
+title: FileAttachmentGroup
+---
+
+import Files from '../../common-content/contexts/message-context/files.mdx';
+
+Component to render a group of file attachments within the [`MessageList`](../../message-list).
+
+This is the default component provided to the prop [`FileAttachmentGroup`](../../../ui-components/channel#fileattachmentgroup) on the `Channel` component.
+
+## Props
+
+### <div class="label description required">required</div> `messageId`
+
+Id of the current message.
+
+| Type   |
+| ------ |
+| string |
+
+### <div class="label description">_overrides the value from [MessageContext](../../../state-and-offline-support/contexts/message-context#files)_</div> `files` {#files}
+
+<Files />

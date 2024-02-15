@@ -1,6 +1,7 @@
 ---
 id: overlay-provider
 title: OverlayProvider
+sidebar_position: 2
 ---
 
 The `OverlayProvider` is the top-level Stream Chat for React Native component and wraps all other components provided by the SDK. The `OverlayProvider` allows users to interact with messages on long press above the underlying views, use the full screen image viewer, and use the `AttachmentPicker` alongside the keyboard.
@@ -192,7 +193,7 @@ This can also be set via the `setTopInset` function provided by the `useAttac
 
 ### `value`
 
-Partially overrides the `value` provided to the `OverlayContext`. This prop can be used to set the [theme](https://getstream.io/chat/docs/sdk/reactnative/customization/theming/) via the `style` key.
+Partially overrides the `value` provided to the `OverlayContext`. This prop can be used to set the [theme](../theme) via the `style` key.
 
 ```tsx
 const theme = {

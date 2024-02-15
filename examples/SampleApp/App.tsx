@@ -162,11 +162,10 @@ const App = () => {
 const DrawerNavigator: React.FC = () => (
   <Drawer.Navigator
     drawerContent={(props) => <MenuDrawer {...props} />}
-    drawerStyle={{
-      width: 300,
-    }}
     screenOptions={{
-      gestureEnabled: true,
+      drawerStyle: {
+        width: 300,
+      },
     }}
   >
     <Drawer.Screen component={HomeScreen} name='HomeScreen' options={{ headerShown: false }} />
@@ -204,7 +203,7 @@ const UserSelector = () => (
     <UserSelectorStack.Screen
       component={AdvancedUserSelectorScreen}
       name='AdvancedUserSelectorScreen'
-      options={{ gestureEnabled: false, headerShown: false }}
+      options={{ gestureEnabled: false }}
     />
     <UserSelectorStack.Screen
       component={UserSelectorScreen}
@@ -220,9 +219,13 @@ const HomeScreen = () => {
 
   return (
     <Stack.Navigator
-      initialRouteName={initialChannelIdGlobalRef.current ? 'ChannelScreen' : 'ChatScreen'}
+      initialRouteName={initialChannelIdGlobalRef.current ? 'ChannelScreen' : 'MessagingScreen'}
     >
-      <Stack.Screen component={ChatScreen} name='ChatScreen' options={{ headerShown: false }} />
+      <Stack.Screen
+        component={ChatScreen}
+        name='MessagingScreen'
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         component={ChannelScreen}
         initialParams={

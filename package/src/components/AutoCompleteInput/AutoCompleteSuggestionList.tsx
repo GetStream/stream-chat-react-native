@@ -1,19 +1,28 @@
-import React from 'react';
-import { FlatList, TouchableOpacity, TouchableOpacityProps } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import {
+  LayoutChangeEvent,
+  Pressable,
+  PressableProps,
+  PressableStateCallbackType,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 import type { AutoCompleteSuggestionHeaderProps } from './AutoCompleteSuggestionHeader';
 import type { AutoCompleteSuggestionItemProps } from './AutoCompleteSuggestionItem';
 
 import {
-  isSuggestionCommand,
-  isSuggestionEmoji,
   isSuggestionUser,
   Suggestion,
   SuggestionsContextValue,
   useSuggestionsContext,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { FlatList } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
+
+const AUTO_COMPLETE_SUGGESTION_LIST_HEADER_HEIGHT = 30;
 
 type AutoCompleteSuggestionListComponentProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -31,9 +40,19 @@ export type AutoCompleteSuggestionListPropsWithContext<
 > &
   AutoCompleteSuggestionListComponentProps<StreamChatGenerics>;
 
-const SuggestionsItem: React.FC<TouchableOpacityProps> = (props) => {
-  const { children, ...touchableOpacityProps } = props;
-  return <TouchableOpacity {...touchableOpacityProps}>{children}</TouchableOpacity>;
+const SuggestionsItem: React.FC<PressableProps> = (props) => {
+  const { children, style: propsStyle, ...pressableProps } = props;
+
+  const style = ({ pressed }: PressableStateCallbackType) => [
+    propsStyle as ViewStyle,
+    { opacity: pressed ? 0.2 : 1 },
+  ];
+
+  return (
+    <Pressable {...pressableProps} style={style}>
+      {children}
+    </Pressable>
+  );
 };
 
 SuggestionsItem.displayName = 'SuggestionsHeader{messageInput{suggestions}}';
@@ -43,6 +62,7 @@ export const AutoCompleteSuggestionListWithContext = <
 >(
   props: AutoCompleteSuggestionListPropsWithContext<StreamChatGenerics>,
 ) => {
+  const [itemHeight, setItemHeight] = useState<number>(0);
   const {
     active,
     AutoCompleteSuggestionHeader,
@@ -55,6 +75,7 @@ export const AutoCompleteSuggestionListWithContext = <
 
   const {
     theme: {
+      colors: { white },
       messageInput: {
         container: { maxHeight },
         suggestions: { item: itemStyle },
@@ -63,62 +84,37 @@ export const AutoCompleteSuggestionListWithContext = <
     },
   } = useTheme();
 
-  const renderItem = ({ index, item }: { index: number; item: Suggestion<StreamChatGenerics> }) => {
+  const flatlistHeight = useMemo(() => {
+    let totalItemHeight;
+    if (triggerType === 'emoji') {
+      totalItemHeight = data.length < 7 ? data.length * itemHeight : itemHeight * 6;
+    } else {
+      totalItemHeight = data.length < 4 ? data.length * itemHeight : itemHeight * 3;
+    }
+
+    return triggerType === 'emoji' || triggerType === 'command'
+      ? totalItemHeight + AUTO_COMPLETE_SUGGESTION_LIST_HEADER_HEIGHT
+      : totalItemHeight;
+  }, [itemHeight, data.length]);
+
+  const renderItem = ({ item }: { item: Suggestion<StreamChatGenerics> }) => {
     switch (triggerType) {
-      case 'mention':
-        if (isSuggestionUser(item)) {
-          return (
-            <SuggestionsItem
-              onPress={() => {
-                onSelect(item);
-              }}
-              style={[
-                {
-                  paddingBottom: index === data.length - 1 ? 8 : 0,
-                  paddingTop: index === 0 ? 8 : 0,
-                },
-                itemStyle,
-              ]}
-            >
-              {AutoCompleteSuggestionItem && (
-                <AutoCompleteSuggestionItem itemProps={item} triggerType={triggerType} />
-              )}
-            </SuggestionsItem>
-          );
-        }
-        return null;
       case 'command':
-        if (isSuggestionCommand(item)) {
-          return (
-            <SuggestionsItem
-              onPress={() => {
-                onSelect(item);
-              }}
-              style={[itemStyle]}
-            >
-              {AutoCompleteSuggestionItem && (
-                <AutoCompleteSuggestionItem itemProps={item} triggerType={triggerType} />
-              )}
-            </SuggestionsItem>
-          );
-        }
-        return null;
+      case 'mention':
       case 'emoji':
-        if (isSuggestionEmoji(item)) {
-          return (
-            <SuggestionsItem
-              onPress={() => {
-                onSelect(item);
-              }}
-              style={[itemStyle]}
-            >
-              {AutoCompleteSuggestionItem && (
-                <AutoCompleteSuggestionItem itemProps={item} triggerType={triggerType} />
-              )}
-            </SuggestionsItem>
-          );
-        }
-        return null;
+        return (
+          <SuggestionsItem
+            onLayout={(event: LayoutChangeEvent) => setItemHeight(event.nativeEvent.layout.height)}
+            onPress={() => {
+              onSelect(item);
+            }}
+            style={itemStyle}
+          >
+            {AutoCompleteSuggestionItem && (
+              <AutoCompleteSuggestionItem itemProps={item} triggerType={triggerType} />
+            )}
+          </SuggestionsItem>
+        );
       default:
         return null;
     }
@@ -127,20 +123,22 @@ export const AutoCompleteSuggestionListWithContext = <
   if (!active || data.length === 0) return null;
 
   return (
-    <FlatList
-      data={data}
-      keyboardShouldPersistTaps='always'
-      keyExtractor={(item, index) =>
-        `${item.name || (isSuggestionUser(item) ? item.id : '')}${index}`
-      }
-      ListHeaderComponent={
-        AutoCompleteSuggestionHeader ? (
-          <AutoCompleteSuggestionHeader queryText={queryText} triggerType={triggerType} />
-        ) : null
-      }
-      renderItem={renderItem}
-      style={[flatlist, { maxHeight }]}
-    />
+    <View style={[styles.container, { backgroundColor: white, height: flatlistHeight }]}>
+      <FlatList
+        data={data}
+        keyboardShouldPersistTaps='always'
+        keyExtractor={(item, index) =>
+          `${item.name || (isSuggestionUser(item) ? item.id : '')}${index}`
+        }
+        ListHeaderComponent={
+          AutoCompleteSuggestionHeader ? (
+            <AutoCompleteSuggestionHeader queryText={queryText} triggerType={triggerType} />
+          ) : null
+        }
+        renderItem={renderItem}
+        style={[flatlist, { maxHeight }]}
+      />
+    </View>
   );
 };
 
@@ -205,6 +203,17 @@ export const AutoCompleteSuggestionList = <
     />
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    borderRadius: 8,
+    elevation: 3,
+    marginHorizontal: 8,
+    marginVertical: 8,
+    shadowOffset: { height: 1, width: 0 },
+    shadowOpacity: 0.15,
+  },
+});
 
 AutoCompleteSuggestionList.displayName =
   'AutoCompleteSuggestionList{messageInput{suggestions{List}}}';

@@ -181,8 +181,14 @@ export const AttachmentPicker = React.forwardRef(
     }, [selectedPicker, closePicker]);
 
     useEffect(() => {
+      const onKeyboardOpenHandler = () => {
+        if (selectedPicker) {
+          setSelectedPicker(undefined);
+        }
+        closePicker();
+      };
       const keyboardShowEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
-      const keyboardSubscription = Keyboard.addListener(keyboardShowEvent, closePicker);
+      const keyboardSubscription = Keyboard.addListener(keyboardShowEvent, onKeyboardOpenHandler);
 
       return () => {
         if (keyboardSubscription?.remove) {
@@ -191,9 +197,9 @@ export const AttachmentPicker = React.forwardRef(
         }
 
         // To keep compatibility with older versions of React Native, where `remove()` is not available
-        Keyboard.removeListener(keyboardShowEvent, closePicker);
+        Keyboard.removeListener(keyboardShowEvent, onKeyboardOpenHandler);
       };
-    }, [closePicker]);
+    }, [closePicker, selectedPicker]);
 
     useEffect(() => {
       if (currentIndex < 0) {

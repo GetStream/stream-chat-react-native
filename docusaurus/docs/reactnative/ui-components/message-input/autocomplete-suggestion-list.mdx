@@ -10,9 +10,9 @@ Component to render and customize the auto suggestion list.
 
 ## General Usage
 
-You can customize the `AutoCompleteSuggestionList` component and provide it back to the SDK via the [`AutoCompleteSuggestionList`](../../core-components/channel.mdx#AutoCompleteSuggestionList) prop on `Channel` if desired.
+You can customize the `AutoCompleteSuggestionList` component and provide it back to the SDK via the [`AutoCompleteSuggestionList`](../channel/channel.mdx#AutoCompleteSuggestionList) prop on `Channel` if desired.
 
-For more details about its usage refer [`Customizing autocomplete suggestions`](../../guides/auto_complete_suggestion_list_customizations.mdx)
+For more details about its usage refer [`Customizing autocomplete suggestions`](../../ui-cookbook/custom-auto-complete-suggestion-list.mdx)
 
 ```tsx
 import { Channel, AutoCompleteSuggestionList } from 'stream-chat-react-native';
@@ -42,10 +42,10 @@ const AutoCompleteSuggestionListComponent = () => <AutoCompleteSuggestionList />
 | --------------------------- |
 | `(item: Suggstion) => void` |
 
-### <div class="label description">_overrides the value from [SuggestionsContext](../../contexts/suggestions_context.mdx#querytext)_</div> `queryText` {#queryText}
+### <div class="label description">_overrides the value from [SuggestionsContext](../../../state-and-offline-support/contexts/suggestions-context#querytext)_</div> `queryText` {#queryText}
 
 <QueryText />
 
-### <div class="label description">_overrides the value from [SuggestionsContext](../../contexts/suggestions_context.mdx#triggertype)_</div> `triggerType` {#triggerType}
+### <div class="label description">_overrides the value from [SuggestionsContext](../../../state-and-offline-support/contexts/suggestions-context#triggertype)_</div> `triggerType` {#triggerType}
 
 <TriggerType />
