@@ -5,8 +5,9 @@ on:
     branches:
       - main # default branch name for each repo that docs should be push from
       - develop
+      - docs-v3-refresh
 env:
-  branch_map: '{"refs/heads/main": "production", "refs/heads/develop": "staging"}'
+  branch_map: '{"refs/heads/main": "production", "refs/heads/docs-v3-refresh": "staging"}'
 jobs:
   push_docusaurus:
     runs-on: ubuntu-latest
