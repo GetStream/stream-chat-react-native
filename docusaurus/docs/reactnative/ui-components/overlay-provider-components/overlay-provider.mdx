@@ -122,9 +122,9 @@ Instance of `Streami18n` class used for internationalization. Please read more
 
 ImageGallery component is used to render the image viewer. This component handler all the gestures for zooming and swiping on images within gallery.
 
-Its not possible to replace this component, given the complexity of it. But you can use `imageGalleryCustomComponents` prop on [`OverlayProvider`](./overlay-provider-components/overlay-provider.mdx) to replace sub-parts of image gallery.
+Its not possible to replace this component, given the complexity of it. But you can use `imageGalleryCustomComponents` prop on `OverlayProvider` to replace sub-parts of image gallery.
 
-Object for providing custom [Image gallery](https://getstream.io/chat/docs/sdk/reactnative/ui-components/image-gallery/) components. Each key in the object is spread as props onto its respective component. Each component has a number of sub-components it can receive in this manner.
+The following object for providing custom components. Each key in the object is spread as props onto its respective component. Each component has a number of sub-components it can receive in this manner.
 
 - `footer` -> [ImageGalleryFooter](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ImageGallery/components/ImageGalleryFooter.tsx)
 - `grid` -> [ImageGrid](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ImageGallery/components/ImageGrid.tsx)
