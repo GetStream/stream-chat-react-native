@@ -30,7 +30,7 @@ By default we render the following actions (as shown in screenshots)
   </tr>
 </table>
 
-Every message action that you see in UI, is represented by [`MessageAction`](../state-and-offline-support/object-types.mdx#messageaction) object for that action. And `MessageAction` object provides all the necessary inputs (title, icon, action handler, `actionType`) for rendering the action button.
+Every message action that you see in UI, is represented by [`MessageAction`](#messageaction) object for that action. And `MessageAction` object provides all the necessary inputs (title, icon, action handler, `actionType`) for rendering the action button.
 
 ```tsx
 type MessageAction = {
@@ -46,7 +46,7 @@ You can customize each one of the default actions using props on the [`Channel c
 
 The channel component accepts a prop called `messageActions`. You can use this prop as a callback function to render message actions selectively.
 
-The arguments to this function is an object with all the default message actions as [`MessageAction`](../state-and-offline-support/object-types.mdx#messageaction) objects. The function should return an array of MessageAction objects to render in a [MessageActionList](../common-content/ui-components/overlay-provider/props/message_action_list.mdx) within the message overlay, that is shown when a user long presses a message in a MessageList.
+The arguments to this function is an object with all the default message actions as [`MessageAction`](#messageaction) objects. The function should return an array of MessageAction objects to render in a [MessageActionList](../common-content/ui-components/overlay-provider/props/message_action_list.mdx) within the message overlay, that is shown when a user long presses a message in a MessageList.
 
 You can also customize each one of the default actions using the `messageActions` prop passed to the OverlayProvider as shown in the example below. The OverlayProvider component makes these props available in the `MessageOverlayContext` context.
 
@@ -71,6 +71,131 @@ messageActions={({
   return [] // Array<MessageAction>
 }}
 ```
+
+## Message Action Object type
+
+### MessageAction
+
+When you long press a message, it opens up a message overlay and renders all the actions available on message. MessageAction is an object consisting of all the parameters required to render a single action button, in message overlay.
+
+#### Example
+
+```jsx
+{
+  action: () => { /** Some action here */ },
+  icon: <PinIcon />,
+  title: 'Pin Message',
+  titleStyle: { color: 'red' }
+}
+```
+
+#### Keys and Values
+
+#### `action`
+
+Callback when user presses the action button.
+
+| Type     |
+| -------- |
+| Function |
+
+#### `actionType`
+
+Type of the action performed.
+
+| Type                                                                                                                                                                                        |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| enum('blockUser', 'copyMessage', 'deleteMessage', 'editMessage', 'flagMessage', 'muteUser', 'pinMessage', 'selectReaction', 'reply', 'retry', 'quotedReply', 'threadReply', 'unpinMessage') |
+
+#### `icon`
+
+Element to render as icon for action button.
+
+| Type          |
+| ------------- |
+| React Element |
+
+#### `title`
+
+Title for action button.
+
+| Type   |
+| ------ |
+| String |
+
+#### `titleStyle`
+
+Styles for underlying Text component of action title.
+
+| Type                                                                      |
+| ------------------------------------------------------------------------- |
+| [`Text Style Props`](https://reactnative.dev/docs/text-style-props#props) |
+
+### MessageTouchableHandlerPayload
+
+`MessageTouchableHandlerPayload` object is provided as parameter to callback handlers such as `onLongPressMessage`, `onPressMessage` for user interaction with message.
+
+#### Example
+
+```jsx
+{
+  actionHandlers: {
+    deleteMessage: [function],
+    editMessage: [function],
+    quotedReply: [function],
+    resendMessage: [function],
+    showMessageOverlay: [function],
+    toggleBanUser: [function],
+    toggleMuteUser: [function],
+    toggleReaction: [function],
+  },
+  additionalInfo: [object],
+  message: [message object],
+}
+```
+
+#### Keys and values
+
+#### `additionalInfo`
+
+Additional message touchable handler info.
+
+| Type   |
+| ------ |
+| Object |
+
+#### `actionHandlers`
+
+Set of action handler functions for various message actions. You can use these functions to perform any action when give interaction occurs.
+
+- `deleteMessage`
+- `editMessage`
+- `quotedReply`
+- `resendMessage`
+- `showMessageOverlay`
+- `toggleBanUser`
+- `toggleMuteUser`
+- `toggleReaction` (takes `reactionType` as parameter)
+
+```tsx
+<Channel onLongPressMessage={({ defaultHandlers }) => defaultHandlers.quotedReply()}
+```
+
+| Type   |
+| ------ |
+| Object |
+
+#### `message`
+
+Message object, on which interaction occurred.
+
+```tsx
+<Channel onLongPressMessage={({ message }) => console.log(message.id, message.text)}
+```
+
+| Type   |
+| ------ |
+| Object |
 
 ## How to conditionally render message actions
 
