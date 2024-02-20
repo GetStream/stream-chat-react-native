@@ -16,6 +16,7 @@ export const useCreateInputMessageInputContext = <
   CommandsButton,
   compressImageQuality,
   CooldownTimer,
+  disabled,
   doDocUploadRequest,
   doImageUploadRequest,
   editing,
@@ -71,6 +72,7 @@ export const useCreateInputMessageInputContext = <
       CommandsButton,
       compressImageQuality,
       CooldownTimer,
+      disabled,
       doDocUploadRequest,
       doImageUploadRequest,
       editing,
@@ -103,7 +105,15 @@ export const useCreateInputMessageInputContext = <
       ShowThreadMessageInChannelButton,
       UploadProgressIndicator,
     }),
-    [compressImageQuality, channelId, editingDep, initialValue, maxMessageLength, quotedMessageId],
+    [
+      compressImageQuality,
+      channelId,
+      disabled,
+      editingDep,
+      initialValue,
+      maxMessageLength,
+      quotedMessageId,
+    ],
   );
 
   return inputMessageInputContext;

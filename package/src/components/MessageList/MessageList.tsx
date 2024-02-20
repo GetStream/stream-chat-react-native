@@ -439,7 +439,9 @@ const MessageListWithContext = <
   });
 
   useEffect(() => {
-    setScrollToBottomButtonVisible(false);
+    if (disabled) {
+      setScrollToBottomButtonVisible(false);
+    }
   }, [disabled]);
 
   useEffect(() => {

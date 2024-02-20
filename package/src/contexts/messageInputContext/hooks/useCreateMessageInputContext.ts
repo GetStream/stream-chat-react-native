@@ -20,6 +20,7 @@ export const useCreateMessageInputContext = <
   compressImageQuality,
   cooldownEndsAt,
   CooldownTimer,
+  disabled,
   doDocUploadRequest,
   doImageUploadRequest,
   editing,
@@ -123,6 +124,7 @@ export const useCreateMessageInputContext = <
       compressImageQuality,
       cooldownEndsAt,
       CooldownTimer,
+      disabled,
       doDocUploadRequest,
       doImageUploadRequest,
       editing,
@@ -198,6 +200,7 @@ export const useCreateMessageInputContext = <
     }),
     [
       cooldownEndsAt,
+      disabled,
       editingdep,
       fileUploadsValue,
       giphyActive,
