@@ -1,0 +1,142 @@
+{
+  "Docs": {
+    "Basics": ["basics/overview", "basics/installation"],
+    "UI Components": [
+      "ui-components/theme",
+      {
+        "Overlay Provider": [
+          "ui-components/overlay-provider-components/overlay-provider",
+          "ui-components/overlay-provider-components/overlay-reaction-list",
+          "ui-components/overlay-provider-components/overlay-reactions-avatar",
+          "ui-components/overlay-provider-components/overlay-reactions",
+          "ui-components/contexts/overlay-context"
+        ]
+      },
+      {
+        "Chat": ["ui-components/chat/chat", "ui-components/contexts/chat-context"]
+      },
+      {
+        "Channel List": [
+          "ui-components/channel-list-components/channel-list",
+          "ui-components/channel-list-components/channel-avatar",
+          "ui-components/channel-list-components/channel-list-messenger",
+          "ui-components/channel-list-components/channel-preview-message",
+          "ui-components/channel-list-components/channel-preview-messenger",
+          "ui-components/channel-list-components/channel-preview-muted-status",
+          "ui-components/channel-list-components/channel-preview-status",
+          "ui-components/channel-list-components/channel-preview-title",
+          "ui-components/channel-list-components/channel-preview-unread-count",
+          "ui-components/contexts/channels-context"
+        ]
+      },
+      {
+        "Channel": ["ui-components/channel/channel", "ui-components/contexts/channel-context"]
+      },
+      {
+        "Message List": [
+          "ui-components/message-list-components/message-list",
+          "ui-components/message-list-components/scroll-to-bottom-button",
+          "ui-components/message-list-components/typing-indicator",
+          "ui-components/contexts/messages-context"
+        ]
+      },
+      {
+        "Message Input": [
+          "ui-components/message-input-components/attach-button",
+          "ui-components/message-input-components/auto-complete-input",
+          "ui-components/message-input-components/autocomplete-suggestion-header",
+          "ui-components/message-input-components/autocomplete-suggestion-item",
+          "ui-components/message-input-components/autocomplete-suggestion-list",
+          "ui-components/message-input-components/commands-button",
+          "ui-components/message-input-components/file-upload-preview",
+          "ui-components/message-input-components/image-upload-preview",
+          "ui-components/message-input-components/input-buttons",
+          "ui-components/message-input-components/input-editing-state-header",
+          "ui-components/message-input-components/input-giphy-search",
+          "ui-components/message-input-components/input-reply-state-header",
+          "ui-components/message-input-components/message-input",
+          "ui-components/message-input-components/more-options-button",
+          "ui-components/message-input-components/reply",
+          "ui-components/message-input-components/send-button",
+          "ui-components/message-input-components/send-message-disallowed-indicator",
+          "ui-components/message-input-components/show-thread-message-in-channel-button",
+          "ui-components/contexts/message-input-context"
+        ]
+      },
+      {
+        "Message": [
+          "ui-components/message-components/attachment",
+          "ui-components/message-components/audio-attachment",
+          "ui-components/message-components/card",
+          "ui-components/message-components/file-attachment-group",
+          "ui-components/message-components/file-attachment",
+          "ui-components/message-components/file-icon",
+          "ui-components/message-components/gallery",
+          "ui-components/message-components/giphy",
+          "ui-components/message-components/message-avatar",
+          "ui-components/message-components/message-bounce",
+          "ui-components/message-components/message-content",
+          "ui-components/message-components/message-deleted",
+          "ui-components/message-components/message-error",
+          "ui-components/message-components/message-footer",
+          "ui-components/message-components/message-pinned-header",
+          "ui-components/message-components/message-replies-avatars",
+          "ui-components/message-components/message-replies",
+          "ui-components/message-components/message-simple",
+          "ui-components/message-components/message-status",
+          "ui-components/message-components/message-system",
+          "ui-components/message-components/reaction-list",
+          "ui-components/message-components/video-thumbnail",
+          "ui-components/contexts/message-context"
+        ]
+      },
+      {
+        "Thread": ["ui-components/thread/thread", "ui-components/contexts/thread-context"]
+      },
+      {
+        "Contexts": [
+          "ui-components/contexts/overview",
+          "ui-components/contexts/attachment-picker-context",
+          "ui-components/contexts/image-gallery-context",
+          "ui-components/contexts/keyboard-context",
+          "ui-components/contexts/message-overlay-context",
+          "ui-components/contexts/own-capabilities-context",
+          "ui-components/contexts/paginated-message-list-context",
+          "ui-components/contexts/suggestions-context",
+          "ui-components/contexts/theme-context",
+          "ui-components/contexts/translation-context",
+          "ui-components/contexts/typing-context"
+        ]
+      }
+    ],
+    "UI Cookbook": [
+      "ui-cookbook/custom-attachments",
+      "ui-cookbook/custom-channel-list",
+      "ui-cookbook/custom-message-actions",
+      "ui-cookbook/custom-message-list",
+      "ui-cookbook/custom-message-input",
+      "ui-cookbook/custom-auto-complete-suggestion-list",
+      "ui-cookbook/custom-channel-background",
+      "ui-cookbook/custom-message"
+    ],
+    "State and Offline Support": ["state-and-offline-support/offline-support"],
+    "Advanced Guides": [
+      "advanced-guides/typescript",
+      "advanced-guides/troubleshooting",
+      "advanced-guides/navigation",
+      "advanced-guides/native-handlers",
+      "advanced-guides/internationalization",
+      "advanced-guides/keyboard",
+      "advanced-guides/going-live-checklist",
+      {
+        "Push Notifications": [
+          "advanced-guides/push-notifications/v1",
+          "advanced-guides/push-notifications/v2"
+        ]
+      },
+      "advanced-guides/debug-using-flipper-plugin",
+      "advanced-guides/performance"
+    ],
+    "Migration Guides": ["migration-guides/migrating-from-4.x-to-5.x"]
+  }
+}
