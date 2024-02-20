@@ -42,6 +42,7 @@
       },
       {
         "Message Input": [
+          "ui-components/message-input-components/message-input",
           "ui-components/message-input-components/attach-button",
           "ui-components/message-input-components/auto-complete-input",
           "ui-components/message-input-components/autocomplete-suggestion-header",
@@ -54,7 +55,6 @@
           "ui-components/message-input-components/input-editing-state-header",
           "ui-components/message-input-components/input-giphy-search",
           "ui-components/message-input-components/input-reply-state-header",
-          "ui-components/message-input-components/message-input",
           "ui-components/message-input-components/more-options-button",
           "ui-components/message-input-components/reply",
           "ui-components/message-input-components/send-button",
@@ -65,6 +65,7 @@
       },
       {
         "Message": [
+          "ui-components/message-components/message-simple",
           "ui-components/message-components/attachment",
           "ui-components/message-components/audio-attachment",
           "ui-components/message-components/card",
@@ -82,7 +83,6 @@
           "ui-components/message-components/message-pinned-header",
           "ui-components/message-components/message-replies-avatars",
           "ui-components/message-components/message-replies",
-          "ui-components/message-components/message-simple",
           "ui-components/message-components/message-status",
           "ui-components/message-components/message-system",
           "ui-components/message-components/reaction-list",
@@ -110,6 +110,7 @@
       }
     ],
     "UI Cookbook": [
+      "ui-cookbook/overview",
       "ui-cookbook/custom-attachments",
       "ui-cookbook/custom-channel-list",
       "ui-cookbook/custom-message-actions",
@@ -119,7 +120,10 @@
       "ui-cookbook/custom-channel-background",
       "ui-cookbook/custom-message"
     ],
-    "State and Offline Support": ["state-and-offline-support/offline-support"],
+    "State and Offline Support": [
+      "state-and-offline-support/state-overview",
+      "state-and-offline-support/offline-support"
+    ],
     "Advanced Guides": [
       "advanced-guides/typescript",
       "advanced-guides/troubleshooting",
