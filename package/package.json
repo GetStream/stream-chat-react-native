@@ -46,7 +46,7 @@
     "prepublishOnly": "echo 'running prepublishOnly for core package' && bash ./bin/before-tag.sh && bash ./bin/release.sh && echo 'finished running prepublishOnly for core package'",
     "prepack": " cp ../README.md .",
     "postpack": "rm README.md",
-    "update-emoji": "node src/emoji-data"
+    "update-emoji": "node src/emoji-data/compile.js"
   },
   "react-native-builder-bob": {
     "source": "src",
