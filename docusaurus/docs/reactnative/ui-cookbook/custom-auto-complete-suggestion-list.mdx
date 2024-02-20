@@ -160,3 +160,56 @@ import { FlatList, Text, View } from 'react-native';
 ```
 
 Note: The default `AutoCompleteSuggestionList` must be returned if you don't want any change for a particular trigger type.
+
+### Customize Auto complete emoji search result
+
+Our `AutoCompleteSuggestionList` already support emoji search using a query that starts with `:` in the message input, on a default data set that can be found [here](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/emoji-data/index.ts).
+
+We allow overriding this behaviour and the default search behaviour by using the `emojiSearchIndex` prop in the `Channel` component.
+
+An example to do the same is as followed:
+
+```tsx
+import { Channel, EmojiSearchIndex } from 'stream-chat-react-native';
+import search from '@jukben/emoji-search';
+
+const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
+  const customEmojiSearchIndex: EmojiSearchIndex = {
+    search: (query: string) => {
+      const results = search(query);
+      return results.slice(0, 10).map(data => ({
+        name: data.name,
+        names: data.keywords,
+        unicode: data.name,
+        skins: [],
+      }));
+    },
+  };
+
+  return (
+    <Channel
+      channel={channel}
+      emojiSearchIndex={customEmojiSearchIndex}
+      keyboardVerticalOffset={headerHeight}
+      thread={thread}
+    >
+      {/* Underlying components here */}
+    </Channel>
+  );
+};
+```
+
+:::Note
+Please make sure you follow the type of the `Emoji` which is defined as below:
+
+```ts
+type Emoji = {
+  id: string;
+  name: string;
+  names: string[];
+  unicode: string;
+  skins?: string[];
+};
+```
+
+:::
