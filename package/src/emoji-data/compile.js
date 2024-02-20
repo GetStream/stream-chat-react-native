@@ -42,7 +42,7 @@ getEmojis().then(({ emojiLib }) => {
   );
 
   fs.writeFile(
-    'src/emoji-data/compiled.ts',
+    'src/emoji-data/index.ts',
     `export type Emoji = {
       id: string;
       name: string;

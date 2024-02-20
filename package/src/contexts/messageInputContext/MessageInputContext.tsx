@@ -36,7 +36,7 @@ import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreO
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
-import type { Emoji } from '../../emoji-data/compiled';
+import type { Emoji } from '../../emoji-data';
 import { pickDocument } from '../../native';
 import type {
   Asset,
