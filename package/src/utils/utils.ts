@@ -359,33 +359,33 @@ export type QueryMembersFunction<
  */
 export const defaultEmojiSearchIndex: EmojiSearchIndex = {
   search: (query) => {
-    const result = compiledEmojis.reduce((acc, cur) => {
-      if (acc.length >= 10) return acc;
+    const results = [];
 
-      if (cur.names.some((name) => name.includes(query))) {
-        // Since there can be no emojiLib for the current name we need to check for it being undefined
-        if (cur.skins) {
-          acc.push({
-            ...cur,
-            name: `${cur.name}-tone-1`,
+    for (const emoji of compiledEmojis) {
+      if (results.length >= 10) return results;
+      if (emoji.names.some((name) => name.includes(query))) {
+        // Aggregate skins as different toned emojis - if skins are present
+        if (emoji.skins) {
+          results.push({
+            ...emoji,
+            name: `${emoji.name}-tone-1`,
             skins: undefined,
           });
-          cur.skins.forEach((tone, index) =>
-            acc.push({
-              ...cur,
-              name: `${cur.name}-tone-${index + 2}`,
+          emoji.skins.forEach((tone, index) =>
+            results.push({
+              ...emoji,
+              name: `${emoji.name}-tone-${index + 2}`,
               skins: undefined,
               unicode: tone,
             }),
           );
         } else {
-          acc.push(cur);
+          results.push(emoji);
         }
       }
+    }
 
-      return acc;
-    }, [] as Emoji[]);
-    return result;
+    return results;
   },
 };
 
