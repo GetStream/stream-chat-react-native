@@ -38,7 +38,7 @@ export const useCreateOwnCapabilitiesContext = <
   }, []);
 
   const ownCapabilitiesContext: OwnCapabilitiesContextValue = useMemo(() => {
-    const capabilities = (JSON.parse(own_capabilities) || []) as Array<string>;
+    const capabilities = (own_capabilities || []) as Array<string>;
     const ownCapabilitiesContext = Object.keys(allOwnCapabilities).reduce(
       (result, capability) => ({
         ...result,
