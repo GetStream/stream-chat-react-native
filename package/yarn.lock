@@ -9571,7 +9571,7 @@ stream-buffers@2.2.x:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha512-uyQK/mx5QjHun80FLJTfaWE7JtwfRMKBLkMne6udYOmvH0CawotVa7TfgYHzAnpphn4+TweIx1QKMnRIbipmUg==
 
-stream-chat@^8.17.0:
+stream-chat@8.17.0:
   version "8.17.0"
   resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.17.0.tgz#01c4aacbcdb5dd734b088e70f40cd42a0bcd0fb7"
   integrity sha512-0cYKSroKGiLilElk8Ol6AKAowWIIpXz3wsY97o+cAqixOwwHdnbuPZ00L2CzAjNB2c94Vl5L48n1K+9iOEpv3w==
