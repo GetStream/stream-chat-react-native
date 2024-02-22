@@ -116,7 +116,6 @@ type MessageInputPropsWithContext<
     | 'SendButton'
     | 'sending'
     | 'sendMessageAsync'
-    | 'SendMessageDisallowedIndicator'
     | 'setShowMoreOptions'
     | 'setGiphyActive'
     | 'showMoreOptions'
