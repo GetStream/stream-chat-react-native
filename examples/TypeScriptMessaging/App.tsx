@@ -1,5 +1,14 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { I18nManager, LogBox, Platform, SafeAreaView, useColorScheme, View } from 'react-native';
+import {
+  I18nManager,
+  LogBox,
+  Platform,
+  SafeAreaView,
+  TouchableOpacity,
+  Text,
+  useColorScheme,
+  View,
+} from 'react-native';
 import { DarkTheme, DefaultTheme, NavigationContainer, RouteProp } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import { useHeaderHeight } from '@react-navigation/elements';
@@ -53,16 +62,15 @@ const options = {
 
 I18nManager.forceRTL(false);
 
-const chatClient = StreamChat.getInstance<StreamChatGenerics>('q95x9hkbyd6p');
+const chatClient = StreamChat.getInstance<StreamChatGenerics>('yjrt5yxw77ev');
 const userToken =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoicm9uIn0.eRVjxLvd4aqCEHY_JRa97g6k7WpHEhxL7Z4K4yTot1c';
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidmlzaGFsIn0.HOlVh-ZyQnjyuL20G-67RTgKufBuAH-I-gbEELFlass';
 
 const user = {
-  id: 'ron',
+  id: 'vishal',
 };
 const filters = {
-  example: 'example-apps',
-  members: { $in: ['ron'] },
+  members: { $in: ['vishal'] },
   type: 'messaging',
 };
 const sort: ChannelSort<StreamChatGenerics> = { last_updated: -1 };
@@ -127,6 +135,17 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
     <SafeAreaView>
       <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread}>
         <View style={{ flex: 1 }}>
+          <TouchableOpacity
+            onPress={async () => {
+              if (channel.data?.frozen) {
+                await channel.updatePartial({ set: { frozen: false } });
+              } else {
+                await channel.updatePartial({ set: { frozen: true } });
+              }
+            }}
+          >
+            <Text style={{ fontSize: 20 }}>{channel.data?.frozen ? 'Unfrozen' : 'Frozen'}</Text>
+          </TouchableOpacity>
           <MessageList<StreamChatGenerics>
             onThreadSelect={(thread) => {
               setThread(thread);

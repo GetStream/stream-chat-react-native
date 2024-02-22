@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import type { Channel } from 'stream-chat';
 
@@ -18,15 +18,27 @@ export const useCreateOwnCapabilitiesContext = <
   channel: Channel<StreamChatGenerics>;
   overrideCapabilities?: Partial<OwnCapabilitiesContextValue>;
 }) => {
+  const [own_capabilities, setOwnCapabilites] = useState(
+    JSON.stringify(channel.data?.own_capabilities as Array<string>),
+  );
   const overrideCapabilitiesStr = overrideCapabilities
     ? JSON.stringify(Object.values(overrideCapabilities))
     : null;
-  const ownCapabilitiesStr = channel?.data?.own_capabilities
-    ? JSON.stringify(Object.values(channel?.data?.own_capabilities as Array<string>))
-    : null;
+
+  useEffect(() => {
+    const listener = channel.on('capabilities.changed', (event) => {
+      if (event.own_capabilities) {
+        setOwnCapabilites(JSON.stringify(event.own_capabilities as Array<string>));
+      }
+    });
+
+    return () => {
+      listener.unsubscribe();
+    };
+  }, []);
 
   const ownCapabilitiesContext: OwnCapabilitiesContextValue = useMemo(() => {
-    const capabilities = (channel?.data?.own_capabilities || []) as Array<string>;
+    const capabilities = (JSON.parse(own_capabilities) || []) as Array<string>;
     const ownCapabilitiesContext = Object.keys(allOwnCapabilities).reduce(
       (result, capability) => ({
         ...result,
@@ -38,7 +50,7 @@ export const useCreateOwnCapabilitiesContext = <
     );
 
     return ownCapabilitiesContext;
-  }, [channel.id, overrideCapabilitiesStr, ownCapabilitiesStr]);
+  }, [channel.id, overrideCapabilitiesStr, own_capabilities]);
 
   return ownCapabilitiesContext;
 };

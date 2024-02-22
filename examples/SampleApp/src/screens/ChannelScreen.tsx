@@ -72,16 +72,11 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
       }}
       RightContent={() => (
         <TouchableOpacity
-          onPress={() => {
-            closePicker();
-            if (isOneOnOneConversation) {
-              navigation.navigate('OneOnOneChannelDetailScreen', {
-                channel,
-              });
+          onPress={async () => {
+            if (channel.data?.frozen) {
+              await channel.updatePartial({ set: { frozen: false } });
             } else {
-              navigation.navigate('GroupChannelDetailsScreen', {
-                channel,
-              });
+              await channel.updatePartial({ set: { frozen: true } });
             }
           }}
         >
