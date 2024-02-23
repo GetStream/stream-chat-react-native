@@ -325,6 +325,7 @@ export type Theme = {
     };
     uploadProgressIndicator: {
       container: ViewStyle;
+      indicatorColor: string;
       overlay: ViewStyle;
     };
   };
@@ -831,6 +832,7 @@ export const defaultTheme: Theme = {
     },
     uploadProgressIndicator: {
       container: {},
+      indicatorColor: '',
       overlay: {},
     },
   },
