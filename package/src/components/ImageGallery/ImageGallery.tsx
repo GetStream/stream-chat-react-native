@@ -272,7 +272,7 @@ export const ImageGallery = <
               !attachment.title_link &&
               !attachment.og_scrape_url &&
               getUrlOfImageAttachment(attachment)) ||
-            (isVideoPackageAvailable() && attachment.type === 'video'),
+            ((isVideoPackageAvailable() && attachment.type) === 'video' && attachment.thumb_url),
         )
         .reverse() || [];
 
@@ -292,6 +292,7 @@ export const ImageGallery = <
         original_width: a.original_width,
         paused: isInitiallyPaused,
         progress: 0,
+        thumb_url: a.thumb_url,
         type: a.type,
         uri:
           a.type === 'giphy'
@@ -728,6 +729,7 @@ export type Photo<
   original_width?: number;
   paused?: boolean;
   progress?: number;
+  thumb_url?: string;
   type?: string;
   user?: UserResponse<StreamChatGenerics> | null;
   user_id?: string;
