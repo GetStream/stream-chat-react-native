@@ -17,6 +17,9 @@ import type { UserResponse } from 'stream-chat';
 
 import type { StreamChatGenerics } from '../../types';
 import { Search } from '../../icons/Search';
+import calendar from 'dayjs/plugin/calendar';
+
+dayjs.extend(calendar);
 
 const styles = StyleSheet.create({
   absolute: { position: 'absolute' },
