@@ -18,7 +18,7 @@ const requestNotificationPermission = async () => {
 };
 
 messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-  const messageId = remoteMessage.data?.id;
+  const messageId = remoteMessage.data?.id as string;
   if (!messageId) return;
   const config = await AsyncStore.getItem<LoginConfig | null>(
     '@stream-rn-sampleapp-login-config',
