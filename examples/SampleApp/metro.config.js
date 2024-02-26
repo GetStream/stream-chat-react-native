@@ -2,7 +2,6 @@
 const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 const { resolveUniqueModule } = require('@rnx-kit/metro-config');
 const PATH = require('path');
-const exclusionList = require('metro-config/src/defaults/exclusionList');
 const packageDir = PATH.resolve(__dirname, '../../package');
 
 // find what all modules need to be unique for the app
@@ -32,7 +31,7 @@ extraNodeModules['stream-chat-react-native'] = PATH.resolve(packageDir, 'native-
 
 const customConfig = {
   resolver: {
-    blockList: exclusionList(blockList),
+    blockList,
     extraNodeModules,
   },
   watchFolders,
