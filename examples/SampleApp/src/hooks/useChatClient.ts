@@ -19,12 +19,16 @@ const requestNotificationPermission = async () => {
 
 messaging().setBackgroundMessageHandler(async (remoteMessage) => {
   const messageId = remoteMessage.data?.id as string;
-  if (!messageId) return;
+  if (!messageId) {
+    return;
+  }
   const config = await AsyncStore.getItem<LoginConfig | null>(
     '@stream-rn-sampleapp-login-config',
     null,
   );
-  if (!config) return;
+  if (!config) {
+    return;
+  }
 
   const client = StreamChat.getInstance(config.apiKey);
 
@@ -34,7 +38,6 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
     name: config.userName,
   };
 
-  // eslint-disable-next-line no-underscore-dangle
   await client._setToken(user, config.userToken);
   const message = await client.getMessage(messageId);
 
@@ -111,7 +114,9 @@ export const useChatClient = () => {
       // show notifications when on foreground
       const unsubscribeForegroundMessageReceive = messaging().onMessage(async (remoteMessage) => {
         const messageId = remoteMessage.data?.id;
-        if (!messageId) return;
+        if (!messageId) {
+          return;
+        }
         const message = await client.getMessage(messageId);
         if (message.message.user?.name && message.message.text) {
           // create the android channel to send the notification to
@@ -189,6 +194,7 @@ export const useChatClient = () => {
     };
     run();
     return unsubscribePushListenersRef.current;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /**

@@ -3,7 +3,7 @@ import { Rect } from 'react-native-svg';
 
 import { IconProps, RootSvg } from './utils/base';
 
-export const Pause: React.FC<IconProps> = (props) => {
+export const Pause = (props: IconProps) => {
   const { height, width } = props;
   return (
     <RootSvg height={height} viewBox={`0 0 ${height} ${width}`} width={width} {...props}>

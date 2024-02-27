@@ -2,7 +2,7 @@ import React from 'react';
 
 import { IconProps, RootPath, RootSvg } from './utils/base';
 
-export const CirclePlus: React.FC<IconProps> = (props) => (
+export const CirclePlus = (props: IconProps) => (
   <RootSvg {...props}>
     <RootPath
       d='"M11 8a1 1 0 112 0v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H8a1 1 0 110-2h3V8z'

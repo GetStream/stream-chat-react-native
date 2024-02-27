@@ -1472,8 +1472,8 @@ const ChannelWithContext = <
       text,
       type: 'regular',
       user: {
-        id: client.userID,
         ...messageUser,
+        id: client.userID,
       },
       ...extraFields,
     } as unknown as MessageResponse<StreamChatGenerics>;

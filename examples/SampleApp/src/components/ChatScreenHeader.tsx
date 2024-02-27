@@ -41,6 +41,7 @@ export const ChatScreenHeader: React.FC<{ title?: string }> = ({ title = 'Stream
 
   return (
     <ScreenHeader
+      // eslint-disable-next-line react/no-unstable-nested-components
       LeftContent={() => (
         <TouchableOpacity onPress={navigation.openDrawer}>
           <Image
@@ -51,6 +52,7 @@ export const ChatScreenHeader: React.FC<{ title?: string }> = ({ title = 'Stream
           />
         </TouchableOpacity>
       )}
+      // eslint-disable-next-line react/no-unstable-nested-components
       RightContent={() => (
         <RoundButton
           onPress={() => {
@@ -60,6 +62,7 @@ export const ChatScreenHeader: React.FC<{ title?: string }> = ({ title = 'Stream
           <NewDirectMessageIcon active color={accent_blue} height={25} width={25} />
         </RoundButton>
       )}
+      // eslint-disable-next-line react/no-unstable-nested-components
       Title={isOnline ? undefined : () => <NetworkDownIndicator titleSize='large' />}
       titleText={title}
     />

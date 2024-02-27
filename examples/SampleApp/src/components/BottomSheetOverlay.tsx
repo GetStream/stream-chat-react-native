@@ -161,7 +161,9 @@ export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
     ],
   }));
 
-  if (!visible) return null;
+  if (!visible) {
+    return null;
+  }
 
   return (
     <Animated.View pointerEvents={visible ? 'auto' : 'none'} style={StyleSheet.absoluteFill}>

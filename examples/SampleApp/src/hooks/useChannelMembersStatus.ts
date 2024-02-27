@@ -36,6 +36,7 @@ export const useChannelMembersStatus = (channel: Channel<StreamChatGenerics>) =>
 
   useEffect(() => {
     setStatus(getStatus());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchersCount, memberCount, chatClient]);
 
   return status;

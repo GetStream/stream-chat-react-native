@@ -11,7 +11,9 @@ Dayjs.extend(relativeTime);
 export const getUserActivityStatus = (
   user?: Immutable<UserResponse<StreamChatGenerics>> | UserResponse<StreamChatGenerics>,
 ) => {
-  if (!user) return '';
+  if (!user) {
+    return '';
+  }
 
   if (user.online) {
     return 'Online';

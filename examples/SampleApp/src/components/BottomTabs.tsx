@@ -75,7 +75,9 @@ export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
       {state.routes.map((route, index) => {
         const tab = getTab(route.name);
 
-        if (!tab) return null;
+        if (!tab) {
+          return null;
+        }
 
         const isFocused = state.index === index;
 

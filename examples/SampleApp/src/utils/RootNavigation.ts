@@ -5,7 +5,9 @@ import { StackNavigatorParamList } from '../types';
 export const RootNavigationRef = React.createRef<NavigationContainerRef>();
 
 export const navigateToChannel = (channelId: string | null | undefined) => {
-  if (!channelId || !RootNavigationRef.current) return;
+  if (!channelId || !RootNavigationRef.current) {
+    return;
+  }
   const navigation = RootNavigationRef.current;
   navigation.dispatch((state) => {
     const routes = state.routes.slice();

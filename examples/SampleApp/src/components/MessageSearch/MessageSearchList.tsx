@@ -80,7 +80,9 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
         </View>
       );
     }
-    if (!messages && !refreshing) return null;
+    if (!messages && !refreshing) {
+      return null;
+    }
 
     return (
       <>

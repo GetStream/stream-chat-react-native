@@ -2,7 +2,7 @@ import React from 'react';
 
 import { IconProps, RootPath, RootSvg } from './utils/base';
 
-export const Picture: React.FC<IconProps> = (props) => (
+export const Picture = (props: IconProps) => (
   <RootSvg {...props}>
     <RootPath
       d='M2 8a3 3 0 013-3h14a3 3 0 013 3v8a3 3 0 01-3 3H5a3 3 0 01-3-3V8zm3-1a1 1 0 00-1 1v8a1 1 0 001 1h14a1 1 0 001-1V8a1 1 0 00-1-1H5z'

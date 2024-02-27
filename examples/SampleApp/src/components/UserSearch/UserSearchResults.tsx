@@ -121,7 +121,9 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
     results.forEach((user) => {
       const initial = user.name?.slice(0, 1).toUpperCase();
 
-      if (!initial) return;
+      if (!initial) {
+        return;
+      }
 
       if (!newSections[initial]) {
         newSections[initial] = {
@@ -133,6 +135,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
       }
     });
     setSections(Object.values(newSections));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resultsLength]);
 
   return (
@@ -173,6 +176,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
         <SectionList
           keyboardDismissMode='interactive'
           keyboardShouldPersistTaps='handled'
+          // eslint-disable-next-line react/no-unstable-nested-components
           ListEmptyComponent={() => (
             <View style={styles.emptyResultIndicator}>
               <Search fill={grey_gainsboro} scale={5} />

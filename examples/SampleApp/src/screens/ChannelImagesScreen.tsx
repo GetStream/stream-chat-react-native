@@ -157,11 +157,12 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
     )
     .join();
 
-  const numberOfMessagesWithImages = messagesWithImages.length;
   useEffect(() => {
     setImages(messagesWithImages);
-    return () => setImages(channelImages.current);
-  }, [imageString, numberOfMessagesWithImages]);
+    const channelImagesCurrent = channelImages.current;
+    return () => setImages(channelImagesCurrent);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imageString, setImages]);
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: white }]}>
