@@ -98,6 +98,7 @@ export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
       Keyboard.dismiss();
     }
     fadeScreen(!!visible);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
   const onPan = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
