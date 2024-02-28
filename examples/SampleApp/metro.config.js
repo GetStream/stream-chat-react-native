@@ -6,8 +6,12 @@ const packageDir = PATH.resolve(__dirname, '../../package');
 
 const config = getDefaultConfig(__dirname);
 
+const symlinked = ['stream-chat-react-native', 'stream-chat-react-native-core'];
+
 // find what all modules need to be unique for the app
-const dependencyPackageNames = Object.keys(require('./package.json').dependencies);
+const dependencyPackageNames = Object.keys(require('./package.json').dependencies).filter(
+  (item) => !symlinked.includes(item),
+);
 
 const watchFolders = [packageDir];
 
@@ -30,6 +34,7 @@ const extraNodeModules = uniqueModules.reduce((acc, item) => {
 }, {});
 
 extraNodeModules['stream-chat-react-native'] = PATH.resolve(packageDir, 'native-package');
+extraNodeModules['stream-chat-react-native-core'] = PATH.resolve(packageDir);
 
 config.resolver.blockList = exclusionList(blockList);
 config.resolver.extraNodeModules = extraNodeModules;
