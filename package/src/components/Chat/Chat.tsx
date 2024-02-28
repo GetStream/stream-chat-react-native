@@ -215,7 +215,12 @@ const ChatWithContext = <
   useSyncDatabase({
     client,
     enableOfflineSupport,
+    initialisedDatabase,
   });
+
+  if (enableOfflineSupport && !initialisedDatabase) {
+    return null;
+  }
 
   return (
     <ChatProvider<StreamChatGenerics> value={chatContext}>
