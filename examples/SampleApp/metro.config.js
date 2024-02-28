@@ -1,9 +1,14 @@
-/* eslint-env node */
 const { getDefaultConfig } = require('@react-native/metro-config');
 const { exclusionList, resolveUniqueModule } = require('@rnx-kit/metro-config');
 const PATH = require('path');
 const packageDir = PATH.resolve(__dirname, '../../package');
 
+/**
+ * Metro configuration
+ * https://facebook.github.io/metro/docs/configuration
+ *
+ * @type {import('metro-config').MetroConfig}
+ */
 const config = getDefaultConfig(__dirname);
 
 const symlinked = ['stream-chat-react-native', 'stream-chat-react-native-core'];
