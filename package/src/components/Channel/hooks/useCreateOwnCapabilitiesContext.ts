@@ -25,6 +25,12 @@ export const useCreateOwnCapabilitiesContext = <
     ? JSON.stringify(Object.values(overrideCapabilities))
     : null;
 
+  // Effect to watch for changes in channel.data?.own_capabilities and update the own_capabilties state accordingly.
+  useEffect(() => {
+    setOwnCapabilites(JSON.stringify(channel.data?.own_capabilities as Array<string>));
+  }, [channel.data?.own_capabilities]);
+
+  // Effect to listen to the `capabilities.changed` event.
   useEffect(() => {
     const listener = channel.on('capabilities.changed', (event) => {
       if (event.own_capabilities) {
