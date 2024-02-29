@@ -1,14 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import {
-  I18nManager,
-  LogBox,
-  Platform,
-  SafeAreaView,
-  TouchableOpacity,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import { I18nManager, LogBox, Platform, SafeAreaView, useColorScheme, View } from 'react-native';
 import { DarkTheme, DefaultTheme, NavigationContainer, RouteProp } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import { useHeaderHeight } from '@react-navigation/elements';
@@ -135,17 +126,6 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
     <SafeAreaView>
       <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread}>
         <View style={{ flex: 1 }}>
-          <TouchableOpacity
-            onPress={async () => {
-              if (channel.data?.frozen) {
-                await channel.updatePartial({ set: { frozen: false } });
-              } else {
-                await channel.updatePartial({ set: { frozen: true } });
-              }
-            }}
-          >
-            <Text style={{ fontSize: 20 }}>{channel.data?.frozen ? 'Unfrozen' : 'Frozen'}</Text>
-          </TouchableOpacity>
           <MessageList<StreamChatGenerics>
             onThreadSelect={(thread) => {
               setThread(thread);
