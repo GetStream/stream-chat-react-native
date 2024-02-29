@@ -3,9 +3,9 @@ id: thread
 title: Thread
 ---
 
-import Client from '../common-content/core-components/chat/props/client.mdx';
+import Client from '../common-content/ui-components/chat/props/client.mdx';
 
-import Thread from '../common-content/core-components/channel/props/thread.mdx';
+import Thread from '../common-content/ui-components/channel/props/thread.mdx';
 
 import CloseThread from '../common-content/contexts/thread-context/close_thread.mdx';
 import LoadMoreThread from '../common-content/contexts/thread-context/load_more_thread.mdx';
@@ -13,35 +13,42 @@ import ReloadThread from '../common-content/contexts/thread-context/reload_threa
 
 Component to render thread replies for a message, along with and input box for adding new thread replies. This component internally uses `MessageList` and `MessageInput` components.
 
-## Basic Usage
+## General Usage
 
 ```tsx
-<OverlayProvider>
-  <Chat client={client}>
-    <Channel channel={channel} thread={messageId} threadList>
-      <Thread />
-    </Channel>
-  </Chat>
-</OverlayProvider>
+import { OverlayProvider, Chat, Channel, Thread } from 'stream-chat-react-native';
+
+const App = () => {
+  return (
+    <OverlayProvider>
+      <Chat client={client}>
+        <Channel channel={channel} thread={messageId} threadList>
+          // highlight-next-line
+          <Thread />
+        </Channel>
+      </Chat>
+    </OverlayProvider>
+  );
+};
 ```
 
 ## Props
 
-### additionalMessageInputProps
+### `additionalMessageInputProps`
 
-Additional [props](./message_input.mdx#props) for underlying `MessageInput` component.
-
-| Type   |
-| ------ |
-| object |
-
-### additionalMessageListProps
-
-Additional [props](./message_list.mdx#props) for underlying `MessageList` component.
+Additional [props](./message-input.mdx#props) for underlying `MessageInput` component.
 
 | Type   |
 | ------ |
-| object |
+| Object |
+
+### `additionalMessageListProps`
+
+Additional [props](./message-list.mdx#props) for underlying `MessageList` component.
+
+| Type   |
+| ------ |
+| Object |
 
 ### `autoFocus`
 
@@ -49,42 +56,62 @@ When true, input box will be auto focused upon mounting.
 
 | Type    | Default |
 | ------- | ------- |
-| boolean | true    |
+| Boolean | `true`  |
 
-<!-- ### closeThreadOnDismount -->
+### `closeThreadOnDismount`
 
-### <div class="description">overrides the value from [ChatContext](../contexts/chat_context.mdx#client)</div> client {#client}
+Closes thread on dismount, defaults to `true`.
+
+| Type    | Default |
+| ------- | ------- |
+| Boolean | `true`  |
+
+### <div class="label description">overrides the value from [ChatContext](../../contexts/chat-context#client)</div> `client` {#client}
 
 <Client />
 
-### <div class="description">overrides the value from [ThreadContext](../contexts/thread_context.mdx#closeThread)</div> `closeThread` {#closeThread}
+### <div class="label description">overrides the value from [ThreadContext](../../contexts/thread-context#closeThread)</div> `closeThread` {#closeThread}
 
 <CloseThread />
 
-### disabled
+### `disabled`
 
 When true, the underlying input box will be disabled.
 
 | Type    | Default |
 | ------- | ------- |
-| boolean | false   |
+| Boolean | `false` |
 
-### <div class="description">overrides the value from [ThreadContext](../contexts/thread_context.mdx#loadMoreThread)</div> loadMoreThread {#loadMoreThread}
+### <div class="label description">overrides the value from [ThreadContext](../../contexts/thread-context#loadMoreThread)</div> `loadMoreThread` {#loadMoreThread}
 
 <LoadMoreThread />
 
-### onThreadDismount
+### `onThreadDismount`
 
 Function which gets called when Thread component un-mounts.
 
 | Type     |
 | -------- |
-| function |
+| Function |
 
-### <div class="description">overrides the value from [ThreadContext](../contexts/thread_context.mdx#reloadThread)</div> `reloadThread` {#reloadThread}
+### <div class="label description">overrides the value from [ThreadContext](../../contexts/thread-context#reloadThread)</div> `reloadThread` {#reloadThread}
 
 <ReloadThread />
 
-### <div class="description">overrides the value from [ThreadContext](../contexts/thread_context.mdx#thread)</div> thread {#thread}
+### <div class="label description">overrides the value from [ThreadContext](../../contexts/thread-context#thread)</div> `thread` {#thread}
 
 <Thread />
+
+## UI Component Props
+
+### `MessageList`
+
+| Type          | Default                             |
+| ------------- | ----------------------------------- |
+| ComponentType | [`MessageList`](./message-list.mdx) |
+
+### `MessageInput`
+
+| Type          | Default                               |
+| ------------- | ------------------------------------- |
+| ComponentType | [`MessageInput`](./message-input.mdx) |

@@ -100,8 +100,17 @@ export type TouchableHandlerPayload = {
 export type MessageTouchableHandlerPayload<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = TouchableHandlerPayload & {
+  /**
+   * Set of action handler functions for various message actions. You can use these functions to perform any action when give interaction occurs.
+   */
   actionHandlers?: MessageActionHandlers;
+  /**
+   * Additional message touchable handler info.
+   */
   additionalInfo?: Record<string, unknown>;
+  /**
+   * Message object, on which interaction occurred.
+   */
   message?: MessageType<StreamChatGenerics>;
 };
 
