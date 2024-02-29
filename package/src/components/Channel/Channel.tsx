@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
 
 import debounce from 'lodash/debounce';
@@ -78,10 +78,19 @@ import { FlatList as FlatListDefault, pickDocument } from '../../native';
 import * as dbApi from '../../store/apis';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
+import { compressedImageURI } from '../../utils/compressImage';
 import { DBSyncManager } from '../../utils/DBSyncManager';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
 import { removeReactionFromLocalState } from '../../utils/removeReactionFromLocalState';
-import { generateRandomId, isLocalUrl, MessageStatusTypes, ReactionData } from '../../utils/utils';
+import { removeReservedFields } from '../../utils/removeReservedFields';
+import {
+  defaultEmojiSearchIndex,
+  generateRandomId,
+  isBouncedMessage,
+  isLocalUrl,
+  MessageStatusTypes,
+  ReactionData,
+} from '../../utils/utils';
 import { Attachment as AttachmentDefault } from '../Attachment/Attachment';
 import { AttachmentActions as AttachmentActionsDefault } from '../Attachment/AttachmentActions';
 import { AudioAttachment as AudioAttachmentDefault } from '../Attachment/AudioAttachment';
@@ -106,8 +115,10 @@ import { LoadingIndicator as LoadingIndicatorDefault } from '../Indicators/Loadi
 import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { Message as MessageDefault } from '../Message/Message';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
+import { MessageBounce as MessageBounceDefault } from '../Message/MessageSimple/MessageBounce';
 import { MessageContent as MessageContentDefault } from '../Message/MessageSimple/MessageContent';
 import { MessageDeleted as MessageDeletedDefault } from '../Message/MessageSimple/MessageDeleted';
+import { MessageError as MessageErrorDefault } from '../Message/MessageSimple/MessageError';
 import { MessageFooter as MessageFooterDefault } from '../Message/MessageSimple/MessageFooter';
 import { MessagePinnedHeader as MessagePinnedHeaderDefault } from '../Message/MessageSimple/MessagePinnedHeader';
 import { MessageReplies as MessageRepliesDefault } from '../Message/MessageSimple/MessageReplies';
@@ -275,9 +286,11 @@ export type ChannelPropsWithContext<
       | 'Message'
       | 'messageActions'
       | 'MessageAvatar'
+      | 'MessageBounce'
       | 'MessageContent'
       | 'messageContentOrder'
       | 'MessageDeleted'
+      | 'MessageError'
       | 'MessageFooter'
       | 'MessageHeader'
       | 'MessageList'
@@ -432,6 +445,7 @@ const ChannelWithContext = <
     doMarkReadRequest,
     doSendMessageRequest,
     doUpdateMessageRequest,
+    emojiSearchIndex = defaultEmojiSearchIndex,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     enableMessageGroupingByUser = true,
     enableOfflineSupport,
@@ -496,9 +510,11 @@ const ChannelWithContext = <
     Message = MessageDefault,
     messageActions,
     MessageAvatar = MessageAvatarDefault,
+    MessageBounce = MessageBounceDefault,
     MessageContent = MessageContentDefault,
     messageContentOrder = ['quoted_reply', 'gallery', 'files', 'text', 'attachments'],
     MessageDeleted = MessageDeletedDefault,
+    MessageError = MessageErrorDefault,
     MessageFooter = MessageFooterDefault,
     MessageHeader,
     messageId,
@@ -568,7 +584,7 @@ const ChannelWithContext = <
     },
   } = useTheme();
   const [deleted, setDeleted] = useState(false);
-  const [editing, setEditing] = useState<boolean | MessageType<StreamChatGenerics>>(false);
+  const [editing, setEditing] = useState<MessageType<StreamChatGenerics> | undefined>(undefined);
   const [error, setError] = useState<Error | boolean>(false);
   const [hasMore, setHasMore] = useState(true);
   const [lastRead, setLastRead] = useState<ChannelContextValue<StreamChatGenerics>['lastRead']>();
@@ -594,7 +610,21 @@ const ChannelWithContext = <
 
   const { setTargetedMessage, targetedMessage } = useTargetedMessage();
 
+  /**
+   * If we loaded a channel around message
+   * We may have moved latest message to a new message set in that case mark this ref to avoid fetching
+   */
+  const hasOverlappingRecentMessagesRef = useRef(false);
+
+  /**
+   * This ref will hold the abort controllers for
+   * requests made for uploading images/files in the messageInputContext
+   * Its a map of filename to AbortController
+   */
+  const uploadAbortControllerRef = useRef<Map<string, AbortController>>(new Map());
+
   const channelId = channel?.id || '';
+
   useEffect(() => {
     const initChannel = () => {
       if (!channel || !shouldSyncChannel || channel.offlineMode) return;
@@ -645,10 +675,13 @@ const ChannelWithContext = <
     } else {
       setThread(null);
     }
-  }, [threadPropsExists]);
+  }, [threadPropsExists, shouldSyncChannel]);
 
   const handleAppBackground = useCallback(() => {
-    if (channel) {
+    const channelData = channel.data as
+      | Extract<typeof channel.data, { own_capabilities: string[] }>
+      | undefined;
+    if (channelData?.own_capabilities?.includes('send-typing-events')) {
       channel.sendEvent({
         parent_id: thread?.id,
         type: 'typing.stop',
@@ -694,7 +727,9 @@ const ChannelWithContext = <
     throttle(
       () => {
         if (channel) {
+          clearInterval(mergeSetsIntervalRef.current);
           setMessages([...channel.state.messages]);
+          restartSetsMergeFuncRef.current();
         }
       },
       newMessageStateUpdateThrottleInterval,
@@ -744,82 +779,128 @@ const ChannelWithContext = <
     ),
   ).current;
 
-  const connectionChangedHandler = () => {
-    if (shouldSyncChannel) {
-      resyncChannel();
-    }
-  };
-
-  const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
-    if (shouldSyncChannel) {
-      if (thread) {
-        const updatedThreadMessages =
-          (thread.id && channel && channel.state.threads[thread.id]) || threadMessages;
-        setThreadMessages(updatedThreadMessages);
-      }
-
-      if (channel && thread && event.message?.id === thread.id) {
-        const updatedThread = channel.state.formatMessage(event.message);
-        setThread(updatedThread);
-      }
-
-      if (event.type === 'typing.start' || event.type === 'typing.stop') {
-        copyTypingState();
-      } else if (event.type === 'message.read') {
-        copyReadState();
-      } else if (event.type === 'message.new') {
-        copyMessagesState();
-      } else if (channel) {
-        copyChannelState();
-      }
-    }
-  };
-
+  // subscribe to specific channel events
   useEffect(() => {
     const channelSubscriptions: Array<ReturnType<ChannelType['on']>> = [];
-    const clientSubscriptions: Array<ReturnType<StreamChat['on']>> = [];
-
-    if (!channel) return;
-
-    clientSubscriptions.push(
-      client.on('channel.deleted', (event) => {
-        if (event.cid === channel.cid) {
-          setDeleted(true);
-        }
-      }),
-    );
-
-    if (enableOfflineSupport) {
-      clientSubscriptions.push(DBSyncManager.onSyncStatusChange(connectionChangedHandler));
-    } else {
-      clientSubscriptions.push(
-        client.on('connection.changed', (event) => {
-          if (event.online) {
-            connectionChangedHandler();
-          }
-        }),
-      );
+    if (channel && shouldSyncChannel) {
+      channelSubscriptions.push(channel.on('message.new', copyMessagesState));
+      channelSubscriptions.push(channel.on('message.read', copyReadState));
+      channelSubscriptions.push(channel.on('typing.start', copyTypingState));
+      channelSubscriptions.push(channel.on('typing.stop', copyTypingState));
     }
-
-    channelSubscriptions.push(channel.on(handleEvent));
-
     return () => {
-      clientSubscriptions.forEach((s) => s.unsubscribe());
       channelSubscriptions.forEach((s) => s.unsubscribe());
     };
-  }, [channelId, connectionChangedHandler, handleEvent]);
+  }, [channelId, shouldSyncChannel]);
+
+  // subscribe to the generic all channel event
+  useEffect(() => {
+    const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
+      if (shouldSyncChannel) {
+        const isTypingEvent = event.type === 'typing.start' || event.type === 'typing.stop';
+        if (!isTypingEvent) {
+          if (thread?.id) {
+            const updatedThreadMessages =
+              (thread.id && channel && channel.state.threads[thread.id]) || threadMessages;
+            setThreadMessages(updatedThreadMessages);
+          }
+
+          if (channel && thread?.id && event.message?.id === thread.id) {
+            const updatedThread = channel.state.formatMessage(event.message);
+            setThread(updatedThread);
+          }
+        }
+
+        // only update channel state if the events are not the previously subscribed useEffect's subscription events
+        if (
+          channel &&
+          event.type !== 'message.new' &&
+          event.type !== 'message.read' &&
+          event.type !== 'typing.start' &&
+          event.type !== 'typing.stop'
+        ) {
+          copyChannelState();
+        }
+      }
+    };
+    const { unsubscribe } = channel.on(handleEvent);
+    return unsubscribe;
+  }, [channelId, thread?.id, shouldSyncChannel]);
+
+  // subscribe to channel.deleted event
+  useEffect(() => {
+    const { unsubscribe } = client.on('channel.deleted', (event) => {
+      if (event.cid === channel?.cid) {
+        setDeleted(true);
+      }
+    });
+
+    return unsubscribe;
+  }, [channelId]);
+
+  useEffect(() => {
+    const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
+      if (channel.cid === event.cid) copyChannelState();
+    };
+
+    const { unsubscribe } = client.on('notification.mark_read', handleEvent);
+    return unsubscribe;
+  }, []);
 
   const channelQueryCallRef = useRef(
     async (
       queryCall: () => Promise<void>,
       onAfterQueryCall: (() => void) | undefined = undefined,
+      // if we are scrolling to a message after the query, pass it here
+      scrollToMessageId: string | (() => string | undefined) | undefined = undefined,
     ) => {
       setError(false);
       try {
+        clearInterval(mergeSetsIntervalRef.current);
         await queryCall();
         setLastRead(new Date());
         setHasMore(true);
+        const currentMessages = channel.state.messages;
+        const hadCurrentLatestMessages =
+          currentMessages.length > 0 && currentMessages === channel.state.latestMessages;
+        if (typeof scrollToMessageId === 'function') {
+          scrollToMessageId = scrollToMessageId();
+        }
+        const scrollToMessageIndex = scrollToMessageId
+          ? currentMessages.findIndex(({ id }) => id === scrollToMessageId)
+          : -1;
+        if (channel && scrollToMessageIndex !== -1) {
+          // We assume that on average user sees 5 messages on screen
+          // We dont want new renders to happen while scrolling to the targeted message
+          // hence we limit the number of messages to be rendered after the targeted message to 5 - 1 = 4
+          // NOTE: we have one drawback here, if there were already a split latest and current message set
+          // the previous latest message set will be thrown away as we cannot merge it with the current message set after the target message is set
+          const limitAfter = 4;
+          const currentLength = currentMessages.length;
+          if (scrollToMessageIndex !== -1) {
+            const noOfMessagesAfter = currentLength - scrollToMessageIndex - 1;
+            // number of messages are over the limit, limit the length of messages
+            if (noOfMessagesAfter > limitAfter) {
+              const endIndex = scrollToMessageIndex + limitAfter;
+              channel.state.clearMessages();
+              channel.state.messages = currentMessages.slice(0, endIndex + 1);
+              splitLatestCurrentMessageSetRef.current();
+              const restOfMessages = currentMessages.slice(endIndex + 1);
+              if (hadCurrentLatestMessages) {
+                const latestSet = channel.state.messageSets.find((set) => set.isLatest);
+                if (latestSet) {
+                  latestSet.messages = restOfMessages;
+                  hasOverlappingRecentMessagesRef.current = true;
+                }
+              }
+            }
+          }
+        }
+        const hasLatestMessages = channel.state.latestMessages.length > 0;
+        channel.state.setIsUpToDate(hasLatestMessages);
+        setHasNoMoreRecentMessagesToLoad(hasLatestMessages);
         copyChannelState();
+        restartSetsMergeFuncRef.current();
         onAfterQueryCall?.();
       } catch (err) {
         if (err instanceof Error) {
@@ -838,22 +919,51 @@ const ChannelWithContext = <
    */
   const loadChannelAtFirstUnreadMessage = () => {
     if (!channel) return;
-    const unreadCount = channel.countUnread();
-    if (unreadCount <= scrollToFirstUnreadThreshold) return;
-    // temporarily clear existing messages so that messageList component gets a list change and does not scroll to any unread message first before loading completes
-    setMessages([]);
+    let unreadMessageIdToScrollTo: string | undefined;
     // query for messages around the last read date
-    return channelQueryCallRef.current(async () => {
-      setLoading(true);
-      const lastReadDate = channel.lastRead() || new Date(0);
-      await channel.query({
-        messages: {
-          created_at_around: lastReadDate,
-          limit: 25,
-        },
-      });
-      setLoading(false);
-    });
+    return channelQueryCallRef.current(
+      async () => {
+        const unreadCount = channel.countUnread();
+        if (unreadCount === 0) return;
+        const isLatestMessageSetShown = !!channel.state.messageSets.find(
+          (set) => set.isCurrent && set.isLatest,
+        );
+        if (isLatestMessageSetShown && unreadCount <= channel.state.messages.length) {
+          unreadMessageIdToScrollTo =
+            channel.state.messages[channel.state.messages.length - unreadCount].id;
+          return;
+        }
+        const lastReadDate = channel.lastRead();
+
+        // if last read date is present we can just fetch messages around that date
+        // last read date not being present is an edge case if somewhere the user of SDK deletes the read state (this will usually never happen)
+        if (lastReadDate) {
+          setLoading(true);
+          // get totally 30 messages... max 15 before last read date and max 15 after last read date
+          // ref: https://github.com/GetStream/chat/pull/2588
+          const res = await channel.query(
+            {
+              messages: {
+                created_at_around: lastReadDate,
+                limit: 30,
+              },
+              watch: true,
+            },
+            'new',
+          );
+          unreadMessageIdToScrollTo = res.messages.find(
+            (m) => lastReadDate < (m.created_at ? new Date(m.created_at) : new Date()),
+          )?.id;
+          if (unreadMessageIdToScrollTo) {
+            channel.state.loadMessageIntoState(unreadMessageIdToScrollTo);
+          }
+        } else {
+          await loadLatestMessagesRef.current();
+        }
+      },
+      undefined,
+      () => unreadMessageIdToScrollTo,
+    );
   };
 
   /**
@@ -862,24 +972,38 @@ const ChannelWithContext = <
    * @param messageId If undefined, channel will be loaded at most recent message.
    */
   const loadChannelAroundMessage: ChannelContextValue<StreamChatGenerics>['loadChannelAroundMessage'] =
-    ({ messageId }) =>
+    ({ messageId: messageIdToLoadAround }) =>
       channelQueryCallRef.current(
         async () => {
-          setHasNoMoreRecentMessagesToLoad(false); // we are jumping to a message, hence we do not know for sure anymore if there are no more recent messages
           setLoading(true);
-          if (messageId) {
-            await channel.state.loadMessageIntoState(messageId);
+          if (messageIdToLoadAround) {
+            setMessages([]);
+            await channel.state.loadMessageIntoState(messageIdToLoadAround);
+            const currentMessageSet = channel.state.messageSets.find((set) => set.isCurrent);
+            if (currentMessageSet && !currentMessageSet?.isLatest) {
+              // if the current message set is not the latest, we will throw away the latest messages
+              // in order to attempt to not throw away, will attempt to merge it by loading 25 more messages
+              const recentCurrentSetMsgId =
+                currentMessageSet.messages[currentMessageSet.messages.length - 1].id;
+              await channel.query({
+                messages: {
+                  id_gte: recentCurrentSetMsgId,
+                  limit: 25,
+                },
+                watch: true,
+              });
+              // if the gap is more than 25, we will unfortunately have to throw away the latest messages
+            }
           } else {
-            await channel.state.loadMessageIntoState('latest');
-            channel.state.setIsUpToDate(true);
+            await loadLatestMessagesRef.current();
           }
-          setLoading(false);
         },
         () => {
-          if (messageId) {
-            setTargetedMessage(messageId);
+          if (messageIdToLoadAround) {
+            setTargetedMessage(messageIdToLoadAround);
           }
         },
+        messageIdToLoadAround,
       );
 
   /**
@@ -904,16 +1028,103 @@ const ChannelWithContext = <
       }
     });
 
+  /**
+   * Utility method to mark that current set if latest into two.
+   * With an empty latest set
+   * This is useful when we know that we dont know the latest messages anymore
+   * Or if we are loading a channel around a message
+   */
+  const splitLatestCurrentMessageSetRef = useRef(() => {
+    const currentLatestSet = channel.state.messageSets.find((set) => set.isCurrent && set.isLatest);
+    if (!currentLatestSet) return;
+    // unmark the current latest set
+    currentLatestSet.isLatest = false;
+    // create a new set with empty latest messages
+    channel.state.messageSets.push({
+      isCurrent: false,
+      isLatest: true,
+      messages: [],
+    });
+  });
+
+  /**
+   * Utility method to merge current and latest message set.
+   * Returns true if merge was successful, false otherwise.
+   */
+  const mergeOverlappingMessageSetsRef = useRef((limitToMaxRenderPerBatch = false) => {
+    if (hasOverlappingRecentMessagesRef.current) {
+      const limit = 30; // 30 is the maxToRenderPerBatch
+      // merge current and latest sets
+      const latestMessageSet = channel.state.messageSets.find((set) => set.isLatest);
+      const currentMessageSet = channel.state.messageSets.find((set) => set.isCurrent);
+      if (latestMessageSet && currentMessageSet && latestMessageSet !== currentMessageSet) {
+        if (limitToMaxRenderPerBatch && latestMessageSet.messages.length > limit) {
+          currentMessageSet.messages = currentMessageSet.messages.concat(
+            latestMessageSet.messages.slice(0, limit),
+          );
+          latestMessageSet.messages = latestMessageSet.messages.slice(limit);
+        } else {
+          channel.state.messageSets = channel.state.messageSets.filter((set) => !set.isLatest);
+          currentMessageSet.messages = currentMessageSet.messages.concat(latestMessageSet.messages);
+          currentMessageSet.isLatest = true;
+          hasOverlappingRecentMessagesRef.current = false;
+          clearInterval(mergeSetsIntervalRef.current);
+        }
+        return true;
+      }
+    }
+    return false;
+  });
+
+  const mergeSetsIntervalRef = useRef<NodeJS.Timeout>();
+
+  // clear the interval on unmount
+  useEffect(
+    () => () => {
+      clearInterval(mergeSetsIntervalRef.current);
+    },
+    [],
+  );
+
+  // if we had split the latest and current message set, we try to merge them back
+  const restartSetsMergeFuncRef = useRef(() => {
+    clearInterval(mergeSetsIntervalRef.current);
+    if (!hasOverlappingRecentMessagesRef.current) return;
+    mergeSetsIntervalRef.current = setInterval(() => {
+      const currentLength = channel.state.messages.length || 0;
+      const didMerge = mergeOverlappingMessageSetsRef.current(true);
+      if (didMerge && channel.state.messages.length !== currentLength) {
+        setMessages([...channel.state.messages]);
+      }
+    }, 1000);
+  });
+
+  /**
+   * Shows the latest messages from the channel state
+   * If recent messages are empty, fetches new
+   * @param clearLatest If true, clears the latest messages before loading (useful for complete refresh)
+   */
+  const loadLatestMessagesRef = useRef(async (clearLatest = false) => {
+    mergeOverlappingMessageSetsRef.current();
+    if (clearLatest) {
+      const latestSet = channel.state.messageSets.find((set) => set.isLatest);
+      if (latestSet) latestSet.messages = [];
+    }
+    if (channel.state.latestMessages.length === 0) {
+      await channel.query({}, 'latest');
+    }
+    await channel.state.loadMessageIntoState('latest');
+  });
+
   const loadChannel = () =>
     channelQueryCallRef.current(async () => {
       if (!channel?.initialized || !channel.state.isUpToDate) {
         await channel?.watch();
-        setHasNoMoreRecentMessagesToLoad(true);
         channel?.state.setIsUpToDate(true);
+        setHasNoMoreRecentMessagesToLoad(true);
       } else {
         await channel.state.loadMessageIntoState('latest');
       }
-      return;
     });
 
   const reloadThread = async () => {
@@ -951,6 +1162,8 @@ const ChannelWithContext = <
 
   const resyncChannel = async () => {
     if (!channel || syncingChannel) return;
+    hasOverlappingRecentMessagesRef.current = false;
+    clearInterval(mergeSetsIntervalRef.current);
     setSyncingChannel(true);
 
     setError(false);
@@ -982,6 +1195,8 @@ const ChannelWithContext = <
         channel.state.clearMessages();
         channel.state.setIsUpToDate(true);
         channel.state.addMessagesSorted(state.messages);
+        channel.state.addPinnedMessages(state.pinned_messages);
+
         copyChannelState();
         return;
       }
@@ -1028,12 +1243,11 @@ const ChannelWithContext = <
         finalMessages = state.messages;
       }
 
-      setHasNoMoreRecentMessagesToLoad(true);
       channel.state.setIsUpToDate(true);
-
       channel.state.clearMessages();
       channel.state.addMessagesSorted(finalMessages);
-
+      channel.state.addPinnedMessages(state.pinned_messages);
+      setHasNoMoreRecentMessagesToLoad(true);
       setHasMore(true);
       copyChannelState();
 
@@ -1060,13 +1274,39 @@ const ChannelWithContext = <
     setSyncingChannel(false);
   };
 
+  // resync channel is added to ref so that it can be used in useEffect without adding it as a dependency
+  const resyncChannelRef = useRef(resyncChannel);
+  resyncChannelRef.current = resyncChannel;
+
+  useEffect(() => {
+    const connectionChangedHandler = () => {
+      if (shouldSyncChannel) {
+        resyncChannelRef.current();
+      }
+    };
+    let connectionChangedSubscription: ReturnType<ChannelType['on']>;
+
+    if (enableOfflineSupport) {
+      connectionChangedSubscription = DBSyncManager.onSyncStatusChange(connectionChangedHandler);
+    } else {
+      connectionChangedSubscription = client.on('connection.changed', (event) => {
+        if (event.online) {
+          connectionChangedHandler();
+        }
+      });
+    }
+    return () => {
+      connectionChangedSubscription.unsubscribe();
+    };
+  }, [enableOfflineSupport, shouldSyncChannel]);
+
   const reloadChannel = () =>
     channelQueryCallRef.current(async () => {
       setLoading(true);
-      await channel.state.loadMessageIntoState('latest');
+      await loadLatestMessagesRef.current(true);
       setLoading(false);
-      setHasNoMoreRecentMessagesToLoad(true);
       channel?.state.setIsUpToDate(true);
+      setHasNoMoreRecentMessagesToLoad(true);
     });
 
   /**
@@ -1084,8 +1324,10 @@ const ChannelWithContext = <
   }: Parameters<ChannelContextValue<StreamChatGenerics>['loadChannelAtMessage']>[0]) => {
     if (!channel) return;
     channel.state.setIsUpToDate(false);
+    hasOverlappingRecentMessagesRef.current = false;
+    clearInterval(mergeSetsIntervalRef.current);
     channel.state.clearMessages();
-    setMessages([...channel.state.messages]);
+    setMessages([]);
     if (!messageId) {
       await channel.query({
         messages: {
@@ -1141,9 +1383,18 @@ const ChannelWithContext = <
     });
 
     if (state.messages.length < limit) {
+      // make current set as the latest
+      const currentSet = channel.state.messageSets.find((set) => set.isCurrent);
+      if (currentSet && !currentSet.isLatest) {
+        channel.state.messageSets = channel.state.messageSets.filter((set) => !set.isLatest);
+        currentSet.isLatest = true;
+      }
       channel.state.setIsUpToDate(true);
+      setHasNoMoreRecentMessagesToLoad(true);
     } else {
+      splitLatestCurrentMessageSetRef.current();
       channel.state.setIsUpToDate(false);
+      setHasNoMoreRecentMessagesToLoad(false);
     }
   };
 
@@ -1254,20 +1505,28 @@ const ChannelWithContext = <
     if (updatedMessage.attachments?.length) {
       for (let i = 0; i < updatedMessage.attachments?.length; i++) {
         const attachment = updatedMessage.attachments[i];
+        const image = attachment.originalImage;
         const file = attachment.originalFile;
         // check if image_url is not a remote url
         if (
           attachment.type === 'image' &&
-          file?.uri &&
+          image?.uri &&
           attachment.image_url &&
           isLocalUrl(attachment.image_url)
         ) {
-          const filename = file.uri.replace(/^(file:\/\/|content:\/\/|assets-library:\/\/)/, '');
+          const filename = image.name ?? image.uri.replace(/^(file:\/\/|content:\/\/)/, '');
+          // if any upload is in progress, cancel it
+          const controller = uploadAbortControllerRef.current.get(filename);
+          if (controller) {
+            controller.abort();
+            uploadAbortControllerRef.current.delete(filename);
+          }
+          const compressedUri = await compressedImageURI(image, compressImageQuality);
           const contentType = lookup(filename) || 'multipart/form-data';
 
           const uploadResponse = doImageUploadRequest
-            ? await doImageUploadRequest(file, channel)
-            : await channel.sendImage(file?.uri, filename, contentType);
+            ? await doImageUploadRequest(image, channel)
+            : await channel.sendImage(compressedUri, filename, contentType);
 
           attachment.image_url = uploadResponse.file;
           delete attachment.originalFile;
@@ -1285,9 +1544,15 @@ const ChannelWithContext = <
           isLocalUrl(attachment.asset_url) &&
           file?.uri
         ) {
+          // if any upload is in progress, cancel it
+          const controller = uploadAbortControllerRef.current.get(file.name);
+          if (controller) {
+            controller.abort();
+            uploadAbortControllerRef.current.delete(file.name);
+          }
           const response = doDocUploadRequest
             ? await doDocUploadRequest(file, channel)
-            : await channel.sendFile(file.uri, file.name, file.type);
+            : await channel.sendFile(file.uri, file.name, file.mimeType);
           attachment.asset_url = response.file;
           if (response.thumb_url) {
             attachment.thumb_url = response.thumb_url;
@@ -1402,6 +1667,8 @@ const ChannelWithContext = <
       attachments: message.attachments || [],
     });
 
+    mergeOverlappingMessageSetsRef.current();
+
     if (!channel?.state.isUpToDate) {
       await reloadChannel();
     }
@@ -1432,15 +1699,24 @@ const ChannelWithContext = <
       status: MessageStatusTypes.SENDING,
     };
 
-    updateMessage(statusPendingMessage);
+    const messageWithoutReservedFields = removeReservedFields(statusPendingMessage);
 
-    await sendMessageRequest(statusPendingMessage, true);
+    // For bounced messages, we don't need to update the message, instead always send a new message.
+    if (!isBouncedMessage(message)) {
+      updateMessage(messageWithoutReservedFields as MessageResponse<StreamChatGenerics>);
+    }
+
+    await sendMessageRequest(
+      messageWithoutReservedFields as MessageResponse<StreamChatGenerics>,
+      true,
+    );
   };
 
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
   const loadMoreFinished = useRef(
     debounce(
       (updatedHasMore: boolean, newMessages: ChannelState<StreamChatGenerics>['messages']) => {
+        setLoading(false);
         setLoadingMore(false);
         setError(false);
         setHasMore(updatedHasMore);
@@ -1451,71 +1727,108 @@ const ChannelWithContext = <
     ),
   ).current;
 
-  const loadMore: PaginatedMessageListContextValue<StreamChatGenerics>['loadMore'] = async (
-    limit = 20,
-  ) => {
-    if (loadingMore || hasMore === false) {
-      return;
-    }
-    setLoadingMore(true);
-
-    if (!messages.length) {
-      return setLoadingMore(false);
-    }
-
-    const oldestMessage = messages && messages[0];
-
-    if (oldestMessage && oldestMessage.status !== MessageStatusTypes.RECEIVED) {
-      return setLoadingMore(false);
-    }
-
-    const oldestID = oldestMessage && oldestMessage.id;
-
-    try {
-      if (channel) {
-        const queryResponse = await channel.query({
-          messages: { id_lt: oldestID, limit },
-        });
-
-        const updatedHasMore = queryResponse.messages.length === limit;
-        loadMoreFinished(updatedHasMore, channel.state.messages);
-      }
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err);
-      } else {
-        setError(true);
-      }
-      setLoadingMore(false);
-      throw err;
-    }
-  };
-
-  const loadMoreRecent: PaginatedMessageListContextValue<StreamChatGenerics>['loadMoreRecent'] =
-    async (limit = 5) => {
-      if (hasNoMoreRecentMessagesToLoad) {
+  /**
+   * This function loads more messages before the first message in current channel state.
+   */
+  const loadMore = useCallback<PaginatedMessageListContextValue<StreamChatGenerics>['loadMore']>(
+    async (limit = 20) => {
+      if (loadingMore || hasMore === false) {
         return;
       }
 
-      setLoadingMoreRecent(true);
+      const currentMessages = channel.state.messages;
 
-      const recentMessage = messages[messages.length - 1];
+      if (!currentMessages.length) {
+        return setLoadingMore(false);
+      }
+
+      const oldestMessage = currentMessages && currentMessages[0];
+
+      if (oldestMessage && oldestMessage.status !== MessageStatusTypes.RECEIVED) {
+        return setLoadingMore(false);
+      }
+
+      setLoadingMore(true);
+
+      const oldestID = oldestMessage && oldestMessage.id;
+
+      try {
+        if (channel) {
+          const queryResponse = await channel.query({
+            messages: { id_lt: oldestID, limit },
+          });
+
+          const updatedHasMore = queryResponse.messages.length === limit;
+          loadMoreFinished(updatedHasMore, channel.state.messages);
+        }
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err);
+        } else {
+          setError(true);
+        }
+        setLoadingMore(false);
+        throw err;
+      }
+    },
+    /*
+     * This function is passed to useCreatePaginatedMessageListContext
+     * Where the deps are [channelId, hasMore, loadingMoreRecent, loadingMore]
+     * and only those deps should be used here because of that
+     */
+    [channelId, hasMore, loadingMore],
+  );
+
+  /**
+   * This function loads more messages after the most recent message in current channel state.
+   */
+  const loadMoreRecent = useCallback<
+    PaginatedMessageListContextValue<StreamChatGenerics>['loadMoreRecent']
+  >(
+    async (limit = 5) => {
+      const latestMessageSet = channel.state.messageSets.find((set) => set.isLatest);
+      const latestLengthBeforeMerge = latestMessageSet?.messages.length || 0;
+      const didMerge = mergeOverlappingMessageSetsRef.current(true);
+      if (didMerge) {
+        if (latestMessageSet && latestLengthBeforeMerge >= limit) {
+          setLoadingMoreRecent(true);
+          channel.state.setIsUpToDate(true);
+          setHasNoMoreRecentMessagesToLoad(true);
+          loadMoreRecentFinished(channel.state.messages);
+          restartSetsMergeFuncRef.current();
+          return;
+        }
+      }
+      if (channel.state.isUpToDate) {
+        setLoadingMoreRecent(false);
+        return;
+      }
+      const currentMessages = channel.state.messages;
+      const recentMessage = currentMessages[currentMessages.length - 1];
 
       if (recentMessage?.status !== MessageStatusTypes.RECEIVED) {
         setLoadingMoreRecent(false);
         return;
       }
-
+      setLoadingMoreRecent(true);
       try {
         if (channel) {
-          const state = await channel.query({
+          const queryResponse = await channel.query({
             messages: {
               id_gte: recentMessage.id,
               limit,
             },
             watch: true,
           });
-          setHasNoMoreRecentMessagesToLoad(state.messages.length < limit);
+          const gotAllRecentMessages = queryResponse.messages.length < limit;
+          const currentSet = channel.state.messageSets.find((set) => set.isCurrent);
+          if (gotAllRecentMessages && currentSet && !currentSet.isLatest) {
+            channel.state.messageSets = channel.state.messageSets.filter((set) => !set.isLatest);
+            // make current set as the latest
+            currentSet.isLatest = true;
+          }
+          channel.state.setIsUpToDate(gotAllRecentMessages);
+          setHasNoMoreRecentMessagesToLoad(gotAllRecentMessages);
           loadMoreRecentFinished(channel.state.messages);
         }
       } catch (err) {
@@ -1528,7 +1841,14 @@ const ChannelWithContext = <
         setLoadingMoreRecent(false);
         throw err;
       }
-    };
+    },
+    /*
+     * This function is passed to useCreatePaginatedMessageListContext
+     * Where the deps are [channelId, hasMore, loadingMoreRecent, loadingMore, hasNoMoreRecentMessagesToLoad]
+     * and and only those deps should be used here because of that
+     */
+    [channelId, hasNoMoreRecentMessagesToLoad],
+  );
 
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
   const loadMoreRecentFinished = useRef(
@@ -1553,21 +1873,25 @@ const ChannelWithContext = <
   const setEditingState: MessagesContextValue<StreamChatGenerics>['setEditingState'] = (
     message,
   ) => {
+    clearQuotedMessageState();
     setEditing(message);
   };
 
   const setQuotedMessageState: MessagesContextValue<StreamChatGenerics>['setQuotedMessageState'] = (
-    message,
+    messageOrBoolean,
   ) => {
-    setQuotedMessage(message);
+    setQuotedMessage(messageOrBoolean);
   };
 
   const clearEditingState: InputMessageInputContextValue<StreamChatGenerics>['clearEditingState'] =
-    () => setEditing(false);
+    () => setEditing(undefined);
 
   const clearQuotedMessageState: InputMessageInputContextValue<StreamChatGenerics>['clearQuotedMessageState'] =
     () => setQuotedMessage(false);
 
+  /**
+   * Removes the message from local state
+   */
   const removeMessage: MessagesContextValue<StreamChatGenerics>['removeMessage'] = (message) => {
     if (channel) {
       channel.state.removeMessage(message);
@@ -1631,6 +1955,10 @@ const ChannelWithContext = <
     }
 
     if (!enableOfflineSupport) {
+      if (message.status === MessageStatusTypes.FAILED) {
+        removeMessage(message);
+        return;
+      }
       await client.deleteMessage(message.id);
       return;
     }
@@ -1702,11 +2030,14 @@ const ChannelWithContext = <
   /**
    * THREAD METHODS
    */
-  const openThread: ThreadContextValue<StreamChatGenerics>['openThread'] = (message) => {
-    const newThreadMessages = message?.id ? channel?.state?.threads[message.id] || [] : [];
-    setThread(message);
-    setThreadMessages(newThreadMessages);
-  };
+  const openThread: ThreadContextValue<StreamChatGenerics>['openThread'] = useCallback(
+    (message) => {
+      const newThreadMessages = message?.id ? channel?.state?.threads[message.id] || [] : [];
+      setThread(message);
+      setThreadMessages(newThreadMessages);
+    },
+    [setThread, setThreadMessages],
+  );
 
   const closeThread: ThreadContextValue<StreamChatGenerics>['closeThread'] = useCallback(() => {
     setThread(null);
@@ -1770,6 +2101,11 @@ const ChannelWithContext = <
     }
   };
 
+  const disabledValue = useMemo(
+    () => !!channel?.data?.frozen && disableIfFrozenChannel,
+    [channel.data?.frozen, disableIfFrozenChannel],
+  );
+
   const ownCapabilitiesContext = useCreateOwnCapabilitiesContext({
     channel,
     overrideCapabilities: overrideOwnCapabilities,
@@ -1777,7 +2113,7 @@ const ChannelWithContext = <
 
   const channelContext = useCreateChannelContext({
     channel,
-    disabled: !!channel?.data?.frozen && disableIfFrozenChannel,
+    disabled: disabledValue,
     EmptyStateIndicator,
     enableMessageGroupingByUser,
     enforceUniqueReaction,
@@ -1808,6 +2144,7 @@ const ChannelWithContext = <
     StickyHeader,
     targetedMessage,
     threadList,
+    uploadAbortControllerRef,
     watcherCount,
     watchers,
   });
@@ -1823,10 +2160,12 @@ const ChannelWithContext = <
     CommandsButton,
     compressImageQuality,
     CooldownTimer,
+    disabled: disabledValue,
     doDocUploadRequest,
     doImageUploadRequest,
     editing,
     editMessage,
+    emojiSearchIndex,
     FileUploadPreview,
     hasCommands,
     hasFilePicker,
@@ -1923,9 +2262,11 @@ const ChannelWithContext = <
     Message,
     messageActions,
     MessageAvatar,
+    MessageBounce,
     MessageContent,
     messageContentOrder,
     MessageDeleted,
+    MessageError,
     MessageFooter,
     MessageHeader,
     MessageList,

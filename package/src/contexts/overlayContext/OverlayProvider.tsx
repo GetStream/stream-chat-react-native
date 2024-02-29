@@ -10,7 +10,6 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import type BottomSheet from '@gorhom/bottom-sheet';
-import Dayjs from 'dayjs';
 
 import { OverlayContext, OverlayProviderProps } from './OverlayContext';
 
@@ -36,7 +35,6 @@ import { ThemeProvider } from '../themeContext/ThemeContext';
 import {
   DEFAULT_USER_LANGUAGE,
   TranslationProvider,
-  TranslatorFunctions,
 } from '../translationContext/TranslationContext';
 
 /**
@@ -66,6 +64,7 @@ export const OverlayProvider = <
 ) => {
   const bottomSheetCloseTimeoutRef = useRef<NodeJS.Timeout>();
   const {
+    autoPlayVideo,
     AttachmentPickerBottomSheetHandle = DefaultAttachmentPickerBottomSheetHandle,
     attachmentPickerBottomSheetHandleHeight,
     attachmentPickerBottomSheetHeight,
@@ -142,17 +141,13 @@ export const OverlayProvider = <
 
   const bottomSheetRef = useRef<BottomSheet>(null);
 
-  const [translators, setTranslators] = useState<TranslatorFunctions>({
-    t: (key: string) => key,
-    tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
-  });
   const [overlay, setOverlay] = useState(value?.overlay || 'none');
 
   const overlayOpacity = useSharedValue(0);
   const { height, width } = Dimensions.get('screen');
 
   // Setup translators
-  const loadingTranslators = useStreami18n({ i18nInstance, setTranslators });
+  const translators = useStreami18n(i18nInstance);
 
   useEffect(() => {
     const backAction = () => {
@@ -216,8 +211,6 @@ export const OverlayProvider = <
     translucentStatusBar,
   };
 
-  if (loadingTranslators) return null;
-
   return (
     <TranslationProvider value={{ ...translators, userLanguage: DEFAULT_USER_LANGUAGE }}>
       <OverlayContext.Provider value={overlayContext}>
@@ -245,6 +238,7 @@ export const OverlayProvider = <
                 )}
                 {overlay === 'gallery' && (
                   <ImageGallery<StreamChatGenerics>
+                    autoPlayVideo={autoPlayVideo}
                     giphyVersion={giphyVersion}
                     imageGalleryCustomComponents={imageGalleryCustomComponents}
                     imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}

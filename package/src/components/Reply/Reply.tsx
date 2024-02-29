@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { Image, ImageStyle, StyleSheet, View, ViewStyle } from 'react-native';
 
 import merge from 'lodash/merge';
@@ -21,7 +21,7 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
-import { emojiRegex } from '../../utils/utils';
+import { hasOnlyEmojis } from '../../utils/utils';
 
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
 import { VideoThumbnail } from '../Attachment/VideoThumbnail';
@@ -151,6 +151,13 @@ const ReplyWithContext = <
     },
   } = useTheme();
 
+  const messageText = typeof quotedMessage === 'boolean' ? '' : quotedMessage.text || '';
+
+  const emojiOnlyText = useMemo(() => {
+    if (!messageText) return false;
+    return hasOnlyEmojis(messageText);
+  }, [messageText]);
+
   if (typeof quotedMessage === 'boolean') return null;
 
   const lastAttachment = quotedMessage.attachments?.slice(-1)[0] as Attachment<StreamChatGenerics>;
@@ -163,7 +170,7 @@ const ReplyWithContext = <
     messageType !== 'video' &&
     (lastAttachment.image_url || lastAttachment.thumb_url || lastAttachment.og_scrape_url);
 
-  const onlyEmojis = !lastAttachment && !!quotedMessage.text && emojiRegex.test(quotedMessage.text);
+  const onlyEmojis = !lastAttachment && emojiOnlyText;
 
   return (
     <View style={[styles.container, container, stylesProp.container]}>
@@ -223,25 +230,26 @@ const ReplyWithContext = <
         ) : null}
         <MessageTextContainer<StreamChatGenerics>
           markdownStyles={
-            quotedMessage.deleted_at
+            quotedMessage.type === 'deleted'
               ? merge({ em: { color: grey } }, deletedText)
               : { text: styles.text, ...markdownStyles }
           }
           message={{
             ...quotedMessage,
-            text: quotedMessage.deleted_at
-              ? `_${t('Message deleted')}_`
-              : quotedMessage.text
-              ? quotedMessage.text.length > 170
-                ? `${quotedMessage.text.slice(0, 170)}...`
+            text:
+              quotedMessage.type === 'deleted'
+                ? `_${t('Message deleted')}_`
                 : quotedMessage.text
-              : messageType === 'image'
-              ? t('Photo')
-              : messageType === 'video'
-              ? t('Video')
-              : messageType === 'file'
-              ? lastAttachment?.title || ''
-              : '',
+                ? quotedMessage.text.length > 170
+                  ? `${quotedMessage.text.slice(0, 170)}...`
+                  : quotedMessage.text
+                : messageType === 'image'
+                ? t('Photo')
+                : messageType === 'video'
+                ? t('Video')
+                : messageType === 'file'
+                ? lastAttachment?.title || ''
+                : '',
           }}
           onlyEmojis={onlyEmojis}
           styles={{
@@ -308,7 +316,8 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     typeof prevQuotedMessage !== 'boolean' &&
     typeof nextQuotedMessage !== 'boolean'
       ? prevQuotedMessage.id === nextQuotedMessage.id &&
-        prevQuotedMessage.deleted_at === nextQuotedMessage.deleted_at
+        prevQuotedMessage.deleted_at === nextQuotedMessage.deleted_at &&
+        prevQuotedMessage.type === nextQuotedMessage.type
       : !!prevQuotedMessage === !!nextQuotedMessage;
 
   if (!quotedMessageEqual) return false;

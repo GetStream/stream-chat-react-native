@@ -3,10 +3,8 @@ import { View } from 'react-native';
 import type { ImageStyle, StyleProp } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
-import { vw } from '../../../utils/utils';
+import { useViewport } from '../../../hooks/useViewport';
 
-const screenWidth = vw(100);
-const halfScreenWidth = vw(50);
 const oneEighth = 1 / 8;
 
 type Props = {
@@ -40,6 +38,10 @@ export const AnimatedGalleryImage: React.FC<Props> = React.memo(
       translateX,
       translateY,
     } = props;
+    const { vw } = useViewport();
+
+    const screenWidth = vw(100);
+    const halfScreenWidth = vw(50);
 
     /**
      * The current image, designated by selected is scaled and translated

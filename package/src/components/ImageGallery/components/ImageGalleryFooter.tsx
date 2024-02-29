@@ -7,7 +7,7 @@ import { ImageGalleryVideoControl } from './ImageGalleryVideoControl';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Grid as GridIconDefault, Share as ShareIconDefault } from '../../../icons';
-import { deleteFile, saveFile, shareImage } from '../../../native';
+import { deleteFile, saveFile, shareImage, VideoType } from '../../../native';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { Photo } from '../ImageGallery';
@@ -67,6 +67,7 @@ export type ImageGalleryFooterVideoControlProps = {
   onPlayPause: (status?: boolean) => void;
   paused: boolean;
   progress: number;
+  videoRef: React.RefObject<VideoType>;
 };
 
 export type ImageGalleryFooterVideoControlComponent = ({
@@ -100,6 +101,7 @@ type ImageGalleryFooterPropsWithContext<
   photoLength: number;
   progress: number;
   selectedIndex: number;
+  videoRef: React.RefObject<VideoType>;
   visible: Animated.SharedValue<number>;
 };
 
@@ -125,6 +127,7 @@ export const ImageGalleryFooterWithContext = <
     selectedIndex,
     ShareIcon,
     videoControlElement,
+    videoRef,
     visible,
   } = props;
 
@@ -181,13 +184,14 @@ export const ImageGalleryFooterWithContext = <
       <ReanimatedSafeAreaView style={[container, footerStyle, { backgroundColor: white }]}>
         {photo.type === 'video' ? (
           videoControlElement ? (
-            videoControlElement({ duration, onPlayPause, paused, progress })
+            videoControlElement({ duration, onPlayPause, paused, progress, videoRef })
           ) : (
             <ImageGalleryVideoControl
               duration={duration}
               onPlayPause={onPlayPause}
               paused={paused}
               progress={progress}
+              videoRef={videoRef}
             />
           )
         ) : null}

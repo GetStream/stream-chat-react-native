@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 
 import type { Attachment, UserResponse } from 'stream-chat';
@@ -44,7 +44,12 @@ import {
 
 import { isVideoPackageAvailable, triggerHaptic } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { emojiRegex, MessageStatusTypes } from '../../utils/utils';
+import {
+  hasOnlyEmojis,
+  isBlockedMessage,
+  isBouncedMessage,
+  MessageStatusTypes,
+} from '../../utils/utils';
 
 import {
   isMessageWithStylesReadByAndDateSeparator,
@@ -141,6 +146,7 @@ export type MessagePropsWithContext<
     | 'isAttachmentEqual'
     | 'messageActions'
     | 'messageContentOrder'
+    | 'MessageBounce'
     | 'MessageSimple'
     | 'onLongPressMessage'
     | 'onPressInMessage'
@@ -217,6 +223,7 @@ const MessageWithContext = <
 >(
   props: MessagePropsWithContext<StreamChatGenerics>,
 ) => {
+  const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
   const isMessageTypeDeleted = props.message.type === 'deleted';
 
   const {
@@ -249,6 +256,7 @@ const MessageWithContext = <
     messageActions: messageActionsProp = defaultMessageActions,
     messageContentOrder: messageContentOrderProp,
     messagesContext,
+    MessageBounce,
     MessageSimple,
     onLongPress: onLongPressProp,
     onLongPressMessage: onLongPressMessageProp,
@@ -319,6 +327,19 @@ const MessageWithContext = <
     }
     const quotedMessage = message.quoted_message as MessageType<StreamChatGenerics>;
     if (error) {
+      /**
+       * If its a Blocked message, we don't do anything as per specs.
+       */
+      if (isBlockedMessage(message)) {
+        return;
+      }
+      /**
+       * If its a Bounced message, we open the message bounced options modal.
+       */
+      if (isBouncedMessage(message)) {
+        setIsBounceDialogOpen(true);
+        return;
+      }
       showMessageOverlay(false, true);
     } else if (quotedMessage) {
       onPressQuotedMessage(quotedMessage);
@@ -413,12 +434,16 @@ const MessageWithContext = <
     }
   });
 
+  const emojiOnlyText = useMemo(() => {
+    if (!message.text) return false;
+    return hasOnlyEmojis(message.text);
+  }, [message.text]);
+
   const onlyEmojis =
     !attachments.files.length &&
     !attachments.images.length &&
     !attachments.other.length &&
-    !!message.text &&
-    emojiRegex.test(message.text);
+    emojiOnlyText;
 
   const onOpenThread = () => {
     if (onThreadSelect) {
@@ -565,7 +590,7 @@ const MessageWithContext = <
       images: attachments.images,
       message,
       messageActions: messageActions?.filter(Boolean) as MessageActionListItemProps[] | undefined,
-      messageContext: { ...messageContext, disabled: true, preventPress: true },
+      messageContext: { ...messageContext, preventPress: true },
       messageReactionTitle: !error && messageReactions ? t('Message Reactions') : undefined,
       messagesContext: { ...messagesContext, messageContentOrder },
       onlyEmojis,
@@ -594,7 +619,7 @@ const MessageWithContext = <
   };
 
   const onLongPressMessage =
-    disabled || hasAttachmentActions
+    disabled || hasAttachmentActions || isBlockedMessage(message)
       ? () => null
       : onLongPressMessageProp
       ? (payload?: TouchableHandlerPayload) =>
@@ -615,6 +640,11 @@ const MessageWithContext = <
           })
       : enableLongPress
       ? () => {
+          // If a message is bounced, on long press the message bounce options modal should open.
+          if (isBouncedMessage(message)) {
+            setIsBounceDialogOpen(true);
+            return;
+          }
           triggerHaptic('impactMedium');
           showMessageOverlay(false);
         }
@@ -644,6 +674,7 @@ const MessageWithContext = <
     members,
     message,
     messageContentOrder,
+    myMessageTheme: messagesContext.myMessageTheme,
     onLongPress: onLongPressMessage,
     onlyEmojis,
     onOpenThread,
@@ -723,6 +754,7 @@ const MessageWithContext = <
         >
           <MessageProvider value={messageContext}>
             <MessageSimple />
+            {isBounceDialogOpen && <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />}
           </MessageProvider>
         </View>
       </View>
@@ -736,6 +768,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 ) => {
   const {
     chatContext: { mutedUsers: prevMutedUsers },
+    disabled: prevDisabled,
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
     isAttachmentEqual,
@@ -743,20 +776,26 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     lastReceivedId: prevLastReceivedId,
     members: prevMembers,
     message: prevMessage,
+    messagesContext: prevMessagesContext,
     showUnreadUnderlay: prevShowUnreadUnderlay,
     t: prevT,
   } = prevProps;
   const {
     chatContext: { mutedUsers: nextMutedUsers },
+    disabled: nextDisabled,
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     isTargetedMessage: nextIsTargetedMessage,
     lastReceivedId: nextLastReceivedId,
     members: nextMembers,
     message: nextMessage,
+    messagesContext: nextMessagesContext,
     showUnreadUnderlay: nextShowUnreadUnderlay,
     t: nextT,
   } = nextProps;
+
+  const disabledEqual = prevDisabled === nextDisabled;
+  if (!disabledEqual) return false;
 
   const membersEqual = Object.keys(prevMembers).length === Object.keys(nextMembers).length;
   if (!membersEqual) return false;
@@ -855,6 +894,12 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const targetedMessageEqual = prevIsTargetedMessage === nextIsTargetedMessage;
   if (!targetedMessageEqual) return false;
+
+  const prevMyMessageTheme = JSON.stringify(prevMessagesContext?.myMessageTheme);
+  const nextMyMessageTheme = JSON.stringify(nextMessagesContext?.myMessageTheme);
+
+  const messageThemeEqual = prevMyMessageTheme === nextMyMessageTheme;
+  if (!messageThemeEqual) return false;
 
   return true;
 };

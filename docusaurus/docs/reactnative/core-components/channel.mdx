@@ -40,6 +40,7 @@ import DismissKeyboardOnMessageTouch from '../common-content/core-components/cha
 import DoDocUploadRequest from '../common-content/core-components/channel/props/do_doc_upload_request.mdx';
 import DoImageUploadRequest from '../common-content/core-components/channel/props/do_image_upload_request.mdx';
 import EnableMessageGroupingByUser from '../common-content/core-components/channel/props/enable_message_grouping_by_user.mdx';
+import EmojiSearchIndex from '../common-content/core-components/channel/props/emoji_search_index.mdx';
 import FileAttachment from '../common-content/core-components/channel/props/file_attachment.mdx';
 import FileAttachmentGroup from '../common-content/core-components/channel/props/file_attachment_group.mdx';
 import FileAttachmentIcon from '../common-content/core-components/channel/props/file_attachment_icon.mdx';
@@ -88,10 +89,12 @@ import MaxNumberOfFiles from '../common-content/core-components/channel/props/ma
 import MentionAllAppUsersEnabled from '../common-content/core-components/channel/props/mention_all_app_users_enabled.mdx';
 import MentionAllAppUsersQuery from '../common-content/core-components/channel/props/mention_all_app_users_query.mdx';
 import MessageAvatar from '../common-content/core-components/channel/props/message_avatar.mdx';
+import MessageBounce from '../common-content/core-components/channel/props/message_bounce.mdx';
 import MessageContent from '../common-content/core-components/channel/props/message_content.mdx';
 import MessageActions from '../common-content/core-components/channel/props/message_actions.mdx';
 import MessageContentOrder from '../common-content/core-components/channel/props/message_content_order.mdx';
 import MessageDeleted from '../common-content/core-components/channel/props/message_deleted.mdx';
+import MessageError from '../common-content/core-components/channel/props/message_error.mdx';
 import MessageFooter from '../common-content/core-components/channel/props/message_footer.mdx';
 import MessageHeader from '../common-content/core-components/channel/props/message_header.mdx';
 import MessagePinnedHeader from '../common-content/core-components/channel/props/message_pinned_header.mdx';
@@ -290,7 +293,7 @@ This is often the header height.
 
 <CompressImageQuality />
 
-### deletedMessagesVisibiltyType
+### deletedMessagesVisibilityType
 
 <DeletedMessagesVisibilityType />
 
@@ -415,6 +418,10 @@ const doUpdateMessageRequest = (channelId, messageObject) => {
 | ------------- | ----------- |
 | channelId     | string      |
 | messageObject | object      |
+
+### emojiSearchIndex
+
+<EmojiSearchIndex />
 
 ### enableMessageGroupingByUser
 
@@ -824,6 +831,10 @@ Component to render full screen error indicator, when channel fails to load.
 
 <MessageAvatar />
 
+### MessageBounce
+
+<MessageBounce />
+
 ### MessageContent
 
 <MessageContent />
@@ -831,6 +842,10 @@ Component to render full screen error indicator, when channel fails to load.
 ### MessageDeleted
 
 <MessageDeleted />
+
+### MessageError
+
+<MessageError />
 
 ### MessageFooter
 

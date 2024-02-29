@@ -39,12 +39,12 @@ describe('MessageInput', () => {
       selectedImages: [
         generateImageAttachment({
           file: { height: 100, uri: 'https://picsum.photos/200/300', width: 100 },
-          fileSize: 500000000,
+          size: 500000000,
           uri: 'https://picsum.photos/200/300',
         }),
         generateImageAttachment({
           file: { height: 100, uri: 'https://picsum.photos/200/300', width: 100 },
-          fileSize: 600000000,
+          size: 600000000,
           uri: 'https://picsum.photos/200/300',
         }),
       ],

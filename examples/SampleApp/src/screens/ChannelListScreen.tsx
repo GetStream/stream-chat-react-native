@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
 const baseFilters = {
   type: 'messaging',
 };
-const sort: ChannelSort<StreamChatGenerics> = { last_message_at: -1 };
+const sort: ChannelSort<StreamChatGenerics> = { last_updated: -1 };
 const options = {
   presence: true,
   state: true,

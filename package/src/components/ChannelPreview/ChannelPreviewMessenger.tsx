@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -17,9 +17,10 @@ import {
   ChannelsContextValue,
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useViewport } from '../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { vw } from '../../utils/utils';
 
 const styles = StyleSheet.create({
   container: {
@@ -43,8 +44,6 @@ const styles = StyleSheet.create({
   },
   title: { fontSize: 14, fontWeight: '700' },
 });
-
-const maxWidth = vw(80) - 16 - 40;
 
 export type ChannelPreviewMessengerPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -119,6 +118,9 @@ const ChannelPreviewMessengerWithContext = <
     PreviewMutedStatus = ChannelPreviewMutedStatus,
     unread,
   } = props;
+  const { vw } = useViewport();
+
+  const maxWidth = vw(80) - 16 - 40;
 
   const {
     theme: {
@@ -127,12 +129,21 @@ const ChannelPreviewMessengerWithContext = <
     },
   } = useTheme();
 
+  const { client } = useChatContext<StreamChatGenerics>();
+
   const displayName = useChannelPreviewDisplayName(
     channel,
     Math.floor(maxWidth / ((title.fontSize || styles.title.fontSize) / 2)),
   );
 
-  const isChannelMuted = channel.muteStatus().muted;
+  const [isChannelMuted, setIsChannelMuted] = useState(() => channel.muteStatus().muted);
+
+  useEffect(() => {
+    const handleEvent = () => setIsChannelMuted(channel.muteStatus().muted);
+
+    client.on('notification.channel_mutes_updated', handleEvent);
+    return () => client.off('notification.channel_mutes_updated', handleEvent);
+  }, [client]);
 
   return (
     <TouchableOpacity
@@ -156,7 +167,7 @@ const ChannelPreviewMessengerWithContext = <
         <View style={[styles.row, row]}>
           <PreviewTitle channel={channel} displayName={displayName} />
           <View style={[styles.statusContainer, row]}>
-            <PreviewMutedStatus channel={channel} muted={isChannelMuted} />
+            {isChannelMuted && <PreviewMutedStatus />}
             <PreviewUnreadCount channel={channel} maxUnreadCount={maxUnreadCount} unread={unread} />
           </View>
         </View>

@@ -1,8 +1,6 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { Image, Platform } from 'react-native';
 
-import Dayjs from 'dayjs';
-
 import type { Channel, StreamChat } from 'stream-chat';
 
 import { useAppSettings } from './hooks/useAppSettings';
@@ -21,7 +19,6 @@ import type { Theme } from '../../contexts/themeContext/utils/theme';
 import {
   DEFAULT_USER_LANGUAGE,
   TranslationProvider,
-  TranslatorFunctions,
 } from '../../contexts/translationContext/TranslationContext';
 import { useStreami18n } from '../../hooks/useStreami18n';
 import init from '../../init';
@@ -149,15 +146,9 @@ const ChatWithContext = <
   } = props;
 
   const [channel, setChannel] = useState<Channel<StreamChatGenerics>>();
-  const [translators, setTranslators] = useState<TranslatorFunctions>({
-    t: (key: string) => key,
-    tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
-  });
 
-  /**
-   * Setup translators
-   */
-  const loadingTranslators = useStreami18n({ i18nInstance, setTranslators });
+  // Setup translators
+  const translators = useStreami18n(i18nInstance);
 
   /**
    * Setup connection event listeners
@@ -224,9 +215,12 @@ const ChatWithContext = <
   useSyncDatabase({
     client,
     enableOfflineSupport,
+    initialisedDatabase,
   });
 
-  if (loadingTranslators) return null;
+  if (enableOfflineSupport && !initialisedDatabase) {
+    return null;
+  }
 
   return (
     <ChatProvider<StreamChatGenerics> value={chatContext}>

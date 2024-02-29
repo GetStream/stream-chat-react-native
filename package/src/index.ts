@@ -2,7 +2,7 @@ export * from './components';
 export * from './hooks';
 export { registerNativeHandlers, NetInfo } from './native';
 export * from './contexts';
-export * from './emoji-data/compiled';
+export * from './emoji-data';
 
 export * from './icons';
 
@@ -11,6 +11,7 @@ export * from './types/types';
 export * from './utils/patchMessageTextCommand';
 export * from './utils/Streami18n';
 export * from './utils/utils';
+export * from './utils/StreamChatRN';
 
 export { default as enTranslations } from './i18n/en.json';
 export { default as frTranslations } from './i18n/fr.json';

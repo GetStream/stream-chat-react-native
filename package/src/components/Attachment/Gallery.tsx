@@ -4,6 +4,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { Attachment } from 'stream-chat';
 
 import { GalleryImage } from './GalleryImage';
+import { ImageReloadIndicator } from './ImageReloadIndicator';
 import { buildGallery } from './utils/buildGallery/buildGallery';
 
 import type { Thumbnail } from './utils/buildGallery/types';
@@ -34,47 +35,6 @@ import { isVideoPackageAvailable } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getUrlWithoutParams } from '../../utils/utils';
 
-const styles = StyleSheet.create({
-  errorTextSize: { fontSize: 10 },
-  galleryContainer: {
-    borderTopLeftRadius: 13,
-    borderTopRightRadius: 13,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    overflow: 'hidden',
-  },
-  imageContainer: {
-    alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    padding: 1,
-  },
-  imageContainerStyle: { alignItems: 'center', flex: 1, justifyContent: 'center' },
-  imageLoadingErrorIndicatorStyle: {
-    bottom: 4,
-    left: 4,
-    position: 'absolute',
-  },
-  imageLoadingIndicatorContainer: {
-    height: '100%',
-    justifyContent: 'center',
-    position: 'absolute',
-    width: '100%',
-  },
-  imageLoadingIndicatorStyle: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
-  },
-  moreImagesContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: 1,
-  },
-  moreImagesText: { color: '#FFFFFF', fontSize: 26, fontWeight: '700' },
-});
-
 export type GalleryPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setSelectedMessage' | 'setMessages'> &
@@ -97,6 +57,7 @@ export type GalleryPropsWithContext<
     | 'VideoThumbnail'
     | 'ImageLoadingIndicator'
     | 'ImageLoadingFailedIndicator'
+    | 'myMessageTheme'
   > &
   Pick<OverlayContextValue, 'setOverlay'> & {
     channelId: string | undefined;
@@ -191,13 +152,11 @@ const GalleryWithContext = <
       style={[
         styles.galleryContainer,
         {
+          flexDirection: invertedDirections ? 'column' : 'row',
           height,
           width,
         },
         galleryContainer,
-        {
-          flexDirection: invertedDirections ? 'column' : 'row',
-        },
       ]}
       testID='gallery-container'
     >
@@ -350,6 +309,9 @@ const GalleryThumbnail = <
   };
 
   const defaultOnPress = () => {
+    if ((thumbnail.type === 'video' && !thumbnail.thumb_url) || !thumbnail.url) {
+      return;
+    }
     if (thumbnail.type === 'video' && !isVideoPackageAvailable()) {
       // This condition is kinda unreachable, since we render videos as file attachment if the video
       // library is not installed. But doesn't hurt to have extra safeguard, in case of some customizations.
@@ -405,11 +367,11 @@ const GalleryThumbnail = <
         <VideoThumbnail
           style={[
             borderRadius,
-            image,
             {
               height: thumbnail.height - 1,
               width: thumbnail.width - 1,
             },
+            image,
           ]}
           thumb_url={thumbnail.thumb_url}
         />
@@ -452,30 +414,42 @@ const GalleryImageThumbnail = <
   GalleryThumbnailProps<StreamChatGenerics>,
   'ImageLoadingFailedIndicator' | 'ImageLoadingIndicator' | 'thumbnail' | 'borderRadius'
 >) => {
-  const { isLoadingImage, isLoadingImageError, setLoadingImage, setLoadingImageError } =
-    useLoadingImage();
+  const {
+    isLoadingImage,
+    isLoadingImageError,
+    onReloadImage,
+    setLoadingImage,
+    setLoadingImageError,
+  } = useLoadingImage();
 
   const {
     theme: {
-      messageSimple: {
-        gallery: { image },
-      },
+      messageSimple: { gallery },
     },
   } = useTheme();
 
   return (
     <View
-      style={{
-        height: thumbnail.height - 1,
-        width: thumbnail.width - 1,
-      }}
+      style={[
+        {
+          height: thumbnail.height - 1,
+          width: thumbnail.width - 1,
+        },
+        gallery.thumbnail,
+      ]}
     >
       {isLoadingImageError ? (
-        <ImageLoadingFailedIndicator style={[styles.imageLoadingErrorIndicatorStyle]} />
+        <>
+          <ImageLoadingFailedIndicator style={styles.imageLoadingErrorIndicatorStyle} />
+          <ImageReloadIndicator
+            onReloadImage={onReloadImage}
+            style={styles.imageReloadContainerStyle}
+          />
+        </>
       ) : (
         <>
           <GalleryImage
-            onError={(error) => {
+            onError={({ nativeEvent: { error } }) => {
               console.warn(error);
               setLoadingImage(false);
               setLoadingImageError(true);
@@ -485,16 +459,16 @@ const GalleryImageThumbnail = <
             resizeMode={thumbnail.resizeMode}
             style={[
               borderRadius,
-              image,
               {
                 height: thumbnail.height - 1,
                 width: thumbnail.width - 1,
               },
+              gallery.image,
             ]}
             uri={thumbnail.url}
           />
           {isLoadingImage && (
-            <View style={[styles.imageLoadingIndicatorContainer]}>
+            <View style={styles.imageLoadingIndicatorContainer}>
               <ImageLoadingIndicator style={styles.imageLoadingIndicatorStyle} />
             </View>
           )}
@@ -513,6 +487,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     hasThreadReplies: prevHasThreadReplies,
     images: prevImages,
     message: prevMessage,
+    myMessageTheme: prevMyMessageTheme,
     videos: prevVideos,
   } = prevProps;
   const {
@@ -520,6 +495,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     hasThreadReplies: nextHasThreadReplies,
     images: nextImages,
     message: nextMessage,
+    myMessageTheme: nextMyMessageTheme,
     videos: nextVideos,
   } = nextProps;
 
@@ -553,6 +529,10 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     );
   if (!videosEqual) return false;
 
+  const messageThemeEqual =
+    JSON.stringify(prevMyMessageTheme) === JSON.stringify(nextMyMessageTheme);
+  if (!messageThemeEqual) return false;
+
   return true;
 };
 
@@ -579,6 +559,7 @@ export const Gallery = <
     ImageLoadingIndicator: PropImageLoadingIndicator,
     images: propImages,
     message: propMessage,
+    myMessageTheme: propMyMessageTheme,
     onLongPress: propOnLongPress,
     onPress: propOnPress,
     onPressIn: propOnPressIn,
@@ -609,6 +590,7 @@ export const Gallery = <
     ImageLoadingFailedIndicator: ContextImageLoadingFailedIndicator,
     ImageLoadingIndicator: ContextImageLoadingIndicator,
     legacyImageViewerSwipeBehaviour,
+    myMessageTheme: contextMyMessageTheme,
     VideoThumbnail: ContextVideoThumnbnail,
   } = useMessagesContext<StreamChatGenerics>();
   const { setOverlay: contextSetOverlay } = useOverlayContext();
@@ -634,6 +616,7 @@ export const Gallery = <
   const ImageLoadingFailedIndicator =
     PropImageLoadingFailedIndicator || ContextImageLoadingFailedIndicator;
   const ImageLoadingIndicator = PropImageLoadingIndicator || ContextImageLoadingIndicator;
+  const myMessageTheme = propMyMessageTheme || contextMyMessageTheme;
 
   return (
     <MemoizedGallery
@@ -648,6 +631,7 @@ export const Gallery = <
         images,
         legacyImageViewerSwipeBehaviour,
         message,
+        myMessageTheme,
         onLongPress,
         onPress,
         onPressIn,
@@ -662,5 +646,51 @@ export const Gallery = <
     />
   );
 };
+
+const styles = StyleSheet.create({
+  errorTextSize: { fontSize: 10 },
+  galleryContainer: {
+    borderTopLeftRadius: 13,
+    borderTopRightRadius: 13,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    overflow: 'hidden',
+  },
+  imageContainer: {
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    padding: 1,
+  },
+  imageContainerStyle: { alignItems: 'center', flex: 1, justifyContent: 'center' },
+  imageLoadingErrorIndicatorStyle: {
+    bottom: 4,
+    left: 4,
+    position: 'absolute',
+  },
+  imageLoadingIndicatorContainer: {
+    height: '100%',
+    justifyContent: 'center',
+    position: 'absolute',
+    width: '100%',
+  },
+  imageLoadingIndicatorStyle: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+  },
+  imageReloadContainerStyle: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  moreImagesContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 1,
+  },
+  moreImagesText: { color: '#FFFFFF', fontSize: 26, fontWeight: '700' },
+});
 
 Gallery.displayName = 'Gallery{messageSimple{gallery}}';

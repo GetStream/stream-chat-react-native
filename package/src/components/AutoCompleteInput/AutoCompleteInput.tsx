@@ -26,7 +26,7 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
-import type { Emoji } from '../../emoji-data/compiled';
+import type { Emoji } from '../../emoji-data';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { isCommandTrigger, isEmojiTrigger, isMentionTrigger } from '../../utils/utils';
 
@@ -63,7 +63,6 @@ type AutoCompleteInputPropsWithContext<
     | 'onChange'
     | 'setGiphyActive'
     | 'setInputBoxRef'
-    | 'setShowMoreOptions'
     | 'text'
     | 'triggerSettings'
   > &
@@ -103,7 +102,6 @@ const AutoCompleteInputWithContext = <
     openSuggestions,
     setGiphyActive,
     setInputBoxRef,
-    setShowMoreOptions,
     t,
     text,
     triggerSettings,
@@ -425,12 +423,6 @@ const AutoCompleteInputWithContext = <
       testID='auto-complete-text-input'
       value={text}
       {...additionalTextInputProps}
-      onBlur={(event) => {
-        if (additionalTextInputProps?.onBlur) {
-          additionalTextInputProps?.onBlur(event);
-        }
-        setShowMoreOptions(true);
-      }}
     />
   );
 };
@@ -489,7 +481,6 @@ export const AutoCompleteInput = <
     onChange,
     setGiphyActive,
     setInputBoxRef,
-    setShowMoreOptions,
     text,
     triggerSettings,
   } = useMessageInputContext<StreamChatGenerics>();
@@ -513,7 +504,6 @@ export const AutoCompleteInput = <
         openSuggestions,
         setGiphyActive,
         setInputBoxRef,
-        setShowMoreOptions,
         t,
         text,
         triggerSettings,

@@ -1,16 +1,10 @@
 import { useEffect, useState } from 'react';
 
 import type { AudioReturnType, RecordingStatus } from '../../../native';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+import type { DefaultStreamChatGenerics, FileUpload, ImageUpload } from '../../../types/types';
 import { generateRandomId } from '../../../utils/utils';
 
-import type { FileUpload, ImageUpload, MessageInputContextValue } from '../MessageInputContext';
-
-export const isEditingBoolean = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  editing: MessageInputContextValue<StreamChatGenerics>['editing'],
-): editing is boolean => typeof editing === 'boolean';
+import type { MessageInputContextValue } from '../MessageInputContext';
 
 export const useMessageDetailsForState = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -37,17 +31,17 @@ export const useMessageDetailsForState = <
   }, [text]);
 
   const messageValue =
-    typeof message === 'boolean' ? '' : `${message.id}${message.text}${message.updated_at}`;
+    message === undefined ? '' : `${message.id}${message.text}${message.updated_at}`;
 
   useEffect(() => {
-    if (!isEditingBoolean<StreamChatGenerics>(message) && Array.isArray(message?.mentioned_users)) {
+    if (message && Array.isArray(message?.mentioned_users)) {
       const mentionedUsers = message.mentioned_users.map((user) => user.id);
       setMentionedUsers(mentionedUsers);
     }
   }, [messageValue]);
 
   useEffect(() => {
-    if (message && !isEditingBoolean<StreamChatGenerics>(message)) {
+    if (message) {
       setText(message?.text || '');
       const newFileUploads: FileUpload[] = [];
       const newImageUploads: ImageUpload[] = [];
@@ -59,9 +53,9 @@ export const useMessageDetailsForState = <
           const id = generateRandomId();
           newFileUploads.push({
             file: {
+              mimeType: attachment.mime_type,
               name: attachment.title || '',
               size: attachment.file_size,
-              type: attachment.mime_type,
             },
             id,
             state: 'finished',
@@ -83,9 +77,9 @@ export const useMessageDetailsForState = <
           const id = generateRandomId();
           newFileUploads.push({
             file: {
+              mimeType: attachment.mime_type,
               name: attachment.title || '',
               size: attachment.file_size,
-              type: attachment.mime_type,
             },
             id,
             state: 'finished',

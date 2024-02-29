@@ -10,17 +10,27 @@ type Size = {
 export const takePhoto = async ({ compressImageQuality = 1 }) => {
   try {
     const permissionCheck = await ImagePicker.getCameraPermissionsAsync();
-    const permissionGranted =
-      permissionCheck?.status === 'granted'
-        ? permissionCheck
-        : await ImagePicker.requestCameraPermissionsAsync();
+    const canRequest = permissionCheck.canAskAgain;
+    let permissionGranted = permissionCheck.granted;
+    if (!permissionGranted) {
+      if (canRequest) {
+        const response = await ImagePicker.requestCameraPermissionsAsync();
+        permissionGranted = response.granted;
+      } else {
+        return { askToOpenSettings: true, cancelled: true };
+      }
+    }
 
-    if (permissionGranted?.status === 'granted' || permissionGranted?.granted === true) {
-      const photo = await ImagePicker.launchCameraAsync({
+    if (permissionGranted) {
+      const imagePickerSuccessResult = await ImagePicker.launchCameraAsync({
         quality: Math.min(Math.max(0, compressImageQuality), 1),
       });
+      const canceled = imagePickerSuccessResult.canceled;
+      const assets = imagePickerSuccessResult.assets;
+      // since we only support single photo upload for now we will only be focusing on 0'th element.
+      const photo = assets && assets[0];
 
-      if (photo.cancelled === false && photo.height && photo.width && photo.uri) {
+      if (canceled === false && photo && photo.height && photo.width && photo.uri) {
         let size: Size = {};
         if (Platform.OS === 'android') {
           // Height and width returned by ImagePicker are incorrect on Android.

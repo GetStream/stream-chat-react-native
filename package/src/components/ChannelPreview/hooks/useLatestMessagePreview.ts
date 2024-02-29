@@ -61,8 +61,13 @@ const getMentionUsers = <
       }
       return acc;
     }, '');
-    return mentionUserString;
+
+    // escape special characters
+    return mentionUserString.replace(/[.*+?^${}()|[\]\\]/g, function (match) {
+      return '\\' + match;
+    });
   }
+
   return '';
 };
 

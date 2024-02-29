@@ -69,6 +69,10 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     paddingTop: 16,
   },
+  unseenItemContainer: {
+    opacity: 0,
+    position: 'absolute',
+  },
 });
 
 const reactionData: ReactionData[] = [
@@ -138,6 +142,8 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
   const layoutHeight = useSharedValue(0);
   const layoutWidth = useSharedValue(0);
 
+  const [itemHeight, setItemHeight] = React.useState(0);
+
   const {
     theme: {
       colors: { accent_blue, black, grey_gainsboro, white },
@@ -159,7 +165,6 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
   } = useTheme();
 
   const width = useWindowDimensions().width;
-  const height = useWindowDimensions().height;
 
   const supportedReactionTypes = supportedReactions.map(
     (supportedReaction) => supportedReaction.type,
@@ -177,15 +182,6 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
         (Number(avatarContainer.padding || 0) || styles.avatarContainer.padding)) *
         2) /
       (avatarSize + (Number(avatarContainer.padding || 0) || styles.avatarContainer.padding) * 2),
-  );
-
-  const maxHeight = Math.floor(
-    height -
-      overlayPadding * 2 -
-      ((Number(flatListContainer.paddingVertical || 0) ||
-        styles.flatListContainer.paddingVertical) +
-        (Number(avatarContainer.padding || 0) || styles.avatarContainer.padding)) *
-        2,
   );
 
   const renderItem = ({ item }: { item: Reaction }) => {
@@ -277,7 +273,9 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
           </View>
         </View>
         <View style={styles.avatarNameContainer}>
-          <Text style={[styles.avatarName, { color: black }, avatarName]}>{name}</Text>
+          <Text numberOfLines={2} style={[styles.avatarName, { color: black }, avatarName]}>
+            {name}
+          </Text>
         </View>
       </View>
     );
@@ -305,23 +303,49 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
   );
 
   return (
-    <Animated.View
-      onLayout={({ nativeEvent: { layout } }) => {
-        layoutWidth.value = layout.width;
-        layoutHeight.value = layout.height;
-      }}
-      style={[styles.container, { backgroundColor: white }, container, showScreenStyle]}
-    >
-      <Text style={[styles.title, { color: black }, titleStyle]}>{title}</Text>
-      <FlatList
-        contentContainerStyle={styles.flatListContentContainer}
-        data={filteredReactions}
-        keyExtractor={({ name }, index) => `${name}_${index}`}
-        numColumns={numColumns}
-        renderItem={renderItem}
-        style={[styles.flatListContainer, flatListContainer, { maxHeight: maxHeight / numColumns }]}
-      />
-    </Animated.View>
+    <>
+      <Animated.View
+        onLayout={({ nativeEvent: { layout } }) => {
+          layoutWidth.value = layout.width;
+          layoutHeight.value = layout.height;
+        }}
+        style={[
+          styles.container,
+          { backgroundColor: white, opacity: itemHeight ? 1 : 0 },
+          container,
+          showScreenStyle,
+        ]}
+      >
+        <Text style={[styles.title, { color: black }, titleStyle]}>{title}</Text>
+        <FlatList
+          contentContainerStyle={styles.flatListContentContainer}
+          data={filteredReactions}
+          key={numColumns}
+          keyExtractor={({ name }, index) => `${name}_${index}`}
+          numColumns={numColumns}
+          renderItem={renderItem}
+          scrollEnabled={filteredReactions.length / numColumns > 1}
+          style={[
+            styles.flatListContainer,
+            flatListContainer,
+            {
+              // we show the item height plus a little extra to tease for scrolling if there are more than one row
+              maxHeight:
+                itemHeight + (filteredReactions.length / numColumns > 1 ? itemHeight / 4 : 8),
+            },
+          ]}
+        />
+        {/* The below view is unseen by the user, we use it to compute the height that the item must be */}
+        <View
+          onLayout={({ nativeEvent: { layout } }) => {
+            setItemHeight(layout.height);
+          }}
+          style={[styles.unseenItemContainer, styles.flatListContentContainer]}
+        >
+          {renderItem({ item: filteredReactions[0] })}
+        </View>
+      </Animated.View>
+    </>
   );
 };
 

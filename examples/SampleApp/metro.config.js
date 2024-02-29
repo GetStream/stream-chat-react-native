@@ -1,5 +1,5 @@
 /* eslint-env node */
-
+const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 const PATH = require('path');
 const blacklist = require('metro-config/src/defaults/exclusionList');
 
@@ -9,7 +9,7 @@ const projectRoot = PATH.resolve(__dirname);
 
 const { alternateRoots, extraNodeModules, moduleBlacklist } = extractLinkedPackages(projectRoot);
 
-module.exports = {
+const customConfig = {
   resolver: {
     blacklistRE: blacklist(moduleBlacklist),
     extraNodeModules,
@@ -17,3 +17,5 @@ module.exports = {
   },
   watchFolders: [projectRoot].concat(alternateRoots),
 };
+
+module.exports = mergeConfig(getDefaultConfig(__dirname), customConfig);

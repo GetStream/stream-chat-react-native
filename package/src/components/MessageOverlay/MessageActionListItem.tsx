@@ -6,31 +6,9 @@ import Animated from 'react-native-reanimated';
 import { useMessageActionAnimation } from './hooks/useMessageActionAnimation';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useViewport } from '../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { vw } from '../../utils/utils';
 import type { MessageOverlayPropsWithContext } from '../MessageOverlay/MessageOverlay';
-
-const styles = StyleSheet.create({
-  bottomBorder: {
-    borderBottomWidth: 1,
-  },
-  container: {
-    borderRadius: 16,
-    marginTop: 8,
-    maxWidth: 275,
-  },
-  row: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    minWidth: vw(65),
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  titleStyle: {
-    paddingLeft: 20,
-  },
-});
 
 export type ActionType =
   | 'blockUser'
@@ -72,6 +50,7 @@ const MessageActionListItemWithContext = <
   props: MessageActionListItemProps<StreamChatGenerics>,
 ) => {
   const { action, actionType, icon, index, length, title, titleStyle } = props;
+  const { vw } = useViewport();
 
   const {
     theme: {
@@ -87,6 +66,9 @@ const MessageActionListItemWithContext = <
       <Animated.View
         style={[
           styles.row,
+          {
+            minWidth: vw(65),
+          },
           index !== length - 1 ? { ...styles.bottomBorder, borderBottomColor: border } : {},
           animatedStyle,
           messageActions.actionContainer,
@@ -94,7 +76,7 @@ const MessageActionListItemWithContext = <
         testID={`${actionType}-list-item`}
       >
         <View style={messageActions.icon}>{icon}</View>
-        <Text style={[styles.titleStyle, messageActions.title, { color: black }, titleStyle]}>
+        <Text style={[styles.titleStyle, { color: black }, titleStyle, messageActions.title]}>
           {title}
         </Text>
       </Animated.View>
@@ -122,3 +104,24 @@ export const MessageActionListItem = <
 >(
   props: MessageActionListItemProps<StreamChatGenerics>,
 ) => <MemoizedMessageActionListItem {...props} />;
+
+const styles = StyleSheet.create({
+  bottomBorder: {
+    borderBottomWidth: 1,
+  },
+  container: {
+    borderRadius: 16,
+    marginTop: 8,
+    maxWidth: 275,
+  },
+  row: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  titleStyle: {
+    paddingLeft: 20,
+  },
+});

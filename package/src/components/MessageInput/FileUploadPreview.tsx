@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FlatList, I18nManager, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import dayjs from 'dayjs';
+
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
 import { ChatContextValue, useChatContext } from '../../contexts';
 import {
-  FileUpload,
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
@@ -18,7 +19,7 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 import { Close } from '../../icons/Close';
 import { Warning } from '../../icons/Warning';
 import { isAudioPackageAvailable } from '../../native';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import type { DefaultStreamChatGenerics, FileUpload } from '../../types/types';
 import { FileState, getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../utils/utils';
 import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
 import { WritingDirectionAwareText } from '../RTLComponents/WritingDirectionAwareText';
@@ -101,6 +102,19 @@ const UnsupportedFileTypeOrFileSizeIndicator = ({
     },
   } = useTheme();
 
+  const ONE_HOUR_IN_SECONDS = 3600;
+  let durationLabel = '00:00';
+  const videoDuration = item.file.duration;
+
+  if (videoDuration) {
+    const isDurationLongerThanHour = videoDuration / ONE_HOUR_IN_SECONDS >= 1;
+    const formattedDurationParam = isDurationLongerThanHour ? 'HH:mm:ss' : 'mm:ss';
+    const formattedVideoDuration = dayjs
+      .duration(videoDuration, 'second')
+      .format(formattedDurationParam);
+    durationLabel = formattedVideoDuration;
+  }
+
   const { t } = useTranslationContext();
 
   return indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
@@ -117,7 +131,7 @@ const UnsupportedFileTypeOrFileSizeIndicator = ({
     </View>
   ) : (
     <WritingDirectionAwareText style={[styles.fileSizeText, { color: grey }, fileSizeText]}>
-      {item.file.duration || getFileSizeDisplayText(item.file.size)}
+      {videoDuration ? durationLabel : getFileSizeDisplayText(item.file.size)}
     </WritingDirectionAwareText>
   );
 };
@@ -183,7 +197,7 @@ const FileUploadPreviewWithContext = <
       setFileUploads((prevFileUploads) =>
         prevFileUploads.map((fileUpload) => ({
           ...fileUpload,
-          paused: fileUpload.id === index ? false : true,
+          paused: fileUpload.id !== index,
         })),
       );
     } else {
@@ -228,7 +242,7 @@ const FileUploadPreviewWithContext = <
           style={styles.overlay}
           type={indicatorType}
         >
-          {item.file.type?.startsWith('audio/') && isAudioPackageAvailable() ? (
+          {item.file.mimeType?.startsWith('audio/') && isAudioPackageAvailable() ? (
             <View
               style={[
                 { marginBottom: item.state === FileState.UPLOADED ? 8 : 0 },
@@ -279,7 +293,7 @@ const FileUploadPreviewWithContext = <
             >
               <View style={[styles.fileContentContainer, fileContentContainer]}>
                 <View style={styles.fileIcon}>
-                  <FileAttachmentIcon mimeType={item.file.type} />
+                  <FileAttachmentIcon mimeType={item.file.mimeType} />
                 </View>
                 <View style={[styles.fileTextContainer, fileTextContainer]}>
                   <Text

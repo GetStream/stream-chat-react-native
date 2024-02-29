@@ -24,8 +24,8 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useViewport } from '../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { vw } from '../../utils/utils';
 
 const styles = StyleSheet.create({
   container: {
@@ -35,7 +35,6 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   details: {
-    maxWidth: vw(60),
     paddingLeft: 16,
   },
   size: {
@@ -94,6 +93,7 @@ const FileAttachmentWithContext = <
       },
     },
   } = useTheme();
+  const { vw } = useViewport();
 
   const defaultOnPress = () => openUrlSafely(attachment.asset_url);
 
@@ -134,7 +134,16 @@ const FileAttachmentWithContext = <
     >
       <View style={[styles.container, { backgroundColor: white }, container, stylesProp.container]}>
         <FileAttachmentIcon mimeType={attachment.mime_type} size={attachmentSize} />
-        <View style={[styles.details, details, stylesProp.details]}>
+        <View
+          style={[
+            styles.details,
+            {
+              maxWidth: vw(60),
+            },
+            details,
+            stylesProp.details,
+          ]}
+        >
           <Text numberOfLines={2} style={[styles.title, { color: black }, title, stylesProp.title]}>
             {attachment.title}
           </Text>

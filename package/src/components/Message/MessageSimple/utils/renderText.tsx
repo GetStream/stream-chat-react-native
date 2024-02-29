@@ -4,7 +4,6 @@ import { GestureResponderEvent, Linking, Text, TextProps, View, ViewProps } from
 // @ts-expect-error
 import Markdown from 'react-native-markdown-package';
 
-import truncate from 'lodash/truncate';
 import {
   DefaultRules,
   defaultRules,
@@ -19,7 +18,7 @@ import {
 
 import type { UserResponse } from 'stream-chat';
 
-import { parseLinksFromText } from './parseLinks';
+import { generateMarkdownText } from './generateMarkdownText';
 
 import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
 import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
@@ -62,7 +61,7 @@ const defaultMarkdownStyles: MarkdownStyle = {
   },
 };
 
-const parse: ParseFunction = (capture, parse, state) => ({
+const mentionsParseFunction: ParseFunction = (capture, parse, state) => ({
   content: parseInline(parse, capture[0], state),
 });
 
@@ -101,26 +100,9 @@ export const renderText = <
     onPress: onPressParam,
     preventPress,
   } = params;
+  const { text } = message;
 
-  // take the @ mentions and turn them into markdown?
-  // translate links
-  const { mentioned_users, text } = message;
-
-  if (!text) return null;
-
-  let newText = text.trim();
-  const linkInfos = parseLinksFromText(newText);
-
-  for (const linkInfo of linkInfos) {
-    const displayLink = truncate(linkInfo.raw, {
-      length: 200,
-      omission: '...',
-    });
-    const markdown = `[${displayLink}](${linkInfo.encodedUrl})`;
-    newText = newText.replace(linkInfo.raw, markdown);
-  }
-
-  newText = newText.replace(/[<&"'>]/g, '\\$&');
+  const markdownText = generateMarkdownText(text);
 
   const styles: MarkdownStyle = {
     ...defaultMarkdownStyles,
@@ -160,8 +142,17 @@ export const renderText = <
       : Linking.canOpenURL(url).then((canOpenUrl) => canOpenUrl && Linking.openURL(url));
   };
 
-  const link: ReactNodeOutput = (node, output, { ...state }) => {
-    const url = node.target;
+  let previousLink: string | undefined;
+  const linkReact: ReactNodeOutput = (node, output, { ...state }) => {
+    let url: string;
+    // Some long URLs with `&` separated parameters are trimmed and the url only until first param is taken.
+    // This is done because of internal link been taken from the original URL in react-native-markdown-package. So, we check for `withinLink` and take the previous full URL.
+    if (state?.withinLink && previousLink) {
+      url = previousLink;
+    } else {
+      url = node.target;
+      previousLink = node.target;
+    }
     const onPress = (event: GestureResponderEvent) => {
       if (!preventPress && onPressParam) {
         onPressParam({
@@ -198,24 +189,49 @@ export const renderText = <
     );
   };
 
-  const paragraphText: ReactNodeOutput = (node, output, { ...state }) => (
-    <Text key={state.key} numberOfLines={messageTextNumberOfLines} style={styles.paragraph}>
-      {output(node.content, state)}
-    </Text>
-  );
+  const paragraphTextReact: ReactNodeOutput = (node, output, { ...state }) => {
+    if (messageTextNumberOfLines !== undefined) {
+      // If we want to truncate the message text, lets only truncate the first paragraph
+      // and simply not render rest of the paragraphs.
+      if (state.key === '0' || state.key === 0) {
+        return (
+          <Text key={state.key} numberOfLines={messageTextNumberOfLines} style={styles.paragraph}>
+            {output(node.content, state)}
+          </Text>
+        );
+      } else {
+        return null;
+      }
+    }
 
+    return (
+      <Text key={state.key} style={styles.paragraph}>
+        {output(node.content, state)}
+      </Text>
+    );
+  };
+
+  // take the @ mentions and turn them into markdown?
+  // translate links
+  const { mentioned_users } = message;
   const mentionedUsers = Array.isArray(mentioned_users)
     ? mentioned_users.reduce((acc, cur) => {
         const userName = cur.name || cur.id || '';
         if (userName) {
-          acc += `${acc.length ? '|' : ''}@${userName}`;
+          acc += `${acc.length ? '|' : ''}@${userName.replace(
+            /[.*+?^${}()|[\]\\]/g,
+            function (match) {
+              return '\\' + match;
+            },
+          )}`;
         }
+
         return acc;
       }, '')
     : '';
 
   const regEx = new RegExp(`^\\B(${mentionedUsers})`, 'g');
-  const match: MatchFunction = (source) => regEx.exec(source);
+  const mentionsMatchFunction: MatchFunction = (source) => regEx.exec(source);
 
   const mentionsReact: ReactNodeOutput = (node, output, { ...state }) => {
     /**removes the @ prefix of username */
@@ -252,7 +268,7 @@ export const renderText = <
     );
   };
 
-  const list: ReactNodeOutput = (node, output, state) => (
+  const listReact: ReactNodeOutput = (node, output, state) => (
     <ListOutput
       key={`list-${state.key}`}
       node={node}
@@ -265,19 +281,19 @@ export const renderText = <
   const customRules = {
     // do not render images, we will scrape them out of the message and show on attachment card component
     image: { match: () => null },
-    link: { react: link },
-    list: { react: list },
+    link: { react: linkReact },
+    list: { react: listReact },
     // Truncate long text content in the message overlay
-    paragraph: messageTextNumberOfLines ? { react: paragraphText } : {},
+    paragraph: messageTextNumberOfLines ? { react: paragraphTextReact } : {},
     // we have no react rendering support for reflinks
     reflink: { match: () => null },
-    sublist: { react: list },
+    sublist: { react: listReact },
     ...(mentionedUsers
       ? {
           mentions: {
-            match,
+            match: mentionsMatchFunction,
             order: defaultRules.text.order - 0.5,
-            parse,
+            parse: mentionsParseFunction,
             react: mentionsReact,
           },
         }
@@ -296,7 +312,7 @@ export const renderText = <
       }}
       styles={styles}
     >
-      {newText}
+      {markdownText}
     </Markdown>
   );
 };

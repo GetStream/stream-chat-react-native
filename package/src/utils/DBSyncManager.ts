@@ -1,8 +1,9 @@
 import type { AxiosError } from 'axios';
+import dayjs from 'dayjs';
 import type { APIErrorResponse, StreamChat } from 'stream-chat';
 
 import { handleEventToSyncDB } from '../components/Chat/hooks/handleEventToSyncDB';
-import { getAllChannelIds, getLastSyncedAt, upsertLastSyncedAt } from '../store/apis';
+import { getAllChannelIds, getLastSyncedAt, upsertUserSyncStatus } from '../store/apis';
 
 import { addPendingTask } from '../store/apis/addPendingTask';
 
@@ -11,6 +12,7 @@ import { getPendingTasks } from '../store/apis/getPendingTasks';
 import { QuickSqliteClient } from '../store/QuickSqliteClient';
 import type { PendingTask, PreparedQueries } from '../store/types';
 import type { DefaultStreamChatGenerics } from '../types/types';
+
 /**
  * DBSyncManager has the responsibility to sync the channel states
  * within local database whenever possible.
@@ -90,30 +92,42 @@ export class DBSyncManager {
 
   static sync = async () => {
     if (!this.client?.user) return;
+    const cids = getAllChannelIds();
+    // If there are no channels, then there is no need to sync.
+    if (cids.length === 0) return;
 
     const lastSyncedAt = getLastSyncedAt({
       currentUserId: this.client.user.id,
     });
-    const cids = getAllChannelIds();
 
     if (lastSyncedAt) {
-      try {
-        const result = await this.client.sync(cids, new Date(lastSyncedAt).toISOString());
-        const queries = result.events.reduce<PreparedQueries[]>((queries, event) => {
-          queries = queries.concat(handleEventToSyncDB(event, false));
-          return queries;
-        }, []);
-
-        if (queries.length) {
-          QuickSqliteClient.executeSqlBatch(queries);
-        }
-      } catch (e) {
-        // Error will be raised by the sync API if there are too many events.
+      const lastSyncedAtDate = new Date(lastSyncedAt);
+      const lastSyncedAtDayJs = dayjs(lastSyncedAtDate);
+      const nowDayJs = dayjs();
+      const diff = nowDayJs.diff(lastSyncedAtDayJs, 'days');
+      if (diff > 30) {
+        // stream backend will send an error if we try to sync after 30 days.
         // In that case reset the entire DB and start fresh.
         QuickSqliteClient.resetDB();
+      } else {
+        try {
+          const result = await this.client.sync(cids, lastSyncedAtDate.toISOString());
+          const queries = result.events.reduce<PreparedQueries[]>((queries, event) => {
+            queries = queries.concat(handleEventToSyncDB(event, false));
+            return queries;
+          }, []);
+
+          if (queries.length) {
+            QuickSqliteClient.executeSqlBatch(queries);
+          }
+        } catch (e) {
+          // Error will be raised by the sync API if there are too many events.
+          // In that case reset the entire DB and start fresh.
+          QuickSqliteClient.resetDB();
+        }
       }
     }
-    upsertLastSyncedAt({
+    upsertUserSyncStatus({
       currentUserId: this.client.user.id,
       lastSyncedAt: new Date().toString(),
     });

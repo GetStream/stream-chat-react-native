@@ -190,7 +190,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
       index: 0,
       routes: [
         {
-          name: 'ChatScreen',
+          name: 'MessagingScreen',
         },
       ],
     });

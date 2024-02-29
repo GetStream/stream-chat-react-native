@@ -20,10 +20,12 @@ export const useCreateMessageInputContext = <
   compressImageQuality,
   cooldownEndsAt,
   CooldownTimer,
+  disabled,
   doDocUploadRequest,
   doImageUploadRequest,
   editing,
   editMessage,
+  emojiSearchIndex,
   FileUploadPreview,
   fileUploads,
   giphyActive,
@@ -107,7 +109,7 @@ export const useCreateMessageInputContext = <
   VoiceRecordingPlayback,
 }: MessageInputContextValue<StreamChatGenerics> &
   Pick<ThreadContextValue<StreamChatGenerics>, 'thread'>) => {
-  const editingExists = !!editing;
+  const editingdep = typeof editing === 'boolean' ? editing : editing?.id;
   const fileUploadsValue = fileUploads
     .map(({ duration, paused, progress, state }) => `${state},${paused},${progress},${duration}`)
     .join();
@@ -135,10 +137,12 @@ export const useCreateMessageInputContext = <
       compressImageQuality,
       cooldownEndsAt,
       CooldownTimer,
+      disabled,
       doDocUploadRequest,
       doImageUploadRequest,
       editing,
       editMessage,
+      emojiSearchIndex,
       FileUploadPreview,
       fileUploads,
       giphyActive,
@@ -221,7 +225,8 @@ export const useCreateMessageInputContext = <
     }),
     [
       cooldownEndsAt,
-      editingExists,
+      disabled,
+      editingdep,
       fileUploadsValue,
       giphyActive,
       imageUploadsValue,

@@ -54,7 +54,7 @@ describe("MessageInputContext's sendMessage", () => {
     const images = generateImageUploadPreview({ state: FileState.UPLOAD_FAILED });
     const { result } = renderHook(() => useMessageInputContext(), {
       initialProps: {
-        editing: true,
+        editing: undefined,
       },
       wrapper: Wrapper,
     });
@@ -76,7 +76,7 @@ describe("MessageInputContext's sendMessage", () => {
 
     const { rerender, result } = renderHook(() => useMessageInputContext(), {
       initialProps: {
-        editing: true,
+        editing: message,
         sendImageAsync: true,
       },
       wrapper: Wrapper,
@@ -92,7 +92,7 @@ describe("MessageInputContext's sendMessage", () => {
       result.current.sendMessage();
     });
 
-    rerender({ editing: false, sendImageAsync: true });
+    rerender({ editing: undefined, sendImageAsync: true });
 
     await expect(result.current.asyncIds).toHaveLength(1);
     await expect(result.current.sending.current).toBeFalsy();
@@ -103,7 +103,7 @@ describe("MessageInputContext's sendMessage", () => {
 
     const { result } = renderHook(() => useMessageInputContext(), {
       initialProps: {
-        editing: true,
+        editing: message,
       },
       wrapper: Wrapper,
     });
@@ -125,7 +125,7 @@ describe("MessageInputContext's sendMessage", () => {
     const files = generateFileUploadPreview({ state: FileState.UPLOADING });
     const { result } = renderHook(() => useMessageInputContext(), {
       initialProps: {
-        editing: true,
+        editing: message,
       },
       wrapper: Wrapper,
     });
@@ -153,7 +153,7 @@ describe("MessageInputContext's sendMessage", () => {
     const { result } = renderHook(() => useMessageInputContext(), {
       initialProps: {
         clearQuotedMessageState: clearQuotedMessageStateMock,
-        editing: true,
+        editing: undefined,
         quotedMessage: false,
         sendMessage: sendMessageMock,
       },
@@ -189,7 +189,7 @@ describe("MessageInputContext's sendMessage", () => {
     const { result } = renderHook(() => useMessageInputContext(), {
       initialProps: {
         clearQuotedMessageState: clearQuotedMessageStateMock,
-        editing: true,
+        editing: undefined,
         quotedMessage: generatedQuotedMessage,
         setQuotedMessageState: setQuotedMessageStateMock,
       },
@@ -259,7 +259,7 @@ describe("MessageInputContext's sendMessage", () => {
     const { result } = renderHook(() => useMessageInputContext(), {
       initialProps: {
         clearQuotedMessageState: clearQuotedMessageStateMock,
-        editing: true,
+        editing: undefined,
         quotedMessage: false,
         sendMessage: sendMessageMock,
       },

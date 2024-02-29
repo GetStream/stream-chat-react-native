@@ -30,6 +30,7 @@ export const useCreateMessageContext = <
   members,
   message,
   messageContentOrder,
+  myMessageTheme,
   onLongPress,
   onlyEmojis,
   onOpenThread,
@@ -54,6 +55,7 @@ export const useCreateMessageContext = <
     message.text
   }${message.reply_count}`;
   const membersValue = JSON.stringify(members);
+  const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
 
   const quotedMessageDeletedValue = message.quoted_message?.deleted_at;
 
@@ -82,6 +84,7 @@ export const useCreateMessageContext = <
       members,
       message,
       messageContentOrder,
+      myMessageTheme,
       onLongPress,
       onlyEmojis,
       onOpenThread,
@@ -108,6 +111,7 @@ export const useCreateMessageContext = <
       lastReceivedId,
       membersValue,
       messageValue,
+      myMessageThemeString,
       reactionsValue,
       showAvatar,
       showMessageStatus,

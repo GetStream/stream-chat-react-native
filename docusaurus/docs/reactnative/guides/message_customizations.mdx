@@ -71,6 +71,7 @@ If you want to customize only a specific part of `MessageSimple` component, you 
 - [MessageHeader](../core-components/channel.mdx#messageheader)
 - [MessageFooter](../core-components/channel.mdx#messagefooter)
 - [MessageAvatar](../core-components/channel.mdx#messageavatar)
+- [MessageBounce](../core-components/channel.mdx#messagebounce)
 - [MessageStatus](../core-components/channel.mdx#messagestatus)
 - [MessageText](../core-components/channel.mdx#messagetext)
 - [MessageSystem](../core-components/channel.mdx#messagesystem)
@@ -499,11 +500,11 @@ const SwipeableMessage = (
 
 ## Hiding deleted messages from the channel
 
-The `deleteMessagesVisibiltyType` prop in the Channel component enables changing the visibility of the deleted messages to both sender and receiver, none of them or either of them.
+The `deletedMessagesVisibilityType` prop in the Channel component enables changing the visibility of the deleted messages to both sender and receiver, none of them or either of them.
 
 ```tsx
 <Channel
   ...
-  deletedMessagesVisibiltyType="sender"
+  deletedMessagesVisibilityType="sender"
 >
 ```

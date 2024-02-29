@@ -1,5 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { BackHandler, Dimensions, Keyboard, Platform, StatusBar, StyleSheet } from 'react-native';
+import {
+  BackHandler,
+  Button,
+  Dimensions,
+  Keyboard,
+  Platform,
+  StatusBar,
+  StyleSheet,
+} from 'react-native';
 
 import BottomSheet, { BottomSheetFlatList, BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import dayjs from 'dayjs';
@@ -11,9 +19,14 @@ import { renderAttachmentPickerItem } from './components/AttachmentPickerItem';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { getPhotos, oniOS14GalleryLibrarySelectionChange } from '../../native';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { useViewport } from '../../hooks/useViewport';
+import {
+  getPhotos,
+  iOS14RefreshGallerySelection,
+  oniOS14GalleryLibrarySelectionChange,
+} from '../../native';
 import type { Asset } from '../../types/types';
-import { vh } from '../../utils/utils';
 
 dayjs.extend(duration);
 
@@ -23,7 +36,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const screenHeight = vh(100);
 const fullScreenHeight = Dimensions.get('window').height;
 
 export type AttachmentPickerProps = {
@@ -93,14 +105,19 @@ export const AttachmentPicker = React.forwardRef(
       setSelectedPicker,
       topInset,
     } = useAttachmentPickerContext();
+    const { vh } = useViewport();
+
+    const screenHeight = vh(100);
 
     const [currentIndex, setCurrentIndex] = useState(-1);
     const endCursorRef = useRef<string>();
     const [photoError, setPhotoError] = useState(false);
+    const [iOSLimited, setIosLimited] = useState(false);
     const hasNextPageRef = useRef(true);
     const [loadingPhotos, setLoadingPhotos] = useState(false);
     const [photos, setPhotos] = useState<Asset[]>([]);
     const attemptedToLoadPhotosOnOpenRef = useRef(false);
+    const { t } = useTranslationContext();
 
     const getMorePhotos = useCallback(async () => {
       if (
@@ -121,6 +138,7 @@ export const AttachmentPicker = React.forwardRef(
           setPhotos((prevPhotos) =>
             endCursor ? [...prevPhotos, ...results.assets] : results.assets,
           );
+          setIosLimited(results.iOSLimited);
           hasNextPageRef.current = !!results.hasNextPage;
         } catch (error) {
           setPhotoError(true);
@@ -163,8 +181,14 @@ export const AttachmentPicker = React.forwardRef(
     }, [selectedPicker, closePicker]);
 
     useEffect(() => {
+      const onKeyboardOpenHandler = () => {
+        if (selectedPicker) {
+          setSelectedPicker(undefined);
+        }
+        closePicker();
+      };
       const keyboardShowEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
-      const keyboardSubscription = Keyboard.addListener(keyboardShowEvent, closePicker);
+      const keyboardSubscription = Keyboard.addListener(keyboardShowEvent, onKeyboardOpenHandler);
 
       return () => {
         if (keyboardSubscription?.remove) {
@@ -173,9 +197,9 @@ export const AttachmentPicker = React.forwardRef(
         }
 
         // To keep compatibility with older versions of React Native, where `remove()` is not available
-        Keyboard.removeListener(keyboardShowEvent, closePicker);
+        Keyboard.removeListener(keyboardShowEvent, onKeyboardOpenHandler);
       };
-    }, [closePicker]);
+    }, [closePicker, selectedPicker]);
 
     useEffect(() => {
       if (currentIndex < 0) {
@@ -209,9 +233,14 @@ export const AttachmentPicker = React.forwardRef(
       maxNumberOfFiles,
       numberOfAttachmentPickerImageColumns,
       numberOfUploads: selectedFiles.length + selectedImages.length,
+      // `id` is available for Expo MediaLibrary while Cameraroll doesn't share id therefore we use `uri`
       selected:
-        selectedImages.some((image) => image.uri === asset.uri) ||
-        selectedFiles.some((file) => file.uri === asset.uri),
+        selectedImages.some((image) =>
+          image.id ? image.id === asset.id : image.uri === asset.uri,
+        ) ||
+        selectedFiles.some((file) => (file.id ? file.id === asset.id : file.uri === asset.uri)),
+      selectedFiles,
+      selectedImages,
       setSelectedFiles,
       setSelectedImages,
     }));
@@ -294,6 +323,9 @@ export const AttachmentPicker = React.forwardRef(
           ref={ref}
           snapPoints={snapPoints}
         >
+          {iOSLimited && (
+            <Button onPress={iOS14RefreshGallerySelection} title={t('Select More Photos')} />
+          )}
           <BottomSheetFlatList
             contentContainerStyle={[
               styles.container,
@@ -304,7 +336,7 @@ export const AttachmentPicker = React.forwardRef(
             data={selectedPhotos}
             keyExtractor={(item) => item.asset.uri}
             numColumns={numberOfAttachmentPickerImageColumns ?? 3}
-            onEndReached={getMorePhotos}
+            onEndReached={photoError ? undefined : getMorePhotos}
             renderItem={renderAttachmentPickerItem}
           />
         </BottomSheet>

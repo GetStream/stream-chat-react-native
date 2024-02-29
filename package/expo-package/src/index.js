@@ -8,17 +8,21 @@ import {
   deleteFile,
   getLocalAssetUri,
   getPhotos,
+  iOS14RefreshGallerySelection,
   NetInfo,
   oniOS14GalleryLibrarySelectionChange,
-  pickDocument,
   saveFile,
-  setClipboardString,
-  shareImage,
   Sound,
   takePhoto,
-  triggerHaptic,
   Video,
 } from './handlers';
+
+import {
+  pickDocument,
+  setClipboardString,
+  shareImage,
+  triggerHaptic,
+} from './optionalDependencies';
 
 registerNativeHandlers({
   Audio,
@@ -27,6 +31,7 @@ registerNativeHandlers({
   FlatList,
   getLocalAssetUri,
   getPhotos,
+  iOS14RefreshGallerySelection,
   NetInfo,
   oniOS14GalleryLibrarySelectionChange,
   pickDocument,
