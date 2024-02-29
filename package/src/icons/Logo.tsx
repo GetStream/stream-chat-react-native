@@ -2,7 +2,7 @@ import React from 'react';
 
 import { IconProps, RootPath, RootSvg } from './utils/base';
 
-export const Logo: React.FC<IconProps> = (props) => {
+export const Logo = (props: IconProps) => {
   const height = props.height || 40;
   const width = props.width || 80;
   return (

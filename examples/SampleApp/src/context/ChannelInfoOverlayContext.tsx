@@ -25,9 +25,11 @@ export type ChannelInfoOverlayContextValue = {
 
 export const ChannelInfoOverlayContext = React.createContext({} as ChannelInfoOverlayContextValue);
 
-export const ChannelInfoOverlayProvider: React.FC<{
+type Props = React.PropsWithChildren<{
   value?: ChannelInfoOverlayContextValue;
-}> = ({ children, value }) => {
+}>;
+
+export const ChannelInfoOverlayProvider = ({ children, value }: Props) => {
   const [data, setData] = useState(value?.data);
 
   const reset = () => {

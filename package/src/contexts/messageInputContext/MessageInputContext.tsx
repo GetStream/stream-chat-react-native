@@ -8,6 +8,7 @@ import { lookup } from 'mime-types';
 import {
   Attachment,
   logChatPromiseExecution,
+  Message,
   SendFileAPIResponse,
   StreamChat,
   Message as StreamMessage,
@@ -36,6 +37,7 @@ import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreO
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
+import type { Emoji } from '../../emoji-data';
 import { pickDocument } from '../../native';
 import type {
   Asset,
@@ -67,6 +69,10 @@ import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
+
+export type EmojiSearchIndex = {
+  search: (query: string) => PromiseLike<Array<Emoji>> | Array<Emoji> | null;
+};
 
 export type MentionAllAppUsersQuery<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -159,7 +165,7 @@ export type LocalMessageInputContext<
   resetInput: (pendingAttachments?: Attachment<StreamChatGenerics>[]) => void;
   selectedPicker: string | undefined;
   sending: React.MutableRefObject<boolean>;
-  sendMessage: () => Promise<void>;
+  sendMessage: (customMessageData?: Partial<Message<StreamChatGenerics>>) => Promise<void>;
   sendMessageAsync: (id: string) => void;
   sendThreadMessageInChannel: boolean;
   setAsyncIds: React.Dispatch<React.SetStateAction<string[]>>;
@@ -204,7 +210,7 @@ export type LocalMessageInputContext<
 
 export type InputMessageInputContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+> = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled'> & {
   /**
    * Custom UI component for attach button.
    *
@@ -337,6 +343,11 @@ export type InputMessageInputContextValue<
    * It is defined with message type if the editing state is true, else its undefined.
    */
   editing?: MessageType<StreamChatGenerics>;
+
+  /**
+   * Prop to override the default emoji search index in auto complete suggestion list.
+   */
+  emojiSearchIndex?: EmojiSearchIndex;
 
   /** Initial value to set on input */
   initialValue?: string;
@@ -696,7 +707,7 @@ export const MessageInputProvider = <
 
   // TODO: Figure out why this is async, as it doesn't await any promise.
   // eslint-disable-next-line require-await
-  const sendMessage = async () => {
+  const sendMessage = async (customMessageData?: Partial<Message<StreamChatGenerics>>) => {
     if (sending.current) {
       return;
     }
@@ -790,6 +801,7 @@ export const MessageInputProvider = <
         mentioned_users: mentionedUsers,
         quoted_message: undefined,
         text: prevText,
+        ...customMessageData,
       } as Parameters<StreamChat<StreamChatGenerics>['updateMessage']>[0];
 
       // TODO: Remove this line and show an error when submit fails
@@ -822,6 +834,7 @@ export const MessageInputProvider = <
             typeof value.quotedMessage === 'boolean' ? undefined : value.quotedMessage.id,
           show_in_channel: sendThreadMessageInChannel || undefined,
           text: prevText,
+          ...customMessageData,
         } as unknown as StreamMessage<StreamChatGenerics>);
 
         value.clearQuotedMessageState();
@@ -891,12 +904,14 @@ export const MessageInputProvider = <
         triggerSettings = value.autoCompleteTriggerSettings({
           channel,
           client,
+          emojiSearchIndex: value.emojiSearchIndex,
           onMentionSelectItem: onSelectItem,
         });
       } else {
         triggerSettings = ACITriggerSettings<StreamChatGenerics>({
           channel,
           client,
+          emojiSearchIndex: value.emojiSearchIndex,
           onMentionSelectItem: onSelectItem,
         });
       }

@@ -122,7 +122,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
     if (setTopInset) {
       setTopInset(HEADER_CONTENT_HEIGHT + insets.top);
     }
-  }, [insets.top]);
+  }, [insets.top, setTopInset]);
 
   return (
     <View

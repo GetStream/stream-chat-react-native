@@ -26,7 +26,7 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
-import type { Emoji } from '../../emoji-data/compiled';
+import type { Emoji } from '../../emoji-data';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { isCommandTrigger, isEmojiTrigger, isMentionTrigger } from '../../utils/utils';
 

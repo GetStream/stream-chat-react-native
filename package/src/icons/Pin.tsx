@@ -2,7 +2,7 @@ import React from 'react';
 
 import { IconProps, RootPath, RootSvg } from './utils/base';
 
-export const Pin: React.FC<IconProps> = (props) => (
+export const Pin = (props: IconProps) => (
   <RootSvg
     height={props.height}
     viewBox={`0 0 ${props.height} ${props.width}`}

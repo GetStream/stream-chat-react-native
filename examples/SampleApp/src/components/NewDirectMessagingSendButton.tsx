@@ -94,13 +94,19 @@ const areEqual = <
   } = nextProps;
 
   const disabledEqual = prevDisabled === nextDisabled;
-  if (!disabledEqual) return false;
+  if (!disabledEqual) {
+    return false;
+  }
 
   const giphyActiveEqual = prevGiphyActive === nextGiphyActive;
-  if (!giphyActiveEqual) return false;
+  if (!giphyActiveEqual) {
+    return false;
+  }
 
   const sendMessageEqual = prevSendMessage === nextSendMessage;
-  if (!sendMessageEqual) return false;
+  if (!sendMessageEqual) {
+    return false;
+  }
 
   return true;
 };
@@ -130,7 +136,9 @@ export const NewDirectMessagingSendButton = (props: SendButtonProps<StreamChatGe
   const { giphyActive, text } = useMessageInputContext<StreamChatGenerics>();
 
   const sendMessage = async () => {
-    if (!channel) return;
+    if (!channel) {
+      return;
+    }
     channel.initialized = false;
     await channel.query({});
     try {

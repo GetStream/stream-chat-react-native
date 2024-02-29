@@ -22,7 +22,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { FlatList } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
-const AUTO_COMPLETE_SUGGESTION_LIST_HEADER_HEIGHT = 30;
+const AUTO_COMPLETE_SUGGESTION_LIST_HEADER_HEIGHT = 50;
 
 type AutoCompleteSuggestionListComponentProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

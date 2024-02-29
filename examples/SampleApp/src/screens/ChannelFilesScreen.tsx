@@ -115,7 +115,9 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
       }
 
       message.attachments?.forEach((a) => {
-        if (a.type !== 'file') return;
+        if (a.type !== 'file') {
+          return;
+        }
 
         newSections[month].data.push(a);
       });

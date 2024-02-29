@@ -3,7 +3,7 @@ import { Defs, LinearGradient, Stop } from 'react-native-svg';
 
 import { IconProps, RootPath, RootSvg } from './utils/base';
 
-export const DOC: React.FC<IconProps> = (props) => (
+export const DOC = (props: IconProps) => (
   <RootSvg
     height={props.height || 40}
     viewBox={props.viewBox || '0 0 34 40'}

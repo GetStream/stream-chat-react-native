@@ -62,12 +62,15 @@ const InProgressIndicator = () => {
   const {
     theme: {
       colors: { white_smoke },
+      messageInput: {
+        uploadProgressIndicator: { indicatorColor },
+      },
     },
   } = useTheme();
 
   return (
     <View style={styles.activityIndicatorContainer}>
-      <ActivityIndicator color={white_smoke} testID='upload-progress-indicator' />
+      <ActivityIndicator color={indicatorColor || white_smoke} testID='upload-progress-indicator' />
     </View>
   );
 };
@@ -76,6 +79,9 @@ const RetryIndicator = ({ action }: Pick<UploadProgressIndicatorProps, 'action'>
   const {
     theme: {
       colors: { white_smoke },
+      messageInput: {
+        uploadProgressIndicator: { indicatorColor },
+      },
     },
   } = useTheme();
 
@@ -83,7 +89,7 @@ const RetryIndicator = ({ action }: Pick<UploadProgressIndicatorProps, 'action'>
     <TouchableOpacity onPress={action} style={styles.retryButtonContainer}>
       <Refresh
         height={REFRESH_ICON_SIZE}
-        pathFill={white_smoke}
+        pathFill={indicatorColor || white_smoke}
         testID='retry-upload-progress-indicator'
         width={REFRESH_ICON_SIZE}
       />

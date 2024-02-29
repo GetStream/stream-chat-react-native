@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BackHandler, StyleSheet, useWindowDimensions, ViewStyle } from 'react-native';
+import { BackHandler, StyleSheet, useWindowDimensions } from 'react-native';
 import Animated, {
   cancelAnimation,
   useAnimatedStyle,
@@ -52,9 +52,10 @@ export const AppOverlayProvider = (
     } else {
       overlayOpacity.value = withTiming(0);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [overlay]);
 
-  const overlayStyle = useAnimatedStyle<ViewStyle>(
+  const overlayStyle = useAnimatedStyle(
     () => ({
       opacity: overlayOpacity.value,
     }),
