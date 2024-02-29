@@ -138,7 +138,7 @@
         "Push Notifications": ["guides/push-notifications-v1", "guides/push-notifications-v2"]
       },
       "guides/debug-mode-using-flipper-plugin",
-      "guides/performance"
+      "guides/performance-guide"
     ],
     "Migration Guides": ["basics/upgrading-from-v4"]
   }
