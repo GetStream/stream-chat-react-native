@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
 
 import debounce from 'lodash/debounce';
@@ -2093,6 +2093,11 @@ const ChannelWithContext = <
     }
   };
 
+  const disabledValue = useMemo(
+    () => !!channel?.data?.frozen && disableIfFrozenChannel,
+    [channel.data?.frozen, disableIfFrozenChannel],
+  );
+
   const ownCapabilitiesContext = useCreateOwnCapabilitiesContext({
     channel,
     overrideCapabilities: overrideOwnCapabilities,
@@ -2100,7 +2105,7 @@ const ChannelWithContext = <
 
   const channelContext = useCreateChannelContext({
     channel,
-    disabled: !!channel?.data?.frozen && disableIfFrozenChannel,
+    disabled: disabledValue,
     EmptyStateIndicator,
     enableMessageGroupingByUser,
     enforceUniqueReaction,
@@ -2147,6 +2152,7 @@ const ChannelWithContext = <
     CommandsButton,
     compressImageQuality,
     CooldownTimer,
+    disabled: disabledValue,
     doDocUploadRequest,
     doImageUploadRequest,
     editing,

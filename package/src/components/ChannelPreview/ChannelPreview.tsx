@@ -18,7 +18,7 @@ export type ChannelPreviewPropsWithContext<
 > = Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
   Pick<ChannelsContextValue<StreamChatGenerics>, 'Preview' | 'forceUpdate'> & {
     /**
-     * The previewed channel
+     * Instance of Channel from stream-chat package.
      */
     channel: Channel<StreamChatGenerics>;
   };

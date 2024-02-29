@@ -100,8 +100,17 @@ export type TouchableHandlerPayload = {
 export type MessageTouchableHandlerPayload<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = TouchableHandlerPayload & {
+  /**
+   * Set of action handler functions for various message actions. You can use these functions to perform any action when give interaction occurs.
+   */
   actionHandlers?: MessageActionHandlers;
+  /**
+   * Additional message touchable handler info.
+   */
   additionalInfo?: Record<string, unknown>;
+  /**
+   * Message object, on which interaction occurred.
+   */
   message?: MessageType<StreamChatGenerics>;
 };
 
@@ -590,7 +599,7 @@ const MessageWithContext = <
       images: attachments.images,
       message,
       messageActions: messageActions?.filter(Boolean) as MessageActionListItemProps[] | undefined,
-      messageContext: { ...messageContext, disabled: true, preventPress: true },
+      messageContext: { ...messageContext, preventPress: true },
       messageReactionTitle: !error && messageReactions ? t('Message Reactions') : undefined,
       messagesContext: { ...messagesContext, messageContentOrder },
       onlyEmojis,
@@ -768,6 +777,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 ) => {
   const {
     chatContext: { mutedUsers: prevMutedUsers },
+    disabled: prevDisabled,
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
     isAttachmentEqual,
@@ -781,6 +791,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   } = prevProps;
   const {
     chatContext: { mutedUsers: nextMutedUsers },
+    disabled: nextDisabled,
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     isTargetedMessage: nextIsTargetedMessage,
@@ -791,6 +802,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     showUnreadUnderlay: nextShowUnreadUnderlay,
     t: nextT,
   } = nextProps;
+
+  const disabledEqual = prevDisabled === nextDisabled;
+  if (!disabledEqual) return false;
 
   const membersEqual = Object.keys(prevMembers).length === Object.keys(nextMembers).length;
   if (!membersEqual) return false;

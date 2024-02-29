@@ -792,12 +792,7 @@ export const MessageInput = <
   const { isOnline } = useChatContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
-  const {
-    disabled = false,
-    members,
-    threadList,
-    watchers,
-  } = useChannelContext<StreamChatGenerics>();
+  const { disabled, members, threadList, watchers } = useChannelContext<StreamChatGenerics>();
 
   const {
     additionalTextInputProps,
@@ -854,7 +849,7 @@ export const MessageInput = <
 
   const { t } = useTranslationContext();
 
-  if (!ownCapabilities.sendMessage && SendMessageDisallowedIndicator) {
+  if ((disabled || !ownCapabilities.sendMessage) && SendMessageDisallowedIndicator) {
     return <SendMessageDisallowedIndicator />;
   }
 
@@ -899,6 +894,7 @@ export const MessageInput = <
         SendButton,
         sending,
         sendMessageAsync,
+        SendMessageDisallowedIndicator,
         setGiphyActive,
         setShowMoreOptions,
         showMoreOptions,
