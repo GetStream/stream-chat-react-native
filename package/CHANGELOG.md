@@ -1,5 +1,23 @@
 # Change Log
 
+## [5.25.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.24.0...v5.25.0) (2024-02-29)
+
+
+### Features
+
+* ability to override the emoji auto complete search input results using emojiSearchIndex ([#2423](https://github.com/GetStream/stream-chat-react-native/issues/2423)) ([e1dc39f](https://github.com/GetStream/stream-chat-react-native/commit/e1dc39f40c311c3ff9e9074b208b6537d6c6ca3e))
+* add a way to  insert a custom field into a message through message input context ([#2422](https://github.com/GetStream/stream-chat-react-native/issues/2422)) ([1f46e31](https://github.com/GetStream/stream-chat-react-native/commit/1f46e31f6662e3179b77483812cd1abe5b1fe15e))
+* introduce upload progress indicator spinner theme color ([#2437](https://github.com/GetStream/stream-chat-react-native/issues/2437)) ([9d2ff5f](https://github.com/GetStream/stream-chat-react-native/commit/9d2ff5f565e819293bca68e7d85b429eee57764c))
+
+
+### Bug Fixes
+
+* auto complete suggestion list container theme ([#2429](https://github.com/GetStream/stream-chat-react-native/issues/2429)) ([93b1eb2](https://github.com/GetStream/stream-chat-react-native/commit/93b1eb2ef9e29c707fd01523175027e90357fd16))
+* channel disabled/frozen UI re-render issue ([#2436](https://github.com/GetStream/stream-chat-react-native/issues/2436)) ([f18e4a5](https://github.com/GetStream/stream-chat-react-native/commit/f18e4a5bfbcb7b2c1cce6d3e2933061109da7ae9))
+* do not render channels on offline support but db init ([#2444](https://github.com/GetStream/stream-chat-react-native/issues/2444)) ([2a6a6da](https://github.com/GetStream/stream-chat-react-native/commit/2a6a6da047f08395a3e992f6e3eb640ace0c78f4))
+* lint in language translations ([#2421](https://github.com/GetStream/stream-chat-react-native/issues/2421)) ([ed8adc0](https://github.com/GetStream/stream-chat-react-native/commit/ed8adc0e975d1e66d480ba72ef2214b6abf539c0))
+* undefined thumb_url when image grid opens in image gallery ([#2438](https://github.com/GetStream/stream-chat-react-native/issues/2438)) ([00c817a](https://github.com/GetStream/stream-chat-react-native/commit/00c817a2e267fcb75053f17590ced4685eccd070))
+
 ## [5.24.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.23.2...v5.24.0) (2024-02-08)
 
 
