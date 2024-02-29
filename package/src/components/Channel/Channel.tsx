@@ -592,7 +592,7 @@ const ChannelWithContext = <
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
 
-  const [syncingChannel, setSyncingChannel] = useState(false);
+  const syncingChannelRef = useRef(false);
 
   /**
    * Flag to track if we know for sure that there are no more recent messages to load.
@@ -618,7 +618,7 @@ const ChannelWithContext = <
   const channelId = channel?.id || '';
 
   useEffect(() => {
-    const initChannel = () => {
+    const initChannel = async () => {
       if (!channel || !shouldSyncChannel || channel.offlineMode) return;
       /**
        * Loading channel at first unread message  requires channel to be initialized in the first place,
@@ -626,22 +626,20 @@ const ChannelWithContext = <
        * Also there is no use case from UX perspective, why one would need loading uninitialized channel at particular message.
        * If the channel is not initiated, then we need to do channel.watch, which is more expensive for backend than channel.query.
        */
+      let channelLoaded = false;
       if (!channel.initialized) {
-        loadChannel();
-        return;
+        await loadChannel();
+        channelLoaded = true;
       }
 
       if (messageId) {
         loadChannelAroundMessage({ messageId });
-        return;
-      }
-
-      if (
+      } else if (
         initialScrollToFirstUnreadMessage &&
         channel.countUnread() > scrollToFirstUnreadThreshold
       ) {
         loadChannelAtFirstUnreadMessage();
-      } else {
+      } else if (!channelLoaded) {
         loadChannel();
       }
     };
@@ -858,9 +856,11 @@ const ChannelWithContext = <
         if (typeof scrollToMessageId === 'function') {
           scrollToMessageId = scrollToMessageId();
         }
+
         const scrollToMessageIndex = scrollToMessageId
           ? currentMessages.findIndex(({ id }) => id === scrollToMessageId)
           : -1;
+
         if (channel && scrollToMessageIndex !== -1) {
           // We assume that on average user sees 5 messages on screen
           // We dont want new renders to happen while scrolling to the targeted message
@@ -977,13 +977,15 @@ const ChannelWithContext = <
               // in order to attempt to not throw away, will attempt to merge it by loading 25 more messages
               const recentCurrentSetMsgId =
                 currentMessageSet.messages[currentMessageSet.messages.length - 1].id;
-              await channel.query({
-                messages: {
-                  id_gte: recentCurrentSetMsgId,
-                  limit: 25,
+              await channel.query(
+                {
+                  messages: {
+                    id_gte: recentCurrentSetMsgId,
+                    limit: 25,
+                  },
                 },
-                watch: true,
-              });
+                'current',
+              );
               // if the gap is more than 25, we will unfortunately have to throw away the latest messages
             }
           } else {
@@ -1153,10 +1155,11 @@ const ChannelWithContext = <
   };
 
   const resyncChannel = async () => {
-    if (!channel || syncingChannel) return;
+    if (!channel || syncingChannelRef.current) return;
+    if (!channel.initialized) return;
     hasOverlappingRecentMessagesRef.current = false;
     clearInterval(mergeSetsIntervalRef.current);
-    setSyncingChannel(true);
+    syncingChannelRef.current = true;
 
     setError(false);
     try {
@@ -1263,7 +1266,7 @@ const ChannelWithContext = <
       setLoading(false);
     }
 
-    setSyncingChannel(false);
+    syncingChannelRef.current = false;
   };
 
   // resync channel is added to ref so that it can be used in useEffect without adding it as a dependency
@@ -1279,7 +1282,11 @@ const ChannelWithContext = <
     let connectionChangedSubscription: ReturnType<ChannelType['on']>;
 
     if (enableOfflineSupport) {
-      connectionChangedSubscription = DBSyncManager.onSyncStatusChange(connectionChangedHandler);
+      connectionChangedSubscription = DBSyncManager.onSyncStatusChange((statusChanged) => {
+        if (statusChanged) {
+          connectionChangedHandler();
+        }
+      });
     } else {
       connectionChangedSubscription = client.on('connection.changed', (event) => {
         if (event.online) {
