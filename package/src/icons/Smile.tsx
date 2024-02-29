@@ -2,7 +2,7 @@ import React from 'react';
 
 import { IconProps, RootPath, RootSvg } from './utils/base';
 
-export const Smile: React.FC<IconProps> = (props) => (
+export const Smile = (props: IconProps) => (
   <RootSvg {...props}>
     <RootPath
       d='M12 4a8 8 0 100 16 8 8 0 000-16zM2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12z'

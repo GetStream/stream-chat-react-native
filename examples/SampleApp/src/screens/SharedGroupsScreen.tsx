@@ -66,9 +66,13 @@ const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
     },
   } = useTheme();
 
-  if (!chatClient) return null;
+  if (!chatClient) {
+    return null;
+  }
 
-  if (Object.keys(channel.state.members).length === 2) return null;
+  if (Object.keys(channel.state.members).length === 2) {
+    return null;
+  }
 
   const displayAvatar = getChannelPreviewDisplayAvatar(channel, chatClient);
 
@@ -176,7 +180,9 @@ export const SharedGroupsScreen: React.FC<SharedGroupsScreenProps> = ({
 }) => {
   const { chatClient } = useAppContext();
 
-  if (!chatClient?.user) return null;
+  if (!chatClient?.user) {
+    return null;
+  }
 
   return (
     <View style={styles.container}>

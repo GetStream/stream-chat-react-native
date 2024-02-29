@@ -9,7 +9,7 @@ const messageSearchByFileAttachmentType = () => {
       file_size: Math.random() * 10000,
       id: generateRandomId(),
       mime_type: 'application/pdf',
-      title: `SlimAron.pdf`,
+      title: 'SlimAron.pdf',
       type: 'file',
     },
     {
@@ -17,7 +17,7 @@ const messageSearchByFileAttachmentType = () => {
       file_size: Math.random() * 10000,
       id: generateRandomId(),
       mime_type: 'application/vnd.ms-powerpoint',
-      title: `Resume.ppt`,
+      title: 'Resume.ppt',
       type: 'file',
     },
     {
@@ -25,7 +25,7 @@ const messageSearchByFileAttachmentType = () => {
       file_size: Math.random() * 10000,
       id: generateRandomId(),
       mime_type: 'application/vnd.ms-excel',
-      title: `RocketLaunch.xls`,
+      title: 'RocketLaunch.xls',
       type: 'file',
     },
     {
@@ -33,7 +33,7 @@ const messageSearchByFileAttachmentType = () => {
       file_size: Math.random() * 10000,
       id: generateRandomId(),
       mime_type: 'application/x-7z-compressed',
-      title: `Resume.zip`,
+      title: 'Resume.zip',
       type: 'file',
     },
   ];

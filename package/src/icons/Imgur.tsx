@@ -3,7 +3,7 @@ import { Circle } from 'react-native-svg';
 
 import { IconProps, RootPath, RootSvg } from './utils/base';
 
-export const Imgur: React.FC<IconProps> = (props) => (
+export const Imgur = (props: IconProps) => (
   <RootSvg {...props}>
     <Circle
       cx={props.width ? props.width / 2 : 12}

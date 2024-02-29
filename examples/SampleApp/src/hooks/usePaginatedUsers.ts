@@ -113,7 +113,9 @@ export const usePaginatedUsers = (): PaginatedUsers => {
   };
 
   const fetchUsers = async (query = '') => {
-    if (queryInProgress.current || !chatClient?.userID) return;
+    if (queryInProgress.current || !chatClient?.userID) {
+      return;
+    }
     setLoading(true);
 
     try {
@@ -189,6 +191,7 @@ export const usePaginatedUsers = (): PaginatedUsers => {
 
   useEffect(() => {
     fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {

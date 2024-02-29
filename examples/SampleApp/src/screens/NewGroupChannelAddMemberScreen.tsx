@@ -85,16 +85,21 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) 
     useUserSearchContext();
 
   const onRightArrowPress = () => {
-    if (selectedUsers.length === 0) return;
+    if (selectedUsers.length === 0) {
+      return;
+    }
     navigation.navigate('NewGroupChannelAssignNameScreen');
   };
 
-  if (!chatClient) return null;
+  if (!chatClient) {
+    return null;
+  }
 
   return (
     <View style={styles.container}>
       <ScreenHeader
         onBack={reset}
+        // eslint-disable-next-line react/no-unstable-nested-components
         RightContent={() => (
           <RightArrowButton disabled={selectedUsers.length === 0} onPress={onRightArrowPress} />
         )}

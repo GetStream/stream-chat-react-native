@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Keyboard, StyleSheet, ViewStyle } from 'react-native';
+import { Keyboard, StyleSheet } from 'react-native';
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
@@ -98,6 +98,7 @@ export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
       Keyboard.dismiss();
     }
     fadeScreen(!!visible);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
   const onPan = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
@@ -145,7 +146,7 @@ export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
     },
   });
 
-  const panStyle = useAnimatedStyle<ViewStyle>(() => ({
+  const panStyle = useAnimatedStyle(() => ({
     transform: [
       {
         translateY: translateY.value > 0 ? translateY.value : 0,
@@ -153,7 +154,7 @@ export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
     ],
   }));
 
-  const showScreenStyle = useAnimatedStyle<ViewStyle>(() => ({
+  const showScreenStyle = useAnimatedStyle(() => ({
     transform: [
       {
         translateY: interpolate(showScreen.value, [0, 1], [viewHeight.value / 2, 0]),
@@ -161,7 +162,9 @@ export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
     ],
   }));
 
-  if (!visible) return null;
+  if (!visible) {
+    return null;
+  }
 
   return (
     <Animated.View pointerEvents={visible ? 'auto' : 'none'} style={StyleSheet.absoluteFill}>

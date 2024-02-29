@@ -149,10 +149,12 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
   const selectedUsersLength = selectedUsers.length;
   useEffect(() => {
     const initChannel = async () => {
-      if (!chatClient?.user?.id) return;
+      if (!chatClient?.user?.id) {
+        return;
+      }
 
       // If there are no selected users, then set dummy channel.
-      if (selectedUsers.length === 0) {
+      if (selectedUsersLength === 0) {
         setFocusOnMessageInput(false);
         return;
       }
@@ -189,7 +191,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
     };
 
     initChannel();
-  }, [selectedUsersLength]);
+  }, [chatClient, selectedUserIds, selectedUsersLength]);
 
   const renderUserSearch = ({ inSafeArea }: { inSafeArea: boolean }) => (
     <View style={[{ backgroundColor: white }, focusOnSearchInput ? styles.container : undefined]}>
@@ -293,7 +295,9 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
     </View>
   );
 
-  if (!chatClient) return null;
+  if (!chatClient) {
+    return null;
+  }
 
   if (!currentChannel.current) {
     return renderUserSearch({ inSafeArea: false });
