@@ -133,6 +133,7 @@
       "customization/native_handlers",
       "basics/translations",
       "guides/keyboard",
+      "guides/moderation",
       "guides/going-live-checklist",
       {
         "Push Notifications": ["guides/push-notifications-v1", "guides/push-notifications-v2"]
