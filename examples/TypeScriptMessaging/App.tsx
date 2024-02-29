@@ -53,15 +53,16 @@ const options = {
 
 I18nManager.forceRTL(false);
 
-const chatClient = StreamChat.getInstance<StreamChatGenerics>('yjrt5yxw77ev');
+const chatClient = StreamChat.getInstance<StreamChatGenerics>('q95x9hkbyd6p');
 const userToken =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidmlzaGFsIn0.HOlVh-ZyQnjyuL20G-67RTgKufBuAH-I-gbEELFlass';
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoicm9uIn0.eRVjxLvd4aqCEHY_JRa97g6k7WpHEhxL7Z4K4yTot1c';
 
 const user = {
-  id: 'vishal',
+  id: 'ron',
 };
 const filters = {
-  members: { $in: ['vishal'] },
+  example: 'example-apps',
+  members: { $in: ['ron'] },
   type: 'messaging',
 };
 const sort: ChannelSort<StreamChatGenerics> = { last_updated: -1 };
