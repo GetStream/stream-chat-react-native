@@ -410,6 +410,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   nextProps: MessageContentPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
+    disabled: prevDisabled,
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
     hasReactions: prevHasReactions,
@@ -425,6 +426,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     tDateTimeParser: prevTDateTimeParser,
   } = prevProps;
   const {
+    disabled: nextDisabled,
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     hasReactions: nextHasReactions,
@@ -438,6 +440,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     t: nextT,
     tDateTimeParser: nextTDateTimeParser,
   } = nextProps;
+
+  const disabledEqual = prevDisabled === nextDisabled;
+  if (!disabledEqual) return false;
 
   const hasReactionsEqual = prevHasReactions === nextHasReactions;
   if (!hasReactionsEqual) return false;

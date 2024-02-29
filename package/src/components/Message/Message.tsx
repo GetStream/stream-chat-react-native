@@ -590,7 +590,7 @@ const MessageWithContext = <
       images: attachments.images,
       message,
       messageActions: messageActions?.filter(Boolean) as MessageActionListItemProps[] | undefined,
-      messageContext: { ...messageContext, disabled: true, preventPress: true },
+      messageContext: { ...messageContext, preventPress: true },
       messageReactionTitle: !error && messageReactions ? t('Message Reactions') : undefined,
       messagesContext: { ...messagesContext, messageContentOrder },
       onlyEmojis,
@@ -768,6 +768,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 ) => {
   const {
     chatContext: { mutedUsers: prevMutedUsers },
+    disabled: prevDisabled,
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
     isAttachmentEqual,
@@ -781,6 +782,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   } = prevProps;
   const {
     chatContext: { mutedUsers: nextMutedUsers },
+    disabled: nextDisabled,
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     isTargetedMessage: nextIsTargetedMessage,
@@ -791,6 +793,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     showUnreadUnderlay: nextShowUnreadUnderlay,
     t: nextT,
   } = nextProps;
+
+  const disabledEqual = prevDisabled === nextDisabled;
+  if (!disabledEqual) return false;
 
   const membersEqual = Object.keys(prevMembers).length === Object.keys(nextMembers).length;
   if (!membersEqual) return false;

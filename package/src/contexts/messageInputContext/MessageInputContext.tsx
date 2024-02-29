@@ -210,7 +210,7 @@ export type LocalMessageInputContext<
 
 export type InputMessageInputContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+> = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled'> & {
   /**
    * Custom UI component for attach button.
    *
