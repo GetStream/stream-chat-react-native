@@ -2,7 +2,7 @@ import React from 'react';
 
 import { IconProps, RootPath, RootSvg } from '../utils/base';
 
-export const Pin: React.FC<IconProps> = (props) => {
+export const Pin = (props: IconProps) => {
   const { fill, ...rest } = props;
   return (
     <RootSvg {...rest}>

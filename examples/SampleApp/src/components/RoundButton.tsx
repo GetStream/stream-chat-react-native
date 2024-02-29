@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Platform, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTheme } from 'stream-chat-react-native';
 
@@ -25,10 +25,10 @@ const styles = StyleSheet.create({
   },
 });
 
-type RoundButtonProps = {
+type RoundButtonProps = PropsWithChildren<{
   disabled?: boolean;
   onPress?: () => void;
-};
+}>;
 
 export const RoundButton: React.FC<RoundButtonProps> = (props) => {
   const { children, disabled, onPress } = props;

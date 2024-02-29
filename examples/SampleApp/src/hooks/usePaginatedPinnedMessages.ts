@@ -73,6 +73,7 @@ export const usePaginatedPinnedMessages = (channel: Channel<StreamChatGenerics>)
 
   useEffect(() => {
     fetchPinnedMessages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {

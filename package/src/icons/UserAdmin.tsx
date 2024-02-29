@@ -2,7 +2,7 @@ import React from 'react';
 
 import { IconProps, RootPath, RootSvg } from './utils/base';
 
-export const UserAdmin: React.FC<IconProps> = (props) => {
+export const UserAdmin = (props: IconProps) => {
   const { height, width, ...rest } = props;
   return (
     <RootSvg height={height} viewBox={`0 0 ${height} ${width}`} width={width} {...rest}>

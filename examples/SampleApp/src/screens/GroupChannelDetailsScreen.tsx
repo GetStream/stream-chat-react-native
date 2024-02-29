@@ -184,9 +184,12 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   const allMembersLength = allMembers.length;
   useEffect(() => {
     setMembers(allMembers.slice(0, 3));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allMembersLength]);
 
-  if (!channel) return null;
+  if (!channel) {
+    return null;
+  }
 
   const channelCreatorId =
     channel.data && (channel.data.created_by_id || (channel.data.created_by as UserResponse)?.id);
@@ -242,6 +245,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
     <SafeAreaView style={[styles.container, { backgroundColor: white }]}>
       <ScreenHeader
         inSafeArea
+        // eslint-disable-next-line react/no-unstable-nested-components
         RightContent={() =>
           channelCreatorId === chatClient?.user?.id ? (
             <RoundButton onPress={openAddMembersSheet}>
@@ -254,7 +258,9 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
       />
       <ScrollView keyboardShouldPersistTaps='always' style={{ backgroundColor: white }}>
         {members.map((member) => {
-          if (!member.user?.id) return null;
+          if (!member.user?.id) {
+            return null;
+          }
 
           return (
             <TouchableOpacity

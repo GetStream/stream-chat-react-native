@@ -59,6 +59,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   useEffect(() => {
     setSelectedImages([]);
     return () => setSelectedImages([]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
