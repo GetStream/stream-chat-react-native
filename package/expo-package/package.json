@@ -1,7 +1,7 @@
 {
   "name": "stream-chat-expo",
   "description": "The official Expo SDK for Stream Chat, a service for building chat applications",
-  "version": "5.14.1",
+  "version": "5.17.1",
   "author": {
     "company": "Stream.io Inc",
     "name": "Stream.io Inc"
@@ -10,7 +10,7 @@
   "main": "src/index.js",
   "types": "types/index.d.ts",
   "dependencies": {
-    "stream-chat-react-native-core": "5.14.1"
+    "stream-chat-react-native-core": "5.17.1"
   },
   "peerDependencies": {
     "@react-native-community/netinfo": ">=6.0.0",
@@ -47,7 +47,7 @@
     "expo-file-system": "^11.0.2",
     "expo-image-manipulator": "^9.1.0",
     "expo-image-picker": "^14.1.1",
-    "expo-media-library": "^12.0.2"
+    "expo-media-library": "~15.2.3"
   },
   "scripts": {
     "prepack": " cp ../../README.md .",

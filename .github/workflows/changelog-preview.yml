@@ -28,9 +28,9 @@ jobs:
           cd package/
           yarn --frozen-lockfile
           cd native-package/
-          yarn --frozen-lockfile
+          yarn
           cd ../../examples/SampleApp/
-          yarn --frozen-lockfile
+          yarn
 
       - name: Generate Changelog
         id: generate_changelog

@@ -100,9 +100,6 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
-
-        multiDexEnabled true
-        vectorDrawables.useSupportLibrary true
     }
 
     splits {
@@ -156,6 +153,11 @@ dependencies {
     implementation("com.facebook.react:react-android")
 
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
+    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
+        debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
+        exclude group:'com.squareup.okhttp3', module:'okhttp'
+    }
+
     // For React native video
     implementation("androidx.appcompat:appcompat:1.0.0")
     // For animated GIF support
@@ -164,10 +166,7 @@ dependencies {
     implementation('com.facebook.fresco:animated-webp:2.6.0')
     implementation('com.facebook.fresco:webpsupport:2.6.0')
 
-    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
-    debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
-        exclude group:'com.squareup.okhttp3', module:'okhttp'
-    }
+
 
     debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")
     if (hermesEnabled.toBoolean()) {

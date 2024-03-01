@@ -55,6 +55,8 @@ import {
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
+const WAIT_FOR_SCROLL_TO_OFFSET_TIMEOUT = 150;
+const MAX_RETRIES_AFTER_SCROLL_FAILURE = 10;
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
@@ -539,7 +541,8 @@ const MessageListWithContext = <
     index: number;
     item: MessageType<StreamChatGenerics>;
   }) => {
-    if (!channel || (!channel.initialized && !channel.offlineMode)) return null;
+    if (!channel || channel.disconnected || (!channel.initialized && !channel.offlineMode))
+      return null;
 
     const lastRead = channel.lastRead();
 
@@ -550,6 +553,7 @@ const MessageListWithContext = <
       }
       return false;
     }
+
     const isCurrentMessageUnread = isMessageUnread(index);
     const showUnreadUnderlay = isCurrentMessageUnread && scrollToBottomButtonVisible;
     const insertInlineUnreadIndicator = showUnreadUnderlay && !isMessageUnread(index + 1); // show only if previous message is read
@@ -783,19 +787,22 @@ const MessageListWithContext = <
     }
   };
 
+  const scrollToIndexFailedRetryCountRef = useRef<number>(0);
+  const failScrollTimeoutId = useRef<NodeJS.Timeout>();
   const onScrollToIndexFailedRef = useRef<
     FlatListProps<MessageType<StreamChatGenerics>>['onScrollToIndexFailed']
   >((info) => {
     // We got a failure as we tried to scroll to an item that was outside the render length
-    if (flatListRef.current) {
-      // we dont know the actual size of all items but we can see the average, so scroll to the closest offset
-      flatListRef.current.scrollToOffset({
-        animated: false,
-        offset: info.averageItemLength * info.index,
-      });
-      // since we used only an average offset.. we wont go to the center of the item yet
-      // with a little delay to wait for scroll to offset to complete, we can then scroll to the index
-      setTimeout(() => {
+    if (!flatListRef.current) return;
+    // we don't know the actual size of all items but we can see the average, so scroll to the closest offset
+    flatListRef.current.scrollToOffset({
+      animated: false,
+      offset: info.averageItemLength * info.index,
+    });
+    // since we used only an average offset... we won't go to the center of the item yet
+    // with a little delay to wait for scroll to offset to complete, we can then scroll to the index
+    failScrollTimeoutId.current = setTimeout(() => {
+      try {
         flatListRef.current?.scrollToIndex({
           animated: false,
           index: info.index,
@@ -804,8 +811,30 @@ const MessageListWithContext = <
         if (messageIdLastScrolledToRef.current) {
           setTargetedMessage(messageIdLastScrolledToRef.current);
         }
-      }, 150);
-    }
+        scrollToIndexFailedRetryCountRef.current = 0;
+      } catch (e) {
+        if (
+          !onScrollToIndexFailedRef.current ||
+          scrollToIndexFailedRetryCountRef.current > MAX_RETRIES_AFTER_SCROLL_FAILURE
+        ) {
+          console.log(
+            `Scrolling to index failed after ${MAX_RETRIES_AFTER_SCROLL_FAILURE} retries`,
+            e,
+          );
+          scrollToIndexFailedRetryCountRef.current = 0;
+          return;
+        }
+        // At some cases the index we're trying to scroll to, doesn't exist yet in the messageList
+        // Scrolling to an index not in range of the Flatlist's data will result in a crash that
+        // won't call onScrollToIndexFailed.
+        // By catching this error we retry scrolling by calling onScrollToIndexFailedRef
+        scrollToIndexFailedRetryCountRef.current += 1;
+        onScrollToIndexFailedRef.current(info);
+      }
+    }, WAIT_FOR_SCROLL_TO_OFFSET_TIMEOUT);
+
+    // Only when index is greater than 0 and in range of items in FlatList
+    // this onScrollToIndexFailed will be called again
   });
 
   const goToMessage = useCallback(
@@ -814,6 +843,8 @@ const MessageListWithContext = <
         (message) => message?.id === messageId,
       );
       if (indexOfParentInMessageList !== -1 && flatListRef.current) {
+        clearTimeout(failScrollTimeoutId.current);
+        scrollToIndexFailedRetryCountRef.current = 0;
         flatListRef.current.scrollToIndex({
           animated: true,
           index: indexOfParentInMessageList,
@@ -855,6 +886,9 @@ const MessageListWithContext = <
         (message) => message?.id === messageIdToScroll,
       );
       if (indexOfParentInMessageList !== -1 && flatListRef.current) {
+        // By a fresh scroll we should clear the retries for the previous failed scroll
+        clearTimeout(failScrollTimeoutId.current);
+        scrollToIndexFailedRetryCountRef.current = 0;
         flatListRef.current.scrollToIndex({
           animated: false,
           index: indexOfParentInMessageList,
@@ -867,6 +901,7 @@ const MessageListWithContext = <
       }
     }, 150);
     return () => {
+      clearTimeout(failScrollTimeoutId.current);
       clearTimeout(scrollToDebounceTimeoutRef.current);
       clearTimeout(initialScrollSettingTimeoutRef.current);
     };

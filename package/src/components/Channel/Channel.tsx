@@ -1295,12 +1295,12 @@ const ChannelWithContext = <
           attachment.image_url &&
           isLocalUrl(attachment.image_url)
         ) {
-          const filename = file.uri.replace(/^(file:\/\/|content:\/\/|assets-library:\/\/)/, '');
+          const filename = file.name ?? file.uri.replace(/^(file:\/\/|content:\/\/)/, '');
           const contentType = lookup(filename) || 'multipart/form-data';
 
           const uploadResponse = doImageUploadRequest
             ? await doImageUploadRequest(file, channel)
-            : await channel.sendImage(file?.uri, filename, contentType);
+            : await channel.sendImage(file.uri, filename, contentType);
 
           attachment.image_url = uploadResponse.file;
           delete attachment.originalFile;
@@ -1320,7 +1320,7 @@ const ChannelWithContext = <
         ) {
           const response = doDocUploadRequest
             ? await doDocUploadRequest(file, channel)
-            : await channel.sendFile(file.uri, file.name, file.type);
+            : await channel.sendFile(file.uri, file.name, file.mimeType);
           attachment.asset_url = response.file;
           if (response.thumb_url) {
             attachment.thumb_url = response.thumb_url;
@@ -1601,6 +1601,9 @@ const ChannelWithContext = <
   const clearQuotedMessageState: InputMessageInputContextValue<StreamChatGenerics>['clearQuotedMessageState'] =
     () => setQuotedMessage(false);
 
+  /**
+   * Removes the message from local state
+   */
   const removeMessage: MessagesContextValue<StreamChatGenerics>['removeMessage'] = (message) => {
     if (channel) {
       channel.state.removeMessage(message);
@@ -1664,6 +1667,10 @@ const ChannelWithContext = <
     }
 
     if (!enableOfflineSupport) {
+      if (message.status === MessageStatusTypes.FAILED) {
+        removeMessage(message);
+        return;
+      }
       await client.deleteMessage(message.id);
       return;
     }

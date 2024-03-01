@@ -10,28 +10,6 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 import { vw } from '../../utils/utils';
 import type { MessageOverlayPropsWithContext } from '../MessageOverlay/MessageOverlay';
 
-const styles = StyleSheet.create({
-  bottomBorder: {
-    borderBottomWidth: 1,
-  },
-  container: {
-    borderRadius: 16,
-    marginTop: 8,
-    maxWidth: 275,
-  },
-  row: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    minWidth: vw(65),
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  titleStyle: {
-    paddingLeft: 20,
-  },
-});
-
 export type ActionType =
   | 'blockUser'
   | 'copyMessage'
@@ -122,3 +100,25 @@ export const MessageActionListItem = <
 >(
   props: MessageActionListItemProps<StreamChatGenerics>,
 ) => <MemoizedMessageActionListItem {...props} />;
+
+const styles = StyleSheet.create({
+  bottomBorder: {
+    borderBottomWidth: 1,
+  },
+  container: {
+    borderRadius: 16,
+    marginTop: 8,
+    maxWidth: 275,
+  },
+  row: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    minWidth: vw(65),
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  titleStyle: {
+    paddingLeft: 20,
+  },
+});

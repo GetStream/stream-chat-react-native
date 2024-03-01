@@ -104,7 +104,7 @@ const FileAttachmentGroupWithContext = <
       setFilesToDisplay((prevFileUploads) =>
         prevFileUploads.map((fileUpload, id) => ({
           ...fileUpload,
-          paused: id.toString() === index ? false : true,
+          paused: id.toString() !== index,
         })),
       );
     } else {

@@ -64,6 +64,7 @@ export const OverlayProvider = <
 ) => {
   const bottomSheetCloseTimeoutRef = useRef<NodeJS.Timeout>();
   const {
+    autoPlayVideo,
     AttachmentPickerBottomSheetHandle = DefaultAttachmentPickerBottomSheetHandle,
     attachmentPickerBottomSheetHandleHeight,
     attachmentPickerBottomSheetHeight,
@@ -237,6 +238,7 @@ export const OverlayProvider = <
                 )}
                 {overlay === 'gallery' && (
                   <ImageGallery<StreamChatGenerics>
+                    autoPlayVideo={autoPlayVideo}
                     giphyVersion={giphyVersion}
                     imageGalleryCustomComponents={imageGalleryCustomComponents}
                     imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}

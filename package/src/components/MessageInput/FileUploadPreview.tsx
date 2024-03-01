@@ -183,7 +183,7 @@ const FileUploadPreviewWithContext = <
       setFileUploads((prevFileUploads) =>
         prevFileUploads.map((fileUpload) => ({
           ...fileUpload,
-          paused: fileUpload.id === index ? false : true,
+          paused: fileUpload.id !== index,
         })),
       );
     } else {
@@ -228,7 +228,7 @@ const FileUploadPreviewWithContext = <
           style={styles.overlay}
           type={indicatorType}
         >
-          {item.file.type?.startsWith('audio/') && isAudioPackageAvailable() ? (
+          {item.file.mimeType?.startsWith('audio/') && isAudioPackageAvailable() ? (
             <View
               style={[
                 { marginBottom: item.state === FileState.UPLOADED ? 8 : 0 },
@@ -279,7 +279,7 @@ const FileUploadPreviewWithContext = <
             >
               <View style={[styles.fileContentContainer, fileContentContainer]}>
                 <View style={styles.fileIcon}>
-                  <FileAttachmentIcon mimeType={item.file.type} />
+                  <FileAttachmentIcon mimeType={item.file.mimeType} />
                 </View>
                 <View style={[styles.fileTextContainer, fileTextContainer]}>
                   <Text

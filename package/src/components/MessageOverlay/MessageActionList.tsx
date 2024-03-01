@@ -13,28 +13,6 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { vw } from '../../utils/utils';
 
-const styles = StyleSheet.create({
-  bottomBorder: {
-    borderBottomWidth: 1,
-  },
-  container: {
-    borderRadius: 16,
-    marginTop: 8,
-    maxWidth: 275,
-  },
-  row: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    minWidth: vw(65),
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  titleStyle: {
-    paddingLeft: 20,
-  },
-});
-
 export type MessageActionListPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
@@ -168,3 +146,26 @@ export const MessageActionList = <
 
   return <MemoizedMessageActionList {...{ alignment, messageActions }} {...props} />;
 };
+
+const styles = StyleSheet.create({
+  bottomBorder: {
+    borderBottomWidth: 1,
+  },
+  container: {
+    borderRadius: 16,
+    marginTop: 8,
+    minWidth: vw(65),
+    overflow: 'hidden',
+  },
+  row: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    minWidth: vw(65),
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  titleStyle: {
+    paddingLeft: 20,
+  },
+});

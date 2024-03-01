@@ -1,5 +1,64 @@
 # Change Log
 
+### [1.22.6](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.22.5...sampleapp@v1.22.6) (2023-09-01)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.22.5](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.22.4...sampleapp@v1.22.5) (2023-08-30)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.22.4](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.22.3...sampleapp@v1.22.4) (2023-08-07)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.22.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.22.2...sampleapp@v1.22.3) (2023-07-18)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.22.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.22.1...sampleapp@v1.22.2) (2023-07-03)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.22.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.22.0...sampleapp@v1.22.1) (2023-06-12)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+## [1.22.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.21.1...sampleapp@v1.22.0) (2023-05-25)
+
+
+### Features
+
+* upgrading flatlist mvcp dep. ([#2112](https://github.com/GetStream/stream-chat-react-native/issues/2112)) ([3039600](https://github.com/GetStream/stream-chat-react-native/commit/30396003bc7c8736b54138488dbbd0cd2b5287b3))
+
+
+### Bug Fixes
+
+* network down spinner was invisible in sample app ([b7fd437](https://github.com/GetStream/stream-chat-react-native/commit/b7fd4376252a50c3f13c3326d50e0d3dd628b92d))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.21.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.21.0...sampleapp@v1.21.1) (2023-05-15)
 
 

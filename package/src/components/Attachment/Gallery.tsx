@@ -35,52 +35,6 @@ import { isVideoPackageAvailable } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getUrlWithoutParams } from '../../utils/utils';
 
-const styles = StyleSheet.create({
-  errorTextSize: { fontSize: 10 },
-  galleryContainer: {
-    borderTopLeftRadius: 13,
-    borderTopRightRadius: 13,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    overflow: 'hidden',
-  },
-  imageContainer: {
-    alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    padding: 1,
-  },
-  imageContainerStyle: { alignItems: 'center', flex: 1, justifyContent: 'center' },
-  imageLoadingErrorIndicatorStyle: {
-    bottom: 4,
-    left: 4,
-    position: 'absolute',
-  },
-  imageLoadingIndicatorContainer: {
-    height: '100%',
-    justifyContent: 'center',
-    position: 'absolute',
-    width: '100%',
-  },
-  imageLoadingIndicatorStyle: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
-  },
-  imageReloadContainerStyle: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  moreImagesContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: 1,
-  },
-  moreImagesText: { color: '#FFFFFF', fontSize: 26, fontWeight: '700' },
-});
-
 export type GalleryPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setSelectedMessage' | 'setMessages'> &
@@ -197,13 +151,11 @@ const GalleryWithContext = <
       style={[
         styles.galleryContainer,
         {
+          flexDirection: invertedDirections ? 'column' : 'row',
           height,
           width,
         },
         galleryContainer,
-        {
-          flexDirection: invertedDirections ? 'column' : 'row',
-        },
       ]}
       testID='gallery-container'
     >
@@ -411,11 +363,11 @@ const GalleryThumbnail = <
         <VideoThumbnail
           style={[
             borderRadius,
-            image,
             {
               height: thumbnail.height - 1,
               width: thumbnail.width - 1,
             },
+            image,
           ]}
           thumb_url={thumbnail.thumb_url}
         />
@@ -468,18 +420,19 @@ const GalleryImageThumbnail = <
 
   const {
     theme: {
-      messageSimple: {
-        gallery: { image },
-      },
+      messageSimple: { gallery },
     },
   } = useTheme();
 
   return (
     <View
-      style={{
-        height: thumbnail.height - 1,
-        width: thumbnail.width - 1,
-      }}
+      style={[
+        {
+          height: thumbnail.height - 1,
+          width: thumbnail.width - 1,
+        },
+        gallery.thumbnail,
+      ]}
     >
       {isLoadingImageError ? (
         <>
@@ -502,11 +455,11 @@ const GalleryImageThumbnail = <
             resizeMode={thumbnail.resizeMode}
             style={[
               borderRadius,
-              image,
               {
                 height: thumbnail.height - 1,
                 width: thumbnail.width - 1,
               },
+              gallery.image,
             ]}
             uri={thumbnail.url}
           />
@@ -679,5 +632,51 @@ export const Gallery = <
     />
   );
 };
+
+const styles = StyleSheet.create({
+  errorTextSize: { fontSize: 10 },
+  galleryContainer: {
+    borderTopLeftRadius: 13,
+    borderTopRightRadius: 13,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    overflow: 'hidden',
+  },
+  imageContainer: {
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    padding: 1,
+  },
+  imageContainerStyle: { alignItems: 'center', flex: 1, justifyContent: 'center' },
+  imageLoadingErrorIndicatorStyle: {
+    bottom: 4,
+    left: 4,
+    position: 'absolute',
+  },
+  imageLoadingIndicatorContainer: {
+    height: '100%',
+    justifyContent: 'center',
+    position: 'absolute',
+    width: '100%',
+  },
+  imageLoadingIndicatorStyle: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+  },
+  imageReloadContainerStyle: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  moreImagesContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 1,
+  },
+  moreImagesText: { color: '#FFFFFF', fontSize: 26, fontWeight: '700' },
+});
 
 Gallery.displayName = 'Gallery{messageSimple{gallery}}';

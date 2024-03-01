@@ -52,6 +52,7 @@ export type ChannelListProps<
     | 'onSelect'
     | 'PreviewAvatar'
     | 'PreviewMessage'
+    | 'PreviewMutedStatus'
     | 'PreviewStatus'
     | 'PreviewTitle'
     | 'PreviewUnreadCount'
@@ -270,6 +271,7 @@ export const ChannelList = <
     Preview = ChannelPreviewMessenger,
     PreviewAvatar,
     PreviewMessage,
+    PreviewMutedStatus,
     PreviewStatus,
     PreviewTitle,
     PreviewUnreadCount,
@@ -391,6 +393,7 @@ export const ChannelList = <
     Preview,
     PreviewAvatar,
     PreviewMessage,
+    PreviewMutedStatus,
     PreviewStatus,
     PreviewTitle,
     PreviewUnreadCount,
