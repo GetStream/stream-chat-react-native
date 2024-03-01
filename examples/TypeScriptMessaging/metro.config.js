@@ -11,9 +11,10 @@ const config = getDefaultConfig(__dirname);
 
 const PATH = require('path');
 const packageDirPath = PATH.resolve(__dirname, '../../package');
+const nativePackageDirPath = PATH.resolve(__dirname, '../../package/native-package');
 
 const symlinked = {
-  'stream-chat-react-native': PATH.resolve(packageDirPath, 'native-package'),
+  'stream-chat-react-native': nativePackageDirPath,
   'stream-chat-react-native-core': packageDirPath,
 };
 
@@ -59,6 +60,8 @@ const extraNodeModules = uniqueModules.reduce((acc, item) => {
 
 config.resolver.blockList = exclusionList(blockList);
 config.resolver.extraNodeModules = extraNodeModules;
+
+config.resolver.nodeModulesPaths = [PATH.resolve(__dirname, 'node_modules')];
 
 // add the package dir for metro to access the package folder
 config.watchFolders = [packageDirPath];
