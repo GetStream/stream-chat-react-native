@@ -26,9 +26,11 @@ export type UserInfoOverlayContextValue = {
 
 export const UserInfoOverlayContext = React.createContext({} as UserInfoOverlayContextValue);
 
-export const UserInfoOverlayProvider: React.FC<{
+type Props = React.PropsWithChildren<{
   value?: UserInfoOverlayContextValue;
-}> = ({ children, value }) => {
+}>;
+
+export const UserInfoOverlayProvider = ({ children, value }: Props) => {
   const [data, setData] = useState(value?.data);
 
   const reset = () => {

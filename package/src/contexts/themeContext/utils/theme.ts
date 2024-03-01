@@ -2,7 +2,6 @@ import type { ImageStyle, TextStyle, ViewStyle } from 'react-native';
 import type { CircleProps, Color, StopProps } from 'react-native-svg';
 
 import type { IconProps } from '../../../icons/utils/base';
-import { vh } from '../../../utils/utils';
 
 export const DEFAULT_STATUS_ICON_SIZE = 16;
 
@@ -262,6 +261,7 @@ export type Theme = {
       fileTextContainer: ViewStyle;
       flatList: ViewStyle;
     };
+    focusedInputBoxContainer: ViewStyle;
     giphyCommandInput: {
       giphyContainer: ViewStyle;
       giphyText: TextStyle;
@@ -278,12 +278,15 @@ export type Theme = {
     moreOptionsButton: ViewStyle;
     optionsContainer: ViewStyle;
     replyContainer: ViewStyle;
+    searchIcon: IconProps;
     sendButton: ViewStyle;
     sendButtonContainer: ViewStyle;
     sendMessageDisallowedIndicator: {
       container: ViewStyle;
       text: TextStyle;
     };
+    sendRightIcon: IconProps;
+    sendUpIcon: IconProps;
     showThreadMessageInChannelButton: {
       check: IconProps;
       checkBoxActive: ViewStyle;
@@ -298,9 +301,6 @@ export type Theme = {
         container: ViewStyle;
         iconContainer: ViewStyle;
         title: TextStyle;
-      };
-      container: ViewStyle & {
-        maxHeight: number;
       };
       emoji: {
         container: ViewStyle;
@@ -325,6 +325,7 @@ export type Theme = {
     };
     uploadProgressIndicator: {
       container: ViewStyle;
+      indicatorColor: string;
       overlay: ViewStyle;
     };
   };
@@ -338,6 +339,7 @@ export type Theme = {
       text: TextStyle;
     };
     listContainer: ViewStyle;
+    messageContainer: ViewStyle;
     messageSystem: {
       container: ViewStyle;
       dateText: TextStyle;
@@ -476,6 +478,7 @@ export type Theme = {
     };
     reactionList: {
       container: ViewStyle;
+      iconFillColor: Color;
       middleIcon: ViewStyle;
       radius: number;
       reactionBubble: ViewStyle;
@@ -765,6 +768,7 @@ export const defaultTheme: Theme = {
       fileTextContainer: {},
       flatList: {},
     },
+    focusedInputBoxContainer: {},
     giphyCommandInput: {
       giphyContainer: {},
       giphyText: {},
@@ -781,12 +785,15 @@ export const defaultTheme: Theme = {
     moreOptionsButton: {},
     optionsContainer: {},
     replyContainer: {},
+    searchIcon: {},
     sendButton: {},
     sendButtonContainer: {},
     sendMessageDisallowedIndicator: {
       container: {},
       text: {},
     },
+    sendRightIcon: {},
+    sendUpIcon: {},
     showThreadMessageInChannelButton: {
       check: {},
       checkBoxActive: {},
@@ -801,9 +808,6 @@ export const defaultTheme: Theme = {
         container: {},
         iconContainer: {},
         title: {},
-      },
-      container: {
-        maxHeight: vh(25),
       },
       emoji: {
         container: {},
@@ -828,6 +832,7 @@ export const defaultTheme: Theme = {
     },
     uploadProgressIndicator: {
       container: {},
+      indicatorColor: '',
       overlay: {},
     },
   },
@@ -841,6 +846,7 @@ export const defaultTheme: Theme = {
       text: {},
     },
     listContainer: {},
+    messageContainer: {},
     messageSystem: {
       container: {},
       dateText: {},
@@ -1011,6 +1017,7 @@ export const defaultTheme: Theme = {
     },
     reactionList: {
       container: {},
+      iconFillColor: '',
       middleIcon: {},
       radius: 2, // not recommended to change this
       reactionBubble: {},

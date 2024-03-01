@@ -27,8 +27,7 @@ import {
   User,
   UserMinus,
   useTheme,
-  vh,
-  vw,
+  useViewport,
 } from 'stream-chat-react-native';
 
 import { useAppOverlayContext } from '../context/AppOverlayContext';
@@ -94,10 +93,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const screenHeight = vh(100);
-const halfScreenHeight = vh(50);
-const width = vw(100) - 60;
-
 export type ChannelInfoOverlayProps = {
   overlayOpacity: Animated.SharedValue<number>;
   visible?: boolean;
@@ -109,6 +104,11 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
   const { overlay, setOverlay } = useAppOverlayContext();
   const { setData } = useBottomSheetOverlayContext();
   const { data, reset } = useChannelInfoOverlayContext();
+  const { vh, vw } = useViewport();
+
+  const screenHeight = vh(100);
+  const halfScreenHeight = vh(50);
+  const width = vw(100) - 60;
 
   const { channel, clientId, navigation } = data || {};
 
@@ -151,6 +151,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
       Keyboard.dismiss();
     }
     fadeScreen(!!visible);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
   const onPan = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({

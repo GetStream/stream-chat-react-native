@@ -8,6 +8,7 @@ import { lookup } from 'mime-types';
 import {
   Attachment,
   logChatPromiseExecution,
+  Message,
   SendFileAPIResponse,
   StreamChat,
   Message as StreamMessage,
@@ -18,8 +19,9 @@ import {
 } from 'stream-chat';
 
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
-import { isEditingBoolean, useMessageDetailsForState } from './hooks/useMessageDetailsForState';
+import { useMessageDetailsForState } from './hooks/useMessageDetailsForState';
 
+import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
 import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
 import type { InputEditingStateHeaderProps } from '../../components/MessageInput/components/InputEditingStateHeader';
@@ -35,8 +37,17 @@ import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreO
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
-import { compressImage, pickDocument } from '../../native';
-import type { Asset, DefaultStreamChatGenerics, File, UnknownType } from '../../types/types';
+import type { Emoji } from '../../emoji-data';
+import { pickDocument } from '../../native';
+import type {
+  Asset,
+  DefaultStreamChatGenerics,
+  File,
+  FileUpload,
+  ImageUpload,
+  UnknownType,
+} from '../../types/types';
+import { compressedImageURI } from '../../utils/compressImage';
 import { removeReservedFields } from '../../utils/removeReservedFields';
 import {
   ACITriggerSettings,
@@ -44,12 +55,13 @@ import {
   FileState,
   FileStateValue,
   generateRandomId,
+  isBouncedMessage,
   TriggerSettings,
-  urlRegex,
 } from '../../utils/utils';
 import { useAttachmentPickerContext } from '../attachmentPickerContext/AttachmentPickerContext';
 import { ChannelContextValue, useChannelContext } from '../channelContext/ChannelContext';
 import { useChatContext } from '../chatContext/ChatContext';
+import { useMessagesContext } from '../messagesContext/MessagesContext';
 import { useOwnCapabilitiesContext } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useThreadContext } from '../threadContext/ThreadContext';
 import { useTranslationContext } from '../translationContext/TranslationContext';
@@ -58,26 +70,8 @@ import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-export type FileUpload = {
-  file: File;
-  id: string;
-  state: FileStateValue;
-  duration?: number;
-  paused?: boolean;
-  progress?: number;
-  thumb_url?: string;
-  url?: string;
-};
-
-export type ImageUpload = {
-  file: Partial<Asset> & {
-    name?: string;
-  };
-  id: string;
-  state: FileStateValue;
-  height?: number;
-  url?: string;
-  width?: number;
+export type EmojiSearchIndex = {
+  search: (query: string) => PromiseLike<Array<Emoji>> | Array<Emoji> | null;
 };
 
 export type MentionAllAppUsersQuery<
@@ -171,7 +165,7 @@ export type LocalMessageInputContext<
   resetInput: (pendingAttachments?: Attachment<StreamChatGenerics>[]) => void;
   selectedPicker: string | undefined;
   sending: React.MutableRefObject<boolean>;
-  sendMessage: () => Promise<void>;
+  sendMessage: (customMessageData?: Partial<Message<StreamChatGenerics>>) => Promise<void>;
   sendMessageAsync: (id: string) => void;
   sendThreadMessageInChannel: boolean;
   setAsyncIds: React.Dispatch<React.SetStateAction<string[]>>;
@@ -216,7 +210,7 @@ export type LocalMessageInputContext<
 
 export type InputMessageInputContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+> = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled'> & {
   /**
    * Custom UI component for attach button.
    *
@@ -240,7 +234,6 @@ export type InputMessageInputContextValue<
    * **default** [CooldownTimer](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/CooldownTimer.tsx)
    */
   CooldownTimer: React.ComponentType<CooldownTimerProps>;
-  editing: boolean | MessageType<StreamChatGenerics>;
   editMessage: StreamChat<StreamChatGenerics>['updateMessage'];
 
   /**
@@ -345,6 +338,17 @@ export type InputMessageInputContextValue<
     channel: ChannelContextValue<StreamChatGenerics>['channel'],
   ) => Promise<SendFileAPIResponse>;
 
+  /**
+   * Variable that tracks the editing state.
+   * It is defined with message type if the editing state is true, else its undefined.
+   */
+  editing?: MessageType<StreamChatGenerics>;
+
+  /**
+   * Prop to override the default emoji search index in auto complete suggestion list.
+   */
+  emojiSearchIndex?: EmojiSearchIndex;
+
   /** Initial value to set on input */
   initialValue?: string;
   /**
@@ -412,6 +416,7 @@ export const MessageInputProvider = <
   const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
     useAttachmentPickerContext();
   const { appSettings, client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
+  const { removeMessage } = useMessagesContext();
 
   const getFileUploadConfig = () => {
     const fileConfig = appSettings?.app?.file_upload_config;
@@ -438,7 +443,8 @@ export const MessageInputProvider = <
 
   const channelCapabities = useOwnCapabilitiesContext();
 
-  const { channel, giphyEnabled } = useChannelContext<StreamChatGenerics>();
+  const { channel, giphyEnabled, uploadAbortControllerRef } =
+    useChannelContext<StreamChatGenerics>();
   const { thread } = useThreadContext<StreamChatGenerics>();
   const { t } = useTranslationContext();
   const inputBoxRef = useRef<TextInput | null>(null);
@@ -594,7 +600,10 @@ export const MessageInputProvider = <
       const totalFileSize = result.assets.reduce((acc, asset) => acc + Number(asset.size), 0);
       if (totalFileSize / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB) {
         Alert.alert(
-          `Maximum file size upload limit reached, please upload files below ${MAX_FILE_SIZE_TO_UPLOAD_IN_MB}MB.`,
+          t(
+            `Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.`,
+            { MAX_FILE_SIZE_TO_UPLOAD_IN_MB },
+          ),
         );
       } else {
         result.assets.forEach((asset) => {
@@ -635,22 +644,26 @@ export const MessageInputProvider = <
       (prevNumberOfUploads) => prevNumberOfUploads - (pendingAttachments?.length || 0),
     );
     setText('');
+    if (value.editing) {
+      value.clearEditingState();
+    }
   };
 
-  const mapImageUploadToAttachment = (image: ImageUpload) => {
-    const mime_type: string | boolean = lookup(image.file.filename as string);
+  const mapImageUploadToAttachment = (image: ImageUpload): Attachment<StreamChatGenerics> => {
+    const mime_type: string | boolean = lookup(image.file.name as string);
+    const name = image.file.name as string;
     return {
-      fallback: image.file.name,
+      fallback: name,
       image_url: image.url,
       mime_type: mime_type ? mime_type : undefined,
       original_height: image.height,
       original_width: image.width,
-      originalFile: image.file,
+      originalImage: image.file,
       type: 'image',
-    } as Attachment;
+    };
   };
 
-  const mapFileUploadToAttachment = (file: FileUpload) => {
+  const mapFileUploadToAttachment = (file: FileUpload): Attachment<StreamChatGenerics> => {
     if (file.file.mimeType?.startsWith('image/')) {
       return {
         fallback: file.file.name,
@@ -694,12 +707,13 @@ export const MessageInputProvider = <
 
   // TODO: Figure out why this is async, as it doesn't await any promise.
   // eslint-disable-next-line require-await
-  const sendMessage = async () => {
+  const sendMessage = async (customMessageData?: Partial<Message<StreamChatGenerics>>) => {
     if (sending.current) {
       return;
     }
+    const linkInfos = parseLinksFromText(text);
 
-    if (!channelCapabities.sendLinks && !!text.match(urlRegex)) {
+    if (!channelCapabities.sendLinks && linkInfos.length > 0) {
       Alert.alert(t('Links are disabled'), t('Sending links is not allowed in this conversation'));
 
       return;
@@ -779,13 +793,15 @@ export const MessageInputProvider = <
       return;
     }
 
-    if (value.editing && !isEditingBoolean(value.editing)) {
+    const message = value.editing;
+    if (message && message.type !== 'error') {
       const updatedMessage = {
-        ...value.editing,
+        ...message,
         attachments,
         mentioned_users: mentionedUsers,
         quoted_message: undefined,
         text: prevText,
+        ...customMessageData,
       } as Parameters<StreamChat<StreamChatGenerics>['updateMessage']>[0];
 
       // TODO: Remove this line and show an error when submit fails
@@ -803,6 +819,12 @@ export const MessageInputProvider = <
       sending.current = false;
     } else {
       try {
+        /**
+         * If the message is bounced by moderation, we firstly remove the message from message list and then send a new message.
+         */
+        if (message && isBouncedMessage(message as MessageType<StreamChatGenerics>)) {
+          removeMessage(message);
+        }
         value.sendMessage({
           attachments,
           mentioned_users: uniq(mentionedUsers),
@@ -812,6 +834,7 @@ export const MessageInputProvider = <
             typeof value.quotedMessage === 'boolean' ? undefined : value.quotedMessage.id,
           show_in_channel: sendThreadMessageInChannel || undefined,
           text: prevText,
+          ...customMessageData,
         } as unknown as StreamMessage<StreamChatGenerics>);
 
         value.clearQuotedMessageState();
@@ -881,12 +904,14 @@ export const MessageInputProvider = <
         triggerSettings = value.autoCompleteTriggerSettings({
           channel,
           client,
+          emojiSearchIndex: value.emojiSearchIndex,
           onMentionSelectItem: onSelectItem,
         });
       } else {
         triggerSettings = ACITriggerSettings<StreamChatGenerics>({
           channel,
           client,
+          emojiSearchIndex: value.emojiSearchIndex,
           onMentionSelectItem: onSelectItem,
         });
       }
@@ -898,7 +923,7 @@ export const MessageInputProvider = <
 
   const updateMessage = async () => {
     try {
-      if (!isEditingBoolean(value.editing)) {
+      if (value.editing) {
         await client.updateMessage({
           ...value.editing,
           quoted_message: undefined,
@@ -906,8 +931,8 @@ export const MessageInputProvider = <
         } as Parameters<StreamChat<StreamChatGenerics>['updateMessage']>[0]);
       }
 
-      resetInput();
       value.clearEditingState();
+      resetInput();
     } catch (error) {
       console.log(error);
     }
@@ -965,11 +990,30 @@ export const MessageInputProvider = <
       if (value.doDocUploadRequest) {
         response = await value.doDocUploadRequest(file, channel);
       } else if (channel && file.uri) {
-        response = await channel.sendFile(file.uri, file.name, file.mimeType);
+        uploadAbortControllerRef.current.set(
+          file.name,
+          client.createAbortControllerForNextRequest(),
+        );
+        // Compress images selected through file picker when uploading them
+        if (file.mimeType?.includes('image')) {
+          const compressedUri = await compressedImageURI(file, value.compressImageQuality);
+          response = await channel.sendFile(compressedUri, file.name, file.mimeType);
+        } else {
+          response = await channel.sendFile(file.uri, file.name, file.mimeType);
+        }
+        uploadAbortControllerRef.current.delete(file.name);
       }
       const extraData: Partial<FileUpload> = { thumb_url: response.thumb_url, url: response.file };
       setFileUploads(getUploadSetStateAction(id, FileState.UPLOADED, extraData));
     } catch (error: unknown) {
+      if (
+        error instanceof Error &&
+        (error.name === 'AbortError' || error.name === 'CanceledError')
+      ) {
+        // nothing to do
+        uploadAbortControllerRef.current.delete(file.name);
+        return;
+      }
       handleFileOrImageUploadError(error, false, id);
     }
   };
@@ -983,52 +1027,55 @@ export const MessageInputProvider = <
 
     let response = {} as SendFileAPIResponse;
 
+    const uri = file.uri || '';
+    const filename = file.name ?? uri.replace(/^(file:\/\/|content:\/\/)/, '');
+
     try {
-      const uri = file.uri || '';
-      /**
-       * We skip compression if:
-       * - the file is from the camera as that should already be compressed
-       * - the file has no height/width value to maintain for compression
-       * - the compressImageQuality number is not present or is 1 (meaning no compression)
-       */
-      const compressedUri = await (file.source === 'camera' ||
-      !file.height ||
-      !file.width ||
-      typeof value.compressImageQuality !== 'number' ||
-      value.compressImageQuality === 1
-        ? uri
-        : compressImage({
-            compressImageQuality: value.compressImageQuality,
-            height: file.height,
-            uri,
-            width: file.width,
-          }));
-      const filename = file.filename ?? uri.replace(/^(file:\/\/|content:\/\/)/, '');
+      const compressedUri = await compressedImageURI(file, value.compressImageQuality);
       const contentType = lookup(filename) || 'multipart/form-data';
       if (value.doImageUploadRequest) {
         response = await value.doImageUploadRequest(file, channel);
       } else if (compressedUri && channel) {
         if (value.sendImageAsync) {
-          channel.sendImage(compressedUri, filename, contentType).then((res) => {
-            if (asyncIds.includes(id)) {
-              // Evaluates to true if user hit send before image successfully uploaded
-              setAsyncUploads((prevAsyncUploads) => {
-                prevAsyncUploads[id] = {
-                  ...prevAsyncUploads[id],
-                  state: FileState.UPLOADED,
-                  url: res.file,
-                };
-                return prevAsyncUploads;
-              });
-            } else {
-              const newImageUploads = getUploadSetStateAction<ImageUpload>(id, FileState.UPLOADED, {
-                url: res.file,
-              });
-              setImageUploads(newImageUploads);
-            }
-          });
+          uploadAbortControllerRef.current.set(
+            filename,
+            client.createAbortControllerForNextRequest(),
+          );
+          channel.sendImage(compressedUri, filename, contentType).then(
+            (res) => {
+              uploadAbortControllerRef.current.delete(filename);
+              if (asyncIds.includes(id)) {
+                // Evaluates to true if user hit send before image successfully uploaded
+                setAsyncUploads((prevAsyncUploads) => {
+                  prevAsyncUploads[id] = {
+                    ...prevAsyncUploads[id],
+                    state: FileState.UPLOADED,
+                    url: res.file,
+                  };
+                  return prevAsyncUploads;
+                });
+              } else {
+                const newImageUploads = getUploadSetStateAction<ImageUpload>(
+                  id,
+                  FileState.UPLOADED,
+                  {
+                    url: res.file,
+                  },
+                );
+                setImageUploads(newImageUploads);
+              }
+            },
+            () => {
+              uploadAbortControllerRef.current.delete(filename);
+            },
+          );
         } else {
+          uploadAbortControllerRef.current.set(
+            filename,
+            client.createAbortControllerForNextRequest(),
+          );
           response = await channel.sendImage(compressedUri, filename, contentType);
+          uploadAbortControllerRef.current.delete(filename);
         }
       }
 
@@ -1041,6 +1088,14 @@ export const MessageInputProvider = <
         setImageUploads(newImageUploads);
       }
     } catch (error) {
+      if (
+        error instanceof Error &&
+        (error.name === 'AbortError' || error.name === 'CanceledError')
+      ) {
+        // nothing to do
+        uploadAbortControllerRef.current.delete(filename);
+        return;
+      }
       handleFileOrImageUploadError(error, true, id);
     }
   };

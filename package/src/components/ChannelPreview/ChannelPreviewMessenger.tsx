@@ -19,8 +19,8 @@ import {
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useViewport } from '../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { vw } from '../../utils/utils';
 
 const styles = StyleSheet.create({
   container: {
@@ -44,8 +44,6 @@ const styles = StyleSheet.create({
   },
   title: { fontSize: 14, fontWeight: '700' },
 });
-
-const maxWidth = vw(80) - 16 - 40;
 
 export type ChannelPreviewMessengerPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -120,6 +118,9 @@ const ChannelPreviewMessengerWithContext = <
     PreviewMutedStatus = ChannelPreviewMutedStatus,
     unread,
   } = props;
+  const { vw } = useViewport();
+
+  const maxWidth = vw(80) - 16 - 40;
 
   const {
     theme: {
@@ -164,16 +165,15 @@ const ChannelPreviewMessengerWithContext = <
         testID={`channel-preview-content-${channel.id}`}
       >
         <View style={[styles.row, row]}>
-          <PreviewTitle channel={channel} displayName={displayName} />
+          <PreviewTitle displayName={displayName} />
           <View style={[styles.statusContainer, row]}>
             {isChannelMuted && <PreviewMutedStatus />}
-            <PreviewUnreadCount channel={channel} maxUnreadCount={maxUnreadCount} unread={unread} />
+            <PreviewUnreadCount maxUnreadCount={maxUnreadCount} unread={unread} />
           </View>
         </View>
         <View style={[styles.row, row]}>
           <PreviewMessage latestMessagePreview={latestMessagePreview} />
           <PreviewStatus
-            channel={channel}
             formatLatestMessageDate={formatLatestMessageDate}
             latestMessagePreview={latestMessagePreview}
           />

@@ -24,11 +24,12 @@ export type MessageSimplePropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageContextValue<StreamChatGenerics>,
-  'alignment' | 'channel' | 'groupStyles' | 'hasReactions' | 'message'
+  'alignment' | 'channel' | 'disabled' | 'groupStyles' | 'hasReactions' | 'message'
 > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
     | 'enableMessageGroupingByUser'
+    | 'myMessageTheme'
     | 'MessageAvatar'
     | 'MessageContent'
     | 'MessagePinnedHeader'
@@ -101,16 +102,23 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 ) => {
   const {
     channel: prevChannel,
+    disabled: prevDisabled,
     groupStyles: prevGroupStyles,
     hasReactions: prevHasReactions,
     message: prevMessage,
+    myMessageTheme: prevMyMessageTheme,
   } = prevProps;
   const {
     channel: nextChannel,
+    disabled: nextDisabled,
     groupStyles: nextGroupStyles,
     hasReactions: nextHasReactions,
     message: nextMessage,
+    myMessageTheme: nextMyMessageTheme,
   } = nextProps;
+
+  const disabledEqual = prevDisabled === nextDisabled;
+  if (!disabledEqual) return false;
 
   const hasReactionsEqual = prevHasReactions === nextHasReactions;
   if (!hasReactionsEqual) return false;
@@ -169,6 +177,10 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
       : prevMessage.latest_reactions === nextMessage.latest_reactions;
   if (!latestReactionsEqual) return false;
 
+  const messageThemeEqual =
+    JSON.stringify(prevMyMessageTheme) === JSON.stringify(nextMyMessageTheme);
+  if (!messageThemeEqual) return false;
+
   return true;
 };
 
@@ -190,13 +202,14 @@ export const MessageSimple = <
 >(
   props: MessageSimpleProps<StreamChatGenerics>,
 ) => {
-  const { alignment, channel, groupStyles, hasReactions, message } =
+  const { alignment, channel, disabled, groupStyles, hasReactions, message } =
     useMessageContext<StreamChatGenerics>();
   const {
     enableMessageGroupingByUser,
     MessageAvatar,
     MessageContent,
     MessagePinnedHeader,
+    myMessageTheme,
     ReactionList,
   } = useMessagesContext<StreamChatGenerics>();
 
@@ -205,6 +218,7 @@ export const MessageSimple = <
       {...{
         alignment,
         channel,
+        disabled,
         enableMessageGroupingByUser,
         groupStyles,
         hasReactions,
@@ -212,6 +226,7 @@ export const MessageSimple = <
         MessageAvatar,
         MessageContent,
         MessagePinnedHeader,
+        myMessageTheme,
         ReactionList,
       }}
       {...props}

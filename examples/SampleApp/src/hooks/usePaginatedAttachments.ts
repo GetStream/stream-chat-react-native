@@ -71,6 +71,7 @@ export const usePaginatedAttachments = (
 
   useEffect(() => {
     fetchAttachments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {

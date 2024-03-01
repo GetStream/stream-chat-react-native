@@ -35,7 +35,10 @@ export type MessageTextContainerPropsWithContext<
   MessageContextValue<StreamChatGenerics>,
   'message' | 'onLongPress' | 'onlyEmojis' | 'onPress' | 'preventPress'
 > &
-  Pick<MessagesContextValue<StreamChatGenerics>, 'markdownRules' | 'MessageText'> & {
+  Pick<
+    MessagesContextValue<StreamChatGenerics>,
+    'markdownRules' | 'MessageText' | 'myMessageTheme'
+  > & {
     markdownStyles?: MarkdownStyle;
     messageOverlay?: boolean;
     messageTextNumberOfLines?: number;
@@ -120,11 +123,13 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const {
     markdownStyles: prevMarkdownStyles,
     message: prevMessage,
+    myMessageTheme: prevMyMessageTheme,
     onlyEmojis: prevOnlyEmojis,
   } = prevProps;
   const {
     markdownStyles: nextMarkdownStyles,
     message: nextMessage,
+    myMessageTheme: nextMyMessageTheme,
     onlyEmojis: nextOnlyEmojis,
   } = nextProps;
 
@@ -154,6 +159,10 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     JSON.stringify(prevMarkdownStyles) === JSON.stringify(nextMarkdownStyles);
   if (!markdownStylesEqual) return false;
 
+  const messageThemeEqual =
+    JSON.stringify(prevMyMessageTheme) === JSON.stringify(nextMyMessageTheme);
+  if (!messageThemeEqual) return false;
+
   return true;
 };
 
@@ -173,7 +182,7 @@ export const MessageTextContainer = <
 ) => {
   const { message, onLongPress, onlyEmojis, onPress, preventPress } =
     useMessageContext<StreamChatGenerics>();
-  const { markdownRules, MessageText } = useMessagesContext<StreamChatGenerics>();
+  const { markdownRules, MessageText, myMessageTheme } = useMessagesContext<StreamChatGenerics>();
   const { messageTextNumberOfLines } = props;
 
   return (
@@ -183,6 +192,7 @@ export const MessageTextContainer = <
         message,
         MessageText,
         messageTextNumberOfLines,
+        myMessageTheme,
         onLongPress,
         onlyEmojis,
         onPress,

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
-import { Check, generateRandomId, useTheme, vw } from 'stream-chat-react-native';
+import { Check, generateRandomId, useTheme, useViewport } from 'stream-chat-react-native';
 
 import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -89,13 +89,18 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
       colors: { bg_gradient_end, bg_gradient_start, black, border, grey, white_snow },
     },
   } = useTheme();
+  const { vw } = useViewport();
 
   const [groupName, setGroupName] = useState('');
 
-  if (!chatClient) return null;
+  if (!chatClient) {
+    return null;
+  }
 
   const onConfirm = () => {
-    if (!chatClient.user || !selectedUsers || !groupName) return;
+    if (!chatClient.user || !selectedUsers || !groupName) {
+      return;
+    }
 
     const channel = chatClient.channel('messaging', generateRandomId(), {
       members: [...selectedUserIds, chatClient.user?.id],
@@ -112,6 +117,7 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
   return (
     <View style={styles.container}>
       <ScreenHeader
+        // eslint-disable-next-line react/no-unstable-nested-components
         RightContent={() => <ConfirmButton disabled={!groupName} onPress={onConfirm} />}
         style={styles.header}
         titleText='Name of Group Chat'

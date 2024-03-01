@@ -7,6 +7,7 @@ type ReturnType = {
   assets: Array<Omit<Asset, 'source'> & { source: 'picker' }>;
   endCursor: string | undefined;
   hasNextPage: boolean;
+  iOSLimited: boolean;
 };
 
 const verifyAndroidPermissions = async () => {
@@ -77,14 +78,14 @@ export const getPhotos = async ({
       ...edge.node.image,
       duration: edge.node.image.playableDuration,
       // since we include filename, fileSize in the query, we can safely assume it will be defined
-      filename: edge.node.image.filename as string,
-      fileSize: edge.node.image.fileSize as number,
+      name: edge.node.image.filename as string,
+      size: edge.node.image.fileSize as number,
       source: 'picker' as const,
       type: edge.node.type,
     }));
     const hasNextPage = results.page_info.has_next_page;
     const endCursor = results.page_info.end_cursor;
-    return { assets, endCursor, hasNextPage };
+    return { assets, endCursor, hasNextPage, iOSLimited: !!results.limited };
   } catch (_error) {
     throw new Error('getPhotos Error');
   }

@@ -28,20 +28,20 @@ const SendButtonWithContext = <
   const {
     theme: {
       colors: { accent_blue, grey_gainsboro },
-      messageInput: { sendButton },
+      messageInput: { searchIcon, sendButton, sendRightIcon, sendUpIcon },
     },
   } = useTheme();
 
   return (
     <Pressable
       disabled={disabled}
-      onPress={disabled ? () => null : sendMessage}
+      onPress={disabled ? () => null : () => sendMessage(undefined)}
       style={[sendButton]}
       testID='send-button'
     >
-      {giphyActive && <Search pathFill={disabled ? grey_gainsboro : accent_blue} />}
-      {!giphyActive && disabled && <SendRight pathFill={grey_gainsboro} />}
-      {!giphyActive && !disabled && <SendUp pathFill={accent_blue} />}
+      {giphyActive && <Search pathFill={disabled ? grey_gainsboro : accent_blue} {...searchIcon} />}
+      {!giphyActive && disabled && <SendRight pathFill={grey_gainsboro} {...sendRightIcon} />}
+      {!giphyActive && !disabled && <SendUp pathFill={accent_blue} {...sendUpIcon} />}
     </Pressable>
   );
 };

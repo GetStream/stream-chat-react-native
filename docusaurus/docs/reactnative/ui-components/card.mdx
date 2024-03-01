@@ -7,19 +7,19 @@ import OnLongPress from '../common-content/contexts/message-context/on_long_pres
 import OnPress from '../common-content/contexts/message-context/on_press.mdx';
 import OnPressIn from '../common-content/contexts/message-context/on_press_in.mdx';
 
-import AdditionalTouchableProps from '../common-content/core-components/channel/props/additional_touchable_props.mdx';
-import CardCover from '../common-content/core-components/channel/props/card_cover.mdx';
-import CardFooter from '../common-content/core-components/channel/props/card_footer.mdx';
-import CardHeader from '../common-content/core-components/channel/props/card_header.mdx';
+import AdditionalTouchableProps from '../common-content/ui-components/channel/props/additional_touchable_props.mdx';
+import CardCover from '../common-content/ui-components/channel/props/card_cover.mdx';
+import CardFooter from '../common-content/ui-components/channel/props/card_footer.mdx';
+import CardHeader from '../common-content/ui-components/channel/props/card_header.mdx';
 
-import ImageComponent from '../common-content/core-components/chat/props/image_component.mdx';
+import ImageComponent from '../common-content/ui-components/chat/props/image_component.mdx';
 
-Component to render custom attachments within the [`MessageList`](./message_list.mdx).
-Please check the guides for [Custom Attachment](../guides/attachment_customizations.mdx) for basic usage.
+Component to render custom attachments within the [`MessageList`](./message-list.mdx).
+Please check the guides for [Custom Attachment](../guides/custom-attachment.mdx) for basic usage.
 
 ## Props
 
-### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#additionaltouchableprops)_</div> additionalTouchableProps {#additionaltouchableprops}
+### <div class="label description">_overrides the value from [MessagesContext](../../contexts/messages-context#additionaltouchableprops)_</div> `additionalTouchableProps` {#additionaltouchableprops}
 
 <AdditionalTouchableProps />
 
@@ -47,19 +47,19 @@ URL to redirect to, when user presses on card.
 | ------ |
 | string |
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onlongpress)_</div> onLongPress {#onlongpress}
+### <div class="label description">_overrides the value from [MessageContext](../../contexts/message-context#onlongpress)_</div> `onLongPress` {#onlongpress}
 
 <OnLongPress />
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onpress)_</div> `onPress` {#onpress}
+### <div class="label description">_overrides the value from [MessageContext](../../contexts/message-context#onpress)_</div> `onPress` {#onpress}
 
 <OnPress />
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onpressin)_</div> onPressIn {#onpressin}
+### <div class="label description">_overrides the value from [MessageContext](../../contexts/message-context#onpressin)_</div> `onPressIn` {#onpressin}
 
 <OnPressIn />
 
-### text
+### `text`
 
 Text description for card, which will be rendered in footer of card.
 
@@ -75,7 +75,7 @@ Thumbnail URL for cover image.
 | ------ |
 | string |
 
-### title
+### `title`
 
 Title for card, which will be rendered in footer of card
 
@@ -83,18 +83,20 @@ Title for card, which will be rendered in footer of card
 | ------ |
 | string |
 
-### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#cardcover)_</div> CardCover {#cardcover}
+## UI Component Props
+
+### <div class="label description">_overrides the value from [MessagesContext](../../contexts/messages-context#cardcover)_</div> `CardCover` {#cardcover}
 
 <CardCover />
 
-### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#cardfooter)_</div> CardFooter {#cardfooter}
+### <div class="label description">_overrides the value from [MessagesContext](../../contexts/messages-context#cardfooter)_</div> `CardFooter` {#cardfooter}
 
 <CardFooter />
 
-### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#cardheader)_</div> CardHeader {#cardheader}
+### <div class="label description">_overrides the value from [MessagesContext](../../contexts/messages-context#cardheader)_</div> `CardHeader` {#cardheader}
 
 <CardHeader />
 
-### <div class="label description">_overrides the value from [ChatContext](../contexts/chat_context.mdx#imagecomponent)_</div> ImageComponent {#imagecomponent}
+### <div class="label description">_overrides the value from [ChatContext](../../contexts/chat-context#imagecomponent)_</div> `ImageComponent` {#imagecomponent}
 
 <ImageComponent />

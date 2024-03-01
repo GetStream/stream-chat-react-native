@@ -16,10 +16,12 @@ export const useCreateInputMessageInputContext = <
   CommandsButton,
   compressImageQuality,
   CooldownTimer,
+  disabled,
   doDocUploadRequest,
   doImageUploadRequest,
   editing,
   editMessage,
+  emojiSearchIndex,
   FileUploadPreview,
   hasCommands,
   hasFilePicker,
@@ -53,7 +55,7 @@ export const useCreateInputMessageInputContext = <
    */
   channelId?: string;
 }) => {
-  const editingExists = !!editing;
+  const editingDep = typeof editing === 'boolean' ? editing : editing?.id;
   const quotedMessageId = quotedMessage
     ? typeof quotedMessage === 'boolean'
       ? ''
@@ -71,10 +73,12 @@ export const useCreateInputMessageInputContext = <
       CommandsButton,
       compressImageQuality,
       CooldownTimer,
+      disabled,
       doDocUploadRequest,
       doImageUploadRequest,
       editing,
       editMessage,
+      emojiSearchIndex,
       FileUploadPreview,
       hasCommands,
       hasFilePicker,
@@ -106,7 +110,8 @@ export const useCreateInputMessageInputContext = <
     [
       compressImageQuality,
       channelId,
-      editingExists,
+      disabled,
+      editingDep,
       initialValue,
       maxMessageLength,
       quotedMessageId,

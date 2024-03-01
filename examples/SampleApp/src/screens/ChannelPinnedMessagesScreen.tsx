@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
 
 type ChannelPinnedMessagesScreenRouteProp = RouteProp<
   StackNavigatorParamList,
-  'ChannelFilesScreen'
+  'ChannelPinnedMessagesScreen'
 >;
 
 export type ChannelPinnedMessagesScreenProps = {

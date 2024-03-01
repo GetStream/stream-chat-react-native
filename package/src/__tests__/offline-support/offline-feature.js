@@ -195,7 +195,7 @@ export const Generic = () => {
       foo: 'bar',
       type: 'messaging',
     };
-    const sort = { last_message_at: 1 };
+    const sort = { last_updated: 1 };
 
     const renderComponent = () =>
       render(

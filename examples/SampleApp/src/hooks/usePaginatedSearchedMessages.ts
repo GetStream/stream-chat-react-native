@@ -113,10 +113,13 @@ export const usePaginatedSearchedMessages = (
 
   useEffect(() => {
     reloadList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messageFilters]);
 
   const refreshList = () => {
-    if (!chatClient?.user?.id) return;
+    if (!chatClient?.user?.id) {
+      return;
+    }
 
     offset.current = 0;
     hasMoreResults.current = true;

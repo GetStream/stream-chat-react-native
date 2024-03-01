@@ -1,5 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+  Alert,
+  NativeSyntheticEvent,
+  StyleSheet,
+  TextInputFocusEventData,
+  View,
+} from 'react-native';
 
 import type { UserResponse } from 'stream-chat';
 
@@ -67,20 +73,18 @@ const styles = StyleSheet.create({
   replyContainer: { paddingBottom: 12, paddingHorizontal: 8 },
   sendButtonContainer: { paddingBottom: 10, paddingLeft: 10 },
   suggestionsListContainer: {
-    borderRadius: 10,
-    elevation: 3,
-    left: 8,
     position: 'absolute',
-    right: 8,
-    shadowOffset: { height: 1, width: 0 },
-    shadowOpacity: 0.15,
+    width: '100%',
   },
 });
 
 type MessageInputPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChatContextValue<StreamChatGenerics>, 'isOnline'> &
-  Pick<ChannelContextValue<StreamChatGenerics>, 'disabled' | 'members' | 'watchers'> &
+  Pick<
+    ChannelContextValue<StreamChatGenerics>,
+    'disabled' | 'members' | 'threadList' | 'watchers'
+  > &
   Pick<
     MessageInputContextValue<StreamChatGenerics>,
     | 'additionalTextInputProps'
@@ -131,9 +135,7 @@ type MessageInputPropsWithContext<
     | 'triggerType'
   > &
   Pick<ThreadContextValue<StreamChatGenerics>, 'thread'> &
-  Pick<TranslationContextValue, 't'> & {
-    threadList?: boolean;
-  };
+  Pick<TranslationContextValue, 't'>;
 
 const MessageInputWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -175,6 +177,7 @@ const MessageInputWithContext = <
     SendButton,
     sending,
     sendMessageAsync,
+    setShowMoreOptions,
     ShowThreadMessageInChannelButton,
     suggestions,
     thread,
@@ -186,6 +189,7 @@ const MessageInputWithContext = <
   } = props;
 
   const [height, setHeight] = useState(0);
+  const { t } = useTranslationContext();
 
   const {
     theme: {
@@ -195,6 +199,7 @@ const MessageInputWithContext = <
         autoCompleteInputContainer,
         composerContainer,
         container,
+        focusedInputBoxContainer,
         inputBoxContainer,
         optionsContainer,
         replyContainer,
@@ -233,6 +238,7 @@ const MessageInputWithContext = <
 
   const [hasResetImages, setHasResetImages] = useState(false);
   const [hasResetFiles, setHasResetFiles] = useState(false);
+  const [focused, setFocused] = useState(false);
   const selectedImagesLength = hasResetImages ? selectedImages.length : 0;
   const imageUploadsLength = hasResetImages ? imageUploads.length : 0;
   const selectedFilesLength = hasResetFiles ? selectedFiles.length : 0;
@@ -287,10 +293,13 @@ const MessageInputWithContext = <
     // Check if the file size of the image exceeds the threshold of 100MB
     if (
       imageToUpload &&
-      Number(imageToUpload.fileSize) / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB
+      Number(imageToUpload.size) / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB
     ) {
       Alert.alert(
-        `Maximum file size upload limit reached, please upload an image below ${MAX_FILE_SIZE_TO_UPLOAD_IN_MB}MB.`,
+        t(
+          `Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.`,
+          { MAX_FILE_SIZE_TO_UPLOAD_IN_MB },
+        ),
       );
       setSelectedImages(
         selectedImages.filter((selectedImage) => selectedImage.uri !== imageToUpload.uri),
@@ -339,7 +348,10 @@ const MessageInputWithContext = <
         Number(fileToUpload.size) / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB
       ) {
         Alert.alert(
-          `Maximum file size upload limit reached, please upload a file below ${MAX_FILE_SIZE_TO_UPLOAD_IN_MB}MB.`,
+          t(
+            `Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.`,
+            { MAX_FILE_SIZE_TO_UPLOAD_IN_MB },
+          ),
         );
         setSelectedFiles(
           selectedFiles.filter((selectedFile) => selectedFile.uri !== fileToUpload.uri),
@@ -506,6 +518,26 @@ const MessageInputWithContext = <
     ...additionalTextInputProps,
   };
 
+  const memoizedAdditionalTextInputProps = useMemo(
+    () => ({
+      ...additionalTextInputProps,
+      onBlur: (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
+        if (additionalTextInputProps?.onBlur) {
+          additionalTextInputProps?.onBlur(event);
+        }
+        if (setFocused) setFocused(false);
+        setShowMoreOptions(true);
+      },
+      onFocus: (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
+        if (additionalTextInputProps?.onFocus) {
+          additionalTextInputProps.onFocus(event);
+        }
+        if (setFocused) setFocused(true);
+      },
+    }),
+    [additionalTextInputProps],
+  );
+
   return (
     <>
       <View
@@ -537,6 +569,7 @@ const MessageInputWithContext = <
                     paddingVertical: giphyActive ? 8 : 12,
                   },
                   inputBoxContainer,
+                  focused ? focusedInputBoxContainer : null,
                 ]}
               >
                 {((typeof editing !== 'boolean' && editing?.quoted_message) || quotedMessage) && (
@@ -562,7 +595,7 @@ const MessageInputWithContext = <
                 ) : (
                   <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
                     <AutoCompleteInput<StreamChatGenerics>
-                      additionalTextInputProps={additionalTextInputProps}
+                      additionalTextInputProps={memoizedAdditionalTextInputProps}
                       cooldownActive={!!cooldownRemainingSeconds}
                     />
                   </View>
@@ -587,11 +620,7 @@ const MessageInputWithContext = <
 
       {triggerType && suggestions ? (
         <View
-          style={[
-            suggestionListContainer,
-            styles.suggestionsListContainer,
-            { backgroundColor: white, bottom: height },
-          ]}
+          style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}
         >
           <AutoCompleteSuggestionList
             active={!!suggestions}
@@ -763,7 +792,7 @@ export const MessageInput = <
   const { isOnline } = useChatContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
-  const { disabled = false, members, watchers } = useChannelContext<StreamChatGenerics>();
+  const { disabled, members, threadList, watchers } = useChannelContext<StreamChatGenerics>();
 
   const {
     additionalTextInputProps,
@@ -820,7 +849,7 @@ export const MessageInput = <
 
   const { t } = useTranslationContext();
 
-  if (!ownCapabilities.sendMessage && SendMessageDisallowedIndicator) {
+  if ((disabled || !ownCapabilities.sendMessage) && SendMessageDisallowedIndicator) {
     return <SendMessageDisallowedIndicator />;
   }
 
@@ -865,6 +894,7 @@ export const MessageInput = <
         SendButton,
         sending,
         sendMessageAsync,
+        SendMessageDisallowedIndicator,
         setGiphyActive,
         setShowMoreOptions,
         showMoreOptions,
@@ -872,6 +902,7 @@ export const MessageInput = <
         suggestions,
         t,
         thread,
+        threadList,
         triggerType,
         uploadNewFile,
         uploadNewImage,

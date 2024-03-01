@@ -33,7 +33,6 @@ Your co-operation is really-really appreciated in this manner. Thanks and happy 
 
 Describe your issue here
 
----
 
 ### Steps to reproduce
 Steps to reproduce the behavior:
@@ -44,14 +43,10 @@ Steps to reproduce the behavior:
 4. See error
    etc...
 
----
-
-
 ### Expected behavior
 
 <!-- A clear and concise description of what you expected to happen. -->
 
----
 
 ## Project Related Information
 
@@ -76,16 +71,12 @@ Steps to reproduce the behavior:
 </p>
 </details>
 
----
-
 ### Offline support
 
 <!--- Mark any options that apply below -->
 
 - [ ] I have enabled offline support.
 - [ ] The feature I'm having does not occur when offline support is disabled. (stripe out if not applicable)
-
----
 
 ## Environment
 
@@ -130,14 +121,9 @@ Steps to reproduce the behavior:
 <!-- For bonus points, if you put a 🔥 (:fire:) emojii at the start of the issue title we'll know -->
 <!-- that you took the time to fill this out correctly, or, at least read this far -->
 
----
-
-
 ### Additional context
 
 <!-- Add any other context about the problem here. -->
-
----
 
 ### Screenshots
 

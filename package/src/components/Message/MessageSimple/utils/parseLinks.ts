@@ -1,35 +1,35 @@
-import Linkify from 'linkify-it';
+import { find } from 'linkifyjs';
 
 interface LinkInfo {
-  encodedUrl: string;
   raw: string;
+  url: string;
 }
 
 /**
- * This is done separately because of the version of javascript run
- * for expo
+ * This is done to remove all markdown formatted links.
+ * eg: [google.com](https://www.google.com), [Google](https://www.google.com), [https://www.google.com](https://www.google.com)
  * */
-const removeMarkdownLinksFromText = (input: string) => input.replace(/\[[\w\s]+\]\(.*\)/g, '');
+const removeMarkdownLinksFromText = (input: string) => input.replace(/\[.*\]\(.*\)/g, '');
 
 /**
- * Hermes doesn't support lookbehind, so this is done separately to avoid
- * parsing user names as links.
- * */
-const removeUserNamesFromText = (input: string) => input.replace(/^@\w+\.?\w/, '');
+ * This is done to avoid parsing usernames with dot as well as an email address in it.
+ */
+const removeUserNamesWithEmailFromText = (input: string) =>
+  input.replace(/@(\w+(\.\w+)?)(@\w+\.\w+)/g, '');
 
 export const parseLinksFromText = (input: string): LinkInfo[] => {
-  const strippedInput = [removeMarkdownLinksFromText, removeUserNamesFromText].reduce(
+  const strippedInput = [removeMarkdownLinksFromText, removeUserNamesWithEmailFromText].reduce(
     (acc, fn) => fn(acc),
     input,
   );
 
-  const linkify = Linkify();
-  const matches = linkify.match(strippedInput) ?? [];
+  const links = find(strippedInput, 'url');
+  const emails = find(strippedInput, 'email');
 
-  const result: LinkInfo[] = matches.map((match) => {
-    const { raw, url } = match;
-    return { encodedUrl: encodeURI(url), raw };
-  });
+  const result: LinkInfo[] = [...links, ...emails].map(({ href, value }) => ({
+    raw: value,
+    url: href,
+  }));
 
   return result;
 };

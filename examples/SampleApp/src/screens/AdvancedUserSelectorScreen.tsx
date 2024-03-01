@@ -3,7 +3,6 @@ import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'reac
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardCompatibleView, useTheme, version } from 'stream-chat-react-native';
 
-import { ScreenHeader } from '../components/ScreenHeader';
 import { useAppContext } from '../context/AppContext';
 
 const styles = StyleSheet.create({
@@ -182,7 +181,6 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
           },
         ]}
       >
-        <ScreenHeader titleText='Advanced Options' />
         <View style={styles.innerContainer}>
           <View style={styles.labelsContainer}>
             <LabeledTextInput
@@ -223,7 +221,9 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
           <View style={styles.bottomContainer}>
             <TouchableOpacity
               onPress={async () => {
-                if (!isValidInput()) return;
+                if (!isValidInput()) {
+                  return;
+                }
 
                 try {
                   await loginUser({

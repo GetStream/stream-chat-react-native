@@ -66,7 +66,7 @@ const initialChannelIdGlobalRef = { current: '' };
 notifee.onBackgroundEvent(async ({ detail, type }) => {
   // user press on notification detected while app was on background on Android
   if (type === EventType.PRESS) {
-    const channelId = detail.notification?.data?.channel_id;
+    const channelId = detail.notification?.data?.channel_id as string;
     if (channelId) {
       navigateToChannel(channelId);
     }
@@ -85,7 +85,7 @@ const App = () => {
   useEffect(() => {
     const unsubscribeOnNotificationOpen = messaging().onNotificationOpenedApp((remoteMessage) => {
       // Notification caused app to open from background state on iOS
-      const channelId = remoteMessage.data?.channel_id;
+      const channelId = remoteMessage.data?.channel_id as string;
       if (channelId) {
         navigateToChannel(channelId);
       }
@@ -94,7 +94,7 @@ const App = () => {
     const unsubscribeForegroundEvent = notifee.onForegroundEvent(({ detail, type }) => {
       if (type === EventType.PRESS) {
         // user has pressed the foreground notification
-        const channelId = detail.notification?.data?.channel_id;
+        const channelId = detail.notification?.data?.channel_id as string;
         if (channelId) {
           navigateToChannel(channelId);
         }
@@ -103,7 +103,7 @@ const App = () => {
     notifee.getInitialNotification().then((initialNotification) => {
       if (initialNotification) {
         // Notification caused app to open from quit state on Android
-        const channelId = initialNotification.notification.data?.channel_id;
+        const channelId = initialNotification.notification.data?.channel_id as string;
         if (channelId) {
           initialChannelIdGlobalRef.current = channelId;
         }
@@ -114,7 +114,7 @@ const App = () => {
       .then((remoteMessage) => {
         if (remoteMessage) {
           // Notification caused app to open from quit state on iOS
-          const channelId = remoteMessage.data?.channel_id;
+          const channelId = remoteMessage.data?.channel_id as string;
           if (channelId) {
             // this will make the app to start with the channel screen with this channel id
             initialChannelIdGlobalRef.current = channelId;
@@ -161,12 +161,11 @@ const App = () => {
 
 const DrawerNavigator: React.FC = () => (
   <Drawer.Navigator
-    drawerContent={(props) => <MenuDrawer {...props} />}
-    drawerStyle={{
-      width: 300,
-    }}
+    drawerContent={MenuDrawer}
     screenOptions={{
-      gestureEnabled: true,
+      drawerStyle: {
+        width: 300,
+      },
     }}
   >
     <Drawer.Screen component={HomeScreen} name='HomeScreen' options={{ headerShown: false }} />
@@ -204,7 +203,7 @@ const UserSelector = () => (
     <UserSelectorStack.Screen
       component={AdvancedUserSelectorScreen}
       name='AdvancedUserSelectorScreen'
-      options={{ gestureEnabled: false, headerShown: false }}
+      options={{ gestureEnabled: false }}
     />
     <UserSelectorStack.Screen
       component={UserSelectorScreen}
@@ -220,9 +219,13 @@ const HomeScreen = () => {
 
   return (
     <Stack.Navigator
-      initialRouteName={initialChannelIdGlobalRef.current ? 'ChannelScreen' : 'ChatScreen'}
+      initialRouteName={initialChannelIdGlobalRef.current ? 'ChannelScreen' : 'MessagingScreen'}
     >
-      <Stack.Screen component={ChatScreen} name='ChatScreen' options={{ headerShown: false }} />
+      <Stack.Screen
+        component={ChatScreen}
+        name='MessagingScreen'
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         component={ChannelScreen}
         initialParams={

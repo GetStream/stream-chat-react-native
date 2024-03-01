@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { RouteProp, useNavigation } from '@react-navigation/native';
+import { NavigationProp, RouteProp, useNavigation } from '@react-navigation/native';
 import {
   Avatar,
   ChannelList,
@@ -59,16 +59,20 @@ type CustomPreviewProps = ChannelPreviewMessengerProps<StreamChatGenerics>;
 const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
   const { chatClient } = useAppContext();
   const name = useChannelPreviewDisplayName(channel, 30);
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<StackNavigatorParamList, 'SharedGroupsScreen'>>();
   const {
     theme: {
       colors: { black, grey, grey_whisper, white_snow },
     },
   } = useTheme();
 
-  if (!chatClient) return null;
+  if (!chatClient) {
+    return null;
+  }
 
-  if (Object.keys(channel.state.members).length === 2) return null;
+  if (Object.keys(channel.state.members).length === 2) {
+    return null;
+  }
 
   const displayAvatar = getChannelPreviewDisplayAvatar(channel, chatClient);
 
@@ -77,7 +81,7 @@ const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
       index: 1,
       routes: [
         {
-          name: 'ChatScreen',
+          name: 'MessagingScreen',
         },
         {
           name: 'ChannelScreen',
@@ -176,7 +180,9 @@ export const SharedGroupsScreen: React.FC<SharedGroupsScreenProps> = ({
 }) => {
   const { chatClient } = useAppContext();
 
-  if (!chatClient?.user) return null;
+  if (!chatClient?.user) {
+    return null;
+  }
 
   return (
     <View style={styles.container}>
@@ -191,7 +197,7 @@ export const SharedGroupsScreen: React.FC<SharedGroupsScreenProps> = ({
         }}
         Preview={CustomPreview}
         sort={{
-          last_message_at: -1,
+          last_updated: -1,
         }}
       />
     </View>

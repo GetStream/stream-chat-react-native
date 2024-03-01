@@ -8,10 +8,10 @@ import { lookup } from 'mime-types';
 
 import type { AttachmentPickerContextValue } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { useViewport } from '../../../hooks/useViewport';
 import { Recorder } from '../../../icons';
 import { getLocalAssetUri } from '../../../native';
 import type { Asset, File } from '../../../types/types';
-import { vw } from '../../../utils/utils';
 
 type AttachmentPickerItemType = Pick<
   AttachmentPickerContextValue,
@@ -39,6 +39,7 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
     selectedFiles,
     setSelectedFiles,
   } = props;
+  const { vw } = useViewport();
 
   const {
     theme: {
@@ -70,15 +71,15 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
     const localAssetURI = Platform.OS === 'ios' && asset.id && (await getLocalAssetUri(asset.id));
     const uri = localAssetURI || asset.uri || '';
     // We need a mime-type to upload a video file.
-    const mimeType = lookup(asset.filename) || 'multipart/form-data';
+    const mimeType = lookup(asset.name) || 'multipart/form-data';
     return [
       ...files,
       {
-        duration: durationLabel,
+        duration: asset.duration,
         id: asset.id,
         mimeType,
-        name: asset.filename,
-        size: asset.fileSize,
+        name: asset.name,
+        size: asset.size,
         uri,
       },
     ];
@@ -152,6 +153,7 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
       colors: { overlay },
     },
   } = useTheme();
+  const { vw } = useViewport();
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 

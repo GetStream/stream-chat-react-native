@@ -12,8 +12,8 @@ import {
   useThreadContext,
 } from '../../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { useViewport } from '../../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { vw } from '../../../utils/utils';
 
 const styles = StyleSheet.create({
   absolute: { position: 'absolute' },
@@ -47,6 +47,7 @@ const ThreadFooterComponentWithContext = <
 ) => {
   const { Message, thread } = props;
   const { t } = useTranslationContext();
+  const { vw } = useViewport();
 
   const {
     theme: {

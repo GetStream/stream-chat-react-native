@@ -13,8 +13,8 @@ import type { BottomTabNavigatorParamList, StackNavigatorParamList } from '../ty
 
 const Tab = createBottomTabNavigator<BottomTabNavigatorParamList>();
 
-type ChatScreenNavigationProp = StackNavigationProp<StackNavigatorParamList, 'ChatScreen'>;
-type ChatScreenRouteProp = RouteProp<StackNavigatorParamList, 'ChatScreen'>;
+type ChatScreenNavigationProp = StackNavigationProp<StackNavigatorParamList, 'MessagingScreen'>;
+type ChatScreenRouteProp = RouteProp<StackNavigatorParamList, 'MessagingScreen'>;
 
 type Props = {
   navigation: ChatScreenNavigationProp;
@@ -22,6 +22,7 @@ type Props = {
 };
 
 export const ChatScreen: React.FC<Props> = () => (
+  // eslint-disable-next-line react/no-unstable-nested-components
   <Tab.Navigator tabBar={(props) => <BottomTabs {...props} />}>
     <Tab.Screen component={ChannelListScreen} name='ChatScreen' options={{ headerShown: false }} />
     <Tab.Screen component={MentionsScreen} name='MentionsScreen' options={{ headerShown: false }} />

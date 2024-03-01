@@ -2,7 +2,7 @@ import React from 'react';
 
 import { IconProps, RootPath, RootSvg } from './utils/base';
 
-export const TXT: React.FC<IconProps> = (props) => (
+export const TXT = (props: IconProps) => (
   <RootSvg
     height={props.height || 40}
     viewBox={props.viewBox || '0 0 34 40'}

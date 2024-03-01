@@ -19,9 +19,9 @@ import {
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
 
-import { Error } from '../../../icons';
+import { useViewport } from '../../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { MessageStatusTypes, vw } from '../../../utils/utils';
+import { MessageStatusTypes } from '../../../utils/utils';
 
 const styles = StyleSheet.create({
   containerInner: {
@@ -88,8 +88,10 @@ export type MessageContentPropsWithContext<
     | 'MessageFooter'
     | 'MessageHeader'
     | 'MessageDeleted'
+    | 'MessageError'
     | 'MessageReplies'
     | 'MessageStatus'
+    | 'myMessageTheme'
     | 'onPressInMessage'
     | 'Reply'
   > &
@@ -121,6 +123,7 @@ const MessageContentWithContext = <
     message,
     messageContentOrder,
     MessageDeleted,
+    MessageError,
     MessageFooter,
     MessageHeader,
     MessageReplies,
@@ -140,7 +143,7 @@ const MessageContentWithContext = <
 
   const {
     theme: {
-      colors: { accent_red, blue_alice, grey_gainsboro, grey_whisper, transparent, white },
+      colors: { blue_alice, grey_gainsboro, grey_whisper, transparent, white },
       messageSimple: {
         content: {
           container: {
@@ -155,8 +158,6 @@ const MessageContentWithContext = <
           },
           containerInner,
           errorContainer,
-          errorIcon,
-          errorIconContainer,
           replyBorder,
           replyContainer,
           wrapper,
@@ -165,6 +166,7 @@ const MessageContentWithContext = <
       },
     },
   } = useTheme();
+  const { vw } = useViewport();
 
   const getDateText = (formatter?: (date: TDateTimeParserInput) => string) => {
     if (!message.created_at) return '';
@@ -395,13 +397,7 @@ const MessageContentWithContext = <
             }
           })}
         </View>
-        {error && (
-          <View style={StyleSheet.absoluteFill} testID='message-error'>
-            <View style={errorIconContainer}>
-              <Error pathFill={accent_red} {...errorIcon} />
-            </View>
-          </View>
-        )}
+        {error && <MessageError />}
       </View>
       <MessageReplies noBorder={noBorder} repliesCurveColor={repliesCurveColor} />
       <MessageFooter formattedDate={getDateText(formatDate)} isDeleted={!!isMessageTypeDeleted} />
@@ -414,6 +410,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   nextProps: MessageContentPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
+    disabled: prevDisabled,
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
     hasReactions: prevHasReactions,
@@ -422,12 +419,14 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     members: prevMembers,
     message: prevMessage,
     messageContentOrder: prevMessageContentOrder,
+    myMessageTheme: prevMyMessageTheme,
     onlyEmojis: prevOnlyEmojis,
     otherAttachments: prevOtherAttachments,
     t: prevT,
     tDateTimeParser: prevTDateTimeParser,
   } = prevProps;
   const {
+    disabled: nextDisabled,
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     hasReactions: nextHasReactions,
@@ -435,11 +434,15 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     members: nextMembers,
     message: nextMessage,
     messageContentOrder: nextMessageContentOrder,
+    myMessageTheme: nextMyMessageTheme,
     onlyEmojis: nextOnlyEmojis,
     otherAttachments: nextOtherAttachments,
     t: nextT,
     tDateTimeParser: nextTDateTimeParser,
   } = nextProps;
+
+  const disabledEqual = prevDisabled === nextDisabled;
+  if (!disabledEqual) return false;
 
   const hasReactionsEqual = prevHasReactions === nextHasReactions;
   if (!hasReactionsEqual) return false;
@@ -530,6 +533,10 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const tDateTimeParserEqual = prevTDateTimeParser === nextTDateTimeParser;
   if (!tDateTimeParserEqual) return false;
 
+  const messageThemeEqual =
+    JSON.stringify(prevMyMessageTheme) === JSON.stringify(nextMyMessageTheme);
+  if (!messageThemeEqual) return false;
+
   return true;
 };
 
@@ -580,10 +587,12 @@ export const MessageContent = <
     Gallery,
     isAttachmentEqual,
     MessageDeleted,
+    MessageError,
     MessageFooter,
     MessageHeader,
     MessageReplies,
     MessageStatus,
+    myMessageTheme,
     Reply,
   } = useMessagesContext<StreamChatGenerics>();
   const { t, tDateTimeParser } = useTranslationContext();
@@ -609,10 +618,12 @@ export const MessageContent = <
         message,
         messageContentOrder,
         MessageDeleted,
+        MessageError,
         MessageFooter,
         MessageHeader,
         MessageReplies,
         MessageStatus,
+        myMessageTheme,
         onLongPress,
         onlyEmojis,
         onPress,

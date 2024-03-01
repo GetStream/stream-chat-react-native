@@ -2,7 +2,7 @@ import React from 'react';
 
 import { IconProps, RootPath, RootSvg } from './utils/base';
 
-export const RAR: React.FC<IconProps> = (props) => (
+export const RAR = (props: IconProps) => (
   <RootSvg
     height={props.height || 40}
     viewBox={props.viewBox || '0 0 34 40'}

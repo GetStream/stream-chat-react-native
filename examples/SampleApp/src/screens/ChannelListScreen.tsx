@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
 const baseFilters = {
   type: 'messaging',
 };
-const sort: ChannelSort<StreamChatGenerics> = { last_message_at: -1 };
+const sort: ChannelSort<StreamChatGenerics> = { last_updated: -1 };
 const options = {
   presence: true,
   state: true,
@@ -88,6 +88,7 @@ export const ChannelListScreen: React.FC = () => {
 
   useScrollToTop(scrollRef);
 
+  // eslint-disable-next-line react/no-unstable-nested-components
   const EmptySearchIndicator = () => (
     <View style={styles.emptyIndicatorContainer}>
       <Search height={112} pathFill={grey_gainsboro} width={112} />

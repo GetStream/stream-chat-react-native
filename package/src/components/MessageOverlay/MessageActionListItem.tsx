@@ -6,8 +6,8 @@ import Animated from 'react-native-reanimated';
 import { useMessageActionAnimation } from './hooks/useMessageActionAnimation';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useViewport } from '../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { vw } from '../../utils/utils';
 import type { MessageOverlayPropsWithContext } from '../MessageOverlay/MessageOverlay';
 
 export type ActionType =
@@ -26,10 +26,26 @@ export type ActionType =
   | 'unpinMessage';
 
 export type MessageActionType = {
+  /**
+   * Callback when user presses the action button.
+   */
   action: () => void;
+  /**
+   * Type of the action performed.
+   * Eg: 'blockUser', 'copyMessage', 'deleteMessage', 'editMessage', 'flagMessage', 'muteUser', 'pinMessage', 'selectReaction', 'reply', 'retry', 'quotedReply', 'threadReply', 'unpinMessage'
+   */
   actionType: ActionType;
+  /**
+   * Title for action button.
+   */
   title: string;
+  /**
+   * Element to render as icon for action button.
+   */
   icon?: React.ReactElement;
+  /**
+   * Styles for underlying Text component of action title.
+   */
   titleStyle?: StyleProp<TextStyle>;
 };
 
@@ -50,6 +66,7 @@ const MessageActionListItemWithContext = <
   props: MessageActionListItemProps<StreamChatGenerics>,
 ) => {
   const { action, actionType, icon, index, length, title, titleStyle } = props;
+  const { vw } = useViewport();
 
   const {
     theme: {
@@ -65,6 +82,9 @@ const MessageActionListItemWithContext = <
       <Animated.View
         style={[
           styles.row,
+          {
+            minWidth: vw(65),
+          },
           index !== length - 1 ? { ...styles.bottomBorder, borderBottomColor: border } : {},
           animatedStyle,
           messageActions.actionContainer,
@@ -72,7 +92,7 @@ const MessageActionListItemWithContext = <
         testID={`${actionType}-list-item`}
       >
         <View style={messageActions.icon}>{icon}</View>
-        <Text style={[styles.titleStyle, messageActions.title, { color: black }, titleStyle]}>
+        <Text style={[styles.titleStyle, { color: black }, titleStyle, messageActions.title]}>
           {title}
         </Text>
       </Animated.View>
@@ -114,7 +134,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    minWidth: vw(65),
     paddingHorizontal: 20,
     paddingVertical: 10,
   },

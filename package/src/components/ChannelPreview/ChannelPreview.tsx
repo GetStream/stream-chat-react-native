@@ -16,9 +16,9 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 export type ChannelPreviewPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
-  Pick<ChannelsContextValue<StreamChatGenerics>, 'Preview'> & {
+  Pick<ChannelsContextValue<StreamChatGenerics>, 'Preview' | 'forceUpdate'> & {
     /**
-     * The previewed channel
+     * Instance of Channel from stream-chat package.
      */
     channel: Channel<StreamChatGenerics>;
   };
@@ -32,7 +32,7 @@ const ChannelPreviewWithContext = <
 >(
   props: ChannelPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { channel, client, Preview } = props;
+  const { channel, client, forceUpdate: channelListForceUpdate, Preview } = props;
 
   const [lastMessage, setLastMessage] = useState<
     | ReturnType<ChannelState<StreamChatGenerics>['formatMessage']>
@@ -70,7 +70,7 @@ const ChannelPreviewWithContext = <
 
     const newUnreadCount = channel.countUnread();
     setUnread(newUnreadCount);
-  }, [channelLastMessageString]);
+  }, [channelLastMessageString, channelListForceUpdate]);
 
   useEffect(() => {
     const handleNewMessageEvent = (event: Event<StreamChatGenerics>) => {
@@ -126,7 +126,7 @@ export const ChannelPreview = <
   props: ChannelPreviewProps<StreamChatGenerics>,
 ) => {
   const { client } = useChatContext<StreamChatGenerics>();
-  const { Preview } = useChannelsContext<StreamChatGenerics>();
+  const { forceUpdate, Preview } = useChannelsContext<StreamChatGenerics>();
 
-  return <ChannelPreviewWithContext {...{ client, Preview }} {...props} />;
+  return <ChannelPreviewWithContext {...{ client, forceUpdate, Preview }} {...props} />;
 };

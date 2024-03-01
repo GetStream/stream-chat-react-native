@@ -2,13 +2,16 @@ import React from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import dayjs from 'dayjs';
-import { Avatar, Spinner, useTheme, vw } from 'stream-chat-react-native';
+import calendar from 'dayjs/plugin/calendar';
+import { Avatar, Spinner, useTheme, useViewport } from 'stream-chat-react-native';
 
 import { MESSAGE_SEARCH_LIMIT } from '../../hooks/usePaginatedSearchedMessages';
 
 import type { MessageResponse } from 'stream-chat';
 
 import type { StreamChatGenerics } from '../../types';
+
+dayjs.extend(calendar);
 
 const styles = StyleSheet.create({
   contentContainer: { flexGrow: 1 },
@@ -43,9 +46,6 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
   },
   title: { fontSize: 14, fontWeight: '700' },
-  titleContainer: {
-    maxWidth: vw(80) - 16 - 40,
-  },
 });
 
 export type MessageSearchListProps = {
@@ -73,6 +73,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
         colors: { black, border, grey, white_snow },
       },
     } = useTheme();
+    const { vw } = useViewport();
     const navigation = useNavigation();
 
     if (loading && !refreshing && (!messages || messages.length === 0)) {
@@ -82,7 +83,9 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
         </View>
       );
     }
-    if (!messages && !refreshing) return null;
+    if (!messages && !refreshing) {
+      return null;
+    }
 
     return (
       <>
@@ -134,7 +137,10 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
               />
               <View style={styles.flex}>
                 <View style={styles.row}>
-                  <Text numberOfLines={1} style={[styles.titleContainer, { color: black }]}>
+                  <Text
+                    numberOfLines={1}
+                    style={[styles.titleContainer, { color: black, maxWidth: vw(80) - 16 - 40 }]}
+                  >
                     <Text style={styles.title}>{`${item.user?.name} `}</Text>
                     {!!item.channel?.name && (
                       <Text style={styles.detailsText}>

@@ -10,7 +10,7 @@ import type {
   SuggestionUser,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import type { Emoji } from '../../emoji-data/compiled';
+import type { Emoji } from '../../emoji-data';
 import { AtMentions } from '../../icons/AtMentions';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { Avatar } from '../Avatar/Avatar';

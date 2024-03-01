@@ -3,7 +3,7 @@ import { Rect } from 'react-native-svg';
 
 import { IconProps, RootPath, RootSvg } from './utils/base';
 
-export const Share: React.FC<IconProps> = (props) => (
+export const Share = (props: IconProps) => (
   <RootSvg {...props}>
     <RootPath
       d='M5.306 9.695a1.043 1.043 0 001.476 0l5.219-5.225 5.218 5.224a1.043 1.043 0 001.476 0 1.046 1.046 0 000-1.478l-5.904-5.91a1.04 1.04 0 00-.8-.304 1.04 1.04 0 00-.781.305l-5.904 5.91a1.046 1.046 0 000 1.478z'

@@ -52,7 +52,9 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   const navigation = useNavigation<ChannelScreenNavigationProp>();
   const typing = useTypingString();
 
-  if (!channel || !chatClient) return null;
+  if (!channel || !chatClient) {
+    return null;
+  }
 
   const isOneOnOneConversation =
     channel &&
@@ -65,9 +67,12 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
         if (!navigation.canGoBack()) {
           // if no previous screen was present in history, go to the list screen
           // this can happen when opened through push notification
-          navigation.navigate('ChatScreen');
+          navigation.reset({ index: 0, routes: [{ name: 'MessagingScreen' }] });
+        } else {
+          navigation.goBack();
         }
       }}
+      // eslint-disable-next-line react/no-unstable-nested-components
       RightContent={() => (
         <TouchableOpacity
           onPress={() => {
@@ -118,7 +123,9 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
 
   useEffect(() => {
     const initChannel = async () => {
-      if (!chatClient || !channelId) return;
+      if (!chatClient || !channelId) {
+        return;
+      }
 
       const newChannel = chatClient?.channel('messaging', channelId);
       if (!newChannel?.initialized) {
@@ -134,7 +141,9 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     setSelectedThread(undefined);
   });
 
-  if (!channel || !chatClient) return null;
+  if (!channel || !chatClient) {
+    return null;
+  }
 
   return (
     <View style={[styles.flex, { backgroundColor: white, paddingBottom: bottom }]}>

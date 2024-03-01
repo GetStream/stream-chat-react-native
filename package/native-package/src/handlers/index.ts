@@ -8,3 +8,4 @@ export * from './takePhoto';
 export * from './Sound';
 export * from './Video';
 export * from './oniOS14GalleryLibrarySelectionChange';
+export * from './iOS14RefreshGallerySelection';

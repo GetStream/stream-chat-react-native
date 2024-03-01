@@ -65,7 +65,7 @@ const filters = {
   members: { $in: ['ron'] },
   type: 'messaging',
 };
-const sort: ChannelSort<StreamChatGenerics> = { last_message_at: -1 };
+const sort: ChannelSort<StreamChatGenerics> = { last_updated: -1 };
 
 /**
  * Start playing with streami18n instance here:
@@ -103,6 +103,8 @@ type ChannelScreenProps = {
   navigation: StackNavigationProp<NavigationParamsList, 'Channel'>;
 };
 
+const EmptyHeader = () => <></>;
+
 const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
   const { channel, setThread, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
@@ -113,11 +115,11 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
     navigation.setOptions({
       gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
     });
-  }, [overlay]);
+  }, [overlay, navigation]);
 
   useEffect(() => {
     setTopInset(headerHeight);
-  }, [headerHeight]);
+  }, [headerHeight, setTopInset]);
 
   if (channel === undefined) {
     return null;
@@ -128,8 +130,8 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
       <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread}>
         <View style={{ flex: 1 }}>
           <MessageList<StreamChatGenerics>
-            onThreadSelect={(thread) => {
-              setThread(thread);
+            onThreadSelect={(selectedThread) => {
+              setThread(selectedThread);
               if (channel?.id) {
                 navigation.navigate('Thread');
               }
@@ -156,9 +158,11 @@ const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation }) => {
     navigation.setOptions({
       gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
     });
-  }, [overlay]);
+  }, [overlay, navigation]);
 
-  if (!channel) return null;
+  if (!channel) {
+    return null;
+  }
 
   return (
     <SafeAreaView>
@@ -244,7 +248,7 @@ const App = () => {
                       name='Channel'
                       options={() => ({
                         headerBackTitle: 'Back',
-                        headerRight: () => <></>,
+                        headerRight: EmptyHeader,
                         headerTitle: channel?.data?.name,
                       })}
                     />
@@ -256,7 +260,7 @@ const App = () => {
                     <Stack.Screen
                       component={ThreadScreen}
                       name='Thread'
-                      options={() => ({ headerLeft: () => <></> })}
+                      options={() => ({ headerLeft: EmptyHeader })}
                     />
                   </Stack.Navigator>
                 )}

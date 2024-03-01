@@ -9,7 +9,7 @@ export type IconProps = Partial<SvgProps> &
     width?: number;
   };
 
-export const RootSvg: React.FC<IconProps> = (props) => {
+export const RootSvg = (props: IconProps) => {
   const { children, height = 24, viewBox = '0 0 24 24', width = 24 } = props;
   return (
     <Svg
@@ -30,7 +30,7 @@ export type RootPathProps = Pick<PathProps, 'd'> & {
   pathOpacity?: PathProps['opacity'];
 };
 
-export const RootPath: React.FC<RootPathProps> = (props) => {
+export const RootPath = (props: RootPathProps) => {
   const {
     theme: {
       colors: { black },

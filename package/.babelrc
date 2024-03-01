@@ -23,7 +23,7 @@
         "contextSeparator": "__",
         "defaultContexts": [""],
         "defaultNS": "en",
-        "locales": ["en", "fr", "hi", "it", "nl", "ru", "tr"],
+        "locales": ["en", "es", "fr", "he", "hi", "it", "ja", "ko", "nl", "ru", "tr"],
         "jsonSpace": 4,
         "keySeparator": null,
         "nsSeparator": null,

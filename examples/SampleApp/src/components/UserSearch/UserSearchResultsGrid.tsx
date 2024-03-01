@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
-import { vw } from 'stream-chat-react-native';
+import { useViewport } from 'stream-chat-react-native';
 
 import { UserGridItem } from './UserGridItem';
 
@@ -9,8 +9,6 @@ import { EmptySearchState } from '../../icons/EmptySearchState';
 import type { UserResponse } from 'stream-chat';
 
 import type { StreamChatGenerics } from '../../types';
-
-const totalUserSpace = vw(100) - 56; // 36 = outside margin 8 * 2 + inner padding 20 * 2;
 
 const styles = StyleSheet.create({
   container: {
@@ -47,48 +45,54 @@ export const UserSearchResultsGrid: React.FC<UserSearchResultsGridProps> = ({
   onPress,
   results,
   searchText,
-}) => (
-  <View style={styles.container}>
-    {loading && results.length === 0 && searchText === '' ? (
-      <ActivityIndicator size='small' />
-    ) : (
-      <FlatList
-        contentContainerStyle={styles.contentContainer}
-        data={results}
-        keyboardDismissMode='interactive'
-        keyboardShouldPersistTaps='handled'
-        keyExtractor={(item, index) => `${item.id}-${index}`}
-        ListEmptyComponent={() => (
-          <View style={styles.emptyResultIndicator}>
-            <EmptySearchState height={124} width={124} />
-            <Text>No user matches these keywords</Text>
-            <Text>{loading ? 'true' : 'false'}</Text>
-            <Text>{results.length}</Text>
-          </View>
-        )}
-        numColumns={gridSize}
-        onEndReached={loadMore}
-        renderItem={({ index, item: user }) => (
-          <View
-            style={[
-              styles.userGridItemContainer,
-              {
-                marginLeft: index % gridSize !== 0 ? (totalUserSpace - 64 * gridSize) / 3 : 0,
-              },
-            ]}
-          >
-            <UserGridItem
-              onPress={() => {
-                onPress(user);
-              }}
-              removeButton={false}
-              user={user}
-            />
-          </View>
-        )}
-        showsVerticalScrollIndicator={false}
-        style={styles.flex}
-      />
-    )}
-  </View>
-);
+}) => {
+  const { vw } = useViewport();
+  const totalUserSpace = vw(100) - 56; // 36 = outside margin 8 * 2 + inner padding 20 * 2;
+
+  return (
+    <View style={styles.container}>
+      {loading && results.length === 0 && searchText === '' ? (
+        <ActivityIndicator size='small' />
+      ) : (
+        <FlatList
+          contentContainerStyle={styles.contentContainer}
+          data={results}
+          keyboardDismissMode='interactive'
+          keyboardShouldPersistTaps='handled'
+          keyExtractor={(item, index) => `${item.id}-${index}`}
+          // eslint-disable-next-line react/no-unstable-nested-components
+          ListEmptyComponent={() => (
+            <View style={styles.emptyResultIndicator}>
+              <EmptySearchState height={124} width={124} />
+              <Text>No user matches these keywords</Text>
+              <Text>{loading ? 'true' : 'false'}</Text>
+              <Text>{results.length}</Text>
+            </View>
+          )}
+          numColumns={gridSize}
+          onEndReached={loadMore}
+          renderItem={({ index, item: user }) => (
+            <View
+              style={[
+                styles.userGridItemContainer,
+                {
+                  marginLeft: index % gridSize !== 0 ? (totalUserSpace - 64 * gridSize) / 3 : 0,
+                },
+              ]}
+            >
+              <UserGridItem
+                onPress={() => {
+                  onPress(user);
+                }}
+                removeButton={false}
+                user={user}
+              />
+            </View>
+          )}
+          showsVerticalScrollIndicator={false}
+          style={styles.flex}
+        />
+      )}
+    </View>
+  );
+};

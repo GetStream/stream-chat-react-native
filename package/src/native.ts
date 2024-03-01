@@ -33,11 +33,15 @@ export let getLocalAssetUri: GetLocalAssetUri = fail;
 type OniOS14LibrarySelectionChange = (callback: () => void) => { unsubscribe: () => void };
 export let oniOS14GalleryLibrarySelectionChange: OniOS14LibrarySelectionChange = fail;
 
+type iOS14RefreshGallerySelection = () => Promise<void>;
+export let iOS14RefreshGallerySelection: iOS14RefreshGallerySelection = fail;
+
 type GetPhotos = ({ after, first }: { first: number; after?: string }) =>
   | Promise<{
       assets: Array<Omit<Asset, 'source'> & { source: 'picker' }>;
       endCursor: string;
       hasNextPage: boolean;
+      iOSLimited: boolean;
     }>
   | never;
 export let getPhotos: GetPhotos = fail;
@@ -83,8 +87,12 @@ type Photo =
   | (Omit<Asset, 'source'> & {
       cancelled: false;
       source: 'camera';
+      askToOpenSettings?: boolean;
     })
-  | { cancelled: true };
+  | {
+      cancelled: true;
+      askToOpenSettings?: boolean;
+    };
 type TakePhoto = (options: { compressImageQuality?: number }) => Promise<Photo> | never;
 export let takePhoto: TakePhoto = fail;
 
@@ -218,6 +226,7 @@ type Handlers = {
   FlatList?: typeof DefaultFlatList;
   getLocalAssetUri?: GetLocalAssetUri;
   getPhotos?: GetPhotos;
+  iOS14RefreshGallerySelection?: iOS14RefreshGallerySelection;
   NetInfo?: NetInfo;
   oniOS14GalleryLibrarySelectionChange?: OniOS14LibrarySelectionChange;
   pickDocument?: PickDocument;
@@ -253,6 +262,10 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 
   if (handlers.getPhotos) {
     getPhotos = handlers.getPhotos;
+  }
+
+  if (handlers.iOS14RefreshGallerySelection) {
+    iOS14RefreshGallerySelection = handlers.iOS14RefreshGallerySelection;
   }
 
   if (handlers.oniOS14GalleryLibrarySelectionChange) {

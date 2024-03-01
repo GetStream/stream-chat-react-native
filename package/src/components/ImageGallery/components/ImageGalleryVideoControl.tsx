@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
 
 export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlProps> = React.memo(
   (props) => {
-    const { duration, onPlayPause, paused, progress } = props;
+    const { duration, onPlayPause, paused, progress, videoRef } = props;
 
     const videoDuration = duration
       ? duration / 3600 >= 1
@@ -60,14 +60,19 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
       },
     } = useTheme();
 
+    const handlePlayPause = async () => {
+      if (progress === 1) {
+        // For expo CLI
+        if (videoRef.current?.setPositionAsync) {
+          await videoRef.current.setPositionAsync(0);
+        }
+      }
+      onPlayPause();
+    };
+
     return (
       <View style={[styles.videoContainer, videoContainer]}>
-        <TouchableOpacity
-          accessibilityLabel='Play Pause Button'
-          onPress={() => {
-            onPlayPause();
-          }}
-        >
+        <TouchableOpacity accessibilityLabel='Play Pause Button' onPress={handlePlayPause}>
           <View style={[styles.roundedView, roundedView, { backgroundColor: static_white }]}>
             {paused ? (
               <Play accessibilityLabel='Play Icon' height={24} pathFill={static_black} width={24} />

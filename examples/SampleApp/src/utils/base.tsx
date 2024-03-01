@@ -10,7 +10,7 @@ export type IconProps = Partial<SvgProps> &
     height?: number;
     width?: number;
   };
-export const RootSvg: React.FC<IconProps> = (props) => {
+export const RootSvg = (props: IconProps) => {
   const { backgroundFill = 'none', children, height = 24, width = 24 } = props;
   return (
     <Svg fill={backgroundFill} height={height} viewBox='0 0 24 24' width={width} {...props}>

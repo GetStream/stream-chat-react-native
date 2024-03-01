@@ -28,7 +28,7 @@ import {
   User,
   UserMinus,
   useTheme,
-  vh,
+  useViewport,
 } from 'stream-chat-react-native';
 
 import { useAppOverlayContext } from '../context/AppOverlayContext';
@@ -96,9 +96,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const screenHeight = vh(100);
-const halfScreenHeight = vh(50);
-
 export type UserInfoOverlayProps = {
   overlayOpacity: Animated.SharedValue<number>;
   visible?: boolean;
@@ -111,6 +108,10 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
   const { client } = useChatContext<StreamChatGenerics>();
   const { setData } = useBottomSheetOverlayContext();
   const { data, reset } = useUserInfoOverlayContext();
+  const { vh } = useViewport();
+
+  const screenHeight = vh(100);
+  const halfScreenHeight = vh(50);
 
   const { channel, member, navigation } = data || {};
 
@@ -153,6 +154,7 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
       Keyboard.dismiss();
     }
     fadeScreen(!!visible);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
   const onPan = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
@@ -226,7 +228,9 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
     return null;
   }
 
-  if (!channel) return null;
+  if (!channel) {
+    return null;
+  }
 
   const channelCreatorId =
     channel.data && (channel.data.created_by_id || (channel.data.created_by as UserResponse)?.id);
@@ -286,7 +290,9 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                       <TapGestureHandler
                         onHandlerStateChange={async ({ nativeEvent: { state } }) => {
                           if (state === State.END) {
-                            if (!client.user?.id) return;
+                            if (!client.user?.id) {
+                              return;
+                            }
 
                             const members = [client.user.id, member.user?.id || ''];
 
@@ -328,7 +334,9 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                       <TapGestureHandler
                         onHandlerStateChange={async ({ nativeEvent: { state } }) => {
                           if (state === State.END) {
-                            if (!client.user?.id) return;
+                            if (!client.user?.id) {
+                              return;
+                            }
 
                             const members = [client.user.id, member.user?.id || ''];
 

@@ -170,7 +170,9 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
    * Opens confirmation sheet for deleting the conversation
    */
   const openDeleteConversationConfirmationSheet = () => {
-    if (!chatClient?.user?.id) return;
+    if (!chatClient?.user?.id) {
+      return;
+    }
     setData({
       confirmText: 'DELETE',
       onConfirm: deleteConversation,
@@ -190,13 +192,15 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
       index: 0,
       routes: [
         {
-          name: 'ChatScreen',
+          name: 'MessagingScreen',
         },
       ],
     });
   };
 
-  if (!user) return null;
+  if (!user) {
+    return null;
+  }
 
   return (
     <SafeAreaView style={[{ backgroundColor: white }, styles.container]}>
