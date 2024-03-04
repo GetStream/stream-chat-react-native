@@ -753,7 +753,7 @@ const ChannelWithContext = <
 
   const copyChannelState = useRef(
     throttle(
-      () => {
+      (onComplete: (() => void) | undefined = undefined) => {
         setLoading(false);
         if (channel) {
           setMembers({ ...channel.state.members });
@@ -762,6 +762,7 @@ const ChannelWithContext = <
           setTyping({ ...channel.state.typing });
           setWatcherCount(channel.state.watcher_count);
           setWatchers({ ...channel.state.watchers });
+          onComplete?.();
         }
       },
       stateUpdateThrottleInterval,
@@ -891,9 +892,11 @@ const ChannelWithContext = <
         const hasLatestMessages = channel.state.latestMessages.length > 0;
         channel.state.setIsUpToDate(hasLatestMessages);
         setHasNoMoreRecentMessagesToLoad(hasLatestMessages);
-        copyChannelState();
-        restartSetsMergeFuncRef.current();
-        onAfterQueryCall?.();
+        copyChannelState(() => {
+          // only after the debounce interval completes, we will merge the sets and set any other states
+          restartSetsMergeFuncRef.current();
+          onAfterQueryCall?.();
+        });
       } catch (err) {
         if (err instanceof Error) {
           setError(err);
