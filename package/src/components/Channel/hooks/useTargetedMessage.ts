@@ -3,6 +3,11 @@ import { useEffect, useRef, useState } from 'react';
 export const useTargetedMessage = (messageId?: string) => {
   const clearTargetedMessageCall = useRef<ReturnType<typeof setTimeout>>();
   const [targetedMessage, setTargetedMessage] = useState(messageId);
+  const prevTargetedMessageRef = useRef<string>();
+
+  useEffect(() => {
+    prevTargetedMessageRef.current = targetedMessage;
+  }, [targetedMessage]);
 
   useEffect(() => {
     clearTargetedMessageCall.current = setTimeout(() => {
@@ -25,6 +30,7 @@ export const useTargetedMessage = (messageId?: string) => {
   });
 
   return {
+    prevTargetedMessage: prevTargetedMessageRef.current,
     setTargetedMessage: setTargetedMessageTimeoutRef.current,
     targetedMessage,
   };

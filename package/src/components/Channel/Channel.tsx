@@ -600,7 +600,7 @@ const ChannelWithContext = <
    */
   const [hasNoMoreRecentMessagesToLoad, setHasNoMoreRecentMessagesToLoad] = useState(true);
 
-  const { setTargetedMessage, targetedMessage } = useTargetedMessage();
+  const { prevTargetedMessage, setTargetedMessage, targetedMessage } = useTargetedMessage();
 
   /**
    * If we loaded a channel around message
@@ -718,7 +718,7 @@ const ChannelWithContext = <
       () => {
         if (channel) {
           clearInterval(mergeSetsIntervalRef.current);
-          setMessages([...channel.state.messages]);
+          setMessages(channel.state.messages);
           restartSetsMergeFuncRef.current();
         }
       },
@@ -753,7 +753,7 @@ const ChannelWithContext = <
 
   const copyChannelState = useRef(
     throttle(
-      (onComplete: (() => void) | undefined = undefined) => {
+      () => {
         setLoading(false);
         if (channel) {
           setMembers({ ...channel.state.members });
@@ -762,7 +762,6 @@ const ChannelWithContext = <
           setTyping({ ...channel.state.typing });
           setWatcherCount(channel.state.watcher_count);
           setWatchers({ ...channel.state.watchers });
-          onComplete?.();
         }
       },
       stateUpdateThrottleInterval,
@@ -787,6 +786,8 @@ const ChannelWithContext = <
   // subscribe to the generic all channel event
   useEffect(() => {
     const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
+      const ignorableEvents = ['user.watching.start', 'user.watching.stop'];
+      if (ignorableEvents.includes(event.type)) return;
       if (shouldSyncChannel) {
         const isTypingEvent = event.type === 'typing.start' || event.type === 'typing.stop';
         if (!isTypingEvent) {
@@ -805,6 +806,7 @@ const ChannelWithContext = <
         // only update channel state if the events are not the previously subscribed useEffect's subscription events
         if (
           channel &&
+          channel.initialized &&
           event.type !== 'message.new' &&
           event.type !== 'message.read' &&
           event.type !== 'typing.start' &&
@@ -861,8 +863,8 @@ const ChannelWithContext = <
         const scrollToMessageIndex = scrollToMessageId
           ? currentMessages.findIndex(({ id }) => id === scrollToMessageId)
           : -1;
-
         if (channel && scrollToMessageIndex !== -1) {
+          copyChannelState.cancel();
           // We assume that on average user sees 5 messages on screen
           // We dont want new renders to happen while scrolling to the targeted message
           // hence we limit the number of messages to be rendered after the targeted message to 5 - 1 = 4
@@ -870,21 +872,19 @@ const ChannelWithContext = <
           // the previous latest message set will be thrown away as we cannot merge it with the current message set after the target message is set
           const limitAfter = 4;
           const currentLength = currentMessages.length;
-          if (scrollToMessageIndex !== -1) {
-            const noOfMessagesAfter = currentLength - scrollToMessageIndex - 1;
-            // number of messages are over the limit, limit the length of messages
-            if (noOfMessagesAfter > limitAfter) {
-              const endIndex = scrollToMessageIndex + limitAfter;
-              channel.state.clearMessages();
-              channel.state.messages = currentMessages.slice(0, endIndex + 1);
-              splitLatestCurrentMessageSetRef.current();
-              const restOfMessages = currentMessages.slice(endIndex + 1);
-              if (hadCurrentLatestMessages) {
-                const latestSet = channel.state.messageSets.find((set) => set.isLatest);
-                if (latestSet) {
-                  latestSet.messages = restOfMessages;
-                  hasOverlappingRecentMessagesRef.current = true;
-                }
+          const noOfMessagesAfter = currentLength - scrollToMessageIndex - 1;
+          // number of messages are over the limit, limit the length of messages
+          if (noOfMessagesAfter > limitAfter) {
+            const endIndex = scrollToMessageIndex + limitAfter;
+            channel.state.clearMessages();
+            channel.state.messages = currentMessages.slice(0, endIndex + 1);
+            splitLatestCurrentMessageSetRef.current();
+            const restOfMessages = currentMessages.slice(endIndex + 1);
+            if (hadCurrentLatestMessages) {
+              const latestSet = channel.state.messageSets.find((set) => set.isLatest);
+              if (latestSet) {
+                latestSet.messages = restOfMessages;
+                hasOverlappingRecentMessagesRef.current = true;
               }
             }
           }
@@ -892,11 +892,12 @@ const ChannelWithContext = <
         const hasLatestMessages = channel.state.latestMessages.length > 0;
         channel.state.setIsUpToDate(hasLatestMessages);
         setHasNoMoreRecentMessagesToLoad(hasLatestMessages);
-        copyChannelState(() => {
-          // only after the debounce interval completes, we will merge the sets and set any other states
-          restartSetsMergeFuncRef.current();
-          onAfterQueryCall?.();
-        });
+        copyChannelState();
+        if (scrollToMessageIndex !== -1) {
+          // since we need to scroll after immediately do this without throttle
+          copyChannelState.flush();
+        }
+        onAfterQueryCall?.();
       } catch (err) {
         if (err instanceof Error) {
           setError(err);
@@ -956,7 +957,11 @@ const ChannelWithContext = <
           await loadLatestMessagesRef.current();
         }
       },
-      undefined,
+      () => {
+        if (unreadMessageIdToScrollTo) {
+          restartSetsMergeFuncRef.current();
+        }
+      },
       () => unreadMessageIdToScrollTo,
     );
   };
@@ -997,11 +1002,20 @@ const ChannelWithContext = <
         },
         () => {
           if (messageIdToLoadAround) {
+            clearInterval(mergeSetsIntervalRef.current); // do not merge sets as we will scroll/highlight to the message
             setTargetedMessage(messageIdToLoadAround);
           }
         },
         messageIdToLoadAround,
       );
+
+  useEffect(() => {
+    if (!targetedMessage && prevTargetedMessage) {
+      // we cleared the merge sets interval to wait for the targeted message to be set
+      // now restart it since its done
+      restartSetsMergeFuncRef.current();
+    }
+  }, [targetedMessage]);
 
   /**
    * @deprecated use loadChannelAroundMessage instead
@@ -1091,7 +1105,7 @@ const ChannelWithContext = <
       const currentLength = channel.state.messages.length || 0;
       const didMerge = mergeOverlappingMessageSetsRef.current(true);
       if (didMerge && channel.state.messages.length !== currentLength) {
-        setMessages([...channel.state.messages]);
+        setMessages(channel.state.messages);
       }
     }, 1000);
   });
