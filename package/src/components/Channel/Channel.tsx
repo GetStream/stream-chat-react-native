@@ -1064,7 +1064,7 @@ const ChannelWithContext = <
    */
   const mergeOverlappingMessageSetsRef = useRef((limitToMaxRenderPerBatch = false) => {
     if (hasOverlappingRecentMessagesRef.current) {
-      const limit = 30; // 30 is the maxToRenderPerBatch
+      const limit = 5; // 5 is the load to recent limit, a larger value seems to cause jumpiness in some devices..
       // merge current and latest sets
       const latestMessageSet = channel.state.messageSets.find((set) => set.isLatest);
       const currentMessageSet = channel.state.messageSets.find((set) => set.isCurrent);
@@ -1098,16 +1098,17 @@ const ChannelWithContext = <
   );
 
   // if we had split the latest and current message set, we try to merge them back
+  // temporarily commented out the interval as it was causing issues with jankiness during scrolling
   const restartSetsMergeFuncRef = useRef(() => {
     clearInterval(mergeSetsIntervalRef.current);
     if (!hasOverlappingRecentMessagesRef.current) return;
-    mergeSetsIntervalRef.current = setInterval(() => {
-      const currentLength = channel.state.messages.length || 0;
-      const didMerge = mergeOverlappingMessageSetsRef.current(true);
-      if (didMerge && channel.state.messages.length !== currentLength) {
-        setMessages(channel.state.messages);
-      }
-    }, 1000);
+    // mergeSetsIntervalRef.current = setInterval(() => {
+    //   const currentLength = channel.state.messages.length || 0;
+    //   const didMerge = mergeOverlappingMessageSetsRef.current(true);
+    //   if (didMerge && channel.state.messages.length !== currentLength) {
+    //     setMessages(channel.state.messages);
+    //   }
+    // }, 1000);
   });
 
   /**
