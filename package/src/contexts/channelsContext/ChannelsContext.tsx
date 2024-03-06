@@ -199,7 +199,7 @@ export type ChannelsContextValue<
    *
    * **Default** [ChannelPreviewTitle](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelPreviewTitle.tsx)
    */
-  PreviewTitle?: React.ComponentType<ChannelPreviewTitleProps>;
+  PreviewTitle?: React.ComponentType<ChannelPreviewTitleProps<StreamChatGenerics>>;
   /**
    * Custom UI component to render preview avatar.
    *
