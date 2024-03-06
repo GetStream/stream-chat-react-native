@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { ChannelPreviewProps } from './ChannelPreview';
+
 import type { ChannelsContextValue } from '../../contexts/channelsContext/ChannelsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
@@ -8,12 +10,13 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 
 export type ChannelPreviewUnreadCountProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChannelsContextValue<StreamChatGenerics>, 'maxUnreadCount'> & {
-  /**
-   * Number of unread messages on the channel
-   */
-  unread?: number;
-};
+> = Pick<ChannelsContextValue<StreamChatGenerics>, 'maxUnreadCount'> &
+  Pick<ChannelPreviewProps<StreamChatGenerics>, 'channel'> & {
+    /**
+     * Number of unread messages on the channel
+     */
+    unread?: number;
+  };
 
 export const ChannelPreviewUnreadCount = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
