@@ -14,7 +14,7 @@ const requestNotificationPermission = async () => {
   const isEnabled =
     authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-  console.log('Permission Status', { authStatus, isEnabled });
+  return isEnabled;
 };
 
 messaging().setBackgroundMessageHandler(async (remoteMessage) => {
@@ -79,6 +79,7 @@ export const useChatClient = () => {
    * @returns function to unsubscribe from listeners
    */
   const loginUser = async (config: LoginConfig) => {
+    console.log('loginUser');
     // unsubscribe from previous push listeners
     unsubscribePushListenersRef.current?.();
     const client = StreamChat.getInstance<StreamChatGenerics>(config.apiKey, {
@@ -92,24 +93,36 @@ export const useChatClient = () => {
       image: config.userImage,
       name: config.userName,
     };
-    const connectedUser = await client.connectUser(user, config.userToken);
-    const initialUnreadCount = connectedUser?.me?.total_unread_count;
-    setUnreadCount(initialUnreadCount);
-    await AsyncStore.setItem('@stream-rn-sampleapp-login-config', config);
 
-    const permissionAuthStatus = await messaging().hasPermission();
-    const isEnabled =
-      permissionAuthStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-      permissionAuthStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    const isPermissionEnabled = await requestNotificationPermission();
 
-    if (isEnabled) {
+    console.log({ isPermissionEnabled });
+    if (isPermissionEnabled) {
       // Register FCM token with stream chat server.
       const token = await messaging().getToken();
-      await client.addDevice(token, 'firebase');
+      const push_provider = 'firebase';
+      const push_provider_name = 'rn-fcm';
+      client.setLocalDevice({
+        id: token,
+        push_provider,
+        push_provider_name,
+      });
+      console.log({ token });
+      await AsyncStore.setItem('@current_push_token', token);
 
-      // Listen to new FCM tokens and register them with stream chat server.
+      const removeOldToken = async () => {
+        const oldToken = await AsyncStore.getItem<string>('@current_push_token', null);
+        if (oldToken !== null) {
+          await client.removeDevice(oldToken);
+        }
+      };
+
       const unsubscribeTokenRefresh = messaging().onTokenRefresh(async (newToken) => {
-        await client.addDevice(newToken, 'firebase');
+        await Promise.all([
+          removeOldToken(),
+          client.addDevice(newToken, push_provider, user.id, push_provider_name),
+          AsyncStore.setItem('@current_push_token', token),
+        ]);
       });
       // show notifications when on foreground
       const unsubscribeForegroundMessageReceive = messaging().onMessage(async (remoteMessage) => {
@@ -149,6 +162,10 @@ export const useChatClient = () => {
         unsubscribeForegroundMessageReceive();
       };
     }
+    const connectedUser = await client.connectUser(user, config.userToken);
+    const initialUnreadCount = connectedUser?.me?.total_unread_count;
+    setUnreadCount(initialUnreadCount);
+    await AsyncStore.setItem('@stream-rn-sampleapp-login-config', config);
     setChatClient(client);
   };
 
@@ -189,7 +206,6 @@ export const useChatClient = () => {
 
   useEffect(() => {
     const run = async () => {
-      await requestNotificationPermission();
       await switchUser();
     };
     run();
