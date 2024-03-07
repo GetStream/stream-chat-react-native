@@ -13,6 +13,10 @@ export const selectReactionsForMessages = (
     .map((name) => `'${name}', b.${name}`)
     .join(', ');
 
+  QuickSqliteClient.logger?.('info', 'selectReactionsForMessages', {
+    messageIds,
+  });
+
   const result = QuickSqliteClient.executeSql(
     `SELECT
       json_object(

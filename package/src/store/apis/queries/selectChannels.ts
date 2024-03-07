@@ -15,6 +15,10 @@ export const selectChannels = ({
       : undefined,
   );
 
+  QuickSqliteClient.logger?.('info', 'selectChannels', {
+    channelIds,
+  });
+
   const result = QuickSqliteClient.executeSql.apply(null, query);
 
   if (channelIds) {

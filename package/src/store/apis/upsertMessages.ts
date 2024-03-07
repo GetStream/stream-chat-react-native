@@ -5,7 +5,6 @@ import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
 import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
-import type { PreparedQueries } from '../types';
 
 export const upsertMessages = ({
   flush = true,
@@ -14,26 +13,37 @@ export const upsertMessages = ({
   messages: MessageResponse[];
   flush?: boolean;
 }) => {
-  const usersToUpsert: PreparedQueries[] = [];
-  const messagesToUpsert: PreparedQueries[] = [];
-  const reactionsToUpsert: PreparedQueries[] = [];
+  const storableMessages: Array<ReturnType<typeof mapMessageToStorable>> = [];
+  const storableUsers: Array<ReturnType<typeof mapUserToStorable>> = [];
+  const storableReactions: Array<ReturnType<typeof mapReactionToStorable>> = [];
 
   messages?.forEach((message: MessageResponse) => {
-    messagesToUpsert.push(createUpsertQuery('messages', mapMessageToStorable(message)));
+    storableMessages.push(mapMessageToStorable(message));
     if (message.user) {
-      usersToUpsert.push(createUpsertQuery('users', mapUserToStorable(message.user)));
+      storableUsers.push(mapUserToStorable(message.user));
     }
-
     [...(message.latest_reactions || []), ...(message.own_reactions || [])].forEach((r) => {
       if (r.user) {
-        usersToUpsert.push(createUpsertQuery('users', mapUserToStorable(r.user)));
+        storableUsers.push(mapUserToStorable(r.user));
       }
-
-      reactionsToUpsert.push(createUpsertQuery('reactions', mapReactionToStorable(r)));
+      storableReactions.push(mapReactionToStorable(r));
     });
   });
 
-  const finalQueries = [...messagesToUpsert, ...reactionsToUpsert, ...usersToUpsert];
+  const finalQueries = [
+    ...storableMessages.map((storableMessage) => createUpsertQuery('messages', storableMessage)),
+    ...storableUsers.map((storableUser) => createUpsertQuery('users', storableUser)),
+    ...storableReactions.map((storableReaction) =>
+      createUpsertQuery('reactions', storableReaction),
+    ),
+  ];
+
+  QuickSqliteClient.logger?.('info', 'upsertMessages', {
+    flush,
+    messages: storableMessages,
+    reactions: storableReactions,
+    users: storableUsers,
+  });
 
   if (flush) {
     QuickSqliteClient.executeSqlBatch(finalQueries);

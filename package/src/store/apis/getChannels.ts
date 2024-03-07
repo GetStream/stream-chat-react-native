@@ -7,6 +7,7 @@ import { selectChannels } from './queries/selectChannels';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { mapStorableToChannel } from '../mappers/mapStorableToChannel';
+import { QuickSqliteClient } from '../QuickSqliteClient';
 
 /**
  * Returns the list of channels with state enriched for given channel ids.
@@ -26,6 +27,7 @@ export const getChannels = <
   channelIds: string[];
   currentUserId: string;
 }): Omit<ChannelAPIResponse<StreamChatGenerics>, 'duration'>[] => {
+  QuickSqliteClient.logger?.('info', 'getChannels', { channelIds, currentUserId });
   const channels = selectChannels({ channelIds });
 
   const cidVsMembers = getMembers<StreamChatGenerics>({ channelIds });

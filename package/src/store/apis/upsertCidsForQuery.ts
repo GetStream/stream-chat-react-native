@@ -17,9 +17,17 @@ export const upsertCidsForQuery = ({
   sort?: ChannelSort;
 }) => {
   // Update the database only if the query is provided.
+  const cidsString = JSON.stringify(cids);
+  const id = convertFilterSortToQuery({ filters, sort });
   const query = createUpsertQuery('channelQueries', {
-    cids: JSON.stringify(cids),
-    id: convertFilterSortToQuery({ filters, sort }),
+    cids: cidsString,
+    id,
+  });
+
+  QuickSqliteClient.logger?.('info', 'upsertCidsForQuery', {
+    cids: cidsString,
+    flush,
+    id,
   });
 
   if (flush) {

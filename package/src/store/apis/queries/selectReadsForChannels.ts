@@ -10,6 +10,11 @@ export const selectReadsForChannels = (cids: string[]): TableRowJoinedUser<'read
   const userColumnNames = Object.keys(tables.users.columns)
     .map((name) => `'${name}', b.${name}`)
     .join(', ');
+
+  QuickSqliteClient.logger?.('info', 'selectReadsForChannels', {
+    cids,
+  });
+
   const result = QuickSqliteClient.executeSql(
     `SELECT
       json_object(

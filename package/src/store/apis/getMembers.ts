@@ -4,6 +4,7 @@ import { selectMembersForChannels } from './queries/selectMembersForChannels';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { mapStorableToMember } from '../mappers/mapStorableToMember';
+import { QuickSqliteClient } from '../QuickSqliteClient';
 
 export const getMembers = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -12,6 +13,7 @@ export const getMembers = <
 }: {
   channelIds: string[];
 }) => {
+  QuickSqliteClient.logger?.('info', 'getMembers', { channelIds });
   const memberRows = selectMembersForChannels(channelIds);
   const cidVsMembers: Record<string, ChannelMemberResponse<StreamChatGenerics>[]> = {};
   memberRows.forEach((member) => {

@@ -27,8 +27,13 @@ export const upsertChannels = ({
   // Update the database only if the query is provided.
   let queries: PreparedQueries[] = [];
 
+  const channelIds = channels.map((channel) => channel.channel.cid);
+
+  QuickSqliteClient.logger?.('info', 'upsertChannels', {
+    channelIds,
+  });
+
   if (filters || sort) {
-    const channelIds = channels.map((channel) => channel.channel.cid);
     queries = queries.concat(
       upsertCidsForQuery({
         cids: channelIds,

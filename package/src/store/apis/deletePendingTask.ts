@@ -6,6 +6,10 @@ export const deletePendingTask = ({ id }: { id: number }) => {
     id,
   });
 
+  QuickSqliteClient.logger?.('info', 'deletePendingTask', {
+    id,
+  });
+
   QuickSqliteClient.executeSql.apply(null, query);
 
   return [query];
