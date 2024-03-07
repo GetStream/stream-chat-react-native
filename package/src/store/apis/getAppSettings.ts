@@ -8,6 +8,9 @@ export const getAppSettings = ({
 }: {
   currentUserId: string;
 }): AppSettingsAPIResponse => {
+  QuickSqliteClient.logger?.('info', 'getAppSettings', {
+    currentUserId,
+  });
   const result = QuickSqliteClient.executeSql.apply(
     null,
     createSelectQuery('userSyncStatus', ['*'], {

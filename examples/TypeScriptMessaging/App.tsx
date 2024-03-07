@@ -13,6 +13,7 @@ import {
   MessageInput,
   MessageList,
   OverlayProvider,
+  QuickSqliteClient,
   Streami18n,
   Thread,
   ThreadContextValue,
@@ -52,6 +53,10 @@ const options = {
 };
 
 I18nManager.forceRTL(false);
+
+QuickSqliteClient.logger = (level, message, extraData) => {
+  console.log(level, `QuickSqliteClient: ${message}`, extraData);
+};
 
 const chatClient = StreamChat.getInstance<StreamChatGenerics>('q95x9hkbyd6p');
 const userToken =

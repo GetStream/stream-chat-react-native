@@ -8,6 +8,7 @@ export const getPendingTasks = (conditions: { messageId?: string } = {}) => {
     createdAt: 1,
   });
 
+  QuickSqliteClient.logger?.('info', 'getPendingTasks', { conditions });
   const result = QuickSqliteClient.executeSql.apply(null, query);
 
   return result.map((r: TableRowJoinedUser<'pendingTasks'>) => mapStorableToTask(r));

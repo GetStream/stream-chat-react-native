@@ -12,6 +12,10 @@ export const selectMembersForChannels = (cids: string[]): TableRowJoinedUser<'me
     .map((name) => `'${name}', b.${name}`)
     .join(', ');
 
+  QuickSqliteClient.logger?.('info', 'selectMembersForChannels', {
+    cids,
+  });
+
   const result = QuickSqliteClient.executeSql(
     `SELECT
       json_object(
