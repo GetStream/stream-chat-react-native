@@ -6,6 +6,11 @@ export const deleteChannel = ({ cid, flush = true }: { cid: string; flush?: bool
     cid,
   });
 
+  QuickSqliteClient.logger?.('info', 'deleteChannel', {
+    cid,
+    flush,
+  });
+
   if (flush) {
     QuickSqliteClient.executeSql.apply(null, query);
   }

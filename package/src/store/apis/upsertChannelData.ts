@@ -11,7 +11,12 @@ export const upsertChannelData = ({
   channel: ChannelResponse;
   flush?: boolean;
 }) => {
-  const query = createUpsertQuery('channels', mapChannelDataToStorable(channel));
+  const storableChannel = mapChannelDataToStorable(channel);
+  const query = createUpsertQuery('channels', storableChannel);
+  QuickSqliteClient.logger?.('info', 'upsertChannelData', {
+    channel: storableChannel,
+    flush,
+  });
   if (flush) {
     QuickSqliteClient.executeSqlBatch([query]);
   }

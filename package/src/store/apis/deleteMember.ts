@@ -17,6 +17,12 @@ export const deleteMember = ({
     userId: member.user_id,
   });
 
+  QuickSqliteClient.logger?.('info', 'deleteMember', {
+    cid,
+    flush,
+    userId: member.user_id,
+  });
+
   if (flush) {
     QuickSqliteClient.executeSql.apply(null, query);
   }

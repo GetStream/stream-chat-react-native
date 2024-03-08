@@ -17,20 +17,26 @@ export const upsertMembers = ({
 }) => {
   const queries: PreparedQueries[] = [];
 
+  const storableUsers: Array<ReturnType<typeof mapUserToStorable>> = [];
+  const storableMembers: Array<ReturnType<typeof mapMemberToStorable>> = [];
+
   members?.forEach((member) => {
     if (member.user) {
-      queries.push(createUpsertQuery('users', mapUserToStorable(member.user)));
+      const storableUser = mapUserToStorable(member.user);
+      storableUsers.push(storableUser);
+      queries.push(createUpsertQuery('users', storableUser));
     }
+    const storableMember = mapMemberToStorable({ cid, member });
+    storableMembers.push(storableMember);
 
-    queries.push(
-      createUpsertQuery(
-        'members',
-        mapMemberToStorable({
-          cid,
-          member,
-        }),
-      ),
-    );
+    queries.push(createUpsertQuery('members', storableMember));
+  });
+
+  QuickSqliteClient.logger?.('info', 'upsertMembers', {
+    cid,
+    flush,
+    storableMembers,
+    storableUsers,
   });
 
   if (flush) {

@@ -11,13 +11,12 @@ export const deleteReactionsForMessage = ({
   const query = createDeleteQuery('reactions', {
     messageId,
   });
+  console.log('deleteReactionsForMessage', {
+    flush,
+    messageId,
+  });
   if (flush) {
-    QuickSqliteClient.executeSql.apply(
-      null,
-      createDeleteQuery('reactions', {
-        messageId,
-      }),
-    );
+    QuickSqliteClient.executeSql.apply(null, query);
   }
 
   return [query];

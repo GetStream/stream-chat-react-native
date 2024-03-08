@@ -246,9 +246,9 @@ const CardWithContext = <
         <View style={[styles.cardFooter, footerStyle, stylesProp.cardFooter]}>
           <View
             style={[
-              authorNameFooterContainer,
               { backgroundColor: transparent },
               !uri ? { borderLeftColor: accent_blue, ...noURI } : {},
+              authorNameFooterContainer,
               stylesProp.authorNameFooterContainer,
             ]}
           >

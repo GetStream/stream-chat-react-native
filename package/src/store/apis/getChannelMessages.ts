@@ -7,6 +7,7 @@ import { selectReactionsForMessages } from './queries/selectReactionsForMessages
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { isBlockedMessage } from '../../utils/utils';
 import { mapStorableToMessage } from '../mappers/mapStorableToMessage';
+import { QuickSqliteClient } from '../QuickSqliteClient';
 import type { TableRowJoinedUser } from '../types';
 
 export const getChannelMessages = <
@@ -18,6 +19,10 @@ export const getChannelMessages = <
   channelIds: string[];
   currentUserId: string;
 }) => {
+  QuickSqliteClient.logger?.('info', 'getChannelMessages', {
+    channelIds,
+    currentUserId,
+  });
   const messageRows = selectMessagesForChannels(channelIds);
   const messageIds = messageRows.map(({ id }) => id);
 
