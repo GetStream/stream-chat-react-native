@@ -174,6 +174,7 @@ const ChannelPreviewMessengerWithContext = <
         <View style={[styles.row, row]}>
           <PreviewMessage latestMessagePreview={latestMessagePreview} />
           <PreviewStatus
+            channel={channel}
             formatLatestMessageDate={formatLatestMessageDate}
             latestMessagePreview={latestMessagePreview}
           />
