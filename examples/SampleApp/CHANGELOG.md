@@ -1,5 +1,18 @@
 # Change Log
 
+### [1.25.5](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.25.4...sampleapp@v1.25.5) (2024-03-08)
+
+
+### Bug Fixes
+
+* metro config for example apps ([#2448](https://github.com/GetStream/stream-chat-react-native/issues/2448)) ([de7b387](https://github.com/GetStream/stream-chat-react-native/commit/de7b3879b7d0ee7449898d5cda673ff0ac1836fc))
+* **sample-app:** broken hot reload from sdk changes ([83b564a](https://github.com/GetStream/stream-chat-react-native/commit/83b564aca3fada176bd32e95e754b12e4ef51fa4))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.25.4](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.25.3...sampleapp@v1.25.4) (2024-02-29)
 
 
