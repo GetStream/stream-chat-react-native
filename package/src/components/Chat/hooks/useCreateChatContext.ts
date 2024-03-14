@@ -24,7 +24,6 @@ export const useCreateChatContext = <
       }${client.mutedChannels.length}`
     : 'Offline';
   const mutedUsersLength = mutedUsers.length;
-  const stringifiedResizableCDNHosts = resizableCDNHosts?.join(',');
 
   const chatContext: ChatContextValue<StreamChatGenerics> = useMemo(
     () => ({
@@ -39,14 +38,7 @@ export const useCreateChatContext = <
       resizableCDNHosts,
       setActiveChannel,
     }),
-    [
-      channelId,
-      clientValues,
-      connectionRecovering,
-      isOnline,
-      mutedUsersLength,
-      stringifiedResizableCDNHosts,
-    ],
+    [channelId, clientValues, connectionRecovering, isOnline, mutedUsersLength],
   );
 
   return chatContext;
