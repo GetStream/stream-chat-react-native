@@ -65,6 +65,10 @@ export type ChatContextValue<
    * @overrideType Channel
    */
   channel?: Channel<StreamChatGenerics>;
+  /**
+   * This option allows you to specify a list of CDNs that offer image resizing.
+   */
+  resizableCDNHosts?: string[];
 };
 
 export const ChatContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as ChatContextValue);
