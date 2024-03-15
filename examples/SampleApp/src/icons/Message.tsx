@@ -2,7 +2,7 @@ import React from 'react';
 import Svg, { Path } from 'react-native-svg';
 import { IconProps } from '../utils/base';
 
-export const Message: React.FC<IconProps> = (props) => {
+export const Message = (props: IconProps) => {
   const { height, width, ...rest } = props;
   return (
     <Svg height={height} viewBox={`0 0 ${height} ${width}`} width={width} {...rest}>

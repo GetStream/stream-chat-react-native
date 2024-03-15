@@ -88,6 +88,7 @@ export const ChannelListScreen: React.FC = () => {
 
   useScrollToTop(scrollRef);
 
+  // eslint-disable-next-line react/no-unstable-nested-components
   const EmptySearchIndicator = () => (
     <View style={styles.emptyIndicatorContainer}>
       <Search height={112} pathFill={grey_gainsboro} width={112} />

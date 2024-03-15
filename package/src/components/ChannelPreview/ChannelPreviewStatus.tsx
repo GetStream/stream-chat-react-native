@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import type { ChannelPreviewProps } from './ChannelPreview';
+import { ChannelPreviewProps } from './ChannelPreview';
 import type { ChannelPreviewMessengerPropsWithContext } from './ChannelPreviewMessenger';
 import { MessageReadStatus } from './hooks/useLatestMessagePreview';
 

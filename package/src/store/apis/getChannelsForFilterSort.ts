@@ -4,6 +4,8 @@ import type { ChannelAPIResponse, ChannelFilters, ChannelSort } from 'stream-cha
 import { getChannels } from './getChannels';
 import { selectChannelIdsForFilterSort } from './queries/selectChannelIdsForFilterSort';
 
+import { QuickSqliteClient } from '../QuickSqliteClient';
+
 /**
  * Gets the channels from database for given filter and sort query.
  *
@@ -29,6 +31,8 @@ export const getChannelsForFilterSort = <
     console.warn('Please provide the query (filters/sort) to fetch channels from DB');
     return null;
   }
+
+  QuickSqliteClient.logger?.('info', 'getChannelsForFilterSort', { filters, sort });
 
   const channelIds = selectChannelIdsForFilterSort({ filters, sort });
 

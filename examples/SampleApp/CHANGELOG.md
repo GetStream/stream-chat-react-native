@@ -1,5 +1,31 @@
 # Change Log
 
+### [1.25.5](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.25.4...sampleapp@v1.25.5) (2024-03-08)
+
+
+### Bug Fixes
+
+* metro config for example apps ([#2448](https://github.com/GetStream/stream-chat-react-native/issues/2448)) ([de7b387](https://github.com/GetStream/stream-chat-react-native/commit/de7b3879b7d0ee7449898d5cda673ff0ac1836fc))
+* **sample-app:** broken hot reload from sdk changes ([83b564a](https://github.com/GetStream/stream-chat-react-native/commit/83b564aca3fada176bd32e95e754b12e4ef51fa4))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.25.4](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.25.3...sampleapp@v1.25.4) (2024-02-29)
+
+
+### Bug Fixes
+
+* calendar undefined issue in MessageSearchList in SampleApp ([#2445](https://github.com/GetStream/stream-chat-react-native/issues/2445)) ([afd9479](https://github.com/GetStream/stream-chat-react-native/commit/afd947963c89e572d5f1070729d7677747791d12)), closes [#2440](https://github.com/GetStream/stream-chat-react-native/issues/2440)
+* channel disabled/frozen UI re-render issue ([#2436](https://github.com/GetStream/stream-chat-react-native/issues/2436)) ([f18e4a5](https://github.com/GetStream/stream-chat-react-native/commit/f18e4a5bfbcb7b2c1cce6d3e2933061109da7ae9))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.25.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.25.2...sampleapp@v1.25.3) (2024-02-08)
 
 

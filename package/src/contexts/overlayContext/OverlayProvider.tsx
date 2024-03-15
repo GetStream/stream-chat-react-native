@@ -18,6 +18,7 @@ import { AttachmentPicker } from '../../components/AttachmentPicker/AttachmentPi
 import { AttachmentPickerBottomSheetHandle as DefaultAttachmentPickerBottomSheetHandle } from '../../components/AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
 import { AttachmentPickerError as DefaultAttachmentPickerError } from '../../components/AttachmentPicker/components/AttachmentPickerError';
 import { AttachmentPickerErrorImage as DefaultAttachmentPickerErrorImage } from '../../components/AttachmentPicker/components/AttachmentPickerErrorImage';
+import { AttachmentPickerIOSSelectMorePhotos as DefaultAttachmentPickerIOSSelectMorePhotos } from '../../components/AttachmentPicker/components/AttachmentPickerIOSSelectMorePhotos';
 import { CameraSelectorIcon as DefaultCameraSelectorIcon } from '../../components/AttachmentPicker/components/CameraSelectorIcon';
 import { FileSelectorIcon as DefaultFileSelectorIcon } from '../../components/AttachmentPicker/components/FileSelectorIcon';
 import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../../components/AttachmentPicker/components/ImageOverlaySelectedComponent';
@@ -73,6 +74,7 @@ export const OverlayProvider = <
     AttachmentPickerErrorImage = DefaultAttachmentPickerErrorImage,
     attachmentPickerErrorText,
     attachmentSelectionBarHeight,
+    AttachmentPickerIOSSelectMorePhotos = DefaultAttachmentPickerIOSSelectMorePhotos,
     bottomInset,
     CameraSelectorIcon = DefaultCameraSelectorIcon,
     children,
@@ -132,6 +134,7 @@ export const OverlayProvider = <
     attachmentPickerErrorButtonText,
     AttachmentPickerErrorImage,
     attachmentPickerErrorText,
+    AttachmentPickerIOSSelectMorePhotos,
     attachmentSelectionBarHeight,
     ImageOverlaySelectedComponent,
     numberOfAttachmentImagesToLoadPerCall,

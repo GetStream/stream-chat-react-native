@@ -52,7 +52,9 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   const navigation = useNavigation<ChannelScreenNavigationProp>();
   const typing = useTypingString();
 
-  if (!channel || !chatClient) return null;
+  if (!channel || !chatClient) {
+    return null;
+  }
 
   const isOneOnOneConversation =
     channel &&
@@ -70,6 +72,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
           navigation.goBack();
         }
       }}
+      // eslint-disable-next-line react/no-unstable-nested-components
       RightContent={() => (
         <TouchableOpacity
           onPress={() => {
@@ -120,7 +123,9 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
 
   useEffect(() => {
     const initChannel = async () => {
-      if (!chatClient || !channelId) return;
+      if (!chatClient || !channelId) {
+        return;
+      }
 
       const newChannel = chatClient?.channel('messaging', channelId);
       if (!newChannel?.initialized) {
@@ -136,7 +141,9 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     setSelectedThread(undefined);
   });
 
-  if (!channel || !chatClient) return null;
+  if (!channel || !chatClient) {
+    return null;
+  }
 
   return (
     <View style={[styles.flex, { backgroundColor: white, paddingBottom: bottom }]}>

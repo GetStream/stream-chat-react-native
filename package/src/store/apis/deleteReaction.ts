@@ -18,6 +18,12 @@ export const deleteReaction = ({
     userId,
   });
 
+  QuickSqliteClient.logger?.('info', 'deleteReaction', {
+    messageId,
+    type: reactionType,
+    userId,
+  });
+
   if (flush) {
     QuickSqliteClient.executeSql.apply(null, query);
   }

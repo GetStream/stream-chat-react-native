@@ -1,13 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  BackHandler,
-  Button,
-  Dimensions,
-  Keyboard,
-  Platform,
-  StatusBar,
-  StyleSheet,
-} from 'react-native';
+import { BackHandler, Dimensions, Keyboard, Platform, StatusBar, StyleSheet } from 'react-native';
 
 import BottomSheet, { BottomSheetFlatList, BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import dayjs from 'dayjs';
@@ -19,13 +11,8 @@ import { renderAttachmentPickerItem } from './components/AttachmentPickerItem';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useViewport } from '../../hooks/useViewport';
-import {
-  getPhotos,
-  iOS14RefreshGallerySelection,
-  oniOS14GalleryLibrarySelectionChange,
-} from '../../native';
+import { getPhotos, oniOS14GalleryLibrarySelectionChange } from '../../native';
 import type { Asset } from '../../types/types';
 
 dayjs.extend(duration);
@@ -58,6 +45,10 @@ export type AttachmentPickerProps = {
    */
   AttachmentPickerErrorImage: React.ComponentType;
   /**
+   * Custom UI Component to render select more photos for selected gallery access in iOS.
+   */
+  AttachmentPickerIOSSelectMorePhotos: React.ComponentType;
+  /**
    * Custom UI component to render overlay component, that shows up on top of [selected image](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png) (with tick mark)
    *
    * **Default** [ImageOverlaySelectedComponent](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/ImageOverlaySelectedComponent.tsx)
@@ -82,6 +73,7 @@ export const AttachmentPicker = React.forwardRef(
       attachmentPickerErrorButtonText,
       AttachmentPickerErrorImage,
       attachmentPickerErrorText,
+      AttachmentPickerIOSSelectMorePhotos,
       ImageOverlaySelectedComponent,
       numberOfAttachmentImagesToLoadPerCall,
       numberOfAttachmentPickerImageColumns,
@@ -117,7 +109,6 @@ export const AttachmentPicker = React.forwardRef(
     const [loadingPhotos, setLoadingPhotos] = useState(false);
     const [photos, setPhotos] = useState<Asset[]>([]);
     const attemptedToLoadPhotosOnOpenRef = useRef(false);
-    const { t } = useTranslationContext();
 
     const getMorePhotos = useCallback(async () => {
       if (
@@ -323,9 +314,7 @@ export const AttachmentPicker = React.forwardRef(
           ref={ref}
           snapPoints={snapPoints}
         >
-          {iOSLimited && (
-            <Button onPress={iOS14RefreshGallerySelection} title={t('Select More Photos')} />
-          )}
+          {iOSLimited && <AttachmentPickerIOSSelectMorePhotos />}
           <BottomSheetFlatList
             contentContainerStyle={[
               styles.container,

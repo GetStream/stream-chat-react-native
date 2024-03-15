@@ -14,7 +14,7 @@ on:
 jobs:
   build_and_deploy_ios_testflight_qa:
     name: Build SampleApp iOS and Deploy-${{ github.ref == 'refs/heads/develop' }}
-    runs-on: [macos-12]
+    runs-on: [macos-14]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -61,7 +61,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: '11'
+          java-version: '17'
           check-latest: true
       - name: Install && Build - SDK and Sample App
         uses: ./.github/actions/install-and-build-sdk

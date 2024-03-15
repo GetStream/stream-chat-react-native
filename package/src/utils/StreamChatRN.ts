@@ -8,6 +8,8 @@ const DEFAULT_GLOBAL_STREAM_CONFIG = {
 /**
  * StreamChatRN - Global config for the RN Chat SDK
  * This config is used to enable/disable features and options for the SDK.
+ *
+ * @deprecated Use the `resizableCDNHosts` prop in the `Chat` component, instead. StreamChatRN will not be exposed starting the next major release.
  */
 export class StreamChatRN {
   /**

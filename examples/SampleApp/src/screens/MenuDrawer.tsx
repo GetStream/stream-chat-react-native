@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const MenuDrawer: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
+export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
   const {
     theme: {
       colors: { black, grey, white },
@@ -52,7 +52,9 @@ export const MenuDrawer: React.FC<DrawerContentComponentProps> = ({ navigation }
 
   const { chatClient, logout } = useAppContext();
 
-  if (!chatClient) return null;
+  if (!chatClient) {
+    return null;
+  }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: white }]}>

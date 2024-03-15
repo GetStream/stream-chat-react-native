@@ -35,6 +35,9 @@ export type ChatContextValue<
   client: StreamChat<StreamChatGenerics>;
   connectionRecovering: boolean;
   enableOfflineSupport: boolean;
+  /**
+   * Drop in replacement of all the underlying Image components within SDK. This is useful for the purpose of offline caching of images. Please check the Offline Support Guide for usage.
+   */
   ImageComponent: React.ComponentType<ImageProps>;
   isOnline: boolean | null;
   mutedUsers: Mute<StreamChatGenerics>[];
@@ -62,6 +65,10 @@ export type ChatContextValue<
    * @overrideType Channel
    */
   channel?: Channel<StreamChatGenerics>;
+  /**
+   * This option allows you to specify a list of CDNs that offer image resizing.
+   */
+  resizableCDNHosts?: string[];
 };
 
 export const ChatContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as ChatContextValue);

@@ -4,7 +4,6 @@ import { StyleSheet, Text } from 'react-native';
 import type { ChannelPreviewProps } from './ChannelPreview';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
@@ -14,6 +13,9 @@ const styles = StyleSheet.create({
 export type ChannelPreviewTitleProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChannelPreviewProps<StreamChatGenerics>, 'channel'> & {
+  /**
+   * Formatted name for the previewed channel.
+   */
   displayName: string;
 };
 

@@ -221,7 +221,9 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
           <View style={styles.bottomContainer}>
             <TouchableOpacity
               onPress={async () => {
-                if (!isValidInput()) return;
+                if (!isValidInput()) {
+                  return;
+                }
 
                 try {
                   await loginUser({

@@ -11,6 +11,12 @@ export const deleteMessagesForChannel = ({
   const query = createDeleteQuery('messages', {
     cid,
   });
+
+  QuickSqliteClient.logger?.('info', 'deleteMessagesForChannel', {
+    cid,
+    flush,
+  });
+
   if (flush) {
     QuickSqliteClient.executeSql.apply(null, query);
   }

@@ -12,8 +12,15 @@ export const upsertAppSettings = ({
   currentUserId: string;
   flush?: boolean;
 }) => {
+  const storableAppSettings = JSON.stringify(appSettings);
   const query = createUpsertQuery('userSyncStatus', {
-    appSettings: JSON.stringify(appSettings),
+    appSettings: storableAppSettings,
+    userId: currentUserId,
+  });
+
+  QuickSqliteClient.logger?.('info', 'upsertAppSettings', {
+    appSettings: storableAppSettings,
+    flush,
     userId: currentUserId,
   });
 

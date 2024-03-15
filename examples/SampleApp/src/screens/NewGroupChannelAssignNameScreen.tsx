@@ -93,10 +93,14 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
 
   const [groupName, setGroupName] = useState('');
 
-  if (!chatClient) return null;
+  if (!chatClient) {
+    return null;
+  }
 
   const onConfirm = () => {
-    if (!chatClient.user || !selectedUsers || !groupName) return;
+    if (!chatClient.user || !selectedUsers || !groupName) {
+      return;
+    }
 
     const channel = chatClient.channel('messaging', generateRandomId(), {
       members: [...selectedUserIds, chatClient.user?.id],
@@ -113,6 +117,7 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
   return (
     <View style={styles.container}>
       <ScreenHeader
+        // eslint-disable-next-line react/no-unstable-nested-components
         RightContent={() => <ConfirmButton disabled={!groupName} onPress={onConfirm} />}
         style={styles.header}
         titleText='Name of Group Chat'

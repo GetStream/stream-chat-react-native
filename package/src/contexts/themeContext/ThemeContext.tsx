@@ -42,9 +42,9 @@ export const mergeThemes = (params: MergedThemesParams) => {
 
 export const ThemeContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as Theme);
 
-export const ThemeProvider: React.FC<
-  PropsWithChildren<ThemeProviderInputValue & Partial<ThemeContextValue>>
-> = (props) => {
+export const ThemeProvider = (
+  props: PropsWithChildren<ThemeProviderInputValue & Partial<ThemeContextValue>>,
+) => {
   const { children, mergedStyle, style, theme } = props;
 
   const modifiedTheme = useMemo(() => {

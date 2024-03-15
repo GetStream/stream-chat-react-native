@@ -30,14 +30,20 @@ export const updateMessage = ({
     return queries;
   }
 
+  const storableMessage = mapMessageToStorable(message);
+
   queries.push(
-    createUpdateQuery('messages', mapMessageToStorable(message), {
+    createUpdateQuery('messages', storableMessage, {
       id: message.id,
     }),
   );
 
+  const storableUsers: Array<ReturnType<typeof mapUserToStorable>> = [];
+
   if (message.user) {
-    queries.push(createUpsertQuery('users', mapUserToStorable(message.user)));
+    const storableUser = mapUserToStorable(message.user);
+    storableUsers.push(storableUser);
+    queries.push(createUpsertQuery('users', storableUser));
   }
 
   queries.push(
@@ -49,12 +55,24 @@ export const updateMessage = ({
   const latestReactions = message.latest_reactions || [];
   const ownReactions = message.own_reactions || [];
 
+  const storableReactions: Array<ReturnType<typeof mapReactionToStorable>> = [];
+
   [...latestReactions, ...ownReactions].forEach((r) => {
     if (r.user) {
-      queries.push(createUpsertQuery('users', mapUserToStorable(r.user)));
+      const storableUser = mapUserToStorable(r.user);
+      storableUsers.push(storableUser);
+      queries.push(createUpsertQuery('users', storableUser));
     }
 
-    queries.push(createUpsertQuery('reactions', mapReactionToStorable(r)));
+    const storableReaction = mapReactionToStorable(r);
+    storableReactions.push(storableReaction);
+    queries.push(createUpsertQuery('reactions', storableReaction));
+  });
+
+  QuickSqliteClient.logger?.('info', 'updateMessage', {
+    message: storableMessage,
+    reactions: storableReactions,
+    users: storableUsers,
   });
 
   if (flush) {

@@ -2,6 +2,7 @@ import React from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import dayjs from 'dayjs';
+import calendar from 'dayjs/plugin/calendar';
 import { Avatar, Spinner, useTheme, useViewport } from 'stream-chat-react-native';
 
 import { MESSAGE_SEARCH_LIMIT } from '../../hooks/usePaginatedSearchedMessages';
@@ -9,6 +10,8 @@ import { MESSAGE_SEARCH_LIMIT } from '../../hooks/usePaginatedSearchedMessages';
 import type { MessageResponse } from 'stream-chat';
 
 import type { StreamChatGenerics } from '../../types';
+
+dayjs.extend(calendar);
 
 const styles = StyleSheet.create({
   contentContainer: { flexGrow: 1 },
@@ -80,7 +83,9 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
         </View>
       );
     }
-    if (!messages && !refreshing) return null;
+    if (!messages && !refreshing) {
+      return null;
+    }
 
     return (
       <>

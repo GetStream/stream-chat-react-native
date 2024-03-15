@@ -60,6 +60,7 @@ export const UserSearchResultsGrid: React.FC<UserSearchResultsGridProps> = ({
           keyboardDismissMode='interactive'
           keyboardShouldPersistTaps='handled'
           keyExtractor={(item, index) => `${item.id}-${index}`}
+          // eslint-disable-next-line react/no-unstable-nested-components
           ListEmptyComponent={() => (
             <View style={styles.emptyResultIndicator}>
               <EmptySearchState height={124} width={124} />

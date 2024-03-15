@@ -18,20 +18,27 @@ export const updateReaction = ({
   flush?: boolean;
 }) => {
   const queries: PreparedQueries[] = [];
+  let storableUser: ReturnType<typeof mapUserToStorable> | undefined;
 
   if (reaction.user) {
+    storableUser = mapUserToStorable(reaction.user);
     queries.push(createUpsertQuery('users', mapUserToStorable(reaction.user)));
   }
 
+  const storableReaction = mapReactionToStorable(reaction);
+
   queries.push(
-    createUpdateQuery('reactions', mapReactionToStorable(reaction), {
+    createUpdateQuery('reactions', storableReaction, {
       messageId: reaction.message_id,
       userId: reaction.user_id,
     }),
   );
 
+  let updatedReactionCounts: string | undefined;
+
   if (message.reaction_counts) {
     const { reactionCounts } = mapMessageToStorable(message);
+    updatedReactionCounts = reactionCounts;
 
     queries.push(
       createUpdateQuery(
@@ -45,6 +52,13 @@ export const updateReaction = ({
       ),
     );
   }
+
+  QuickSqliteClient.logger?.('info', 'updateReaction', {
+    addedUser: storableUser,
+    flush,
+    updatedReaction: storableReaction,
+    updatedReactionCounts,
+  });
 
   if (flush) {
     QuickSqliteClient.executeSqlBatch(queries);
