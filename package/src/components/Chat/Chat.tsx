@@ -160,7 +160,13 @@ const ChatWithContext = <
     closeConnectionOnBackground,
   );
 
-  const [initialisedDatabase, setInitialisedDatabase] = useState(false);
+  const [initialisedDatabaseConfig, setInitialisedDatabaseConfig] = useState<{
+    initialised: boolean;
+    userID?: string;
+  }>({
+    initialised: false,
+    userID: undefined,
+  });
 
   /**
    * Setup muted user listener
@@ -170,6 +176,8 @@ const ChatWithContext = <
 
   const debugRef = useDebugContext();
   const isDebugModeEnabled = __DEV__ && debugRef && debugRef.current;
+
+  const userID = client.userID;
 
   // Set the `resizableCDNHosts` as per the prop.
   StreamChatRN.setConfig({ resizableCDNHosts });
@@ -195,15 +203,20 @@ const ChatWithContext = <
   const setActiveChannel = (newChannel?: Channel<StreamChatGenerics>) => setChannel(newChannel);
 
   useEffect(() => {
-    if (client.user?.id && enableOfflineSupport) {
-      setInitialisedDatabase(false);
+    if (userID && enableOfflineSupport) {
+      setInitialisedDatabaseConfig({ initialised: false, userID });
       QuickSqliteClient.initializeDatabase();
       DBSyncManager.init(client as unknown as StreamChat);
-      setInitialisedDatabase(true);
+      setInitialisedDatabaseConfig({ initialised: true, userID });
     }
-  }, [client?.user?.id, enableOfflineSupport]);
+  }, [userID, enableOfflineSupport]);
 
-  const appSettings = useAppSettings(client, isOnline, enableOfflineSupport, initialisedDatabase);
+  const appSettings = useAppSettings(
+    client,
+    isOnline,
+    enableOfflineSupport,
+    initialisedDatabaseConfig,
+  );
 
   const chatContext = useCreateChatContext({
     appSettings,
@@ -221,11 +234,15 @@ const ChatWithContext = <
   useSyncDatabase({
     client,
     enableOfflineSupport,
-    initialisedDatabase,
+    initialisedDatabase:
+      initialisedDatabaseConfig.initialised && userID === initialisedDatabaseConfig.userID,
   });
 
-  if (enableOfflineSupport && !initialisedDatabase) {
-    return null;
+  if (userID && enableOfflineSupport) {
+    if (!initialisedDatabaseConfig.initialised || userID !== initialisedDatabaseConfig.userID) {
+      // if user id has been set and offline support is enabled, we need to wait for database to be initialised
+      return null;
+    }
   }
 
   return (
