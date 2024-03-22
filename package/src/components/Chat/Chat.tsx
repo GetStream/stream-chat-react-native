@@ -210,12 +210,10 @@ const ChatWithContext = <
     }
   }, [userID, enableOfflineSupport]);
 
-  const appSettings = useAppSettings(
-    client,
-    isOnline,
-    enableOfflineSupport,
-    initialisedDatabaseConfig,
-  );
+  const initialisedDatabase =
+    initialisedDatabaseConfig.initialised && userID === initialisedDatabaseConfig.userID;
+
+  const appSettings = useAppSettings(client, isOnline, enableOfflineSupport, initialisedDatabase);
 
   const chatContext = useCreateChatContext({
     appSettings,
@@ -233,15 +231,12 @@ const ChatWithContext = <
   useSyncDatabase({
     client,
     enableOfflineSupport,
-    initialisedDatabase:
-      initialisedDatabaseConfig.initialised && userID === initialisedDatabaseConfig.userID,
+    initialisedDatabase,
   });
 
-  if (userID && enableOfflineSupport) {
-    if (!initialisedDatabaseConfig.initialised || userID !== initialisedDatabaseConfig.userID) {
-      // if user id has been set and offline support is enabled, we need to wait for database to be initialised
-      return null;
-    }
+  if (userID && enableOfflineSupport && !initialisedDatabaseConfig.initialised) {
+    // if user id has been set and offline support is enabled, we need to wait for database to be initialised
+    return null;
   }
 
   return (

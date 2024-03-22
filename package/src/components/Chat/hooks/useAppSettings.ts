@@ -10,10 +10,7 @@ export const useAppSettings = <
   client: StreamChat<StreamChatGenerics>,
   isOnline: boolean | null,
   enableOfflineSupport: boolean,
-  initialisedDatabase: {
-    initialised: boolean;
-    userID?: string;
-  },
+  initialisedDatabase: boolean,
 ): AppSettingsAPIResponse | null => {
   const [appSettings, setAppSettings] = useState<AppSettingsAPIResponse | null>(null);
   const isMounted = useRef(true);
