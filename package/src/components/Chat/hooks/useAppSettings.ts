@@ -19,9 +19,7 @@ export const useAppSettings = <
     async function enforeAppSettings() {
       if (!client.userID) return;
 
-      if (enableOfflineSupport && !initialisedDatabase.initialised) return;
-
-      if (enableOfflineSupport && initialisedDatabase.userID !== client.userID) return;
+      if (enableOfflineSupport && !initialisedDatabase) return;
 
       if (!isOnline && enableOfflineSupport) {
         const appSettings = dbApi.getAppSettings({ currentUserId: client.userID });
