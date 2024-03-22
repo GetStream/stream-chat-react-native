@@ -234,7 +234,7 @@ const ChatWithContext = <
     initialisedDatabase,
   });
 
-  if (userID && enableOfflineSupport && !initialisedDatabaseConfig.initialised) {
+  if (userID && enableOfflineSupport && !initialisedDatabase) {
     // if user id has been set and offline support is enabled, we need to wait for database to be initialised
     return null;
   }
