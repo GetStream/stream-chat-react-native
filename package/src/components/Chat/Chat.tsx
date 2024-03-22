@@ -165,7 +165,6 @@ const ChatWithContext = <
     userID?: string;
   }>({
     initialised: false,
-    userID: undefined,
   });
 
   /**
