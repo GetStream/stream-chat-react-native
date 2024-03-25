@@ -160,7 +160,12 @@ const ChatWithContext = <
     closeConnectionOnBackground,
   );
 
-  const [initialisedDatabase, setInitialisedDatabase] = useState(false);
+  const [initialisedDatabaseConfig, setInitialisedDatabaseConfig] = useState<{
+    initialised: boolean;
+    userID?: string;
+  }>({
+    initialised: false,
+  });
 
   /**
    * Setup muted user listener
@@ -170,6 +175,8 @@ const ChatWithContext = <
 
   const debugRef = useDebugContext();
   const isDebugModeEnabled = __DEV__ && debugRef && debugRef.current;
+
+  const userID = client.userID;
 
   // Set the `resizableCDNHosts` as per the prop.
   StreamChatRN.setConfig({ resizableCDNHosts });
@@ -195,13 +202,16 @@ const ChatWithContext = <
   const setActiveChannel = (newChannel?: Channel<StreamChatGenerics>) => setChannel(newChannel);
 
   useEffect(() => {
-    if (client.user?.id && enableOfflineSupport) {
-      setInitialisedDatabase(false);
+    if (userID && enableOfflineSupport) {
+      setInitialisedDatabaseConfig({ initialised: false, userID });
       QuickSqliteClient.initializeDatabase();
       DBSyncManager.init(client as unknown as StreamChat);
-      setInitialisedDatabase(true);
+      setInitialisedDatabaseConfig({ initialised: true, userID });
     }
-  }, [client?.user?.id, enableOfflineSupport]);
+  }, [userID, enableOfflineSupport]);
+
+  const initialisedDatabase =
+    initialisedDatabaseConfig.initialised && userID === initialisedDatabaseConfig.userID;
 
   const appSettings = useAppSettings(client, isOnline, enableOfflineSupport, initialisedDatabase);
 
@@ -224,7 +234,8 @@ const ChatWithContext = <
     initialisedDatabase,
   });
 
-  if (enableOfflineSupport && !initialisedDatabase) {
+  if (userID && enableOfflineSupport && !initialisedDatabase) {
+    // if user id has been set and offline support is enabled, we need to wait for database to be initialised
     return null;
   }
 
