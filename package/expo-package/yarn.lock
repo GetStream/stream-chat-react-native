@@ -3046,10 +3046,10 @@ stream-buffers@2.2.x:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha512-uyQK/mx5QjHun80FLJTfaWE7JtwfRMKBLkMne6udYOmvH0CawotVa7TfgYHzAnpphn4+TweIx1QKMnRIbipmUg==
 
-stream-chat-react-native-core@5.25.0:
-  version "5.25.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.25.0.tgz#a70ce7fde1d324b233738e31dea7c5d27598af39"
-  integrity sha512-awONq/IuUdMpKZHXjTC3YP6LbYNjCwcIHFPmbXkTXCl3AA2646cgwzBNruaDkO0H8hpsiXXmlOESXSmFoP7r6w==
+stream-chat-react-native-core@5.26.0:
+  version "5.26.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.26.0.tgz#b081bde25585a9f571ac7bb2dc8c910e4ddc99c5"
+  integrity sha512-Sh5MufLMn6JlEDiML+xDwa5EaCkegHMhKTXdBxfbtbbxaBl1WDOhpwgR6ROIyvGt8nuJ4NQOzRseiNCyXpibXA==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "4.4.8"

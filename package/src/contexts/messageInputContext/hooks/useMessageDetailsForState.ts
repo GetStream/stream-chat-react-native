@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 
-import type { AudioReturnType, RecordingStatus } from '../../../native';
+import { Attachment } from 'stream-chat';
+
+import type { AudioReturnType } from '../../../native';
 import type { DefaultStreamChatGenerics, FileUpload, ImageUpload } from '../../../types/types';
 import { generateRandomId } from '../../../utils/utils';
 
@@ -19,7 +21,9 @@ export const useMessageDetailsForState = <
   const [showMoreOptions, setShowMoreOptions] = useState(true);
   const [showVoiceUI, setShowVoiceUI] = useState(false);
   const [recording, setRecording] = useState<AudioReturnType | string | undefined>(undefined);
-  const [recordingStatus, setRecordingStatus] = useState<RecordingStatus | undefined>(undefined);
+  const [recordingDuration, setRecordingDuration] = useState<number>(0);
+  const [recordingStopped, setRecordingStopped] = useState<boolean>(true);
+  const [micLocked, setMicLocked] = useState(false);
 
   const initialTextValue = initialValue || '';
   const [text, setText] = useState(initialTextValue);
@@ -28,7 +32,10 @@ export const useMessageDetailsForState = <
     if (text !== initialTextValue) {
       setShowMoreOptions(false);
     }
-  }, [text]);
+    if (fileUploads.length || imageUploads.length) {
+      setShowMoreOptions(false);
+    }
+  }, [text, imageUploads.length, fileUploads.length]);
 
   const messageValue =
     message === undefined ? '' : `${message.id}${message.text}${message.updated_at}`;
@@ -40,6 +47,73 @@ export const useMessageDetailsForState = <
     }
   }, [messageValue]);
 
+  const mapAttachmentToFileUpload = (attachment: Attachment<StreamChatGenerics>): FileUpload => {
+    const id = generateRandomId();
+
+    if (attachment.type === 'audio') {
+      return {
+        file: {
+          duration: attachment.duration,
+          mimeType: attachment.mime_type,
+          name: attachment.title || '',
+          size: attachment.file_size,
+          uri: attachment.asset_url,
+        },
+        id,
+        state: 'finished',
+        url: attachment.asset_url,
+      };
+    } else if (attachment.type === 'video') {
+      return {
+        file: {
+          mimeType: attachment.mime_type,
+          name: attachment.title || '',
+          size: attachment.file_size,
+        },
+        id,
+        state: 'finished',
+        thumb_url: attachment.thumb_url,
+        url: attachment.asset_url,
+      };
+    } else if (attachment.type === 'voiceRecording') {
+      return {
+        file: {
+          duration: attachment.duration,
+          mimeType: attachment.mime_type,
+          name: attachment.title || '',
+          size: attachment.file_size,
+          uri: attachment.asset_url,
+          waveform_data: attachment.waveform_data,
+        },
+        id,
+        state: 'finished',
+        url: attachment.asset_url,
+      };
+    } else if (attachment.type === 'file') {
+      return {
+        file: {
+          mimeType: attachment.mime_type,
+          name: attachment.title || '',
+          size: attachment.file_size,
+        },
+        id,
+        state: 'finished',
+        url: attachment.asset_url,
+      };
+    } else {
+      return {
+        file: {
+          mimeType: attachment.mime_type,
+          name: attachment.title || '',
+          size: attachment.file_size,
+        },
+        id,
+        state: 'finished',
+        url: attachment.asset_url,
+      };
+    }
+  };
+
   useEffect(() => {
     if (message) {
       setText(message?.text || '');
@@ -49,19 +123,7 @@ export const useMessageDetailsForState = <
       const attachments = Array.isArray(message.attachments) ? message.attachments : [];
 
       for (const attachment of attachments) {
-        if (attachment.type === 'file') {
-          const id = generateRandomId();
-          newFileUploads.push({
-            file: {
-              mimeType: attachment.mime_type,
-              name: attachment.title || '',
-              size: attachment.file_size,
-            },
-            id,
-            state: 'finished',
-            url: attachment.asset_url,
-          });
-        } else if (attachment.type === 'image') {
+        if (attachment.type === 'image') {
           const id = generateRandomId();
           newImageUploads.push({
             file: {
@@ -73,19 +135,11 @@ export const useMessageDetailsForState = <
             state: 'finished',
             url: attachment.image_url || attachment.asset_url || attachment.thumb_url,
           });
-        } else if (attachment.type === 'video') {
-          const id = generateRandomId();
-          newFileUploads.push({
-            file: {
-              mimeType: attachment.mime_type,
-              name: attachment.title || '',
-              size: attachment.file_size,
-            },
-            id,
-            state: 'finished',
-            thumb_url: attachment.thumb_url,
-            url: attachment.asset_url,
-          });
+        } else {
+          const fileUpload = mapAttachmentToFileUpload(attachment);
+          if (fileUpload) {
+            newFileUploads.push(fileUpload);
+          }
         }
       }
       if (newFileUploads.length) {
@@ -101,15 +155,19 @@ export const useMessageDetailsForState = <
     fileUploads,
     imageUploads,
     mentionedUsers,
+    micLocked,
     numberOfUploads,
     recording,
-    recordingStatus,
+    recordingDuration,
+    recordingStopped,
     setFileUploads,
     setImageUploads,
     setMentionedUsers,
+    setMicLocked,
     setNumberOfUploads,
     setRecording,
-    setRecordingStatus,
+    setRecordingDuration,
+    setRecordingStopped,
     setShowMoreOptions,
     setShowVoiceUI,
     setText,

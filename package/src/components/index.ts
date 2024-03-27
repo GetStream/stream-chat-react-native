@@ -114,8 +114,12 @@ export * from '../utils/removeReservedFields';
 
 export * from './MessageInput/AttachButton';
 export * from './MessageInput/CommandsButton';
-export * from './MessageInput/MicButton';
-export * from './MessageInput/MicInput';
+export * from './MessageInput/components/AudioRecorder/AudioRecorder';
+export * from './MessageInput/components/AudioRecorder/AudioRecordingButton';
+export * from './MessageInput/components/AudioRecorder/AudioRecordingInProgress';
+export * from './MessageInput/components/AudioRecorder/AudioRecordingLockIndicator';
+export * from './MessageInput/components/AudioRecorder/AudioRecordingPreview';
+export * from './MessageInput/components/AudioRecorder/AudioRecordingWaveform';
 export * from './MessageInput/CooldownTimer';
 export * from './MessageInput/FileUploadPreview';
 export * from './MessageInput/ImageUploadPreview';
@@ -125,8 +129,6 @@ export * from './MessageInput/MoreOptionsButton';
 export * from './MessageInput/SendButton';
 export * from './MessageInput/ShowThreadMessageInChannelButton';
 export * from './MessageInput/UploadProgressIndicator';
-export * from './MessageInput/VoiceRecording';
-export * from './MessageInput/VoiceRecordingPlayback';
 
 export * from './MessageList/DateHeader';
 export * from './MessageList/hooks/useMessageList';

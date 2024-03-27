@@ -87,7 +87,11 @@ const AttachmentWithContext = <
     );
   }
 
-  if (attachment.type === 'file' || attachment.type === 'audio') {
+  if (
+    attachment.type === 'file' ||
+    attachment.type === 'audio' ||
+    attachment.type === 'voiceRecording'
+  ) {
     return <FileAttachment attachment={attachment} />;
   }
 
@@ -117,7 +121,8 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const attachmentEqual =
     prevAttachment.actions?.length === nextAttachment.actions?.length &&
     prevAttachment.image_url === nextAttachment.image_url &&
-    prevAttachment.thumb_url === nextAttachment.thumb_url;
+    prevAttachment.thumb_url === nextAttachment.thumb_url &&
+    prevAttachment.type === nextAttachment.type;
   if (!attachmentEqual) return false;
 
   if (isAttachmentEqual) {

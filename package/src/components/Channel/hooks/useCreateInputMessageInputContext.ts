@@ -8,6 +8,12 @@ export const useCreateInputMessageInputContext = <
 >({
   additionalTextInputProps,
   AttachButton,
+  AudioRecorder,
+  AudioRecordingButton,
+  AudioRecordingInProgress,
+  AudioRecordingLockIndicator,
+  AudioRecordingPreview,
+  AudioRecordingWaveform,
   autoCompleteSuggestionsLimit,
   autoCompleteTriggerSettings,
   channelId,
@@ -37,8 +43,6 @@ export const useCreateInputMessageInputContext = <
   maxNumberOfFiles,
   mentionAllAppUsersEnabled,
   mentionAllAppUsersQuery,
-  MicButton,
-  MicInput,
   MoreOptionsButton,
   numberOfLines,
   onChangeText,
@@ -51,8 +55,6 @@ export const useCreateInputMessageInputContext = <
   setQuotedMessageState,
   ShowThreadMessageInChannelButton,
   UploadProgressIndicator,
-  VoiceRecording,
-  VoiceRecordingPlayback,
 }: InputMessageInputContextValue<StreamChatGenerics> & {
   /**
    * To ensure we allow re-render, when channel is changed
@@ -70,6 +72,12 @@ export const useCreateInputMessageInputContext = <
     () => ({
       additionalTextInputProps,
       AttachButton,
+      AudioRecorder,
+      AudioRecordingButton,
+      AudioRecordingInProgress,
+      AudioRecordingLockIndicator,
+      AudioRecordingPreview,
+      AudioRecordingWaveform,
       autoCompleteSuggestionsLimit,
       autoCompleteTriggerSettings,
       clearEditingState,
@@ -98,8 +106,6 @@ export const useCreateInputMessageInputContext = <
       maxNumberOfFiles,
       mentionAllAppUsersEnabled,
       mentionAllAppUsersQuery,
-      MicButton,
-      MicInput,
       MoreOptionsButton,
       numberOfLines,
       onChangeText,
@@ -112,8 +118,6 @@ export const useCreateInputMessageInputContext = <
       setQuotedMessageState,
       ShowThreadMessageInChannelButton,
       UploadProgressIndicator,
-      VoiceRecording,
-      VoiceRecordingPlayback,
     }),
     [
       compressImageQuality,

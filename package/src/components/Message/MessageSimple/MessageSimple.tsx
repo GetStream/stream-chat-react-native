@@ -161,7 +161,8 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
           const attachmentKeysEqual =
             attachment.image_url === nextMessageAttachments[index].image_url &&
             attachment.og_scrape_url === nextMessageAttachments[index].og_scrape_url &&
-            attachment.thumb_url === nextMessageAttachments[index].thumb_url;
+            attachment.thumb_url === nextMessageAttachments[index].thumb_url &&
+            attachment.type === nextMessageAttachments[index].type;
 
           return attachmentKeysEqual;
         })

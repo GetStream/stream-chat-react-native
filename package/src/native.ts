@@ -119,6 +119,7 @@ export type PlaybackStatus = {
   isMuted: boolean;
   isPlaying: boolean;
   positionMillis: number;
+  shouldPlay: boolean;
 };
 
 export type AVPlaybackStatusToSet = {
@@ -155,13 +156,16 @@ export type SoundReturnType = {
   onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void;
   onProgress?: (data: VideoProgressData) => void;
   onReadyForDisplay?: () => void;
+  pause?: () => void;
   pauseAsync?: () => void;
   play?: () => void;
   playAsync?: () => void;
   replayAsync?: () => void;
   resizeMode?: string;
+  resume?: () => void;
   seek?: (progress: number) => void;
   setPositionAsync?: (millis: number) => void;
+  setProgressUpdateIntervalAsync?: (progressUpdateIntervalMillis: number) => void;
   soundRef?: React.RefObject<SoundReturnType>;
   stopAsync?: () => void;
   style?: StyleProp<ViewStyle>;
@@ -180,12 +184,13 @@ export type SoundType = {
 
 export type RecordingStatus = {
   canRecord: boolean;
+  currentMetering: number;
   currentPosition: number;
   durationMillis: number;
   isDoneRecording: boolean;
   isRecording: boolean;
+  metering: number;
   mediaServicesDidReset?: boolean;
-  metering?: number;
   uri?: string | null;
 };
 
@@ -193,18 +198,27 @@ export type AudioReturnType = {
   getStatusAsync: () => Promise<RecordingStatus>;
   getURI: () => string | null;
   pauseAsync: () => Promise<RecordingStatus>;
+  setProgressUpdateInterval: (progressUpdateIntervalMillis: number) => void;
   stopAndUnloadAsync: () => Promise<RecordingStatus>;
+};
+
+export type RecordingOptions = {
+  /**
+   * A boolean that determines whether audio level information will be part of the status object under the "metering" key.
+   */
+  isMeteringEnabled?: boolean;
 };
 
 export type AudioType = {
   startRecording: (
+    options?: RecordingOptions,
     onRecordingStatusUpdate?: (recordingStatus: RecordingStatus) => void,
   ) => Promise<AudioReturnType> | Promise<string>;
   stopRecording: () => Promise<void>;
   pausePlayer?: () => Promise<void>;
   resumePlayer?: () => Promise<void>;
   startPlayer?: (
-    uri?: string,
+    uri?: string | AudioReturnType,
     initialStatus?: Partial<AVPlaybackStatusToSet>,
     onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void,
   ) => Promise<void>;

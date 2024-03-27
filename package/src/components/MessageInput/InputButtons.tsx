@@ -12,7 +12,6 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   attachButtonContainer: { paddingRight: 10 },
-  micButtonContainer: { paddingRight: 10 },
 });
 
 export type InputButtonsProps<
@@ -29,10 +28,8 @@ export type InputButtonsWithContextProps<
   | 'hasCommands'
   | 'hasFilePicker'
   | 'hasImagePicker'
-  | 'MicButton'
   | 'MoreOptionsButton'
   | 'openCommandsPicker'
-  | 'startVoiceRecording'
   | 'selectedPicker'
   | 'setShowMoreOptions'
   | 'showMoreOptions'
@@ -52,19 +49,17 @@ export const InputButtonsWithContext = <
     hasCommands,
     hasFilePicker,
     hasImagePicker,
-    MicButton,
     MoreOptionsButton,
     openCommandsPicker,
     setShowMoreOptions,
     showMoreOptions,
-    startVoiceRecording,
     text,
     toggleAttachmentPicker,
   } = props;
 
   const {
     theme: {
-      messageInput: { attachButtonContainer, commandsButtonContainer, micButtonContainer },
+      messageInput: { attachButtonContainer, commandsButtonContainer },
     },
   } = useTheme();
 
@@ -78,9 +73,6 @@ export const InputButtonsWithContext = <
     <MoreOptionsButton handleOnPress={() => setShowMoreOptions(true)} />
   ) : (
     <>
-      <View style={[styles.micButtonContainer, micButtonContainer]}>
-        <MicButton handleOnPress={startVoiceRecording} />
-      </View>
       {(hasImagePicker || hasFilePicker) && ownCapabilities.uploadFile && (
         <View
           style={[hasCommands ? styles.attachButtonContainer : undefined, attachButtonContainer]}
@@ -169,13 +161,11 @@ export const InputButtons = <
     hasCommands,
     hasFilePicker,
     hasImagePicker,
-    MicButton,
     MoreOptionsButton,
     openCommandsPicker,
     selectedPicker,
     setShowMoreOptions,
     showMoreOptions,
-    startVoiceRecording,
     text,
     toggleAttachmentPicker,
   } = useMessageInputContext<StreamChatGenerics>();
@@ -189,13 +179,11 @@ export const InputButtons = <
         hasCommands,
         hasFilePicker,
         hasImagePicker,
-        MicButton,
         MoreOptionsButton,
         openCommandsPicker,
         selectedPicker,
         setShowMoreOptions,
         showMoreOptions,
-        startVoiceRecording,
         text,
         toggleAttachmentPicker,
       }}

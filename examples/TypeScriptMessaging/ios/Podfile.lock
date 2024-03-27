@@ -963,10 +963,10 @@ PODS:
     - React-Core
   - react-native-safe-area-context (4.9.0):
     - React-Core
-  - react-native-video (6.0.0-beta.5):
+  - react-native-video (6.0.0-beta.6):
     - React-Core
-    - react-native-video/Video (= 6.0.0-beta.5)
-  - react-native-video/Video (6.0.0-beta.5):
+    - react-native-video/Video (= 6.0.0-beta.6)
+  - react-native-video/Video (6.0.0-beta.6):
     - PromisesSwift
     - React-Core
   - React-nativeconfig (0.73.4)
@@ -1136,6 +1136,8 @@ PODS:
     - React-jsi (= 0.73.4)
     - React-logger (= 0.73.4)
     - React-perflogger (= 0.73.4)
+  - RNAudioRecorderPlayer (3.6.6):
+    - React-Core
   - RNCClipboard (1.13.2):
     - React-Core
   - RNCMaskedView (0.1.11):
@@ -1473,7 +1475,7 @@ SPEC CHECKSUMS:
   react-native-netinfo: 299dad906cdbf3b67bcc6f693c807f98bdd127cc
   react-native-quick-sqlite: 2b225dadc63b670f027111e58f6f169773f6d755
   react-native-safe-area-context: b97eb6f9e3b7f437806c2ce5983f479f8eb5de4b
-  react-native-video: df7d8a4c8568ed4a31b28e6cd2bfa4a98b186e36
+  react-native-video: dc3118548cf8864a83f57df4345cf6c692402e8f
   React-nativeconfig: d7af5bae6da70fa15ce44f045621cf99ed24087c
   React-NativeModulesApple: 0123905d5699853ac68519607555a9a4f5c7b3ac
   React-perflogger: 8a1e1af5733004bdd91258dcefbde21e0d1faccd
@@ -1494,6 +1496,7 @@ SPEC CHECKSUMS:
   React-runtimescheduler: ed48e5faac6751e66ee1261c4bd01643b436f112
   React-utils: 6e5ad394416482ae21831050928ae27348f83487
   ReactCommon: 840a955d37b7f3358554d819446bffcf624b2522
+  RNAudioRecorderPlayer: f790fc1afb118552ae6285d60adde52ee6b5d9ef
   RNCClipboard: 60fed4b71560d7bfe40e9d35dea9762b024da86d
   RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
@@ -1506,7 +1509,7 @@ SPEC CHECKSUMS:
   RNSVG: ba3e7232f45e34b7b47e74472386cf4e1a676d0a
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
-  Yoga: 1b901a6d6eeba4e8a2e8f308f708691cdb5db312
+  Yoga: 64cd2a583ead952b0315d5135bf39e053ae9be70
 
 PODFILE CHECKSUM: 90406e1e85c82b37484f5d746afa45c0637bb4b3
 

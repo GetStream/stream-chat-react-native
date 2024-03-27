@@ -196,7 +196,7 @@ export const useMessageActions = <
       }
     },
     actionType: 'deleteMessage',
-    icon: <Delete pathFill={accent_red} />,
+    icon: <Delete fill={accent_red} size={32} />,
     title: t('Delete Message'),
     titleStyle: { color: accent_red },
   };
@@ -345,7 +345,7 @@ export const useMessageActions = <
       await handleResendMessage();
     },
     actionType: 'retry',
-    icon: <SendUp pathFill={accent_blue} />,
+    icon: <SendUp fill={accent_blue} size={32} />,
     title: t('Resend'),
   };
 

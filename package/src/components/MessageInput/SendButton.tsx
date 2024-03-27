@@ -39,9 +39,13 @@ const SendButtonWithContext = <
       style={[sendButton]}
       testID='send-button'
     >
-      {giphyActive && <Search pathFill={disabled ? grey_gainsboro : accent_blue} {...searchIcon} />}
-      {!giphyActive && disabled && <SendRight pathFill={grey_gainsboro} {...sendRightIcon} />}
-      {!giphyActive && !disabled && <SendUp pathFill={accent_blue} {...sendUpIcon} />}
+      {giphyActive ? (
+        <Search pathFill={disabled ? grey_gainsboro : accent_blue} {...searchIcon} />
+      ) : disabled ? (
+        <SendRight fill={grey_gainsboro} size={32} {...sendRightIcon} />
+      ) : (
+        <SendUp fill={accent_blue} size={32} {...sendUpIcon} />
+      )}
     </Pressable>
   );
 };

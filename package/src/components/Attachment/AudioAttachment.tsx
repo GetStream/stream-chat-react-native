@@ -15,40 +15,29 @@ import {
 } from '../../native';
 import type { FileUpload } from '../../types/types';
 import { ProgressControl } from '../ProgressControl/ProgressControl';
+import { WaveProgressBar } from '../ProgressControl/WaveProgressBar';
 
 dayjs.extend(duration);
 
-const FILE_PREVIEW_HEIGHT = 70;
-
 const styles = StyleSheet.create({
-  fileContainer: {
-    borderRadius: 12,
-    borderWidth: 1,
+  fileContentContainer: {
+    alignItems: 'center',
     flexDirection: 'row',
-    height: FILE_PREVIEW_HEIGHT,
-    paddingLeft: 8,
-    paddingRight: 8,
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 8,
   },
-  fileContentContainer: { flexDirection: 'row', paddingRight: 40 },
   filenameText: {
     fontSize: 14,
     fontWeight: 'bold',
-    paddingLeft: 10,
+    paddingBottom: 16,
+    paddingLeft: 8,
   },
   fileTextContainer: {
     justifyContent: 'space-around',
   },
-  flatList: { marginBottom: 12, maxHeight: FILE_PREVIEW_HEIGHT * 2.5 + 16 },
-  overlay: {
-    borderRadius: 12,
-    marginLeft: 8,
-    marginRight: 8,
-  },
-  progressControlView: {
-    flex: 8,
-  },
+  progressControlView: {},
   progressDurationText: {
-    flex: 4,
     fontSize: 12,
     paddingLeft: 10,
     paddingRight: 8,
@@ -71,7 +60,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export type AudioAttachmentPropsWithContext = {
+export type AudioAttachmentProps = {
   item: Omit<FileUpload, 'state'>;
   onLoad: (index: string, duration: number) => void;
   onPlayPause: (index: string, pausedStatus?: boolean) => void;
@@ -79,18 +68,26 @@ export type AudioAttachmentPropsWithContext = {
   testID?: string;
 };
 
-const AudioAttachmentWithContext = (props: AudioAttachmentPropsWithContext) => {
+export const AudioAttachment = (props: AudioAttachmentProps) => {
   const soundRef = React.useRef<SoundReturnType | null>(null);
   const { item, onLoad, onPlayPause, onProgress } = props;
 
+  /** This is for Native CLI Apps */
   const handleLoad = (payload: VideoPayloadData) => {
-    onLoad(item.id, payload.duration);
+    onLoad(item.id, item.duration || payload.duration);
   };
 
+  /** This is for Native CLI Apps */
   const handleProgress = (data: VideoProgressData) => {
-    if (data.currentTime && data.seekableDuration) {
+    if (data.currentTime <= data.seekableDuration) {
       onProgress(item.id, data.currentTime);
     }
+  };
+
+  /** This is for Native CLI Apps */
+  const handleEnd = () => {
+    onPlayPause(item.id, true);
+    onProgress(item.id, item.duration, true);
   };
 
   const handlePlayPause = async (isPausedStatusAvailable?: boolean) => {
@@ -103,9 +100,13 @@ const AudioAttachmentWithContext = (props: AudioAttachmentPropsWithContext) => {
           if (soundRef.current.setPositionAsync) soundRef.current.setPositionAsync(0);
         }
         if (item.paused) {
+          // For expo CLI
           if (soundRef.current.playAsync) await soundRef.current.playAsync();
+          if (soundRef.current.setProgressUpdateIntervalAsync)
+            await soundRef.current.setProgressUpdateIntervalAsync(60);
           onPlayPause(item.id, false);
         } else {
+          // For expo CLI
           if (soundRef.current.pauseAsync) await soundRef.current.pauseAsync();
           onPlayPause(item.id, true);
         }
@@ -117,17 +118,15 @@ const AudioAttachmentWithContext = (props: AudioAttachmentPropsWithContext) => {
 
   const handleProgressDrag = async (position: number) => {
     onProgress(item.id, position);
+    // For native CLI
     if (soundRef.current?.seek) soundRef.current.seek(position);
+    // For expo CLI
     if (soundRef.current?.setPositionAsync) {
       await soundRef.current.setPositionAsync(position * 1000);
     }
   };
 
-  const handleEnd = () => {
-    onPlayPause(item.id, true);
-    onProgress(item.id, item.duration, true);
-  };
-
+  /** For Expo CLI */
   const onPlaybackStatusUpdate = (playbackStatus: PlaybackStatus) => {
     if (!playbackStatus.isLoaded) {
       // Update your UI for the unloaded state
@@ -135,8 +134,7 @@ const AudioAttachmentWithContext = (props: AudioAttachmentPropsWithContext) => {
         console.log(`Encountered a fatal error during playback: ${playbackStatus.error}`);
       }
     } else {
-      const { durationMillis, positionMillis } = playbackStatus;
-      onLoad(item.id, durationMillis / 1000);
+      const { positionMillis } = playbackStatus;
       // Update your UI for the loaded state
       if (playbackStatus.isPlaying) {
         // Update your UI for the playing state
@@ -187,9 +185,12 @@ const AudioAttachmentWithContext = (props: AudioAttachmentPropsWithContext) => {
           if (soundRef.current.pauseAsync) await soundRef.current.pauseAsync();
         } else {
           if (soundRef.current.playAsync) await soundRef.current.playAsync();
+          if (soundRef.current.setProgressUpdateIntervalAsync)
+            await soundRef.current.setProgressUpdateIntervalAsync(60);
         }
       }
     };
+    // For expo CLI
     if (!Sound.Player) {
       initalPlayPause();
     }
@@ -231,9 +232,9 @@ const AudioAttachmentWithContext = (props: AudioAttachmentPropsWithContext) => {
         ]}
       >
         {item.paused ? (
-          <Play height={24} pathFill={static_black} width={24} />
+          <Play fill={static_black} height={32} width={32} />
         ) : (
-          <Pause height={24} pathFill={static_black} width={24} />
+          <Pause fill={static_black} height={32} width={32} />
         )}
       </TouchableOpacity>
       <View style={[styles.fileTextContainer, fileTextContainer]}>
@@ -254,7 +255,9 @@ const AudioAttachmentWithContext = (props: AudioAttachmentPropsWithContext) => {
             filenameText,
           ]}
         >
-          {item.file.name.slice(0, 12) + '...' + item.file.name.slice(lastIndexOfDot)}
+          {item.file.name.length < 12
+            ? item.file.name
+            : item.file.name.slice(0, 12) + '...' + item.file.name.slice(lastIndexOfDot)}
         </Text>
         <View
           style={{
@@ -279,36 +282,35 @@ const AudioAttachmentWithContext = (props: AudioAttachmentPropsWithContext) => {
             {progressDuration}
           </Text>
           <View style={[styles.progressControlView, progressControlView]}>
-            <ProgressControl
-              duration={item.duration as number}
-              filledColor={accent_blue}
-              onPlayPause={handlePlayPause}
-              onProgressDrag={handleProgressDrag}
-              progress={item.progress as number}
-              testID='progress-control'
-              width={120}
-            />
+            {item.file.waveform_data ? (
+              <WaveProgressBar
+                amplitudesCount={30}
+                onPlayPause={handlePlayPause}
+                onProgressDrag={(position) => {
+                  if (item.file.waveform_data) {
+                    const progress = (position / 30) * (item.duration as number);
+                    handleProgressDrag(progress);
+                  }
+                }}
+                progress={(item.progress as number) * 100}
+                waveformData={item.file.waveform_data}
+              />
+            ) : (
+              <ProgressControl
+                duration={item.duration as number}
+                filledColor={accent_blue}
+                onPlayPause={handlePlayPause}
+                onProgressDrag={handleProgressDrag}
+                progress={item.progress as number}
+                testID='progress-control'
+                width={'30%'}
+              />
+            )}
           </View>
         </View>
       </View>
     </View>
   );
 };
-
-export type AudioAttachmentProps = Partial<AudioAttachmentPropsWithContext> & {
-  item: Omit<FileUpload, 'state'>;
-  onLoad: (index: string, duration: number) => void;
-  onPlayPause: (index: string, pausedStatus?: boolean) => void;
-  onProgress: (index: string, currentTime?: number, hasEnd?: boolean) => void;
-  testID: string;
-};
-
-/**
- * AudioAttachment
- * UI Component to preview the audio files
- */
-export const AudioAttachment = (props: AudioAttachmentProps) => (
-  <AudioAttachmentWithContext {...props} />
-);
 
 AudioAttachment.displayName = 'AudioAttachment{messageInput{autoAttachment}}';

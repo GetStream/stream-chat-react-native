@@ -128,6 +128,12 @@ import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/
 import { ReactionList as ReactionListDefault } from '../Message/MessageSimple/ReactionList';
 import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButton';
 import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
+import { AudioRecorder as AudioRecorderDefault } from '../MessageInput/components/AudioRecorder/AudioRecorder';
+import { AudioRecordingButton as AudioRecordingButtonDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingButton';
+import { AudioRecordingInProgress as AudioRecordingInProgressDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingInProgress';
+import { AudioRecordingLockIndicator as AudioRecordingLockIndicatorDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingLockIndicator';
+import { AudioRecordingPreview as AudioRecordingPreviewDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingPreview';
+import { AudioRecordingWaveform as AudioRecordingWaveformDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingWaveform';
 import { InputEditingStateHeader as InputEditingStateHeaderDefault } from '../MessageInput/components/InputEditingStateHeader';
 import { InputGiphySearch as InputGiphyCommandInputDefault } from '../MessageInput/components/InputGiphySearch';
 import { InputReplyStateHeader as InputReplyStateHeaderDefault } from '../MessageInput/components/InputReplyStateHeader';
@@ -135,15 +141,11 @@ import { CooldownTimer as CooldownTimerDefault } from '../MessageInput/CooldownT
 import { FileUploadPreview as FileUploadPreviewDefault } from '../MessageInput/FileUploadPreview';
 import { ImageUploadPreview as ImageUploadPreviewDefault } from '../MessageInput/ImageUploadPreview';
 import { InputButtons as InputButtonsDefault } from '../MessageInput/InputButtons';
-import { MicButton as MicButtonDefault } from '../MessageInput/MicButton';
-import { MicInput as MicInputDefault } from '../MessageInput/MicInput';
 import { MoreOptionsButton as MoreOptionsButtonDefault } from '../MessageInput/MoreOptionsButton';
 import { SendButton as SendButtonDefault } from '../MessageInput/SendButton';
 import { SendMessageDisallowedIndicator as SendMessageDisallowedIndicatorDefault } from '../MessageInput/SendMessageDisallowedIndicator';
 import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDefault } from '../MessageInput/ShowThreadMessageInChannelButton';
 import { UploadProgressIndicator as UploadProgressIndicatorDefault } from '../MessageInput/UploadProgressIndicator';
-import { VoiceRecording as VoiceRecordingDefault } from '../MessageInput/VoiceRecording';
-import { VoiceRecordingPlayback as VoiceRecordingPlaybackDefault } from '../MessageInput/VoiceRecordingPlayback';
 import { DateHeader as DateHeaderDefault } from '../MessageList/DateHeader';
 import type { MessageType } from '../MessageList/hooks/useMessageList';
 import { InlineDateSeparator as InlineDateSeparatorDefault } from '../MessageList/InlineDateSeparator';
@@ -419,6 +421,12 @@ const ChannelWithContext = <
     Attachment = AttachmentDefault,
     AttachmentActions = AttachmentActionsDefault,
     AudioAttachment = AudioAttachmentDefault,
+    AudioRecorder = AudioRecorderDefault,
+    AudioRecordingButton = AudioRecordingButtonDefault,
+    AudioRecordingInProgress = AudioRecordingInProgressDefault,
+    AudioRecordingLockIndicator = AudioRecordingLockIndicatorDefault,
+    AudioRecordingPreview = AudioRecordingPreviewDefault,
+    AudioRecordingWaveform = AudioRecordingWaveformDefault,
     AutoCompleteSuggestionHeader = AutoCompleteSuggestionHeaderDefault,
     AutoCompleteSuggestionItem = AutoCompleteSuggestionItemDefault,
     AutoCompleteSuggestionList = AutoCompleteSuggestionListDefault,
@@ -527,8 +535,6 @@ const ChannelWithContext = <
     MessageStatus = MessageStatusDefault,
     MessageSystem = MessageSystemDefault,
     MessageText,
-    MicButton = MicButtonDefault,
-    MicInput = MicInputDefault,
     MoreOptionsButton = MoreOptionsButtonDefault,
     myMessageTheme,
     newMessageStateUpdateThrottleInterval = defaultThrottleInterval,
@@ -571,8 +577,6 @@ const ChannelWithContext = <
     UploadProgressIndicator = UploadProgressIndicatorDefault,
     UrlPreview = CardDefault,
     VideoThumbnail = VideoThumbnailDefault,
-    VoiceRecording = VoiceRecordingDefault,
-    VoiceRecordingPlayback = VoiceRecordingPlaybackDefault,
     watcherCount,
     watchers,
   } = props;
@@ -1582,6 +1586,7 @@ const ChannelWithContext = <
         if (
           (attachment.type === 'file' ||
             attachment.type === 'audio' ||
+            attachment.type === 'voiceRecording' ||
             attachment.type === 'video') &&
           attachment.asset_url &&
           isLocalUrl(attachment.asset_url) &&
@@ -1600,6 +1605,7 @@ const ChannelWithContext = <
           if (response.thumb_url) {
             attachment.thumb_url = response.thumb_url;
           }
+
           delete attachment.originalFile;
           dbApi.updateMessage({
             message: { ...updatedMessage, cid: channel.cid },
@@ -2195,6 +2201,12 @@ const ChannelWithContext = <
   const inputMessageInputContext = useCreateInputMessageInputContext<StreamChatGenerics>({
     additionalTextInputProps,
     AttachButton,
+    AudioRecorder,
+    AudioRecordingButton,
+    AudioRecordingInProgress,
+    AudioRecordingLockIndicator,
+    AudioRecordingPreview,
+    AudioRecordingWaveform,
     autoCompleteSuggestionsLimit,
     autoCompleteTriggerSettings,
     channelId,
@@ -2224,8 +2236,6 @@ const ChannelWithContext = <
     maxNumberOfFiles,
     mentionAllAppUsersEnabled,
     mentionAllAppUsersQuery,
-    MicButton,
-    MicInput,
     MoreOptionsButton,
     numberOfLines,
     onChangeText,
@@ -2238,8 +2248,6 @@ const ChannelWithContext = <
     setQuotedMessageState,
     ShowThreadMessageInChannelButton,
     UploadProgressIndicator,
-    VoiceRecording,
-    VoiceRecordingPlayback,
   });
 
   const messageListContext = useCreatePaginatedMessageListContext({

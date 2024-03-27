@@ -545,6 +545,7 @@ export type Theme = {
     imageAttachment: ImageStyle;
     markdownStyles: MarkdownStyle;
     messageContainer: ViewStyle;
+    secondaryText: ViewStyle;
     textContainer: ViewStyle;
     videoThumbnail: {
       container: ViewStyle;
@@ -1093,6 +1094,7 @@ export const defaultTheme: Theme = {
     imageAttachment: {},
     markdownStyles: {},
     messageContainer: {},
+    secondaryText: {},
     textContainer: {},
     videoThumbnail: {
       container: {},

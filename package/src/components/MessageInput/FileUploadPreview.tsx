@@ -163,12 +163,27 @@ const FileUploadPreviewWithContext = <
   const flatListRef = useRef<FlatList<FileUpload> | null>(null);
   const [flatListWidth, setFlatListWidth] = useState(0);
 
+  useEffect(() => {
+    setFileUploads(
+      fileUploads.map((file) => ({
+        ...file,
+        duration: file.duration || 0,
+        paused: true,
+        progress: 0,
+      })),
+    );
+  }, [fileUploads.length]);
+
   // Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here and the duration is set.
   const onLoad = (index: string, duration: number) => {
     setFileUploads((prevFileUploads) =>
       prevFileUploads.map((fileUpload) => ({
         ...fileUpload,
         duration: fileUpload.id === index ? duration : fileUpload.duration,
+        file: {
+          ...fileUpload.file,
+          duration: fileUpload.id === index ? duration : fileUpload.duration,
+        },
       })),
     );
   };
@@ -213,7 +228,7 @@ const FileUploadPreviewWithContext = <
 
   const {
     theme: {
-      colors: { black, grey_dark, grey_gainsboro, grey_whisper, white },
+      colors: { black, grey_dark, grey_gainsboro, grey_whisper },
       messageInput: {
         fileUploadPreview: {
           audioAttachmentFileContainer,
@@ -258,9 +273,7 @@ const FileUploadPreviewWithContext = <
                       }
                     : {},
                   {
-                    backgroundColor: white,
                     borderColor: grey_whisper,
-                    width: -16,
                   },
                   fileContainer,
                 ]}

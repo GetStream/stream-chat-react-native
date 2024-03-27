@@ -55,7 +55,7 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = (props) => {
       style={[styles.container, container, style]}
     >
       <View style={[styles.roundedView, roundedView, { backgroundColor: static_white }]}>
-        <Play height={24} pathFill={static_black} width={24} />
+        <Play fill={static_black} height={32} width={32} />
       </View>
     </ImageBackground>
   );

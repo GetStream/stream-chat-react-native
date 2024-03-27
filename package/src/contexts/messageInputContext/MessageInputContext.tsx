@@ -24,6 +24,12 @@ import { useMessageDetailsForState } from './hooks/useMessageDetailsForState';
 import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
 import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
+import type { AudioRecorderProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecorder';
+import type { AudioRecordingButtonProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingButton';
+import type { AudioRecordingInProgressProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingInProgress';
+import type { AudioRecordingLockIndicatorProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingLockIndicator';
+import type { AudioRecordingPreviewProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingPreview';
+import type { AudioRecordingWaveformProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingWaveform';
 import type { InputEditingStateHeaderProps } from '../../components/MessageInput/components/InputEditingStateHeader';
 import type { InputGiphySearchProps } from '../../components/MessageInput/components/InputGiphySearch';
 import type { InputReplyStateHeaderProps } from '../../components/MessageInput/components/InputReplyStateHeader';
@@ -33,16 +39,12 @@ import { useCooldown } from '../../components/MessageInput/hooks/useCooldown';
 import type { ImageUploadPreviewProps } from '../../components/MessageInput/ImageUploadPreview';
 import type { InputButtonsProps } from '../../components/MessageInput/InputButtons';
 import type { MessageInputProps } from '../../components/MessageInput/MessageInput';
-import type { MicButtonProps } from '../../components/MessageInput/MicButton';
-import type { MicInputProps } from '../../components/MessageInput/MicInput';
 import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreOptionsButton';
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
-import type { VoiceRecordingProps } from '../../components/MessageInput/VoiceRecording';
-import type { VoiceRecodingPlaybackProps } from '../../components/MessageInput/VoiceRecordingPlayback';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { Emoji } from '../../emoji-data';
-import { Audio, AudioReturnType, pickDocument, RecordingStatus } from '../../native';
+import { AudioReturnType, pickDocument } from '../../native';
 import type {
   Asset,
   DefaultStreamChatGenerics,
@@ -146,6 +148,7 @@ export type LocalMessageInputContext<
   inputBoxRef: React.MutableRefObject<TextInput | null>;
   isValidMessage: () => boolean;
   mentionedUsers: string[];
+  micLocked: boolean;
   numberOfUploads: number;
   onChange: (newText: string) => void;
   onSelectItem: (item: UserResponse<StreamChatGenerics>) => void;
@@ -155,7 +158,8 @@ export type LocalMessageInputContext<
   openMentionsPicker: () => void;
   pickFile: () => Promise<void>;
   recording: AudioReturnType | string | undefined;
-  recordingStatus: RecordingStatus | undefined;
+  recordingDuration: number;
+  recordingStopped: boolean;
   /**
    * Function for removing a file from the upload preview
    *
@@ -191,19 +195,17 @@ export type LocalMessageInputContext<
    */
   setInputBoxRef: LegacyRef<TextInput> | undefined;
   setMentionedUsers: React.Dispatch<React.SetStateAction<string[]>>;
+  setMicLocked: React.Dispatch<React.SetStateAction<boolean>>;
   setNumberOfUploads: React.Dispatch<React.SetStateAction<number>>;
   setRecording: React.Dispatch<React.SetStateAction<AudioReturnType | string | undefined>>;
-  setRecordingStatus: React.Dispatch<React.SetStateAction<RecordingStatus | undefined>>;
+  setRecordingDuration: React.Dispatch<React.SetStateAction<number>>;
+  setRecordingStopped: React.Dispatch<boolean>;
   setSendThreadMessageInChannel: React.Dispatch<React.SetStateAction<boolean>>;
   setShowMoreOptions: React.Dispatch<React.SetStateAction<boolean>>;
   setShowVoiceUI: React.Dispatch<React.SetStateAction<boolean>>;
   setText: React.Dispatch<React.SetStateAction<string>>;
   showMoreOptions: boolean;
   showVoiceUI: boolean;
-  /**
-   * Text value of the TextInput
-   */
-  startVoiceRecording: () => Promise<void>;
   text: string;
   toggleAttachmentPicker: () => void;
   /**
@@ -228,6 +230,43 @@ export type InputMessageInputContextValue<
    * Defaults to and accepts same props as: [AttachButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/attach-button/)
    */
   AttachButton: React.ComponentType<AttachButtonProps<StreamChatGenerics>>;
+
+  /**
+   * Custom UI component for audio recorder UI.
+   *
+   * Defaults to and accepts same props as: [AudioRecorder](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/AudioRecorder.tsx)
+   */
+  AudioRecorder: React.ComponentType<AudioRecorderProps<StreamChatGenerics>>;
+  /**
+   * Custom UI component for audio recording mic button.
+   *
+   * Defaults to and accepts same props as: [AudioRecordingButton](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingButton.tsx)
+   */
+  AudioRecordingButton: React.ComponentType<AudioRecordingButtonProps<StreamChatGenerics>>;
+  /**
+   * Custom UI component to render audio recording in progress.
+   *
+   * **Default** [AudioRecordingInProgress](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingInProgress.tsx)
+   */
+  AudioRecordingInProgress: React.ComponentType<AudioRecordingInProgressProps>;
+  /**
+   * Custom UI component for audio recording lock indicator.
+   *
+   * Defaults to and accepts same props as: [AudioRecordingLockIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingLockIndicator.tsx)
+   */
+  AudioRecordingLockIndicator: React.ComponentType<AudioRecordingLockIndicatorProps>;
+  /**
+   * Custom UI component to render audio recording preview.
+   *
+   * **Default** [AudioRecordingPreview](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingPreview.tsx)
+   */
+  AudioRecordingPreview: React.ComponentType<AudioRecordingPreviewProps>;
+  /**
+   * Custom UI component to render audio recording waveform.
+   *
+   * **Default** [AudioRecordingWaveform](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingWaveform.tsx)
+   */
+  AudioRecordingWaveform: React.ComponentType<AudioRecordingWaveformProps>;
 
   clearEditingState: () => void;
   clearQuotedMessageState: () => void;
@@ -269,18 +308,7 @@ export type InputMessageInputContextValue<
   InputReplyStateHeader: React.ComponentType<InputReplyStateHeaderProps<StreamChatGenerics>>;
   /** Limit on allowed number of files to attach at a time. */
   maxNumberOfFiles: number;
-  /**
-   * Custom UI component for mic button.
-   *
-   * Defaults to and accepts same props as: [MicButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/mic-button/)
-   */
-  MicButton: React.ComponentType<MicButtonProps<StreamChatGenerics>>;
-  /**
-   * Custom UI component for mic input.
-   *
-   * Defaults to and accepts same props as: [MicInput](https://getstream.io/chat/docs/sdk/reactnative/ui-components/mic-input/)
-   */
-  MicInput: React.ComponentType<MicInputProps<StreamChatGenerics>>;
+
   /**
    * Custom UI component for more options button.
    *
@@ -312,18 +340,7 @@ export type InputMessageInputContextValue<
    * **Default** [UploadProgressIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/UploadProgressIndicator.tsx)
    */
   UploadProgressIndicator: React.ComponentType<UploadProgressIndicatorProps>;
-  /**
-   * Custom UI component to render voice recording status.
-   *
-   * **Default** [VoiceRecording](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/VoiceRecording.tsx)
-   */
-  VoiceRecording: React.ComponentType<VoiceRecordingProps>;
-  /**
-   * Custom UI component to render voice recording playback status.
-   *
-   * **Default** [VoiceRecordingPlayback](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/VoiceRecordingPlayback.tsx)
-   */
-  VoiceRecordingPlayback: React.ComponentType<VoiceRecodingPlaybackProps>;
+
   /**
    * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
    *
@@ -499,15 +516,19 @@ export const MessageInputProvider = <
     fileUploads,
     imageUploads,
     mentionedUsers,
+    micLocked,
     numberOfUploads,
     recording,
-    recordingStatus,
+    recordingDuration,
+    recordingStopped,
     setFileUploads,
     setImageUploads,
     setMentionedUsers,
+    setMicLocked,
     setNumberOfUploads,
     setRecording,
-    setRecordingStatus,
+    setRecordingDuration,
+    setRecordingStopped,
     setShowMoreOptions,
     setShowVoiceUI,
     setText,
@@ -529,6 +550,10 @@ export const MessageInputProvider = <
   /** Checks if the message is valid or not. Accordingly we can enable/disable send button */
   const isValidMessage = () => {
     if (text && text.trim()) {
+      return true;
+    }
+
+    if (micLocked) {
       return true;
     }
 
@@ -581,20 +606,6 @@ export const MessageInputProvider = <
     if (inputBoxRef.current) {
       inputBoxRef.current.focus();
     }
-  };
-
-  const onRecordingStatusUpdate = (status: RecordingStatus) => {
-    setRecordingStatus(status);
-  };
-
-  const startRecording = async () => {
-    const recording = await Audio.startRecording(onRecordingStatusUpdate);
-    setRecording(recording);
-  };
-
-  const startVoiceRecording = async () => {
-    setShowVoiceUI(true);
-    await startRecording();
   };
 
   const openMentionsPicker = () => {
@@ -720,7 +731,7 @@ export const MessageInputProvider = <
   };
 
   const mapFileUploadToAttachment = (file: FileUpload): Attachment<StreamChatGenerics> => {
-    if (file.file.mimeType?.startsWith('image/')) {
+    if (file.type === 'image') {
       return {
         fallback: file.file.name,
         image_url: file.url,
@@ -728,7 +739,7 @@ export const MessageInputProvider = <
         originalFile: file.file,
         type: 'image',
       };
-    } else if (file.file.mimeType?.startsWith('audio/')) {
+    } else if (file.type === 'audio') {
       return {
         asset_url: file.url || file.file.uri,
         duration: file.file.duration,
@@ -738,7 +749,7 @@ export const MessageInputProvider = <
         title: file.file.name,
         type: 'audio',
       };
-    } else if (file.file.mimeType?.startsWith('video/')) {
+    } else if (file.type === 'video') {
       return {
         asset_url: file.url || file.file.uri,
         duration: file.file.duration,
@@ -748,6 +759,17 @@ export const MessageInputProvider = <
         thumb_url: file.thumb_url,
         title: file.file.name,
         type: 'video',
+      };
+    } else if (file.type === 'voiceRecording') {
+      return {
+        asset_url: file.url || file.file.uri,
+        duration: file.file.duration,
+        file_size: file.file.size,
+        mime_type: file.file.mimeType,
+        originalFile: file.file,
+        title: file.file.name,
+        type: 'voiceRecording',
+        waveform_data: file.file.waveform_data,
       };
     } else {
       return {
@@ -1059,7 +1081,11 @@ export const MessageInputProvider = <
         }
         uploadAbortControllerRef.current.delete(file.name);
       }
-      const extraData: Partial<FileUpload> = { thumb_url: response.thumb_url, url: response.file };
+
+      const extraData: Partial<FileUpload> = {
+        thumb_url: response.thumb_url,
+        url: response.file,
+      };
       setFileUploads(getUploadSetStateAction(id, FileState.UPLOADED, extraData));
     } catch (error: unknown) {
       if (
@@ -1171,13 +1197,15 @@ export const MessageInputProvider = <
         ? FileState.NOT_SUPPORTED
         : FileState.UPLOADING;
 
+    // If file type is explicitly provided while upload we use it, else we derive the file type.
+    const fileType = file.type || file.mimeType?.split('/')[0];
+
     const newFile: FileUpload = {
-      duration: 0,
+      duration: file.duration || 0,
       file,
       id: file.id || id,
-      paused: true,
-      progress: 0,
       state: fileState,
+      type: fileType,
     };
 
     await Promise.all([
@@ -1237,6 +1265,7 @@ export const MessageInputProvider = <
     inputBoxRef,
     isValidMessage,
     mentionedUsers,
+    micLocked,
     numberOfUploads,
     onChange,
     onSelectItem,
@@ -1246,7 +1275,8 @@ export const MessageInputProvider = <
     openMentionsPicker,
     pickFile,
     recording,
-    recordingStatus,
+    recordingDuration,
+    recordingStopped,
     removeFile,
     removeImage,
     resetInput,
@@ -1261,16 +1291,17 @@ export const MessageInputProvider = <
     setImageUploads,
     setInputBoxRef,
     setMentionedUsers,
+    setMicLocked,
     setNumberOfUploads,
     setRecording,
-    setRecordingStatus,
+    setRecordingDuration,
+    setRecordingStopped,
     setSendThreadMessageInChannel,
     setShowMoreOptions,
     setShowVoiceUI,
     setText,
     showMoreOptions,
     showVoiceUI,
-    startVoiceRecording,
     text,
     thread,
     toggleAttachmentPicker,

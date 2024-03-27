@@ -1,0 +1,112 @@
+import React from 'react';
+import { GestureResponderEvent, StyleSheet, Text, View } from 'react-native';
+
+import dayjs from 'dayjs';
+
+import {
+  MessageInputContextValue,
+  useMessageInputContext,
+} from '../../../../contexts/messageInputContext/MessageInputContext';
+import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+
+import type { DefaultStreamChatGenerics } from '../../../../types/types';
+
+type AudioRecordingInProgressPropsWithContext<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<
+  MessageInputContextValue<StreamChatGenerics>,
+  'AudioRecordingWaveform' | 'recordingDuration'
+> & {
+  waveformData: number[];
+  /** Function that opens audio selector */
+  handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
+  maxDataPointsDrawn?: number;
+};
+
+const AudioRecordingInProgressWithContext = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  props: AudioRecordingInProgressPropsWithContext<StreamChatGenerics>,
+) => {
+  const {
+    AudioRecordingWaveform,
+    maxDataPointsDrawn = 80,
+    recordingDuration,
+    waveformData,
+  } = props;
+
+  const {
+    theme: {
+      colors: { grey_dark },
+    },
+  } = useTheme();
+
+  return (
+    <View style={styles.container}>
+      {/* `durationMillis` is for Expo apps, `currentPosition` is for Native CLI apps. */}
+      <Text style={[styles.durationText, { color: grey_dark }]}>
+        {recordingDuration ? dayjs.duration(recordingDuration).format('mm:ss') : null}
+      </Text>
+      <AudioRecordingWaveform maxDataPointsDrawn={maxDataPointsDrawn} waveformData={waveformData} />
+    </View>
+  );
+};
+
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: AudioRecordingInProgressPropsWithContext<StreamChatGenerics>,
+  nextProps: AudioRecordingInProgressPropsWithContext<StreamChatGenerics>,
+) => {
+  const { recordingDuration: prevRecordingDuration } = prevProps;
+  const { recordingDuration: nextRecordingDuration } = nextProps;
+
+  const recordingDurationEqual = prevRecordingDuration === nextRecordingDuration;
+
+  if (!recordingDurationEqual) return false;
+
+  return true;
+};
+
+const MemoizedAudioRecordingInProgress = React.memo(
+  AudioRecordingInProgressWithContext,
+  areEqual,
+) as typeof AudioRecordingInProgressWithContext;
+
+export type AudioRecordingInProgressProps<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<AudioRecordingInProgressPropsWithContext<StreamChatGenerics>> & {
+  waveformData: number[];
+};
+
+/**
+ * UI Component for attach button in MessageInput component.
+ */
+export const AudioRecordingInProgress = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  props: AudioRecordingInProgressProps<StreamChatGenerics>,
+) => {
+  const { AudioRecordingWaveform, recordingDuration } =
+    useMessageInputContext<StreamChatGenerics>();
+
+  return (
+    <MemoizedAudioRecordingInProgress
+      {...{ AudioRecordingWaveform, recordingDuration }}
+      {...props}
+    />
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingBottom: 8,
+    paddingTop: 4,
+  },
+  durationText: {
+    fontSize: 16,
+  },
+});
+
+AudioRecordingInProgress.displayName = 'AudioRecordingInProgress{messageInput}';

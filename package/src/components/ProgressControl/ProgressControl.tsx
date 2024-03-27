@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, View, ViewStyle } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
@@ -16,44 +16,25 @@ export type ProgressControlProps = {
   filledColor: string;
   progress: number;
   testID: string;
-  width: number;
+  width: ViewStyle['width'];
   onPlayPause?: (status?: boolean) => void;
   onProgressDrag?: (progress: number) => void;
 };
 
 const height = 2;
-const styles = StyleSheet.create({
-  containerStyle: {
-    borderRadius: 50,
-    height,
-  },
-  innerStyle: {
-    height,
-  },
-  progressControlThumbStyle: {
-    borderRadius: 5,
-    elevation: 6,
-    height: 20,
-    shadowOffset: {
-      height: 3,
-      width: 0,
-    },
-    shadowOpacity: 0.27,
-    shadowRadius: 4.65,
-    top: -11,
-    width: 5,
-  },
-});
 
 const ProgressControlThumb = () => {
   const {
     theme: {
-      colors: { black },
+      colors: { black, grey_dark, static_white },
     },
   } = useTheme();
   return (
     <View
-      style={[styles.progressControlThumbStyle, { backgroundColor: '#ffffff', shadowColor: black }]}
+      style={[
+        styles.progressControlThumbStyle,
+        { backgroundColor: static_white, borderColor: grey_dark, shadowColor: black },
+      ]}
     />
   );
 };
@@ -61,6 +42,13 @@ const ProgressControlThumb = () => {
 export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
   (props) => {
     const { duration, filledColor, onPlayPause, onProgressDrag, progress, testID, width } = props;
+    const { width: windowWidth } = Dimensions.get('screen');
+    const widthInNumbers = width
+      ? typeof width === 'number'
+        ? width
+        : (windowWidth * Number(width?.substring(0, width.length - 1))) / 100
+      : 0;
+
     const {
       theme: {
         colors: { grey_dark },
@@ -71,9 +59,11 @@ export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
     const translateX = useSharedValue(0);
 
     useEffect(() => {
-      state.value = progress * width;
-      translateX.value = progress * width;
-    }, [progress]);
+      if (progress <= 1) {
+        state.value = progress * widthInNumbers;
+        translateX.value = progress * widthInNumbers;
+      }
+    }, [progress, widthInNumbers]);
 
     const animatedStyles = useAnimatedStyle(() => ({
       backgroundColor: filledColor,
@@ -88,12 +78,12 @@ export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
       {
         onActive: (event) => {
           state.value = translateX.value + event.translationX;
-          if (state.value > width) state.value = width;
+          if (state.value > widthInNumbers) state.value = widthInNumbers;
           else if (state.value < 0) state.value = 0;
         },
         onFinish: () => {
           translateX.value = state.value;
-          const dragFinishLocationInSeconds = (state.value / width) * duration;
+          const dragFinishLocationInSeconds = (state.value / widthInNumbers) * duration;
           if (onProgressDrag) runOnJS(onProgressDrag)(dragFinishLocationInSeconds);
           if (onPlayPause) runOnJS(onPlayPause)(false);
         },
@@ -103,10 +93,11 @@ export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
           state.value = translateX.value;
         },
       },
-      [duration],
+      [duration, widthInNumbers],
     );
+
     return (
-      <View style={[styles.containerStyle, { backgroundColor: grey_dark, width }]}>
+      <View style={[styles.containerStyle, { backgroundColor: grey_dark, width: widthInNumbers }]}>
         <Animated.View style={[styles.innerStyle, animatedStyles]} />
 
         <PanGestureHandler
@@ -122,8 +113,36 @@ export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
     );
   },
   (prevProps, nextProps) => {
-    if (prevProps.duration === nextProps.duration && prevProps.progress === nextProps.progress)
+    if (
+      prevProps.duration === nextProps.duration &&
+      prevProps.progress === nextProps.progress &&
+      prevProps.width === nextProps.width
+    )
       return true;
     else return false;
   },
 );
+
+const styles = StyleSheet.create({
+  containerStyle: {
+    borderRadius: 50,
+    height,
+  },
+  innerStyle: {
+    height,
+  },
+  progressControlThumbStyle: {
+    borderRadius: 5,
+    borderWidth: 0.2,
+    elevation: 6,
+    height: 20,
+    shadowOffset: {
+      height: 3,
+      width: 0,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    top: -11,
+    width: 5,
+  },
+});

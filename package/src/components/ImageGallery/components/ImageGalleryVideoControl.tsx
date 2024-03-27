@@ -75,14 +75,9 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
         <TouchableOpacity accessibilityLabel='Play Pause Button' onPress={handlePlayPause}>
           <View style={[styles.roundedView, roundedView, { backgroundColor: static_white }]}>
             {paused ? (
-              <Play accessibilityLabel='Play Icon' height={24} pathFill={static_black} width={24} />
+              <Play accessibilityLabel='Play Icon' fill={static_black} height={32} width={32} />
             ) : (
-              <Pause
-                accessibilityLabel='Pause Icon'
-                height={24}
-                pathFill={static_black}
-                width={24}
-              />
+              <Pause accessibilityLabel='Pause Icon' fill={static_black} height={32} width={32} />
             )}
           </View>
         </TouchableOpacity>

@@ -1,14 +1,15 @@
 import React from 'react';
-import { Rect } from 'react-native-svg';
+import Svg, { Path } from 'react-native-svg';
 
-import { IconProps, RootSvg } from './utils/base';
+import { IconProps } from './utils/base';
 
-export const Pause = (props: IconProps) => {
-  const { height, width } = props;
-  return (
-    <RootSvg height={height} viewBox={`0 0 ${height} ${width}`} width={width} {...props}>
-      <Rect fill={props.pathFill} height={14} width={4} x={6} y={5} />
-      <Rect fill={props.pathFill} height={14} width={4} x={14} y={5} />
-    </RootSvg>
-  );
-};
+type Props = IconProps;
+
+export const Pause = ({ height, width, ...rest }: Props) => (
+  <Svg height={height} viewBox={`0 0 ${height} ${width}`} width={width} {...rest}>
+    <Path
+      d='M8 25.3333H13.3333V6.66663H8V25.3333ZM18.6667 6.66663V25.3333H24V6.66663H18.6667Z'
+      {...rest}
+    />
+  </Svg>
+);
