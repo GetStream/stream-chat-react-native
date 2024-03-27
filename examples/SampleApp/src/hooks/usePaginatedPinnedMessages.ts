@@ -30,6 +30,7 @@ export const usePaginatedPinnedMessages = (channel: Channel<StreamChatGenerics>)
 
       if (!hasMoreResults.current) {
         queryInProgress.current = false;
+        setLoading(false);
         return;
       }
 
@@ -48,6 +49,7 @@ export const usePaginatedPinnedMessages = (channel: Channel<StreamChatGenerics>)
 
       if (!newMessages) {
         queryInProgress.current = false;
+        setLoading(false);
         return;
       }
 
