@@ -309,15 +309,14 @@ const GalleryThumbnail = <
   };
 
   const defaultOnPress = () => {
-    if ((thumbnail.type === 'video' && !thumbnail.thumb_url) || !thumbnail.url) {
-      return;
-    }
-    if (thumbnail.type === 'video' && !isVideoPackageAvailable()) {
-      // This condition is kinda unreachable, since we render videos as file attachment if the video
-      // library is not installed. But doesn't hurt to have extra safeguard, in case of some customizations.
-      openUrlSafely(thumbnail.url);
-    } else {
-      openImageViewer();
+    if (thumbnail.type === 'video' && thumbnail.url) {
+      if (isVideoPackageAvailable()) {
+        openImageViewer();
+      } else {
+        // This condition is kinda unreachable, since we render videos as file attachment if the video
+        // library is not installed. But doesn't hurt to have extra safeguard, in case of some customizations.
+        openUrlSafely(thumbnail.url);
+      }
     }
   };
 
