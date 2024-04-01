@@ -309,6 +309,7 @@ const GalleryThumbnail = <
   };
 
   const defaultOnPress = () => {
+    // If file type is video and the url is defined then try to open the file.
     if (thumbnail.type === 'video' && thumbnail.url) {
       if (isVideoPackageAvailable()) {
         openImageViewer();
