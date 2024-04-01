@@ -228,7 +228,6 @@ const App = () => {
         theme={{
           colors: {
             ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
-            background: theme.colors?.white_snow || '#FCFCFC',
           },
           dark: colorScheme === 'dark',
         }}
