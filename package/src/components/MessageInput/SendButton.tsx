@@ -35,7 +35,7 @@ const SendButtonWithContext = <
   return (
     <Pressable
       disabled={disabled}
-      onPress={disabled ? () => null : () => sendMessage(undefined)}
+      onPress={disabled ? () => null : () => sendMessage()}
       style={[sendButton]}
       testID='send-button'
     >
