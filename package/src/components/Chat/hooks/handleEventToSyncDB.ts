@@ -1,4 +1,3 @@
-import { PreparedQueries } from 'src/store/types';
 import { DefaultStreamChatGenerics } from 'src/types/types';
 import type { Event, StreamChat } from 'stream-chat';
 
@@ -12,6 +11,9 @@ import { upsertChannels } from '../../../store/apis/upsertChannels';
 import { upsertMembers } from '../../../store/apis/upsertMembers';
 import { upsertMessages } from '../../../store/apis/upsertMessages';
 import { upsertReads } from '../../../store/apis/upsertReads';
+import { QuickSqliteClient } from '../../../store/QuickSqliteClient';
+import { createSelectQuery } from '../../../store/sqlite-utils/createSelectQuery';
+import { PreparedQueries } from '../../../store/types';
 
 export const handleEventToSyncDB = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -22,63 +24,76 @@ export const handleEventToSyncDB = <
 ) => {
   const { type } = event;
 
+  // This function is used to guard the queries that require channel to be present in the db first
+  // If channel is not present in the db, we first fetch the channel data from the channel object
+  // and then add the queries with a channel create query first
+  const queriesWithChannelGuard = (queries: PreparedQueries[]) => {
+    const cid = event.cid || event.channel?.cid;
+    if (!cid) return queries;
+    const channels = QuickSqliteClient.executeSql.apply(
+      null,
+      createSelectQuery('channels', ['cid'], {
+        cid,
+      }),
+    );
+    // a channel is not present in the db, we first fetch the channel data from the channel object.
+    // this can happen for example when a message.new event is received for a channel that is not in the db due to a channel being hidden.
+    if (channels.length === 0) {
+      const channel =
+        event.channel_type && event.channel_id
+          ? client.channel(event.channel_type, event.channel_id)
+          : undefined;
+      if (channel && channel.initialized && !channel.disconnected) {
+        const channelQuery = upsertChannelDataFromChannel({
+          channel,
+          flush,
+        });
+        if (channelQuery) {
+          return [...channelQuery, ...queries];
+        } else {
+          console.warn(
+            'Couldnt create channel queries on event for an initialized channel that is not in DB, skipping event',
+            { event },
+          );
+          return [];
+        }
+      } else {
+        console.warn(
+          'Received "message.new" event for a non initialized channel that is not in DB, skipping event',
+          { event },
+        );
+        return [];
+      }
+    }
+    return queries;
+  };
+
   if (type === 'message.read') {
     if (event.user?.id && event.cid) {
-      return upsertReads({
-        cid: event.cid,
-        flush,
-        reads: [
-          {
-            last_read: event.received_at as string,
-            unread_messages: 0,
-            user: event.user,
-          },
-        ],
-      });
+      return queriesWithChannelGuard(
+        upsertReads({
+          cid: event.cid,
+          flush,
+          reads: [
+            {
+              last_read: event.received_at as string,
+              unread_messages: 0,
+              user: event.user,
+            },
+          ],
+        }),
+      );
     }
   }
 
   if (type === 'message.new') {
     if (event.message && (!event.message.parent_id || event.message.show_in_channel)) {
-      const channel =
-        event.channel_type && event.channel_id
-          ? client.channel(event.channel_type, event.channel_id)
-          : undefined;
-      const skippedMessageQueries: PreparedQueries[] = [];
-      const queries = upsertMessages({
-        flush,
-        messages: [event.message],
-        onNonExistentChannel: (map) => {
-          map.forEach((skippedQueries) => {
-            skippedMessageQueries.push(...skippedQueries);
-          });
-        },
-      });
-      // if a channel was hidden and a new message was received it would be missing from the database
-      if (skippedMessageQueries.length) {
-        if (channel && channel.initialized && !channel.disconnected) {
-          const channelQuery = upsertChannelDataFromChannel({
-            channel,
-            flush,
-          });
-          if (channelQuery) {
-            return [...channelQuery, ...queries, ...skippedMessageQueries];
-          } else {
-            console.warn(
-              'Couldnt create channel queries on "message.new" for an initialized channel that is not in DB, skipping message',
-              { event },
-            );
-            return [];
-          }
-        } else {
-          console.warn(
-            'Received "message.new" event for a non initialized channel that is not in DB, skipping message',
-            { event },
-          );
-          return [];
-        }
-      }
-      return queries;
+      return queriesWithChannelGuard(
+        upsertMessages({
+          flush,
+          messages: [event.message],
+        }),
+      );
     }
   }
 
@@ -86,10 +101,12 @@ export const handleEventToSyncDB = <
     if (event.message && !event.message.parent_id) {
       // Update only if it exists, otherwise event could be related
       // to a message which is not in database.
-      return updateMessage({
-        flush,
-        message: event.message,
-      });
+      return queriesWithChannelGuard(
+        updateMessage({
+          flush,
+          message: event.message,
+        }),
+      );
     }
   }
 
@@ -97,10 +114,12 @@ export const handleEventToSyncDB = <
     if (event.message && event.reaction) {
       // We update the entire message to make sure we also update
       // reaction_counts.
-      return updateMessage({
-        flush,
-        message: event.message,
-      });
+      return queriesWithChannelGuard(
+        updateMessage({
+          flush,
+          message: event.message,
+        }),
+      );
     }
   }
 
@@ -109,10 +128,12 @@ export const handleEventToSyncDB = <
       // Here we are relying on the fact message.latest_reactions always includes
       // the new reaction. So we first delete all the existing reactions and populate
       // the reactions table with message.latest_reactions
-      return updateMessage({
-        flush,
-        message: event.message,
-      });
+      return queriesWithChannelGuard(
+        updateMessage({
+          flush,
+          message: event.message,
+        }),
+      );
     }
   }
 
@@ -164,21 +185,25 @@ export const handleEventToSyncDB = <
 
   if (type === 'member.added' || type === 'member.updated') {
     if (event.member && event.cid) {
-      return upsertMembers({
-        cid: event.cid,
-        flush,
-        members: [event.member],
-      });
+      return queriesWithChannelGuard(
+        upsertMembers({
+          cid: event.cid,
+          flush,
+          members: [event.member],
+        }),
+      );
     }
   }
 
   if (type === 'member.removed') {
     if (event.member && event.cid) {
-      return deleteMember({
-        cid: event.cid,
-        flush,
-        member: event.member,
-      });
+      return queriesWithChannelGuard(
+        deleteMember({
+          cid: event.cid,
+          flush,
+          member: event.member,
+        }),
+      );
     }
   }
 
