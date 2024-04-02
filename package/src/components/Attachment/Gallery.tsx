@@ -309,14 +309,14 @@ const GalleryThumbnail = <
   };
 
   const defaultOnPress = () => {
-    // If file type is video and the url is defined then try to open the file.
-    if (thumbnail.type === 'video' && thumbnail.url) {
-      if (isVideoPackageAvailable()) {
-        openImageViewer();
-      } else {
+    // If the url is defined then only try to open the file.
+    if (thumbnail.url) {
+      if (thumbnail.type === 'video' && !isVideoPackageAvailable()) {
         // This condition is kinda unreachable, since we render videos as file attachment if the video
         // library is not installed. But doesn't hurt to have extra safeguard, in case of some customizations.
         openUrlSafely(thumbnail.url);
+      } else {
+        openImageViewer();
       }
     }
   };
