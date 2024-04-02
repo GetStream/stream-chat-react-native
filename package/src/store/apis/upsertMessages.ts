@@ -35,7 +35,6 @@ export const upsertMessages = ({
 
   messages.forEach((message) => {
     let storableMessage = mapMessageToStorable(message);
-    storableMessages.push(storableMessage);
     const messageQuery = createUpsertQuery('messages', storableMessage);
     const userQueries: PreparedQueries[] = [];
     if (message.user) {
@@ -67,12 +66,14 @@ export const upsertMessages = ({
         // channel was not present and a new message came so we must re-add the channel first
         const skipped = [messageQuery, ...userQueries, ...reactionsQueries];
         storableMessage = Object.assign({ skipped: true }, storableMessage);
+        storableMessages.push(storableMessage);
         const previousQueries = nonExistentChannelQueriesMap.get(message.cid) ?? [];
         nonExistentChannelQueriesMap.set(message.cid, previousQueries.concat(skipped));
         return;
       }
     }
 
+    storableMessages.push(storableMessage);
     messagesToUpsert.push(messageQuery);
     usersToUpsert.push(...userQueries);
     reactionsToUpsert.push(...reactionsQueries);
