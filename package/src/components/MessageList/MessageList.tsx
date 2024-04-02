@@ -525,7 +525,7 @@ const MessageListWithContext = <
     if (threadList || hasNoMoreRecentMessagesToLoad) {
       scrollToBottomIfNeeded();
     } else {
-      setScrollToBottomButtonVisible(true);
+      setScrollToBottomButtonVisible(false);
     }
 
     if (
@@ -805,13 +805,15 @@ const MessageListWithContext = <
 
   const handleScroll: ScrollViewProps['onScroll'] = (event) => {
     const offset = event.nativeEvent.contentOffset.y;
+    const messageListHasMessages = processedMessageList.length > 0;
     // Show scrollToBottom button once scroll position goes beyond 150.
     const isScrollAtBottom = offset <= 150;
 
     const notLatestSet = channel.state.messages !== channel.state.latestMessages;
 
     const showScrollToBottomButton =
-      (!threadList && notLatestSet) || !isScrollAtBottom || !hasNoMoreRecentMessagesToLoad;
+      messageListHasMessages &&
+      ((!threadList && notLatestSet) || !isScrollAtBottom || !hasNoMoreRecentMessagesToLoad);
 
     /**
      * 1. If I scroll up -> show scrollToBottom button.
