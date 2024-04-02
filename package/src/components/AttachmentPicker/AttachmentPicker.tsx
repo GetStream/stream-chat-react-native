@@ -292,7 +292,7 @@ export const AttachmentPicker = React.forwardRef(
      * this is an issue if you are calling close on the bottom sheet.
      */
     const snapPoints = useMemo(
-      () => [initialSnapPoint, finalSnapPoint],
+      () => [Math.max(0, initialSnapPoint), Math.max(0, finalSnapPoint)],
       [initialSnapPoint, finalSnapPoint],
     );
 

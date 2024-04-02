@@ -26,7 +26,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetModalProvider, BottomSheetProps } from '@gorhom/bottom-sheet';
 
 import type { UserResponse } from 'stream-chat';
 
@@ -131,6 +131,29 @@ type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamC
       | 'numberOfImageGalleryGridColumns'
       | 'autoPlayVideo'
     >;
+
+type SnapPoints = BottomSheetProps['snapPoints'];
+
+const normalizeSnapPoints = (input: SnapPoints): SnapPoints => {
+  const snapPoints = input ? ('value' in input ? input.value : input) : [];
+
+  return snapPoints.map((snapPoint) => {
+    if (typeof snapPoint === 'number') {
+      return Math.max(0, snapPoint);
+    } else {
+      const numericValue = Number(snapPoint.replace('%', ''));
+      const isPercentage = snapPoint.includes('%');
+
+      if (isNaN(numericValue)) {
+        return 0;
+      } else if (isPercentage) {
+        return `${Math.max(0, numericValue)}%`;
+      } else {
+        return Math.max(0, numericValue);
+      }
+    }
+  });
+};
 
 export const ImageGallery = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -685,7 +708,7 @@ export const ImageGallery = <
           index={0}
           onChange={(index: number) => setCurrentBottomSheetIndex(index)}
           ref={bottomSheetModalRef}
-          snapPoints={imageGalleryGridSnapPoints || snapPoints}
+          snapPoints={normalizeSnapPoints(imageGalleryGridSnapPoints || snapPoints)}
         >
           <ImageGrid
             closeGridView={closeGridView}
