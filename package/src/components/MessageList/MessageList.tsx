@@ -805,7 +805,7 @@ const MessageListWithContext = <
 
   const handleScroll: ScrollViewProps['onScroll'] = (event) => {
     const offset = event.nativeEvent.contentOffset.y;
-    const messageListHasMessages = channel.state.messages.length > 0;
+    const messageListHasMessages = processedMessageList.length > 0;
     // Show scrollToBottom button once scroll position goes beyond 150.
     const isScrollAtBottom = offset <= 150;
 

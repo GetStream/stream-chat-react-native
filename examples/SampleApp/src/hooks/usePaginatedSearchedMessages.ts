@@ -64,6 +64,7 @@ export const usePaginatedSearchedMessages = (
         {
           limit: DEFAULT_PAGINATION_LIMIT,
           offset: offset.current,
+          sort: { created_at: -1 },
         },
       );
 
