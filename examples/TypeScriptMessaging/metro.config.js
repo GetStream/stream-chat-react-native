@@ -11,19 +11,17 @@ const config = getDefaultConfig(__dirname);
 
 const PATH = require('path');
 const packageDirPath = PATH.resolve(__dirname, '../../package');
-const nativePackageDirPath = PATH.resolve(__dirname, '../../package/native-package');
 
 const symlinked = {
-  'stream-chat-react-native': nativePackageDirPath,
+  'stream-chat-react-native': PATH.resolve(packageDirPath, 'native-package'),
   'stream-chat-react-native-core': packageDirPath,
 };
 
 // find what all modules need to be unique for the app (mainly react and react-native)
-// note: we filter the symlinked modules as they are already unique
-// and as they dont follow the workspace pattern the auto-generated path to the module is incorrect
 const dependencyPackageNames = Object.keys(require('./package.json').dependencies);
 
 const uniqueModules = dependencyPackageNames.map((packageName) => {
+  // if the module is symlinked, use the symlinked path that we know
   if (symlinked[packageName]) {
     const modulePath = symlinked[packageName];
     const escapedPackageName = PATH.normalize(packageName).replace(/\\/g, '\\\\');
@@ -61,9 +59,9 @@ const extraNodeModules = uniqueModules.reduce((acc, item) => {
 config.resolver.blockList = exclusionList(blockList);
 config.resolver.extraNodeModules = extraNodeModules;
 
-config.resolver.nodeModulesPaths = [PATH.resolve(__dirname, 'node_modules')];
+extraNodeModules['stream-chat'] = '/Users/santhoshvaiyapuri/Projects/stream-chat-js';
 
 // add the package dir for metro to access the package folder
-config.watchFolders = [packageDirPath];
+config.watchFolders = [packageDirPath, '/Users/santhoshvaiyapuri/Projects/stream-chat-js'];
 
 module.exports = config;

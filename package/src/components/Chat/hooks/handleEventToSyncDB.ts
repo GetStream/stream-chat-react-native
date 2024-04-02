@@ -1,16 +1,25 @@
-import type { Event } from 'stream-chat';
+import { PreparedQueries } from 'src/store/types';
+import { DefaultStreamChatGenerics } from 'src/types/types';
+import type { Event, StreamChat } from 'stream-chat';
 
 import { deleteChannel } from '../../../store/apis/deleteChannel';
 import { deleteMember } from '../../../store/apis/deleteMember';
 import { deleteMessagesForChannel } from '../../../store/apis/deleteMessagesForChannel';
 import { updateMessage } from '../../../store/apis/updateMessage';
 import { upsertChannelData } from '../../../store/apis/upsertChannelData';
+import { upsertChannelDataFromChannel } from '../../../store/apis/upsertChannelDataFromChannel';
 import { upsertChannels } from '../../../store/apis/upsertChannels';
 import { upsertMembers } from '../../../store/apis/upsertMembers';
 import { upsertMessages } from '../../../store/apis/upsertMessages';
 import { upsertReads } from '../../../store/apis/upsertReads';
 
-export const handleEventToSyncDB = (event: Event, flush?: boolean) => {
+export const handleEventToSyncDB = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  event: Event,
+  client: StreamChat<StreamChatGenerics>,
+  flush?: boolean,
+) => {
   const { type } = event;
 
   if (type === 'message.read') {
@@ -31,10 +40,45 @@ export const handleEventToSyncDB = (event: Event, flush?: boolean) => {
 
   if (type === 'message.new') {
     if (event.message && (!event.message.parent_id || event.message.show_in_channel)) {
-      return upsertMessages({
+      const channel =
+        event.channel_type && event.channel_id
+          ? client.channel(event.channel_type, event.channel_id)
+          : undefined;
+      const skippedMessageQueries: PreparedQueries[] = [];
+      const queries = upsertMessages({
         flush,
         messages: [event.message],
+        onNonExistentChannel: (map) => {
+          map.forEach((skippedQueries) => {
+            skippedMessageQueries.push(...skippedQueries);
+          });
+        },
       });
+      // if a channel was hidden and a new message was received it would be missing from the database
+      if (skippedMessageQueries.length) {
+        if (channel && channel.initialized && !channel.disconnected) {
+          const channelQuery = upsertChannelDataFromChannel({
+            channel,
+            flush,
+          });
+          if (channelQuery) {
+            return [...channelQuery, ...queries, ...skippedMessageQueries];
+          } else {
+            console.warn(
+              'Couldnt create channel queries on "message.new" for an initialized channel that is not in DB, skipping message',
+              { event },
+            );
+            return [];
+          }
+        } else {
+          console.warn(
+            'Received "message.new" event for a non initialized channel that is not in DB, skipping message',
+            { event },
+          );
+          return [];
+        }
+      }
+      return queries;
     }
   }
 

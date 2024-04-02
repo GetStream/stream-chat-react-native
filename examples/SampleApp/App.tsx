@@ -80,6 +80,10 @@ const App = () => {
 
   useEffect(() => {
     const unsubscribeOnNotificationOpen = messaging().onNotificationOpenedApp((remoteMessage) => {
+      console.log('background', {
+        dataFromRemoteMessage: remoteMessage.data,
+        remoteMessage,
+      });
       // Notification caused app to open from background state on iOS
       const channelId = remoteMessage.data?.channel_id as string;
       if (channelId) {
@@ -89,6 +93,11 @@ const App = () => {
     // handle notification clicks on foreground
     const unsubscribeForegroundEvent = notifee.onForegroundEvent(({ detail, type }) => {
       if (type === EventType.PRESS) {
+        console.log('foreground', {
+          dataFromRemoteMessage: detail.notification?.data,
+          dataStream: detail.notification?.data,
+          remoteMessage: detail.notification,
+        });
         // user has pressed the foreground notification
         const channelId = detail.notification?.data?.channel_id as string;
         if (channelId) {

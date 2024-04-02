@@ -90,7 +90,11 @@ export class DBSyncManager {
     };
   };
 
-  static sync = async () => {
+  static sync = async <
+    StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  >(
+    client: StreamChat<StreamChatGenerics>,
+  ) => {
     if (!this.client?.user) return;
     const cids = getAllChannelIds();
     // If there are no channels, then there is no need to sync.
@@ -113,7 +117,7 @@ export class DBSyncManager {
         try {
           const result = await this.client.sync(cids, lastSyncedAtDate.toISOString());
           const queries = result.events.reduce<PreparedQueries[]>((queries, event) => {
-            queries = queries.concat(handleEventToSyncDB(event, false));
+            queries = queries.concat(handleEventToSyncDB(event, client, false));
             return queries;
           }, []);
 
@@ -137,7 +141,7 @@ export class DBSyncManager {
     if (!this.client) return;
 
     await this.executePendingTasks(this.client);
-    await this.sync();
+    await this.sync(this.client);
   };
 
   static queueTask = async <
