@@ -139,7 +139,7 @@ const normalizeSnapPoints = (input: SnapPoints): SnapPoints => {
 
   return snapPoints.map((snapPoint) => {
     if (typeof snapPoint === 'number') {
-      return Math.max(1, snapPoint);
+      return Math.max(0, snapPoint);
     } else {
       const numericValue = Number(snapPoint.replace('%', ''));
       const isPercentage = snapPoint.includes('%');
