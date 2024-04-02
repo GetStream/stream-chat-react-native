@@ -27,9 +27,11 @@ export const handleEventToSyncDB = <
   // This function is used to guard the queries that require channel to be present in the db first
   // If channel is not present in the db, we first fetch the channel data from the channel object
   // and then add the queries with a channel create query first
-  const queriesWithChannelGuard = (queries: PreparedQueries[]) => {
+  const queriesWithChannelGuard = (
+    createQueries: (flushOverride?: boolean) => PreparedQueries[],
+  ) => {
     const cid = event.cid || event.channel?.cid;
-    if (!cid) return queries;
+    if (!cid) return createQueries(flush);
     const channels = QuickSqliteClient.executeSql.apply(
       null,
       createSelectQuery('channels', ['cid'], {
@@ -49,7 +51,7 @@ export const handleEventToSyncDB = <
           flush,
         });
         if (channelQuery) {
-          return [...channelQuery, ...queries];
+          return [...channelQuery, ...createQueries(false)];
         } else {
           console.warn(
             `Couldnt create channel queries on ${type} event for an initialized channel that is not in DB, skipping event`,
@@ -65,20 +67,22 @@ export const handleEventToSyncDB = <
         return [];
       }
     }
-    return queries;
+    return createQueries(flush);
   };
 
   if (type === 'message.read') {
-    if (event.user?.id && event.cid) {
-      return queriesWithChannelGuard(
+    const cid = event.cid;
+    const user = event.user;
+    if (user?.id && cid) {
+      return queriesWithChannelGuard((flushOverride) =>
         upsertReads({
-          cid: event.cid,
-          flush,
+          cid,
+          flush: flushOverride,
           reads: [
             {
               last_read: event.received_at as string,
               unread_messages: 0,
-              user: event.user,
+              user,
             },
           ],
         }),
@@ -87,51 +91,55 @@ export const handleEventToSyncDB = <
   }
 
   if (type === 'message.new') {
-    if (event.message && (!event.message.parent_id || event.message.show_in_channel)) {
-      return queriesWithChannelGuard(
+    const message = event.message;
+    if (message && (!message.parent_id || message.show_in_channel)) {
+      return queriesWithChannelGuard((flushOverride) =>
         upsertMessages({
-          flush,
-          messages: [event.message],
+          flush: flushOverride,
+          messages: [message],
         }),
       );
     }
   }
 
   if (type === 'message.updated' || type === 'message.deleted') {
-    if (event.message && !event.message.parent_id) {
+    const message = event.message;
+    if (message && !message.parent_id) {
       // Update only if it exists, otherwise event could be related
       // to a message which is not in database.
-      return queriesWithChannelGuard(
+      return queriesWithChannelGuard((flushOverride) =>
         updateMessage({
-          flush,
-          message: event.message,
+          flush: flushOverride,
+          message,
         }),
       );
     }
   }
 
   if (type === 'reaction.updated') {
-    if (event.message && event.reaction) {
+    const message = event.message;
+    if (message && event.reaction) {
       // We update the entire message to make sure we also update
       // reaction_counts.
-      return queriesWithChannelGuard(
+      return queriesWithChannelGuard((flushOverride) =>
         updateMessage({
-          flush,
-          message: event.message,
+          flush: flushOverride,
+          message,
         }),
       );
     }
   }
 
   if (type === 'reaction.new' || type === 'reaction.deleted') {
-    if (event.message && !event.message.parent_id) {
+    const message = event.message;
+    if (message && !message.parent_id) {
       // Here we are relying on the fact message.latest_reactions always includes
       // the new reaction. So we first delete all the existing reactions and populate
       // the reactions table with message.latest_reactions
-      return queriesWithChannelGuard(
+      return queriesWithChannelGuard((flushOverride) =>
         updateMessage({
-          flush,
-          message: event.message,
+          flush: flushOverride,
+          message,
         }),
       );
     }
@@ -184,24 +192,28 @@ export const handleEventToSyncDB = <
   }
 
   if (type === 'member.added' || type === 'member.updated') {
-    if (event.member && event.cid) {
-      return queriesWithChannelGuard(
+    const member = event.member;
+    const cid = event.cid;
+    if (member && cid) {
+      return queriesWithChannelGuard((flushOverride) =>
         upsertMembers({
-          cid: event.cid,
-          flush,
-          members: [event.member],
+          cid,
+          flush: flushOverride,
+          members: [member],
         }),
       );
     }
   }
 
   if (type === 'member.removed') {
-    if (event.member && event.cid) {
-      return queriesWithChannelGuard(
+    const member = event.member;
+    const cid = event.cid;
+    if (member && cid) {
+      return queriesWithChannelGuard((flushOverride) =>
         deleteMember({
-          cid: event.cid,
-          flush,
-          member: event.member,
+          cid,
+          flush: flushOverride,
+          member,
         }),
       );
     }
