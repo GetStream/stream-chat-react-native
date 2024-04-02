@@ -1072,7 +1072,11 @@ const MessageListWithContext = <
   const renderListEmptyComponent = useCallback(
     () => (
       <View
-        style={[styles.flex, shouldApplyAndroidWorkaround ? styles.invertAndroid : styles.invert]}
+        style={[
+          styles.flex,
+          { backgroundColor: white_snow },
+          shouldApplyAndroidWorkaround ? styles.invertAndroid : styles.invert,
+        ]}
         testID='empty-state'
       >
         <EmptyStateIndicator listType='message' />
@@ -1099,16 +1103,6 @@ const MessageListWithContext = <
     [shouldApplyAndroidWorkaround, HeaderComponent],
   );
 
-  if (!FlatList) return null;
-
-  if (loading) {
-    return (
-      <View style={styles.flex}>
-        <LoadingIndicator listType='message' />
-      </View>
-    );
-  }
-
   const StickyHeaderComponent = () => {
     if (!stickyHeaderDateString) return null;
     if (StickyHeader) return <StickyHeader dateString={stickyHeaderDateString} />;
@@ -1125,6 +1119,16 @@ const MessageListWithContext = <
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { contentContainerStyle, style, ...rest } = additionalFlatListProps;
     additionalFlatListPropsExcludingStyle = rest;
+  }
+
+  if (!FlatList) return null;
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { backgroundColor: white_snow }, container]}>
+        <LoadingIndicator listType='message' />
+      </View>
+    );
   }
 
   return (
