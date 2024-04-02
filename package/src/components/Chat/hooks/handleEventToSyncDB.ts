@@ -52,14 +52,14 @@ export const handleEventToSyncDB = <
           return [...channelQuery, ...queries];
         } else {
           console.warn(
-            'Couldnt create channel queries on event for an initialized channel that is not in DB, skipping event',
+            `Couldnt create channel queries on ${type} event for an initialized channel that is not in DB, skipping event`,
             { event },
           );
           return [];
         }
       } else {
         console.warn(
-          'Received "message.new" event for a non initialized channel that is not in DB, skipping event',
+          `Received ${type} event for a non initialized channel that is not in DB, skipping event`,
           { event },
         );
         return [];
