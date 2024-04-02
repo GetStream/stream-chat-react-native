@@ -31,6 +31,7 @@ export const handleEventToSyncDB = <
     createQueries: (flushOverride?: boolean) => PreparedQueries[],
   ) => {
     const cid = event.cid || event.channel?.cid;
+
     if (!cid) return createQueries(flush);
     const channels = QuickSqliteClient.executeSql.apply(
       null,
@@ -51,7 +52,11 @@ export const handleEventToSyncDB = <
           flush,
         });
         if (channelQuery) {
-          return [...channelQuery, ...createQueries(false)];
+          const newQueries = [...channelQuery, ...createQueries(false)];
+          if (flush !== false) {
+            QuickSqliteClient.executeSqlBatch(newQueries);
+          }
+          return newQueries;
         } else {
           console.warn(
             `Couldnt create channel queries on ${type} event for an initialized channel that is not in DB, skipping event`,
