@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { StreamChat } from 'stream-chat';
 import messaging from '@react-native-firebase/messaging';
-import notifee from '@notifee/react-native';
 import { QuickSqliteClient } from 'stream-chat-react-native';
 import { USER_TOKENS, USERS } from '../ChatUsers';
 import AsyncStore from '../utils/AsyncStore';
 
 import type { LoginConfig, StreamChatGenerics } from '../types';
+
+const PUSH_PROVIDER = 'firebase';
+const PUSH_PROVIDER_NAME = 'rn-fcm';
 
 // Request Push Notification permission from device.
 const requestNotificationPermission = async () => {
@@ -14,58 +16,11 @@ const requestNotificationPermission = async () => {
   const isEnabled =
     authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-  return isEnabled;
+  console.log('Notification Permission Status', { authStatus, isEnabled });
 };
 
-messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-  const messageId = remoteMessage.data?.id as string;
-  if (!messageId) {
-    return;
-  }
-  const config = await AsyncStore.getItem<LoginConfig | null>(
-    '@stream-rn-sampleapp-login-config',
-    null,
-  );
-  if (!config) {
-    return;
-  }
-
-  const client = StreamChat.getInstance(config.apiKey);
-
-  const user = {
-    id: config.userId,
-    image: config.userImage,
-    name: config.userName,
-  };
-
-  await client._setToken(user, config.userToken);
-  const message = await client.getMessage(messageId);
-
-  // create the android channel to send the notification to
-  const channelId = await notifee.createChannel({
-    id: 'chat-messages',
-    name: 'Chat Messages',
-  });
-
-  if (message.message.user?.name && message.message.text) {
-    const { stream, ...rest } = remoteMessage.data ?? {};
-    const data = {
-      ...rest,
-      ...((stream as unknown as Record<string, string> | undefined) ?? {}), // extract and merge stream object if present
-    };
-    await notifee.displayNotification({
-      android: {
-        channelId,
-        pressAction: {
-          id: 'default',
-        },
-      },
-      body: message.message.text,
-      data,
-      title: 'New message from ' + message.message.user.name,
-    });
-  }
-});
+// note: empty backgroundMessageHandler to avoid warning that no handler is set
+messaging().setBackgroundMessageHandler(async (_remoteMessage) => {});
 
 export const useChatClient = () => {
   const [chatClient, setChatClient] = useState<StreamChat<StreamChatGenerics> | null>(null);
@@ -79,7 +34,6 @@ export const useChatClient = () => {
    * @returns function to unsubscribe from listeners
    */
   const loginUser = async (config: LoginConfig) => {
-    console.log('loginUser');
     // unsubscribe from previous push listeners
     unsubscribePushListenersRef.current?.();
     const client = StreamChat.getInstance<StreamChatGenerics>(config.apiKey, {
@@ -94,103 +48,43 @@ export const useChatClient = () => {
       name: config.userName,
     };
 
-    const isPermissionEnabled = await requestNotificationPermission();
+    // Register FCM token with stream chat server.
+    const token = await messaging().getToken();
 
-    console.log({ isPermissionEnabled });
-    if (isPermissionEnabled) {
-      // Register FCM token with stream chat server.
-      const token = await messaging().getToken();
-      const push_provider = 'firebase';
-      const push_provider_name = 'rn-fcm';
-      client.setLocalDevice({
-        id: token,
-        push_provider,
-        push_provider_name,
-      });
-      console.log({ token });
-      await AsyncStore.setItem('@current_push_token', token);
+    client.setLocalDevice({
+      id: token,
+      push_provider: PUSH_PROVIDER,
+      push_provider_name: PUSH_PROVIDER_NAME,
+    });
 
-      const removeOldToken = async () => {
-        const oldToken = await AsyncStore.getItem<string>('@current_push_token', null);
-        if (oldToken !== null) {
-          await client.removeDevice(oldToken);
-        }
-      };
-
-      const unsubscribeTokenRefresh = messaging().onTokenRefresh(async (newToken) => {
-        await Promise.all([
-          removeOldToken(),
-          client.addDevice(newToken, push_provider, user.id, push_provider_name),
-          AsyncStore.setItem('@current_push_token', token),
-        ]);
-      });
-      // show notifications when on foreground
-      const unsubscribeForegroundMessageReceive = messaging().onMessage(async (remoteMessage) => {
-        const messageId = remoteMessage.data?.id;
-        if (!messageId) {
-          return;
-        }
-        const message = await client.getMessage(messageId);
-        if (message.message.user?.name && message.message.text) {
-          // create the android channel to send the notification to
-          const channelId = await notifee.createChannel({
-            id: 'foreground',
-            name: 'Foreground Messages',
-          });
-          // display the notification on foreground
-          const { stream, ...rest } = remoteMessage.data ?? {};
-          const data = {
-            ...rest,
-            ...((stream as unknown as Record<string, string> | undefined) ?? {}), // extract and merge stream object if present
-          };
-          await notifee.displayNotification({
-            android: {
-              channelId,
-              pressAction: {
-                id: 'default',
-              },
-            },
-            body: message.message.text,
-            data,
-            title: 'New message from ' + message.message.user.name,
-          });
-        }
-      });
-
-      unsubscribePushListenersRef.current = () => {
-        unsubscribeTokenRefresh();
-        unsubscribeForegroundMessageReceive();
-      };
-    }
     const connectedUser = await client.connectUser(user, config.userToken);
     const initialUnreadCount = connectedUser?.me?.total_unread_count;
     setUnreadCount(initialUnreadCount);
     await AsyncStore.setItem('@stream-rn-sampleapp-login-config', config);
-    setChatClient(client);
+
+    // Listen to new FCM tokens and register them with stream chat server.
+    const unsubscribeTokenRefresh = messaging().onTokenRefresh(async (newToken) => {
+      if (newToken === token) {
+        return;
+      }
+      await client.addDevice(newToken, PUSH_PROVIDER, user.id, PUSH_PROVIDER_NAME);
+    });
+
+    unsubscribePushListenersRef.current = () => {
+      unsubscribeTokenRefresh();
+    };
   };
 
-  const switchUser = async (userId?: string) => {
+  const switchUser = async (userId: string) => {
     setIsConnecting(true);
-
     try {
-      if (userId) {
-        await loginUser({
-          apiKey: 'yjrt5yxw77ev',
-          userId: USERS[userId].id,
-          userImage: USERS[userId].image,
-          userName: USERS[userId].name,
-          userToken: USER_TOKENS[userId],
-        });
-      } else {
-        const config = await AsyncStore.getItem<LoginConfig | null>(
-          '@stream-rn-sampleapp-login-config',
-          null,
-        );
-
-        if (config) {
-          await loginUser(config);
-        }
-      }
+      await loginUser({
+        apiKey: 'yjrt5yxw77ev',
+        userId: USERS[userId].id,
+        userImage: USERS[userId].image,
+        userName: USERS[userId].name,
+        userToken: USER_TOKENS[userId],
+      });
     } catch (e) {
       console.warn(e);
     }
@@ -204,12 +98,32 @@ export const useChatClient = () => {
     await AsyncStore.removeItem('@stream-rn-sampleapp-login-config');
   };
 
+  /**
+   * On mount,
+   * 1. request notification permission
+   * 2. login user if a previous login config exists
+   */
   useEffect(() => {
     const run = async () => {
-      await switchUser();
+      await requestNotificationPermission();
+      const prevLoginConfig = await AsyncStore.getItem<LoginConfig | null>(
+        '@stream-rn-sampleapp-login-config',
+        null,
+      );
+      if (prevLoginConfig) {
+        try {
+          await loginUser(prevLoginConfig);
+        } catch (e) {
+          console.warn(e);
+        }
+      }
     };
     run();
-    return unsubscribePushListenersRef.current;
+    return () => {
+      unsubscribePushListenersRef.current?.();
+      // note: disconnect user on unmount for cleanup in hot reload scenarios
+      chatClient?.disconnectUser();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
