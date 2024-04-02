@@ -6,6 +6,7 @@ export const getLastSyncedAt = ({
 }: {
   currentUserId: string;
 }): number | undefined => {
+  QuickSqliteClient.logger?.('info', 'getLastSyncedAt', { currentUserId });
   const result = QuickSqliteClient.executeSql.apply(
     null,
     createSelectQuery('userSyncStatus', ['*'], {

@@ -5,6 +5,12 @@ export const deleteMessage = ({ flush = true, id }: { id: string; flush?: boolea
   const query = createDeleteQuery('messages', {
     id,
   });
+
+  QuickSqliteClient.logger?.('info', 'deleteMessage', {
+    flush,
+    id,
+  });
+
   if (flush) {
     QuickSqliteClient.executeSql.apply(null, query);
   }

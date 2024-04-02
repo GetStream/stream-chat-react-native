@@ -21,14 +21,14 @@ const styles = StyleSheet.create({
 const LoadingIndicatorWrapper: React.FC<{ text: string }> = ({ text }) => {
   const {
     theme: {
-      colors: { black },
+      colors: { black, white_snow },
       loadingIndicator: { container, loadingText },
     },
   } = useTheme();
 
   return (
-    <View style={[styles.container, container]}>
-      <Spinner />
+    <View style={[styles.container, { backgroundColor: white_snow }, container]}>
+      <Spinner height={20} width={20} />
       <Text style={[styles.loadingText, { color: black }, loadingText]} testID='loading'>
         {text}
       </Text>

@@ -1,5 +1,23 @@
 # Change Log
 
+## [5.26.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.25.0...v5.26.0) (2024-03-08)
+
+
+### Features
+
+* add optional logging for sqlite methods ([#2453](https://github.com/GetStream/stream-chat-react-native/issues/2453)) ([3f39283](https://github.com/GetStream/stream-chat-react-native/commit/3f392830db7e3880366034a71b4e42bcebd9f075))
+* add portuguese translation ([#2224](https://github.com/GetStream/stream-chat-react-native/issues/2224)) ([ecffe87](https://github.com/GetStream/stream-chat-react-native/commit/ecffe87bbb0756e535f9943cdb241665d5009537))
+
+
+### Bug Fixes
+
+* add back channel prop to ChannelPreviewTitle and ChannelPreviewUnreadCount ([#2451](https://github.com/GetStream/stream-chat-react-native/issues/2451)) ([b317e18](https://github.com/GetStream/stream-chat-react-native/commit/b317e18b85c1c09beaf65cbd9b3cc86fc1e4b8f4))
+* authorNameFooterContainer theme in Card component ([#2449](https://github.com/GetStream/stream-chat-react-native/issues/2449)) ([068d722](https://github.com/GetStream/stream-chat-react-native/commit/068d72265d2f9200d5f9434a9ec14e3c5a7534e6))
+* disable auto merge sets messages addition ([392af2c](https://github.com/GetStream/stream-chat-react-native/commit/392af2c16722c1a34a78d500d8a14cdd73fe5f8d))
+* do not merge message sets during targeted message highlighting ([5ec367d](https://github.com/GetStream/stream-chat-react-native/commit/5ec367df4ab7e4d33ec4766f55bcc70f530e81d4))
+* race condition on initial channel load with a message id ([11126eb](https://github.com/GetStream/stream-chat-react-native/commit/11126ebef1ea948b5ee2d6c0b89cad62fd99725c))
+* scroll to message after channel state is copied reliably ([93f521b](https://github.com/GetStream/stream-chat-react-native/commit/93f521b30b9cf6b272837a4ecfea7473440b1bf7))
+
 ## [5.25.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.24.0...v5.25.0) (2024-02-29)
 
 

@@ -31,6 +31,7 @@ export const usePaginatedAttachments = (
 
       if (!hasMoreResults.current) {
         queryInProgress.current = false;
+        setLoading(false);
         return;
       }
 
@@ -50,6 +51,7 @@ export const usePaginatedAttachments = (
 
       if (!newMessages) {
         queryInProgress.current = false;
+        setLoading(false);
         return;
       }
 

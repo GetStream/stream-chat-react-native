@@ -14,12 +14,19 @@ export const insertReaction = ({
 }) => {
   const queries: PreparedQueries[] = [];
 
-  queries.push(createUpsertQuery('reactions', mapReactionToStorable(reaction)));
+  const storableReaction = mapReactionToStorable(reaction);
+
+  queries.push(createUpsertQuery('reactions', storableReaction));
 
   queries.push([
     'UPDATE messages SET reactionCounts = reactionCounts + 1 WHERE id = ?',
     [reaction.message_id],
   ]);
+
+  QuickSqliteClient.logger?.('info', 'insertReaction', {
+    flush,
+    reaction: storableReaction,
+  });
 
   if (flush) {
     QuickSqliteClient.executeSqlBatch(queries);

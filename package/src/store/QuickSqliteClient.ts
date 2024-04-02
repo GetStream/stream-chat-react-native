@@ -17,6 +17,8 @@ try {
   // 2. Offline support is disabled, in which case this library is not installed.
 }
 
+import { Logger } from 'stream-chat';
+
 import { DB_LOCATION, DB_NAME } from './constants';
 import { tables } from './schema';
 import { createCreateTableQuery } from './sqlite-utils/createCreateTableQuery';
@@ -32,6 +34,7 @@ export class QuickSqliteClient {
 
   static dbName = DB_NAME;
   static dbLocation = DB_LOCATION;
+  static logger: Logger | undefined;
 
   static getDbVersion = () => QuickSqliteClient.dbVersion;
   // Force a specific db version. This is mainly useful for testsuit.
@@ -42,6 +45,9 @@ export class QuickSqliteClient {
       sqlite.open(QuickSqliteClient.dbName, QuickSqliteClient.dbLocation);
       sqlite.execute(QuickSqliteClient.dbName, `PRAGMA foreign_keys = ON`, []);
     } catch (e) {
+      this.logger?.('error', `Error opening database ${QuickSqliteClient.dbName}`, {
+        error: e,
+      });
       console.error(`Error opening database ${QuickSqliteClient.dbName}: ${e}`);
     }
   };
@@ -50,6 +56,9 @@ export class QuickSqliteClient {
     try {
       sqlite.close(QuickSqliteClient.dbName);
     } catch (e) {
+      this.logger?.('error', `Error closing database ${QuickSqliteClient.dbName}`, {
+        error: e,
+      });
       console.error(`Error closing database ${QuickSqliteClient.dbName}: ${e}`);
     }
   };
@@ -64,7 +73,11 @@ export class QuickSqliteClient {
       QuickSqliteClient.closeDB();
     } catch (e) {
       QuickSqliteClient.closeDB();
-      throw new Error(`Query/queries failed: ${e}`);
+      this.logger?.('error', `SqlBatch queries failed`, {
+        error: e,
+        queries,
+      });
+      throw new Error(`Queries failed: ${e}`);
     }
   };
 
@@ -77,7 +90,11 @@ export class QuickSqliteClient {
       return rows ? rows._array : [];
     } catch (e) {
       QuickSqliteClient.closeDB();
-      throw new Error(`Query/queries failed: ${e}: `);
+      this.logger?.('error', `Sql single query failed`, {
+        error: e,
+        query,
+      });
+      throw new Error(`Query failed: ${e}: `);
     }
   };
 
@@ -86,14 +103,25 @@ export class QuickSqliteClient {
       `DROP TABLE IF EXISTS ${table}`,
       [],
     ]);
-
+    this.logger?.('info', `Dropping tables`, {
+      tables: Object.keys(tables),
+    });
     QuickSqliteClient.executeSqlBatch(queries);
   };
 
   static deleteDatabase = () => {
+    this.logger?.('info', `deleteDatabase`, {
+      dbLocation: QuickSqliteClient.dbLocation,
+      dbname: QuickSqliteClient.dbName,
+    });
     try {
       sqlite.delete(QuickSqliteClient.dbName, QuickSqliteClient.dbLocation);
     } catch (e) {
+      this.logger?.('error', `Error deleting DB`, {
+        dbLocation: QuickSqliteClient.dbLocation,
+        dbname: QuickSqliteClient.dbName,
+        error: e,
+      });
       throw new Error(`Error deleting DB: ${e}`);
     }
 
@@ -110,9 +138,13 @@ export class QuickSqliteClient {
     const version = QuickSqliteClient.getUserPragmaVersion();
 
     if (version !== QuickSqliteClient.dbVersion) {
+      QuickSqliteClient.logger?.('info', `DB version mismatch`);
       QuickSqliteClient.dropTables();
       QuickSqliteClient.updateUserPragmaVersion(QuickSqliteClient.dbVersion);
     }
+    QuickSqliteClient.logger?.('info', `create tables if not exists`, {
+      tables: Object.keys(tables),
+    });
     const q = (Object.keys(tables) as Table[]).reduce<PreparedQueries[]>(
       (queriesSoFar, tableName) => {
         queriesSoFar.push(...createCreateTableQuery(tableName));
@@ -125,6 +157,7 @@ export class QuickSqliteClient {
   };
 
   static updateUserPragmaVersion = (version: number) => {
+    QuickSqliteClient.logger?.('info', `updateUserPragmaVersion to ${version}`);
     QuickSqliteClient.openDB();
     sqlite.execute(DB_NAME, `PRAGMA user_version = ${version}`, []);
     QuickSqliteClient.closeDB();
@@ -135,6 +168,9 @@ export class QuickSqliteClient {
     try {
       const { rows } = sqlite.execute(DB_NAME, `PRAGMA user_version`, []);
       const result = rows ? rows._array : [];
+      this.logger?.('info', `getUserPragmaVersion`, {
+        result,
+      });
       QuickSqliteClient.closeDB();
       return result[0].user_version as number;
     } catch (e) {
@@ -144,6 +180,7 @@ export class QuickSqliteClient {
   };
 
   static resetDB = () => {
+    this.logger?.('info', `resetDB`);
     QuickSqliteClient.dropTables();
     QuickSqliteClient.initializeDatabase();
   };

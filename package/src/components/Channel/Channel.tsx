@@ -972,42 +972,60 @@ const ChannelWithContext = <
    * @param messageId If undefined, channel will be loaded at most recent message.
    */
   const loadChannelAroundMessage: ChannelContextValue<StreamChatGenerics>['loadChannelAroundMessage'] =
-    ({ messageId: messageIdToLoadAround }) =>
-      channelQueryCallRef.current(
-        async () => {
-          setLoading(true);
-          if (messageIdToLoadAround) {
-            setMessages([]);
-            await channel.state.loadMessageIntoState(messageIdToLoadAround);
-            const currentMessageSet = channel.state.messageSets.find((set) => set.isCurrent);
-            if (currentMessageSet && !currentMessageSet?.isLatest) {
-              // if the current message set is not the latest, we will throw away the latest messages
-              // in order to attempt to not throw away, will attempt to merge it by loading 25 more messages
-              const recentCurrentSetMsgId =
-                currentMessageSet.messages[currentMessageSet.messages.length - 1].id;
-              await channel.query(
-                {
-                  messages: {
-                    id_gte: recentCurrentSetMsgId,
-                    limit: 25,
-                  },
-                },
-                'current',
-              );
-              // if the gap is more than 25, we will unfortunately have to throw away the latest messages
-            }
-          } else {
-            await loadLatestMessagesRef.current();
-          }
-        },
-        () => {
-          if (messageIdToLoadAround) {
-            clearInterval(mergeSetsIntervalRef.current); // do not merge sets as we will scroll/highlight to the message
+    async ({ messageId: messageIdToLoadAround }) => {
+      if (thread) {
+        if (messageIdToLoadAround) {
+          setThreadLoadingMore(true);
+          try {
+            await channel.state.loadMessageIntoState(messageIdToLoadAround, thread.id);
+            setThreadLoadingMore(false);
+            setThreadMessages(channel.state.threads[thread.id]);
             setTargetedMessage(messageIdToLoadAround);
+          } catch (err) {
+            if (err instanceof Error) {
+              setError(err);
+            } else {
+              setError(true);
+            }
+            setThreadLoadingMore(false);
           }
-        },
-        messageIdToLoadAround,
-      );
+        }
+      } else {
+        await channelQueryCallRef.current(
+          async () => {
+            setLoading(true);
+            if (messageIdToLoadAround) {
+              setMessages([]);
+              await channel.state.loadMessageIntoState(messageIdToLoadAround);
+              const currentMessageSet = channel.state.messageSets.find((set) => set.isCurrent);
+              if (currentMessageSet && !currentMessageSet?.isLatest) {
+                // if the current message set is not the latest, we will throw away the latest messages
+                // in order to attempt to not throw away, will attempt to merge it by loading 25 more messages
+                const recentCurrentSetMsgId =
+                  currentMessageSet.messages[currentMessageSet.messages.length - 1].id;
+                await channel.query(
+                  {
+                    messages: {
+                      id_gte: recentCurrentSetMsgId,
+                      limit: 25,
+                    },
+                  },
+                  'current',
+                );
+                // if the gap is more than 25, we will unfortunately have to throw away the latest messages
+              }
+            }
+          },
+          () => {
+            if (messageIdToLoadAround) {
+              clearInterval(mergeSetsIntervalRef.current); // do not merge sets as we will scroll/highlight to the message
+              setTargetedMessage(messageIdToLoadAround);
+            }
+          },
+          messageIdToLoadAround,
+        );
+      }
+    };
 
   useEffect(() => {
     if (!targetedMessage && prevTargetedMessage) {
@@ -1064,7 +1082,7 @@ const ChannelWithContext = <
    */
   const mergeOverlappingMessageSetsRef = useRef((limitToMaxRenderPerBatch = false) => {
     if (hasOverlappingRecentMessagesRef.current) {
-      const limit = 30; // 30 is the maxToRenderPerBatch
+      const limit = 5; // 5 is the load to recent limit, a larger value seems to cause jumpiness in some devices..
       // merge current and latest sets
       const latestMessageSet = channel.state.messageSets.find((set) => set.isLatest);
       const currentMessageSet = channel.state.messageSets.find((set) => set.isCurrent);
@@ -1098,16 +1116,17 @@ const ChannelWithContext = <
   );
 
   // if we had split the latest and current message set, we try to merge them back
+  // temporarily commented out the interval as it was causing issues with jankiness during scrolling
   const restartSetsMergeFuncRef = useRef(() => {
     clearInterval(mergeSetsIntervalRef.current);
     if (!hasOverlappingRecentMessagesRef.current) return;
-    mergeSetsIntervalRef.current = setInterval(() => {
-      const currentLength = channel.state.messages.length || 0;
-      const didMerge = mergeOverlappingMessageSetsRef.current(true);
-      if (didMerge && channel.state.messages.length !== currentLength) {
-        setMessages(channel.state.messages);
-      }
-    }, 1000);
+    // mergeSetsIntervalRef.current = setInterval(() => {
+    //   const currentLength = channel.state.messages.length || 0;
+    //   const didMerge = mergeOverlappingMessageSetsRef.current(true);
+    //   if (didMerge && channel.state.messages.length !== currentLength) {
+    //     setMessages(channel.state.messages);
+    //   }
+    // }, 1000);
   });
 
   /**

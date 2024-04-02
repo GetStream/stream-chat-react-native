@@ -272,7 +272,7 @@ export const ImageGallery = <
               !attachment.title_link &&
               !attachment.og_scrape_url &&
               getUrlOfImageAttachment(attachment)) ||
-            ((isVideoPackageAvailable() && attachment.type) === 'video' && attachment.thumb_url),
+            (isVideoPackageAvailable() && attachment.type === 'video'),
         )
         .reverse() || [];
 

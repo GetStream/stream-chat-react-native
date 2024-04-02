@@ -21,7 +21,7 @@ export const SendMessageDisallowedIndicator = () => {
   const { t } = useTranslationContext();
   const {
     theme: {
-      colors: { border, grey_dark },
+      colors: { border, grey_dark, white },
       messageInput: {
         sendMessageDisallowedIndicator: { container, text },
       },
@@ -33,6 +33,7 @@ export const SendMessageDisallowedIndicator = () => {
       style={[
         styles.container,
         {
+          backgroundColor: white,
           borderTopColor: border,
           height: 50,
         },

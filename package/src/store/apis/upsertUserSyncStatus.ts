@@ -13,5 +13,10 @@ export const upsertUserSyncStatus = ({
     userId: currentUserId,
   });
 
+  QuickSqliteClient.logger?.('info', 'upsertUserSyncStatus', {
+    lastSyncedAt,
+    userId: currentUserId,
+  });
+
   QuickSqliteClient.executeSql.apply(null, query);
 };
