@@ -22,7 +22,7 @@ export const useSyncDatabase = <
     let listener: ReturnType<StreamChat['on']> | undefined;
 
     if (enableOfflineSupport && initialisedDatabase) {
-      listener = client?.on(handleEventToSyncDB);
+      listener = client?.on((event) => handleEventToSyncDB(event, client));
     }
 
     return () => {

@@ -165,7 +165,9 @@ export type LocalMessageInputContext<
   resetInput: (pendingAttachments?: Attachment<StreamChatGenerics>[]) => void;
   selectedPicker: string | undefined;
   sending: React.MutableRefObject<boolean>;
-  sendMessage: (customMessageData?: Partial<Message<StreamChatGenerics>>) => Promise<void>;
+  sendMessage: (params?: {
+    customMessageData?: Partial<Message<StreamChatGenerics>>;
+  }) => Promise<void>;
   sendMessageAsync: (id: string) => void;
   sendThreadMessageInChannel: boolean;
   setAsyncIds: React.Dispatch<React.SetStateAction<string[]>>;
@@ -706,8 +708,12 @@ export const MessageInputProvider = <
   };
 
   // TODO: Figure out why this is async, as it doesn't await any promise.
-  // eslint-disable-next-line require-await
-  const sendMessage = async (customMessageData?: Partial<Message<StreamChatGenerics>>) => {
+  const sendMessage = async ({
+    customMessageData,
+  }: {
+    customMessageData?: Partial<Message<StreamChatGenerics>>;
+    // eslint-disable-next-line require-await
+  } = {}) => {
     if (sending.current) {
       return;
     }

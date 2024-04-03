@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { ChannelPreviewProps } from './ChannelPreview';
 import type { ChannelPreviewMessengerPropsWithContext } from './ChannelPreviewMessenger';
 import { MessageReadStatus } from './hooks/useLatestMessagePreview';
 
@@ -25,7 +26,8 @@ export type ChannelPreviewStatusProps<
 > = Pick<
   ChannelPreviewMessengerPropsWithContext<StreamChatGenerics>,
   'latestMessagePreview' | 'formatLatestMessageDate'
->;
+> &
+  Pick<ChannelPreviewProps<StreamChatGenerics>, 'channel'>;
 
 export const ChannelPreviewStatus = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

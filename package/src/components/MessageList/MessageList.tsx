@@ -525,7 +525,7 @@ const MessageListWithContext = <
     if (threadList || hasNoMoreRecentMessagesToLoad) {
       scrollToBottomIfNeeded();
     } else {
-      setScrollToBottomButtonVisible(true);
+      setScrollToBottomButtonVisible(false);
     }
 
     if (
@@ -805,13 +805,15 @@ const MessageListWithContext = <
 
   const handleScroll: ScrollViewProps['onScroll'] = (event) => {
     const offset = event.nativeEvent.contentOffset.y;
+    const messageListHasMessages = processedMessageList.length > 0;
     // Show scrollToBottom button once scroll position goes beyond 150.
     const isScrollAtBottom = offset <= 150;
 
     const notLatestSet = channel.state.messages !== channel.state.latestMessages;
 
     const showScrollToBottomButton =
-      (!threadList && notLatestSet) || !isScrollAtBottom || !hasNoMoreRecentMessagesToLoad;
+      messageListHasMessages &&
+      ((!threadList && notLatestSet) || !isScrollAtBottom || !hasNoMoreRecentMessagesToLoad);
 
     /**
      * 1. If I scroll up -> show scrollToBottom button.
@@ -1072,7 +1074,11 @@ const MessageListWithContext = <
   const renderListEmptyComponent = useCallback(
     () => (
       <View
-        style={[styles.flex, shouldApplyAndroidWorkaround ? styles.invertAndroid : styles.invert]}
+        style={[
+          styles.flex,
+          { backgroundColor: white_snow },
+          shouldApplyAndroidWorkaround ? styles.invertAndroid : styles.invert,
+        ]}
         testID='empty-state'
       >
         <EmptyStateIndicator listType='message' />
@@ -1099,16 +1105,6 @@ const MessageListWithContext = <
     [shouldApplyAndroidWorkaround, HeaderComponent],
   );
 
-  if (!FlatList) return null;
-
-  if (loading) {
-    return (
-      <View style={styles.flex}>
-        <LoadingIndicator listType='message' />
-      </View>
-    );
-  }
-
   const StickyHeaderComponent = () => {
     if (!stickyHeaderDateString) return null;
     if (StickyHeader) return <StickyHeader dateString={stickyHeaderDateString} />;
@@ -1125,6 +1121,16 @@ const MessageListWithContext = <
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { contentContainerStyle, style, ...rest } = additionalFlatListProps;
     additionalFlatListPropsExcludingStyle = rest;
+  }
+
+  if (!FlatList) return null;
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { backgroundColor: white_snow }, container]}>
+        <LoadingIndicator listType='message' />
+      </View>
+    );
   }
 
   return (
