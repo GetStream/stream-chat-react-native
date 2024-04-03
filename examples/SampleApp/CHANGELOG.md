@@ -1,5 +1,19 @@
 # Change Log
 
+### [1.25.6](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.25.5...sampleapp@v1.25.6) (2024-04-03)
+
+
+### Bug Fixes
+
+* offline support saving cyclic structure ([#2469](https://github.com/GetStream/stream-chat-react-native/issues/2469)) ([792b4c9](https://github.com/GetStream/stream-chat-react-native/commit/792b4c9e09138cafdcb564649274b24d21d5a7f3))
+* scroll to bottom issue when the message list is empty ([#2471](https://github.com/GetStream/stream-chat-react-native/issues/2471)) ([a05573f](https://github.com/GetStream/stream-chat-react-native/commit/a05573fcdb024c270c06c1223125d90f53859817))
+* **sample-app:** set loading status to false when the list of attachments or pinned messages was empty ([d99471a](https://github.com/GetStream/stream-chat-react-native/commit/d99471aa098641efa29e8fa45d7e1301d38932a9))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.25.5](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.25.4...sampleapp@v1.25.5) (2024-03-08)
 
 
