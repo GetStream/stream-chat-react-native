@@ -4,6 +4,8 @@ import {
   cleanup,
   fireEvent,
   render,
+  screen,
+  userEvent,
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react-native';
@@ -98,29 +100,24 @@ describe('Giphy', () => {
   afterEach(cleanup);
 
   it('should render Card component for "imgur" type attachment', async () => {
-    const { getByTestId } = render(getAttachmentComponent({ attachment }));
+    render(getAttachmentComponent({ attachment }));
 
     await waitFor(() => {
-      expect(getByTestId('giphy-attachment')).toBeTruthy();
+      expect(screen.getByTestId('giphy-attachment')).toBeTruthy();
     });
   });
 
   it('should render Card component for "giphy" type attachment', async () => {
-    const { getByTestId } = render(getAttachmentComponent({ attachment }));
+    render(getAttachmentComponent({ attachment }));
 
     await waitFor(() => {
-      expect(getByTestId('giphy-attachment')).toBeTruthy();
+      expect(screen.getByTestId('giphy-attachment')).toBeTruthy();
     });
   });
 
   it('"giphy" attachment size should be customisable', async () => {
     attachment.giphy = giphy;
-    const { getByTestId: getByTestIdFixedHeight } = render(
-      getAttachmentComponent({ attachment, giphyVersion: 'fixed_height' }),
-    );
-    const { getByTestId: getByTestIdOriginal } = render(
-      getAttachmentComponent({ attachment, giphyVersion: 'original' }),
-    );
+    render(getAttachmentComponent({ attachment, giphyVersion: 'fixed_height' }));
     await waitFor(() => {
       const checkImageProps = (imageProps, specificSizedGiphyData) => {
         let imageStyle = imageProps.style;
@@ -132,11 +129,23 @@ describe('Giphy', () => {
         expect(imageProps.source.uri).toBe(specificSizedGiphyData.url);
       };
       checkImageProps(
-        getByTestIdFixedHeight('giphy-attachment-image').props,
+        screen.getByTestId('giphy-attachment-image').props,
         attachment.giphy.fixed_height,
       );
+    });
+    render(getAttachmentComponent({ attachment, giphyVersion: 'original' }));
+    await waitFor(() => {
+      const checkImageProps = (imageProps, specificSizedGiphyData) => {
+        let imageStyle = imageProps.style;
+        if (Array.isArray(imageStyle)) {
+          imageStyle = Object.assign({}, ...imageStyle);
+        }
+        expect(imageStyle.height).toBe(parseFloat(specificSizedGiphyData.height));
+        expect(imageStyle.width).toBe(parseFloat(specificSizedGiphyData.width));
+        expect(imageProps.source.uri).toBe(specificSizedGiphyData.url);
+      };
       checkImageProps(
-        getByTestIdOriginal('giphy-attachment-image').props,
+        screen.getByTestId('giphy-attachment-image').props,
         attachment.giphy.original,
       );
     });
@@ -144,22 +153,21 @@ describe('Giphy', () => {
 
   it('show render giphy action UI and all the 3 action buttons', async () => {
     attachment.actions = actions;
-    const { getByTestId } = render(
-      getAttachmentComponent({ attachment, giphyVersion: 'fixed_height' }),
-    );
+    render(getAttachmentComponent({ attachment, giphyVersion: 'fixed_height' }));
 
     await waitFor(() => {
-      expect(getByTestId('giphy-action-attachment')).toBeTruthy();
-      expect(getByTestId('cancel-action-button')).toBeTruthy();
-      expect(getByTestId('shuffle-action-button')).toBeTruthy();
-      expect(getByTestId('send-action-button')).toBeTruthy();
+      expect(screen.getByTestId('giphy-action-attachment')).toBeTruthy();
+      expect(screen.getByTestId('cancel-action-button')).toBeTruthy();
+      expect(screen.getByTestId('shuffle-action-button')).toBeTruthy();
+      expect(screen.getByTestId('send-action-button')).toBeTruthy();
     });
   });
 
   it('should trigger the cancel giphy action', async () => {
     const handleAction = jest.fn();
+    const user = userEvent.setup();
     attachment.actions = actions;
-    const { getByTestId } = render(
+    render(
       getAttachmentComponent({
         attachment,
         giphyVersion: 'fixed_height',
@@ -167,13 +175,13 @@ describe('Giphy', () => {
       }),
     );
 
-    await waitFor(() => getByTestId(`${attachment.actions[2].value}-action-button`));
+    await waitFor(() => screen.getByTestId(`${attachment.actions[2].value}-action-button`));
 
-    expect(getByTestId('giphy-action-attachment')).toContainElement(
-      getByTestId(`${attachment.actions[2].value}-action-button`),
+    expect(screen.getByTestId('giphy-action-attachment')).toContainElement(
+      screen.getByTestId(`${attachment.actions[2].value}-action-button`),
     );
 
-    fireEvent.press(getByTestId(`${attachment.actions[2].value}-action-button`));
+    user.press(screen.getByTestId(`${attachment.actions[2].value}-action-button`));
 
     await waitFor(() => {
       expect(handleAction).toHaveBeenCalledTimes(1);
@@ -182,8 +190,9 @@ describe('Giphy', () => {
 
   it('should trigger the shuffle giphy action', async () => {
     const handleAction = jest.fn();
+    const user = userEvent.setup();
     attachment.actions = actions;
-    const { getByTestId } = render(
+    render(
       getAttachmentComponent({
         attachment,
         giphyVersion: 'fixed_height',
@@ -191,13 +200,13 @@ describe('Giphy', () => {
       }),
     );
 
-    await waitFor(() => getByTestId(`${attachment.actions[1].value}-action-button`));
+    await waitFor(() => screen.getByTestId(`${attachment.actions[1].value}-action-button`));
 
-    expect(getByTestId('giphy-action-attachment')).toContainElement(
-      getByTestId(`${attachment.actions[1].value}-action-button`),
+    expect(screen.getByTestId('giphy-action-attachment')).toContainElement(
+      screen.getByTestId(`${attachment.actions[1].value}-action-button`),
     );
 
-    fireEvent.press(getByTestId(`${attachment.actions[1].value}-action-button`));
+    user.press(screen.getByTestId(`${attachment.actions[1].value}-action-button`));
 
     await waitFor(() => {
       expect(handleAction).toHaveBeenCalledTimes(1);
@@ -206,8 +215,9 @@ describe('Giphy', () => {
 
   it('should trigger the send giphy action', async () => {
     const handleAction = jest.fn();
+    const user = userEvent.setup();
     attachment.actions = actions;
-    const { getByTestId } = render(
+    render(
       getAttachmentComponent({
         attachment,
         giphyVersion: 'fixed_height',
@@ -215,13 +225,13 @@ describe('Giphy', () => {
       }),
     );
 
-    await waitFor(() => getByTestId(`${attachment.actions[0].value}-action-button`));
+    await waitFor(() => screen.getByTestId(`${attachment.actions[0].value}-action-button`));
 
-    expect(getByTestId('giphy-action-attachment')).toContainElement(
-      getByTestId(`${attachment.actions[0].value}-action-button`),
+    expect(screen.getByTestId('giphy-action-attachment')).toContainElement(
+      screen.getByTestId(`${attachment.actions[0].value}-action-button`),
     );
 
-    fireEvent.press(getByTestId(`${attachment.actions[0].value}-action-button`));
+    user.press(screen.getByTestId(`${attachment.actions[0].value}-action-button`));
 
     await waitFor(() => {
       expect(handleAction).toHaveBeenCalledTimes(1);
@@ -245,7 +255,7 @@ describe('Giphy', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.watch();
 
-    const { getByTestId, queryByTestId } = render(
+    render(
       <OverlayProvider i18nInstance={streami18n}>
         <Chat client={chatClient} i18nInstance={streami18n}>
           <Channel channel={channel}>
@@ -256,15 +266,15 @@ describe('Giphy', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('giphy-action-attachment')).toBeTruthy();
-      expect(getByTestId('cancel-action-button')).toBeTruthy();
-      expect(getByTestId('shuffle-action-button')).toBeTruthy();
-      expect(getByTestId('send-action-button')).toBeTruthy();
+      expect(screen.queryByTestId('giphy-action-attachment')).toBeTruthy();
+      expect(screen.getByTestId('cancel-action-button')).toBeTruthy();
+      expect(screen.getByTestId('shuffle-action-button')).toBeTruthy();
+      expect(screen.getByTestId('send-action-button')).toBeTruthy();
     });
   });
 
   it('giphy attachment UI should render within the message list', async () => {
-    const { queryByTestId } = render(
+    render(
       <OverlayProvider i18nInstance={streami18n}>
         <Chat client={chatClient} i18nInstance={streami18n}>
           <Channel channel={channel}>
@@ -275,12 +285,12 @@ describe('Giphy', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('giphy-attachment')).toBeTruthy();
+      expect(screen.queryByTestId('giphy-attachment')).toBeTruthy();
     });
   });
 
   it('should render a error indicator in giphy image', async () => {
-    const { getByA11yLabel, getByAccessibilityHint, queryByTestId } = render(
+    render(
       <OverlayProvider i18nInstance={streami18n}>
         <Chat client={chatClient} i18nInstance={streami18n}>
           <Channel channel={channel}>
@@ -290,15 +300,15 @@ describe('Giphy', () => {
       </OverlayProvider>,
     );
     await waitFor(() => {
-      expect(queryByTestId('giphy-attachment')).toBeTruthy();
+      expect(screen.queryByTestId('giphy-attachment')).toBeTruthy();
     });
 
-    fireEvent(getByA11yLabel('Giphy Attachment Image'), 'error');
-    expect(getByAccessibilityHint('image-loading-error')).toBeTruthy();
+    fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'error');
+    expect(screen.getByAccessibilityHint('image-loading-error')).toBeTruthy();
   });
 
   it('should render a loading indicator in giphy image and when successful render the image', async () => {
-    const { getByA11yLabel, getByAccessibilityHint } = render(
+    render(
       <OverlayProvider i18nInstance={streami18n}>
         <Chat client={chatClient} i18nInstance={streami18n}>
           <Channel channel={channel}>
@@ -308,16 +318,16 @@ describe('Giphy', () => {
       </OverlayProvider>,
     );
     await waitFor(() => {
-      expect(getByAccessibilityHint('image-loading')).toBeTruthy();
+      expect(screen.getByAccessibilityHint('image-loading')).toBeTruthy();
     });
 
-    fireEvent(getByA11yLabel('Giphy Attachment Image'), 'onLoadStart');
+    fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'onLoadStart');
 
-    expect(getByAccessibilityHint('image-loading')).toBeTruthy();
+    expect(screen.getByAccessibilityHint('image-loading')).toBeTruthy();
 
-    fireEvent(getByA11yLabel('Giphy Attachment Image'), 'onLoadFinish');
+    fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'onLoadFinish');
 
-    waitForElementToBeRemoved(() => getByAccessibilityHint('image-loading'));
-    expect(getByA11yLabel('Giphy Attachment Image')).toBeTruthy();
+    waitForElementToBeRemoved(() => screen.getByAccessibilityHint('image-loading'));
+    expect(screen.getByLabelText('Giphy Attachment Image')).toBeTruthy();
   });
 });

@@ -56,6 +56,7 @@ jest.mock('@gorhom/bottom-sheet', () => {
     BottomSheetModalProvider: react.View,
     BottomSheetScrollView: react.ScrollView,
     default: react.View,
+    TouchableOpacity: react.View,
   };
 });
 jest.mock('react-native-quick-sqlite', () => {

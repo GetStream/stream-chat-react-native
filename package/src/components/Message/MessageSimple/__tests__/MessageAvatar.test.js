@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { cleanup, render, waitFor } from '@testing-library/react-native';
+import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
@@ -19,32 +19,32 @@ describe('MessageAvatar', () => {
     const message = generateMessage({
       user: { ...staticUser, image: undefined },
     });
-    const { getByTestId, queryAllByTestId, rerender, toJSON } = render(
+    render(
       <ThemeProvider style={defaultTheme}>
         <MessageAvatar alignment='right' groupStyles={['bottom']} message={message} />
       </ThemeProvider>,
     );
 
     await waitFor(() => {
-      expect(getByTestId('message-avatar')).toBeTruthy();
+      expect(screen.getByTestId('message-avatar')).toBeTruthy();
     });
 
-    rerender(
+    screen.rerender(
       <ThemeProvider style={defaultTheme}>
         <MessageAvatar alignment='right' groupStyles={[]} message={message} />
       </ThemeProvider>,
     );
 
     await waitFor(() => {
-      expect(getByTestId('spacer')).toBeTruthy();
-      expect(queryAllByTestId('avatar-image')).toHaveLength(0);
+      expect(screen.getByTestId('spacer')).toBeTruthy();
+      expect(screen.queryAllByTestId('avatar-image')).toHaveLength(0);
     });
 
     const staticMessage = generateStaticMessage('hi', {
       user: staticUser,
     });
 
-    rerender(
+    screen.rerender(
       <ThemeProvider style={defaultTheme}>
         <MessageAvatar
           alignment='left'
@@ -56,9 +56,9 @@ describe('MessageAvatar', () => {
     );
 
     await waitFor(() => {
-      expect(getByTestId('message-avatar')).toBeTruthy();
-      expect(getByTestId('avatar-image')).toBeTruthy();
-      expect(toJSON()).toMatchSnapshot();
+      expect(screen.getByTestId('message-avatar')).toBeTruthy();
+      expect(screen.getByTestId('avatar-image')).toBeTruthy();
+      expect(screen.toJSON()).toMatchSnapshot();
     });
   });
 });

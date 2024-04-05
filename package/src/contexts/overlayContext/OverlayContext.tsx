@@ -95,7 +95,7 @@ export const withOverlayContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<StreamChatGenerics>,
-): React.FC<Omit<StreamChatGenerics, keyof OverlayContextValue>> => {
+): React.ComponentType<Omit<StreamChatGenerics, keyof OverlayContextValue>> => {
   const WithOverlayContextComponent = (
     props: Omit<StreamChatGenerics, keyof OverlayContextValue>,
   ) => {

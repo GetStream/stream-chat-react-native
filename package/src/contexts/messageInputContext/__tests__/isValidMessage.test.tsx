@@ -1,12 +1,14 @@
 import React, { PropsWithChildren } from 'react';
 import { act } from 'react-test-renderer';
 
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react-native';
 
 import {
   generateFileUploadPreview,
   generateImageUploadPreview,
 } from '../../../mock-builders/generator/attachment';
+import { generateMessage } from '../../../mock-builders/generator/message';
+import { generateUser } from '../../../mock-builders/generator/user';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { FileState } from '../../../utils/utils';
 import {
@@ -15,6 +17,9 @@ import {
   MessageInputProvider,
   useMessageInputContext,
 } from '../MessageInputContext';
+
+const user1 = generateUser();
+const message = generateMessage({ user: user1 }, 'isValidMessage');
 
 type WrapperType<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   Partial<InputMessageInputContextValue<StreamChatGenerics>>;
@@ -36,7 +41,7 @@ const Wrapper = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultS
 
 describe("MessageInputContext's isValidMessage", () => {
   const initialProps = {
-    editing: true,
+    editing: message,
     hasImagePicker: true,
   };
 
@@ -53,8 +58,14 @@ describe("MessageInputContext's isValidMessage", () => {
     'isValidMessage with fileUploads %p, imageUploads %p, mentionedUsers %p, numberOfUploads %d, text %s gives %p',
     (fileUploads, imageUploads, mentionedUsers, numberOfUploads, text, isValidMessageStatus) => {
       const { result } = renderHook(() => useMessageInputContext(), {
-        initialProps,
-        wrapper: Wrapper,
+        wrapper: (props) => (
+          <Wrapper
+            // @ts-ignore
+            editing={initialProps.editing}
+            hasImagePicker={initialProps.hasImagePicker}
+            {...props}
+          />
+        ),
       });
 
       act(() => {

@@ -1,6 +1,6 @@
-import { renderHook } from '@testing-library/react-hooks';
-import type { MessageType } from 'src/components';
-import type { DefaultStreamChatGenerics } from 'src/types/types';
+import { renderHook } from '@testing-library/react-native';
+
+import type { MessageType } from '../../../components';
 
 import {
   generateFileAttachment,
@@ -9,6 +9,7 @@ import {
 import { generateMessage } from '../../../mock-builders/generator/message';
 
 import { generateUser } from '../../../mock-builders/generator/user';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { useMessageDetailsForState } from '../hooks/useMessageDetailsForState';
 
 describe('useMessageDetailsForState', () => {

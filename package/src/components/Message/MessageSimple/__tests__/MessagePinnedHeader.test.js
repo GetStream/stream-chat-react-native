@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { cleanup, render, waitFor } from '@testing-library/react-native';
+import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
@@ -19,17 +19,17 @@ describe('MessagePinnedHeader', () => {
     const message = generateMessage({
       user: { ...staticUser, image: undefined },
     });
-    const { getByTestId, rerender, toJSON } = render(
+    render(
       <ThemeProvider style={defaultTheme}>
         <MessagePinnedHeader alignment='right' message={message} />
       </ThemeProvider>,
     );
 
     await waitFor(() => {
-      expect(getByTestId('message-pinned')).toBeTruthy();
+      expect(screen.getByTestId('message-pinned')).toBeTruthy();
     });
 
-    rerender(
+    screen.rerender(
       <ThemeProvider style={defaultTheme}>
         <MessagePinnedHeader alignment='right' message={message} />
       </ThemeProvider>,
@@ -39,15 +39,15 @@ describe('MessagePinnedHeader', () => {
       user: staticUser,
     });
 
-    rerender(
+    screen.rerender(
       <ThemeProvider style={defaultTheme}>
         <MessagePinnedHeader alignment='left' message={staticMessage} />
       </ThemeProvider>,
     );
 
     await waitFor(() => {
-      expect(getByTestId('message-pinned')).toBeTruthy();
-      expect(toJSON()).toMatchSnapshot();
+      expect(screen.getByTestId('message-pinned')).toBeTruthy();
+      expect(screen.toJSON()).toMatchSnapshot();
     });
   });
 });

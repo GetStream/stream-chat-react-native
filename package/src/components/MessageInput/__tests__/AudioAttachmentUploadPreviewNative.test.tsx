@@ -2,7 +2,7 @@ import React from 'react';
 
 import { act } from 'react-test-renderer';
 
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import {
   MessageInputContext,
@@ -51,7 +51,7 @@ describe('AudioAttachment', () => {
     });
 
     const onPlayPauseMock = jest.fn();
-    const { getByA11yLabel } = render(
+    render(
       getComponent({
         fileUploads: [generateFileUploadPreview({ type: 'audio/mp3' })],
         item: { file: { name: 'audio.mp3' }, paused: true, progress: 1 } as unknown as FileUpload,
@@ -59,11 +59,9 @@ describe('AudioAttachment', () => {
       }),
     );
 
-    const playPauseButton = getByA11yLabel('Play Pause Button');
+    const playPauseButton = screen.getByLabelText('Play Pause Button');
+    fireEvent.press(playPauseButton);
 
-    act(() => {
-      fireEvent(playPauseButton, 'onPress');
-    });
     expect(seekMock).toHaveBeenCalled();
   });
 
@@ -77,7 +75,7 @@ describe('AudioAttachment', () => {
       },
     });
 
-    const { getByA11yLabel } = render(
+    render(
       getComponent({
         fileUploads: [generateFileUploadPreview({ type: 'audio/mp3' })],
         item: { file: { name: 'audio.mp3' }, paused: true } as unknown as FileUpload,
@@ -85,10 +83,10 @@ describe('AudioAttachment', () => {
       }),
     );
 
-    const playPauseButton = getByA11yLabel('Play Pause Button');
+    const playPauseButton = screen.getByLabelText('Play Pause Button');
 
     act(() => {
-      fireEvent(playPauseButton, 'onPress');
+      fireEvent.press(playPauseButton);
     });
 
     expect(playAsyncMock).toHaveBeenCalled();
@@ -104,7 +102,7 @@ describe('AudioAttachment', () => {
       },
     });
 
-    const { getByA11yLabel } = render(
+    render(
       getComponent({
         fileUploads: [generateFileUploadPreview({ type: 'audio/mp3' })],
         item: { file: { name: 'audio.mp3' }, paused: false } as unknown as FileUpload,
@@ -112,10 +110,10 @@ describe('AudioAttachment', () => {
       }),
     );
 
-    const playPauseButton = getByA11yLabel('Play Pause Button');
+    const playPauseButton = screen.getByLabelText('Play Pause Button');
 
     act(() => {
-      fireEvent(playPauseButton, 'onPress');
+      fireEvent.press(playPauseButton);
     });
 
     expect(pauseAsyncMock).toHaveBeenCalled();
@@ -124,7 +122,7 @@ describe('AudioAttachment', () => {
   it('handle onLoad event of sound player', () => {
     const onLoadMock = jest.fn().mockImplementation((id, duration) => ({ duration, id }));
 
-    const { getByTestId } = render(
+    render(
       getComponent({
         fileUploads: [generateFileUploadPreview({ type: 'audio/mp3' })],
         item: { file: { name: 'audio.mp3' }, paused: false } as unknown as FileUpload,
@@ -132,7 +130,7 @@ describe('AudioAttachment', () => {
       }),
     );
 
-    const soundPlayer = getByTestId('sound-player');
+    const soundPlayer = screen.getByTestId('sound-player');
 
     act(() => {
       fireEvent(soundPlayer, 'onLoad', {
@@ -147,7 +145,7 @@ describe('AudioAttachment', () => {
     const onProgressMock = jest.fn().mockImplementation((id, duration) => ({ duration, id }));
     const onPlayPauseMock = jest.fn().mockImplementation((id, status) => ({ id, status }));
 
-    const { getByTestId } = render(
+    render(
       getComponent({
         fileUploads: [generateFileUploadPreview({ type: 'audio/mp3' })],
         item: { file: { name: 'audio.mp3' }, paused: false } as unknown as FileUpload,
@@ -156,7 +154,7 @@ describe('AudioAttachment', () => {
       }),
     );
 
-    const soundPlayer = getByTestId('sound-player');
+    const soundPlayer = screen.getByTestId('sound-player');
 
     act(() => {
       fireEvent(soundPlayer, 'onEnd');
@@ -169,7 +167,7 @@ describe('AudioAttachment', () => {
   it('handle onProgress event of sound player', () => {
     const onProgressMock = jest.fn().mockImplementation((id, duration) => ({ duration, id }));
 
-    const { getByTestId } = render(
+    render(
       getComponent({
         fileUploads: [generateFileUploadPreview({ type: 'audio/mp3' })],
         item: { file: { name: 'audio.mp3' }, paused: false } as unknown as FileUpload,
@@ -177,7 +175,7 @@ describe('AudioAttachment', () => {
       }),
     );
 
-    const soundPlayer = getByTestId('sound-player');
+    const soundPlayer = screen.getByTestId('sound-player');
 
     act(() => {
       fireEvent(soundPlayer, 'onProgress', {
@@ -199,7 +197,7 @@ describe('AudioAttachment', () => {
       },
     });
 
-    const { getByTestId } = render(
+    render(
       getComponent({
         fileUploads: [generateFileUploadPreview({ type: 'audio/mp3' })],
         item: { file: { name: 'audio.mp3' }, paused: false } as unknown as FileUpload,
@@ -207,7 +205,7 @@ describe('AudioAttachment', () => {
       }),
     );
 
-    const progressControl = getByTestId('progress-control');
+    const progressControl = screen.getByTestId('progress-control');
 
     act(() => {
       fireEvent(progressControl, 'onProgressDrag', {

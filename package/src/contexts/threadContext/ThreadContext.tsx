@@ -64,7 +64,7 @@ export const withThreadContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ThreadContextValue<StreamChatGenerics>>> => {
+): React.ComponentType<Omit<P, keyof ThreadContextValue<StreamChatGenerics>>> => {
   const WithThreadContextComponent = (
     props: Omit<P, keyof ThreadContextValue<StreamChatGenerics>>,
   ) => {

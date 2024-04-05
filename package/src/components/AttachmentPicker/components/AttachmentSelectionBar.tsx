@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const AttachmentSelectionBar: React.FC = () => {
+export const AttachmentSelectionBar = () => {
   const {
     attachmentSelectionBarHeight,
     CameraSelectorIcon,

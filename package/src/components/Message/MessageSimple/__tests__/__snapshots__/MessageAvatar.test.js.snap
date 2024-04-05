@@ -3,11 +3,11 @@
 exports[`MessageAvatar should render message avatar 1`] = `
 <View
   style={
-    Array [
-      Object {
+    [
+      {
         "marginRight": 8,
       },
-      Object {},
+      {},
     ]
   }
   testID="message-avatar"
@@ -15,18 +15,18 @@ exports[`MessageAvatar should render message avatar 1`] = `
   <View>
     <View
       style={
-        Array [
-          Object {
+        [
+          {
             "alignItems": "center",
             "justifyContent": "center",
             "overflow": "hidden",
           },
-          Object {
+          {
             "borderRadius": 16,
             "height": 32,
             "width": 32,
           },
-          Object {},
+          {},
           undefined,
         ]
       }
@@ -35,18 +35,18 @@ exports[`MessageAvatar should render message avatar 1`] = `
         accessibilityLabel="Avatar Image"
         onError={[Function]}
         source={
-          Object {
+          {
             "uri": "https://i.imgur.com/ytIyojl.png",
           }
         }
         style={
-          Array [
-            Object {
+          [
+            {
               "borderRadius": 16,
               "height": 32,
               "width": 32,
             },
-            Object {
+            {
               "backgroundColor": "#ececec",
               "borderRadius": 16,
               "height": 32,

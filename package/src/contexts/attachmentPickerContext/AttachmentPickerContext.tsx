@@ -139,7 +139,7 @@ export const withAttachmentPickerContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<StreamChatGenerics>,
-): React.FC<Omit<StreamChatGenerics, keyof AttachmentPickerContextValue>> => {
+): React.ComponentType<Omit<StreamChatGenerics, keyof AttachmentPickerContextValue>> => {
   const WithAttachmentPickerContextComponent = (
     props: Omit<StreamChatGenerics, keyof AttachmentPickerContextValue>,
   ) => {

@@ -37,7 +37,7 @@ export type VideoThumbnailProps = {
   thumb_url?: string;
 };
 
-export const VideoThumbnail: React.FC<VideoThumbnailProps> = (props) => {
+export const VideoThumbnail = (props: VideoThumbnailProps) => {
   const {
     theme: {
       colors: { static_black, static_white },

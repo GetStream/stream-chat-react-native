@@ -110,7 +110,7 @@ export const withChatContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ChatContextValue<StreamChatGenerics>>> => {
+): React.ComponentType<Omit<P, keyof ChatContextValue<StreamChatGenerics>>> => {
   const WithChatContextComponent = (props: Omit<P, keyof ChatContextValue<StreamChatGenerics>>) => {
     const chatContext = useChatContext<StreamChatGenerics>();
 

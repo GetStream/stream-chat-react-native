@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ChannelAvatar } from './ChannelAvatar';
 import type { ChannelPreviewProps } from './ChannelPreview';
@@ -112,10 +111,10 @@ const ChannelPreviewMessengerWithContext = <
     onSelect,
     PreviewAvatar = ChannelAvatar,
     PreviewMessage = ChannelPreviewMessage,
+    PreviewMutedStatus = ChannelPreviewMutedStatus,
     PreviewStatus = ChannelPreviewStatus,
     PreviewTitle = ChannelPreviewTitle,
     PreviewUnreadCount = ChannelPreviewUnreadCount,
-    PreviewMutedStatus = ChannelPreviewMutedStatus,
     unread,
   } = props;
   const { vw } = useViewport();
@@ -146,7 +145,7 @@ const ChannelPreviewMessengerWithContext = <
   }, [client]);
 
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={() => {
         if (onSelect) {
           onSelect(channel);
@@ -180,7 +179,7 @@ const ChannelPreviewMessengerWithContext = <
           />
         </View>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

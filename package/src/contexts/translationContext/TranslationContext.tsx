@@ -41,9 +41,11 @@ export const TranslationContext = React.createContext<TranslationContextValue>(
   defaultTranslationContextValue,
 );
 
-export const TranslationProvider: React.FC<{
+type Props = React.PropsWithChildren<{
   value: TranslationContextValue;
-}> = ({ children, value }) => (
+}>;
+
+export const TranslationProvider = ({ children, value }: Props) => (
   <TranslationContext.Provider value={value}>{children}</TranslationContext.Provider>
 );
 
@@ -63,7 +65,7 @@ export const withTranslationContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<StreamChatGenerics>,
-): React.FC<Omit<StreamChatGenerics, keyof TranslationContextValue>> => {
+): React.ComponentType<Omit<StreamChatGenerics, keyof TranslationContextValue>> => {
   const WithTranslationContextComponent = (
     props: Omit<StreamChatGenerics, keyof TranslationContextValue>,
   ) => {

@@ -203,7 +203,7 @@ export const withChannelsStateContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ChannelsStateContextValue<StreamChatGenerics>>> => {
+): React.ComponentType<Omit<P, keyof ChannelsStateContextValue<StreamChatGenerics>>> => {
   const WithChannelsStateContextComponent = (
     props: Omit<P, keyof ChannelsStateContextValue<StreamChatGenerics>>,
   ) => {

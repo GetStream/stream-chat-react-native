@@ -3,29 +3,29 @@
 exports[`TypingIndicator should match typing indicator snapshot 1`] = `
 <View
   style={
-    Array [
-      Object {
+    [
+      {
         "alignItems": "center",
         "flexDirection": "row",
         "height": 24,
         "justifyContent": "flex-start",
       },
-      Object {
+      {
         "backgroundColor": "#FCFCFCE6",
       },
-      Object {},
+      {},
     ]
   }
   testID="typing-indicator"
 >
   <View
     style={
-      Array [
-        Object {
+      [
+        {
           "flexDirection": "row",
         },
-        Object {},
-        Object {
+        {},
+        {
           "marginLeft": 8,
         },
       ]
@@ -33,18 +33,18 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
   >
     <View
       style={
-        Array [
-          Object {
+        [
+          {
             "backgroundColor": "#000000",
             "borderRadius": 2,
             "height": 4,
             "width": 4,
           },
-          Object {
+          {
             "marginRight": 2,
           },
-          Object {},
-          Object {
+          {},
+          {
             "opacity": -0.3333333333333333,
           },
         ]
@@ -52,18 +52,18 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
     />
     <View
       style={
-        Array [
-          Object {
+        [
+          {
             "backgroundColor": "#000000",
             "borderRadius": 2,
             "height": 4,
             "width": 4,
           },
-          Object {
+          {
             "marginHorizontal": 2,
           },
-          Object {},
-          Object {
+          {},
+          {
             "opacity": 0.3333333333333333,
           },
         ]
@@ -71,18 +71,18 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
     />
     <View
       style={
-        Array [
-          Object {
+        [
+          {
             "backgroundColor": "#000000",
             "borderRadius": 2,
             "height": 4,
             "width": 4,
           },
-          Object {
+          {
             "marginLeft": 2,
           },
-          Object {},
-          Object {
+          {},
+          {
             "opacity": 1,
           },
         ]
@@ -91,14 +91,14 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
   </View>
   <Text
     style={
-      Array [
-        Object {
+      [
+        {
           "marginLeft": 8,
         },
-        Object {
+        {
           "color": "#7A7A7A",
         },
-        Object {
+        {
           "fontSize": 14,
         },
       ]

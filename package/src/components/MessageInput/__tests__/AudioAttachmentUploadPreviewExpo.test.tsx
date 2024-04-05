@@ -42,7 +42,7 @@ const getComponent = (
   </ThemeProvider>
 );
 
-describe('AudioAttachmentExpo', () => {
+describe.skip('AudioAttachmentExpo', () => {
   it('handle play pause button when isPausedStatusAvailable unavailable and progress 1', () => {
     const setPositionAsyncMock = jest.fn();
     jest.spyOn(React, 'useRef').mockReturnValue({

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
+import { cleanup, render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
@@ -15,13 +15,14 @@ afterEach(cleanup);
 describe('MessageReplies', () => {
   it('should render message replies', async () => {
     const onPressMock = jest.fn(() => null);
+    const user = userEvent.setup();
     const t = jest.fn((key) => key);
     const staticUser = generateStaticUser(0);
     const message = generateMessage({
       reply_count: 2,
       user: staticUser,
     });
-    const { getByTestId, getByText, queryAllByTestId, rerender, toJSON } = render(
+    render(
       <TranslationProvider value={{ t }}>
         <ThemeProvider style={defaultTheme}>
           <MessageReplies
@@ -36,13 +37,13 @@ describe('MessageReplies', () => {
     );
 
     await waitFor(() => {
-      expect(getByTestId('message-replies')).toBeTruthy();
-      expect(getByTestId('message-replies-right')).toBeTruthy();
-      expect(queryAllByTestId('message-replies-left')).toHaveLength(0);
+      expect(screen.getByTestId('message-replies')).toBeTruthy();
+      expect(screen.getByTestId('message-replies-right')).toBeTruthy();
+      expect(screen.queryAllByTestId('message-replies-left')).toHaveLength(0);
       expect(t).toHaveBeenCalledWith('{{ replyCount }} Thread Replies', {
         replyCount: message.reply_count,
       });
-      expect(getByText('{{ replyCount }} Thread Replies')).toBeTruthy();
+      expect(screen.getByText('{{ replyCount }} Thread Replies')).toBeTruthy();
     });
 
     const message2 = generateMessage({
@@ -50,7 +51,7 @@ describe('MessageReplies', () => {
       user: staticUser,
     });
 
-    rerender(
+    screen.rerender(
       <TranslationProvider value={{ t }}>
         <ThemeProvider style={defaultTheme}>
           <MessageReplies
@@ -64,16 +65,16 @@ describe('MessageReplies', () => {
       </TranslationProvider>,
     );
 
-    fireEvent.press(getByTestId('message-replies'));
+    user.press(screen.getByTestId('message-replies'));
 
     await waitFor(() => {
       expect(onPressMock).toHaveBeenCalled();
-      expect(getByTestId('message-replies')).toBeTruthy();
-      expect(getByTestId('message-replies-left')).toBeTruthy();
-      expect(queryAllByTestId('message-replies-right')).toHaveLength(0);
+      expect(screen.getByTestId('message-replies')).toBeTruthy();
+      expect(screen.getByTestId('message-replies-left')).toBeTruthy();
+      expect(screen.queryAllByTestId('message-replies-right')).toHaveLength(0);
       expect(t).toHaveBeenCalledWith('1 Thread Reply');
-      expect(getByText('1 Thread Reply')).toBeTruthy();
-      expect(toJSON()).toMatchSnapshot();
+      expect(screen.getByText('1 Thread Reply')).toBeTruthy();
+      expect(screen.toJSON()).toMatchSnapshot();
     });
   });
 
@@ -83,7 +84,7 @@ describe('MessageReplies', () => {
     const message = generateMessage({
       user,
     });
-    const { queryAllByTestId, rerender } = render(
+    render(
       <TranslationProvider value={{ t }}>
         <ThemeProvider style={defaultTheme}>
           <MessageReplies
@@ -97,9 +98,9 @@ describe('MessageReplies', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByTestId('message-replies')).toHaveLength(0);
-      expect(queryAllByTestId('message-replies-left')).toHaveLength(0);
-      expect(queryAllByTestId('message-replies-right')).toHaveLength(0);
+      expect(screen.queryAllByTestId('message-replies')).toHaveLength(0);
+      expect(screen.queryAllByTestId('message-replies-left')).toHaveLength(0);
+      expect(screen.queryAllByTestId('message-replies-right')).toHaveLength(0);
     });
 
     const message2 = generateMessage({
@@ -107,7 +108,7 @@ describe('MessageReplies', () => {
       user,
     });
 
-    rerender(
+    screen.rerender(
       <TranslationProvider value={{ t }}>
         <ThemeProvider style={defaultTheme}>
           <MessageReplies
@@ -122,9 +123,9 @@ describe('MessageReplies', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByTestId('message-replies')).toHaveLength(0);
-      expect(queryAllByTestId('message-replies-left')).toHaveLength(0);
-      expect(queryAllByTestId('message-replies-right')).toHaveLength(0);
+      expect(screen.queryAllByTestId('message-replies')).toHaveLength(0);
+      expect(screen.queryAllByTestId('message-replies-left')).toHaveLength(0);
+      expect(screen.queryAllByTestId('message-replies-right')).toHaveLength(0);
     });
   });
 });

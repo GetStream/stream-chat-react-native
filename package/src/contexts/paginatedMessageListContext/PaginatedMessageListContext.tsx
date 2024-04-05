@@ -94,7 +94,7 @@ export const withPaginatedMessageListContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof PaginatedMessageListContextValue<StreamChatGenerics>>> => {
+): React.ComponentType<Omit<P, keyof PaginatedMessageListContextValue<StreamChatGenerics>>> => {
   const WithPaginatedMessageListContextComponent = (
     props: Omit<P, keyof PaginatedMessageListContextValue<StreamChatGenerics>>,
   ) => {

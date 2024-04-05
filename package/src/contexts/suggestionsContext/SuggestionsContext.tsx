@@ -154,7 +154,7 @@ export const withSuggestionsContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof SuggestionsContextValue<StreamChatGenerics>>> => {
+): React.ComponentType<Omit<P, keyof SuggestionsContextValue<StreamChatGenerics>>> => {
   const WithSuggestionsContextComponent = (
     props: Omit<P, keyof SuggestionsContextValue<StreamChatGenerics>>,
   ) => {

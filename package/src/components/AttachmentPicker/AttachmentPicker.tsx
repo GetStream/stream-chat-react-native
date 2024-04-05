@@ -182,13 +182,16 @@ export const AttachmentPicker = React.forwardRef(
       const keyboardSubscription = Keyboard.addListener(keyboardShowEvent, onKeyboardOpenHandler);
 
       return () => {
+        // Following if-else condition to avoid deprecated warning coming RN 0.65
         if (keyboardSubscription?.remove) {
           keyboardSubscription.remove();
           return;
         }
-
-        // To keep compatibility with older versions of React Native, where `remove()` is not available
-        Keyboard.removeListener(keyboardShowEvent, onKeyboardOpenHandler);
+        // @ts-ignore
+        else if (Keyboard.removeListener) {
+          // @ts-ignore
+          Keyboard.removeListener(keyboardShowEvent, onKeyboardOpenHandler);
+        }
       };
     }, [closePicker, selectedPicker]);
 

@@ -58,8 +58,8 @@ const ProgressControlThumb = () => {
   );
 };
 
-export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
-  (props) => {
+export const ProgressControl = React.memo(
+  (props: ProgressControlProps) => {
     const { duration, filledColor, onPlayPause, onProgressDrag, progress, testID, width } = props;
     const {
       theme: {
@@ -127,3 +127,5 @@ export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
     else return false;
   },
 );
+
+ProgressControl.displayName = 'ProgressControl';

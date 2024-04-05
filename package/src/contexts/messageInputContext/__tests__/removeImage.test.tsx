@@ -1,11 +1,11 @@
 import React, { PropsWithChildren } from 'react';
 import { act } from 'react-test-renderer';
 
-import { renderHook } from '@testing-library/react-hooks';
-
-import { waitFor } from '@testing-library/react-native';
+import { renderHook, waitFor } from '@testing-library/react-native';
 
 import { generateImageUploadPreview } from '../../../mock-builders/generator/attachment';
+import { generateMessage } from '../../../mock-builders/generator/message';
+import { generateUser } from '../../../mock-builders/generator/user';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import {
   InputMessageInputContextValue,
@@ -32,9 +32,12 @@ const Wrapper = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultS
   </MessageInputProvider>
 );
 
+const user1 = generateUser();
+const message = generateMessage({ user: user1 });
+const newMessage = generateMessage({ id: 'new-id' });
 describe("MessageInputContext's removeImage", () => {
   const initialProps = {
-    editing: true,
+    editing: message,
   };
   const image = generateImageUploadPreview({
     file: {
@@ -51,7 +54,7 @@ describe("MessageInputContext's removeImage", () => {
     async (imageId, expectedImageUploadsLength, expectedNumberOfUploadsLength) => {
       const { rerender, result } = renderHook(() => useMessageInputContext(), {
         initialProps,
-        wrapper: Wrapper,
+        wrapper: (props) => <Wrapper editing={initialProps.editing} {...props} />,
       });
 
       act(() => {
@@ -59,7 +62,7 @@ describe("MessageInputContext's removeImage", () => {
         result.current.setNumberOfUploads(1);
       });
 
-      rerender({ editing: false });
+      rerender({ editing: newMessage });
 
       await waitFor(() => {
         expect(result.current.imageUploads.length).toBe(1);
@@ -69,7 +72,7 @@ describe("MessageInputContext's removeImage", () => {
         result.current.removeImage(imageId);
       });
 
-      rerender({ editing: true });
+      rerender({ editing: newMessage });
 
       await waitFor(() => {
         expect(result.current.imageUploads.length).toBe(expectedImageUploadsLength);

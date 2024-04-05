@@ -70,7 +70,7 @@ export const withImageGalleryContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ImageGalleryContextValue<StreamChatGenerics>>> => {
+): React.ComponentType<Omit<P, keyof ImageGalleryContextValue<StreamChatGenerics>>> => {
   const WithImageGalleryContextComponent = (
     props: Omit<P, keyof ImageGalleryContextValue<StreamChatGenerics>>,
   ) => {

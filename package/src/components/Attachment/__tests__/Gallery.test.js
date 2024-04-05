@@ -3,6 +3,7 @@ import React from 'react';
 import {
   fireEvent,
   render,
+  screen,
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react-native';
@@ -68,14 +69,14 @@ describe('Gallery', () => {
       original_width: 400,
     });
     const component = await getComponent([attachment1, attachment2]);
-    const { queryAllByTestId } = render(component);
+    render(component);
 
     await waitFor(() => {
-      expect(queryAllByTestId('gallery-row-0').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-0').length).toBe(1);
       // expect(queryAllByTestId('gallery-row-1').length).toBe(1);
 
-      expect(queryAllByTestId('gallery-row-0-item-0').length).toBe(1);
-      expect(queryAllByTestId('gallery-row-0-item-1').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-0-item-0').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-0-item-1').length).toBe(1);
     });
   });
 
@@ -87,13 +88,13 @@ describe('Gallery', () => {
     });
     const attachment2 = generateVideoAttachment();
     const component = await getComponent([attachment1, attachment2]);
-    const { getAllByA11yLabel, queryAllByTestId } = render(component);
+    render(component);
 
     await waitFor(() => {
-      expect(queryAllByTestId('gallery-row-0').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-0').length).toBe(1);
 
-      expect(queryAllByTestId('gallery-row-0-item-0').length).toBe(1);
-      expect(getAllByA11yLabel('Video Thumbnail').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-0-item-0').length).toBe(1);
+      expect(screen.getAllByLabelText('Video Thumbnail').length).toBe(1);
     });
   });
 
@@ -107,13 +108,13 @@ describe('Gallery', () => {
       original_width: 400,
     });
     const component = await getComponent([attachment1, attachment2]);
-    const { queryAllByTestId } = render(component);
+    render(component);
 
     await waitFor(() => {
-      expect(queryAllByTestId('gallery-row-0').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-0').length).toBe(1);
 
-      expect(queryAllByTestId('gallery-row-0-item-0').length).toBe(1);
-      expect(queryAllByTestId('gallery-row-0-item-1').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-0-item-0').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-0-item-1').length).toBe(1);
     });
   });
 
@@ -135,13 +136,13 @@ describe('Gallery', () => {
       original_width: 400,
     });
     const component = await getComponent([attachment1, attachment2]);
-    const { queryAllByTestId } = render(component);
+    render(component);
     await waitFor(() => {
-      expect(queryAllByTestId('gallery-row-0').length).toBe(1);
-      expect(queryAllByTestId('gallery-row-1').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-0').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-1').length).toBe(1);
 
-      expect(queryAllByTestId('gallery-row-0-item-0').length).toBe(1);
-      expect(queryAllByTestId('gallery-row-1-item-0').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-0-item-0').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-1-item-0').length).toBe(1);
     });
   });
 
@@ -169,15 +170,15 @@ describe('Gallery', () => {
     });
 
     const component = await getComponent([portraitImage, squareImage1, squareImage2]);
-    const { queryAllByTestId } = render(component);
+    render(component);
 
     await waitFor(() => {
-      expect(queryAllByTestId('gallery-column-0').length).toBe(1);
-      expect(queryAllByTestId('gallery-column-1').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-column-0').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-column-1').length).toBe(1);
 
-      expect(queryAllByTestId('gallery-column-0-item-0').length).toBe(1);
-      expect(queryAllByTestId('gallery-column-1-item-0').length).toBe(1);
-      expect(queryAllByTestId('gallery-column-1-item-1').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-column-0-item-0').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-column-1-item-0').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-column-1-item-1').length).toBe(1);
     });
   });
 
@@ -205,15 +206,15 @@ describe('Gallery', () => {
     });
 
     const component = await getComponent([portraitImage, squareImage1, squareImage2]);
-    const { queryAllByTestId } = render(component);
+    render(component);
 
     await waitFor(() => {
-      expect(queryAllByTestId('gallery-row-0').length).toBe(1);
-      expect(queryAllByTestId('gallery-row-1').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-0').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-1').length).toBe(1);
 
-      expect(queryAllByTestId('gallery-row-0-item-0').length).toBe(1);
-      expect(queryAllByTestId('gallery-row-1-item-0').length).toBe(1);
-      expect(queryAllByTestId('gallery-row-1-item-1').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-0-item-0').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-1-item-0').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-1-item-1').length).toBe(1);
     });
   });
 
@@ -245,16 +246,16 @@ describe('Gallery', () => {
     });
 
     const component = await getComponent([image1, image2, image3, image4]);
-    const { queryAllByTestId } = render(component);
+    render(component);
 
     await waitFor(() => {
-      expect(queryAllByTestId('gallery-row-0').length).toBe(1);
-      expect(queryAllByTestId('gallery-row-1').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-0').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-1').length).toBe(1);
 
-      expect(queryAllByTestId('gallery-row-0-item-0').length).toBe(1);
-      expect(queryAllByTestId('gallery-row-0-item-1').length).toBe(1);
-      expect(queryAllByTestId('gallery-row-1-item-0').length).toBe(1);
-      expect(queryAllByTestId('gallery-row-1-item-1').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-0-item-0').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-0-item-1').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-1-item-0').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-row-1-item-1').length).toBe(1);
     });
   });
 
@@ -265,15 +266,15 @@ describe('Gallery', () => {
     });
 
     const component = await getComponent([image1]);
-    const { getByA11yLabel, getByAccessibilityHint, queryAllByTestId } = render(component);
+    render(component);
     await waitFor(() => {
-      expect(queryAllByTestId('gallery-container').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-container').length).toBe(1);
     });
 
-    fireEvent(getByA11yLabel('Gallery Image'), 'error', {
+    fireEvent(screen.getByLabelText('Gallery Image'), 'error', {
       nativeEvent: { error: 'error loading image' },
     });
-    expect(getByAccessibilityHint('image-loading-error')).toBeTruthy();
+    expect(screen.getByAccessibilityHint('image-loading-error')).toBeTruthy();
   });
 
   it('should render a loading indicator and when successful render the image', async () => {
@@ -283,17 +284,17 @@ describe('Gallery', () => {
     });
 
     const component = await getComponent([image1]);
-    const { getByA11yLabel, getByAccessibilityHint, queryAllByTestId } = render(component);
+    render(component);
 
     await waitFor(() => {
-      expect(queryAllByTestId('gallery-container').length).toBe(1);
+      expect(screen.queryAllByTestId('gallery-container').length).toBe(1);
     });
 
-    fireEvent(getByA11yLabel('Gallery Image'), 'onLoadStart');
-    expect(getByAccessibilityHint('image-loading')).toBeTruthy();
+    fireEvent(screen.getByLabelText('Gallery Image'), 'onLoadStart');
+    expect(screen.getByAccessibilityHint('image-loading')).toBeTruthy();
 
-    fireEvent(getByA11yLabel('Gallery Image'), 'onLoadFinish');
-    waitForElementToBeRemoved(() => getByAccessibilityHint('Image Loading'));
-    expect(getByA11yLabel('Gallery Image')).toBeTruthy();
+    fireEvent(screen.getByLabelText('Gallery Image'), 'onLoadFinish');
+    waitForElementToBeRemoved(() => screen.getByAccessibilityHint('image-loading'));
+    expect(screen.getByLabelText('Gallery Image')).toBeTruthy();
   });
 });

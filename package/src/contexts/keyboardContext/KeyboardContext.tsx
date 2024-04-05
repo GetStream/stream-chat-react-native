@@ -13,9 +13,11 @@ export const KeyboardContext = React.createContext({
   dismissKeyboard: Keyboard.dismiss,
 });
 
-export const KeyboardProvider: React.FC<{
+type Props = React.PropsWithChildren<{
   value: KeyboardContextValue;
-}> = ({ children, value }) => (
+}>;
+
+export const KeyboardProvider = ({ children, value }: Props) => (
   <KeyboardContext.Provider value={value}>{children}</KeyboardContext.Provider>
 );
 
@@ -25,7 +27,7 @@ export const withKeyboardContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<StreamChatGenerics>,
-): React.FC<Omit<StreamChatGenerics, keyof KeyboardContextValue>> => {
+): React.ComponentType<Omit<StreamChatGenerics, keyof KeyboardContextValue>> => {
   const WithKeyboardContextComponent = (
     props: Omit<StreamChatGenerics, keyof KeyboardContextValue>,
   ) => {

@@ -1262,7 +1262,7 @@ export const withMessageInputContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof MessageInputContextValue<StreamChatGenerics>>> => {
+): React.ComponentType<Omit<P, keyof MessageInputContextValue<StreamChatGenerics>>> => {
   const WithMessageInputContextComponent = (
     props: Omit<P, keyof MessageInputContextValue<StreamChatGenerics>>,
   ) => {

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { ProgressIndicatorTypes } from '../../../utils/utils';
@@ -35,7 +35,7 @@ describe('UploadProgressIndicator', () => {
   it('should render an active UploadProgressIndicator', async () => {
     const action = jest.fn();
 
-    const { queryByTestId, toJSON } = render(
+    render(
       <ThemeProvider>
         <UploadProgressIndicator
           action={action}
@@ -45,12 +45,12 @@ describe('UploadProgressIndicator', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('active-upload-progress-indicator')).toBeTruthy();
-      expect(queryByTestId('inactive-upload-progress-indicator')).toBeFalsy();
+      expect(screen.queryByTestId('active-upload-progress-indicator')).toBeTruthy();
+      expect(screen.queryByTestId('inactive-upload-progress-indicator')).toBeFalsy();
       expect(action).toHaveBeenCalledTimes(0);
     });
 
-    const snapshot = toJSON();
+    const snapshot = screen.toJSON();
 
     await waitFor(() => {
       expect(snapshot).toMatchSnapshot();
@@ -60,7 +60,7 @@ describe('UploadProgressIndicator', () => {
   it('should render an active UploadProgressIndicator and not-supported indicator', async () => {
     const action = jest.fn();
 
-    const { queryByTestId, toJSON } = render(
+    render(
       <ThemeProvider>
         <UploadProgressIndicator
           action={action}
@@ -70,13 +70,13 @@ describe('UploadProgressIndicator', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('active-upload-progress-indicator')).toBeTruthy();
-      expect(queryByTestId('not-supported-upload-progress-indicator')).toBeTruthy();
-      expect(queryByTestId('inactive-upload-progress-indicator')).toBeFalsy();
+      expect(screen.queryByTestId('active-upload-progress-indicator')).toBeTruthy();
+      expect(screen.queryByTestId('not-supported-upload-progress-indicator')).toBeTruthy();
+      expect(screen.queryByTestId('inactive-upload-progress-indicator')).toBeFalsy();
       expect(action).toHaveBeenCalledTimes(0);
     });
 
-    const snapshot = toJSON();
+    const snapshot = screen.toJSON();
 
     await waitFor(() => {
       expect(snapshot).toMatchSnapshot();
@@ -86,7 +86,7 @@ describe('UploadProgressIndicator', () => {
   it('should render an active UploadProgressIndicator and in-progress indicator', async () => {
     const action = jest.fn();
 
-    const { queryByTestId, toJSON } = render(
+    render(
       <ThemeProvider>
         <UploadProgressIndicator
           action={action}
@@ -96,13 +96,13 @@ describe('UploadProgressIndicator', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('active-upload-progress-indicator')).toBeTruthy();
-      expect(queryByTestId('upload-progress-indicator')).toBeTruthy();
-      expect(queryByTestId('inactive-upload-progress-indicator')).toBeFalsy();
+      expect(screen.queryByTestId('active-upload-progress-indicator')).toBeTruthy();
+      expect(screen.queryByTestId('upload-progress-indicator')).toBeTruthy();
+      expect(screen.queryByTestId('inactive-upload-progress-indicator')).toBeFalsy();
       expect(action).toHaveBeenCalledTimes(0);
     });
 
-    const snapshot = toJSON();
+    const snapshot = screen.toJSON();
 
     await waitFor(() => {
       expect(snapshot).toMatchSnapshot();
@@ -111,8 +111,9 @@ describe('UploadProgressIndicator', () => {
 
   it('should render an active UploadProgressIndicator and retry indicator', async () => {
     const action = jest.fn();
+    const user = userEvent.setup();
 
-    const { getByTestId, queryByTestId, toJSON } = render(
+    render(
       <ThemeProvider>
         <UploadProgressIndicator
           action={action}
@@ -122,18 +123,18 @@ describe('UploadProgressIndicator', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('active-upload-progress-indicator')).toBeTruthy();
-      expect(queryByTestId('upload-progress-indicator')).toBeFalsy();
-      expect(queryByTestId('inactive-upload-progress-indicator')).toBeFalsy();
-      expect(queryByTestId('retry-upload-progress-indicator')).toBeTruthy();
+      expect(screen.queryByTestId('active-upload-progress-indicator')).toBeTruthy();
+      expect(screen.queryByTestId('upload-progress-indicator')).toBeFalsy();
+      expect(screen.queryByTestId('inactive-upload-progress-indicator')).toBeFalsy();
+      expect(screen.queryByTestId('retry-upload-progress-indicator')).toBeTruthy();
       expect(action).toHaveBeenCalledTimes(0);
     });
 
-    fireEvent.press(getByTestId('retry-upload-progress-indicator'));
+    user.press(screen.getByTestId('retry-upload-progress-indicator'));
 
     await waitFor(() => expect(action).toHaveBeenCalledTimes(1));
 
-    const snapshot = toJSON();
+    const snapshot = screen.toJSON();
 
     await waitFor(() => {
       expect(snapshot).toMatchSnapshot();

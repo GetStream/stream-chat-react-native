@@ -3,14 +3,14 @@
 exports[`MessageReplies should render message replies 1`] = `
 <View
   style={
-    Object {
+    {
       "flexDirection": "row",
     }
   }
 >
   <View
     style={
-      Object {
+      {
         "flexDirection": "row",
       }
     }
@@ -18,38 +18,55 @@ exports[`MessageReplies should render message replies 1`] = `
   >
     <View
       style={
-        Array [
-          Object {
+        [
+          {
             "borderColor": undefined,
           },
-          Object {
+          {
             "borderTopWidth": 0,
             "borderWidth": 1,
             "height": 16,
             "width": 16,
           },
-          Object {
+          {
             "borderBottomLeftRadius": 16,
             "borderRightWidth": 0,
           },
-          Object {},
+          {},
         ]
       }
     />
     <View
       style={
-        Array [
-          Object {
+        [
+          {
             "alignItems": "center",
             "flexDirection": "row",
             "paddingTop": 2,
           },
-          Object {},
+          {},
         ]
       }
     />
   </View>
   <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
     accessible={true}
     collapsable={false}
     focusable={true}
@@ -61,28 +78,28 @@ exports[`MessageReplies should render message replies 1`] = `
     onResponderTerminationRequest={[Function]}
     onStartShouldSetResponder={[Function]}
     style={
-      Object {
+      {
         "alignItems": "center",
         "flexDirection": "row",
         "marginTop": 8,
-        "opacity": 1,
+        "opacity": 0.24515840000000003,
       }
     }
     testID="message-replies"
   >
     <Text
       style={
-        Array [
-          Object {
+        [
+          {
             "fontSize": 12,
             "fontWeight": "700",
             "paddingBottom": 5,
             "paddingHorizontal": 8,
           },
-          Object {
+          {
             "color": "#005FFF",
           },
-          Object {},
+          {},
         ]
       }
     >

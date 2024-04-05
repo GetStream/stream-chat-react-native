@@ -28,7 +28,7 @@ export type InlineDateSeparatorProps = {
   date?: Date;
 };
 
-export const InlineDateSeparator: React.FC<InlineDateSeparatorProps> = ({ date }) => {
+export const InlineDateSeparator = ({ date }: InlineDateSeparatorProps) => {
   const {
     theme: {
       colors: { overlay, white },

@@ -3,7 +3,7 @@ import React from 'react';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { Camera } from '../../../icons';
 
-export const CameraSelectorIcon: React.FC = () => {
+export const CameraSelectorIcon = () => {
   const {
     theme: {
       colors: { grey },

@@ -33,8 +33,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlProps> = React.memo(
-  (props) => {
+export const ImageGalleryVideoControl = React.memo(
+  (props: ImageGalleryFooterVideoControlProps) => {
     const { duration, onPlayPause, paused, progress, videoRef } = props;
 
     const videoDuration = duration

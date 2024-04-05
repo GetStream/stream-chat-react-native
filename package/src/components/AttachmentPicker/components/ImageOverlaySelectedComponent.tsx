@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const ImageOverlaySelectedComponent: React.FC = () => {
+export const ImageOverlaySelectedComponent = () => {
   const {
     theme: {
       attachmentPicker: {

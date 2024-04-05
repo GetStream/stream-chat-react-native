@@ -17,24 +17,25 @@ export type InlineLoadingMoreIndicatorPropsWithContext = {
   loadingMore?: boolean;
 };
 
-export const InlineLoadingMoreIndicatorWithContext: React.FC<InlineLoadingMoreIndicatorPropsWithContext> =
-  ({ loadingMore }) => {
-    const { theme } = useTheme();
+export const InlineLoadingMoreIndicatorWithContext = ({
+  loadingMore,
+}: InlineLoadingMoreIndicatorPropsWithContext) => {
+  const { theme } = useTheme();
 
-    const {
-      colors: { accent_blue },
-    } = theme;
+  const {
+    colors: { accent_blue },
+  } = theme;
 
-    if (!loadingMore) {
-      return null;
-    }
+  if (!loadingMore) {
+    return null;
+  }
 
-    return (
-      <View style={styles.activityIndicatorContainer}>
-        <ActivityIndicator color={accent_blue} size='small' />
-      </View>
-    );
-  };
+  return (
+    <View style={styles.activityIndicatorContainer}>
+      <ActivityIndicator color={accent_blue} size='small' />
+    </View>
+  );
+};
 
 const areEqual = (
   prevProps: InlineLoadingMoreIndicatorPropsWithContext,

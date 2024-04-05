@@ -21,7 +21,7 @@ type Props = {
   currentBottomSheetIndex: number;
 };
 
-export const ImageGalleryOverlay: React.FC<Props> = (props) => {
+export const ImageGalleryOverlay = (props: Props) => {
   const { animatedBottomSheetIndex, closeGridView, currentBottomSheetIndex } = props;
 
   const {

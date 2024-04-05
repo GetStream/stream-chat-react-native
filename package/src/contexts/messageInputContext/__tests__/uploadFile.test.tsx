@@ -1,11 +1,11 @@
 import React, { PropsWithChildren } from 'react';
 import { act } from 'react-test-renderer';
 
-import { renderHook } from '@testing-library/react-hooks';
-
-import { waitFor } from '@testing-library/react-native';
+import { renderHook, waitFor } from '@testing-library/react-native';
 
 import { generateFileUploadPreview } from '../../../mock-builders/generator/attachment';
+import { generateMessage } from '../../../mock-builders/generator/message';
+import { generateUser } from '../../../mock-builders/generator/user';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import {
   InputMessageInputContextValue,
@@ -16,6 +16,9 @@ import {
 
 type WrapperType<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   Partial<InputMessageInputContextValue<StreamChatGenerics>>;
+
+const user1 = generateUser();
+const message = generateMessage({ user: user1 });
 
 const Wrapper = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>({
   children,
@@ -40,12 +43,19 @@ describe("MessageInputContext's uploadFile", () => {
       },
       thumb_url: '',
     });
+    const initialProps = {
+      doDocUploadRequest: doDocUploadRequestMock,
+      editing: message,
+    };
     const { result } = renderHook(() => useMessageInputContext(), {
-      initialProps: {
-        doDocUploadRequest: doDocUploadRequestMock,
-        editing: true,
-      },
-      wrapper: Wrapper,
+      initialProps,
+      wrapper: (props) => (
+        <Wrapper
+          doDocUploadRequest={initialProps.doDocUploadRequest}
+          editing={initialProps.editing}
+          {...props}
+        />
+      ),
     });
 
     await waitFor(() => {
@@ -63,12 +73,19 @@ describe("MessageInputContext's uploadFile", () => {
 
   it('uploadFile catch block gets executed', async () => {
     const doDocUploadRequestMock = jest.fn().mockResolvedValue(new Error('This is an error'));
+    const initialProps = {
+      doDocUploadRequest: doDocUploadRequestMock,
+      editing: message,
+    };
     const { result } = renderHook(() => useMessageInputContext(), {
-      initialProps: {
-        doDocUploadRequest: doDocUploadRequestMock,
-        editing: true,
-      },
-      wrapper: Wrapper,
+      initialProps,
+      wrapper: (props) => (
+        <Wrapper
+          doDocUploadRequest={initialProps.doDocUploadRequest}
+          editing={initialProps.editing}
+          {...props}
+        />
+      ),
     });
 
     await waitFor(() => {

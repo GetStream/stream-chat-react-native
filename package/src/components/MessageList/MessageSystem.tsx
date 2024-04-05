@@ -87,7 +87,7 @@ export const MessageSystem = <
         <Text style={[styles.text, { color: grey }, text]}>
           {message.text?.toUpperCase() || ''}
         </Text>
-        <Text style={[styles.text, { color: grey }, dateText]}>{date}</Text>
+        <Text style={[styles.text, { color: grey }, dateText]}>{date.toString()}</Text>
       </View>
       <View style={[styles.line, { backgroundColor: grey_whisper }, line]} />
     </View>

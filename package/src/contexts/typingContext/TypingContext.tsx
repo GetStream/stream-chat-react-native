@@ -55,7 +55,7 @@ export const withTypingContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof TypingContextValue<StreamChatGenerics>>> => {
+): React.ComponentType<Omit<P, keyof TypingContextValue<StreamChatGenerics>>> => {
   const WithTypingContextComponent = (
     props: Omit<P, keyof TypingContextValue<StreamChatGenerics>>,
   ) => {

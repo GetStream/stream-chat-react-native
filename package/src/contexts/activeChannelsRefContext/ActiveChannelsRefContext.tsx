@@ -20,7 +20,7 @@ export const useActiveChannelsRefContext = () =>
 
 export const withActiveChannelsRefContext = <P extends UnknownType>(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, 'activeChannels'>> => {
+): React.ComponentType<Omit<P, 'activeChannels'>> => {
   const WithActiveChannelsContextComponent = (props: Omit<P, 'activeChannels'>) => {
     const ActiveChannelsContext = useActiveChannelsRefContext();
 
