@@ -197,7 +197,7 @@ exports[`UploadProgressIndicator should render an active UploadProgressIndicator
           "bottom": 0,
           "justifyContent": "center",
           "left": 0,
-          "opacity": 0.2589824,
+          "opacity": 0.28317440000000005,
           "position": "absolute",
           "right": 0,
           "top": 0,

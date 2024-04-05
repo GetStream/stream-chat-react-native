@@ -82,7 +82,7 @@ exports[`MessageReplies should render message replies 1`] = `
         "alignItems": "center",
         "flexDirection": "row",
         "marginTop": 8,
-        "opacity": 0.24515840000000003,
+        "opacity": 0.2495616,
       }
     }
     testID="message-replies"
