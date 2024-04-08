@@ -97,7 +97,6 @@
     "@babel/plugin-transform-arrow-functions": "^7.24.1",
     "@babel/plugin-transform-shorthand-properties": "^7.24.1",
     "@babel/plugin-transform-template-literals": "^7.24.1",
-    "@babel/polyfill": "7.12.1",
     "@babel/preset-env": "7.13.12",
     "@babel/preset-typescript": "7.13.0",
     "@babel/runtime": "^7.20.0",

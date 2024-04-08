@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { I18nManager, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { I18nManager, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';

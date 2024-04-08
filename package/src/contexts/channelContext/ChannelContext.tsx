@@ -222,7 +222,12 @@ export const useChannelContext = <
 
   return contextValue;
 };
+
 /**
+ * @deprecated because of no usage
+ *
+ * This will be removed in the next major version.
+ *
  * Typescript currently does not support partial inference so if ChatContext
  * typing is desired while using the HOC withChannelContext the Props for the
  * wrapped component must be provided as the first generic.
