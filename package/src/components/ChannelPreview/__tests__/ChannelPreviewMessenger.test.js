@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import truncate from 'lodash/truncate';
 
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
@@ -58,7 +58,6 @@ describe('ChannelPreviewMessenger', () => {
 
   it('should call setActiveChannel on click', async () => {
     const onSelect = jest.fn();
-    const user = userEvent.setup();
     await initializeChannel(generateChannelResponse());
 
     render(
@@ -70,7 +69,7 @@ describe('ChannelPreviewMessenger', () => {
 
     await waitFor(() => screen.getByTestId('channel-preview-button'));
 
-    user.press(screen.getByTestId('channel-preview-button'));
+    fireEvent(screen.getByTestId('channel-preview-button'), 'onPress');
 
     await waitFor(() => {
       expect(onSelect).toHaveBeenCalledTimes(1);
