@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
+import { I18nManager, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
@@ -221,7 +221,7 @@ const AudioAttachmentWithContext = (props: AudioAttachmentPropsWithContext) => {
 
   return (
     <View style={[styles.fileContentContainer, fileContentContainer]}>
-      <Pressable
+      <TouchableOpacity
         accessibilityLabel='Play Pause Button'
         onPress={() => handlePlayPause()}
         style={[
@@ -235,7 +235,7 @@ const AudioAttachmentWithContext = (props: AudioAttachmentPropsWithContext) => {
         ) : (
           <Pause height={24} pathFill={static_black} width={24} />
         )}
-      </Pressable>
+      </TouchableOpacity>
       <View style={[styles.fileTextContainer, fileTextContainer]}>
         <Text
           accessibilityLabel='File Name'
