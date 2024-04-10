@@ -10,7 +10,7 @@ describe('UploadProgressIndicator', () => {
   it('should render an inactive UploadProgressIndicator', async () => {
     const action = jest.fn();
 
-    const { queryByTestId, toJSON } = render(
+    render(
       <ThemeProvider>
         <UploadProgressIndicator
           action={action}
@@ -20,8 +20,8 @@ describe('UploadProgressIndicator', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('active-upload-progress-indicator')).toBeFalsy();
-      expect(queryByTestId('inactive-upload-progress-indicator')).toBeTruthy();
+      expect(screen.queryByTestId('active-upload-progress-indicator')).toBeFalsy();
+      expect(screen.queryByTestId('inactive-upload-progress-indicator')).toBeTruthy();
       expect(action).toHaveBeenCalledTimes(0);
     });
   });
