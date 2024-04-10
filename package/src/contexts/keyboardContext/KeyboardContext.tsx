@@ -24,7 +24,7 @@ export const KeyboardProvider = ({ children, value }: Props) => (
 export const useKeyboardContext = () => useContext(KeyboardContext);
 
 /**
- * @deprecated because of no usage
+ * @deprecated
  *
  * This will be removed in the next major version.
  *

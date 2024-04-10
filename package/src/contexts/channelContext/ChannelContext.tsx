@@ -224,7 +224,7 @@ export const useChannelContext = <
 };
 
 /**
- * @deprecated because of no usage
+ * @deprecated
  *
  * This will be removed in the next major version.
  *

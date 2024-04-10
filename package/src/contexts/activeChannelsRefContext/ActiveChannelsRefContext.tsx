@@ -19,7 +19,7 @@ export const useActiveChannelsRefContext = () =>
   useContext(ActiveChannelsContext) as unknown as ActiveChannels;
 
 /**
- * @deprecated because of no usage
+ * @deprecated
  *
  * This will be removed in the next major version.
  *
