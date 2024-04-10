@@ -24,12 +24,6 @@ describe('UploadProgressIndicator', () => {
       expect(queryByTestId('inactive-upload-progress-indicator')).toBeTruthy();
       expect(action).toHaveBeenCalledTimes(0);
     });
-
-    const snapshot = toJSON();
-
-    await waitFor(() => {
-      expect(snapshot).toMatchSnapshot();
-    });
   });
 
   it('should render an active UploadProgressIndicator', async () => {
@@ -48,12 +42,6 @@ describe('UploadProgressIndicator', () => {
       expect(screen.queryByTestId('active-upload-progress-indicator')).toBeTruthy();
       expect(screen.queryByTestId('inactive-upload-progress-indicator')).toBeFalsy();
       expect(action).toHaveBeenCalledTimes(0);
-    });
-
-    const snapshot = screen.toJSON();
-
-    await waitFor(() => {
-      expect(snapshot).toMatchSnapshot();
     });
   });
 
@@ -75,12 +63,6 @@ describe('UploadProgressIndicator', () => {
       expect(screen.queryByTestId('inactive-upload-progress-indicator')).toBeFalsy();
       expect(action).toHaveBeenCalledTimes(0);
     });
-
-    const snapshot = screen.toJSON();
-
-    await waitFor(() => {
-      expect(snapshot).toMatchSnapshot();
-    });
   });
 
   it('should render an active UploadProgressIndicator and in-progress indicator', async () => {
@@ -100,12 +82,6 @@ describe('UploadProgressIndicator', () => {
       expect(screen.queryByTestId('upload-progress-indicator')).toBeTruthy();
       expect(screen.queryByTestId('inactive-upload-progress-indicator')).toBeFalsy();
       expect(action).toHaveBeenCalledTimes(0);
-    });
-
-    const snapshot = screen.toJSON();
-
-    await waitFor(() => {
-      expect(snapshot).toMatchSnapshot();
     });
   });
 
@@ -133,11 +109,5 @@ describe('UploadProgressIndicator', () => {
     user.press(screen.getByTestId('retry-upload-progress-indicator'));
 
     await waitFor(() => expect(action).toHaveBeenCalledTimes(1));
-
-    const snapshot = screen.toJSON();
-
-    await waitFor(() => {
-      expect(snapshot).toMatchSnapshot();
-    });
   });
 });

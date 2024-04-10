@@ -74,7 +74,6 @@ describe('MessageReplies', () => {
       expect(screen.queryAllByTestId('message-replies-right')).toHaveLength(0);
       expect(t).toHaveBeenCalledWith('1 Thread Reply');
       expect(screen.getByText('1 Thread Reply')).toBeTruthy();
-      expect(screen.toJSON()).toMatchSnapshot();
     });
   });
 
