@@ -656,6 +656,7 @@ const ChannelWithContext = <
   }, [channelId, messageId]);
 
   const threadPropsExists = !!threadProps;
+
   useEffect(() => {
     if (threadProps && shouldSyncChannel) {
       setThread(threadProps);
@@ -1192,7 +1193,6 @@ const ChannelWithContext = <
 
   const resyncChannel = async () => {
     if (!channel || syncingChannelRef.current) return;
-    if (!channel.initialized) return;
     hasOverlappingRecentMessagesRef.current = false;
     clearInterval(mergeSetsIntervalRef.current);
     syncingChannelRef.current = true;
@@ -1703,10 +1703,6 @@ const ChannelWithContext = <
     });
 
     mergeOverlappingMessageSetsRef.current();
-
-    if (!channel?.state.isUpToDate) {
-      await reloadChannel();
-    }
 
     updateMessage(messagePreview, {
       commands: [],
