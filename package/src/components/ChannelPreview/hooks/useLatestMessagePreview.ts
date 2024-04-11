@@ -165,7 +165,7 @@ const getLatestMessageReadStatus = <
     return MessageReadStatus.NOT_SENT_BY_CURRENT_USER;
   }
 
-  const readList = channel.state.read;
+  const readList = {...channel.state.read};
   if (currentUserId) {
     delete readList[currentUserId];
   }
