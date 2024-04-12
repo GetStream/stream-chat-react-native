@@ -18,7 +18,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const LoadingIndicatorWrapper: React.FC<{ text: string }> = ({ text }) => {
+type LoadingIndicatorWrapperProps = { text: string };
+
+const LoadingIndicatorWrapper = ({ text }: LoadingIndicatorWrapperProps) => {
   const {
     theme: {
       colors: { black, white_snow },
@@ -44,7 +46,7 @@ export type LoadingProps = {
 /**
  * UI Component for LoadingIndicator
  */
-export const LoadingIndicator: React.FC<LoadingProps> = (props) => {
+export const LoadingIndicator = (props: LoadingProps) => {
   const { listType, loadingText } = props;
 
   const { t } = useTranslationContext();

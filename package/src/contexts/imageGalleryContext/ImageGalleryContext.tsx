@@ -65,12 +65,21 @@ export const useImageGalleryContext = <
   return contextValue as ImageGalleryContextValue<StreamChatGenerics>;
 };
 
+/**
+ * @deprecated
+ *
+ * This will be removed in the next major version.
+ *
+ * Typescript currently does not support partial inference so if ChatContext
+ * typing is desired while using the HOC withImageGalleryContext the Props for the
+ * wrapped component must be provided as the first generic.
+ */
 export const withImageGalleryContext = <
   P extends UnknownType,
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ImageGalleryContextValue<StreamChatGenerics>>> => {
+): React.ComponentType<Omit<P, keyof ImageGalleryContextValue<StreamChatGenerics>>> => {
   const WithImageGalleryContextComponent = (
     props: Omit<P, keyof ImageGalleryContextValue<StreamChatGenerics>>,
   ) => {

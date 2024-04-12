@@ -148,8 +148,8 @@ const MessageRepliesWithContext = <
       >
         <Text style={[styles.messageRepliesText, { color: accent_blue }, messageRepliesText]}>
           {message.reply_count === 1
-            ? t('1 Thread Reply')
-            : t('{{ replyCount }} Thread Replies', {
+            ? t<string>('1 Thread Reply')
+            : t<string>('{{ replyCount }} Thread Replies', {
                 replyCount: message.reply_count,
               })}
         </Text>

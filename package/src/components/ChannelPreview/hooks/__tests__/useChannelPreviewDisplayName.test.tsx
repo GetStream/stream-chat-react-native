@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text } from 'react-native';
 
-import { render, waitFor } from '@testing-library/react-native';
+import { render, screen, waitFor } from '@testing-library/react-native';
 
 import type { DefaultStreamChatGenerics } from 'src/types/types';
 import type { Channel, ChannelMemberResponse, DefaultGenerics, StreamChat } from 'stream-chat';
@@ -40,10 +40,10 @@ describe('useChannelPreviewDisplayName', () => {
       return <Text>{channelDisplayName}</Text>;
     };
 
-    const { getByText } = render(<TestComponent />);
+    render(<TestComponent />);
 
     await waitFor(() => {
-      expect(getByText(channelName)).toBeTruthy();
+      expect(screen.getByText(channelName)).toBeTruthy();
     });
   });
 

@@ -26,6 +26,7 @@ describe('list', () => {
     type: 'text',
   });
 
+  // @ts-ignore
   const mockOutput = (node: ASTNode) => <Text>{node}</Text>;
   const MockText = ({ node, output, state }: ListOutputProps) => (
     <>
@@ -35,8 +36,8 @@ describe('list', () => {
 
   it('renders numbered items', () => {
     const node = createNode({ amount: 3, ordered: true, start: 1 });
-    const { container } = render(<MockText node={node} output={mockOutput} state={{}} />);
-    const textInstances = container.children as ReactTestInstance[];
+    const { root } = render(<MockText node={node} output={mockOutput} state={{}} />);
+    const textInstances = root.children as ReactTestInstance[];
     textInstances.forEach(async (instance, index) => {
       const text = `${index + node.start}. `; // 1. , 2. ...
       await waitFor(() => expect(within(instance).getByText(text)).toBeTruthy());
@@ -45,8 +46,8 @@ describe('list', () => {
 
   it('renders numbered items from a start index', () => {
     const node = createNode({ amount: 3, ordered: true, start: 3 });
-    const { container } = render(<MockText node={node} output={mockOutput} state={{}} />);
-    const textInstances = container.children as ReactTestInstance[];
+    const { root } = render(<MockText node={node} output={mockOutput} state={{}} />);
+    const textInstances = root.children as ReactTestInstance[];
     textInstances.forEach(async (instance, index) => {
       const text = `${index + node.start}. `; // 3. , 4. ...
       await waitFor(() => expect(within(instance).getByText(text)).toBeTruthy());
@@ -58,8 +59,8 @@ describe('list', () => {
       ...createNode({ amount: 3, ordered: true }),
       items: ['Not empty', null, 'Not empty'],
     };
-    const { container } = render(<MockText node={node} output={mockOutput} state={{}} />);
-    const textInstances = container.children as ReactTestInstance[];
+    const { root } = render(<MockText node={node} output={mockOutput} state={{}} />);
+    const textInstances = root.children as ReactTestInstance[];
     textInstances.forEach(async (instance, index) => {
       const text = `${index + 1}. `; // 1. , 2. ...
       await waitFor(() => expect(within(instance).getByText(text)).toBeTruthy());
@@ -68,8 +69,8 @@ describe('list', () => {
 
   it('renders an unordered list', () => {
     const node = createNode({ amount: 3 });
-    const { container } = render(<MockText node={node} output={mockOutput} state={{}} />);
-    const textInstances = container.children as ReactTestInstance[];
+    const { root } = render(<MockText node={node} output={mockOutput} state={{}} />);
+    const textInstances = root.children as ReactTestInstance[];
     textInstances.forEach(async (instance) => {
       await waitFor(() => expect(within(instance).getByText('\u2022 ')).toBeTruthy());
     });

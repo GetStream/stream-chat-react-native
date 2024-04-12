@@ -8,7 +8,7 @@ export type MessageErrorProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-export const MessageError: React.FC<MessageErrorProps> = ({ style }) => {
+export const MessageError = ({ style }: MessageErrorProps) => {
   const {
     theme: {
       colors: { accent_red },

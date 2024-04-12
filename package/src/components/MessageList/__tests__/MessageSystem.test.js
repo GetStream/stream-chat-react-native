@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { cleanup, render, waitFor } from '@testing-library/react-native';
+import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
@@ -36,7 +36,7 @@ describe('MessageSystem', () => {
     const translators = await i18nInstance.getTranslators();
     const user = generateStaticUser(0);
     const message = generateStaticMessage('Hello World', { user });
-    const { toJSON } = render(
+    render(
       <ThemeProvider style={defaultTheme}>
         <TranslationProvider value={translators}>
           <MessageSystem message={message} />
@@ -45,7 +45,7 @@ describe('MessageSystem', () => {
     );
 
     await waitFor(() => {
-      expect(toJSON()).toMatchSnapshot();
+      expect(screen.toJSON()).toMatchSnapshot();
     });
   });
 });

@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Text, View } from 'react-native';
 
-import { render } from '@testing-library/react-native';
+import { render, screen } from '@testing-library/react-native';
 
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
@@ -19,13 +19,6 @@ type ImageGridHandleProps = ImageGalleryGridHandleCustomComponentProps & {
   closeGridView: () => void;
 };
 
-jest.mock('@gorhom/bottom-sheet', () => {
-  const View = require('react-native/Libraries/Components/View/View');
-  return {
-    TouchableOpacity: View,
-  };
-});
-
 const getComponent = (props: Partial<ImageGridHandleProps> = {}) => {
   const t = jest.fn((key) => key);
 
@@ -40,9 +33,9 @@ const getComponent = (props: Partial<ImageGridHandleProps> = {}) => {
 
 describe('ImageGalleryOverlay', () => {
   it('should render ImageGalleryGridHandle', () => {
-    const { queryAllByA11yLabel } = render(getComponent());
+    render(getComponent());
 
-    expect(queryAllByA11yLabel('Image Grid Handle')).toHaveLength(1);
+    expect(screen.queryAllByLabelText('Image Grid Handle')).toHaveLength(1);
   });
 
   it('should render the custom components', () => {
@@ -64,7 +57,7 @@ describe('ImageGalleryOverlay', () => {
       </View>
     );
 
-    const { queryAllByText } = render(
+    render(
       getComponent({
         centerComponent: CustomCenterComponent,
         leftComponent: CustomLeftComponent,
@@ -72,8 +65,8 @@ describe('ImageGalleryOverlay', () => {
       }),
     );
 
-    expect(queryAllByText('Left Element')).toHaveLength(1);
-    expect(queryAllByText('Right Element')).toHaveLength(1);
-    expect(queryAllByText('Center Element')).toHaveLength(1);
+    expect(screen.queryAllByText('Left Element')).toHaveLength(1);
+    expect(screen.queryAllByText('Right Element')).toHaveLength(1);
+    expect(screen.queryAllByText('Center Element')).toHaveLength(1);
   });
 });

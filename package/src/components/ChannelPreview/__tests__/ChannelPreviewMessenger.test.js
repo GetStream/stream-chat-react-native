@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import truncate from 'lodash/truncate';
 
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
@@ -60,15 +60,16 @@ describe('ChannelPreviewMessenger', () => {
     const onSelect = jest.fn();
     await initializeChannel(generateChannelResponse());
 
-    const { getByTestId } = render(
+    render(
       getComponent({
         onSelect,
         watchers: {},
       }),
     );
 
-    await waitFor(() => getByTestId('channel-preview-button'));
-    fireEvent.press(getByTestId('channel-preview-button'));
+    await waitFor(() => screen.getByTestId('channel-preview-button'));
+
+    fireEvent(screen.getByTestId('channel-preview-button'), 'onPress');
 
     await waitFor(() => {
       expect(onSelect).toHaveBeenCalledTimes(1);
@@ -84,8 +85,8 @@ describe('ChannelPreviewMessenger', () => {
         },
       }),
     );
-    const { queryByText } = render(getComponent());
-    await waitFor(() => queryByText(channelName));
+    render(getComponent());
+    await waitFor(() => screen.queryByText(channelName));
   });
 
   it('should render comma separated names of other members, if channel has no name', async () => {
@@ -99,17 +100,17 @@ describe('ChannelPreviewMessenger', () => {
       }),
     );
 
-    const { queryByText } = render(getComponent());
+    render(getComponent());
     const expectedDisplayName = `${m1.user.name}, ${m2.user.name}, ${m3.user.name}`;
 
-    await waitFor(() => queryByText(expectedDisplayName));
+    await waitFor(() => screen.queryByText(expectedDisplayName));
   });
 
   it('should render latest message, truncated to length given by latestMessageLength', async () => {
     const message = generateMessage();
     await initializeChannel(generateChannelResponse());
 
-    const { queryByText } = render(
+    render(
       getComponent({
         latestMessage: message,
         latestMessageLength: 6,
@@ -117,6 +118,6 @@ describe('ChannelPreviewMessenger', () => {
     );
 
     const expectedMessagePreview = truncate(message.text, { length: 6 });
-    await waitFor(() => queryByText(expectedMessagePreview));
+    await waitFor(() => screen.queryByText(expectedMessagePreview));
   });
 });

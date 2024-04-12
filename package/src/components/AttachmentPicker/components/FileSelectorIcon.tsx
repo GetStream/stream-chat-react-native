@@ -3,7 +3,7 @@ import React from 'react';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { Folder } from '../../../icons';
 
-export const FileSelectorIcon: React.FC = () => {
+export const FileSelectorIcon = () => {
   const {
     theme: {
       colors: { grey },

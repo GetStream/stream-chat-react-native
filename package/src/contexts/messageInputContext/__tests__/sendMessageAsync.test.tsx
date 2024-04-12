@@ -1,7 +1,10 @@
 import React, { PropsWithChildren } from 'react';
 import { act } from 'react-test-renderer';
 
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react-native';
+
+import { generateMessage } from '../../../mock-builders/generator/message';
+import { generateUser } from '../../../mock-builders/generator/user';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { FileState } from '../../../utils/utils';
@@ -30,6 +33,9 @@ const Wrapper = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultS
   </MessageInputProvider>
 );
 
+const user1 = generateUser();
+const message = generateMessage({ user: user1 });
+const newMessage = generateMessage({ id: 'new-id' });
 describe("MessageInputContext's sendMessageAsync", () => {
   it('sendMessageAsync returns undefined when image state is UPLOAD_FAILED', () => {
     const asyncUploads = {
@@ -38,19 +44,19 @@ describe("MessageInputContext's sendMessageAsync", () => {
         url: 'https://www.test.com',
       },
     };
-
+    const initialProps = {
+      editing: message,
+    };
     const { rerender, result } = renderHook(() => useMessageInputContext(), {
-      initialProps: {
-        editing: true,
-      },
-      wrapper: Wrapper,
+      initialProps,
+      wrapper: (props) => <Wrapper editing={initialProps.editing} {...props} />,
     });
 
     act(() => {
       result.current.setAsyncUploads(asyncUploads);
     });
 
-    rerender({ editing: false });
+    rerender({ editing: newMessage });
 
     let data;
     act(() => {
@@ -62,7 +68,7 @@ describe("MessageInputContext's sendMessageAsync", () => {
 
   it.each([[FileState.UPLOADED], [FileState.FINISHED]])(
     'sendImageAsync is been called with %s file upload state and checked for snapshot)',
-    (fileState) => {
+    async (fileState) => {
       const sendMessageMock = jest.fn();
       const asyncUploads = {
         'test-file': {
@@ -70,22 +76,30 @@ describe("MessageInputContext's sendMessageAsync", () => {
           url: 'https://www.test.com',
         },
       };
+      const initialProps = {
+        editing: message,
+        quotedMessage: false,
+        sendMessage: sendMessageMock,
+      };
       const { rerender, result } = renderHook(() => useMessageInputContext(), {
-        initialProps: {
-          editing: true,
-          quotedMessage: false,
-          sendMessage: sendMessageMock,
-        },
-        wrapper: Wrapper,
+        initialProps,
+        wrapper: (props) => (
+          <Wrapper
+            editing={initialProps.editing}
+            quotedMessage={initialProps.quotedMessage}
+            sendMessage={initialProps.sendMessage}
+            {...props}
+          />
+        ),
       });
 
-      act(() => {
+      await waitFor(() => {
         result.current.setAsyncUploads(asyncUploads);
       });
 
-      rerender({ editing: false, quotedMessage: false, sendMessage: sendMessageMock });
+      rerender({ editing: newMessage, quotedMessage: false, sendMessage: sendMessageMock });
 
-      act(() => {
+      await waitFor(() => {
         result.current.sendMessageAsync('test-file');
       });
 
@@ -93,7 +107,7 @@ describe("MessageInputContext's sendMessageAsync", () => {
     },
   );
 
-  it('sendMessageAsync goes to catch block', () => {
+  it('sendMessageAsync goes to catch block', async () => {
     const sendMessageMock = jest.fn();
     const asyncUploads = {
       'test-file': {
@@ -101,21 +115,28 @@ describe("MessageInputContext's sendMessageAsync", () => {
         url: 'https://www.test.com',
       },
     };
+    const initialProps = {
+      editing: message,
+      quotedMessage: false,
+    };
     const { rerender, result } = renderHook(() => useMessageInputContext(), {
-      initialProps: {
-        editing: true,
-        quotedMessage: false,
-      },
-      wrapper: Wrapper,
+      initialProps,
+      wrapper: (props) => (
+        <Wrapper
+          editing={initialProps.editing}
+          quotedMessage={initialProps.quotedMessage}
+          {...props}
+        />
+      ),
     });
 
     act(() => {
       result.current.setAsyncUploads(asyncUploads);
     });
 
-    rerender({ editing: false, quotedMessage: false });
+    rerender({ editing: newMessage, quotedMessage: false });
 
-    act(() => {
+    await waitFor(() => {
       result.current.sendMessageAsync('test-file');
     });
 

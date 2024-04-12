@@ -2,9 +2,7 @@ import React from 'react';
 
 import type { SharedValue } from 'react-native-reanimated';
 
-import { act } from 'react-test-renderer';
-
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import {
   ImageGalleryContext,
@@ -46,7 +44,7 @@ const getComponent = (props: Partial<ImageGalleryContextValue>) => (
 
 describe('ImageGallery', () => {
   it('render image gallery component', async () => {
-    const { queryAllByA11yLabel } = render(
+    render(
       getComponent({
         messages: [
           generateMessage({
@@ -61,8 +59,8 @@ describe('ImageGallery', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByA11yLabel('Image Item')).toHaveLength(2);
-      expect(queryAllByA11yLabel('Image Gallery Video')).toHaveLength(1);
+      expect(screen.queryAllByLabelText('Image Item')).toHaveLength(2);
+      expect(screen.queryAllByLabelText('Image Gallery Video')).toHaveLength(1);
     });
   });
 
@@ -71,13 +69,13 @@ describe('ImageGallery', () => {
     const message = generateMessage({
       attachments: [attachment],
     });
-    const { getByA11yLabel } = render(
+    render(
       getComponent({
         messages: [message] as unknown as MessageType<DefaultStreamChatGenerics>[],
       }),
     );
 
-    const videoItemComponent = getByA11yLabel('Image Gallery Video');
+    const videoItemComponent = screen.getByLabelText('Image Gallery Video');
 
     act(() => {
       fireEvent(
@@ -88,7 +86,7 @@ describe('ImageGallery', () => {
       );
     });
 
-    const videoDurationComponent = getByA11yLabel('Video Duration');
+    const videoDurationComponent = screen.getByLabelText('Video Duration');
 
     await waitFor(() => {
       expect(videoDurationComponent.children[0]).toBe('00:10');
@@ -96,7 +94,7 @@ describe('ImageGallery', () => {
   });
 
   it('handle handleLoad function when video item present and payload duration is undefined', async () => {
-    const { getByA11yLabel } = render(
+    render(
       getComponent({
         messages: [
           generateMessage({
@@ -106,7 +104,7 @@ describe('ImageGallery', () => {
       }),
     );
 
-    const videoItemComponent = getByA11yLabel('Image Gallery Video');
+    const videoItemComponent = screen.getByLabelText('Image Gallery Video');
 
     act(() => {
       fireEvent(videoItemComponent, 'handleLoad', {
@@ -114,7 +112,7 @@ describe('ImageGallery', () => {
       });
     });
 
-    const videoDurationComponent = getByA11yLabel('Video Duration');
+    const videoDurationComponent = screen.getByLabelText('Video Duration');
     await waitFor(() => {
       expect(videoDurationComponent.children[0]).toBe('00:00');
     });
@@ -126,13 +124,13 @@ describe('ImageGallery', () => {
       attachments: [attachment],
     });
 
-    const { getByA11yLabel } = render(
+    render(
       getComponent({
         messages: [message] as unknown as MessageType<DefaultStreamChatGenerics>[],
       }),
     );
 
-    const videoItemComponent = getByA11yLabel('Image Gallery Video');
+    const videoItemComponent = screen.getByLabelText('Image Gallery Video');
 
     act(() => {
       fireEvent(
@@ -149,7 +147,7 @@ describe('ImageGallery', () => {
       );
     });
 
-    const progressDurationComponent = getByA11yLabel('Progress Duration');
+    const progressDurationComponent = screen.getByLabelText('Progress Duration');
 
     await waitFor(() => {
       expect(progressDurationComponent.children[0]).toBe('00:03');
@@ -157,7 +155,7 @@ describe('ImageGallery', () => {
   });
 
   it('handle handleProgress function when video item present and payload is not defined', async () => {
-    const { getByA11yLabel } = render(
+    render(
       getComponent({
         messages: [
           generateMessage({
@@ -167,7 +165,7 @@ describe('ImageGallery', () => {
       }),
     );
 
-    const videoItemComponent = getByA11yLabel('Image Gallery Video');
+    const videoItemComponent = screen.getByLabelText('Image Gallery Video');
 
     act(() => {
       fireEvent(videoItemComponent, 'handleLoad', {
@@ -179,7 +177,7 @@ describe('ImageGallery', () => {
       });
     });
 
-    const progressDurationComponent = getByA11yLabel('Progress Duration');
+    const progressDurationComponent = screen.getByLabelText('Progress Duration');
 
     await waitFor(() => {
       expect(progressDurationComponent.children[0]).toBe('00:00');
@@ -191,13 +189,13 @@ describe('ImageGallery', () => {
     const message = generateMessage({
       attachments: [attachment],
     });
-    const { getByA11yLabel } = render(
+    render(
       getComponent({
         messages: [message] as unknown as MessageType<DefaultStreamChatGenerics>[],
       }),
     );
 
-    const videoItemComponent = getByA11yLabel('Image Gallery Video');
+    const videoItemComponent = screen.getByLabelText('Image Gallery Video');
 
     act(() => {
       fireEvent(
@@ -209,9 +207,9 @@ describe('ImageGallery', () => {
       fireEvent(videoItemComponent, 'handleEnd');
     });
 
-    const progressDurationComponent = getByA11yLabel('Progress Duration');
+    const progressDurationComponent = screen.getByLabelText('Progress Duration');
     await waitFor(() => {
-      expect(getByA11yLabel('Play Icon')).not.toBeUndefined();
+      expect(screen.getByLabelText('Play Icon')).not.toBeUndefined();
       expect(progressDurationComponent.children[0]).toBe('00:10');
     });
   });

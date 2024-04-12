@@ -55,8 +55,8 @@ export const ChannelPreviewStatus = <
       ) : null}
       <Text style={[styles.date, { color: grey }, date]}>
         {formatLatestMessageDate && latestMessageDate
-          ? formatLatestMessageDate(latestMessageDate)
-          : latestMessagePreview.created_at}
+          ? formatLatestMessageDate(latestMessageDate).toString()
+          : latestMessagePreview.created_at.toString()}
       </Text>
     </View>
   );

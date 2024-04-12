@@ -147,17 +147,3 @@ Hooks, including those to access contexts, also require generics to be applied t
 ```tsx
 const { channel } = useChannelContext<StreamChatGenerics>();
 ```
-
-## Partial inference
-
-Inference only works correctly when all generics are provided by a given input.
-[Partial Type Argument Inference](https://github.com/microsoft/TypeScript/issues/26242) is currently not supported in TypeScript.
-
-### Higher Order Components
-
-The lack of partial inference is particularly relevant if Higher Order Components (HOC) are used in place of the provided context hooks.
-The `withChannelContext` HOC accepts the generics similarly to the `useChannelContext` hook, but because partial inference is not supported the props for the wrapped component must also be explicitly provided.
-
-```tsx {2}
-withChannelContext<MyComponentProps, StreamChatGenerics>(MyComponent);
-```

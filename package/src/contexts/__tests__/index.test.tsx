@@ -91,7 +91,7 @@ describe('contexts hooks in a component throws an error with message when not wr
       `The useAttachmentPickerContext hook was called outside the AttachmentPickerContext provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider`,
     ],
   ])('calls %p results in error %p', (useContextHook, expectedErrorMessage) => {
-    expect(() => render(<TestComponent useContextHook={useContextHook} />)).toThrowError(
+    expect(() => render(<TestComponent useContextHook={useContextHook} />)).toThrow(
       expectedErrorMessage,
     );
   });

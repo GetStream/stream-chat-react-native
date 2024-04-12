@@ -24,7 +24,7 @@ export type DateHeaderProps = {
   dateString: string;
 };
 
-export const DateHeader: React.FC<DateHeaderProps> = ({ dateString }) => {
+export const DateHeader = ({ dateString }: DateHeaderProps) => {
   const {
     theme: {
       colors: { overlay, white },

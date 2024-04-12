@@ -17,24 +17,25 @@ export type InlineLoadingMoreRecentIndicatorPropsWithContext = {
   loadingMoreRecent?: boolean;
 };
 
-export const InlineLoadingMoreRecentIndicatorWithContext: React.FC<InlineLoadingMoreRecentIndicatorPropsWithContext> =
-  ({ loadingMoreRecent }) => {
-    const { theme } = useTheme();
+export const InlineLoadingMoreRecentIndicatorWithContext = ({
+  loadingMoreRecent,
+}: InlineLoadingMoreRecentIndicatorPropsWithContext) => {
+  const { theme } = useTheme();
 
-    const {
-      colors: { accent_blue },
-    } = theme;
+  const {
+    colors: { accent_blue },
+  } = theme;
 
-    if (!loadingMoreRecent) {
-      return null;
-    }
+  if (!loadingMoreRecent) {
+    return null;
+  }
 
-    return (
-      <View style={styles.activityIndicatorContainer}>
-        <ActivityIndicator color={accent_blue} size='small' />
-      </View>
-    );
-  };
+  return (
+    <View style={styles.activityIndicatorContainer}>
+      <ActivityIndicator color={accent_blue} size='small' />
+    </View>
+  );
+};
 
 const areEqual = (
   prevProps: InlineLoadingMoreRecentIndicatorPropsWithContext,

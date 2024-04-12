@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import {
   Platform,
+  Pressable,
   SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   ViewStyle,
 } from 'react-native';
@@ -167,18 +167,18 @@ export const ImageGalleryHeader = <
           {leftElement ? (
             leftElement({ hideOverlay, photo })
           ) : (
-            <TouchableOpacity accessibilityLabel='Hide Overlay' onPress={hideOverlay}>
+            <Pressable accessibilityLabel='Hide Overlay' onPress={hideOverlay}>
               <View style={[styles.leftContainer, leftContainer]}>
                 {CloseIcon ? CloseIcon : <Close />}
               </View>
-            </TouchableOpacity>
+            </Pressable>
           )}
           {centerElement ? (
             centerElement({ hideOverlay, photo })
           ) : (
             <View style={[styles.centerContainer, centerContainer]}>
               <Text style={[styles.userName, { color: black }, usernameText]}>
-                {photo?.user?.name || photo?.user?.id || t('Unknown User')}
+                {photo?.user?.name || photo?.user?.id || t<string>('Unknown User')}
               </Text>
               {date && <Text style={[styles.date, { color: black }, dateText]}>{date}</Text>}
             </View>

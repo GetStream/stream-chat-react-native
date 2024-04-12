@@ -53,7 +53,13 @@ const ThreadFooterComponentWithContext = <
     theme: {
       colors: { bg_gradient_end, bg_gradient_start, grey },
       thread: {
-        newThread: { backgroundGradientStart, backgroundGradientStop, text, ...newThread },
+        newThread: {
+          backgroundGradientStart,
+          backgroundGradientStop,
+          text,
+          threadHeight,
+          ...newThread
+        },
       },
     },
   } = useTheme();
@@ -68,8 +74,8 @@ const ThreadFooterComponentWithContext = <
         <Message groupStyles={['single']} message={thread} preventPress threadList />
       </View>
       <View style={[styles.newThread, newThread]}>
-        <Svg height={newThread.height ?? 24} style={styles.absolute} width={vw(100)}>
-          <Rect fill='url(#gradient)' height={newThread.height ?? 24} width={vw(100)} x={0} y={0} />
+        <Svg height={threadHeight ?? 24} style={styles.absolute} width={vw(100)}>
+          <Rect fill='url(#gradient)' height={threadHeight ?? 24} width={vw(100)} x={0} y={0} />
           <Defs>
             <LinearGradient
               gradientUnits='userSpaceOnUse'
@@ -77,7 +83,7 @@ const ThreadFooterComponentWithContext = <
               x1={0}
               x2={0}
               y1={0}
-              y2={newThread.height ?? 24}
+              y2={threadHeight ?? 24}
             >
               <Stop
                 offset={1}
@@ -94,8 +100,8 @@ const ThreadFooterComponentWithContext = <
         </Svg>
         <Text style={[styles.text, { color: grey }, text]}>
           {replyCount === 1
-            ? t('1 Reply')
-            : t('{{ replyCount }} Replies', {
+            ? t<string>('1 Reply')
+            : t<string>('{{ replyCount }} Replies', {
                 replyCount,
               })}
         </Text>

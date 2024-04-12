@@ -112,10 +112,10 @@ const ChannelPreviewMessengerWithContext = <
     onSelect,
     PreviewAvatar = ChannelAvatar,
     PreviewMessage = ChannelPreviewMessage,
+    PreviewMutedStatus = ChannelPreviewMutedStatus,
     PreviewStatus = ChannelPreviewStatus,
     PreviewTitle = ChannelPreviewTitle,
     PreviewUnreadCount = ChannelPreviewUnreadCount,
-    PreviewMutedStatus = ChannelPreviewMutedStatus,
     unread,
   } = props;
   const { vw } = useViewport();

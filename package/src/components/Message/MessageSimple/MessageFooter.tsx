@@ -91,7 +91,7 @@ const MessageFooterWithContext = <
               ]}
               testID='only-visible-to-you'
             >
-              {t('Only visible to you')}
+              {t<string>('Only visible to you')}
             </Text>
           </>
         )}
@@ -104,7 +104,7 @@ const MessageFooterWithContext = <
             metaText,
           ]}
         >
-          {formattedDate}
+          {formattedDate.toString()}
         </Text>
       </View>
     );
@@ -129,7 +129,7 @@ const MessageFooterWithContext = <
               deletedMetaText,
             ]}
           >
-            {t('Only visible to you')}
+            {t<string>('Only visible to you')}
           </Text>
         </>
       ) : null}
@@ -137,7 +137,9 @@ const MessageFooterWithContext = <
         <Text style={[{ color: grey }, messageUser]}>{message.user.name}</Text>
       ) : null}
       {showMessageStatus && <MessageStatus />}
-      <Text style={[{ color: grey, textAlign: alignment }, metaText]}>{formattedDate}</Text>
+      <Text style={[{ color: grey, textAlign: alignment }, metaText]}>
+        {formattedDate.toString()}
+      </Text>
     </View>
   );
 };

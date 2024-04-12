@@ -99,7 +99,7 @@ export const generateChannelResponse = (
     type?: string;
   } = { channel: {}, id: uuidv4(), messages: [], type: 'messaging' },
 ) => {
-  const { id = uuidv4(), messages = [], type = 'messaging', channel = {}, ...rest } = customValues;
+  const { channel = {}, id = uuidv4(), messages = [], type = 'messaging', ...rest } = customValues;
 
   const defaults = getChannelDefaults();
   return {

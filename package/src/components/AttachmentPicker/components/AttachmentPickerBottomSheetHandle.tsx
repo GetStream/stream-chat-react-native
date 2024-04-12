@@ -17,9 +17,11 @@ const styles = StyleSheet.create({
   },
 });
 
-export const AttachmentPickerBottomSheetHandle: React.FC<{
+type Props = {
   animatedIndex: Animated.SharedValue<number>;
-}> = ({ animatedIndex }) => {
+};
+
+export const AttachmentPickerBottomSheetHandle = ({ animatedIndex }: Props) => {
   const {
     theme: {
       colors: { black, white },

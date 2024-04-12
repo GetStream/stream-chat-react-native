@@ -3,8 +3,20 @@
 exports[`SendButton should render a non-editing disabled SendButton 1`] = `
 <View
   accessibilityState={
-    Object {
+    {
+      "busy": undefined,
+      "checked": undefined,
       "disabled": true,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}
@@ -20,8 +32,8 @@ exports[`SendButton should render a non-editing disabled SendButton 1`] = `
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
   style={
-    Array [
-      Object {},
+    [
+      {},
     ]
   }
   testID="send-button"
@@ -37,12 +49,12 @@ exports[`SendButton should render a non-editing disabled SendButton 1`] = `
     minY={0}
     pathFill="#DBDBDB"
     style={
-      Array [
-        Object {
+      [
+        {
           "backgroundColor": "transparent",
           "borderWidth": 0,
         },
-        Object {
+        {
           "flex": 0,
           "height": 24,
           "width": 24,
@@ -53,14 +65,26 @@ exports[`SendButton should render a non-editing disabled SendButton 1`] = `
     vbWidth={24}
     width={24}
   >
-    <RNSVGGroup>
+    <RNSVGGroup
+      fill={
+        {
+          "payload": 4278190080,
+          "type": 0,
+        }
+      }
+    >
       <RNSVGPath
         clipRule={0}
         d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12s4.48 10 10 10 10-4.48 10-10zM8 11h4V8l4 4-4 4v-3H8v-2z"
-        fill={4292598747}
+        fill={
+          {
+            "payload": 4292598747,
+            "type": 0,
+          }
+        }
         fillRule={0}
         propList={
-          Array [
+          [
             "fill",
             "fillRule",
           ]
@@ -74,8 +98,20 @@ exports[`SendButton should render a non-editing disabled SendButton 1`] = `
 exports[`SendButton should render a non-editing enabled SendButton 1`] = `
 <View
   accessibilityState={
-    Object {
+    {
+      "busy": undefined,
+      "checked": undefined,
       "disabled": false,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}
@@ -91,8 +127,8 @@ exports[`SendButton should render a non-editing enabled SendButton 1`] = `
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
   style={
-    Array [
-      Object {},
+    [
+      {},
     ]
   }
   testID="send-button"
@@ -108,12 +144,12 @@ exports[`SendButton should render a non-editing enabled SendButton 1`] = `
     minY={0}
     pathFill="#005FFF"
     style={
-      Array [
-        Object {
+      [
+        {
           "backgroundColor": "transparent",
           "borderWidth": 0,
         },
-        Object {
+        {
           "flex": 0,
           "height": 24,
           "width": 24,
@@ -124,14 +160,26 @@ exports[`SendButton should render a non-editing enabled SendButton 1`] = `
     vbWidth={24}
     width={24}
   >
-    <RNSVGGroup>
+    <RNSVGGroup
+      fill={
+        {
+          "payload": 4278190080,
+          "type": 0,
+        }
+      }
+    >
       <RNSVGPath
         clipRule={0}
         d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14v-4H8l4-4 4 4h-3v4h-2z"
-        fill={4278214655}
+        fill={
+          {
+            "payload": 4278214655,
+            "type": 0,
+          }
+        }
         fillRule={0}
         propList={
-          Array [
+          [
             "fill",
             "fillRule",
           ]
@@ -145,8 +193,20 @@ exports[`SendButton should render a non-editing enabled SendButton 1`] = `
 exports[`SendButton should render an editing disabled SendButton 1`] = `
 <View
   accessibilityState={
-    Object {
+    {
+      "busy": undefined,
+      "checked": undefined,
       "disabled": true,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}
@@ -162,8 +222,8 @@ exports[`SendButton should render an editing disabled SendButton 1`] = `
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
   style={
-    Array [
-      Object {},
+    [
+      {},
     ]
   }
   testID="send-button"
@@ -179,12 +239,12 @@ exports[`SendButton should render an editing disabled SendButton 1`] = `
     minY={0}
     pathFill="#DBDBDB"
     style={
-      Array [
-        Object {
+      [
+        {
           "backgroundColor": "transparent",
           "borderWidth": 0,
         },
-        Object {
+        {
           "flex": 0,
           "height": 24,
           "width": 24,
@@ -195,14 +255,26 @@ exports[`SendButton should render an editing disabled SendButton 1`] = `
     vbWidth={24}
     width={24}
   >
-    <RNSVGGroup>
+    <RNSVGGroup
+      fill={
+        {
+          "payload": 4278190080,
+          "type": 0,
+        }
+      }
+    >
       <RNSVGPath
         clipRule={0}
         d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12s4.48 10 10 10 10-4.48 10-10zM8 11h4V8l4 4-4 4v-3H8v-2z"
-        fill={4292598747}
+        fill={
+          {
+            "payload": 4292598747,
+            "type": 0,
+          }
+        }
         fillRule={0}
         propList={
-          Array [
+          [
             "fill",
             "fillRule",
           ]
@@ -216,8 +288,20 @@ exports[`SendButton should render an editing disabled SendButton 1`] = `
 exports[`SendButton should render an editing enabled SendButton 1`] = `
 <View
   accessibilityState={
-    Object {
+    {
+      "busy": undefined,
+      "checked": undefined,
       "disabled": false,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}
@@ -233,8 +317,8 @@ exports[`SendButton should render an editing enabled SendButton 1`] = `
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
   style={
-    Array [
-      Object {},
+    [
+      {},
     ]
   }
   testID="send-button"
@@ -250,12 +334,12 @@ exports[`SendButton should render an editing enabled SendButton 1`] = `
     minY={0}
     pathFill="#005FFF"
     style={
-      Array [
-        Object {
+      [
+        {
           "backgroundColor": "transparent",
           "borderWidth": 0,
         },
-        Object {
+        {
           "flex": 0,
           "height": 24,
           "width": 24,
@@ -266,14 +350,26 @@ exports[`SendButton should render an editing enabled SendButton 1`] = `
     vbWidth={24}
     width={24}
   >
-    <RNSVGGroup>
+    <RNSVGGroup
+      fill={
+        {
+          "payload": 4278190080,
+          "type": 0,
+        }
+      }
+    >
       <RNSVGPath
         clipRule={0}
         d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14v-4H8l4-4 4 4h-3v4h-2z"
-        fill={4278214655}
+        fill={
+          {
+            "payload": 4278214655,
+            "type": 0,
+          }
+        }
         fillRule={0}
         propList={
-          Array [
+          [
             "fill",
             "fillRule",
           ]

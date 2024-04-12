@@ -75,8 +75,8 @@ const FileAttachmentWithContext = <
   const {
     additionalTouchableProps,
     attachment,
-    attachmentSize,
     AttachmentActions,
+    attachmentSize,
     FileAttachmentIcon,
     onLongPress,
     onPress,

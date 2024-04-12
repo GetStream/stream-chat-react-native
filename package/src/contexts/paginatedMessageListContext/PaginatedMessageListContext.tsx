@@ -85,8 +85,12 @@ export const usePaginatedMessageListContext = <
 };
 
 /**
- * Typescript currently does not support partial inference so if MessageListContextValue
- * typing is desired while using the HOC withMessageListContext the Props for the
+ * @deprecated
+ *
+ * This will be removed in the next major version.
+ *
+ * Typescript currently does not support partial inference so if ChatContext
+ * typing is desired while using the HOC withPaginatedMessageListContext the Props for the
  * wrapped component must be provided as the first generic.
  */
 export const withPaginatedMessageListContext = <
@@ -94,7 +98,7 @@ export const withPaginatedMessageListContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof PaginatedMessageListContextValue<StreamChatGenerics>>> => {
+): React.ComponentType<Omit<P, keyof PaginatedMessageListContextValue<StreamChatGenerics>>> => {
   const WithPaginatedMessageListContextComponent = (
     props: Omit<P, keyof PaginatedMessageListContextValue<StreamChatGenerics>>,
   ) => {

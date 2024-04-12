@@ -13,7 +13,7 @@ type Props = {
   style?: StyleProp<ViewStyle>;
 };
 
-export const LoadingDots: React.FC<Props> = (props) => {
+export const LoadingDots = (props: Props) => {
   const { diameter = 4, duration = 1500, numberOfDots = 3, spacing: spacingProp, style } = props;
 
   const {

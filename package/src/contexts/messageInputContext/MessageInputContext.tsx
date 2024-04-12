@@ -1253,7 +1253,11 @@ export const useMessageInputContext = <
 };
 
 /**
- * Typescript currently does not support partial inference so if MessageInputContext
+ * @deprecated
+ *
+ * This will be removed in the next major version.
+ *
+ * Typescript currently does not support partial inference so if ChatContext
  * typing is desired while using the HOC withMessageInputContext the Props for the
  * wrapped component must be provided as the first generic.
  */
@@ -1262,7 +1266,7 @@ export const withMessageInputContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof MessageInputContextValue<StreamChatGenerics>>> => {
+): React.ComponentType<Omit<P, keyof MessageInputContextValue<StreamChatGenerics>>> => {
   const WithMessageInputContextComponent = (
     props: Omit<P, keyof MessageInputContextValue<StreamChatGenerics>>,
   ) => {

@@ -43,11 +43,11 @@ export const getGroupStyles = <
 
   for (let i = 0; i < messagesFilteredForNonUser.length; i++) {
     const previousMessage = messagesFilteredForNonUser[i - 1] as
-      | typeof messagesFilteredForNonUser[0]
+      | (typeof messagesFilteredForNonUser)[0]
       | undefined;
     const message = messagesFilteredForNonUser[i];
     const nextMessage = messagesFilteredForNonUser[i + 1] as
-      | typeof messagesFilteredForNonUser[0]
+      | (typeof messagesFilteredForNonUser)[0]
       | undefined;
     const groupStyles: GroupType[] = [];
 

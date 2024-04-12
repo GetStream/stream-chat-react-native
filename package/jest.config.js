@@ -4,7 +4,7 @@ module.exports = {
   moduleNameMapper: {
     'mock-builders(.*)$': '<rootDir>/src/mock-builders$1',
   },
-  preset: 'react-native',
+  preset: '@testing-library/react-native',
   setupFiles: [
     './src/mock-builders/native/react-native-mock.js',
     './node_modules/react-native-gesture-handler/jestSetup.js',
@@ -13,7 +13,7 @@ module.exports = {
     '@testing-library/jest-native/extend-expect',
     require.resolve('./jest-setup.js'),
   ],
-  testEnvironment: 'jsdom',
+  testEnvironment: 'node',
   testPathIgnorePatterns: ['/node_modules/', '/examples/', '__snapshots__', '/lib/'],
   testRegex: [
     /**

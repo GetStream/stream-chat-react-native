@@ -311,4 +311,4 @@ export const AudioAttachment = (props: AudioAttachmentProps) => (
   <AudioAttachmentWithContext {...props} />
 );
 
-AudioAttachment.displayName = 'AudioAttachment{messageInput{autoAttachment}}';
+AudioAttachment.displayName = 'AudioAttachment{messageInput{audioAttachment}}';
