@@ -42,13 +42,13 @@ export type MessageReactions = {
   supportedReactions?: ReactionData[];
 };
 
-const Icon: React.FC<
-  Pick<IconProps, 'pathFill' | 'style'> & {
-    size: number;
-    supportedReactions: ReactionData[];
-    type: string;
-  }
-> = ({ pathFill, size, style, supportedReactions, type }) => {
+type Props = Pick<IconProps, 'pathFill' | 'style'> & {
+  size: number;
+  supportedReactions: ReactionData[];
+  type: string;
+};
+
+const Icon = ({ pathFill, size, style, supportedReactions, type }: Props) => {
   const ReactionIcon =
     supportedReactions.find((reaction) => reaction.type === type)?.Icon || Unknown;
 

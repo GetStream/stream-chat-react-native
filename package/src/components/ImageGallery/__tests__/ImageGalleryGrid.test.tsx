@@ -3,7 +3,7 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import { act } from 'react-test-renderer';
 
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
@@ -16,15 +16,6 @@ import {
   generateVideoAttachment,
 } from '../../../mock-builders/generator/attachment';
 import { ImageGrid, ImageGridType } from '../components/ImageGrid';
-
-jest.mock('@gorhom/bottom-sheet', () => {
-  const View = require('react-native/Libraries/Components/View/View');
-  const FlatList = require('react-native/Libraries/Lists/FlatList');
-  return {
-    BottomSheetFlatList: FlatList,
-    TouchableOpacity: View,
-  };
-});
 
 const getComponent = (props: Partial<ImageGridType> = {}) => {
   const t = jest.fn((key) => key);
@@ -40,21 +31,19 @@ const getComponent = (props: Partial<ImageGridType> = {}) => {
 
 describe('ImageGalleryOverlay', () => {
   it('should render ImageGalleryGrid', () => {
-    const { queryAllByA11yLabel } = render(
-      getComponent({ photos: [generateImageAttachment(), generateImageAttachment()] }),
-    );
+    render(getComponent({ photos: [generateImageAttachment(), generateImageAttachment()] }));
 
-    expect(queryAllByA11yLabel('Image Grid')).toHaveLength(1);
+    expect(screen.queryAllByLabelText('Image Grid')).toHaveLength(1);
   });
 
   it('should render ImageGalleryGrid individual images', () => {
-    const { queryAllByA11yLabel } = render(
+    render(
       getComponent({
         photos: [generateImageAttachment(), generateVideoAttachment({ type: 'video' })],
       }),
     );
 
-    expect(queryAllByA11yLabel('Grid Image')).toHaveLength(2);
+    expect(screen.queryAllByLabelText('Grid Image')).toHaveLength(2);
   });
 
   it('should render ImageGalleryGrid with custom image component', () => {
@@ -64,21 +53,21 @@ describe('ImageGalleryOverlay', () => {
       </View>
     );
 
-    const { queryAllByText } = render(
+    render(
       getComponent({
         imageComponent: CustomImageComponent,
         photos: [generateImageAttachment(), generateVideoAttachment({ type: 'video' })],
       }),
     );
 
-    expect(queryAllByText('Image Attachment')).toHaveLength(2);
+    expect(screen.queryAllByText('Image Attachment')).toHaveLength(2);
   });
 
   it('should trigger the selectAndClose when the Image item is pressed', () => {
     const closeGridViewMock = jest.fn();
     const setSelectedMessageMock = jest.fn();
 
-    const { getAllByA11yLabel } = render(
+    render(
       getComponent({
         closeGridView: closeGridViewMock,
         photos: [generateImageAttachment(), generateVideoAttachment({ type: 'video' })],
@@ -86,7 +75,7 @@ describe('ImageGalleryOverlay', () => {
       }),
     );
 
-    const component = getAllByA11yLabel('Grid Image');
+    const component = screen.getAllByLabelText('Grid Image');
 
     act(() => {
       fireEvent(component[0], 'onPress');

@@ -105,7 +105,7 @@ const ImageUploadPreviewWithContext = <
   const UnsupportedImageTypeIndicator = ({
     indicatorType,
   }: {
-    indicatorType: typeof ProgressIndicatorTypes[keyof typeof ProgressIndicatorTypes] | null;
+    indicatorType: (typeof ProgressIndicatorTypes)[keyof typeof ProgressIndicatorTypes] | null;
   }) => {
     const {
       theme: {
@@ -123,7 +123,7 @@ const ImageUploadPreviewWithContext = <
             style={styles.warningIconStyle}
             width={WARNING_ICON_SIZE}
           />
-          <Text style={[styles.warningText, { color: white }]}>{t('Not supported')}</Text>
+          <Text style={[styles.warningText, { color: white }]}>{t<string>('Not supported')}</Text>
         </View>
       </View>
     ) : null;

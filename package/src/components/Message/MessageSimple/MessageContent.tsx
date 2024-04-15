@@ -1,5 +1,11 @@
 import React from 'react';
-import { LayoutChangeEvent, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  AnimatableNumericValue,
+  LayoutChangeEvent,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import { MessageTextContainer } from './MessageTextContainer';
 
@@ -260,7 +266,7 @@ const MessageContentWithContext = <
   };
 
   const getBorderRadiusFromTheme = () => {
-    const bordersFromTheme: Record<string, number | undefined> = {
+    const bordersFromTheme: Record<string, AnimatableNumericValue | undefined> = {
       borderBottomLeftRadius,
       borderBottomRightRadius,
       borderRadius,

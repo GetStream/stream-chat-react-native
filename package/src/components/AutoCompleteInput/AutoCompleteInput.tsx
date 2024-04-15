@@ -119,11 +119,11 @@ const AutoCompleteInputWithContext = <
     },
   } = useTheme();
 
-  const handleChange = (newText: string, fromUpdate = false) => {
+  const handleChange = async (newText: string, fromUpdate = false) => {
     if (!fromUpdate) {
       onChange(newText);
     } else {
-      handleSuggestionsThrottled(newText);
+      await handleSuggestionsThrottled(newText);
     }
   };
 
@@ -296,7 +296,7 @@ const AutoCompleteInputWithContext = <
     return true;
   };
 
-  const handleMentions = ({ tokenMatch }: { tokenMatch: RegExpMatchArray | null }) => {
+  const handleMentions = async ({ tokenMatch }: { tokenMatch: RegExpMatchArray | null }) => {
     const lastToken = tokenMatch?.[tokenMatch.length - 1];
     const handleMentionsTrigger =
       (lastToken && Object.keys(triggerSettings).find((trigger) => trigger === lastToken[0])) ||
@@ -322,10 +322,10 @@ const AutoCompleteInputWithContext = <
       startTracking('@');
     }
 
-    updateSuggestions({ query: actualToken, trigger: '@' });
+    await updateSuggestions({ query: actualToken, trigger: '@' });
   };
 
-  const handleEmojis = ({ tokenMatch }: { tokenMatch: RegExpMatchArray | null }) => {
+  const handleEmojis = async ({ tokenMatch }: { tokenMatch: RegExpMatchArray | null }) => {
     const lastToken = tokenMatch?.[tokenMatch.length - 1].trim();
     const handleEmojisTrigger =
       (lastToken && Object.keys(triggerSettings).find((trigger) => trigger === lastToken[0])) ||
@@ -351,10 +351,11 @@ const AutoCompleteInputWithContext = <
       startTracking(':');
     }
 
-    updateSuggestions({ query: actualToken, trigger: ':' });
+    await updateSuggestions({ query: actualToken, trigger: ':' });
   };
 
   const handleSuggestions = async (text: string) => {
+    if (text === undefined) return;
     if (
       /\s/.test(text.slice(selectionEnd.current - 1, selectionEnd.current)) &&
       isTrackingStarted.current
@@ -365,12 +366,12 @@ const AutoCompleteInputWithContext = <
         .slice(0, selectionEnd.current)
         .match(/(?!^|\W)?@[^\s@]*\s?[^\s@]*$/g);
       if (mentionTokenMatch) {
-        handleMentions({ tokenMatch: mentionTokenMatch });
+        await handleMentions({ tokenMatch: mentionTokenMatch });
       } else {
         const emojiTokenMatch = text
           .slice(0, selectionEnd.current)
           .match(/(?!^|\W)?:\w{2,}[^\s]*\s?[^\s]*$/g);
-        handleEmojis({ tokenMatch: emojiTokenMatch });
+        await handleEmojis({ tokenMatch: emojiTokenMatch });
       }
     }
   };
@@ -390,12 +391,12 @@ const AutoCompleteInputWithContext = <
       autoFocus={giphyActive}
       maxLength={maxMessageLength}
       multiline
-      onChangeText={(newText) => {
-        if (giphyEnabled && newText.startsWith('/giphy ')) {
-          handleChange(newText.slice(7)); // 7 because of '/giphy' length
+      onChangeText={async (newText) => {
+        if (giphyEnabled && newText && newText.startsWith('/giphy ')) {
+          await handleChange(newText.slice(7)); // 7 because of '/giphy' length
           setGiphyActive(true);
         } else {
-          handleChange(newText);
+          await handleChange(newText);
         }
       }}
       onContentSizeChange={({

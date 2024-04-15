@@ -19,11 +19,12 @@ For Expo, you can follow [this guide](https://docs.expo.dev/get-started/installa
 In order to install the Stream Chat React Native SDK, run the following command in your terminal of choice:
 
 <Tabs
-defaultValue='rncli'
-values={[
-  { label: 'RN CLI', value: 'rncli' },
-  { label: 'Expo', value: 'expo' },
-]}
+  defaultValue='rncli'
+  groupId='rn-platform'
+  values={[
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
+  ]}
 >
 <TabItem value='rncli'>
 
@@ -35,7 +36,7 @@ yarn add stream-chat-react-native
 <TabItem value='expo'>
 
 ```bash title="Terminal"
-yarn add stream-chat-expo
+npx expo install stream-chat-expo
 ```
 
 </TabItem>
@@ -46,6 +47,7 @@ Stream Chat React Native SDK requires installing some peer dependencies to provi
 
 <Tabs
   defaultValue='rncli'
+  groupId='rn-platform'
   values={[
     { label: 'RN CLI', value: 'rncli' },
     { label: 'Expo', value: 'expo' },
@@ -62,7 +64,7 @@ yarn add @react-native-camera-roll/camera-roll @react-native-community/netinfo @
 <TabItem value='expo'>
 
 ```bash title="Terminal"
-expo install @stream-io/flat-list-mvcp @react-native-community/netinfo expo-file-system expo-image-manipulator expo-image-picker expo-media-library react-native-gesture-handler react-native-reanimated react-native-svg
+npx expo install @stream-io/flat-list-mvcp @react-native-community/netinfo expo-file-system expo-image-manipulator expo-image-picker expo-media-library react-native-gesture-handler react-native-reanimated react-native-svg
 ```
 
 </TabItem>
@@ -72,6 +74,7 @@ So what did we install precisely?
 
 <Tabs
 defaultValue='rncli'
+groupId='rn-platform'
 values={[
   { label: 'RN CLI', value: 'rncli' },
   { label: 'Expo', value: 'expo' },
@@ -111,6 +114,7 @@ There are a few optional dependencies that can be added to have more features wi
 
 <Tabs
 defaultValue='rncli'
+groupId='rn-platform'
 values={[
   { label: 'RN CLI', value: 'rncli' },
   { label: 'Expo', value: 'expo' },
@@ -148,27 +152,34 @@ The most important steps to get started are:
 
 ```js
 module.exports = {
-  ...
+  presets: [
+    ... // don't add it here :)
+  ],
   plugins: [
     ...
     // highlight-next-line
-    'react-native-reanimated/plugin', // Reanimated plugin has to be listed last.
+    'react-native-reanimated/plugin',
   ],
 };
 ```
 
-- Import `react-native-gesture-handler` at the top of your `index.js` file. It should look as follows:
+:::caution
+`react-native-reanimated/plugin` has to be listed last.
+:::
+
+- After installation, wrap your entry point with `<GestureHandlerRootView>` or `gestureHandlerRootHOC`:
 
 ```js
-// highlight-next-line
-import 'react-native-gesture-handler';
-import { AppRegistry } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import App from './App';
-import { name as appName } from './app.json';
-
-AppRegistry.registerComponent(appName, () => App);
+export default function App() {
+  return <GestureHandlerRootView style={{ flex: 1 }}>{/* content */}</GestureHandlerRootView>;
+}
 ```
+
+:::note
+The entry point of your app exists usually either in `index.js` or `App.tsx` file. In case of navigation with Expo Router v3.x, the entry point is inside `app/_layout.js`.
+:::
 
 Please also follow the steps mentioned in the links below for corresponding dependencies:
 
@@ -180,6 +191,7 @@ Now you should be able to run the app on simulator by running following command:
 
 <Tabs
 defaultValue='rncli'
+groupId='rn-platform'
 values={[
   { label: 'RN CLI', value: 'rncli' },
   { label: 'Expo', value: 'expo' },

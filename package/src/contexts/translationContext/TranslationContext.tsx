@@ -41,9 +41,11 @@ export const TranslationContext = React.createContext<TranslationContextValue>(
   defaultTranslationContextValue,
 );
 
-export const TranslationProvider: React.FC<{
+type Props = React.PropsWithChildren<{
   value: TranslationContextValue;
-}> = ({ children, value }) => (
+}>;
+
+export const TranslationProvider = ({ children, value }: Props) => (
   <TranslationContext.Provider value={value}>{children}</TranslationContext.Provider>
 );
 
@@ -59,11 +61,20 @@ export const useTranslationContext = () => {
   return contextValue;
 };
 
+/**
+ * @deprecated
+ *
+ * This will be removed in the next major version.
+ *
+ * Typescript currently does not support partial inference so if ChatContext
+ * typing is desired while using the HOC withTranslationContext the Props for the
+ * wrapped component must be provided as the first generic.
+ */
 export const withTranslationContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<StreamChatGenerics>,
-): React.FC<Omit<StreamChatGenerics, keyof TranslationContextValue>> => {
+): React.ComponentType<Omit<StreamChatGenerics, keyof TranslationContextValue>> => {
   const WithTranslationContextComponent = (
     props: Omit<StreamChatGenerics, keyof TranslationContextValue>,
   ) => {

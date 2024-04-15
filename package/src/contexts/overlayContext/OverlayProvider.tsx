@@ -65,7 +65,6 @@ export const OverlayProvider = <
 ) => {
   const bottomSheetCloseTimeoutRef = useRef<NodeJS.Timeout>();
   const {
-    autoPlayVideo,
     AttachmentPickerBottomSheetHandle = DefaultAttachmentPickerBottomSheetHandle,
     attachmentPickerBottomSheetHandleHeight,
     attachmentPickerBottomSheetHeight,
@@ -73,8 +72,9 @@ export const OverlayProvider = <
     attachmentPickerErrorButtonText,
     AttachmentPickerErrorImage = DefaultAttachmentPickerErrorImage,
     attachmentPickerErrorText,
-    attachmentSelectionBarHeight,
     AttachmentPickerIOSSelectMorePhotos = DefaultAttachmentPickerIOSSelectMorePhotos,
+    attachmentSelectionBarHeight,
+    autoPlayVideo,
     bottomInset,
     CameraSelectorIcon = DefaultCameraSelectorIcon,
     children,
@@ -118,11 +118,11 @@ export const OverlayProvider = <
         console.warn('bottom and top insets must be set for the image picker to work correctly');
       }
     },
-    topInset,
-    translucentStatusBar,
     OverlayReactionList,
     OverlayReactions,
     OverlayReactionsAvatar,
+    topInset,
+    translucentStatusBar,
     value,
   } = props;
 

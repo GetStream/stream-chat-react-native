@@ -3,7 +3,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 
-import { act, cleanup, render, waitFor } from '@testing-library/react-native';
+import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -46,7 +46,7 @@ import { BetterSqlite } from '../../test-utils/BetterSqlite';
  * to debug.
  */
 const ChannelPreviewComponent = ({ channel, setActiveChannel }) => (
-  <View accessibilityRole='list-item' onPress={setActiveChannel} testID={channel.cid}>
+  <View accessibilityLabel='list-item' onPress={setActiveChannel} testID={channel.cid}>
     <Text>{channel.data.name}</Text>
     <Text>{channel.state.messages[0]?.text}</Text>
   </View>
@@ -90,12 +90,12 @@ export const Generic = () => {
     });
 
     it('should NOT create tables on first load if offline feature is disabled', async () => {
-      const { getByTestId } = render(
+      render(
         <Chat client={chatClient}>
           <View testID='test-child'></View>
         </Chat>,
       );
-      await waitFor(() => expect(getByTestId('test-child')).toBeTruthy());
+      await waitFor(() => expect(screen.getByTestId('test-child')).toBeTruthy());
 
       const tablesInDb = BetterSqlite.getTables();
       const tableNamesInDB = tablesInDb.map((table) => table.name);
@@ -209,8 +209,8 @@ export const Generic = () => {
         </Chat>,
       );
 
-    const expectCIDsOnUIToBeInDB = (queryAllByA11yRole) => {
-      const channelIdsOnUI = queryAllByA11yRole('list-item').map(
+    const expectCIDsOnUIToBeInDB = (queryAllByLabelText) => {
+      const channelIdsOnUI = queryAllByLabelText('list-item').map(
         (node) => node._fiber.pendingProps.testID,
       );
 
@@ -229,8 +229,8 @@ export const Generic = () => {
       });
     };
 
-    const expectAllChannelsWithStateToBeInDB = (queryAllByA11yRole) => {
-      const channelIdsOnUI = queryAllByA11yRole('list-item').map(
+    const expectAllChannelsWithStateToBeInDB = (queryAllByLabelText) => {
+      const channelIdsOnUI = queryAllByLabelText('list-item').map(
         (node) => node._fiber.pendingProps.testID,
       );
 
@@ -278,12 +278,12 @@ export const Generic = () => {
     };
 
     it('should create tables on first load if offline feature is enabled', async () => {
-      const { getByTestId } = render(
+      render(
         <Chat client={chatClient} enableOfflineSupport>
           <View testID='test-child'></View>
         </Chat>,
       );
-      await waitFor(() => expect(getByTestId('test-child')).toBeTruthy());
+      await waitFor(() => expect(screen.getByTestId('test-child')).toBeTruthy());
 
       const tablesInDb = BetterSqlite.getTables();
       const tableNamesInDB = tablesInDb.map((table) => table.name);
@@ -294,31 +294,31 @@ export const Generic = () => {
 
     it('should store filter-sort query and cids on ChannelList in channelQueries table', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
-      const { getByTestId, queryAllByA11yRole } = renderComponent();
+      renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       // await waiter();
       act(() => dispatchConnectionChangedEvent(chatClient));
-      await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
-      expectCIDsOnUIToBeInDB(queryAllByA11yRole);
+      expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
     });
 
     it('should store channels and its state in tables', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      const { getByTestId, queryAllByA11yRole } = renderComponent();
+      renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
-      await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
-      expectAllChannelsWithStateToBeInDB(queryAllByA11yRole);
+      expectAllChannelsWithStateToBeInDB(screen.queryAllByLabelText);
     });
 
     it('should add a new message to database', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      const { getByTestId } = renderComponent();
+      renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
-      await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
       const newMessage = generateMessage({
         cid: channels[0].channel.cid,
         user: generateUser(),
@@ -334,9 +334,9 @@ export const Generic = () => {
     it('should add a new channel and a new message to database from notification event', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      const { getByTestId, queryAllByA11yRole } = renderComponent();
+      renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
-      await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const newChannel = createChannel();
       channels.push(newChannel);
@@ -344,21 +344,21 @@ export const Generic = () => {
 
       act(() => dispatchNotificationMessageNewEvent(chatClient, newChannel.channel));
       await waitFor(() => {
-        const channelIdsOnUI = queryAllByA11yRole('list-item').map(
-          (node) => node._fiber.pendingProps.testID,
-        );
+        const channelIdsOnUI = screen
+          .queryAllByLabelText('list-item')
+          .map((node) => node._fiber.pendingProps.testID);
         expect(channelIdsOnUI.includes(newChannel.channel.cid)).toBeTruthy();
       });
 
-      expectAllChannelsWithStateToBeInDB(queryAllByA11yRole);
+      expectAllChannelsWithStateToBeInDB(screen.queryAllByLabelText);
     });
 
     it('should update a message in database', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      const { getByTestId } = renderComponent();
+      renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
-      await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const updatedMessage = { ...channels[0].messages[0] };
       updatedMessage.text = uuidv4();
@@ -375,19 +375,19 @@ export const Generic = () => {
     it('should remove the channel from DB when user is removed as member', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      const { getByTestId, queryAllByA11yRole } = renderComponent();
+      renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
-      await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
       const removedChannel = channels[getRandomInt(0, channels.length - 1)].channel;
       act(() => dispatchNotificationRemovedFromChannel(chatClient, removedChannel));
       await waitFor(() => {
-        const channelIdsOnUI = queryAllByA11yRole('list-item').map(
-          (node) => node._fiber.pendingProps.testID,
-        );
+        const channelIdsOnUI = screen
+          .queryAllByLabelText('list-item')
+          .map((node) => node._fiber.pendingProps.testID);
         expect(channelIdsOnUI.includes(removedChannel.cid)).toBeFalsy();
       });
 
-      expectCIDsOnUIToBeInDB(queryAllByA11yRole);
+      expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
 
       const channelsRows = BetterSqlite.selectFromTable('channels');
       const matchingRows = channelsRows.filter((c) => c.id === removedChannel.id);
@@ -402,9 +402,9 @@ export const Generic = () => {
     it('should add the channel to DB when user is added as member', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      const { getByTestId, queryAllByA11yRole } = renderComponent();
+      renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
-      await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const newChannel = createChannel();
       useMockedApis(chatClient, [getOrCreateChannelApi(newChannel)]);
@@ -412,13 +412,13 @@ export const Generic = () => {
       act(() => dispatchNotificationAddedToChannel(chatClient, newChannel.channel));
 
       await waitFor(() => {
-        const channelIdsOnUI = queryAllByA11yRole('list-item').map(
-          (node) => node._fiber.pendingProps.testID,
-        );
+        const channelIdsOnUI = screen
+          .queryAllByLabelText('list-item')
+          .map((node) => node._fiber.pendingProps.testID);
         expect(channelIdsOnUI.includes(newChannel.channel.cid)).toBeTruthy();
       });
 
-      expectCIDsOnUIToBeInDB(queryAllByA11yRole);
+      expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
       const channelsRows = BetterSqlite.selectFromTable('channels');
       const matchingChannelsRows = channelsRows.filter((c) => c.id === newChannel.channel.id);
 
@@ -432,21 +432,21 @@ export const Generic = () => {
     it('should remove the channel messages from DB when channel is truncated', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      const { getByTestId, queryAllByA11yRole } = renderComponent();
+      renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
-      await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const channelToTruncate = channels[getRandomInt(0, channels.length - 1)].channel;
       act(() => dispatchChannelTruncatedEvent(chatClient, channelToTruncate));
 
       await waitFor(() => {
-        const channelIdsOnUI = queryAllByA11yRole('list-item').map(
-          (node) => node._fiber.pendingProps.testID,
-        );
+        const channelIdsOnUI = screen
+          .queryAllByLabelText('list-item')
+          .map((node) => node._fiber.pendingProps.testID);
         expect(channelIdsOnUI.includes(channelToTruncate.cid)).toBeTruthy();
       });
 
-      expectCIDsOnUIToBeInDB(queryAllByA11yRole);
+      expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
 
       const messagesRows = BetterSqlite.selectFromTable('messages');
       const matchingMessagesRows = messagesRows.filter((m) => m.cid === channelToTruncate.cid);
@@ -456,10 +456,9 @@ export const Generic = () => {
 
     it('should add a reaction to DB when a new reaction is added', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
-
-      const { getByTestId } = renderComponent();
+      renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
-      await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
       const targetMessage =
@@ -500,9 +499,9 @@ export const Generic = () => {
     it('should remove a reaction from DB when reaction is deleted', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      const { getByTestId } = renderComponent();
+      renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
-      await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
       const targetMessage =
@@ -548,9 +547,9 @@ export const Generic = () => {
     it('should update a reaction in DB when reaction is updated', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      const { getByTestId } = renderComponent();
+      renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
-      await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
       const targetMessage =
@@ -582,9 +581,9 @@ export const Generic = () => {
     it('should add a member to DB when a new member is added to channel', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      const { getByTestId } = renderComponent();
+      renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
-      await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
       const newMember = generateMember();
@@ -601,9 +600,9 @@ export const Generic = () => {
     it('should remove a member from DB when a member is removed from channel', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      const { getByTestId } = renderComponent();
+      renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
-      await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
       const targetMember = targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
@@ -620,9 +619,9 @@ export const Generic = () => {
     it('should update the member in DB when a member of a channel is updated', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      const { getByTestId } = renderComponent();
+      renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
-      await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
       const targetMember = targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
@@ -644,9 +643,9 @@ export const Generic = () => {
     it('should update the channel data in DB when a channel is updated', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      const { getByTestId } = renderComponent();
+      renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
-      await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
       targetChannel.channel.name = uuidv4();
@@ -665,9 +664,9 @@ export const Generic = () => {
     it('should update reads in DB when channel is read', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      const { getByTestId } = renderComponent();
+      renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
-      await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
       const targetMember = targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
 

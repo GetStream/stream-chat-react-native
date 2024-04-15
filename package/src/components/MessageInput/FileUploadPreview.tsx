@@ -90,7 +90,7 @@ const UnsupportedFileTypeOrFileSizeIndicator = ({
   indicatorType,
   item,
 }: {
-  indicatorType: typeof ProgressIndicatorTypes[keyof typeof ProgressIndicatorTypes];
+  indicatorType: (typeof ProgressIndicatorTypes)[keyof typeof ProgressIndicatorTypes];
   item: FileUpload;
 }) => {
   const {
@@ -126,7 +126,7 @@ const UnsupportedFileTypeOrFileSizeIndicator = ({
         width={WARNING_ICON_SIZE}
       />
       <Text style={[styles.unsupportedFileText, { color: grey_dark }]}>
-        {t('File type not supported')}
+        {t<string>('File type not supported')}
       </Text>
     </View>
   ) : (

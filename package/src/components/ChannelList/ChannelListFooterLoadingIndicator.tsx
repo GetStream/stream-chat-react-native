@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const ChannelListFooterLoadingIndicator: React.FC = () => {
+export const ChannelListFooterLoadingIndicator = () => {
   const {
     theme: {
       channelListFooterLoadingIndicator: { container },

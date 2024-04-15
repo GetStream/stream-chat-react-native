@@ -17,24 +17,25 @@ export type InlineLoadingMoreThreadIndicatorPropsWithContext = {
   threadLoadingMore?: boolean;
 };
 
-export const InlineLoadingMoreThreadIndicatorWithContext: React.FC<InlineLoadingMoreThreadIndicatorPropsWithContext> =
-  ({ threadLoadingMore }) => {
-    const { theme } = useTheme();
+export const InlineLoadingMoreThreadIndicatorWithContext = ({
+  threadLoadingMore,
+}: InlineLoadingMoreThreadIndicatorPropsWithContext) => {
+  const { theme } = useTheme();
 
-    const {
-      colors: { accent_blue },
-    } = theme;
+  const {
+    colors: { accent_blue },
+  } = theme;
 
-    if (!threadLoadingMore) {
-      return null;
-    }
+  if (!threadLoadingMore) {
+    return null;
+  }
 
-    return (
-      <View style={styles.activityIndicatorContainer}>
-        <ActivityIndicator color={accent_blue} size='small' />
-      </View>
-    );
-  };
+  return (
+    <View style={styles.activityIndicatorContainer}>
+      <ActivityIndicator color={accent_blue} size='small' />
+    </View>
+  );
+};
 
 const areEqual = (
   prevProps: InlineLoadingMoreThreadIndicatorPropsWithContext,

@@ -8,12 +8,12 @@ import {
   KeyboardAvoidingViewProps,
   KeyboardEvent,
   KeyboardEventListener,
+  KeyboardMetrics,
   LayoutAnimation,
   LayoutChangeEvent,
   LayoutRectangle,
   NativeEventSubscription,
   Platform,
-  ScreenRect,
   StatusBar,
   StyleSheet,
   View,
@@ -56,7 +56,7 @@ export class KeyboardCompatibleView extends React.Component<
     this.viewRef = React.createRef();
   }
 
-  _relativeKeyboardHeight(keyboardFrame: ScreenRect) {
+  _relativeKeyboardHeight(keyboardFrame: KeyboardMetrics) {
     const frame = this._frame;
     if (!frame || !keyboardFrame) {
       return 0;
@@ -188,7 +188,10 @@ export class KeyboardCompatibleView extends React.Component<
     // Following if-else condition to avoid deprecated warning coming RN 0.65
     if (this._appStateSubscription?.remove) {
       this._appStateSubscription?.remove();
-    } else {
+    }
+    // @ts-ignore
+    else if (AppState.removeEventListener) {
+      // @ts-ignore
       AppState.removeEventListener('change', this._handleAppStateChange);
     }
     this.unsetKeyboardListeners();

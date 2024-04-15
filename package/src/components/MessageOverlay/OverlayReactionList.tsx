@@ -94,7 +94,7 @@ type ReactionButtonProps<
   OverlayReactionListPropsWithContext<StreamChatGenerics>,
   'ownReactionTypes' | 'handleReaction' | 'setOverlay'
 > & {
-  Icon: React.FC<IconProps>;
+  Icon: React.ComponentType<IconProps>;
   index: number;
   numberOfReactions: number;
   showScreen: Animated.SharedValue<number>;
@@ -255,9 +255,9 @@ const OverlayReactionListWithContext = <
     handleReaction,
     messageLayout,
     ownReactionTypes,
+    setOverlay,
     setReactionListHeight,
     showScreen,
-    setOverlay,
     supportedReactions = reactionData,
   } = props;
 
@@ -266,7 +266,7 @@ const OverlayReactionListWithContext = <
       colors: { white_snow },
       overlay: {
         padding: screenPadding,
-        reactionsList: { radius, reactionList },
+        reactionsList: { radius, reactionList, reactionListBorderRadius },
       },
     },
   } = useTheme();
@@ -281,7 +281,7 @@ const OverlayReactionListWithContext = <
   const { width } = useWindowDimensions();
 
   const animatedStyle = useAnimatedStyle<ViewStyle>(() => {
-    const borderRadius = reactionList.borderRadius || styles.reactionList.borderRadius;
+    const borderRadius = reactionListBorderRadius || styles.reactionList.borderRadius;
     const insideLeftBound =
       messageLayout.value.x - reactionListLayout.value.width + borderRadius > screenPadding;
     const insideRightBound = messageLayout.value.x + borderRadius < width - screenPadding;

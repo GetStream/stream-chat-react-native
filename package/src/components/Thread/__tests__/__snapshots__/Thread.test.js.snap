@@ -5,30 +5,30 @@ exports[`Thread should match thread snapshot 1`] = `
   keyboardVerticalOffset={86.5}
   onLayout={[Function]}
   style={
-    Object {
+    {
       "paddingBottom": 0,
     }
   }
 >
   <View
     style={
-      Object {
+      {
         "height": "100%",
       }
     }
   >
     <View
       style={
-        Array [
-          Object {
+        [
+          {
             "alignItems": "center",
             "flex": 1,
             "width": "100%",
           },
-          Object {
+          {
             "backgroundColor": "#FCFCFC",
           },
-          Object {},
+          {},
         ]
       }
       testID="message-flat-list-wrapper"
@@ -38,23 +38,23 @@ exports[`Thread should match thread snapshot 1`] = `
         ListFooterComponent={null}
         ListHeaderComponent={[Function]}
         contentContainerStyle={
-          Array [
-            Object {
+          [
+            {
               "flexGrow": 1,
               "paddingBottom": 4,
             },
             undefined,
-            Object {},
+            {},
           ]
         }
         data={
-          Array [
-            Object {
+          [
+            {
               "__html": "<p>regular</p>",
-              "attachments": Array [],
+              "attachments": [],
               "created_at": 2020-05-05T14:50:00.000Z,
               "dateSeparator": undefined,
-              "groupStyles": Array [
+              "groupStyles": [
                 "single",
               ],
               "html": "<p>regular</p>",
@@ -66,7 +66,7 @@ exports[`Thread should match thread snapshot 1`] = `
               "text": "Message6",
               "type": "regular",
               "updated_at": 2020-05-05T14:50:00.000Z,
-              "user": Object {
+              "user": {
                 "banned": false,
                 "created_at": "2020-04-27T13:39:49.331742Z",
                 "id": "arthur",
@@ -77,12 +77,12 @@ exports[`Thread should match thread snapshot 1`] = `
                 "updated_at": "2020-04-27T13:39:49.332087Z",
               },
             },
-            Object {
+            {
               "__html": "<p>regular</p>",
-              "attachments": Array [],
+              "attachments": [],
               "created_at": 2020-05-05T14:50:00.000Z,
               "dateSeparator": undefined,
-              "groupStyles": Array [
+              "groupStyles": [
                 "single",
               ],
               "html": "<p>regular</p>",
@@ -94,7 +94,7 @@ exports[`Thread should match thread snapshot 1`] = `
               "text": "Message5",
               "type": "regular",
               "updated_at": 2020-05-05T14:50:00.000Z,
-              "user": Object {
+              "user": {
                 "banned": false,
                 "created_at": "2020-04-27T13:39:49.331742Z",
                 "id": "finn",
@@ -105,12 +105,12 @@ exports[`Thread should match thread snapshot 1`] = `
                 "updated_at": "2020-04-27T13:39:49.332087Z",
               },
             },
-            Object {
+            {
               "__html": "<p>regular</p>",
-              "attachments": Array [],
+              "attachments": [],
               "created_at": 2020-05-05T14:50:00.000Z,
               "dateSeparator": 2020-05-05T14:50:00.000Z,
-              "groupStyles": Array [
+              "groupStyles": [
                 "single",
               ],
               "html": "<p>regular</p>",
@@ -122,7 +122,7 @@ exports[`Thread should match thread snapshot 1`] = `
               "text": "Message4",
               "type": "regular",
               "updated_at": 2020-05-05T14:50:00.000Z,
-              "user": Object {
+              "user": {
                 "banned": false,
                 "created_at": "2020-04-27T13:39:49.331742Z",
                 "id": "arthur",
@@ -140,12 +140,13 @@ exports[`Thread should match thread snapshot 1`] = `
         getItemCount={[Function]}
         invertStickyHeaders={true}
         inverted={true}
+        isInvertedVirtualizedList={true}
         keyExtractor={[Function]}
         keyboardShouldPersistTaps="handled"
         maintainVisibleContentPosition={
-          Object {
+          {
             "autoscrollToTopThreshold": 10,
-            "minIndexForVisible": 1,
+            "minIndexForVisible": 2,
           }
         }
         maxToRenderPerBatch={30}
@@ -162,24 +163,24 @@ exports[`Thread should match thread snapshot 1`] = `
         removeClippedSubviews={false}
         renderItem={[Function]}
         scrollEnabled={false}
-        scrollEventThrottle={50}
+        scrollEventThrottle={0.0001}
         showsVerticalScrollIndicator={true}
-        stickyHeaderIndices={Array []}
+        stickyHeaderIndices={[]}
         style={
-          Array [
-            Object {
-              "transform": Array [
-                Object {
+          [
+            {
+              "transform": [
+                {
                   "scaleY": -1,
                 },
               ],
             },
-            Array [
-              Object {
+            [
+              {
                 "flex": 1,
                 "width": "100%",
               },
-              Object {},
+              {},
               undefined,
               undefined,
             ],
@@ -187,15 +188,15 @@ exports[`Thread should match thread snapshot 1`] = `
         }
         testID="message-flat-list"
         viewabilityConfig={
-          Object {
+          {
             "viewAreaCoveragePercentThreshold": 1,
           }
         }
         viewabilityConfigCallbackPairs={
-          Array [
-            Object {
+          [
+            {
               "onViewableItemsChanged": [Function],
-              "viewabilityConfig": Object {
+              "viewabilityConfig": {
                 "viewAreaCoveragePercentThreshold": 1,
               },
             },
@@ -204,11 +205,12 @@ exports[`Thread should match thread snapshot 1`] = `
       >
         <View>
           <View
+            collapsable={false}
             onLayout={[Function]}
             style={
-              Object {
-                "transform": Array [
-                  Object {
+              {
+                "transform": [
+                  {
                     "scaleY": -1,
                   },
                 ],
@@ -218,15 +220,16 @@ exports[`Thread should match thread snapshot 1`] = `
             <View />
           </View>
           <View
+            onFocusCapture={[Function]}
             onLayout={[Function]}
             style={
-              Array [
-                Object {
+              [
+                {
                   "flexDirection": "column-reverse",
                 },
-                Object {
-                  "transform": Array [
-                    Object {
+                {
+                  "transform": [
+                    {
                       "scaleY": -1,
                     },
                   ],
@@ -239,7 +242,7 @@ exports[`Thread should match thread snapshot 1`] = `
             >
               <View
                 style={
-                  Array [
+                  [
                     undefined,
                   ]
                 }
@@ -247,14 +250,14 @@ exports[`Thread should match thread snapshot 1`] = `
               >
                 <View
                   style={
-                    Array [
-                      Array [
-                        Object {
+                    [
+                      [
+                        {
                           "paddingHorizontal": 8,
                         },
-                        Object {},
+                        {},
                       ],
-                      Object {
+                      {
                         "backgroundColor": undefined,
                       },
                     ]
@@ -262,35 +265,35 @@ exports[`Thread should match thread snapshot 1`] = `
                 >
                   <View
                     style={
-                      Array [
-                        Object {},
+                      [
+                        {},
                       ]
                     }
                   >
                     <View
                       style={
-                        Array [
-                          Object {
+                        [
+                          {
                             "alignItems": "flex-end",
                             "flexDirection": "row",
                           },
-                          Object {
+                          {
                             "justifyContent": "flex-start",
                             "marginBottom": 8,
                             "marginTop": 0,
                           },
-                          Object {},
+                          {},
                         ]
                       }
                       testID="message-simple-wrapper"
                     >
                       <View
                         style={
-                          Array [
-                            Object {
+                          [
+                            {
                               "marginRight": 8,
                             },
-                            Object {},
+                            {},
                           ]
                         }
                         testID="message-avatar"
@@ -298,18 +301,18 @@ exports[`Thread should match thread snapshot 1`] = `
                         <View>
                           <View
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "alignItems": "center",
                                   "justifyContent": "center",
                                   "overflow": "hidden",
                                 },
-                                Object {
+                                {
                                   "borderRadius": 16,
                                   "height": 32,
                                   "width": 32,
                                 },
-                                Object {},
+                                {},
                                 undefined,
                               ]
                             }
@@ -318,18 +321,18 @@ exports[`Thread should match thread snapshot 1`] = `
                               accessibilityLabel="Avatar Image"
                               onError={[Function]}
                               source={
-                                Object {
+                                {
                                   "uri": "https://i.imgur.com/LuuGvh0.png",
                                 }
                               }
                               style={
-                                Array [
-                                  Object {
+                                [
+                                  {
                                     "borderRadius": 16,
                                     "height": 32,
                                     "width": 32,
                                   },
-                                  Object {
+                                  {
                                     "backgroundColor": "#ececec",
                                     "borderRadius": 16,
                                     "height": 32,
@@ -344,6 +347,23 @@ exports[`Thread should match thread snapshot 1`] = `
                         </View>
                       </View>
                       <View
+                        accessibilityState={
+                          {
+                            "busy": undefined,
+                            "checked": undefined,
+                            "disabled": undefined,
+                            "expanded": undefined,
+                            "selected": undefined,
+                          }
+                        }
+                        accessibilityValue={
+                          {
+                            "max": undefined,
+                            "min": undefined,
+                            "now": undefined,
+                            "text": undefined,
+                          }
+                        }
                         accessible={true}
                         collapsable={false}
                         focusable={true}
@@ -355,7 +375,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         onResponderTerminationRequest={[Function]}
                         onStartShouldSetResponder={[Function]}
                         style={
-                          Object {
+                          {
                             "alignItems": "flex-start",
                             "opacity": 1,
                             "paddingTop": 2,
@@ -365,37 +385,37 @@ exports[`Thread should match thread snapshot 1`] = `
                       >
                         <View
                           onLayout={[Function]}
-                          style={Object {}}
+                          style={{}}
                         >
                           <View
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "borderTopLeftRadius": 16,
                                   "borderTopRightRadius": 16,
                                   "borderWidth": 1,
                                   "overflow": "hidden",
                                 },
-                                Object {
+                                {
                                   "backgroundColor": "#FFFFFF",
                                   "borderBottomLeftRadius": 0,
                                   "borderBottomRightRadius": 16,
                                   "borderColor": "#ECEBEB",
                                 },
-                                Object {},
-                                Object {},
+                                {},
+                                {},
                               ]
                             }
                             testID="message-content-wrapper"
                           >
                             <View
                               style={
-                                Array [
-                                  Object {
+                                [
+                                  {
                                     "maxWidth": 250,
                                     "paddingHorizontal": 16,
                                   },
-                                  Object {},
+                                  {},
                                   undefined,
                                 ]
                               }
@@ -403,8 +423,8 @@ exports[`Thread should match thread snapshot 1`] = `
                             >
                               <View
                                 style={
-                                  Array [
-                                    Object {
+                                  [
+                                    {
                                       "alignSelf": "stretch",
                                     },
                                     undefined,
@@ -413,7 +433,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               >
                                 <Text
                                   style={
-                                    Object {
+                                    {
                                       "alignItems": "flex-start",
                                       "flexDirection": "row",
                                       "flexWrap": "wrap",
@@ -425,7 +445,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                 >
                                   <Text
                                     style={
-                                      Object {
+                                      {
                                         "color": "#000000",
                                       }
                                     }
@@ -439,7 +459,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         </View>
                         <View
                           style={
-                            Object {
+                            {
                               "flexDirection": "row",
                               "marginTop": 4,
                             }
@@ -448,12 +468,12 @@ exports[`Thread should match thread snapshot 1`] = `
                         >
                           <Text
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "color": "#7A7A7A",
                                   "textAlign": "left",
                                 },
-                                Object {
+                                {
                                   "fontSize": 12,
                                 },
                               ]
@@ -470,15 +490,16 @@ exports[`Thread should match thread snapshot 1`] = `
             </View>
           </View>
           <View
+            onFocusCapture={[Function]}
             onLayout={[Function]}
             style={
-              Array [
-                Object {
+              [
+                {
                   "flexDirection": "column-reverse",
                 },
-                Object {
-                  "transform": Array [
-                    Object {
+                {
+                  "transform": [
+                    {
                       "scaleY": -1,
                     },
                   ],
@@ -491,7 +512,7 @@ exports[`Thread should match thread snapshot 1`] = `
             >
               <View
                 style={
-                  Array [
+                  [
                     undefined,
                   ]
                 }
@@ -499,14 +520,14 @@ exports[`Thread should match thread snapshot 1`] = `
               >
                 <View
                   style={
-                    Array [
-                      Array [
-                        Object {
+                    [
+                      [
+                        {
                           "paddingHorizontal": 8,
                         },
-                        Object {},
+                        {},
                       ],
-                      Object {
+                      {
                         "backgroundColor": undefined,
                       },
                     ]
@@ -514,35 +535,35 @@ exports[`Thread should match thread snapshot 1`] = `
                 >
                   <View
                     style={
-                      Array [
-                        Object {},
+                      [
+                        {},
                       ]
                     }
                   >
                     <View
                       style={
-                        Array [
-                          Object {
+                        [
+                          {
                             "alignItems": "flex-end",
                             "flexDirection": "row",
                           },
-                          Object {
+                          {
                             "justifyContent": "flex-start",
                             "marginBottom": 8,
                             "marginTop": 0,
                           },
-                          Object {},
+                          {},
                         ]
                       }
                       testID="message-simple-wrapper"
                     >
                       <View
                         style={
-                          Array [
-                            Object {
+                          [
+                            {
                               "marginRight": 8,
                             },
-                            Object {},
+                            {},
                           ]
                         }
                         testID="message-avatar"
@@ -550,18 +571,18 @@ exports[`Thread should match thread snapshot 1`] = `
                         <View>
                           <View
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "alignItems": "center",
                                   "justifyContent": "center",
                                   "overflow": "hidden",
                                 },
-                                Object {
+                                {
                                   "borderRadius": 16,
                                   "height": 32,
                                   "width": 32,
                                 },
-                                Object {},
+                                {},
                                 undefined,
                               ]
                             }
@@ -570,18 +591,18 @@ exports[`Thread should match thread snapshot 1`] = `
                               accessibilityLabel="Avatar Image"
                               onError={[Function]}
                               source={
-                                Object {
+                                {
                                   "uri": "https://i.imgur.com/spueyAP.png",
                                 }
                               }
                               style={
-                                Array [
-                                  Object {
+                                [
+                                  {
                                     "borderRadius": 16,
                                     "height": 32,
                                     "width": 32,
                                   },
-                                  Object {
+                                  {
                                     "backgroundColor": "#ececec",
                                     "borderRadius": 16,
                                     "height": 32,
@@ -596,6 +617,23 @@ exports[`Thread should match thread snapshot 1`] = `
                         </View>
                       </View>
                       <View
+                        accessibilityState={
+                          {
+                            "busy": undefined,
+                            "checked": undefined,
+                            "disabled": undefined,
+                            "expanded": undefined,
+                            "selected": undefined,
+                          }
+                        }
+                        accessibilityValue={
+                          {
+                            "max": undefined,
+                            "min": undefined,
+                            "now": undefined,
+                            "text": undefined,
+                          }
+                        }
                         accessible={true}
                         collapsable={false}
                         focusable={true}
@@ -607,7 +645,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         onResponderTerminationRequest={[Function]}
                         onStartShouldSetResponder={[Function]}
                         style={
-                          Object {
+                          {
                             "alignItems": "flex-start",
                             "opacity": 1,
                             "paddingTop": 2,
@@ -617,37 +655,37 @@ exports[`Thread should match thread snapshot 1`] = `
                       >
                         <View
                           onLayout={[Function]}
-                          style={Object {}}
+                          style={{}}
                         >
                           <View
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "borderTopLeftRadius": 16,
                                   "borderTopRightRadius": 16,
                                   "borderWidth": 1,
                                   "overflow": "hidden",
                                 },
-                                Object {
+                                {
                                   "backgroundColor": "#FFFFFF",
                                   "borderBottomLeftRadius": 0,
                                   "borderBottomRightRadius": 16,
                                   "borderColor": "#ECEBEB",
                                 },
-                                Object {},
-                                Object {},
+                                {},
+                                {},
                               ]
                             }
                             testID="message-content-wrapper"
                           >
                             <View
                               style={
-                                Array [
-                                  Object {
+                                [
+                                  {
                                     "maxWidth": 250,
                                     "paddingHorizontal": 16,
                                   },
-                                  Object {},
+                                  {},
                                   undefined,
                                 ]
                               }
@@ -655,8 +693,8 @@ exports[`Thread should match thread snapshot 1`] = `
                             >
                               <View
                                 style={
-                                  Array [
-                                    Object {
+                                  [
+                                    {
                                       "alignSelf": "stretch",
                                     },
                                     undefined,
@@ -665,7 +703,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               >
                                 <Text
                                   style={
-                                    Object {
+                                    {
                                       "alignItems": "flex-start",
                                       "flexDirection": "row",
                                       "flexWrap": "wrap",
@@ -677,7 +715,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                 >
                                   <Text
                                     style={
-                                      Object {
+                                      {
                                         "color": "#000000",
                                       }
                                     }
@@ -691,7 +729,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         </View>
                         <View
                           style={
-                            Object {
+                            {
                               "flexDirection": "row",
                               "marginTop": 4,
                             }
@@ -700,12 +738,12 @@ exports[`Thread should match thread snapshot 1`] = `
                         >
                           <Text
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "color": "#7A7A7A",
                                   "textAlign": "left",
                                 },
-                                Object {
+                                {
                                   "fontSize": 12,
                                 },
                               ]
@@ -722,15 +760,16 @@ exports[`Thread should match thread snapshot 1`] = `
             </View>
           </View>
           <View
+            onFocusCapture={[Function]}
             onLayout={[Function]}
             style={
-              Array [
-                Object {
+              [
+                {
                   "flexDirection": "column-reverse",
                 },
-                Object {
-                  "transform": Array [
-                    Object {
+                {
+                  "transform": [
+                    {
                       "scaleY": -1,
                     },
                   ],
@@ -743,7 +782,7 @@ exports[`Thread should match thread snapshot 1`] = `
             >
               <View
                 style={
-                  Array [
+                  [
                     undefined,
                   ]
                 }
@@ -751,14 +790,14 @@ exports[`Thread should match thread snapshot 1`] = `
               >
                 <View
                   style={
-                    Array [
-                      Array [
-                        Object {
+                    [
+                      [
+                        {
                           "paddingHorizontal": 8,
                         },
-                        Object {},
+                        {},
                       ],
-                      Object {
+                      {
                         "backgroundColor": undefined,
                       },
                     ]
@@ -766,35 +805,35 @@ exports[`Thread should match thread snapshot 1`] = `
                 >
                   <View
                     style={
-                      Array [
-                        Object {},
+                      [
+                        {},
                       ]
                     }
                   >
                     <View
                       style={
-                        Array [
-                          Object {
+                        [
+                          {
                             "alignItems": "flex-end",
                             "flexDirection": "row",
                           },
-                          Object {
+                          {
                             "justifyContent": "flex-start",
                             "marginBottom": 8,
                             "marginTop": 0,
                           },
-                          Object {},
+                          {},
                         ]
                       }
                       testID="message-simple-wrapper"
                     >
                       <View
                         style={
-                          Array [
-                            Object {
+                          [
+                            {
                               "marginRight": 8,
                             },
-                            Object {},
+                            {},
                           ]
                         }
                         testID="message-avatar"
@@ -802,18 +841,18 @@ exports[`Thread should match thread snapshot 1`] = `
                         <View>
                           <View
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "alignItems": "center",
                                   "justifyContent": "center",
                                   "overflow": "hidden",
                                 },
-                                Object {
+                                {
                                   "borderRadius": 16,
                                   "height": 32,
                                   "width": 32,
                                 },
-                                Object {},
+                                {},
                                 undefined,
                               ]
                             }
@@ -822,18 +861,18 @@ exports[`Thread should match thread snapshot 1`] = `
                               accessibilityLabel="Avatar Image"
                               onError={[Function]}
                               source={
-                                Object {
+                                {
                                   "uri": "https://i.imgur.com/LuuGvh0.png",
                                 }
                               }
                               style={
-                                Array [
-                                  Object {
+                                [
+                                  {
                                     "borderRadius": 16,
                                     "height": 32,
                                     "width": 32,
                                   },
-                                  Object {
+                                  {
                                     "backgroundColor": "#ececec",
                                     "borderRadius": 16,
                                     "height": 32,
@@ -848,6 +887,23 @@ exports[`Thread should match thread snapshot 1`] = `
                         </View>
                       </View>
                       <View
+                        accessibilityState={
+                          {
+                            "busy": undefined,
+                            "checked": undefined,
+                            "disabled": undefined,
+                            "expanded": undefined,
+                            "selected": undefined,
+                          }
+                        }
+                        accessibilityValue={
+                          {
+                            "max": undefined,
+                            "min": undefined,
+                            "now": undefined,
+                            "text": undefined,
+                          }
+                        }
                         accessible={true}
                         collapsable={false}
                         focusable={true}
@@ -859,7 +915,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         onResponderTerminationRequest={[Function]}
                         onStartShouldSetResponder={[Function]}
                         style={
-                          Object {
+                          {
                             "alignItems": "flex-start",
                             "opacity": 1,
                             "paddingTop": 2,
@@ -869,37 +925,37 @@ exports[`Thread should match thread snapshot 1`] = `
                       >
                         <View
                           onLayout={[Function]}
-                          style={Object {}}
+                          style={{}}
                         >
                           <View
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "borderTopLeftRadius": 16,
                                   "borderTopRightRadius": 16,
                                   "borderWidth": 1,
                                   "overflow": "hidden",
                                 },
-                                Object {
+                                {
                                   "backgroundColor": "#FFFFFF",
                                   "borderBottomLeftRadius": 0,
                                   "borderBottomRightRadius": 16,
                                   "borderColor": "#ECEBEB",
                                 },
-                                Object {},
-                                Object {},
+                                {},
+                                {},
                               ]
                             }
                             testID="message-content-wrapper"
                           >
                             <View
                               style={
-                                Array [
-                                  Object {
+                                [
+                                  {
                                     "maxWidth": 250,
                                     "paddingHorizontal": 16,
                                   },
-                                  Object {},
+                                  {},
                                   undefined,
                                 ]
                               }
@@ -907,8 +963,8 @@ exports[`Thread should match thread snapshot 1`] = `
                             >
                               <View
                                 style={
-                                  Array [
-                                    Object {
+                                  [
+                                    {
                                       "alignSelf": "stretch",
                                     },
                                     undefined,
@@ -917,7 +973,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               >
                                 <Text
                                   style={
-                                    Object {
+                                    {
                                       "alignItems": "flex-start",
                                       "flexDirection": "row",
                                       "flexWrap": "wrap",
@@ -929,7 +985,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                 >
                                   <Text
                                     style={
-                                      Object {
+                                      {
                                         "color": "#000000",
                                       }
                                     }
@@ -943,7 +999,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         </View>
                         <View
                           style={
-                            Object {
+                            {
                               "flexDirection": "row",
                               "marginTop": 4,
                             }
@@ -952,12 +1008,12 @@ exports[`Thread should match thread snapshot 1`] = `
                         >
                           <Text
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "color": "#7A7A7A",
                                   "textAlign": "left",
                                 },
-                                Object {
+                                {
                                   "fontSize": 12,
                                 },
                               ]
@@ -974,8 +1030,8 @@ exports[`Thread should match thread snapshot 1`] = `
             </View>
             <View
               style={
-                Array [
-                  Object {
+                [
+                  {
                     "alignItems": "center",
                     "alignSelf": "center",
                     "borderRadius": 8,
@@ -984,26 +1040,26 @@ exports[`Thread should match thread snapshot 1`] = `
                     "marginVertical": 4,
                     "paddingHorizontal": 8,
                   },
-                  Object {
+                  {
                     "backgroundColor": "#000000CC",
                   },
-                  Object {},
+                  {},
                 ]
               }
               testID="date-separator"
             >
               <Text
                 style={
-                  Array [
-                    Object {
+                  [
+                    {
                       "fontSize": 12,
                       "textAlign": "center",
                       "textAlignVertical": "center",
                     },
-                    Object {
+                    {
                       "color": "#FFFFFF",
                     },
-                    Object {},
+                    {},
                   ]
                 }
               >
@@ -1014,9 +1070,9 @@ exports[`Thread should match thread snapshot 1`] = `
           <View
             onLayout={[Function]}
             style={
-              Object {
-                "transform": Array [
-                  Object {
+              {
+                "transform": [
+                  {
                     "scaleY": -1,
                   },
                 ],
@@ -1026,7 +1082,7 @@ exports[`Thread should match thread snapshot 1`] = `
             <View>
               <View
                 style={
-                  Object {
+                  {
                     "marginVertical": 8,
                   }
                 }
@@ -1034,14 +1090,14 @@ exports[`Thread should match thread snapshot 1`] = `
               >
                 <View
                   style={
-                    Object {
+                    {
                       "paddingHorizontal": 8,
                     }
                   }
                 >
                   <View
                     style={
-                      Array [
+                      [
                         undefined,
                       ]
                     }
@@ -1049,9 +1105,9 @@ exports[`Thread should match thread snapshot 1`] = `
                   >
                     <View
                       style={
-                        Array [
+                        [
                           undefined,
-                          Object {
+                          {
                             "backgroundColor": undefined,
                           },
                         ]
@@ -1059,35 +1115,35 @@ exports[`Thread should match thread snapshot 1`] = `
                     >
                       <View
                         style={
-                          Array [
-                            Object {},
+                          [
+                            {},
                           ]
                         }
                       >
                         <View
                           style={
-                            Array [
-                              Object {
+                            [
+                              {
                                 "alignItems": "flex-end",
                                 "flexDirection": "row",
                               },
-                              Object {
+                              {
                                 "justifyContent": "flex-start",
                                 "marginBottom": 30,
                                 "marginTop": 0,
                               },
-                              Object {},
+                              {},
                             ]
                           }
                           testID="message-simple-wrapper"
                         >
                           <View
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "marginRight": 8,
                                 },
-                                Object {},
+                                {},
                               ]
                             }
                             testID="message-avatar"
@@ -1095,18 +1151,18 @@ exports[`Thread should match thread snapshot 1`] = `
                             <View>
                               <View
                                 style={
-                                  Array [
-                                    Object {
+                                  [
+                                    {
                                       "alignItems": "center",
                                       "justifyContent": "center",
                                       "overflow": "hidden",
                                     },
-                                    Object {
+                                    {
                                       "borderRadius": 16,
                                       "height": 32,
                                       "width": 32,
                                     },
-                                    Object {},
+                                    {},
                                     undefined,
                                   ]
                                 }
@@ -1115,18 +1171,18 @@ exports[`Thread should match thread snapshot 1`] = `
                                   accessibilityLabel="Avatar Image"
                                   onError={[Function]}
                                   source={
-                                    Object {
+                                    {
                                       "uri": "https://i.imgur.com/spueyAP.png",
                                     }
                                   }
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "borderRadius": 16,
                                         "height": 32,
                                         "width": 32,
                                       },
-                                      Object {
+                                      {
                                         "backgroundColor": "#ececec",
                                         "borderRadius": 16,
                                         "height": 32,
@@ -1142,8 +1198,20 @@ exports[`Thread should match thread snapshot 1`] = `
                           </View>
                           <View
                             accessibilityState={
-                              Object {
+                              {
+                                "busy": undefined,
+                                "checked": undefined,
                                 "disabled": true,
+                                "expanded": undefined,
+                                "selected": undefined,
+                              }
+                            }
+                            accessibilityValue={
+                              {
+                                "max": undefined,
+                                "min": undefined,
+                                "now": undefined,
+                                "text": undefined,
                               }
                             }
                             accessible={true}
@@ -1157,7 +1225,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
                             style={
-                              Object {
+                              {
                                 "alignItems": "flex-start",
                                 "opacity": 1,
                                 "paddingTop": 2,
@@ -1167,37 +1235,37 @@ exports[`Thread should match thread snapshot 1`] = `
                           >
                             <View
                               onLayout={[Function]}
-                              style={Object {}}
+                              style={{}}
                             >
                               <View
                                 style={
-                                  Array [
-                                    Object {
+                                  [
+                                    {
                                       "borderTopLeftRadius": 16,
                                       "borderTopRightRadius": 16,
                                       "borderWidth": 1,
                                       "overflow": "hidden",
                                     },
-                                    Object {
+                                    {
                                       "backgroundColor": "#FFFFFF",
                                       "borderBottomLeftRadius": 0,
                                       "borderBottomRightRadius": 16,
                                       "borderColor": "#ECEBEB",
                                     },
-                                    Object {},
-                                    Object {},
+                                    {},
+                                    {},
                                   ]
                                 }
                                 testID="message-content-wrapper"
                               >
                                 <View
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "maxWidth": 250,
                                         "paddingHorizontal": 16,
                                       },
-                                      Object {},
+                                      {},
                                       undefined,
                                     ]
                                   }
@@ -1205,8 +1273,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                 >
                                   <View
                                     style={
-                                      Array [
-                                        Object {
+                                      [
+                                        {
                                           "alignSelf": "stretch",
                                         },
                                         undefined,
@@ -1215,7 +1283,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   >
                                     <Text
                                       style={
-                                        Object {
+                                        {
                                           "alignItems": "flex-start",
                                           "flexDirection": "row",
                                           "flexWrap": "wrap",
@@ -1227,7 +1295,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                     >
                                       <Text
                                         style={
-                                          Object {
+                                          {
                                             "color": "#000000",
                                           }
                                         }
@@ -1241,7 +1309,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             </View>
                             <View
                               style={
-                                Object {
+                                {
                                   "flexDirection": "row",
                                   "marginTop": 4,
                                 }
@@ -1250,12 +1318,12 @@ exports[`Thread should match thread snapshot 1`] = `
                             >
                               <Text
                                 style={
-                                  Array [
-                                    Object {
+                                  [
+                                    {
                                       "color": "#7A7A7A",
                                       "textAlign": "left",
                                     },
-                                    Object {
+                                    {
                                       "fontSize": 12,
                                     },
                                   ]
@@ -1272,14 +1340,14 @@ exports[`Thread should match thread snapshot 1`] = `
                 </View>
                 <View
                   style={
-                    Array [
-                      Object {
+                    [
+                      {
                         "alignItems": "center",
                         "height": 24,
                         "justifyContent": "center",
                         "marginTop": 8,
                       },
-                      Object {},
+                      {},
                     ]
                   }
                 >
@@ -1289,15 +1357,15 @@ exports[`Thread should match thread snapshot 1`] = `
                     focusable={false}
                     height={24}
                     style={
-                      Array [
-                        Object {
+                      [
+                        {
                           "backgroundColor": "transparent",
                           "borderWidth": 0,
                         },
-                        Object {
+                        {
                           "position": "absolute",
                         },
-                        Object {
+                        {
                           "flex": 0,
                           "height": 24,
                           "width": 750,
@@ -1306,17 +1374,24 @@ exports[`Thread should match thread snapshot 1`] = `
                     }
                     width={750}
                   >
-                    <RNSVGGroup>
+                    <RNSVGGroup
+                      fill={
+                        {
+                          "payload": 4278190080,
+                          "type": 0,
+                        }
+                      }
+                    >
                       <RNSVGRect
                         fill={
-                          Array [
-                            1,
-                            "gradient",
-                          ]
+                          {
+                            "brushRef": "gradient",
+                            "type": 1,
+                          }
                         }
                         height={24}
                         propList={
-                          Array [
+                          [
                             "fill",
                           ]
                         }
@@ -1327,7 +1402,7 @@ exports[`Thread should match thread snapshot 1`] = `
                       <RNSVGDefs>
                         <RNSVGLinearGradient
                           gradient={
-                            Array [
+                            [
                               0,
                               -197380,
                               1,
@@ -1347,15 +1422,15 @@ exports[`Thread should match thread snapshot 1`] = `
                   </RNSVGSvgView>
                   <Text
                     style={
-                      Array [
-                        Object {
+                      [
+                        {
                           "fontSize": 12,
                           "textAlign": "center",
                         },
-                        Object {
+                        {
                           "color": "#7A7A7A",
                         },
-                        Object {},
+                        {},
                       ]
                     }
                   >
@@ -1369,7 +1444,7 @@ exports[`Thread should match thread snapshot 1`] = `
       </RCTScrollView>
       <View
         style={
-          Object {
+          {
             "position": "absolute",
             "top": 0,
           }
@@ -1379,56 +1454,68 @@ exports[`Thread should match thread snapshot 1`] = `
     <View
       onLayout={[Function]}
       style={
-        Array [
-          Object {
+        [
+          {
             "borderTopWidth": 1,
             "padding": 10,
           },
-          Object {
+          {
             "backgroundColor": "#FFFFFF",
             "borderColor": "#00000014",
           },
-          Object {},
+          {},
         ]
       }
     >
       <View
         style={
-          Array [
-            Object {
+          [
+            {
               "alignItems": "flex-end",
               "flexDirection": "row",
             },
-            Object {},
+            {},
           ]
         }
       >
         <View
           style={
-            Array [
-              Object {
+            [
+              {
                 "flexDirection": "row",
                 "paddingBottom": 10,
                 "paddingRight": 10,
               },
-              Object {},
+              {},
             ]
           }
         >
           <View
             style={
-              Array [
-                Object {
+              [
+                {
                   "paddingRight": 10,
                 },
-                Object {},
+                {},
               ]
             }
           >
             <View
               accessibilityState={
-                Object {
+                {
+                  "busy": undefined,
+                  "checked": undefined,
                   "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
                 }
               }
               accessible={true}
@@ -1444,8 +1531,8 @@ exports[`Thread should match thread snapshot 1`] = `
               onResponderTerminationRequest={[Function]}
               onStartShouldSetResponder={[Function]}
               style={
-                Array [
-                  Object {},
+                [
+                  {},
                 ]
               }
               testID="attach-button"
@@ -1461,12 +1548,12 @@ exports[`Thread should match thread snapshot 1`] = `
                 minY={0}
                 pathFill="#7A7A7A"
                 style={
-                  Array [
-                    Object {
+                  [
+                    {
                       "backgroundColor": "transparent",
                       "borderWidth": 0,
                     },
-                    Object {
+                    {
                       "flex": 0,
                       "height": 24,
                       "width": 24,
@@ -1477,14 +1564,26 @@ exports[`Thread should match thread snapshot 1`] = `
                 vbWidth={24}
                 width={24}
               >
-                <RNSVGGroup>
+                <RNSVGGroup
+                  fill={
+                    {
+                      "payload": 4278190080,
+                      "type": 0,
+                    }
+                  }
+                >
                   <RNSVGPath
                     clipRule={0}
                     d="M13.468 2.888a5.07 5.07 0 012.983.635 5.07 5.07 0 012.041 2.265c.45 1.01.546 2.254-.144 3.449l-4.5 7.794a3.232 3.232 0 01-1.427 1.294c-.757.342-1.696.367-2.671-.196-.975-.563-1.422-1.389-1.506-2.215a3.233 3.233 0 01.408-1.883l4-6.928a1 1 0 011.732 1l-4 6.928c-.087.15-.176.425-.15.682.02.196.105.447.516.684.41.237.671.185.85.105.236-.107.43-.32.516-.47l4.5-7.795c.31-.538.29-1.093.049-1.636a3.072 3.072 0 00-1.214-1.346 3.072 3.072 0 00-1.773-.378c-.591.062-1.082.322-1.392.86l-5 8.66c-.654 1.133-.286 3.3 1.964 4.598 2.25 1.3 4.31.535 4.964-.598l3.5-6.062a1 1 0 111.732 1l-3.5 6.062c-1.345 2.33-4.75 3.031-7.696 1.33-2.946-1.7-4.042-5-2.696-7.33l5-8.66c.69-1.195 1.815-1.733 2.914-1.85z"
-                    fill={4286216826}
+                    fill={
+                      {
+                        "payload": 4286216826,
+                        "type": 0,
+                      }
+                    }
                     fillRule={0}
                     propList={
-                      Array [
+                      [
                         "fill",
                         "fillRule",
                       ]
@@ -1495,12 +1594,24 @@ exports[`Thread should match thread snapshot 1`] = `
             </View>
           </View>
           <View
-            style={Object {}}
+            style={{}}
           >
             <View
               accessibilityState={
-                Object {
+                {
+                  "busy": undefined,
+                  "checked": undefined,
                   "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
                 }
               }
               accessible={true}
@@ -1516,8 +1627,8 @@ exports[`Thread should match thread snapshot 1`] = `
               onResponderTerminationRequest={[Function]}
               onStartShouldSetResponder={[Function]}
               style={
-                Array [
-                  Object {},
+                [
+                  {},
                 ]
               }
               testID="commands-button"
@@ -1533,12 +1644,12 @@ exports[`Thread should match thread snapshot 1`] = `
                 minY={0}
                 pathFill="#7A7A7A"
                 style={
-                  Array [
-                    Object {
+                  [
+                    {
                       "backgroundColor": "transparent",
                       "borderWidth": 0,
                     },
-                    Object {
+                    {
                       "flex": 0,
                       "height": 24,
                       "width": 24,
@@ -1549,14 +1660,26 @@ exports[`Thread should match thread snapshot 1`] = `
                 vbWidth={24}
                 width={24}
               >
-                <RNSVGGroup>
+                <RNSVGGroup
+                  fill={
+                    {
+                      "payload": 4278190080,
+                      "type": 0,
+                    }
+                  }
+                >
                   <RNSVGPath
                     clipRule={0}
                     d="M11.636 4H16l-2.91 5.818H16L10.546 20l1.09-7.273H8L11.636 4z"
-                    fill={4286216826}
+                    fill={
+                      {
+                        "payload": 4286216826,
+                        "type": 0,
+                      }
+                    }
                     fillRule={0}
                     propList={
-                      Array [
+                      [
                         "fill",
                         "fillRule",
                       ]
@@ -1569,31 +1692,31 @@ exports[`Thread should match thread snapshot 1`] = `
         </View>
         <View
           style={
-            Array [
-              Object {
+            [
+              {
                 "borderRadius": 20,
                 "borderWidth": 1,
                 "flex": 1,
               },
-              Object {
+              {
                 "borderColor": "#ECEBEB",
                 "paddingVertical": 12,
               },
-              Object {},
+              {},
               null,
             ]
           }
         >
           <View
             style={
-              Array [
-                Object {
+              [
+                {
                   "alignItems": "center",
                   "flexDirection": "row",
                   "paddingLeft": 16,
                   "paddingRight": 16,
                 },
-                Object {},
+                {},
               ]
             }
           >
@@ -1610,8 +1733,8 @@ exports[`Thread should match thread snapshot 1`] = `
               placeholder="Send a message"
               placeholderTextColor="#7A7A7A"
               style={
-                Array [
-                  Object {
+                [
+                  {
                     "flex": 1,
                     "fontSize": 14,
                     "includeFontPadding": false,
@@ -1619,12 +1742,12 @@ exports[`Thread should match thread snapshot 1`] = `
                     "paddingTop": 0,
                     "textAlignVertical": "center",
                   },
-                  Object {
+                  {
                     "color": "#000000",
                     "maxHeight": 85,
                     "textAlign": "left",
                   },
-                  Object {},
+                  {},
                 ]
               }
               testID="auto-complete-text-input"
@@ -1634,19 +1757,31 @@ exports[`Thread should match thread snapshot 1`] = `
         </View>
         <View
           style={
-            Array [
-              Object {
+            [
+              {
                 "paddingBottom": 10,
                 "paddingLeft": 10,
               },
-              Object {},
+              {},
             ]
           }
         >
           <View
             accessibilityState={
-              Object {
+              {
+                "busy": undefined,
+                "checked": undefined,
                 "disabled": true,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
               }
             }
             accessible={true}
@@ -1662,8 +1797,8 @@ exports[`Thread should match thread snapshot 1`] = `
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
             style={
-              Array [
-                Object {},
+              [
+                {},
               ]
             }
             testID="send-button"
@@ -1679,12 +1814,12 @@ exports[`Thread should match thread snapshot 1`] = `
               minY={0}
               pathFill="#DBDBDB"
               style={
-                Array [
-                  Object {
+                [
+                  {
                     "backgroundColor": "transparent",
                     "borderWidth": 0,
                   },
-                  Object {
+                  {
                     "flex": 0,
                     "height": 24,
                     "width": 24,
@@ -1695,14 +1830,26 @@ exports[`Thread should match thread snapshot 1`] = `
               vbWidth={24}
               width={24}
             >
-              <RNSVGGroup>
+              <RNSVGGroup
+                fill={
+                  {
+                    "payload": 4278190080,
+                    "type": 0,
+                  }
+                }
+              >
                 <RNSVGPath
                   clipRule={0}
                   d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12s4.48 10 10 10 10-4.48 10-10zM8 11h4V8l4 4-4 4v-3H8v-2z"
-                  fill={4292598747}
+                  fill={
+                    {
+                      "payload": 4292598747,
+                      "type": 0,
+                    }
+                  }
                   fillRule={0}
                   propList={
-                    Array [
+                    [
                       "fill",
                       "fillRule",
                     ]
@@ -1715,18 +1862,35 @@ exports[`Thread should match thread snapshot 1`] = `
       </View>
       <View
         style={
-          Array [
-            Object {
+          [
+            {
               "flexDirection": "row",
               "marginHorizontal": 2,
               "marginTop": 8,
             },
-            Object {},
+            {},
           ]
         }
         testID="show-thread-message-in-channel-button"
       >
         <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
           accessible={true}
           collapsable={false}
           focusable={true}
@@ -1738,25 +1902,25 @@ exports[`Thread should match thread snapshot 1`] = `
           onResponderTerminationRequest={[Function]}
           onStartShouldSetResponder={[Function]}
           style={
-            Object {
+            {
               "opacity": 1,
             }
           }
         >
           <View
             style={
-              Array [
-                Object {
+              [
+                {
                   "flexDirection": "row",
                 },
-                Object {},
+                {},
               ]
             }
           >
             <View
               style={
-                Array [
-                  Object {
+                [
+                  {
                     "alignItems": "center",
                     "borderRadius": 3,
                     "borderWidth": 2,
@@ -1764,7 +1928,7 @@ exports[`Thread should match thread snapshot 1`] = `
                     "justifyContent": "center",
                     "width": 16,
                   },
-                  Object {
+                  {
                     "borderColor": "#7A7A7A",
                   },
                 ]
@@ -1772,15 +1936,15 @@ exports[`Thread should match thread snapshot 1`] = `
             />
             <Text
               style={
-                Array [
-                  Object {
+                [
+                  {
                     "fontSize": 13,
                     "marginLeft": 12,
                   },
-                  Object {
+                  {
                     "color": "#7A7A7A",
                   },
-                  Object {},
+                  {},
                 ]
               }
             >

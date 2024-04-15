@@ -1,11 +1,11 @@
 import React, { PropsWithChildren } from 'react';
 import { act } from 'react-test-renderer';
 
-import { renderHook } from '@testing-library/react-hooks';
-
-import { waitFor } from '@testing-library/react-native';
+import { renderHook, waitFor } from '@testing-library/react-native';
 
 import { generateFileUploadPreview } from '../../../mock-builders/generator/attachment';
+import { generateMessage } from '../../../mock-builders/generator/message';
+import { generateUser } from '../../../mock-builders/generator/user';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import {
   InputMessageInputContextValue,
@@ -32,9 +32,12 @@ const Wrapper = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultS
   </MessageInputProvider>
 );
 
+const user1 = generateUser();
+const message = generateMessage({ user: user1 });
+const newMessage = generateMessage({ id: 'new-id' });
 describe("MessageInputContext's removeFile", () => {
   const initialProps = {
-    editing: true,
+    editing: message,
   };
 
   const file = generateFileUploadPreview({
@@ -61,7 +64,7 @@ describe("MessageInputContext's removeFile", () => {
         result.current.setNumberOfUploads(1);
       });
 
-      rerender({ editing: false });
+      rerender({ editing: newMessage });
 
       await waitFor(() => {
         expect(result.current.fileUploads.length).toBe(1);
@@ -71,7 +74,7 @@ describe("MessageInputContext's removeFile", () => {
         result.current.removeFile(fileId);
       });
 
-      rerender({ editing: true });
+      rerender({ editing: newMessage });
 
       await waitFor(() => {
         expect(result.current.fileUploads.length).toBe(expectedFileUploadsLength);

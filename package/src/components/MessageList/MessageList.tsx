@@ -1045,6 +1045,7 @@ const MessageListWithContext = <
     !hasMoved && selectedPicker && setHasMoved(true);
     onUserScrollEvent(event);
   };
+
   const onScrollEndDrag: ScrollViewProps['onScrollEndDrag'] = (event) => {
     hasMoved && selectedPicker && setHasMoved(false);
     onUserScrollEvent(event);

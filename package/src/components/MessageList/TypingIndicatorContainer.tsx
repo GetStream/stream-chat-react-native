@@ -51,12 +51,12 @@ const TypingIndicatorContainerWithContext = <
 
 export type TypingIndicatorContainerProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<TypingIndicatorContainerPropsWithContext<StreamChatGenerics>>;
+> = PropsWithChildren<Partial<TypingIndicatorContainerPropsWithContext<StreamChatGenerics>>>;
 
 export const TypingIndicatorContainer = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: PropsWithChildren<TypingIndicatorContainerProps<StreamChatGenerics>>,
+  props: TypingIndicatorContainerProps<StreamChatGenerics>,
 ) => {
   const { typing } = useTypingContext<StreamChatGenerics>();
   const { client } = useChatContext<StreamChatGenerics>();
