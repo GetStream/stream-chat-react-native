@@ -49,6 +49,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   container: {
+    borderRadius: 16,
     overflow: 'hidden',
     width: 270,
   },
@@ -63,9 +64,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 12,
     flexDirection: 'row',
-    height: 24,
-    justifyContent: 'center',
-    width: 68,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
   },
   giphyHeaderText: {
     fontSize: 16,
