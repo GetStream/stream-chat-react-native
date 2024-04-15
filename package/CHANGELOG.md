@@ -1,5 +1,14 @@
 # Change Log
 
+### [5.27.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.27.0...v5.27.1) (2024-04-15)
+
+
+### Bug Fixes
+
+* giphy border radius and color issue ([cfcb22e](https://github.com/GetStream/stream-chat-react-native/commit/cfcb22e4a1575020919f85c6a77c984a2dd7f5eb))
+* giphy border radius and color issue ([#2484](https://github.com/GetStream/stream-chat-react-native/issues/2484)) ([8814112](https://github.com/GetStream/stream-chat-react-native/commit/8814112496f21a09efb99bea4fb8ef355d727404))
+* messages not received when connection recovered and do not reload channel when sending message ([#2479](https://github.com/GetStream/stream-chat-react-native/issues/2479)) ([8dff165](https://github.com/GetStream/stream-chat-react-native/commit/8dff165ca21e134d07cf806c1b407546b701131d))
+
 ## [5.27.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.26.0...v5.27.0) (2024-04-03)
 
 
