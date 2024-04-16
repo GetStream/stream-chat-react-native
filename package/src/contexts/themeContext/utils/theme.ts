@@ -426,6 +426,8 @@ export type Theme = {
         onlyEmojiMarkdown: MarkdownStyle;
       };
       wrapper: ViewStyle;
+      receiverMessageBackgroundColor?: ColorValue;
+      senderMessageBackgroundColor?: ColorValue;
     };
     file: {
       container: ViewStyle;
