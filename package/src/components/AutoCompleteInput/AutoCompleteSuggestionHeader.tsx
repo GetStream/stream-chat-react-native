@@ -48,7 +48,7 @@ const AutoCompleteSuggestionHeaderWithContext = <
       <View style={[styles.container, container]}>
         <Lightning pathFill={accent_blue} />
         <Text style={[styles.title, { color: grey }, title]} testID='commands-header-title'>
-          {t('Instant Commands')}
+          {t<string>('Instant Commands')}
         </Text>
       </View>
     );
@@ -57,7 +57,7 @@ const AutoCompleteSuggestionHeaderWithContext = <
       <View style={[styles.container, container]}>
         <Smile pathFill={accent_blue} />
         <Text style={[styles.title, { color: grey }, title]} testID='emojis-header-title'>
-          {t('Emoji matching') + ' "' + queryText + '"'}
+          {t<string>('Emoji matching') + ' "' + queryText + '"'}
         </Text>
       </View>
     );

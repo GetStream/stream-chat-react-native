@@ -27,7 +27,7 @@ type LoadingErrorWrapperProps = {
   onPress?: () => void;
 };
 
-const LoadingErrorWrapper: React.FC<LoadingErrorWrapperProps> = (props) => {
+const LoadingErrorWrapper = (props: React.PropsWithChildren<LoadingErrorWrapperProps>) => {
   const { children, onPress, text } = props;
 
   const {
@@ -54,7 +54,7 @@ export type LoadingErrorProps = {
   retry?: () => void;
 };
 
-export const LoadingErrorIndicator: React.FC<LoadingErrorProps> = (props) => {
+export const LoadingErrorIndicator = (props: LoadingErrorProps) => {
   const { listType, retry = () => null } = props;
 
   const {

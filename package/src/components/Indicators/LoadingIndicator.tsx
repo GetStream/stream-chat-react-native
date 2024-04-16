@@ -18,17 +18,19 @@ const styles = StyleSheet.create({
   },
 });
 
-const LoadingIndicatorWrapper: React.FC<{ text: string }> = ({ text }) => {
+type LoadingIndicatorWrapperProps = { text: string };
+
+const LoadingIndicatorWrapper = ({ text }: LoadingIndicatorWrapperProps) => {
   const {
     theme: {
-      colors: { black },
+      colors: { black, white_snow },
       loadingIndicator: { container, loadingText },
     },
   } = useTheme();
 
   return (
-    <View style={[styles.container, container]}>
-      <Spinner />
+    <View style={[styles.container, { backgroundColor: white_snow }, container]}>
+      <Spinner height={20} width={20} />
       <Text style={[styles.loadingText, { color: black }, loadingText]} testID='loading'>
         {text}
       </Text>
@@ -44,7 +46,7 @@ export type LoadingProps = {
 /**
  * UI Component for LoadingIndicator
  */
-export const LoadingIndicator: React.FC<LoadingProps> = (props) => {
+export const LoadingIndicator = (props: LoadingProps) => {
   const { listType, loadingText } = props;
 
   const { t } = useTranslationContext();

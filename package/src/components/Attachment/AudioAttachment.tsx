@@ -68,6 +68,10 @@ export type AudioAttachmentProps = {
   testID?: string;
 };
 
+/**
+ * AudioAttachment
+ * UI Component to preview the audio files
+ */
 export const AudioAttachment = (props: AudioAttachmentProps) => {
   const soundRef = React.useRef<SoundReturnType | null>(null);
   const { item, onLoad, onPlayPause, onProgress } = props;
@@ -313,4 +317,4 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   );
 };
 
-AudioAttachment.displayName = 'AudioAttachment{messageInput{autoAttachment}}';
+AudioAttachment.displayName = 'AudioAttachment{messageInput{audioAttachment}}';

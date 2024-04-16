@@ -1,5 +1,5 @@
-import type { ImageStyle, TextStyle, ViewStyle } from 'react-native';
-import type { CircleProps, Color, StopProps } from 'react-native-svg';
+import type { ColorValue, ImageStyle, TextStyle, ViewStyle } from 'react-native';
+import type { CircleProps, StopProps } from 'react-native-svg';
 
 import type { IconProps } from '../../../icons/utils/base';
 
@@ -127,7 +127,7 @@ export type Theme = {
     gradientStart: StopProps;
     gradientStop: StopProps;
     height: number;
-    maskFillColor?: Color;
+    maskFillColor?: ColorValue;
   };
   channelPreview: {
     checkAllIcon: IconProps;
@@ -268,7 +268,7 @@ export type Theme = {
     };
     imageUploadPreview: {
       dismiss: ViewStyle;
-      dismissIconColor: Color;
+      dismissIconColor: ColorValue;
       flatList: ViewStyle;
       itemContainer: ViewStyle;
       upload: ImageStyle;
@@ -354,7 +354,7 @@ export type Theme = {
       unreadCountNotificationContainer: ViewStyle;
       unreadCountNotificationText: TextStyle;
       wrapper: ViewStyle;
-      chevronColor?: Color;
+      chevronColor?: ColorValue;
     };
     typingIndicatorContainer: ViewStyle;
   };
@@ -427,6 +427,8 @@ export type Theme = {
         onlyEmojiMarkdown: MarkdownStyle;
       };
       wrapper: ViewStyle;
+      receiverMessageBackgroundColor?: ColorValue;
+      senderMessageBackgroundColor?: ColorValue;
     };
     file: {
       container: ViewStyle;
@@ -479,7 +481,7 @@ export type Theme = {
     };
     reactionList: {
       container: ViewStyle;
-      iconFillColor: Color;
+      iconFillColor: ColorValue;
       middleIcon: ViewStyle;
       radius: number;
       reactionBubble: ViewStyle;
@@ -530,12 +532,14 @@ export type Theme = {
       radius: number;
       reactionBubble: ViewStyle;
       reactionBubbleBackground: ViewStyle;
+      reactionBubbleBorderRadius: number;
       title: TextStyle;
     };
     reactionsList: {
       radius: number;
       reaction: ViewStyle;
       reactionList: ViewStyle;
+      reactionListBorderRadius: number;
       reactionSize: number;
     };
   };
@@ -559,6 +563,7 @@ export type Theme = {
       text: TextStyle;
       backgroundGradientStart?: string;
       backgroundGradientStop?: string;
+      threadHeight?: number;
     };
   };
   typingIndicator: {
@@ -1079,12 +1084,14 @@ export const defaultTheme: Theme = {
       radius: 2,
       reactionBubble: {},
       reactionBubbleBackground: {},
+      reactionBubbleBorderRadius: 24,
       title: {},
     },
     reactionsList: {
       radius: 2.5,
       reaction: {},
       reactionList: {},
+      reactionListBorderRadius: 24,
       reactionSize: 24,
     },
   },

@@ -35,14 +35,14 @@ const MessageActionListWithContext = <
 ) => {
   const {
     alignment,
-    messageActions,
-    showScreen,
-    MessageActionListItem = DefaultMessageActionListItem,
-    isMyMessage,
-    message,
-    messageReactions,
     error,
+    isMyMessage,
     isThreadMessage,
+    message,
+    MessageActionListItem = DefaultMessageActionListItem,
+    messageActions,
+    messageReactions,
+    showScreen,
   } = props;
 
   const messageActionProps = {

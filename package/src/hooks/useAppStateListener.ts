@@ -28,7 +28,11 @@ export const useAppStateListener = (onForeground?: () => void, onBackground?: ()
       if (subscription?.remove) {
         subscription.remove();
       } else {
-        AppState.removeEventListener('change', handleAppStateChange);
+        // @ts-ignore
+        if (AppState.removeEventListener) {
+          // @ts-ignore
+          AppState.removeEventListener('change', handleAppStateChange);
+        }
       }
     };
   }, []);

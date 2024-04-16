@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react-native';
 
 import type { DefaultGenerics, StreamChat } from 'stream-chat';
 

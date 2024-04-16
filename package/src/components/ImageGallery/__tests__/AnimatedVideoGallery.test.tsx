@@ -4,7 +4,7 @@ import type { SharedValue } from 'react-native-reanimated';
 
 import { act } from 'react-test-renderer';
 
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
@@ -29,7 +29,7 @@ const getComponent = (props: Partial<AnimatedGalleryVideoType>) => (
 
 describe('ImageGallery', () => {
   it('render image gallery component with video rendered', () => {
-    const { queryAllByA11yLabel } = render(
+    render(
       getComponent({
         offsetScale: { value: 1 } as SharedValue<number>,
         scale: { value: 1 } as SharedValue<number>,
@@ -40,11 +40,11 @@ describe('ImageGallery', () => {
         translateX: { value: 1 } as SharedValue<number>,
       }),
     );
-    expect(queryAllByA11yLabel('Image Gallery Video')).toHaveLength(1);
+    expect(screen.queryAllByLabelText('Image Gallery Video')).toHaveLength(1);
   });
 
   it('render empty view when shouldRender is false', () => {
-    const { getByA11yLabel } = render(
+    render(
       getComponent({
         offsetScale: { value: 1 } as SharedValue<number>,
         scale: { value: 1 } as SharedValue<number>,
@@ -53,14 +53,14 @@ describe('ImageGallery', () => {
       }),
     );
 
-    expect(getByA11yLabel('Empty View Image Gallery')).not.toBeUndefined();
+    expect(screen.getByLabelText('Empty View Image Gallery')).not.toBeUndefined();
   });
 
   it('trigger onEnd and onProgress events handlers of Video component', () => {
     const handleEndMock = jest.fn();
     const handleProgressMock = jest.fn();
 
-    const { getByTestId } = render(
+    render(
       getComponent({
         handleEnd: handleEndMock,
         handleProgress: handleProgressMock,
@@ -74,7 +74,7 @@ describe('ImageGallery', () => {
       }),
     );
 
-    const videoComponent = getByTestId('video-player');
+    const videoComponent = screen.getByTestId('video-player');
 
     act(() => {
       fireEvent(videoComponent, 'onEnd');
@@ -86,7 +86,7 @@ describe('ImageGallery', () => {
   });
 
   it('trigger onLoadStart event handler of Video component', () => {
-    const { getByTestId, queryByA11yLabel } = render(
+    render(
       getComponent({
         offsetScale: { value: 1 } as SharedValue<number>,
         scale: { value: 1 } as SharedValue<number>,
@@ -98,8 +98,8 @@ describe('ImageGallery', () => {
       }),
     );
 
-    const videoComponent = getByTestId('video-player');
-    const spinnerComponent = queryByA11yLabel('Spinner');
+    const videoComponent = screen.getByTestId('video-player');
+    const spinnerComponent = screen.queryByLabelText('Spinner');
 
     act(() => {
       fireEvent(videoComponent, 'onLoadStart');
@@ -110,7 +110,7 @@ describe('ImageGallery', () => {
   it('trigger onLoad event handler of Video component', () => {
     const handleLoadMock = jest.fn();
 
-    const { getByTestId, queryByA11yLabel } = render(
+    render(
       getComponent({
         handleLoad: handleLoadMock,
         offsetScale: { value: 1 } as SharedValue<number>,
@@ -123,8 +123,8 @@ describe('ImageGallery', () => {
       }),
     );
 
-    const videoComponent = getByTestId('video-player');
-    const spinnerComponent = queryByA11yLabel('Spinner');
+    const videoComponent = screen.getByTestId('video-player');
+    const spinnerComponent = screen.queryByLabelText('Spinner');
 
     act(() => {
       fireEvent(videoComponent, 'onLoad', { duration: 10 });
@@ -135,7 +135,7 @@ describe('ImageGallery', () => {
   });
 
   it('trigger onBuffer event handler of Video component', () => {
-    const { getByTestId, queryByA11yLabel } = render(
+    render(
       getComponent({
         offsetScale: { value: 1 } as SharedValue<number>,
         scale: { value: 1 } as SharedValue<number>,
@@ -147,8 +147,8 @@ describe('ImageGallery', () => {
       }),
     );
 
-    const videoComponent = getByTestId('video-player');
-    const spinnerComponent = queryByA11yLabel('Spinner');
+    const videoComponent = screen.getByTestId('video-player');
+    const spinnerComponent = screen.queryByLabelText('Spinner');
 
     act(() => {
       fireEvent(videoComponent, 'onBuffer', {
@@ -173,7 +173,7 @@ describe('ImageGallery', () => {
     const handleProgressMock = jest.fn();
     const handleEndMock = jest.fn();
 
-    const { getByTestId, queryByA11yLabel } = render(
+    render(
       getComponent({
         handleEnd: handleEndMock,
         handleLoad: handleLoadMock,
@@ -188,8 +188,8 @@ describe('ImageGallery', () => {
       }),
     );
 
-    const videoComponent = getByTestId('video-player');
-    const spinnerComponent = queryByA11yLabel('Spinner');
+    const videoComponent = screen.getByTestId('video-player');
+    const spinnerComponent = screen.queryByLabelText('Spinner');
 
     act(() => {
       fireEvent(videoComponent, 'onPlaybackStatusUpdate', {

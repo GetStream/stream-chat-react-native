@@ -1,9 +1,11 @@
 import React from 'react';
 
-import { Color, G, Path, Svg } from 'react-native-svg';
+import { G, Path, Svg } from 'react-native-svg';
+
+import { ColorValue } from 'react-native/types';
 
 type Props = {
-  color: Color;
+  color: ColorValue;
   size: number;
 };
 

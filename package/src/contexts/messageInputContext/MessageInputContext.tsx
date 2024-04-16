@@ -175,7 +175,9 @@ export type LocalMessageInputContext<
   resetInput: (pendingAttachments?: Attachment<StreamChatGenerics>[]) => void;
   selectedPicker: string | undefined;
   sending: React.MutableRefObject<boolean>;
-  sendMessage: (customMessageData?: Partial<Message<StreamChatGenerics>>) => Promise<void>;
+  sendMessage: (params?: {
+    customMessageData?: Partial<Message<StreamChatGenerics>>;
+  }) => Promise<void>;
   sendMessageAsync: (id: string) => void;
   sendThreadMessageInChannel: boolean;
   setAsyncIds: React.Dispatch<React.SetStateAction<string[]>>;
@@ -784,8 +786,12 @@ export const MessageInputProvider = <
   };
 
   // TODO: Figure out why this is async, as it doesn't await any promise.
-  // eslint-disable-next-line require-await
-  const sendMessage = async (customMessageData?: Partial<Message<StreamChatGenerics>>) => {
+  const sendMessage = async ({
+    customMessageData,
+  }: {
+    customMessageData?: Partial<Message<StreamChatGenerics>>;
+    // eslint-disable-next-line require-await
+  } = {}) => {
     if (sending.current) {
       return;
     }
@@ -1341,7 +1347,11 @@ export const useMessageInputContext = <
 };
 
 /**
- * Typescript currently does not support partial inference so if MessageInputContext
+ * @deprecated
+ *
+ * This will be removed in the next major version.
+ *
+ * Typescript currently does not support partial inference so if ChatContext
  * typing is desired while using the HOC withMessageInputContext the Props for the
  * wrapped component must be provided as the first generic.
  */
@@ -1350,7 +1360,7 @@ export const withMessageInputContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof MessageInputContextValue<StreamChatGenerics>>> => {
+): React.ComponentType<Omit<P, keyof MessageInputContextValue<StreamChatGenerics>>> => {
   const WithMessageInputContextComponent = (
     props: Omit<P, keyof MessageInputContextValue<StreamChatGenerics>>,
   ) => {

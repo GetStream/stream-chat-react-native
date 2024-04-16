@@ -36,7 +36,7 @@ export type AttachmentPickerErrorProps = {
   attachmentPickerErrorText?: string;
 };
 
-export const AttachmentPickerError: React.FC<AttachmentPickerErrorProps> = (props) => {
+export const AttachmentPickerError = (props: AttachmentPickerErrorProps) => {
   const {
     attachmentPickerBottomSheetHeight,
     attachmentPickerErrorButtonText,
@@ -78,14 +78,14 @@ export const AttachmentPickerError: React.FC<AttachmentPickerErrorProps> = (prop
       <AttachmentPickerErrorImage />
       <Text style={[styles.errorText, { color: grey }, errorText]}>
         {attachmentPickerErrorText ||
-          t('Please enable access to your photos and videos so you can share them.')}
+          t<string>('Please enable access to your photos and videos so you can share them.')}
       </Text>
       <Text
         onPress={openSettings}
         style={[styles.errorButtonText, { color: accent_blue }, errorButtonText]}
         suppressHighlighting
       >
-        {attachmentPickerErrorButtonText || t('Allow access to your Gallery')}
+        {attachmentPickerErrorButtonText || t<string>('Allow access to your Gallery')}
       </Text>
     </View>
   );

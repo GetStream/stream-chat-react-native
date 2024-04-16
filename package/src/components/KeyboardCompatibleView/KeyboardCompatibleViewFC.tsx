@@ -7,11 +7,11 @@ import {
   KeyboardAvoidingViewProps,
   KeyboardEvent,
   KeyboardEventListener,
+  KeyboardMetrics,
   LayoutAnimation,
   LayoutChangeEvent,
   LayoutRectangle,
   Platform,
-  ScreenRect,
   StyleSheet,
   View,
 } from 'react-native';
@@ -24,7 +24,7 @@ import { KeyboardProvider } from '../../contexts/keyboardContext/KeyboardContext
  *
  * Following piece of code has been mostly copied from KeyboardAvoidingView component, with few additional tweaks.
  */
-export const KeyboardCompatibleView: React.FC<KeyboardAvoidingViewProps> = ({
+export const KeyboardCompatibleView = ({
   behavior = Platform.OS === 'ios' ? 'padding' : 'position',
   children,
   contentContainerStyle,
@@ -32,7 +32,7 @@ export const KeyboardCompatibleView: React.FC<KeyboardAvoidingViewProps> = ({
   keyboardVerticalOffset = Platform.OS === 'ios' ? 86.5 : -300,
   style,
   ...props
-}) => {
+}: KeyboardAvoidingViewProps) => {
   const frame = useRef<LayoutRectangle>();
   const initialFrameHeight = useRef(0);
   const keyboardEvent = useRef<KeyboardEvent>();
@@ -92,11 +92,20 @@ export const KeyboardCompatibleView: React.FC<KeyboardAvoidingViewProps> = ({
       });
     };
 
-    AppState.addEventListener('change', handleAppStateChange);
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
     setKeyboardListeners();
 
     return () => {
-      AppState.removeEventListener('change', handleAppStateChange);
+      // Following if-else condition to avoid deprecated warning coming RN 0.65
+      if (subscription?.remove) {
+        subscription?.remove();
+      }
+      // @ts-ignore
+      else if (AppState.removeEventListener) {
+        // @ts-ignore
+        AppState.removeEventListener('change', handleAppStateChange);
+      }
+
       unsetKeyboardListeners();
     };
   }, []);
@@ -130,7 +139,7 @@ export const KeyboardCompatibleView: React.FC<KeyboardAvoidingViewProps> = ({
     updateBottomIfNecessary();
   };
 
-  const relativeKeyboardHeight = (keyboardFrame: ScreenRect) => {
+  const relativeKeyboardHeight = (keyboardFrame: KeyboardMetrics) => {
     if (!frame.current || !keyboardFrame) {
       return 0;
     }

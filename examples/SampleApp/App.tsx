@@ -37,9 +37,6 @@ import { UserSelectorScreen } from './src/screens/UserSelectorScreen';
 
 import type { StreamChat } from 'stream-chat';
 
-LogBox.ignoreLogs(["Seems like you're using an old API"]);
-LogBox.ignoreLogs(['Each child in a list should have a unique']);
-
 if (__DEV__) {
   DevSettings.addMenuItem('Reset local DB (offline storage)', () => {
     QuickSqliteClient.resetDB();
@@ -56,7 +53,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { navigateToChannel, RootNavigationRef } from './src/utils/RootNavigation';
 import FastImage from 'react-native-fast-image';
 
-LogBox.ignoreAllLogs(true);
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']);
 console.assert = () => null;
 

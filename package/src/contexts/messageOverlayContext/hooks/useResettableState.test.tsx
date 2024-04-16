@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Button, Text } from 'react-native';
 
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
 import { useResettableState } from './useResettableState';
 
@@ -35,13 +35,14 @@ const waitForOptions = {
 };
 
 test('useResettableState can be reset to its initial state', async () => {
-  const { getByTestId } = render(<TestComponent />);
+  const user = userEvent.setup();
+  render(<TestComponent />);
 
-  await waitFor(() => expect(getByTestId('value').children[0]).toBe('0'), waitForOptions);
+  await waitFor(() => expect(screen.getByTestId('value').children[0]).toBe('0'), waitForOptions);
 
-  fireEvent.press(getByTestId('increment'));
-  await waitFor(() => expect(getByTestId('value').children[0]).toBe('1'), waitForOptions);
+  user.press(screen.getByTestId('increment'));
+  await waitFor(() => expect(screen.getByTestId('value').children[0]).toBe('1'), waitForOptions);
 
-  fireEvent.press(getByTestId('reset'));
-  await waitFor(() => expect(getByTestId('value').children[0]).toBe('0'), waitForOptions);
+  user.press(screen.getByTestId('reset'));
+  await waitFor(() => expect(screen.getByTestId('value').children[0]).toBe('0'), waitForOptions);
 });

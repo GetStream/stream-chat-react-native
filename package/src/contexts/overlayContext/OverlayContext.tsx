@@ -91,11 +91,20 @@ export const useOverlayContext = () => {
   return contextValue;
 };
 
+/**
+ * @deprecated
+ *
+ * This will be removed in the next major version.
+ *
+ * Typescript currently does not support partial inference so if ChatContext
+ * typing is desired while using the HOC withOverlayContext the Props for the
+ * wrapped component must be provided as the first generic.
+ */
 export const withOverlayContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<StreamChatGenerics>,
-): React.FC<Omit<StreamChatGenerics, keyof OverlayContextValue>> => {
+): React.ComponentType<Omit<StreamChatGenerics, keyof OverlayContextValue>> => {
   const WithOverlayContextComponent = (
     props: Omit<StreamChatGenerics, keyof OverlayContextValue>,
   ) => {

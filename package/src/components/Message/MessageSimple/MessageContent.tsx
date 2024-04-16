@@ -1,5 +1,11 @@
 import React from 'react';
-import { LayoutChangeEvent, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  AnimatableNumericValue,
+  LayoutChangeEvent,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import { MessageTextContainer } from './MessageTextContainer';
 
@@ -158,8 +164,10 @@ const MessageContentWithContext = <
           },
           containerInner,
           errorContainer,
+          receiverMessageBackgroundColor,
           replyBorder,
           replyContainer,
+          senderMessageBackgroundColor,
           wrapper,
         },
         reactionList: { radius, reactionSize },
@@ -219,7 +227,9 @@ const MessageContentWithContext = <
     );
   }
 
-  let backgroundColor = grey_gainsboro;
+  const isMessageReceivedOrErrorType = !isMyMessage || error;
+
+  let backgroundColor = senderMessageBackgroundColor || grey_gainsboro;
   if (onlyEmojis && !message.quoted_message) {
     backgroundColor = transparent;
   } else if (otherAttachments.length) {
@@ -228,13 +238,11 @@ const MessageContentWithContext = <
     } else {
       backgroundColor = blue_alice;
     }
-  } else if (alignment === 'left' || error) {
-    backgroundColor = white;
+  } else if (isMessageReceivedOrErrorType) {
+    backgroundColor = receiverMessageBackgroundColor || white;
   }
 
-  const repliesCurveColor = isMyMessage && !error ? backgroundColor : grey_whisper;
-
-  const isBorderColor = isMyMessage && !error;
+  const repliesCurveColor = !isMessageReceivedOrErrorType ? backgroundColor : grey_gainsboro;
 
   const getBorderRadius = () => {
     // enum('top', 'middle', 'bottom', 'single')
@@ -246,10 +254,10 @@ const MessageContentWithContext = <
 
     if (isBottomOrSingle && (!hasThreadReplies || threadList)) {
       // add relevant sharp corner
-      if (alignment === 'left') {
-        borderBottomLeftRadius = borderRadiusS;
-      } else {
+      if (isMyMessage) {
         borderBottomRightRadius = borderRadiusS;
+      } else {
+        borderBottomLeftRadius = borderRadiusS;
       }
     }
 
@@ -260,7 +268,7 @@ const MessageContentWithContext = <
   };
 
   const getBorderRadiusFromTheme = () => {
-    const bordersFromTheme: Record<string, number | undefined> = {
+    const bordersFromTheme: Record<string, AnimatableNumericValue | undefined> = {
       borderBottomLeftRadius,
       borderBottomRightRadius,
       borderRadius,
@@ -313,7 +321,7 @@ const MessageContentWithContext = <
        * Otherwise background is transparent, so border radius is not really visible.
        */
       style={[
-        alignment === 'left' ? styles.leftAlignItems : styles.rightAlignItems,
+        isMyMessage ? styles.rightAlignItems : styles.leftAlignItems,
         { paddingTop: hasReactions ? reactionSize / 2 + radius : 2 },
         error ? errorContainer : {},
         container,
@@ -323,7 +331,7 @@ const MessageContentWithContext = <
         <MessageHeader
           alignment={alignment}
           formattedDate={getDateText(formatDate)}
-          isDeleted={!!isMessageTypeDeleted}
+          isDeleted={isMessageTypeDeleted}
           lastGroupMessage={lastGroupMessage}
           members={members}
           message={message}
@@ -352,7 +360,7 @@ const MessageContentWithContext = <
             styles.containerInner,
             {
               backgroundColor,
-              borderColor: isBorderColor ? backgroundColor : grey_whisper,
+              borderColor: isMessageReceivedOrErrorType ? grey_whisper : backgroundColor,
               ...getBorderRadius(),
               ...getBorderRadiusFromTheme(),
             },

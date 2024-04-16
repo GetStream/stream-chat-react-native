@@ -28,7 +28,7 @@ type AttachmentImageProps = Omit<AttachmentPickerItemType, 'setSelectedFiles' | 
 
 type AttachmentVideoProps = Omit<AttachmentPickerItemType, 'setSelectedImages' | 'selectedImages'>;
 
-const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
+const AttachmentVideo = (props: AttachmentVideoProps) => {
   const {
     asset,
     ImageOverlaySelectedComponent,
@@ -136,7 +136,7 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
   );
 };
 
-const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
+const AttachmentImage = (props: AttachmentImageProps) => {
   const {
     asset,
     ImageOverlaySelectedComponent,

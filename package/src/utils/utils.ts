@@ -29,7 +29,7 @@ import type { TableRowJoinedUser } from '../store/types';
 import type { DefaultStreamChatGenerics, ValueOf } from '../types/types';
 
 export type ReactionData = {
-  Icon: React.FC<IconProps>;
+  Icon: React.ComponentType<IconProps>;
   type: string;
 };
 
@@ -62,7 +62,7 @@ export const MessageStatusTypes = {
   SENDING: 'sending',
 };
 
-export type FileStateValue = typeof FileState[keyof typeof FileState];
+export type FileStateValue = (typeof FileState)[keyof typeof FileState];
 
 type Progress = ValueOf<typeof ProgressIndicatorTypes>;
 type IndicatorStatesMap = Record<ValueOf<typeof FileState>, Progress | null>;

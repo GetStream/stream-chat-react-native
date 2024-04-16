@@ -114,11 +114,12 @@ export const useCreateMessageInputContext = <
   UploadProgressIndicator,
 }: MessageInputContextValue<StreamChatGenerics> &
   Pick<ThreadContextValue<StreamChatGenerics>, 'thread'>) => {
-  const editingdep = typeof editing === 'boolean' ? editing : editing?.id;
+  const editingdep = editing?.id;
   const fileUploadsValue = fileUploads
     .map(({ duration, paused, progress, state }) => `${state},${paused},${progress},${duration}`)
     .join();
   const imageUploadsValue = imageUploads.map(({ state }) => state).join();
+  const asyncUploadsValue = Object.keys(asyncUploads).join();
   const mentionedUsersLength = mentionedUsers.length;
   const quotedMessageId = quotedMessage
     ? typeof quotedMessage === 'boolean'
@@ -126,6 +127,7 @@ export const useCreateMessageInputContext = <
       : quotedMessage.id
     : '';
   const threadId = thread?.id;
+  const asyncIdsLength = asyncIds.length;
 
   const messageInputContext: MessageInputContextValue<StreamChatGenerics> = useMemo(
     () => ({
@@ -234,6 +236,8 @@ export const useCreateMessageInputContext = <
       UploadProgressIndicator,
     }),
     [
+      asyncIdsLength,
+      asyncUploadsValue,
       cooldownEndsAt,
       disabled,
       editingdep,

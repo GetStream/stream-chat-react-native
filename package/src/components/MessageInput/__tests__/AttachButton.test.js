@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { AttachButton } from '../AttachButton';
@@ -14,19 +14,20 @@ describe('AttachButton', () => {
 
   it('should render an enabled AttachButton', async () => {
     const handleOnPress = jest.fn();
+    const user = userEvent.setup();
 
-    const { getByTestId, queryByTestId, toJSON } = render(getComponent({ handleOnPress }));
+    render(getComponent({ handleOnPress }));
 
     await waitFor(() => {
-      expect(queryByTestId('attach-button')).toBeTruthy();
+      expect(screen.queryByTestId('attach-button')).toBeTruthy();
       expect(handleOnPress).toHaveBeenCalledTimes(0);
     });
 
-    fireEvent.press(getByTestId('attach-button'));
+    user.press(screen.getByTestId('attach-button'));
 
     await waitFor(() => expect(handleOnPress).toHaveBeenCalledTimes(1));
 
-    const snapshot = toJSON();
+    const snapshot = screen.toJSON();
 
     await waitFor(() => {
       expect(snapshot).toMatchSnapshot();
@@ -35,21 +36,20 @@ describe('AttachButton', () => {
 
   it('should render a disabled AttachButton', async () => {
     const handleOnPress = jest.fn();
+    const user = userEvent.setup();
 
-    const { getByTestId, queryByTestId, toJSON } = render(
-      getComponent({ disabled: true, handleOnPress }),
-    );
+    render(getComponent({ disabled: true, handleOnPress }));
 
     await waitFor(() => {
-      expect(queryByTestId('attach-button')).toBeTruthy();
+      expect(screen.queryByTestId('attach-button')).toBeTruthy();
       expect(handleOnPress).toHaveBeenCalledTimes(0);
     });
 
-    fireEvent.press(getByTestId('attach-button'));
+    user.press(screen.getByTestId('attach-button'));
 
     await waitFor(() => expect(handleOnPress).toHaveBeenCalledTimes(0));
 
-    const snapshot = toJSON();
+    const snapshot = screen.toJSON();
 
     await waitFor(() => {
       expect(snapshot).toMatchSnapshot();

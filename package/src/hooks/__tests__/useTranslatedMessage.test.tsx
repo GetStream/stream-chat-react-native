@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text } from 'react-native';
 
-import { render, waitFor } from '@testing-library/react-native';
+import { render, screen, waitFor } from '@testing-library/react-native';
 
 import type { MessageResponse } from 'stream-chat';
 
@@ -33,14 +33,14 @@ describe('useTranslatedMessage', () => {
       text: 'Hello world!',
     } as MessageResponse;
 
-    const { getByText } = render(
+    render(
       <TranslationProvider value={{ userLanguage: 'es' } as TranslationContextValue}>
         <TestComponent message={message} />
       </TranslationProvider>,
     );
 
     await waitFor(() => {
-      expect(getByText('Hello world!')).toBeTruthy();
+      expect(screen.getByText('Hello world!')).toBeTruthy();
     });
   });
 
@@ -52,14 +52,14 @@ describe('useTranslatedMessage', () => {
       text: 'Hello world!',
     } as MessageResponse;
 
-    const { getByText } = render(
+    render(
       <TranslationProvider value={{ userLanguage: 'no' } as TranslationContextValue}>
         <TestComponent message={message} />
       </TranslationProvider>,
     );
 
     await waitFor(() => {
-      expect(getByText('Hallo verden!')).toBeTruthy();
+      expect(screen.getByText('Hallo verden!')).toBeTruthy();
     });
   });
 
@@ -68,10 +68,10 @@ describe('useTranslatedMessage', () => {
       text: 'Hello world!',
     } as MessageResponse;
 
-    const { getByText } = render(<TestComponent message={message} />);
+    render(<TestComponent message={message} />);
 
     await waitFor(() => {
-      expect(getByText('Hello world!')).toBeTruthy();
+      expect(screen.getByText('Hello world!')).toBeTruthy();
     });
   });
 
@@ -91,7 +91,7 @@ describe('useTranslatedMessage', () => {
      * In practice, the userLanguage will be set with the setData call and not directly
      * in the provider.
      * */
-    const { getByText } = render(
+    render(
       <MessageOverlayProvider
         value={{ userLanguage: 'nl' } as unknown as MessageOverlayContextValue}
       >
@@ -100,7 +100,7 @@ describe('useTranslatedMessage', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Hallo wereld!')).toBeTruthy();
+      expect(screen.getByText('Hallo wereld!')).toBeTruthy();
     });
   });
 });

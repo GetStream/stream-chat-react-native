@@ -51,7 +51,7 @@ export const InputEditingStateHeaderWithContext = <
     <View style={[styles.editingBoxHeader, editingBoxHeader]}>
       <Edit pathFill={grey_gainsboro} />
       <Text style={[styles.editingBoxHeaderTitle, { color: black }, editingBoxHeaderTitle]}>
-        {t('Editing Message')}
+        {t<string>('Editing Message')}
       </Text>
       <TouchableOpacity
         disabled={disabled}

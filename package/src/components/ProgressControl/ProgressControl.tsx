@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Dimensions, StyleSheet, View, ViewStyle } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
@@ -16,7 +16,7 @@ export type ProgressControlProps = {
   filledColor: string;
   progress: number;
   testID: string;
-  width: ViewStyle['width'];
+  width: number | string;
   onPlayPause?: (status?: boolean) => void;
   onProgressDrag?: (progress: number) => void;
 };
@@ -39,14 +39,14 @@ const ProgressControlThumb = () => {
   );
 };
 
-export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
-  (props) => {
+export const ProgressControl = React.memo(
+  (props: ProgressControlProps) => {
     const { duration, filledColor, onPlayPause, onProgressDrag, progress, testID, width } = props;
     const { width: windowWidth } = Dimensions.get('screen');
     const widthInNumbers = width
-      ? typeof width === 'number'
-        ? width
-        : (windowWidth * Number(width?.substring(0, width.length - 1))) / 100
+      ? typeof width === 'string'
+        ? (windowWidth * Number(width?.substring(0, width.length - 1))) / 100
+        : width
       : 0;
 
     const {
@@ -146,3 +146,4 @@ const styles = StyleSheet.create({
     width: 5,
   },
 });
+ProgressControl.displayName = 'ProgressControl';

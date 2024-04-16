@@ -12,8 +12,8 @@ type MoveParameters<
 export const moveChannelUp = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
-  cid,
   channels = [],
+  cid,
 }: MoveParameters<StreamChatGenerics>) => {
   // get channel from channels
   const index = channels.findIndex((c) => c.cid === cid);

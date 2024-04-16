@@ -34,6 +34,7 @@
     "experiments": {
       "turboModules": true
     },
-    "scheme": "ExpoMessaging"
+    "scheme": "ExpoMessaging",
+    "plugins": ["expo-router"]
   }
 }

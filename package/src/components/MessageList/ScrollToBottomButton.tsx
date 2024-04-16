@@ -55,7 +55,7 @@ export type ScrollToBottomButtonProps = {
   unreadCount?: number;
 };
 
-export const ScrollToBottomButton: React.FC<ScrollToBottomButtonProps> = (props) => {
+export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
   const { onPress, showNotification = true, unreadCount } = props;
 
   const {

@@ -10,7 +10,7 @@ export type GalleryImageWithContextProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = GalleryImageProps & Pick<ChatContextValue<StreamChatGenerics>, 'ImageComponent'>;
 
-export const GalleryImageWithContext: React.FC<GalleryImageWithContextProps> = (props) => {
+export const GalleryImageWithContext = (props: GalleryImageWithContextProps) => {
   const { ImageComponent = Image, uri, ...rest } = props;
 
   // Caching image components such as FastImage will not work with local images.

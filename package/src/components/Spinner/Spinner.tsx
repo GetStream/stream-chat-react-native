@@ -26,7 +26,7 @@ export type SpinnerProps = {
   width?: number;
 };
 
-export const Spinner: React.FC<SpinnerProps> = (props) => {
+export const Spinner = (props: SpinnerProps) => {
   const rotation = useSharedValue(0);
   const { height, style, width } = props;
 

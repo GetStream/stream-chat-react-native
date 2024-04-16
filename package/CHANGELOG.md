@@ -1,5 +1,39 @@
 # Change Log
 
+### [5.27.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.27.0...v5.27.1) (2024-04-15)
+
+
+### Bug Fixes
+
+* giphy border radius and color issue ([cfcb22e](https://github.com/GetStream/stream-chat-react-native/commit/cfcb22e4a1575020919f85c6a77c984a2dd7f5eb))
+* giphy border radius and color issue ([#2484](https://github.com/GetStream/stream-chat-react-native/issues/2484)) ([8814112](https://github.com/GetStream/stream-chat-react-native/commit/8814112496f21a09efb99bea4fb8ef355d727404))
+* messages not received when connection recovered and do not reload channel when sending message ([#2479](https://github.com/GetStream/stream-chat-react-native/issues/2479)) ([8dff165](https://github.com/GetStream/stream-chat-react-native/commit/8dff165ca21e134d07cf806c1b407546b701131d))
+
+## [5.27.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.26.0...v5.27.0) (2024-04-03)
+
+
+### Features
+
+* add customizability for attachment picker ios select more photos component ([#2458](https://github.com/GetStream/stream-chat-react-native/issues/2458)) ([bacabd9](https://github.com/GetStream/stream-chat-react-native/commit/bacabd96482d40b1847bb57464b593a4c3798ed1))
+* expo 50 version upgrade in sample app ([#2463](https://github.com/GetStream/stream-chat-react-native/issues/2463)) ([4f39e6a](https://github.com/GetStream/stream-chat-react-native/commit/4f39e6a9149db2ac1991501aa34b2daed4f22f34))
+
+
+### Bug Fixes
+
+* **offline-support:** foreign constraint failure ([#2472](https://github.com/GetStream/stream-chat-react-native/issues/2472)) ([0119754](https://github.com/GetStream/stream-chat-react-native/commit/0119754be82657109c47d24b299b8db331df5a12))
+* add channel prop to ChannelPreviewStatus and fix docs props information ([#2455](https://github.com/GetStream/stream-chat-react-native/issues/2455)) ([2ce2548](https://github.com/GetStream/stream-chat-react-native/commit/2ce2548679c304cffe26f662ac7b2a73a9fcef93))
+* add missing support for scroll to messageid inside thread ([0b53ffb](https://github.com/GetStream/stream-chat-react-native/commit/0b53ffbdd401c1d48979460b6bbb251d4972f75f))
+* attachment picker ios select more photos component theme ([22c57e3](https://github.com/GetStream/stream-chat-react-native/commit/22c57e328c69102c220ea432fa6e9cb47406c276))
+* crashes due to negative bottom sheet snap points ([#2473](https://github.com/GetStream/stream-chat-react-native/issues/2473)) ([746280a](https://github.com/GetStream/stream-chat-react-native/commit/746280ae6488e189291f8bae5ffeb5929de3f100))
+* deprecate global config from usage and add resizableCDNHosts to resizableCDNHosts ([#2457](https://github.com/GetStream/stream-chat-react-native/issues/2457)) ([47d503d](https://github.com/GetStream/stream-chat-react-native/commit/47d503d8e82bad5b4692ab2a2eda16883972b133))
+* image gallery image opening issue ([dbd3805](https://github.com/GetStream/stream-chat-react-native/commit/dbd3805832c6dee6d5114edb19b9560bb795bebd))
+* offline support saving cyclic structure ([#2469](https://github.com/GetStream/stream-chat-react-native/issues/2469)) ([792b4c9](https://github.com/GetStream/stream-chat-react-native/commit/792b4c9e09138cafdcb564649274b24d21d5a7f3))
+* playing video in image gallery even when thumb_url not present ([#2466](https://github.com/GetStream/stream-chat-react-native/issues/2466)) ([14fb017](https://github.com/GetStream/stream-chat-react-native/commit/14fb01787ee82e7db33056efe96ca586bad6ef5a))
+* scroll to bottom issue when the message list is empty ([#2471](https://github.com/GetStream/stream-chat-react-native/issues/2471)) ([a05573f](https://github.com/GetStream/stream-chat-react-native/commit/a05573fcdb024c270c06c1223125d90f53859817))
+* theme for MessageList and SendMessageDisallowedIndicator ([#2470](https://github.com/GetStream/stream-chat-react-native/issues/2470)) ([a2119af](https://github.com/GetStream/stream-chat-react-native/commit/a2119afa86980ab7db03981394427783d47ecd46))
+* **offline-support:** when user is not connected don't render null ([#2462](https://github.com/GetStream/stream-chat-react-native/issues/2462)) ([1934634](https://github.com/GetStream/stream-chat-react-native/commit/19346344e40867d4b8f06843ac930c2e3fd30ce7))
+* undefined local states for reaction count ([#2460](https://github.com/GetStream/stream-chat-react-native/issues/2460)) ([e2c94d8](https://github.com/GetStream/stream-chat-react-native/commit/e2c94d80ce1d71addcccc0043681053591349ddf))
+
 ## [5.26.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.25.0...v5.26.0) (2024-03-08)
 
 

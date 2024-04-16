@@ -22,8 +22,8 @@ type Props = {
   style?: StyleProp<ImageStyle>;
 };
 
-export const AnimatedGalleryImage: React.FC<Props> = React.memo(
-  (props) => {
+export const AnimatedGalleryImage = React.memo(
+  (props: Props) => {
     const {
       accessibilityLabel,
       index,

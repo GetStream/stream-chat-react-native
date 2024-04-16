@@ -2,6 +2,23 @@
 
 exports[`ScrollToBottomButton should render the message notification and match snapshot 1`] = `
 <View
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={true}
@@ -13,7 +30,7 @@ exports[`ScrollToBottomButton should render the message notification and match s
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
   style={
-    Object {
+    {
       "bottom": 20,
       "opacity": 1,
       "position": "absolute",
@@ -24,26 +41,26 @@ exports[`ScrollToBottomButton should render the message notification and match s
 >
   <View
     style={
-      Array [
-        Object {
+      [
+        {
           "alignItems": "center",
           "height": 50,
           "justifyContent": "flex-end",
         },
-        Object {},
+        {},
       ]
     }
   >
     <View
       style={
-        Array [
-          Object {
+        [
+          {
             "alignItems": "center",
             "borderRadius": 20,
             "elevation": 5,
             "height": 40,
             "justifyContent": "center",
-            "shadowOffset": Object {
+            "shadowOffset": {
               "height": 2,
               "width": 0,
             },
@@ -51,11 +68,11 @@ exports[`ScrollToBottomButton should render the message notification and match s
             "shadowRadius": 4,
             "width": 40,
           },
-          Object {
+          {
             "backgroundColor": "#FFFFFF",
             "shadowColor": "#000000",
           },
-          Object {},
+          {},
         ]
       }
     >
@@ -70,12 +87,12 @@ exports[`ScrollToBottomButton should render the message notification and match s
         minY={0}
         pathFill="#000000"
         style={
-          Array [
-            Object {
+          [
+            {
               "backgroundColor": "transparent",
               "borderWidth": 0,
             },
-            Object {
+            {
               "flex": 0,
               "height": 24,
               "width": 24,
@@ -86,14 +103,26 @@ exports[`ScrollToBottomButton should render the message notification and match s
         vbWidth={24}
         width={24}
       >
-        <RNSVGGroup>
+        <RNSVGGroup
+          fill={
+            {
+              "payload": 4278190080,
+              "type": 0,
+            }
+          }
+        >
           <RNSVGPath
             clipRule={0}
             d="M5.305 8.306a1.046 1.046 0 000 1.478l5.904 5.91c.228.228.536.33.834.302.27 0 .539-.101.744-.306l5.907-5.907a1.044 1.044 0 10-1.477-1.477l-5.22 5.22-5.216-5.22a1.043 1.043 0 00-1.476 0z"
-            fill={4278190080}
+            fill={
+              {
+                "payload": 4278190080,
+                "type": 0,
+              }
+            }
             fillRule={0}
             propList={
-              Array [
+              [
                 "fill",
                 "fillRule",
               ]

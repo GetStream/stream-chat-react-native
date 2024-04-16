@@ -240,9 +240,14 @@ export const useChannelsContext = <
 
   return contextValue;
 };
+
 /**
+ * @deprecated
+ *
+ * This will be removed in the next major version.
+ *
  * Typescript currently does not support partial inference so if ChatContext
- * typing is desired while using the HOC withChannelContext the Props for the
+ * typing is desired while using the HOC withChannelsContext the Props for the
  * wrapped component must be provided as the first generic.
  */
 export const withChannelsContext = <
@@ -250,7 +255,7 @@ export const withChannelsContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ChannelsContextValue<StreamChatGenerics>>> => {
+): React.ComponentType<Omit<P, keyof ChannelsContextValue<StreamChatGenerics>>> => {
   const WithChannelsContextComponent = (
     props: Omit<P, keyof ChannelsContextValue<StreamChatGenerics>>,
   ) => {

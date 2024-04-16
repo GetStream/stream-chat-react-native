@@ -18,7 +18,7 @@ type Props = {
   style?: StyleProp<ViewStyle>;
 };
 
-export const LoadingDot: React.FC<Props> = (props) => {
+export const LoadingDot = (props: Props) => {
   const { diameter = 4, duration = 1500, offset = 0, style } = props;
   const halfDuration = duration / 2;
   const startingOffset = halfDuration - offset;

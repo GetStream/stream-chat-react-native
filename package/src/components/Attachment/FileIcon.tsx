@@ -361,7 +361,7 @@ const videoFileTypes = [
   'video/x-flv',
 ];
 
-const mimeTypeToIconMap: Record<string, React.FC<IconProps>> = {
+const mimeTypeToIconMap: Record<string, React.ComponentType<IconProps>> = {
   'application/pdf': PDF, // .pdf
   'application/rtf': RTF, // .rtf
   'application/vnd.rar': RAR, // .rar
@@ -416,7 +416,7 @@ for (const type of videoFileTypes) {
   mimeTypeToIconMap[type] = Video;
 }
 
-function mimeTypeToIcon(mimeType?: string): React.FC<IconProps> {
+function mimeTypeToIcon(mimeType?: string): React.ComponentType<IconProps> {
   if (!mimeType) return GenericFile;
 
   const Icon = mimeTypeToIconMap[mimeType];
@@ -430,7 +430,7 @@ export type FileIconProps = {
   size?: number;
 };
 
-export const FileIcon: React.FC<FileIconProps> = ({ mimeType, size }) => {
+export const FileIcon = ({ mimeType, size }: FileIconProps) => {
   const {
     theme: {
       messageSimple: {

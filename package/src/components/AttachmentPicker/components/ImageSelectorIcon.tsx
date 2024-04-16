@@ -7,7 +7,7 @@ type Props = {
   selectedPicker?: 'images';
 };
 
-export const ImageSelectorIcon: React.FC<Props> = ({ selectedPicker }) => {
+export const ImageSelectorIcon = ({ selectedPicker }: Props) => {
   const {
     theme: {
       colors: { accent_blue, grey },

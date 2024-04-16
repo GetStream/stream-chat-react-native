@@ -487,6 +487,8 @@ const ChannelWithContext = <
     hasImagePicker = true,
     hideDateSeparators = false,
     hideStickyDateHeader = false,
+    ImageLoadingFailedIndicator = ImageLoadingFailedIndicatorDefault,
+    ImageLoadingIndicator = ImageLoadingIndicatorDefault,
     ImageUploadPreview = ImageUploadPreviewDefault,
     initialScrollToFirstUnreadMessage = false,
     initialValue,
@@ -506,15 +508,13 @@ const ChannelWithContext = <
     LoadingIndicator = LoadingIndicatorDefault,
     loadingMore: loadingMoreProp,
     loadingMoreRecent: loadingMoreRecentProp,
-    ImageLoadingFailedIndicator = ImageLoadingFailedIndicatorDefault,
-    ImageLoadingIndicator = ImageLoadingIndicatorDefault,
     markdownRules,
     maxMessageLength: maxMessageLengthProp,
     maxNumberOfFiles = 10,
     maxTimeBetweenGroupedMessages,
+    members,
     mentionAllAppUsersEnabled = false,
     mentionAllAppUsersQuery,
-    members,
     Message = MessageDefault,
     messageActions,
     MessageAvatar = MessageAvatarDefault,
@@ -537,23 +537,23 @@ const ChannelWithContext = <
     MessageText,
     MoreOptionsButton = MoreOptionsButtonDefault,
     myMessageTheme,
-    newMessageStateUpdateThrottleInterval = defaultThrottleInterval,
     NetworkDownIndicator = NetworkDownIndicatorDefault,
+    newMessageStateUpdateThrottleInterval = defaultThrottleInterval,
     numberOfLines = 5,
     onChangeText,
     onLongPressMessage,
-    overrideOwnCapabilities,
     onPressInMessage,
     onPressMessage,
     OverlayReactionList = OverlayReactionListDefault,
+    overrideOwnCapabilities,
     ReactionList = ReactionListDefault,
     read,
     Reply = ReplyDefault,
     ScrollToBottomButton = ScrollToBottomButtonDefault,
     selectReaction,
     SendButton = SendButtonDefault,
-    SendMessageDisallowedIndicator = SendMessageDisallowedIndicatorDefault,
     sendImageAsync = false,
+    SendMessageDisallowedIndicator = SendMessageDisallowedIndicatorDefault,
     setInputRef,
     setMembers,
     setMessages,
@@ -596,8 +596,9 @@ const ChannelWithContext = <
   const [loadingMore, setLoadingMore] = useState(false);
 
   const [loadingMoreRecent, setLoadingMoreRecent] = useState(false);
-  const [quotedMessage, setQuotedMessage] =
-    useState<boolean | MessageType<StreamChatGenerics>>(false);
+  const [quotedMessage, setQuotedMessage] = useState<boolean | MessageType<StreamChatGenerics>>(
+    false,
+  );
   const [thread, setThread] = useState<ThreadContextValue<StreamChatGenerics>['thread']>(
     threadProps || null,
   );
@@ -668,6 +669,7 @@ const ChannelWithContext = <
   }, [channelId, messageId]);
 
   const threadPropsExists = !!threadProps;
+
   useEffect(() => {
     if (threadProps && shouldSyncChannel) {
       setThread(threadProps);
@@ -1204,7 +1206,6 @@ const ChannelWithContext = <
 
   const resyncChannel = async () => {
     if (!channel || syncingChannelRef.current) return;
-    if (!channel.initialized) return;
     hasOverlappingRecentMessagesRef.current = false;
     clearInterval(mergeSetsIntervalRef.current);
     syncingChannelRef.current = true;
@@ -1717,10 +1718,6 @@ const ChannelWithContext = <
     });
 
     mergeOverlappingMessageSetsRef.current();
-
-    if (!channel?.state.isUpToDate) {
-      await reloadChannel();
-    }
 
     updateMessage(messagePreview, {
       commands: [],
@@ -2384,7 +2381,7 @@ const ChannelWithContext = <
   if (!channel?.cid || !channel.watch) {
     return (
       <Text style={[styles.selectChannel, { color: black }, selectChannel]} testID='no-channel'>
-        {t('Please select a channel first')}
+        {t<string>('Please select a channel first')}
       </Text>
     );
   }

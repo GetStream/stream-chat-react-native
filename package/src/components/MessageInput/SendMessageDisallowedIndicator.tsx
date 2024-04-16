@@ -21,7 +21,7 @@ export const SendMessageDisallowedIndicator = () => {
   const { t } = useTranslationContext();
   const {
     theme: {
-      colors: { border, grey_dark },
+      colors: { border, grey_dark, white },
       messageInput: {
         sendMessageDisallowedIndicator: { container, text },
       },
@@ -33,6 +33,7 @@ export const SendMessageDisallowedIndicator = () => {
       style={[
         styles.container,
         {
+          backgroundColor: white,
           borderTopColor: border,
           height: 50,
         },
@@ -41,7 +42,7 @@ export const SendMessageDisallowedIndicator = () => {
       testID='send-message-disallowed-indicator'
     >
       <Text style={[styles.text, { color: grey_dark }, text]}>
-        {t("You can't send messages in this channel")}
+        {t<string>("You can't send messages in this channel")}
       </Text>
     </View>
   );

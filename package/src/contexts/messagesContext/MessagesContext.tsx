@@ -44,6 +44,7 @@ import type { InlineDateSeparatorProps } from '../../components/MessageList/Inli
 import type { MessageListProps } from '../../components/MessageList/MessageList';
 import type { MessageSystemProps } from '../../components/MessageList/MessageSystem';
 import type { ScrollToBottomButtonProps } from '../../components/MessageList/ScrollToBottomButton';
+import { TypingIndicatorContainerProps } from '../../components/MessageList/TypingIndicatorContainer';
 import type { getGroupStyles } from '../../components/MessageList/utils/getGroupStyles';
 import type { MessageActionType } from '../../components/MessageOverlay/MessageActionListItem';
 import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
@@ -251,7 +252,7 @@ export type MessagesContextValue<
    * UI component for TypingIndicatorContainer
    * Defaults to: [TypingIndicatorContainer](https://getstream.io/chat/docs/sdk/reactnative/contexts/messages-context/#typingindicatorcontainer)
    */
-  TypingIndicatorContainer: React.ComponentType;
+  TypingIndicatorContainer: React.ComponentType<TypingIndicatorContainerProps>;
   updateMessage: (
     updatedMessage: MessageResponse<StreamChatGenerics>,
     extraState?: {
@@ -533,7 +534,11 @@ export const useMessagesContext = <
 };
 
 /**
- * Typescript currently does not support partial inference so if MessagesContext
+ * @deprecated
+ *
+ * This will be removed in the next major version.
+ *
+ * Typescript currently does not support partial inference so if ChatContext
  * typing is desired while using the HOC withMessagesContext the Props for the
  * wrapped component must be provided as the first generic.
  */
@@ -542,7 +547,7 @@ export const withMessagesContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof MessagesContextValue<StreamChatGenerics>>> => {
+): React.ComponentType<Omit<P, keyof MessagesContextValue<StreamChatGenerics>>> => {
   const WithMessagesContextComponent = (
     props: Omit<P, keyof MessagesContextValue<StreamChatGenerics>>,
   ) => {

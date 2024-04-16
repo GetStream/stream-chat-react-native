@@ -9,7 +9,7 @@ export type OverlayReactionsAvatarProps = {
   reaction: Reaction;
 } & Partial<Pick<AvatarProps, 'size'>>;
 
-export const OverlayReactionsAvatar: React.FC<OverlayReactionsAvatarProps> = (props) => {
+export const OverlayReactionsAvatar = (props: OverlayReactionsAvatarProps) => {
   const {
     reaction: { image, name },
     size,

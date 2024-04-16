@@ -134,8 +134,8 @@ const ReplyWithContext = <
   props: ReplyPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
-    FileAttachmentIcon,
     attachmentSize = 40,
+    FileAttachmentIcon,
     MessageAvatar,
     quotedMessage,
     styles: stylesProp = {},
@@ -222,15 +222,15 @@ const ReplyWithContext = <
               source={{
                 uri: getResizedImageUrl({
                   height:
-                    stylesProp.imageAttachment?.height ||
-                    imageAttachment?.height ||
+                    (stylesProp.imageAttachment?.height as number) ||
+                    (imageAttachment?.height as number) ||
                     styles.imageAttachment.height,
                   url: (lastAttachment.image_url ||
                     lastAttachment.thumb_url ||
                     lastAttachment.og_scrape_url) as string,
                   width:
-                    stylesProp.imageAttachment?.width ||
-                    imageAttachment?.width ||
+                    (stylesProp.imageAttachment?.width as number) ||
+                    (imageAttachment?.width as number) ||
                     styles.imageAttachment.width,
                 }),
               }}
