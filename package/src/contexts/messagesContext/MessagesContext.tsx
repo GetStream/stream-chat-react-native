@@ -2,11 +2,6 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import type { TouchableOpacityProps } from 'react-native';
 
-import type { ImageLoadingFailedIndicatorProps } from 'src/components/Attachment/ImageLoadingFailedIndicator';
-import type { ImageLoadingIndicatorProps } from 'src/components/Attachment/ImageLoadingIndicator';
-
-import type { MessagePinnedHeaderProps } from 'src/components/Message/MessageSimple/MessagePinnedHeader';
-
 import type { Attachment, ChannelState, MessageResponse } from 'stream-chat';
 
 import type { AttachmentProps } from '../../components/Attachment/Attachment';
@@ -18,6 +13,8 @@ import type { FileAttachmentGroupProps } from '../../components/Attachment/FileA
 import type { FileIconProps } from '../../components/Attachment/FileIcon';
 import type { GalleryProps } from '../../components/Attachment/Gallery';
 import type { GiphyProps } from '../../components/Attachment/Giphy';
+import type { ImageLoadingFailedIndicatorProps } from '../../components/Attachment/ImageLoadingFailedIndicator';
+import type { ImageLoadingIndicatorProps } from '../../components/Attachment/ImageLoadingIndicator';
 import type { VideoThumbnailProps } from '../../components/Attachment/VideoThumbnail';
 import type {
   MessageProps,
@@ -29,7 +26,7 @@ import type { MessageContentProps } from '../../components/Message/MessageSimple
 import type { MessageDeletedProps } from '../../components/Message/MessageSimple/MessageDeleted';
 import type { MessageErrorProps } from '../../components/Message/MessageSimple/MessageError';
 import type { MessageFooterProps } from '../../components/Message/MessageSimple/MessageFooter';
-
+import type { MessagePinnedHeaderProps } from '../../components/Message/MessageSimple/MessagePinnedHeader';
 import type { MessageRepliesProps } from '../../components/Message/MessageSimple/MessageReplies';
 import type { MessageRepliesAvatarsProps } from '../../components/Message/MessageSimple/MessageRepliesAvatars';
 import type { MessageSimpleProps } from '../../components/Message/MessageSimple/MessageSimple';
