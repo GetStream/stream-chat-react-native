@@ -6,7 +6,7 @@ export const Sound = {
   initializeSound: null,
   // eslint-disable-next-line react/display-name
   Player: AudioVideoPlayer
-    ? ({ onBuffer, onEnd, onLoad, onProgress, paused, soundRef, style, uri }) => (
+    ? ({ onBuffer, onEnd, onLoad, onProgress, paused, rate, soundRef, style, uri }) => (
         <AudioVideoPlayer
           audioOnly={true}
           onBuffer={onBuffer}
@@ -17,6 +17,7 @@ export const Sound = {
           onLoad={onLoad}
           onProgress={onProgress}
           paused={paused}
+          rate={rate}
           ref={soundRef}
           source={{
             uri,

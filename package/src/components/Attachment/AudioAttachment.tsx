@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
-import { I18nManager, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
 import { useTheme } from '../../contexts';
-import { Pause, Play } from '../../icons';
+import { Audio, Pause, Play } from '../../icons';
 import {
   PlaybackStatus,
   Sound,
@@ -19,52 +19,12 @@ import { WaveProgressBar } from '../ProgressControl/WaveProgressBar';
 
 dayjs.extend(duration);
 
-const styles = StyleSheet.create({
-  fileContentContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 8,
-  },
-  filenameText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    paddingBottom: 16,
-    paddingLeft: 8,
-  },
-  fileTextContainer: {
-    justifyContent: 'space-around',
-  },
-  progressControlView: {},
-  progressDurationText: {
-    fontSize: 12,
-    paddingLeft: 10,
-    paddingRight: 8,
-  },
-  roundedView: {
-    alignItems: 'center',
-    alignSelf: 'center',
-    borderRadius: 50,
-    display: 'flex',
-    elevation: 4,
-    height: 36,
-    justifyContent: 'center',
-    shadowOffset: {
-      height: 2,
-      width: 0,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    width: 36,
-  },
-});
-
 export type AudioAttachmentProps = {
   item: Omit<FileUpload, 'state'>;
   onLoad: (index: string, duration: number) => void;
   onPlayPause: (index: string, pausedStatus?: boolean) => void;
   onProgress: (index: string, currentTime?: number, hasEnd?: boolean) => void;
+  showSpeedSettings?: boolean;
   testID?: string;
 };
 
@@ -73,8 +33,9 @@ export type AudioAttachmentProps = {
  * UI Component to preview the audio files
  */
 export const AudioAttachment = (props: AudioAttachmentProps) => {
+  const [currentSpeed, setCurrentSpeed] = useState<number>(1.0);
   const soundRef = React.useRef<SoundReturnType | null>(null);
-  const { item, onLoad, onPlayPause, onProgress } = props;
+  const { item, onLoad, onPlayPause, onProgress, showSpeedSettings = false } = props;
 
   /** This is for Native CLI Apps */
   const handleLoad = (payload: VideoPayloadData) => {
@@ -200,16 +161,42 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     }
   }, [item.paused]);
 
+  const onSpeedChangeHandler = async () => {
+    if (currentSpeed === 2.0) {
+      setCurrentSpeed(1.0);
+      if (soundRef.current && soundRef.current.setRateAsync) {
+        await soundRef.current.setRateAsync(1.0);
+      }
+    } else {
+      if (currentSpeed === 1.0) {
+        setCurrentSpeed(1.5);
+        if (soundRef.current && soundRef.current.setRateAsync) {
+          await soundRef.current.setRateAsync(1.5);
+        }
+      } else if (currentSpeed === 1.5) {
+        setCurrentSpeed(2.0);
+        if (soundRef.current && soundRef.current.setRateAsync) {
+          await soundRef.current.setRateAsync(2.0);
+        }
+      }
+    }
+  };
+
   const {
     theme: {
+      audioAttachment: {
+        container,
+        leftContainer,
+        playPauseButton,
+        progressControlContainer,
+        progressDurationText,
+        rightContainer,
+        speedChangeButton,
+        speedChangeButtonText,
+      },
       colors: { accent_blue, black, grey_dark, static_black, static_white },
       messageInput: {
-        fileUploadPreview: {
-          audioAttachment: { progressControlView, progressDurationText, roundedView },
-          fileContentContainer,
-          filenameText,
-          fileTextContainer,
-        },
+        fileUploadPreview: { filenameText },
       },
     },
   } = useTheme();
@@ -225,14 +212,14 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   const lastIndexOfDot = item.file.name.lastIndexOf('.');
 
   return (
-    <View style={[styles.fileContentContainer, fileContentContainer]}>
-      <TouchableOpacity
+    <View style={[styles.container, container]}>
+      <Pressable
         accessibilityLabel='Play Pause Button'
         onPress={() => handlePlayPause()}
         style={[
-          styles.roundedView,
-          roundedView,
+          styles.playPauseButton,
           { backgroundColor: static_white, shadowColor: black },
+          playPauseButton,
         ]}
       >
         {item.paused ? (
@@ -240,8 +227,8 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
         ) : (
           <Pause fill={static_black} height={32} width={32} />
         )}
-      </TouchableOpacity>
-      <View style={[styles.fileTextContainer, fileTextContainer]}>
+      </Pressable>
+      <View style={[styles.leftContainer, leftContainer]}>
         <Text
           accessibilityLabel='File Name'
           numberOfLines={1}
@@ -263,13 +250,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             ? item.file.name
             : item.file.name.slice(0, 12) + '...' + item.file.name.slice(lastIndexOfDot)}
         </Text>
-        <View
-          style={{
-            alignItems: 'center',
-            display: 'flex',
-            flexDirection: 'row',
-          }}
-        >
+        <View style={styles.audioInfo}>
           {/* <ExpoSoundPlayer filePaused={!!item.paused} soundRef={soundRef} /> */}
           {Sound.Player && (
             <Sound.Player
@@ -277,6 +258,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
               onLoad={handleLoad}
               onProgress={handleProgress}
               paused={item.paused as boolean}
+              rate={currentSpeed}
               soundRef={soundRef}
               testID='sound-player'
               uri={item.file.uri}
@@ -285,7 +267,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
           <Text style={[styles.progressDurationText, { color: grey_dark }, progressDurationText]}>
             {progressDuration}
           </Text>
-          <View style={[styles.progressControlView, progressControlView]}>
+          <View style={[styles.progressControlContainer, progressControlContainer]}>
             {item.file.waveform_data ? (
               <WaveProgressBar
                 amplitudesCount={30}
@@ -313,8 +295,97 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
           </View>
         </View>
       </View>
+      {showSpeedSettings && (
+        <View style={[styles.rightContainer, rightContainer]}>
+          {item.progress === 0 || item.progress === 1 ? (
+            <Audio fill={'#ffffff'} />
+          ) : (
+            <Pressable
+              onPress={onSpeedChangeHandler}
+              style={[
+                styles.speedChangeButton,
+                { backgroundColor: static_white, shadowColor: black },
+                speedChangeButton,
+              ]}
+            >
+              <Text
+                style={[styles.speedChangeButtonText, speedChangeButtonText]}
+              >{`x${currentSpeed}`}</Text>
+            </Pressable>
+          )}
+        </View>
+      )}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  audioInfo: {
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+  },
+
+  container: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+  },
+  filenameText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    paddingBottom: 8,
+    paddingLeft: 8,
+  },
+  leftContainer: {
+    justifyContent: 'space-around',
+  },
+  playPauseButton: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    borderRadius: 50,
+    display: 'flex',
+    elevation: 4,
+    justifyContent: 'center',
+    paddingVertical: 2,
+    shadowOffset: {
+      height: 2,
+      width: 0,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    width: 36,
+  },
+  progressControlContainer: {},
+  progressDurationText: {
+    fontSize: 12,
+    paddingLeft: 10,
+    paddingRight: 8,
+  },
+  rightContainer: {
+    marginLeft: 10,
+  },
+  speedChangeButton: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    borderRadius: 50,
+    elevation: 4,
+    justifyContent: 'center',
+    paddingVertical: 5,
+    shadowOffset: {
+      height: 2,
+      width: 0,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    width: 36,
+  },
+  speedChangeButtonText: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+});
 
 AudioAttachment.displayName = 'AudioAttachment{messageInput{audioAttachment}}';

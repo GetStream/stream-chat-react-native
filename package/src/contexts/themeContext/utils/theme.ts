@@ -96,6 +96,16 @@ export type Theme = {
     container: ViewStyle;
     icon: ViewStyle;
   };
+  audioAttachment: {
+    container: ViewStyle;
+    leftContainer: ViewStyle;
+    playPauseButton: ViewStyle;
+    progressControlContainer: ViewStyle;
+    progressDurationText: TextStyle;
+    rightContainer: ViewStyle;
+    speedChangeButton: ViewStyle;
+    speedChangeButtonText: TextStyle;
+  };
   avatar: {
     BASE_AVATAR_SIZE: number;
     container: ViewStyle;
@@ -247,11 +257,6 @@ export type Theme = {
       editingBoxHeaderTitle: TextStyle;
     };
     fileUploadPreview: {
-      audioAttachment: {
-        progressControlView: ViewStyle;
-        progressDurationText: TextStyle;
-        roundedView: ViewStyle;
-      };
       audioAttachmentFileContainer: ViewStyle;
       dismiss: ViewStyle;
       fileContainer: ViewStyle;
@@ -591,6 +596,16 @@ export const defaultTheme: Theme = {
     container: {},
     icon: {},
   },
+  audioAttachment: {
+    container: {},
+    leftContainer: {},
+    playPauseButton: {},
+    progressControlContainer: {},
+    progressDurationText: {},
+    rightContainer: {},
+    speedChangeButton: {},
+    speedChangeButtonText: {},
+  },
   avatar: {
     BASE_AVATAR_SIZE: 32,
     container: {},
@@ -761,11 +776,6 @@ export const defaultTheme: Theme = {
       editingBoxHeaderTitle: {},
     },
     fileUploadPreview: {
-      audioAttachment: {
-        progressControlView: {},
-        progressDurationText: {},
-        roundedView: {},
-      },
       audioAttachmentFileContainer: {},
       dismiss: {},
       fileContainer: {},

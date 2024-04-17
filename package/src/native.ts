@@ -160,12 +160,14 @@ export type SoundReturnType = {
   pauseAsync?: () => void;
   play?: () => void;
   playAsync?: () => void;
+  rate?: number;
   replayAsync?: () => void;
   resizeMode?: string;
   resume?: () => void;
   seek?: (progress: number) => void;
   setPositionAsync?: (millis: number) => void;
   setProgressUpdateIntervalAsync?: (progressUpdateIntervalMillis: number) => void;
+  setRateAsync?: (rate: number) => void;
   soundRef?: React.RefObject<SoundReturnType>;
   stopAsync?: () => void;
   style?: StyleProp<ViewStyle>;

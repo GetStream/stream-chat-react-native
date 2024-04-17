@@ -166,6 +166,7 @@ const FileAttachmentGroupWithContext = <
                 onLoad={onLoad}
                 onPlayPause={onPlayPause}
                 onProgress={onProgress}
+                showSpeedSettings={true}
                 testID='audio-attachment-preview'
               />
             </View>
