@@ -18,6 +18,13 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     flexDirection: 'row',
   },
+  lastMessageContainer: {
+    marginBottom: 12,
+  },
+  messageGroupedSingleOrBottomContainer: {
+    marginBottom: 8,
+  },
+  messageGroupedTopContainer: {},
 });
 
 export type MessageSimplePropsWithContext<
@@ -32,7 +39,6 @@ export type MessageSimplePropsWithContext<
     | 'myMessageTheme'
     | 'MessageAvatar'
     | 'MessageContent'
-    | 'MessagePinnedHeader'
     | 'ReactionList'
   >;
 
@@ -50,13 +56,17 @@ const MessageSimpleWithContext = <
     message,
     MessageAvatar,
     MessageContent,
-    MessagePinnedHeader,
     ReactionList,
   } = props;
 
   const {
     theme: {
-      messageSimple: { container },
+      messageSimple: {
+        container,
+        lastMessageContainer,
+        messageGroupedSingleOrBottomContainer,
+        messageGroupedTopContainer,
+      },
     },
   } = useTheme();
 
@@ -65,23 +75,30 @@ const MessageSimpleWithContext = <
   const isVeryLastMessage =
     channel?.state.messages[channel?.state.messages.length - 1]?.id === message.id;
 
-  const hasMarginBottom = groupStyles.includes('single') || groupStyles.includes('bottom');
+  const messageGroupedSingleOrBottom =
+    groupStyles.includes('single') || groupStyles.includes('bottom');
 
   const showReactions = hasReactions && ReactionList;
 
+  const lastMessageInMessageListStyles = [styles.lastMessageContainer, lastMessageContainer];
+  const messageGroupedSingleOrBottomStyles = [
+    styles.messageGroupedSingleOrBottomContainer,
+    messageGroupedSingleOrBottomContainer,
+  ];
+  const messageGroupedTopStyles = [styles.messageGroupedTopContainer, messageGroupedTopContainer];
+
   return (
     <>
-      {message.pinned && <MessagePinnedHeader />}
       <View
         style={[
           styles.container,
+          messageGroupedSingleOrBottom
+            ? isVeryLastMessage && enableMessageGroupingByUser
+              ? lastMessageInMessageListStyles
+              : messageGroupedSingleOrBottomStyles
+            : messageGroupedTopStyles,
           {
             justifyContent: alignment === 'left' ? 'flex-start' : 'flex-end',
-            marginBottom: hasMarginBottom
-              ? isVeryLastMessage && enableMessageGroupingByUser
-                ? 30
-                : 8
-              : 0,
             marginTop: showReactions ? 2 : 0,
           },
           container,
@@ -136,8 +153,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     isPrevMessageTypeDeleted === isNextMessageTypeDeleted &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
-    prevMessage.text === nextMessage.text &&
-    prevMessage.pinned === nextMessage.pinned;
+    prevMessage.text === nextMessage.text;
   if (!messageEqual) return false;
 
   const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';
@@ -208,7 +224,6 @@ export const MessageSimple = <
     enableMessageGroupingByUser,
     MessageAvatar,
     MessageContent,
-    MessagePinnedHeader,
     myMessageTheme,
     ReactionList,
   } = useMessagesContext<StreamChatGenerics>();
@@ -225,7 +240,6 @@ export const MessageSimple = <
         message,
         MessageAvatar,
         MessageContent,
-        MessagePinnedHeader,
         myMessageTheme,
         ReactionList,
       }}
