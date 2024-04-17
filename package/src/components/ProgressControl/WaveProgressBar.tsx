@@ -169,3 +169,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
 });
+
+WaveProgressBar.displayName = 'WaveProgressBar';
