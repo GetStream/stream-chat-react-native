@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import type { Attachment } from 'stream-chat';
 
@@ -76,7 +76,7 @@ const MessageFooterWithContext = <
 
   if (isDeleted) {
     return (
-      <View style={metaContainer} testID='message-deleted'>
+      <View style={[styles.container, metaContainer]} testID='message-deleted'>
         {deletedMessagesVisibilityType === 'sender' && (
           <>
             <Eye pathFill={grey_dark} {...eyeIcon} />
@@ -115,7 +115,7 @@ const MessageFooterWithContext = <
   }
 
   return (
-    <View style={metaContainer} testID='message-status-time'>
+    <View style={[styles.container, metaContainer]} testID='message-status-time'>
       {otherAttachments.length && otherAttachments[0].actions ? (
         <>
           <Eye pathFill={grey_dark} {...eyeIcon} />
@@ -249,3 +249,10 @@ export const MessageFooter = <
     />
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    marginTop: 4,
+  },
+});
