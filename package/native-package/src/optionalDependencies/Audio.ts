@@ -111,22 +111,61 @@ export type RecordingOptions = {
   isMeteringEnabled?: boolean;
 };
 
-const getCheckPermissionPromise = () =>
-  Promise.all([PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO)]).then(
-    ([hasRecordAudioPermission]) => hasRecordAudioPermission,
-  );
+const verifyAndroidPermissions = async () => {
+  const isRN71orAbove = Platform.constants.reactNativeVersion?.minor >= 71;
+  const isAndroid13orAbove = (Platform.Version as number) >= 33;
+  const shouldCheckForMediaPermissions = isRN71orAbove && isAndroid13orAbove;
 
-const getRequestPermissionPromise = async () => {
+  const getCheckPermissionPromise = () => {
+    if (shouldCheckForMediaPermissions) {
+      return Promise.all([
+        PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO),
+        PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_MEDIA_AUDIO),
+      ]).then(
+        ([hasRecordAudioPermission, hasReadMediaAudioPermission]) =>
+          hasRecordAudioPermission && hasReadMediaAudioPermission,
+      );
+    } else {
+      return Promise.all([
+        PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO),
+        PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE),
+      ]).then(
+        ([hasRecordAudioPermission, hasReadExternalStorage]) =>
+          hasRecordAudioPermission && hasReadExternalStorage,
+      );
+    }
+  };
   const hasPermission = await getCheckPermissionPromise();
   if (!hasPermission) {
-    return await PermissionsAndroid.requestMultiple([
-      PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-    ]).then(
-      (statuses) =>
-        statuses[PermissionsAndroid.PERMISSIONS.RECORD_AUDIO] ===
-        PermissionsAndroid.RESULTS.GRANTED,
-    );
+    const getRequestPermissionPromise = () => {
+      if (shouldCheckForMediaPermissions) {
+        return PermissionsAndroid.requestMultiple([
+          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+          PermissionsAndroid.PERMISSIONS.READ_MEDIA_AUDIO,
+        ]).then(
+          (statuses) =>
+            statuses[PermissionsAndroid.PERMISSIONS.RECORD_AUDIO] ===
+              PermissionsAndroid.RESULTS.GRANTED &&
+            statuses[PermissionsAndroid.PERMISSIONS.READ_MEDIA_AUDIO] ===
+              PermissionsAndroid.RESULTS.GRANTED,
+        );
+      } else {
+        return PermissionsAndroid.requestMultiple([
+          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        ]).then(
+          (statuses) =>
+            statuses[PermissionsAndroid.PERMISSIONS.RECORD_AUDIO] ===
+              PermissionsAndroid.RESULTS.GRANTED &&
+            statuses[PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE] ===
+              PermissionsAndroid.RESULTS.GRANTED,
+        );
+      }
+    };
+    const granted = await getRequestPermissionPromise();
+    return granted;
   }
+  return true;
 };
 
 export const Audio = AudioRecorderPackage
@@ -153,12 +192,14 @@ export const Audio = AudioRecorderPackage
       },
       startRecording: async (options: RecordingOptions, onRecordingStatusUpdate) => {
         console.log('Starting recording..');
-        // if (Platform.OS === 'android') {
-        //   const granted = await getRequestPermissionPromise();
-        //   if (!granted) {
-        //     throw new Error('startRecording Error');
-        //   }
-        // }
+        if (Platform.OS === 'android') {
+          try {
+            await verifyAndroidPermissions();
+          } catch (err) {
+            console.warn('Audio Recording Permissions error', err);
+            return;
+          }
+        }
         try {
           const path = Platform.select({
             android: `${RNFS.CachesDirectoryPath}/sound.aac`,
