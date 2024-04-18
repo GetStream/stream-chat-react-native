@@ -352,17 +352,17 @@ const MessageListWithContext = <
   /**
    * The timeout id used to debounce our scrollToIndex calls on messageList updates
    */
-  const scrollToDebounceTimeoutRef = useRef<NodeJS.Timeout>();
+  const scrollToDebounceTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   /**
    * The timeout id used to lazier load the initial scroll set flag
    */
-  const initialScrollSettingTimeoutRef = useRef<NodeJS.Timeout>();
+  const initialScrollSettingTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   /**
    * The timeout id used to temporarily load the initial scroll set flag
    */
-  const onScrollEventTimeoutRef = useRef<NodeJS.Timeout>();
+  const onScrollEventTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   /**
    * Last messageID that was scrolled to after loading a new message list,
@@ -861,7 +861,7 @@ const MessageListWithContext = <
   };
 
   const scrollToIndexFailedRetryCountRef = useRef<number>(0);
-  const failScrollTimeoutId = useRef<NodeJS.Timeout>();
+  const failScrollTimeoutId = useRef<ReturnType<typeof setTimeout>>();
   const onScrollToIndexFailedRef = useRef<
     FlatListProps<MessageType<StreamChatGenerics>>['onScrollToIndexFailed']
   >((info) => {
