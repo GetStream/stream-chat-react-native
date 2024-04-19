@@ -107,8 +107,8 @@ Both `bottomInset` & `topInset` can be set via the appropriate functions, `setBo
 
 ### Android
 
-On Android if the StatusBar is set to translucent, that is `StatusBar.setTranslucent(true)`, you need to provide the prop `translucentStatusBar` to the `OverlayProvider`.
-This prop is a `boolean` that adjusts for differences in the measurements of the screen height when the StatusBar on Android is translucent.
+On Android if the StatusBar is set to translucent, that is `StatusBar.setTranslucent(true)`, you can simply add the height/padding adjustments on the container wrapping the `Channel` component.
+This will adjust the differences in the measurements of the screen height when the StatusBar on Android is translucent.
 It is important to note that since Expo 38 `true` is the default for transparent on Android.
 
 ## Image picker not working

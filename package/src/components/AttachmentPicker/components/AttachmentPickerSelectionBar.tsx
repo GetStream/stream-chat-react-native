@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const AttachmentSelectionBar = () => {
+export const AttachmentPickerSelectionBar = () => {
   const {
     attachmentSelectionBarHeight,
     CameraSelectorIcon,
@@ -75,7 +75,7 @@ export const AttachmentSelectionBar = () => {
   };
 
   return (
-    <View style={[styles.container, container, { height: attachmentSelectionBarHeight ?? 52 }]}>
+    <View style={[styles.container, container, { height: attachmentSelectionBarHeight }]}>
       <TouchableOpacity
         hitSlop={{ bottom: 15, top: 15 }}
         onPress={() => setPicker('images')}

@@ -1,5 +1,7 @@
 import React, { PropsWithChildren, useContext, useEffect, useState } from 'react';
 
+import { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
+
 import type { Asset, DefaultStreamChatGenerics, File } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
@@ -12,6 +14,36 @@ export type AttachmentPickerIconProps = {
 };
 
 export type AttachmentPickerContextValue = {
+  /**
+   * Custom UI component to render [draggable handle](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png) of attachment picker.
+   *
+   * **Default** [AttachmentPickerBottomSheetHandle](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerBottomSheetHandle.tsx)
+   */
+  AttachmentPickerBottomSheetHandle: React.FC<BottomSheetHandleProps>;
+  /**
+   * Height of the image picker bottom sheet handle.
+   * @type number
+   * @default 20
+   */
+  attachmentPickerBottomSheetHandleHeight: number;
+  /**
+   * Height of the image picker bottom sheet when opened.
+   * @type number
+   * @default 40% of window height
+   */
+  attachmentPickerBottomSheetHeight: number;
+  /**
+   * Custom UI component for AttachmentPickerSelectionBar
+   *
+   * **Default: ** [AttachmentPickerSelectionBar](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/AttachmentPicker/components/AttachmentPickerSelectionBar.tsx)
+   */
+  AttachmentPickerSelectionBar: React.ComponentType;
+  /**
+   * Height of the attachment selection bar displayed on the attachment picker.
+   * @type number
+   * @default 52
+   */
+  attachmentSelectionBarHeight: number;
   /**
    * `bottomInset` determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened.
    * This can also be set via the `setBottomInset` function provided by the `useAttachmentPickerContext` hook.
@@ -53,8 +85,6 @@ export type AttachmentPickerContextValue = {
   setSelectedPicker: React.Dispatch<React.SetStateAction<'images' | undefined>>;
   setTopInset: React.Dispatch<React.SetStateAction<number>>;
   topInset: number;
-  attachmentPickerBottomSheetHeight?: number;
-  attachmentSelectionBarHeight?: number;
   selectedPicker?: 'images';
 };
 
@@ -68,13 +98,7 @@ export const AttachmentPickerProvider = ({
 }: PropsWithChildren<{
   value?: Pick<
     AttachmentPickerContextValue,
-    | 'attachmentSelectionBarHeight'
-    | 'attachmentPickerBottomSheetHeight'
-    | 'CameraSelectorIcon'
-    | 'closePicker'
-    | 'FileSelectorIcon'
-    | 'ImageSelectorIcon'
-    | 'openPicker'
+    'CameraSelectorIcon' | 'closePicker' | 'FileSelectorIcon' | 'ImageSelectorIcon' | 'openPicker'
   > &
     Partial<Pick<AttachmentPickerContextValue, 'bottomInset' | 'topInset'>>;
 }>) => {
@@ -86,7 +110,7 @@ export const AttachmentPickerProvider = ({
   const [selectedImages, setSelectedImages] = useState<Asset[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedPicker, setSelectedPicker] = useState<'images'>();
-  const [topInset, setTopInset] = useState<number>(value?.topInset ?? 0);
+  const [topInset, setTopInset] = useState<number>(topInsetValue ?? 0);
 
   useEffect(() => {
     setBottomInset(bottomInsetValue ?? 0);
