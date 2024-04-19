@@ -66,7 +66,7 @@ export const OverlayProvider = <
   props: PropsWithChildren<OverlayProviderProps<StreamChatGenerics>>,
 ) => {
   const { vh } = useViewport();
-  const bottomSheetCloseTimeoutRef = useRef<NodeJS.Timeout>();
+  const bottomSheetCloseTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const {
     AttachmentPickerBottomSheetHandle = DefaultAttachmentPickerBottomSheetHandle,
     attachmentPickerBottomSheetHandleHeight = 20,
