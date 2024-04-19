@@ -112,16 +112,13 @@ On Android if the StatusBar is set to translucent, that is `StatusBar.setTranslu
 ```tsx
 import { StatusBar } from 'react-native';
 import { useHeaderHeight } from '@react-navigation/elements';
-import {
-  useAttachmentPickerContext,
-} from 'stream-chat-react-native';
+import { useAttachmentPickerContext } from 'stream-chat-react-native';
 const headerHeight = useHeaderHeight();
 const { setTopInset } = useAttachmentPickerContext();
 
 // When the status bar is translucent, the headerHeight contains the actual header height + the status bar height which needs to be substracted.
 const finalHeaderHeight =
-  headerHeight -
-  (Platform.OS === 'android' && StatusBar.currentHeight ? StatusBar.currentHeight : 0);
+  headerHeight - (Platform.OS === 'android' && StatusBar.currentHeight ? StatusBar.currentHeight : 0);
 
 useEffect(() => {
   setTopInset(finalHeaderHeight);
