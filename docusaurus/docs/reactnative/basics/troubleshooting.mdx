@@ -107,8 +107,29 @@ Both `bottomInset` & `topInset` can be set via the appropriate functions, `setBo
 
 ### Android
 
-On Android if the StatusBar is set to translucent, that is `StatusBar.setTranslucent(true)`, you can simply add the height/padding adjustments on the container wrapping the `Channel` component.
-This will adjust the differences in the measurements of the screen height when the StatusBar on Android is translucent.
+On Android if the StatusBar is set to translucent, that is `StatusBar.setTranslucent(true)`, you should add the height adjustments using the `setTopInset` function of the `useAttachmentPickerContext` hook.
+
+```tsx
+import { StatusBar } from 'react-native';
+import { useHeaderHeight } from '@react-navigation/elements';
+import {
+  useAttachmentPickerContext,
+} from 'stream-chat-react-native';
+const headerHeight = useHeaderHeight();
+const { setTopInset } = useAttachmentPickerContext();
+
+// When the status bar is translucent, the headerHeight contains the actual header height + the status bar height which needs to be substracted.
+const finalHeaderHeight =
+  headerHeight -
+  (Platform.OS === 'android' && StatusBar.currentHeight ? StatusBar.currentHeight : 0);
+
+useEffect(() => {
+  setTopInset(finalHeaderHeight);
+}, [setTopInset, finalHeaderHeight]);
+```
+
+This can also be passed to the `topInset` prop of of `OverlayProvider`.
+
 It is important to note that since Expo 38 `true` is the default for transparent on Android.
 
 ## Image picker not working
