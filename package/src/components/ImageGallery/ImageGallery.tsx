@@ -153,8 +153,8 @@ export const ImageGallery = <
   const { vh, vw } = useViewport();
 
   const fullWindowHeight = vh(100);
-  const screenWidth = vw(100);
-  const halfScreenWidth = vw(50);
+  const fullWindowWidth = vw(100);
+  const halfScreenWidth = fullWindowWidth / 2;
 
   const halfScreenHeight = fullWindowHeight / 2;
   const quarterScreenHeight = fullWindowHeight / 4;
@@ -275,7 +275,7 @@ export const ImageGallery = <
             : getResizedImageUrl({
                 height: fullWindowHeight,
                 url: imageUrl,
-                width: screenWidth,
+                width: fullWindowWidth,
               }),
         user: cur.user,
         user_id: cur.user_id,
@@ -312,7 +312,7 @@ export const ImageGallery = <
 
       if (newIndex > -1) {
         index.value = newIndex;
-        translationX.value = -(screenWidth + MARGIN) * newIndex;
+        translationX.value = -(fullWindowWidth + MARGIN) * newIndex;
         runOnJS(setSelectedIndex)(newIndex);
       }
     };
@@ -341,12 +341,12 @@ export const ImageGallery = <
     const width = photo?.original_width;
 
     if (height && width) {
-      const imageHeight = Math.floor(height * (screenWidth / width));
+      const imageHeight = Math.floor(height * (fullWindowWidth / width));
       setCurrentImageHeight(imageHeight > fullWindowHeight ? fullWindowHeight : imageHeight);
     } else if (photo?.uri) {
       if (photo.type === 'image') {
         Image.getSize(photo.uri, (width, height) => {
-          const imageHeight = Math.floor(height * (screenWidth / width));
+          const imageHeight = Math.floor(height * (fullWindowWidth / width));
           setCurrentImageHeight(imageHeight > fullWindowHeight ? fullWindowHeight : imageHeight);
         });
       }
@@ -363,7 +363,7 @@ export const ImageGallery = <
     photoLength,
     scale,
     screenHeight: fullWindowHeight,
-    screenWidth,
+    screenWidth: fullWindowWidth,
     selectedIndex,
     setSelectedIndex,
     translateX,
@@ -574,7 +574,7 @@ export const ImageGallery = <
                                 {
                                   height: fullWindowHeight * 8,
                                   marginRight: MARGIN,
-                                  width: screenWidth * 8,
+                                  width: fullWindowWidth * 8,
                                 },
                                 slide,
                               ]}
@@ -598,7 +598,7 @@ export const ImageGallery = <
                                 {
                                   height: fullWindowHeight * 8,
                                   marginRight: MARGIN,
-                                  width: screenWidth * 8,
+                                  width: fullWindowWidth * 8,
                                 },
                                 slide,
                               ]}
