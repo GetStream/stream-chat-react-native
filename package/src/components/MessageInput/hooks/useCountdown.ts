@@ -15,7 +15,7 @@ export const useCountdown = (end: Date) => {
    * the `end` is in the future.
    **/
   useEffect(() => {
-    let intervalId: NodeJS.Timeout;
+    let intervalId: ReturnType<typeof setInterval>;
 
     const startCountdown = (seconds: number) => {
       setSeconds(seconds);
