@@ -51,11 +51,11 @@ Height of the image picker bottom sheet handle.
 
 ### `attachmentPickerBottomSheetHeight`
 
-Height of the image picker bottom sheet when closed.
+Height of the image picker bottom sheet when opened.
 
-| Type   | Default |
-| ------ | ------- |
-| Number | 308     |
+| Type   | Default              |
+| ------ | -------------------- |
+| Number | 40% of Window Height |
 
 ### `attachmentPickerErrorButtonText`
 
@@ -75,7 +75,7 @@ Error text for [`AttachmentPickerError`](https://github.com/GetStream/stream-ch
 
 ### `attachmentSelectionBarHeight`
 
-Height of the attachment selection bar displayed above the image picker.
+Height of the attachment selection bar displayed on the attachment picker.
 
 | Type   | Default |
 | ------ | ------- |
@@ -249,6 +249,14 @@ Component to render select more photos option for selected gallery access in iOS
 | Type          | Default                                                                                                                                                                                                            |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | ComponentType | `undefined` \| [`AttachmentPickerIOSSelectMorePhotos`](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerIOSSelectMorePhotos.tsx) |
+
+### `AttachmentPickerSelectionBar`
+
+Component to render and customize the attachment picker selection bar that displays the image, file and camera icons.\_createMdxContent
+
+| Type          | Default                                                                                                                                                                                                 |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ComponentType | `undefined` \| [`AttachmentPickerSelectionBar`](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/AttachmentPicker/components/AttachmentPickerSelectionBar.tsx) |
 
 ### `CameraSelectorIcon`
 
