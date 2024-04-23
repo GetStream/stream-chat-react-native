@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Platform,
-  Pressable,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { Pressable, SafeAreaView, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import Animated, { Extrapolate, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
@@ -108,7 +99,7 @@ export const ImageGalleryHeader = <
     },
   } = useTheme();
   const { t, tDateTimeParser } = useTranslationContext();
-  const { setOverlay, translucentStatusBar } = useOverlayContext();
+  const { setOverlay } = useOverlayContext();
 
   const parsedDate = photo ? tDateTimeParser(photo?.created_at) : null;
 
@@ -146,11 +137,6 @@ export const ImageGalleryHeader = <
     ],
   }));
 
-  const androidTranslucentHeaderStyle = {
-    paddingTop:
-      Platform.OS === 'android' && translucentStatusBar ? StatusBar.currentHeight : undefined,
-  };
-
   const hideOverlay = () => {
     setOverlay('none');
   };
@@ -160,9 +146,7 @@ export const ImageGalleryHeader = <
       onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
       pointerEvents={'box-none'}
     >
-      <ReanimatedSafeAreaView
-        style={[{ backgroundColor: white }, androidTranslucentHeaderStyle, container, headerStyle]}
-      >
+      <ReanimatedSafeAreaView style={[{ backgroundColor: white }, container, headerStyle]}>
         <View style={[styles.innerContainer, innerContainer]}>
           {leftElement ? (
             leftElement({ hideOverlay, photo })

@@ -426,6 +426,8 @@ export type Theme = {
         onlyEmojiMarkdown: MarkdownStyle;
       };
       wrapper: ViewStyle;
+      receiverMessageBackgroundColor?: ColorValue;
+      senderMessageBackgroundColor?: ColorValue;
     };
     file: {
       container: ViewStyle;
@@ -468,10 +470,13 @@ export type Theme = {
       shuffle: TextStyle;
       title: TextStyle;
     };
+    lastMessageContainer: ViewStyle;
     loadingIndicator: {
       container: ViewStyle;
       roundedView: ViewStyle;
     };
+    messageGroupedSingleOrBottomContainer: ViewStyle;
+    messageGroupedTopContainer: ViewStyle;
     pinnedHeader: {
       container: ViewStyle;
       label: TextStyle;
@@ -955,10 +960,7 @@ export const defaultTheme: Theme = {
         fontWeight: '700',
         paddingRight: 6,
       },
-      metaContainer: {
-        flexDirection: 'row',
-        marginTop: 4,
-      },
+      metaContainer: {},
       metaText: {
         fontSize: 12,
       },
@@ -1010,10 +1012,13 @@ export const defaultTheme: Theme = {
       shuffle: {},
       title: {},
     },
+    lastMessageContainer: {},
     loadingIndicator: {
       container: {},
       roundedView: {},
     },
+    messageGroupedSingleOrBottomContainer: {},
+    messageGroupedTopContainer: {},
     pinnedHeader: {
       container: {},
       label: {},

@@ -7,9 +7,6 @@ exports[`MessagePinnedHeader should render message pinned 1`] = `
       {
         "display": "flex",
         "flexDirection": "row",
-        "marginBottom": 8,
-        "marginLeft": 30,
-        "marginTop": 5,
       },
       {
         "justifyContent": "flex-start",
