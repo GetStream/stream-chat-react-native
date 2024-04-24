@@ -1,5 +1,3 @@
-import { PermissionsAndroid, Platform } from 'react-native';
-
 import { AudioComponent } from '../optionalDependencies/Video';
 
 export enum AndroidOutputFormat {
@@ -214,16 +212,12 @@ export type RecordingOptions = {
   keepAudioActiveHint?: boolean;
 };
 
-const getCheckPermissionPromise = () =>
-  Promise.all([PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO)]).then(
-    ([hasRecordAudioPermission]) => hasRecordAudioPermission,
-  );
-
 export const Audio = {
   startRecording: async (recordingOptions: RecordingOptions, onRecordingStatusUpdate) => {
     try {
       console.log('Requesting permissions..');
-      if (!getCheckPermissionPromise()) {
+      const permissionsGranted = await AudioComponent.getPermissionsAsync().granted;
+      if (!permissionsGranted) {
         await AudioComponent.requestPermissionsAsync();
       }
       await AudioComponent.setAudioModeAsync({
