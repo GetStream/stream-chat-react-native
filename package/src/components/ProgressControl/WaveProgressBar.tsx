@@ -50,6 +50,8 @@ export const WaveProgressBar = React.memo(
   (props: WaveProgressBarProps) => {
     const [endPosition, setEndPosition] = useState(0);
     const [currentWaveformProgress, setCurrentWaveformProgress] = useState(0);
+    /* On Android, the seek doesn't work for AAC files, hence we disable progress drag for now */
+    const showProgressDrag = Platform.OS === 'ios';
     const {
       amplitudesCount = 70,
       filledColor,
@@ -66,7 +68,9 @@ export const WaveProgressBar = React.memo(
     const state = useSharedValue(0);
 
     useEffect(() => {
-      const stageProgress = Math.floor(progress * (amplitudesCount - 1));
+      const stageProgress = Math.floor(
+        progress * (showProgressDrag ? amplitudesCount - 1 : amplitudesCount),
+      );
       state.value = stageProgress * (WAVEFORM_WIDTH * 2);
       setEndPosition(state.value);
       setCurrentWaveformProgress(stageProgress);
@@ -127,8 +131,7 @@ export const WaveProgressBar = React.memo(
             ]}
           />
         ))}
-        {/* On Android, the seek doesn't work for AAC files, hence we disable progress drag for now */}
-        {Platform.OS === 'ios' && onProgressDrag && (
+        {showProgressDrag && onProgressDrag && (
           <PanGestureHandler maxPointers={1} onGestureEvent={onGestureEvent}>
             <Animated.View style={thumbStyles}>
               <ProgressControlThumb />

@@ -150,6 +150,11 @@ export const useAudioController = () => {
       status.currentMetering || status.metering,
       Platform.OS === 'android' && typeof recording !== 'string',
     );
+    console.log(
+      status.currentMetering || status.metering,
+      normalizedAudioLevel,
+      Platform.OS === 'android' && typeof recording !== 'string',
+    );
     setWaveformData((prev) => [...prev, normalizedAudioLevel]);
   };
 
