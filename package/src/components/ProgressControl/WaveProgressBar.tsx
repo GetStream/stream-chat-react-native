@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { Platform, Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
@@ -66,7 +66,8 @@ export const WaveProgressBar = React.memo(
     const state = useSharedValue(0);
 
     useEffect(() => {
-      const stageProgress = Math.floor((progress / 100) * (amplitudesCount - 1));
+      const stageProgress = Math.floor(progress * (amplitudesCount - 1));
+      console.log(stageProgress);
       state.value = stageProgress * (WAVEFORM_WIDTH * 2);
       setEndPosition(state.value);
       setCurrentWaveformProgress(stageProgress);
@@ -122,12 +123,13 @@ export const WaveProgressBar = React.memo(
               {
                 backgroundColor:
                   index < currentWaveformProgress ? filledColor || accent_blue : grey_dark,
-                height: waveform * 20 > 2 ? waveform * 20 : 2,
+                height: waveform * 25 > 3 ? waveform * 25 : 3,
               },
             ]}
           />
         ))}
-        {onProgressDrag && (
+        {/* On Android, the seek doesn't work for AAC files, hence we disable progress drag for now */}
+        {Platform.OS === 'ios' && onProgressDrag && (
           <PanGestureHandler maxPointers={1} onGestureEvent={onGestureEvent}>
             <Animated.View style={thumbStyles}>
               <ProgressControlThumb />
@@ -138,8 +140,9 @@ export const WaveProgressBar = React.memo(
     );
   },
   (prevProps, nextProps) => {
-    if (prevProps.progress === nextProps.progress) return true;
-    else return false;
+    if (prevProps.amplitudesCount !== nextProps.amplitudesCount) return false;
+    if (prevProps.progress !== nextProps.progress) return false;
+    else return true;
   },
 );
 

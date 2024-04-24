@@ -196,12 +196,21 @@ export type RecordingStatus = {
   uri?: string | null;
 };
 
+export type AudioRecordingReturnType =
+  | string
+  | {
+      getStatusAsync: () => Promise<RecordingStatus>;
+      getURI: () => string | null;
+      pauseAsync: () => Promise<RecordingStatus>;
+      recording: string;
+      setProgressUpdateInterval: (progressUpdateIntervalMillis: number) => void;
+      stopAndUnloadAsync: () => Promise<RecordingStatus>;
+    }
+  | undefined;
+
 export type AudioReturnType = {
-  getStatusAsync: () => Promise<RecordingStatus>;
-  getURI: () => string | null;
-  pauseAsync: () => Promise<RecordingStatus>;
-  setProgressUpdateInterval: (progressUpdateIntervalMillis: number) => void;
-  stopAndUnloadAsync: () => Promise<RecordingStatus>;
+  accessGranted: boolean;
+  recording?: AudioRecordingReturnType;
 };
 
 export type RecordingOptions = {
@@ -215,12 +224,12 @@ export type AudioType = {
   startRecording: (
     options?: RecordingOptions,
     onRecordingStatusUpdate?: (recordingStatus: RecordingStatus) => void,
-  ) => Promise<AudioReturnType> | Promise<string>;
+  ) => Promise<AudioReturnType>;
   stopRecording: () => Promise<void>;
   pausePlayer?: () => Promise<void>;
   resumePlayer?: () => Promise<void>;
   startPlayer?: (
-    uri?: string | AudioReturnType,
+    uri?: AudioRecordingReturnType,
     initialStatus?: Partial<AVPlaybackStatusToSet>,
     onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void,
   ) => Promise<void>;

@@ -249,9 +249,10 @@ export const Audio = {
         options,
         onRecordingStatusUpdate,
       );
-      return recording;
+      return { accessGranted: true, recording };
     } catch (error) {
       console.error('Failed to start recording', error);
+      return { accessGranted: false, recording: null };
     }
   },
   stopRecording: async () => {

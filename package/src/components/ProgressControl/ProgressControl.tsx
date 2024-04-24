@@ -48,7 +48,6 @@ export const ProgressControl = React.memo(
         ? (windowWidth * Number(width?.substring(0, width.length - 1))) / 100
         : width
       : 0;
-
     const {
       theme: {
         colors: { grey_dark },

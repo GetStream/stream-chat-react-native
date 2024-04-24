@@ -24,7 +24,7 @@ export const AudioRecordingWaveform = (props: AudioRecordingWaveformProps) => {
             styles.waveform,
             {
               backgroundColor: grey_dark,
-              height: waveform * 20 > 2 ? waveform * 20 : 2,
+              height: waveform * 30 > 3 ? waveform * 30 : 3,
             },
           ]}
         />

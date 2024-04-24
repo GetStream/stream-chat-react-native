@@ -11,7 +11,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
-  attachButtonContainer: { paddingRight: 10 },
+  attachButtonContainer: { paddingRight: 5 },
 });
 
 export type InputButtonsProps<

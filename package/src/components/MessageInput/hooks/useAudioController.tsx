@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { Platform } from 'react-native';
+import { Alert, Platform } from 'react-native';
 
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import {
@@ -16,15 +16,18 @@ import { resampleWaveformData } from '../utils/audioSampling';
 import { normalizeAudioLevel } from '../utils/normalizeAudioLevel';
 
 export const useAudioController = () => {
+  const [permissionsGranted, setPermissionsGranted] = useState(true);
   const [progress, setProgress] = useState<number>(0);
   const [position, setPosition] = useState<number>(0);
   const [paused, setPaused] = useState<boolean>(true);
   const [waveformData, setWaveformData] = useState<number[]>([]);
+  const [isScheduledForSubmit, setIsScheduleForSubmit] = useState(false);
 
   const {
     recording,
     recordingDuration,
     recordingStopped,
+    sendMessage,
     setMicLocked,
     setRecording,
     setRecordingDuration,
@@ -43,6 +46,13 @@ export const useAudioController = () => {
     },
     [],
   );
+
+  useEffect(() => {
+    if (isScheduledForSubmit) {
+      sendMessage();
+      setIsScheduleForSubmit(false);
+    }
+  }, [isScheduledForSubmit, sendMessage]);
 
   const onVoicePlayerProgressHandler = (currentPosition: number, playbackDuration: number) => {
     const currentProgress = currentPosition / playbackDuration;
@@ -91,6 +101,7 @@ export const useAudioController = () => {
   };
 
   const startVoicePlayer = async () => {
+    if (!recording) return;
     console.log('startVoicePlayer');
     // For Native CLI
     if (Audio.startPlayer)
@@ -145,17 +156,26 @@ export const useAudioController = () => {
   const startVoiceRecording = async () => {
     setShowVoiceUI(true);
     setRecordingStopped(false);
-    const recording = await Audio.startRecording(
+    const recordingInfo = await Audio.startRecording(
       {
         isMeteringEnabled: true,
       },
       onRecordingStatusUpdate,
     );
-    if (typeof recording !== 'string') {
-      recording.setProgressUpdateInterval(Platform.OS === 'android' ? 100 : 60);
+    const accessGranted = recordingInfo.accessGranted;
+    if (accessGranted) {
+      setPermissionsGranted(true);
+      const recording = recordingInfo.recording;
+      if (recording && typeof recording !== 'string') {
+        recording.setProgressUpdateInterval(Platform.OS === 'android' ? 100 : 60);
+      }
+      setRecording(recording);
+      await stopVoicePlayer();
+    } else {
+      setPermissionsGranted(false);
+      resetState();
+      Alert.alert('Please allow Audio permissions in settings.');
     }
-    setRecording(recording);
-    await stopVoicePlayer();
   };
 
   const stopVoiceRecording = async () => {
@@ -184,17 +204,17 @@ export const useAudioController = () => {
   };
 
   const deleteVoiceRecording = async () => {
-    resetState();
     if (!recordingStopped) {
       await stopVoiceRecording();
     }
     if (!paused) {
       await stopVoicePlayer();
     }
+    resetState();
     triggerHaptic('impactMedium');
   };
 
-  const uploadVoiceRecording = async () => {
+  const uploadVoiceRecording = async (multiSendEnabled: boolean) => {
     if (!paused) {
       await stopVoicePlayer();
     }
@@ -214,7 +234,14 @@ export const useAudioController = () => {
       uri: typeof recording !== 'string' ? (recording?.getURI() as string) : (recording as string),
       waveform_data: resampledWaveformData,
     };
-    await uploadNewFile(file);
+
+    if (multiSendEnabled) {
+      await uploadNewFile(file);
+    } else {
+      // FIXME: cannot call handleSubmit() directly as the function has stale reference to file uploads
+      await uploadNewFile(file);
+      setIsScheduleForSubmit(true);
+    }
     resetState();
   };
 
@@ -222,6 +249,7 @@ export const useAudioController = () => {
     deleteVoiceRecording,
     onVoicePlayerPlayPause,
     paused,
+    permissionsGranted,
     position,
     progress,
     startVoiceRecording,

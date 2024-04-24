@@ -44,7 +44,7 @@ import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { Emoji } from '../../emoji-data';
-import { AudioReturnType, pickDocument } from '../../native';
+import { AudioRecordingReturnType, pickDocument } from '../../native';
 import type {
   Asset,
   DefaultStreamChatGenerics,
@@ -157,7 +157,7 @@ export type LocalMessageInputContext<
   openFilePicker: () => void;
   openMentionsPicker: () => void;
   pickFile: () => Promise<void>;
-  recording: AudioReturnType | string | undefined;
+  recording: AudioRecordingReturnType;
   recordingDuration: number;
   recordingStopped: boolean;
   /**
@@ -199,7 +199,7 @@ export type LocalMessageInputContext<
   setMentionedUsers: React.Dispatch<React.SetStateAction<string[]>>;
   setMicLocked: React.Dispatch<React.SetStateAction<boolean>>;
   setNumberOfUploads: React.Dispatch<React.SetStateAction<number>>;
-  setRecording: React.Dispatch<React.SetStateAction<AudioReturnType | string | undefined>>;
+  setRecording: React.Dispatch<React.SetStateAction<AudioRecordingReturnType>>;
   setRecordingDuration: React.Dispatch<React.SetStateAction<number>>;
   setRecordingStopped: React.Dispatch<boolean>;
   setSendThreadMessageInChannel: React.Dispatch<React.SetStateAction<boolean>>;
@@ -226,6 +226,11 @@ export type LocalMessageInputContext<
 export type InputMessageInputContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled'> & {
+  asyncMessagesEnabled: boolean;
+  asyncMessagesLockDistance: number;
+  asyncMessagesMinimumPressDuration: number;
+  asyncMessagesMultiSendEnabled: boolean;
+  asyncMessagesSlideToCancelDistance: number;
   /**
    * Custom UI component for attach button.
    *

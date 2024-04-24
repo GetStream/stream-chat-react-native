@@ -24,6 +24,7 @@ export type AudioAttachmentProps = {
   onLoad: (index: string, duration: number) => void;
   onPlayPause: (index: string, pausedStatus?: boolean) => void;
   onProgress: (index: string, currentTime?: number, hasEnd?: boolean) => void;
+  hideProgressBar?: boolean;
   showSpeedSettings?: boolean;
   testID?: string;
 };
@@ -33,9 +34,17 @@ export type AudioAttachmentProps = {
  * UI Component to preview the audio files
  */
 export const AudioAttachment = (props: AudioAttachmentProps) => {
+  const [width, setWidth] = useState(0);
   const [currentSpeed, setCurrentSpeed] = useState<number>(1.0);
   const soundRef = React.useRef<SoundReturnType | null>(null);
-  const { item, onLoad, onPlayPause, onProgress, showSpeedSettings = false } = props;
+  const {
+    hideProgressBar = false,
+    item,
+    onLoad,
+    onPlayPause,
+    onProgress,
+    showSpeedSettings = false,
+  } = props;
 
   /** This is for Native CLI Apps */
   const handleLoad = (payload: VideoPayloadData) => {
@@ -99,7 +108,11 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
         console.log(`Encountered a fatal error during playback: ${playbackStatus.error}`);
       }
     } else {
-      const { positionMillis } = playbackStatus;
+      const { durationMillis, positionMillis } = playbackStatus;
+      // This is done for Expo CLI where we don't get file duration from file picker
+      if (item.duration === 0) {
+        onLoad(item.id, durationMillis / 1000);
+      }
       // Update your UI for the loaded state
       if (playbackStatus.isPlaying) {
         // Update your UI for the playing state
@@ -212,7 +225,12 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   const lastIndexOfDot = item.file.name.lastIndexOf('.');
 
   return (
-    <View style={[styles.container, container]}>
+    <View
+      onLayout={({ nativeEvent }) => {
+        setWidth(nativeEvent.layout.width);
+      }}
+      style={[styles.container, container]}
+    >
       <Pressable
         accessibilityLabel='Play Pause Button'
         onPress={() => handlePlayPause()}
@@ -267,32 +285,34 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
           <Text style={[styles.progressDurationText, { color: grey_dark }, progressDurationText]}>
             {progressDuration}
           </Text>
-          <View style={[styles.progressControlContainer, progressControlContainer]}>
-            {item.file.waveform_data ? (
-              <WaveProgressBar
-                amplitudesCount={30}
-                onPlayPause={handlePlayPause}
-                onProgressDrag={(position) => {
-                  if (item.file.waveform_data) {
-                    const progress = (position / 30) * (item.duration as number);
-                    handleProgressDrag(progress);
-                  }
-                }}
-                progress={(item.progress as number) * 100}
-                waveformData={item.file.waveform_data}
-              />
-            ) : (
-              <ProgressControl
-                duration={item.duration as number}
-                filledColor={accent_blue}
-                onPlayPause={handlePlayPause}
-                onProgressDrag={handleProgressDrag}
-                progress={item.progress as number}
-                testID='progress-control'
-                width={'30%'}
-              />
-            )}
-          </View>
+          {!hideProgressBar && (
+            <View style={[styles.progressControlContainer, progressControlContainer]}>
+              {item.file.waveform_data ? (
+                <WaveProgressBar
+                  amplitudesCount={35}
+                  onPlayPause={handlePlayPause}
+                  onProgressDrag={(position) => {
+                    if (item.file.waveform_data) {
+                      const progress = (position / 30) * (item.duration as number);
+                      handleProgressDrag(progress);
+                    }
+                  }}
+                  progress={item.progress as number}
+                  waveformData={item.file.waveform_data}
+                />
+              ) : (
+                <ProgressControl
+                  duration={item.duration as number}
+                  filledColor={accent_blue}
+                  onPlayPause={handlePlayPause}
+                  onProgressDrag={handleProgressDrag}
+                  progress={item.progress as number}
+                  testID='progress-control'
+                  width={width / 2}
+                />
+              )}
+            </View>
+          )}
         </View>
       </View>
       {showSpeedSettings && (
@@ -325,7 +345,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
   },
-
   container: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -336,7 +355,7 @@ const styles = StyleSheet.create({
   filenameText: {
     fontSize: 14,
     fontWeight: 'bold',
-    paddingBottom: 8,
+    paddingBottom: 10,
     paddingLeft: 8,
   },
   leftContainer: {

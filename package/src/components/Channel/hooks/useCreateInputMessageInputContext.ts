@@ -7,6 +7,11 @@ export const useCreateInputMessageInputContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   additionalTextInputProps,
+  asyncMessagesEnabled,
+  asyncMessagesLockDistance,
+  asyncMessagesMinimumPressDuration,
+  asyncMessagesMultiSendEnabled,
+  asyncMessagesSlideToCancelDistance,
   AttachButton,
   AudioRecorder,
   AudioRecordingButton,
@@ -71,6 +76,11 @@ export const useCreateInputMessageInputContext = <
   const inputMessageInputContext: InputMessageInputContextValue<StreamChatGenerics> = useMemo(
     () => ({
       additionalTextInputProps,
+      asyncMessagesEnabled,
+      asyncMessagesLockDistance,
+      asyncMessagesMinimumPressDuration,
+      asyncMessagesMultiSendEnabled,
+      asyncMessagesSlideToCancelDistance,
       AttachButton,
       AudioRecorder,
       AudioRecordingButton,

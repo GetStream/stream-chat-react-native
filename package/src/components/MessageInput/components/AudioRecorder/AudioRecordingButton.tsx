@@ -10,6 +10,7 @@ import {
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { Mic } from '../../../../icons/Mic';
 import { triggerHaptic } from '../../../../native';
 
@@ -18,11 +19,15 @@ import type { DefaultStreamChatGenerics } from '../../../../types/types';
 type AudioRecordingButtonPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled'> &
-  Pick<MessageInputContextValue<StreamChatGenerics>, 'showVoiceUI'> & {
+  Pick<
+    MessageInputContextValue<StreamChatGenerics>,
+    'asyncMessagesMinimumPressDuration' | 'showVoiceUI'
+  > & {
     buttonSize?: number;
     /** Function that opens audio selector */
     handleLongPress?: () => void;
     handlePress?: () => void;
+    permissionsGranted?: boolean;
     startVoiceRecording?: () => Promise<void>;
   };
 
@@ -31,14 +36,23 @@ const AudioRecordingButtonWithContext = <
 >(
   props: AudioRecordingButtonPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { buttonSize, disabled, handleLongPress, handlePress, showVoiceUI, startVoiceRecording } =
-    props;
+  const {
+    asyncMessagesMinimumPressDuration,
+    buttonSize,
+    disabled,
+    handleLongPress,
+    handlePress,
+    permissionsGranted,
+    showVoiceUI,
+    startVoiceRecording,
+  } = props;
 
   const {
     theme: {
       colors: { grey, light_gray, white },
     },
   } = useTheme();
+  const { t } = useTranslationContext();
 
   const onPressHandler = () => {
     if (handlePress) {
@@ -46,7 +60,7 @@ const AudioRecordingButtonWithContext = <
     }
     if (!showVoiceUI) {
       triggerHaptic('notificationError');
-      Alert.alert('Hold to start recording');
+      Alert.alert(t('Hold to start recording.'));
     }
   };
 
@@ -57,12 +71,17 @@ const AudioRecordingButtonWithContext = <
     }
     if (!showVoiceUI) {
       triggerHaptic('impactHeavy');
+      if (!permissionsGranted) {
+        Alert.alert(t('Please allow Audio permissions in settings.'));
+        return;
+      }
       if (startVoiceRecording) startVoiceRecording();
     }
   };
 
   return (
     <Pressable
+      delayLongPress={asyncMessagesMinimumPressDuration}
       disabled={disabled}
       onLongPress={onLongPressHandler}
       onPress={onPressHandler}
@@ -85,8 +104,20 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   prevProps: AudioRecordingButtonPropsWithContext<StreamChatGenerics>,
   nextProps: AudioRecordingButtonPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { disabled: prevDisabled, showVoiceUI: prevShowVoiceUI } = prevProps;
-  const { disabled: nextDisabled, showVoiceUI: nextShowVoiceUI } = nextProps;
+  const {
+    asyncMessagesMinimumPressDuration: prevAsyncMessagesMinimumPressDuration,
+    disabled: prevDisabled,
+    showVoiceUI: prevShowVoiceUI,
+  } = prevProps;
+  const {
+    asyncMessagesMinimumPressDuration: nextAsyncMessagesMinimumPressDuration,
+    disabled: nextDisabled,
+    showVoiceUI: nextShowVoiceUI,
+  } = nextProps;
+
+  const asyncMessagesMinimumPressDurationEqual =
+    prevAsyncMessagesMinimumPressDuration === nextAsyncMessagesMinimumPressDuration;
+  if (!asyncMessagesMinimumPressDurationEqual) return false;
 
   const disabledEqual = prevDisabled === nextDisabled;
   if (!disabledEqual) return false;
@@ -115,9 +146,15 @@ export const AudioRecordingButton = <
   props: AudioRecordingButtonProps<StreamChatGenerics>,
 ) => {
   const { disabled = false } = useChannelContext<StreamChatGenerics>();
-  const { showVoiceUI } = useMessageInputContext<StreamChatGenerics>();
+  const { asyncMessagesMinimumPressDuration, showVoiceUI } =
+    useMessageInputContext<StreamChatGenerics>();
 
-  return <MemoizedAudioRecordingButton {...{ disabled, showVoiceUI }} {...props} />;
+  return (
+    <MemoizedAudioRecordingButton
+      {...{ asyncMessagesMinimumPressDuration, disabled, showVoiceUI }}
+      {...props}
+    />
+  );
 };
 
 const styles = StyleSheet.create({

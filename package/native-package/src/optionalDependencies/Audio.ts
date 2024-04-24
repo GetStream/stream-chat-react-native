@@ -223,9 +223,10 @@ export const Audio = AudioRecorderPackage
           audioRecorderPlayer.addRecordBackListener((status) => {
             onRecordingStatusUpdate(status);
           });
-          return recording;
+          return { accessGranted: true, recording };
         } catch (error) {
-          console.log(error);
+          console.error('Failed to start recording', error);
+          return { accessGranted: false, recording: null };
         }
       },
       stopPlayer: async () => {

@@ -42,7 +42,7 @@ export const AudioRecordingPreview = (props: AudioRecordingPreviewProps) => {
       </View>
       <View style={styles.progressBar}>
         {/* Since the progress is in range 0-1 we convert it in terms of 100% */}
-        <WaveProgressBar progress={progress * 100} waveformData={waveformData} />
+        <WaveProgressBar progress={progress} waveformData={waveformData} />
       </View>
     </View>
   );

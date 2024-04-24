@@ -40,9 +40,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     flexDirection: 'row',
-    height: FILE_PREVIEW_HEIGHT,
     justifyContent: 'space-between',
-    marginBottom: 8,
     paddingLeft: 8,
     paddingRight: 8,
   },
@@ -59,11 +57,12 @@ const styles = StyleSheet.create({
   },
   fileSizeText: {
     fontSize: 12,
+    marginTop: 10,
     paddingHorizontal: 10,
   },
   fileTextContainer: {
-    height: '100%',
     justifyContent: 'space-around',
+    marginVertical: 10,
   },
   flatList: { marginBottom: 12, maxHeight: FILE_PREVIEW_HEIGHT * 2.5 + 16 },
   overlay: {
@@ -162,6 +161,8 @@ const FileUploadPreviewWithContext = <
 
   const flatListRef = useRef<FlatList<FileUpload> | null>(null);
   const [flatListWidth, setFlatListWidth] = useState(0);
+
+  console.log(fileUploads);
 
   useEffect(() => {
     setFileUploads(
@@ -280,6 +281,7 @@ const FileUploadPreviewWithContext = <
                 testID='audio-attachment-upload-preview'
               >
                 <AudioAttachment
+                  hideProgressBar={true}
                   item={item}
                   onLoad={onLoad}
                   onPlayPause={onPlayPause}

@@ -31,14 +31,18 @@ type AudioRecorderPropsWithContext<
 > = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled'> &
   Pick<
     MessageInputContextValue<StreamChatGenerics>,
-    'micLocked' | 'recording' | 'recordingDuration' | 'recordingStopped'
+    | 'asyncMessagesMultiSendEnabled'
+    | 'micLocked'
+    | 'recording'
+    | 'recordingDuration'
+    | 'recordingStopped'
   > & {
     deleteVoiceRecording?: () => Promise<void>;
     /** Function that opens audio selector */
     handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
     slideToCancelStyle?: StyleProp<ViewStyle>;
     stopVoiceRecording?: () => Promise<void>;
-    uploadVoiceRecording?: () => Promise<void>;
+    uploadVoiceRecording?: (multiSendEnabled: boolean) => Promise<void>;
   };
 
 const AudioRecorderWithContext = <
@@ -47,6 +51,7 @@ const AudioRecorderWithContext = <
   props: AudioRecorderPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
+    asyncMessagesMultiSendEnabled,
     deleteVoiceRecording,
     disabled,
     micLocked,
@@ -95,7 +100,14 @@ const AudioRecorderWithContext = <
         </Animated.View>
       )}
       {micLocked ? (
-        <Pressable onPress={uploadVoiceRecording} style={styles.checkContainer}>
+        <Pressable
+          onPress={async () => {
+            if (uploadVoiceRecording) {
+              await uploadVoiceRecording(asyncMessagesMultiSendEnabled);
+            }
+          }}
+          style={styles.checkContainer}
+        >
           <SendCheck fill={accent_blue} size={32} />
         </Pressable>
       ) : null}
@@ -108,6 +120,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   nextProps: AudioRecorderPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
+    asyncMessagesMultiSendEnabled: prevAsyncMessagesMultiSendEnabled,
     disabled: prevDisabled,
     micLocked: prevMicLocked,
     recording: prevRecording,
@@ -115,12 +128,17 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     recordingStopped: prevRecordingStopped,
   } = prevProps;
   const {
+    asyncMessagesMultiSendEnabled: nextAsyncMessagesMultiSendEnabled,
     disabled: nextDisabled,
     micLocked: nextMicLocked,
     recording: nextRecording,
     recordingDuration: nextRecordingDuration,
     recordingStopped: nextRecordingStopped,
   } = nextProps;
+
+  const asyncMessagesMultiSendEnabledEqual =
+    prevAsyncMessagesMultiSendEnabled === nextAsyncMessagesMultiSendEnabled;
+  if (!asyncMessagesMultiSendEnabledEqual) return false;
 
   const disabledEqual = prevDisabled === nextDisabled;
   if (!disabledEqual) return false;
@@ -158,12 +176,18 @@ export const AudioRecorder = <
   props: AudioRecorderProps<StreamChatGenerics>,
 ) => {
   const { disabled = false } = useChannelContext<StreamChatGenerics>();
-  const { micLocked, recording, recordingDuration, recordingStopped } =
-    useMessageInputContext<StreamChatGenerics>();
+  const {
+    asyncMessagesMultiSendEnabled,
+    micLocked,
+    recording,
+    recordingDuration,
+    recordingStopped,
+  } = useMessageInputContext<StreamChatGenerics>();
 
   return (
     <MemoizedAudioRecorder
       {...{
+        asyncMessagesMultiSendEnabled,
         disabled,
         micLocked,
         recording,

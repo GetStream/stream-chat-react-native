@@ -417,6 +417,11 @@ const ChannelWithContext = <
     additionalTextInputProps,
     additionalTouchableProps,
     allowThreadMessagesInChannel = true,
+    asyncMessagesEnabled = true,
+    asyncMessagesLockDistance = 60,
+    asyncMessagesMinimumPressDuration = 500,
+    asyncMessagesMultiSendEnabled = true,
+    asyncMessagesSlideToCancelDistance = 150,
     AttachButton = AttachButtonDefault,
     Attachment = AttachmentDefault,
     AttachmentActions = AttachmentActionsDefault,
@@ -2197,6 +2202,11 @@ const ChannelWithContext = <
 
   const inputMessageInputContext = useCreateInputMessageInputContext<StreamChatGenerics>({
     additionalTextInputProps,
+    asyncMessagesEnabled,
+    asyncMessagesLockDistance,
+    asyncMessagesMinimumPressDuration,
+    asyncMessagesMultiSendEnabled,
+    asyncMessagesSlideToCancelDistance,
     AttachButton,
     AudioRecorder,
     AudioRecordingButton,

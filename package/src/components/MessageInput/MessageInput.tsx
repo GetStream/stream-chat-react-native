@@ -110,6 +110,10 @@ type MessageInputPropsWithContext<
     MessageInputContextValue<StreamChatGenerics>,
     | 'additionalTextInputProps'
     | 'asyncIds'
+    | 'asyncMessagesEnabled'
+    | 'asyncMessagesLockDistance'
+    | 'asyncMessagesMinimumPressDuration'
+    | 'asyncMessagesSlideToCancelDistance'
     | 'asyncUploads'
     | 'AudioRecorder'
     | 'AudioRecordingButton'
@@ -178,6 +182,10 @@ const MessageInputWithContext = <
   const {
     additionalTextInputProps,
     asyncIds,
+    asyncMessagesEnabled,
+    asyncMessagesLockDistance,
+    asyncMessagesMinimumPressDuration,
+    asyncMessagesSlideToCancelDistance,
     asyncUploads,
     AttachmentPickerSelectionBar,
     AudioRecorder,
@@ -584,27 +592,30 @@ const MessageInputWithContext = <
   );
 
   const isSendingButtonVisible = () => {
-    if (showVoiceUI) {
-      return false;
-    }
-    if (text && text.trim()) {
-      return true;
-    }
+    if (asyncMessagesEnabled) {
+      if (showVoiceUI) {
+        return false;
+      }
+      if (text && text.trim()) {
+        return true;
+      }
 
-    const imagesAndFiles = [...imageUploads, ...fileUploads];
-    if (imagesAndFiles.length === 0) return false;
+      const imagesAndFiles = [...imageUploads, ...fileUploads];
+      if (imagesAndFiles.length === 0) return false;
+    }
 
     return true;
   };
 
   const micPositionX = useSharedValue(0);
   const micPositionY = useSharedValue(0);
-  const X_AXIS_POSITION = -150;
-  const Y_AXIS_POSITION = -60;
+  const X_AXIS_POSITION = -asyncMessagesSlideToCancelDistance;
+  const Y_AXIS_POSITION = -asyncMessagesLockDistance;
   const {
     deleteVoiceRecording,
     onVoicePlayerPlayPause,
     paused,
+    permissionsGranted,
     position,
     progress,
     startVoiceRecording,
@@ -804,9 +815,9 @@ const MessageInputWithContext = <
                     />
                   </View>
                 ))}
-              {!micLocked && (
+              {asyncMessagesEnabled && !micLocked && (
                 <PanGestureHandler
-                  activateAfterLongPress={700}
+                  activateAfterLongPress={asyncMessagesMinimumPressDuration + 100}
                   onGestureEvent={handleMicGestureEvent}
                 >
                   <Animated.View
@@ -816,7 +827,10 @@ const MessageInputWithContext = <
                       micButtonContainer,
                     ]}
                   >
-                    <AudioRecordingButton startVoiceRecording={startVoiceRecording} />
+                    <AudioRecordingButton
+                      permissionsGranted={permissionsGranted}
+                      startVoiceRecording={startVoiceRecording}
+                    />
                   </Animated.View>
                 </PanGestureHandler>
               )}
@@ -864,6 +878,10 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 ) => {
   const {
     additionalTextInputProps: prevAdditionalTextInputProps,
+    asyncMessagesEnabled: prevAsyncMessagesEnabled,
+    asyncMessagesLockDistance: prevAsyncMessagesLockDistance,
+    asyncMessagesMinimumPressDuration: prevAsyncMessagesMinimumPressDuration,
+    asyncMessagesSlideToCancelDistance: prevAsyncMessagesSlideToCancelDistance,
     asyncUploads: prevAsyncUploads,
     disabled: prevDisabled,
     editing: prevEditing,
@@ -887,6 +905,10 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   } = prevProps;
   const {
     additionalTextInputProps: nextAdditionalTextInputProps,
+    asyncMessagesEnabled: nextAsyncMessagesEnabled,
+    asyncMessagesLockDistance: nextAsyncMessagesLockDistance,
+    asyncMessagesMinimumPressDuration: nextAsyncMessagesMinimumPressDuration,
+    asyncMessagesSlideToCancelDistance: nextAsyncMessagesSlideToCancelDistance,
     asyncUploads: nextAsyncUploads,
     disabled: nextDisabled,
     editing: nextEditing,
@@ -915,6 +937,21 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const additionalTextInputPropsEven =
     prevAdditionalTextInputProps === nextAdditionalTextInputProps;
   if (!additionalTextInputPropsEven) return false;
+
+  const asyncMessagesEnabledEqual = prevAsyncMessagesEnabled === nextAsyncMessagesEnabled;
+  if (!asyncMessagesEnabledEqual) return false;
+
+  const asyncMessagesLockDistanceEqual =
+    prevAsyncMessagesLockDistance === nextAsyncMessagesLockDistance;
+  if (!asyncMessagesLockDistanceEqual) return false;
+
+  const asyncMessagesMinimumPressDurationEqual =
+    prevAsyncMessagesMinimumPressDuration === nextAsyncMessagesMinimumPressDuration;
+  if (!asyncMessagesMinimumPressDurationEqual) return false;
+
+  const asyncMessagesSlideToCancelDistanceEqual =
+    prevAsyncMessagesSlideToCancelDistance === nextAsyncMessagesSlideToCancelDistance;
+  if (!asyncMessagesSlideToCancelDistanceEqual) return false;
 
   const disabledEqual = prevDisabled === nextDisabled;
   if (!disabledEqual) return false;
@@ -1025,6 +1062,10 @@ export const MessageInput = <
   const {
     additionalTextInputProps,
     asyncIds,
+    asyncMessagesEnabled,
+    asyncMessagesLockDistance,
+    asyncMessagesMinimumPressDuration,
+    asyncMessagesSlideToCancelDistance,
     asyncUploads,
     AudioRecorder,
     AudioRecordingButton,
@@ -1099,6 +1140,10 @@ export const MessageInput = <
       {...{
         additionalTextInputProps,
         asyncIds,
+        asyncMessagesEnabled,
+        asyncMessagesLockDistance,
+        asyncMessagesMinimumPressDuration,
+        asyncMessagesSlideToCancelDistance,
         asyncUploads,
         AttachmentPickerSelectionBar,
         AudioRecorder,
