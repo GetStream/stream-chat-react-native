@@ -1,4 +1,3 @@
-import { DefaultStreamChatGenerics } from 'src/types/types';
 import type { Event, StreamChat } from 'stream-chat';
 
 import { deleteChannel } from '../../../store/apis/deleteChannel';
@@ -14,6 +13,7 @@ import { upsertReads } from '../../../store/apis/upsertReads';
 import { QuickSqliteClient } from '../../../store/QuickSqliteClient';
 import { createSelectQuery } from '../../../store/sqlite-utils/createSelectQuery';
 import { PreparedQueries } from '../../../store/types';
+import { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const handleEventToSyncDB = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

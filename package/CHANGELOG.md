@@ -1,5 +1,21 @@
 # Change Log
 
+## [5.28.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.27.1...v5.28.0) (2024-04-23)
+
+
+### Features
+
+* add sender and receiver message theme background color ([#2485](https://github.com/GetStream/stream-chat-react-native/issues/2485)) ([7c2567c](https://github.com/GetStream/stream-chat-react-native/commit/7c2567ca684ecb7d883b550deca7d37c3ddcfd5b))
+* introduce grouped message theming for message and fix message pinned header styles ([#2488](https://github.com/GetStream/stream-chat-react-native/issues/2488)) ([93a7b25](https://github.com/GetStream/stream-chat-react-native/commit/93a7b2546372c090558333a6c7a95dba5be7df1f))
+
+
+### Bug Fixes
+
+* broken imports in SDK as per TS ([#2487](https://github.com/GetStream/stream-chat-react-native/issues/2487)) ([6d7af92](https://github.com/GetStream/stream-chat-react-native/commit/6d7af925d7e772506d90d0ef169ec3f3f77e6288))
+* improve attachment picker and image gallery bottom sheet implementation ([#2490](https://github.com/GetStream/stream-chat-react-native/issues/2490)) ([54bd86f](https://github.com/GetStream/stream-chat-react-native/commit/54bd86fab5fcfa3b68601cf97f0c88117a8c47e7))
+* return type of setInterval and setTimeout ([#2489](https://github.com/GetStream/stream-chat-react-native/issues/2489)) ([46f5fef](https://github.com/GetStream/stream-chat-react-native/commit/46f5fefba7c59fbe1647dd5b9db9ddfada58f51f))
+* ts issue in getPhotos around Platform.Version ([#2493](https://github.com/GetStream/stream-chat-react-native/issues/2493)) ([1f3751a](https://github.com/GetStream/stream-chat-react-native/commit/1f3751ae4d7cb594b1e06ab62b1e6a0157631773))
+
 ### [5.27.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.27.0...v5.27.1) (2024-04-15)
 
 

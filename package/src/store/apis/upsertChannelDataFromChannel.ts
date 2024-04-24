@@ -1,6 +1,6 @@
-import { DefaultStreamChatGenerics } from 'src/types/types';
 import type { Channel } from 'stream-chat';
 
+import { DefaultStreamChatGenerics } from '../../types/types';
 import { mapChannelToStorable } from '../mappers/mapChannelToStorable';
 import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';

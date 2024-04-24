@@ -277,9 +277,14 @@ exports[`Thread should match thread snapshot 1`] = `
                             "alignItems": "flex-end",
                             "flexDirection": "row",
                           },
+                          [
+                            {
+                              "marginBottom": 8,
+                            },
+                            {},
+                          ],
                           {
                             "justifyContent": "flex-start",
-                            "marginBottom": 8,
                             "marginTop": 0,
                           },
                           {},
@@ -459,10 +464,13 @@ exports[`Thread should match thread snapshot 1`] = `
                         </View>
                         <View
                           style={
-                            {
-                              "flexDirection": "row",
-                              "marginTop": 4,
-                            }
+                            [
+                              {
+                                "flexDirection": "row",
+                                "marginTop": 4,
+                              },
+                              {},
+                            ]
                           }
                           testID="message-status-time"
                         >
@@ -547,9 +555,14 @@ exports[`Thread should match thread snapshot 1`] = `
                             "alignItems": "flex-end",
                             "flexDirection": "row",
                           },
+                          [
+                            {
+                              "marginBottom": 8,
+                            },
+                            {},
+                          ],
                           {
                             "justifyContent": "flex-start",
-                            "marginBottom": 8,
                             "marginTop": 0,
                           },
                           {},
@@ -729,10 +742,13 @@ exports[`Thread should match thread snapshot 1`] = `
                         </View>
                         <View
                           style={
-                            {
-                              "flexDirection": "row",
-                              "marginTop": 4,
-                            }
+                            [
+                              {
+                                "flexDirection": "row",
+                                "marginTop": 4,
+                              },
+                              {},
+                            ]
                           }
                           testID="message-status-time"
                         >
@@ -817,9 +833,14 @@ exports[`Thread should match thread snapshot 1`] = `
                             "alignItems": "flex-end",
                             "flexDirection": "row",
                           },
+                          [
+                            {
+                              "marginBottom": 8,
+                            },
+                            {},
+                          ],
                           {
                             "justifyContent": "flex-start",
-                            "marginBottom": 8,
                             "marginTop": 0,
                           },
                           {},
@@ -999,10 +1020,13 @@ exports[`Thread should match thread snapshot 1`] = `
                         </View>
                         <View
                           style={
-                            {
-                              "flexDirection": "row",
-                              "marginTop": 4,
-                            }
+                            [
+                              {
+                                "flexDirection": "row",
+                                "marginTop": 4,
+                              },
+                              {},
+                            ]
                           }
                           testID="message-status-time"
                         >
@@ -1127,9 +1151,14 @@ exports[`Thread should match thread snapshot 1`] = `
                                 "alignItems": "flex-end",
                                 "flexDirection": "row",
                               },
+                              [
+                                {
+                                  "marginBottom": 12,
+                                },
+                                {},
+                              ],
                               {
                                 "justifyContent": "flex-start",
-                                "marginBottom": 30,
                                 "marginTop": 0,
                               },
                               {},
@@ -1309,10 +1338,13 @@ exports[`Thread should match thread snapshot 1`] = `
                             </View>
                             <View
                               style={
-                                {
-                                  "flexDirection": "row",
-                                  "marginTop": 4,
-                                }
+                                [
+                                  {
+                                    "flexDirection": "row",
+                                    "marginTop": 4,
+                                  },
+                                  {},
+                                ]
                               }
                               testID="message-status-time"
                             >

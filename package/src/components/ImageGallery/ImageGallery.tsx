@@ -1,14 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  Dimensions,
-  Image,
-  ImageStyle,
-  Keyboard,
-  Platform,
-  StatusBar,
-  StyleSheet,
-  ViewStyle,
-} from 'react-native';
+import { Image, ImageStyle, Keyboard, Platform, StyleSheet, ViewStyle } from 'react-native';
 
 import {
   PanGestureHandler,
@@ -26,7 +17,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { BottomSheetModal, BottomSheetModalProvider, BottomSheetProps } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 import type { UserResponse } from 'stream-chat';
 
@@ -63,7 +54,6 @@ import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
 import { getGiphyMimeType } from '../Attachment/utils/getGiphyMimeType';
 
 const isAndroid = Platform.OS === 'android';
-const fullScreenHeight = Dimensions.get('screen').height;
 
 const MARGIN = 32;
 
@@ -132,29 +122,6 @@ type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamC
       | 'autoPlayVideo'
     >;
 
-type SnapPoints = BottomSheetProps['snapPoints'];
-
-const normalizeSnapPoints = (input: SnapPoints): SnapPoints => {
-  const snapPoints = input ? ('value' in input ? input.value : input) : [];
-
-  return snapPoints.map((snapPoint) => {
-    if (typeof snapPoint === 'number') {
-      return Math.max(0, snapPoint);
-    } else {
-      const numericValue = Number(snapPoint.replace('%', ''));
-      const isPercentage = snapPoint.includes('%');
-
-      if (isNaN(numericValue)) {
-        return 0;
-      } else if (isPercentage) {
-        return `${Math.max(0, numericValue)}%`;
-      } else {
-        return Math.max(0, numericValue);
-      }
-    }
-  });
-};
-
 export const ImageGallery = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
@@ -164,7 +131,7 @@ export const ImageGallery = <
     autoPlayVideo = false,
     giphyVersion = 'fixed_height',
     imageGalleryCustomComponents,
-    imageGalleryGridHandleHeight,
+    imageGalleryGridHandleHeight = 40,
     imageGalleryGridSnapPoints,
     numberOfImageGalleryGridColumns,
     overlayOpacity,
@@ -179,35 +146,20 @@ export const ImageGallery = <
     },
   } = useTheme();
   const [gridPhotos, setGridPhotos] = useState<Photo<StreamChatGenerics>[]>([]);
-  const { overlay, translucentStatusBar } = useOverlayContext();
+  const { overlay } = useOverlayContext();
   const { messages, selectedMessage, setSelectedMessage } =
     useImageGalleryContext<StreamChatGenerics>();
 
   const { vh, vw } = useViewport();
 
-  const measuredScreenHeight = vh(100);
-  const screenWidth = vw(100);
-  const halfScreenWidth = vw(50);
+  const fullWindowHeight = vh(100);
+  const fullWindowWidth = vw(100);
+  const halfScreenWidth = fullWindowWidth / 2;
 
-  /**
-   * Height constants
-   */
-  const statusBarHeight = StatusBar.currentHeight ?? 0;
-  const bottomBarHeight = fullScreenHeight - measuredScreenHeight - statusBarHeight;
-  const androidScreenHeightAdjustment = translucentStatusBar
-    ? bottomBarHeight === statusBarHeight || bottomBarHeight < 0
-      ? 0
-      : statusBarHeight
-    : bottomBarHeight === statusBarHeight || bottomBarHeight < 0
-    ? -statusBarHeight
-    : 0;
-  const screenHeight = isAndroid
-    ? Dimensions.get('window').height + androidScreenHeightAdjustment
-    : vh(100);
-  const halfScreenHeight = screenHeight / 2;
-  const quarterScreenHeight = screenHeight / 4;
+  const halfScreenHeight = fullWindowHeight / 2;
+  const quarterScreenHeight = fullWindowHeight / 4;
   const snapPoints = React.useMemo(
-    () => [(screenHeight * 3) / 4, screenHeight - (imageGalleryGridHandleHeight ?? 40)],
+    () => [(fullWindowHeight * 3) / 4, fullWindowHeight - imageGalleryGridHandleHeight],
     [],
   );
 
@@ -226,7 +178,7 @@ export const ImageGallery = <
    * Fade animation for screen, it is always rendered with pointerEvents
    * set to none for fast opening
    */
-  const screenTranslateY = useSharedValue(screenHeight);
+  const screenTranslateY = useSharedValue(fullWindowHeight);
   const showScreen = () => {
     'worklet';
     screenTranslateY.value = withTiming(0, {
@@ -246,7 +198,7 @@ export const ImageGallery = <
   /**
    * Image height from URL or default to full screen height
    */
-  const [currentImageHeight, setCurrentImageHeight] = useState<number>(screenHeight);
+  const [currentImageHeight, setCurrentImageHeight] = useState<number>(fullWindowHeight);
 
   /**
    * JS and UI index values, the JS follows the UI but is needed
@@ -321,9 +273,9 @@ export const ImageGallery = <
           a.type === 'giphy'
             ? giphyURL
             : getResizedImageUrl({
-                height: screenHeight,
+                height: fullWindowHeight,
                 url: imageUrl,
-                width: screenWidth,
+                width: fullWindowWidth,
               }),
         user: cur.user,
         user_id: cur.user_id,
@@ -360,7 +312,7 @@ export const ImageGallery = <
 
       if (newIndex > -1) {
         index.value = newIndex;
-        translationX.value = -(screenWidth + MARGIN) * newIndex;
+        translationX.value = -(fullWindowWidth + MARGIN) * newIndex;
         runOnJS(setSelectedIndex)(newIndex);
       }
     };
@@ -383,19 +335,19 @@ export const ImageGallery = <
   const uriForCurrentImage = imageGalleryAttachments[selectedIndex]?.uri;
 
   useEffect(() => {
-    setCurrentImageHeight(screenHeight);
+    setCurrentImageHeight(fullWindowHeight);
     const photo = imageGalleryAttachments[index.value];
     const height = photo?.original_height;
     const width = photo?.original_width;
 
     if (height && width) {
-      const imageHeight = Math.floor(height * (screenWidth / width));
-      setCurrentImageHeight(imageHeight > screenHeight ? screenHeight : imageHeight);
+      const imageHeight = Math.floor(height * (fullWindowWidth / width));
+      setCurrentImageHeight(imageHeight > fullWindowHeight ? fullWindowHeight : imageHeight);
     } else if (photo?.uri) {
       if (photo.type === 'image') {
         Image.getSize(photo.uri, (width, height) => {
-          const imageHeight = Math.floor(height * (screenWidth / width));
-          setCurrentImageHeight(imageHeight > screenHeight ? screenHeight : imageHeight);
+          const imageHeight = Math.floor(height * (fullWindowWidth / width));
+          setCurrentImageHeight(imageHeight > fullWindowHeight ? fullWindowHeight : imageHeight);
         });
       }
     }
@@ -410,8 +362,8 @@ export const ImageGallery = <
     overlayOpacity,
     photoLength,
     scale,
-    screenHeight,
-    screenWidth,
+    screenHeight: fullWindowHeight,
+    screenWidth: fullWindowWidth,
     selectedIndex,
     setSelectedIndex,
     translateX,
@@ -425,9 +377,9 @@ export const ImageGallery = <
    */
   const headerFooterOpacity = useDerivedValue(
     () =>
-      currentImageHeight * scale.value < screenHeight && translateY.value > 0
+      currentImageHeight * scale.value < fullWindowHeight && translateY.value > 0
         ? 1 - translateY.value / quarterScreenHeight
-        : currentImageHeight * scale.value > screenHeight &&
+        : currentImageHeight * scale.value > fullWindowHeight &&
           translateY.value > (currentImageHeight / 2) * scale.value - halfScreenHeight
         ? 1 -
           (translateY.value - ((currentImageHeight / 2) * scale.value - halfScreenHeight)) /
@@ -614,15 +566,15 @@ export const ImageGallery = <
                               previous={selectedIndex > i}
                               repeat={true}
                               scale={scale}
-                              screenHeight={screenHeight}
+                              screenHeight={fullWindowHeight}
                               selected={selectedIndex === i}
                               shouldRender={Math.abs(selectedIndex - i) < 4}
                               source={{ uri: photo.uri }}
                               style={[
                                 {
-                                  height: screenHeight * 8,
+                                  height: fullWindowHeight * 8,
                                   marginRight: MARGIN,
-                                  width: screenWidth * 8,
+                                  width: fullWindowWidth * 8,
                                 },
                                 slide,
                               ]}
@@ -639,14 +591,14 @@ export const ImageGallery = <
                               photo={photo}
                               previous={selectedIndex > i}
                               scale={scale}
-                              screenHeight={screenHeight}
+                              screenHeight={fullWindowHeight}
                               selected={selectedIndex === i}
                               shouldRender={Math.abs(selectedIndex - i) < 4}
                               style={[
                                 {
-                                  height: screenHeight * 8,
+                                  height: fullWindowHeight * 8,
                                   marginRight: MARGIN,
-                                  width: screenWidth * 8,
+                                  width: fullWindowWidth * 8,
                                 },
                                 slide,
                               ]}
@@ -704,11 +656,11 @@ export const ImageGallery = <
               {...imageGalleryCustomComponents?.gridHandle}
             />
           )}
-          handleHeight={imageGalleryGridHandleHeight ?? 40}
+          handleHeight={imageGalleryGridHandleHeight}
           index={0}
           onChange={(index: number) => setCurrentBottomSheetIndex(index)}
           ref={bottomSheetModalRef}
-          snapPoints={normalizeSnapPoints(imageGalleryGridSnapPoints || snapPoints)}
+          snapPoints={imageGalleryGridSnapPoints || snapPoints}
         >
           <ImageGrid
             closeGridView={closeGridView}

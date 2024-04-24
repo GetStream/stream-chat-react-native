@@ -28,7 +28,10 @@ import { useAudioController } from './hooks/useAudioController';
 import { useCountdown } from './hooks/useCountdown';
 
 import { ChatContextValue, useChatContext } from '../../contexts';
-import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import {
+  AttachmentPickerContextValue,
+  useAttachmentPickerContext,
+} from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import {
   ChannelContextValue,
   useChannelContext,
@@ -55,7 +58,6 @@ import {
 
 import { triggerHaptic } from '../../native';
 import type { Asset, DefaultStreamChatGenerics } from '../../types/types';
-import { AttachmentSelectionBar } from '../AttachmentPicker/components/AttachmentSelectionBar';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 
 const styles = StyleSheet.create({
@@ -98,7 +100,8 @@ const styles = StyleSheet.create({
 
 type MessageInputPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChatContextValue<StreamChatGenerics>, 'isOnline'> &
+> = Pick<AttachmentPickerContextValue, 'AttachmentPickerSelectionBar'> &
+  Pick<ChatContextValue<StreamChatGenerics>, 'isOnline'> &
   Pick<
     ChannelContextValue<StreamChatGenerics>,
     'disabled' | 'members' | 'threadList' | 'watchers'
@@ -176,6 +179,7 @@ const MessageInputWithContext = <
     additionalTextInputProps,
     asyncIds,
     asyncUploads,
+    AttachmentPickerSelectionBar,
     AudioRecorder,
     AudioRecordingButton,
     AudioRecordingInProgress,
@@ -842,14 +846,12 @@ const MessageInputWithContext = <
             {
               backgroundColor: white_smoke,
               height:
-                (attachmentPickerBottomSheetHeight
-                  ? attachmentPickerBottomSheetHeight + (attachmentSelectionBarHeight ?? 52)
-                  : 360) - bottomInset,
+                attachmentPickerBottomSheetHeight + attachmentSelectionBarHeight - bottomInset,
             },
             attachmentSelectionBar,
           ]}
         >
-          <AttachmentSelectionBar />
+          <AttachmentPickerSelectionBar />
         </View>
       )}
     </>
@@ -1014,6 +1016,7 @@ export const MessageInput = <
 >(
   props: MessageInputProps<StreamChatGenerics>,
 ) => {
+  const { AttachmentPickerSelectionBar } = useAttachmentPickerContext();
   const { isOnline } = useChatContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
@@ -1097,6 +1100,7 @@ export const MessageInput = <
         additionalTextInputProps,
         asyncIds,
         asyncUploads,
+        AttachmentPickerSelectionBar,
         AudioRecorder,
         AudioRecordingButton,
         AudioRecordingInProgress,

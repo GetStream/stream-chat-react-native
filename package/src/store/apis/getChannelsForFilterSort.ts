@@ -1,8 +1,9 @@
-import type { DefaultStreamChatGenerics } from 'src/types/types';
 import type { ChannelAPIResponse, ChannelFilters, ChannelSort } from 'stream-chat';
 
 import { getChannels } from './getChannels';
 import { selectChannelIdsForFilterSort } from './queries/selectChannelIdsForFilterSort';
+
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 import { QuickSqliteClient } from '../QuickSqliteClient';
 

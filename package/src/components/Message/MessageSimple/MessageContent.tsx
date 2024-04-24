@@ -95,6 +95,7 @@ export type MessageContentPropsWithContext<
     | 'MessageHeader'
     | 'MessageDeleted'
     | 'MessageError'
+    | 'MessagePinnedHeader'
     | 'MessageReplies'
     | 'MessageStatus'
     | 'myMessageTheme'
@@ -132,6 +133,7 @@ const MessageContentWithContext = <
     MessageError,
     MessageFooter,
     MessageHeader,
+    MessagePinnedHeader,
     MessageReplies,
     MessageStatus,
     onLongPress,
@@ -340,6 +342,7 @@ const MessageContentWithContext = <
           showMessageStatus={showMessageStatus}
         />
       )}
+      {message.pinned && <MessagePinnedHeader />}
       <View onLayout={onLayout} style={wrapper}>
         {hasThreadReplies && !threadList && !noBorder && (
           <View
@@ -599,6 +602,7 @@ export const MessageContent = <
     MessageError,
     MessageFooter,
     MessageHeader,
+    MessagePinnedHeader,
     MessageReplies,
     MessageStatus,
     myMessageTheme,
@@ -630,6 +634,7 @@ export const MessageContent = <
         MessageError,
         MessageFooter,
         MessageHeader,
+        MessagePinnedHeader,
         MessageReplies,
         MessageStatus,
         myMessageTheme,
