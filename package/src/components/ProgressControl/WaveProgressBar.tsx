@@ -67,7 +67,6 @@ export const WaveProgressBar = React.memo(
 
     useEffect(() => {
       const stageProgress = Math.floor(progress * (amplitudesCount - 1));
-      console.log(stageProgress);
       state.value = stageProgress * (WAVEFORM_WIDTH * 2);
       setEndPosition(state.value);
       setCurrentWaveformProgress(stageProgress);

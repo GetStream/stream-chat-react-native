@@ -162,8 +162,6 @@ const FileUploadPreviewWithContext = <
   const flatListRef = useRef<FlatList<FileUpload> | null>(null);
   const [flatListWidth, setFlatListWidth] = useState(0);
 
-  console.log(fileUploads);
-
   useEffect(() => {
     setFileUploads(
       fileUploads.map((file) => ({
