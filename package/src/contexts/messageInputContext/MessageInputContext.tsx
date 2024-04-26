@@ -226,10 +226,25 @@ export type LocalMessageInputContext<
 export type InputMessageInputContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled'> & {
+  /**
+   * Controls whether the feature is enabled.
+   */
   asyncMessagesEnabled: boolean;
+  /**
+   * Controls how many pixels to the top side the user has to scroll in order to lock the recording view and allow the user to lift their finger from the screen without stopping the recording.
+   */
   asyncMessagesLockDistance: number;
+  /**
+   * Controls the minimum duration that the user has to press on the record button in the composer, in order to start recording a new voice message.
+   */
   asyncMessagesMinimumPressDuration: number;
+  /**
+   * When it’s enabled, recorded messages won’t be sent immediately. Instead they will “stack up” in the composer allowing the user to send multiple voice recording as part of the same message
+   */
   asyncMessagesMultiSendEnabled: boolean;
+  /**
+   * Controls how many pixels to the leading side the user has to scroll in order to cancel the recording of a voice message.
+   */
   asyncMessagesSlideToCancelDistance: number;
   /**
    * Custom UI component for attach button.

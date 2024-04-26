@@ -150,11 +150,6 @@ export const useAudioController = () => {
       status.currentMetering || status.metering,
       Platform.OS === 'android' && typeof recording !== 'string',
     );
-    console.log(
-      status.currentMetering || status.metering,
-      normalizedAudioLevel,
-      Platform.OS === 'android' && typeof recording !== 'string',
-    );
     setWaveformData((prev) => [...prev, normalizedAudioLevel]);
   };
 
@@ -234,7 +229,7 @@ export const useAudioController = () => {
     const file: File = {
       duration: durationInSeconds,
       mimeType: 'audio/aac',
-      name: 'Recording',
+      name: `audio_recording_${new Date().toISOString()}.aac`,
       type: 'voiceRecording',
       uri: typeof recording !== 'string' ? (recording?.getURI() as string) : (recording as string),
       waveform_data: resampledWaveformData,

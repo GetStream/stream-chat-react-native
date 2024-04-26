@@ -2,7 +2,6 @@
  * Utility function to normalize the audio level.
  */
 export const normalizeAudioLevel = (value: number, higherLowerBound?: boolean) => {
-  console.log(higherLowerBound);
   // For Native CLI, the lower bound is around -50
   const lowerBound = higherLowerBound === true ? -120 : -50;
   const upperBound = 0;
