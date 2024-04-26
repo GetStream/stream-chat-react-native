@@ -131,7 +131,7 @@ export const ImageGallery = <
     autoPlayVideo = false,
     giphyVersion = 'fixed_height',
     imageGalleryCustomComponents,
-    imageGalleryGridHandleHeight,
+    imageGalleryGridHandleHeight = 40,
     imageGalleryGridSnapPoints,
     numberOfImageGalleryGridColumns,
     overlayOpacity,

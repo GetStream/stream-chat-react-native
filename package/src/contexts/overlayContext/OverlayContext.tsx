@@ -59,7 +59,6 @@ export type OverlayProviderProps<
       | 'OverlayReactionsAvatar'
     >
   > & {
-    imageGalleryGridHandleHeight: number;
     autoPlayVideo?: boolean;
     /**
      * The giphy version to render - check the keys of the [Image Object](https://developers.giphy.com/docs/api/schema#image-object) for possible values. Uses 'fixed_height' by default
@@ -69,6 +68,7 @@ export type OverlayProviderProps<
     giphyVersion?: keyof NonNullable<Attachment['giphy']>;
     /** https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n) */
     i18nInstance?: Streami18n;
+    imageGalleryGridHandleHeight?: number;
     imageGalleryGridSnapPoints?: [string | number, string | number];
     isMyMessage?: boolean;
     isThreadMessage?: boolean;
