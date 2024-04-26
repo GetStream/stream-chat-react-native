@@ -240,6 +240,44 @@ export type Theme = {
     attachButton: ViewStyle;
     attachButtonContainer: ViewStyle;
     attachmentSelectionBar: ViewStyle;
+    attachmentSeparator: ViewStyle;
+    audioRecorder: {
+      arrowLeftIcon: IconProps;
+      checkContainer: ViewStyle;
+      circleStopIcon: IconProps;
+      deleteContainer: ViewStyle;
+      deleteIcon: IconProps;
+      micContainer: ViewStyle;
+      micIcon: IconProps;
+      pausedContainer: ViewStyle;
+      sendCheckIcon: IconProps;
+      slideToCancelContainer: ViewStyle;
+    };
+    audioRecordingButton: {
+      container: ViewStyle;
+      micIcon: IconProps;
+    };
+    audioRecordingInProgress: {
+      container: ViewStyle;
+      durationText: TextStyle;
+    };
+    audioRecordingLockIndicator: {
+      arrowUpIcon: IconProps;
+      container: ViewStyle;
+      lockIcon: IconProps;
+    };
+    audioRecordingPreview: {
+      container: ViewStyle;
+      currentTime: TextStyle;
+      infoContainer: ViewStyle;
+      pauseIcon: IconProps;
+      playIcon: IconProps;
+      progressBar: ViewStyle;
+    };
+    audioRecordingWaveform: {
+      container: ViewStyle;
+      waveform: ViewStyle;
+    };
     autoCompleteInputContainer: ViewStyle;
     commandsButton: ViewStyle;
     commandsButtonContainer: ViewStyle;
@@ -443,6 +481,7 @@ export type Theme = {
       title: TextStyle;
     };
     fileAttachmentGroup: {
+      attachmentContainer: ViewStyle;
       container: ViewStyle;
     };
     gallery: {
@@ -762,6 +801,31 @@ export const defaultTheme: Theme = {
     attachButton: {},
     attachButtonContainer: {},
     attachmentSelectionBar: {},
+    attachmentSeparator: {},
+    audioRecorder: {
+      arrowLeftIcon: {},
+      checkContainer: {},
+      circleStopIcon: {},
+      deleteContainer: {},
+      deleteIcon: {},
+      micContainer: {},
+      micIcon: {},
+      pausedContainer: {},
+      sendCheckIcon: {},
+      slideToCancelContainer: {},
+    },
+    audioRecordingButton: { container: {}, micIcon: {} },
+    audioRecordingInProgress: { container: {}, durationText: {} },
+    audioRecordingLockIndicator: { arrowUpIcon: {}, container: {}, lockIcon: {} },
+    audioRecordingPreview: {
+      container: {},
+      currentTime: {},
+      infoContainer: {},
+      pauseIcon: {},
+      playIcon: {},
+      progressBar: {},
+    },
+    audioRecordingWaveform: { container: {}, waveform: {} },
     autoCompleteInputContainer: {},
     commandsButton: {},
     commandsButtonContainer: {},
@@ -992,6 +1056,7 @@ export const defaultTheme: Theme = {
       title: {},
     },
     fileAttachmentGroup: {
+      attachmentContainer: {},
       container: {},
     },
     gallery: {

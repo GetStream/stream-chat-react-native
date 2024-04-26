@@ -35,6 +35,9 @@ export const AudioRecordingLockIndicator = ({
   const {
     theme: {
       colors: { accent_blue, grey, light_gray },
+      messageInput: {
+        audioRecordingLockIndicator: { arrowUpIcon, container, lockIcon },
+      },
     },
   } = useTheme();
 
@@ -44,10 +47,15 @@ export const AudioRecordingLockIndicator = ({
 
   return (
     <Animated.View
-      style={[styles.container, style, { backgroundColor: light_gray, bottom: messageInputHeight }]}
+      style={[
+        styles.container,
+        style,
+        { backgroundColor: light_gray, bottom: messageInputHeight },
+        container,
+      ]}
     >
-      <Lock color={locked ? accent_blue : grey} size={32} />
-      {!locked && <ArrowUp color={grey} size={32} />}
+      <Lock color={locked ? accent_blue : grey} size={32} {...lockIcon} />
+      {!locked && <ArrowUp color={grey} size={32} {...arrowUpIcon} />}
     </Animated.View>
   );
 };

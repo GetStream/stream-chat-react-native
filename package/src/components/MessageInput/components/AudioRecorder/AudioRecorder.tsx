@@ -65,6 +65,20 @@ const AudioRecorderWithContext = <
   const {
     theme: {
       colors: { accent_blue, accent_red, grey_dark },
+      messageInput: {
+        audioRecorder: {
+          arrowLeftIcon,
+          checkContainer,
+          circleStopIcon,
+          deleteContainer,
+          deleteIcon,
+          micContainer,
+          micIcon,
+          pausedContainer,
+          sendCheckIcon,
+          slideToCancelContainer,
+        },
+      },
     },
   } = useTheme();
 
@@ -72,12 +86,17 @@ const AudioRecorderWithContext = <
     <>
       {recordingStopped !== undefined ? (
         recordingStopped ? (
-          <Pressable disabled={disabled} onPress={deleteVoiceRecording} testID='delete-button'>
-            <Delete fill={accent_blue} size={32} />
+          <Pressable
+            disabled={disabled}
+            onPress={deleteVoiceRecording}
+            style={[styles.deleteContainer, deleteContainer]}
+            testID='delete-button'
+          >
+            <Delete fill={accent_blue} size={32} {...deleteIcon} />
           </Pressable>
         ) : (
-          <View style={[styles.micContainer]}>
-            <Mic fill={recordingDuration !== 0 ? accent_red : grey_dark} size={32} />
+          <View style={[styles.micContainer, micContainer]}>
+            <Mic fill={recordingDuration !== 0 ? accent_red : grey_dark} size={32} {...micIcon} />
             {/* `durationMillis` is for Expo apps, `currentPosition` is for Native CLI apps. */}
             {!micLocked && (
               <Text style={[styles.durationLabel, { color: grey_dark }]}>
@@ -89,14 +108,16 @@ const AudioRecorderWithContext = <
       ) : null}
       {micLocked ? (
         !recordingStopped && (
-          <Pressable onPress={stopVoiceRecording} style={styles.pausedContainer}>
-            <CircleStop fill={accent_red} size={32} />
+          <Pressable onPress={stopVoiceRecording} style={[styles.pausedContainer, pausedContainer]}>
+            <CircleStop fill={accent_red} size={32} {...circleStopIcon} />
           </Pressable>
         )
       ) : (
-        <Animated.View style={[styles.slideToCancelContainer, slideToCancelStyle]}>
+        <Animated.View
+          style={[styles.slideToCancelContainer, slideToCancelStyle, slideToCancelContainer]}
+        >
           <Text style={[styles.slideToCancel, { color: grey_dark }]}>Slide to Cancel</Text>
-          <ArrowLeft fill={grey_dark} size={24} />
+          <ArrowLeft fill={grey_dark} size={24} {...arrowLeftIcon} />
         </Animated.View>
       )}
       {micLocked ? (
@@ -106,9 +127,9 @@ const AudioRecorderWithContext = <
               await uploadVoiceRecording(asyncMessagesMultiSendEnabled);
             }
           }}
-          style={styles.checkContainer}
+          style={[styles.checkContainer, checkContainer]}
         >
-          <SendCheck fill={accent_blue} size={32} />
+          <SendCheck fill={accent_blue} size={32} {...sendCheckIcon} />
         </Pressable>
       ) : null}
     </>
@@ -201,6 +222,7 @@ export const AudioRecorder = <
 
 const styles = StyleSheet.create({
   checkContainer: {},
+  deleteContainer: {},
   durationLabel: {
     fontSize: 14,
   },

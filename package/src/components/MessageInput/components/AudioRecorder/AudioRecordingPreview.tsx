@@ -22,25 +22,35 @@ export const AudioRecordingPreview = (props: AudioRecordingPreviewProps) => {
   const {
     theme: {
       colors: { accent_blue, grey_dark },
+      messageInput: {
+        audioRecordingPreview: {
+          container,
+          currentTime,
+          infoContainer,
+          pauseIcon,
+          playIcon,
+          progressBar,
+        },
+      },
     },
   } = useTheme();
 
   return (
-    <View style={styles.container}>
-      <View style={styles.info}>
+    <View style={[styles.container, container]}>
+      <View style={[styles.infoContainer, infoContainer]}>
         <Pressable onPress={onVoicePlayerPlayPause}>
           {paused ? (
-            <Play fill={accent_blue} height={32} width={32} />
+            <Play fill={accent_blue} height={32} width={32} {...playIcon} />
           ) : (
-            <Pause fill={accent_blue} height={32} width={32} />
+            <Pause fill={accent_blue} height={32} width={32} {...pauseIcon} />
           )}
         </Pressable>
         {/* `durationMillis` is for Expo apps, `currentPosition` is for Native CLI apps. */}
-        <Text style={[styles.currentTime, { color: grey_dark }]}>
+        <Text style={[styles.currentTime, { color: grey_dark }, currentTime]}>
           {dayjs.duration(position).format('mm:ss')}
         </Text>
       </View>
-      <View style={styles.progressBar}>
+      <View style={[styles.progressBar, progressBar]}>
         {/* Since the progress is in range 0-1 we convert it in terms of 100% */}
         <WaveProgressBar progress={progress} waveformData={waveformData} />
       </View>
@@ -60,7 +70,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 4,
   },
-  info: {
+  infoContainer: {
     alignItems: 'center',
     display: 'flex',
     flex: 1,

@@ -248,6 +248,7 @@ const MessageInputWithContext = <
       colors: { border, grey_whisper, white, white_smoke },
       messageInput: {
         attachmentSelectionBar,
+        attachmentSeparator,
         autoCompleteInputContainer,
         composerContainer,
         container,
@@ -723,19 +724,18 @@ const MessageInputWithContext = <
           />
         )}
         {showVoiceUI &&
-          (micLocked ? (
-            recordingStopped ? (
-              <AudioRecordingPreview
-                onVoicePlayerPlayPause={onVoicePlayerPlayPause}
-                paused={paused}
-                position={position}
-                progress={progress}
-                waveformData={waveformData}
-              />
-            ) : (
-              <AudioRecordingInProgress waveformData={waveformData} />
-            )
-          ) : null)}
+          micLocked &&
+          (recordingStopped ? (
+            <AudioRecordingPreview
+              onVoicePlayerPlayPause={onVoicePlayerPlayPause}
+              paused={paused}
+              position={position}
+              progress={progress}
+              waveformData={waveformData}
+            />
+          ) : (
+            <AudioRecordingInProgress waveformData={waveformData} />
+          ))}
         <View style={[styles.composerContainer, composerContainer]}>
           {Input ? (
             <Input
@@ -782,6 +782,7 @@ const MessageInputWithContext = <
                             borderBottomColor: grey_whisper,
                             marginHorizontal: giphyActive ? 8 : 12,
                           },
+                          attachmentSeparator,
                         ]}
                       />
                     ) : null}

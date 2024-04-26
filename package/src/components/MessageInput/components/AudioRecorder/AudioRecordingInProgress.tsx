@@ -38,13 +38,16 @@ const AudioRecordingInProgressWithContext = <
   const {
     theme: {
       colors: { grey_dark },
+      messageInput: {
+        audioRecordingInProgress: { container, durationText },
+      },
     },
   } = useTheme();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, container]}>
       {/* `durationMillis` is for Expo apps, `currentPosition` is for Native CLI apps. */}
-      <Text style={[styles.durationText, { color: grey_dark }]}>
+      <Text style={[styles.durationText, { color: grey_dark }, durationText]}>
         {recordingDuration ? dayjs.duration(recordingDuration).format('mm:ss') : null}
       </Text>
       <AudioRecordingWaveform maxDataPointsDrawn={maxDataPointsDrawn} waveformData={waveformData} />

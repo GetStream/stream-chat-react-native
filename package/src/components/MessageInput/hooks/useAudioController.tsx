@@ -100,9 +100,11 @@ export const useAudioController = () => {
     setPaused(!paused);
   };
 
+  /**
+   * Function to start playing voice recording to preview it after recording.
+   */
   const startVoicePlayer = async () => {
     if (!recording) return;
-    console.log('startVoicePlayer');
     // For Native CLI
     if (Audio.startPlayer)
       await Audio.startPlayer(recording, {}, onVoicePlayerPlaybackStatusUpdate);
@@ -125,8 +127,10 @@ export const useAudioController = () => {
     }
   };
 
+  /**
+   * Function to stop playing voice recording.
+   */
   const stopVoicePlayer = async () => {
-    console.log('stopVoicePlayer');
     // For Native CLI
     if (Audio.stopPlayer) {
       await Audio.stopPlayer();
@@ -153,6 +157,9 @@ export const useAudioController = () => {
     setWaveformData((prev) => [...prev, normalizedAudioLevel]);
   };
 
+  /**
+   * Function to start voice recording.
+   */
   const startVoiceRecording = async () => {
     setShowVoiceUI(true);
     setRecordingStopped(false);
@@ -178,6 +185,9 @@ export const useAudioController = () => {
     }
   };
 
+  /**
+   * Function to stop voice recording.
+   */
   const stopVoiceRecording = async () => {
     if (recording) {
       // For Expo CLI
@@ -193,6 +203,9 @@ export const useAudioController = () => {
     setRecordingStopped(true);
   };
 
+  /**
+   * Function to reset the state of the message input for async voice messages.
+   */
   const resetState = () => {
     setRecordingStopped(true);
     setShowVoiceUI(false);
@@ -203,6 +216,9 @@ export const useAudioController = () => {
     setProgress(0);
   };
 
+  /**
+   * Function to delete voice recording.
+   */
   const deleteVoiceRecording = async () => {
     if (!recordingStopped) {
       await stopVoiceRecording();
@@ -214,6 +230,10 @@ export const useAudioController = () => {
     triggerHaptic('impactMedium');
   };
 
+  /**
+   * Function to upload or send voice recording.
+   * @param multiSendEnabled boolean
+   */
   const uploadVoiceRecording = async (multiSendEnabled: boolean) => {
     if (!paused) {
       await stopVoicePlayer();

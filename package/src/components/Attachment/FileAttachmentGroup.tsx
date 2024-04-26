@@ -19,18 +19,6 @@ import { isAudioPackageAvailable } from '../../native';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 4,
-  },
-  fileContainer: {
-    borderRadius: 12,
-    borderWidth: 1,
-    paddingHorizontal: 4,
-    paddingVertical: 4,
-  },
-});
-
 export type FileAttachmentGroupPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<MessageContextValue<StreamChatGenerics>, 'files'> &
@@ -117,9 +105,8 @@ const FileAttachmentGroupWithContext = <
 
   const {
     theme: {
-      colors: { grey_whisper, white },
       messageSimple: {
-        fileAttachmentGroup: { container },
+        fileAttachmentGroup: { attachmentContainer, container },
       },
     },
   } = useTheme();
@@ -132,44 +119,29 @@ const FileAttachmentGroupWithContext = <
           style={[
             { paddingBottom: index !== files.length - 1 ? 4 : 0 },
             stylesProp.attachmentContainer,
+            attachmentContainer,
           ]}
         >
           {(file.type === 'audio' || file.type === 'voiceRecording') &&
           isAudioPackageAvailable() ? (
-            <View
-              accessibilityLabel='audio-attachment-preview'
-              style={[
-                styles.fileContainer,
-                index === filesToDisplay.length - 1
-                  ? {
-                      marginBottom: 0,
-                    }
-                  : {},
-                {
-                  backgroundColor: white,
-                  borderColor: grey_whisper,
+            <AudioAttachment
+              item={{
+                duration: file.duration,
+                file: {
+                  name: file.title as string,
+                  uri: file.asset_url,
+                  waveform_data: file.waveform_data,
                 },
-              ]}
-            >
-              <AudioAttachment
-                item={{
-                  duration: file.duration,
-                  file: {
-                    name: file.title as string,
-                    uri: file.asset_url,
-                    waveform_data: file.waveform_data,
-                  },
-                  id: index.toString(),
-                  paused: file.paused,
-                  progress: file.progress,
-                }}
-                onLoad={onLoad}
-                onPlayPause={onPlayPause}
-                onProgress={onProgress}
-                showSpeedSettings={true}
-                testID='audio-attachment-preview'
-              />
-            </View>
+                id: index.toString(),
+                paused: file.paused,
+                progress: file.progress,
+              }}
+              onLoad={onLoad}
+              onPlayPause={onPlayPause}
+              onProgress={onProgress}
+              showSpeedSettings={true}
+              testID='audio-attachment-preview'
+            />
           ) : (
             <Attachment attachment={file} />
           )}
@@ -226,5 +198,11 @@ export const FileAttachmentGroup = <
     />
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 4,
+  },
+});
 
 FileAttachmentGroup.displayName = 'FileAttachmentGroup{messageSimple{fileAttachmentGroup}}';

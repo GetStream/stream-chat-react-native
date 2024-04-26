@@ -13,10 +13,13 @@ export const AudioRecordingWaveform = (props: AudioRecordingWaveformProps) => {
   const {
     theme: {
       colors: { grey_dark },
+      messageInput: {
+        audioRecordingWaveform: { container, waveform: waveformTheme },
+      },
     },
   } = useTheme();
   return (
-    <View style={styles.waveformContainer}>
+    <View style={[styles.container, container]}>
       {waveformData.slice(-maxDataPointsDrawn).map((waveform, index) => (
         <View
           key={index}
@@ -26,6 +29,7 @@ export const AudioRecordingWaveform = (props: AudioRecordingWaveformProps) => {
               backgroundColor: grey_dark,
               height: waveform * 30 > 3 ? waveform * 30 : 3,
             },
+            waveformTheme,
           ]}
         />
       ))}
@@ -34,15 +38,15 @@ export const AudioRecordingWaveform = (props: AudioRecordingWaveformProps) => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    alignSelf: 'center',
+    flexDirection: 'row',
+  },
   waveform: {
     alignSelf: 'center',
     borderRadius: 2,
     marginHorizontal: 1,
     width: 2,
-  },
-  waveformContainer: {
-    alignSelf: 'center',
-    flexDirection: 'row',
   },
 });
 

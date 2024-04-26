@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Pressable, StyleSheet } from 'react-native';
+import { Alert, Linking, Pressable, StyleSheet } from 'react-native';
 
 import {
   ChannelContextValue,
@@ -50,6 +50,9 @@ const AudioRecordingButtonWithContext = <
   const {
     theme: {
       colors: { grey, light_gray, white },
+      messageInput: {
+        audioRecordingButton: { container, micIcon },
+      },
     },
   } = useTheme();
   const { t } = useTranslationContext();
@@ -72,7 +75,14 @@ const AudioRecordingButtonWithContext = <
     if (!showVoiceUI) {
       triggerHaptic('impactHeavy');
       if (!permissionsGranted) {
-        Alert.alert(t('Please allow Audio permissions in settings.'));
+        Alert.alert(t('Please allow Audio permissions in settings.'), '', [
+          {
+            onPress: () => {
+              Linking.openSettings();
+            },
+            text: t('Open Setting'),
+          },
+        ]);
         return;
       }
       if (startVoiceRecording) startVoiceRecording();
@@ -92,10 +102,11 @@ const AudioRecordingButtonWithContext = <
           height: buttonSize || 40,
           width: buttonSize || 40,
         },
+        container,
       ]}
       testID='audio-button'
     >
-      <Mic fill={grey} size={32} />
+      <Mic fill={grey} size={32} {...micIcon} />
     </Pressable>
   );
 };

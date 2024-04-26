@@ -207,7 +207,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
         speedChangeButton,
         speedChangeButtonText,
       },
-      colors: { accent_blue, black, grey_dark, static_black, static_white },
+      colors: { accent_blue, black, grey_dark, grey_whisper, static_black, static_white, white },
       messageInput: {
         fileUploadPreview: { filenameText },
       },
@@ -226,10 +226,18 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
 
   return (
     <View
+      accessibilityLabel='audio-attachment-preview'
       onLayout={({ nativeEvent }) => {
         setWidth(nativeEvent.layout.width);
       }}
-      style={[styles.container, container]}
+      style={[
+        styles.container,
+        {
+          backgroundColor: white,
+          borderColor: grey_whisper,
+        },
+        container,
+      ]}
     >
       <Pressable
         accessibilityLabel='Play Pause Button'
@@ -347,15 +355,17 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: 'center',
+    borderRadius: 12,
+    borderWidth: 1,
     flexDirection: 'row',
     justifyContent: 'center',
     paddingHorizontal: 8,
-    paddingVertical: 8,
+    paddingVertical: 12,
   },
   filenameText: {
     fontSize: 14,
     fontWeight: 'bold',
-    paddingBottom: 10,
+    paddingBottom: 12,
     paddingLeft: 8,
   },
   leftContainer: {
