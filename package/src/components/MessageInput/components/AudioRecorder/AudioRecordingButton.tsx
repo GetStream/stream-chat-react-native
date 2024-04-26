@@ -78,7 +78,7 @@ const AudioRecordingButtonWithContext = <
             onPress: () => {
               Linking.openSettings();
             },
-            text: t('Open Setting'),
+            text: t('Open Settings'),
           },
         ]);
         return;
