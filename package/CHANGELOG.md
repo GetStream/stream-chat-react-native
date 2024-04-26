@@ -1,5 +1,12 @@
 # Change Log
 
+### [5.28.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.28.0...v5.28.1) (2024-04-26)
+
+
+### Bug Fixes
+
+* image gallery handle height ts issue ([#2496](https://github.com/GetStream/stream-chat-react-native/issues/2496)) ([51f68aa](https://github.com/GetStream/stream-chat-react-native/commit/51f68aad495cdca036f6bbd080b3031a7d3abc14))
+
 ## [5.28.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.27.1...v5.28.0) (2024-04-23)
 
 
