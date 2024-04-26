@@ -204,10 +204,8 @@ export type LocalMessageInputContext<
   setRecordingStopped: React.Dispatch<boolean>;
   setSendThreadMessageInChannel: React.Dispatch<React.SetStateAction<boolean>>;
   setShowMoreOptions: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowVoiceUI: React.Dispatch<React.SetStateAction<boolean>>;
   setText: React.Dispatch<React.SetStateAction<string>>;
   showMoreOptions: boolean;
-  showVoiceUI: boolean;
   text: string;
   toggleAttachmentPicker: () => void;
   /**
@@ -552,10 +550,8 @@ export const MessageInputProvider = <
     setRecordingDuration,
     setRecordingStopped,
     setShowMoreOptions,
-    setShowVoiceUI,
     setText,
     showMoreOptions,
-    showVoiceUI,
     text,
   } = useMessageDetailsForState<StreamChatGenerics>(editing, initialValue);
   const { endsAt: cooldownEndsAt, start: startCooldown } = useCooldown<StreamChatGenerics>();
@@ -726,7 +722,6 @@ export const MessageInputProvider = <
     setFileUploads([]);
     setGiphyActive(false);
     setShowMoreOptions(true);
-    setShowVoiceUI(false);
     setImageUploads([]);
     setMentionedUsers([]);
     setNumberOfUploads(
@@ -1324,10 +1319,8 @@ export const MessageInputProvider = <
     setRecordingStopped,
     setSendThreadMessageInChannel,
     setShowMoreOptions,
-    setShowVoiceUI,
     setText,
     showMoreOptions,
-    showVoiceUI,
     text,
     thread,
     toggleAttachmentPicker,

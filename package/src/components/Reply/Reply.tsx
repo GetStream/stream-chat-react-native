@@ -24,6 +24,7 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
+import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
 import { hasOnlyEmojis } from '../../utils/utils';
 
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
@@ -178,6 +179,8 @@ const ReplyWithContext = <
   const lastAttachment = quotedMessage.attachments?.slice(-1)[0] as Attachment<StreamChatGenerics>;
   const messageType = lastAttachment && getMessageType(lastAttachment);
 
+  const trimmedLastAttachmentTitle = getTrimmedAttachmentTitle(lastAttachment?.title);
+
   const hasImage =
     !error &&
     lastAttachment &&
@@ -268,7 +271,7 @@ const ReplyWithContext = <
                   : messageType === 'file' ||
                     messageType === 'audio' ||
                     messageType === 'voiceRecording'
-                  ? lastAttachment?.title || ''
+                  ? trimmedLastAttachmentTitle || ''
                   : '',
             }}
             onlyEmojis={onlyEmojis}

@@ -14,6 +14,7 @@ import {
   VideoProgressData,
 } from '../../native';
 import type { FileUpload } from '../../types/types';
+import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
 import { ProgressControl } from '../ProgressControl/ProgressControl';
 import { WaveProgressBar } from '../ProgressControl/WaveProgressBar';
 
@@ -44,6 +45,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     onPlayPause,
     onProgress,
     showSpeedSettings = false,
+    testID,
   } = props;
 
   /** This is for Native CLI Apps */
@@ -220,9 +222,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     ? progressValueInSeconds / 3600 >= 1
       ? dayjs.duration(progressValueInSeconds, 'second').format('HH:mm:ss')
       : dayjs.duration(progressValueInSeconds, 'second').format('mm:ss')
-    : '00:00';
-
-  const lastIndexOfDot = item.file.name.lastIndexOf('.');
+    : dayjs.duration(item.duration ?? 0, 'second').format('mm:ss');
 
   return (
     <View
@@ -238,6 +238,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
         },
         container,
       ]}
+      testID={testID}
     >
       <Pressable
         accessibilityLabel='Play Pause Button'
@@ -272,9 +273,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             filenameText,
           ]}
         >
-          {item.file.name.length < 12
-            ? item.file.name
-            : item.file.name.slice(0, 12) + '...' + item.file.name.slice(lastIndexOfDot)}
+          {getTrimmedAttachmentTitle(item.file.name)}
         </Text>
         <View style={styles.audioInfo}>
           {/* <ExpoSoundPlayer filePaused={!!item.paused} soundRef={soundRef} /> */}
@@ -358,7 +357,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     flexDirection: 'row',
-    justifyContent: 'center',
     paddingHorizontal: 8,
     paddingVertical: 12,
   },

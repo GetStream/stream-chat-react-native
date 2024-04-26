@@ -19,7 +19,6 @@ export const useMessageDetailsForState = <
   const [mentionedUsers, setMentionedUsers] = useState<string[]>([]);
   const [numberOfUploads, setNumberOfUploads] = useState(0);
   const [showMoreOptions, setShowMoreOptions] = useState(true);
-  const [showVoiceUI, setShowVoiceUI] = useState(false);
   const [recording, setRecording] = useState<AudioRecordingReturnType>(undefined);
   const [recordingDuration, setRecordingDuration] = useState<number>(0);
   const [recordingStopped, setRecordingStopped] = useState<boolean>(true);
@@ -169,10 +168,8 @@ export const useMessageDetailsForState = <
     setRecordingDuration,
     setRecordingStopped,
     setShowMoreOptions,
-    setShowVoiceUI,
     setText,
     showMoreOptions,
-    showVoiceUI,
     text,
   };
 };

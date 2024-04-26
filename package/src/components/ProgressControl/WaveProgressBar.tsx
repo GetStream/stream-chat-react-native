@@ -63,6 +63,7 @@ export const WaveProgressBar = React.memo(
     const {
       theme: {
         colors: { accent_blue, grey_dark },
+        waveProgressBar: { container, thumb, waveform: waveformTheme },
       },
     } = useTheme();
     const state = useSharedValue(0);
@@ -117,7 +118,7 @@ export const WaveProgressBar = React.memo(
     );
 
     return (
-      <View style={styles.waveformContainer}>
+      <View style={[styles.container, container]}>
         {resampledWaveformData.map((waveform, index) => (
           <View
             key={index}
@@ -128,12 +129,13 @@ export const WaveProgressBar = React.memo(
                   index < currentWaveformProgress ? filledColor || accent_blue : grey_dark,
                 height: waveform * 25 > 3 ? waveform * 25 : 3,
               },
+              waveformTheme,
             ]}
           />
         ))}
         {showProgressDrag && onProgressDrag && (
           <PanGestureHandler maxPointers={1} onGestureEvent={onGestureEvent}>
-            <Animated.View style={thumbStyles}>
+            <Animated.View style={[thumbStyles, thumb]}>
               <ProgressControlThumb />
             </Animated.View>
           </PanGestureHandler>
@@ -149,6 +151,11 @@ export const WaveProgressBar = React.memo(
 );
 
 const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    flexDirection: 'row',
+  },
   progressControlThumbStyle: {
     borderRadius: 5,
     borderWidth: 0.2,
@@ -167,11 +174,6 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     marginHorizontal: WAVEFORM_WIDTH / 2,
     width: WAVEFORM_WIDTH,
-  },
-  waveformContainer: {
-    alignItems: 'center',
-    alignSelf: 'center',
-    flexDirection: 'row',
   },
 });
 

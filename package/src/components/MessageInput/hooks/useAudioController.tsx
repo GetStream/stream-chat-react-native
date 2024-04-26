@@ -15,11 +15,15 @@ import { File } from '../../../types/types';
 import { resampleWaveformData } from '../utils/audioSampling';
 import { normalizeAudioLevel } from '../utils/normalizeAudioLevel';
 
+/**
+ * The hook that controls all the async audio core features including start/stop or recording, player, upload/delete of the recorded audio.
+ */
 export const useAudioController = () => {
   const [permissionsGranted, setPermissionsGranted] = useState(true);
   const [progress, setProgress] = useState<number>(0);
   const [position, setPosition] = useState<number>(0);
   const [paused, setPaused] = useState<boolean>(true);
+  const [showVoiceUI, setShowVoiceUI] = useState(false);
   const [waveformData, setWaveformData] = useState<number[]>([]);
   const [isScheduledForSubmit, setIsScheduleForSubmit] = useState(false);
 
@@ -32,7 +36,6 @@ export const useAudioController = () => {
     setRecording,
     setRecordingDuration,
     setRecordingStopped,
-    setShowVoiceUI,
     uploadNewFile,
   } = useMessageInputContext();
 
@@ -272,6 +275,7 @@ export const useAudioController = () => {
     permissionsGranted,
     position,
     progress,
+    showVoiceUI,
     startVoiceRecording,
     stopVoiceRecording,
     uploadVoiceRecording,

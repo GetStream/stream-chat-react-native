@@ -295,10 +295,8 @@ export type Theme = {
       editingBoxHeaderTitle: TextStyle;
     };
     fileUploadPreview: {
-      audioAttachmentFileContainer: ViewStyle;
       dismiss: ViewStyle;
       fileContainer: ViewStyle;
-      fileContentContainer: ViewStyle;
       filenameText: TextStyle;
       fileSizeText: TextStyle;
       fileTextContainer: ViewStyle;
@@ -590,6 +588,12 @@ export type Theme = {
       reactionSize: number;
     };
   };
+  progressControl: {
+    container: ViewStyle;
+    filledColor: ColorValue;
+    filledStyles: ViewStyle;
+    thumb: ViewStyle;
+  };
   reply: {
     container: ViewStyle;
     fileAttachmentContainer: ViewStyle;
@@ -618,6 +622,11 @@ export type Theme = {
     text: TextStyle & {
       fontSize: TextStyle['fontSize'];
     };
+  };
+  waveProgressBar: {
+    container: ViewStyle;
+    thumb: ViewStyle;
+    waveform: ViewStyle;
   };
 };
 
@@ -843,10 +852,8 @@ export const defaultTheme: Theme = {
       editingBoxHeaderTitle: {},
     },
     fileUploadPreview: {
-      audioAttachmentFileContainer: {},
       dismiss: {},
       fileContainer: {},
-      fileContentContainer: {},
       filenameText: {},
       fileSizeText: {},
       fileTextContainer: {},
@@ -1173,6 +1180,12 @@ export const defaultTheme: Theme = {
       reactionSize: 24,
     },
   },
+  progressControl: {
+    container: {},
+    filledColor: '',
+    filledStyles: {},
+    thumb: {},
+  },
   reply: {
     container: {},
     fileAttachmentContainer: {},
@@ -1198,5 +1211,10 @@ export const defaultTheme: Theme = {
     text: {
       fontSize: 14,
     },
+  },
+  waveProgressBar: {
+    container: {},
+    thumb: {},
+    waveform: {},
   },
 };

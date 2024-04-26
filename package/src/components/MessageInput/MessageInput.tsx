@@ -150,9 +150,7 @@ type MessageInputPropsWithContext<
     | 'setShowMoreOptions'
     | 'setGiphyActive'
     | 'setMicLocked'
-    | 'setShowVoiceUI'
     | 'showMoreOptions'
-    | 'showVoiceUI'
     | 'ShowThreadMessageInChannelButton'
     | 'recordingDuration'
     | 'recordingStopped'
@@ -229,7 +227,6 @@ const MessageInputWithContext = <
     setMicLocked,
     setShowMoreOptions,
     ShowThreadMessageInChannelButton,
-    showVoiceUI,
     suggestions,
     text,
     thread,
@@ -592,6 +589,20 @@ const MessageInputWithContext = <
     [additionalTextInputProps],
   );
 
+  const {
+    deleteVoiceRecording,
+    onVoicePlayerPlayPause,
+    paused,
+    permissionsGranted,
+    position,
+    progress,
+    showVoiceUI,
+    startVoiceRecording,
+    stopVoiceRecording,
+    uploadVoiceRecording,
+    waveformData,
+  } = useAudioController();
+
   const isSendingButtonVisible = () => {
     if (asyncMessagesEnabled) {
       if (showVoiceUI) {
@@ -612,18 +623,6 @@ const MessageInputWithContext = <
   const micPositionY = useSharedValue(0);
   const X_AXIS_POSITION = -asyncMessagesSlideToCancelDistance;
   const Y_AXIS_POSITION = -asyncMessagesLockDistance;
-  const {
-    deleteVoiceRecording,
-    onVoicePlayerPlayPause,
-    paused,
-    permissionsGranted,
-    position,
-    progress,
-    startVoiceRecording,
-    stopVoiceRecording,
-    uploadVoiceRecording,
-    waveformData,
-  } = useAudioController();
 
   const resetAudioRecording = async () => {
     await deleteVoiceRecording();
@@ -830,6 +829,7 @@ const MessageInputWithContext = <
                   >
                     <AudioRecordingButton
                       permissionsGranted={permissionsGranted}
+                      showVoiceUI={showVoiceUI}
                       startVoiceRecording={startVoiceRecording}
                     />
                   </Animated.View>
@@ -898,7 +898,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     recordingStopped: prevRecordingStopped,
     sending: prevSending,
     showMoreOptions: prevShowMoreOptions,
-    showVoiceUI: prevShowVoiceUI,
     suggestions: prevSuggestions,
     t: prevT,
     thread: prevThread,
@@ -925,7 +924,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     recordingStopped: nextRecordingStopped,
     sending: nextSending,
     showMoreOptions: nextShowMoreOptions,
-    showVoiceUI: nextShowVoiceUI,
     suggestions: nextSuggestions,
     t: nextT,
     thread: nextThread,
@@ -980,9 +978,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const showMoreOptionsEqual = prevShowMoreOptions === nextShowMoreOptions;
   if (!showMoreOptionsEqual) return false;
-
-  const showVoiceUIEqual = prevShowVoiceUI === nextShowVoiceUI;
-  if (!showVoiceUIEqual) return false;
 
   const isOnlineEqual = prevIsOnline === nextIsOnline;
   if (!isOnlineEqual) return false;
@@ -1109,10 +1104,8 @@ export const MessageInput = <
     setGiphyActive,
     setMicLocked,
     setShowMoreOptions,
-    setShowVoiceUI,
     showMoreOptions,
     ShowThreadMessageInChannelButton,
-    showVoiceUI,
     text,
     uploadNewFile,
     uploadNewImage,
@@ -1195,10 +1188,8 @@ export const MessageInput = <
         setGiphyActive,
         setMicLocked,
         setShowMoreOptions,
-        setShowVoiceUI,
         showMoreOptions,
         ShowThreadMessageInChannelButton,
-        showVoiceUI,
         suggestions,
         t,
         text,

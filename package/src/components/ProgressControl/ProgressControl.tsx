@@ -41,7 +41,15 @@ const ProgressControlThumb = () => {
 
 export const ProgressControl = React.memo(
   (props: ProgressControlProps) => {
-    const { duration, filledColor, onPlayPause, onProgressDrag, progress, testID, width } = props;
+    const {
+      duration,
+      filledColor: filledColorFromProp,
+      onPlayPause,
+      onProgressDrag,
+      progress,
+      testID,
+      width,
+    } = props;
     const { width: windowWidth } = Dimensions.get('screen');
     const widthInNumbers = width
       ? typeof width === 'string'
@@ -51,11 +59,13 @@ export const ProgressControl = React.memo(
     const {
       theme: {
         colors: { grey_dark },
+        progressControl: { container, filledColor: filledColorFromTheme, filledStyles, thumb },
       },
     } = useTheme();
 
     const state = useSharedValue(0);
     const translateX = useSharedValue(0);
+    const filledColor = filledColorFromProp || filledColorFromTheme;
 
     useEffect(() => {
       if (progress <= 1) {
@@ -96,15 +106,17 @@ export const ProgressControl = React.memo(
     );
 
     return (
-      <View style={[styles.containerStyle, { backgroundColor: grey_dark, width: widthInNumbers }]}>
-        <Animated.View style={[styles.innerStyle, animatedStyles]} />
+      <View
+        style={[styles.container, { backgroundColor: grey_dark, width: widthInNumbers }, container]}
+      >
+        <Animated.View style={[styles.filledStyle, animatedStyles, filledStyles]} />
 
         <PanGestureHandler
           maxPointers={1}
           onGestureEvent={onProgressDrag ? onGestureEvent : undefined}
           testID={testID}
         >
-          <Animated.View style={[thumbStyles]}>
+          <Animated.View style={[thumbStyles, thumb]}>
             {onProgressDrag && <ProgressControlThumb />}
           </Animated.View>
         </PanGestureHandler>
@@ -123,11 +135,11 @@ export const ProgressControl = React.memo(
 );
 
 const styles = StyleSheet.create({
-  containerStyle: {
+  container: {
     borderRadius: 50,
     height,
   },
-  innerStyle: {
+  filledStyle: {
     height,
   },
   progressControlThumbStyle: {
