@@ -225,7 +225,7 @@ export type InputMessageInputContextValue<
    */
   asyncMessagesMinimumPressDuration: number;
   /**
-   * When it’s enabled, recorded messages won’t be sent immediately. Instead they will “stack up” in the composer allowing the user to send multiple voice recording as part of the same message
+   * When it’s enabled, recorded messages won’t be sent immediately. Instead they will “stack up” in the composer allowing the user to send multiple voice recording as part of the same message.
    */
   asyncMessagesMultiSendEnabled: boolean;
   /**
@@ -244,7 +244,6 @@ export type InputMessageInputContextValue<
    * Defaults to and accepts same props as: [AudioRecorder](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/AudioRecorder.tsx)
    */
   AudioRecorder: React.ComponentType<AudioRecorderProps<StreamChatGenerics>>;
-
   /**
    * Controls whether the feature is enabled.
    */
