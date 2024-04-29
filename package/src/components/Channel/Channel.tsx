@@ -74,7 +74,7 @@ import {
   ThumbsUpReaction,
   WutReaction,
 } from '../../icons';
-import { FlatList as FlatListDefault, pickDocument } from '../../native';
+import { FlatList as FlatListDefault, isAudioPackageAvailable, pickDocument } from '../../native';
 import * as dbApi from '../../store/apis';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
@@ -417,7 +417,6 @@ const ChannelWithContext = <
     additionalTextInputProps,
     additionalTouchableProps,
     allowThreadMessagesInChannel = true,
-    asyncMessagesEnabled = true,
     asyncMessagesLockDistance = 60,
     asyncMessagesMinimumPressDuration = 500,
     asyncMessagesMultiSendEnabled = true,
@@ -427,7 +426,7 @@ const ChannelWithContext = <
     AttachmentActions = AttachmentActionsDefault,
     AudioAttachment = AudioAttachmentDefault,
     AudioRecorder = AudioRecorderDefault,
-    AudioRecordingButton = AudioRecordingButtonDefault,
+    audioRecordingEnabled = true && isAudioPackageAvailable(),
     AudioRecordingInProgress = AudioRecordingInProgressDefault,
     AudioRecordingLockIndicator = AudioRecordingLockIndicatorDefault,
     AudioRecordingPreview = AudioRecordingPreviewDefault,
@@ -569,6 +568,7 @@ const ChannelWithContext = <
     setWatchers,
     shouldSyncChannel,
     ShowThreadMessageInChannelButton = ShowThreadMessageInChannelButtonDefault,
+    StartAudioRecordingButton = AudioRecordingButtonDefault,
     stateUpdateThrottleInterval = defaultThrottleInterval,
     StickyHeader,
     supportedReactions = reactionData,
@@ -2202,14 +2202,13 @@ const ChannelWithContext = <
 
   const inputMessageInputContext = useCreateInputMessageInputContext<StreamChatGenerics>({
     additionalTextInputProps,
-    asyncMessagesEnabled,
     asyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration,
     asyncMessagesMultiSendEnabled,
     asyncMessagesSlideToCancelDistance,
     AttachButton,
     AudioRecorder,
-    AudioRecordingButton,
+    audioRecordingEnabled,
     AudioRecordingInProgress,
     AudioRecordingLockIndicator,
     AudioRecordingPreview,
@@ -2254,6 +2253,7 @@ const ChannelWithContext = <
     setInputRef,
     setQuotedMessageState,
     ShowThreadMessageInChannelButton,
+    StartAudioRecordingButton,
     UploadProgressIndicator,
   });
 

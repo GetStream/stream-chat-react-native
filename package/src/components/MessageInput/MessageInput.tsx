@@ -110,13 +110,12 @@ type MessageInputPropsWithContext<
     MessageInputContextValue<StreamChatGenerics>,
     | 'additionalTextInputProps'
     | 'asyncIds'
-    | 'asyncMessagesEnabled'
+    | 'audioRecordingEnabled'
     | 'asyncMessagesLockDistance'
     | 'asyncMessagesMinimumPressDuration'
     | 'asyncMessagesSlideToCancelDistance'
     | 'asyncUploads'
     | 'AudioRecorder'
-    | 'AudioRecordingButton'
     | 'AudioRecordingInProgress'
     | 'AudioRecordingLockIndicator'
     | 'AudioRecordingPreview'
@@ -150,6 +149,7 @@ type MessageInputPropsWithContext<
     | 'setGiphyActive'
     | 'showMoreOptions'
     | 'ShowThreadMessageInChannelButton'
+    | 'StartAudioRecordingButton'
     | 'removeFile'
     | 'removeImage'
     | 'text'
@@ -176,14 +176,13 @@ const MessageInputWithContext = <
   const {
     additionalTextInputProps,
     asyncIds,
-    asyncMessagesEnabled,
     asyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration,
     asyncMessagesSlideToCancelDistance,
     asyncUploads,
     AttachmentPickerSelectionBar,
     AudioRecorder,
-    AudioRecordingButton,
+    audioRecordingEnabled,
     AudioRecordingInProgress,
     AudioRecordingLockIndicator,
     AudioRecordingPreview,
@@ -220,6 +219,7 @@ const MessageInputWithContext = <
     sendMessageAsync,
     setShowMoreOptions,
     ShowThreadMessageInChannelButton,
+    StartAudioRecordingButton,
     suggestions,
     text,
     thread,
@@ -601,7 +601,7 @@ const MessageInputWithContext = <
   } = useAudioController();
 
   const isSendingButtonVisible = () => {
-    if (asyncMessagesEnabled) {
+    if (audioRecordingEnabled) {
       if (recording) {
         return false;
       }
@@ -821,7 +821,7 @@ const MessageInputWithContext = <
                     />
                   </View>
                 ))}
-              {asyncMessagesEnabled && !micLocked && (
+              {audioRecordingEnabled && !micLocked && (
                 <PanGestureHandler
                   activateAfterLongPress={asyncMessagesMinimumPressDuration + 100}
                   onGestureEvent={handleMicGestureEvent}
@@ -833,7 +833,7 @@ const MessageInputWithContext = <
                       micButtonContainer,
                     ]}
                   >
-                    <AudioRecordingButton
+                    <StartAudioRecordingButton
                       permissionsGranted={permissionsGranted}
                       recording={recording}
                       startVoiceRecording={startVoiceRecording}
@@ -885,11 +885,11 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 ) => {
   const {
     additionalTextInputProps: prevAdditionalTextInputProps,
-    asyncMessagesEnabled: prevAsyncMessagesEnabled,
     asyncMessagesLockDistance: prevAsyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration: prevAsyncMessagesMinimumPressDuration,
     asyncMessagesSlideToCancelDistance: prevAsyncMessagesSlideToCancelDistance,
     asyncUploads: prevAsyncUploads,
+    audioRecordingEnabled: prevAsyncMessagesEnabled,
     disabled: prevDisabled,
     editing: prevEditing,
     fileUploads: prevFileUploads,
@@ -908,11 +908,11 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   } = prevProps;
   const {
     additionalTextInputProps: nextAdditionalTextInputProps,
-    asyncMessagesEnabled: nextAsyncMessagesEnabled,
     asyncMessagesLockDistance: nextAsyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration: nextAsyncMessagesMinimumPressDuration,
     asyncMessagesSlideToCancelDistance: nextAsyncMessagesSlideToCancelDistance,
     asyncUploads: nextAsyncUploads,
+    audioRecordingEnabled: nextAsyncMessagesEnabled,
     disabled: nextDisabled,
     editing: nextEditing,
     fileUploads: nextFileUploads,
@@ -1049,13 +1049,12 @@ export const MessageInput = <
   const {
     additionalTextInputProps,
     asyncIds,
-    asyncMessagesEnabled,
     asyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration,
     asyncMessagesSlideToCancelDistance,
     asyncUploads,
     AudioRecorder,
-    AudioRecordingButton,
+    audioRecordingEnabled,
     AudioRecordingInProgress,
     AudioRecordingLockIndicator,
     AudioRecordingPreview,
@@ -1093,6 +1092,7 @@ export const MessageInput = <
     setShowMoreOptions,
     showMoreOptions,
     ShowThreadMessageInChannelButton,
+    StartAudioRecordingButton,
     text,
     uploadNewFile,
     uploadNewImage,
@@ -1121,14 +1121,13 @@ export const MessageInput = <
       {...{
         additionalTextInputProps,
         asyncIds,
-        asyncMessagesEnabled,
         asyncMessagesLockDistance,
         asyncMessagesMinimumPressDuration,
         asyncMessagesSlideToCancelDistance,
         asyncUploads,
         AttachmentPickerSelectionBar,
         AudioRecorder,
-        AudioRecordingButton,
+        audioRecordingEnabled,
         AudioRecordingInProgress,
         AudioRecordingLockIndicator,
         AudioRecordingPreview,
@@ -1173,6 +1172,7 @@ export const MessageInput = <
         setShowMoreOptions,
         showMoreOptions,
         ShowThreadMessageInChannelButton,
+        StartAudioRecordingButton,
         suggestions,
         t,
         text,

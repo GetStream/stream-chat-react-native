@@ -379,3 +379,4 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 
 export const isVideoPackageAvailable = () => !!Video;
 export const isAudioPackageAvailable = () => !!Sound.Player || !!Sound.initializeSound;
+export const isRecordingPackageAvailable = () => !!Audio;

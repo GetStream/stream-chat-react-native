@@ -217,10 +217,6 @@ export type InputMessageInputContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled'> & {
   /**
-   * Controls whether the feature is enabled.
-   */
-  asyncMessagesEnabled: boolean;
-  /**
    * Controls how many pixels to the top side the user has to scroll in order to lock the recording view and allow the user to lift their finger from the screen without stopping the recording.
    */
   asyncMessagesLockDistance: number;
@@ -242,19 +238,17 @@ export type InputMessageInputContextValue<
    * Defaults to and accepts same props as: [AttachButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/attach-button/)
    */
   AttachButton: React.ComponentType<AttachButtonProps<StreamChatGenerics>>;
-
   /**
    * Custom UI component for audio recorder UI.
    *
    * Defaults to and accepts same props as: [AudioRecorder](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/AudioRecorder.tsx)
    */
   AudioRecorder: React.ComponentType<AudioRecorderProps<StreamChatGenerics>>;
+
   /**
-   * Custom UI component for audio recording mic button.
-   *
-   * Defaults to and accepts same props as: [AudioRecordingButton](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingButton.tsx)
+   * Controls whether the feature is enabled.
    */
-  AudioRecordingButton: React.ComponentType<AudioRecordingButtonProps<StreamChatGenerics>>;
+  audioRecordingEnabled: boolean;
   /**
    * Custom UI component to render audio recording in progress.
    *
@@ -346,6 +340,12 @@ export type InputMessageInputContextValue<
   ShowThreadMessageInChannelButton: React.ComponentType<{
     threadList?: boolean;
   }>;
+  /**
+   * Custom UI component for audio recording mic button.
+   *
+   * Defaults to and accepts same props as: [AudioRecordingButton](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingButton.tsx)
+   */
+  StartAudioRecordingButton: React.ComponentType<AudioRecordingButtonProps<StreamChatGenerics>>;
   /**
    * Custom UI component to render upload progress indicator on attachment preview.
    *

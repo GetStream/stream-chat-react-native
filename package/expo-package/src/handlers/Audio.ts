@@ -212,57 +212,59 @@ export type RecordingOptions = {
   keepAudioActiveHint?: boolean;
 };
 
-export const Audio = {
-  startRecording: async (recordingOptions: RecordingOptions, onRecordingStatusUpdate) => {
-    try {
-      console.log('Requesting permissions..');
-      const permissionsGranted = await AudioComponent.getPermissionsAsync().granted;
-      if (!permissionsGranted) {
-        await AudioComponent.requestPermissionsAsync();
-      }
-      await AudioComponent.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
-      });
-      console.log('Starting recording..');
-      const androidOptions = {
-        audioEncoder: AndroidAudioEncoder.AAC,
-        extension: '.aac',
-        outputFormat: AndroidOutputFormat.AAC_ADTS,
-      };
-      const iosOptions = {
-        audioQuality: IOSAudioQuality.HIGH,
-        bitRate: 128000,
-        extension: '.aac',
-        numberOfChannels: 2,
-        outputFormat: IOSOutputFormat.MPEG4AAC,
-        sampleRate: 44100,
-      };
-      const options = {
-        ...recordingOptions,
-        android: androidOptions,
-        ios: iosOptions,
-        web: {},
-      };
+export const Audio = AudioComponent
+  ? {
+      startRecording: async (recordingOptions: RecordingOptions, onRecordingStatusUpdate) => {
+        try {
+          console.log('Requesting permissions..');
+          const permissionsGranted = await AudioComponent.getPermissionsAsync().granted;
+          if (!permissionsGranted) {
+            await AudioComponent.requestPermissionsAsync();
+          }
+          await AudioComponent.setAudioModeAsync({
+            allowsRecordingIOS: true,
+            playsInSilentModeIOS: true,
+          });
+          console.log('Starting recording..');
+          const androidOptions = {
+            audioEncoder: AndroidAudioEncoder.AAC,
+            extension: '.aac',
+            outputFormat: AndroidOutputFormat.AAC_ADTS,
+          };
+          const iosOptions = {
+            audioQuality: IOSAudioQuality.HIGH,
+            bitRate: 128000,
+            extension: '.aac',
+            numberOfChannels: 2,
+            outputFormat: IOSOutputFormat.MPEG4AAC,
+            sampleRate: 44100,
+          };
+          const options = {
+            ...recordingOptions,
+            android: androidOptions,
+            ios: iosOptions,
+            web: {},
+          };
 
-      const { recording } = await AudioComponent.Recording.createAsync(
-        options,
-        onRecordingStatusUpdate,
-      );
-      return { accessGranted: true, recording };
-    } catch (error) {
-      console.error('Failed to start recording', error);
-      return { accessGranted: false, recording: null };
+          const { recording } = await AudioComponent.Recording.createAsync(
+            options,
+            onRecordingStatusUpdate,
+          );
+          return { accessGranted: true, recording };
+        } catch (error) {
+          console.error('Failed to start recording', error);
+          return { accessGranted: false, recording: null };
+        }
+      },
+      stopRecording: async () => {
+        try {
+          console.log('Stopping recording..');
+          await AudioComponent.setAudioModeAsync({
+            allowsRecordingIOS: false,
+          });
+        } catch (error) {
+          console.log('Error stopping recoding', error);
+        }
+      },
     }
-  },
-  stopRecording: async () => {
-    try {
-      console.log('Stopping recording..');
-      await AudioComponent.setAudioModeAsync({
-        allowsRecordingIOS: false,
-      });
-    } catch (error) {
-      console.log('Error stopping recoding', error);
-    }
-  },
-};
+  : null;
