@@ -189,7 +189,7 @@ export type AudioRecorderProps<
 > = Partial<AudioRecorderPropsWithContext<StreamChatGenerics>>;
 
 /**
- * UI Component for attach button in MessageInput component.
+ * Component to display the Recording UI in the Message Input.
  */
 export const AudioRecorder = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

@@ -16,6 +16,9 @@ export type AudioRecordingPreviewProps = {
   onVoicePlayerPlayPause?: () => Promise<void>;
 };
 
+/**
+ * Component displayed when the audio is recorded and can be previewed.
+ */
 export const AudioRecordingPreview = (props: AudioRecordingPreviewProps) => {
   const { onVoicePlayerPlayPause, paused, position, progress, waveformData } = props;
 

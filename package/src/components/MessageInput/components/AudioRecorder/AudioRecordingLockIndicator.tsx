@@ -12,6 +12,9 @@ export type AudioRecordingLockIndicatorProps = {
   style?: StyleProp<ViewStyle>;
 };
 
+/**
+ * Component displayed to show the lock state of the recording when the button is slided up.
+ */
 export const AudioRecordingLockIndicator = ({
   locked,
   messageInputHeight,

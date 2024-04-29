@@ -81,7 +81,7 @@ export type AudioRecordingInProgressProps<
 };
 
 /**
- * UI Component for attach button in MessageInput component.
+ * Component displayed when the audio is in the recording state.
  */
 export const AudioRecordingInProgress = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

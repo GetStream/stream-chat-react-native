@@ -8,6 +8,9 @@ export type AudioRecordingWaveformProps = {
   waveformData: number[];
 };
 
+/**
+ * Waveform Component displayed when the audio is in the recording state.
+ */
 export const AudioRecordingWaveform = (props: AudioRecordingWaveformProps) => {
   const { maxDataPointsDrawn, waveformData } = props;
   const {
