@@ -7,8 +7,18 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { ArrowUp, Lock } from '../../../../icons';
 
 export type AudioRecordingLockIndicatorProps = {
-  locked?: boolean;
+  /**
+   * Boolean used to show if the voice recording state is locked. This makes sure the mic button shouldn't be pressed any longer.
+   * When the mic is locked the `AudioRecordingInProgress` component shows up.
+   */
+  micLocked: boolean;
+  /**
+   * Height of the message input, to apply necessary position adjustments to this component.
+   */
   messageInputHeight?: number;
+  /**
+   * Styles of the lock indicator.
+   */
   style?: StyleProp<ViewStyle>;
 };
 
@@ -16,8 +26,8 @@ export type AudioRecordingLockIndicatorProps = {
  * Component displayed to show the lock state of the recording when the button is slided up.
  */
 export const AudioRecordingLockIndicator = ({
-  locked,
   messageInputHeight,
+  micLocked,
   style,
 }: AudioRecordingLockIndicatorProps) => {
   const [visible, setVisible] = useState(true);
@@ -25,7 +35,7 @@ export const AudioRecordingLockIndicator = ({
 
   useEffect(() => {
     timeoutRef.current = setTimeout(() => {
-      if (locked) {
+      if (micLocked) {
         setVisible(false);
       }
     }, 2000);
@@ -33,7 +43,7 @@ export const AudioRecordingLockIndicator = ({
     return () => {
       clearTimeout(timeoutRef.current);
     };
-  }, [locked]);
+  }, [micLocked]);
 
   const {
     theme: {
@@ -57,8 +67,8 @@ export const AudioRecordingLockIndicator = ({
         container,
       ]}
     >
-      <Lock color={locked ? accent_blue : grey} size={32} {...lockIcon} />
-      {!locked && <ArrowUp color={grey} size={32} {...arrowUpIcon} />}
+      <Lock color={micLocked ? accent_blue : grey} size={32} {...lockIcon} />
+      {!micLocked && <ArrowUp color={grey} size={32} {...arrowUpIcon} />}
     </Animated.View>
   );
 };

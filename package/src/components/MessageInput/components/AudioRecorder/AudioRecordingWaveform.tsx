@@ -4,7 +4,13 @@ import { StyleSheet, View } from 'react-native';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 
 export type AudioRecordingWaveformProps = {
+  /**
+   * Maximum number of waveform lines that should be rendered in the UI.
+   */
   maxDataPointsDrawn: number;
+  /**
+   * The waveform data to be presented to show the audio levels.
+   */
   waveformData: number[];
 };
 

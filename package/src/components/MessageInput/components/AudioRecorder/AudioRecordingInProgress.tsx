@@ -1,5 +1,5 @@
 import React from 'react';
-import { GestureResponderEvent, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import dayjs from 'dayjs';
 
@@ -13,14 +13,19 @@ import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
 type AudioRecordingInProgressPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<
-  MessageInputContextValue<StreamChatGenerics>,
-  'AudioRecordingWaveform' | 'recordingDuration'
-> & {
+> = Pick<MessageInputContextValue<StreamChatGenerics>, 'AudioRecordingWaveform'> & {
+  /**
+   * The waveform data to be presented to show the audio levels.
+   */
   waveformData: number[];
-  /** Function that opens audio selector */
-  handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
+  /**
+   * Maximum number of waveform lines that should be rendered in the UI.
+   */
   maxDataPointsDrawn?: number;
+  /**
+   * The duration of the voice recording.
+   */
+  recordingDuration?: number;
 };
 
 const AudioRecordingInProgressWithContext = <
@@ -88,15 +93,9 @@ export const AudioRecordingInProgress = <
 >(
   props: AudioRecordingInProgressProps<StreamChatGenerics>,
 ) => {
-  const { AudioRecordingWaveform, recordingDuration } =
-    useMessageInputContext<StreamChatGenerics>();
+  const { AudioRecordingWaveform } = useMessageInputContext<StreamChatGenerics>();
 
-  return (
-    <MemoizedAudioRecordingInProgress
-      {...{ AudioRecordingWaveform, recordingDuration }}
-      {...props}
-    />
-  );
+  return <MemoizedAudioRecordingInProgress {...{ AudioRecordingWaveform }} {...props} />;
 };
 
 const styles = StyleSheet.create({

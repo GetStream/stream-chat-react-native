@@ -44,7 +44,7 @@ import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { Emoji } from '../../emoji-data';
-import { AudioRecordingReturnType, pickDocument } from '../../native';
+import { pickDocument } from '../../native';
 import type {
   Asset,
   DefaultStreamChatGenerics,
@@ -148,7 +148,6 @@ export type LocalMessageInputContext<
   inputBoxRef: React.MutableRefObject<TextInput | null>;
   isValidMessage: () => boolean;
   mentionedUsers: string[];
-  micLocked: boolean;
   numberOfUploads: number;
   onChange: (newText: string) => void;
   onSelectItem: (item: UserResponse<StreamChatGenerics>) => void;
@@ -157,9 +156,6 @@ export type LocalMessageInputContext<
   openFilePicker: () => void;
   openMentionsPicker: () => void;
   pickFile: () => Promise<void>;
-  recording: AudioRecordingReturnType;
-  recordingDuration: number;
-  recordingStopped: boolean;
   /**
    * Function for removing a file from the upload preview
    *
@@ -197,11 +193,7 @@ export type LocalMessageInputContext<
    */
   setInputBoxRef: LegacyRef<TextInput> | undefined;
   setMentionedUsers: React.Dispatch<React.SetStateAction<string[]>>;
-  setMicLocked: React.Dispatch<React.SetStateAction<boolean>>;
   setNumberOfUploads: React.Dispatch<React.SetStateAction<number>>;
-  setRecording: React.Dispatch<React.SetStateAction<AudioRecordingReturnType>>;
-  setRecordingDuration: React.Dispatch<React.SetStateAction<number>>;
-  setRecordingStopped: React.Dispatch<boolean>;
   setSendThreadMessageInChannel: React.Dispatch<React.SetStateAction<boolean>>;
   setShowMoreOptions: React.Dispatch<React.SetStateAction<boolean>>;
   setText: React.Dispatch<React.SetStateAction<string>>;
@@ -536,19 +528,11 @@ export const MessageInputProvider = <
     fileUploads,
     imageUploads,
     mentionedUsers,
-    micLocked,
     numberOfUploads,
-    recording,
-    recordingDuration,
-    recordingStopped,
     setFileUploads,
     setImageUploads,
     setMentionedUsers,
-    setMicLocked,
     setNumberOfUploads,
-    setRecording,
-    setRecordingDuration,
-    setRecordingStopped,
     setShowMoreOptions,
     setText,
     showMoreOptions,
@@ -568,10 +552,6 @@ export const MessageInputProvider = <
   /** Checks if the message is valid or not. Accordingly we can enable/disable send button */
   const isValidMessage = () => {
     if (text && text.trim()) {
-      return true;
-    }
-
-    if (micLocked) {
       return true;
     }
 
@@ -1286,7 +1266,6 @@ export const MessageInputProvider = <
     inputBoxRef,
     isValidMessage,
     mentionedUsers,
-    micLocked,
     numberOfUploads,
     onChange,
     onSelectItem,
@@ -1295,9 +1274,6 @@ export const MessageInputProvider = <
     openFilePicker: pickFile,
     openMentionsPicker,
     pickFile,
-    recording,
-    recordingDuration,
-    recordingStopped,
     removeFile,
     removeImage,
     resetInput,
@@ -1312,11 +1288,7 @@ export const MessageInputProvider = <
     setImageUploads,
     setInputBoxRef,
     setMentionedUsers,
-    setMicLocked,
     setNumberOfUploads,
-    setRecording,
-    setRecordingDuration,
-    setRecordingStopped,
     setSendThreadMessageInChannel,
     setShowMoreOptions,
     setText,

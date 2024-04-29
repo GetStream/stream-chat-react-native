@@ -9,10 +9,25 @@ import { Pause, Play } from '../../../../icons';
 import { WaveProgressBar } from '../../../ProgressControl/WaveProgressBar';
 
 export type AudioRecordingPreviewProps = {
+  /**
+   * Boolean used to show the paused state of the player.
+   */
   paused: boolean;
+  /**
+   * Number used to show the current position of the audio being played.
+   */
   position: number;
+  /**
+   * Number used to show the percentage of progress of the audio being played. It should be in 0-1 range.
+   */
   progress: number;
+  /**
+   * The waveform data to be presented to show the audio levels.
+   */
   waveformData: number[];
+  /**
+   * Function to play or pause the audio player.
+   */
   onVoicePlayerPlayPause?: () => Promise<void>;
 };
 

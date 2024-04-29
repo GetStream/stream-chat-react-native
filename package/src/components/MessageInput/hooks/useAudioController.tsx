@@ -5,6 +5,7 @@ import { Alert, Platform } from 'react-native';
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import {
   Audio,
+  AudioRecordingReturnType,
   PlaybackStatus,
   RecordingStatus,
   Sound,
@@ -19,25 +20,18 @@ import { normalizeAudioLevel } from '../utils/normalizeAudioLevel';
  * The hook that controls all the async audio core features including start/stop or recording, player, upload/delete of the recorded audio.
  */
 export const useAudioController = () => {
+  const [micLocked, setMicLocked] = useState(false);
   const [permissionsGranted, setPermissionsGranted] = useState(true);
   const [progress, setProgress] = useState<number>(0);
   const [position, setPosition] = useState<number>(0);
   const [paused, setPaused] = useState<boolean>(true);
-  const [showVoiceUI, setShowVoiceUI] = useState(false);
   const [waveformData, setWaveformData] = useState<number[]>([]);
   const [isScheduledForSubmit, setIsScheduleForSubmit] = useState(false);
+  const [recording, setRecording] = useState<AudioRecordingReturnType>(undefined);
+  const [recordingDuration, setRecordingDuration] = useState<number>(0);
+  const [recordingStopped, setRecordingStopped] = useState<boolean>(true);
 
-  const {
-    recording,
-    recordingDuration,
-    recordingStopped,
-    sendMessage,
-    setMicLocked,
-    setRecording,
-    setRecordingDuration,
-    setRecordingStopped,
-    uploadNewFile,
-  } = useMessageInputContext();
+  const { sendMessage, uploadNewFile } = useMessageInputContext();
 
   // For playback support in Expo CLI apps
   const soundRef = useRef<SoundReturnType | null>(null);
@@ -164,7 +158,6 @@ export const useAudioController = () => {
    * Function to start voice recording.
    */
   const startVoiceRecording = async () => {
-    setShowVoiceUI(true);
     setRecordingStopped(false);
     const recordingInfo = await Audio.startRecording(
       {
@@ -210,8 +203,8 @@ export const useAudioController = () => {
    * Function to reset the state of the message input for async voice messages.
    */
   const resetState = () => {
+    setRecording(undefined);
     setRecordingStopped(true);
-    setShowVoiceUI(false);
     setMicLocked(false);
     setWaveformData([]);
     setPaused(true);
@@ -270,12 +263,20 @@ export const useAudioController = () => {
 
   return {
     deleteVoiceRecording,
+    micLocked,
     onVoicePlayerPlayPause,
     paused,
     permissionsGranted,
     position,
     progress,
-    showVoiceUI,
+    recording,
+    recordingDuration,
+    recordingStopped,
+    setMicLocked,
+    setRecording,
+    setRecordingDuration,
+    setRecordingStopped,
+    setWaveformData,
     startVoiceRecording,
     stopVoiceRecording,
     uploadVoiceRecording,

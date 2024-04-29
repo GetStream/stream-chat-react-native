@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 
 import { Attachment } from 'stream-chat';
 
-import type { AudioRecordingReturnType } from '../../../native';
 import type { DefaultStreamChatGenerics, FileUpload, ImageUpload } from '../../../types/types';
 import { generateRandomId } from '../../../utils/utils';
 
@@ -19,10 +18,6 @@ export const useMessageDetailsForState = <
   const [mentionedUsers, setMentionedUsers] = useState<string[]>([]);
   const [numberOfUploads, setNumberOfUploads] = useState(0);
   const [showMoreOptions, setShowMoreOptions] = useState(true);
-  const [recording, setRecording] = useState<AudioRecordingReturnType>(undefined);
-  const [recordingDuration, setRecordingDuration] = useState<number>(0);
-  const [recordingStopped, setRecordingStopped] = useState<boolean>(true);
-  const [micLocked, setMicLocked] = useState(false);
 
   const initialTextValue = initialValue || '';
   const [text, setText] = useState(initialTextValue);
@@ -154,19 +149,11 @@ export const useMessageDetailsForState = <
     fileUploads,
     imageUploads,
     mentionedUsers,
-    micLocked,
     numberOfUploads,
-    recording,
-    recordingDuration,
-    recordingStopped,
     setFileUploads,
     setImageUploads,
     setMentionedUsers,
-    setMicLocked,
     setNumberOfUploads,
-    setRecording,
-    setRecordingDuration,
-    setRecordingStopped,
     setShowMoreOptions,
     setText,
     showMoreOptions,

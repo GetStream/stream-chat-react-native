@@ -140,7 +140,6 @@ type MessageInputPropsWithContext<
     | 'isValidMessage'
     | 'maxNumberOfFiles'
     | 'mentionedUsers'
-    | 'micLocked'
     | 'numberOfUploads'
     | 'quotedMessage'
     | 'resetInput'
@@ -149,11 +148,8 @@ type MessageInputPropsWithContext<
     | 'sendMessageAsync'
     | 'setShowMoreOptions'
     | 'setGiphyActive'
-    | 'setMicLocked'
     | 'showMoreOptions'
     | 'ShowThreadMessageInChannelButton'
-    | 'recordingDuration'
-    | 'recordingStopped'
     | 'removeFile'
     | 'removeImage'
     | 'text'
@@ -213,10 +209,8 @@ const MessageInputWithContext = <
     maxNumberOfFiles,
     members,
     mentionedUsers,
-    micLocked,
     numberOfUploads,
     quotedMessage,
-    recordingStopped,
     removeFile,
     removeImage,
     Reply,
@@ -224,7 +218,6 @@ const MessageInputWithContext = <
     SendButton,
     sending,
     sendMessageAsync,
-    setMicLocked,
     setShowMoreOptions,
     ShowThreadMessageInChannelButton,
     suggestions,
@@ -591,12 +584,16 @@ const MessageInputWithContext = <
 
   const {
     deleteVoiceRecording,
+    micLocked,
     onVoicePlayerPlayPause,
     paused,
     permissionsGranted,
     position,
     progress,
-    showVoiceUI,
+    recording,
+    recordingDuration,
+    recordingStopped,
+    setMicLocked,
     startVoiceRecording,
     stopVoiceRecording,
     uploadVoiceRecording,
@@ -605,7 +602,7 @@ const MessageInputWithContext = <
 
   const isSendingButtonVisible = () => {
     if (asyncMessagesEnabled) {
-      if (showVoiceUI) {
+      if (recording) {
         return false;
       }
       if (text && text.trim()) {
@@ -715,26 +712,31 @@ const MessageInputWithContext = <
       >
         {editing && <InputEditingStateHeader />}
         {quotedMessage && <InputReplyStateHeader />}
-        {showVoiceUI && (
-          <AudioRecordingLockIndicator
-            locked={micLocked}
-            messageInputHeight={height}
-            style={animatedStyles.lockIndicator}
-          />
-        )}
-        {showVoiceUI &&
-          micLocked &&
-          (recordingStopped ? (
-            <AudioRecordingPreview
-              onVoicePlayerPlayPause={onVoicePlayerPlayPause}
-              paused={paused}
-              position={position}
-              progress={progress}
-              waveformData={waveformData}
+        {recording && (
+          <>
+            <AudioRecordingLockIndicator
+              messageInputHeight={height}
+              micLocked={micLocked}
+              style={animatedStyles.lockIndicator}
             />
-          ) : (
-            <AudioRecordingInProgress waveformData={waveformData} />
-          ))}
+            {micLocked &&
+              (recordingStopped ? (
+                <AudioRecordingPreview
+                  onVoicePlayerPlayPause={onVoicePlayerPlayPause}
+                  paused={paused}
+                  position={position}
+                  progress={progress}
+                  waveformData={waveformData}
+                />
+              ) : (
+                <AudioRecordingInProgress
+                  recordingDuration={recordingDuration}
+                  waveformData={waveformData}
+                />
+              ))}
+          </>
+        )}
+
         <View style={[styles.composerContainer, composerContainer]}>
           {Input ? (
             <Input
@@ -743,9 +745,13 @@ const MessageInputWithContext = <
             />
           ) : (
             <>
-              {showVoiceUI ? (
+              {recording ? (
                 <AudioRecorder
                   deleteVoiceRecording={deleteVoiceRecording}
+                  micLocked={micLocked}
+                  recording={recording}
+                  recordingDuration={recordingDuration}
+                  recordingStopped={recordingStopped}
                   slideToCancelStyle={animatedStyles.slideToCancel}
                   stopVoiceRecording={stopVoiceRecording}
                   uploadVoiceRecording={uploadVoiceRecording}
@@ -829,7 +835,7 @@ const MessageInputWithContext = <
                   >
                     <AudioRecordingButton
                       permissionsGranted={permissionsGranted}
-                      showVoiceUI={showVoiceUI}
+                      recording={recording}
                       startVoiceRecording={startVoiceRecording}
                     />
                   </Animated.View>
@@ -892,10 +898,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     isOnline: prevIsOnline,
     isValidMessage: prevIsValidMessage,
     mentionedUsers: prevMentionedUsers,
-    micLocked: prevMicLocked,
     quotedMessage: prevQuotedMessage,
-    recordingDuration: prevRecordingDuration,
-    recordingStopped: prevRecordingStopped,
     sending: prevSending,
     showMoreOptions: prevShowMoreOptions,
     suggestions: prevSuggestions,
@@ -918,10 +921,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     isOnline: nextIsOnline,
     isValidMessage: nextIsValidMessage,
     mentionedUsers: nextMentionedUsers,
-    micLocked: nextMicLocked,
     quotedMessage: nextQuotedMessage,
-    recordingDuration: nextRecordingDuration,
-    recordingStopped: nextRecordingStopped,
     sending: nextSending,
     showMoreOptions: nextShowMoreOptions,
     suggestions: nextSuggestions,
@@ -997,15 +997,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const mentionedUsersEqual = prevMentionedUsers.length === nextMentionedUsers.length;
   if (!mentionedUsersEqual) return false;
-
-  const micLockedEqual = prevMicLocked === nextMicLocked;
-  if (!micLockedEqual) return false;
-
-  const recordingDurationEqual = prevRecordingDuration === nextRecordingDuration;
-  if (!recordingDurationEqual) return false;
-
-  const recordingStoppedEqual = prevRecordingStopped === nextRecordingStopped;
-  if (!recordingStoppedEqual) return false;
 
   const suggestionsEqual =
     !!prevSuggestions?.data && !!nextSuggestions?.data
@@ -1089,11 +1080,8 @@ export const MessageInput = <
     isValidMessage,
     maxNumberOfFiles,
     mentionedUsers,
-    micLocked,
     numberOfUploads,
     quotedMessage,
-    recordingDuration,
-    recordingStopped,
     removeFile,
     removeImage,
     resetInput,
@@ -1102,7 +1090,6 @@ export const MessageInput = <
     sendMessageAsync,
     SendMessageDisallowedIndicator,
     setGiphyActive,
-    setMicLocked,
     setShowMoreOptions,
     showMoreOptions,
     ShowThreadMessageInChannelButton,
@@ -1172,11 +1159,8 @@ export const MessageInput = <
         maxNumberOfFiles,
         members,
         mentionedUsers,
-        micLocked,
         numberOfUploads,
         quotedMessage,
-        recordingDuration,
-        recordingStopped,
         removeFile,
         removeImage,
         Reply,
@@ -1186,7 +1170,6 @@ export const MessageInput = <
         sendMessageAsync,
         SendMessageDisallowedIndicator,
         setGiphyActive,
-        setMicLocked,
         setShowMoreOptions,
         showMoreOptions,
         ShowThreadMessageInChannelButton,

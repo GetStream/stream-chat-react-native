@@ -12,7 +12,7 @@ import {
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { Mic } from '../../../../icons/Mic';
-import { triggerHaptic } from '../../../../native';
+import { AudioRecordingReturnType, triggerHaptic } from '../../../../native';
 
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
@@ -20,12 +20,29 @@ type AudioRecordingButtonPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled'> &
   Pick<MessageInputContextValue<StreamChatGenerics>, 'asyncMessagesMinimumPressDuration'> & {
+    /**
+     * The current voice recording that is in progress.
+     */
+    recording: AudioRecordingReturnType;
+    /**
+     * Size of the mic button.
+     */
     buttonSize?: number;
-    /** Function that opens audio selector */
+    /**
+     * Handler to determine what should happen on long press of the mic button.
+     */
     handleLongPress?: () => void;
+    /**
+     * Handler to determine what should happen on press of the mic button.
+     */
     handlePress?: () => void;
+    /**
+     * Boolean to determine if the audio recording permissions are granted.
+     */
     permissionsGranted?: boolean;
-    showVoiceUI?: boolean;
+    /**
+     * Function to start the voice recording.
+     */
     startVoiceRecording?: () => Promise<void>;
   };
 
@@ -41,7 +58,7 @@ const AudioRecordingButtonWithContext = <
     handleLongPress,
     handlePress,
     permissionsGranted,
-    showVoiceUI,
+    recording,
     startVoiceRecording,
   } = props;
 
@@ -59,7 +76,7 @@ const AudioRecordingButtonWithContext = <
     if (handlePress) {
       handlePress();
     }
-    if (!showVoiceUI) {
+    if (!recording) {
       triggerHaptic('notificationError');
       Alert.alert(t('Hold to start recording.'));
     }
@@ -70,7 +87,7 @@ const AudioRecordingButtonWithContext = <
       handleLongPress();
       return;
     }
-    if (!showVoiceUI) {
+    if (!recording) {
       triggerHaptic('impactHeavy');
       if (!permissionsGranted) {
         Alert.alert(t('Please allow Audio permissions in settings.'), '', [
@@ -116,10 +133,12 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const {
     asyncMessagesMinimumPressDuration: prevAsyncMessagesMinimumPressDuration,
     disabled: prevDisabled,
+    recording: prevRecording,
   } = prevProps;
   const {
     asyncMessagesMinimumPressDuration: nextAsyncMessagesMinimumPressDuration,
     disabled: nextDisabled,
+    recording: nextRecording,
   } = nextProps;
 
   const asyncMessagesMinimumPressDurationEqual =
@@ -128,6 +147,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const disabledEqual = prevDisabled === nextDisabled;
   if (!disabledEqual) return false;
+
+  const recordingEqual = prevRecording === nextRecording;
+  if (!recordingEqual) return false;
 
   return true;
 };
@@ -139,7 +161,9 @@ const MemoizedAudioRecordingButton = React.memo(
 
 export type AudioRecordingButtonProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<AudioRecordingButtonPropsWithContext<StreamChatGenerics>>;
+> = Partial<AudioRecordingButtonPropsWithContext<StreamChatGenerics>> & {
+  recording: AudioRecordingReturnType;
+};
 
 /**
  * Component to display the mic button on the Message Input.
