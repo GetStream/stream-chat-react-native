@@ -21,6 +21,7 @@ import {
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
 import { useMessageDetailsForState } from './hooks/useMessageDetailsForState';
 
+import { AudioAttachmentProps } from '../../components/Attachment/AudioAttachment';
 import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
 import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
@@ -239,13 +240,19 @@ export type InputMessageInputContextValue<
    */
   AttachButton: React.ComponentType<AttachButtonProps<StreamChatGenerics>>;
   /**
+   * Custom UI component for audio attachment upload preview.
+   *
+   * Defaults to and accepts same props as: [AudioAttachmentUploadPreview](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/AudioAttachment.tsx)
+   */
+  AudioAttachmentUploadPreview: React.ComponentType<AudioAttachmentProps>;
+  /**
    * Custom UI component for audio recorder UI.
    *
    * Defaults to and accepts same props as: [AudioRecorder](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/AudioRecorder.tsx)
    */
   AudioRecorder: React.ComponentType<AudioRecorderProps<StreamChatGenerics>>;
   /**
-   * Controls whether the feature is enabled.
+   * Controls whether the async audio feature is enabled.
    */
   audioRecordingEnabled: boolean;
   /**

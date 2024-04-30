@@ -16,20 +16,22 @@ import { File } from '../../../types/types';
 import { resampleWaveformData } from '../utils/audioSampling';
 import { normalizeAudioLevel } from '../utils/normalizeAudioLevel';
 
+export type RecordingStatusStates = 'idle' | 'recording' | 'stopped';
+
 /**
  * The hook that controls all the async audio core features including start/stop or recording, player, upload/delete of the recorded audio.
  */
 export const useAudioController = () => {
   const [micLocked, setMicLocked] = useState(false);
   const [permissionsGranted, setPermissionsGranted] = useState(true);
-  const [progress, setProgress] = useState<number>(0);
-  const [position, setPosition] = useState<number>(0);
   const [paused, setPaused] = useState<boolean>(true);
+  const [position, setPosition] = useState<number>(0);
+  const [progress, setProgress] = useState<number>(0);
   const [waveformData, setWaveformData] = useState<number[]>([]);
   const [isScheduledForSubmit, setIsScheduleForSubmit] = useState(false);
   const [recording, setRecording] = useState<AudioRecordingReturnType>(undefined);
   const [recordingDuration, setRecordingDuration] = useState<number>(0);
-  const [recordingStopped, setRecordingStopped] = useState<boolean>(true);
+  const [recordingStatus, setRecordingStatus] = useState<RecordingStatusStates>('idle');
 
   const { sendMessage, uploadNewFile } = useMessageInputContext();
 
@@ -158,7 +160,7 @@ export const useAudioController = () => {
    * Function to start voice recording.
    */
   const startVoiceRecording = async () => {
-    setRecordingStopped(false);
+    setRecordingStatus('recording');
     const recordingInfo = await Audio.startRecording(
       {
         isMeteringEnabled: true,
@@ -196,7 +198,7 @@ export const useAudioController = () => {
         await Audio.stopRecording();
       }
     }
-    setRecordingStopped(true);
+    setRecordingStatus('stopped');
   };
 
   /**
@@ -204,7 +206,7 @@ export const useAudioController = () => {
    */
   const resetState = () => {
     setRecording(undefined);
-    setRecordingStopped(true);
+    setRecordingStatus('idle');
     setMicLocked(false);
     setWaveformData([]);
     setPaused(true);
@@ -216,9 +218,7 @@ export const useAudioController = () => {
    * Function to delete voice recording.
    */
   const deleteVoiceRecording = async () => {
-    if (!recordingStopped) {
-      await stopVoiceRecording();
-    }
+    await stopVoiceRecording();
     if (!paused) {
       await stopVoicePlayer();
     }
@@ -234,7 +234,7 @@ export const useAudioController = () => {
     if (!paused) {
       await stopVoicePlayer();
     }
-    if (!recordingStopped) {
+    if (recordingStatus === 'recording') {
       await stopVoiceRecording();
     }
 
@@ -271,11 +271,11 @@ export const useAudioController = () => {
     progress,
     recording,
     recordingDuration,
-    recordingStopped,
+    recordingStatus,
     setMicLocked,
     setRecording,
     setRecordingDuration,
-    setRecordingStopped,
+    setRecordingStatus,
     setWaveformData,
     startVoiceRecording,
     stopVoiceRecording,

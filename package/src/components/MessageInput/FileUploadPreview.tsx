@@ -136,9 +136,9 @@ type FileUploadPreviewPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageInputContextValue<StreamChatGenerics>,
-  'fileUploads' | 'removeFile' | 'uploadFile' | 'setFileUploads'
+  'fileUploads' | 'removeFile' | 'uploadFile' | 'setFileUploads' | 'AudioAttachmentUploadPreview'
 > &
-  Pick<MessagesContextValue<StreamChatGenerics>, 'AudioAttachment' | 'FileAttachmentIcon'> &
+  Pick<MessagesContextValue<StreamChatGenerics>, 'FileAttachmentIcon'> &
   Pick<ChatContextValue<StreamChatGenerics>, 'enableOfflineSupport'>;
 
 const FileUploadPreviewWithContext = <
@@ -147,7 +147,7 @@ const FileUploadPreviewWithContext = <
   props: FileUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
-    AudioAttachment,
+    AudioAttachmentUploadPreview,
     enableOfflineSupport,
     FileAttachmentIcon,
     fileUploads,
@@ -244,7 +244,7 @@ const FileUploadPreviewWithContext = <
           type={indicatorType}
         >
           {item.file.mimeType?.startsWith('audio/') && isAudioPackageAvailable() ? (
-            <AudioAttachment
+            <AudioAttachmentUploadPreview
               hideProgressBar={true}
               item={item}
               onLoad={onLoad}
@@ -377,14 +377,14 @@ export const FileUploadPreview = <
   props: FileUploadPreviewProps<StreamChatGenerics>,
 ) => {
   const { enableOfflineSupport } = useChatContext<StreamChatGenerics>();
-  const { fileUploads, removeFile, setFileUploads, uploadFile } =
+  const { AudioAttachmentUploadPreview, fileUploads, removeFile, setFileUploads, uploadFile } =
     useMessageInputContext<StreamChatGenerics>();
-  const { AudioAttachment, FileAttachmentIcon } = useMessagesContext<StreamChatGenerics>();
+  const { FileAttachmentIcon } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedFileUploadPreview
       {...{
-        AudioAttachment,
+        AudioAttachmentUploadPreview,
         FileAttachmentIcon,
         fileUploads,
         removeFile,

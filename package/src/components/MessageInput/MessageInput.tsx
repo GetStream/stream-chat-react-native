@@ -592,7 +592,7 @@ const MessageInputWithContext = <
     progress,
     recording,
     recordingDuration,
-    recordingStopped,
+    recordingStatus,
     setMicLocked,
     startVoiceRecording,
     stopVoiceRecording,
@@ -720,7 +720,7 @@ const MessageInputWithContext = <
               style={animatedStyles.lockIndicator}
             />
             {micLocked &&
-              (recordingStopped ? (
+              (recordingStatus === 'stopped' ? (
                 <AudioRecordingPreview
                   onVoicePlayerPlayPause={onVoicePlayerPlayPause}
                   paused={paused}
@@ -751,7 +751,7 @@ const MessageInputWithContext = <
                   micLocked={micLocked}
                   recording={recording}
                   recordingDuration={recordingDuration}
-                  recordingStopped={recordingStopped}
+                  recordingStopped={recordingStatus === 'stopped'}
                   slideToCancelStyle={animatedStyles.slideToCancel}
                   stopVoiceRecording={stopVoiceRecording}
                   uploadVoiceRecording={uploadVoiceRecording}

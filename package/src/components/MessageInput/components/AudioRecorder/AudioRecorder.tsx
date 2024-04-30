@@ -24,6 +24,10 @@ type AudioRecorderPropsWithContext<
 > = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled'> &
   Pick<MessageInputContextValue<StreamChatGenerics>, 'asyncMessagesMultiSendEnabled'> & {
     /**
+     * Function to stop and delete the voice recording.
+     */
+    deleteVoiceRecording: () => Promise<void>;
+    /**
      * Boolean used to show if the voice recording state is locked. This makes sure the mic button shouldn't be pressed any longer.
      * When the mic is locked the `AudioRecordingInProgress` component shows up.
      */
@@ -37,9 +41,13 @@ type AudioRecorderPropsWithContext<
      */
     recordingStopped: boolean;
     /**
-     * Function to stop and delete the voice recording.
+     * Function to stop the ongoing voice recording.
      */
-    deleteVoiceRecording?: () => Promise<void>;
+    stopVoiceRecording: () => Promise<void>;
+    /**
+     * Function to upload the voice recording.
+     */
+    uploadVoiceRecording: (multiSendEnabled: boolean) => Promise<void>;
     /**
      * The duration of the voice recording.
      */
@@ -48,15 +56,84 @@ type AudioRecorderPropsWithContext<
      * Style used in slide to cancel container.
      */
     slideToCancelStyle?: StyleProp<ViewStyle>;
-    /**
-     * Function to stop the ongoing voice recording.
-     */
-    stopVoiceRecording?: () => Promise<void>;
-    /**
-     * Function to upload the voice recording.
-     */
-    uploadVoiceRecording?: (multiSendEnabled: boolean) => Promise<void>;
   };
+
+const StopRecording = ({
+  stopVoiceRecordingHandler,
+}: {
+  stopVoiceRecordingHandler: () => Promise<void>;
+}) => {
+  const {
+    theme: {
+      colors: { accent_red },
+      messageInput: {
+        audioRecorder: { circleStopIcon, pausedContainer },
+      },
+    },
+  } = useTheme();
+  return (
+    <Pressable
+      onPress={stopVoiceRecordingHandler}
+      style={[styles.pausedContainer, pausedContainer]}
+    >
+      <CircleStop fill={accent_red} size={32} {...circleStopIcon} />
+    </Pressable>
+  );
+};
+
+const UploadRecording = ({
+  asyncMessagesMultiSendEnabled,
+  uploadVoiceRecordingHandler,
+}: {
+  asyncMessagesMultiSendEnabled: boolean;
+  uploadVoiceRecordingHandler: (multiSendEnabled: boolean) => Promise<void>;
+}) => {
+  const {
+    theme: {
+      colors: { accent_blue },
+      messageInput: {
+        audioRecorder: { checkContainer, sendCheckIcon },
+      },
+    },
+  } = useTheme();
+  return (
+    <Pressable
+      onPress={async () => {
+        await uploadVoiceRecordingHandler(asyncMessagesMultiSendEnabled);
+      }}
+      style={[styles.checkContainer, checkContainer]}
+    >
+      <SendCheck fill={accent_blue} size={32} {...sendCheckIcon} />
+    </Pressable>
+  );
+};
+
+const DeleteRecording = ({
+  deleteVoiceRecordingHandler,
+  disabled,
+}: {
+  deleteVoiceRecordingHandler: () => Promise<void>;
+  disabled?: boolean;
+}) => {
+  const {
+    theme: {
+      colors: { accent_blue },
+      messageInput: {
+        audioRecorder: { deleteContainer, deleteIcon },
+      },
+    },
+  } = useTheme();
+  return (
+    <Pressable
+      disabled={disabled}
+      onPress={deleteVoiceRecordingHandler}
+      style={[styles.deleteContainer, deleteContainer]}
+      testID='delete-button'
+    >
+      <Delete fill={accent_blue} size={32} {...deleteIcon} />
+    </Pressable>
+  );
+};
 
 const AudioRecorderWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -77,77 +154,56 @@ const AudioRecorderWithContext = <
 
   const {
     theme: {
-      colors: { accent_blue, accent_red, grey_dark },
+      colors: { accent_red, grey_dark },
       messageInput: {
-        audioRecorder: {
-          arrowLeftIcon,
-          checkContainer,
-          circleStopIcon,
-          deleteContainer,
-          deleteIcon,
-          micContainer,
-          micIcon,
-          pausedContainer,
-          sendCheckIcon,
-          slideToCancelContainer,
-        },
+        audioRecorder: { arrowLeftIcon, micContainer, micIcon, slideToCancelContainer },
       },
     },
   } = useTheme();
 
-  return (
-    <>
-      {recordingStopped ? (
-        <Pressable
-          disabled={disabled}
-          onPress={deleteVoiceRecording}
-          style={[styles.deleteContainer, deleteContainer]}
-          testID='delete-button'
-        >
-          <Delete fill={accent_blue} size={32} {...deleteIcon} />
-        </Pressable>
-      ) : (
+  if (micLocked) {
+    if (recordingStopped) {
+      return (
+        <>
+          <DeleteRecording deleteVoiceRecordingHandler={deleteVoiceRecording} disabled={disabled} />
+          <UploadRecording
+            asyncMessagesMultiSendEnabled={asyncMessagesMultiSendEnabled}
+            uploadVoiceRecordingHandler={uploadVoiceRecording}
+          />
+        </>
+      );
+    } else {
+      return (
+        <>
+          <View style={[styles.micContainer, micContainer]}>
+            <Mic fill={recordingDuration !== 0 ? accent_red : grey_dark} size={32} {...micIcon} />
+          </View>
+          <StopRecording stopVoiceRecordingHandler={stopVoiceRecording} />
+          <UploadRecording
+            asyncMessagesMultiSendEnabled={asyncMessagesMultiSendEnabled}
+            uploadVoiceRecordingHandler={uploadVoiceRecording}
+          />
+        </>
+      );
+    }
+  } else {
+    return (
+      <>
         <View style={[styles.micContainer, micContainer]}>
           <Mic fill={recordingDuration !== 0 ? accent_red : grey_dark} size={32} {...micIcon} />
-          {/* `durationMillis` is for Expo apps, `currentPosition` is for Native CLI apps. */}
-          {!micLocked && (
-            <Text style={[styles.durationLabel, { color: grey_dark }]}>
-              {recordingDuration ? dayjs.duration(recordingDuration).format('mm:ss') : null}
-            </Text>
-          )}
+          <Text style={[styles.durationLabel, { color: grey_dark }]}>
+            {recordingDuration ? dayjs.duration(recordingDuration).format('mm:ss') : null}
+          </Text>
         </View>
-      )}
-      {micLocked ? (
-        <>
-          {!recordingStopped && (
-            <Pressable
-              onPress={stopVoiceRecording}
-              style={[styles.pausedContainer, pausedContainer]}
-            >
-              <CircleStop fill={accent_red} size={32} {...circleStopIcon} />
-            </Pressable>
-          )}
-          <Pressable
-            onPress={async () => {
-              if (uploadVoiceRecording) {
-                await uploadVoiceRecording(asyncMessagesMultiSendEnabled);
-              }
-            }}
-            style={[styles.checkContainer, checkContainer]}
-          >
-            <SendCheck fill={accent_blue} size={32} {...sendCheckIcon} />
-          </Pressable>
-        </>
-      ) : (
         <Animated.View
           style={[styles.slideToCancelContainer, slideToCancelStyle, slideToCancelContainer]}
         >
           <Text style={[styles.slideToCancel, { color: grey_dark }]}>Slide to Cancel</Text>
           <ArrowLeft fill={grey_dark} size={24} {...arrowLeftIcon} />
         </Animated.View>
-      )}
-    </>
-  );
+      </>
+    );
+  }
 };
 
 const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
@@ -200,11 +256,16 @@ const MemoizedAudioRecorder = React.memo(
 
 export type AudioRecorderProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<AudioRecorderPropsWithContext<StreamChatGenerics>> & {
-  micLocked: boolean;
-  recording: AudioRecordingReturnType;
-  recordingStopped: boolean;
-};
+> = Partial<AudioRecorderPropsWithContext<StreamChatGenerics>> &
+  Pick<
+    AudioRecorderPropsWithContext<StreamChatGenerics>,
+    | 'deleteVoiceRecording'
+    | 'micLocked'
+    | 'recording'
+    | 'recordingStopped'
+    | 'stopVoiceRecording'
+    | 'uploadVoiceRecording'
+  >;
 
 /**
  * Component to display the Recording UI in the Message Input.

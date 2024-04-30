@@ -132,6 +132,7 @@
       "basics/stream_chat_with_navigation",
       "customization/native_handlers",
       "basics/translations",
+      "guides/audio-support",
       "guides/keyboard",
       "guides/moderation",
       "guides/going-live-checklist",
