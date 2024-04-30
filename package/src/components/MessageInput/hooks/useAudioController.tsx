@@ -218,7 +218,9 @@ export const useAudioController = () => {
    * Function to delete voice recording.
    */
   const deleteVoiceRecording = async () => {
-    await stopVoiceRecording();
+    if (recordingStatus === 'recording') {
+      await stopVoiceRecording();
+    }
     if (!paused) {
       await stopVoicePlayer();
     }
