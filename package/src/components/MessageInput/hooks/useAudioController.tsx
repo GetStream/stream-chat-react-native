@@ -148,10 +148,11 @@ export const useAudioController = () => {
       return;
     }
     setRecordingDuration(status?.currentPosition || status.durationMillis);
-    // For expo android the lower bound is -160 so we need to normalize according to it.
+    // For expo android the lower bound is -120 so we need to normalize according to it. The `status.currentMetering` is undefined for Expo CLI apps, so we can use it.
+    const lowerBound = Platform.OS === 'ios' || status.currentMetering ? -60 : -120;
     const normalizedAudioLevel = normalizeAudioLevel(
       status.currentMetering || status.metering,
-      Platform.OS === 'android' && typeof recording !== 'string',
+      lowerBound,
     );
     setWaveformData((prev) => [...prev, normalizedAudioLevel]);
   };
