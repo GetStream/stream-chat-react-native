@@ -17,7 +17,7 @@ export default function ChannelScreen() {
     <SafeAreaView>
       <Stack.Screen options={{ title: 'Channel Screen' }} />
       {channel && (
-        <Channel channel={channel}>
+        <Channel audioRecordingEnabled={true} channel={channel}>
           <View style={{ flex: 1 }}>
             <MessageList
               onThreadSelect={(thread) => {

@@ -74,7 +74,7 @@ import {
   ThumbsUpReaction,
   WutReaction,
 } from '../../icons';
-import { FlatList as FlatListDefault, isAudioPackageAvailable, pickDocument } from '../../native';
+import { FlatList as FlatListDefault, pickDocument } from '../../native';
 import * as dbApi from '../../store/apis';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
@@ -427,7 +427,7 @@ const ChannelWithContext = <
     AudioAttachment = AudioAttachmentDefault,
     AudioAttachmentUploadPreview = AudioAttachmentDefault,
     AudioRecorder = AudioRecorderDefault,
-    audioRecordingEnabled = true && isAudioPackageAvailable(),
+    audioRecordingEnabled = false,
     AudioRecordingInProgress = AudioRecordingInProgressDefault,
     AudioRecordingLockIndicator = AudioRecordingLockIndicatorDefault,
     AudioRecordingPreview = AudioRecordingPreviewDefault,
