@@ -1040,11 +1040,15 @@ PODS:
     - React-Core
   - react-native-safe-area-context (4.9.0):
     - React-Core
-  - react-native-video (6.0.0-beta.5):
+  - react-native-video (6.0.0-beta.8):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core
-    - react-native-video/Video (= 6.0.0-beta.5)
-  - react-native-video/Video (6.0.0-beta.5):
+    - react-native-video/Video (= 6.0.0-beta.8)
+  - react-native-video/Video (6.0.0-beta.8):
+    - glog
     - PromisesSwift
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core
   - React-nativeconfig (0.73.5)
   - React-NativeModulesApple (0.73.5):
@@ -1571,7 +1575,7 @@ SPEC CHECKSUMS:
   react-native-netinfo: 299dad906cdbf3b67bcc6f693c807f98bdd127cc
   react-native-quick-sqlite: 2b225dadc63b670f027111e58f6f169773f6d755
   react-native-safe-area-context: b97eb6f9e3b7f437806c2ce5983f479f8eb5de4b
-  react-native-video: df7d8a4c8568ed4a31b28e6cd2bfa4a98b186e36
+  react-native-video: 2e38d3e0f7382427539b6b436812553480fcf70a
   React-nativeconfig: 78e2b14c0ee479449845b67bbe103343257cbcc0
   React-NativeModulesApple: 4fce13d416890352a7a9621427459fe738c4e79a
   React-perflogger: 0dd9f1725d55f8264b81efadd373fe1d9cca7dc2

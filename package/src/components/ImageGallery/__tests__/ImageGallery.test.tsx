@@ -209,7 +209,7 @@ describe('ImageGallery', () => {
 
     const progressDurationComponent = screen.getByLabelText('Progress Duration');
     await waitFor(() => {
-      expect(screen.getByLabelText('Play Icon')).not.toBeUndefined();
+      expect(screen.queryAllByLabelText('Play Icon').length).toBeGreaterThan(0);
       expect(progressDurationComponent.children[0]).toBe('00:10');
     });
   });

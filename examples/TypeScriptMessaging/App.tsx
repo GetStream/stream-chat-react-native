@@ -132,7 +132,12 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView>
-      <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread}>
+      <Channel
+        audioRecordingEnabled={true}
+        channel={channel}
+        keyboardVerticalOffset={headerHeight}
+        thread={thread}
+      >
         <View style={{ flex: 1 }}>
           <MessageList<StreamChatGenerics>
             onThreadSelect={(selectedThread) => {
@@ -171,7 +176,13 @@ const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView>
-      <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread} threadList>
+      <Channel
+        audioRecordingEnabled={true}
+        channel={channel}
+        keyboardVerticalOffset={headerHeight}
+        thread={thread}
+        threadList
+      >
         <View
           style={{
             flex: 1,

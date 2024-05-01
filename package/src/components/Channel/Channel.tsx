@@ -128,6 +128,12 @@ import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/
 import { ReactionList as ReactionListDefault } from '../Message/MessageSimple/ReactionList';
 import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButton';
 import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
+import { AudioRecorder as AudioRecorderDefault } from '../MessageInput/components/AudioRecorder/AudioRecorder';
+import { AudioRecordingButton as AudioRecordingButtonDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingButton';
+import { AudioRecordingInProgress as AudioRecordingInProgressDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingInProgress';
+import { AudioRecordingLockIndicator as AudioRecordingLockIndicatorDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingLockIndicator';
+import { AudioRecordingPreview as AudioRecordingPreviewDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingPreview';
+import { AudioRecordingWaveform as AudioRecordingWaveformDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingWaveform';
 import { InputEditingStateHeader as InputEditingStateHeaderDefault } from '../MessageInput/components/InputEditingStateHeader';
 import { InputGiphySearch as InputGiphyCommandInputDefault } from '../MessageInput/components/InputGiphySearch';
 import { InputReplyStateHeader as InputReplyStateHeaderDefault } from '../MessageInput/components/InputReplyStateHeader';
@@ -411,10 +417,21 @@ const ChannelWithContext = <
     additionalTextInputProps,
     additionalTouchableProps,
     allowThreadMessagesInChannel = true,
+    asyncMessagesLockDistance = 50,
+    asyncMessagesMinimumPressDuration = 500,
+    asyncMessagesMultiSendEnabled = true,
+    asyncMessagesSlideToCancelDistance = 100,
     AttachButton = AttachButtonDefault,
     Attachment = AttachmentDefault,
     AttachmentActions = AttachmentActionsDefault,
     AudioAttachment = AudioAttachmentDefault,
+    AudioAttachmentUploadPreview = AudioAttachmentDefault,
+    AudioRecorder = AudioRecorderDefault,
+    audioRecordingEnabled = false,
+    AudioRecordingInProgress = AudioRecordingInProgressDefault,
+    AudioRecordingLockIndicator = AudioRecordingLockIndicatorDefault,
+    AudioRecordingPreview = AudioRecordingPreviewDefault,
+    AudioRecordingWaveform = AudioRecordingWaveformDefault,
     AutoCompleteSuggestionHeader = AutoCompleteSuggestionHeaderDefault,
     AutoCompleteSuggestionItem = AutoCompleteSuggestionItemDefault,
     AutoCompleteSuggestionList = AutoCompleteSuggestionListDefault,
@@ -552,6 +569,7 @@ const ChannelWithContext = <
     setWatchers,
     shouldSyncChannel,
     ShowThreadMessageInChannelButton = ShowThreadMessageInChannelButtonDefault,
+    StartAudioRecordingButton = AudioRecordingButtonDefault,
     stateUpdateThrottleInterval = defaultThrottleInterval,
     StickyHeader,
     supportedReactions = reactionData,
@@ -1575,6 +1593,7 @@ const ChannelWithContext = <
         if (
           (attachment.type === 'file' ||
             attachment.type === 'audio' ||
+            attachment.type === 'voiceRecording' ||
             attachment.type === 'video') &&
           attachment.asset_url &&
           isLocalUrl(attachment.asset_url) &&
@@ -1593,6 +1612,7 @@ const ChannelWithContext = <
           if (response.thumb_url) {
             attachment.thumb_url = response.thumb_url;
           }
+
           delete attachment.originalFile;
           dbApi.updateMessage({
             message: { ...updatedMessage, cid: channel.cid },
@@ -2183,7 +2203,18 @@ const ChannelWithContext = <
 
   const inputMessageInputContext = useCreateInputMessageInputContext<StreamChatGenerics>({
     additionalTextInputProps,
+    asyncMessagesLockDistance,
+    asyncMessagesMinimumPressDuration,
+    asyncMessagesMultiSendEnabled,
+    asyncMessagesSlideToCancelDistance,
     AttachButton,
+    AudioAttachmentUploadPreview,
+    AudioRecorder,
+    audioRecordingEnabled,
+    AudioRecordingInProgress,
+    AudioRecordingLockIndicator,
+    AudioRecordingPreview,
+    AudioRecordingWaveform,
     autoCompleteSuggestionsLimit,
     autoCompleteTriggerSettings,
     channelId,
@@ -2224,6 +2255,7 @@ const ChannelWithContext = <
     setInputRef,
     setQuotedMessageState,
     ShowThreadMessageInChannelButton,
+    StartAudioRecordingButton,
     UploadProgressIndicator,
   });
 

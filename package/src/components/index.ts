@@ -114,6 +114,12 @@ export * from '../utils/removeReservedFields';
 
 export * from './MessageInput/AttachButton';
 export * from './MessageInput/CommandsButton';
+export * from './MessageInput/components/AudioRecorder/AudioRecorder';
+export * from './MessageInput/components/AudioRecorder/AudioRecordingButton';
+export * from './MessageInput/components/AudioRecorder/AudioRecordingInProgress';
+export * from './MessageInput/components/AudioRecorder/AudioRecordingLockIndicator';
+export * from './MessageInput/components/AudioRecorder/AudioRecordingPreview';
+export * from './MessageInput/components/AudioRecorder/AudioRecordingWaveform';
 export * from './MessageInput/CooldownTimer';
 export * from './MessageInput/FileUploadPreview';
 export * from './MessageInput/ImageUploadPreview';

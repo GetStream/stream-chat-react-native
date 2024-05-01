@@ -1,12 +1,21 @@
 import React from 'react';
 
-import { IconProps, RootPath, RootSvg } from './utils/base';
+import Svg, { Circle, Path } from 'react-native-svg';
 
-export const SendUp = (props: IconProps) => (
-  <RootSvg {...props}>
-    <RootPath
-      d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14v-4H8l4-4 4 4h-3v4h-2z'
-      {...props}
+import { IconProps } from './utils/base';
+
+type Props = IconProps & {
+  size: number;
+};
+
+export const SendUp = ({ size, ...rest }: Props) => (
+  <Svg height={size} viewBox={`0 0 ${size} ${size}`} width={size} {...rest}>
+    <Circle cx={size / 2} cy={size / 2} r={size / 2} {...rest} />
+    <Path
+      clipRule='evenodd'
+      d='M14.6673 16V22.6667H17.334V16H22.6673L16.0007 9.33337L9.33398 16H14.6673Z'
+      fill={'white'}
+      fillRule='evenodd'
     />
-  </RootSvg>
+  </Svg>
 );

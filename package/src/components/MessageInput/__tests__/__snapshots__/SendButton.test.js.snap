@@ -40,14 +40,14 @@ exports[`SendButton should render a non-editing disabled SendButton 1`] = `
 >
   <RNSVGSvgView
     align="xMidYMid"
-    bbHeight={24}
-    bbWidth={24}
+    bbHeight={32}
+    bbWidth={32}
+    fill="#DBDBDB"
     focusable={false}
-    height={24}
+    height={32}
     meetOrSlice={0}
     minX={0}
     minY={0}
-    pathFill="#DBDBDB"
     style={
       [
         {
@@ -56,29 +56,50 @@ exports[`SendButton should render a non-editing disabled SendButton 1`] = `
         },
         {
           "flex": 0,
-          "height": 24,
-          "width": 24,
+          "height": 32,
+          "width": 32,
         },
       ]
     }
-    vbHeight={24}
-    vbWidth={24}
-    width={24}
+    vbHeight={32}
+    vbWidth={32}
+    width={32}
   >
     <RNSVGGroup
       fill={
         {
-          "payload": 4278190080,
+          "payload": 4292598747,
           "type": 0,
         }
       }
+      propList={
+        [
+          "fill",
+        ]
+      }
     >
-      <RNSVGPath
-        clipRule={0}
-        d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12s4.48 10 10 10 10-4.48 10-10zM8 11h4V8l4 4-4 4v-3H8v-2z"
+      <RNSVGCircle
+        cx={16}
+        cy={16}
         fill={
           {
             "payload": 4292598747,
+            "type": 0,
+          }
+        }
+        propList={
+          [
+            "fill",
+          ]
+        }
+        r={16}
+      />
+      <RNSVGPath
+        clipRule={0}
+        d="M9.33398 14.6666H16.0007V9.33325L22.6673 15.9999L16.0007 22.6666V17.3333H9.33398V14.6666Z"
+        fill={
+          {
+            "payload": 4294967295,
             "type": 0,
           }
         }
@@ -135,14 +156,14 @@ exports[`SendButton should render a non-editing enabled SendButton 1`] = `
 >
   <RNSVGSvgView
     align="xMidYMid"
-    bbHeight={24}
-    bbWidth={24}
+    bbHeight={32}
+    bbWidth={32}
+    fill="#005FFF"
     focusable={false}
-    height={24}
+    height={32}
     meetOrSlice={0}
     minX={0}
     minY={0}
-    pathFill="#005FFF"
     style={
       [
         {
@@ -151,29 +172,50 @@ exports[`SendButton should render a non-editing enabled SendButton 1`] = `
         },
         {
           "flex": 0,
-          "height": 24,
-          "width": 24,
+          "height": 32,
+          "width": 32,
         },
       ]
     }
-    vbHeight={24}
-    vbWidth={24}
-    width={24}
+    vbHeight={32}
+    vbWidth={32}
+    width={32}
   >
     <RNSVGGroup
       fill={
         {
-          "payload": 4278190080,
+          "payload": 4278214655,
           "type": 0,
         }
       }
+      propList={
+        [
+          "fill",
+        ]
+      }
     >
-      <RNSVGPath
-        clipRule={0}
-        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14v-4H8l4-4 4 4h-3v4h-2z"
+      <RNSVGCircle
+        cx={16}
+        cy={16}
         fill={
           {
             "payload": 4278214655,
+            "type": 0,
+          }
+        }
+        propList={
+          [
+            "fill",
+          ]
+        }
+        r={16}
+      />
+      <RNSVGPath
+        clipRule={0}
+        d="M14.6673 16V22.6667H17.334V16H22.6673L16.0007 9.33337L9.33398 16H14.6673Z"
+        fill={
+          {
+            "payload": 4294967295,
             "type": 0,
           }
         }
@@ -230,14 +272,14 @@ exports[`SendButton should render an editing disabled SendButton 1`] = `
 >
   <RNSVGSvgView
     align="xMidYMid"
-    bbHeight={24}
-    bbWidth={24}
+    bbHeight={32}
+    bbWidth={32}
+    fill="#DBDBDB"
     focusable={false}
-    height={24}
+    height={32}
     meetOrSlice={0}
     minX={0}
     minY={0}
-    pathFill="#DBDBDB"
     style={
       [
         {
@@ -246,29 +288,50 @@ exports[`SendButton should render an editing disabled SendButton 1`] = `
         },
         {
           "flex": 0,
-          "height": 24,
-          "width": 24,
+          "height": 32,
+          "width": 32,
         },
       ]
     }
-    vbHeight={24}
-    vbWidth={24}
-    width={24}
+    vbHeight={32}
+    vbWidth={32}
+    width={32}
   >
     <RNSVGGroup
       fill={
         {
-          "payload": 4278190080,
+          "payload": 4292598747,
           "type": 0,
         }
       }
+      propList={
+        [
+          "fill",
+        ]
+      }
     >
-      <RNSVGPath
-        clipRule={0}
-        d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12s4.48 10 10 10 10-4.48 10-10zM8 11h4V8l4 4-4 4v-3H8v-2z"
+      <RNSVGCircle
+        cx={16}
+        cy={16}
         fill={
           {
             "payload": 4292598747,
+            "type": 0,
+          }
+        }
+        propList={
+          [
+            "fill",
+          ]
+        }
+        r={16}
+      />
+      <RNSVGPath
+        clipRule={0}
+        d="M9.33398 14.6666H16.0007V9.33325L22.6673 15.9999L16.0007 22.6666V17.3333H9.33398V14.6666Z"
+        fill={
+          {
+            "payload": 4294967295,
             "type": 0,
           }
         }
@@ -325,14 +388,14 @@ exports[`SendButton should render an editing enabled SendButton 1`] = `
 >
   <RNSVGSvgView
     align="xMidYMid"
-    bbHeight={24}
-    bbWidth={24}
+    bbHeight={32}
+    bbWidth={32}
+    fill="#005FFF"
     focusable={false}
-    height={24}
+    height={32}
     meetOrSlice={0}
     minX={0}
     minY={0}
-    pathFill="#005FFF"
     style={
       [
         {
@@ -341,29 +404,50 @@ exports[`SendButton should render an editing enabled SendButton 1`] = `
         },
         {
           "flex": 0,
-          "height": 24,
-          "width": 24,
+          "height": 32,
+          "width": 32,
         },
       ]
     }
-    vbHeight={24}
-    vbWidth={24}
-    width={24}
+    vbHeight={32}
+    vbWidth={32}
+    width={32}
   >
     <RNSVGGroup
       fill={
         {
-          "payload": 4278190080,
+          "payload": 4278214655,
           "type": 0,
         }
       }
+      propList={
+        [
+          "fill",
+        ]
+      }
     >
-      <RNSVGPath
-        clipRule={0}
-        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14v-4H8l4-4 4 4h-3v4h-2z"
+      <RNSVGCircle
+        cx={16}
+        cy={16}
         fill={
           {
             "payload": 4278214655,
+            "type": 0,
+          }
+        }
+        propList={
+          [
+            "fill",
+          ]
+        }
+        r={16}
+      />
+      <RNSVGPath
+        clipRule={0}
+        d="M14.6673 16V22.6667H17.334V16H22.6673L16.0007 9.33337L9.33398 16H14.6673Z"
+        fill={
+          {
+            "payload": 4294967295,
             "type": 0,
           }
         }
