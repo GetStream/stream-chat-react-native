@@ -322,6 +322,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
             }
           },
         }}
+        audioRecordingEnabled={true}
         channel={currentChannel.current}
         EmptyStateIndicator={EmptyMessagesIndicator}
         enforceUniqueReaction
