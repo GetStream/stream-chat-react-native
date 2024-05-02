@@ -2929,10 +2929,10 @@ stream-buffers@2.2.x:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha512-uyQK/mx5QjHun80FLJTfaWE7JtwfRMKBLkMne6udYOmvH0CawotVa7TfgYHzAnpphn4+TweIx1QKMnRIbipmUg==
 
-stream-chat-react-native-core@5.28.0:
-  version "5.28.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.28.0.tgz#66449c014e034bf6041f364ccf8f25302b8ff580"
-  integrity sha512-G+NmlCYPO84OE2p1soNoKRi/RlfM0ICnw3gm5wq8bPWaBvt1XozZuX6usO2+nEGVcdhaKTvXqX5i4+6FEGDPBw==
+stream-chat-react-native-core@5.28.1:
+  version "5.28.1"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.28.1.tgz#9bde6c2af43a24e8a5c9d4ca35da19ccef95cb34"
+  integrity sha512-+vsLbqFmxm6Xyt4U3f2zfNvTTB9cXWTk8gyyw4b2RJ2qMZ/8wuN/luS5xwKdNbBZZCuaDlwuJpWE/x5/ERbpWg==
   dependencies:
     "@gorhom/bottom-sheet" "4.4.8"
     dayjs "1.10.5"

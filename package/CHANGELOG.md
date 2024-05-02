@@ -1,5 +1,12 @@
 # Change Log
 
+## [5.29.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.28.1...v5.29.0) (2024-05-02)
+
+
+### Features
+
+* async audio ([#2501](https://github.com/GetStream/stream-chat-react-native/issues/2501)) ([871cdd2](https://github.com/GetStream/stream-chat-react-native/commit/871cdd2be5b7b7790d8dcebbbcd46ef2082def13))
+
 ### [5.28.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.28.0...v5.28.1) (2024-04-26)
 
 
