@@ -3268,6 +3268,11 @@ domutils@^3.0.1:
     domelementtype "^2.3.0"
     domhandler "^5.0.3"
 
+dooboolab-welcome@^1.3.2:
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/dooboolab-welcome/-/dooboolab-welcome-1.3.2.tgz#4928595312f0429b4ea1b485ba8767bae6acdab7"
+  integrity sha512-2NbMaIIURElxEf/UAoVUFlXrO+7n/FRhLCiQlk4fkbGRh9cJ3/f8VEMPveR9m4Ug2l2Zey+UCXjd6EcBqHJ5bw==
+
 ecdsa-sig-formatter@1.0.11:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/ecdsa-sig-formatter/-/ecdsa-sig-formatter-1.0.11.tgz#ae0f0fa2d85045ef14a817daa3ce9acd0489e5bf"
@@ -6143,6 +6148,13 @@ react-is@^17.0.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
+react-native-audio-recorder-player@^3.6.7:
+  version "3.6.7"
+  resolved "https://registry.yarnpkg.com/react-native-audio-recorder-player/-/react-native-audio-recorder-player-3.6.7.tgz#a80e95a5d14dae4e1aaa25b2a9819f85e7c04853"
+  integrity sha512-uv6lLNBuyr69NLwDYvoucT+BE675ys5fjHJy1Yjr5Rr1r4MTJks/+P9nAIV+MDZkqfasmLwSpvUEboFyXcCeeQ==
+  dependencies:
+    dooboolab-welcome "^1.3.2"
+
 react-native-document-picker@9.0.1:
   version "9.0.1"
   resolved "https://registry.yarnpkg.com/react-native-document-picker/-/react-native-document-picker-9.0.1.tgz#a5ceec157f84dbadb85fe717c657569755f4c6ca"
@@ -6813,10 +6825,10 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-stream-chat-react-native-core@5.27.1:
-  version "5.27.1"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.27.1.tgz#a748b30fb3b53c575cf1e4f7230ea26e7f994a7b"
-  integrity sha512-zHOt41uOfeo90iY/lAHU0VA9yxgjnBz94LejXeAT4RqYThuX0hR9rQ3LkQlg99mXlp9I6DzKdf/w/+PrxwQ6nQ==
+stream-chat-react-native-core@5.28.1:
+  version "5.28.1"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.28.1.tgz#9bde6c2af43a24e8a5c9d4ca35da19ccef95cb34"
+  integrity sha512-+vsLbqFmxm6Xyt4U3f2zfNvTTB9cXWTk8gyyw4b2RJ2qMZ/8wuN/luS5xwKdNbBZZCuaDlwuJpWE/x5/ERbpWg==
   dependencies:
     "@gorhom/bottom-sheet" "4.4.8"
     dayjs "1.10.5"
