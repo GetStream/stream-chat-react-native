@@ -1,5 +1,18 @@
 # Change Log
 
+## [1.26.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.25.9...sampleapp@v1.26.0) (2024-05-02)
+
+
+### Features
+
+* add async audio feature to sample app ([#2504](https://github.com/GetStream/stream-chat-react-native/issues/2504)) ([fa6817d](https://github.com/GetStream/stream-chat-react-native/commit/fa6817d722b3f1370f1fd16810c40c3a55ec15a9))
+* async audio ([#2501](https://github.com/GetStream/stream-chat-react-native/issues/2501)) ([871cdd2](https://github.com/GetStream/stream-chat-react-native/commit/871cdd2be5b7b7790d8dcebbbcd46ef2082def13))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.25.9](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.25.8...sampleapp@v1.25.9) (2024-04-26)
 
 
