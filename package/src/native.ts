@@ -108,14 +108,18 @@ type TriggerHaptic = (method: HapticFeedbackMethod) => void | never;
 export let triggerHaptic: TriggerHaptic = fail;
 
 export type PlaybackStatus = {
+  currentPosition: number;
   didJustFinish: boolean;
+  duration: number;
   durationMillis: number;
   error: string;
   isBuffering: boolean;
   isLoaded: boolean;
   isLooping: boolean;
+  isMuted: boolean;
   isPlaying: boolean;
   positionMillis: number;
+  shouldPlay: boolean;
 };
 
 export type AVPlaybackStatusToSet = {
@@ -152,13 +156,18 @@ export type SoundReturnType = {
   onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void;
   onProgress?: (data: VideoProgressData) => void;
   onReadyForDisplay?: () => void;
+  pause?: () => void;
   pauseAsync?: () => void;
   play?: () => void;
   playAsync?: () => void;
+  rate?: number;
   replayAsync?: () => void;
   resizeMode?: string;
+  resume?: () => void;
   seek?: (progress: number) => void;
   setPositionAsync?: (millis: number) => void;
+  setProgressUpdateIntervalAsync?: (progressUpdateIntervalMillis: number) => void;
+  setRateAsync?: (rate: number) => void;
   soundRef?: React.RefObject<SoundReturnType>;
   stopAsync?: () => void;
   style?: StyleProp<ViewStyle>;
@@ -174,6 +183,60 @@ export type SoundType = {
   ) => Promise<SoundReturnType | null>;
   Player: React.ComponentType<SoundReturnType> | null;
 };
+
+export type RecordingStatus = {
+  canRecord: boolean;
+  currentMetering: number;
+  currentPosition: number;
+  durationMillis: number;
+  isDoneRecording: boolean;
+  isRecording: boolean;
+  metering: number;
+  mediaServicesDidReset?: boolean;
+  uri?: string | null;
+};
+
+export type AudioRecordingReturnType =
+  | string
+  | {
+      getStatusAsync: () => Promise<RecordingStatus>;
+      getURI: () => string | null;
+      pauseAsync: () => Promise<RecordingStatus>;
+      recording: string;
+      setProgressUpdateInterval: (progressUpdateIntervalMillis: number) => void;
+      stopAndUnloadAsync: () => Promise<RecordingStatus>;
+    }
+  | undefined;
+
+export type AudioReturnType = {
+  accessGranted: boolean;
+  recording?: AudioRecordingReturnType;
+};
+
+export type RecordingOptions = {
+  /**
+   * A boolean that determines whether audio level information will be part of the status object under the "metering" key.
+   */
+  isMeteringEnabled?: boolean;
+};
+
+export type AudioType = {
+  startRecording: (
+    options?: RecordingOptions,
+    onRecordingStatusUpdate?: (recordingStatus: RecordingStatus) => void,
+  ) => Promise<AudioReturnType>;
+  stopRecording: () => Promise<void>;
+  pausePlayer?: () => Promise<void>;
+  resumePlayer?: () => Promise<void>;
+  startPlayer?: (
+    uri?: AudioRecordingReturnType,
+    initialStatus?: Partial<AVPlaybackStatusToSet>,
+    onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void,
+  ) => Promise<void>;
+  stopPlayer?: () => Promise<void>;
+};
+
+export let Audio: AudioType;
 
 export let Sound: SoundType;
 
@@ -221,6 +284,7 @@ export type VideoType = {
 export let Video: React.ComponentType<VideoType>;
 
 type Handlers = {
+  Audio?: AudioType;
   compressImage?: CompressImage;
   deleteFile?: DeleteFile;
   FlatList?: typeof DefaultFlatList;
@@ -241,6 +305,10 @@ type Handlers = {
 };
 
 export const registerNativeHandlers = (handlers: Handlers) => {
+  if (handlers.Audio) {
+    Audio = handlers.Audio;
+  }
+
   if (handlers.compressImage) {
     compressImage = handlers.compressImage;
   }
@@ -311,3 +379,4 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 
 export const isVideoPackageAvailable = () => !!Video;
 export const isAudioPackageAvailable = () => !!Sound.Player || !!Sound.initializeSound;
+export const isRecordingPackageAvailable = () => !!Audio;

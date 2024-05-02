@@ -1503,8 +1503,9 @@ exports[`Thread should match thread snapshot 1`] = `
         style={
           [
             {
-              "alignItems": "flex-end",
+              "alignItems": "center",
               "flexDirection": "row",
+              "justifyContent": "space-between",
             },
             {},
           ]
@@ -1515,8 +1516,6 @@ exports[`Thread should match thread snapshot 1`] = `
             [
               {
                 "flexDirection": "row",
-                "paddingBottom": 10,
-                "paddingRight": 10,
               },
               {},
             ]
@@ -1526,7 +1525,7 @@ exports[`Thread should match thread snapshot 1`] = `
             style={
               [
                 {
-                  "paddingRight": 10,
+                  "paddingRight": 5,
                 },
                 {},
               ]
@@ -1729,6 +1728,7 @@ exports[`Thread should match thread snapshot 1`] = `
                 "borderRadius": 20,
                 "borderWidth": 1,
                 "flex": 1,
+                "marginHorizontal": 10,
               },
               {
                 "borderColor": "#ECEBEB",
@@ -1790,10 +1790,7 @@ exports[`Thread should match thread snapshot 1`] = `
         <View
           style={
             [
-              {
-                "paddingBottom": 10,
-                "paddingLeft": 10,
-              },
+              {},
               {},
             ]
           }
@@ -1837,14 +1834,14 @@ exports[`Thread should match thread snapshot 1`] = `
           >
             <RNSVGSvgView
               align="xMidYMid"
-              bbHeight={24}
-              bbWidth={24}
+              bbHeight={32}
+              bbWidth={32}
+              fill="#DBDBDB"
               focusable={false}
-              height={24}
+              height={32}
               meetOrSlice={0}
               minX={0}
               minY={0}
-              pathFill="#DBDBDB"
               style={
                 [
                   {
@@ -1853,29 +1850,50 @@ exports[`Thread should match thread snapshot 1`] = `
                   },
                   {
                     "flex": 0,
-                    "height": 24,
-                    "width": 24,
+                    "height": 32,
+                    "width": 32,
                   },
                 ]
               }
-              vbHeight={24}
-              vbWidth={24}
-              width={24}
+              vbHeight={32}
+              vbWidth={32}
+              width={32}
             >
               <RNSVGGroup
                 fill={
                   {
-                    "payload": 4278190080,
+                    "payload": 4292598747,
                     "type": 0,
                   }
                 }
+                propList={
+                  [
+                    "fill",
+                  ]
+                }
               >
-                <RNSVGPath
-                  clipRule={0}
-                  d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12s4.48 10 10 10 10-4.48 10-10zM8 11h4V8l4 4-4 4v-3H8v-2z"
+                <RNSVGCircle
+                  cx={16}
+                  cy={16}
                   fill={
                     {
                       "payload": 4292598747,
+                      "type": 0,
+                    }
+                  }
+                  propList={
+                    [
+                      "fill",
+                    ]
+                  }
+                  r={16}
+                />
+                <RNSVGPath
+                  clipRule={0}
+                  d="M9.33398 14.6666H16.0007V9.33325L22.6673 15.9999L16.0007 22.6666V17.3333H9.33398V14.6666Z"
+                  fill={
+                    {
+                      "payload": 4294967295,
                       "type": 0,
                     }
                   }

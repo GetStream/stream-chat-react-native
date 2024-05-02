@@ -107,7 +107,6 @@ describe('MessageInput', () => {
       expect(queryByTestId('upload-file-touchable')).toBeTruthy();
       expect(queryByTestId('take-photo-touchable')).toBeTruthy();
       expect(queryByTestId('auto-complete-text-input')).toBeTruthy();
-      expect(queryByTestId('send-button')).toBeTruthy();
       expect(queryByText('Editing Message')).toBeFalsy();
     });
   });

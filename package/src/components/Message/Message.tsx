@@ -386,7 +386,7 @@ const MessageWithContext = <
             } else if (cur.type === 'video' && !cur.og_scrape_url) {
               acc.files.push(cur);
               acc.other = []; // remove other attachments if a file exists
-            } else if (cur.type === 'audio') {
+            } else if (cur.type === 'audio' || cur.type === 'voiceRecording') {
               acc.files.push(cur);
             } else if (cur.type === 'image' && !cur.title_link && !cur.og_scrape_url) {
               /**

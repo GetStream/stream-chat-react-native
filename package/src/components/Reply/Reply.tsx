@@ -1,5 +1,8 @@
 import React, { useContext, useMemo, useState } from 'react';
-import { Image, ImageStyle, StyleSheet, View, ViewStyle } from 'react-native';
+
+import { Image, ImageStyle, StyleSheet, Text, View, ViewStyle } from 'react-native';
+
+import dayjs from 'dayjs';
 
 import merge from 'lodash/merge';
 
@@ -21,6 +24,7 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
+import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
 import { hasOnlyEmojis } from '../../utils/utils';
 
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
@@ -51,7 +55,10 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
   },
-  text: { fontSize: 12 },
+  secondaryText: {
+    paddingHorizontal: 8,
+  },
+  text: { fontSize: 12, fontWeight: 'bold', overflow: 'hidden' },
   textContainer: { maxWidth: undefined, paddingHorizontal: 8 },
   videoThumbnailContainerStyle: {
     borderRadius: 8,
@@ -87,7 +94,11 @@ const getMessageType = <
 ) => {
   let messageType;
 
-  const isLastAttachmentFile = lastAttachment.type === 'file' || lastAttachment.type === 'audio';
+  const isLastAttachmentFile = lastAttachment.type === 'file';
+
+  const isLastAttachmentAudio = lastAttachment.type === 'audio';
+
+  const isLastAttachmentVoiceRecording = lastAttachment.type === 'voiceRecording';
 
   const isLastAttachmentVideo = lastAttachment.type === 'video';
 
@@ -105,6 +116,10 @@ const getMessageType = <
     messageType = 'file';
   } else if (isLastAttachmentVideo) {
     messageType = 'video';
+  } else if (isLastAttachmentAudio) {
+    messageType = 'audio';
+  } else if (isLastAttachmentVoiceRecording) {
+    messageType = 'voiceRecording';
   } else if (isLastAttachmentImageOrGiphy) {
     if (isLastAttachmentImage) messageType = 'image';
     else messageType = undefined;
@@ -142,6 +157,7 @@ const ReplyWithContext = <
         imageAttachment,
         markdownStyles,
         messageContainer,
+        secondaryText,
         textContainer,
         videoThumbnail: {
           container: videoThumbnailContainerStyle,
@@ -163,11 +179,15 @@ const ReplyWithContext = <
   const lastAttachment = quotedMessage.attachments?.slice(-1)[0] as Attachment<StreamChatGenerics>;
   const messageType = lastAttachment && getMessageType(lastAttachment);
 
+  const trimmedLastAttachmentTitle = getTrimmedAttachmentTitle(lastAttachment?.title);
+
   const hasImage =
     !error &&
     lastAttachment &&
     messageType !== 'file' &&
     messageType !== 'video' &&
+    messageType !== 'audio' &&
+    messageType !== 'voiceRecording' &&
     (lastAttachment.image_url || lastAttachment.thumb_url || lastAttachment.og_scrape_url);
 
   const onlyEmojis = !lastAttachment && emojiOnlyText;
@@ -189,7 +209,7 @@ const ReplyWithContext = <
         ]}
       >
         {!error && lastAttachment ? (
-          messageType === 'file' ? (
+          messageType === 'file' || messageType === 'voiceRecording' || messageType === 'audio' ? (
             <View
               style={[
                 styles.fileAttachmentContainer,
@@ -228,60 +248,73 @@ const ReplyWithContext = <
             thumb_url={lastAttachment.thumb_url}
           />
         ) : null}
-        <MessageTextContainer<StreamChatGenerics>
-          markdownStyles={
-            quotedMessage.type === 'deleted'
-              ? merge({ em: { color: grey } }, deletedText)
-              : { text: styles.text, ...markdownStyles }
-          }
-          message={{
-            ...quotedMessage,
-            text:
+        <View style={{ flexDirection: 'column' }}>
+          <MessageTextContainer<StreamChatGenerics>
+            markdownStyles={
               quotedMessage.type === 'deleted'
-                ? `_${t('Message deleted')}_`
-                : quotedMessage.text
-                ? quotedMessage.text.length > 170
-                  ? `${quotedMessage.text.slice(0, 170)}...`
+                ? merge({ em: { color: grey } }, deletedText)
+                : { text: styles.text, ...markdownStyles }
+            }
+            message={{
+              ...quotedMessage,
+              text:
+                quotedMessage.type === 'deleted'
+                  ? `_${t('Message deleted')}_`
                   : quotedMessage.text
-                : messageType === 'image'
-                ? t('Photo')
-                : messageType === 'video'
-                ? t('Video')
-                : messageType === 'file'
-                ? lastAttachment?.title || ''
-                : '',
-          }}
-          onlyEmojis={onlyEmojis}
-          styles={{
-            textContainer: [
-              {
-                marginRight:
-                  hasImage || messageType === 'video'
-                    ? Number(
-                        stylesProp.imageAttachment?.height ||
-                          imageAttachment.height ||
-                          styles.imageAttachment.height,
-                      ) +
-                      Number(
-                        stylesProp.imageAttachment?.marginLeft ||
-                          imageAttachment.marginLeft ||
-                          styles.imageAttachment.marginLeft,
-                      )
-                    : messageType === 'file'
-                    ? attachmentSize +
-                      Number(
-                        stylesProp.fileAttachmentContainer?.paddingLeft ||
-                          fileAttachmentContainer.paddingLeft ||
-                          styles.fileAttachmentContainer.paddingLeft,
-                      )
-                    : undefined,
-              },
-              styles.textContainer,
-              textContainer,
-              stylesProp.textContainer,
-            ],
-          }}
-        />
+                  ? quotedMessage.text.length > 170
+                    ? `${quotedMessage.text.slice(0, 170)}...`
+                    : quotedMessage.text
+                  : messageType === 'image'
+                  ? t('Photo')
+                  : messageType === 'video'
+                  ? t('Video')
+                  : messageType === 'file' ||
+                    messageType === 'audio' ||
+                    messageType === 'voiceRecording'
+                  ? trimmedLastAttachmentTitle || ''
+                  : '',
+            }}
+            onlyEmojis={onlyEmojis}
+            styles={{
+              textContainer: [
+                {
+                  marginRight:
+                    hasImage || messageType === 'video'
+                      ? Number(
+                          stylesProp.imageAttachment?.height ||
+                            imageAttachment.height ||
+                            styles.imageAttachment.height,
+                        ) +
+                        Number(
+                          stylesProp.imageAttachment?.marginLeft ||
+                            imageAttachment.marginLeft ||
+                            styles.imageAttachment.marginLeft,
+                        )
+                      : messageType === 'file' ||
+                        messageType === 'audio' ||
+                        messageType === 'voiceRecording'
+                      ? attachmentSize +
+                        Number(
+                          stylesProp.fileAttachmentContainer?.paddingLeft ||
+                            fileAttachmentContainer.paddingLeft ||
+                            styles.fileAttachmentContainer.paddingLeft,
+                        )
+                      : undefined,
+                },
+                styles.textContainer,
+                textContainer,
+                stylesProp.textContainer,
+              ],
+            }}
+          />
+          {messageType === 'audio' || messageType === 'voiceRecording' ? (
+            <Text style={[styles.secondaryText, { color: grey }, secondaryText]}>
+              {lastAttachment.duration
+                ? dayjs.duration(lastAttachment.duration, 'second').format('mm:ss')
+                : ''}
+            </Text>
+          ) : null}
+        </View>
       </View>
     </View>
   );

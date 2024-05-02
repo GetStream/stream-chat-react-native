@@ -148,6 +148,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   return (
     <View style={[styles.flex, { backgroundColor: white, paddingBottom: bottom }]}>
       <Channel
+        audioRecordingEnabled={true}
         channel={channel}
         disableTypingIndicator
         enforceUniqueReaction

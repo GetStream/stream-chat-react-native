@@ -7,8 +7,24 @@ import {
   View,
 } from 'react-native';
 
+import {
+  GestureEvent,
+  PanGestureHandler,
+  PanGestureHandlerEventPayload,
+} from 'react-native-gesture-handler';
+import Animated, {
+  Extrapolation,
+  interpolate,
+  runOnJS,
+  useAnimatedGestureHandler,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
+
 import type { UserResponse } from 'stream-chat';
 
+import { useAudioController } from './hooks/useAudioController';
 import { useCountdown } from './hooks/useCountdown';
 
 import { ChatContextValue, useChatContext } from '../../contexts';
@@ -40,6 +56,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
+import { triggerHaptic } from '../../native';
 import type { Asset, DefaultStreamChatGenerics } from '../../types/types';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 
@@ -55,8 +72,9 @@ const styles = StyleSheet.create({
     paddingRight: 16,
   },
   composerContainer: {
-    alignItems: 'flex-end',
+    alignItems: 'center',
     flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   container: {
     borderTopWidth: 1,
@@ -66,14 +84,14 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     flex: 1,
+    marginHorizontal: 10,
   },
+  micButtonContainer: {},
   optionsContainer: {
     flexDirection: 'row',
-    paddingBottom: 10,
-    paddingRight: 10,
   },
   replyContainer: { paddingBottom: 12, paddingHorizontal: 8 },
-  sendButtonContainer: { paddingBottom: 10, paddingLeft: 10 },
+  sendButtonContainer: {},
   suggestionsListContainer: {
     position: 'absolute',
     width: '100%',
@@ -92,7 +110,15 @@ type MessageInputPropsWithContext<
     MessageInputContextValue<StreamChatGenerics>,
     | 'additionalTextInputProps'
     | 'asyncIds'
+    | 'audioRecordingEnabled'
+    | 'asyncMessagesLockDistance'
+    | 'asyncMessagesMinimumPressDuration'
+    | 'asyncMessagesSlideToCancelDistance'
     | 'asyncUploads'
+    | 'AudioRecorder'
+    | 'AudioRecordingInProgress'
+    | 'AudioRecordingLockIndicator'
+    | 'AudioRecordingPreview'
     | 'cooldownEndsAt'
     | 'CooldownTimer'
     | 'clearEditingState'
@@ -123,8 +149,10 @@ type MessageInputPropsWithContext<
     | 'setGiphyActive'
     | 'showMoreOptions'
     | 'ShowThreadMessageInChannelButton'
+    | 'StartAudioRecordingButton'
     | 'removeFile'
     | 'removeImage'
+    | 'text'
     | 'uploadNewFile'
     | 'uploadNewImage'
   > &
@@ -148,8 +176,16 @@ const MessageInputWithContext = <
   const {
     additionalTextInputProps,
     asyncIds,
+    asyncMessagesLockDistance,
+    asyncMessagesMinimumPressDuration,
+    asyncMessagesSlideToCancelDistance,
     asyncUploads,
     AttachmentPickerSelectionBar,
+    AudioRecorder,
+    audioRecordingEnabled,
+    AudioRecordingInProgress,
+    AudioRecordingLockIndicator,
+    AudioRecordingPreview,
     AutoCompleteSuggestionList,
     closeAttachmentPicker,
     cooldownEndsAt,
@@ -183,7 +219,9 @@ const MessageInputWithContext = <
     sendMessageAsync,
     setShowMoreOptions,
     ShowThreadMessageInChannelButton,
+    StartAudioRecordingButton,
     suggestions,
+    text,
     thread,
     threadList,
     triggerType,
@@ -200,11 +238,13 @@ const MessageInputWithContext = <
       colors: { border, grey_whisper, white, white_smoke },
       messageInput: {
         attachmentSelectionBar,
+        attachmentSeparator,
         autoCompleteInputContainer,
         composerContainer,
         container,
         focusedInputBoxContainer,
         inputBoxContainer,
+        micButtonContainer,
         optionsContainer,
         replyContainer,
         sendButtonContainer,
@@ -542,6 +582,124 @@ const MessageInputWithContext = <
     [additionalTextInputProps],
   );
 
+  const {
+    deleteVoiceRecording,
+    micLocked,
+    onVoicePlayerPlayPause,
+    paused,
+    permissionsGranted,
+    position,
+    progress,
+    recording,
+    recordingDuration,
+    recordingStatus,
+    setMicLocked,
+    startVoiceRecording,
+    stopVoiceRecording,
+    uploadVoiceRecording,
+    waveformData,
+  } = useAudioController();
+
+  const isSendingButtonVisible = () => {
+    if (audioRecordingEnabled) {
+      if (recording) {
+        return false;
+      }
+      if (text && text.trim()) {
+        return true;
+      }
+
+      const imagesAndFiles = [...imageUploads, ...fileUploads];
+      if (imagesAndFiles.length === 0) return false;
+    }
+
+    return true;
+  };
+
+  const micPositionX = useSharedValue(0);
+  const micPositionY = useSharedValue(0);
+  const X_AXIS_POSITION = -asyncMessagesSlideToCancelDistance;
+  const Y_AXIS_POSITION = -asyncMessagesLockDistance;
+
+  const resetAudioRecording = async () => {
+    await deleteVoiceRecording();
+    micPositionX.value = 0;
+  };
+
+  const micLockHandler = () => {
+    setMicLocked(true);
+    micPositionY.value = 0;
+    triggerHaptic('impactMedium');
+  };
+
+  const handleMicGestureEvent = useAnimatedGestureHandler<
+    GestureEvent<PanGestureHandlerEventPayload>
+  >({
+    onActive: (event) => {
+      const newPositionX = event.translationX;
+      const newPositionY = event.translationY;
+
+      if (newPositionX <= 0 && newPositionX >= X_AXIS_POSITION) {
+        micPositionX.value = newPositionX;
+      }
+      if (newPositionY <= 0 && newPositionY >= Y_AXIS_POSITION) {
+        micPositionY.value = newPositionY;
+      }
+    },
+    onFinish: () => {
+      if (micPositionY.value > Y_AXIS_POSITION / 2) {
+        micPositionY.value = withSpring(0);
+      } else {
+        micPositionY.value = withSpring(Y_AXIS_POSITION);
+        runOnJS(micLockHandler)();
+      }
+      if (micPositionX.value > X_AXIS_POSITION / 2) {
+        micPositionX.value = withSpring(0);
+      } else {
+        micPositionX.value = withSpring(X_AXIS_POSITION);
+        runOnJS(resetAudioRecording)();
+      }
+    },
+    onStart: () => {
+      micPositionX.value = 0;
+      micPositionY.value = 0;
+      runOnJS(setMicLocked)(false);
+    },
+  });
+
+  const animatedStyles = {
+    lockIndicator: useAnimatedStyle(() => ({
+      transform: [
+        {
+          translateY: interpolate(
+            micPositionY.value,
+            [0, Y_AXIS_POSITION],
+            [0, Y_AXIS_POSITION],
+            Extrapolation.CLAMP,
+          ),
+        },
+      ],
+    })),
+    micButton: useAnimatedStyle(() => ({
+      opacity: interpolate(micPositionX.value, [0, X_AXIS_POSITION], [1, 0], Extrapolation.CLAMP),
+      transform: [{ translateX: micPositionX.value }, { translateY: micPositionY.value }],
+      zIndex: 2,
+    })),
+    slideToCancel: useAnimatedStyle(() => ({
+      opacity: interpolate(micPositionX.value, [0, X_AXIS_POSITION], [1, 0], Extrapolation.CLAMP),
+      transform: [
+        {
+          translateX: interpolate(
+            micPositionX.value,
+            [0, X_AXIS_POSITION],
+            [0, X_AXIS_POSITION / 2],
+            Extrapolation.CLAMP,
+          ),
+        },
+      ],
+    })),
+  };
+
   return (
     <>
       <View
@@ -554,6 +712,31 @@ const MessageInputWithContext = <
       >
         {editing && <InputEditingStateHeader />}
         {quotedMessage && <InputReplyStateHeader />}
+        {recording && (
+          <>
+            <AudioRecordingLockIndicator
+              messageInputHeight={height}
+              micLocked={micLocked}
+              style={animatedStyles.lockIndicator}
+            />
+            {micLocked &&
+              (recordingStatus === 'stopped' ? (
+                <AudioRecordingPreview
+                  onVoicePlayerPlayPause={onVoicePlayerPlayPause}
+                  paused={paused}
+                  position={position}
+                  progress={progress}
+                  waveformData={waveformData}
+                />
+              ) : (
+                <AudioRecordingInProgress
+                  recordingDuration={recordingDuration}
+                  waveformData={waveformData}
+                />
+              ))}
+          </>
+        )}
+
         <View style={[styles.composerContainer, composerContainer]}>
           {Input ? (
             <Input
@@ -562,60 +745,102 @@ const MessageInputWithContext = <
             />
           ) : (
             <>
-              <View style={[styles.optionsContainer, optionsContainer]}>
-                {InputButtons && <InputButtons />}
-              </View>
-              <View
-                style={[
-                  styles.inputBoxContainer,
-                  {
-                    borderColor: grey_whisper,
-                    paddingVertical: giphyActive ? 8 : 12,
-                  },
-                  inputBoxContainer,
-                  focused ? focusedInputBoxContainer : null,
-                ]}
-              >
-                {((typeof editing !== 'boolean' && editing?.quoted_message) || quotedMessage) && (
-                  <View style={[styles.replyContainer, replyContainer]}>
-                    <Reply />
+              {recording ? (
+                <AudioRecorder
+                  deleteVoiceRecording={deleteVoiceRecording}
+                  micLocked={micLocked}
+                  recording={recording}
+                  recordingDuration={recordingDuration}
+                  recordingStopped={recordingStatus === 'stopped'}
+                  slideToCancelStyle={animatedStyles.slideToCancel}
+                  stopVoiceRecording={stopVoiceRecording}
+                  uploadVoiceRecording={uploadVoiceRecording}
+                />
+              ) : (
+                <>
+                  <View style={[styles.optionsContainer, optionsContainer]}>
+                    {InputButtons && <InputButtons />}
                   </View>
-                )}
-                {imageUploads.length ? <ImageUploadPreview /> : null}
-                {imageUploads.length && fileUploads.length ? (
                   <View
                     style={[
-                      styles.attachmentSeparator,
+                      styles.inputBoxContainer,
                       {
-                        borderBottomColor: grey_whisper,
-                        marginHorizontal: giphyActive ? 8 : 12,
+                        borderColor: grey_whisper,
+                        paddingVertical: giphyActive ? 8 : 12,
                       },
+                      inputBoxContainer,
+                      focused ? focusedInputBoxContainer : null,
                     ]}
-                  />
-                ) : null}
-                {fileUploads.length ? <FileUploadPreview /> : null}
-                {giphyActive ? (
-                  <InputGiphySearch disabled={!isOnline} />
-                ) : (
-                  <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
-                    <AutoCompleteInput<StreamChatGenerics>
-                      additionalTextInputProps={memoizedAdditionalTextInputProps}
-                      cooldownActive={!!cooldownRemainingSeconds}
-                    />
+                  >
+                    {((typeof editing !== 'boolean' && editing?.quoted_message) ||
+                      quotedMessage) && (
+                      <View style={[styles.replyContainer, replyContainer]}>
+                        <Reply />
+                      </View>
+                    )}
+                    {imageUploads.length ? <ImageUploadPreview /> : null}
+                    {imageUploads.length && fileUploads.length ? (
+                      <View
+                        style={[
+                          styles.attachmentSeparator,
+                          {
+                            borderBottomColor: grey_whisper,
+                            marginHorizontal: giphyActive ? 8 : 12,
+                          },
+                          attachmentSeparator,
+                        ]}
+                      />
+                    ) : null}
+                    {fileUploads.length ? <FileUploadPreview /> : null}
+                    {giphyActive ? (
+                      <InputGiphySearch disabled={!isOnline} />
+                    ) : (
+                      <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
+                        <AutoCompleteInput<StreamChatGenerics>
+                          additionalTextInputProps={memoizedAdditionalTextInputProps}
+                          cooldownActive={!!cooldownRemainingSeconds}
+                        />
+                      </View>
+                    )}
                   </View>
-                )}
-              </View>
-              <View style={[styles.sendButtonContainer, sendButtonContainer]}>
-                {cooldownRemainingSeconds ? (
+                </>
+              )}
+
+              {isSendingButtonVisible() &&
+                (cooldownRemainingSeconds ? (
                   <CooldownTimer seconds={cooldownRemainingSeconds} />
                 ) : (
-                  <SendButton
-                    disabled={
-                      disabled || sending.current || !isValidMessage() || (giphyActive && !isOnline)
-                    }
-                  />
-                )}
-              </View>
+                  <View style={[styles.sendButtonContainer, sendButtonContainer]}>
+                    <SendButton
+                      disabled={
+                        disabled ||
+                        sending.current ||
+                        !isValidMessage() ||
+                        (giphyActive && !isOnline)
+                      }
+                    />
+                  </View>
+                ))}
+              {audioRecordingEnabled && !micLocked && (
+                <PanGestureHandler
+                  activateAfterLongPress={asyncMessagesMinimumPressDuration + 100}
+                  onGestureEvent={handleMicGestureEvent}
+                >
+                  <Animated.View
+                    style={[
+                      styles.micButtonContainer,
+                      animatedStyles.micButton,
+                      micButtonContainer,
+                    ]}
+                  >
+                    <StartAudioRecordingButton
+                      permissionsGranted={permissionsGranted}
+                      recording={recording}
+                      startVoiceRecording={startVoiceRecording}
+                    />
+                  </Animated.View>
+                </PanGestureHandler>
+              )}
             </>
           )}
         </View>
@@ -635,6 +860,7 @@ const MessageInputWithContext = <
           />
         </View>
       ) : null}
+
       {selectedPicker && (
         <View
           style={[
@@ -659,7 +885,11 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 ) => {
   const {
     additionalTextInputProps: prevAdditionalTextInputProps,
+    asyncMessagesLockDistance: prevAsyncMessagesLockDistance,
+    asyncMessagesMinimumPressDuration: prevAsyncMessagesMinimumPressDuration,
+    asyncMessagesSlideToCancelDistance: prevAsyncMessagesSlideToCancelDistance,
     asyncUploads: prevAsyncUploads,
+    audioRecordingEnabled: prevAsyncMessagesEnabled,
     disabled: prevDisabled,
     editing: prevEditing,
     fileUploads: prevFileUploads,
@@ -678,7 +908,11 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   } = prevProps;
   const {
     additionalTextInputProps: nextAdditionalTextInputProps,
+    asyncMessagesLockDistance: nextAsyncMessagesLockDistance,
+    asyncMessagesMinimumPressDuration: nextAsyncMessagesMinimumPressDuration,
+    asyncMessagesSlideToCancelDistance: nextAsyncMessagesSlideToCancelDistance,
     asyncUploads: nextAsyncUploads,
+    audioRecordingEnabled: nextAsyncMessagesEnabled,
     disabled: nextDisabled,
     editing: nextEditing,
     fileUploads: nextFileUploads,
@@ -702,6 +936,21 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const additionalTextInputPropsEven =
     prevAdditionalTextInputProps === nextAdditionalTextInputProps;
   if (!additionalTextInputPropsEven) return false;
+
+  const asyncMessagesEnabledEqual = prevAsyncMessagesEnabled === nextAsyncMessagesEnabled;
+  if (!asyncMessagesEnabledEqual) return false;
+
+  const asyncMessagesLockDistanceEqual =
+    prevAsyncMessagesLockDistance === nextAsyncMessagesLockDistance;
+  if (!asyncMessagesLockDistanceEqual) return false;
+
+  const asyncMessagesMinimumPressDurationEqual =
+    prevAsyncMessagesMinimumPressDuration === nextAsyncMessagesMinimumPressDuration;
+  if (!asyncMessagesMinimumPressDurationEqual) return false;
+
+  const asyncMessagesSlideToCancelDistanceEqual =
+    prevAsyncMessagesSlideToCancelDistance === nextAsyncMessagesSlideToCancelDistance;
+  if (!asyncMessagesSlideToCancelDistanceEqual) return false;
 
   const disabledEqual = prevDisabled === nextDisabled;
   if (!disabledEqual) return false;
@@ -800,7 +1049,16 @@ export const MessageInput = <
   const {
     additionalTextInputProps,
     asyncIds,
+    asyncMessagesLockDistance,
+    asyncMessagesMinimumPressDuration,
+    asyncMessagesSlideToCancelDistance,
     asyncUploads,
+    AudioRecorder,
+    audioRecordingEnabled,
+    AudioRecordingInProgress,
+    AudioRecordingLockIndicator,
+    AudioRecordingPreview,
+    AudioRecordingWaveform,
     clearEditingState,
     clearQuotedMessageState,
     closeAttachmentPicker,
@@ -834,6 +1092,8 @@ export const MessageInput = <
     setShowMoreOptions,
     showMoreOptions,
     ShowThreadMessageInChannelButton,
+    StartAudioRecordingButton,
+    text,
     uploadNewFile,
     uploadNewImage,
   } = useMessageInputContext<StreamChatGenerics>();
@@ -861,8 +1121,17 @@ export const MessageInput = <
       {...{
         additionalTextInputProps,
         asyncIds,
+        asyncMessagesLockDistance,
+        asyncMessagesMinimumPressDuration,
+        asyncMessagesSlideToCancelDistance,
         asyncUploads,
         AttachmentPickerSelectionBar,
+        AudioRecorder,
+        audioRecordingEnabled,
+        AudioRecordingInProgress,
+        AudioRecordingLockIndicator,
+        AudioRecordingPreview,
+        AudioRecordingWaveform,
         AutoCompleteSuggestionHeader,
         AutoCompleteSuggestionItem,
         AutoCompleteSuggestionList,
@@ -903,8 +1172,10 @@ export const MessageInput = <
         setShowMoreOptions,
         showMoreOptions,
         ShowThreadMessageInChannelButton,
+        StartAudioRecordingButton,
         suggestions,
         t,
+        text,
         thread,
         threadList,
         triggerType,

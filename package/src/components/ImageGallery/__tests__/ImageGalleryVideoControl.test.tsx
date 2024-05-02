@@ -42,10 +42,10 @@ describe('ImageGalleryOverlay', () => {
   it('should render the play icon when paused prop is true', async () => {
     render(getComponent({ paused: true }));
 
-    const component = screen.queryByLabelText('Play Icon') as ReactTestInstance;
+    const components = screen.queryAllByLabelText('Play Icon').length;
 
     await waitFor(() => {
-      expect(component).not.toBeUndefined();
+      expect(components).toBeGreaterThan(0);
     });
   });
 

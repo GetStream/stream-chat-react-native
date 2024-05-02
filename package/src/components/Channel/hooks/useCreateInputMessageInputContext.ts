@@ -7,7 +7,18 @@ export const useCreateInputMessageInputContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   additionalTextInputProps,
+  asyncMessagesLockDistance,
+  asyncMessagesMinimumPressDuration,
+  asyncMessagesMultiSendEnabled,
+  asyncMessagesSlideToCancelDistance,
   AttachButton,
+  AudioAttachmentUploadPreview,
+  AudioRecorder,
+  audioRecordingEnabled,
+  AudioRecordingInProgress,
+  AudioRecordingLockIndicator,
+  AudioRecordingPreview,
+  AudioRecordingWaveform,
   autoCompleteSuggestionsLimit,
   autoCompleteTriggerSettings,
   channelId,
@@ -48,6 +59,7 @@ export const useCreateInputMessageInputContext = <
   setInputRef,
   setQuotedMessageState,
   ShowThreadMessageInChannelButton,
+  StartAudioRecordingButton,
   UploadProgressIndicator,
 }: InputMessageInputContextValue<StreamChatGenerics> & {
   /**
@@ -65,7 +77,18 @@ export const useCreateInputMessageInputContext = <
   const inputMessageInputContext: InputMessageInputContextValue<StreamChatGenerics> = useMemo(
     () => ({
       additionalTextInputProps,
+      asyncMessagesLockDistance,
+      asyncMessagesMinimumPressDuration,
+      asyncMessagesMultiSendEnabled,
+      asyncMessagesSlideToCancelDistance,
       AttachButton,
+      AudioAttachmentUploadPreview,
+      AudioRecorder,
+      audioRecordingEnabled,
+      AudioRecordingInProgress,
+      AudioRecordingLockIndicator,
+      AudioRecordingPreview,
+      AudioRecordingWaveform,
       autoCompleteSuggestionsLimit,
       autoCompleteTriggerSettings,
       clearEditingState,
@@ -105,6 +128,7 @@ export const useCreateInputMessageInputContext = <
       setInputRef,
       setQuotedMessageState,
       ShowThreadMessageInChannelButton,
+      StartAudioRecordingButton,
       UploadProgressIndicator,
     }),
     [

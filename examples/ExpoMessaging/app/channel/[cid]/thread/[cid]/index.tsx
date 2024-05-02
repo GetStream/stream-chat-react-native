@@ -15,7 +15,7 @@ export default function ThreadScreen() {
     <SafeAreaView>
       <Stack.Screen options={{ title: 'Thread Screen' }} />
 
-      <Channel channel={channel} thread={thread} threadList>
+      <Channel audioRecordingEnabled={true} channel={channel} thread={thread} threadList>
         <View
           style={{
             flex: 1,
