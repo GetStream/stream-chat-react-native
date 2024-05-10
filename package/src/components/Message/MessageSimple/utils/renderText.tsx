@@ -61,9 +61,12 @@ const defaultMarkdownStyles: MarkdownStyle = {
   },
 };
 
-const mentionsParseFunction: ParseFunction = (capture, parse, state) => ({
-  content: parseInline(parse, capture[0], state),
-});
+const mentionsParseFunction: ParseFunction = (capture, parse, state) => {
+  console.log(capture, parse, state);
+  return {
+    content: parseInline(parse, capture[0], state),
+  };
+};
 
 export type MarkdownRules = Partial<DefaultRules>;
 
@@ -211,25 +214,19 @@ export const renderText = <
     );
   };
 
+  function escapeRegExp(text: string) {
+    return text.replace(/[-[\]{}()*+?.,/\\^$|#]/g, '\\$&');
+  }
+
   // take the @ mentions and turn them into markdown?
   // translate links
   const { mentioned_users } = message;
-  const mentionedUsers = Array.isArray(mentioned_users)
-    ? mentioned_users.reduce((acc, cur) => {
-        const userName = cur.name || cur.id || '';
-        if (userName) {
-          acc += `${acc.length ? '|' : ''}@${userName.replace(
-            /[.*+?^${}()|[\]\\]/g,
-            function (match) {
-              return '\\' + match;
-            },
-          )}`;
-        }
-
-        return acc;
-      }, '')
-    : '';
-
+  const mentionedUsernames = (mentioned_users || [])
+    .map((user) => user.name || user.id)
+    .filter(Boolean)
+    .sort((a, b) => b.length - a.length)
+    .map(escapeRegExp);
+  const mentionedUsers = mentionedUsernames.map((username) => `@${username}`).join('|');
   const regEx = new RegExp(`^\\B(${mentionedUsers})`, 'g');
   const mentionsMatchFunction: MatchFunction = (source) => regEx.exec(source);
 
