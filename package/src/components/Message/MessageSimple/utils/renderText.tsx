@@ -61,12 +61,9 @@ const defaultMarkdownStyles: MarkdownStyle = {
   },
 };
 
-const mentionsParseFunction: ParseFunction = (capture, parse, state) => {
-  console.log(capture, parse, state);
-  return {
-    content: parseInline(parse, capture[0], state),
-  };
-};
+const mentionsParseFunction: ParseFunction = (capture, parse, state) => ({
+  content: parseInline(parse, capture[0], state),
+});
 
 export type MarkdownRules = Partial<DefaultRules>;
 
