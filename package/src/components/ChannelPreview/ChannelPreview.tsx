@@ -10,7 +10,6 @@ import {
 } from '../../contexts/channelsContext/ChannelsContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 
-import { useTranslatedMessage } from '../../hooks/useTranslatedMessage';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
 export type ChannelPreviewPropsWithContext<
@@ -40,14 +39,10 @@ const ChannelPreviewWithContext = <
     | undefined
   >(channel.state.messages[channel.state.messages.length - 1]);
 
-  const translatedLastMessage = useTranslatedMessage<StreamChatGenerics>(
-    lastMessage || ({} as MessageResponse<StreamChatGenerics>),
-  );
-
   const [forceUpdate, setForceUpdate] = useState(0);
   const [unread, setUnread] = useState(channel.countUnread());
 
-  const latestMessagePreview = useLatestMessagePreview(channel, forceUpdate, translatedLastMessage);
+  const latestMessagePreview = useLatestMessagePreview(channel, forceUpdate);
 
   const channelLastMessage = channel.lastMessage();
   const channelLastMessageString = `${channelLastMessage?.id}${channelLastMessage?.updated_at}`;

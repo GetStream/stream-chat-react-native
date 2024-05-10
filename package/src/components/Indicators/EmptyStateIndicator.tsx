@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useViewport } from '../../hooks/useViewport';
-import { MessageIcon } from '../../icons/MessageIcon';
+import { ChatIcon, MessageIcon } from '../../icons';
 
 const styles = StyleSheet.create({
   channelContainer: {
@@ -20,6 +20,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingBottom: 8,
     paddingTop: 16,
+  },
+  messageContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  messageTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    paddingBottom: 8,
   },
 });
 
@@ -58,7 +68,14 @@ export const EmptyStateIndicator = ({ listType }: EmptyStateProps) => {
         </View>
       );
     case 'message':
-      return null;
+      return (
+        <View style={[styles.messageContainer]}>
+          <ChatIcon height={width} pathFill={grey_gainsboro} width={width} />
+          <Text style={[styles.messageTitle, { color: grey_gainsboro }]}>
+            {t<string>('No chats here yet…')}
+          </Text>
+        </View>
+      );
     default:
       return <Text style={{ color: black }}>No items exist</Text>;
   }
