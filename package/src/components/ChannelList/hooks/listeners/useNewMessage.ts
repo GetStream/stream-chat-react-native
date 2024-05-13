@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 
-import uniqBy from 'lodash/uniqBy';
 import type { Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
@@ -42,7 +41,7 @@ export const useNewMessage = <
             // It may happen that channel was hidden using channel.hide(). In that case
             // We remove it from `channels` state, but its still being watched and exists in client.activeChannels.
             const channel = client.channel(event.channel_type, event.channel_id);
-            return uniqBy([channel, ...channels], 'cid');
+            return [channel, ...channels];
           }
 
           if (!lockChannelOrder && event.cid)

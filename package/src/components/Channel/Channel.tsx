@@ -732,7 +732,6 @@ const ChannelWithContext = <
   const copyMessagesState = useRef(
     throttle(
       () => {
-        console.log(channel.state.messageSets, channel.state.isUpToDate);
         if (channel) {
           clearInterval(mergeSetsIntervalRef.current);
           setMessages(channel.state.messages);
