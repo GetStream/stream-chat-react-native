@@ -245,7 +245,7 @@ export const useAudioController = () => {
 
     const resampledWaveformData = resampleWaveformData(waveformData, 100);
 
-    const date = new new Date().toISOString().replace(/[\.\:]/g, '_');
+    const date = new Date().toISOString().replace(/[\.\:]/g, '_');
 
     const file: File = {
       duration: durationInSeconds,
