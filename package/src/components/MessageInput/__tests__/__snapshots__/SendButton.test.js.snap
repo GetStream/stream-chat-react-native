@@ -40,8 +40,8 @@ exports[`SendButton should render a non-editing disabled SendButton 1`] = `
 >
   <RNSVGSvgView
     align="xMidYMid"
-    bbHeight={32}
-    bbWidth={32}
+    bbHeight="32"
+    bbWidth="32"
     fill="#DBDBDB"
     focusable={false}
     height={32}
@@ -79,8 +79,8 @@ exports[`SendButton should render a non-editing disabled SendButton 1`] = `
       }
     >
       <RNSVGCircle
-        cx={16}
-        cy={16}
+        cx="16"
+        cy="16"
         fill={
           {
             "payload": 4292598747,
@@ -92,7 +92,7 @@ exports[`SendButton should render a non-editing disabled SendButton 1`] = `
             "fill",
           ]
         }
-        r={16}
+        r="16"
       />
       <RNSVGPath
         clipRule={0}
@@ -156,8 +156,8 @@ exports[`SendButton should render a non-editing enabled SendButton 1`] = `
 >
   <RNSVGSvgView
     align="xMidYMid"
-    bbHeight={32}
-    bbWidth={32}
+    bbHeight="32"
+    bbWidth="32"
     fill="#005FFF"
     focusable={false}
     height={32}
@@ -195,8 +195,8 @@ exports[`SendButton should render a non-editing enabled SendButton 1`] = `
       }
     >
       <RNSVGCircle
-        cx={16}
-        cy={16}
+        cx="16"
+        cy="16"
         fill={
           {
             "payload": 4278214655,
@@ -208,7 +208,7 @@ exports[`SendButton should render a non-editing enabled SendButton 1`] = `
             "fill",
           ]
         }
-        r={16}
+        r="16"
       />
       <RNSVGPath
         clipRule={0}
@@ -272,8 +272,8 @@ exports[`SendButton should render an editing disabled SendButton 1`] = `
 >
   <RNSVGSvgView
     align="xMidYMid"
-    bbHeight={32}
-    bbWidth={32}
+    bbHeight="32"
+    bbWidth="32"
     fill="#DBDBDB"
     focusable={false}
     height={32}
@@ -311,8 +311,8 @@ exports[`SendButton should render an editing disabled SendButton 1`] = `
       }
     >
       <RNSVGCircle
-        cx={16}
-        cy={16}
+        cx="16"
+        cy="16"
         fill={
           {
             "payload": 4292598747,
@@ -324,7 +324,7 @@ exports[`SendButton should render an editing disabled SendButton 1`] = `
             "fill",
           ]
         }
-        r={16}
+        r="16"
       />
       <RNSVGPath
         clipRule={0}
@@ -388,8 +388,8 @@ exports[`SendButton should render an editing enabled SendButton 1`] = `
 >
   <RNSVGSvgView
     align="xMidYMid"
-    bbHeight={32}
-    bbWidth={32}
+    bbHeight="32"
+    bbWidth="32"
     fill="#005FFF"
     focusable={false}
     height={32}
@@ -427,8 +427,8 @@ exports[`SendButton should render an editing enabled SendButton 1`] = `
       }
     >
       <RNSVGCircle
-        cx={16}
-        cy={16}
+        cx="16"
+        cy="16"
         fill={
           {
             "payload": 4278214655,
@@ -440,7 +440,7 @@ exports[`SendButton should render an editing enabled SendButton 1`] = `
             "fill",
           ]
         }
-        r={16}
+        r="16"
       />
       <RNSVGPath
         clipRule={0}

@@ -34,8 +34,8 @@ exports[`MessageStatus should render message status with read by container 1`] =
   </Text>
   <RNSVGSvgView
     align="xMidYMid"
-    bbHeight={16}
-    bbWidth={16}
+    bbHeight="16"
+    bbWidth="16"
     focusable={false}
     height={16}
     meetOrSlice={0}

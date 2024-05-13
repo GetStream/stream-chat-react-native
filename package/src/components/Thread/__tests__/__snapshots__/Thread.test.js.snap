@@ -1384,8 +1384,8 @@ exports[`Thread should match thread snapshot 1`] = `
                   }
                 >
                   <RNSVGSvgView
-                    bbHeight={24}
-                    bbWidth={750}
+                    bbHeight="24"
+                    bbWidth="750"
                     focusable={false}
                     height={24}
                     style={
@@ -1421,15 +1421,15 @@ exports[`Thread should match thread snapshot 1`] = `
                             "type": 1,
                           }
                         }
-                        height={24}
+                        height="24"
                         propList={
                           [
                             "fill",
                           ]
                         }
-                        width={750}
-                        x={0}
-                        y={0}
+                        width="750"
+                        x="0"
+                        y="0"
                       />
                       <RNSVGDefs>
                         <RNSVGLinearGradient
@@ -1444,10 +1444,10 @@ exports[`Thread should match thread snapshot 1`] = `
                           gradientTransform={null}
                           gradientUnits={1}
                           name="gradient"
-                          x1={0}
-                          x2={0}
-                          y1={0}
-                          y2={24}
+                          x1="0"
+                          x2="0"
+                          y1="0"
+                          y2="24"
                         />
                       </RNSVGDefs>
                     </RNSVGGroup>
@@ -1570,8 +1570,8 @@ exports[`Thread should match thread snapshot 1`] = `
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={24}
-                bbWidth={24}
+                bbHeight="24"
+                bbWidth="24"
                 focusable={false}
                 height={24}
                 meetOrSlice={0}
@@ -1666,8 +1666,8 @@ exports[`Thread should match thread snapshot 1`] = `
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={24}
-                bbWidth={24}
+                bbHeight="24"
+                bbWidth="24"
                 focusable={false}
                 height={24}
                 meetOrSlice={0}
@@ -1834,8 +1834,8 @@ exports[`Thread should match thread snapshot 1`] = `
           >
             <RNSVGSvgView
               align="xMidYMid"
-              bbHeight={32}
-              bbWidth={32}
+              bbHeight="32"
+              bbWidth="32"
               fill="#DBDBDB"
               focusable={false}
               height={32}
@@ -1873,8 +1873,8 @@ exports[`Thread should match thread snapshot 1`] = `
                 }
               >
                 <RNSVGCircle
-                  cx={16}
-                  cy={16}
+                  cx="16"
+                  cy="16"
                   fill={
                     {
                       "payload": 4292598747,
@@ -1886,7 +1886,7 @@ exports[`Thread should match thread snapshot 1`] = `
                       "fill",
                     ]
                   }
-                  r={16}
+                  r="16"
                 />
                 <RNSVGPath
                   clipRule={0}

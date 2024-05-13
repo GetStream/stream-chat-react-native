@@ -18,8 +18,8 @@ exports[`MessagePinnedHeader should render message pinned 1`] = `
 >
   <RNSVGSvgView
     align="xMidYMid"
-    bbHeight={24}
-    bbWidth={24}
+    bbHeight="24"
+    bbWidth="24"
     focusable={false}
     height={24}
     meetOrSlice={0}
