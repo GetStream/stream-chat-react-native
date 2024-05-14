@@ -38,7 +38,7 @@ export const MessageEditedTimestampWithContext = <
 
   return (
     <View style={[styles.container, editedTimestampContainer]}>
-      <Text style={[styles.text, { color: grey }, editedLabel]}>{t<string>('Edited ')}</Text>
+      <Text style={[styles.text, { color: grey }, editedLabel]}>{t<string>('Edited') + ' '}</Text>
       <MessageTimestamp calendar={true} timestamp={timestamp} />
     </View>
   );
