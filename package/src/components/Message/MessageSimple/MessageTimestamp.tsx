@@ -56,24 +56,12 @@ export const MessageTimestampWithContext = (props: MessageTimestampPropsWithCont
   );
 };
 
-const MemoizedMessageTimestamp = React.memo(
-  MessageTimestampWithContext,
-  () => true,
-) as typeof MessageTimestampWithContext;
-
 export type MessageTimestampProps = Partial<MessageTimestampPropsWithContext>;
 
 export const MessageTimestamp = (props: MessageTimestampProps) => {
   const { tDateTimeParser } = useTranslationContext();
 
-  return (
-    <MemoizedMessageTimestamp
-      {...{
-        tDateTimeParser,
-        ...props,
-      }}
-    />
-  );
+  return <MessageTimestampWithContext tDateTimeParser={tDateTimeParser} {...props} />;
 };
 
 const styles = StyleSheet.create({
