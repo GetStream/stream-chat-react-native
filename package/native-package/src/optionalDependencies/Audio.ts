@@ -8,8 +8,8 @@ try {
   audioRecorderPlayer = new AudioRecorderPackage();
   audioRecorderPlayer.setSubscriptionDuration(Platform.OS === 'android' ? 0.1 : 0.06);
 } catch (e) {
+  console.log('react-native-audio-recorder-player is not installed.');
   console.log(e);
-  console.warn('react-native-audio-recorder-player is not installed.');
 }
 
 export enum AudioSourceAndroidType {
