@@ -118,6 +118,7 @@ import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/
 import { MessageBounce as MessageBounceDefault } from '../Message/MessageSimple/MessageBounce';
 import { MessageContent as MessageContentDefault } from '../Message/MessageSimple/MessageContent';
 import { MessageDeleted as MessageDeletedDefault } from '../Message/MessageSimple/MessageDeleted';
+import { MessageEditedTimestamp as MessageEditedTimestampDefault } from '../Message/MessageSimple/MessageEditedTimestamp';
 import { MessageError as MessageErrorDefault } from '../Message/MessageSimple/MessageError';
 import { MessageFooter as MessageFooterDefault } from '../Message/MessageSimple/MessageFooter';
 import { MessagePinnedHeader as MessagePinnedHeaderDefault } from '../Message/MessageSimple/MessagePinnedHeader';
@@ -262,7 +263,6 @@ export type ChannelPropsWithContext<
       | 'FileAttachmentGroup'
       | 'FlatList'
       | 'forceAlignMessages'
-      | 'formatDate'
       | 'Gallery'
       | 'getMessagesGroupStyles'
       | 'Giphy'
@@ -292,6 +292,7 @@ export type ChannelPropsWithContext<
       | 'MessageContent'
       | 'messageContentOrder'
       | 'MessageDeleted'
+      | 'MessageEditedTimestamp'
       | 'MessageError'
       | 'MessageFooter'
       | 'MessageHeader'
@@ -469,7 +470,6 @@ const ChannelWithContext = <
     FileUploadPreview = FileUploadPreviewDefault,
     FlatList = FlatListDefault,
     forceAlignMessages,
-    formatDate,
     Gallery = GalleryDefault,
     getMessagesGroupStyles,
     Giphy = GiphyDefault,
@@ -527,6 +527,7 @@ const ChannelWithContext = <
     MessageContent = MessageContentDefault,
     messageContentOrder = ['quoted_reply', 'gallery', 'files', 'text', 'attachments'],
     MessageDeleted = MessageDeletedDefault,
+    MessageEditedTimestamp = MessageEditedTimestampDefault,
     MessageError = MessageErrorDefault,
     MessageFooter = MessageFooterDefault,
     MessageHeader,
@@ -2295,7 +2296,6 @@ const ChannelWithContext = <
     FileAttachmentIcon,
     FlatList,
     forceAlignMessages,
-    formatDate,
     Gallery,
     getMessagesGroupStyles,
     Giphy,
@@ -2326,6 +2326,7 @@ const ChannelWithContext = <
     MessageContent,
     messageContentOrder,
     MessageDeleted,
+    MessageEditedTimestamp,
     MessageError,
     MessageFooter,
     MessageHeader,

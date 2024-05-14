@@ -24,6 +24,7 @@ import type { MessageAvatarProps } from '../../components/Message/MessageSimple/
 import type { MessageBounceProps } from '../../components/Message/MessageSimple/MessageBounce';
 import type { MessageContentProps } from '../../components/Message/MessageSimple/MessageContent';
 import type { MessageDeletedProps } from '../../components/Message/MessageSimple/MessageDeleted';
+import type { MessageEditedTimestampProps } from '../../components/Message/MessageSimple/MessageEditedTimestamp';
 import type { MessageErrorProps } from '../../components/Message/MessageSimple/MessageError';
 import type { MessageFooterProps } from '../../components/Message/MessageSimple/MessageFooter';
 import type { MessagePinnedHeaderProps } from '../../components/Message/MessageSimple/MessagePinnedHeader';
@@ -53,7 +54,6 @@ import type { Alignment } from '../messageContext/MessageContext';
 import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
-import type { TDateTimeParserInput } from '../translationContext/TranslationContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { getDisplayName } from '../utils/getDisplayName';
@@ -173,6 +173,11 @@ export type MessagesContextValue<
    * Defaults to: [MessageDeleted](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageSimple/MessageDeleted.tsx)
    */
   MessageDeleted: React.ComponentType<MessageDeletedProps<StreamChatGenerics>>;
+  /**
+   * UI component for MessageEditedTimestamp
+   * Defaults to: [MessageEditedTimestamp](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageSimple/MessageEditedTimestamp.tsx)
+   */
+  MessageEditedTimestamp: React.ComponentType<MessageEditedTimestampProps>;
   /**
    * UI component for the MessageError.
    */
@@ -304,10 +309,6 @@ export type MessagesContextValue<
    * sent messages will be aligned to right.
    */
   forceAlignMessages?: Alignment | boolean;
-  /**
-   * Optional function to custom format the message date
-   */
-  formatDate?: (date: TDateTimeParserInput) => string;
   getMessagesGroupStyles?: typeof getGroupStyles;
   handleBlock?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
   /** Handler to access when a copy message action is invoked */

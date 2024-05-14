@@ -466,7 +466,9 @@ exports[`Thread should match thread snapshot 1`] = `
                           style={
                             [
                               {
+                                "alignItems": "center",
                                 "flexDirection": "row",
+                                "justifyContent": "center",
                                 "marginTop": 4,
                               },
                               {},
@@ -478,12 +480,12 @@ exports[`Thread should match thread snapshot 1`] = `
                             style={
                               [
                                 {
-                                  "color": "#7A7A7A",
-                                  "textAlign": "left",
-                                },
-                                {
                                   "fontSize": 12,
                                 },
+                                {
+                                  "color": "#7A7A7A",
+                                },
+                                {},
                               ]
                             }
                           >
@@ -744,7 +746,9 @@ exports[`Thread should match thread snapshot 1`] = `
                           style={
                             [
                               {
+                                "alignItems": "center",
                                 "flexDirection": "row",
+                                "justifyContent": "center",
                                 "marginTop": 4,
                               },
                               {},
@@ -756,12 +760,12 @@ exports[`Thread should match thread snapshot 1`] = `
                             style={
                               [
                                 {
-                                  "color": "#7A7A7A",
-                                  "textAlign": "left",
-                                },
-                                {
                                   "fontSize": 12,
                                 },
+                                {
+                                  "color": "#7A7A7A",
+                                },
+                                {},
                               ]
                             }
                           >
@@ -1022,7 +1026,9 @@ exports[`Thread should match thread snapshot 1`] = `
                           style={
                             [
                               {
+                                "alignItems": "center",
                                 "flexDirection": "row",
+                                "justifyContent": "center",
                                 "marginTop": 4,
                               },
                               {},
@@ -1034,12 +1040,12 @@ exports[`Thread should match thread snapshot 1`] = `
                             style={
                               [
                                 {
-                                  "color": "#7A7A7A",
-                                  "textAlign": "left",
-                                },
-                                {
                                   "fontSize": 12,
                                 },
+                                {
+                                  "color": "#7A7A7A",
+                                },
+                                {},
                               ]
                             }
                           >
@@ -1340,7 +1346,9 @@ exports[`Thread should match thread snapshot 1`] = `
                               style={
                                 [
                                   {
+                                    "alignItems": "center",
                                     "flexDirection": "row",
+                                    "justifyContent": "center",
                                     "marginTop": 4,
                                   },
                                   {},
@@ -1352,12 +1360,12 @@ exports[`Thread should match thread snapshot 1`] = `
                                 style={
                                   [
                                     {
-                                      "color": "#7A7A7A",
-                                      "textAlign": "left",
-                                    },
-                                    {
                                       "fontSize": 12,
                                     },
+                                    {
+                                      "color": "#7A7A7A",
+                                    },
+                                    {},
                                   ]
                                 }
                               >

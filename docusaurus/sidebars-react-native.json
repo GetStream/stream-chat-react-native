@@ -79,6 +79,7 @@
           "ui-components/message-bounce",
           "ui-components/message-content",
           "ui-components/message-deleted",
+          "ui-components/message-edited-timestamp",
           "ui-components/message-error",
           "ui-components/message-footer",
           "ui-components/message-pinned-header",

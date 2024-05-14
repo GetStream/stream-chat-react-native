@@ -2,10 +2,8 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import {
-  isDayOrMoment,
-  useTranslationContext,
-} from '../../contexts/translationContext/TranslationContext';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { getDateString } from '../../utils/getDateString';
 
 const styles = StyleSheet.create({
   container: {
@@ -42,10 +40,8 @@ export const InlineDateSeparator = ({ date }: InlineDateSeparatorProps) => {
   }
 
   const dateFormat = date.getFullYear() === new Date().getFullYear() ? 'MMM D' : 'MMM D, YYYY';
-  const tDate = tDateTimeParser(date);
-  const dateString = isDayOrMoment(tDate)
-    ? tDate.format(dateFormat)
-    : new Date(tDate).toDateString();
+
+  const dateString = getDateString({ date, format: dateFormat, tDateTimeParser });
 
   return (
     <View

@@ -4,14 +4,11 @@ import Animated, { Extrapolate, interpolate, useAnimatedStyle } from 'react-nati
 
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import {
-  isDayOrMoment,
-  TDateTimeParserOutput,
-  useTranslationContext,
-} from '../../../contexts/translationContext/TranslationContext';
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Close } from '../../../icons';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
+import { getDateString } from '../../../utils/getDateString';
 import type { Photo } from '../ImageGallery';
 
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent
@@ -101,32 +98,7 @@ export const ImageGalleryHeader = <
   const { t, tDateTimeParser } = useTranslationContext();
   const { setOverlay } = useOverlayContext();
 
-  const parsedDate = photo ? tDateTimeParser(photo?.created_at) : null;
-
-  /**
-   * .calendar and .fromNow can be initialized after the first render,
-   * and attempting to access them at that time will cause an error
-   * to be thrown.
-   *
-   * This falls back to null if neither exist.
-   */
-  const getDateObject = (date: TDateTimeParserOutput | null) => {
-    if (date === null || !isDayOrMoment(date)) {
-      return null;
-    }
-
-    if (date.calendar) {
-      return date.calendar();
-    }
-
-    if (date.fromNow) {
-      return date.fromNow();
-    }
-
-    return null;
-  };
-
-  const date = getDateObject(parsedDate);
+  const date = getDateString({ calendar: true, date: photo?.created_at, tDateTimeParser });
 
   const headerStyle = useAnimatedStyle<ViewStyle>(() => ({
     opacity: opacity.value,

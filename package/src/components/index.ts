@@ -99,6 +99,7 @@ export * from './Message/MessageSimple/MessageAvatar';
 export * from './Message/MessageSimple/MessageBounce';
 export * from './Message/MessageSimple/MessageContent';
 export * from './Message/MessageSimple/MessageDeleted';
+export * from './Message/MessageSimple/MessageEditedTimestamp';
 export * from './Message/MessageSimple/MessageError';
 export * from './Message/MessageSimple/MessageFooter';
 export * from './Message/MessageSimple/MessagePinnedHeader';

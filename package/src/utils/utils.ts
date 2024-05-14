@@ -113,6 +113,17 @@ export const isBouncedMessage = <
   message: MessageType<StreamChatGenerics>,
 ) => message.type === 'error' && message.moderation_details !== undefined;
 
+/**
+ * Utility to check if the message is a edited message.
+ * @param message
+ * @returns boolean
+ */
+export const isEditedMessage = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  message: MessageType<StreamChatGenerics>,
+) => !!message.message_text_updated_at;
+
 const defaultAutoCompleteSuggestionsLimit = 10;
 const defaultMentionAllAppUsersQuery = {
   filters: {},
