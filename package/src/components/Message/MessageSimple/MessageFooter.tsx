@@ -104,7 +104,7 @@ const MessageFooterWithContext = <
     theme: {
       colors: { grey },
       messageSimple: {
-        content: { deletedMetaText, editedLabel, messageUser, metaContainer, metaText },
+        content: { editedLabel, messageUser, metaContainer, metaText },
       },
     },
   } = useTheme();
@@ -116,18 +116,7 @@ const MessageFooterWithContext = <
         {deletedMessagesVisibilityType === 'sender' && (
           <OnlyVisibleToYouComponent alignment={alignment} />
         )}
-        <MessageTimestamp
-          format='LT'
-          textStyle={[
-            {
-              color: grey,
-              textAlign: alignment,
-            },
-            metaText,
-            deletedMetaText,
-          ]}
-          timestamp={date}
-        />
+        <MessageTimestamp format='LT' timestamp={date} />
       </View>
     );
   }
@@ -146,17 +135,7 @@ const MessageFooterWithContext = <
           <Text style={[styles.text, { color: grey }, messageUser]}>{message.user.name}</Text>
         ) : null}
         {showMessageStatus && <MessageStatus />}
-        <MessageTimestamp
-          format='LT'
-          textStyle={[
-            {
-              color: grey,
-              textAlign: alignment,
-            },
-            metaText,
-          ]}
-          timestamp={date}
-        />
+        <MessageTimestamp format='LT' timestamp={date} />
 
         {isEditedMessage(message) && !isEditedMessageOpen && (
           <>

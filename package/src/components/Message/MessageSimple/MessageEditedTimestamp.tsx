@@ -71,14 +71,7 @@ export const MessageEditedTimestamp = <
   props: MessageEditedTimestampProps<StreamChatGenerics>,
 ) => {
   const { message } = useMessageContext<StreamChatGenerics>();
-  return (
-    <MemoizedMessageEditedTimestamp<StreamChatGenerics>
-      {...{
-        message,
-      }}
-      {...props}
-    />
-  );
+  return <MemoizedMessageEditedTimestamp<StreamChatGenerics> message={message} {...props} />;
 };
 
 const styles = StyleSheet.create({
