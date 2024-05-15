@@ -36,7 +36,7 @@ export const useNewMessage = <
           if (!channels) return channels;
           const channelInList = channels.filter((channel) => channel.cid === event.cid).length > 0;
 
-          if (!channelInList && event.channel_type) {
+          if (!channelInList && event.channel_type && event.channel_id) {
             // If channel doesn't exist in existing list, check in activeChannels as well.
             // It may happen that channel was hidden using channel.hide(). In that case
             // We remove it from `channels` state, but its still being watched and exists in client.activeChannels.
