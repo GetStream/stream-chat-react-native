@@ -250,10 +250,13 @@ export const useAudioController = () => {
 
     const resampledWaveformData = resampleWaveformData(waveformData, 100);
 
+    const clearFilter = new RegExp('[.:]', 'g');
+    const date = new Date().toISOString().replace(clearFilter, '_');
+
     const file: File = {
       duration: durationInSeconds,
       mimeType: 'audio/aac',
-      name: `audio_recording_${new Date().toISOString()}.aac`,
+      name: `audio_recording_${date}.aac`,
       type: 'voiceRecording',
       uri: typeof recording !== 'string' ? (recording?.getURI() as string) : (recording as string),
       waveform_data: resampledWaveformData,
