@@ -598,7 +598,7 @@ const ChannelWithContext = <
   const [error, setError] = useState<Error | boolean>(false);
   const [hasMore, setHasMore] = useState(true);
   const [lastRead, setLastRead] = useState<ChannelContextValue<StreamChatGenerics>['lastRead']>();
-  const [loading, setLoading] = useState(!channel?.state.messages.length);
+  const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
 
   const [loadingMoreRecent, setLoadingMoreRecent] = useState(false);
@@ -645,10 +645,8 @@ const ChannelWithContext = <
        * Also there is no use case from UX perspective, why one would need loading uninitialized channel at particular message.
        * If the channel is not initiated, then we need to do channel.watch, which is more expensive for backend than channel.query.
        */
-      let channelLoaded = false;
       if (!channel.initialized) {
         await loadChannel();
-        channelLoaded = true;
       }
 
       if (messageId) {
@@ -658,8 +656,6 @@ const ChannelWithContext = <
         channel.countUnread() > scrollToFirstUnreadThreshold
       ) {
         loadChannelAtFirstUnreadMessage();
-      } else if (!channelLoaded) {
-        loadChannel();
       }
     };
 
@@ -1167,15 +1163,19 @@ const ChannelWithContext = <
   });
 
   const loadChannel = () =>
-    channelQueryCallRef.current(async () => {
-      if (!channel?.initialized || !channel.state.isUpToDate) {
-        await channel?.watch();
+    channelQueryCallRef.current(
+      async () => {
+        if (!channel?.initialized || !channel.state.isUpToDate) {
+          await channel?.watch();
+        } else {
+          await channel.state.loadMessageIntoState('latest');
+        }
+      },
+      () => {
         channel?.state.setIsUpToDate(true);
         setHasNoMoreRecentMessagesToLoad(true);
-      } else {
-        await channel.state.loadMessageIntoState('latest');
-      }
-    });
+      },
+    );
 
   const reloadThread = async () => {
     if (!channel || !thread?.id) return;

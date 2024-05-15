@@ -45,7 +45,7 @@ describe('useLatestMessagePreview', () => {
   );
 
   it('should return a deleted message preview if the latest message is deleted', async () => {
-    const latestMessage = { type: 'deleted' } as unknown as MessageResponse;
+    const latestMessage = { cid: 'test', type: 'deleted' } as unknown as MessageResponse;
 
     const { result } = renderHook(
       () => useLatestMessagePreview(CHANNEL_WITH_DELETED_MESSAGES, FORCE_UPDATE, latestMessage),

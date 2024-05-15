@@ -7,6 +7,7 @@ export * from './AtMentions';
 export * from './Attach';
 export * from './Audio';
 export * from './Camera';
+export * from './ChatIcon';
 export * from './Check';
 export * from './CheckAll';
 export * from './CheckSend';
