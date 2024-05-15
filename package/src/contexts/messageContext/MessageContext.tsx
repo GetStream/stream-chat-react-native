@@ -53,6 +53,8 @@ export type MessageContextValue<
   hasReactions: boolean;
   /** The images attached to a message */
   images: Attachment<StreamChatGenerics>[];
+  /** Boolean that determines if the edited message is pressed. */
+  isEditedMessageOpen: boolean;
   /** Whether or not this is the active user's message */
   isMyMessage: boolean;
   /** Whether or not this is the last message in a group of messages */
@@ -91,6 +93,8 @@ export type MessageContextValue<
   /** The images attached to a message */
   otherAttachments: Attachment<StreamChatGenerics>[];
   reactions: Reactions;
+  /** React set state function to set the state of `isEditedMessageOpen` */
+  setIsEditedMessageOpen: React.Dispatch<React.SetStateAction<boolean>>;
   showMessageOverlay: (messageReactions?: boolean, error?: boolean) => void;
   showMessageStatus: boolean;
   /** Whether or not the Message is part of a Thread */

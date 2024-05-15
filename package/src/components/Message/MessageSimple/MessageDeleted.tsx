@@ -3,11 +3,9 @@ import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 
 import merge from 'lodash/merge';
 
-import type { MessageFooterProps } from './MessageFooter';
 import { MessageTextContainer } from './MessageTextContainer';
 
 import {
-  Alignment,
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
@@ -16,13 +14,9 @@ import {
   useMessagesContext,
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import {
-  TranslationContextValue,
-  useTranslationContext,
-} from '../../../contexts/translationContext/TranslationContext';
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
 
 const styles = StyleSheet.create({
   containerInner: {
@@ -40,17 +34,16 @@ const styles = StyleSheet.create({
 });
 
 type MessageDeletedComponentProps = {
-  formattedDate: string | Date;
   groupStyle: string;
   noBorder: boolean;
   onLayout: (event: LayoutChangeEvent) => void;
+  date?: string | Date;
 };
 
 type MessageDeletedPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<MessageContextValue<StreamChatGenerics>, 'alignment' | 'message'> &
   Pick<MessagesContextValue<StreamChatGenerics>, 'MessageFooter'> &
-  Pick<TranslationContextValue, 't'> &
   MessageDeletedComponentProps;
 
 const MessageDeletedWithContext = <
@@ -58,8 +51,7 @@ const MessageDeletedWithContext = <
 >(
   props: MessageDeletedPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { alignment, formattedDate, groupStyle, message, MessageFooter, noBorder, onLayout, t } =
-    props;
+  const { alignment, date, groupStyle, message, MessageFooter, noBorder, onLayout } = props;
 
   const {
     theme: {
@@ -74,6 +66,7 @@ const MessageDeletedWithContext = <
       },
     },
   } = useTheme();
+  const { t } = useTranslationContext();
 
   return (
     <View
@@ -108,7 +101,7 @@ const MessageDeletedWithContext = <
           message={{ ...message, text: `_${t('Message deleted')}_` }}
         />
       </View>
-      <MessageFooter formattedDate={formattedDate} isDeleted />
+      <MessageFooter date={date} isDeleted />
     </View>
   );
 };
@@ -117,16 +110,8 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   prevProps: MessageDeletedPropsWithContext<StreamChatGenerics>,
   nextProps: MessageDeletedPropsWithContext<StreamChatGenerics>,
 ) => {
-  const {
-    alignment: prevAlignment,
-    formattedDate: prevFormattedDate,
-    message: prevMessage,
-  } = prevProps;
-  const {
-    alignment: nextAlignment,
-    formattedDate: nextFormattedDate,
-    message: nextMessage,
-  } = nextProps;
+  const { alignment: prevAlignment, date: prevDate, message: prevMessage } = prevProps;
+  const { alignment: nextAlignment, date: nextDate, message: nextMessage } = nextProps;
 
   const alignmentEqual = prevAlignment === nextAlignment;
   if (!alignmentEqual) return false;
@@ -142,8 +127,8 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     prevMessage.pinned === nextMessage.pinned;
   if (!messageEqual) return false;
 
-  const formattedDateEqual = prevFormattedDate === nextFormattedDate;
-  if (!formattedDateEqual) return false;
+  const dateEqual = prevDate === nextDate;
+  if (!dateEqual) return false;
 
   return true;
 };
@@ -155,10 +140,10 @@ const MemoizedMessageDeleted = React.memo(
 
 export type MessageDeletedProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = MessageDeletedComponentProps & {
-  alignment?: Alignment;
-  message?: MessageType<StreamChatGenerics>;
-  MessageFooter?: React.ComponentType<MessageFooterProps<StreamChatGenerics>>;
+> = Partial<MessageDeletedPropsWithContext<StreamChatGenerics>> & {
+  groupStyle: string;
+  noBorder: boolean;
+  onLayout: (event: LayoutChangeEvent) => void;
 };
 
 export const MessageDeleted = <
@@ -170,15 +155,12 @@ export const MessageDeleted = <
 
   const { MessageFooter } = useMessagesContext<StreamChatGenerics>();
 
-  const { t } = useTranslationContext();
-
   return (
     <MemoizedMessageDeleted
       {...{
         alignment,
         message,
         MessageFooter,
-        t,
       }}
       {...props}
     />

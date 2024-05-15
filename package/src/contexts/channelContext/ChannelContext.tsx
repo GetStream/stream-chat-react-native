@@ -180,7 +180,7 @@ export type ChannelContextValue<
    *
    * **Default** [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)
    */
-  StickyHeader?: React.ComponentType<{ dateString: string }>;
+  StickyHeader?: React.ComponentType<{ dateString: string | number }>;
   /**
    * Id of message, around which Channel/MessageList gets loaded when opened.
    * You will see a highlighted background for targetted message, when opened.
