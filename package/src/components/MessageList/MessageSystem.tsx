@@ -40,7 +40,11 @@ export const MessageSystem = <
   const { tDateTimeParser } = useTranslationContext();
 
   const createdAt = message.created_at;
-  const formattedDate = getDateString({ calendar: true, date: createdAt, tDateTimeParser });
+  const formattedDate = getDateString({
+    calendar: true,
+    date: createdAt,
+    tDateTimeParser,
+  });
 
   return (
     <View style={[styles.container, style, container]} testID='message-system'>

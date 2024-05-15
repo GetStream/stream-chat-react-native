@@ -41,7 +41,11 @@ export const InlineDateSeparator = ({ date }: InlineDateSeparatorProps) => {
 
   const dateFormat = date.getFullYear() === new Date().getFullYear() ? 'MMM D' : 'MMM D, YYYY';
 
-  const dateString = getDateString({ date, format: dateFormat, tDateTimeParser });
+  const dateString = getDateString({
+    date,
+    format: dateFormat,
+    tDateTimeParser,
+  });
 
   return (
     <View

@@ -1026,15 +1026,14 @@ const MessageListWithContext = <
   const stickyHeaderDateFormat =
     stickyHeaderDate?.getFullYear() === new Date().getFullYear() ? 'MMM D' : 'MMM D, YYYY';
 
-  const stickyHeaderDateString = useMemo(
-    () =>
-      getDateString({
-        date: stickyHeaderDate,
-        format: stickyHeaderDateFormat,
-        tDateTimeParser,
-      }),
-    [stickyHeaderDate, stickyHeaderDateFormat],
-  );
+  const stickyHeaderDateString = useMemo(() => {
+    if (!stickyHeaderDate) return null;
+    return getDateString({
+      date: stickyHeaderDate,
+      format: stickyHeaderDateFormat,
+      tDateTimeParser,
+    });
+  }, [stickyHeaderDate, stickyHeaderDateFormat]);
 
   const dismissImagePicker = () => {
     if (!hasMoved && selectedPicker) {

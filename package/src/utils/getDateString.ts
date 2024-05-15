@@ -27,8 +27,6 @@ interface DateFormatterOptions {
   tDateTimeParser?: TDateTimeParser;
 }
 
-export const notValidDateWarning =
-  'MessageTimestamp was called without a message, or message has invalid created_at date.';
 export const noParsingFunctionWarning =
   'MessageTimestamp was called but there is no datetime parsing function available';
 
@@ -43,7 +41,6 @@ export function getDateString({
   tDateTimeParser,
 }: DateFormatterOptions): string | number | null {
   if (!date || (typeof date === 'string' && !Date.parse(date))) {
-    console.warn(notValidDateWarning);
     return null;
   }
 
@@ -52,7 +49,7 @@ export function getDateString({
   }
 
   if (!tDateTimeParser) {
-    console.warn(noParsingFunctionWarning);
+    console.log(noParsingFunctionWarning);
     return null;
   }
 
