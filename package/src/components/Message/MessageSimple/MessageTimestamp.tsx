@@ -9,7 +9,7 @@ import {
 } from '../../../contexts/translationContext/TranslationContext';
 import { getDateString } from '../../../utils/getDateString';
 
-export type MessageTimestampPropsWithContext = Pick<TranslationContextValue, 'tDateTimeParser'> & {
+export type MessageTimestampProps = Partial<Pick<TranslationContextValue, 'tDateTimeParser'>> & {
   /**
    * Whether to show the time in Calendar time format. Calendar time displays time relative to a today's date.
    */
@@ -28,8 +28,8 @@ export type MessageTimestampPropsWithContext = Pick<TranslationContextValue, 'tD
   timestamp?: string | Date;
 };
 
-export const MessageTimestampWithContext = (props: MessageTimestampPropsWithContext) => {
-  const { calendar, format, formatDate, tDateTimeParser, timestamp } = props;
+export const MessageTimestamp = (props: MessageTimestampProps) => {
+  const { calendar, format, formatDate, tDateTimeParser: propsTDateTimeParser, timestamp } = props;
   const {
     theme: {
       colors: { grey },
@@ -38,6 +38,7 @@ export const MessageTimestampWithContext = (props: MessageTimestampPropsWithCont
       },
     },
   } = useTheme();
+  const { tDateTimeParser: contextTDateTimeParser } = useTranslationContext();
 
   if (!timestamp) return null;
 
@@ -46,7 +47,7 @@ export const MessageTimestampWithContext = (props: MessageTimestampPropsWithCont
     date: timestamp,
     format,
     formatDate,
-    tDateTimeParser,
+    tDateTimeParser: propsTDateTimeParser || contextTDateTimeParser,
   });
 
   if (!formattedDate) return null;
@@ -54,14 +55,6 @@ export const MessageTimestampWithContext = (props: MessageTimestampPropsWithCont
   return (
     <Text style={[styles.text, { color: grey }, timestampText]}>{formattedDate.toString()}</Text>
   );
-};
-
-export type MessageTimestampProps = Partial<MessageTimestampPropsWithContext>;
-
-export const MessageTimestamp = (props: MessageTimestampProps) => {
-  const { tDateTimeParser } = useTranslationContext();
-
-  return <MessageTimestampWithContext tDateTimeParser={tDateTimeParser} {...props} />;
 };
 
 const styles = StyleSheet.create({

@@ -12,16 +12,16 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import { DefaultStreamChatGenerics } from '../../../types/types';
 import { isEditedMessage } from '../../../utils/utils';
 
-export type MessageEditedTimestampPropsWithContext<
+export type MessageEditedTimestampProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessageContextValue<StreamChatGenerics>, 'message'> & MessageTimestampProps;
+> = Partial<Pick<MessageContextValue<StreamChatGenerics>, 'message'>> & MessageTimestampProps;
 
-export const MessageEditedTimestampWithContext = <
+export const MessageEditedTimestamp = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageEditedTimestampPropsWithContext<StreamChatGenerics>,
+  props: MessageEditedTimestampProps<StreamChatGenerics>,
 ) => {
-  const { message, timestamp } = props;
+  const { message: propMessage, timestamp } = props;
   const {
     theme: {
       colors: { grey },
@@ -31,6 +31,8 @@ export const MessageEditedTimestampWithContext = <
     },
   } = useTheme();
   const { t } = useTranslationContext();
+  const { message: contextMessage } = useMessageContext<StreamChatGenerics>();
+  const message = propMessage || contextMessage;
 
   if (!isEditedMessage(message)) {
     return null;
@@ -42,36 +44,6 @@ export const MessageEditedTimestampWithContext = <
       <MessageTimestamp calendar={true} timestamp={timestamp} />
     </View>
   );
-};
-
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: MessageEditedTimestampPropsWithContext<StreamChatGenerics>,
-  nextProps: MessageEditedTimestampPropsWithContext<StreamChatGenerics>,
-) => {
-  const { message: prevMessage } = prevProps;
-  const { message: nextMessage } = nextProps;
-  const messageEqual = prevMessage.message_text_updated_at === nextMessage.message_text_updated_at;
-  if (!messageEqual) return false;
-
-  return true;
-};
-
-const MemoizedMessageEditedTimestamp = React.memo(
-  MessageEditedTimestampWithContext,
-  areEqual,
-) as typeof MessageEditedTimestampWithContext;
-
-export type MessageEditedTimestampProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<MessageEditedTimestampPropsWithContext<StreamChatGenerics>> & MessageTimestampProps;
-
-export const MessageEditedTimestamp = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageEditedTimestampProps<StreamChatGenerics>,
-) => {
-  const { message } = useMessageContext<StreamChatGenerics>();
-  return <MemoizedMessageEditedTimestamp<StreamChatGenerics> message={message} {...props} />;
 };
 
 const styles = StyleSheet.create({
