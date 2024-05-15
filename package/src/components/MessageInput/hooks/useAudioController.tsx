@@ -245,7 +245,7 @@ export const useAudioController = () => {
 
     const resampledWaveformData = resampleWaveformData(waveformData, 100);
 
-    const clearFilter = new RegExp("[.:]", 'g')
+    const clearFilter = new RegExp('[.:]', 'g');
     const date = new Date().toISOString().replace(clearFilter, '_');
 
     const file: File = {
