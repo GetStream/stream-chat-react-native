@@ -1,5 +1,17 @@
 # Change Log
 
+## [1.27.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.26.0...sampleapp@v1.27.0) (2024-05-16)
+
+
+### Features
+
+* show edited message label in message UI ([#2514](https://github.com/GetStream/stream-chat-react-native/issues/2514)) ([e19be3c](https://github.com/GetStream/stream-chat-react-native/commit/e19be3ca85ea21c29deb3e26bc43c5e8d1f7c6d5))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ## [1.26.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.25.9...sampleapp@v1.26.0) (2024-05-02)
 
 
