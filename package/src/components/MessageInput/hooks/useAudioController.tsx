@@ -138,11 +138,9 @@ export const useAudioController = () => {
       await Audio.stopPlayer();
     }
     // For Expo CLI
-    if (recording && typeof recording !== 'string') {
-      if (soundRef.current?.stopAsync && soundRef.current?.unloadAsync) {
-        await soundRef.current.stopAsync();
-        await soundRef.current?.unloadAsync();
-      }
+    if (soundRef.current?.stopAsync && soundRef.current?.unloadAsync) {
+      await soundRef.current.stopAsync();
+      await soundRef.current?.unloadAsync();
     }
   };
 
