@@ -52,12 +52,12 @@ import {
 import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import {
-  isDayOrMoment,
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
+import { getDateString } from '../../utils/getDateString';
 
 const WAIT_FOR_SCROLL_TO_OFFSET_TIMEOUT = 150;
 const MAX_RETRIES_AFTER_SCROLL_FAILURE = 10;
@@ -1023,17 +1023,17 @@ const MessageListWithContext = <
     threadList,
   ]);
 
-  const stickyHeaderFormatDate =
+  const stickyHeaderDateFormat =
     stickyHeaderDate?.getFullYear() === new Date().getFullYear() ? 'MMM D' : 'MMM D, YYYY';
-  const tStickyHeaderDate =
-    stickyHeaderDate && !hideStickyDateHeader ? tDateTimeParser(stickyHeaderDate) : null;
 
   const stickyHeaderDateString = useMemo(() => {
-    if (tStickyHeaderDate === null || hideStickyDateHeader) return null;
-    if (isDayOrMoment(tStickyHeaderDate)) return tStickyHeaderDate.format(stickyHeaderFormatDate);
-
-    return new Date(tStickyHeaderDate).toDateString();
-  }, [tStickyHeaderDate, stickyHeaderFormatDate, hideStickyDateHeader]);
+    if (!stickyHeaderDate) return null;
+    return getDateString({
+      date: stickyHeaderDate,
+      format: stickyHeaderDateFormat,
+      tDateTimeParser,
+    });
+  }, [stickyHeaderDate, stickyHeaderDateFormat]);
 
   const dismissImagePicker = () => {
     if (!hasMoved && selectedPicker) {

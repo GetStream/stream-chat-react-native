@@ -48,6 +48,7 @@ import {
   hasOnlyEmojis,
   isBlockedMessage,
   isBouncedMessage,
+  isEditedMessage,
   MessageStatusTypes,
 } from '../../utils/utils';
 
@@ -233,6 +234,7 @@ const MessageWithContext = <
   props: MessagePropsWithContext<StreamChatGenerics>,
 ) => {
   const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
+  const [isEditedMessageOpen, setIsEditedMessageOpen] = useState(false);
   const isMessageTypeDeleted = props.message.type === 'deleted';
 
   const {
@@ -333,6 +335,9 @@ const MessageWithContext = <
   const onPress = (error = errorOrFailed) => {
     if (dismissKeyboardOnMessageTouch) {
       Keyboard.dismiss();
+    }
+    if (isEditedMessage(message)) {
+      setIsEditedMessageOpen((prevState) => !prevState);
     }
     const quotedMessage = message.quoted_message as MessageType<StreamChatGenerics>;
     if (error) {
@@ -677,6 +682,7 @@ const MessageWithContext = <
     handleToggleReaction,
     hasReactions,
     images: attachments.images,
+    isEditedMessageOpen,
     isMyMessage,
     lastGroupMessage: groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
     lastReceivedId,
@@ -727,6 +733,7 @@ const MessageWithContext = <
     otherAttachments: attachments.other,
     preventPress,
     reactions,
+    setIsEditedMessageOpen,
     showAvatar,
     showMessageOverlay,
     showMessageStatus: typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,

@@ -450,6 +450,8 @@ export type Theme = {
       deletedContainerInner: ViewStyle;
       deletedMetaText: TextStyle;
       deletedText: MarkdownStyle;
+      editedLabel: TextStyle;
+      editedTimestampContainer: ViewStyle;
       errorContainer: ViewStyle;
       errorIcon: IconProps;
       errorIconContainer: ViewStyle;
@@ -470,6 +472,7 @@ export type Theme = {
       wrapper: ViewStyle;
       receiverMessageBackgroundColor?: ColorValue;
       senderMessageBackgroundColor?: ColorValue;
+      timestampText?: TextStyle;
     };
     file: {
       container: ViewStyle;
@@ -1021,6 +1024,8 @@ export const defaultTheme: Theme = {
           fontWeight: '400',
         },
       },
+      editedLabel: {},
+      editedTimestampContainer: {},
       errorContainer: {
         paddingRight: 12,
         paddingTop: 0,
@@ -1053,6 +1058,7 @@ export const defaultTheme: Theme = {
       textContainer: {
         onlyEmojiMarkdown: { text: { fontSize: 50 } },
       },
+      timestampText: {},
       wrapper: {},
     },
     file: {

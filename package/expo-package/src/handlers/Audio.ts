@@ -216,7 +216,6 @@ export const Audio = AudioComponent
   ? {
       startRecording: async (recordingOptions: RecordingOptions, onRecordingStatusUpdate) => {
         try {
-          console.log('Requesting permissions..');
           const permissionsGranted = await AudioComponent.getPermissionsAsync().granted;
           if (!permissionsGranted) {
             await AudioComponent.requestPermissionsAsync();
@@ -225,7 +224,6 @@ export const Audio = AudioComponent
             allowsRecordingIOS: true,
             playsInSilentModeIOS: true,
           });
-          console.log('Starting recording..');
           const androidOptions = {
             audioEncoder: AndroidAudioEncoder.AAC,
             extension: '.aac',
@@ -258,7 +256,6 @@ export const Audio = AudioComponent
       },
       stopRecording: async () => {
         try {
-          console.log('Stopping recording..');
           await AudioComponent.setAudioModeAsync({
             allowsRecordingIOS: false,
           });

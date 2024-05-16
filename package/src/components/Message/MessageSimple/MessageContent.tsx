@@ -19,8 +19,6 @@ import {
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import {
-  isDayOrMoment,
-  TDateTimeParserInput,
   TranslationContextValue,
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
@@ -66,6 +64,7 @@ export type MessageContentPropsWithContext<
   MessageContextValue<StreamChatGenerics>,
   | 'alignment'
   | 'disabled'
+  | 'isEditedMessageOpen'
   | 'goToMessage'
   | 'groupStyles'
   | 'hasReactions'
@@ -88,7 +87,6 @@ export type MessageContentPropsWithContext<
     | 'additionalTouchableProps'
     | 'Attachment'
     | 'FileAttachmentGroup'
-    | 'formatDate'
     | 'Gallery'
     | 'isAttachmentEqual'
     | 'MessageFooter'
@@ -102,7 +100,7 @@ export type MessageContentPropsWithContext<
     | 'onPressInMessage'
     | 'Reply'
   > &
-  Pick<TranslationContextValue, 't' | 'tDateTimeParser'> & {
+  Pick<TranslationContextValue, 't'> & {
     setMessageContentWidth: React.Dispatch<React.SetStateAction<number>>;
   };
 
@@ -120,7 +118,6 @@ const MessageContentWithContext = <
     Attachment,
     disabled,
     FileAttachmentGroup,
-    formatDate,
     Gallery,
     groupStyles,
     hasReactions,
@@ -145,7 +142,6 @@ const MessageContentWithContext = <
     Reply,
     setMessageContentWidth,
     showMessageStatus,
-    tDateTimeParser,
     threadList,
   } = props;
 
@@ -178,21 +174,6 @@ const MessageContentWithContext = <
   } = useTheme();
   const { vw } = useViewport();
 
-  const getDateText = (formatter?: (date: TDateTimeParserInput) => string) => {
-    if (!message.created_at) return '';
-
-    if (formatter) {
-      return formatter(message.created_at);
-    }
-
-    const parserOutput = tDateTimeParser(message.created_at);
-
-    if (isDayOrMoment(parserOutput)) {
-      return parserOutput.format('LT');
-    }
-    return message.created_at;
-  };
-
   const onLayout: (event: LayoutChangeEvent) => void = ({
     nativeEvent: {
       layout: { width },
@@ -221,7 +202,7 @@ const MessageContentWithContext = <
   if (isMessageTypeDeleted) {
     return (
       <MessageDeleted
-        formattedDate={getDateText(formatDate)}
+        date={message.created_at}
         groupStyle={groupStyle}
         noBorder={noBorder}
         onLayout={onLayout}
@@ -332,7 +313,7 @@ const MessageContentWithContext = <
       {MessageHeader && (
         <MessageHeader
           alignment={alignment}
-          formattedDate={getDateText(formatDate)}
+          date={message.created_at}
           isDeleted={isMessageTypeDeleted}
           lastGroupMessage={lastGroupMessage}
           members={members}
@@ -411,7 +392,7 @@ const MessageContentWithContext = <
         {error && <MessageError />}
       </View>
       <MessageReplies noBorder={noBorder} repliesCurveColor={repliesCurveColor} />
-      <MessageFooter formattedDate={getDateText(formatDate)} isDeleted={!!isMessageTypeDeleted} />
+      <MessageFooter date={message.created_at} isDeleted={!!isMessageTypeDeleted} />
     </TouchableOpacity>
   );
 };
@@ -426,6 +407,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     groupStyles: prevGroupStyles,
     hasReactions: prevHasReactions,
     isAttachmentEqual,
+    isEditedMessageOpen: prevIsEditedMessageOpen,
     lastGroupMessage: prevLastGroupMessage,
     members: prevMembers,
     message: prevMessage,
@@ -434,13 +416,13 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     onlyEmojis: prevOnlyEmojis,
     otherAttachments: prevOtherAttachments,
     t: prevT,
-    tDateTimeParser: prevTDateTimeParser,
   } = prevProps;
   const {
     disabled: nextDisabled,
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     hasReactions: nextHasReactions,
+    isEditedMessageOpen: nextIsEditedMessageOpen,
     lastGroupMessage: nextLastGroupMessage,
     members: nextMembers,
     message: nextMessage,
@@ -449,7 +431,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     onlyEmojis: nextOnlyEmojis,
     otherAttachments: nextOtherAttachments,
     t: nextT,
-    tDateTimeParser: nextTDateTimeParser,
   } = nextProps;
 
   const disabledEqual = prevDisabled === nextDisabled;
@@ -464,6 +445,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const goToMessageChangedAndMatters =
     nextMessage.quoted_message_id && prevGoToMessage !== nextGoToMessage;
   if (goToMessageChangedAndMatters) return false;
+
+  const isEditedMessageOpenEqual = prevIsEditedMessageOpen === nextIsEditedMessageOpen;
+  if (!isEditedMessageOpenEqual) return false;
 
   const onlyEmojisEqual = prevOnlyEmojis === nextOnlyEmojis;
   if (!onlyEmojisEqual) return false;
@@ -542,9 +526,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const tEqual = prevT === nextT;
   if (!tEqual) return false;
 
-  const tDateTimeParserEqual = prevTDateTimeParser === nextTDateTimeParser;
-  if (!tDateTimeParserEqual) return false;
-
   const messageThemeEqual =
     JSON.stringify(prevMyMessageTheme) === JSON.stringify(nextMyMessageTheme);
   if (!messageThemeEqual) return false;
@@ -576,6 +557,7 @@ export const MessageContent = <
     goToMessage,
     groupStyles,
     hasReactions,
+    isEditedMessageOpen,
     isMyMessage,
     lastGroupMessage,
     lastReceivedId,
@@ -595,7 +577,6 @@ export const MessageContent = <
     additionalTouchableProps,
     Attachment,
     FileAttachmentGroup,
-    formatDate,
     Gallery,
     isAttachmentEqual,
     MessageDeleted,
@@ -608,7 +589,7 @@ export const MessageContent = <
     myMessageTheme,
     Reply,
   } = useMessagesContext<StreamChatGenerics>();
-  const { t, tDateTimeParser } = useTranslationContext();
+  const { t } = useTranslationContext();
 
   return (
     <MemoizedMessageContent<StreamChatGenerics>
@@ -618,12 +599,12 @@ export const MessageContent = <
         Attachment,
         disabled,
         FileAttachmentGroup,
-        formatDate,
         Gallery,
         goToMessage,
         groupStyles,
         hasReactions,
         isAttachmentEqual,
+        isEditedMessageOpen,
         isMyMessage,
         lastGroupMessage,
         lastReceivedId,
@@ -647,7 +628,6 @@ export const MessageContent = <
         Reply,
         showMessageStatus,
         t,
-        tDateTimeParser,
         threadList,
       }}
       {...props}

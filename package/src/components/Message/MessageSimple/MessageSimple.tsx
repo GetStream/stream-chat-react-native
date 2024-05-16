@@ -31,7 +31,13 @@ export type MessageSimplePropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageContextValue<StreamChatGenerics>,
-  'alignment' | 'channel' | 'disabled' | 'groupStyles' | 'hasReactions' | 'message'
+  | 'alignment'
+  | 'channel'
+  | 'disabled'
+  | 'isEditedMessageOpen'
+  | 'groupStyles'
+  | 'hasReactions'
+  | 'message'
 > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
@@ -122,6 +128,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     disabled: prevDisabled,
     groupStyles: prevGroupStyles,
     hasReactions: prevHasReactions,
+    isEditedMessageOpen: prevIsEditedMessageOpen,
     message: prevMessage,
     myMessageTheme: prevMyMessageTheme,
   } = prevProps;
@@ -130,6 +137,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     disabled: nextDisabled,
     groupStyles: nextGroupStyles,
     hasReactions: nextHasReactions,
+    isEditedMessageOpen: nextIsEditedMessageOpen,
     message: nextMessage,
     myMessageTheme: nextMyMessageTheme,
   } = nextProps;
@@ -145,6 +153,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const groupStylesEqual = JSON.stringify(prevGroupStyles) === JSON.stringify(nextGroupStyles);
   if (!groupStylesEqual) return false;
+
+  const isEditedMessageOpenEqual = prevIsEditedMessageOpen === nextIsEditedMessageOpen;
+  if (!isEditedMessageOpenEqual) return false;
 
   const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
   const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
@@ -219,7 +230,7 @@ export const MessageSimple = <
 >(
   props: MessageSimpleProps<StreamChatGenerics>,
 ) => {
-  const { alignment, channel, disabled, groupStyles, hasReactions, message } =
+  const { alignment, channel, disabled, groupStyles, hasReactions, isEditedMessageOpen, message } =
     useMessageContext<StreamChatGenerics>();
   const {
     enableMessageGroupingByUser,
@@ -238,6 +249,7 @@ export const MessageSimple = <
         enableMessageGroupingByUser,
         groupStyles,
         hasReactions,
+        isEditedMessageOpen,
         message,
         MessageAvatar,
         MessageContent,

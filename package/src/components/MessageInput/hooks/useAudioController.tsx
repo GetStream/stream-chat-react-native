@@ -82,6 +82,7 @@ export const useAudioController = () => {
   };
 
   const onVoicePlayerPlayPause = async () => {
+    if (!Audio) return;
     if (paused) {
       if (progress === 0) await startVoicePlayer();
       else {
@@ -103,6 +104,7 @@ export const useAudioController = () => {
    * Function to start playing voice recording to preview it after recording.
    */
   const startVoicePlayer = async () => {
+    if (!Audio) return;
     if (!recording) return;
     // For Native CLI
     if (Audio.startPlayer)
@@ -130,16 +132,15 @@ export const useAudioController = () => {
    * Function to stop playing voice recording.
    */
   const stopVoicePlayer = async () => {
+    if (!Audio) return;
     // For Native CLI
     if (Audio.stopPlayer) {
       await Audio.stopPlayer();
     }
     // For Expo CLI
-    if (recording && typeof recording !== 'string') {
-      if (soundRef.current?.stopAsync && soundRef.current?.unloadAsync) {
-        await soundRef.current.stopAsync();
-        await soundRef.current?.unloadAsync();
-      }
+    if (soundRef.current?.stopAsync && soundRef.current?.unloadAsync) {
+      await soundRef.current.stopAsync();
+      await soundRef.current?.unloadAsync();
     }
   };
 
@@ -161,6 +162,7 @@ export const useAudioController = () => {
    * Function to start voice recording.
    */
   const startVoiceRecording = async () => {
+    if (!Audio) return;
     setRecordingStatus('recording');
     const recordingInfo = await Audio.startRecording(
       {
@@ -188,6 +190,7 @@ export const useAudioController = () => {
    * Function to stop voice recording.
    */
   const stopVoiceRecording = async () => {
+    if (!Audio) return;
     if (recording) {
       // For Expo CLI
       if (typeof recording !== 'string') {
@@ -245,10 +248,13 @@ export const useAudioController = () => {
 
     const resampledWaveformData = resampleWaveformData(waveformData, 100);
 
+    const clearFilter = new RegExp('[.:]', 'g');
+    const date = new Date().toISOString().replace(clearFilter, '_');
+
     const file: File = {
       duration: durationInSeconds,
       mimeType: 'audio/aac',
-      name: `audio_recording_${new Date().toISOString()}.aac`,
+      name: `audio_recording_${date}.aac`,
       type: 'voiceRecording',
       uri: typeof recording !== 'string' ? (recording?.getURI() as string) : (recording as string),
       waveform_data: resampledWaveformData,

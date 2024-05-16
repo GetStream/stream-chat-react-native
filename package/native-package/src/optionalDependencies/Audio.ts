@@ -8,8 +8,8 @@ try {
   audioRecorderPlayer = new AudioRecorderPackage();
   audioRecorderPlayer.setSubscriptionDuration(Platform.OS === 'android' ? 0.1 : 0.06);
 } catch (e) {
+  console.log('react-native-audio-recorder-player is not installed.');
   console.log(e);
-  console.warn('react-native-audio-recorder-player is not installed.');
 }
 
 export enum AudioSourceAndroidType {
@@ -171,16 +171,13 @@ const verifyAndroidPermissions = async () => {
 export const Audio = AudioRecorderPackage
   ? {
       pausePlayer: async () => {
-        console.log('Pause Player..');
         await audioRecorderPlayer.pausePlayer();
       },
       resumePlayer: async () => {
-        console.log('Resume Player..');
         await audioRecorderPlayer.resumePlayer();
       },
       startPlayer: async (uri, _, onPlaybackStatusUpdate) => {
         try {
-          console.log('Starting Player..');
           const playback = await audioRecorderPlayer.startPlayer(uri);
           console.log({ playback });
           audioRecorderPlayer.addPlayBackListener((status) => {
@@ -191,7 +188,6 @@ export const Audio = AudioRecorderPackage
         }
       },
       startRecording: async (options: RecordingOptions, onRecordingStatusUpdate) => {
-        console.log('Starting recording..');
         if (Platform.OS === 'android') {
           try {
             await verifyAndroidPermissions();
@@ -230,12 +226,14 @@ export const Audio = AudioRecorderPackage
         }
       },
       stopPlayer: async () => {
-        console.log('Stopping player..');
-        await audioRecorderPlayer.stopPlayer();
-        audioRecorderPlayer.removePlayBackListener();
+        try {
+          await audioRecorderPlayer.stopPlayer();
+          audioRecorderPlayer.removePlayBackListener();
+        } catch (error) {
+          console.log(error);
+        }
       },
       stopRecording: async () => {
-        console.log('Stopping recording..');
         await audioRecorderPlayer.stopRecorder();
         audioRecorderPlayer.removeRecordBackListener();
       },
