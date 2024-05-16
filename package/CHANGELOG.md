@@ -1,5 +1,22 @@
 # Change Log
 
+## [5.30.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.29.0...v5.30.0) (2024-05-16)
+
+
+### Features
+
+* show edited message label in message UI ([#2514](https://github.com/GetStream/stream-chat-react-native/issues/2514)) ([e19be3c](https://github.com/GetStream/stream-chat-react-native/commit/e19be3ca85ea21c29deb3e26bc43c5e8d1f7c6d5))
+
+
+### Bug Fixes
+
+* channel.lastRead() returns null after posting a message ([#2480](https://github.com/GetStream/stream-chat-react-native/issues/2480)) ([851d314](https://github.com/GetStream/stream-chat-react-native/commit/851d3148555fc2eaf9927271089b56f6c4bde02d))
+* handle react native audio recorder player optionally ([#2515](https://github.com/GetStream/stream-chat-react-native/issues/2515)) ([bdca957](https://github.com/GetStream/stream-chat-react-native/commit/bdca95725c7089ea75154b7c9dfa8730c5be9a97))
+* incorrect mentioned users regex users with same prefix ([#2508](https://github.com/GetStream/stream-chat-react-native/issues/2508)) ([c73fd35](https://github.com/GetStream/stream-chat-react-native/commit/c73fd35e939192d62202d7bff3687211b2754643))
+* new message in empty messagelist and channel preview latest message ([#2509](https://github.com/GetStream/stream-chat-react-native/issues/2509)) ([fb971a6](https://github.com/GetStream/stream-chat-react-native/commit/fb971a67da203f0783209af5b505758a7504dc42))
+* remove redundant console.logs from Audio.ts ([a9a308a](https://github.com/GetStream/stream-chat-react-native/commit/a9a308a58d596b923c110821b6b3e266b4607d5b))
+* Stream chat fix http no such file ([#2512](https://github.com/GetStream/stream-chat-react-native/issues/2512)) ([b9cb890](https://github.com/GetStream/stream-chat-react-native/commit/b9cb8905e2783c95ac0c2b203197475abfccde21))
+
 ## [5.29.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.28.1...v5.29.0) (2024-05-02)
 
 
