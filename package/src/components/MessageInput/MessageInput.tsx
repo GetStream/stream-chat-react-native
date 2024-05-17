@@ -1,11 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  Alert,
-  NativeSyntheticEvent,
-  StyleSheet,
-  TextInputFocusEventData,
-  View,
-} from 'react-native';
+import { NativeSyntheticEvent, StyleSheet, TextInputFocusEventData, View } from 'react-native';
 
 import {
   GestureEvent,
@@ -231,7 +225,6 @@ const MessageInputWithContext = <
   } = props;
 
   const [height, setHeight] = useState(0);
-  const { t } = useTranslationContext();
 
   const {
     theme: {
@@ -323,9 +316,6 @@ const MessageInputWithContext = <
     }
   }, [imagesForInput]);
 
-  const MEGA_BYTES_TO_BYTES = 1024 * 1024;
-  const MAX_FILE_SIZE_TO_UPLOAD_IN_MB = 100;
-
   const uploadImagesHandler = () => {
     const imageToUpload = selectedImages.find((selectedImage) => {
       const uploadedImage = imageUploads.find(
@@ -334,23 +324,8 @@ const MessageInputWithContext = <
       );
       return !uploadedImage;
     });
-    // Check if the file size of the image exceeds the threshold of 100MB
-    if (
-      imageToUpload &&
-      Number(imageToUpload.size) / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB
-    ) {
-      Alert.alert(
-        t(
-          `Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.`,
-          { MAX_FILE_SIZE_TO_UPLOAD_IN_MB },
-        ),
-      );
-      setSelectedImages(
-        selectedImages.filter((selectedImage) => selectedImage.uri !== imageToUpload.uri),
-      );
-    } else {
-      if (imageToUpload) uploadNewImage(imageToUpload);
-    }
+
+    if (imageToUpload) uploadNewImage(imageToUpload);
   };
 
   const removeImagesHandler = () => {
@@ -386,23 +361,7 @@ const MessageInputWithContext = <
         );
         return !uploadedFile;
       });
-      // Check if the file size exceeds the threshold of 100MB
-      if (
-        fileToUpload &&
-        Number(fileToUpload.size) / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB
-      ) {
-        Alert.alert(
-          t(
-            `Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.`,
-            { MAX_FILE_SIZE_TO_UPLOAD_IN_MB },
-          ),
-        );
-        setSelectedFiles(
-          selectedFiles.filter((selectedFile) => selectedFile.uri !== fileToUpload.uri),
-        );
-      } else {
-        if (fileToUpload) uploadNewFile(fileToUpload);
-      }
+      if (fileToUpload) uploadNewFile(fileToUpload);
     } else {
       /** User de-selected a video in bottom sheet attachment picker */
       const filesToRemove = fileUploads.filter(
