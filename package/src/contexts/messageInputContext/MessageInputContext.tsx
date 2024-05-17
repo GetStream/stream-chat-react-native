@@ -668,30 +668,17 @@ export const MessageInputProvider = <
       maxNumberOfFiles: value.maxNumberOfFiles - numberOfUploads,
     });
 
-    const MEGA_BYTES_TO_BYTES = 1024 * 1024;
-    const MAX_FILE_SIZE_TO_UPLOAD_IN_MB = 100;
-
     if (!result.cancelled && result.assets) {
-      const totalFileSize = result.assets.reduce((acc, asset) => acc + Number(asset.size), 0);
-      if (totalFileSize / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB) {
-        Alert.alert(
-          t(
-            `Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.`,
-            { MAX_FILE_SIZE_TO_UPLOAD_IN_MB },
-          ),
-        );
-      } else {
-        result.assets.forEach((asset) => {
-          /**
-           * TODO: The current tight coupling of images to the image
-           * picker does not allow images picked from the file picker
-           * to be rendered in a preview via the uploadNewImage call.
-           * This should be updated alongside allowing image a file
-           * uploads together.
-           */
-          uploadNewFile(asset);
-        });
-      }
+      result.assets.forEach((asset) => {
+        /**
+         * TODO: The current tight coupling of images to the image
+         * picker does not allow images picked from the file picker
+         * to be rendered in a preview via the uploadNewImage call.
+         * This should be updated alongside allowing image a file
+         * uploads together.
+         */
+        uploadNewFile(asset);
+      });
     }
   };
 
