@@ -21,7 +21,7 @@ import {
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
 import { useMessageDetailsForState } from './hooks/useMessageDetailsForState';
 
-import { isUploadAllowed, prettifyFileSize } from './utils/utils';
+import { isUploadAllowed, MAX_FILE_SIZE_TO_UPLOAD, prettifyFileSize } from './utils/utils';
 
 import { AudioAttachmentProps } from '../../components/Attachment/AudioAttachment';
 import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
@@ -497,7 +497,6 @@ export const MessageInputProvider = <
   } = useAttachmentPickerContext();
   const { appSettings, client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
   const { removeMessage } = useMessagesContext();
-  const MAX_FILE_SIZE_TO_UPLOAD_IN_MB = 100 * 1024 * 1024; // 100 MB
 
   const getFileUploadConfig = () => {
     const fileConfig = appSettings?.app?.file_upload_config;
@@ -1188,15 +1187,16 @@ export const MessageInputProvider = <
 
     const isAllowed = isUploadAllowed({ config: fileConfig, file });
 
-    const sizeLimit = size_limit || MAX_FILE_SIZE_TO_UPLOAD_IN_MB;
+    const sizeLimit = size_limit || MAX_FILE_SIZE_TO_UPLOAD;
 
-    if (file.size && file?.size > sizeLimit) {
+    if (file.size && file.size > sizeLimit) {
       Alert.alert(
         t('File is too large: {{ size }}, maximum upload size is {{ limit }}', {
-          limit: sizeLimit / (1024 * 1024),
+          limit: prettifyFileSize(sizeLimit),
           size: prettifyFileSize(file.size),
         }),
       );
+      console.log(selectedFiles);
       setSelectedFiles(selectedFiles.filter((selectedFile) => selectedFile.uri !== file.uri));
       return;
     }
@@ -1232,12 +1232,12 @@ export const MessageInputProvider = <
 
     const isAllowed = isUploadAllowed({ config: imageUploadConfig, file: image });
 
-    const sizeLimit = size_limit || MAX_FILE_SIZE_TO_UPLOAD_IN_MB;
+    const sizeLimit = size_limit || MAX_FILE_SIZE_TO_UPLOAD;
 
     if (image.size && image?.size > sizeLimit) {
       Alert.alert(
         t('File is too large: {{ size }}, maximum upload size is {{ limit }}', {
-          limit: sizeLimit / (1024 * 1024),
+          limit: prettifyFileSize(sizeLimit),
           size: prettifyFileSize(image.size),
         }),
       );

@@ -9,8 +9,9 @@ import { generateFileAttachment } from '../../../mock-builders/generator/attachm
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import * as NativeUtils from '../../../native';
-
 import type { DefaultStreamChatGenerics } from '../../../types/types';
+import * as AttachmentPickerContext from '../../attachmentPickerContext/AttachmentPickerContext';
+
 import {
   InputMessageInputContextValue,
   MessageInputContextValue,
@@ -51,13 +52,17 @@ describe("MessageInputContext's pickFile", () => {
       cancelled: false,
     }),
   );
+  jest.spyOn(AttachmentPickerContext, 'useAttachmentPickerContext').mockImplementation(() => ({
+    selectedFiles: [],
+    setSelectedFiles: jest.fn(),
+  }));
 
   const initialProps = {
     editing: message,
     maxNumberOfFiles: 2,
   };
 
-  it.each([[3, 1]])(
+  it.each([[3, 2]])(
     'run pickFile when numberOfUploads is %d and alert is triggered %d number of times',
     async (numberOfUploads, numberOfTimesCalled) => {
       const { rerender, result } = renderHook(() => useMessageInputContext(), {
@@ -103,6 +108,6 @@ describe("MessageInputContext's pickFile", () => {
       result.current.pickFile();
     });
 
-    expect(Alert.alert).toHaveBeenCalledTimes(1);
+    expect(Alert.alert).toHaveBeenCalledTimes(2);
   });
 });
