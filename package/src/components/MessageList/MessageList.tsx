@@ -612,14 +612,17 @@ const MessageListWithContext = <
       const isLatestMessageSetShown = !!channel.state.messageSets.find(
         (set) => set.isCurrent && set.isLatest,
       );
-      const msg = processedMessageList?.[messageArrayIndex];
+
       if (!isLatestMessageSetShown) {
+        const msg = processedMessageList?.[messageArrayIndex];
         if (
           channel.state.latestMessages.length !== 0 &&
           unreadCount > channel.state.latestMessages.length
         ) {
           return messageArrayIndex <= unreadCount - channel.state.latestMessages.length - 1;
-        } else if (lastRead && msg.created_at) {
+        }
+        // `msg` can be undefined here, hence we first check if its defined. Eg: `messageArrayIndex` is equal to processedMessageList.length.
+        else if (lastRead && msg && msg.created_at) {
           return lastRead < msg.created_at;
         }
         return false;
