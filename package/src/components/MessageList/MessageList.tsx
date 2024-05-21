@@ -622,7 +622,7 @@ const MessageListWithContext = <
           return messageArrayIndex <= unreadCount - channel.state.latestMessages.length - 1;
         }
         // The `msg` can be undefined here, since `messageArrayIndex` can be out of bounds hence we add a check for `msg`.
-        else if (lastRead && msg && msg.created_at) {
+        else if (lastRead && msg?.created_at) {
           return lastRead < msg.created_at;
         }
         return false;
