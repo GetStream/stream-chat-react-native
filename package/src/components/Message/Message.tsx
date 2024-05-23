@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 
+import { uniqBy } from 'lodash';
 import type { Attachment, UserResponse } from 'stream-chat';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
@@ -17,11 +18,7 @@ import {
   KeyboardContextValue,
   useKeyboardContext,
 } from '../../contexts/keyboardContext/KeyboardContext';
-import {
-  MessageContextValue,
-  MessageProvider,
-  Reactions,
-} from '../../contexts/messageContext/MessageContext';
+import { MessageContextValue, MessageProvider } from '../../contexts/messageContext/MessageContext';
 import {
   MessageOverlayContextValue,
   useMessageOverlayContext,
@@ -473,23 +470,25 @@ const MessageWithContext = <
 
   const clientId = client.userID;
 
-  const reactions = hasReactions
-    ? supportedReactions.reduce((acc, cur) => {
-        const reactionType = cur.type;
-        const reactionsOfReactionType = message.latest_reactions?.filter(
-          (reaction) => reaction.type === reactionType,
-        );
+  const getReactions = (reactions: typeof message.latest_reactions) => {
+    // Firstly, sort the reactions in descending order of created_at
+    const sortedReactions = reactions?.sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    );
 
-        if (reactionsOfReactionType?.length) {
-          const hasOwnReaction = reactionsOfReactionType.some(
-            (reaction) => reaction.user_id === clientId,
-          );
-          acc.push({ own: hasOwnReaction, type: reactionType });
-        }
+    // Find unique reactions by type
+    const uniqueReactions = uniqBy(sortedReactions, 'type');
 
-        return acc;
-      }, [] as Reactions)
-    : [];
+    // Assign `own` as true for reactions by the client
+    const mappedReactions = uniqueReactions.map((reaction) => ({
+      own: reaction.user_id === clientId,
+      type: reaction.type,
+    }));
+
+    return mappedReactions;
+  };
+
+  const reactions = hasReactions ? getReactions(message.latest_reactions) : [];
 
   const ownCapabilities = useOwnCapabilitiesContext();
 
