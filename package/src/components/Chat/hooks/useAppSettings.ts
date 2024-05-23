@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import type { AppSettingsAPIResponse, StreamChat } from 'stream-chat';
 
+import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 import * as dbApi from '../../../store/apis';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 export const useAppSettings = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
@@ -13,7 +15,7 @@ export const useAppSettings = <
   initialisedDatabase: boolean,
 ): AppSettingsAPIResponse | null => {
   const [appSettings, setAppSettings] = useState<AppSettingsAPIResponse | null>(null);
-  const isMounted = useRef(true);
+  const isMounted = useIsMountedRef();
 
   useEffect(() => {
     async function enforeAppSettings() {
@@ -45,10 +47,6 @@ export const useAppSettings = <
     }
 
     enforeAppSettings();
-
-    return () => {
-      isMounted.current = false;
-    };
   }, [client, isOnline, initialisedDatabase]);
 
   return appSettings;

@@ -21,6 +21,8 @@ import {
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
 import { useMessageDetailsForState } from './hooks/useMessageDetailsForState';
 
+import { isUploadAllowed, MAX_FILE_SIZE_TO_UPLOAD, prettifyFileSize } from './utils/utils';
+
 import { AudioAttachmentProps } from '../../components/Attachment/AudioAttachment';
 import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
@@ -483,33 +485,35 @@ export const MessageInputProvider = <
 }: PropsWithChildren<{
   value: InputMessageInputContextValue<StreamChatGenerics>;
 }>) => {
-  const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
-    useAttachmentPickerContext();
+  const {
+    closePicker,
+    openPicker,
+    selectedFiles,
+    selectedImages,
+    selectedPicker,
+    setSelectedFiles,
+    setSelectedImages,
+    setSelectedPicker,
+  } = useAttachmentPickerContext();
   const { appSettings, client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
   const { removeMessage } = useMessagesContext();
 
   const getFileUploadConfig = () => {
     const fileConfig = appSettings?.app?.file_upload_config;
-    if (fileConfig !== null || fileConfig !== undefined) {
+    if (fileConfig !== undefined) {
       return fileConfig;
     } else {
       return {};
     }
   };
 
-  const blockedFileExtensionTypes = getFileUploadConfig()?.blocked_file_extensions;
-  const blockedFileMimeTypes = getFileUploadConfig()?.blocked_mime_types;
-
   const getImageUploadConfig = () => {
     const imageConfig = appSettings?.app?.image_upload_config;
-    if (imageConfig !== null || imageConfig !== undefined) {
+    if (imageConfig !== undefined) {
       return imageConfig;
     }
     return {};
   };
-
-  const blockedImageExtensionTypes = getImageUploadConfig()?.blocked_file_extensions;
-  const blockedImageMimeTypes = getImageUploadConfig()?.blocked_mime_types;
 
   const channelCapabities = useOwnCapabilitiesContext();
 
@@ -663,30 +667,17 @@ export const MessageInputProvider = <
       maxNumberOfFiles: value.maxNumberOfFiles - numberOfUploads,
     });
 
-    const MEGA_BYTES_TO_BYTES = 1024 * 1024;
-    const MAX_FILE_SIZE_TO_UPLOAD_IN_MB = 100;
-
     if (!result.cancelled && result.assets) {
-      const totalFileSize = result.assets.reduce((acc, asset) => acc + Number(asset.size), 0);
-      if (totalFileSize / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB) {
-        Alert.alert(
-          t(
-            `Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.`,
-            { MAX_FILE_SIZE_TO_UPLOAD_IN_MB },
-          ),
-        );
-      } else {
-        result.assets.forEach((asset) => {
-          /**
-           * TODO: The current tight coupling of images to the image
-           * picker does not allow images picked from the file picker
-           * to be rendered in a preview via the uploadNewImage call.
-           * This should be updated alongside allowing image a file
-           * uploads together.
-           */
-          uploadNewFile(asset);
-        });
-      }
+      result.assets.forEach((asset) => {
+        /**
+         * TODO: The current tight coupling of images to the image
+         * picker does not allow images picked from the file picker
+         * to be rendered in a preview via the uploadNewImage call.
+         * This should be updated alongside allowing image a file
+         * uploads together.
+         */
+        uploadNewFile(asset);
+      });
     }
   };
 
@@ -1191,18 +1182,25 @@ export const MessageInputProvider = <
 
   const uploadNewFile = async (file: File) => {
     const id: string = generateRandomId();
+    const fileConfig = getFileUploadConfig();
+    const { size_limit } = fileConfig;
 
-    const isBlockedFileExtension: boolean | undefined = blockedFileExtensionTypes?.some(
-      (fileExtensionType: string) => file.name?.includes(fileExtensionType),
-    );
-    const isBlockedFileMimeType: boolean | undefined = blockedFileMimeTypes?.some(
-      (mimeType: string) => file.name?.includes(mimeType),
-    );
+    const isAllowed = isUploadAllowed({ config: fileConfig, file });
 
-    const fileState =
-      isBlockedFileExtension || isBlockedFileMimeType
-        ? FileState.NOT_SUPPORTED
-        : FileState.UPLOADING;
+    const sizeLimit = size_limit || MAX_FILE_SIZE_TO_UPLOAD;
+
+    if (file.size && file.size > sizeLimit) {
+      Alert.alert(
+        t('File is too large: {{ size }}, maximum upload size is {{ limit }}', {
+          limit: prettifyFileSize(sizeLimit),
+          size: prettifyFileSize(file.size),
+        }),
+      );
+      setSelectedFiles(selectedFiles.filter((selectedFile) => selectedFile.uri !== file.uri));
+      return;
+    }
+
+    const fileState = isAllowed ? FileState.UPLOADING : FileState.NOT_SUPPORTED;
 
     // If file type is explicitly provided while upload we use it, else we derive the file type.
     const fileType = file.type || file.mimeType?.split('/')[0];
@@ -1220,26 +1218,33 @@ export const MessageInputProvider = <
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
     ]);
 
-    if (!isBlockedFileExtension) {
+    if (isAllowed) {
       uploadFile({ newFile });
     }
   };
 
   const uploadNewImage = async (image: Partial<Asset>) => {
     const id = generateRandomId();
+    const imageUploadConfig = getImageUploadConfig();
 
-    const isBlockedImageMimeType = blockedImageMimeTypes?.some((mimeType: string) =>
-      image.uri?.includes(mimeType),
-    );
+    const { size_limit } = imageUploadConfig;
 
-    const isBlockedImageExtension = blockedImageExtensionTypes?.some((imageExtensionType: string) =>
-      image.uri?.includes(imageExtensionType),
-    );
+    const isAllowed = isUploadAllowed({ config: imageUploadConfig, file: image });
 
-    const imageState =
-      isBlockedImageExtension || isBlockedImageMimeType
-        ? FileState.NOT_SUPPORTED
-        : FileState.UPLOADING;
+    const sizeLimit = size_limit || MAX_FILE_SIZE_TO_UPLOAD;
+
+    if (image.size && image?.size > sizeLimit) {
+      Alert.alert(
+        t('File is too large: {{ size }}, maximum upload size is {{ limit }}', {
+          limit: prettifyFileSize(sizeLimit),
+          size: prettifyFileSize(image.size),
+        }),
+      );
+      setSelectedImages(selectedImages.filter((selectedImage) => selectedImage.uri !== image.uri));
+      return;
+    }
+
+    const imageState = isAllowed ? FileState.UPLOADING : FileState.NOT_SUPPORTED;
 
     const newImage: ImageUpload = {
       file: image,
@@ -1255,7 +1260,7 @@ export const MessageInputProvider = <
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
     ]);
 
-    if (!isBlockedImageExtension) {
+    if (isAllowed) {
       uploadImage({ newImage });
     }
   };

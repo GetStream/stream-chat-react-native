@@ -118,11 +118,20 @@ describe('MessageInputContext', () => {
     act(() => {
       result.current.uploadNewImage(
         generateImageAttachment({
+          name: 'dummy.png',
           uri: 'https://www.bastiaanmulder.nl/wp-content/uploads/2013/11/dummy-image-square.png',
         }),
       );
     });
 
+    expect(result.current.imageUploads[0].state).toBe(FileState.NOT_SUPPORTED);
+
+    act(() => {
+      result.current.uploadNewFile({
+        name: 'dummy.mp3',
+        uri: 'https://www.bastiaanmulder.nl/wp-content/uploads/2013/11/dummy.mp3',
+      });
+    });
     expect(result.current.imageUploads[0].state).toBe(FileState.NOT_SUPPORTED);
   });
 
