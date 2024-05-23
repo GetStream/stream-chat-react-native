@@ -1196,7 +1196,6 @@ export const MessageInputProvider = <
           size: prettifyFileSize(file.size),
         }),
       );
-      console.log(selectedFiles);
       setSelectedFiles(selectedFiles.filter((selectedFile) => selectedFile.uri !== file.uri));
       return;
     }
