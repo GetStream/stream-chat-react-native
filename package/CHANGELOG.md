@@ -1,5 +1,17 @@
 # Change Log
 
+## [5.31.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.30.0...v5.31.0) (2024-05-23)
+
+
+### Features
+
+* support file_size config in file and image upload ([#2517](https://github.com/GetStream/stream-chat-react-native/issues/2517)) ([d4f5449](https://github.com/GetStream/stream-chat-react-native/commit/d4f54497d9930573a9498cb8c4f953d0ef2e1abf))
+
+
+### Bug Fixes
+
+* add undefined check for message when checking for isMessageUnread ([#2518](https://github.com/GetStream/stream-chat-react-native/issues/2518)) ([b0a2ce0](https://github.com/GetStream/stream-chat-react-native/commit/b0a2ce0d6710df2085ebabf315d531eba807f6ac))
+
 ## [5.30.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.29.0...v5.30.0) (2024-05-16)
 
 
