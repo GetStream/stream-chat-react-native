@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 
-import { uniqBy } from 'lodash';
 import type { Attachment, UserResponse } from 'stream-chat';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
 import { useMessageActions } from './hooks/useMessageActions';
+import { useProcessReactions } from './hooks/useProcessReactions';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
 
 import {
@@ -465,30 +465,14 @@ const MessageWithContext = <
     }
   };
 
-  const hasReactions =
-    !isMessageTypeDeleted && !!message.latest_reactions && message.latest_reactions.length > 0;
+  const { existingReactions, hasReactions } = useProcessReactions({
+    latest_reactions: message.latest_reactions,
+    own_reactions: message.own_reactions ?? [],
+    reaction_groups: message.reaction_groups ?? {},
+    supportedReactions,
+  });
 
-  const clientId = client.userID;
-
-  const getReactions = (reactions: typeof message.latest_reactions) => {
-    // Firstly, sort the reactions in descending order of created_at
-    const sortedReactions = reactions?.sort(
-      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-    );
-
-    // Find unique reactions by type
-    const uniqueReactions = uniqBy(sortedReactions, 'type');
-
-    // Assign `own` as true for reactions by the client
-    const mappedReactions = uniqueReactions.map((reaction) => ({
-      own: reaction.user_id === clientId,
-      type: reaction.type,
-    }));
-
-    return mappedReactions;
-  };
-
-  const reactions = hasReactions ? getReactions(message.latest_reactions) : [];
+  const reactions = hasReactions ? existingReactions : [];
 
   const ownCapabilities = useOwnCapabilitiesContext();
 

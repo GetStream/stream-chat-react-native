@@ -1653,6 +1653,8 @@ const ChannelWithContext = <
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         reaction_counts,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        reaction_groups,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         reactions,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         status,
@@ -2000,6 +2002,7 @@ const ChannelWithContext = <
       },
     });
   };
+
   const deleteMessage: MessagesContextValue<StreamChatGenerics>['deleteMessage'] = async (
     message,
   ) => {

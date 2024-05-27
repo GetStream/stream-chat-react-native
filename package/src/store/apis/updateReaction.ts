@@ -53,11 +53,19 @@ export const updateReaction = ({
     );
   }
 
+  let updatedReactionGroups: string | undefined;
+  if (message.reaction_groups) {
+    const { reactionGroups } = mapMessageToStorable(message);
+    updatedReactionGroups = reactionGroups;
+    queries.push(createUpdateQuery('messages', { reactionGroups }, { id: message.id }));
+  }
+
   QuickSqliteClient.logger?.('info', 'updateReaction', {
     addedUser: storableUser,
     flush,
     updatedReaction: storableReaction,
     updatedReactionCounts,
+    updatedReactionGroups,
   });
 
   if (flush) {
