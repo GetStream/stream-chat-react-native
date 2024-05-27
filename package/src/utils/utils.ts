@@ -24,12 +24,11 @@ import type {
   SuggestionUser,
 } from '../contexts/suggestionsContext/SuggestionsContext';
 import { compiledEmojis, Emoji } from '../emoji-data';
-import type { IconProps } from '../icons/utils/base';
 import type { TableRowJoinedUser } from '../store/types';
 import type { DefaultStreamChatGenerics, ValueOf } from '../types/types';
 
 export type ReactionData = {
-  Icon: React.ComponentType<IconProps>;
+  Icon: React.ComponentType;
   type: string;
 };
 

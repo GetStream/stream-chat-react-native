@@ -1,4 +1,6 @@
-import { ComponentType, useCallback, useMemo } from 'react';
+import { ComponentType, useMemo } from 'react';
+
+import { ReactionResponse } from 'stream-chat';
 
 import { useMessageContext } from '../../../contexts/messageContext/MessageContext';
 import {
@@ -6,6 +8,7 @@ import {
   useMessagesContext,
 } from '../../../contexts/messagesContext/MessagesContext';
 import { DefaultStreamChatGenerics } from '../../../types/types';
+import { ReactionData } from '../../../utils/utils';
 import { ReactionListProps } from '../MessageSimple/ReactionList';
 
 export type ReactionSummary = {
@@ -39,6 +42,32 @@ export const defaultReactionsSort: ReactionsComparator = (a, b) => {
   return a.type.localeCompare(b.type, 'en');
 };
 
+const isOwnReaction = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  reactionType: string,
+  ownReactions?: ReactionResponse<StreamChatGenerics>[] | null,
+) => (ownReactions ? ownReactions.some((reaction) => reaction.type === reactionType) : false);
+
+const isSupportedReaction = (reactionType: string, supportedReactions: ReactionData[]) =>
+  supportedReactions
+    ? supportedReactions.some((reactionOption) => reactionOption.type === reactionType)
+    : false;
+
+const getEmojiByReactionType = (reactionType: string, supportedReactions: ReactionData[]) =>
+  supportedReactions.find(({ type }) => type === reactionType)?.Icon ?? null;
+
+const getLatestReactedUserNames = (reactionType: string, latestReactions?: ReactionResponse[]) =>
+  latestReactions
+    ? latestReactions.flatMap((reaction) => {
+        if (reactionType && reactionType === reaction.type) {
+          const username = reaction.user?.name || reaction.user?.id;
+          return username ? [username] : [];
+        }
+        return [];
+      })
+    : [];
+
 export const useProcessReactions = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
@@ -56,53 +85,24 @@ export const useProcessReactions = <
   const { supportedReactions: contextSupportedReactions } = useMessagesContext();
   const supportedReactions = propSupportedReactions || contextSupportedReactions;
   const latestReactions = propLatestReactions || message.latest_reactions;
-  const ownReactions = propOwnReactions || message?.own_reactions;
-  const reactionGroups = propReactionGroups || message?.reaction_groups;
+  const ownReactions = propOwnReactions || message.own_reactions;
+  const reactionGroups = propReactionGroups || message.reaction_groups;
   const sortReactions = propSortReactions || defaultReactionsSort;
 
-  const isOwnReaction = useCallback(
-    (reactionType: string) =>
-      ownReactions?.some((reaction) => reaction.type === reactionType) ?? false,
-    [ownReactions],
-  );
-
-  const getEmojiByReactionType = useCallback(
-    (reactionType: string) =>
-      supportedReactions.find(({ type }) => type === reactionType)?.Icon ?? null,
-    [supportedReactions],
-  );
-
-  const isSupportedReaction = useCallback(
-    (reactionType: string) =>
-      supportedReactions.some((reactionOption) => reactionOption.type === reactionType),
-    [supportedReactions],
-  );
-
-  const getLatestReactedUserNames = useCallback(
-    (reactionType?: string) =>
-      latestReactions?.flatMap((reaction) => {
-        if (reactionType && reactionType === reaction.type) {
-          const username = reaction.user?.name || reaction.user?.id;
-          return username ? [username] : [];
-        }
-        return [];
-      }) ?? [],
-    [latestReactions],
-  );
-
-  const existingReactions = useMemo(() => {
-    if (!reactionGroups) return [];
+  const { existingReactions, hasReactions, totalReactionCount } = useMemo(() => {
+    if (!reactionGroups)
+      return { existingReactions: [], hasReactions: false, totalReactionCount: 0 };
     const unsortedReactions = Object.entries(reactionGroups).flatMap(
       ([reactionType, { count, first_reaction_at, last_reaction_at }]) => {
-        if (count === 0 || !isSupportedReaction(reactionType)) return [];
+        if (count === 0 || !isSupportedReaction(reactionType, supportedReactions)) return [];
 
-        const latestReactedUserNames = getLatestReactedUserNames(reactionType);
+        const latestReactedUserNames = getLatestReactedUserNames(reactionType, latestReactions);
 
         return {
           count,
           firstReactionAt: first_reaction_at ? new Date(first_reaction_at) : null,
-          Icon: getEmojiByReactionType(reactionType),
-          isOwnReaction: isOwnReaction(reactionType),
+          Icon: getEmojiByReactionType(reactionType, supportedReactions),
+          isOwnReaction: isOwnReaction<StreamChatGenerics>(reactionType, ownReactions),
           lastReactionAt: last_reaction_at ? new Date(last_reaction_at) : null,
           latestReactedUserNames,
           type: reactionType,
@@ -111,7 +111,11 @@ export const useProcessReactions = <
       },
     );
 
-    return unsortedReactions.sort(sortReactions);
+    return {
+      existingReactions: unsortedReactions.sort(sortReactions),
+      hasReactions: unsortedReactions.length > 0,
+      totalReactionCount: unsortedReactions.reduce((total, { count }) => total + count, 0),
+    };
   }, [
     getEmojiByReactionType,
     getLatestReactedUserNames,
@@ -120,13 +124,6 @@ export const useProcessReactions = <
     reactionGroups,
     sortReactions,
   ]);
-
-  const hasReactions = existingReactions.length > 0;
-
-  const totalReactionCount = useMemo(
-    () => existingReactions.reduce((total, { count }) => total + count, 0),
-    [existingReactions],
-  );
 
   return { existingReactions, hasReactions, totalReactionCount };
 };
