@@ -64,10 +64,10 @@ export type ReactionListPropsWithContext<
     /** An array of the reaction objects to display in the list */
     latest_reactions?: ReactionResponse<StreamChatGenerics>[];
     /** An array of the own reaction objects to distinguish own reactions visually */
-    own_reactions?: ReactionResponse<StreamChatGenerics>[];
+    own_reactions?: ReactionResponse<StreamChatGenerics>[] | null;
     radius?: number; // not recommended to change this
     /** An object containing summary for each reaction type on a message */
-    reaction_groups?: Record<string, ReactionGroupResponse>;
+    reaction_groups?: Record<string, ReactionGroupResponse> | null;
     reactionSize?: number;
     stroke?: string;
     strokeSize?: number; // not recommended to change this

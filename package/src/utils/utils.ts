@@ -614,7 +614,9 @@ export const stringifyMessage = <
   type,
   updated_at,
 }: FormatMessageResponse<StreamChatGenerics> | MessageType<StreamChatGenerics>): string =>
-  `${type}${deleted_at}${latest_reactions ? latest_reactions.map(({ type }) => type).join() : ''}${
+  `${
+    latest_reactions ? latest_reactions.map(({ type, user }) => `${type}${user?.id}`).join() : ''
+  }${
     reaction_groups
       ? Object.entries(reaction_groups)
           .flatMap(
@@ -623,7 +625,7 @@ export const stringifyMessage = <
           )
           .join()
       : ''
-  }${text}${readBy}${reply_count}${status}${updated_at}`;
+  }${type}${deleted_at}${text}${readBy}${reply_count}${status}${updated_at}`;
 
 /**
  * Reduces a list of messages to strings that are used in useEffect & useMemo

@@ -2,7 +2,6 @@ import { ComponentType, useMemo } from 'react';
 
 import { ReactionResponse } from 'stream-chat';
 
-import { useMessageContext } from '../../../contexts/messageContext/MessageContext';
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -30,7 +29,7 @@ type UseProcessReactionsParams<
   ReactionListProps<StreamChatGenerics>,
   'own_reactions' | 'reaction_groups' | 'latest_reactions'
 > &
-  Pick<MessagesContextValue<StreamChatGenerics>, 'supportedReactions'> & {
+  Partial<Pick<MessagesContextValue<StreamChatGenerics>, 'supportedReactions'>> & {
     sortReactions?: ReactionsComparator;
   };
 
@@ -73,36 +72,30 @@ export const useProcessReactions = <
 >(
   props: UseProcessReactionsParams<StreamChatGenerics>,
 ) => {
+  const { supportedReactions: contextSupportedReactions } = useMessagesContext();
+
   const {
-    latest_reactions: propLatestReactions,
-    own_reactions: propOwnReactions,
-    reaction_groups: propReactionGroups,
-    sortReactions: propSortReactions,
-    supportedReactions: propSupportedReactions,
+    latest_reactions,
+    own_reactions,
+    reaction_groups,
+    sortReactions = defaultReactionsSort,
+    supportedReactions = contextSupportedReactions,
   } = props;
 
-  const { message } = useMessageContext();
-  const { supportedReactions: contextSupportedReactions } = useMessagesContext();
-  const supportedReactions = propSupportedReactions || contextSupportedReactions;
-  const latestReactions = propLatestReactions || message.latest_reactions;
-  const ownReactions = propOwnReactions || message.own_reactions;
-  const reactionGroups = propReactionGroups || message.reaction_groups;
-  const sortReactions = propSortReactions || defaultReactionsSort;
-
-  const { existingReactions, hasReactions, totalReactionCount } = useMemo(() => {
-    if (!reactionGroups)
+  return useMemo(() => {
+    if (!reaction_groups)
       return { existingReactions: [], hasReactions: false, totalReactionCount: 0 };
-    const unsortedReactions = Object.entries(reactionGroups).flatMap(
+    const unsortedReactions = Object.entries(reaction_groups).flatMap(
       ([reactionType, { count, first_reaction_at, last_reaction_at }]) => {
         if (count === 0 || !isSupportedReaction(reactionType, supportedReactions)) return [];
 
-        const latestReactedUserNames = getLatestReactedUserNames(reactionType, latestReactions);
+        const latestReactedUserNames = getLatestReactedUserNames(reactionType, latest_reactions);
 
         return {
           count,
           firstReactionAt: first_reaction_at ? new Date(first_reaction_at) : null,
           Icon: getEmojiByReactionType(reactionType, supportedReactions),
-          isOwnReaction: isOwnReaction<StreamChatGenerics>(reactionType, ownReactions),
+          isOwnReaction: isOwnReaction<StreamChatGenerics>(reactionType, own_reactions),
           lastReactionAt: last_reaction_at ? new Date(last_reaction_at) : null,
           latestReactedUserNames,
           type: reactionType,
@@ -116,14 +109,5 @@ export const useProcessReactions = <
       hasReactions: unsortedReactions.length > 0,
       totalReactionCount: unsortedReactions.reduce((total, { count }) => total + count, 0),
     };
-  }, [
-    getEmojiByReactionType,
-    getLatestReactedUserNames,
-    isOwnReaction,
-    isSupportedReaction,
-    reactionGroups,
-    sortReactions,
-  ]);
-
-  return { existingReactions, hasReactions, totalReactionCount };
+  }, [reaction_groups, own_reactions?.length, latest_reactions?.length, sortReactions]);
 };

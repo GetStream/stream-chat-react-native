@@ -466,10 +466,9 @@ const MessageWithContext = <
   };
 
   const { existingReactions, hasReactions } = useProcessReactions({
-    latest_reactions: message.latest_reactions ?? [],
-    own_reactions: message.own_reactions ?? [],
-    reaction_groups: message.reaction_groups ?? {},
-    supportedReactions,
+    latest_reactions: message.latest_reactions,
+    own_reactions: message.own_reactions,
+    reaction_groups: message.reaction_groups,
   });
 
   const reactions = hasReactions ? existingReactions : [];
