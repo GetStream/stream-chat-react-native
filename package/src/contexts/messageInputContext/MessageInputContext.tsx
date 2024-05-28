@@ -329,7 +329,6 @@ export type InputMessageInputContextValue<
   MoreOptionsButton: React.ComponentType<MoreOptionsButtonProps<StreamChatGenerics>>;
   /** Limit on the number of lines in the text input before scrolling */
   numberOfLines: number;
-  quotedMessage: boolean | MessageType<StreamChatGenerics>;
   /**
    * Custom UI component for send button.
    *
@@ -455,6 +454,7 @@ export type InputMessageInputContextValue<
    * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
    */
   onChangeText?: (newText: string) => void;
+  quotedMessage?: MessageType<StreamChatGenerics>;
   SendMessageDisallowedIndicator?: React.ComponentType;
   /**
    * ref for input setter function
@@ -915,8 +915,7 @@ export const MessageInputProvider = <
           mentioned_users: uniq(mentionedUsers),
           /** Parent message id - in case of thread */
           parent_id: thread?.id,
-          quoted_message_id:
-            typeof value.quotedMessage === 'boolean' ? undefined : value.quotedMessage.id,
+          quoted_message_id: value.quotedMessage ? value.quotedMessage.id : undefined,
           show_in_channel: sendThreadMessageInChannel || undefined,
           text: prevText,
           ...customMessageData,
@@ -956,8 +955,7 @@ export const MessageInputProvider = <
           attachments,
           mentioned_users: [],
           parent_id: thread?.id,
-          quoted_message_id:
-            typeof value.quotedMessage === 'boolean' ? undefined : value.quotedMessage.id,
+          quoted_message_id: value.quotedMessage ? value.quotedMessage.id : undefined,
           show_in_channel: sendThreadMessageInChannel || undefined,
           text: '',
         } as unknown as Partial<StreamMessage<StreamChatGenerics>>);
