@@ -28,6 +28,7 @@ import type { MessageType } from '../../MessageList/hooks/useMessageList';
 
 type MessageFooterComponentProps = {
   date?: string | Date;
+  formattedDate?: string | Date;
   isDeleted?: boolean;
 };
 
@@ -89,6 +90,7 @@ const MessageFooterWithContext = <
     alignment,
     date,
     deletedMessagesVisibilityType,
+    formattedDate,
     isDeleted,
     isEditedMessageOpen,
     lastGroupMessage,
@@ -116,7 +118,7 @@ const MessageFooterWithContext = <
         {deletedMessagesVisibilityType === 'sender' && (
           <OnlyVisibleToYouComponent alignment={alignment} />
         )}
-        <MessageTimestamp format='LT' timestamp={date} />
+        <MessageTimestamp format='LT' formattedDate={formattedDate} timestamp={date} />
       </View>
     );
   }
@@ -135,7 +137,7 @@ const MessageFooterWithContext = <
           <Text style={[styles.text, { color: grey }, messageUser]}>{message.user.name}</Text>
         ) : null}
         {showMessageStatus && <MessageStatus />}
-        <MessageTimestamp format='LT' timestamp={date} />
+        <MessageTimestamp format='LT' formattedDate={formattedDate} timestamp={date} />
 
         {isEditedMessage(message) && !isEditedMessageOpen && (
           <>
@@ -157,7 +159,9 @@ const MessageFooterWithContext = <
           </>
         )}
       </View>
-      {isEditedMessageOpen && <MessageEditedTimestamp format='LT' timestamp={date} />}
+      {isEditedMessageOpen && (
+        <MessageEditedTimestamp format='LT' formattedDate={formattedDate} timestamp={date} />
+      )}
     </>
   );
 };
@@ -169,6 +173,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const {
     alignment: prevAlignment,
     date: prevDate,
+    formattedDate: prevFormattedDate,
     isEditedMessageOpen: prevIsEditedMessageOpen,
     lastGroupMessage: prevLastGroupMessage,
     members: prevMembers,
@@ -179,6 +184,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const {
     alignment: nextAlignment,
     date: nextDate,
+    formattedDate: nextFormattedDate,
     isEditedMessageOpen: nextIsEditedMessageOpen,
     lastGroupMessage: nextLastGroupMessage,
     members: nextMembers,
@@ -225,6 +231,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const dateEqual = prevDate === nextDate;
   if (!dateEqual) return false;
+
+  const formattedDateEqual = prevFormattedDate === nextFormattedDate;
+  if (!formattedDateEqual) return false;
 
   return true;
 };
