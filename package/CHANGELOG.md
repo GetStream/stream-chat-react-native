@@ -1,5 +1,12 @@
 # Change Log
 
+### [5.31.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.31.0...v5.31.1) (2024-05-28)
+
+
+### Bug Fixes
+
+* add back formattedDate prop to MessageFooter ([#2528](https://github.com/GetStream/stream-chat-react-native/issues/2528)) ([e553d50](https://github.com/GetStream/stream-chat-react-native/commit/e553d50bdbfa91455bb27c2eda58cfaaf1aca873))
+
 ## [5.31.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.30.0...v5.31.0) (2024-05-23)
 
 
