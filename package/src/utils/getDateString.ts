@@ -39,7 +39,7 @@ export function getDateString({
   format,
   formatDate,
   tDateTimeParser,
-}: DateFormatterOptions): string | Date | undefined {
+}: DateFormatterOptions): string | number | undefined {
   if (!date || (typeof date === 'string' && !Date.parse(date))) {
     return;
   }
