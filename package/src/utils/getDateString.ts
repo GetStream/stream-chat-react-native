@@ -39,9 +39,9 @@ export function getDateString({
   format,
   formatDate,
   tDateTimeParser,
-}: DateFormatterOptions): string | number | null {
+}: DateFormatterOptions): string | number | undefined {
   if (!date || (typeof date === 'string' && !Date.parse(date))) {
-    return null;
+    return;
   }
 
   if (typeof formatDate === 'function') {
@@ -50,7 +50,7 @@ export function getDateString({
 
   if (!tDateTimeParser) {
     console.log(noParsingFunctionWarning);
-    return null;
+    return;
   }
 
   const parsedTime = tDateTimeParser(date);

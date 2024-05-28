@@ -23,13 +23,25 @@ export type MessageTimestampProps = Partial<Pick<TranslationContextValue, 'tDate
    */
   formatDate?: (date: TDateTimeParserInput) => string;
   /**
+   * Already Formatted date
+   */
+  formattedDate?: string | Date;
+  /**
    * The timestamp of the message.
    */
   timestamp?: string | Date;
 };
 
 export const MessageTimestamp = (props: MessageTimestampProps) => {
-  const { calendar, format, formatDate, tDateTimeParser: propsTDateTimeParser, timestamp } = props;
+  const {
+    calendar,
+    format,
+    formatDate,
+    formattedDate,
+    tDateTimeParser: propsTDateTimeParser,
+    timestamp,
+  } = props;
+
   const {
     theme: {
       colors: { grey },
@@ -40,9 +52,15 @@ export const MessageTimestamp = (props: MessageTimestampProps) => {
   } = useTheme();
   const { tDateTimeParser: contextTDateTimeParser } = useTranslationContext();
 
+  if (formattedDate) {
+    return (
+      <Text style={[styles.text, { color: grey }, timestampText]}>{formattedDate.toString()}</Text>
+    );
+  }
+
   if (!timestamp) return null;
 
-  const formattedDate = getDateString({
+  const dateString = getDateString({
     calendar,
     date: timestamp,
     format,
@@ -50,11 +68,9 @@ export const MessageTimestamp = (props: MessageTimestampProps) => {
     tDateTimeParser: propsTDateTimeParser || contextTDateTimeParser,
   });
 
-  if (!formattedDate) return null;
+  if (!dateString) return null;
 
-  return (
-    <Text style={[styles.text, { color: grey }, timestampText]}>{formattedDate.toString()}</Text>
-  );
+  return <Text style={[styles.text, { color: grey }, timestampText]}>{dateString.toString()}</Text>;
 };
 
 const styles = StyleSheet.create({
