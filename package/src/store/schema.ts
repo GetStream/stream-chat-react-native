@@ -102,7 +102,6 @@ export const tables: Tables = {
       deletedAt: 'TEXT',
       extraData: 'TEXT',
       id: 'TEXT',
-      reactionCounts: 'TEXT',
       reactionGroups: 'TEXT',
       text: "TEXT DEFAULT ''",
       type: 'TEXT',
@@ -263,7 +262,6 @@ export type Schema = {
     deletedAt: string;
     extraData: string;
     id: string;
-    reactionCounts: string;
     reactionGroups: string;
     type: MessageLabel;
     updatedAt: string;

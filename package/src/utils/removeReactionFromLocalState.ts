@@ -46,17 +46,6 @@ export const removeReactionFromLocalState = <
     }
   }
 
-  if (message.reaction_counts?.[reactionType]) {
-    if (message.reaction_counts[reactionType] > 0) {
-      message.reaction_counts[reactionType] = message.reaction_counts[reactionType] - 1;
-      if (message.reaction_counts[reactionType] === 0) {
-        delete message.reaction_counts[reactionType];
-      }
-    } else {
-      delete message.reaction_counts[reactionType];
-    }
-  }
-
   deleteReaction({
     messageId,
     reactionType,

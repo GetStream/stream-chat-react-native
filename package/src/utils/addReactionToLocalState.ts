@@ -49,15 +49,6 @@ export const addReactionToLocalState = <
       message.latest_reactions = [];
     }
     message.latest_reactions = message.latest_reactions.filter((r) => r.user_id !== user.id);
-    if (
-      currentReaction &&
-      message.reaction_counts &&
-      message.reaction_counts[currentReaction.type] &&
-      message.reaction_counts[currentReaction.type] > 0
-    ) {
-      message.reaction_counts[currentReaction.type] =
-        message.reaction_counts[currentReaction.type] - 1;
-    }
 
     if (
       currentReaction &&
@@ -70,14 +61,6 @@ export const addReactionToLocalState = <
         message.reaction_groups[currentReaction.type].count - 1;
       message.reaction_groups[currentReaction.type].sum_scores =
         message.reaction_groups[currentReaction.type].sum_scores - 1;
-    }
-
-    if (!message.reaction_counts) {
-      message.reaction_counts = {
-        [reactionType]: 1,
-      };
-    } else {
-      message.reaction_counts[reactionType] = (message.reaction_counts?.[reactionType] || 0) + 1;
     }
 
     if (!message.reaction_groups) {
@@ -107,14 +90,6 @@ export const addReactionToLocalState = <
       }
     }
   } else {
-    if (!message.reaction_counts) {
-      message.reaction_counts = {
-        [reactionType]: 1,
-      };
-    } else {
-      message.reaction_counts[reactionType] = (message.reaction_counts?.[reactionType] || 0) + 1;
-    }
-
     if (!message.reaction_groups) {
       message.reaction_groups = {
         [reactionType]: {
