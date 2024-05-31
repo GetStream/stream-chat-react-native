@@ -36,21 +36,11 @@ export const updateReaction = ({
 
   let updatedReactionCounts: string | undefined;
 
-  if (message.reaction_counts) {
-    const { reactionCounts } = mapMessageToStorable(message);
-    updatedReactionCounts = reactionCounts;
-
-    queries.push(
-      createUpdateQuery(
-        'messages',
-        {
-          reactionCounts,
-        },
-        {
-          id: message.id,
-        },
-      ),
-    );
+  let updatedReactionGroups: string | undefined;
+  if (message.reaction_groups) {
+    const { reactionGroups } = mapMessageToStorable(message);
+    updatedReactionGroups = reactionGroups;
+    queries.push(createUpdateQuery('messages', { reactionGroups }, { id: message.id }));
   }
 
   QuickSqliteClient.logger?.('info', 'updateReaction', {
@@ -58,6 +48,7 @@ export const updateReaction = ({
     flush,
     updatedReaction: storableReaction,
     updatedReactionCounts,
+    updatedReactionGroups,
   });
 
   if (flush) {
