@@ -32,37 +32,37 @@ export const useFetchReactions = <
 
   const sortString = useMemo(() => JSON.stringify(sort), [sort]);
 
-  const loadOfflineReactions = () => {
-    if (!messageId) return;
-    const reactionsFromDB = getReactionsForFilterSort({
-      currentMessageId: messageId,
-      filters: reactionType ? { type: reactionType } : {},
-      sort,
-    });
-    if (reactionsFromDB) {
-      setReactions(reactionsFromDB);
-      setLoading(false);
-      setHasNextPage(false);
-    }
-  };
-
-  const loadOnlineReactions = async () => {
-    if (!messageId) return;
-    const response = await client.queryReactions(
-      messageId,
-      reactionType ? { type: reactionType } : {},
-      sort,
-      { limit, next },
-    );
-    if (response) {
-      setNext(response.next);
-      setHasNextPage(response.next !== undefined);
-      setReactions((prevReactions) => [...prevReactions, ...response.reactions]);
-      setLoading(false);
-    }
-  };
-
   const fetchReactions = useCallback(async () => {
+    const loadOfflineReactions = () => {
+      if (!messageId) return;
+      const reactionsFromDB = getReactionsForFilterSort({
+        currentMessageId: messageId,
+        filters: reactionType ? { type: reactionType } : {},
+        sort,
+      });
+      if (reactionsFromDB) {
+        setReactions(reactionsFromDB);
+        setLoading(false);
+        setHasNextPage(false);
+      }
+    };
+
+    const loadOnlineReactions = async () => {
+      if (!messageId) return;
+      const response = await client.queryReactions(
+        messageId,
+        reactionType ? { type: reactionType } : {},
+        sort,
+        { limit, next },
+      );
+      if (response) {
+        setNext(response.next);
+        setHasNextPage(response.next !== undefined);
+        setReactions((prevReactions) => [...prevReactions, ...response.reactions]);
+        setLoading(false);
+      }
+    };
+
     try {
       if (enableOfflineSupport) {
         loadOfflineReactions();
