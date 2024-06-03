@@ -1,5 +1,11 @@
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
+import {
+  FlatList as FlatListDefault,
+  KeyboardAvoidingViewProps,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
@@ -74,7 +80,7 @@ import {
   ThumbsUpReaction,
   WutReaction,
 } from '../../icons';
-import { FlatList as FlatListDefault, pickDocument } from '../../native';
+import { pickDocument } from '../../native';
 import * as dbApi from '../../store/apis';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';

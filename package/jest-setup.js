@@ -1,5 +1,5 @@
 /* global require */
-import { FlatList, View } from 'react-native';
+import { View } from 'react-native';
 
 import mockRNCNetInfo from '@react-native-community/netinfo/jest/netinfo-mock.js';
 
@@ -21,7 +21,6 @@ registerNativeHandlers({
   },
   compressImage: () => null,
   deleteFile: () => null,
-  FlatList,
   getLocalAssetUri: () => null,
   getPhotos: () => null,
   NetInfo: {

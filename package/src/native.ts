@@ -1,5 +1,5 @@
 import type React from 'react';
-import { FlatList as DefaultFlatList, StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, ViewStyle } from 'react-native';
 
 import type { NetInfoSubscription } from '@react-native-community/netinfo';
 
@@ -50,8 +50,6 @@ type NetInfo = {
   addEventListener: (listener: (isConnected: boolean) => void) => NetInfoSubscription | never;
   fetch: (requestedInterface?: string | undefined) => Promise<boolean> | never;
 };
-
-export let FlatList = DefaultFlatList;
 
 export let NetInfo: NetInfo = {
   addEventListener: fail,
@@ -287,7 +285,6 @@ type Handlers = {
   Audio?: AudioType;
   compressImage?: CompressImage;
   deleteFile?: DeleteFile;
-  FlatList?: typeof DefaultFlatList;
   getLocalAssetUri?: GetLocalAssetUri;
   getPhotos?: GetPhotos;
   iOS14RefreshGallerySelection?: iOS14RefreshGallerySelection;
@@ -317,9 +314,6 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     deleteFile = handlers.deleteFile;
   }
 
-  if (handlers.FlatList) {
-    FlatList = handlers.FlatList;
-  }
   if (handlers.NetInfo) {
     NetInfo = handlers.NetInfo;
   }
