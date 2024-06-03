@@ -31,11 +31,11 @@ const client = StreamChat.getInstance('api_key');
 **Usage of `StreamChat.getInstance()` available since stream-chat@2.12.0.**
 
 <br />
-This new Singleton pattern allows you to instantiate a unique StreamChat client, i.e create a StreamChat instance and retrieve
-it wherever you need it on your app to perform API calls. After calling it once, any following <code>
+This new Singleton pattern allows you to instantiate a unique StreamChat client, i.e create a StreamChat instance and
+retrieve it wherever you need it on your app to perform API calls. After calling it once, any following <code>
   getInstance
-</code> call will return the initial StreamChat instance. This will prevent you from accidentally creating multiple StreamChat
-instances, opening multiple WebSockets, and driving up your concurrent connections unnecessarily.
+</code> call will return the initial StreamChat instance. This will prevent you from accidentally creating multiple
+StreamChat instances, opening multiple WebSockets, and driving up your concurrent connections unnecessarily.
 <br />
 <br />
 
