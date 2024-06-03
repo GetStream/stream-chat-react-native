@@ -15,14 +15,15 @@
   "peerDependencies": {
     "@react-native-community/netinfo": ">=6.0.0",
     "expo": ">=44.0.0",
+    "expo-av": "*",
+    "expo-clipboard": "*",
     "expo-document-picker": "*",
     "expo-file-system": "*",
     "expo-haptics": "*",
     "expo-image-manipulator": "*",
     "expo-image-picker": ">=14.1.0",
     "expo-media-library": "*",
-    "expo-sharing": "*",
-    "expo-av": "*"
+    "expo-sharing": "*"
   },
   "peerDependenciesMeta": {
     "expo-av": {
