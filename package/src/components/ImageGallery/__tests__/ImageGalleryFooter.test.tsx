@@ -29,10 +29,6 @@ jest.mock('../../../native.ts', () => {
   return {
     deleteFile: jest.fn(),
     isVideoPackageAvailable: jest.fn(() => true),
-    NetInfo: {
-      addEventListener: jest.fn(),
-      fetch: jest.fn(),
-    },
     saveFile: jest.fn(),
     shareImage: jest.fn(),
     Video: View,
