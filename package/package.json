@@ -81,7 +81,7 @@
     "stream-chat": "8.31.0"
   },
   "peerDependencies": {
-    "@react-native-community/netinfo": ">=11.3.2",
+    "@react-native-community/netinfo": ">=11.3.1",
     "react-native-quick-sqlite": ">=5.1.0",
     "react-native-svg": ">=15.1.0"
   },
