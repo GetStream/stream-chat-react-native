@@ -85,13 +85,13 @@ export const useIsOnline = <
 
     const setInitialOnlineState = async () => {
       const { isConnected } = await NetInfo.fetch();
-      setIsOnline(isConnected);
-      notifyChatClient(isConnected);
+      if (isMounted.current) {
+        setIsOnline(isConnected);
+        notifyChatClient(isConnected);
+      }
     };
 
-    if (isMounted.current) {
-      setInitialOnlineState();
-    }
+    setInitialOnlineState();
 
     const chatListeners: Array<ReturnType<StreamChat['on']>> = [];
 
