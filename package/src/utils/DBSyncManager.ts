@@ -9,7 +9,7 @@ import { addPendingTask } from '../store/apis/addPendingTask';
 
 import { deletePendingTask } from '../store/apis/deletePendingTask';
 import { getPendingTasks } from '../store/apis/getPendingTasks';
-import { QuickSqliteClient } from '../store/QuickSqliteClient';
+import { SqliteClient } from '../store/SqliteClient';
 import type { PendingTask, PreparedQueries } from '../store/types';
 import type { DefaultStreamChatGenerics } from '../types/types';
 
@@ -112,7 +112,7 @@ export class DBSyncManager {
       if (diff > 30) {
         // stream backend will send an error if we try to sync after 30 days.
         // In that case reset the entire DB and start fresh.
-        QuickSqliteClient.resetDB();
+        SqliteClient.resetDB();
       } else {
         try {
           const result = await this.client.sync(cids, lastSyncedAtDate.toISOString());
@@ -122,12 +122,12 @@ export class DBSyncManager {
           }, []);
 
           if (queries.length) {
-            QuickSqliteClient.executeSqlBatch(queries);
+            SqliteClient.executeSqlBatch(queries);
           }
         } catch (e) {
           // Error will be raised by the sync API if there are too many events.
           // In that case reset the entire DB and start fresh.
-          QuickSqliteClient.resetDB();
+          SqliteClient.resetDB();
         }
       }
     }

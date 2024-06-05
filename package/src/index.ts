@@ -22,7 +22,7 @@ export { default as ruTranslations } from './i18n/ru.json';
 export { default as trTranslations } from './i18n/tr.json';
 export { default as heTranslations } from './i18n/he.json';
 
-export { QuickSqliteClient } from './store/QuickSqliteClient';
+export { SqliteClient } from './store/SqliteClient';
 export { version } from './version.json';
 
 import * as OfflineStoreApis from './store/apis';

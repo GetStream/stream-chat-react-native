@@ -2092,6 +2092,11 @@
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
 
+"@op-engineering/op-sqlite@^6.0.4":
+  version "6.0.4"
+  resolved "https://registry.yarnpkg.com/@op-engineering/op-sqlite/-/op-sqlite-6.0.4.tgz#482c11e5333776707b72ac0f25ba9b9f09f2091e"
+  integrity sha512-reC9TszzU+ygH+RckXA017SeBEwzhuy/7UxLtGVtXpSlWEJp24MmMUYMcWO++OnNFHZZrpI376M09RjyQkl7xQ==
+
 "@radix-ui/react-compose-refs@1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@radix-ui/react-compose-refs/-/react-compose-refs-1.0.0.tgz#37595b1f16ec7f228d698590e78eeed18ff218ae"
@@ -6658,11 +6663,6 @@ react-native-markdown-package@1.8.2:
     lodash "^4.17.15"
     react-native-lightbox "^0.7.0"
     simple-markdown "^0.7.1"
-
-react-native-quick-sqlite@^8.0.6:
-  version "8.0.6"
-  resolved "https://registry.yarnpkg.com/react-native-quick-sqlite/-/react-native-quick-sqlite-8.0.6.tgz#ac1b662efe5641bc51eb7a8ee8ffac8af29532c4"
-  integrity sha512-XtwXnfZ1a6zRzAHoWFyVJsP3p8etx3/xww1oFKGdiOSj054PdYIeup9A53rtQ6ENyg+aqSKOgmxoN/PetulGOQ==
 
 react-native-reanimated@~3.6.2:
   version "3.6.3"

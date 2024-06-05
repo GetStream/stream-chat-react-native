@@ -1,4 +1,4 @@
-import { QuickSqliteClient } from '../../QuickSqliteClient';
+import { SqliteClient } from '../../SqliteClient';
 import { tables } from '../../schema';
 import type { TableRowJoinedUser } from '../../types';
 
@@ -11,11 +11,11 @@ export const selectReadsForChannels = (cids: string[]): TableRowJoinedUser<'read
     .map((name) => `'${name}', b.${name}`)
     .join(', ');
 
-  QuickSqliteClient.logger?.('info', 'selectReadsForChannels', {
+  SqliteClient.logger?.('info', 'selectReadsForChannels', {
     cids,
   });
 
-  const result = QuickSqliteClient.executeSql(
+  const result = SqliteClient.executeSql(
     `SELECT
       json_object(
         'user', json_object(
@@ -26,7 +26,7 @@ export const selectReadsForChannels = (cids: string[]): TableRowJoinedUser<'read
     FROM reads a
     LEFT JOIN
       users b
-    ON b.id = a.userId 
+    ON b.id = a.userId
     WHERE a.cid in (${questionMarks})`,
     cids,
   );

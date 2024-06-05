@@ -1,4 +1,4 @@
-import { QuickSqliteClient } from '../../QuickSqliteClient';
+import { SqliteClient } from '../../SqliteClient';
 import { createSelectQuery } from '../../sqlite-utils/createSelectQuery';
 import type { TableRowJoinedUser } from '../../types';
 
@@ -15,11 +15,11 @@ export const selectChannels = ({
       : undefined,
   );
 
-  QuickSqliteClient.logger?.('info', 'selectChannels', {
+  SqliteClient.logger?.('info', 'selectChannels', {
     channelIds,
   });
 
-  const result = QuickSqliteClient.executeSql.apply(null, query);
+  const result = SqliteClient.executeSql.apply(null, query);
 
   if (channelIds) {
     return result.sort(

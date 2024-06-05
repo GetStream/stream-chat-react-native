@@ -1,6 +1,6 @@
 import type { AppSettingsAPIResponse } from 'stream-chat';
 
-import { QuickSqliteClient } from '../QuickSqliteClient';
+import { SqliteClient } from '../SqliteClient';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 
 export const upsertAppSettings = ({
@@ -18,13 +18,13 @@ export const upsertAppSettings = ({
     userId: currentUserId,
   });
 
-  QuickSqliteClient.logger?.('info', 'upsertAppSettings', {
+  SqliteClient.logger?.('info', 'upsertAppSettings', {
     appSettings: storableAppSettings,
     flush,
     userId: currentUserId,
   });
 
   if (flush) {
-    QuickSqliteClient.executeSql.apply(null, query);
+    SqliteClient.executeSql.apply(null, query);
   }
 };

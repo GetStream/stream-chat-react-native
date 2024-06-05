@@ -3,7 +3,7 @@ import type { MessageResponse } from 'stream-chat';
 import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
-import { QuickSqliteClient } from '../QuickSqliteClient';
+import { SqliteClient } from '../SqliteClient';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 
 export const upsertMessages = ({
@@ -38,7 +38,7 @@ export const upsertMessages = ({
     ),
   ];
 
-  QuickSqliteClient.logger?.('info', 'upsertMessages', {
+  SqliteClient.logger?.('info', 'upsertMessages', {
     flush,
     messages: storableMessages,
     reactions: storableReactions,
@@ -46,7 +46,7 @@ export const upsertMessages = ({
   });
 
   if (flush) {
-    QuickSqliteClient.executeSqlBatch(finalQueries);
+    SqliteClient.executeSqlBatch(finalQueries);
   }
 
   return finalQueries;

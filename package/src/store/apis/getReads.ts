@@ -4,7 +4,7 @@ import { selectReadsForChannels } from './queries/selectReadsForChannels';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { mapStorableToRead } from '../mappers/mapStorableToRead';
-import { QuickSqliteClient } from '../QuickSqliteClient';
+import { SqliteClient } from '../SqliteClient';
 
 export const getReads = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -13,7 +13,7 @@ export const getReads = <
 }: {
   channelIds: string[];
 }) => {
-  QuickSqliteClient.logger?.('info', 'getReads', { channelIds });
+  SqliteClient.logger?.('info', 'getReads', { channelIds });
   const reads = selectReadsForChannels(channelIds);
   const cidVsReads: Record<string, ReadResponse<StreamChatGenerics>[]> = {};
 

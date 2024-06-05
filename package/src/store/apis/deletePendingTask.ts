@@ -1,4 +1,4 @@
-import { QuickSqliteClient } from '../QuickSqliteClient';
+import { SqliteClient } from '../SqliteClient';
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 
 export const deletePendingTask = ({ id }: { id: number }) => {
@@ -6,11 +6,11 @@ export const deletePendingTask = ({ id }: { id: number }) => {
     id,
   });
 
-  QuickSqliteClient.logger?.('info', 'deletePendingTask', {
+  SqliteClient.logger?.('info', 'deletePendingTask', {
     id,
   });
 
-  QuickSqliteClient.executeSql.apply(null, query);
+  SqliteClient.executeSql.apply(null, query);
 
   return [query];
 };

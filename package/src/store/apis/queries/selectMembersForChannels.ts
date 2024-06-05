@@ -1,6 +1,6 @@
 import type { TableRowJoinedUser } from '../../../store/types';
 
-import { QuickSqliteClient } from '../../QuickSqliteClient';
+import { SqliteClient } from '../../SqliteClient';
 import { tables } from '../../schema';
 
 export const selectMembersForChannels = (cids: string[]): TableRowJoinedUser<'members'>[] => {
@@ -12,11 +12,11 @@ export const selectMembersForChannels = (cids: string[]): TableRowJoinedUser<'me
     .map((name) => `'${name}', b.${name}`)
     .join(', ');
 
-  QuickSqliteClient.logger?.('info', 'selectMembersForChannels', {
+  SqliteClient.logger?.('info', 'selectMembersForChannels', {
     cids,
   });
 
-  const result = QuickSqliteClient.executeSql(
+  const result = SqliteClient.executeSql(
     `SELECT
       json_object(
         'user', json_object(

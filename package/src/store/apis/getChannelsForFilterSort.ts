@@ -5,7 +5,7 @@ import { selectChannelIdsForFilterSort } from './queries/selectChannelIdsForFilt
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
-import { QuickSqliteClient } from '../QuickSqliteClient';
+import { SqliteClient } from '../SqliteClient';
 
 /**
  * Gets the channels from database for given filter and sort query.
@@ -33,7 +33,7 @@ export const getChannelsForFilterSort = <
     return null;
   }
 
-  QuickSqliteClient.logger?.('info', 'getChannelsForFilterSort', { filters, sort });
+  SqliteClient.logger?.('info', 'getChannelsForFilterSort', { filters, sort });
 
   const channelIds = selectChannelIdsForFilterSort({ filters, sort });
 

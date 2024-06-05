@@ -81,11 +81,11 @@
     "stream-chat": "8.31.0"
   },
   "peerDependencies": {
-    "react-native-quick-sqlite": ">=5.1.0",
+    "@op-engineering/op-sqlite": ">=6.0.4",
     "react-native-svg": ">=15.1.0"
   },
   "peerDependenciesMeta": {
-    "react-native-quick-sqlite": {
+    "@op-engineering/op-sqlite": {
       "optional": true
     }
   },
@@ -100,6 +100,7 @@
     "@babel/preset-env": "7.13.12",
     "@babel/preset-typescript": "7.13.0",
     "@babel/runtime": "^7.20.0",
+    "@op-engineering/op-sqlite": "^6.0.4",
     "@react-native-community/eslint-config": "2.0.0",
     "@react-native-community/eslint-plugin": "1.1.0",
     "@react-native-community/netinfo": "6.0.0",
@@ -143,7 +144,6 @@
     "react-native": "0.73.6",
     "react-native-builder-bob": "0.23.1",
     "react-native-gesture-handler": "~2.8.0",
-    "react-native-quick-sqlite": "5.1.0",
     "react-native-reanimated": "3.7.0",
     "react-native-svg": "15.1.0",
     "react-test-renderer": "18.2.0",

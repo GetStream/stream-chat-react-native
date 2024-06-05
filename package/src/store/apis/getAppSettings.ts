@@ -1,6 +1,6 @@
 import type { AppSettingsAPIResponse } from 'stream-chat';
 
-import { QuickSqliteClient } from '../QuickSqliteClient';
+import { SqliteClient } from '../SqliteClient';
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
 
 export const getAppSettings = ({
@@ -8,10 +8,10 @@ export const getAppSettings = ({
 }: {
   currentUserId: string;
 }): AppSettingsAPIResponse => {
-  QuickSqliteClient.logger?.('info', 'getAppSettings', {
+  SqliteClient.logger?.('info', 'getAppSettings', {
     currentUserId,
   });
-  const result = QuickSqliteClient.executeSql.apply(
+  const result = SqliteClient.executeSql.apply(
     null,
     createSelectQuery('userSyncStatus', ['*'], {
       userId: currentUserId,

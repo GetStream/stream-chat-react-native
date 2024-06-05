@@ -10,7 +10,7 @@ import { upsertChannels } from '../../../store/apis/upsertChannels';
 import { upsertMembers } from '../../../store/apis/upsertMembers';
 import { upsertMessages } from '../../../store/apis/upsertMessages';
 import { upsertReads } from '../../../store/apis/upsertReads';
-import { QuickSqliteClient } from '../../../store/QuickSqliteClient';
+import { SqliteClient } from '../../../store/SqliteClient';
 import { createSelectQuery } from '../../../store/sqlite-utils/createSelectQuery';
 import { PreparedQueries } from '../../../store/types';
 import { DefaultStreamChatGenerics } from '../../../types/types';
@@ -33,7 +33,7 @@ export const handleEventToSyncDB = <
     const cid = event.cid || event.channel?.cid;
 
     if (!cid) return createQueries(flush);
-    const channels = QuickSqliteClient.executeSql.apply(
+    const channels = SqliteClient.executeSql.apply(
       null,
       createSelectQuery('channels', ['cid'], {
         cid,
@@ -54,7 +54,7 @@ export const handleEventToSyncDB = <
         if (channelQuery) {
           const newQueries = [...channelQuery, ...createQueries(false)];
           if (flush !== false) {
-            QuickSqliteClient.executeSqlBatch(newQueries);
+            SqliteClient.executeSqlBatch(newQueries);
           }
           return newQueries;
         } else {

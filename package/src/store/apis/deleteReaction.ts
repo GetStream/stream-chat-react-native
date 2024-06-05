@@ -1,4 +1,4 @@
-import { QuickSqliteClient } from '../QuickSqliteClient';
+import { SqliteClient } from '../SqliteClient';
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 
 export const deleteReaction = ({
@@ -18,14 +18,14 @@ export const deleteReaction = ({
     userId,
   });
 
-  QuickSqliteClient.logger?.('info', 'deleteReaction', {
+  SqliteClient.logger?.('info', 'deleteReaction', {
     messageId,
     type: reactionType,
     userId,
   });
 
   if (flush) {
-    QuickSqliteClient.executeSql.apply(null, query);
+    SqliteClient.executeSql.apply(null, query);
   }
 
   return [query];

@@ -1,12 +1,12 @@
 /* eslint-disable no-underscore-dangle */
-import type { QuickSQLite } from 'react-native-quick-sqlite';
-let sqlite: typeof QuickSQLite;
+import type { DB, OPSQLite } from '@op-engineering/op-sqlite';
+let sqlite: typeof OPSQLite;
 
 try {
-  sqlite = require('react-native-quick-sqlite').QuickSQLite;
+  sqlite = require('@op-engineering/op-sqlite');
 } catch (e) {
   // We want to throw the original error when remote debugger (e.g. Chrome) is enabled.
-  // QuickSQLite can only be used when synchronous method invocations (JSI) are possible.
+  // SQLite can only be used when synchronous method invocations (JSI) are possible.
   // e.g on-device debugger (e.g. Flipper).
   const isRemoteDebuggerError = e instanceof Error && e.message.includes('Failed to install');
   if (isRemoteDebuggerError) {
@@ -25,54 +25,68 @@ import { createCreateTableQuery } from './sqlite-utils/createCreateTableQuery';
 import type { PreparedQueries, Table } from './types';
 
 /**
- * QuickSqliteClient takes care of any direct interaction with sqlite.
- * This way usage react-native-quick-sqlite package is scoped to a single class/file.
- *
+ * SqliteClient takes care of any direct interaction with sqlite.
+ * This way usage @op-engineering/op-sqlite package is scoped to a single class/file.
  */
-export class QuickSqliteClient {
+export class SqliteClient {
   static dbVersion = 3;
 
   static dbName = DB_NAME;
   static dbLocation = DB_LOCATION;
   static logger: Logger | undefined;
+  static db: DB | undefined;
 
-  static getDbVersion = () => QuickSqliteClient.dbVersion;
+  static getDbVersion = () => SqliteClient.dbVersion;
   // Force a specific db version. This is mainly useful for testsuit.
-  static setDbVersion = (version: number) => (QuickSqliteClient.dbVersion = version);
+  static setDbVersion = (version: number) => (SqliteClient.dbVersion = version);
 
   static openDB = () => {
     try {
-      sqlite.open(QuickSqliteClient.dbName, QuickSqliteClient.dbLocation);
-      sqlite.execute(QuickSqliteClient.dbName, `PRAGMA foreign_keys = ON`, []);
+      if (sqlite === undefined) {
+        throw new Error(
+          'Please install "@op-engineering/op-sqlite" package to enable offline support',
+        );
+      }
+      this.db = sqlite.open({
+        location: SqliteClient.dbLocation,
+        name: SqliteClient.dbName,
+      });
+      this.db.execute(`PRAGMA foreign_keys = ON`, []);
     } catch (e) {
-      this.logger?.('error', `Error opening database ${QuickSqliteClient.dbName}`, {
+      this.logger?.('error', `Error opening database ${SqliteClient.dbName}`, {
         error: e,
       });
-      console.error(`Error opening database ${QuickSqliteClient.dbName}: ${e}`);
+      console.error(`Error opening database ${SqliteClient.dbName}: ${e}`);
     }
   };
 
   static closeDB = () => {
     try {
-      sqlite.close(QuickSqliteClient.dbName);
+      if (!this.db) {
+        throw new Error('DB is not open or initialized.');
+      }
+      this.db.close();
     } catch (e) {
-      this.logger?.('error', `Error closing database ${QuickSqliteClient.dbName}`, {
+      this.logger?.('error', `Error closing database ${SqliteClient.dbName}`, {
         error: e,
       });
-      console.error(`Error closing database ${QuickSqliteClient.dbName}: ${e}`);
+      console.error(`Error closing database ${SqliteClient.dbName}: ${e}`);
     }
   };
 
   static executeSqlBatch = (queries: PreparedQueries[]) => {
     if (!queries || !queries.length) return;
 
-    QuickSqliteClient.openDB();
+    SqliteClient.openDB();
     try {
-      sqlite.executeBatch(DB_NAME, queries);
+      if (!this.db) {
+        throw new Error('DB is not open or initialized.');
+      }
+      this.db.executeBatch(queries);
 
-      QuickSqliteClient.closeDB();
+      SqliteClient.closeDB();
     } catch (e) {
-      QuickSqliteClient.closeDB();
+      SqliteClient.closeDB();
       this.logger?.('error', `SqlBatch queries failed`, {
         error: e,
         queries,
@@ -83,13 +97,16 @@ export class QuickSqliteClient {
 
   static executeSql = (query: string, params?: string[]) => {
     try {
-      QuickSqliteClient.openDB();
-      const { rows } = sqlite.execute(DB_NAME, query, params);
-      QuickSqliteClient.closeDB();
+      SqliteClient.openDB();
+      if (!this.db) {
+        throw new Error('DB is not open or initialized.');
+      }
+      const { rows } = this.db.execute(query, params);
+      SqliteClient.closeDB();
 
       return rows ? rows._array : [];
     } catch (e) {
-      QuickSqliteClient.closeDB();
+      SqliteClient.closeDB();
       this.logger?.('error', `Sql single query failed`, {
         error: e,
         query,
@@ -106,20 +123,23 @@ export class QuickSqliteClient {
     this.logger?.('info', `Dropping tables`, {
       tables: Object.keys(tables),
     });
-    QuickSqliteClient.executeSqlBatch(queries);
+    SqliteClient.executeSqlBatch(queries);
   };
 
   static deleteDatabase = () => {
     this.logger?.('info', `deleteDatabase`, {
-      dbLocation: QuickSqliteClient.dbLocation,
-      dbname: QuickSqliteClient.dbName,
+      dbLocation: SqliteClient.dbLocation,
+      dbname: SqliteClient.dbName,
     });
     try {
-      sqlite.delete(QuickSqliteClient.dbName, QuickSqliteClient.dbLocation);
+      if (!this.db) {
+        throw new Error('DB is not open or initialized.');
+      }
+      this.db.delete();
     } catch (e) {
       this.logger?.('error', `Error deleting DB`, {
-        dbLocation: QuickSqliteClient.dbLocation,
-        dbname: QuickSqliteClient.dbName,
+        dbLocation: SqliteClient.dbLocation,
+        dbname: SqliteClient.dbName,
         error: e,
       });
       throw new Error(`Error deleting DB: ${e}`);
@@ -129,20 +149,15 @@ export class QuickSqliteClient {
   };
 
   static initializeDatabase = () => {
-    if (sqlite === undefined) {
-      throw new Error(
-        'Please install "react-native-quick-sqlite" package to enable offline support',
-      );
-    }
+    SqliteClient.openDB();
+    const version = SqliteClient.getUserPragmaVersion();
 
-    const version = QuickSqliteClient.getUserPragmaVersion();
-
-    if (version !== QuickSqliteClient.dbVersion) {
-      QuickSqliteClient.logger?.('info', `DB version mismatch`);
-      QuickSqliteClient.dropTables();
-      QuickSqliteClient.updateUserPragmaVersion(QuickSqliteClient.dbVersion);
+    if (version !== SqliteClient.dbVersion) {
+      SqliteClient.logger?.('info', `DB version mismatch`);
+      SqliteClient.dropTables();
+      SqliteClient.updateUserPragmaVersion(SqliteClient.dbVersion);
     }
-    QuickSqliteClient.logger?.('info', `create tables if not exists`, {
+    SqliteClient.logger?.('info', `create tables if not exists`, {
       tables: Object.keys(tables),
     });
     const q = (Object.keys(tables) as Table[]).reduce<PreparedQueries[]>(
@@ -153,35 +168,40 @@ export class QuickSqliteClient {
       [],
     );
 
-    QuickSqliteClient.executeSqlBatch(q);
+    SqliteClient.executeSqlBatch(q);
   };
 
   static updateUserPragmaVersion = (version: number) => {
-    QuickSqliteClient.logger?.('info', `updateUserPragmaVersion to ${version}`);
-    QuickSqliteClient.openDB();
-    sqlite.execute(DB_NAME, `PRAGMA user_version = ${version}`, []);
-    QuickSqliteClient.closeDB();
+    SqliteClient.logger?.('info', `updateUserPragmaVersion to ${version}`);
+    SqliteClient.openDB();
+    if (!this.db) {
+      throw new Error('DB is not open or initialized.');
+    }
+    this.db.execute(`PRAGMA user_version = ${version}`, []);
+    SqliteClient.closeDB();
   };
 
   static getUserPragmaVersion = () => {
-    QuickSqliteClient.openDB();
     try {
-      const { rows } = sqlite.execute(DB_NAME, `PRAGMA user_version`, []);
+      if (!this.db) {
+        throw new Error('DB is not open or initialized.');
+      }
+      const { rows } = this.db.execute(`PRAGMA user_version`, []);
       const result = rows ? rows._array : [];
       this.logger?.('info', `getUserPragmaVersion`, {
         result,
       });
-      QuickSqliteClient.closeDB();
+      SqliteClient.closeDB();
       return result[0].user_version as number;
     } catch (e) {
-      QuickSqliteClient.closeDB();
+      SqliteClient.closeDB();
       throw new Error(`Querying for user_version failed: ${e}`);
     }
   };
 
   static resetDB = () => {
     this.logger?.('info', `resetDB`);
-    QuickSqliteClient.dropTables();
-    QuickSqliteClient.initializeDatabase();
+    SqliteClient.dropTables();
+    SqliteClient.initializeDatabase();
   };
 }

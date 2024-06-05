@@ -1555,6 +1555,11 @@
   resolved "https://registry.yarnpkg.com/@notifee/react-native/-/react-native-7.8.2.tgz#72d3199ae830b4128ddaef3c1c2f11604759c9c4"
   integrity sha512-VG4IkWJIlOKqXwa3aExC3WFCVCGCC9BA55Ivg0SMRfEs+ruvYy/zlLANcrVGiPtgkUEryXDhA8SXx9+JcO8oLA==
 
+"@op-engineering/op-sqlite@^6.0.4":
+  version "6.0.4"
+  resolved "https://registry.yarnpkg.com/@op-engineering/op-sqlite/-/op-sqlite-6.0.4.tgz#482c11e5333776707b72ac0f25ba9b9f09f2091e"
+  integrity sha512-reC9TszzU+ygH+RckXA017SeBEwzhuy/7UxLtGVtXpSlWEJp24MmMUYMcWO++OnNFHZZrpI376M09RjyQkl7xQ==
+
 "@react-native-async-storage/async-storage@^1.21.0":
   version "1.22.2"
   resolved "https://registry.yarnpkg.com/@react-native-async-storage/async-storage/-/async-storage-1.22.2.tgz#c6f966f02cc5602e5a768c32295e8009e897c28e"
@@ -6216,11 +6221,6 @@ react-native-markdown-package@1.8.2:
     lodash "^4.17.15"
     react-native-lightbox "^0.7.0"
     simple-markdown "^0.7.1"
-
-react-native-quick-sqlite@8.0.2:
-  version "8.0.2"
-  resolved "https://registry.yarnpkg.com/react-native-quick-sqlite/-/react-native-quick-sqlite-8.0.2.tgz#67ad0a330ede647f9cd02c83115810722d5bd828"
-  integrity sha512-w5m4y0q5ggaiVS8vHmN0ihynD9hMPgLNAZJA7ZRcXs6WwR+VSW9WXUlEn1N0fgIrmoYRLNXyU5TjXx/IiKPlMA==
 
 react-native-reanimated@^3.7.0:
   version "3.7.1"
