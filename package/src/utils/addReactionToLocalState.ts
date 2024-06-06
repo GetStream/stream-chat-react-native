@@ -116,33 +116,6 @@ export const addReactionToLocalState = <
         };
       }
     }
-  } else {
-    if (!message.reaction_groups) {
-      message.reaction_groups = {
-        [reactionType]: {
-          count: 1,
-          first_reaction_at: new Date().toISOString(),
-          last_reaction_at: new Date().toISOString(),
-          sum_scores: 1,
-        },
-      };
-    } else {
-      if (!message.reaction_groups[reactionType]) {
-        message.reaction_groups[reactionType] = {
-          count: 1,
-          first_reaction_at: new Date().toISOString(),
-          last_reaction_at: new Date().toISOString(),
-          sum_scores: 1,
-        };
-      } else {
-        message.reaction_groups[reactionType] = {
-          ...message.reaction_groups[reactionType],
-          count: message.reaction_groups[reactionType].count + 1,
-          last_reaction_at: new Date().toISOString(),
-          sum_scores: message.reaction_groups[reactionType].sum_scores + 1,
-        };
-      }
-    }
 
     if (!message.reaction_groups) {
       message.reaction_groups = {
