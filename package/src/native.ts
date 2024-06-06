@@ -1,5 +1,5 @@
 import type React from 'react';
-import { FlatList as DefaultFlatList, StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, ViewStyle } from 'react-native';
 
 import type { Asset, File } from './types/types';
 
@@ -43,8 +43,6 @@ type GetPhotos = ({ after, first }: { first: number; after?: string }) =>
     }>
   | never;
 export let getPhotos: GetPhotos = fail;
-
-export let FlatList = DefaultFlatList;
 
 type PickDocument = ({ maxNumberOfFiles }: { maxNumberOfFiles?: number }) =>
   | Promise<{
@@ -275,7 +273,6 @@ type Handlers = {
   Audio?: AudioType;
   compressImage?: CompressImage;
   deleteFile?: DeleteFile;
-  FlatList?: typeof DefaultFlatList;
   getLocalAssetUri?: GetLocalAssetUri;
   getPhotos?: GetPhotos;
   iOS14RefreshGallerySelection?: iOS14RefreshGallerySelection;
@@ -302,10 +299,6 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 
   if (handlers.deleteFile) {
     deleteFile = handlers.deleteFile;
-  }
-
-  if (handlers.FlatList) {
-    FlatList = handlers.FlatList;
   }
 
   if (handlers.getLocalAssetUri) {

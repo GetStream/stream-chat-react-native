@@ -18,7 +18,6 @@
     "@react-native-community/netinfo": "^11.3.2",
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/stack": "^6.2.0",
-    "@stream-io/flat-list-mvcp": "0.10.3",
     "react": "18.2.0",
     "react-native": "^0.73.6",
     "react-native-audio-recorder-player": "3.6.6",
