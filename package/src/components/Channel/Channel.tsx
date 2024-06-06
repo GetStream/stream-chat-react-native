@@ -609,8 +609,8 @@ const ChannelWithContext = <
   const [loadingMore, setLoadingMore] = useState(false);
 
   const [loadingMoreRecent, setLoadingMoreRecent] = useState(false);
-  const [quotedMessage, setQuotedMessage] = useState<boolean | MessageType<StreamChatGenerics>>(
-    false,
+  const [quotedMessage, setQuotedMessage] = useState<MessageType<StreamChatGenerics> | undefined>(
+    undefined,
   );
   const [thread, setThread] = useState<ThreadContextValue<StreamChatGenerics>['thread']>(
     threadProps || null,
@@ -1946,7 +1946,7 @@ const ChannelWithContext = <
     () => setEditing(undefined);
 
   const clearQuotedMessageState: InputMessageInputContextValue<StreamChatGenerics>['clearQuotedMessageState'] =
-    () => setQuotedMessage(false);
+    () => setQuotedMessage(undefined);
 
   /**
    * Removes the message from local state
