@@ -11,14 +11,14 @@ import { ReactionData } from '../../../utils/utils';
 import { ReactionListProps } from '../MessageSimple/ReactionList';
 
 export type ReactionSummary = {
-  count: number;
-  firstReactionAt: Date | null;
-  Icon: ComponentType | null;
-  isOwnReaction: boolean;
-  lastReactionAt: Date | null;
-  latestReactedUserNames: string[];
+  own: boolean;
   type: string;
-  unlistedReactedUserCount: number;
+  count?: number;
+  firstReactionAt?: Date | null;
+  Icon?: ComponentType | null;
+  lastReactionAt?: Date | null;
+  latestReactedUserNames?: string[];
+  unlistedReactedUserCount?: number;
 };
 
 export type ReactionsComparator = (a: ReactionSummary, b: ReactionSummary) => number;
@@ -67,6 +67,9 @@ const getLatestReactedUserNames = (reactionType: string, latestReactions?: React
       })
     : [];
 
+/**
+ * Custom hook to process reactions data from message and return a list of reactions with additional info.
+ */
 export const useProcessReactions = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
@@ -95,9 +98,9 @@ export const useProcessReactions = <
           count,
           firstReactionAt: first_reaction_at ? new Date(first_reaction_at) : null,
           Icon: getEmojiByReactionType(reactionType, supportedReactions),
-          isOwnReaction: isOwnReaction<StreamChatGenerics>(reactionType, own_reactions),
           lastReactionAt: last_reaction_at ? new Date(last_reaction_at) : null,
           latestReactedUserNames,
+          own: isOwnReaction<StreamChatGenerics>(reactionType, own_reactions),
           type: reactionType,
           unlistedReactedUserCount: count - latestReactedUserNames.length,
         };
