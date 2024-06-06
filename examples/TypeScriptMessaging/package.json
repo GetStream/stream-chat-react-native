@@ -15,7 +15,7 @@
     "@react-native-camera-roll/camera-roll": "^5.3.1",
     "@react-native-clipboard/clipboard": "^1.10.0",
     "@react-native-community/masked-view": "0.1.11",
-    "@react-native-community/netinfo": "^11.0.1",
+    "@react-native-community/netinfo": "^11.3.2",
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/stack": "^6.2.0",
     "react": "18.2.0",

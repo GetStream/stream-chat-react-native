@@ -9,11 +9,6 @@ import { registerNativeHandlers } from './src/native';
 
 console.warn = () => {};
 
-export let netInfoFetch = jest.fn();
-
-export const setNetInfoFetchMock = (fn) => {
-  netInfoFetch = fn;
-};
 registerNativeHandlers({
   Audio: {
     startPlayer: jest.fn(),
@@ -23,14 +18,6 @@ registerNativeHandlers({
   deleteFile: () => null,
   getLocalAssetUri: () => null,
   getPhotos: () => null,
-  NetInfo: {
-    addEventListener: () => () => null,
-    fetch: () =>
-      new Promise((resolve) => {
-        resolve(true);
-        netInfoFetch();
-      }),
-  },
   oniOS14GalleryLibrarySelectionChange: () => ({
     unsubscribe: () => {},
   }),
