@@ -14,9 +14,6 @@ jest.mock('../../../native.ts', () => {
   const View = require('react-native/Libraries/Components/View/View');
   return {
     isVideoPackageAvailable: jest.fn(() => true),
-    NetInfo: {
-      addEventListener: jest.fn(),
-    },
     Video: View,
   };
 });

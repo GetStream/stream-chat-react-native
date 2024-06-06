@@ -1,8 +1,6 @@
 import type React from 'react';
 import { FlatList as DefaultFlatList, StyleProp, ViewStyle } from 'react-native';
 
-import type { NetInfoSubscription } from '@react-native-community/netinfo';
-
 import type { Asset, File } from './types/types';
 
 const fail = () => {
@@ -46,17 +44,7 @@ type GetPhotos = ({ after, first }: { first: number; after?: string }) =>
   | never;
 export let getPhotos: GetPhotos = fail;
 
-type NetInfo = {
-  addEventListener: (listener: (isConnected: boolean) => void) => NetInfoSubscription | never;
-  fetch: (requestedInterface?: string | undefined) => Promise<boolean> | never;
-};
-
 export let FlatList = DefaultFlatList;
-
-export let NetInfo: NetInfo = {
-  addEventListener: fail,
-  fetch: fail,
-};
 
 type PickDocument = ({ maxNumberOfFiles }: { maxNumberOfFiles?: number }) =>
   | Promise<{
@@ -291,7 +279,6 @@ type Handlers = {
   getLocalAssetUri?: GetLocalAssetUri;
   getPhotos?: GetPhotos;
   iOS14RefreshGallerySelection?: iOS14RefreshGallerySelection;
-  NetInfo?: NetInfo;
   oniOS14GalleryLibrarySelectionChange?: OniOS14LibrarySelectionChange;
   pickDocument?: PickDocument;
   saveFile?: SaveFile;
@@ -319,9 +306,6 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 
   if (handlers.FlatList) {
     FlatList = handlers.FlatList;
-  }
-  if (handlers.NetInfo) {
-    NetInfo = handlers.NetInfo;
   }
 
   if (handlers.getLocalAssetUri) {

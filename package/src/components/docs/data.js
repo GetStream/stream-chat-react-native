@@ -11,8 +11,7 @@ client.connectUser(
 );
 
 export const channel = client.channel('messaging', 'general', {
-  image:
-    'https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01_green.jpg',
+  image: 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01_green.jpg',
   name: 'Talk about the documentation',
 });
 
@@ -45,8 +44,7 @@ export const message = {
   attachments: [],
   command: '',
   created_at: '2019-01-25T00:18:59.675Z',
-  html:
-    '<p><a href="https://unsplash.com/photos/lxuB4abGzXc" rel="nofollow">https://unsplash.com/photos/lxuB4abGzXc</a></p>\n',
+  html: '<p><a href="https://unsplash.com/photos/lxuB4abGzXc" rel="nofollow">https://unsplash.com/photos/lxuB4abGzXc</a></p>\n',
   id: 'thierry-e298f569-8745-407f-a02b-f75c0206612f',
   own_reactions: [
     {
@@ -120,8 +118,7 @@ export const message = {
   user: {
     created_at: '2019-01-22T16:35:18.417456Z',
     id: 'thierry',
-    image:
-      'https://cdn.pixabay.com/photo/2014/03/25/16/54/user-297566__340.png',
+    image: 'https://cdn.pixabay.com/photo/2014/03/25/16/54/user-297566__340.png',
     last_active: '2019-01-25T09:23:47.108127-07:00',
     online: true,
     role: 'user',
@@ -148,17 +145,13 @@ export const messageWithImages = {
       type: 'image',
     },
     {
-      image_url:
-        'https://www.fujixpassion.com/wp-content/uploads/2016/01/Image-1-Title.jpg',
-      thumb_url:
-        'https://www.fujixpassion.com/wp-content/uploads/2016/01/Image-1-Title.jpg',
+      image_url: 'https://www.fujixpassion.com/wp-content/uploads/2016/01/Image-1-Title.jpg',
+      thumb_url: 'https://www.fujixpassion.com/wp-content/uploads/2016/01/Image-1-Title.jpg',
       type: 'image',
     },
     {
-      image_url:
-        'https://i-cdn.phonearena.com/images/articles/47012-image/photo2.jpg',
-      thumb_url:
-        'https://i-cdn.phonearena.com/images/articles/47012-image/photo2.jpg',
+      image_url: 'https://i-cdn.phonearena.com/images/articles/47012-image/photo2.jpg',
+      thumb_url: 'https://i-cdn.phonearena.com/images/articles/47012-image/photo2.jpg',
       type: 'image',
     },
   ],
@@ -238,14 +231,12 @@ export const messageWithImages = {
   user: {
     created_at: '2019-01-22T16:35:18.417456Z',
     id: 'thierry',
-    image:
-      'https://cdn.pixabay.com/photo/2014/03/25/16/54/user-297566__340.png',
+    image: 'https://cdn.pixabay.com/photo/2014/03/25/16/54/user-297566__340.png',
     last_active: '2019-01-25T09:23:47.108127-07:00',
     online: true,
     role: 'user',
     updated_at: '2019-01-25T16:23:47.052538Z',
   },
-  
 };
 
 export const messageWithUrlPreview = {
@@ -256,8 +247,7 @@ export const messageWithUrlPreview = {
       image_url:
         'https://images.unsplash.com/photo-1548256434-c7d2374b1077?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjEyMDd9',
       og_scrape_url: 'https://unsplash.com/photos/lxuB4abGzXc',
-      text:
-        'Download this photo in Addu City, Maldives by Ibrahim Shabil (@shabilphotos)',
+      text: 'Download this photo in Addu City, Maldives by Ibrahim Shabil (@shabilphotos)',
       thumb_url:
         'https://images.unsplash.com/photo-1548256434-c7d2374b1077?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjEyMDd9',
       title: 'Cosmic Home photo by Ibrahim Shabil (@shabilphotos) on Unsplash',
@@ -267,8 +257,7 @@ export const messageWithUrlPreview = {
   ],
   command: '',
   created_at: '2019-01-25T00:18:59.675Z',
-  html:
-    '<p><a href="https://unsplash.com/photos/lxuB4abGzXc" rel="nofollow">https://unsplash.com/photos/lxuB4abGzXc</a></p>\n',
+  html: '<p><a href="https://unsplash.com/photos/lxuB4abGzXc" rel="nofollow">https://unsplash.com/photos/lxuB4abGzXc</a></p>\n',
   id: 'thierry-e298f569-8745-407f-a02b-f75c0206612f',
   own_reactions: [
     {
@@ -342,8 +331,7 @@ export const messageWithUrlPreview = {
   user: {
     created_at: '2019-01-22T16:35:18.417456Z',
     id: 'thierry',
-    image:
-      'https://cdn.pixabay.com/photo/2014/03/25/16/54/user-297566__340.png',
+    image: 'https://cdn.pixabay.com/photo/2014/03/25/16/54/user-297566__340.png',
     last_active: '2019-01-25T09:23:47.108127-07:00',
     online: true,
     role: 'user',
@@ -370,8 +358,7 @@ export const thread = {
   ],
   command: '',
   created_at: '2019-01-25T21:25:45.306Z',
-  html:
-    '<p>this place looks amazing: <a href="https://unsplash.com/photos/f3hDGOHptrM" rel="nofollow">https://unsplash.com/photos/f3hDGOHptrM</a></p>\n',
+  html: '<p>this place looks amazing: <a href="https://unsplash.com/photos/f3hDGOHptrM" rel="nofollow">https://unsplash.com/photos/f3hDGOHptrM</a></p>\n',
   id: 'thierry-ec4eac2b-1278-4f49-8b20-2ebcd76dace5',
   own_reactions: [],
   reaction_counts: null,
@@ -388,7 +375,6 @@ export const thread = {
     role: 'user',
     updated_at: '2019-01-25T21:27:39.606466Z',
   },
-  
 };
 
 export const threadMessages = [
@@ -527,7 +513,7 @@ export const MessageMock = {
 
 // Based on: https://javascript.info/promise-basics#example-loadscript
 function dynamicallyLoadScript(url) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     const script = document.createElement('script');
     script.src = url;
     script.onload = resolve;
