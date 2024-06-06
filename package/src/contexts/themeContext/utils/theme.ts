@@ -1,5 +1,5 @@
-import type { ImageStyle, TextStyle, ViewStyle } from 'react-native';
-import type { CircleProps, Color, StopProps } from 'react-native-svg';
+import type { ColorValue, ImageStyle, TextStyle, ViewStyle } from 'react-native';
+import type { CircleProps, StopProps } from 'react-native-svg';
 
 import type { IconProps } from '../../../icons/utils/base';
 
@@ -96,6 +96,16 @@ export type Theme = {
     container: ViewStyle;
     icon: ViewStyle;
   };
+  audioAttachment: {
+    container: ViewStyle;
+    leftContainer: ViewStyle;
+    playPauseButton: ViewStyle;
+    progressControlContainer: ViewStyle;
+    progressDurationText: TextStyle;
+    rightContainer: ViewStyle;
+    speedChangeButton: ViewStyle;
+    speedChangeButtonText: TextStyle;
+  };
   avatar: {
     BASE_AVATAR_SIZE: number;
     container: ViewStyle;
@@ -127,7 +137,7 @@ export type Theme = {
     gradientStart: StopProps;
     gradientStop: StopProps;
     height: number;
-    maskFillColor?: Color;
+    maskFillColor?: ColorValue;
   };
   channelPreview: {
     checkAllIcon: IconProps;
@@ -230,6 +240,44 @@ export type Theme = {
     attachButton: ViewStyle;
     attachButtonContainer: ViewStyle;
     attachmentSelectionBar: ViewStyle;
+    attachmentSeparator: ViewStyle;
+    audioRecorder: {
+      arrowLeftIcon: IconProps;
+      checkContainer: ViewStyle;
+      circleStopIcon: IconProps;
+      deleteContainer: ViewStyle;
+      deleteIcon: IconProps;
+      micContainer: ViewStyle;
+      micIcon: IconProps;
+      pausedContainer: ViewStyle;
+      sendCheckIcon: IconProps;
+      slideToCancelContainer: ViewStyle;
+    };
+    audioRecordingButton: {
+      container: ViewStyle;
+      micIcon: IconProps;
+    };
+    audioRecordingInProgress: {
+      container: ViewStyle;
+      durationText: TextStyle;
+    };
+    audioRecordingLockIndicator: {
+      arrowUpIcon: IconProps;
+      container: ViewStyle;
+      lockIcon: IconProps;
+    };
+    audioRecordingPreview: {
+      container: ViewStyle;
+      currentTime: TextStyle;
+      infoContainer: ViewStyle;
+      pauseIcon: IconProps;
+      playIcon: IconProps;
+      progressBar: ViewStyle;
+    };
+    audioRecordingWaveform: {
+      container: ViewStyle;
+      waveform: ViewStyle;
+    };
     autoCompleteInputContainer: ViewStyle;
     commandsButton: ViewStyle;
     commandsButtonContainer: ViewStyle;
@@ -247,15 +295,8 @@ export type Theme = {
       editingBoxHeaderTitle: TextStyle;
     };
     fileUploadPreview: {
-      audioAttachment: {
-        progressControlView: ViewStyle;
-        progressDurationText: TextStyle;
-        roundedView: ViewStyle;
-      };
-      audioAttachmentFileContainer: ViewStyle;
       dismiss: ViewStyle;
       fileContainer: ViewStyle;
-      fileContentContainer: ViewStyle;
       filenameText: TextStyle;
       fileSizeText: TextStyle;
       fileTextContainer: ViewStyle;
@@ -268,13 +309,14 @@ export type Theme = {
     };
     imageUploadPreview: {
       dismiss: ViewStyle;
-      dismissIconColor: Color;
+      dismissIconColor: ColorValue;
       flatList: ViewStyle;
       itemContainer: ViewStyle;
       upload: ImageStyle;
     };
     inputBox: TextStyle;
     inputBoxContainer: ViewStyle;
+    micButtonContainer: ViewStyle;
     moreOptionsButton: ViewStyle;
     optionsContainer: ViewStyle;
     replyContainer: ViewStyle;
@@ -353,7 +395,7 @@ export type Theme = {
       unreadCountNotificationContainer: ViewStyle;
       unreadCountNotificationText: TextStyle;
       wrapper: ViewStyle;
-      chevronColor?: Color;
+      chevronColor?: ColorValue;
     };
     typingIndicatorContainer: ViewStyle;
   };
@@ -408,6 +450,8 @@ export type Theme = {
       deletedContainerInner: ViewStyle;
       deletedMetaText: TextStyle;
       deletedText: MarkdownStyle;
+      editedLabel: TextStyle;
+      editedTimestampContainer: ViewStyle;
       errorContainer: ViewStyle;
       errorIcon: IconProps;
       errorIconContainer: ViewStyle;
@@ -426,6 +470,9 @@ export type Theme = {
         onlyEmojiMarkdown: MarkdownStyle;
       };
       wrapper: ViewStyle;
+      receiverMessageBackgroundColor?: ColorValue;
+      senderMessageBackgroundColor?: ColorValue;
+      timestampText?: TextStyle;
     };
     file: {
       container: ViewStyle;
@@ -435,6 +482,7 @@ export type Theme = {
       title: TextStyle;
     };
     fileAttachmentGroup: {
+      attachmentContainer: ViewStyle;
       container: ViewStyle;
     };
     gallery: {
@@ -468,21 +516,23 @@ export type Theme = {
       shuffle: TextStyle;
       title: TextStyle;
     };
+    lastMessageContainer: ViewStyle;
     loadingIndicator: {
       container: ViewStyle;
       roundedView: ViewStyle;
     };
+    messageGroupedSingleOrBottomContainer: ViewStyle;
+    messageGroupedTopContainer: ViewStyle;
     pinnedHeader: {
       container: ViewStyle;
       label: TextStyle;
     };
     reactionList: {
       container: ViewStyle;
-      iconFillColor: Color;
+      iconFillColor: ColorValue;
       middleIcon: ViewStyle;
       radius: number;
       reactionBubble: ViewStyle;
-      reactionBubbleBackground: ViewStyle;
       reactionSize: number;
       strokeSize: number;
     };
@@ -529,14 +579,22 @@ export type Theme = {
       radius: number;
       reactionBubble: ViewStyle;
       reactionBubbleBackground: ViewStyle;
+      reactionBubbleBorderRadius: number;
       title: TextStyle;
     };
     reactionsList: {
       radius: number;
       reaction: ViewStyle;
       reactionList: ViewStyle;
+      reactionListBorderRadius: number;
       reactionSize: number;
     };
+  };
+  progressControl: {
+    container: ViewStyle;
+    filledColor: ColorValue;
+    filledStyles: ViewStyle;
+    thumb: ViewStyle;
   };
   reply: {
     container: ViewStyle;
@@ -544,6 +602,7 @@ export type Theme = {
     imageAttachment: ImageStyle;
     markdownStyles: MarkdownStyle;
     messageContainer: ViewStyle;
+    secondaryText: ViewStyle;
     textContainer: ViewStyle;
     videoThumbnail: {
       container: ViewStyle;
@@ -557,6 +616,7 @@ export type Theme = {
       text: TextStyle;
       backgroundGradientStart?: string;
       backgroundGradientStop?: string;
+      threadHeight?: number;
     };
   };
   typingIndicator: {
@@ -564,6 +624,11 @@ export type Theme = {
     text: TextStyle & {
       fontSize: TextStyle['fontSize'];
     };
+  };
+  waveProgressBar: {
+    container: ViewStyle;
+    thumb: ViewStyle;
+    waveform: ViewStyle;
   };
 };
 
@@ -583,6 +648,16 @@ export const defaultTheme: Theme = {
   attachmentSelectionBar: {
     container: {},
     icon: {},
+  },
+  audioAttachment: {
+    container: {},
+    leftContainer: {},
+    playPauseButton: {},
+    progressControlContainer: {},
+    progressDurationText: {},
+    rightContainer: {},
+    speedChangeButton: {},
+    speedChangeButtonText: {},
   },
   avatar: {
     BASE_AVATAR_SIZE: 32,
@@ -737,6 +812,31 @@ export const defaultTheme: Theme = {
     attachButton: {},
     attachButtonContainer: {},
     attachmentSelectionBar: {},
+    attachmentSeparator: {},
+    audioRecorder: {
+      arrowLeftIcon: {},
+      checkContainer: {},
+      circleStopIcon: {},
+      deleteContainer: {},
+      deleteIcon: {},
+      micContainer: {},
+      micIcon: {},
+      pausedContainer: {},
+      sendCheckIcon: {},
+      slideToCancelContainer: {},
+    },
+    audioRecordingButton: { container: {}, micIcon: {} },
+    audioRecordingInProgress: { container: {}, durationText: {} },
+    audioRecordingLockIndicator: { arrowUpIcon: {}, container: {}, lockIcon: {} },
+    audioRecordingPreview: {
+      container: {},
+      currentTime: {},
+      infoContainer: {},
+      pauseIcon: {},
+      playIcon: {},
+      progressBar: {},
+    },
+    audioRecordingWaveform: { container: {}, waveform: {} },
     autoCompleteInputContainer: {},
     commandsButton: {},
     commandsButtonContainer: {},
@@ -754,15 +854,8 @@ export const defaultTheme: Theme = {
       editingBoxHeaderTitle: {},
     },
     fileUploadPreview: {
-      audioAttachment: {
-        progressControlView: {},
-        progressDurationText: {},
-        roundedView: {},
-      },
-      audioAttachmentFileContainer: {},
       dismiss: {},
       fileContainer: {},
-      fileContentContainer: {},
       filenameText: {},
       fileSizeText: {},
       fileTextContainer: {},
@@ -782,6 +875,7 @@ export const defaultTheme: Theme = {
     },
     inputBox: {},
     inputBoxContainer: {},
+    micButtonContainer: {},
     moreOptionsButton: {},
     optionsContainer: {},
     replyContainer: {},
@@ -929,6 +1023,8 @@ export const defaultTheme: Theme = {
           fontWeight: '400',
         },
       },
+      editedLabel: {},
+      editedTimestampContainer: {},
       errorContainer: {
         paddingRight: 12,
         paddingTop: 0,
@@ -952,10 +1048,7 @@ export const defaultTheme: Theme = {
         fontWeight: '700',
         paddingRight: 6,
       },
-      metaContainer: {
-        flexDirection: 'row',
-        marginTop: 4,
-      },
+      metaContainer: {},
       metaText: {
         fontSize: 12,
       },
@@ -964,6 +1057,7 @@ export const defaultTheme: Theme = {
       textContainer: {
         onlyEmojiMarkdown: { text: { fontSize: 50 } },
       },
+      timestampText: {},
       wrapper: {},
     },
     file: {
@@ -974,6 +1068,7 @@ export const defaultTheme: Theme = {
       title: {},
     },
     fileAttachmentGroup: {
+      attachmentContainer: {},
       container: {},
     },
     gallery: {
@@ -1007,10 +1102,13 @@ export const defaultTheme: Theme = {
       shuffle: {},
       title: {},
     },
+    lastMessageContainer: {},
     loadingIndicator: {
       container: {},
       roundedView: {},
     },
+    messageGroupedSingleOrBottomContainer: {},
+    messageGroupedTopContainer: {},
     pinnedHeader: {
       container: {},
       label: {},
@@ -1021,7 +1119,6 @@ export const defaultTheme: Theme = {
       middleIcon: {},
       radius: 2, // not recommended to change this
       reactionBubble: {},
-      reactionBubbleBackground: {},
       reactionSize: 24,
       strokeSize: 1, // not recommended to change this
     },
@@ -1076,14 +1173,22 @@ export const defaultTheme: Theme = {
       radius: 2,
       reactionBubble: {},
       reactionBubbleBackground: {},
+      reactionBubbleBorderRadius: 24,
       title: {},
     },
     reactionsList: {
       radius: 2.5,
       reaction: {},
       reactionList: {},
+      reactionListBorderRadius: 24,
       reactionSize: 24,
     },
+  },
+  progressControl: {
+    container: {},
+    filledColor: '',
+    filledStyles: {},
+    thumb: {},
   },
   reply: {
     container: {},
@@ -1091,6 +1196,7 @@ export const defaultTheme: Theme = {
     imageAttachment: {},
     markdownStyles: {},
     messageContainer: {},
+    secondaryText: {},
     textContainer: {},
     videoThumbnail: {
       container: {},
@@ -1109,5 +1215,10 @@ export const defaultTheme: Theme = {
     text: {
       fontSize: 14,
     },
+  },
+  waveProgressBar: {
+    container: {},
+    thumb: {},
+    waveform: {},
   },
 };

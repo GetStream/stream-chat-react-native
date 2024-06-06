@@ -40,7 +40,7 @@ export type AutoCompleteSuggestionListPropsWithContext<
 > &
   AutoCompleteSuggestionListComponentProps<StreamChatGenerics>;
 
-const SuggestionsItem: React.FC<PressableProps> = (props) => {
+const SuggestionsItem = (props: PressableProps) => {
   const { children, style: propsStyle, ...pressableProps } = props;
 
   const style = ({ pressed }: PressableStateCallbackType) => [

@@ -21,9 +21,7 @@ export type HeaderErrorProps = {
   onPress?: (event: GestureResponderEvent) => void;
 };
 
-export const ChannelListHeaderErrorIndicator: React.FC<HeaderErrorProps> = ({
-  onPress = () => null,
-}) => {
+export const ChannelListHeaderErrorIndicator = ({ onPress = () => null }: HeaderErrorProps) => {
   const {
     theme: {
       channelListHeaderErrorIndicator: { container, errorText },
@@ -38,7 +36,7 @@ export const ChannelListHeaderErrorIndicator: React.FC<HeaderErrorProps> = ({
       style={[styles.container, { backgroundColor: `${grey_dark}E6` }, container]}
     >
       <Text style={[styles.errorText, { color: white }, errorText]} testID='channel-loading-error'>
-        {t('Error while loading, please reload/refresh')}
+        {t<string>('Error while loading, please reload/refresh')}
       </Text>
     </TouchableOpacity>
   );

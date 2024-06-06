@@ -3,7 +3,7 @@ import React from 'react';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { Picture } from '../../../icons';
 
-export const AttachmentPickerErrorImage: React.FC = () => {
+export const AttachmentPickerErrorImage = () => {
   const {
     theme: {
       colors: { grey_gainsboro },

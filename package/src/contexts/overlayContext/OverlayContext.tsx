@@ -24,7 +24,6 @@ export type OverlayContextValue = {
   overlay: Overlay;
   setOverlay: React.Dispatch<React.SetStateAction<Overlay>>;
   style?: DeepPartial<Theme>;
-  translucentStatusBar?: boolean;
 };
 
 export const OverlayContext = React.createContext(
@@ -37,7 +36,10 @@ export type OverlayProviderProps<
   Partial<
     Pick<
       AttachmentPickerContextValue,
+      | 'AttachmentPickerBottomSheetHandle'
+      | 'attachmentPickerBottomSheetHandleHeight'
       | 'attachmentPickerBottomSheetHeight'
+      | 'AttachmentPickerSelectionBar'
       | 'attachmentSelectionBarHeight'
       | 'bottomInset'
       | 'CameraSelectorIcon'
@@ -56,8 +58,7 @@ export type OverlayProviderProps<
       | 'OverlayReactions'
       | 'OverlayReactionsAvatar'
     >
-  > &
-  Pick<OverlayContextValue, 'translucentStatusBar'> & {
+  > & {
     autoPlayVideo?: boolean;
     /**
      * The giphy version to render - check the keys of the [Image Object](https://developers.giphy.com/docs/api/schema#image-object) for possible values. Uses 'fixed_height' by default
@@ -91,11 +92,20 @@ export const useOverlayContext = () => {
   return contextValue;
 };
 
+/**
+ * @deprecated
+ *
+ * This will be removed in the next major version.
+ *
+ * Typescript currently does not support partial inference so if ChatContext
+ * typing is desired while using the HOC withOverlayContext the Props for the
+ * wrapped component must be provided as the first generic.
+ */
 export const withOverlayContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<StreamChatGenerics>,
-): React.FC<Omit<StreamChatGenerics, keyof OverlayContextValue>> => {
+): React.ComponentType<Omit<StreamChatGenerics, keyof OverlayContextValue>> => {
   const WithOverlayContextComponent = (
     props: Omit<StreamChatGenerics, keyof OverlayContextValue>,
   ) => {

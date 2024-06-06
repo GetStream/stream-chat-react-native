@@ -1,5 +1,79 @@
 # Change Log
 
+### [1.27.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.27.1...sampleapp@v1.27.2) (2024-05-28)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.27.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.27.0...sampleapp@v1.27.1) (2024-05-23)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+## [1.27.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.26.0...sampleapp@v1.27.0) (2024-05-16)
+
+
+### Features
+
+* show edited message label in message UI ([#2514](https://github.com/GetStream/stream-chat-react-native/issues/2514)) ([e19be3c](https://github.com/GetStream/stream-chat-react-native/commit/e19be3ca85ea21c29deb3e26bc43c5e8d1f7c6d5))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+## [1.26.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.25.9...sampleapp@v1.26.0) (2024-05-02)
+
+
+### Features
+
+* add async audio feature to sample app ([#2504](https://github.com/GetStream/stream-chat-react-native/issues/2504)) ([fa6817d](https://github.com/GetStream/stream-chat-react-native/commit/fa6817d722b3f1370f1fd16810c40c3a55ec15a9))
+* async audio ([#2501](https://github.com/GetStream/stream-chat-react-native/issues/2501)) ([871cdd2](https://github.com/GetStream/stream-chat-react-native/commit/871cdd2be5b7b7790d8dcebbbcd46ef2082def13))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.25.9](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.25.8...sampleapp@v1.25.9) (2024-04-26)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.25.8](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.25.7...sampleapp@v1.25.8) (2024-04-23)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.25.7](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.25.6...sampleapp@v1.25.7) (2024-04-15)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.25.6](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.25.5...sampleapp@v1.25.6) (2024-04-03)
+
+
+### Bug Fixes
+
+* offline support saving cyclic structure ([#2469](https://github.com/GetStream/stream-chat-react-native/issues/2469)) ([792b4c9](https://github.com/GetStream/stream-chat-react-native/commit/792b4c9e09138cafdcb564649274b24d21d5a7f3))
+* scroll to bottom issue when the message list is empty ([#2471](https://github.com/GetStream/stream-chat-react-native/issues/2471)) ([a05573f](https://github.com/GetStream/stream-chat-react-native/commit/a05573fcdb024c270c06c1223125d90f53859817))
+* **sample-app:** set loading status to false when the list of attachments or pinned messages was empty ([d99471a](https://github.com/GetStream/stream-chat-react-native/commit/d99471aa098641efa29e8fa45d7e1301d38932a9))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.25.5](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.25.4...sampleapp@v1.25.5) (2024-03-08)
 
 

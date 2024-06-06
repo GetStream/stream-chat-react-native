@@ -54,9 +54,14 @@ export const useThreadContext = <
 
   return contextValue;
 };
+
 /**
- * Typescript currently does not support partial inference so if ThreadContext
- * typing is desired while using the HOC withThreadContextContext the Props for the
+ * @deprecated
+ *
+ * This will be removed in the next major version.
+ *
+ * Typescript currently does not support partial inference so if ChatContext
+ * typing is desired while using the HOC withThreadContext the Props for the
  * wrapped component must be provided as the first generic.
  */
 export const withThreadContext = <
@@ -64,7 +69,7 @@ export const withThreadContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ThreadContextValue<StreamChatGenerics>>> => {
+): React.ComponentType<Omit<P, keyof ThreadContextValue<StreamChatGenerics>>> => {
   const WithThreadContextComponent = (
     props: Omit<P, keyof ThreadContextValue<StreamChatGenerics>>,
   ) => {

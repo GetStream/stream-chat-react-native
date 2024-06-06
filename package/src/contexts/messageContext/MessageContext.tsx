@@ -3,6 +3,7 @@ import React, { PropsWithChildren, useContext } from 'react';
 import type { Attachment } from 'stream-chat';
 
 import type { ActionHandler } from '../../components/Attachment/Attachment';
+import { ReactionSummary } from '../../components/Message/hooks/useProcessReactions';
 import type {
   MessageTouchableHandlerPayload,
   TouchableHandlerPayload,
@@ -18,11 +19,6 @@ import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type Alignment = 'right' | 'left';
-
-export type Reactions = {
-  own: boolean;
-  type: string;
-}[];
 
 export type MessageContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -53,6 +49,8 @@ export type MessageContextValue<
   hasReactions: boolean;
   /** The images attached to a message */
   images: Attachment<StreamChatGenerics>[];
+  /** Boolean that determines if the edited message is pressed. */
+  isEditedMessageOpen: boolean;
   /** Whether or not this is the active user's message */
   isMyMessage: boolean;
   /** Whether or not this is the last message in a group of messages */
@@ -90,7 +88,9 @@ export type MessageContextValue<
   onPressIn: ((payload: TouchableHandlerPayload) => void) | null;
   /** The images attached to a message */
   otherAttachments: Attachment<StreamChatGenerics>[];
-  reactions: Reactions;
+  reactions: ReactionSummary[];
+  /** React set state function to set the state of `isEditedMessageOpen` */
+  setIsEditedMessageOpen: React.Dispatch<React.SetStateAction<boolean>>;
   showMessageOverlay: (messageReactions?: boolean, error?: boolean) => void;
   showMessageStatus: boolean;
   /** Whether or not the Message is part of a Thread */
@@ -138,8 +138,12 @@ export const useMessageContext = <
 };
 
 /**
- * Typescript currently does not support partial inference so if MessageContext
- * typing is desired while using the HOC withMessageContextContext the Props for the
+ * @deprecated
+ *
+ * This will be removed in the next major version.
+ *
+ * Typescript currently does not support partial inference so if ChatContext
+ * typing is desired while using the HOC withMessageContext the Props for the
  * wrapped component must be provided as the first generic.
  */
 export const withMessageContext = <
@@ -147,7 +151,7 @@ export const withMessageContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof MessageContextValue<StreamChatGenerics>>> => {
+): React.ComponentType<Omit<P, keyof MessageContextValue<StreamChatGenerics>>> => {
   const WithMessageContextComponent = (
     props: Omit<P, keyof MessageContextValue<StreamChatGenerics>>,
   ) => {

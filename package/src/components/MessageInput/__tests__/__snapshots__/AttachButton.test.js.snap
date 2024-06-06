@@ -3,8 +3,20 @@
 exports[`AttachButton should render a disabled AttachButton 1`] = `
 <View
   accessibilityState={
-    Object {
+    {
+      "busy": undefined,
+      "checked": undefined,
       "disabled": true,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}
@@ -20,8 +32,8 @@ exports[`AttachButton should render a disabled AttachButton 1`] = `
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
   style={
-    Array [
-      Object {},
+    [
+      {},
     ]
   }
   testID="attach-button"
@@ -37,12 +49,12 @@ exports[`AttachButton should render a disabled AttachButton 1`] = `
     minY={0}
     pathFill="#7A7A7A"
     style={
-      Array [
-        Object {
+      [
+        {
           "backgroundColor": "transparent",
           "borderWidth": 0,
         },
-        Object {
+        {
           "flex": 0,
           "height": 24,
           "width": 24,
@@ -53,14 +65,26 @@ exports[`AttachButton should render a disabled AttachButton 1`] = `
     vbWidth={24}
     width={24}
   >
-    <RNSVGGroup>
+    <RNSVGGroup
+      fill={
+        {
+          "payload": 4278190080,
+          "type": 0,
+        }
+      }
+    >
       <RNSVGPath
         clipRule={0}
         d="M13.468 2.888a5.07 5.07 0 012.983.635 5.07 5.07 0 012.041 2.265c.45 1.01.546 2.254-.144 3.449l-4.5 7.794a3.232 3.232 0 01-1.427 1.294c-.757.342-1.696.367-2.671-.196-.975-.563-1.422-1.389-1.506-2.215a3.233 3.233 0 01.408-1.883l4-6.928a1 1 0 011.732 1l-4 6.928c-.087.15-.176.425-.15.682.02.196.105.447.516.684.41.237.671.185.85.105.236-.107.43-.32.516-.47l4.5-7.795c.31-.538.29-1.093.049-1.636a3.072 3.072 0 00-1.214-1.346 3.072 3.072 0 00-1.773-.378c-.591.062-1.082.322-1.392.86l-5 8.66c-.654 1.133-.286 3.3 1.964 4.598 2.25 1.3 4.31.535 4.964-.598l3.5-6.062a1 1 0 111.732 1l-3.5 6.062c-1.345 2.33-4.75 3.031-7.696 1.33-2.946-1.7-4.042-5-2.696-7.33l5-8.66c.69-1.195 1.815-1.733 2.914-1.85z"
-        fill={4286216826}
+        fill={
+          {
+            "payload": 4286216826,
+            "type": 0,
+          }
+        }
         fillRule={0}
         propList={
-          Array [
+          [
             "fill",
             "fillRule",
           ]
@@ -74,8 +98,20 @@ exports[`AttachButton should render a disabled AttachButton 1`] = `
 exports[`AttachButton should render an enabled AttachButton 1`] = `
 <View
   accessibilityState={
-    Object {
+    {
+      "busy": undefined,
+      "checked": undefined,
       "disabled": false,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}
@@ -91,8 +127,8 @@ exports[`AttachButton should render an enabled AttachButton 1`] = `
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
   style={
-    Array [
-      Object {},
+    [
+      {},
     ]
   }
   testID="attach-button"
@@ -108,12 +144,12 @@ exports[`AttachButton should render an enabled AttachButton 1`] = `
     minY={0}
     pathFill="#7A7A7A"
     style={
-      Array [
-        Object {
+      [
+        {
           "backgroundColor": "transparent",
           "borderWidth": 0,
         },
-        Object {
+        {
           "flex": 0,
           "height": 24,
           "width": 24,
@@ -124,14 +160,26 @@ exports[`AttachButton should render an enabled AttachButton 1`] = `
     vbWidth={24}
     width={24}
   >
-    <RNSVGGroup>
+    <RNSVGGroup
+      fill={
+        {
+          "payload": 4278190080,
+          "type": 0,
+        }
+      }
+    >
       <RNSVGPath
         clipRule={0}
         d="M13.468 2.888a5.07 5.07 0 012.983.635 5.07 5.07 0 012.041 2.265c.45 1.01.546 2.254-.144 3.449l-4.5 7.794a3.232 3.232 0 01-1.427 1.294c-.757.342-1.696.367-2.671-.196-.975-.563-1.422-1.389-1.506-2.215a3.233 3.233 0 01.408-1.883l4-6.928a1 1 0 011.732 1l-4 6.928c-.087.15-.176.425-.15.682.02.196.105.447.516.684.41.237.671.185.85.105.236-.107.43-.32.516-.47l4.5-7.795c.31-.538.29-1.093.049-1.636a3.072 3.072 0 00-1.214-1.346 3.072 3.072 0 00-1.773-.378c-.591.062-1.082.322-1.392.86l-5 8.66c-.654 1.133-.286 3.3 1.964 4.598 2.25 1.3 4.31.535 4.964-.598l3.5-6.062a1 1 0 111.732 1l-3.5 6.062c-1.345 2.33-4.75 3.031-7.696 1.33-2.946-1.7-4.042-5-2.696-7.33l5-8.66c.69-1.195 1.815-1.733 2.914-1.85z"
-        fill={4286216826}
+        fill={
+          {
+            "payload": 4286216826,
+            "type": 0,
+          }
+        }
         fillRule={0}
         propList={
-          Array [
+          [
             "fill",
             "fillRule",
           ]

@@ -18,13 +18,26 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     flexDirection: 'row',
   },
+  lastMessageContainer: {
+    marginBottom: 12,
+  },
+  messageGroupedSingleOrBottomContainer: {
+    marginBottom: 8,
+  },
+  messageGroupedTopContainer: {},
 });
 
 export type MessageSimplePropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageContextValue<StreamChatGenerics>,
-  'alignment' | 'channel' | 'disabled' | 'groupStyles' | 'hasReactions' | 'message'
+  | 'alignment'
+  | 'channel'
+  | 'disabled'
+  | 'isEditedMessageOpen'
+  | 'groupStyles'
+  | 'hasReactions'
+  | 'message'
 > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
@@ -32,7 +45,6 @@ export type MessageSimplePropsWithContext<
     | 'myMessageTheme'
     | 'MessageAvatar'
     | 'MessageContent'
-    | 'MessagePinnedHeader'
     | 'ReactionList'
   >;
 
@@ -50,13 +62,17 @@ const MessageSimpleWithContext = <
     message,
     MessageAvatar,
     MessageContent,
-    MessagePinnedHeader,
     ReactionList,
   } = props;
 
   const {
     theme: {
-      messageSimple: { container },
+      messageSimple: {
+        container,
+        lastMessageContainer,
+        messageGroupedSingleOrBottomContainer,
+        messageGroupedTopContainer,
+      },
     },
   } = useTheme();
 
@@ -65,23 +81,30 @@ const MessageSimpleWithContext = <
   const isVeryLastMessage =
     channel?.state.messages[channel?.state.messages.length - 1]?.id === message.id;
 
-  const hasMarginBottom = groupStyles.includes('single') || groupStyles.includes('bottom');
+  const messageGroupedSingleOrBottom =
+    groupStyles.includes('single') || groupStyles.includes('bottom');
 
   const showReactions = hasReactions && ReactionList;
 
+  const lastMessageInMessageListStyles = [styles.lastMessageContainer, lastMessageContainer];
+  const messageGroupedSingleOrBottomStyles = [
+    styles.messageGroupedSingleOrBottomContainer,
+    messageGroupedSingleOrBottomContainer,
+  ];
+  const messageGroupedTopStyles = [styles.messageGroupedTopContainer, messageGroupedTopContainer];
+
   return (
     <>
-      {message.pinned && <MessagePinnedHeader />}
       <View
         style={[
           styles.container,
+          messageGroupedSingleOrBottom
+            ? isVeryLastMessage && enableMessageGroupingByUser
+              ? lastMessageInMessageListStyles
+              : messageGroupedSingleOrBottomStyles
+            : messageGroupedTopStyles,
           {
             justifyContent: alignment === 'left' ? 'flex-start' : 'flex-end',
-            marginBottom: hasMarginBottom
-              ? isVeryLastMessage && enableMessageGroupingByUser
-                ? 30
-                : 8
-              : 0,
             marginTop: showReactions ? 2 : 0,
           },
           container,
@@ -105,6 +128,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     disabled: prevDisabled,
     groupStyles: prevGroupStyles,
     hasReactions: prevHasReactions,
+    isEditedMessageOpen: prevIsEditedMessageOpen,
     message: prevMessage,
     myMessageTheme: prevMyMessageTheme,
   } = prevProps;
@@ -113,6 +137,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     disabled: nextDisabled,
     groupStyles: nextGroupStyles,
     hasReactions: nextHasReactions,
+    isEditedMessageOpen: nextIsEditedMessageOpen,
     message: nextMessage,
     myMessageTheme: nextMyMessageTheme,
   } = nextProps;
@@ -129,6 +154,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const groupStylesEqual = JSON.stringify(prevGroupStyles) === JSON.stringify(nextGroupStyles);
   if (!groupStylesEqual) return false;
 
+  const isEditedMessageOpenEqual = prevIsEditedMessageOpen === nextIsEditedMessageOpen;
+  if (!isEditedMessageOpenEqual) return false;
+
   const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
   const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
 
@@ -136,8 +164,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     isPrevMessageTypeDeleted === isNextMessageTypeDeleted &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
-    prevMessage.text === nextMessage.text &&
-    prevMessage.pinned === nextMessage.pinned;
+    prevMessage.text === nextMessage.text;
   if (!messageEqual) return false;
 
   const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';
@@ -161,7 +188,8 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
           const attachmentKeysEqual =
             attachment.image_url === nextMessageAttachments[index].image_url &&
             attachment.og_scrape_url === nextMessageAttachments[index].og_scrape_url &&
-            attachment.thumb_url === nextMessageAttachments[index].thumb_url;
+            attachment.thumb_url === nextMessageAttachments[index].thumb_url &&
+            attachment.type === nextMessageAttachments[index].type;
 
           return attachmentKeysEqual;
         })
@@ -202,13 +230,12 @@ export const MessageSimple = <
 >(
   props: MessageSimpleProps<StreamChatGenerics>,
 ) => {
-  const { alignment, channel, disabled, groupStyles, hasReactions, message } =
+  const { alignment, channel, disabled, groupStyles, hasReactions, isEditedMessageOpen, message } =
     useMessageContext<StreamChatGenerics>();
   const {
     enableMessageGroupingByUser,
     MessageAvatar,
     MessageContent,
-    MessagePinnedHeader,
     myMessageTheme,
     ReactionList,
   } = useMessagesContext<StreamChatGenerics>();
@@ -222,10 +249,10 @@ export const MessageSimple = <
         enableMessageGroupingByUser,
         groupStyles,
         hasReactions,
+        isEditedMessageOpen,
         message,
         MessageAvatar,
         MessageContent,
-        MessagePinnedHeader,
         myMessageTheme,
         ReactionList,
       }}

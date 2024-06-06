@@ -1,5 +1,11 @@
 import React from 'react';
-import { LayoutChangeEvent, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  AnimatableNumericValue,
+  LayoutChangeEvent,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import { MessageTextContainer } from './MessageTextContainer';
 
@@ -13,8 +19,6 @@ import {
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import {
-  isDayOrMoment,
-  TDateTimeParserInput,
   TranslationContextValue,
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
@@ -60,6 +64,7 @@ export type MessageContentPropsWithContext<
   MessageContextValue<StreamChatGenerics>,
   | 'alignment'
   | 'disabled'
+  | 'isEditedMessageOpen'
   | 'goToMessage'
   | 'groupStyles'
   | 'hasReactions'
@@ -82,20 +87,20 @@ export type MessageContentPropsWithContext<
     | 'additionalTouchableProps'
     | 'Attachment'
     | 'FileAttachmentGroup'
-    | 'formatDate'
     | 'Gallery'
     | 'isAttachmentEqual'
     | 'MessageFooter'
     | 'MessageHeader'
     | 'MessageDeleted'
     | 'MessageError'
+    | 'MessagePinnedHeader'
     | 'MessageReplies'
     | 'MessageStatus'
     | 'myMessageTheme'
     | 'onPressInMessage'
     | 'Reply'
   > &
-  Pick<TranslationContextValue, 't' | 'tDateTimeParser'> & {
+  Pick<TranslationContextValue, 't'> & {
     setMessageContentWidth: React.Dispatch<React.SetStateAction<number>>;
   };
 
@@ -113,7 +118,6 @@ const MessageContentWithContext = <
     Attachment,
     disabled,
     FileAttachmentGroup,
-    formatDate,
     Gallery,
     groupStyles,
     hasReactions,
@@ -126,6 +130,7 @@ const MessageContentWithContext = <
     MessageError,
     MessageFooter,
     MessageHeader,
+    MessagePinnedHeader,
     MessageReplies,
     MessageStatus,
     onLongPress,
@@ -137,7 +142,6 @@ const MessageContentWithContext = <
     Reply,
     setMessageContentWidth,
     showMessageStatus,
-    tDateTimeParser,
     threadList,
   } = props;
 
@@ -158,8 +162,10 @@ const MessageContentWithContext = <
           },
           containerInner,
           errorContainer,
+          receiverMessageBackgroundColor,
           replyBorder,
           replyContainer,
+          senderMessageBackgroundColor,
           wrapper,
         },
         reactionList: { radius, reactionSize },
@@ -167,21 +173,6 @@ const MessageContentWithContext = <
     },
   } = useTheme();
   const { vw } = useViewport();
-
-  const getDateText = (formatter?: (date: TDateTimeParserInput) => string) => {
-    if (!message.created_at) return '';
-
-    if (formatter) {
-      return formatter(message.created_at);
-    }
-
-    const parserOutput = tDateTimeParser(message.created_at);
-
-    if (isDayOrMoment(parserOutput)) {
-      return parserOutput.format('LT');
-    }
-    return message.created_at;
-  };
 
   const onLayout: (event: LayoutChangeEvent) => void = ({
     nativeEvent: {
@@ -211,7 +202,7 @@ const MessageContentWithContext = <
   if (isMessageTypeDeleted) {
     return (
       <MessageDeleted
-        formattedDate={getDateText(formatDate)}
+        date={message.created_at}
         groupStyle={groupStyle}
         noBorder={noBorder}
         onLayout={onLayout}
@@ -219,7 +210,9 @@ const MessageContentWithContext = <
     );
   }
 
-  let backgroundColor = grey_gainsboro;
+  const isMessageReceivedOrErrorType = !isMyMessage || error;
+
+  let backgroundColor = senderMessageBackgroundColor || grey_gainsboro;
   if (onlyEmojis && !message.quoted_message) {
     backgroundColor = transparent;
   } else if (otherAttachments.length) {
@@ -228,13 +221,11 @@ const MessageContentWithContext = <
     } else {
       backgroundColor = blue_alice;
     }
-  } else if (alignment === 'left' || error) {
-    backgroundColor = white;
+  } else if (isMessageReceivedOrErrorType) {
+    backgroundColor = receiverMessageBackgroundColor || white;
   }
 
-  const repliesCurveColor = isMyMessage && !error ? backgroundColor : grey_whisper;
-
-  const isBorderColor = isMyMessage && !error;
+  const repliesCurveColor = !isMessageReceivedOrErrorType ? backgroundColor : grey_gainsboro;
 
   const getBorderRadius = () => {
     // enum('top', 'middle', 'bottom', 'single')
@@ -246,10 +237,10 @@ const MessageContentWithContext = <
 
     if (isBottomOrSingle && (!hasThreadReplies || threadList)) {
       // add relevant sharp corner
-      if (alignment === 'left') {
-        borderBottomLeftRadius = borderRadiusS;
-      } else {
+      if (isMyMessage) {
         borderBottomRightRadius = borderRadiusS;
+      } else {
+        borderBottomLeftRadius = borderRadiusS;
       }
     }
 
@@ -260,7 +251,7 @@ const MessageContentWithContext = <
   };
 
   const getBorderRadiusFromTheme = () => {
-    const bordersFromTheme: Record<string, number | undefined> = {
+    const bordersFromTheme: Record<string, AnimatableNumericValue | undefined> = {
       borderBottomLeftRadius,
       borderBottomRightRadius,
       borderRadius,
@@ -313,7 +304,7 @@ const MessageContentWithContext = <
        * Otherwise background is transparent, so border radius is not really visible.
        */
       style={[
-        alignment === 'left' ? styles.leftAlignItems : styles.rightAlignItems,
+        isMyMessage ? styles.rightAlignItems : styles.leftAlignItems,
         { paddingTop: hasReactions ? reactionSize / 2 + radius : 2 },
         error ? errorContainer : {},
         container,
@@ -322,8 +313,8 @@ const MessageContentWithContext = <
       {MessageHeader && (
         <MessageHeader
           alignment={alignment}
-          formattedDate={getDateText(formatDate)}
-          isDeleted={!!isMessageTypeDeleted}
+          date={message.created_at}
+          isDeleted={isMessageTypeDeleted}
           lastGroupMessage={lastGroupMessage}
           members={members}
           message={message}
@@ -332,6 +323,7 @@ const MessageContentWithContext = <
           showMessageStatus={showMessageStatus}
         />
       )}
+      {message.pinned && <MessagePinnedHeader />}
       <View onLayout={onLayout} style={wrapper}>
         {hasThreadReplies && !threadList && !noBorder && (
           <View
@@ -352,7 +344,7 @@ const MessageContentWithContext = <
             styles.containerInner,
             {
               backgroundColor,
-              borderColor: isBorderColor ? backgroundColor : grey_whisper,
+              borderColor: isMessageReceivedOrErrorType ? grey_whisper : backgroundColor,
               ...getBorderRadius(),
               ...getBorderRadiusFromTheme(),
             },
@@ -400,7 +392,7 @@ const MessageContentWithContext = <
         {error && <MessageError />}
       </View>
       <MessageReplies noBorder={noBorder} repliesCurveColor={repliesCurveColor} />
-      <MessageFooter formattedDate={getDateText(formatDate)} isDeleted={!!isMessageTypeDeleted} />
+      <MessageFooter date={message.created_at} isDeleted={!!isMessageTypeDeleted} />
     </TouchableOpacity>
   );
 };
@@ -415,6 +407,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     groupStyles: prevGroupStyles,
     hasReactions: prevHasReactions,
     isAttachmentEqual,
+    isEditedMessageOpen: prevIsEditedMessageOpen,
     lastGroupMessage: prevLastGroupMessage,
     members: prevMembers,
     message: prevMessage,
@@ -423,13 +416,13 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     onlyEmojis: prevOnlyEmojis,
     otherAttachments: prevOtherAttachments,
     t: prevT,
-    tDateTimeParser: prevTDateTimeParser,
   } = prevProps;
   const {
     disabled: nextDisabled,
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     hasReactions: nextHasReactions,
+    isEditedMessageOpen: nextIsEditedMessageOpen,
     lastGroupMessage: nextLastGroupMessage,
     members: nextMembers,
     message: nextMessage,
@@ -438,7 +431,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     onlyEmojis: nextOnlyEmojis,
     otherAttachments: nextOtherAttachments,
     t: nextT,
-    tDateTimeParser: nextTDateTimeParser,
   } = nextProps;
 
   const disabledEqual = prevDisabled === nextDisabled;
@@ -453,6 +445,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const goToMessageChangedAndMatters =
     nextMessage.quoted_message_id && prevGoToMessage !== nextGoToMessage;
   if (goToMessageChangedAndMatters) return false;
+
+  const isEditedMessageOpenEqual = prevIsEditedMessageOpen === nextIsEditedMessageOpen;
+  if (!isEditedMessageOpenEqual) return false;
 
   const onlyEmojisEqual = prevOnlyEmojis === nextOnlyEmojis;
   if (!onlyEmojisEqual) return false;
@@ -499,7 +494,8 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
           const attachmentKeysEqual =
             attachment.image_url === nextMessageAttachments[index].image_url &&
             attachment.og_scrape_url === nextMessageAttachments[index].og_scrape_url &&
-            attachment.thumb_url === nextMessageAttachments[index].thumb_url;
+            attachment.thumb_url === nextMessageAttachments[index].thumb_url &&
+            attachment.type === nextMessageAttachments[index].type;
 
           if (isAttachmentEqual)
             return (
@@ -529,9 +525,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const tEqual = prevT === nextT;
   if (!tEqual) return false;
-
-  const tDateTimeParserEqual = prevTDateTimeParser === nextTDateTimeParser;
-  if (!tDateTimeParserEqual) return false;
 
   const messageThemeEqual =
     JSON.stringify(prevMyMessageTheme) === JSON.stringify(nextMyMessageTheme);
@@ -564,6 +557,7 @@ export const MessageContent = <
     goToMessage,
     groupStyles,
     hasReactions,
+    isEditedMessageOpen,
     isMyMessage,
     lastGroupMessage,
     lastReceivedId,
@@ -583,19 +577,19 @@ export const MessageContent = <
     additionalTouchableProps,
     Attachment,
     FileAttachmentGroup,
-    formatDate,
     Gallery,
     isAttachmentEqual,
     MessageDeleted,
     MessageError,
     MessageFooter,
     MessageHeader,
+    MessagePinnedHeader,
     MessageReplies,
     MessageStatus,
     myMessageTheme,
     Reply,
   } = useMessagesContext<StreamChatGenerics>();
-  const { t, tDateTimeParser } = useTranslationContext();
+  const { t } = useTranslationContext();
 
   return (
     <MemoizedMessageContent<StreamChatGenerics>
@@ -605,12 +599,12 @@ export const MessageContent = <
         Attachment,
         disabled,
         FileAttachmentGroup,
-        formatDate,
         Gallery,
         goToMessage,
         groupStyles,
         hasReactions,
         isAttachmentEqual,
+        isEditedMessageOpen,
         isMyMessage,
         lastGroupMessage,
         lastReceivedId,
@@ -621,6 +615,7 @@ export const MessageContent = <
         MessageError,
         MessageFooter,
         MessageHeader,
+        MessagePinnedHeader,
         MessageReplies,
         MessageStatus,
         myMessageTheme,
@@ -633,7 +628,6 @@ export const MessageContent = <
         Reply,
         showMessageStatus,
         t,
-        tDateTimeParser,
         threadList,
       }}
       {...props}

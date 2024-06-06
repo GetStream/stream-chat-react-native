@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
@@ -33,6 +33,7 @@ jest.mock('../../../native.ts', () => {
     isAudioPackageAvailable: jest.fn(() => true),
     NetInfo: {
       addEventListener: jest.fn(),
+      fetch: jest.fn(),
     },
     Sound: {
       Player: View,
@@ -50,6 +51,7 @@ describe('FileUploadPreview', () => {
     ];
     const removeFile = jest.fn();
     const uploadFile = jest.fn();
+    const user = userEvent.setup();
 
     const user1 = generateUser();
 
@@ -63,7 +65,7 @@ describe('FileUploadPreview', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { getAllByTestId, queryAllByTestId, queryAllByText } = render(
+    render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel} FlatList={MockedFlatList}>
@@ -78,16 +80,18 @@ describe('FileUploadPreview', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(fileUploads.length);
-      expect(queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(0);
-      expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(fileUploads.length);
-      expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(0);
-      expect(queryAllByText('File type not supported')).toHaveLength(0);
+      expect(screen.queryAllByTestId('active-upload-progress-indicator')).toHaveLength(
+        fileUploads.length,
+      );
+      expect(screen.queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(0);
+      expect(screen.queryAllByTestId('upload-progress-indicator')).toHaveLength(fileUploads.length);
+      expect(screen.queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(0);
+      expect(screen.queryAllByText('File type not supported')).toHaveLength(0);
       expect(removeFile).toHaveBeenCalledTimes(0);
       expect(uploadFile).toHaveBeenCalledTimes(0);
     });
 
-    fireEvent.press(getAllByTestId('remove-file-upload-preview')[0]);
+    user.press(screen.getAllByTestId('remove-file-upload-preview')[0]);
 
     await waitFor(() => {
       expect(removeFile).toHaveBeenCalledTimes(1);
@@ -104,6 +108,7 @@ describe('FileUploadPreview', () => {
     ];
     const removeFile = jest.fn();
     const uploadFile = jest.fn();
+    const user = userEvent.setup();
 
     const user1 = generateUser();
 
@@ -117,7 +122,7 @@ describe('FileUploadPreview', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { getAllByTestId, queryAllByTestId, queryAllByText } = render(
+    render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel} FlatList={MockedFlatList}>
@@ -132,18 +137,18 @@ describe('FileUploadPreview', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(0);
-      expect(queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(
+      expect(screen.queryAllByTestId('active-upload-progress-indicator')).toHaveLength(0);
+      expect(screen.queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(
         fileUploads.length,
       );
-      expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(0);
-      expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(0);
-      expect(queryAllByText('File type not supported')).toHaveLength(0);
+      expect(screen.queryAllByTestId('upload-progress-indicator')).toHaveLength(0);
+      expect(screen.queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(0);
+      expect(screen.queryAllByText('File type not supported')).toHaveLength(0);
       expect(removeFile).toHaveBeenCalledTimes(0);
       expect(uploadFile).toHaveBeenCalledTimes(0);
     });
 
-    fireEvent.press(getAllByTestId('remove-file-upload-preview')[0]);
+    user.press(screen.getAllByTestId('remove-file-upload-preview')[0]);
 
     await waitFor(() => {
       expect(removeFile).toHaveBeenCalledTimes(1);
@@ -162,6 +167,7 @@ describe('FileUploadPreview', () => {
     const uploadFile = jest.fn();
 
     const user1 = generateUser();
+    const user = userEvent.setup();
 
     const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
@@ -173,7 +179,7 @@ describe('FileUploadPreview', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { getAllByTestId, queryAllByTestId, queryAllByText } = render(
+    render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel} FlatList={MockedFlatList}>
@@ -188,23 +194,27 @@ describe('FileUploadPreview', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(fileUploads.length);
-      expect(queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(0);
-      expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(0);
-      expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(fileUploads.length);
-      expect(queryAllByText('File type not supported')).toHaveLength(0);
+      expect(screen.queryAllByTestId('active-upload-progress-indicator')).toHaveLength(
+        fileUploads.length,
+      );
+      expect(screen.queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(0);
+      expect(screen.queryAllByTestId('upload-progress-indicator')).toHaveLength(0);
+      expect(screen.queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(
+        fileUploads.length,
+      );
+      expect(screen.queryAllByText('File type not supported')).toHaveLength(0);
       expect(removeFile).toHaveBeenCalledTimes(0);
       expect(uploadFile).toHaveBeenCalledTimes(0);
     });
 
-    fireEvent.press(getAllByTestId('remove-file-upload-preview')[0]);
+    user.press(screen.getAllByTestId('remove-file-upload-preview')[0]);
 
     await waitFor(() => {
       expect(removeFile).toHaveBeenCalledTimes(1);
       expect(uploadFile).toHaveBeenCalledTimes(0);
     });
 
-    fireEvent.press(getAllByTestId('retry-upload-progress-indicator')[0]);
+    user.press(screen.getAllByTestId('retry-upload-progress-indicator')[0]);
 
     await waitFor(() => {
       expect(removeFile).toHaveBeenCalledTimes(1);
@@ -223,6 +233,7 @@ describe('FileUploadPreview', () => {
     const uploadFile = jest.fn();
 
     const user1 = generateUser();
+    const user = userEvent.setup();
 
     const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
@@ -234,7 +245,7 @@ describe('FileUploadPreview', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { getAllByTestId, queryAllByTestId, queryAllByText } = render(
+    render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel} FlatList={MockedFlatList}>
@@ -249,16 +260,18 @@ describe('FileUploadPreview', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(fileUploads.length);
-      expect(queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(0);
-      expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(0);
-      expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(0);
-      expect(queryAllByText('File type not supported')).toHaveLength(fileUploads.length);
+      expect(screen.queryAllByTestId('active-upload-progress-indicator')).toHaveLength(
+        fileUploads.length,
+      );
+      expect(screen.queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(0);
+      expect(screen.queryAllByTestId('upload-progress-indicator')).toHaveLength(0);
+      expect(screen.queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(0);
+      expect(screen.queryAllByText('File type not supported')).toHaveLength(fileUploads.length);
       expect(removeFile).toHaveBeenCalledTimes(0);
       expect(uploadFile).toHaveBeenCalledTimes(0);
     });
 
-    fireEvent.press(getAllByTestId('remove-file-upload-preview')[0]);
+    user.press(screen.getAllByTestId('remove-file-upload-preview')[0]);
 
     await waitFor(() => {
       expect(removeFile).toHaveBeenCalledTimes(1);
@@ -288,7 +301,7 @@ describe('FileUploadPreview', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { queryAllByTestId, queryAllByText } = render(
+    render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel} FlatList={MockedFlatList}>
@@ -302,13 +315,13 @@ describe('FileUploadPreview', () => {
       </OverlayProvider>,
     );
     await waitFor(() => {
-      expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(
+      expect(screen.queryAllByTestId('active-upload-progress-indicator')).toHaveLength(
         fileUploads.length - 1,
       );
-      expect(queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(1);
-      expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(1);
-      expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(1);
-      expect(queryAllByText('File type not supported')).toHaveLength(1);
+      expect(screen.queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(1);
+      expect(screen.queryAllByTestId('upload-progress-indicator')).toHaveLength(1);
+      expect(screen.queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(1);
+      expect(screen.queryAllByText('File type not supported')).toHaveLength(1);
       expect(removeFile).toHaveBeenCalledTimes(0);
       expect(uploadFile).toHaveBeenCalledTimes(0);
     });
@@ -337,7 +350,7 @@ describe('FileUploadPreview', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { getByTestId } = render(
+    render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel} FlatList={MockedFlatList}>
@@ -351,7 +364,7 @@ describe('FileUploadPreview', () => {
       </OverlayProvider>,
     );
 
-    const AudioAttachmentComponent = getByTestId('audio-attachment-upload-preview');
+    const AudioAttachmentComponent = screen.getByTestId('audio-attachment-upload-preview');
 
     await waitFor(() => {
       fireEvent(AudioAttachmentComponent, 'onLoad');

@@ -1,7 +1,7 @@
 import React, { PropsWithChildren } from 'react';
 import { act } from 'react-test-renderer';
 
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react-native';
 
 import type { MessageType } from '../../../components/MessageList/hooks/useMessageList';
 import {
@@ -37,6 +37,7 @@ const Wrapper = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultS
   </MessageInputProvider>
 );
 
+const newMessage = generateMessage({ id: 'new-id' });
 describe("MessageInputContext's sendMessage", () => {
   const message: boolean | MessageType<DefaultStreamChatGenerics> = generateMessage({
     created_at: 'Sat Jul 02 2022 23:55:13 GMT+0530 (India Standard Time)',
@@ -50,13 +51,20 @@ describe("MessageInputContext's sendMessage", () => {
   }) as unknown as MessageType<DefaultStreamChatGenerics>;
 
   it('exit sendMessage when file upload status failed', async () => {
+    const initialProps = {
+      editing: undefined,
+    };
     const files = generateFileUploadPreview({ state: FileState.UPLOAD_FAILED });
     const images = generateImageUploadPreview({ state: FileState.UPLOAD_FAILED });
     const { result } = renderHook(() => useMessageInputContext(), {
-      initialProps: {
-        editing: undefined,
-      },
-      wrapper: Wrapper,
+      initialProps,
+      wrapper: (props) => (
+        <Wrapper
+          // @ts-ignore
+          editing={initialProps.editing}
+          {...props}
+        />
+      ),
     });
 
     act(() => {
@@ -73,13 +81,21 @@ describe("MessageInputContext's sendMessage", () => {
 
   it('exit sendMessage when image upload status is uploading', async () => {
     const images = generateImageUploadPreview({ state: FileState.UPLOADING });
+    const initialProps = {
+      editing: message,
+      sendImageAsync: true,
+    };
 
     const { rerender, result } = renderHook(() => useMessageInputContext(), {
-      initialProps: {
-        editing: message,
-        sendImageAsync: true,
-      },
-      wrapper: Wrapper,
+      initialProps,
+      wrapper: (props) => (
+        <Wrapper
+          // @ts-ignore
+          editing={initialProps.editing}
+          sendImageAsync={initialProps.sendImageAsync}
+          {...props}
+        />
+      ),
     });
 
     act(() => {
@@ -88,24 +104,33 @@ describe("MessageInputContext's sendMessage", () => {
       result.current.setText('');
     });
 
-    act(() => {
+    await waitFor(() => {
       result.current.sendMessage();
     });
 
-    rerender({ editing: undefined, sendImageAsync: true });
+    rerender({ editing: newMessage, sendImageAsync: true });
 
-    await expect(result.current.asyncIds).toHaveLength(1);
+    await waitFor(() => {
+      expect(result.current.asyncIds).toHaveLength(1);
+    });
     await expect(result.current.sending.current).toBeFalsy();
   });
 
   it('exit sendMessage when image upload status is uploading and sendImageAsync is available', async () => {
     const images = generateImageUploadPreview({ state: FileState.UPLOADING });
+    const initialProps = {
+      editing: message,
+    };
 
     const { result } = renderHook(() => useMessageInputContext(), {
-      initialProps: {
-        editing: message,
-      },
-      wrapper: Wrapper,
+      initialProps,
+      wrapper: (props) => (
+        <Wrapper
+          // @ts-ignore
+          editing={initialProps.editing}
+          {...props}
+        />
+      ),
     });
 
     act(() => {
@@ -123,11 +148,18 @@ describe("MessageInputContext's sendMessage", () => {
 
   it('exit sendMessage when file upload status is uploading', async () => {
     const files = generateFileUploadPreview({ state: FileState.UPLOADING });
+    const initialProps = {
+      editing: message,
+    };
     const { result } = renderHook(() => useMessageInputContext(), {
-      initialProps: {
-        editing: message,
-      },
-      wrapper: Wrapper,
+      initialProps,
+      wrapper: (props) => (
+        <Wrapper
+          // @ts-ignore
+          editing={initialProps.editing}
+          {...props}
+        />
+      ),
     });
 
     act(() => {
@@ -143,21 +175,30 @@ describe("MessageInputContext's sendMessage", () => {
     await expect(result.current.sending.current).toBeFalsy();
   });
 
-  it('exit sendMessage when image upload status is uploaded successfully', () => {
+  it('exit sendMessage when image upload status is uploaded successfully', async () => {
     const sendMessageMock = jest.fn();
     const clearQuotedMessageStateMock = jest.fn();
     const images = [
       generateImageUploadPreview({ state: FileState.UPLOADED }),
       generateImageUploadPreview({ state: FileState.FINISHED }),
     ];
+    const initialProps = {
+      clearQuotedMessageState: clearQuotedMessageStateMock,
+      editing: undefined,
+      quotedMessage: false,
+      sendMessage: sendMessageMock,
+    };
     const { result } = renderHook(() => useMessageInputContext(), {
-      initialProps: {
-        clearQuotedMessageState: clearQuotedMessageStateMock,
-        editing: undefined,
-        quotedMessage: false,
-        sendMessage: sendMessageMock,
-      },
-      wrapper: Wrapper,
+      initialProps,
+      wrapper: (props) => (
+        <Wrapper
+          clearQuotedMessageState={initialProps.clearQuotedMessageState}
+          editing={initialProps.editing}
+          quotedMessage={initialProps.quotedMessage}
+          sendMessage={initialProps.sendMessage}
+          {...props}
+        />
+      ),
     });
 
     act(() => {
@@ -166,7 +207,7 @@ describe("MessageInputContext's sendMessage", () => {
       result.current.setText('');
     });
 
-    act(() => {
+    await waitFor(() => {
       result.current.sendMessage();
     });
 
@@ -186,14 +227,24 @@ describe("MessageInputContext's sendMessage", () => {
       generateImageUploadPreview({ state: FileState.UPLOADED }),
       generateImageUploadPreview({ state: FileState.FINISHED }),
     ];
+    const initialProps = {
+      clearQuotedMessageState: clearQuotedMessageStateMock,
+      editing: undefined,
+      quotedMessage: generatedQuotedMessage,
+      setQuotedMessageState: setQuotedMessageStateMock,
+    };
     const { result } = renderHook(() => useMessageInputContext(), {
-      initialProps: {
-        clearQuotedMessageState: clearQuotedMessageStateMock,
-        editing: undefined,
-        quotedMessage: generatedQuotedMessage,
-        setQuotedMessageState: setQuotedMessageStateMock,
-      },
-      wrapper: Wrapper,
+      initialProps,
+      wrapper: (props) => (
+        <Wrapper
+          // @ts-ignore
+          clearEditingState={initialProps.clearQuotedMessageState}
+          editing={initialProps.editing}
+          quotedMessage={initialProps.quotedMessage}
+          setQuotedMessageState={initialProps.setQuotedMessageState}
+          {...props}
+        />
+      ),
     });
 
     act(() => {
@@ -217,16 +268,27 @@ describe("MessageInputContext's sendMessage", () => {
     const editMessageMock = jest.fn().mockResolvedValue({ data: {} });
     const images = generateImageUploadPreview({ state: FileState.UPLOADED });
     const generatedMessage: boolean | MessageType<DefaultStreamChatGenerics> = message;
+    const initialProps = {
+      clearEditingState: clearEditingStateMock,
+      clearQuotedMessageState: clearQuotedMessageStateMock,
+      editing: generatedMessage,
+      editMessage: editMessageMock,
+      quotedMessage: false,
+      sendMessage: sendMessageMock,
+    };
     const { result } = renderHook(() => useMessageInputContext(), {
-      initialProps: {
-        clearEditingState: clearEditingStateMock,
-        clearQuotedMessageState: clearQuotedMessageStateMock,
-        editing: generatedMessage,
-        editMessage: editMessageMock,
-        quotedMessage: false,
-        sendMessage: sendMessageMock,
-      },
-      wrapper: Wrapper,
+      initialProps,
+      wrapper: (props) => (
+        <Wrapper
+          clearEditingState={initialProps.clearEditingState}
+          clearQuotedMessageState={initialProps.clearQuotedMessageState}
+          editing={initialProps.editing}
+          editMessage={initialProps.editMessage}
+          quotedMessage={initialProps.quotedMessage}
+          sendMessage={initialProps.sendMessage}
+          {...props}
+        />
+      ),
     });
 
     act(() => {
@@ -256,14 +318,24 @@ describe("MessageInputContext's sendMessage", () => {
     ];
     const sendMessageMock = jest.fn();
     const clearQuotedMessageStateMock = jest.fn();
+    const initialProps = {
+      clearQuotedMessageState: clearQuotedMessageStateMock,
+      editing: undefined,
+      quotedMessage: false,
+      sendMessage: sendMessageMock,
+    };
     const { result } = renderHook(() => useMessageInputContext(), {
-      initialProps: {
-        clearQuotedMessageState: clearQuotedMessageStateMock,
-        editing: undefined,
-        quotedMessage: false,
-        sendMessage: sendMessageMock,
-      },
-      wrapper: Wrapper,
+      initialProps,
+      wrapper: (props) => (
+        <Wrapper
+          // @ts-ignore
+          clearQuotedMessageState={initialProps.clearQuotedMessageState}
+          editing={initialProps.editing}
+          quotedMessage={initialProps.quotedMessage}
+          sendMessage={initialProps.sendMessage}
+          {...props}
+        />
+      ),
     });
 
     act(() => {

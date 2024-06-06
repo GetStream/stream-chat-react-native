@@ -2,13 +2,16 @@ import React, { PropsWithChildren } from 'react';
 import { Alert } from 'react-native';
 import { act } from 'react-test-renderer';
 
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react-native';
 
 import { generateFileAttachment } from '../../../mock-builders/generator/attachment';
 
+import { generateMessage } from '../../../mock-builders/generator/message';
+import { generateUser } from '../../../mock-builders/generator/user';
 import * as NativeUtils from '../../../native';
-
 import type { DefaultStreamChatGenerics } from '../../../types/types';
+import * as AttachmentPickerContext from '../../attachmentPickerContext/AttachmentPickerContext';
+
 import {
   InputMessageInputContextValue,
   MessageInputContextValue,
@@ -16,6 +19,8 @@ import {
   useMessageInputContext,
 } from '../MessageInputContext';
 
+const user1 = generateUser();
+const message = generateMessage({ user: user1 });
 type WrapperType<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   Partial<InputMessageInputContextValue<StreamChatGenerics>>;
 
@@ -47,30 +52,38 @@ describe("MessageInputContext's pickFile", () => {
       cancelled: false,
     }),
   );
+  jest.spyOn(AttachmentPickerContext, 'useAttachmentPickerContext').mockImplementation(() => ({
+    selectedFiles: [],
+    setSelectedFiles: jest.fn(),
+  }));
 
   const initialProps = {
-    editing: true,
+    editing: message,
     maxNumberOfFiles: 2,
   };
 
-  it.each([
-    [3, 1],
-    [1, 0],
-  ])(
+  it.each([[3, 2]])(
     'run pickFile when numberOfUploads is %d and alert is triggered %d number of times',
-    (numberOfUploads, numberOfTimesCalled) => {
+    async (numberOfUploads, numberOfTimesCalled) => {
       const { rerender, result } = renderHook(() => useMessageInputContext(), {
         initialProps,
-        wrapper: Wrapper,
+        wrapper: (props) => (
+          <Wrapper
+            // @ts-ignore
+            editing={initialProps.editing}
+            maxNumberOfFiles={initialProps.maxNumberOfFiles}
+            {...props}
+          />
+        ),
       });
 
       act(() => {
         result.current.setNumberOfUploads(numberOfUploads);
       });
 
-      rerender({ editing: false, maxNumberOfFiles: 2 });
+      rerender({ editing: message, maxNumberOfFiles: 2 });
 
-      act(() => {
+      await waitFor(() => {
         result.current.pickFile();
       });
 
@@ -78,16 +91,23 @@ describe("MessageInputContext's pickFile", () => {
     },
   );
 
-  it('trigger file size threshold limit alert when file size above the limit', () => {
+  it('trigger file size threshold limit alert when file size above the limit', async () => {
     const { result } = renderHook(() => useMessageInputContext(), {
       initialProps,
-      wrapper: Wrapper,
+      wrapper: (props) => (
+        // @ts-ignore
+        <Wrapper
+          editing={initialProps.editing}
+          maxNumberOfFiles={initialProps.maxNumberOfFiles}
+          {...props}
+        />
+      ),
     });
 
-    act(() => {
+    await waitFor(() => {
       result.current.pickFile();
     });
 
-    expect(Alert.alert).toHaveBeenCalledTimes(1);
+    expect(Alert.alert).toHaveBeenCalledTimes(2);
   });
 });

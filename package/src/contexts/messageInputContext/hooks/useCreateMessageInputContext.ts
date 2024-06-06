@@ -10,8 +10,19 @@ export const useCreateMessageInputContext = <
   additionalTextInputProps,
   appendText,
   asyncIds,
+  asyncMessagesLockDistance,
+  asyncMessagesMinimumPressDuration,
+  asyncMessagesMultiSendEnabled,
+  asyncMessagesSlideToCancelDistance,
   asyncUploads,
   AttachButton,
+  AudioAttachmentUploadPreview,
+  AudioRecorder,
+  audioRecordingEnabled,
+  AudioRecordingInProgress,
+  AudioRecordingLockIndicator,
+  AudioRecordingPreview,
+  AudioRecordingWaveform,
   autoCompleteSuggestionsLimit,
   clearEditingState,
   clearQuotedMessageState,
@@ -57,6 +68,7 @@ export const useCreateMessageInputContext = <
   openCommandsPicker,
   openFilePicker,
   openMentionsPicker,
+
   pickFile,
   quotedMessage,
   removeFile,
@@ -85,6 +97,7 @@ export const useCreateMessageInputContext = <
   setText,
   showMoreOptions,
   ShowThreadMessageInChannelButton,
+  StartAudioRecordingButton,
   text,
   thread,
   toggleAttachmentPicker,
@@ -97,11 +110,12 @@ export const useCreateMessageInputContext = <
   UploadProgressIndicator,
 }: MessageInputContextValue<StreamChatGenerics> &
   Pick<ThreadContextValue<StreamChatGenerics>, 'thread'>) => {
-  const editingdep = typeof editing === 'boolean' ? editing : editing?.id;
+  const editingdep = editing?.id;
   const fileUploadsValue = fileUploads
     .map(({ duration, paused, progress, state }) => `${state},${paused},${progress},${duration}`)
     .join();
   const imageUploadsValue = imageUploads.map(({ state }) => state).join();
+  const asyncUploadsValue = Object.keys(asyncUploads).join();
   const mentionedUsersLength = mentionedUsers.length;
   const quotedMessageId = quotedMessage
     ? typeof quotedMessage === 'boolean'
@@ -109,14 +123,26 @@ export const useCreateMessageInputContext = <
       : quotedMessage.id
     : '';
   const threadId = thread?.id;
+  const asyncIdsLength = asyncIds.length;
 
   const messageInputContext: MessageInputContextValue<StreamChatGenerics> = useMemo(
     () => ({
       additionalTextInputProps,
       appendText,
       asyncIds,
+      asyncMessagesLockDistance,
+      asyncMessagesMinimumPressDuration,
+      asyncMessagesMultiSendEnabled,
+      asyncMessagesSlideToCancelDistance,
       asyncUploads,
       AttachButton,
+      AudioAttachmentUploadPreview,
+      AudioRecorder,
+      audioRecordingEnabled,
+      AudioRecordingInProgress,
+      AudioRecordingLockIndicator,
+      AudioRecordingPreview,
+      AudioRecordingWaveform,
       autoCompleteSuggestionsLimit,
       clearEditingState,
       clearQuotedMessageState,
@@ -190,6 +216,7 @@ export const useCreateMessageInputContext = <
       setText,
       showMoreOptions,
       ShowThreadMessageInChannelButton,
+      StartAudioRecordingButton,
       text,
       toggleAttachmentPicker,
       triggerSettings,
@@ -201,6 +228,8 @@ export const useCreateMessageInputContext = <
       UploadProgressIndicator,
     }),
     [
+      asyncIdsLength,
+      asyncUploadsValue,
       cooldownEndsAt,
       disabled,
       editingdep,

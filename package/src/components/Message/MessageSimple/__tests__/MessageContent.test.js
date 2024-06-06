@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
 
-import { cleanup, render, waitFor } from '@testing-library/react-native';
+import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
 import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext/ChannelsStateContext';
 
@@ -58,10 +58,10 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    const { getByTestId } = renderMessage({ message });
+    renderMessage({ message });
 
     await waitFor(() => {
-      expect(getByTestId('message-content-wrapper')).toBeTruthy();
+      expect(screen.getByTestId('message-content-wrapper')).toBeTruthy();
     });
   });
 
@@ -69,13 +69,13 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    const { getByTestId } = renderMessage({
+    renderMessage({
       message: { ...message, type: 'error' },
     });
 
     await waitFor(() => {
-      expect(getByTestId('message-content-wrapper')).toBeTruthy();
-      expect(getByTestId('message-error')).toBeTruthy();
+      expect(screen.getByTestId('message-content-wrapper')).toBeTruthy();
+      expect(screen.getByTestId('message-error')).toBeTruthy();
     });
   });
 
@@ -83,13 +83,13 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    const { getByTestId } = renderMessage({
+    renderMessage({
       message: { ...message, status: 'failed' },
     });
 
     await waitFor(() => {
-      expect(getByTestId('message-content-wrapper')).toBeTruthy();
-      expect(getByTestId('message-error')).toBeTruthy();
+      expect(screen.getByTestId('message-content-wrapper')).toBeTruthy();
+      expect(screen.getByTestId('message-error')).toBeTruthy();
     });
   });
 
@@ -97,13 +97,13 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    const { getByTestId } = renderMessage({
+    renderMessage({
       message: { ...message, type: 'deleted' },
     });
 
     await waitFor(() => {
-      expect(getByTestId('message-content-wrapper')).toBeTruthy();
-      expect(getByTestId('message-deleted')).toBeTruthy();
+      expect(screen.getByTestId('message-content-wrapper')).toBeTruthy();
+      expect(screen.getByTestId('message-deleted')).toBeTruthy();
     });
   });
 
@@ -113,7 +113,7 @@ describe('MessageContent', () => {
 
     const ContextMessageHeader = (props) => <View {...props} testID='message-header' />;
 
-    const { getByTestId } = render(
+    render(
       <ChannelsStateProvider>
         <Chat client={chatClient}>
           <Channel channel={channel} MessageHeader={ContextMessageHeader}>
@@ -124,8 +124,8 @@ describe('MessageContent', () => {
     );
 
     await waitFor(() => {
-      expect(getByTestId('message-content-wrapper')).toBeTruthy();
-      expect(getByTestId('message-header')).toBeTruthy();
+      expect(screen.getByTestId('message-content-wrapper')).toBeTruthy();
+      expect(screen.getByTestId('message-header')).toBeTruthy();
     });
   });
 
@@ -135,7 +135,7 @@ describe('MessageContent', () => {
 
     const ContextMessageFooter = (props) => <View {...props} testID='message-footer' />;
 
-    const { getByTestId } = render(
+    render(
       <ChannelsStateProvider>
         <Chat client={chatClient}>
           <Channel channel={channel} MessageFooter={ContextMessageFooter}>
@@ -146,8 +146,8 @@ describe('MessageContent', () => {
     );
 
     await waitFor(() => {
-      expect(getByTestId('message-content-wrapper')).toBeTruthy();
-      expect(getByTestId('message-footer')).toBeTruthy();
+      expect(screen.getByTestId('message-content-wrapper')).toBeTruthy();
+      expect(screen.getByTestId('message-footer')).toBeTruthy();
     });
   });
 
@@ -155,15 +155,15 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    const { getByTestId, queryAllByTestId } = renderMessage({
+    renderMessage({
       message,
       MessageFooter: null,
     });
 
     await waitFor(() => {
-      expect(getByTestId('message-content-wrapper')).toBeTruthy();
-      expect(getByTestId('message-status-time')).toBeTruthy();
-      expect(queryAllByTestId('message-footer')).toHaveLength(0);
+      expect(screen.getByTestId('message-content-wrapper')).toBeTruthy();
+      expect(screen.getByTestId('message-status-time')).toBeTruthy();
+      expect(screen.queryAllByTestId('message-footer')).toHaveLength(0);
     });
   });
 
@@ -177,11 +177,11 @@ describe('MessageContent', () => {
       user,
     });
 
-    const { getByTestId } = renderMessage({ message });
+    renderMessage({ message });
 
     await waitFor(() => {
-      expect(getByTestId('message-content-wrapper')).toBeTruthy();
-      expect(getByTestId('gallery-container')).toBeTruthy();
+      expect(screen.getByTestId('message-content-wrapper')).toBeTruthy();
+      expect(screen.getByTestId('gallery-container')).toBeTruthy();
     });
   });
 
@@ -196,13 +196,13 @@ describe('MessageContent', () => {
       user,
     });
 
-    const { getByTestId, queryAllByA11yLabel, queryAllByTestId } = renderMessage({ message });
+    renderMessage({ message });
 
-    const fileAttachments = queryAllByTestId('file-attachment');
-    const audioAttachments = queryAllByA11yLabel('audio-attachment-preview');
+    const fileAttachments = screen.queryAllByTestId('file-attachment');
+    const audioAttachments = screen.queryAllByLabelText('audio-attachment-preview');
 
     await waitFor(() => {
-      expect(getByTestId('message-content-wrapper')).toBeTruthy();
+      expect(screen.getByTestId('message-content-wrapper')).toBeTruthy();
       expect(fileAttachments).toHaveLength(1);
       expect(audioAttachments).toHaveLength(1);
     });
@@ -212,7 +212,7 @@ describe('MessageContent', () => {
     const user = generateUser();
     const reaction = generateReaction();
     const message = generateMessage({
-      latest_reactions: [reaction],
+      reaction_groups: { [reaction.type]: reaction },
       user,
     });
 
@@ -225,7 +225,7 @@ describe('MessageContent', () => {
       return <MessageContent {...props} />;
     };
 
-    const { getByTestId } = render(
+    render(
       <ChannelsStateProvider>
         <Chat client={chatClient}>
           <Channel channel={channel} MessageContent={MessageContentWithMockedMessageContentWidth}>
@@ -236,8 +236,8 @@ describe('MessageContent', () => {
     );
 
     await waitFor(() => {
-      expect(getByTestId('message-content-wrapper')).toBeTruthy();
-      expect(getByTestId('reaction-list')).toBeTruthy();
+      expect(screen.getByTestId('message-content-wrapper')).toBeTruthy();
+      expect(screen.getByTestId('reaction-list')).toBeTruthy();
     });
   });
 });

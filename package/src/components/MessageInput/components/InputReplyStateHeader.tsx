@@ -51,7 +51,7 @@ export const InputReplyStateHeaderWithContext = <
     <View style={[styles.replyBoxHeader, editingBoxHeader]}>
       <CurveLineLeftUp pathFill={grey_gainsboro} />
       <Text style={[styles.replyBoxHeaderTitle, { color: black }, editingBoxHeaderTitle]}>
-        {t('Reply to Message')}
+        {t<string>('Reply to Message')}
       </Text>
       <TouchableOpacity
         disabled={disabled}

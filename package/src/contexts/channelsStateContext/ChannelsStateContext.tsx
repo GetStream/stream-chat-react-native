@@ -198,12 +198,21 @@ export const useChannelsStateContext = <
   return contextValue;
 };
 
+/**
+ * @deprecated
+ *
+ * This will be removed in the next major version.
+ *
+ * Typescript currently does not support partial inference so if ChatContext
+ * typing is desired while using the HOC withChannelsStateContext the Props for the
+ * wrapped component must be provided as the first generic.
+ */
 export const withChannelsStateContext = <
   P extends UnknownType,
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ChannelsStateContextValue<StreamChatGenerics>>> => {
+): React.ComponentType<Omit<P, keyof ChannelsStateContextValue<StreamChatGenerics>>> => {
   const WithChannelsStateContextComponent = (
     props: Omit<P, keyof ChannelsStateContextValue<StreamChatGenerics>>,
   ) => {

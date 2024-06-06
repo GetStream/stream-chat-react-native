@@ -2,6 +2,7 @@ import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useS
 import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
 
 import debounce from 'lodash/debounce';
+import omit from 'lodash/omit';
 import throttle from 'lodash/throttle';
 
 import { lookup } from 'mime-types';
@@ -118,6 +119,7 @@ import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/
 import { MessageBounce as MessageBounceDefault } from '../Message/MessageSimple/MessageBounce';
 import { MessageContent as MessageContentDefault } from '../Message/MessageSimple/MessageContent';
 import { MessageDeleted as MessageDeletedDefault } from '../Message/MessageSimple/MessageDeleted';
+import { MessageEditedTimestamp as MessageEditedTimestampDefault } from '../Message/MessageSimple/MessageEditedTimestamp';
 import { MessageError as MessageErrorDefault } from '../Message/MessageSimple/MessageError';
 import { MessageFooter as MessageFooterDefault } from '../Message/MessageSimple/MessageFooter';
 import { MessagePinnedHeader as MessagePinnedHeaderDefault } from '../Message/MessageSimple/MessagePinnedHeader';
@@ -128,6 +130,12 @@ import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/
 import { ReactionList as ReactionListDefault } from '../Message/MessageSimple/ReactionList';
 import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButton';
 import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
+import { AudioRecorder as AudioRecorderDefault } from '../MessageInput/components/AudioRecorder/AudioRecorder';
+import { AudioRecordingButton as AudioRecordingButtonDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingButton';
+import { AudioRecordingInProgress as AudioRecordingInProgressDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingInProgress';
+import { AudioRecordingLockIndicator as AudioRecordingLockIndicatorDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingLockIndicator';
+import { AudioRecordingPreview as AudioRecordingPreviewDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingPreview';
+import { AudioRecordingWaveform as AudioRecordingWaveformDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingWaveform';
 import { InputEditingStateHeader as InputEditingStateHeaderDefault } from '../MessageInput/components/InputEditingStateHeader';
 import { InputGiphySearch as InputGiphyCommandInputDefault } from '../MessageInput/components/InputGiphySearch';
 import { InputReplyStateHeader as InputReplyStateHeaderDefault } from '../MessageInput/components/InputReplyStateHeader';
@@ -256,7 +264,6 @@ export type ChannelPropsWithContext<
       | 'FileAttachmentGroup'
       | 'FlatList'
       | 'forceAlignMessages'
-      | 'formatDate'
       | 'Gallery'
       | 'getMessagesGroupStyles'
       | 'Giphy'
@@ -286,6 +293,7 @@ export type ChannelPropsWithContext<
       | 'MessageContent'
       | 'messageContentOrder'
       | 'MessageDeleted'
+      | 'MessageEditedTimestamp'
       | 'MessageError'
       | 'MessageFooter'
       | 'MessageHeader'
@@ -411,10 +419,21 @@ const ChannelWithContext = <
     additionalTextInputProps,
     additionalTouchableProps,
     allowThreadMessagesInChannel = true,
+    asyncMessagesLockDistance = 50,
+    asyncMessagesMinimumPressDuration = 500,
+    asyncMessagesMultiSendEnabled = true,
+    asyncMessagesSlideToCancelDistance = 100,
     AttachButton = AttachButtonDefault,
     Attachment = AttachmentDefault,
     AttachmentActions = AttachmentActionsDefault,
     AudioAttachment = AudioAttachmentDefault,
+    AudioAttachmentUploadPreview = AudioAttachmentDefault,
+    AudioRecorder = AudioRecorderDefault,
+    audioRecordingEnabled = false,
+    AudioRecordingInProgress = AudioRecordingInProgressDefault,
+    AudioRecordingLockIndicator = AudioRecordingLockIndicatorDefault,
+    AudioRecordingPreview = AudioRecordingPreviewDefault,
+    AudioRecordingWaveform = AudioRecordingWaveformDefault,
     AutoCompleteSuggestionHeader = AutoCompleteSuggestionHeaderDefault,
     AutoCompleteSuggestionItem = AutoCompleteSuggestionItemDefault,
     AutoCompleteSuggestionList = AutoCompleteSuggestionListDefault,
@@ -452,7 +471,6 @@ const ChannelWithContext = <
     FileUploadPreview = FileUploadPreviewDefault,
     FlatList = FlatListDefault,
     forceAlignMessages,
-    formatDate,
     Gallery = GalleryDefault,
     getMessagesGroupStyles,
     Giphy = GiphyDefault,
@@ -475,6 +493,8 @@ const ChannelWithContext = <
     hasImagePicker = true,
     hideDateSeparators = false,
     hideStickyDateHeader = false,
+    ImageLoadingFailedIndicator = ImageLoadingFailedIndicatorDefault,
+    ImageLoadingIndicator = ImageLoadingIndicatorDefault,
     ImageUploadPreview = ImageUploadPreviewDefault,
     initialScrollToFirstUnreadMessage = false,
     initialValue,
@@ -494,15 +514,13 @@ const ChannelWithContext = <
     LoadingIndicator = LoadingIndicatorDefault,
     loadingMore: loadingMoreProp,
     loadingMoreRecent: loadingMoreRecentProp,
-    ImageLoadingFailedIndicator = ImageLoadingFailedIndicatorDefault,
-    ImageLoadingIndicator = ImageLoadingIndicatorDefault,
     markdownRules,
     maxMessageLength: maxMessageLengthProp,
     maxNumberOfFiles = 10,
     maxTimeBetweenGroupedMessages,
+    members,
     mentionAllAppUsersEnabled = false,
     mentionAllAppUsersQuery,
-    members,
     Message = MessageDefault,
     messageActions,
     MessageAvatar = MessageAvatarDefault,
@@ -510,6 +528,7 @@ const ChannelWithContext = <
     MessageContent = MessageContentDefault,
     messageContentOrder = ['quoted_reply', 'gallery', 'files', 'text', 'attachments'],
     MessageDeleted = MessageDeletedDefault,
+    MessageEditedTimestamp = MessageEditedTimestampDefault,
     MessageError = MessageErrorDefault,
     MessageFooter = MessageFooterDefault,
     MessageHeader,
@@ -525,23 +544,23 @@ const ChannelWithContext = <
     MessageText,
     MoreOptionsButton = MoreOptionsButtonDefault,
     myMessageTheme,
-    newMessageStateUpdateThrottleInterval = defaultThrottleInterval,
     NetworkDownIndicator = NetworkDownIndicatorDefault,
+    newMessageStateUpdateThrottleInterval = defaultThrottleInterval,
     numberOfLines = 5,
     onChangeText,
     onLongPressMessage,
-    overrideOwnCapabilities,
     onPressInMessage,
     onPressMessage,
     OverlayReactionList = OverlayReactionListDefault,
+    overrideOwnCapabilities,
     ReactionList = ReactionListDefault,
     read,
     Reply = ReplyDefault,
     ScrollToBottomButton = ScrollToBottomButtonDefault,
     selectReaction,
     SendButton = SendButtonDefault,
-    SendMessageDisallowedIndicator = SendMessageDisallowedIndicatorDefault,
     sendImageAsync = false,
+    SendMessageDisallowedIndicator = SendMessageDisallowedIndicatorDefault,
     setInputRef,
     setMembers,
     setMessages,
@@ -552,6 +571,7 @@ const ChannelWithContext = <
     setWatchers,
     shouldSyncChannel,
     ShowThreadMessageInChannelButton = ShowThreadMessageInChannelButtonDefault,
+    StartAudioRecordingButton = AudioRecordingButtonDefault,
     stateUpdateThrottleInterval = defaultThrottleInterval,
     StickyHeader,
     supportedReactions = reactionData,
@@ -580,12 +600,13 @@ const ChannelWithContext = <
   const [error, setError] = useState<Error | boolean>(false);
   const [hasMore, setHasMore] = useState(true);
   const [lastRead, setLastRead] = useState<ChannelContextValue<StreamChatGenerics>['lastRead']>();
-  const [loading, setLoading] = useState(!channel?.state.messages.length);
+  const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
 
   const [loadingMoreRecent, setLoadingMoreRecent] = useState(false);
-  const [quotedMessage, setQuotedMessage] =
-    useState<boolean | MessageType<StreamChatGenerics>>(false);
+  const [quotedMessage, setQuotedMessage] = useState<boolean | MessageType<StreamChatGenerics>>(
+    false,
+  );
   const [thread, setThread] = useState<ThreadContextValue<StreamChatGenerics>['thread']>(
     threadProps || null,
   );
@@ -626,10 +647,8 @@ const ChannelWithContext = <
        * Also there is no use case from UX perspective, why one would need loading uninitialized channel at particular message.
        * If the channel is not initiated, then we need to do channel.watch, which is more expensive for backend than channel.query.
        */
-      let channelLoaded = false;
       if (!channel.initialized) {
         await loadChannel();
-        channelLoaded = true;
       }
 
       if (messageId) {
@@ -639,8 +658,6 @@ const ChannelWithContext = <
         channel.countUnread() > scrollToFirstUnreadThreshold
       ) {
         loadChannelAtFirstUnreadMessage();
-      } else if (!channelLoaded) {
-        loadChannel();
       }
     };
 
@@ -656,6 +673,7 @@ const ChannelWithContext = <
   }, [channelId, messageId]);
 
   const threadPropsExists = !!threadProps;
+
   useEffect(() => {
     if (threadProps && shouldSyncChannel) {
       setThread(threadProps);
@@ -1147,15 +1165,19 @@ const ChannelWithContext = <
   });
 
   const loadChannel = () =>
-    channelQueryCallRef.current(async () => {
-      if (!channel?.initialized || !channel.state.isUpToDate) {
-        await channel?.watch();
+    channelQueryCallRef.current(
+      async () => {
+        if (!channel?.initialized || !channel.state.isUpToDate) {
+          await channel?.watch();
+        } else {
+          await channel.state.loadMessageIntoState('latest');
+        }
+      },
+      () => {
         channel?.state.setIsUpToDate(true);
         setHasNoMoreRecentMessagesToLoad(true);
-      } else {
-        await channel.state.loadMessageIntoState('latest');
-      }
-    });
+      },
+    );
 
   const reloadThread = async () => {
     if (!channel || !thread?.id) return;
@@ -1192,7 +1214,6 @@ const ChannelWithContext = <
 
   const resyncChannel = async () => {
     if (!channel || syncingChannelRef.current) return;
-    if (!channel.initialized) return;
     hasOverlappingRecentMessagesRef.current = false;
     clearInterval(mergeSetsIntervalRef.current);
     syncingChannelRef.current = true;
@@ -1574,6 +1595,7 @@ const ChannelWithContext = <
         if (
           (attachment.type === 'file' ||
             attachment.type === 'audio' ||
+            attachment.type === 'voiceRecording' ||
             attachment.type === 'video') &&
           attachment.asset_url &&
           isLocalUrl(attachment.asset_url) &&
@@ -1592,6 +1614,7 @@ const ChannelWithContext = <
           if (response.thumb_url) {
             attachment.thumb_url = response.thumb_url;
           }
+
           delete attachment.originalFile;
           dbApi.updateMessage({
             message: { ...updatedMessage, cid: channel.cid },
@@ -1609,40 +1632,28 @@ const ChannelWithContext = <
   ) => {
     try {
       const updatedMessage = await uploadPendingAttachments(message);
-      const {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        __html,
-        attachments,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        created_at,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        deleted_at,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        html,
-        id,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        latest_reactions,
-        mentioned_users,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        own_reactions,
-        parent_id,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        quoted_message,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        reaction_counts,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        reactions,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        status,
-        text,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        type,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        updated_at,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        user,
-        ...extraFields
-      } = updatedMessage;
+      const extraFields = omit(updatedMessage, [
+        '__html',
+        'attachments',
+        'created_at',
+        'deleted_at',
+        'html',
+        'id',
+        'latest_reactions',
+        'mentioned_users',
+        'own_reactions',
+        'parent_id',
+        'quoted_message',
+        'reaction_counts',
+        'reaction_groups',
+        'reactions',
+        'status',
+        'text',
+        'type',
+        'updated_at',
+        'user',
+      ]);
+      const { attachments, id, mentioned_users, parent_id, text } = updatedMessage;
       if (!channel.id) return;
 
       const mentionedUserIds = mentioned_users?.map((user) => user.id) || [];
@@ -1703,10 +1714,6 @@ const ChannelWithContext = <
     });
 
     mergeOverlappingMessageSetsRef.current();
-
-    if (!channel?.state.isUpToDate) {
-      await reloadChannel();
-    }
 
     updateMessage(messagePreview, {
       commands: [],
@@ -1982,6 +1989,7 @@ const ChannelWithContext = <
       },
     });
   };
+
   const deleteMessage: MessagesContextValue<StreamChatGenerics>['deleteMessage'] = async (
     message,
   ) => {
@@ -2186,7 +2194,18 @@ const ChannelWithContext = <
 
   const inputMessageInputContext = useCreateInputMessageInputContext<StreamChatGenerics>({
     additionalTextInputProps,
+    asyncMessagesLockDistance,
+    asyncMessagesMinimumPressDuration,
+    asyncMessagesMultiSendEnabled,
+    asyncMessagesSlideToCancelDistance,
     AttachButton,
+    AudioAttachmentUploadPreview,
+    AudioRecorder,
+    audioRecordingEnabled,
+    AudioRecordingInProgress,
+    AudioRecordingLockIndicator,
+    AudioRecordingPreview,
+    AudioRecordingWaveform,
     autoCompleteSuggestionsLimit,
     autoCompleteTriggerSettings,
     channelId,
@@ -2227,6 +2246,7 @@ const ChannelWithContext = <
     setInputRef,
     setQuotedMessageState,
     ShowThreadMessageInChannelButton,
+    StartAudioRecordingButton,
     UploadProgressIndicator,
   });
 
@@ -2266,7 +2286,6 @@ const ChannelWithContext = <
     FileAttachmentIcon,
     FlatList,
     forceAlignMessages,
-    formatDate,
     Gallery,
     getMessagesGroupStyles,
     Giphy,
@@ -2297,6 +2316,7 @@ const ChannelWithContext = <
     MessageContent,
     messageContentOrder,
     MessageDeleted,
+    MessageEditedTimestamp,
     MessageError,
     MessageFooter,
     MessageHeader,
@@ -2364,7 +2384,7 @@ const ChannelWithContext = <
   if (!channel?.cid || !channel.watch) {
     return (
       <Text style={[styles.selectChannel, { color: black }, selectChannel]} testID='no-channel'>
-        {t('Please select a channel first')}
+        {t<string>('Please select a channel first')}
       </Text>
     );
   }

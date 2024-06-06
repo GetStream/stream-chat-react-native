@@ -65,6 +65,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: white }]}>
       <Channel<StreamChatGenerics>
+        audioRecordingEnabled={true}
         channel={channel}
         enforceUniqueReaction
         keyboardVerticalOffset={0}

@@ -16,6 +16,10 @@ import NetworkDownIndicator from '../common-content/ui-components/channel/props/
 import AdditionalKeyboardAvoidingViewProps from '../common-content/ui-components/channel/props/additional_keyboard_avoiding_view_props.mdx';
 import AdditionalTextInputProps from '../common-content/ui-components/channel/props/additional_text_input_props.mdx';
 import AllowThreadMessagesInChannel from '../common-content/ui-components/channel/props/allow_thread_messages_in_channel.mdx';
+import AsyncMessagesLockDistance from '../common-content/ui-components/channel/props/async_messages_lock_distance.mdx';
+import AsyncMessagesMinimumPressDuration from '../common-content/ui-components/channel/props/async_messages_minimum_press_duration.mdx';
+import AsyncMessagesMultiSendEnabled from '../common-content/ui-components/channel/props/async_messages_multi_send_enabled.mdx';
+import AsyncMessagesSlideToCancelDistance from '../common-content/ui-components/channel/props/async_messages_slide_to_cancel_distance.mdx';
 import AutoCompleteSuggestionHeader from '../common-content/ui-components/channel/props/autocomplete_suggestion_header.mdx';
 import AutoCompleteSuggestionItem from '../common-content/ui-components/channel/props/autocomplete_suggestion_item.mdx';
 import AutoCompleteSuggestionList from '../common-content/ui-components/channel/props/autocomplete_suggestion_list.mdx';
@@ -26,6 +30,13 @@ import AttachButton from '../common-content/ui-components/channel/props/attach_b
 import Attachment from '../common-content/ui-components/channel/props/attachment.mdx';
 import AttachmentActions from '../common-content/ui-components/channel/props/attachment_actions.mdx';
 import AudioAttachment from '../common-content/ui-components/channel/props/audio_attachment.mdx';
+import AudioAttachmentUploadPreview from '../common-content/ui-components/channel/props/audio_attachment_upload_preview.mdx';
+import AudioRecorder from '../common-content/ui-components/channel/props/audio_recorder.mdx';
+import AudioRecordingEnabled from '../common-content/ui-components/channel/props/audio_recording_enabled.mdx';
+import AudioRecordingInProgress from '../common-content/ui-components/channel/props/audio_recording_in_progress.mdx';
+import AudioRecordingLockIndicator from '../common-content/ui-components/channel/props/audio_recording_lock_indicator.mdx';
+import AudioRecordingPreview from '../common-content/ui-components/channel/props/audio_recording_preview.mdx';
+import AudioRecordingWaveform from '../common-content/ui-components/channel/props/audio_recording_waveform.mdx';
 import Card from '../common-content/ui-components/channel/props/card.mdx';
 import CardCover from '../common-content/ui-components/channel/props/card_cover.mdx';
 import CardFooter from '../common-content/ui-components/channel/props/card_footer.mdx';
@@ -93,6 +104,7 @@ import MessageContent from '../common-content/ui-components/channel/props/messag
 import MessageActions from '../common-content/ui-components/channel/props/message_actions.mdx';
 import MessageContentOrder from '../common-content/ui-components/channel/props/message_content_order.mdx';
 import MessageDeleted from '../common-content/ui-components/channel/props/message-deleted.mdx';
+import MessageEditedTimestamp from '../common-content/ui-components/channel/props/message-edited-timestamp.mdx';
 import MessageError from '../common-content/ui-components/channel/props/message-error.mdx';
 import MessageFooter from '../common-content/ui-components/channel/props/message-footer.mdx';
 import MessageHeader from '../common-content/ui-components/channel/props/message-header.mdx';
@@ -120,6 +132,7 @@ import SelectReaction from '../common-content/ui-components/channel/props/select
 import SendButton from '../common-content/ui-components/channel/props/send_button.mdx';
 import SendMessageDisallowedIndicator from '../common-content/ui-components/channel/props/send_message_disallowed_indicator.mdx';
 import ShowThreadMessageInChannelButton from '../common-content/ui-components/channel/props/show_thread_message_in_channel_button.mdx';
+import StartAudioRecordingButton from '../common-content/ui-components/channel/props/start_audio_recording_button.mdx';
 import StateUpdateThrottleInterval from '../common-content/ui-components/channel/props/state_update_throttle_interval.mdx';
 import SupportedReactions from '../common-content/ui-components/channel/props/supported_reactions.mdx';
 import Thread from '../common-content/ui-components/channel/props/thread.mdx';
@@ -268,21 +281,29 @@ This is often the header height.
 
 <AllowThreadMessagesInChannel />
 
+### ayncMessagesLockDistance
+
+<AsyncMessagesLockDistance />
+
+### ayncMessagesMinimumPressDuration
+
+<AsyncMessagesMinimumPressDuration />
+
+### ayncMessagesMultiSendEnabled
+
+<AsyncMessagesMultiSendEnabled />
+
+### ayncMessagesSlideToCancelDistance
+
+<AsyncMessagesSlideToCancelDistance />
+
+### audioRecordingEnabled
+
+<AudioRecordingEnabled />
+
 ### autoCompleteSuggestionsLimit
 
 <AutoCompleteSuggestionsLimit />
-
-### AutoCompleteSuggestionHeader
-
-<AutoCompleteSuggestionHeader />
-
-### AutoCompleteSuggestionItem
-
-<AutoCompleteSuggestionItem />
-
-### AutoCompleteSuggestionList
-
-<AutoCompleteSuggestionList />
 
 ### autoCompleteTriggerSettings
 
@@ -688,6 +709,8 @@ Callback function to set the [ref](https://reactjs.org/docs/refs-and-the-dom.htm
 
 <!-- ### updateSuggestions -->
 
+## UI Components Props
+
 ### AttachButton
 
 <AttachButton />
@@ -703,6 +726,42 @@ Callback function to set the [ref](https://reactjs.org/docs/refs-and-the-dom.htm
 ### AudioAttachment
 
 <AudioAttachment />
+
+### AudioAttachmentUploadPreview
+
+<AudioAttachmentUploadPreview />
+
+### AudioRecorder
+
+<AudioRecorder />
+
+### AudioRecordingInProgress
+
+<AudioRecordingInProgress />
+
+### AudioRecordingLockIndicator
+
+<AudioRecordingLockIndicator />
+
+### AudioRecordingPreview
+
+<AudioRecordingPreview />
+
+### AudioRecordingWaveform
+
+<AudioRecordingWaveform />
+
+### AutoCompleteSuggestionHeader
+
+<AutoCompleteSuggestionHeader />
+
+### AutoCompleteSuggestionItem
+
+<AutoCompleteSuggestionItem />
+
+### AutoCompleteSuggestionList
+
+<AutoCompleteSuggestionList />
 
 ### Card
 
@@ -842,6 +901,10 @@ Component to render full screen error indicator, when channel fails to load.
 
 <MessageDeleted />
 
+### MessageEditedTimestamp
+
+<MessageEditedTimestamp />
+
 ### MessageError
 
 <MessageError />
@@ -919,6 +982,10 @@ Component to render full screen error indicator, when channel fails to load.
 ### ShowThreadMessageInChannelButton
 
 <ShowThreadMessageInChannelButton />
+
+### StartAudioRecordingButton
+
+<StartAudioRecordingButton />
 
 <!-- ### StickyHeader -->
 

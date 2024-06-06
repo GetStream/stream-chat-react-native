@@ -4,13 +4,67 @@ import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import type { MessageType } from './hooks/useMessageList';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import {
-  isDayOrMoment,
-  TDateTimeParserInput,
-  useTranslationContext,
-} from '../../contexts/translationContext/TranslationContext';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
+import { getDateString } from '../../utils/getDateString';
+
+export type MessageSystemProps<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
+  message: MessageType<StreamChatGenerics>;
+  style?: StyleProp<ViewStyle>;
+};
+
+/**
+ * A component to display system message. e.g, when someone updates the channel,
+ * they can attach a message with that update. That message will be available
+ * in message list as (type) system message.
+ */
+export const MessageSystem = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  props: MessageSystemProps<StreamChatGenerics>,
+) => {
+  const { message, style } = props;
+
+  const {
+    theme: {
+      colors: { grey, grey_whisper },
+      messageList: {
+        messageSystem: { container, dateText, line, text, textContainer },
+      },
+    },
+  } = useTheme();
+  const { tDateTimeParser } = useTranslationContext();
+
+  const createdAt = message.created_at;
+  const formattedDate = getDateString({
+    calendar: true,
+    date: createdAt,
+    tDateTimeParser,
+  });
+
+  return (
+    <View style={[styles.container, style, container]} testID='message-system'>
+      <View style={[styles.line, { backgroundColor: grey_whisper }, line]} />
+      <View style={[styles.textContainer, textContainer]}>
+        <Text style={[styles.text, { color: grey }, text]}>
+          {message.text?.toUpperCase() || ''}
+        </Text>
+        {formattedDate && (
+          <Text style={[styles.text, { color: grey }, dateText]}>
+            {formattedDate.toString().toUpperCase()}
+          </Text>
+        )}
+      </View>
+      <View style={[styles.line, { backgroundColor: grey_whisper }, line]} />
+    </View>
+  );
+};
+
+MessageSystem.displayName = 'MessageSystem{messageList{messageSystem}}';
 
 const styles = StyleSheet.create({
   container: {
@@ -33,65 +87,3 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
 });
-
-export type MessageSystemProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
-  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
-  message: MessageType<StreamChatGenerics>;
-  /**
-   * Formatter function for date object.
-   *
-   * @param date TDateTimeParserInput object of message
-   * @returns string
-   */
-  formatDate?: (date: TDateTimeParserInput) => string;
-  style?: StyleProp<ViewStyle>;
-};
-
-/**
- * A component to display system message. e.g, when someone updates the channel,
- * they can attach a message with that update. That message will be available
- * in message list as (type) system message.
- */
-export const MessageSystem = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageSystemProps<StreamChatGenerics>,
-) => {
-  const { formatDate, message, style } = props;
-
-  const {
-    theme: {
-      colors: { grey, grey_whisper },
-      messageList: {
-        messageSystem: { container, dateText, line, text, textContainer },
-      },
-    },
-  } = useTheme();
-  const { tDateTimeParser } = useTranslationContext();
-
-  const createdAt = message.created_at;
-  const parsedDate = tDateTimeParser(createdAt);
-  const date =
-    formatDate && createdAt
-      ? formatDate(createdAt)
-      : parsedDate && isDayOrMoment(parsedDate)
-      ? parsedDate.calendar().toUpperCase()
-      : parsedDate;
-
-  return (
-    <View style={[styles.container, style, container]} testID='message-system'>
-      <View style={[styles.line, { backgroundColor: grey_whisper }, line]} />
-      <View style={[styles.textContainer, textContainer]}>
-        <Text style={[styles.text, { color: grey }, text]}>
-          {message.text?.toUpperCase() || ''}
-        </Text>
-        <Text style={[styles.text, { color: grey }, dateText]}>{date}</Text>
-      </View>
-      <View style={[styles.line, { backgroundColor: grey_whisper }, line]} />
-    </View>
-  );
-};
-
-MessageSystem.displayName = 'MessageSystem{messageList{messageSystem}}';

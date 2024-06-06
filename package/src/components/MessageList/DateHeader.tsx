@@ -21,10 +21,10 @@ const styles = StyleSheet.create({
 });
 
 export type DateHeaderProps = {
-  dateString: string;
+  dateString: string | number;
 };
 
-export const DateHeader: React.FC<DateHeaderProps> = ({ dateString }) => {
+export const DateHeader = ({ dateString }: DateHeaderProps) => {
   const {
     theme: {
       colors: { overlay, white },

@@ -48,8 +48,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export const AnimatedGalleryVideo: React.FC<AnimatedGalleryVideoType> = React.memo(
-  (props) => {
+export const AnimatedGalleryVideo = React.memo(
+  (props: AnimatedGalleryVideoType) => {
     const [opacity, setOpacity] = useState<number>(1);
 
     const {

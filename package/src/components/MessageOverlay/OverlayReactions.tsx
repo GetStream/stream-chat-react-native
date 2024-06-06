@@ -116,13 +116,13 @@ export type OverlayReactionsProps<
   supportedReactions?: ReactionData[];
 };
 
-const ReactionIcon: React.FC<
-  Pick<Reaction, 'type'> & {
-    pathFill: string;
-    size: number;
-    supportedReactions: ReactionData[];
-  }
-> = ({ pathFill, size, supportedReactions, type }) => {
+type ReactionIconProps = Pick<Reaction, 'type'> & {
+  pathFill: string;
+  size: number;
+  supportedReactions: ReactionData[];
+};
+
+const ReactionIcon = ({ pathFill, size, supportedReactions, type }: ReactionIconProps) => {
   const Icon = supportedReactions.find((reaction) => reaction.type === type)?.Icon || Unknown;
   return <Icon height={size} pathFill={pathFill} width={size} />;
 };
@@ -130,14 +130,14 @@ const ReactionIcon: React.FC<
 /**
  * OverlayReactions - A high level component which implements all the logic required for message overlay reactions
  */
-export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
+export const OverlayReactions = (props: OverlayReactionsProps) => {
   const {
     alignment: overlayAlignment,
-    reactions,
-    supportedReactions = reactionData,
-    showScreen,
-    title,
     OverlayReactionsAvatar,
+    reactions,
+    showScreen,
+    supportedReactions = reactionData,
+    title,
   } = props;
   const layoutHeight = useSharedValue(0);
   const layoutWidth = useSharedValue(0);
@@ -158,6 +158,7 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
           radius,
           reactionBubble,
           reactionBubbleBackground,
+          reactionBubbleBorderRadius,
           title: titleStyle,
         },
       },
@@ -252,20 +253,18 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
                 {
                   backgroundColor: alignment === 'left' ? grey_gainsboro : white,
                   height:
-                    (reactionBubble.borderRadius || styles.reactionBubble.borderRadius) -
-                    radius / 2,
+                    (reactionBubbleBorderRadius || styles.reactionBubble.borderRadius) - radius / 2,
                   left,
                   top,
                   width:
-                    (reactionBubble.borderRadius || styles.reactionBubble.borderRadius) -
-                    radius / 2,
+                    (reactionBubbleBorderRadius || styles.reactionBubble.borderRadius) - radius / 2,
                 },
                 reactionBubble,
               ]}
             >
               <ReactionIcon
                 pathFill={accent_blue}
-                size={(reactionBubble.borderRadius || styles.reactionBubble.borderRadius) / 2}
+                size={(reactionBubbleBorderRadius || styles.reactionBubble.borderRadius) / 2}
                 supportedReactions={supportedReactions}
                 type={type}
               />

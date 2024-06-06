@@ -19,6 +19,7 @@ import { AttachmentPickerBottomSheetHandle as DefaultAttachmentPickerBottomSheet
 import { AttachmentPickerError as DefaultAttachmentPickerError } from '../../components/AttachmentPicker/components/AttachmentPickerError';
 import { AttachmentPickerErrorImage as DefaultAttachmentPickerErrorImage } from '../../components/AttachmentPicker/components/AttachmentPickerErrorImage';
 import { AttachmentPickerIOSSelectMorePhotos as DefaultAttachmentPickerIOSSelectMorePhotos } from '../../components/AttachmentPicker/components/AttachmentPickerIOSSelectMorePhotos';
+import { AttachmentPickerSelectionBar as DefaultAttachmentPickerSelectionBar } from '../../components/AttachmentPicker/components/AttachmentPickerSelectionBar';
 import { CameraSelectorIcon as DefaultCameraSelectorIcon } from '../../components/AttachmentPicker/components/CameraSelectorIcon';
 import { FileSelectorIcon as DefaultFileSelectorIcon } from '../../components/AttachmentPicker/components/FileSelectorIcon';
 import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../../components/AttachmentPicker/components/ImageOverlaySelectedComponent';
@@ -28,6 +29,7 @@ import { MessageOverlay } from '../../components/MessageOverlay/MessageOverlay';
 import { OverlayBackdrop } from '../../components/MessageOverlay/OverlayBackdrop';
 import { useStreami18n } from '../../hooks/useStreami18n';
 
+import { useViewport } from '../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { AttachmentPickerProvider } from '../attachmentPickerContext/AttachmentPickerContext';
 import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
@@ -63,18 +65,20 @@ export const OverlayProvider = <
 >(
   props: PropsWithChildren<OverlayProviderProps<StreamChatGenerics>>,
 ) => {
-  const bottomSheetCloseTimeoutRef = useRef<NodeJS.Timeout>();
+  const { vh } = useViewport();
+  const bottomSheetCloseTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const {
-    autoPlayVideo,
     AttachmentPickerBottomSheetHandle = DefaultAttachmentPickerBottomSheetHandle,
-    attachmentPickerBottomSheetHandleHeight,
-    attachmentPickerBottomSheetHeight,
+    attachmentPickerBottomSheetHandleHeight = 20,
+    attachmentPickerBottomSheetHeight = vh(45),
     AttachmentPickerError = DefaultAttachmentPickerError,
     attachmentPickerErrorButtonText,
     AttachmentPickerErrorImage = DefaultAttachmentPickerErrorImage,
     attachmentPickerErrorText,
-    attachmentSelectionBarHeight,
     AttachmentPickerIOSSelectMorePhotos = DefaultAttachmentPickerIOSSelectMorePhotos,
+    AttachmentPickerSelectionBar = DefaultAttachmentPickerSelectionBar,
+    attachmentSelectionBarHeight = 52,
+    autoPlayVideo,
     bottomInset,
     CameraSelectorIcon = DefaultCameraSelectorIcon,
     children,
@@ -98,7 +102,7 @@ export const OverlayProvider = <
     giphyVersion,
     i18nInstance,
     imageGalleryCustomComponents,
-    imageGalleryGridHandleHeight,
+    imageGalleryGridHandleHeight = 40,
     imageGalleryGridSnapPoints,
     ImageOverlaySelectedComponent = DefaultImageOverlaySelectedComponent,
     ImageSelectorIcon = DefaultImageSelectorIcon,
@@ -118,11 +122,10 @@ export const OverlayProvider = <
         console.warn('bottom and top insets must be set for the image picker to work correctly');
       }
     },
-    topInset,
-    translucentStatusBar,
     OverlayReactionList,
     OverlayReactions,
     OverlayReactionsAvatar,
+    topInset,
     value,
   } = props;
 
@@ -139,7 +142,6 @@ export const OverlayProvider = <
     ImageOverlaySelectedComponent,
     numberOfAttachmentImagesToLoadPerCall,
     numberOfAttachmentPickerImageColumns,
-    translucentStatusBar,
   };
 
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -189,7 +191,9 @@ export const OverlayProvider = <
   }, [overlay]);
 
   const attachmentPickerContext = {
+    AttachmentPickerBottomSheetHandle,
     attachmentPickerBottomSheetHeight,
+    AttachmentPickerSelectionBar,
     attachmentSelectionBarHeight,
     bottomInset,
     CameraSelectorIcon,
@@ -211,7 +215,6 @@ export const OverlayProvider = <
     overlay,
     setOverlay,
     style: value?.style,
-    translucentStatusBar,
   };
 
   return (

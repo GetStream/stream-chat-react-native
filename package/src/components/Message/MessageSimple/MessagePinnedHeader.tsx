@@ -14,9 +14,6 @@ const styles = StyleSheet.create({
   container: {
     display: 'flex',
     flexDirection: 'row',
-    marginBottom: 8,
-    marginLeft: 30,
-    marginTop: 5,
   },
   label: {},
 });
@@ -55,8 +52,8 @@ const MessagePinnedHeaderWithContext = <
     >
       <PinHeader pathFill={grey} />
       <Text style={[{ color: grey }, styles.label, label]}>
-        {t('Pinned by')}{' '}
-        {message?.pinned_by?.id === client?.user?.id ? t('You') : message?.pinned_by?.name}
+        {t<string>('Pinned by')}{' '}
+        {message?.pinned_by?.id === client?.user?.id ? t<string>('You') : message?.pinned_by?.name}
       </Text>
     </View>
   );

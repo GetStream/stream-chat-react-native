@@ -13,7 +13,8 @@ import type {
   UserResponse,
 } from 'stream-chat';
 
-import type { MessageType } from '../components/MessageList/hooks/useMessageList';
+import { IconProps } from '../../src/icons/utils/base';
+import { MessageType } from '../components/MessageList/hooks/useMessageList';
 import type {
   EmojiSearchIndex,
   MentionAllAppUsersQuery,
@@ -24,12 +25,11 @@ import type {
   SuggestionUser,
 } from '../contexts/suggestionsContext/SuggestionsContext';
 import { compiledEmojis, Emoji } from '../emoji-data';
-import type { IconProps } from '../icons/utils/base';
 import type { TableRowJoinedUser } from '../store/types';
 import type { DefaultStreamChatGenerics, ValueOf } from '../types/types';
 
 export type ReactionData = {
-  Icon: React.FC<IconProps>;
+  Icon: React.ComponentType<IconProps>;
   type: string;
 };
 
@@ -62,7 +62,7 @@ export const MessageStatusTypes = {
   SENDING: 'sending',
 };
 
-export type FileStateValue = typeof FileState[keyof typeof FileState];
+export type FileStateValue = (typeof FileState)[keyof typeof FileState];
 
 type Progress = ValueOf<typeof ProgressIndicatorTypes>;
 type IndicatorStatesMap = Record<ValueOf<typeof FileState>, Progress | null>;
@@ -112,6 +112,17 @@ export const isBouncedMessage = <
 >(
   message: MessageType<StreamChatGenerics>,
 ) => message.type === 'error' && message.moderation_details !== undefined;
+
+/**
+ * Utility to check if the message is a edited message.
+ * @param message
+ * @returns boolean
+ */
+export const isEditedMessage = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  message: MessageType<StreamChatGenerics>,
+) => !!message.message_text_updated_at;
 
 const defaultAutoCompleteSuggestionsLimit = 10;
 const defaultMentionAllAppUsersQuery = {
@@ -591,19 +602,31 @@ export const hasOnlyEmojis = (text: string) => {
  * @param {FormatMessageResponse<StreamChatGenerics>} message - the message object to be stringified
  * @returns {string} The stringified message
  */
-const stringifyMessage = <
+export const stringifyMessage = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   deleted_at,
   latest_reactions,
+  reaction_groups,
+  readBy,
   reply_count,
   status,
+  text,
   type,
   updated_at,
-}: FormatMessageResponse<StreamChatGenerics>): string =>
-  `${type}${deleted_at}${
-    latest_reactions ? latest_reactions.map(({ type }) => type).join() : ''
-  }${reply_count}${status}${updated_at?.toISOString?.() || updated_at}`;
+}: FormatMessageResponse<StreamChatGenerics> | MessageType<StreamChatGenerics>): string =>
+  `${
+    latest_reactions ? latest_reactions.map(({ type, user }) => `${type}${user?.id}`).join() : ''
+  }${
+    reaction_groups
+      ? Object.entries(reaction_groups)
+          .flatMap(
+            ([type, { count, first_reaction_at, last_reaction_at }]) =>
+              `${type}${count}${first_reaction_at}${last_reaction_at}`,
+          )
+          .join()
+      : ''
+  }${type}${deleted_at}${text}${readBy}${reply_count}${status}${updated_at}`;
 
 /**
  * Reduces a list of messages to strings that are used in useEffect & useMemo

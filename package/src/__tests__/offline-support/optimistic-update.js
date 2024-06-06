@@ -3,7 +3,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View } from 'react-native';
 
-import { act, cleanup, render, waitFor } from '@testing-library/react-native';
+import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -146,7 +146,7 @@ export const OptimisticUpdates = () => {
       it('pending task should exist if deleteMessage request fails', async () => {
         const message = generateMessage();
 
-        const { getByTestId } = render(
+        render(
           <Chat client={chatClient} enableOfflineSupport>
             <Channel channel={channel} initialValue={message.text}>
               <CallbackEffectWithContext
@@ -165,7 +165,7 @@ export const OptimisticUpdates = () => {
             </Channel>
           </Chat>,
         );
-        await waitFor(() => expect(getByTestId('children')).toBeTruthy());
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
         await waitFor(() => {
           const pendingTasksRows = BetterSqlite.selectFromTable('pendingTasks');
           const pendingTaskType = pendingTasksRows?.[0]?.type;
@@ -177,7 +177,7 @@ export const OptimisticUpdates = () => {
 
       it('pending task should be cleared if deleteMessage request is succesful', async () => {
         const message = generateMessage();
-        const { getByTestId } = render(
+        render(
           <Chat client={chatClient} enableOfflineSupport>
             <Channel channel={channel} initialValue={message.text}>
               <CallbackEffectWithContext
@@ -192,7 +192,7 @@ export const OptimisticUpdates = () => {
             </Channel>
           </Chat>,
         );
-        await waitFor(() => expect(getByTestId('children')).toBeTruthy());
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
         await waitFor(() => {
           const pendingTasksRows = BetterSqlite.selectFromTable('pendingTasks');
           expect(pendingTasksRows.length).toBe(0);
@@ -205,7 +205,7 @@ export const OptimisticUpdates = () => {
         const reaction = generateReaction();
         const targetMessage = channel.state.messages[0];
 
-        const { getByTestId } = render(
+        render(
           <Chat client={chatClient} enableOfflineSupport>
             <Channel channel={channel}>
               <CallbackEffectWithContext
@@ -224,7 +224,7 @@ export const OptimisticUpdates = () => {
             </Channel>
           </Chat>,
         );
-        await waitFor(() => expect(getByTestId('children')).toBeTruthy());
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
         await waitFor(() => {
           const pendingTasksRows = BetterSqlite.selectFromTable('pendingTasks');
           const pendingTaskType = pendingTasksRows?.[0]?.type;
@@ -238,7 +238,7 @@ export const OptimisticUpdates = () => {
         const reaction = generateReaction();
         const targetMessage = channel.state.messages[0];
 
-        const { getByTestId } = render(
+        render(
           <Chat client={chatClient} enableOfflineSupport>
             <Channel channel={channel}>
               <CallbackEffectWithContext
@@ -253,7 +253,7 @@ export const OptimisticUpdates = () => {
             </Channel>
           </Chat>,
         );
-        await waitFor(() => expect(getByTestId('children')).toBeTruthy());
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
         await waitFor(() => {
           const pendingTasksRows = BetterSqlite.selectFromTable('pendingTasks');
           expect(pendingTasksRows.length).toBe(0);
@@ -266,7 +266,7 @@ export const OptimisticUpdates = () => {
         const reaction = generateReaction();
         const targetMessage = channel.state.messages[0];
 
-        const { getByTestId } = render(
+        render(
           <Chat client={chatClient} enableOfflineSupport>
             <Channel channel={channel}>
               <CallbackEffectWithContext
@@ -285,7 +285,7 @@ export const OptimisticUpdates = () => {
             </Channel>
           </Chat>,
         );
-        await waitFor(() => expect(getByTestId('children')).toBeTruthy());
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
         await waitFor(() => {
           const pendingTasksRows = BetterSqlite.selectFromTable('pendingTasks');
           const pendingTaskType = pendingTasksRows?.[0]?.type;
@@ -299,7 +299,7 @@ export const OptimisticUpdates = () => {
         const reaction = generateReaction();
         const targetMessage = channel.state.messages[0];
 
-        const { getByTestId } = render(
+        render(
           <Chat client={chatClient} enableOfflineSupport>
             <Channel channel={channel}>
               <CallbackEffectWithContext
@@ -314,7 +314,7 @@ export const OptimisticUpdates = () => {
             </Channel>
           </Chat>,
         );
-        await waitFor(() => expect(getByTestId('children')).toBeTruthy());
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
 
         await waitFor(() => {
           const pendingTasksRows = BetterSqlite.selectFromTable('pendingTasks');
@@ -327,7 +327,7 @@ export const OptimisticUpdates = () => {
       const message = channel.state.messages[0];
       const reaction = generateReaction();
 
-      const { getByTestId } = render(
+      render(
         <Chat client={chatClient} enableOfflineSupport>
           <Channel channel={channel} initialValue={message.text}>
             <CallbackEffectWithContext
@@ -353,7 +353,7 @@ export const OptimisticUpdates = () => {
           </Channel>
         </Chat>,
       );
-      await waitFor(() => expect(getByTestId('children')).toBeTruthy());
+      await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
 
       await waitFor(() => {
         const pendingTasksRows = BetterSqlite.selectFromTable('pendingTasks');

@@ -9,7 +9,7 @@ type LoadingProps = IconProps &
     stopColor?: StopProps['stopColor'];
   };
 
-export const Loading: React.FC<LoadingProps> = (props) => {
+export const Loading = (props: LoadingProps) => {
   const {
     height = 16,
     startColor = '#0169F6',

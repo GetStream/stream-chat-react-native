@@ -1,3 +1,4 @@
+import uniqBy from 'lodash/uniqBy';
 import type { Channel, StreamChat } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
@@ -12,8 +13,8 @@ type MoveParameters<
 export const moveChannelUp = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
-  cid,
   channels = [],
+  cid,
 }: MoveParameters<StreamChatGenerics>) => {
   // get channel from channels
   const index = channels.findIndex((c) => c.cid === cid);
@@ -24,7 +25,7 @@ export const moveChannelUp = <
   channels.splice(index, 1);
   channels.unshift(channel);
 
-  return [...channels];
+  return uniqBy([channel, ...channels], 'cid');
 };
 
 type GetParameters<

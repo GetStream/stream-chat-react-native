@@ -1,9 +1,10 @@
 import React, { PropsWithChildren } from 'react';
-import { act } from 'react-test-renderer';
 
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react-native';
 
 import { generateImageUploadPreview } from '../../../mock-builders/generator/attachment';
+import { generateMessage } from '../../../mock-builders/generator/message';
+import { generateUser } from '../../../mock-builders/generator/user';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import {
   InputMessageInputContextValue,
@@ -30,6 +31,8 @@ const Wrapper = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultS
   </MessageInputProvider>
 );
 
+const user1 = generateUser();
+const message = generateMessage({ user: user1 });
 describe("MessageInputContext's uploadImage", () => {
   it('uploadImage works', async () => {
     const doImageUploadRequestMock = jest
@@ -38,16 +41,22 @@ describe("MessageInputContext's uploadImage", () => {
 
     const initialProps = {
       doImageUploadRequest: doImageUploadRequestMock,
-      editing: true,
+      editing: message,
     };
 
     const { result } = renderHook(() => useMessageInputContext(), {
       initialProps,
-      wrapper: Wrapper,
+      wrapper: (props) => (
+        <Wrapper
+          doImageUploadRequest={initialProps.doImageUploadRequest}
+          editing={initialProps.editing}
+          {...props}
+        />
+      ),
     });
 
-    await act(async () => {
-      await result.current.uploadImage({ newImage: generateImageUploadPreview() });
+    await waitFor(() => {
+      result.current.uploadImage({ newImage: generateImageUploadPreview() });
     });
 
     expect(doImageUploadRequestMock).toHaveBeenCalledTimes(1);

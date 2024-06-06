@@ -1,5 +1,5 @@
 {
-  "presets": ["@babel/env", "module:metro-react-native-babel-preset"],
+  "presets": ["@babel/env", "module:@react-native/babel-preset"],
   "plugins": [
     [
       "i18next-extract",

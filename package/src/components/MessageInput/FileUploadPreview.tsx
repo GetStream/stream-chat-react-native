@@ -20,7 +20,8 @@ import { Close } from '../../icons/Close';
 import { Warning } from '../../icons/Warning';
 import { isAudioPackageAvailable } from '../../native';
 import type { DefaultStreamChatGenerics, FileUpload } from '../../types/types';
-import { FileState, getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../utils/utils';
+import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
+import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../utils/utils';
 import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
 import { WritingDirectionAwareText } from '../RTLComponents/WritingDirectionAwareText';
 
@@ -40,13 +41,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     flexDirection: 'row',
-    height: FILE_PREVIEW_HEIGHT,
-    justifyContent: 'space-between',
-    marginBottom: 8,
-    paddingLeft: 8,
-    paddingRight: 8,
+    paddingHorizontal: 8,
   },
-  fileContentContainer: { flexDirection: 'row' },
   fileIcon: {
     alignItems: 'center',
     alignSelf: 'center',
@@ -55,26 +51,25 @@ const styles = StyleSheet.create({
   filenameText: {
     fontSize: 14,
     fontWeight: 'bold',
-    paddingHorizontal: 10,
   },
   fileSizeText: {
     fontSize: 12,
-    paddingHorizontal: 10,
+    marginTop: 10,
   },
   fileTextContainer: {
-    height: '100%',
     justifyContent: 'space-around',
+    marginVertical: 10,
+    paddingHorizontal: 10,
   },
   flatList: { marginBottom: 12, maxHeight: FILE_PREVIEW_HEIGHT * 2.5 + 16 },
   overlay: {
     borderRadius: 12,
-    marginLeft: 8,
-    marginRight: 8,
+    marginHorizontal: 8,
     marginTop: 2,
   },
   unsupportedFile: {
     flexDirection: 'row',
-    paddingLeft: 10,
+    paddingTop: 10,
   },
   unsupportedFileText: {
     fontSize: 12,
@@ -90,7 +85,7 @@ const UnsupportedFileTypeOrFileSizeIndicator = ({
   indicatorType,
   item,
 }: {
-  indicatorType: typeof ProgressIndicatorTypes[keyof typeof ProgressIndicatorTypes];
+  indicatorType: (typeof ProgressIndicatorTypes)[keyof typeof ProgressIndicatorTypes];
   item: FileUpload;
 }) => {
   const {
@@ -126,7 +121,7 @@ const UnsupportedFileTypeOrFileSizeIndicator = ({
         width={WARNING_ICON_SIZE}
       />
       <Text style={[styles.unsupportedFileText, { color: grey_dark }]}>
-        {t('File type not supported')}
+        {t<string>('File type not supported')}
       </Text>
     </View>
   ) : (
@@ -140,9 +135,9 @@ type FileUploadPreviewPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageInputContextValue<StreamChatGenerics>,
-  'fileUploads' | 'removeFile' | 'uploadFile' | 'setFileUploads'
+  'fileUploads' | 'removeFile' | 'uploadFile' | 'setFileUploads' | 'AudioAttachmentUploadPreview'
 > &
-  Pick<MessagesContextValue<StreamChatGenerics>, 'AudioAttachment' | 'FileAttachmentIcon'> &
+  Pick<MessagesContextValue<StreamChatGenerics>, 'FileAttachmentIcon'> &
   Pick<ChatContextValue<StreamChatGenerics>, 'enableOfflineSupport'>;
 
 const FileUploadPreviewWithContext = <
@@ -151,7 +146,7 @@ const FileUploadPreviewWithContext = <
   props: FileUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
-    AudioAttachment,
+    AudioAttachmentUploadPreview,
     enableOfflineSupport,
     FileAttachmentIcon,
     fileUploads,
@@ -163,12 +158,27 @@ const FileUploadPreviewWithContext = <
   const flatListRef = useRef<FlatList<FileUpload> | null>(null);
   const [flatListWidth, setFlatListWidth] = useState(0);
 
+  useEffect(() => {
+    setFileUploads(
+      fileUploads.map((file) => ({
+        ...file,
+        duration: file.duration || 0,
+        paused: true,
+        progress: 0,
+      })),
+    );
+  }, [fileUploads.length]);
+
   // Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here and the duration is set.
   const onLoad = (index: string, duration: number) => {
     setFileUploads((prevFileUploads) =>
       prevFileUploads.map((fileUpload) => ({
         ...fileUpload,
         duration: fileUpload.id === index ? duration : fileUpload.duration,
+        file: {
+          ...fileUpload.file,
+          duration: fileUpload.id === index ? duration : fileUpload.duration,
+        },
       })),
     );
   };
@@ -213,25 +223,15 @@ const FileUploadPreviewWithContext = <
 
   const {
     theme: {
-      colors: { black, grey_dark, grey_gainsboro, grey_whisper, white },
+      colors: { black, grey_dark, grey_gainsboro, grey_whisper },
       messageInput: {
-        fileUploadPreview: {
-          audioAttachmentFileContainer,
-          dismiss,
-          fileContainer,
-          fileContentContainer,
-          filenameText,
-          fileTextContainer,
-          flatList,
-        },
+        fileUploadPreview: { dismiss, fileContainer, filenameText, fileTextContainer, flatList },
       },
     },
   } = useTheme();
 
-  const renderItem = ({ index, item }: { index: number; item: FileUpload }) => {
+  const renderItem = ({ item }: { item: FileUpload }) => {
     const indicatorType = getIndicatorTypeForFileState(item.state, enableOfflineSupport);
-
-    const lastIndexOfDot = item.file.name.lastIndexOf('.');
 
     return (
       <>
@@ -243,85 +243,53 @@ const FileUploadPreviewWithContext = <
           type={indicatorType}
         >
           {item.file.mimeType?.startsWith('audio/') && isAudioPackageAvailable() ? (
-            <View
-              style={[
-                { marginBottom: item.state === FileState.UPLOADED ? 8 : 0 },
-                audioAttachmentFileContainer,
-              ]}
-            >
-              <View
-                style={[
-                  styles.fileContainer,
-                  index === fileUploads.length - 1
-                    ? {
-                        marginBottom: 0,
-                      }
-                    : {},
-                  {
-                    backgroundColor: white,
-                    borderColor: grey_whisper,
-                    width: -16,
-                  },
-                  fileContainer,
-                ]}
-                testID='audio-attachment-upload-preview'
-              >
-                <AudioAttachment
-                  item={item}
-                  onLoad={onLoad}
-                  onPlayPause={onPlayPause}
-                  onProgress={onProgress}
-                  testID='audio-attachment-upload-preview'
-                />
-              </View>
-            </View>
+            <AudioAttachmentUploadPreview
+              hideProgressBar={true}
+              item={item}
+              onLoad={onLoad}
+              onPlayPause={onPlayPause}
+              onProgress={onProgress}
+              testID='audio-attachment-upload-preview'
+            />
           ) : (
             <View
               style={[
                 styles.fileContainer,
-                index === fileUploads.length - 1
-                  ? {
-                      marginBottom: 0,
-                    }
-                  : {},
                 {
                   borderColor: grey_whisper,
-                  width: flatListWidth - 16,
                 },
                 fileContainer,
               ]}
             >
-              <View style={[styles.fileContentContainer, fileContentContainer]}>
-                <View style={styles.fileIcon}>
-                  <FileAttachmentIcon mimeType={item.file.mimeType} />
-                </View>
-                <View style={[styles.fileTextContainer, fileTextContainer]}>
-                  <Text
-                    numberOfLines={1}
-                    style={[
-                      styles.filenameText,
-                      {
-                        color: black,
-                        width:
-                          flatListWidth -
-                          16 - // 16 = horizontal padding
-                          40 - // 40 = file icon size
-                          24 - // 24 = close icon size
-                          24, // 24 = internal padding
-                      },
-                      I18nManager.isRTL ? { writingDirection: 'rtl' } : { writingDirection: 'ltr' },
-                      filenameText,
-                    ]}
-                  >
-                    {item.file.name.slice(0, 12) + '...' + item.file.name.slice(lastIndexOfDot)}
-                  </Text>
-                  {indicatorType !== null && (
-                    <UnsupportedFileTypeOrFileSizeIndicator
-                      indicatorType={indicatorType}
-                      item={item}
-                    />
-                  )}
-                </View>
+              <View style={styles.fileIcon}>
+                <FileAttachmentIcon mimeType={item.file.mimeType} />
+              </View>
+              <View style={[styles.fileTextContainer, fileTextContainer]}>
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    styles.filenameText,
+                    {
+                      color: black,
+                      width:
+                        flatListWidth -
+                        16 - // 16 = horizontal padding
+                        40 - // 40 = file icon size
+                        24 - // 24 = close icon size
+                        24, // 24 = internal padding
+                    },
+                    I18nManager.isRTL ? { writingDirection: 'rtl' } : { writingDirection: 'ltr' },
+                    filenameText,
+                  ]}
+                >
+                  {getTrimmedAttachmentTitle(item.file.name)}
+                </Text>
+                {indicatorType !== null && (
+                  <UnsupportedFileTypeOrFileSizeIndicator
+                    indicatorType={indicatorType}
+                    item={item}
+                  />
+                )}
               </View>
             </View>
           )}
@@ -408,14 +376,14 @@ export const FileUploadPreview = <
   props: FileUploadPreviewProps<StreamChatGenerics>,
 ) => {
   const { enableOfflineSupport } = useChatContext<StreamChatGenerics>();
-  const { fileUploads, removeFile, setFileUploads, uploadFile } =
+  const { AudioAttachmentUploadPreview, fileUploads, removeFile, setFileUploads, uploadFile } =
     useMessageInputContext<StreamChatGenerics>();
-  const { AudioAttachment, FileAttachmentIcon } = useMessagesContext<StreamChatGenerics>();
+  const { FileAttachmentIcon } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedFileUploadPreview
       {...{
-        AudioAttachment,
+        AudioAttachmentUploadPreview,
         FileAttachmentIcon,
         fileUploads,
         removeFile,

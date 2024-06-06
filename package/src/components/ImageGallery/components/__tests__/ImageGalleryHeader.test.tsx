@@ -2,9 +2,7 @@ import React from 'react';
 import type Animated from 'react-native-reanimated';
 import { useSharedValue } from 'react-native-reanimated';
 
-import { renderHook } from '@testing-library/react-hooks';
-
-import { render, waitFor } from '@testing-library/react-native';
+import { render, renderHook, waitFor } from '@testing-library/react-native';
 
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { BackHandler, Dimensions, Keyboard, Platform, StatusBar, StyleSheet } from 'react-native';
+import { BackHandler, Keyboard, Platform, StyleSheet } from 'react-native';
 
-import BottomSheet, { BottomSheetFlatList, BottomSheetHandleProps } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
@@ -9,9 +9,12 @@ import type { AttachmentPickerErrorProps } from './components/AttachmentPickerEr
 
 import { renderAttachmentPickerItem } from './components/AttachmentPickerItem';
 
-import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import {
+  AttachmentPickerContextValue,
+  useAttachmentPickerContext,
+} from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useViewport } from '../../hooks/useViewport';
+import { useScreenDimensions } from '../../hooks/useScreenDimensions';
 import { getPhotos, oniOS14GalleryLibrarySelectionChange } from '../../native';
 import type { Asset } from '../../types/types';
 
@@ -23,15 +26,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const fullScreenHeight = Dimensions.get('window').height;
-
-export type AttachmentPickerProps = {
-  /**
-   * Custom UI component to render [draggable handle](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png) of attachment picker.
-   *
-   * **Default** [AttachmentPickerBottomSheetHandle](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerBottomSheetHandle.tsx)
-   */
-  AttachmentPickerBottomSheetHandle: React.FC<BottomSheetHandleProps>;
+export type AttachmentPickerProps = Pick<
+  AttachmentPickerContextValue,
+  | 'AttachmentPickerBottomSheetHandle'
+  | 'attachmentPickerBottomSheetHandleHeight'
+  | 'attachmentSelectionBarHeight'
+  | 'attachmentPickerBottomSheetHeight'
+> & {
   /**
    * Custom UI component to render error component while opening attachment picker.
    *
@@ -54,13 +55,10 @@ export type AttachmentPickerProps = {
    * **Default** [ImageOverlaySelectedComponent](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/ImageOverlaySelectedComponent.tsx)
    */
   ImageOverlaySelectedComponent: React.ComponentType;
-  attachmentPickerBottomSheetHandleHeight?: number;
-  attachmentPickerBottomSheetHeight?: number;
   attachmentPickerErrorButtonText?: string;
   attachmentPickerErrorText?: string;
   numberOfAttachmentImagesToLoadPerCall?: number;
   numberOfAttachmentPickerImageColumns?: number;
-  translucentStatusBar?: boolean;
 };
 
 export const AttachmentPicker = React.forwardRef(
@@ -77,7 +75,6 @@ export const AttachmentPicker = React.forwardRef(
       ImageOverlaySelectedComponent,
       numberOfAttachmentImagesToLoadPerCall,
       numberOfAttachmentPickerImageColumns,
-      translucentStatusBar,
     } = props;
 
     const {
@@ -97,9 +94,9 @@ export const AttachmentPicker = React.forwardRef(
       setSelectedPicker,
       topInset,
     } = useAttachmentPickerContext();
-    const { vh } = useViewport();
+    const { vh: screenVh } = useScreenDimensions();
 
-    const screenHeight = vh(100);
+    const fullScreenHeight = screenVh(100);
 
     const [currentIndex, setCurrentIndex] = useState(-1);
     const endCursorRef = useRef<string>();
@@ -182,13 +179,16 @@ export const AttachmentPicker = React.forwardRef(
       const keyboardSubscription = Keyboard.addListener(keyboardShowEvent, onKeyboardOpenHandler);
 
       return () => {
+        // Following if-else condition to avoid deprecated warning coming RN 0.65
         if (keyboardSubscription?.remove) {
           keyboardSubscription.remove();
           return;
         }
-
-        // To keep compatibility with older versions of React Native, where `remove()` is not available
-        Keyboard.removeListener(keyboardShowEvent, onKeyboardOpenHandler);
+        // @ts-ignore
+        else if (Keyboard.removeListener) {
+          // @ts-ignore
+          Keyboard.removeListener(keyboardShowEvent, onKeyboardOpenHandler);
+        }
       };
     }, [closePicker, selectedPicker]);
 
@@ -236,56 +236,11 @@ export const AttachmentPicker = React.forwardRef(
       setSelectedImages,
     }));
 
-    const handleHeight = attachmentPickerBottomSheetHandleHeight || 20;
+    const handleHeight = attachmentPickerBottomSheetHandleHeight;
 
-    /**
-     * This is to handle issues with Android measurements coming back incorrect.
-     * If the StatusBar height is perfectly 1/2 of the difference between the two
-     * dimensions for screen and window, it is incorrect and we need to account for
-     * this. If you use a translucent header bar more adjustments are needed.
-     */
-    const getAndroidBottomBarHeightAdjustment = (): number => {
-      if (Platform.OS === 'android') {
-        const statusBarHeight = StatusBar.currentHeight ?? 0;
-        const bottomBarHeight = fullScreenHeight - screenHeight - statusBarHeight;
-        if (bottomBarHeight === statusBarHeight) {
-          return translucentStatusBar ? 0 : statusBarHeight;
-        } else {
-          if (translucentStatusBar) {
-            if (bottomBarHeight > statusBarHeight) {
-              return -bottomBarHeight + statusBarHeight;
-            } else {
-              return bottomBarHeight > 0 ? -statusBarHeight : 0;
-            }
-          } else {
-            return bottomBarHeight > 0 ? 0 : statusBarHeight;
-          }
-        }
-      }
-      return 0;
-    };
+    const initialSnapPoint = attachmentPickerBottomSheetHeight;
 
-    const getInitialSnapPoint = (): number => {
-      if (attachmentPickerBottomSheetHeight !== undefined) {
-        return attachmentPickerBottomSheetHeight;
-      }
-      if (Platform.OS === 'android') {
-        return (
-          308 +
-          (fullScreenHeight - screenHeight + getAndroidBottomBarHeightAdjustment()) -
-          handleHeight
-        );
-      } else {
-        return 308 + (fullScreenHeight - screenHeight);
-      }
-    };
-
-    const initialSnapPoint = getInitialSnapPoint();
-
-    const finalSnapPoint =
-      Platform.OS === 'android'
-        ? fullScreenHeight - topInset - handleHeight
-        : fullScreenHeight - topInset;
+    const finalSnapPoint = fullScreenHeight - topInset;
 
     /**
      * Snap points changing cause a rerender of the position,
@@ -331,7 +286,7 @@ export const AttachmentPicker = React.forwardRef(
         </BottomSheet>
         {selectedPicker === 'images' && photoError && (
           <AttachmentPickerError
-            attachmentPickerBottomSheetHeight={initialSnapPoint}
+            attachmentPickerBottomSheetHeight={attachmentPickerBottomSheetHeight}
             attachmentPickerErrorButtonText={attachmentPickerErrorButtonText}
             AttachmentPickerErrorImage={AttachmentPickerErrorImage}
             attachmentPickerErrorText={attachmentPickerErrorText}

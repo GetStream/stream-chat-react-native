@@ -1,9 +1,6 @@
 import React, { FC } from 'react';
 
-import { renderHook } from '@testing-library/react-hooks/native';
-import { waitFor } from '@testing-library/react-native';
-
-import type { DefaultStreamChatGenerics } from 'src/types/types';
+import { renderHook, waitFor } from '@testing-library/react-native';
 
 import type { DefaultGenerics, MessageResponse, StreamChat } from 'stream-chat';
 
@@ -21,6 +18,7 @@ import {
 
 import { generateUser } from '../../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
+import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
 import { useLatestMessagePreview } from '../useLatestMessagePreview';
 
@@ -47,7 +45,7 @@ describe('useLatestMessagePreview', () => {
   );
 
   it('should return a deleted message preview if the latest message is deleted', async () => {
-    const latestMessage = { type: 'deleted' } as unknown as MessageResponse;
+    const latestMessage = { cid: 'test', type: 'deleted' } as unknown as MessageResponse;
 
     const { result } = renderHook(
       () => useLatestMessagePreview(CHANNEL_WITH_DELETED_MESSAGES, FORCE_UPDATE, latestMessage),

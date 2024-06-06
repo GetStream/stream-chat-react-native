@@ -2,11 +2,6 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import type { TouchableOpacityProps } from 'react-native';
 
-import type { ImageLoadingFailedIndicatorProps } from 'src/components/Attachment/ImageLoadingFailedIndicator';
-import type { ImageLoadingIndicatorProps } from 'src/components/Attachment/ImageLoadingIndicator';
-
-import type { MessagePinnedHeaderProps } from 'src/components/Message/MessageSimple/MessagePinnedHeader';
-
 import type { Attachment, ChannelState, MessageResponse } from 'stream-chat';
 
 import type { AttachmentProps } from '../../components/Attachment/Attachment';
@@ -18,6 +13,8 @@ import type { FileAttachmentGroupProps } from '../../components/Attachment/FileA
 import type { FileIconProps } from '../../components/Attachment/FileIcon';
 import type { GalleryProps } from '../../components/Attachment/Gallery';
 import type { GiphyProps } from '../../components/Attachment/Giphy';
+import type { ImageLoadingFailedIndicatorProps } from '../../components/Attachment/ImageLoadingFailedIndicator';
+import type { ImageLoadingIndicatorProps } from '../../components/Attachment/ImageLoadingIndicator';
 import type { VideoThumbnailProps } from '../../components/Attachment/VideoThumbnail';
 import type {
   MessageProps,
@@ -27,9 +24,10 @@ import type { MessageAvatarProps } from '../../components/Message/MessageSimple/
 import type { MessageBounceProps } from '../../components/Message/MessageSimple/MessageBounce';
 import type { MessageContentProps } from '../../components/Message/MessageSimple/MessageContent';
 import type { MessageDeletedProps } from '../../components/Message/MessageSimple/MessageDeleted';
+import type { MessageEditedTimestampProps } from '../../components/Message/MessageSimple/MessageEditedTimestamp';
 import type { MessageErrorProps } from '../../components/Message/MessageSimple/MessageError';
 import type { MessageFooterProps } from '../../components/Message/MessageSimple/MessageFooter';
-
+import type { MessagePinnedHeaderProps } from '../../components/Message/MessageSimple/MessagePinnedHeader';
 import type { MessageRepliesProps } from '../../components/Message/MessageSimple/MessageReplies';
 import type { MessageRepliesAvatarsProps } from '../../components/Message/MessageSimple/MessageRepliesAvatars';
 import type { MessageSimpleProps } from '../../components/Message/MessageSimple/MessageSimple';
@@ -44,6 +42,7 @@ import type { InlineDateSeparatorProps } from '../../components/MessageList/Inli
 import type { MessageListProps } from '../../components/MessageList/MessageList';
 import type { MessageSystemProps } from '../../components/MessageList/MessageSystem';
 import type { ScrollToBottomButtonProps } from '../../components/MessageList/ScrollToBottomButton';
+import { TypingIndicatorContainerProps } from '../../components/MessageList/TypingIndicatorContainer';
 import type { getGroupStyles } from '../../components/MessageList/utils/getGroupStyles';
 import type { MessageActionType } from '../../components/MessageOverlay/MessageActionListItem';
 import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
@@ -55,7 +54,6 @@ import type { Alignment } from '../messageContext/MessageContext';
 import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
-import type { TDateTimeParserInput } from '../translationContext/TranslationContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { getDisplayName } from '../utils/getDisplayName';
@@ -176,6 +174,11 @@ export type MessagesContextValue<
    */
   MessageDeleted: React.ComponentType<MessageDeletedProps<StreamChatGenerics>>;
   /**
+   * UI component for MessageEditedTimestamp
+   * Defaults to: [MessageEditedTimestamp](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageSimple/MessageEditedTimestamp.tsx)
+   */
+  MessageEditedTimestamp: React.ComponentType<MessageEditedTimestampProps>;
+  /**
    * UI component for the MessageError.
    */
   MessageError: React.ComponentType<MessageErrorProps>;
@@ -251,7 +254,7 @@ export type MessagesContextValue<
    * UI component for TypingIndicatorContainer
    * Defaults to: [TypingIndicatorContainer](https://getstream.io/chat/docs/sdk/reactnative/contexts/messages-context/#typingindicatorcontainer)
    */
-  TypingIndicatorContainer: React.ComponentType;
+  TypingIndicatorContainer: React.ComponentType<TypingIndicatorContainerProps>;
   updateMessage: (
     updatedMessage: MessageResponse<StreamChatGenerics>,
     extraState?: {
@@ -306,10 +309,6 @@ export type MessagesContextValue<
    * sent messages will be aligned to right.
    */
   forceAlignMessages?: Alignment | boolean;
-  /**
-   * Optional function to custom format the message date
-   */
-  formatDate?: (date: TDateTimeParserInput) => string;
   getMessagesGroupStyles?: typeof getGroupStyles;
   handleBlock?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
   /** Handler to access when a copy message action is invoked */
@@ -533,7 +532,11 @@ export const useMessagesContext = <
 };
 
 /**
- * Typescript currently does not support partial inference so if MessagesContext
+ * @deprecated
+ *
+ * This will be removed in the next major version.
+ *
+ * Typescript currently does not support partial inference so if ChatContext
  * typing is desired while using the HOC withMessagesContext the Props for the
  * wrapped component must be provided as the first generic.
  */
@@ -542,7 +545,7 @@ export const withMessagesContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof MessagesContextValue<StreamChatGenerics>>> => {
+): React.ComponentType<Omit<P, keyof MessagesContextValue<StreamChatGenerics>>> => {
   const WithMessagesContextComponent = (
     props: Omit<P, keyof MessagesContextValue<StreamChatGenerics>>,
   ) => {

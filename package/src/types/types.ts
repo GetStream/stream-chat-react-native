@@ -20,8 +20,10 @@ export type File = {
   id?: string;
   mimeType?: string;
   size?: number;
+  type?: 'file' | 'image' | 'video' | 'audio' | 'voiceRecording';
   // The uri should be of type `string`. But is `string|undefined` because the same type is used for the response from Stream's Attachment. This shall be fixed.
   uri?: string;
+  waveform_data?: number[];
 };
 
 export type FileUpload = {
@@ -32,7 +34,9 @@ export type FileUpload = {
   paused?: boolean;
   progress?: number;
   thumb_url?: string;
+  type?: string;
   url?: string;
+  waveform_data?: number[];
 };
 
 export type ImageUpload = {
@@ -45,10 +49,12 @@ export type ImageUpload = {
 };
 
 export type DefaultAttachmentType = UnknownType & {
+  duration?: number;
   file_size?: number;
   mime_type?: string;
   originalFile?: File;
   originalImage?: Partial<Asset>;
+  waveform_data?: number[];
 };
 
 interface DefaultUserType extends UnknownType {

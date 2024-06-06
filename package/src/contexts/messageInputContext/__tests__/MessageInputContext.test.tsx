@@ -2,9 +2,7 @@ import React, { PropsWithChildren } from 'react';
 
 import type { TextInput } from 'react-native';
 
-import { act, renderHook } from '@testing-library/react-hooks';
-
-import { waitFor } from '@testing-library/react-native';
+import { act, renderHook, waitFor } from '@testing-library/react-native';
 import type { AppSettingsAPIResponse, StreamChat } from 'stream-chat';
 
 import { ChatContextValue, ChatProvider } from '../../../contexts/chatContext/ChatContext';
@@ -32,6 +30,8 @@ type WrapperType<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultS
 
 afterEach(jest.clearAllMocks);
 
+const user1 = generateUser();
+const message = generateMessage({ user: user1 });
 describe('MessageInputContext', () => {
   const Wrapper = <
     StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -55,7 +55,7 @@ describe('MessageInputContext', () => {
             },
           } as unknown as AppSettingsAPIResponse<StreamChatGenerics>,
           client: {
-            updateMessage: jest.fn().mockResolvedValue({ message: generateMessage() }),
+            updateMessage: jest.fn().mockResolvedValue({ message }),
           } as unknown as StreamChat<StreamChatGenerics>,
         } as ChatContextValue<StreamChatGenerics>
       }
@@ -73,12 +73,19 @@ describe('MessageInputContext', () => {
   );
 
   it('appendText works', () => {
+    const initialProps = {
+      editing: message,
+      hasImagePicker: true,
+    };
     const { result } = renderHook(() => useMessageInputContext(), {
-      initialProps: {
-        editing: true,
-        hasImagePicker: true,
-      },
-      wrapper: Wrapper,
+      initialProps,
+      wrapper: (props) => (
+        <Wrapper
+          editing={initialProps.editing}
+          hasImagePicker={initialProps.hasImagePicker}
+          {...props}
+        />
+      ),
     });
 
     act(() => {
@@ -93,22 +100,38 @@ describe('MessageInputContext', () => {
   });
 
   it('uploadNewImage with blocked image extensions to be not supported', () => {
+    const initialProps = {
+      editing: message,
+      maxNumberOfFiles: 2,
+    };
     const { result } = renderHook(() => useMessageInputContext(), {
-      initialProps: {
-        editing: true,
-        maxNumberOfFiles: 2,
-      },
-      wrapper: Wrapper,
+      initialProps,
+      wrapper: (props) => (
+        <Wrapper
+          editing={initialProps.editing}
+          maxNumberOfFiles={initialProps.maxNumberOfFiles}
+          {...props}
+        />
+      ),
     });
 
     act(() => {
       result.current.uploadNewImage(
         generateImageAttachment({
+          name: 'dummy.png',
           uri: 'https://www.bastiaanmulder.nl/wp-content/uploads/2013/11/dummy-image-square.png',
         }),
       );
     });
 
+    expect(result.current.imageUploads[0].state).toBe(FileState.NOT_SUPPORTED);
+
+    act(() => {
+      result.current.uploadNewFile({
+        name: 'dummy.mp3',
+        uri: 'https://www.bastiaanmulder.nl/wp-content/uploads/2013/11/dummy.mp3',
+      });
+    });
     expect(result.current.imageUploads[0].state).toBe(FileState.NOT_SUPPORTED);
   });
 
@@ -116,12 +139,20 @@ describe('MessageInputContext', () => {
     const mentioned_user = generateUser();
     const initialUsers = [mentioned_user.id];
 
+    const initialProps = {
+      editing: message,
+      hasImagePicker: true,
+    };
+
     const { result } = renderHook(() => useMessageInputContext(), {
-      initialProps: {
-        editing: true,
-        hasImagePicker: true,
-      },
-      wrapper: Wrapper,
+      initialProps,
+      wrapper: (props) => (
+        <Wrapper
+          editing={initialProps.editing}
+          hasImagePicker={initialProps.hasImagePicker}
+          {...props}
+        />
+      ),
     });
 
     act(() => {
@@ -137,44 +168,63 @@ describe('MessageInputContext', () => {
   it('setInputBoxRef works', () => {
     const setInputRefMock = jest.fn();
     const inputRef = React.createRef<TextInput | null>();
+    const initialProps = {
+      editing: message,
+      setInputRef: setInputRefMock,
+    };
     const { result } = renderHook(() => useMessageInputContext(), {
-      initialProps: {
-        editing: true,
-        setInputRef: setInputRefMock,
-      },
-      wrapper: Wrapper,
+      initialProps,
+      wrapper: (props) => (
+        <Wrapper editing={initialProps.editing} setInputRef={initialProps.setInputRef} {...props} />
+      ),
     });
 
     act(() => {
-      result.current.setInputBoxRef(inputRef.current);
+      if (result.current.setInputBoxRef) {
+        result.current.setInputBoxRef(inputRef.current);
+      }
     });
 
     expect(setInputRefMock).toHaveBeenCalled();
   });
 
   it('openCommandsPicker works', () => {
+    const initialProps = {
+      editing: message,
+      hasImagePicker: true,
+    };
     const { result } = renderHook(() => useMessageInputContext(), {
-      initialProps: {
-        editing: true,
-        hasImagePicker: true,
-      },
-      wrapper: Wrapper,
+      initialProps,
+      wrapper: (props) => (
+        <Wrapper
+          editing={initialProps.editing}
+          hasImagePicker={initialProps.hasImagePicker}
+          {...props}
+        />
+      ),
     });
 
     act(() => {
       result.current.openCommandsPicker();
     });
 
-    expect(result.current.text).toBe('/');
+    expect(result.current.text).toBe(`${initialProps.editing.text}/`);
   });
 
   it('openMentionPicker works', async () => {
+    const initialProps = {
+      editing: message,
+      hasImagePicker: true,
+    };
     const { result } = renderHook(() => useMessageInputContext(), {
-      initialProps: {
-        editing: true,
-        hasImagePicker: true,
-      },
-      wrapper: Wrapper,
+      initialProps,
+      wrapper: (props) => (
+        <Wrapper
+          editing={initialProps.editing}
+          hasImagePicker={initialProps.hasImagePicker}
+          {...props}
+        />
+      ),
     });
 
     act(() => {
@@ -182,7 +232,7 @@ describe('MessageInputContext', () => {
     });
 
     await waitFor(() => {
-      expect(result.current.text).toBe('@');
+      expect(result.current.text).toBe(`${initialProps.editing.text}@`);
     });
   });
 
@@ -193,13 +243,21 @@ describe('MessageInputContext', () => {
         docs: [generateFileAttachment(), generateImageAttachment()],
       }),
     );
+    const initialProps = {
+      editing: message,
+      hasFilePicker: true,
+      hasImagePicker: false,
+    };
     const { result } = renderHook(() => useMessageInputContext(), {
-      initialProps: {
-        editing: true,
-        hasFilePicker: true,
-        hasImagePicker: false,
-      },
-      wrapper: Wrapper,
+      initialProps,
+      wrapper: (props) => (
+        <Wrapper
+          editing={initialProps.editing}
+          hasFilePicker={initialProps.hasFilePicker}
+          hasImagePicker={initialProps.hasImagePicker}
+          {...props}
+        />
+      ),
     });
 
     act(() => {

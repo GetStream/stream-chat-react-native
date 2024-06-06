@@ -46,7 +46,11 @@ export const useTypingContext = <
 };
 
 /**
- * Typescript currently does not support partial inference so if TypingContext
+ * @deprecated
+ *
+ * This will be removed in the next major version.
+ *
+ * Typescript currently does not support partial inference so if ChatContext
  * typing is desired while using the HOC withTypingContext the Props for the
  * wrapped component must be provided as the first generic.
  */
@@ -55,7 +59,7 @@ export const withTypingContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof TypingContextValue<StreamChatGenerics>>> => {
+): React.ComponentType<Omit<P, keyof TypingContextValue<StreamChatGenerics>>> => {
   const WithTypingContextComponent = (
     props: Omit<P, keyof TypingContextValue<StreamChatGenerics>>,
   ) => {

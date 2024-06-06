@@ -16,6 +16,7 @@ import {
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { AttachmentPickerSelectionBar } from '../../AttachmentPicker/components/AttachmentPickerSelectionBar';
 import { CameraSelectorIcon } from '../../AttachmentPicker/components/CameraSelectorIcon';
 import { FileSelectorIcon } from '../../AttachmentPicker/components/FileSelectorIcon';
 import { ImageSelectorIcon } from '../../AttachmentPicker/components/ImageSelectorIcon';
@@ -27,6 +28,7 @@ describe('MessageInput', () => {
   jest.spyOn(Alert, 'alert');
   jest.spyOn(AttachmentPickerUtils, 'useAttachmentPickerContext').mockImplementation(
     jest.fn(() => ({
+      AttachmentPickerSelectionBar,
       CameraSelectorIcon,
       closePicker: jest.fn(),
       FileSelectorIcon,
@@ -105,7 +107,6 @@ describe('MessageInput', () => {
       expect(queryByTestId('upload-file-touchable')).toBeTruthy();
       expect(queryByTestId('take-photo-touchable')).toBeTruthy();
       expect(queryByTestId('auto-complete-text-input')).toBeTruthy();
-      expect(queryByTestId('send-button')).toBeTruthy();
       expect(queryByText('Editing Message')).toBeFalsy();
     });
   });

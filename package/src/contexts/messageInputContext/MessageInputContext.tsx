@@ -21,9 +21,18 @@ import {
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
 import { useMessageDetailsForState } from './hooks/useMessageDetailsForState';
 
+import { isUploadAllowed, MAX_FILE_SIZE_TO_UPLOAD, prettifyFileSize } from './utils/utils';
+
+import { AudioAttachmentProps } from '../../components/Attachment/AudioAttachment';
 import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
 import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
+import type { AudioRecorderProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecorder';
+import type { AudioRecordingButtonProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingButton';
+import type { AudioRecordingInProgressProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingInProgress';
+import type { AudioRecordingLockIndicatorProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingLockIndicator';
+import type { AudioRecordingPreviewProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingPreview';
+import type { AudioRecordingWaveformProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingWaveform';
 import type { InputEditingStateHeaderProps } from '../../components/MessageInput/components/InputEditingStateHeader';
 import type { InputGiphySearchProps } from '../../components/MessageInput/components/InputGiphySearch';
 import type { InputReplyStateHeaderProps } from '../../components/MessageInput/components/InputReplyStateHeader';
@@ -192,9 +201,6 @@ export type LocalMessageInputContext<
   setShowMoreOptions: React.Dispatch<React.SetStateAction<boolean>>;
   setText: React.Dispatch<React.SetStateAction<string>>;
   showMoreOptions: boolean;
-  /**
-   * Text value of the TextInput
-   */
   text: string;
   toggleAttachmentPicker: () => void;
   /**
@@ -214,11 +220,67 @@ export type InputMessageInputContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled'> & {
   /**
+   * Controls how many pixels to the top side the user has to scroll in order to lock the recording view and allow the user to lift their finger from the screen without stopping the recording.
+   */
+  asyncMessagesLockDistance: number;
+  /**
+   * Controls the minimum duration that the user has to press on the record button in the composer, in order to start recording a new voice message.
+   */
+  asyncMessagesMinimumPressDuration: number;
+  /**
+   * When it’s enabled, recorded messages won’t be sent immediately. Instead they will “stack up” in the composer allowing the user to send multiple voice recording as part of the same message.
+   */
+  asyncMessagesMultiSendEnabled: boolean;
+  /**
+   * Controls how many pixels to the leading side the user has to scroll in order to cancel the recording of a voice message.
+   */
+  asyncMessagesSlideToCancelDistance: number;
+  /**
    * Custom UI component for attach button.
    *
    * Defaults to and accepts same props as: [AttachButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/attach-button/)
    */
   AttachButton: React.ComponentType<AttachButtonProps<StreamChatGenerics>>;
+  /**
+   * Custom UI component for audio attachment upload preview.
+   *
+   * Defaults to and accepts same props as: [AudioAttachmentUploadPreview](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/AudioAttachment.tsx)
+   */
+  AudioAttachmentUploadPreview: React.ComponentType<AudioAttachmentProps>;
+  /**
+   * Custom UI component for audio recorder UI.
+   *
+   * Defaults to and accepts same props as: [AudioRecorder](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/AudioRecorder.tsx)
+   */
+  AudioRecorder: React.ComponentType<AudioRecorderProps<StreamChatGenerics>>;
+  /**
+   * Controls whether the async audio feature is enabled.
+   */
+  audioRecordingEnabled: boolean;
+  /**
+   * Custom UI component to render audio recording in progress.
+   *
+   * **Default** [AudioRecordingInProgress](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingInProgress.tsx)
+   */
+  AudioRecordingInProgress: React.ComponentType<AudioRecordingInProgressProps>;
+  /**
+   * Custom UI component for audio recording lock indicator.
+   *
+   * Defaults to and accepts same props as: [AudioRecordingLockIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingLockIndicator.tsx)
+   */
+  AudioRecordingLockIndicator: React.ComponentType<AudioRecordingLockIndicatorProps>;
+  /**
+   * Custom UI component to render audio recording preview.
+   *
+   * **Default** [AudioRecordingPreview](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingPreview.tsx)
+   */
+  AudioRecordingPreview: React.ComponentType<AudioRecordingPreviewProps>;
+  /**
+   * Custom UI component to render audio recording waveform.
+   *
+   * **Default** [AudioRecordingWaveform](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingWaveform.tsx)
+   */
+  AudioRecordingWaveform: React.ComponentType<AudioRecordingWaveformProps>;
 
   clearEditingState: () => void;
   clearQuotedMessageState: () => void;
@@ -260,6 +322,7 @@ export type InputMessageInputContextValue<
   InputReplyStateHeader: React.ComponentType<InputReplyStateHeaderProps<StreamChatGenerics>>;
   /** Limit on allowed number of files to attach at a time. */
   maxNumberOfFiles: number;
+
   /**
    * Custom UI component for more options button.
    *
@@ -286,11 +349,18 @@ export type InputMessageInputContextValue<
     threadList?: boolean;
   }>;
   /**
+   * Custom UI component for audio recording mic button.
+   *
+   * Defaults to and accepts same props as: [AudioRecordingButton](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingButton.tsx)
+   */
+  StartAudioRecordingButton: React.ComponentType<AudioRecordingButtonProps<StreamChatGenerics>>;
+  /**
    * Custom UI component to render upload progress indicator on attachment preview.
    *
    * **Default** [UploadProgressIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/UploadProgressIndicator.tsx)
    */
   UploadProgressIndicator: React.ComponentType<UploadProgressIndicatorProps>;
+
   /**
    * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
    *
@@ -415,33 +485,35 @@ export const MessageInputProvider = <
 }: PropsWithChildren<{
   value: InputMessageInputContextValue<StreamChatGenerics>;
 }>) => {
-  const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
-    useAttachmentPickerContext();
+  const {
+    closePicker,
+    openPicker,
+    selectedFiles,
+    selectedImages,
+    selectedPicker,
+    setSelectedFiles,
+    setSelectedImages,
+    setSelectedPicker,
+  } = useAttachmentPickerContext();
   const { appSettings, client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
   const { removeMessage } = useMessagesContext();
 
   const getFileUploadConfig = () => {
     const fileConfig = appSettings?.app?.file_upload_config;
-    if (fileConfig !== null || fileConfig !== undefined) {
+    if (fileConfig !== undefined) {
       return fileConfig;
     } else {
       return {};
     }
   };
 
-  const blockedFileExtensionTypes = getFileUploadConfig()?.blocked_file_extensions;
-  const blockedFileMimeTypes = getFileUploadConfig()?.blocked_mime_types;
-
   const getImageUploadConfig = () => {
     const imageConfig = appSettings?.app?.image_upload_config;
-    if (imageConfig !== null || imageConfig !== undefined) {
+    if (imageConfig !== undefined) {
       return imageConfig;
     }
     return {};
   };
-
-  const blockedImageExtensionTypes = getImageUploadConfig()?.blocked_file_extensions;
-  const blockedImageMimeTypes = getImageUploadConfig()?.blocked_mime_types;
 
   const channelCapabities = useOwnCapabilitiesContext();
 
@@ -595,30 +667,17 @@ export const MessageInputProvider = <
       maxNumberOfFiles: value.maxNumberOfFiles - numberOfUploads,
     });
 
-    const MEGA_BYTES_TO_BYTES = 1024 * 1024;
-    const MAX_FILE_SIZE_TO_UPLOAD_IN_MB = 100;
-
     if (!result.cancelled && result.assets) {
-      const totalFileSize = result.assets.reduce((acc, asset) => acc + Number(asset.size), 0);
-      if (totalFileSize / MEGA_BYTES_TO_BYTES > MAX_FILE_SIZE_TO_UPLOAD_IN_MB) {
-        Alert.alert(
-          t(
-            `Maximum file size upload limit reached. Please upload a file below {{MAX_FILE_SIZE_TO_UPLOAD_IN_MB}} MB.`,
-            { MAX_FILE_SIZE_TO_UPLOAD_IN_MB },
-          ),
-        );
-      } else {
-        result.assets.forEach((asset) => {
-          /**
-           * TODO: The current tight coupling of images to the image
-           * picker does not allow images picked from the file picker
-           * to be rendered in a preview via the uploadNewImage call.
-           * This should be updated alongside allowing image a file
-           * uploads together.
-           */
-          uploadNewFile(asset);
-        });
-      }
+      result.assets.forEach((asset) => {
+        /**
+         * TODO: The current tight coupling of images to the image
+         * picker does not allow images picked from the file picker
+         * to be rendered in a preview via the uploadNewImage call.
+         * This should be updated alongside allowing image a file
+         * uploads together.
+         */
+        uploadNewFile(asset);
+      });
     }
   };
 
@@ -666,7 +725,7 @@ export const MessageInputProvider = <
   };
 
   const mapFileUploadToAttachment = (file: FileUpload): Attachment<StreamChatGenerics> => {
-    if (file.file.mimeType?.startsWith('image/')) {
+    if (file.type === 'image') {
       return {
         fallback: file.file.name,
         image_url: file.url,
@@ -674,7 +733,7 @@ export const MessageInputProvider = <
         originalFile: file.file,
         type: 'image',
       };
-    } else if (file.file.mimeType?.startsWith('audio/')) {
+    } else if (file.type === 'audio') {
       return {
         asset_url: file.url || file.file.uri,
         duration: file.file.duration,
@@ -684,7 +743,7 @@ export const MessageInputProvider = <
         title: file.file.name,
         type: 'audio',
       };
-    } else if (file.file.mimeType?.startsWith('video/')) {
+    } else if (file.type === 'video') {
       return {
         asset_url: file.url || file.file.uri,
         duration: file.file.duration,
@@ -694,6 +753,17 @@ export const MessageInputProvider = <
         thumb_url: file.thumb_url,
         title: file.file.name,
         type: 'video',
+      };
+    } else if (file.type === 'voiceRecording') {
+      return {
+        asset_url: file.url || file.file.uri,
+        duration: file.file.duration,
+        file_size: file.file.size,
+        mime_type: file.file.mimeType,
+        originalFile: file.file,
+        title: file.file.name,
+        type: 'voiceRecording',
+        waveform_data: file.file.waveform_data,
       };
     } else {
       return {
@@ -1009,7 +1079,11 @@ export const MessageInputProvider = <
         }
         uploadAbortControllerRef.current.delete(file.name);
       }
-      const extraData: Partial<FileUpload> = { thumb_url: response.thumb_url, url: response.file };
+
+      const extraData: Partial<FileUpload> = {
+        thumb_url: response.thumb_url,
+        url: response.file,
+      };
       setFileUploads(getUploadSetStateAction(id, FileState.UPLOADED, extraData));
     } catch (error: unknown) {
       if (
@@ -1108,26 +1182,35 @@ export const MessageInputProvider = <
 
   const uploadNewFile = async (file: File) => {
     const id: string = generateRandomId();
+    const fileConfig = getFileUploadConfig();
+    const { size_limit } = fileConfig;
 
-    const isBlockedFileExtension: boolean | undefined = blockedFileExtensionTypes?.some(
-      (fileExtensionType: string) => file.name?.includes(fileExtensionType),
-    );
-    const isBlockedFileMimeType: boolean | undefined = blockedFileMimeTypes?.some(
-      (mimeType: string) => file.name?.includes(mimeType),
-    );
+    const isAllowed = isUploadAllowed({ config: fileConfig, file });
 
-    const fileState =
-      isBlockedFileExtension || isBlockedFileMimeType
-        ? FileState.NOT_SUPPORTED
-        : FileState.UPLOADING;
+    const sizeLimit = size_limit || MAX_FILE_SIZE_TO_UPLOAD;
+
+    if (file.size && file.size > sizeLimit) {
+      Alert.alert(
+        t('File is too large: {{ size }}, maximum upload size is {{ limit }}', {
+          limit: prettifyFileSize(sizeLimit),
+          size: prettifyFileSize(file.size),
+        }),
+      );
+      setSelectedFiles(selectedFiles.filter((selectedFile) => selectedFile.uri !== file.uri));
+      return;
+    }
+
+    const fileState = isAllowed ? FileState.UPLOADING : FileState.NOT_SUPPORTED;
+
+    // If file type is explicitly provided while upload we use it, else we derive the file type.
+    const fileType = file.type || file.mimeType?.split('/')[0];
 
     const newFile: FileUpload = {
-      duration: 0,
+      duration: file.duration || 0,
       file,
       id: file.id || id,
-      paused: true,
-      progress: 0,
       state: fileState,
+      type: fileType,
     };
 
     await Promise.all([
@@ -1135,26 +1218,33 @@ export const MessageInputProvider = <
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
     ]);
 
-    if (!isBlockedFileExtension) {
+    if (isAllowed) {
       uploadFile({ newFile });
     }
   };
 
   const uploadNewImage = async (image: Partial<Asset>) => {
     const id = generateRandomId();
+    const imageUploadConfig = getImageUploadConfig();
 
-    const isBlockedImageMimeType = blockedImageMimeTypes?.some((mimeType: string) =>
-      image.uri?.includes(mimeType),
-    );
+    const { size_limit } = imageUploadConfig;
 
-    const isBlockedImageExtension = blockedImageExtensionTypes?.some((imageExtensionType: string) =>
-      image.uri?.includes(imageExtensionType),
-    );
+    const isAllowed = isUploadAllowed({ config: imageUploadConfig, file: image });
 
-    const imageState =
-      isBlockedImageExtension || isBlockedImageMimeType
-        ? FileState.NOT_SUPPORTED
-        : FileState.UPLOADING;
+    const sizeLimit = size_limit || MAX_FILE_SIZE_TO_UPLOAD;
+
+    if (image.size && image?.size > sizeLimit) {
+      Alert.alert(
+        t('File is too large: {{ size }}, maximum upload size is {{ limit }}', {
+          limit: prettifyFileSize(sizeLimit),
+          size: prettifyFileSize(image.size),
+        }),
+      );
+      setSelectedImages(selectedImages.filter((selectedImage) => selectedImage.uri !== image.uri));
+      return;
+    }
+
+    const imageState = isAllowed ? FileState.UPLOADING : FileState.NOT_SUPPORTED;
 
     const newImage: ImageUpload = {
       file: image,
@@ -1170,7 +1260,7 @@ export const MessageInputProvider = <
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
     ]);
 
-    if (!isBlockedImageExtension) {
+    if (isAllowed) {
       uploadImage({ newImage });
     }
   };
@@ -1253,7 +1343,11 @@ export const useMessageInputContext = <
 };
 
 /**
- * Typescript currently does not support partial inference so if MessageInputContext
+ * @deprecated
+ *
+ * This will be removed in the next major version.
+ *
+ * Typescript currently does not support partial inference so if ChatContext
  * typing is desired while using the HOC withMessageInputContext the Props for the
  * wrapped component must be provided as the first generic.
  */
@@ -1262,7 +1356,7 @@ export const withMessageInputContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof MessageInputContextValue<StreamChatGenerics>>> => {
+): React.ComponentType<Omit<P, keyof MessageInputContextValue<StreamChatGenerics>>> => {
   const WithMessageInputContextComponent = (
     props: Omit<P, keyof MessageInputContextValue<StreamChatGenerics>>,
   ) => {

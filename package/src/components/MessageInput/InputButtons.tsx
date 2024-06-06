@@ -11,7 +11,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
-  attachButtonContainer: { paddingRight: 10 },
+  attachButtonContainer: { paddingRight: 5 },
 });
 
 export type InputButtonsProps<
@@ -88,6 +88,7 @@ export const InputButtonsWithContext = <
     </>
   );
 };
+
 const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: InputButtonsWithContextProps<StreamChatGenerics>,
   nextProps: InputButtonsWithContextProps<StreamChatGenerics>,

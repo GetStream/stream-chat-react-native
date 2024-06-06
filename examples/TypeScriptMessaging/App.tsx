@@ -34,6 +34,8 @@ type LocalEventType = Record<string, unknown>;
 type LocalMessageType = Record<string, unknown>;
 type LocalReactionType = Record<string, unknown>;
 type LocalUserType = Record<string, unknown>;
+type LocalPollOptionType = Record<string, unknown>;
+type LocalPollType = Record<string, unknown>;
 
 type StreamChatGenerics = {
   attachmentType: LocalAttachmentType;
@@ -41,6 +43,8 @@ type StreamChatGenerics = {
   commandType: LocalCommandType;
   eventType: LocalEventType;
   messageType: LocalMessageType;
+  pollOptionType: LocalPollOptionType;
+  pollType: LocalPollType;
   reactionType: LocalReactionType;
   userType: LocalUserType;
 };
@@ -132,7 +136,12 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView>
-      <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread}>
+      <Channel
+        audioRecordingEnabled={true}
+        channel={channel}
+        keyboardVerticalOffset={headerHeight}
+        thread={thread}
+      >
         <View style={{ flex: 1 }}>
           <MessageList<StreamChatGenerics>
             onThreadSelect={(selectedThread) => {
@@ -171,7 +180,13 @@ const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView>
-      <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread} threadList>
+      <Channel
+        audioRecordingEnabled={true}
+        channel={channel}
+        keyboardVerticalOffset={headerHeight}
+        thread={thread}
+        threadList
+      >
         <View
           style={{
             flex: 1,

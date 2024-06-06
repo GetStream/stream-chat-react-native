@@ -79,6 +79,7 @@
           "ui-components/message-bounce",
           "ui-components/message-content",
           "ui-components/message-deleted",
+          "ui-components/message-edited-timestamp",
           "ui-components/message-error",
           "ui-components/message-footer",
           "ui-components/message-pinned-header",
@@ -127,6 +128,7 @@
       "basics/offline-support"
     ],
     "Advanced Guides": [
+      "guides/audio-messages-support",
       "customization/typescript",
       "basics/troubleshooting",
       "basics/stream_chat_with_navigation",

@@ -12,7 +12,7 @@ type ReturnType = {
 
 const verifyAndroidPermissions = async () => {
   const isRN71orAbove = Platform.constants.reactNativeVersion?.minor >= 71;
-  const isAndroid13orAbove = Platform.Version >= 33;
+  const isAndroid13orAbove = (Platform.Version as number) >= 33;
   const shouldCheckForMediaPermissions = isRN71orAbove && isAndroid13orAbove;
   const getCheckPermissionPromise = () => {
     if (shouldCheckForMediaPermissions) {

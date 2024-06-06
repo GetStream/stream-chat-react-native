@@ -52,12 +52,12 @@ import {
 import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import {
-  isDayOrMoment,
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
+import { getDateString } from '../../utils/getDateString';
 
 const WAIT_FOR_SCROLL_TO_OFFSET_TIMEOUT = 150;
 const MAX_RETRIES_AFTER_SCROLL_FAILURE = 10;
@@ -78,7 +78,6 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
   },
   flex: { flex: 1 },
-  invert: { transform: [{ scaleY: -1 }] },
   invertAndroid: {
     // Invert the Y AND X axis to prevent a react native issue that can lead to ANRs on android 13
     // details: https://github.com/Expensify/App/pull/12820
@@ -352,17 +351,17 @@ const MessageListWithContext = <
   /**
    * The timeout id used to debounce our scrollToIndex calls on messageList updates
    */
-  const scrollToDebounceTimeoutRef = useRef<NodeJS.Timeout>();
+  const scrollToDebounceTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   /**
    * The timeout id used to lazier load the initial scroll set flag
    */
-  const initialScrollSettingTimeoutRef = useRef<NodeJS.Timeout>();
+  const initialScrollSettingTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   /**
    * The timeout id used to temporarily load the initial scroll set flag
    */
-  const onScrollEventTimeoutRef = useRef<NodeJS.Timeout>();
+  const onScrollEventTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   /**
    * Last messageID that was scrolled to after loading a new message list,
@@ -525,7 +524,7 @@ const MessageListWithContext = <
     if (threadList || hasNoMoreRecentMessagesToLoad) {
       scrollToBottomIfNeeded();
     } else {
-      setScrollToBottomButtonVisible(true);
+      setScrollToBottomButtonVisible(false);
     }
 
     if (
@@ -612,14 +611,17 @@ const MessageListWithContext = <
       const isLatestMessageSetShown = !!channel.state.messageSets.find(
         (set) => set.isCurrent && set.isLatest,
       );
-      const msg = processedMessageList?.[messageArrayIndex];
+
       if (!isLatestMessageSetShown) {
+        const msg = processedMessageList?.[messageArrayIndex];
         if (
           channel.state.latestMessages.length !== 0 &&
           unreadCount > channel.state.latestMessages.length
         ) {
           return messageArrayIndex <= unreadCount - channel.state.latestMessages.length - 1;
-        } else if (lastRead && msg.created_at) {
+        }
+        // The `msg` can be undefined here, since `messageArrayIndex` can be out of bounds hence we add a check for `msg`.
+        else if (lastRead && msg?.created_at) {
           return lastRead < msg.created_at;
         }
         return false;
@@ -805,13 +807,15 @@ const MessageListWithContext = <
 
   const handleScroll: ScrollViewProps['onScroll'] = (event) => {
     const offset = event.nativeEvent.contentOffset.y;
+    const messageListHasMessages = processedMessageList.length > 0;
     // Show scrollToBottom button once scroll position goes beyond 150.
     const isScrollAtBottom = offset <= 150;
 
     const notLatestSet = channel.state.messages !== channel.state.latestMessages;
 
     const showScrollToBottomButton =
-      (!threadList && notLatestSet) || !isScrollAtBottom || !hasNoMoreRecentMessagesToLoad;
+      messageListHasMessages &&
+      ((!threadList && notLatestSet) || !isScrollAtBottom || !hasNoMoreRecentMessagesToLoad);
 
     /**
      * 1. If I scroll up -> show scrollToBottom button.
@@ -859,7 +863,7 @@ const MessageListWithContext = <
   };
 
   const scrollToIndexFailedRetryCountRef = useRef<number>(0);
-  const failScrollTimeoutId = useRef<NodeJS.Timeout>();
+  const failScrollTimeoutId = useRef<ReturnType<typeof setTimeout>>();
   const onScrollToIndexFailedRef = useRef<
     FlatListProps<MessageType<StreamChatGenerics>>['onScrollToIndexFailed']
   >((info) => {
@@ -1021,17 +1025,17 @@ const MessageListWithContext = <
     threadList,
   ]);
 
-  const stickyHeaderFormatDate =
+  const stickyHeaderDateFormat =
     stickyHeaderDate?.getFullYear() === new Date().getFullYear() ? 'MMM D' : 'MMM D, YYYY';
-  const tStickyHeaderDate =
-    stickyHeaderDate && !hideStickyDateHeader ? tDateTimeParser(stickyHeaderDate) : null;
 
   const stickyHeaderDateString = useMemo(() => {
-    if (tStickyHeaderDate === null || hideStickyDateHeader) return null;
-    if (isDayOrMoment(tStickyHeaderDate)) return tStickyHeaderDate.format(stickyHeaderFormatDate);
-
-    return new Date(tStickyHeaderDate).toDateString();
-  }, [tStickyHeaderDate, stickyHeaderFormatDate, hideStickyDateHeader]);
+    if (!stickyHeaderDate) return null;
+    return getDateString({
+      date: stickyHeaderDate,
+      format: stickyHeaderDateFormat,
+      tDateTimeParser,
+    });
+  }, [stickyHeaderDate, stickyHeaderDateFormat]);
 
   const dismissImagePicker = () => {
     if (!hasMoved && selectedPicker) {
@@ -1043,6 +1047,7 @@ const MessageListWithContext = <
     !hasMoved && selectedPicker && setHasMoved(true);
     onUserScrollEvent(event);
   };
+
   const onScrollEndDrag: ScrollViewProps['onScrollEndDrag'] = (event) => {
     hasMoved && selectedPicker && setHasMoved(false);
     onUserScrollEvent(event);
@@ -1068,22 +1073,6 @@ const MessageListWithContext = <
         data: processedMessageList,
       });
   }
-
-  const renderListEmptyComponent = useCallback(
-    () => (
-      <View
-        style={[
-          styles.flex,
-          { backgroundColor: white_snow },
-          shouldApplyAndroidWorkaround ? styles.invertAndroid : styles.invert,
-        ]}
-        testID='empty-state'
-      >
-        <EmptyStateIndicator listType='message' />
-      </View>
-    ),
-    [EmptyStateIndicator, shouldApplyAndroidWorkaround],
-  );
 
   const ListFooterComponent = useCallback(
     () => (
@@ -1136,55 +1125,61 @@ const MessageListWithContext = <
       style={[styles.container, { backgroundColor: white_snow }, container]}
       testID='message-flat-list-wrapper'
     >
-      <FlatList
-        CellRendererComponent={
-          shouldApplyAndroidWorkaround ? InvertedCellRendererComponent : undefined
-        }
-        contentContainerStyle={[
-          styles.contentContainer,
-          additionalFlatListProps?.contentContainerStyle,
-          contentContainer,
-        ]}
-        /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
-        data={processedMessageList}
-        extraData={disabled || !hasNoMoreRecentMessagesToLoad}
-        inverted={shouldApplyAndroidWorkaround ? false : inverted}
-        keyboardShouldPersistTaps='handled'
-        keyExtractor={keyExtractor}
-        ListEmptyComponent={renderListEmptyComponent}
-        ListFooterComponent={ListFooterComponent}
-        /**
+      {processedMessageList.length === 0 ? (
+        <View style={[styles.flex, { backgroundColor: white_snow }]} testID='empty-state'>
+          <EmptyStateIndicator listType='message' />
+        </View>
+      ) : (
+        <FlatList
+          CellRendererComponent={
+            shouldApplyAndroidWorkaround ? InvertedCellRendererComponent : undefined
+          }
+          contentContainerStyle={[
+            styles.contentContainer,
+            additionalFlatListProps?.contentContainerStyle,
+            contentContainer,
+          ]}
+          /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
+          data={processedMessageList}
+          extraData={disabled || !hasNoMoreRecentMessagesToLoad}
+          inverted={shouldApplyAndroidWorkaround ? false : inverted}
+          keyboardShouldPersistTaps='handled'
+          keyExtractor={keyExtractor}
+          ListFooterComponent={ListFooterComponent}
+          /**
           if autoscrollToTopThreshold is 10, we scroll to recent if before new list update it was already at the bottom (10 offset or below)
           minIndexForVisible = 1 means that beyond item at index 1 will not change position on list updates
           minIndexForVisible is not used when autoscrollToTopThreshold = 10
         */
-        ListHeaderComponent={ListHeaderComponent}
-        maintainVisibleContentPosition={{
-          autoscrollToTopThreshold: autoscrollToRecent ? 10 : undefined,
-          minIndexForVisible: 1,
-        }}
-        maxToRenderPerBatch={30}
-        onMomentumScrollEnd={onUserScrollEvent}
-        onScroll={handleScroll}
-        onScrollBeginDrag={onScrollBeginDrag}
-        onScrollEndDrag={onScrollEndDrag}
-        onScrollToIndexFailed={onScrollToIndexFailedRef.current}
-        onTouchEnd={dismissImagePicker}
-        onViewableItemsChanged={onViewableItemsChanged.current}
-        ref={refCallback}
-        renderItem={renderItem}
-        scrollEnabled={overlay === 'none'}
-        showsVerticalScrollIndicator={!shouldApplyAndroidWorkaround}
-        style={[
-          styles.listContainer,
-          listContainer,
-          additionalFlatListProps?.style,
-          shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined,
-        ]}
-        testID='message-flat-list'
-        viewabilityConfig={flatListViewabilityConfig}
-        {...additionalFlatListPropsExcludingStyle}
-      />
+          ListHeaderComponent={ListHeaderComponent}
+          maintainVisibleContentPosition={{
+            autoscrollToTopThreshold: autoscrollToRecent ? 10 : undefined,
+            minIndexForVisible: 1,
+          }}
+          maxToRenderPerBatch={30}
+          onMomentumScrollEnd={onUserScrollEvent}
+          onScroll={handleScroll}
+          onScrollBeginDrag={onScrollBeginDrag}
+          onScrollEndDrag={onScrollEndDrag}
+          onScrollToIndexFailed={onScrollToIndexFailedRef.current}
+          onTouchEnd={dismissImagePicker}
+          onViewableItemsChanged={onViewableItemsChanged.current}
+          ref={refCallback}
+          renderItem={renderItem}
+          scrollEnabled={overlay === 'none'}
+          showsVerticalScrollIndicator={!shouldApplyAndroidWorkaround}
+          style={[
+            styles.listContainer,
+            listContainer,
+            additionalFlatListProps?.style,
+            shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined,
+          ]}
+          testID='message-flat-list'
+          viewabilityConfig={flatListViewabilityConfig}
+          {...additionalFlatListPropsExcludingStyle}
+        />
+      )}
+
       {!loading && (
         <>
           <View style={styles.stickyHeader}>

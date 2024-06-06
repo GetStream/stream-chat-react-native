@@ -15,6 +15,10 @@ export const setNetInfoFetchMock = (fn) => {
   netInfoFetch = fn;
 };
 registerNativeHandlers({
+  Audio: {
+    startPlayer: jest.fn(),
+    stopPlayer: jest.fn(),
+  },
   compressImage: () => null,
   deleteFile: () => null,
   FlatList,
@@ -56,6 +60,7 @@ jest.mock('@gorhom/bottom-sheet', () => {
     BottomSheetModalProvider: react.View,
     BottomSheetScrollView: react.ScrollView,
     default: react.View,
+    TouchableOpacity: react.View,
   };
 });
 jest.mock('react-native-quick-sqlite', () => {

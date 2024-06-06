@@ -1,26 +1,14 @@
 import React, { useState } from 'react';
-import {
-  Platform,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { Pressable, SafeAreaView, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import Animated, { Extrapolate, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import {
-  isDayOrMoment,
-  TDateTimeParserOutput,
-  useTranslationContext,
-} from '../../../contexts/translationContext/TranslationContext';
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Close } from '../../../icons';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
+import { getDateString } from '../../../utils/getDateString';
 import type { Photo } from '../ImageGallery';
 
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent
@@ -108,34 +96,9 @@ export const ImageGalleryHeader = <
     },
   } = useTheme();
   const { t, tDateTimeParser } = useTranslationContext();
-  const { setOverlay, translucentStatusBar } = useOverlayContext();
+  const { setOverlay } = useOverlayContext();
 
-  const parsedDate = photo ? tDateTimeParser(photo?.created_at) : null;
-
-  /**
-   * .calendar and .fromNow can be initialized after the first render,
-   * and attempting to access them at that time will cause an error
-   * to be thrown.
-   *
-   * This falls back to null if neither exist.
-   */
-  const getDateObject = (date: TDateTimeParserOutput | null) => {
-    if (date === null || !isDayOrMoment(date)) {
-      return null;
-    }
-
-    if (date.calendar) {
-      return date.calendar();
-    }
-
-    if (date.fromNow) {
-      return date.fromNow();
-    }
-
-    return null;
-  };
-
-  const date = getDateObject(parsedDate);
+  const date = getDateString({ calendar: true, date: photo?.created_at, tDateTimeParser });
 
   const headerStyle = useAnimatedStyle<ViewStyle>(() => ({
     opacity: opacity.value,
@@ -146,11 +109,6 @@ export const ImageGalleryHeader = <
     ],
   }));
 
-  const androidTranslucentHeaderStyle = {
-    paddingTop:
-      Platform.OS === 'android' && translucentStatusBar ? StatusBar.currentHeight : undefined,
-  };
-
   const hideOverlay = () => {
     setOverlay('none');
   };
@@ -160,25 +118,23 @@ export const ImageGalleryHeader = <
       onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
       pointerEvents={'box-none'}
     >
-      <ReanimatedSafeAreaView
-        style={[{ backgroundColor: white }, androidTranslucentHeaderStyle, container, headerStyle]}
-      >
+      <ReanimatedSafeAreaView style={[{ backgroundColor: white }, container, headerStyle]}>
         <View style={[styles.innerContainer, innerContainer]}>
           {leftElement ? (
             leftElement({ hideOverlay, photo })
           ) : (
-            <TouchableOpacity accessibilityLabel='Hide Overlay' onPress={hideOverlay}>
+            <Pressable accessibilityLabel='Hide Overlay' onPress={hideOverlay}>
               <View style={[styles.leftContainer, leftContainer]}>
                 {CloseIcon ? CloseIcon : <Close />}
               </View>
-            </TouchableOpacity>
+            </Pressable>
           )}
           {centerElement ? (
             centerElement({ hideOverlay, photo })
           ) : (
             <View style={[styles.centerContainer, centerContainer]}>
               <Text style={[styles.userName, { color: black }, usernameText]}>
-                {photo?.user?.name || photo?.user?.id || t('Unknown User')}
+                {photo?.user?.name || photo?.user?.id || t<string>('Unknown User')}
               </Text>
               {date && <Text style={[styles.date, { color: black }, dateText]}>{date}</Text>}
             </View>

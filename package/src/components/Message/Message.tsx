@@ -6,6 +6,7 @@ import type { Attachment, UserResponse } from 'stream-chat';
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
 import { useMessageActions } from './hooks/useMessageActions';
+import { useProcessReactions } from './hooks/useProcessReactions';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
 
 import {
@@ -17,11 +18,7 @@ import {
   KeyboardContextValue,
   useKeyboardContext,
 } from '../../contexts/keyboardContext/KeyboardContext';
-import {
-  MessageContextValue,
-  MessageProvider,
-  Reactions,
-} from '../../contexts/messageContext/MessageContext';
+import { MessageContextValue, MessageProvider } from '../../contexts/messageContext/MessageContext';
 import {
   MessageOverlayContextValue,
   useMessageOverlayContext,
@@ -48,6 +45,7 @@ import {
   hasOnlyEmojis,
   isBlockedMessage,
   isBouncedMessage,
+  isEditedMessage,
   MessageStatusTypes,
 } from '../../utils/utils';
 
@@ -233,12 +231,14 @@ const MessageWithContext = <
   props: MessagePropsWithContext<StreamChatGenerics>,
 ) => {
   const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
+  const [isEditedMessageOpen, setIsEditedMessageOpen] = useState(false);
   const isMessageTypeDeleted = props.message.type === 'deleted';
 
   const {
-    sendReaction,
     channel,
+    chatContext,
     deleteMessage: deleteMessageFromContext,
+    deleteReaction,
     disabled,
     dismissKeyboard,
     dismissKeyboardOnMessageTouch,
@@ -258,29 +258,29 @@ const MessageWithContext = <
     handleReaction: handleReactionProp,
     handleRetry,
     handleThreadReply,
-    chatContext,
+    isTargetedMessage,
     lastReceivedId,
     members,
     message,
     messageActions: messageActionsProp = defaultMessageActions,
+    MessageBounce,
     messageContentOrder: messageContentOrderProp,
     messagesContext,
-    MessageBounce,
     MessageSimple,
     onLongPress: onLongPressProp,
     onLongPressMessage: onLongPressMessageProp,
     onPress: onPressProp,
-    onPressMessage: onPressMessageProp,
     onPressIn: onPressInProp,
     onPressInMessage: onPressInMessageProp,
+    onPressMessage: onPressMessageProp,
     onThreadSelect,
     openThread,
     OverlayReactionList,
     preventPress,
     removeMessage,
-    deleteReaction,
     retrySendMessage,
     selectReaction,
+    sendReaction,
     setData,
     setEditingState,
     setOverlay,
@@ -291,7 +291,6 @@ const MessageWithContext = <
     style,
     supportedReactions,
     t,
-    isTargetedMessage,
     threadList = false,
     updateMessage,
   } = props;
@@ -333,6 +332,9 @@ const MessageWithContext = <
   const onPress = (error = errorOrFailed) => {
     if (dismissKeyboardOnMessageTouch) {
       Keyboard.dismiss();
+    }
+    if (isEditedMessage(message)) {
+      setIsEditedMessageOpen((prevState) => !prevState);
     }
     const quotedMessage = message.quoted_message as MessageType<StreamChatGenerics>;
     if (error) {
@@ -386,7 +388,7 @@ const MessageWithContext = <
             } else if (cur.type === 'video' && !cur.og_scrape_url) {
               acc.files.push(cur);
               acc.other = []; // remove other attachments if a file exists
-            } else if (cur.type === 'audio') {
+            } else if (cur.type === 'audio' || cur.type === 'voiceRecording') {
               acc.files.push(cur);
             } else if (cur.type === 'image' && !cur.title_link && !cur.og_scrape_url) {
               /**
@@ -463,28 +465,13 @@ const MessageWithContext = <
     }
   };
 
-  const hasReactions =
-    !isMessageTypeDeleted && !!message.latest_reactions && message.latest_reactions.length > 0;
+  const { existingReactions, hasReactions } = useProcessReactions({
+    latest_reactions: message.latest_reactions,
+    own_reactions: message.own_reactions,
+    reaction_groups: message.reaction_groups,
+  });
 
-  const clientId = client.userID;
-
-  const reactions = hasReactions
-    ? supportedReactions.reduce((acc, cur) => {
-        const reactionType = cur.type;
-        const reactionsOfReactionType = message.latest_reactions?.filter(
-          (reaction) => reaction.type === reactionType,
-        );
-
-        if (reactionsOfReactionType?.length) {
-          const hasOwnReaction = reactionsOfReactionType.some(
-            (reaction) => reaction.user_id === clientId,
-          );
-          acc.push({ own: hasOwnReaction, type: reactionType });
-        }
-
-        return acc;
-      }, [] as Reactions)
-    : [];
+  const reactions = hasReactions ? existingReactions : [];
 
   const ownCapabilities = useOwnCapabilitiesContext();
 
@@ -677,6 +664,7 @@ const MessageWithContext = <
     handleToggleReaction,
     hasReactions,
     images: attachments.images,
+    isEditedMessageOpen,
     isMyMessage,
     lastGroupMessage: groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
     lastReceivedId,
@@ -727,6 +715,7 @@ const MessageWithContext = <
     otherAttachments: attachments.other,
     preventPress,
     reactions,
+    setIsEditedMessageOpen,
     showAvatar,
     showMessageOverlay,
     showMessageStatus: typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,

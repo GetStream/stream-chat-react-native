@@ -1,4 +1,4 @@
-import type { TableRowJoinedUser } from 'src/store/types';
+import type { TableRowJoinedUser } from '../../../store/types';
 
 import { QuickSqliteClient } from '../../QuickSqliteClient';
 import { tables } from '../../schema';
@@ -27,7 +27,7 @@ export const selectMembersForChannels = (cids: string[]): TableRowJoinedUser<'me
     FROM members a
     LEFT JOIN
       users b
-    ON b.id = a.userId 
+    ON b.id = a.userId
     WHERE cid in (${questionMarks}) ORDER BY datetime(a.createdAt) DESC`,
     cids,
   );

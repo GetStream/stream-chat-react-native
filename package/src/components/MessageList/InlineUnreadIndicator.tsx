@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const InlineUnreadIndicator: React.FC = () => {
+export const InlineUnreadIndicator = () => {
   const {
     theme: {
       colors: { bg_gradient_end, bg_gradient_start, grey },
@@ -41,7 +41,7 @@ export const InlineUnreadIndicator: React.FC = () => {
           </LinearGradient>
         </Defs>
       </Svg>
-      <Text style={[styles.text, { color: grey }, text]}>{t('Unread Messages')}</Text>
+      <Text style={[styles.text, { color: grey }, text]}>{t<string>('Unread Messages')}</Text>
     </View>
   );
 };

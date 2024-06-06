@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
 
 export type WritingDirectionAwareTextProps = ViewProps;
 
-export const WritingDirectionAwareText: React.FC<WritingDirectionAwareTextProps> = (props) => {
+export const WritingDirectionAwareText = (props: WritingDirectionAwareTextProps) => {
   const { children, style, ...rest } = props;
   return (
     <Text {...rest} style={[style, styles.defaultStyle]}>

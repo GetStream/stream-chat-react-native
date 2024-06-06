@@ -1,13 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`MessageInputContext's sendMessage exit sendMessage when edit message is not boolean image upload status is uploaded successfully 1`] = `
-Object {
-  "attachments": Array [
-    Object {
+{
+  "attachments": [
+    {
       "fallback": undefined,
       "image_url": undefined,
       "mime_type": undefined,
-      "originalImage": Object {
+      "originalImage": {
         "uri": "http://www.jackblack.com/tenac_iousd.bmp",
       },
       "original_height": undefined,
@@ -17,13 +17,13 @@ Object {
   ],
   "html": "<p>regular</p>",
   "id": "7a85f744-cc89-4f82-a1d4-5456432cc8bf",
-  "mentioned_users": Array [
+  "mentioned_users": [
     "dummy1",
     "dummy2",
   ],
   "quoted_message": undefined,
   "text": "",
-  "user": Object {
+  "user": {
     "banned": false,
     "created_at": "2020-04-27T13:39:49.331742Z",
     "id": "5d6f6322-567e-4e1e-af90-97ef1ed5cc23",
@@ -37,13 +37,13 @@ Object {
 `;
 
 exports[`MessageInputContext's sendMessage exit sendMessage when file upload status is uploaded successfully 1`] = `
-Object {
-  "attachments": Array [
-    Object {
+{
+  "attachments": [
+    {
       "asset_url": undefined,
       "file_size": undefined,
       "mime_type": undefined,
-      "originalFile": Object {
+      "originalFile": {
         "name": "dummy.pdf",
         "state": "uploaded",
         "type": "file",
@@ -51,11 +51,11 @@ Object {
       "title": "dummy.pdf",
       "type": "file",
     },
-    Object {
+    {
       "asset_url": undefined,
       "file_size": undefined,
       "mime_type": undefined,
-      "originalFile": Object {
+      "originalFile": {
         "name": "dummy.pdf",
         "state": "finished",
         "type": "video/mp4",
@@ -63,11 +63,11 @@ Object {
       "title": "dummy.pdf",
       "type": "file",
     },
-    Object {
+    {
       "asset_url": undefined,
       "file_size": undefined,
       "mime_type": undefined,
-      "originalFile": Object {
+      "originalFile": {
         "name": "dummy.pdf",
         "state": "uploaded",
         "type": "audio/mp3",
@@ -75,11 +75,11 @@ Object {
       "title": "dummy.pdf",
       "type": "file",
     },
-    Object {
+    {
       "asset_url": undefined,
       "file_size": undefined,
       "mime_type": undefined,
-      "originalFile": Object {
+      "originalFile": {
         "name": "dummy.pdf",
         "state": "finished",
         "type": "image/jpeg",
@@ -88,7 +88,7 @@ Object {
       "type": "file",
     },
   ],
-  "mentioned_users": Array [
+  "mentioned_users": [
     "dummy1",
     "dummy2",
   ],
@@ -100,24 +100,24 @@ Object {
 `;
 
 exports[`MessageInputContext's sendMessage exit sendMessage when image upload status is uploaded successfully 1`] = `
-Object {
-  "attachments": Array [
-    Object {
+{
+  "attachments": [
+    {
       "fallback": undefined,
       "image_url": undefined,
       "mime_type": undefined,
-      "originalImage": Object {
+      "originalImage": {
         "uri": "http://www.jackblack.com/tenac_iousd.bmp",
       },
       "original_height": undefined,
       "original_width": undefined,
       "type": "image",
     },
-    Object {
+    {
       "fallback": undefined,
       "image_url": undefined,
       "mime_type": undefined,
-      "originalImage": Object {
+      "originalImage": {
         "uri": "http://www.jackblack.com/tenac_iousd.bmp",
       },
       "original_height": undefined,
@@ -125,7 +125,7 @@ Object {
       "type": "image",
     },
   ],
-  "mentioned_users": Array [
+  "mentioned_users": [
     "dummy1",
     "dummy2",
   ],

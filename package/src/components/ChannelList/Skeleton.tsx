@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const Skeleton: React.FC = () => {
+export const Skeleton = () => {
   const width = useWindowDimensions().width;
   const startOffset = useSharedValue(-width);
 

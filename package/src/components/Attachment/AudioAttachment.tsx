@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
-import { I18nManager, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
 import { useTheme } from '../../contexts';
-import { Pause, Play } from '../../icons';
+import { Audio, Pause, Play } from '../../icons';
 import {
   PlaybackStatus,
   Sound,
@@ -14,83 +14,56 @@ import {
   VideoProgressData,
 } from '../../native';
 import type { FileUpload } from '../../types/types';
+import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
 import { ProgressControl } from '../ProgressControl/ProgressControl';
+import { WaveProgressBar } from '../ProgressControl/WaveProgressBar';
 
 dayjs.extend(duration);
 
-const FILE_PREVIEW_HEIGHT = 70;
-
-const styles = StyleSheet.create({
-  fileContainer: {
-    borderRadius: 12,
-    borderWidth: 1,
-    flexDirection: 'row',
-    height: FILE_PREVIEW_HEIGHT,
-    paddingLeft: 8,
-    paddingRight: 8,
-  },
-  fileContentContainer: { flexDirection: 'row', paddingRight: 40 },
-  filenameText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    paddingLeft: 10,
-  },
-  fileTextContainer: {
-    justifyContent: 'space-around',
-  },
-  flatList: { marginBottom: 12, maxHeight: FILE_PREVIEW_HEIGHT * 2.5 + 16 },
-  overlay: {
-    borderRadius: 12,
-    marginLeft: 8,
-    marginRight: 8,
-  },
-  progressControlView: {
-    flex: 8,
-  },
-  progressDurationText: {
-    flex: 4,
-    fontSize: 12,
-    paddingLeft: 10,
-    paddingRight: 8,
-  },
-  roundedView: {
-    alignItems: 'center',
-    alignSelf: 'center',
-    borderRadius: 50,
-    display: 'flex',
-    elevation: 4,
-    height: 36,
-    justifyContent: 'center',
-    shadowOffset: {
-      height: 2,
-      width: 0,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    width: 36,
-  },
-});
-
-export type AudioAttachmentPropsWithContext = {
+export type AudioAttachmentProps = {
   item: Omit<FileUpload, 'state'>;
   onLoad: (index: string, duration: number) => void;
   onPlayPause: (index: string, pausedStatus?: boolean) => void;
   onProgress: (index: string, currentTime?: number, hasEnd?: boolean) => void;
+  hideProgressBar?: boolean;
+  showSpeedSettings?: boolean;
   testID?: string;
 };
 
-const AudioAttachmentWithContext = (props: AudioAttachmentPropsWithContext) => {
+/**
+ * AudioAttachment
+ * UI Component to preview the audio files
+ */
+export const AudioAttachment = (props: AudioAttachmentProps) => {
+  const [width, setWidth] = useState(0);
+  const [currentSpeed, setCurrentSpeed] = useState<number>(1.0);
   const soundRef = React.useRef<SoundReturnType | null>(null);
-  const { item, onLoad, onPlayPause, onProgress } = props;
+  const {
+    hideProgressBar = false,
+    item,
+    onLoad,
+    onPlayPause,
+    onProgress,
+    showSpeedSettings = false,
+    testID,
+  } = props;
 
+  /** This is for Native CLI Apps */
   const handleLoad = (payload: VideoPayloadData) => {
-    onLoad(item.id, payload.duration);
+    onLoad(item.id, item.duration || payload.duration);
   };
 
+  /** This is for Native CLI Apps */
   const handleProgress = (data: VideoProgressData) => {
-    if (data.currentTime && data.seekableDuration) {
+    if (data.currentTime <= data.seekableDuration) {
       onProgress(item.id, data.currentTime);
     }
+  };
+
+  /** This is for Native CLI Apps */
+  const handleEnd = () => {
+    onPlayPause(item.id, true);
+    onProgress(item.id, item.duration, true);
   };
 
   const handlePlayPause = async (isPausedStatusAvailable?: boolean) => {
@@ -103,9 +76,13 @@ const AudioAttachmentWithContext = (props: AudioAttachmentPropsWithContext) => {
           if (soundRef.current.setPositionAsync) soundRef.current.setPositionAsync(0);
         }
         if (item.paused) {
+          // For expo CLI
           if (soundRef.current.playAsync) await soundRef.current.playAsync();
+          if (soundRef.current.setProgressUpdateIntervalAsync)
+            await soundRef.current.setProgressUpdateIntervalAsync(60);
           onPlayPause(item.id, false);
         } else {
+          // For expo CLI
           if (soundRef.current.pauseAsync) await soundRef.current.pauseAsync();
           onPlayPause(item.id, true);
         }
@@ -117,17 +94,15 @@ const AudioAttachmentWithContext = (props: AudioAttachmentPropsWithContext) => {
 
   const handleProgressDrag = async (position: number) => {
     onProgress(item.id, position);
+    // For native CLI
     if (soundRef.current?.seek) soundRef.current.seek(position);
+    // For expo CLI
     if (soundRef.current?.setPositionAsync) {
       await soundRef.current.setPositionAsync(position * 1000);
     }
   };
 
-  const handleEnd = () => {
-    onPlayPause(item.id, true);
-    onProgress(item.id, item.duration, true);
-  };
-
+  /** For Expo CLI */
   const onPlaybackStatusUpdate = (playbackStatus: PlaybackStatus) => {
     if (!playbackStatus.isLoaded) {
       // Update your UI for the unloaded state
@@ -136,7 +111,10 @@ const AudioAttachmentWithContext = (props: AudioAttachmentPropsWithContext) => {
       }
     } else {
       const { durationMillis, positionMillis } = playbackStatus;
-      onLoad(item.id, durationMillis / 1000);
+      // This is done for Expo CLI where we don't get file duration from file picker
+      if (item.duration === 0) {
+        onLoad(item.id, durationMillis / 1000);
+      }
       // Update your UI for the loaded state
       if (playbackStatus.isPlaying) {
         // Update your UI for the playing state
@@ -187,24 +165,53 @@ const AudioAttachmentWithContext = (props: AudioAttachmentPropsWithContext) => {
           if (soundRef.current.pauseAsync) await soundRef.current.pauseAsync();
         } else {
           if (soundRef.current.playAsync) await soundRef.current.playAsync();
+          if (soundRef.current.setProgressUpdateIntervalAsync)
+            await soundRef.current.setProgressUpdateIntervalAsync(60);
         }
       }
     };
+    // For expo CLI
     if (!Sound.Player) {
       initalPlayPause();
     }
   }, [item.paused]);
 
+  const onSpeedChangeHandler = async () => {
+    if (currentSpeed === 2.0) {
+      setCurrentSpeed(1.0);
+      if (soundRef.current && soundRef.current.setRateAsync) {
+        await soundRef.current.setRateAsync(1.0);
+      }
+    } else {
+      if (currentSpeed === 1.0) {
+        setCurrentSpeed(1.5);
+        if (soundRef.current && soundRef.current.setRateAsync) {
+          await soundRef.current.setRateAsync(1.5);
+        }
+      } else if (currentSpeed === 1.5) {
+        setCurrentSpeed(2.0);
+        if (soundRef.current && soundRef.current.setRateAsync) {
+          await soundRef.current.setRateAsync(2.0);
+        }
+      }
+    }
+  };
+
   const {
     theme: {
-      colors: { accent_blue, black, grey_dark, static_black, static_white },
+      audioAttachment: {
+        container,
+        leftContainer,
+        playPauseButton,
+        progressControlContainer,
+        progressDurationText,
+        rightContainer,
+        speedChangeButton,
+        speedChangeButtonText,
+      },
+      colors: { accent_blue, black, grey_dark, grey_whisper, static_black, static_white, white },
       messageInput: {
-        fileUploadPreview: {
-          audioAttachment: { progressControlView, progressDurationText, roundedView },
-          fileContentContainer,
-          filenameText,
-          fileTextContainer,
-        },
+        fileUploadPreview: { filenameText },
       },
     },
   } = useTheme();
@@ -215,28 +222,40 @@ const AudioAttachmentWithContext = (props: AudioAttachmentPropsWithContext) => {
     ? progressValueInSeconds / 3600 >= 1
       ? dayjs.duration(progressValueInSeconds, 'second').format('HH:mm:ss')
       : dayjs.duration(progressValueInSeconds, 'second').format('mm:ss')
-    : '00:00';
-
-  const lastIndexOfDot = item.file.name.lastIndexOf('.');
+    : dayjs.duration(item.duration ?? 0, 'second').format('mm:ss');
 
   return (
-    <View style={[styles.fileContentContainer, fileContentContainer]}>
-      <TouchableOpacity
+    <View
+      accessibilityLabel='audio-attachment-preview'
+      onLayout={({ nativeEvent }) => {
+        setWidth(nativeEvent.layout.width);
+      }}
+      style={[
+        styles.container,
+        {
+          backgroundColor: white,
+          borderColor: grey_whisper,
+        },
+        container,
+      ]}
+      testID={testID}
+    >
+      <Pressable
         accessibilityLabel='Play Pause Button'
         onPress={() => handlePlayPause()}
         style={[
-          styles.roundedView,
-          roundedView,
+          styles.playPauseButton,
           { backgroundColor: static_white, shadowColor: black },
+          playPauseButton,
         ]}
       >
         {item.paused ? (
-          <Play height={24} pathFill={static_black} width={24} />
+          <Play fill={static_black} height={32} width={32} />
         ) : (
-          <Pause height={24} pathFill={static_black} width={24} />
+          <Pause fill={static_black} height={32} width={32} />
         )}
-      </TouchableOpacity>
-      <View style={[styles.fileTextContainer, fileTextContainer]}>
+      </Pressable>
+      <View style={[styles.leftContainer, leftContainer]}>
         <Text
           accessibilityLabel='File Name'
           numberOfLines={1}
@@ -254,15 +273,9 @@ const AudioAttachmentWithContext = (props: AudioAttachmentPropsWithContext) => {
             filenameText,
           ]}
         >
-          {item.file.name.slice(0, 12) + '...' + item.file.name.slice(lastIndexOfDot)}
+          {getTrimmedAttachmentTitle(item.file.name)}
         </Text>
-        <View
-          style={{
-            alignItems: 'center',
-            display: 'flex',
-            flexDirection: 'row',
-          }}
-        >
+        <View style={styles.audioInfo}>
           {/* <ExpoSoundPlayer filePaused={!!item.paused} soundRef={soundRef} /> */}
           {Sound.Player && (
             <Sound.Player
@@ -270,6 +283,7 @@ const AudioAttachmentWithContext = (props: AudioAttachmentPropsWithContext) => {
               onLoad={handleLoad}
               onProgress={handleProgress}
               paused={item.paused as boolean}
+              rate={currentSpeed}
               soundRef={soundRef}
               testID='sound-player'
               uri={item.file.uri}
@@ -278,37 +292,127 @@ const AudioAttachmentWithContext = (props: AudioAttachmentPropsWithContext) => {
           <Text style={[styles.progressDurationText, { color: grey_dark }, progressDurationText]}>
             {progressDuration}
           </Text>
-          <View style={[styles.progressControlView, progressControlView]}>
-            <ProgressControl
-              duration={item.duration as number}
-              filledColor={accent_blue}
-              onPlayPause={handlePlayPause}
-              onProgressDrag={handleProgressDrag}
-              progress={item.progress as number}
-              testID='progress-control'
-              width={120}
-            />
-          </View>
+          {!hideProgressBar && (
+            <View style={[styles.progressControlContainer, progressControlContainer]}>
+              {item.file.waveform_data ? (
+                <WaveProgressBar
+                  amplitudesCount={35}
+                  onPlayPause={handlePlayPause}
+                  onProgressDrag={(position) => {
+                    if (item.file.waveform_data) {
+                      const progress = (position / 30) * (item.duration as number);
+                      handleProgressDrag(progress);
+                    }
+                  }}
+                  progress={item.progress as number}
+                  waveformData={item.file.waveform_data}
+                />
+              ) : (
+                <ProgressControl
+                  duration={item.duration as number}
+                  filledColor={accent_blue}
+                  onPlayPause={handlePlayPause}
+                  onProgressDrag={handleProgressDrag}
+                  progress={item.progress as number}
+                  testID='progress-control'
+                  width={width / 2}
+                />
+              )}
+            </View>
+          )}
         </View>
       </View>
+      {showSpeedSettings && (
+        <View style={[styles.rightContainer, rightContainer]}>
+          {item.progress === 0 || item.progress === 1 ? (
+            <Audio fill={'#ffffff'} />
+          ) : (
+            <Pressable
+              onPress={onSpeedChangeHandler}
+              style={[
+                styles.speedChangeButton,
+                { backgroundColor: static_white, shadowColor: black },
+                speedChangeButton,
+              ]}
+            >
+              <Text
+                style={[styles.speedChangeButtonText, speedChangeButtonText]}
+              >{`x${currentSpeed}`}</Text>
+            </Pressable>
+          )}
+        </View>
+      )}
     </View>
   );
 };
 
-export type AudioAttachmentProps = Partial<AudioAttachmentPropsWithContext> & {
-  item: Omit<FileUpload, 'state'>;
-  onLoad: (index: string, duration: number) => void;
-  onPlayPause: (index: string, pausedStatus?: boolean) => void;
-  onProgress: (index: string, currentTime?: number, hasEnd?: boolean) => void;
-  testID: string;
-};
+const styles = StyleSheet.create({
+  audioInfo: {
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  container: {
+    alignItems: 'center',
+    borderRadius: 12,
+    borderWidth: 1,
+    flexDirection: 'row',
+    paddingHorizontal: 8,
+    paddingVertical: 12,
+  },
+  filenameText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    paddingBottom: 12,
+    paddingLeft: 8,
+  },
+  leftContainer: {
+    justifyContent: 'space-around',
+  },
+  playPauseButton: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    borderRadius: 50,
+    display: 'flex',
+    elevation: 4,
+    justifyContent: 'center',
+    paddingVertical: 2,
+    shadowOffset: {
+      height: 2,
+      width: 0,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    width: 36,
+  },
+  progressControlContainer: {},
+  progressDurationText: {
+    fontSize: 12,
+    paddingLeft: 10,
+    paddingRight: 8,
+  },
+  rightContainer: {
+    marginLeft: 10,
+  },
+  speedChangeButton: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    borderRadius: 50,
+    elevation: 4,
+    justifyContent: 'center',
+    paddingVertical: 5,
+    shadowOffset: {
+      height: 2,
+      width: 0,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    width: 36,
+  },
+  speedChangeButtonText: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+});
 
-/**
- * AudioAttachment
- * UI Component to preview the audio files
- */
-export const AudioAttachment = (props: AudioAttachmentProps) => (
-  <AudioAttachmentWithContext {...props} />
-);
-
-AudioAttachment.displayName = 'AudioAttachment{messageInput{autoAttachment}}';
+AudioAttachment.displayName = 'AudioAttachment{messageInput{audioAttachment}}';

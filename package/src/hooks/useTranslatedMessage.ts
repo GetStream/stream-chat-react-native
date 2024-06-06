@@ -9,7 +9,7 @@ type TranslationKey = `${TranslationLanguages}_text`;
 export const useTranslatedMessage = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  message: MessageResponse<StreamChatGenerics> | FormatMessageResponse<StreamChatGenerics>,
+  message?: MessageResponse<StreamChatGenerics> | FormatMessageResponse<StreamChatGenerics>,
 ) => {
   const { userLanguage: translationContextUserLanguage } = useTranslationContext();
   const messageOverlayContextValue = useMessageOverlayContext<StreamChatGenerics>();
@@ -18,6 +18,8 @@ export const useTranslatedMessage = <
     messageOverlayContextValue.data?.userLanguage || translationContextUserLanguage;
 
   const translationKey: TranslationKey = `${userLanguage}_text`;
+
+  if (!message) return undefined;
 
   if (message.i18n && translationKey in message.i18n && message.type !== 'deleted') {
     return {

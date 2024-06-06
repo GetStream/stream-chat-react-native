@@ -3,9 +3,9 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import type { SharedValue } from 'react-native-reanimated';
 
-import { act, ReactTestInstance } from 'react-test-renderer';
+import { act } from 'react-test-renderer';
 
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
 import { Chat } from '../../../components/Chat/Chat';
 import {
@@ -33,6 +33,7 @@ jest.mock('../../../native.ts', () => {
     isVideoPackageAvailable: jest.fn(() => true),
     NetInfo: {
       addEventListener: jest.fn(),
+      fetch: jest.fn(),
     },
     Video: View,
   };
@@ -60,7 +61,7 @@ describe('ImageGalleryHeader', () => {
       </View>
     );
 
-    const { queryAllByText } = render(
+    render(
       <OverlayProvider>
         <ImageGalleryContext.Provider
           value={
@@ -92,9 +93,9 @@ describe('ImageGalleryHeader', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByText('Left element')).toHaveLength(1);
-      expect(queryAllByText('Right element')).toHaveLength(1);
-      expect(queryAllByText('Center element')).toHaveLength(1);
+      expect(screen.queryAllByText('Left element')).toHaveLength(1);
+      expect(screen.queryAllByText('Right element')).toHaveLength(1);
+      expect(screen.queryAllByText('Center element')).toHaveLength(1);
     });
   });
 
@@ -107,7 +108,7 @@ describe('ImageGalleryHeader', () => {
       </View>
     );
 
-    const { queryAllByText } = render(
+    render(
       <OverlayProvider>
         <ImageGalleryContext.Provider
           value={
@@ -136,15 +137,16 @@ describe('ImageGalleryHeader', () => {
       </OverlayProvider>,
     );
     await waitFor(() => {
-      expect(queryAllByText('Close Icon element')).toHaveLength(1);
+      expect(screen.queryAllByText('Close Icon element')).toHaveLength(1);
     });
   });
 
   it('should trigger the hideOverlay function on button onPress', async () => {
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     const setOverlayMock = jest.fn();
+    const user = userEvent.setup();
 
-    const { queryByA11yLabel } = render(
+    render(
       <OverlayContext.Provider
         value={{ setOverlay: setOverlayMock } as unknown as OverlayContextValue}
       >
@@ -167,7 +169,7 @@ describe('ImageGalleryHeader', () => {
     );
 
     act(() => {
-      fireEvent(queryByA11yLabel('Hide Overlay') as ReactTestInstance, 'onPress');
+      user.press(screen.getByLabelText('Hide Overlay'));
     });
 
     await waitFor(() => {

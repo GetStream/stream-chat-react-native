@@ -180,7 +180,7 @@ export type ChannelContextValue<
    *
    * **Default** [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)
    */
-  StickyHeader?: React.ComponentType<{ dateString: string }>;
+  StickyHeader?: React.ComponentType<{ dateString: string | number }>;
   /**
    * Id of message, around which Channel/MessageList gets loaded when opened.
    * You will see a highlighted background for targetted message, when opened.
@@ -222,7 +222,12 @@ export const useChannelContext = <
 
   return contextValue;
 };
+
 /**
+ * @deprecated
+ *
+ * This will be removed in the next major version.
+ *
  * Typescript currently does not support partial inference so if ChatContext
  * typing is desired while using the HOC withChannelContext the Props for the
  * wrapped component must be provided as the first generic.
@@ -232,7 +237,7 @@ export const withChannelContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ChannelContextValue<StreamChatGenerics>>> => {
+): React.ComponentType<Omit<P, keyof ChannelContextValue<StreamChatGenerics>>> => {
   const WithChannelContextComponent = (
     props: Omit<P, keyof ChannelContextValue<StreamChatGenerics>>,
   ) => {

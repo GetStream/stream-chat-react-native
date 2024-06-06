@@ -3,9 +3,9 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import type { SharedValue } from 'react-native-reanimated';
 
-import { act, ReactTestInstance } from 'react-test-renderer';
+import { ReactTestInstance } from 'react-test-renderer';
 
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
 import { Chat } from '../../../components/Chat/Chat';
 import {
@@ -31,6 +31,7 @@ jest.mock('../../../native.ts', () => {
     isVideoPackageAvailable: jest.fn(() => true),
     NetInfo: {
       addEventListener: jest.fn(),
+      fetch: jest.fn(),
     },
     saveFile: jest.fn(),
     shareImage: jest.fn(),
@@ -66,7 +67,7 @@ describe('ImageGalleryFooter', () => {
       </View>
     );
 
-    const { queryAllByText } = render(
+    render(
       <OverlayProvider>
         <ImageGalleryContext.Provider
           value={
@@ -99,10 +100,10 @@ describe('ImageGalleryFooter', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByText('Left element')).toHaveLength(1);
-      expect(queryAllByText('Right element')).toHaveLength(1);
-      expect(queryAllByText('Center element')).toHaveLength(1);
-      expect(queryAllByText('Video Control element')).toHaveLength(1);
+      expect(screen.queryAllByText('Left element')).toHaveLength(1);
+      expect(screen.queryAllByText('Right element')).toHaveLength(1);
+      expect(screen.queryAllByText('Center element')).toHaveLength(1);
+      expect(screen.queryAllByText('Video Control element')).toHaveLength(1);
     });
   });
 
@@ -121,7 +122,7 @@ describe('ImageGalleryFooter', () => {
       </View>
     );
 
-    const { queryAllByText } = render(
+    render(
       <OverlayProvider>
         <ImageGalleryContext.Provider
           value={
@@ -152,18 +153,19 @@ describe('ImageGalleryFooter', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByText('Share Icon element')).toHaveLength(1);
-      expect(queryAllByText('Grid Icon element')).toHaveLength(1);
+      expect(screen.queryAllByText('Share Icon element')).toHaveLength(1);
+      expect(screen.queryAllByText('Grid Icon element')).toHaveLength(1);
     });
   });
 
   it('should trigger the share button onPress Handler', async () => {
+    const user = userEvent.setup();
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     const saveFileMock = jest.spyOn(NativeUtils, 'saveFile');
     const shareImageMock = jest.spyOn(NativeUtils, 'shareImage');
     const deleteFileMock = jest.spyOn(NativeUtils, 'deleteFile');
 
-    const { queryByA11yLabel } = render(
+    render(
       <OverlayProvider>
         <ImageGalleryContext.Provider
           value={
@@ -183,8 +185,8 @@ describe('ImageGalleryFooter', () => {
       </OverlayProvider>,
     );
 
-    act(() => {
-      fireEvent(queryByA11yLabel('Share Button') as ReactTestInstance, 'onPress');
+    await waitFor(() => {
+      user.press(screen.queryByLabelText('Share Button') as ReactTestInstance);
     });
 
     await waitFor(() => {

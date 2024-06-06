@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const ChannelListLoadingIndicator: React.FC = () => {
+export const ChannelListLoadingIndicator = () => {
   const {
     theme: {
       channelListLoadingIndicator: { container },

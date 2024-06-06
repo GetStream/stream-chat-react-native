@@ -119,8 +119,12 @@ export const useMessageOverlayContext = <
 };
 
 /**
- * Typescript currently does not support partial inference so if MessageOverlayContext
- * typing is desired while using the HOC withMessageOverlayContextContext the Props for the
+ * @deprecated
+ *
+ * This will be removed in the next major version.
+ *
+ * Typescript currently does not support partial inference so if ChatContext
+ * typing is desired while using the HOC withMessageOverlayContext the Props for the
  * wrapped component must be provided as the first generic.
  */
 export const withMessageOverlayContext = <
@@ -128,7 +132,7 @@ export const withMessageOverlayContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof MessageOverlayContextValue<StreamChatGenerics>>> => {
+): React.ComponentType<Omit<P, keyof MessageOverlayContextValue<StreamChatGenerics>>> => {
   const WithMessageOverlayContextComponent = (
     props: Omit<P, keyof MessageOverlayContextValue<StreamChatGenerics>>,
   ) => {
