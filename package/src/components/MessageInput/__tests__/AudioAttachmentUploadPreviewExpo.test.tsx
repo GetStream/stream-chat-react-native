@@ -17,9 +17,6 @@ import { AudioAttachment, AudioAttachmentProps } from '../../Attachment/AudioAtt
 
 jest.mock('../../../native.ts', () => ({
   isAudioPackageAvailable: jest.fn(() => true),
-  NetInfo: {
-    addEventListener: jest.fn(),
-  },
   Sound: {
     initializeSound: jest.fn(),
     Player: null,

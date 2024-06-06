@@ -20,9 +20,6 @@ jest.mock('../../../native.ts', () => {
 
   return {
     isAudioPackageAvailable: jest.fn(() => true),
-    NetInfo: {
-      addEventListener: jest.fn(),
-    },
     Sound: {
       Player: View,
     },

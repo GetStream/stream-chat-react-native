@@ -2057,10 +2057,10 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/masked-view/-/masked-view-0.1.11.tgz#2f4c6e10bee0786abff4604e39a37ded6f3980ce"
   integrity sha512-rQfMIGSR/1r/SyN87+VD8xHHzDYeHaJq6elOSCAD+0iLagXkSI2pfA0LmSXP21uw5i3em7GkkRjfJ8wpqWXZNw==
 
-"@react-native-community/netinfo@^11.0.1":
-  version "11.3.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-11.3.0.tgz#9d99ba00138b38350a794eab5eca436f6e209114"
-  integrity sha512-mR9iqUi0GzuC8ut+goI/lLkgG+a2OViI1mjSdXHKZnkfdJVjHblyWX3xoA8GE4GH8X4r0X/PNM3Vvyf2FH9mVg==
+"@react-native-community/netinfo@^11.3.2":
+  version "11.3.2"
+  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-11.3.2.tgz#e63201d0b87ad42d086d1003be48ae7b327f0594"
+  integrity sha512-YsaS3Dutnzqd1BEoeC+DEcuNJedYRkN6Ef3kftT5Sm8ExnCF94C/nl4laNxuvFli3+Jz8Df3jO25Jn8A9S0h4w==
 
 "@react-native/assets-registry@0.73.1":
   version "0.73.1"
@@ -2363,11 +2363,6 @@
   integrity sha512-OPwQlEdg40HAj5KNF8WW6q2KG4Z+cBCZb3m4ninfTZKaBmbIJodviQsDBoYMPHkOyJJMHnOJo5j2+LKDOhOACg==
   dependencies:
     "@sinonjs/commons" "^3.0.0"
-
-"@stream-io/flat-list-mvcp@0.10.3":
-  version "0.10.3"
-  resolved "https://registry.yarnpkg.com/@stream-io/flat-list-mvcp/-/flat-list-mvcp-0.10.3.tgz#774e56aba7f3da5a8f2ae5ad3065f05e5a27e7f2"
-  integrity sha512-2ZK8piYlEfKIPZrH8BpZz9uj8HZcUvMCV0X7qSLSAc/vhLOANBfR0SSn0OaWPbqb2mFGAd4FxmLSPp1zKEYuaw==
 
 "@types/babel__core@^7.1.14":
   version "7.20.1"

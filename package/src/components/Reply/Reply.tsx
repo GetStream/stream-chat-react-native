@@ -167,14 +167,14 @@ const ReplyWithContext = <
     },
   } = useTheme();
 
-  const messageText = typeof quotedMessage === 'boolean' ? '' : quotedMessage.text || '';
+  const messageText = quotedMessage ? quotedMessage.text : '';
 
   const emojiOnlyText = useMemo(() => {
     if (!messageText) return false;
     return hasOnlyEmojis(messageText);
   }, [messageText]);
 
-  if (typeof quotedMessage === 'boolean') return null;
+  if (!quotedMessage) return null;
 
   const lastAttachment = quotedMessage.attachments?.slice(-1)[0] as Attachment<StreamChatGenerics>;
   const messageType = lastAttachment && getMessageType(lastAttachment);
