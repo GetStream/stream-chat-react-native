@@ -78,7 +78,6 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
   },
   flex: { flex: 1 },
-  invert: { transform: [{ scaleY: -1 }] },
   invertAndroid: {
     // Invert the Y AND X axis to prevent a react native issue that can lead to ANRs on android 13
     // details: https://github.com/Expensify/App/pull/12820
@@ -1075,22 +1074,6 @@ const MessageListWithContext = <
       });
   }
 
-  const renderListEmptyComponent = useCallback(
-    () => (
-      <View
-        style={[
-          styles.flex,
-          { backgroundColor: white_snow },
-          shouldApplyAndroidWorkaround ? styles.invertAndroid : styles.invert,
-        ]}
-        testID='empty-state'
-      >
-        <EmptyStateIndicator listType='message' />
-      </View>
-    ),
-    [EmptyStateIndicator, shouldApplyAndroidWorkaround],
-  );
-
   const ListFooterComponent = useCallback(
     () => (
       <View style={shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined}>
@@ -1142,55 +1125,61 @@ const MessageListWithContext = <
       style={[styles.container, { backgroundColor: white_snow }, container]}
       testID='message-flat-list-wrapper'
     >
-      <FlatList
-        CellRendererComponent={
-          shouldApplyAndroidWorkaround ? InvertedCellRendererComponent : undefined
-        }
-        contentContainerStyle={[
-          styles.contentContainer,
-          additionalFlatListProps?.contentContainerStyle,
-          contentContainer,
-        ]}
-        /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
-        data={processedMessageList}
-        extraData={disabled || !hasNoMoreRecentMessagesToLoad}
-        inverted={shouldApplyAndroidWorkaround ? false : inverted}
-        keyboardShouldPersistTaps='handled'
-        keyExtractor={keyExtractor}
-        ListEmptyComponent={renderListEmptyComponent}
-        ListFooterComponent={ListFooterComponent}
-        /**
+      {processedMessageList.length === 0 ? (
+        <View style={[styles.flex, { backgroundColor: white_snow }]} testID='empty-state'>
+          <EmptyStateIndicator listType='message' />
+        </View>
+      ) : (
+        <FlatList
+          CellRendererComponent={
+            shouldApplyAndroidWorkaround ? InvertedCellRendererComponent : undefined
+          }
+          contentContainerStyle={[
+            styles.contentContainer,
+            additionalFlatListProps?.contentContainerStyle,
+            contentContainer,
+          ]}
+          /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
+          data={processedMessageList}
+          extraData={disabled || !hasNoMoreRecentMessagesToLoad}
+          inverted={shouldApplyAndroidWorkaround ? false : inverted}
+          keyboardShouldPersistTaps='handled'
+          keyExtractor={keyExtractor}
+          ListFooterComponent={ListFooterComponent}
+          /**
           if autoscrollToTopThreshold is 10, we scroll to recent if before new list update it was already at the bottom (10 offset or below)
           minIndexForVisible = 1 means that beyond item at index 1 will not change position on list updates
           minIndexForVisible is not used when autoscrollToTopThreshold = 10
         */
-        ListHeaderComponent={ListHeaderComponent}
-        maintainVisibleContentPosition={{
-          autoscrollToTopThreshold: autoscrollToRecent ? 10 : undefined,
-          minIndexForVisible: 1,
-        }}
-        maxToRenderPerBatch={30}
-        onMomentumScrollEnd={onUserScrollEvent}
-        onScroll={handleScroll}
-        onScrollBeginDrag={onScrollBeginDrag}
-        onScrollEndDrag={onScrollEndDrag}
-        onScrollToIndexFailed={onScrollToIndexFailedRef.current}
-        onTouchEnd={dismissImagePicker}
-        onViewableItemsChanged={onViewableItemsChanged.current}
-        ref={refCallback}
-        renderItem={renderItem}
-        scrollEnabled={overlay === 'none'}
-        showsVerticalScrollIndicator={!shouldApplyAndroidWorkaround}
-        style={[
-          styles.listContainer,
-          listContainer,
-          additionalFlatListProps?.style,
-          shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined,
-        ]}
-        testID='message-flat-list'
-        viewabilityConfig={flatListViewabilityConfig}
-        {...additionalFlatListPropsExcludingStyle}
-      />
+          ListHeaderComponent={ListHeaderComponent}
+          maintainVisibleContentPosition={{
+            autoscrollToTopThreshold: autoscrollToRecent ? 10 : undefined,
+            minIndexForVisible: 1,
+          }}
+          maxToRenderPerBatch={30}
+          onMomentumScrollEnd={onUserScrollEvent}
+          onScroll={handleScroll}
+          onScrollBeginDrag={onScrollBeginDrag}
+          onScrollEndDrag={onScrollEndDrag}
+          onScrollToIndexFailed={onScrollToIndexFailedRef.current}
+          onTouchEnd={dismissImagePicker}
+          onViewableItemsChanged={onViewableItemsChanged.current}
+          ref={refCallback}
+          renderItem={renderItem}
+          scrollEnabled={overlay === 'none'}
+          showsVerticalScrollIndicator={!shouldApplyAndroidWorkaround}
+          style={[
+            styles.listContainer,
+            listContainer,
+            additionalFlatListProps?.style,
+            shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined,
+          ]}
+          testID='message-flat-list'
+          viewabilityConfig={flatListViewabilityConfig}
+          {...additionalFlatListPropsExcludingStyle}
+        />
+      )}
+
       {!loading && (
         <>
           <View style={styles.stickyHeader}>

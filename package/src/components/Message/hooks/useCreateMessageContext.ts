@@ -48,9 +48,7 @@ export const useCreateMessageContext = <
   videos,
 }: MessageContextValue<StreamChatGenerics>) => {
   const groupStylesLength = groupStyles.length;
-  const reactionsValue = reactions
-    .map(({ count, isOwnReaction, type }) => `${isOwnReaction}${type}${count}`)
-    .join();
+  const reactionsValue = reactions.map(({ count, own, type }) => `${own}${type}${count}`).join();
   const stringifiedMessage = stringifyMessage(message);
 
   const membersValue = JSON.stringify(members);

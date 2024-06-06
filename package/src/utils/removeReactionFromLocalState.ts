@@ -32,9 +32,14 @@ export const removeReactionFromLocalState = <
       message.reaction_groups[reactionType].count > 0 ||
       message.reaction_groups[reactionType].sum_scores > 0
     ) {
-      message.reaction_groups[reactionType].count = message.reaction_groups[reactionType].count - 1;
-      message.reaction_groups[reactionType].sum_scores =
-        message.reaction_groups[reactionType].sum_scores - 1;
+      message.reaction_groups[reactionType].count = Math.max(
+        0,
+        message.reaction_groups[reactionType].count - 1,
+      );
+      message.reaction_groups[reactionType].sum_scores = Math.max(
+        0,
+        message.reaction_groups[reactionType].sum_scores - 1,
+      );
       if (
         message.reaction_groups[reactionType].count === 0 ||
         message.reaction_groups[reactionType].sum_scores === 0
@@ -43,17 +48,6 @@ export const removeReactionFromLocalState = <
       }
     } else {
       delete message.reaction_groups[reactionType];
-    }
-  }
-
-  if (message.reaction_counts?.[reactionType]) {
-    if (message.reaction_counts[reactionType] > 0) {
-      message.reaction_counts[reactionType] = message.reaction_counts[reactionType] - 1;
-      if (message.reaction_counts[reactionType] === 0) {
-        delete message.reaction_counts[reactionType];
-      }
-    } else {
-      delete message.reaction_counts[reactionType];
     }
   }
 
