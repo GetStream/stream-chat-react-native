@@ -6,7 +6,6 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import {
   ChannelPreviewMessenger,
   ChannelPreviewMessengerProps,
-  Delete,
   MenuPointHorizontal,
   useChatContext,
   useTheme,
@@ -19,6 +18,7 @@ import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayConte
 import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
+import { Delete } from '../icons/Delete';
 
 const styles = StyleSheet.create({
   leftSwipeableButton: {
@@ -99,7 +99,7 @@ export const ChannelPreview: React.FC<ChannelPreviewMessengerProps<StreamChatGen
             }}
             style={[styles.rightSwipeableButton]}
           >
-            <Delete pathFill={accent_red} />
+            <Delete height={32} pathFill={accent_red} width={32} />
           </RectButton>
         </View>
       )}
