@@ -1,14 +1,17 @@
-import type { ReactionResponse } from 'stream-chat';
+import type { FormatMessageResponse, MessageResponse, ReactionResponse } from 'stream-chat';
 
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
 import { QuickSqliteClient } from '../QuickSqliteClient';
+import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import type { PreparedQueries } from '../types';
 
 export const insertReaction = ({
   flush = true,
+  message,
   reaction,
 }: {
+  message: MessageResponse | FormatMessageResponse;
   reaction: ReactionResponse;
   flush?: boolean;
 }) => {
@@ -18,10 +21,17 @@ export const insertReaction = ({
 
   queries.push(createUpsertQuery('reactions', storableReaction));
 
-  queries.push([
-    'UPDATE messages SET reactionCounts = reactionCounts + 1 WHERE id = ?',
-    [reaction.message_id],
-  ]);
+  const stringifiedNewReactionGroups = JSON.stringify(message.reaction_groups);
+
+  queries.push(
+    createUpdateQuery(
+      'messages',
+      {
+        reactionGroups: stringifiedNewReactionGroups,
+      },
+      { id: reaction.message_id },
+    ),
+  );
 
   QuickSqliteClient.logger?.('info', 'insertReaction', {
     flush,

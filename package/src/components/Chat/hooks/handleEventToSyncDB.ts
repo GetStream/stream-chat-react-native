@@ -124,8 +124,7 @@ export const handleEventToSyncDB = <
   if (type === 'reaction.updated') {
     const message = event.message;
     if (message && event.reaction) {
-      // We update the entire message to make sure we also update
-      // reaction_counts.
+      // We update the entire message to make sure we also update reaction_groups
       return queriesWithChannelGuard((flushOverride) =>
         updateMessage({
           flush: flushOverride,
