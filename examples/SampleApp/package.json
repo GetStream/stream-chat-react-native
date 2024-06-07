@@ -22,6 +22,7 @@
     "clean-all": "yarn clean && rm -rf node_modules && rm -rf ios/Pods && rm -rf vendor && bundle install && yarn install && cd ios && bundle exec pod install && cd -"
   },
   "dependencies": {
+    "@bam.tech/react-native-image-resizer": "^3.0.10",
     "@notifee/react-native": "^7.7.1",
     "@react-native-async-storage/async-storage": "^1.21.0",
     "@react-native-camera-roll/camera-roll": "^5.3.1",
@@ -42,7 +43,6 @@
     "react-native-gesture-handler": "^2.14.0",
     "react-native-haptic-feedback": "2.0.3",
     "react-native-image-crop-picker": "0.39.0",
-    "react-native-image-resizer": "1.4.5",
     "react-native-markdown-package": "1.8.2",
     "react-native-quick-sqlite": "8.0.2",
     "react-native-reanimated": "^3.7.0",

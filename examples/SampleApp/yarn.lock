@@ -1161,6 +1161,11 @@
     "@babel/helper-validator-identifier" "^7.22.20"
     to-fast-properties "^2.0.0"
 
+"@bam.tech/react-native-image-resizer@^3.0.10":
+  version "3.0.10"
+  resolved "https://registry.yarnpkg.com/@bam.tech/react-native-image-resizer/-/react-native-image-resizer-3.0.10.tgz#03395a29cb61cd819ce1e7730fb137ab6e75618a"
+  integrity sha512-IVIBRkgy8eq4g51RjAzh7zk8KpGhiQH6GqLC7SgAUJ0plh2bdqG2l8+D+Q/A0uFe85YutUmHyFioyDEsRGXaCQ==
+
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
@@ -6190,11 +6195,6 @@ react-native-image-crop-picker@0.39.0:
   version "0.39.0"
   resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.39.0.tgz#9cb8e8ffb0e8ab06f7b3227cadf077169e225eba"
   integrity sha512-4aANbQMrmU6zN/4b0rVBA7SbaZ3aa5JESm3Xk751sINybZMt1yz/9h95LkO7U0pbslHDo3ofXjG75PmQRP6a/w==
-
-react-native-image-resizer@1.4.5:
-  version "1.4.5"
-  resolved "https://registry.yarnpkg.com/react-native-image-resizer/-/react-native-image-resizer-1.4.5.tgz#5a520aa8baa07638b1894a1d87d4d9a0945c8d58"
-  integrity sha512-33EgL3C9pyvjKpullAB6fWyD5QhoYEpNNB9rxNvUsrpAnL2mHBW7PTrUCCZudJeB6Weg7nbweKrSw1nnto5aqg==
 
 react-native-lightbox@^0.7.0:
   version "0.7.0"
