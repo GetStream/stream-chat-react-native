@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 
 import debounce from 'lodash/debounce';
+import omit from 'lodash/omit';
 import throttle from 'lodash/throttle';
 
 import { lookup } from 'mime-types';
@@ -1637,40 +1638,28 @@ const ChannelWithContext = <
   ) => {
     try {
       const updatedMessage = await uploadPendingAttachments(message);
-      const {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        __html,
-        attachments,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        created_at,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        deleted_at,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        html,
-        id,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        latest_reactions,
-        mentioned_users,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        own_reactions,
-        parent_id,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        quoted_message,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        reaction_counts,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        reactions,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        status,
-        text,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        type,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        updated_at,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        user,
-        ...extraFields
-      } = updatedMessage;
+      const extraFields = omit(updatedMessage, [
+        '__html',
+        'attachments',
+        'created_at',
+        'deleted_at',
+        'html',
+        'id',
+        'latest_reactions',
+        'mentioned_users',
+        'own_reactions',
+        'parent_id',
+        'quoted_message',
+        'reaction_counts',
+        'reaction_groups',
+        'reactions',
+        'status',
+        'text',
+        'type',
+        'updated_at',
+        'user',
+      ]);
+      const { attachments, id, mentioned_users, parent_id, text } = updatedMessage;
       if (!channel.id) return;
 
       const mentionedUserIds = mentioned_users?.map((user) => user.id) || [];
@@ -2006,6 +1995,7 @@ const ChannelWithContext = <
       },
     });
   };
+
   const deleteMessage: MessagesContextValue<StreamChatGenerics>['deleteMessage'] = async (
     message,
   ) => {

@@ -15,6 +15,8 @@ export type LocalReactionType = Record<string, unknown>;
 export type LocalUserType = {
   image?: string;
 };
+type LocalPollOptionType = Record<string, unknown>;
+type LocalPollType = Record<string, unknown>;
 
 export type StreamChatGenerics = {
   attachmentType: LocalAttachmentType;
@@ -22,6 +24,8 @@ export type StreamChatGenerics = {
   commandType: LocalCommandType;
   eventType: LocalEventType;
   messageType: LocalMessageType;
+  pollOptionType: LocalPollOptionType;
+  pollType: LocalPollType;
   reactionType: LocalReactionType;
   userType: LocalUserType;
 };
