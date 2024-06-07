@@ -18,14 +18,13 @@ export type UseFetchReactionParams<
 export const useFetchReactions = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
-  limit = 25,
+  limit = 2,
   messageId,
   reactionType,
   sort,
 }: UseFetchReactionParams) => {
   const [reactions, setReactions] = useState<ReactionResponse<StreamChatGenerics>[]>([]);
   const [loading, setLoading] = useState(true);
-  const [hasNextPage, setHasNextPage] = useState<boolean>(true);
   const [next, setNext] = useState<string | undefined>(undefined);
 
   const { client, enableOfflineSupport } = useChatContext();
@@ -43,7 +42,6 @@ export const useFetchReactions = <
       if (reactionsFromDB) {
         setReactions(reactionsFromDB);
         setLoading(false);
-        setHasNextPage(false);
       }
     };
 
@@ -57,7 +55,6 @@ export const useFetchReactions = <
       );
       if (response) {
         setNext(response.next);
-        setHasNextPage(response.next !== undefined);
         setReactions((prevReactions) => [...prevReactions, ...response.reactions]);
         setLoading(false);
       }
@@ -72,13 +69,13 @@ export const useFetchReactions = <
     } catch (error) {
       console.log('Error fetching reactions: ', error);
     }
-  }, [client, messageId, reactionType, sortString, next]);
+  }, [client, messageId, reactionType, sortString, next, enableOfflineSupport]);
 
   const loadNextPage = useCallback(async () => {
-    if (hasNextPage) {
+    if (next) {
       await fetchReactions();
     }
-  }, [hasNextPage]);
+  }, [fetchReactions]);
 
   useEffect(() => {
     fetchReactions();
