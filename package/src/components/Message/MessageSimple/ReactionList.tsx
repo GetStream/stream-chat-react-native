@@ -250,7 +250,7 @@ const ReactionListWithContext = <
               >
                 <Icon
                   key={reaction.type}
-                  pathFill={reaction.isOwnReaction ? iconFillColor || accent_blue : grey}
+                  pathFill={reaction.own ? iconFillColor || accent_blue : grey}
                   size={reactionSize / 2}
                   style={middleIcon}
                   supportedReactions={supportedReactions}

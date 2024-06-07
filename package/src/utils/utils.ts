@@ -13,6 +13,7 @@ import type {
   UserResponse,
 } from 'stream-chat';
 
+import { IconProps } from '../../src/icons/utils/base';
 import { MessageType } from '../components/MessageList/hooks/useMessageList';
 import type {
   EmojiSearchIndex,
@@ -28,7 +29,7 @@ import type { TableRowJoinedUser } from '../store/types';
 import type { DefaultStreamChatGenerics, ValueOf } from '../types/types';
 
 export type ReactionData = {
-  Icon: React.ComponentType;
+  Icon: React.ComponentType<IconProps>;
   type: string;
 };
 
