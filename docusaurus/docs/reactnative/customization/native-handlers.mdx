@@ -42,9 +42,9 @@ There are the handlers registered as they interact with different native API pac
 
 An `async` function that compresses an image and returns the local `uri` of the compressed image.
 
-| React Native CLI                                                                     | Expo                                                                                   |
-| ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
-| [`react-native-image-resizer`](https://github.com/bamlab/react-native-image-resizer) | [`expo-image-manipulator`](https://docs.expo.io/versions/latest/sdk/imagemanipulator/) |
+| React Native CLI                                                                               | Expo                                                                                   |
+| ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| [`@bam.tech/react-native-image-resizer`](https://github.com/bamlab/react-native-image-resizer) | [`expo-image-manipulator`](https://docs.expo.io/versions/latest/sdk/imagemanipulator/) |
 
 ### `setClipboardString`
 
@@ -62,14 +62,6 @@ A function that deletes a file at a given local `uri`.
 | ---------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | [`react-native-fs`](https://github.com/itinance/react-native-fs) | [`expo-file-system`](https://docs.expo.io/versions/latest/sdk/filesystem/) |
 
-### `FlatList`
-
-A FlatList component, on Expo the standard React Native component is used, on React Native a modified FlatList better fit for two directional scrolling is used.
-
-| React Native CLI                                                           | Expo                                                    |
-| -------------------------------------------------------------------------- | ------------------------------------------------------- |
-| [`@stream-io/flat-list-mvcp`](https://github.com/GetStream/flat-list-mvcp) | [`react-native`](https://reactnative.dev/docs/flatlist) |
-
 ### `getLocalAssetUri`
 
 A function that gets the local `uri` of an image or remote asset.
@@ -85,14 +77,6 @@ A function that returns photos from the camera roll given an offset of `after` a
 | React Native CLI                                                                                              | Expo                                                                            |
 | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
 | [`@react-native-camera-roll/camera-roll`](https://github.com/react-native-cameraroll/react-native-cameraroll) | [`expo-media-library`](https://docs.expo.io/versions/latest/sdk/media-library/) |
-
-### `NetInfo`
-
-A object containing two keys, `addEventListener` and `fetch`, which are functions that allow a developer to add listeners to `NetInfo` or fetch information from `NetInfo`.
-
-| React Native CLI                                                                                  | Expo                                                                                              |
-| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo) | [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo) |
 
 ### `pickDocument`
 

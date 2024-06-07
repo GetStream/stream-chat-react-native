@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { TouchableOpacityProps } from 'react-native';
+import { FlatList, TouchableOpacityProps } from 'react-native';
 
 import type { Attachment, ChannelState, MessageResponse } from 'stream-chat';
 
@@ -47,7 +47,6 @@ import type { getGroupStyles } from '../../components/MessageList/utils/getGroup
 import type { MessageActionType } from '../../components/MessageOverlay/MessageActionListItem';
 import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
 import type { ReplyProps } from '../../components/Reply/Reply';
-import type { FlatList } from '../../native';
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
 import type { Alignment } from '../messageContext/MessageContext';
@@ -243,7 +242,7 @@ export type MessagesContextValue<
   ScrollToBottomButton: React.ComponentType<ScrollToBottomButtonProps>;
   sendReaction: (type: string, messageId: string) => Promise<void>;
   setEditingState: (message?: MessageType<StreamChatGenerics>) => void;
-  setQuotedMessageState: (message: MessageType<StreamChatGenerics> | boolean) => void;
+  setQuotedMessageState: (message?: MessageType<StreamChatGenerics>) => void;
   supportedReactions: ReactionData[];
   /**
    * UI component for TypingIndicator

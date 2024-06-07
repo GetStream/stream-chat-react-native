@@ -1,7 +1,14 @@
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
+import {
+  FlatList as FlatListDefault,
+  KeyboardAvoidingViewProps,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import debounce from 'lodash/debounce';
+import omit from 'lodash/omit';
 import throttle from 'lodash/throttle';
 
 import { lookup } from 'mime-types';
@@ -74,7 +81,7 @@ import {
   ThumbsUpReaction,
   WutReaction,
 } from '../../icons';
-import { FlatList as FlatListDefault, pickDocument } from '../../native';
+import { pickDocument } from '../../native';
 import * as dbApi from '../../store/apis';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
@@ -603,8 +610,8 @@ const ChannelWithContext = <
   const [loadingMore, setLoadingMore] = useState(false);
 
   const [loadingMoreRecent, setLoadingMoreRecent] = useState(false);
-  const [quotedMessage, setQuotedMessage] = useState<boolean | MessageType<StreamChatGenerics>>(
-    false,
+  const [quotedMessage, setQuotedMessage] = useState<MessageType<StreamChatGenerics> | undefined>(
+    undefined,
   );
   const [thread, setThread] = useState<ThreadContextValue<StreamChatGenerics>['thread']>(
     threadProps || null,
@@ -1631,40 +1638,28 @@ const ChannelWithContext = <
   ) => {
     try {
       const updatedMessage = await uploadPendingAttachments(message);
-      const {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        __html,
-        attachments,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        created_at,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        deleted_at,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        html,
-        id,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        latest_reactions,
-        mentioned_users,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        own_reactions,
-        parent_id,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        quoted_message,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        reaction_counts,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        reactions,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        status,
-        text,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        type,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        updated_at,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        user,
-        ...extraFields
-      } = updatedMessage;
+      const extraFields = omit(updatedMessage, [
+        '__html',
+        'attachments',
+        'created_at',
+        'deleted_at',
+        'html',
+        'id',
+        'latest_reactions',
+        'mentioned_users',
+        'own_reactions',
+        'parent_id',
+        'quoted_message',
+        'reaction_counts',
+        'reaction_groups',
+        'reactions',
+        'status',
+        'text',
+        'type',
+        'updated_at',
+        'user',
+      ]);
+      const { attachments, id, mentioned_users, parent_id, text } = updatedMessage;
       if (!channel.id) return;
 
       const mentionedUserIds = mentioned_users?.map((user) => user.id) || [];
@@ -1940,7 +1935,7 @@ const ChannelWithContext = <
     () => setEditing(undefined);
 
   const clearQuotedMessageState: InputMessageInputContextValue<StreamChatGenerics>['clearQuotedMessageState'] =
-    () => setQuotedMessage(false);
+    () => setQuotedMessage(undefined);
 
   /**
    * Removes the message from local state
@@ -2000,6 +1995,7 @@ const ChannelWithContext = <
       },
     });
   };
+
   const deleteMessage: MessagesContextValue<StreamChatGenerics>['deleteMessage'] = async (
     message,
   ) => {

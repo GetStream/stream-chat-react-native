@@ -1,6 +1,6 @@
 export * from './components';
 export * from './hooks';
-export { registerNativeHandlers, NetInfo, iOS14RefreshGallerySelection } from './native';
+export { registerNativeHandlers, iOS14RefreshGallerySelection } from './native';
 export * from './contexts';
 export * from './emoji-data';
 

@@ -82,6 +82,7 @@
   },
   "peerDependencies": {
     "@op-engineering/op-sqlite": ">=6.0.4",
+    "@react-native-community/netinfo": ">=11.3.1",
     "react-native-svg": ">=15.1.0"
   },
   "peerDependenciesMeta": {
@@ -103,7 +104,7 @@
     "@op-engineering/op-sqlite": "^6.0.4",
     "@react-native-community/eslint-config": "2.0.0",
     "@react-native-community/eslint-plugin": "1.1.0",
-    "@react-native-community/netinfo": "6.0.0",
+    "@react-native-community/netinfo": "^11.3.2",
     "@react-native/babel-preset": "0.73.21",
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "12.4.5",

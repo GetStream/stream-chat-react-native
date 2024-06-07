@@ -212,7 +212,7 @@ describe('MessageContent', () => {
     const user = generateUser();
     const reaction = generateReaction();
     const message = generateMessage({
-      latest_reactions: [reaction],
+      reaction_groups: { [reaction.type]: reaction },
       user,
     });
 

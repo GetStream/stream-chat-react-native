@@ -1,5 +1,5 @@
 /* global require */
-import { FlatList, View } from 'react-native';
+import { View } from 'react-native';
 
 import mockRNCNetInfo from '@react-native-community/netinfo/jest/netinfo-mock.js';
 
@@ -9,11 +9,6 @@ import { registerNativeHandlers } from './src/native';
 
 console.warn = () => {};
 
-export let netInfoFetch = jest.fn();
-
-export const setNetInfoFetchMock = (fn) => {
-  netInfoFetch = fn;
-};
 registerNativeHandlers({
   Audio: {
     startPlayer: jest.fn(),
@@ -21,17 +16,8 @@ registerNativeHandlers({
   },
   compressImage: () => null,
   deleteFile: () => null,
-  FlatList,
   getLocalAssetUri: () => null,
   getPhotos: () => null,
-  NetInfo: {
-    addEventListener: () => () => null,
-    fetch: () =>
-      new Promise((resolve) => {
-        resolve(true);
-        netInfoFetch();
-      }),
-  },
   oniOS14GalleryLibrarySelectionChange: () => ({
     unsubscribe: () => {},
   }),

@@ -1,5 +1,5 @@
 // @ts-ignore this module does not have a type declaration
-import ImageResizer from 'react-native-image-resizer';
+import ImageResizer from '@bam.tech/react-native-image-resizer';
 
 type CompressImageParams = {
   compressImageQuality: number;
