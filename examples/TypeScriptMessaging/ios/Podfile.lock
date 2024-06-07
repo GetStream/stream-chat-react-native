@@ -955,7 +955,7 @@ PODS:
     - React-Core
   - react-native-image-resizer (3.0.10):
     - React-Core
-  - react-native-netinfo (11.3.0):
+  - react-native-netinfo (11.3.2):
     - React-Core
   - react-native-quick-sqlite (8.0.2):
     - React

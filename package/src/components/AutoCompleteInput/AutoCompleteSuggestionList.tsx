@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import {
+  FlatList,
   LayoutChangeEvent,
   Pressable,
   PressableProps,
@@ -19,7 +20,6 @@ import {
   useSuggestionsContext,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { FlatList } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const AUTO_COMPLETE_SUGGESTION_LIST_HEADER_HEIGHT = 50;

@@ -13,7 +13,6 @@ import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import { registerNativeHandlers } from '../../../native';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { MessageList } from '../MessageList';
@@ -314,16 +313,6 @@ describe('MessageList', () => {
   });
 
   it('should render the is offline error', async () => {
-    registerNativeHandlers({
-      NetInfo: {
-        addEventListener: () => () => null,
-        fetch: () =>
-          new Promise((resolve) => {
-            resolve(false);
-          }),
-      },
-    });
-
     const user1 = generateUser();
     const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
@@ -350,16 +339,6 @@ describe('MessageList', () => {
       expect(queryAllByTestId('typing-indicator')).toHaveLength(0);
       expect(getByTestId('error-notification')).toBeTruthy();
       expect(getByText('Reconnecting...')).toBeTruthy();
-    });
-
-    registerNativeHandlers({
-      NetInfo: {
-        addEventListener: () => () => null,
-        fetch: () =>
-          new Promise((resolve) => {
-            resolve(true);
-          }),
-      },
     });
   });
 });
