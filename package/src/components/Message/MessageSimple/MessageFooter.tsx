@@ -160,7 +160,7 @@ const MessageFooterWithContext = <
         )}
       </View>
       {isEditedMessageOpen && (
-        <MessageEditedTimestamp format='LT' formattedDate={formattedDate} timestamp={date} />
+        <MessageEditedTimestamp format='LT' timestamp={message.message_text_updated_at} />
       )}
     </>
   );
