@@ -18,7 +18,7 @@ export type UseFetchReactionParams<
 export const useFetchReactions = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
-  limit = 2,
+  limit = 25,
   messageId,
   reactionType,
   sort,
