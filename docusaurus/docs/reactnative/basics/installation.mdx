@@ -181,13 +181,13 @@ An example `Info.plist` would look like this with permissions:
 
 ```xml
 <key>NSPhotoLibraryUsageDescription</key>
-<string>$(PRODUCT_NAME) would like access to your photo gallery.</string>
-<key>NSCameraUsageDescription</key>
-<string>$(PRODUCT_NAME) would like to use your camera.</string>
+<string>$(PRODUCT_NAME) would like access to your photo gallery to share image in a message.</string>
 <key>NSPhotoLibraryAddUsageDescription</key>
-<string>$(PRODUCT_NAME) would like to save photos to your photo gallery.</string>
+<string>$(PRODUCT_NAME) would like to save photos to your photo gallery after downloading from a message.</string>
+<key>NSCameraUsageDescription</key>
+<string>$(PRODUCT_NAME) would like to use your camera to share image in a message.</string>
 <key>NSMicrophoneUsageDescription</key>
-<string>$(PRODUCT_NAME) would like to use your microphone (for voice recording).</string>
+<string>$(PRODUCT_NAME) would like to use your microphone for voice recording.</string>
 ```
 
 </TabItem>
@@ -206,20 +206,20 @@ An example `app.json` config for expo would look like this to add permissions to
       [
         "expo-media-library",
         {
-          "photosPermission": "$(PRODUCT_NAME) would like access to your photo gallery.",
-          "savePhotosPermission": "$(PRODUCT_NAME) would like to save photos to your photo gallery."
+          "photosPermission": "$(PRODUCT_NAME) would like access to your photo gallery to share image in a message.",
+          "savePhotosPermission": "$(PRODUCT_NAME) would like to save photos to your photo gallery after downloading from a message."
         }
       ],
       [
         "expo-image-picker",
         {
-          "cameraPermission": "$(PRODUCT_NAME) would like to use your camera."
+          "cameraPermission": "$(PRODUCT_NAME) would like to use your camera to share image in a message."
         }
       ],
       [
         "expo-av",
         {
-          "microphonePermission": "$(PRODUCT_NAME) would like to use your microphone."
+          "microphonePermission": "$(PRODUCT_NAME) would like to use your microphone for voice recording."
         }
       ]
     ]
