@@ -147,6 +147,91 @@ values={[
 Please follow along the linked documentation of each optional dependencies so as to support them correctly in your application.
 :::
 
+### Configuring permissions
+
+Some dependencies(if you are using them on your application), require you to add additional permissions to the `Info.plist` file in iOS and `AndroidManifest.xml` file in Android. Please follow the steps mentioned in the links below for corresponding dependencies:
+
+<Tabs
+defaultValue='rncli'
+groupId='rn-platform'
+values={[
+  { label: 'RN CLI', value: 'rncli' },
+  { label: 'Expo', value: 'expo' },
+]}
+>
+<TabItem value='rncli'>
+
+- [`@react-native-camera-roll/camera-roll`](https://github.com/react-native-cameraroll/react-native-cameraroll?tab=readme-ov-file#permissions) for gallery/photo library access.
+- [`react-native-image-crop-picker`](https://github.com/ivpusic/react-native-image-crop-picker?tab=readme-ov-file#step-3) for camera access.
+- [`react-native-audio-recorder-player`](https://github.com/hyochan/react-native-audio-recorder-player?tab=readme-ov-file#post-installation) for microphone access for voice recording.
+
+An example `AndroidManifest.xml` would look like this with permissions:
+
+```xml
+  <uses-permission android:name="android.permission.CAMERA" />
+  <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+  <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+  <uses-permission android:name="android.permission.RECORD_AUDIO" />
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    android:maxSdkVersion="32" />
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+```
+
+An example `Info.plist` would look like this with permissions:
+
+```xml
+<key>NSPhotoLibraryUsageDescription</key>
+<string>$(PRODUCT_NAME) would like access to your photo gallery.</string>
+<key>NSCameraUsageDescription</key>
+<string>$(PRODUCT_NAME) would like to use your camera.</string>
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>$(PRODUCT_NAME) would like to save photos to your photo gallery.</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>$(PRODUCT_NAME) would like to use your microphone (for voice recording).</string>
+```
+
+</TabItem>
+<TabItem value="expo">
+
+- [`expo-media-library`](https://docs.expo.dev/versions/latest/sdk/media-library/#configurable-properties) for gallery/photo library access.
+- [`expo-image-picker`](https://docs.expo.dev/versions/latest/sdk/imagepicker/#configuration-in-appjsonappconfigjs) for camera access.
+- [`expo-av`](https://docs.expo.dev/versions/latest/sdk/av/#configuration-in-appjsonappconfigjs) for microphone access for voice recording.
+
+An example `app.json` config for expo would look like this to add permissions to the `Info.plist` on iOS, using the config plugins:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "$(PRODUCT_NAME) would like access to your photo gallery.",
+          "savePhotosPermission": "$(PRODUCT_NAME) would like to save photos to your photo gallery."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "$(PRODUCT_NAME) would like to use your camera."
+        }
+      ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": "$(PRODUCT_NAME) would like to use your microphone."
+        }
+      ]
+    ]
+  }
+}
+```
+
+For Android on Expo, most of the most permissions are added automatically by libraries that you use in your app either with config plugins or with a package-level `AndroidManifest.xml`. Read more [here](https://docs.expo.dev/guides/permissions/#android).
+
+</TabItem>
+</Tabs>
+
 ### Additional Steps
 
 Some dependencies require us to make changes to our application for all functionalities to be available.

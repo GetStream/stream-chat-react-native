@@ -26,11 +26,11 @@
 		<true />
 		<key>NSAppTransportSecurity</key>
 		<dict>
-	  	<!-- Do not change NSAllowsArbitraryLoads to true, or you will risk app rejection! -->
+			<!-- Do not change NSAllowsArbitraryLoads to true, or you will risk app rejection! -->
 			<key>NSAllowsArbitraryLoads</key>
-			<false/>
+			<false />
 			<key>NSAllowsLocalNetworking</key>
-			<true/>
+			<true />
 		</dict>
 		<key>NSLocationWhenInUseUsageDescription</key>
 		<string></string>
@@ -49,15 +49,12 @@
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false />
 		<key>NSPhotoLibraryUsageDescription</key>
-		<string>$(PRODUCT_NAME) would like access to your photo gallery</string>
+		<string>$(PRODUCT_NAME) would like access to your photo gallery.</string>
 		<key>NSCameraUsageDescription</key>
-		<string>$(PRODUCT_NAME) would like to use your camera</string>
+		<string>$(PRODUCT_NAME) would like to use your camera.</string>
 		<key>NSPhotoLibraryAddUsageDescription</key>
-		<string>$(PRODUCT_NAME) would like to save photos to your photo gallery</string>
+		<string>$(PRODUCT_NAME) would like to save photos to your photo gallery.</string>
 		<key>NSMicrophoneUsageDescription</key>
-		<string>$(PRODUCT_NAME) would like to use your microphone (for videos)</string>
-		<key>NSMicrophoneUsageDescription</key>
-		<string>Give $(PRODUCT_NAME) permission to use your microphone. Your record wont be shared
-			without your permission.</string>
+		<string>$(PRODUCT_NAME) would like to use your microphone (for voice recording).</string>
 	</dict>
 </plist>

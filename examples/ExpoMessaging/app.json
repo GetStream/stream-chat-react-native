@@ -35,6 +35,27 @@
       "turboModules": true
     },
     "scheme": "ExpoMessaging",
-    "plugins": ["expo-router"]
+    "plugins": [
+      "expo-router",
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "$(PRODUCT_NAME) would like access to your photo gallery.",
+          "savePhotosPermission": "$(PRODUCT_NAME) would like to save photos to your photo gallery."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "$(PRODUCT_NAME) would like to use your camera."
+        }
+      ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": "$(PRODUCT_NAME) would like to use your microphone."
+        }
+      ]
+    ]
   }
 }
