@@ -44,10 +44,7 @@ import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContex
 import { useViewport } from '../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
-import {
-  OverlayReactions as DefaultOverlayReactions,
-  Reaction,
-} from '../MessageOverlay/OverlayReactions';
+import { OverlayReactions as DefaultOverlayReactions } from '../MessageOverlay/OverlayReactions';
 import type { ReplyProps } from '../Reply/Reply';
 
 const styles = StyleSheet.create({
@@ -464,26 +461,16 @@ const MessageOverlayWithContext = <
                 message={message}
               />
             )}
-            {!!messageReactionTitle &&
-            message.latest_reactions &&
-            message.latest_reactions.length > 0 ? (
+            {!!messageReactionTitle && (
               <OverlayReactions
                 alignment={alignment}
+                messageId={message.id}
                 OverlayReactionsAvatar={OverlayReactionsAvatar}
-                reactions={
-                  message.latest_reactions.map((reaction) => ({
-                    alignment: clientId && clientId === reaction.user?.id ? 'right' : 'left',
-                    id: reaction?.user?.id || '',
-                    image: reaction?.user?.image,
-                    name: reaction?.user?.name || reaction.user_id || '',
-                    type: reaction.type,
-                  })) as Reaction[]
-                }
                 showScreen={showScreen}
                 supportedReactions={messagesContext?.supportedReactions}
                 title={messageReactionTitle}
               />
-            ) : null}
+            )}
           </View>
         )}
       </Animated.View>
