@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, useWindowDimensions, View, ViewStyle } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+
+import { ReactionSortBase } from 'stream-chat';
 
 import { useFetchReactions } from './hooks/useFetchReactions';
 
@@ -92,6 +94,10 @@ export type OverlayReactionsProps<
   supportedReactions?: ReactionData[];
 };
 
+const sort: ReactionSortBase = {
+  created_at: -1,
+};
+
 /**
  * OverlayReactions - A high level component which implements all the logic required for message overlay reactions
  */
@@ -114,18 +120,21 @@ export const OverlayReactions = (props: OverlayReactionsProps) => {
     reactions: fetchedReactions,
   } = useFetchReactions({
     messageId,
-    sort: { created_at: -1 },
+    sort,
   });
 
-  const reactions =
-    propReactions ||
-    (fetchedReactions.map((reaction) => ({
-      alignment: 'left',
-      id: reaction.user?.id,
-      image: reaction.user?.image,
-      name: reaction.user?.name,
-      type: reaction.type,
-    })) as Reaction[]);
+  const reactions = useMemo(
+    () =>
+      propReactions ||
+      (fetchedReactions.map((reaction) => ({
+        alignment: 'left',
+        id: reaction.user?.id,
+        image: reaction.user?.image,
+        name: reaction.user?.name,
+        type: reaction.type,
+      })) as Reaction[]),
+    [propReactions, fetchedReactions],
+  );
 
   const {
     theme: {
