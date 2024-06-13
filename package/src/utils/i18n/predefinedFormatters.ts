@@ -1,7 +1,6 @@
+import { calendarFormats as calendarFormatsDefault } from './calendarFormats';
 import { getDateString } from './getDateString';
 import { Streami18n } from './Streami18n';
-
-import { calendarFormats as calendarFormatsDefault } from '../i18n/calendarFormats';
 
 export type TimestampFormatterOptions = {
   /* If true, call the `Day.js` calendar function to get the date string to display (e.g. "Yesterday at 3:58 PM"). */

@@ -10,7 +10,7 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import dispatchConnectionChangedEvent from '../../../mock-builders/event/connectionChanged';
 import dispatchConnectionRecoveredEvent from '../../../mock-builders/event/connectionRecovered';
 import { getTestClient } from '../../../mock-builders/mock';
-import { Streami18n } from '../../../utils/Streami18n';
+import { Streami18n } from '../../../utils/i18n/Streami18n';
 import { Chat } from '../Chat';
 
 const ChatContextConsumer = ({ fn }) => {

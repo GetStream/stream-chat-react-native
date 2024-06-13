@@ -4,7 +4,7 @@ import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-nati
 
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
-import { Streami18n } from '../../../utils/Streami18n';
+import { Streami18n } from '../../../utils/i18n/Streami18n';
 import { ScrollToBottomButton } from '../ScrollToBottomButton';
 
 afterEach(cleanup);

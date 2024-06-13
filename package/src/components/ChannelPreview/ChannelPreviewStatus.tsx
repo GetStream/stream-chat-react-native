@@ -10,7 +10,7 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 import { Check, CheckAll } from '../../icons';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { getDateString } from '../../utils/getDateString';
+import { getDateString } from '../../utils/i18n/getDateString';
 
 const styles = StyleSheet.create({
   date: {

@@ -7,7 +7,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { getDateString } from '../../utils/getDateString';
+import { getDateString } from '../../utils/i18n/getDateString';
 
 export type MessageSystemProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

@@ -3,7 +3,7 @@ import type { TimestampFormatterOptions } from './predefinedFormatters';
 import {
   isDayOrMoment,
   TranslatorFunctions,
-} from '../contexts/translationContext/TranslationContext';
+} from '../../contexts/translationContext/TranslationContext';
 
 type DateFormatterOptions = TimestampFormatterOptions &
   Partial<TranslatorFunctions> & {

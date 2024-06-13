@@ -4,7 +4,7 @@ import { MessagesContextValue } from '../../contexts/messagesContext/MessagesCon
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 import { DefaultStreamChatGenerics } from '../../types/types';
-import { getDateString } from '../../utils/getDateString';
+import { getDateString } from '../../utils/i18n/getDateString';
 
 /**
  * Props for the StickyHeader component.

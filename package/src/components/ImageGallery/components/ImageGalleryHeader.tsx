@@ -8,7 +8,7 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import { Close } from '../../../icons';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { getDateString } from '../../../utils/getDateString';
+import { getDateString } from '../../../utils/i18n/getDateString';
 import type { Photo } from '../ImageGallery';
 
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent

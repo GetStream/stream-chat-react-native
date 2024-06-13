@@ -7,7 +7,7 @@ import { TypingProvider } from '../../../contexts/typingContext/TypingContext';
 
 import { generateStaticUser, generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import { Streami18n } from '../../../utils/Streami18n';
+import { Streami18n } from '../../../utils/i18n/Streami18n';
 import { Chat } from '../../Chat/Chat';
 import { TypingIndicator } from '../TypingIndicator';
 

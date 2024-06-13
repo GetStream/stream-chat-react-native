@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { getDateString } from '../../utils/getDateString';
+import { getDateString } from '../../utils/i18n/getDateString';
 
 const styles = StyleSheet.create({
   container: {

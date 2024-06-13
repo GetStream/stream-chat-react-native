@@ -8,26 +8,26 @@ import i18n, { FallbackLng, TFunction } from 'i18next';
 
 import type moment from 'moment';
 
+import { calendarFormats } from './calendarFormats';
 import {
   CustomFormatters,
   PredefinedFormatters,
   predefinedFormatters,
 } from './predefinedFormatters';
 
-import type { TDateTimeParser } from '../contexts/translationContext/TranslationContext';
-import { calendarFormats } from '../i18n/calendarFormats';
-import enTranslations from '../i18n/en.json';
-import esTranslations from '../i18n/es.json';
-import frTranslations from '../i18n/fr.json';
-import heTranslations from '../i18n/he.json';
-import hiTranslations from '../i18n/hi.json';
-import itTranslations from '../i18n/it.json';
-import jaTranslations from '../i18n/ja.json';
-import koTranslations from '../i18n/ko.json';
-import nlTranslations from '../i18n/nl.json';
-import ptBRTranslations from '../i18n/pt-BR.json';
-import ruTranslations from '../i18n/ru.json';
-import trTranslations from '../i18n/tr.json';
+import type { TDateTimeParser } from '../../contexts/translationContext/TranslationContext';
+import enTranslations from '../../i18n/en.json';
+import esTranslations from '../../i18n/es.json';
+import frTranslations from '../../i18n/fr.json';
+import heTranslations from '../../i18n/he.json';
+import hiTranslations from '../../i18n/hi.json';
+import itTranslations from '../../i18n/it.json';
+import jaTranslations from '../../i18n/ja.json';
+import koTranslations from '../../i18n/ko.json';
+import nlTranslations from '../../i18n/nl.json';
+import ptBRTranslations from '../../i18n/pt-BR.json';
+import ruTranslations from '../../i18n/ru.json';
+import trTranslations from '../../i18n/tr.json';
 
 import 'dayjs/locale/es';
 import 'dayjs/locale/fr';
@@ -48,7 +48,7 @@ import 'dayjs/locale/tr';
  */
 import 'dayjs/locale/en';
 
-import type { DefaultStreamChatGenerics } from '../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const defaultNS = 'translation';
 const defaultLng = 'en';
