@@ -54,7 +54,7 @@ const CustomMessageTimestamp = (props: MessageTimestampProps) => (
 Once the default prop values are nullified, we override the default formatting rules in the JSON translation value. We can take a look at an example:
 
 ```json
-"timestamp/MessageSystem": "{{ timestamp, timestampFormatter(calendar: true; calendarFormats: {\"sameDay\": \"LT\"}) }}",
+"timestamp/MessageSystem": "{{ timestamp, timestampFormatter(calendar: true; calendarFormats: {\"lastDay: \"[gestern um] LT\", \"lastWeek\": \"[letzten] dddd [um] LT\", \"nextDay\": \"[morgen um] LT\", \"nextWeek\": \"dddd [um] LT\", \"sameDay\": \"[heute um] LT\", \"sameElse\": \"L\"}) }}",
 ```
 
 or
@@ -70,16 +70,53 @@ Let's dissect the example:
 - The `timestampFormatter` is the name of the formatting function that is used to convert the `timestamp` value into desired format
 - The `timestampFormatter` can be passed the same parameters as the React components (`calendar`, `calendarFormats`, `format`) as if the function was called with these values.
 
-:::note
-For `calendarFormats`, you don't have to provide all the formats. Provide only the formats you want to customize.
-:::
-
-Params:
+**Params**:
 
 - `calendar` - This is a boolean field to decide if the date format should be in calendar format or not. The default value is `false`.
 - `calendarFormats` - This is an object that contains the formats for the calendar. The default value is `{ sameDay: 'LT', nextDay: 'LT', nextWeek: 'dddd', lastDay: 'dddd', lastWeek: 'dddd', sameElse: 'L' }`.
 - `format` - This is a string that contains the format of the date.
 
+If calendar formatting is enabled, the dates are formatted with time-relative words ("yesterday at ...", "last ..."). The calendar strings can be further customized with `calendarFormats` object. The `calendarFormats` object has to cover all the formatting cases as shows the example below:
+
+```js
+{
+  lastDay: '[gestern um] LT',
+  lastWeek: '[letzten] dddd [um] LT',
+  nextDay: '[morgen um] LT',
+  nextWeek: 'dddd [um] LT',
+  sameDay: '[heute um] LT',
+  sameElse: 'L',
+}
+```
+
+:::important
+If any of the `calendarFormats` keys are missing, then the underlying library will fall back to hard-coded english equivalents
+:::
+
+If `calendar` formatting is enabled, the `format` prop would be ignored. So to apply the `format` string, the `calendar` has to be disabled.
+
 :::note
 The described rules follow the formatting rules required by the i18n library used under the hood - `i18next`. You can learn more about the rules in [the formatting section of the `i18next` documentation](https://www.i18next.com/translation-function/formatting#basic-usage).
 :::
+
+### Custom datetime formatter functions
+
+Besides overriding the configuration parameters, we can override the default `timestampFormatter` function by providing custom `Streami18n` instance:
+
+```tsx
+import { Chat, Streami18n } from 'stream-chat-react-native';
+
+const chatClient = 'Your Chat client here';
+
+const i18n = new Streami18n({
+  formatters: {
+    timestampFormatter: () => (val: string | Date) => {
+      return new Date(val).getTime() + '';
+    },
+  },
+});
+
+export const ChatApp = ({ apiKey, userId, userToken }) => {
+  return <Chat client={chatClient} i18nInstance={i18n}></Chat>;
+};
+```

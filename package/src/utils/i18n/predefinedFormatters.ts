@@ -1,4 +1,3 @@
-import { calendarFormats as calendarFormatsDefault } from './calendarFormats';
 import { getDateString } from './getDateString';
 import { Streami18n } from './Streami18n';
 
@@ -6,7 +5,7 @@ export type TimestampFormatterOptions = {
   /* If true, call the `Day.js` calendar function to get the date string to display (e.g. "Yesterday at 3:58 PM"). */
   calendar?: boolean | null;
   /* Object specifying date display formats for dates formatted with calendar extension. Active only if calendar prop enabled. */
-  calendarFormats?: Record<string, string>;
+  calendarFormats?: Record<string, string> | string;
   /* Overrides the default timestamp format if calendar is disabled. */
   format?: string;
 };
@@ -28,6 +27,7 @@ export const predefinedFormatters: PredefinedFormatters = {
   timestampFormatter:
     (streamI18n) =>
     (value, _, { calendarFormats, ...options }: TimestampFormatterOptions) => {
+      console.log(calendarFormats);
       let parsedCalendarFormats;
       try {
         if (!options.calendar) {
@@ -43,10 +43,7 @@ export const predefinedFormatters: PredefinedFormatters = {
 
       const result = getDateString({
         ...options,
-        calendarFormats: {
-          ...calendarFormatsDefault[streamI18n.currentLanguage || 'en'],
-          ...parsedCalendarFormats,
-        },
+        calendarFormats: parsedCalendarFormats,
         date: value,
         tDateTimeParser: streamI18n.tDateTimeParser,
       });
