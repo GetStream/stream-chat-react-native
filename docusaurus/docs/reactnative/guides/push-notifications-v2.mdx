@@ -3,8 +3,8 @@ id: push-notifications-v2
 title: V2
 ---
 
-import chatOverviewPage from '../assets/guides/push-notifications/v2/chat_overview_page.png';
-import firebaseNotificationsToggle from '../assets/guides/push-notifications/v2/firebase_notifications_toggle.png';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 Easiest way to integrate push notifications in your Chat applications is using Firebase. [React Native Firebase](https://rnfirebase.io/) is the officially recommended package to add Firebase to your apps. We also recommend the [Notifee](https://notifee.app/) library for customising push notifications and listening to user interaction events.
 
@@ -31,36 +31,9 @@ Push notifications require membership. Watching a channel isn't enough.
 
 Follow the steps mentioned below to setup a Firebase project for your apps:
 
-1. [Create a Firebase project for your apps](https://console.firebase.google.com/).
+1. [Create a Firebase project for your app](https://console.firebase.google.com/).
 2. Register your [Android](https://firebase.google.com/docs/android/setup#register-app) app and [iOS](https://firebase.google.com/docs/ios/setup#register-app) app with the Firebase project.
 3. Upload your [APNs authentication key](https://firebase.google.com/docs/cloud-messaging/ios/client#upload_your_apns_authentication_key) to your Firebase project.
-
-## App setup
-
-Follow the steps below to setup your apps with Firebase:
-
-1. Install React Native Firebase and its messaging module
-
-   ```sh
-   # Install & setup the app module
-   yarn add @react-native-firebase/app
-
-   # Install the messaging module
-   yarn add @react-native-firebase/messaging
-   ```
-
-2. [Setup your Android app with credentials and configure Firebase](https://rnfirebase.io/#2-react-native-cli---android-setup).
-3. [Setup your iOS app with credentials and configure Firebase]https://rnfirebase.io/#3-react-native-cli---ios-setup).
-4. Add the ["Push Notifications" capability](https://developer.apple.com/documentation/xcode/adding-capabilities-to-your-app) for your iOS app.
-5. Add the ["Background Modes" capability ](https://rnfirebase.io/messaging/usage/ios-setup#enable-background-modes) for your iOS app along with both the "Background fetch" and "Remote notifications" sub-modes
-
-### Expo
-
-:::note
-If you're using Bare Workflow, please follow the installation steps above.
-:::
-
-React Native Firebase library is not available in the [Expo Go](https://expo.dev/client) app by default due to including much-needed native code. However, you can get things working via the [expo-dev-client](https://docs.expo.dev/development/getting-started/) library and adding [config plugins](https://docs.expo.dev/guides/config-plugins/). Please follow the [expo installation docs at React Native Firebase](https://rnfirebase.io/#installation-1) for the details.
 
 ## Get Google Service Account Credentials
 
@@ -72,104 +45,154 @@ These credentials are the [private key file](https://firebase.google.com/docs/ad
 - Click `Generate New Private Key`, then confirm by clicking `Generate Key`.
 - Securely store the JSON file containing the key.
 
-This JSON file contains the credentials which needs to be uploaded to Stream server as explained in next step.
+This JSON file contains the credentials which needs to be uploaded to Stream server as explained in the next step.
 
-## Upload Firebase Credentials
+## Upload Credentials in Stream Dashboard
 
-You can upload your JSON file containing your Firebase credentials either using dashboard or using the app settings API:
+Visit your app's [Stream dashboard](https://dashboard.getstream.io/) page. From there, select the `Push Notifications` menu option as you can see in the image below:
 
-### Using Dashboard
+![Push notifications dashboard menu](../assets/guides/push-notifications/v2/push_notifications_dashboard_menu.png)
 
-1. Go to Chat Overview page on Stream Dashboard
+From there you can create a new configuration by clicking the `New Configuration` button.
 
-<img src={chatOverviewPage} />
+After selecting the `Firebase` Provider, you will be asked to provide the following information:
 
-2. Enable Firebase Notification toggle on Chat Overview
+| Field Name | Usage description |
+|---|---|
+| `Name` | The name to identify this configuration. It is used in the `addDevice` methods while sending the device token. You can use different names per each build type of your app (for example `Production`, `Staging`) or similar |
+| `Description` | Allows you to set a description on the configuration to help identify its usage in your app's context. |
+| `Credentials JSON` | The firebase credentials that will be used to send the push notification. |
 
-<img src={firebaseNotificationsToggle} />
+For our example, we are using `staging` as `name` and we are filling in the remaining information as you can see in the image below:
 
-3. Enter your Firebase Credentials in input box below the toggle and **press "Save" button**.
+![Setting up your Firebase Credentials on the Stream Dashboard](../assets/guides/push-notifications/v2/dashboard-firebase-push-configuration-example.png)
 
-### Using API
+:::tip IMPORTANT
+Make sure that the `enabled` switch button is set to `on` 
+:::
 
-You can also enable Firebase notifications and upload the Firebase credentials using API:
+Now, tap on the `Create` button at the bottom, to add this push configuration.
+
+## App setup
+
+### Generate Firebase credentials for the app from Firebase console
+
+<Tabs groupId="current-os" queryString>
+  <TabItem value="android" label="Android" default>
+
+  
+  On the Firebase console, add a new Android application and enter your projects details. The "Android package name" must match your local projects package name which can be found inside of the `namespace` field in `/android/app/build.gradle`, or in the `manifest` tag within the `/android/app/src/main/AndroidManifest.xml` file within your project for projects using android gradle plugin v7 and below.
+
+  Download the `google-services.json` file.
+
+
+  </TabItem>
+  <TabItem value="ios" label="iOS">
+
+  On the Firebase console, add a new iOS application and enter your projects details. The "iOS bundle ID" must match your local project bundle ID. The bundle ID can be found within the "General" tab when opening the project with Xcode.
+
+  Download the `GoogleService-Info.plist` file.
+
+  </TabItem>
+</Tabs>
+
+### Configure Firebase with credentials
+
+<Tabs groupId="current-platform" queryString>
+  <TabItem value="expo" label="Expo" default>
+
+Integration with Expo is possible when using a [development build](https://docs.expo.dev/development/getting-started/). You can configure the project via config plugins or manually configure the native projects yourself (the "bare workflow").
+
+NOTE: React Native Firebase cannot be used in the pre-compiled Expo Go app because React Native Firebase uses native code that is not compiled into Expo Go.
+
+For "bare workflow" please switch the tab to React Native and follow its installation steps. The steps below are for Expo development builds.
+
+#### Install React Native Firebase modules
+
+  ```bash title="Terminal"
+  # Install & setup the app module
+  npx expo install @react-native-firebase/app
+
+  # Install the messaging module
+  npx expo install @react-native-firebase/messaging
+  ```
+
+#### Configure React Native Firebase modules
+
+The recommended approach to configure React Native Firebase is to use Expo Config Plugins. You will add React Native Firebase modules to the `plugins` array of your `app.json` or `app.config.js`.
+
+To enable Firebase on the native Android and iOS platforms, move the downloaded `google-services.json` and `GoogleService-Info.plist files` and provide their paths in the following `app.json` fields: `expo.android.googleServicesFile` and `expo.ios.googleServicesFile`. See the example configuration below.
+
+For iOS only, since `firebase-ios-sdk` requires use_frameworks then you want to configure `expo-build-properties` `app.json` by adding `"useFrameworks": "static"`. See the example configuration below.
+ß
+The following is an example `app.json` to enable the React Native Firebase modules App, that specifies the Service Account files for both mobile platforms, and that sets the application ID to the example value of `com.mycorp.myapp` (change to match your own):
+
+// TODO from here
+  
+  </TabItem>
+  <TabItem value="rn" label="React Native">
+
+1. Install React Native Firebase and its messaging module
+
+  ```bash title="Terminal"
+  # Install & setup the app module
+  yarn add @react-native-firebase/app
+
+  # Install the messaging module
+  yarn add @react-native-firebase/messaging
+  ```
+
+2. [Setup your Android app with credentials and configure Firebase](https://rnfirebase.io/#2-react-native-cli---android-setup).
+3. [Setup your iOS app with credentials and configure Firebase](https://rnfirebase.io/#3-react-native-cli---ios-setup).
+4. Add the ["Push Notifications" capability](https://rnfirebase.io/messaging/usage/ios-setup#enable-push-notifications) for your iOS app.
+5. Add the ["Background Modes" capability](https://rnfirebase.io/messaging/usage/ios-setup#enable-background-modes) for your iOS app along with both the "Background fetch" and "Remote notifications" sub-modes.
+
+
+  </TabItem>
+</Tabs>
+
+### Request for notification permissions
+
+At an appropriate place in your app, request notification permissions from the user. Below is a small example of how to request permissions using [`react-native-permissions`](https://github.com/zoontek/react-native-permissions) library:
+<!-- vale off -->
 
 ```js
-const client = StreamChat.getInstance('api_key', 'api_secret');
-client.updateAppSettings({
-  push_config: {
-    version: 'v2'
-  },
-  firebase_config: {
-    credentials_json: fs.readFileSync(
-      './firebase-credentials.json',
-      'utf-8',
-    ),
- });
+import { requestNotifications } from 'react-native-permissions';
+
+await requestNotifications(['alert', 'sound']);
 ```
+
+:::tip IMPORTANT
+Ensure that the setup steps for iOS and Android in React Native/Expo from [`react-native-permissions`](https://github.com/zoontek/react-native-permissions) library documentation relevant for notification permission.
+:::
 
 ## Registering a device with Stream
 
 Once you configure the Firebase server key and set it up on the Stream dashboard, a device that is supposed to receive push notifications needs to be registered at the Stream backend. This is usually done by listening for the Firebase device token.
 
-:::caution
+```ts
+import { StreamChat } from 'stream-chat';
+import messaging from '@react-native-firebase/messaging';
 
-Please note that, `client.addDevice` call requires a user token to be set on the client.
-So `client.addDevice` call should be made after `client.connectUser` in code.
-
-:::
-
-```js
-// Request Push Notification permission from device.
-const requestPermission = async () => {
-  const authStatus = await messaging().requestPermission();
-  const enabled =
-    authStatus === messaging.AuthorizationStatus.AUTHORIZED || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-  if (enabled) {
-    console.log('Authorization status:', authStatus);
-  }
-};
+const client = StreamChat.getInstance('api_key');
+// the name of the firebase configuration set in stream dashboard
+const push_provider_name = 'staging';
 
 const App = () => {
   const [isReady, setIsReady] = useState(false);
-  const unsubscribeTokenRefreshListenerRef = useRef<() => void>();
 
   useEffect(() => {
-    // Register FCM token with stream chat server.
-    const registerPushToken = async () => {
-      // unsubscribe any previous listener
-      unsubscribeTokenRefreshListenerRef.current?.();
-      const token = await messaging().getToken();
-      const push_provider = 'firebase';
-      const push_provider_name = 'MyRNAppFirebasePush'; // name an alias for your push provider (optional)
-      client.setLocalDevice({
-        id: token,
-        push_provider,
-        // push_provider_name is meant for optional multiple providers support, see: https://getstream.io/chat/docs/react/push_providers_and_multi_bundle
-        push_provider_name,
-      });
-      await AsyncStorage.setItem('@current_push_token', token);
-
-      const removeOldToken = async () => {
-        const oldToken = await AsyncStorage.getItem('@current_push_token');
-        if (oldToken !== null) {
-          await client.removeDevice(oldToken);
-        }
-      };
-
-      unsubscribeTokenRefreshListenerRef.current = messaging().onTokenRefresh(async newToken => {
-        await Promise.all([
-          removeOldToken(),
-          client.addDevice(newToken, push_provider, USER_ID, push_provider_name),
-          AsyncStorage.setItem('@current_push_token', newToken),
-        ]);
-      });
-    };
+    const unsubscribe = messaging().onTokenRefresh(async newToken => {
+      await client.addDevice(newToken, 'firebase', USER_ID, push_provider_name);
+    });
 
     const init = async () => {
-      await requestPermission();
-      await registerPushToken();
+      const token = await messaging().getToken();
+      client.setLocalDevice({
+        id: token,
+        'firebase',
+        push_provider_name,
+      });
       await client.connectUser({ id: USER_ID }, USER_TOKEN);
 
       setIsReady(true);
@@ -179,7 +202,7 @@ const App = () => {
 
     return async () => {
       await client?.disconnectUser();
-      unsubscribeTokenRefreshListenerRef.current?.();
+      unsubscribe();
     };
   }, []);
 
@@ -188,9 +211,9 @@ const App = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <Chat client={client}>{/* Child components of Chat go here */}</Chat>
-    </View>
+    <Chat client={client}>
+      {/* Child components of Chat go here */}
+    </Chat>
   );
 };
 
@@ -202,6 +225,13 @@ const styles = StyleSheet.create({
   },
 });
 ```
+
+:::caution
+
+Please note that, `client.addDevice` call requires a user token to be set on the client.
+So `client.addDevice` call should be made after `client.connectUser` in code.
+
+:::
 
 ## The Push Notification Message Payload
 
