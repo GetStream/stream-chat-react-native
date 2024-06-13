@@ -51,13 +51,8 @@ import {
 } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
-import {
-  TranslationContextValue,
-  useTranslationContext,
-} from '../../contexts/translationContext/TranslationContext';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { getDateString } from '../../utils/getDateString';
 
 const WAIT_FOR_SCROLL_TO_OFFSET_TIMEOUT = 150;
 const MAX_RETRIES_AFTER_SCROLL_FAILURE = 10;
@@ -156,8 +151,7 @@ type MessageListPropsWithContext<
     | 'TypingIndicator'
     | 'TypingIndicatorContainer'
   > &
-  Pick<ThreadContextValue<StreamChatGenerics>, 'loadMoreThread' | 'thread'> &
-  Pick<TranslationContextValue, 't' | 'tDateTimeParser'> & {
+  Pick<ThreadContextValue<StreamChatGenerics>, 'loadMoreThread' | 'thread'> & {
     /**
      * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
      * to attach some additional props to underlying FlatList, you can add it to following prop.
@@ -278,7 +272,6 @@ const MessageListWithContext = <
     setTargetedMessage,
     StickyHeader,
     targetedMessage,
-    tDateTimeParser,
     thread,
     threadList = false,
     TypingIndicator,
@@ -1025,18 +1018,6 @@ const MessageListWithContext = <
     threadList,
   ]);
 
-  const stickyHeaderDateFormat =
-    stickyHeaderDate?.getFullYear() === new Date().getFullYear() ? 'MMM D' : 'MMM D, YYYY';
-
-  const stickyHeaderDateString = useMemo(() => {
-    if (!stickyHeaderDate) return null;
-    return getDateString({
-      date: stickyHeaderDate,
-      format: stickyHeaderDateFormat,
-      tDateTimeParser,
-    });
-  }, [stickyHeaderDate, stickyHeaderDateFormat]);
-
   const dismissImagePicker = () => {
     if (!hasMoved && selectedPicker) {
       setSelectedPicker(undefined);
@@ -1091,13 +1072,6 @@ const MessageListWithContext = <
     ),
     [shouldApplyAndroidWorkaround, HeaderComponent],
   );
-
-  const StickyHeaderComponent = () => {
-    if (!stickyHeaderDateString) return null;
-    if (StickyHeader) return <StickyHeader dateString={stickyHeaderDateString} />;
-    if (messageListLengthAfterUpdate) return <DateHeader dateString={stickyHeaderDateString} />;
-    return null;
-  };
 
   // We need to omit the style related props from the additionalFlatListProps and add them directly instead of spreading
   let additionalFlatListPropsExcludingStyle:
@@ -1183,7 +1157,13 @@ const MessageListWithContext = <
       {!loading && (
         <>
           <View style={styles.stickyHeader}>
-            <StickyHeaderComponent />
+            {StickyHeader && (
+              <StickyHeader
+                date={stickyHeaderDate}
+                DateHeader={DateHeader}
+                messageListLengthAfterUpdate={messageListLengthAfterUpdate}
+              />
+            )}
           </View>
           {!disableTypingIndicator && TypingIndicator && (
             <TypingIndicatorContainer>
@@ -1253,7 +1233,6 @@ export const MessageList = <
     usePaginatedMessageListContext<StreamChatGenerics>();
   const { overlay } = useOverlayContext();
   const { loadMoreThread, thread } = useThreadContext<StreamChatGenerics>();
-  const { t, tDateTimeParser } = useTranslationContext();
 
   return (
     <MessageListWithContext
@@ -1295,9 +1274,7 @@ export const MessageList = <
         setSelectedPicker,
         setTargetedMessage,
         StickyHeader,
-        t,
         targetedMessage,
-        tDateTimeParser,
         thread,
         threadList,
         TypingIndicator,

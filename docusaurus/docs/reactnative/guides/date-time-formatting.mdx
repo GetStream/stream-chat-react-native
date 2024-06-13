@@ -1,0 +1,85 @@
+---
+id: date-time-formatting
+title: Date and time formatting
+---
+
+In this guide we will learn how date a time formatting can be customized within SDK's components.
+
+## SDK components displaying date & time
+
+The following components provided by the SDK display datetime:
+
+- `ChannelPreviewStatus` - Component showing last message date and time in `ChannelList`.
+- `ImageGalleryHeader` - Component showing the header in the `ImageGallery`.
+- `InlineDateSeparator` - Component separating groups of messages in `MessageList`.
+- `MessageEditedTimestamp` - Component showing edited message time when clicked on an edited message.
+- `MessageSystem` - Component showing system message.
+- `MessageTimestamp` - Component showing message timestamp.
+- `StickyHeader` - Component showing sticky header on the top of the `MessageList`/`Channel`.
+
+## Format Customization
+
+The datetime format can be customized by providing date format through the `i18n` JSON.
+
+### Date & time formatting with i18n service
+
+Formatting via i18n service allows for SDK wide configuration. The configuration is stored with other translations in JSON files. Formatting with i18n service has the following advantages:
+
+- It is centralized.
+- It takes into consideration the locale out of the box.
+- Allows for high granularity - formatting per string, not component (opposed to props approach).
+- Allows for high re-usability - apply the same configuration in multiple places via the same translation key.
+- Allows for custom formatting logic.
+
+The default datetime formatting configuration is stored in the JSON translation files. The default translation keys are namespaced with prefix `timestamp/` followed by the component name. For example, the message date formatting can be targeted via `timestamp/MessageTimestamp`, because the underlying component is called `MessageTimestamp`.
+
+We can apply custom configuration in all the translation JSON files. It could look similar to the following example key-value pair.
+
+```json
+"timestamp/SystemMessage": "{{ timestamp, timestampFormatter(format: YYYY) }}",
+```
+
+Besides overriding the formatting parameters above, we can customize the translation key via `timestampTranslationKey` prop. All the above components (`ChannelPreviewStatus`, `ImageGalleryHeader`, `InlineDateSeparator`, `MessageEditedTimestamp`, `MessageSystem`, `MessageTimestamp`, `StickyHeader`) accept this prop.
+
+```tsx
+import { MessageTimestampProps, MessageTimestamp } from 'stream-chat-react-native';
+
+const CustomMessageTimestamp = (props: MessageTimestampProps) => (
+  <MessageTimestamp {...props} timestampTranslationKey='customTimestampTranslationKey' />
+);
+```
+
+### Understanding the formatting syntax
+
+Once the default prop values are nullified, we override the default formatting rules in the JSON translation value. We can take a look at an example:
+
+```json
+"timestamp/MessageSystem": "{{ timestamp, timestampFormatter(calendar: true; calendarFormats: {\"sameDay\": \"LT\"}) }}",
+```
+
+or
+
+```json
+"timestamp/MessageTimestamp": "{{ timestamp, timestampFormatter(format: LT) }}",
+```
+
+Let's dissect the example:
+
+- The curly brackets (`{{`, `}}`) indicate the place where a value will be interpolated (inserted) into the string.
+- Variable `timestamp` is the name of variable which value will be inserted into the string
+- The `timestampFormatter` is the name of the formatting function that is used to convert the `timestamp` value into desired format
+- The `timestampFormatter` can be passed the same parameters as the React components (`calendar`, `calendarFormats`, `format`) as if the function was called with these values.
+
+:::note
+For `calendarFormats`, you don't have to provide all the formats. Provide only the formats you want to customize.
+:::
+
+Params:
+
+- `calendar` - This is a boolean field to decide if the date format should be in calendar format or not. The default value is `false`.
+- `calendarFormats` - This is an object that contains the formats for the calendar. The default value is `{ sameDay: 'LT', nextDay: 'LT', nextWeek: 'dddd', lastDay: 'dddd', lastWeek: 'dddd', sameElse: 'L' }`.
+- `format` - This is a string that contains the format of the date.
+
+:::note
+The described rules follow the formatting rules required by the i18n library used under the hood - `i18next`. You can learn more about the rules in [the formatting section of the `i18next` documentation](https://www.i18next.com/translation-function/formatting#basic-usage).
+:::

@@ -14,7 +14,14 @@ export type MessageSystemProps<
 > = {
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: MessageType<StreamChatGenerics>;
+  /**
+   * Additional styles for the system message container.
+   */
   style?: StyleProp<ViewStyle>;
+  /*
+   * Lookup key in the language corresponding translations sheet to perform date formatting
+   */
+  timestampTranslationKey?: string;
 };
 
 /**
@@ -27,7 +34,7 @@ export const MessageSystem = <
 >(
   props: MessageSystemProps<StreamChatGenerics>,
 ) => {
-  const { message, style } = props;
+  const { message, style, timestampTranslationKey = 'timestamp/MessageSystem' } = props;
 
   const {
     theme: {
@@ -37,13 +44,14 @@ export const MessageSystem = <
       },
     },
   } = useTheme();
-  const { tDateTimeParser } = useTranslationContext();
+  const { t, tDateTimeParser } = useTranslationContext();
 
   const createdAt = message.created_at;
   const formattedDate = getDateString({
-    calendar: true,
     date: createdAt,
+    t,
     tDateTimeParser,
+    timestampTranslationKey,
   });
 
   return (

@@ -1,56 +1,63 @@
+import type { TimestampFormatterOptions } from './predefinedFormatters';
+
 import {
   isDayOrMoment,
-  TDateTimeParser,
-  TDateTimeParserInput,
+  TranslatorFunctions,
 } from '../contexts/translationContext/TranslationContext';
 
-interface DateFormatterOptions {
-  /**
-   * Whether to show the time in Calendar time format. Calendar time displays time relative to a today's date.
-   */
-  calendar?: boolean;
-  /**
-   * The timestamp to be formatted.
-   */
-  date?: string | Date;
-  /**
-   * The format in which the date should be displayed.
-   */
-  format?: string;
-  /**
-   * A function to format the date.
-   */
-  formatDate?: (date: TDateTimeParserInput) => string;
-  /**
-   * The datetime parsing function.
-   */
-  tDateTimeParser?: TDateTimeParser;
-}
+type DateFormatterOptions = TimestampFormatterOptions &
+  Partial<TranslatorFunctions> & {
+    /**
+     * The timestamp to be formatted.
+     */
+    date?: string | Date;
+    /*
+     * Lookup key in the language corresponding translations sheet to perform date formatting
+     */
+    timestampTranslationKey?: string;
+  };
 
 export const noParsingFunctionWarning =
   'MessageTimestamp was called but there is no datetime parsing function available';
 
 /**
- * Utility funcyion to format the date string.
+ * Utility function to format the date string.
  */
 export function getDateString({
   calendar,
+  calendarFormats,
   date,
   format,
-  formatDate,
+  t,
   tDateTimeParser,
+  timestampTranslationKey,
 }: DateFormatterOptions): string | number | undefined {
   if (!date || (typeof date === 'string' && !Date.parse(date))) {
     return;
   }
 
-  if (typeof formatDate === 'function') {
-    return formatDate(new Date(date));
-  }
-
   if (!tDateTimeParser) {
     console.log(noParsingFunctionWarning);
     return;
+  }
+
+  if (t && timestampTranslationKey) {
+    const options: TimestampFormatterOptions = {};
+    if (typeof calendar !== 'undefined' && calendar !== null) {
+      options.calendar = calendar;
+    }
+    if (typeof calendarFormats !== 'undefined' && calendarFormats !== null) {
+      options.calendarFormats = calendarFormats;
+    }
+    if (typeof format !== 'undefined' && format !== null) {
+      options.format = format;
+    }
+    const translatedTimestamp = t(timestampTranslationKey, {
+      ...options,
+      timestamp: new Date(date),
+    });
+    const translationKeyFound = timestampTranslationKey !== translatedTimestamp;
+    if (translationKeyFound) return translatedTimestamp;
   }
 
   const parsedTime = tDateTimeParser(date);
@@ -60,7 +67,9 @@ export function getDateString({
      * parsedTime.calendar is guaranteed on the type but is only
      * available when a user calls dayjs.extend(calendar)
      */
-    return calendar && parsedTime.calendar ? parsedTime.calendar() : parsedTime.format(format);
+    return calendar && parsedTime.calendar
+      ? parsedTime.calendar(undefined, calendarFormats)
+      : parsedTime.format(format);
   }
 
   return new Date(date).toDateString();

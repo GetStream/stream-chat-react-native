@@ -22,29 +22,41 @@ const styles = StyleSheet.create({
   },
 });
 
+/**
+ * Props for the `InlineDateSeparator` component.
+ */
 export type InlineDateSeparatorProps = {
+  /**
+   * Date to be displayed.
+   */
   date?: Date;
+  /*
+   * Lookup key in the language corresponding translations sheet to perform date formatting
+   */
+  timestampTranslationKey?: string;
 };
 
-export const InlineDateSeparator = ({ date }: InlineDateSeparatorProps) => {
+export const InlineDateSeparator = ({
+  date,
+  timestampTranslationKey = 'timestamp/InlineDateSeparator',
+}: InlineDateSeparatorProps) => {
   const {
     theme: {
       colors: { overlay, white },
       inlineDateSeparator: { container, text },
     },
   } = useTheme();
-  const { tDateTimeParser } = useTranslationContext();
+  const { t, tDateTimeParser } = useTranslationContext();
 
   if (!date) {
     return null;
   }
 
-  const dateFormat = date.getFullYear() === new Date().getFullYear() ? 'MMM D' : 'MMM D, YYYY';
-
   const dateString = getDateString({
     date,
-    format: dateFormat,
+    t,
     tDateTimeParser,
+    timestampTranslationKey,
   });
 
   return (
