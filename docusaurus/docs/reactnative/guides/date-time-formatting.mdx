@@ -36,7 +36,7 @@ The default datetime formatting configuration is stored in the JSON translation 
 We can apply custom configuration in all the translation JSON files. It could look similar to the following example key-value pair.
 
 ```json
-"timestamp/SystemMessage": "{{ timestamp, timestampFormatter(format: YYYY) }}",
+"timestamp/SystemMessage": "{{ timestamp | timestampFormatter(format: YYYY) }}",
 ```
 
 Besides overriding the formatting parameters above, we can customize the translation key via `timestampTranslationKey` prop. All the above components (`ChannelPreviewStatus`, `ImageGalleryHeader`, `InlineDateSeparator`, `MessageEditedTimestamp`, `MessageSystem`, `MessageTimestamp`, `StickyHeader`) accept this prop.
@@ -54,19 +54,26 @@ const CustomMessageTimestamp = (props: MessageTimestampProps) => (
 Once the default prop values are nullified, we override the default formatting rules in the JSON translation value. We can take a look at an example:
 
 ```json
-"timestamp/MessageSystem": "{{ timestamp, timestampFormatter(calendar: true; calendarFormats: {\"lastDay: \"[gestern um] LT\", \"lastWeek\": \"[letzten] dddd [um] LT\", \"nextDay\": \"[morgen um] LT\", \"nextWeek\": \"dddd [um] LT\", \"sameDay\": \"[heute um] LT\", \"sameElse\": \"L\"}) }}",
+"timestamp/MessageSystem": "{{ timestamp | timestampFormatter(calendar: true) }}",
 ```
 
-or
+or with custom calendar formats:
 
 ```json
-"timestamp/MessageTimestamp": "{{ timestamp, timestampFormatter(format: LT) }}",
+"timestamp/MessageSystem": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay: \"[gestern um] LT\", \"lastWeek\": \"[letzten] dddd [um] LT\", \"nextDay\": \"[morgen um] LT\", \"nextWeek\": \"dddd [um] LT\", \"sameDay\": \"[heute um] LT\", \"sameElse\": \"L\"}) }}",
+```
+
+or with custom format:
+
+```json
+"timestamp/MessageTimestamp": "{{ timestamp | timestampFormatter(format: LT) }}",
 ```
 
 Let's dissect the example:
 
 - The curly brackets (`{{`, `}}`) indicate the place where a value will be interpolated (inserted) into the string.
-- Variable `timestamp` is the name of variable which value will be inserted into the string
+- Variable `timestamp` is the name of variable which value will be inserted into the string.
+- The `|` character is a pipe that separates the variable from the formatting function.
 - The `timestampFormatter` is the name of the formatting function that is used to convert the `timestamp` value into desired format
 - The `timestampFormatter` can be passed the same parameters as the React components (`calendar`, `calendarFormats`, `format`) as if the function was called with these values.
 

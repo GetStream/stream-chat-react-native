@@ -529,6 +529,7 @@ export class Streami18n {
     try {
       this.t = await this.i18nInstance.init({
         ...this.i18nextConfig,
+        interpolation: { escapeValue: false, formatSeparator: '|' },
         lng: this.currentLanguage,
         resources: this.translations,
       });
