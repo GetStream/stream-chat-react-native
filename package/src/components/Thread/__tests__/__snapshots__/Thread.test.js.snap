@@ -488,7 +488,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               ]
                             }
                           >
-                            2:50 PM
+                            2020-05-05T14:50:00+00:00
                           </Text>
                         </View>
                       </View>
@@ -768,7 +768,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               ]
                             }
                           >
-                            2:50 PM
+                            2020-05-05T14:50:00+00:00
                           </Text>
                         </View>
                       </View>
@@ -1048,7 +1048,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               ]
                             }
                           >
-                            2:50 PM
+                            2020-05-05T14:50:00+00:00
                           </Text>
                         </View>
                       </View>
@@ -1092,7 +1092,7 @@ exports[`Thread should match thread snapshot 1`] = `
                   ]
                 }
               >
-                May 5, 2020
+                2020-05-05T14:50:00+00:00
               </Text>
             </View>
           </View>
@@ -1368,7 +1368,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   ]
                                 }
                               >
-                                2:50 PM
+                                2020-05-05T14:50:00+00:00
                               </Text>
                             </View>
                           </View>
@@ -1473,7 +1473,7 @@ exports[`Thread should match thread snapshot 1`] = `
                       ]
                     }
                   >
-                     Replies
+                    {{ replyCount }} Replies
                   </Text>
                 </View>
               </View>

@@ -104,7 +104,7 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
       ]
     }
   >
-    Arthur and 1 more are typing
+    {{ firstUser }} and {{ nonSelfUserLength }} more are typing
   </Text>
 </View>
 `;

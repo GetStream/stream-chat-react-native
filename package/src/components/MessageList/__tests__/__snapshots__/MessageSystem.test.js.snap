@@ -73,7 +73,7 @@ exports[`MessageSystem should match the snapshot for message system 1`] = `
         ]
       }
     >
-      04/27/2020
+      2020-04-27T13:39:49+00:00
     </Text>
   </View>
   <View
