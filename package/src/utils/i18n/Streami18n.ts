@@ -165,7 +165,7 @@ type Streami18nOptions = {
 type I18NextConfig = {
   debug: boolean;
   fallbackLng: false | FallbackLng;
-  interpolation: { escapeValue: boolean };
+  interpolation: { escapeValue: boolean; formatSeparator: string };
   keySeparator: false | string;
   lng: string;
   nsSeparator: false | string;
@@ -474,7 +474,7 @@ export class Streami18n {
     this.i18nextConfig = {
       debug: finalOptions.debug,
       fallbackLng: false,
-      interpolation: { escapeValue: false },
+      interpolation: { escapeValue: false, formatSeparator: '|' },
       keySeparator: false,
       lng: this.currentLanguage,
       nsSeparator: false,
@@ -529,7 +529,6 @@ export class Streami18n {
     try {
       this.t = await this.i18nInstance.init({
         ...this.i18nextConfig,
-        interpolation: { escapeValue: false, formatSeparator: '|' },
         lng: this.currentLanguage,
         resources: this.translations,
       });
