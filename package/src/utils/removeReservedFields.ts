@@ -22,6 +22,7 @@ export const removeReservedFields = <
     'reaction_groups',
     'last_message_at',
     'member_count',
+    'message_text_updated_at',
     'type',
     'updated_at',
     'reply_count',
