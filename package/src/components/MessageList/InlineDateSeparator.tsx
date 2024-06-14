@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -41,16 +41,16 @@ export const InlineDateSeparator = ({ date }: InlineDateSeparatorProps) => {
   } = useTheme();
   const { t, tDateTimeParser } = useTranslationContext();
 
-  if (!date) {
-    return null;
-  }
-
-  const dateString = getDateString({
-    date,
-    t,
-    tDateTimeParser,
-    timestampTranslationKey: 'timestamp/InlineDateSeparator',
-  });
+  const dateString = useMemo(
+    () =>
+      getDateString({
+        date,
+        t,
+        tDateTimeParser,
+        timestampTranslationKey: 'timestamp/InlineDateSeparator',
+      }),
+    [date, t, tDateTimeParser],
+  );
 
   return (
     <View

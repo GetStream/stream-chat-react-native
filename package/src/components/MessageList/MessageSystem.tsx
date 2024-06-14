@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import type { MessageType } from './hooks/useMessageList';
@@ -46,12 +46,17 @@ export const MessageSystem = <
   const { t, tDateTimeParser } = useTranslationContext();
 
   const createdAt = message.created_at;
-  const formattedDate = getDateString({
-    date: createdAt,
-    t,
-    tDateTimeParser,
-    timestampTranslationKey: 'timestamp/MessageSystem',
-  });
+
+  const formattedDate = useMemo(
+    () =>
+      getDateString({
+        date: createdAt,
+        t,
+        tDateTimeParser,
+        timestampTranslationKey: 'timestamp/MessageSystem',
+      }),
+    [createdAt, t, tDateTimeParser],
+  );
 
   return (
     <View style={[styles.container, style, container]} testID='message-system'>

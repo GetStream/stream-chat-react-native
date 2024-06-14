@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text } from 'react-native';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
@@ -30,6 +30,8 @@ export const MessageTimestamp = (props: MessageTimestampProps) => {
     timestamp,
     timestampTranslationKey = 'timestamp/MessageTimestamp',
   } = props;
+  const { t, tDateTimeParser: contextTDateTimeParser } = useTranslationContext();
+  const tDateTimeParser = propsTDateTimeParser || contextTDateTimeParser;
 
   const {
     theme: {
@@ -39,22 +41,23 @@ export const MessageTimestamp = (props: MessageTimestampProps) => {
       },
     },
   } = useTheme();
-  const { t, tDateTimeParser: contextTDateTimeParser } = useTranslationContext();
+
+  const dateString = useMemo(
+    () =>
+      getDateString({
+        date: timestamp,
+        t,
+        tDateTimeParser,
+        timestampTranslationKey,
+      }),
+    [],
+  );
 
   if (formattedDate) {
     return (
       <Text style={[styles.text, { color: grey }, timestampText]}>{formattedDate.toString()}</Text>
     );
   }
-
-  if (!timestamp) return null;
-
-  const dateString = getDateString({
-    date: timestamp,
-    t,
-    tDateTimeParser: propsTDateTimeParser || contextTDateTimeParser,
-    timestampTranslationKey,
-  });
 
   if (!dateString) return null;
 

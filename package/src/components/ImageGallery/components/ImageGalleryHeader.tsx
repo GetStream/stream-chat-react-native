@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Pressable, SafeAreaView, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import Animated, { Extrapolate, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 
@@ -99,12 +99,16 @@ export const ImageGalleryHeader = <
   const { t, tDateTimeParser } = useTranslationContext();
   const { setOverlay } = useOverlayContext();
 
-  const date = getDateString({
-    date: photo?.created_at,
-    t,
-    tDateTimeParser,
-    timestampTranslationKey: 'timestamp/ImageGalleryHeader',
-  });
+  const date = useMemo(
+    () =>
+      getDateString({
+        date: photo?.created_at,
+        t,
+        tDateTimeParser,
+        timestampTranslationKey: 'timestamp/ImageGalleryHeader',
+      }),
+    [photo?.created_at, t, tDateTimeParser],
+  );
 
   const headerStyle = useAnimatedStyle<ViewStyle>(() => ({
     opacity: opacity.value,
