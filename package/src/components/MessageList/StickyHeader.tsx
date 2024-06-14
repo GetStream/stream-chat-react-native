@@ -45,7 +45,7 @@ export const StickyHeader = ({
     });
   }, [date]);
 
-  if (!date) return;
+  if (!date) return null;
 
   return <DateHeader dateString={stickyHeaderDateString} />;
 };
