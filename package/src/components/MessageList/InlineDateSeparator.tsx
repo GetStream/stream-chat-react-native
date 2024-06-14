@@ -30,16 +30,9 @@ export type InlineDateSeparatorProps = {
    * Date to be displayed.
    */
   date?: Date;
-  /*
-   * Lookup key in the language corresponding translations sheet to perform date formatting
-   */
-  timestampTranslationKey?: string;
 };
 
-export const InlineDateSeparator = ({
-  date,
-  timestampTranslationKey = 'timestamp/InlineDateSeparator',
-}: InlineDateSeparatorProps) => {
+export const InlineDateSeparator = ({ date }: InlineDateSeparatorProps) => {
   const {
     theme: {
       colors: { overlay, white },
@@ -56,7 +49,7 @@ export const InlineDateSeparator = ({
     date,
     t,
     tDateTimeParser,
-    timestampTranslationKey,
+    timestampTranslationKey: 'timestamp/InlineDateSeparator',
   });
 
   return (

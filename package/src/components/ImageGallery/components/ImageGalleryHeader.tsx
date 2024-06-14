@@ -71,7 +71,6 @@ type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamC
     visible: Animated.SharedValue<number>;
     photo?: Photo<StreamChatGenerics>;
     /* Lookup key in the language corresponding translations sheet to perform date formatting */
-    timestampTranslationKey?: string;
   };
 
 export const ImageGalleryHeader = <
@@ -79,16 +78,7 @@ export const ImageGalleryHeader = <
 >(
   props: Props<StreamChatGenerics>,
 ) => {
-  const {
-    centerElement,
-    CloseIcon,
-    leftElement,
-    opacity,
-    photo,
-    rightElement,
-    timestampTranslationKey = 'timestamp/ImageGalleryHeader',
-    visible,
-  } = props;
+  const { centerElement, CloseIcon, leftElement, opacity, photo, rightElement, visible } = props;
   const [height, setHeight] = useState(200);
   const {
     theme: {
@@ -113,7 +103,7 @@ export const ImageGalleryHeader = <
     date: photo?.created_at,
     t,
     tDateTimeParser,
-    timestampTranslationKey,
+    timestampTranslationKey: 'timestamp/ImageGalleryHeader',
   });
 
   const headerStyle = useAnimatedStyle<ViewStyle>(() => ({

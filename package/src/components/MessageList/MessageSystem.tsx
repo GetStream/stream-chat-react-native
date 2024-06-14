@@ -21,7 +21,6 @@ export type MessageSystemProps<
   /*
    * Lookup key in the language corresponding translations sheet to perform date formatting
    */
-  timestampTranslationKey?: string;
 };
 
 /**
@@ -34,7 +33,7 @@ export const MessageSystem = <
 >(
   props: MessageSystemProps<StreamChatGenerics>,
 ) => {
-  const { message, style, timestampTranslationKey = 'timestamp/MessageSystem' } = props;
+  const { message, style } = props;
 
   const {
     theme: {
@@ -51,7 +50,7 @@ export const MessageSystem = <
     date: createdAt,
     t,
     tDateTimeParser,
-    timestampTranslationKey,
+    timestampTranslationKey: 'timestamp/MessageSystem',
   });
 
   return (

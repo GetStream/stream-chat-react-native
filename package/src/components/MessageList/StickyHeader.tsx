@@ -20,18 +20,9 @@ export type StickyHeaderProps<
    * The formatted date string to be displayed in the sticky header.
    */
   dateString?: string | number;
-  /*
-   * Lookup key in the language corresponding translations sheet to perform date formatting
-   */
-  timestampTranslationKey?: string;
 };
 
-export const StickyHeader = ({
-  date,
-  DateHeader,
-  dateString,
-  timestampTranslationKey = 'timestamp/StickyHeader',
-}: StickyHeaderProps) => {
+export const StickyHeader = ({ date, DateHeader, dateString }: StickyHeaderProps) => {
   const { t, tDateTimeParser } = useTranslationContext();
 
   const stickyHeaderDateString = useMemo(() => {
@@ -41,7 +32,7 @@ export const StickyHeader = ({
       date,
       t,
       tDateTimeParser,
-      timestampTranslationKey,
+      timestampTranslationKey: 'timestamp/StickyHeader',
     });
   }, [date]);
 
