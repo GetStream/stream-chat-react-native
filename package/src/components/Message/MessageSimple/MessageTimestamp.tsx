@@ -50,7 +50,7 @@ export const MessageTimestamp = (props: MessageTimestampProps) => {
         tDateTimeParser,
         timestampTranslationKey,
       }),
-    [],
+    [timestamp, t, tDateTimeParser, timestampTranslationKey],
   );
 
   if (formattedDate) {
