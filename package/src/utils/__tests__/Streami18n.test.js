@@ -183,3 +183,25 @@ describe('setLanguage - switch to french', () => {
     }
   });
 });
+
+describe('formatters property', () => {
+  it('contains the default timestampFormatter', () => {
+    expect(new Streami18n().formatters.timestampFormatter).toBeDefined();
+  });
+  it('allows to override the default timestampFormatter', async () => {
+    const i18n = new Streami18n({
+      formatters: { timestampFormatter: (s) => () => 'custom' },
+      translationsForLanguage: { abc: '{{ value | timestampFormatter }}' },
+    });
+    await i18n.init();
+    expect(i18n.t('abc')).toBe('custom');
+  });
+  it('allows to add new custom formatter', async () => {
+    const i18n = new Streami18n({
+      formatters: { customFormatter: (s) => () => 'custom' },
+      translationsForLanguage: { abc: '{{ value | customFormatter }}' },
+    });
+    await i18n.init();
+    expect(i18n.t('abc')).toBe('custom');
+  });
+});

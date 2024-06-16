@@ -13,9 +13,15 @@ import { MessageSystem } from '../MessageSystem';
 
 afterEach(cleanup);
 
+let i18nInstance;
+
 describe('MessageSystem', () => {
+  beforeAll(() => {
+    i18nInstance = new Streami18n();
+  });
+  afterEach(cleanup);
+
   it('should render the message system', async () => {
-    const i18nInstance = new Streami18n();
     const translators = await i18nInstance.getTranslators();
     const message = generateMessage();
     const { queryByTestId } = render(
@@ -32,7 +38,6 @@ describe('MessageSystem', () => {
   });
 
   it('should match the snapshot for message system', async () => {
-    const i18nInstance = new Streami18n();
     const translators = await i18nInstance.getTranslators();
     const user = generateStaticUser(0);
     const message = generateStaticMessage('Hello World', { user });
