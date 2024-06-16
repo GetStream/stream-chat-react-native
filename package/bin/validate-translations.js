@@ -15,9 +15,6 @@ fs.readdir(directoryPath, function (err, files) {
     if (file.split('.').reverse()[0] !== 'json') return;
     // Do whatever you want to do with the file
     const data = require(i18nDirectoryRelativePath + file);
-    if (file === 'pt-br.json') {
-      console.log(data);
-    }
     const keys = Object.keys(data);
     keys.forEach((key) => {
       if (!data[key] || data[key] === '') {
