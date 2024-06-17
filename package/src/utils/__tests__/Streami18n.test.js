@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { default as Dayjs } from 'dayjs';
 import 'dayjs/locale/nl';
 import localeData from 'dayjs/plugin/localeData';
