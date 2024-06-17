@@ -58,6 +58,7 @@ exports[`Thread should match thread snapshot 1`] = `
               ],
               "html": "<p>regular</p>",
               "id": "38ef6f7c-3090-5759-a37f-ab0053aadb96",
+              "message_text_updated_at": "2020-05-05T14:50:00.000Z",
               "parent_id": "b4612a73-fa2b-5787-bf71-1adc8f291a04",
               "pinned_at": null,
               "readBy": false,
@@ -86,6 +87,7 @@ exports[`Thread should match thread snapshot 1`] = `
               ],
               "html": "<p>regular</p>",
               "id": "516efa25-5d29-5c9a-ad2d-4cc183e785bd",
+              "message_text_updated_at": "2020-05-05T14:50:00.000Z",
               "parent_id": "b4612a73-fa2b-5787-bf71-1adc8f291a04",
               "pinned_at": null,
               "readBy": false,
@@ -114,6 +116,7 @@ exports[`Thread should match thread snapshot 1`] = `
               ],
               "html": "<p>regular</p>",
               "id": "82a83b16-b611-527c-b3ac-765ef6220490",
+              "message_text_updated_at": "2020-05-05T14:50:00.000Z",
               "parent_id": "b4612a73-fa2b-5787-bf71-1adc8f291a04",
               "pinned_at": null,
               "readBy": false,
@@ -490,6 +493,40 @@ exports[`Thread should match thread snapshot 1`] = `
                           >
                             2:50 PM
                           </Text>
+                          <Text
+                            style={
+                              [
+                                {
+                                  "paddingHorizontal": 4,
+                                },
+                                {
+                                  "color": "#7A7A7A",
+                                  "textAlign": "left",
+                                },
+                                {
+                                  "fontSize": 12,
+                                },
+                              ]
+                            }
+                          >
+                            ⦁
+                          </Text>
+                          <Text
+                            style={
+                              [
+                                {
+                                  "fontSize": 12,
+                                },
+                                {
+                                  "color": "#7A7A7A",
+                                  "textAlign": "left",
+                                },
+                                {},
+                              ]
+                            }
+                          >
+                            Edited
+                          </Text>
                         </View>
                       </View>
                     </View>
@@ -770,6 +807,40 @@ exports[`Thread should match thread snapshot 1`] = `
                           >
                             2:50 PM
                           </Text>
+                          <Text
+                            style={
+                              [
+                                {
+                                  "paddingHorizontal": 4,
+                                },
+                                {
+                                  "color": "#7A7A7A",
+                                  "textAlign": "left",
+                                },
+                                {
+                                  "fontSize": 12,
+                                },
+                              ]
+                            }
+                          >
+                            ⦁
+                          </Text>
+                          <Text
+                            style={
+                              [
+                                {
+                                  "fontSize": 12,
+                                },
+                                {
+                                  "color": "#7A7A7A",
+                                  "textAlign": "left",
+                                },
+                                {},
+                              ]
+                            }
+                          >
+                            Edited
+                          </Text>
                         </View>
                       </View>
                     </View>
@@ -1049,6 +1120,40 @@ exports[`Thread should match thread snapshot 1`] = `
                             }
                           >
                             2:50 PM
+                          </Text>
+                          <Text
+                            style={
+                              [
+                                {
+                                  "paddingHorizontal": 4,
+                                },
+                                {
+                                  "color": "#7A7A7A",
+                                  "textAlign": "left",
+                                },
+                                {
+                                  "fontSize": 12,
+                                },
+                              ]
+                            }
+                          >
+                            ⦁
+                          </Text>
+                          <Text
+                            style={
+                              [
+                                {
+                                  "fontSize": 12,
+                                },
+                                {
+                                  "color": "#7A7A7A",
+                                  "textAlign": "left",
+                                },
+                                {},
+                              ]
+                            }
+                          >
+                            Edited
                           </Text>
                         </View>
                       </View>
@@ -1369,6 +1474,40 @@ exports[`Thread should match thread snapshot 1`] = `
                                 }
                               >
                                 2:50 PM
+                              </Text>
+                              <Text
+                                style={
+                                  [
+                                    {
+                                      "paddingHorizontal": 4,
+                                    },
+                                    {
+                                      "color": "#7A7A7A",
+                                      "textAlign": "left",
+                                    },
+                                    {
+                                      "fontSize": 12,
+                                    },
+                                  ]
+                                }
+                              >
+                                ⦁
+                              </Text>
+                              <Text
+                                style={
+                                  [
+                                    {
+                                      "fontSize": 12,
+                                    },
+                                    {
+                                      "color": "#7A7A7A",
+                                      "textAlign": "left",
+                                    },
+                                    {},
+                                  ]
+                                }
+                              >
+                                Edited
                               </Text>
                             </View>
                           </View>
