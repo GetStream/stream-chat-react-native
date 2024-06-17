@@ -1,4 +1,0 @@
-{
-  "presets": ["@babel/env", "module:@react-native/babel-preset"],
-  "plugins": [["i18next-extract"], "@babel/transform-runtime"]
-}

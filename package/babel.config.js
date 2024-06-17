@@ -9,26 +9,7 @@ module.exports = (api) => {
           compact: false,
         },
       ],
-      plugins: [
-        [
-          'i18next-extract',
-          {
-            contextSeparator: '__',
-            defaultContexts: [''],
-            defaultNS: 'en',
-            discardOldKeys: true,
-            jsonSpace: 4,
-            keyAsDefaultValue: ['en'],
-            keyAsDefaultValueForDerivedKeys: false,
-            keySeparator: null,
-            locales: ['en', 'es', 'fr', 'he', 'hi', 'it', 'ja', 'ko', 'nl', 'ru', 'tr', 'pt-BR'],
-            nsSeparator: null,
-            outputPath: 'src/i18n/{{locale}}.json',
-          },
-        ],
-        'module-resolver',
-        'react-native-reanimated/plugin',
-      ],
+      plugins: ['module-resolver', 'react-native-reanimated/plugin'],
       presets: ['@babel/env', 'module:@react-native/babel-preset', '@babel/preset-typescript'],
     };
   }
@@ -51,25 +32,7 @@ module.exports = (api) => {
         compact: false,
       },
     ],
-    plugins: [
-      [
-        'i18next-extract',
-        {
-          contextSeparator: '__',
-          defaultContexts: [''],
-          defaultNS: 'en',
-          discardOldKeys: true,
-          jsonSpace: 4,
-          keyAsDefaultValue: ['en'],
-          keyAsDefaultValueForDerivedKeys: false,
-          keySeparator: null,
-          locales: ['en', 'es', 'fr', 'he', 'hi', 'it', 'ja', 'ko', 'nl', 'ru', 'tr', 'pt-BR'],
-          nsSeparator: null,
-          outputPath: 'src/i18n/{{locale}}.json',
-        },
-      ],
-      'module-resolver',
-    ],
+    plugins: ['module-resolver'],
     presets: ['@babel/env', 'module:@react-native/babel-preset', '@babel/preset-typescript'],
   };
 };

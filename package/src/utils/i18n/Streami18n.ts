@@ -25,7 +25,7 @@ import itTranslations from '../../i18n/it.json';
 import jaTranslations from '../../i18n/ja.json';
 import koTranslations from '../../i18n/ko.json';
 import nlTranslations from '../../i18n/nl.json';
-import ptBRTranslations from '../../i18n/pt-BR.json';
+import ptBRTranslations from '../../i18n/pt-br.json';
 import ruTranslations from '../../i18n/ru.json';
 import trTranslations from '../../i18n/tr.json';
 
