@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { default as Dayjs } from 'dayjs';
 import 'dayjs/locale/nl';
 import localeData from 'dayjs/plugin/localeData';
@@ -191,7 +190,7 @@ describe('formatters property', () => {
   });
   it('allows to override the default timestampFormatter', async () => {
     const i18n = new Streami18n({
-      formatters: { timestampFormatter: (s) => () => 'custom' },
+      formatters: { timestampFormatter: () => () => 'custom' },
       translationsForLanguage: { abc: '{{ value | timestampFormatter }}' },
     });
     await i18n.init();
@@ -199,7 +198,7 @@ describe('formatters property', () => {
   });
   it('allows to add new custom formatter', async () => {
     const i18n = new Streami18n({
-      formatters: { customFormatter: (s) => () => 'custom' },
+      formatters: { customFormatter: () => () => 'custom' },
       translationsForLanguage: { abc: '{{ value | customFormatter }}' },
     });
     await i18n.init();
