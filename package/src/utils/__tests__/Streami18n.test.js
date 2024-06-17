@@ -4,7 +4,7 @@ import localeData from 'dayjs/plugin/localeData';
 
 import frTranslations from '../../i18n/fr.json';
 import nlTranslations from '../../i18n/nl.json';
-import { Streami18n } from '../Streami18n';
+import { Streami18n } from '../i18n/Streami18n';
 
 Dayjs.extend(localeData);
 
@@ -181,5 +181,27 @@ describe('setLanguage - switch to french', () => {
 
       expect(_t(key)).toBe(frTranslations[key]);
     }
+  });
+});
+
+describe('formatters property', () => {
+  it('contains the default timestampFormatter', () => {
+    expect(new Streami18n().formatters.timestampFormatter).toBeDefined();
+  });
+  it('allows to override the default timestampFormatter', async () => {
+    const i18n = new Streami18n({
+      formatters: { timestampFormatter: () => () => 'custom' },
+      translationsForLanguage: { abc: '{{ value | timestampFormatter }}' },
+    });
+    await i18n.init();
+    expect(i18n.t('abc')).toBe('custom');
+  });
+  it('allows to add new custom formatter', async () => {
+    const i18n = new Streami18n({
+      formatters: { customFormatter: () => () => 'custom' },
+      translationsForLanguage: { abc: '{{ value | customFormatter }}' },
+    });
+    await i18n.init();
+    expect(i18n.t('abc')).toBe('custom');
   });
 });

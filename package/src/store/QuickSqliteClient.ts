@@ -30,7 +30,7 @@ import type { PreparedQueries, Table } from './types';
  *
  */
 export class QuickSqliteClient {
-  static dbVersion = 3;
+  static dbVersion = 5;
 
   static dbName = DB_NAME;
   static dbLocation = DB_LOCATION;

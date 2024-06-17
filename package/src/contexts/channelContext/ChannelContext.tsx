@@ -4,6 +4,7 @@ import type { Channel, ChannelState } from 'stream-chat';
 
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
+import { StickyHeaderProps } from '../../components/MessageList/StickyHeader';
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
@@ -180,7 +181,7 @@ export type ChannelContextValue<
    *
    * **Default** [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)
    */
-  StickyHeader?: React.ComponentType<{ dateString: string | number }>;
+  StickyHeader?: React.ComponentType<StickyHeaderProps>;
   /**
    * Id of message, around which Channel/MessageList gets loaded when opened.
    * You will see a highlighted background for targetted message, when opened.

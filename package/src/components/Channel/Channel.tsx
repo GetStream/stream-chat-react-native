@@ -2,6 +2,7 @@ import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useS
 import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
 
 import debounce from 'lodash/debounce';
+import omit from 'lodash/omit';
 import throttle from 'lodash/throttle';
 
 import { lookup } from 'mime-types';
@@ -126,6 +127,7 @@ import { MessageReplies as MessageRepliesDefault } from '../Message/MessageSimpl
 import { MessageRepliesAvatars as MessageRepliesAvatarsDefault } from '../Message/MessageSimple/MessageRepliesAvatars';
 import { MessageSimple as MessageSimpleDefault } from '../Message/MessageSimple/MessageSimple';
 import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/MessageStatus';
+import { MessageTimestamp as MessageTimestampDefault } from '../Message/MessageSimple/MessageTimestamp';
 import { ReactionList as ReactionListDefault } from '../Message/MessageSimple/ReactionList';
 import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButton';
 import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
@@ -155,6 +157,7 @@ import { MessageList as MessageListDefault } from '../MessageList/MessageList';
 import { MessageSystem as MessageSystemDefault } from '../MessageList/MessageSystem';
 import { NetworkDownIndicator as NetworkDownIndicatorDefault } from '../MessageList/NetworkDownIndicator';
 import { ScrollToBottomButton as ScrollToBottomButtonDefault } from '../MessageList/ScrollToBottomButton';
+import { StickyHeader as StickyHeaderDefault } from '../MessageList/StickyHeader';
 import { TypingIndicator as TypingIndicatorDefault } from '../MessageList/TypingIndicator';
 import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../MessageList/TypingIndicatorContainer';
 import { OverlayReactionList as OverlayReactionListDefault } from '../MessageOverlay/OverlayReactionList';
@@ -304,6 +307,7 @@ export type ChannelPropsWithContext<
       | 'MessageStatus'
       | 'MessageSystem'
       | 'MessageText'
+      | 'MessageTimestamp'
       | 'myMessageTheme'
       | 'onLongPressMessage'
       | 'onPressInMessage'
@@ -541,6 +545,7 @@ const ChannelWithContext = <
     MessageStatus = MessageStatusDefault,
     MessageSystem = MessageSystemDefault,
     MessageText,
+    MessageTimestamp = MessageTimestampDefault,
     MoreOptionsButton = MoreOptionsButtonDefault,
     myMessageTheme,
     NetworkDownIndicator = NetworkDownIndicatorDefault,
@@ -572,7 +577,7 @@ const ChannelWithContext = <
     ShowThreadMessageInChannelButton = ShowThreadMessageInChannelButtonDefault,
     StartAudioRecordingButton = AudioRecordingButtonDefault,
     stateUpdateThrottleInterval = defaultThrottleInterval,
-    StickyHeader,
+    StickyHeader = StickyHeaderDefault,
     supportedReactions = reactionData,
     t,
     thread: threadProps,
@@ -1631,40 +1636,28 @@ const ChannelWithContext = <
   ) => {
     try {
       const updatedMessage = await uploadPendingAttachments(message);
-      const {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        __html,
-        attachments,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        created_at,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        deleted_at,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        html,
-        id,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        latest_reactions,
-        mentioned_users,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        own_reactions,
-        parent_id,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        quoted_message,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        reaction_counts,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        reactions,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        status,
-        text,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        type,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        updated_at,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        user,
-        ...extraFields
-      } = updatedMessage;
+      const extraFields = omit(updatedMessage, [
+        '__html',
+        'attachments',
+        'created_at',
+        'deleted_at',
+        'html',
+        'id',
+        'latest_reactions',
+        'mentioned_users',
+        'own_reactions',
+        'parent_id',
+        'quoted_message',
+        'reaction_counts',
+        'reaction_groups',
+        'reactions',
+        'status',
+        'text',
+        'type',
+        'updated_at',
+        'user',
+      ]);
+      const { attachments, id, mentioned_users, parent_id, text } = updatedMessage;
       if (!channel.id) return;
 
       const mentionedUserIds = mentioned_users?.map((user) => user.id) || [];
@@ -2000,6 +1993,7 @@ const ChannelWithContext = <
       },
     });
   };
+
   const deleteMessage: MessagesContextValue<StreamChatGenerics>['deleteMessage'] = async (
     message,
   ) => {
@@ -2338,6 +2332,7 @@ const ChannelWithContext = <
     MessageStatus,
     MessageSystem,
     MessageText,
+    MessageTimestamp,
     myMessageTheme,
     onLongPressMessage,
     onPressInMessage,

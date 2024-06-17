@@ -23,7 +23,7 @@ import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import { Streami18n } from '../../../utils/Streami18n';
+import { Streami18n } from '../../../utils/i18n/Streami18n';
 import { ImageLoadingFailedIndicator } from '../../Attachment/ImageLoadingFailedIndicator';
 import { ImageLoadingIndicator } from '../../Attachment/ImageLoadingIndicator';
 import { Channel } from '../../Channel/Channel';

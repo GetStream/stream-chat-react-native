@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
 });
 
 export type DateHeaderProps = {
-  dateString: string | number;
+  dateString?: string | number;
 };
 
 export const DateHeader = ({ dateString }: DateHeaderProps) => {

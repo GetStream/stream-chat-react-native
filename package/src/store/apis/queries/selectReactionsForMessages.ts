@@ -2,6 +2,10 @@ import { QuickSqliteClient } from '../../QuickSqliteClient';
 import { tables } from '../../schema';
 import type { TableRowJoinedUser } from '../../types';
 
+/**
+ * Fetches reactions for a message from the database for messageIds.
+ * @param messageIds The message IDs for which reactions are to be fetched.
+ */
 export const selectReactionsForMessages = (
   messageIds: string[],
 ): TableRowJoinedUser<'reactions'>[] => {
@@ -28,7 +32,7 @@ export const selectReactionsForMessages = (
     FROM reactions a
     LEFT JOIN
       users b
-    ON b.id = a.userId 
+    ON b.id = a.userId
     WHERE a.messageId in (${questionMarks})`,
     messageIds,
   );

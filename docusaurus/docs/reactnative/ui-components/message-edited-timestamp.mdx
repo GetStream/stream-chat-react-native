@@ -11,38 +11,16 @@ This is the default component provided to the prop [`MessageEditedTimestamp`](..
 
 ## Props
 
-### <div class="label description">_overrides the value from [MessageContext](../../contexts/message-context#message)_</div> `message` {#message}
+### <div class="label description">_overrides the value from [MessageContext](../../contexts/message-context#message)_</div> `message` `{#message}`
 
 <MessageProp />
 
-### `calendar`
+## UI components
 
-Whether to show the time in Calendar time format. Calendar time displays time relative to a today's date.
+### `MessageTimestamp`
 
-| Type                   | Default     |
-| ---------------------- | ----------- |
-| `Boolean`\|`undefined` | `undefined` |
-
-### `format`
-
-Format of the date.
-
-| Type                  | Default     |
-| --------------------- | ----------- |
-| `String`\|`undefined` | `undefined` |
-
-### `formatDate`
-
-Function to format the date.
-
-| Type                    | Default     |
-| ----------------------- | ----------- |
-| `Function`\|`undefined` | `undefined` |
-
-### `timestamp`
-
-The date to be shown after formatting.
+The Component that renders the message timestamp.
 
 | Type                          | Default     |
 | ----------------------------- | ----------- |
-| `String`\|`Date`\|`undefined` | `undefined` |
+| `ComponentType` \|`undefined` | `undefined` |

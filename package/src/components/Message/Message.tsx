@@ -6,6 +6,7 @@ import type { Attachment, UserResponse } from 'stream-chat';
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
 import { useMessageActions } from './hooks/useMessageActions';
+import { useProcessReactions } from './hooks/useProcessReactions';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
 
 import {
@@ -17,11 +18,7 @@ import {
   KeyboardContextValue,
   useKeyboardContext,
 } from '../../contexts/keyboardContext/KeyboardContext';
-import {
-  MessageContextValue,
-  MessageProvider,
-  Reactions,
-} from '../../contexts/messageContext/MessageContext';
+import { MessageContextValue, MessageProvider } from '../../contexts/messageContext/MessageContext';
 import {
   MessageOverlayContextValue,
   useMessageOverlayContext,
@@ -468,28 +465,13 @@ const MessageWithContext = <
     }
   };
 
-  const hasReactions =
-    !isMessageTypeDeleted && !!message.latest_reactions && message.latest_reactions.length > 0;
+  const { existingReactions, hasReactions } = useProcessReactions({
+    latest_reactions: message.latest_reactions,
+    own_reactions: message.own_reactions,
+    reaction_groups: message.reaction_groups,
+  });
 
-  const clientId = client.userID;
-
-  const reactions = hasReactions
-    ? supportedReactions.reduce((acc, cur) => {
-        const reactionType = cur.type;
-        const reactionsOfReactionType = message.latest_reactions?.filter(
-          (reaction) => reaction.type === reactionType,
-        );
-
-        if (reactionsOfReactionType?.length) {
-          const hasOwnReaction = reactionsOfReactionType.some(
-            (reaction) => reaction.user_id === clientId,
-          );
-          acc.push({ own: hasOwnReaction, type: reactionType });
-        }
-
-        return acc;
-      }, [] as Reactions)
-    : [];
+  const reactions = hasReactions ? existingReactions : [];
 
   const ownCapabilities = useOwnCapabilitiesContext();
 
