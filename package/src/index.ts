@@ -1,3 +1,6 @@
+/** i18next polyfill to handle intl format for pluralization. For more info see https://www.i18next.com/misc/json-format#i-18-next-json-v4 */
+import 'intl-pluralrules';
+
 export * from './components';
 export * from './hooks';
 export { registerNativeHandlers, NetInfo, iOS14RefreshGallerySelection } from './native';
@@ -9,7 +12,7 @@ export * from './icons';
 export * from './types/types';
 
 export * from './utils/patchMessageTextCommand';
-export * from './utils/Streami18n';
+export * from './utils/i18n/Streami18n';
 export * from './utils/utils';
 export * from './utils/StreamChatRN';
 

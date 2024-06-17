@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import type { MessageType } from './hooks/useMessageList';
@@ -7,14 +7,20 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { getDateString } from '../../utils/getDateString';
+import { getDateString } from '../../utils/i18n/getDateString';
 
 export type MessageSystemProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: MessageType<StreamChatGenerics>;
+  /**
+   * Additional styles for the system message container.
+   */
   style?: StyleProp<ViewStyle>;
+  /*
+   * Lookup key in the language corresponding translations sheet to perform date formatting
+   */
 };
 
 /**
@@ -37,14 +43,20 @@ export const MessageSystem = <
       },
     },
   } = useTheme();
-  const { tDateTimeParser } = useTranslationContext();
+  const { t, tDateTimeParser } = useTranslationContext();
 
   const createdAt = message.created_at;
-  const formattedDate = getDateString({
-    calendar: true,
-    date: createdAt,
-    tDateTimeParser,
-  });
+
+  const formattedDate = useMemo(
+    () =>
+      getDateString({
+        date: createdAt,
+        t,
+        tDateTimeParser,
+        timestampTranslationKey: 'timestamp/MessageSystem',
+      }),
+    [createdAt, t, tDateTimeParser],
+  );
 
   return (
     <View style={[styles.container, style, container]} testID='message-system'>

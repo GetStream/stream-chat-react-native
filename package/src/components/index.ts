@@ -108,6 +108,7 @@ export * from './Message/MessageSimple/MessageRepliesAvatars';
 export * from './Message/MessageSimple/MessageSimple';
 export * from './Message/MessageSimple/MessageStatus';
 export * from './Message/MessageSimple/MessageTextContainer';
+export * from './Message/MessageSimple/MessageTimestamp';
 export * from './Message/MessageSimple/ReactionList';
 export * from './Message/MessageSimple/utils/renderText';
 export * from './Message/utils/messageActions';
