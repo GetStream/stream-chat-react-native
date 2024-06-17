@@ -27,8 +27,8 @@ import { SDK } from '../../native';
 import { QuickSqliteClient } from '../../store/QuickSqliteClient';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { DBSyncManager } from '../../utils/DBSyncManager';
+import type { Streami18n } from '../../utils/i18n/Streami18n';
 import { StreamChatRN } from '../../utils/StreamChatRN';
-import type { Streami18n } from '../../utils/Streami18n';
 import { version } from '../../version.json';
 
 init();
