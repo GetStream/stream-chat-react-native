@@ -1,5 +1,12 @@
 # Change Log
 
+### [5.32.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.32.0...v5.32.1) (2024-06-18)
+
+
+### Bug Fixes
+
+* empty message list text string crash bug ([#2556](https://github.com/GetStream/stream-chat-react-native/issues/2556)) ([d518e0a](https://github.com/GetStream/stream-chat-react-native/commit/d518e0a2b1bc71db2b36506a136ba843b2f31baa))
+
 ## [5.32.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.31.1...v5.32.0) (2024-06-17)
 
 
