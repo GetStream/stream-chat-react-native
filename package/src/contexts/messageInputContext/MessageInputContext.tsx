@@ -1,5 +1,3 @@
-import path from 'path';
-
 import type { LegacyRef } from 'react';
 import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
 import type { TextInput, TextInputProps } from 'react-native';
@@ -66,6 +64,7 @@ import {
   FileState,
   FileStateValue,
   generateRandomId,
+  getFileNameFromPath,
   isBouncedMessage,
   TriggerSettings,
 } from '../../utils/utils';
@@ -1110,7 +1109,7 @@ export const MessageInputProvider = <
     let response = {} as SendFileAPIResponse;
 
     const uri = file.uri || '';
-    const filename = file.name ?? path.basename(uri.replace(/^(file:\/\/|content:\/\/)/, ''));
+    const filename = file.name ?? getFileNameFromPath(uri);
 
     try {
       const compressedUri = await compressedImageURI(file, value.compressImageQuality);

@@ -1,5 +1,3 @@
-import path from 'path';
-
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
 
@@ -89,6 +87,7 @@ import { removeReservedFields } from '../../utils/removeReservedFields';
 import {
   defaultEmojiSearchIndex,
   generateRandomId,
+  getFileNameFromPath,
   isBouncedMessage,
   isLocalUrl,
   MessageStatusTypes,
@@ -1576,8 +1575,7 @@ const ChannelWithContext = <
           attachment.image_url &&
           isLocalUrl(attachment.image_url)
         ) {
-          const filename =
-            image.name ?? path.basename(image.uri.replace(/^(file:\/\/|content:\/\/)/, ''));
+          const filename = image.name ?? getFileNameFromPath(image.uri);
           // if any upload is in progress, cancel it
           const controller = uploadAbortControllerRef.current.get(filename);
           if (controller) {
