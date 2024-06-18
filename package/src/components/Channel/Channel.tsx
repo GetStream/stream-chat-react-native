@@ -1,3 +1,5 @@
+import path from 'path';
+
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
 
@@ -1574,7 +1576,8 @@ const ChannelWithContext = <
           attachment.image_url &&
           isLocalUrl(attachment.image_url)
         ) {
-          const filename = image.name ?? image.uri.replace(/^(file:\/\/|content:\/\/)/, '');
+          const filename =
+            image.name ?? path.basename(image.uri.replace(/^(file:\/\/|content:\/\/)/, ''));
           // if any upload is in progress, cancel it
           const controller = uploadAbortControllerRef.current.get(filename);
           if (controller) {
