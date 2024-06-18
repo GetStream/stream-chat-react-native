@@ -133,6 +133,7 @@ import { MessageReplies as MessageRepliesDefault } from '../Message/MessageSimpl
 import { MessageRepliesAvatars as MessageRepliesAvatarsDefault } from '../Message/MessageSimple/MessageRepliesAvatars';
 import { MessageSimple as MessageSimpleDefault } from '../Message/MessageSimple/MessageSimple';
 import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/MessageStatus';
+import { MessageTimestamp as MessageTimestampDefault } from '../Message/MessageSimple/MessageTimestamp';
 import { ReactionList as ReactionListDefault } from '../Message/MessageSimple/ReactionList';
 import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButton';
 import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
@@ -162,6 +163,7 @@ import { MessageList as MessageListDefault } from '../MessageList/MessageList';
 import { MessageSystem as MessageSystemDefault } from '../MessageList/MessageSystem';
 import { NetworkDownIndicator as NetworkDownIndicatorDefault } from '../MessageList/NetworkDownIndicator';
 import { ScrollToBottomButton as ScrollToBottomButtonDefault } from '../MessageList/ScrollToBottomButton';
+import { StickyHeader as StickyHeaderDefault } from '../MessageList/StickyHeader';
 import { TypingIndicator as TypingIndicatorDefault } from '../MessageList/TypingIndicator';
 import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../MessageList/TypingIndicatorContainer';
 import { OverlayReactionList as OverlayReactionListDefault } from '../MessageOverlay/OverlayReactionList';
@@ -311,6 +313,7 @@ export type ChannelPropsWithContext<
       | 'MessageStatus'
       | 'MessageSystem'
       | 'MessageText'
+      | 'MessageTimestamp'
       | 'myMessageTheme'
       | 'onLongPressMessage'
       | 'onPressInMessage'
@@ -548,6 +551,7 @@ const ChannelWithContext = <
     MessageStatus = MessageStatusDefault,
     MessageSystem = MessageSystemDefault,
     MessageText,
+    MessageTimestamp = MessageTimestampDefault,
     MoreOptionsButton = MoreOptionsButtonDefault,
     myMessageTheme,
     NetworkDownIndicator = NetworkDownIndicatorDefault,
@@ -579,7 +583,7 @@ const ChannelWithContext = <
     ShowThreadMessageInChannelButton = ShowThreadMessageInChannelButtonDefault,
     StartAudioRecordingButton = AudioRecordingButtonDefault,
     stateUpdateThrottleInterval = defaultThrottleInterval,
-    StickyHeader,
+    StickyHeader = StickyHeaderDefault,
     supportedReactions = reactionData,
     t,
     thread: threadProps,
@@ -2334,6 +2338,7 @@ const ChannelWithContext = <
     MessageStatus,
     MessageSystem,
     MessageText,
+    MessageTimestamp,
     myMessageTheme,
     onLongPressMessage,
     onPressInMessage,

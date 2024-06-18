@@ -5,8 +5,6 @@ import type { Attachment } from 'stream-chat';
 
 import type { MessageStatusProps } from './MessageStatus';
 
-import { MessageTimestamp } from './MessageTimestamp';
-
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import {
   Alignment,
@@ -46,7 +44,10 @@ type MessageFooterPropsWithContext<
 > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
-    'deletedMessagesVisibilityType' | 'MessageEditedTimestamp' | 'MessageStatus'
+    | 'deletedMessagesVisibilityType'
+    | 'MessageEditedTimestamp'
+    | 'MessageStatus'
+    | 'MessageTimestamp'
   > &
   MessageFooterComponentProps;
 
@@ -98,6 +99,7 @@ const MessageFooterWithContext = <
     message,
     MessageEditedTimestamp,
     MessageStatus,
+    MessageTimestamp,
     otherAttachments,
     showMessageStatus,
   } = props;
@@ -118,7 +120,7 @@ const MessageFooterWithContext = <
         {deletedMessagesVisibilityType === 'sender' && (
           <OnlyVisibleToYouComponent alignment={alignment} />
         )}
-        <MessageTimestamp format='LT' formattedDate={formattedDate} timestamp={date} />
+        <MessageTimestamp formattedDate={formattedDate} timestamp={date} />
       </View>
     );
   }
@@ -137,7 +139,7 @@ const MessageFooterWithContext = <
           <Text style={[styles.text, { color: grey }, messageUser]}>{message.user.name}</Text>
         ) : null}
         {showMessageStatus && <MessageStatus />}
-        <MessageTimestamp format='LT' formattedDate={formattedDate} timestamp={date} />
+        <MessageTimestamp formattedDate={formattedDate} timestamp={date} />
 
         {isEditedMessage(message) && !isEditedMessageOpen && (
           <>
@@ -160,7 +162,7 @@ const MessageFooterWithContext = <
         )}
       </View>
       {isEditedMessageOpen && (
-        <MessageEditedTimestamp format='LT' formattedDate={formattedDate} timestamp={date} />
+        <MessageEditedTimestamp message={message} MessageTimestamp={MessageTimestamp} />
       )}
     </>
   );
@@ -270,7 +272,7 @@ export const MessageFooter = <
     showMessageStatus,
   } = useMessageContext<StreamChatGenerics>();
 
-  const { deletedMessagesVisibilityType, MessageEditedTimestamp, MessageStatus } =
+  const { deletedMessagesVisibilityType, MessageEditedTimestamp, MessageStatus, MessageTimestamp } =
     useMessagesContext<StreamChatGenerics>();
 
   return (
@@ -284,6 +286,7 @@ export const MessageFooter = <
         message,
         MessageEditedTimestamp,
         MessageStatus,
+        MessageTimestamp,
         otherAttachments,
         showMessageStatus,
       }}

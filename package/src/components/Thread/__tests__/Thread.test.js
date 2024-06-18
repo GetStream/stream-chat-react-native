@@ -15,7 +15,7 @@ import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage, generateStaticMessage } from '../../../mock-builders/generator/message';
 import { generateStaticUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import { Streami18n } from '../../../utils/Streami18n';
+import { Streami18n } from '../../../utils/i18n/Streami18n';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { Thread } from '../Thread';

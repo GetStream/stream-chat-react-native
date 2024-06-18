@@ -8,7 +8,7 @@ import type { ImageGalleryCustomComponents } from '../../components/ImageGallery
 
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import type { Streami18n } from '../../utils/Streami18n';
+import type { Streami18n } from '../../utils/i18n/Streami18n';
 import type { AttachmentPickerContextValue } from '../attachmentPickerContext/AttachmentPickerContext';
 import type { MessageOverlayContextValue } from '../messageOverlayContext/MessageOverlayContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';

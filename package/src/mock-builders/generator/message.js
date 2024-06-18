@@ -11,6 +11,7 @@ export const generateMessage = (options = {}) => {
     created_at: timestamp,
     html: '<p>regular</p>',
     id: uuidv4(),
+    message_text_updated_at: timestamp,
     text: uuidv4(),
     type: 'regular',
     updated_at: timestamp.toString(),
@@ -24,6 +25,7 @@ export const generateStaticMessage = (seed, options, date) =>
   generateMessage({
     created_at: date || '2020-04-27T13:39:49.331742Z',
     id: uuidv5(seed, StreamReactNativeNamespace),
+    message_text_updated_at: date || '2020-04-27T13:39:49.331742Z',
     text: seed,
     updated_at: date || '2020-04-27T13:39:49.331742Z',
     ...options,

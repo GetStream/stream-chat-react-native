@@ -33,6 +33,7 @@ import type { MessageRepliesAvatarsProps } from '../../components/Message/Messag
 import type { MessageSimpleProps } from '../../components/Message/MessageSimple/MessageSimple';
 import type { MessageStatusProps } from '../../components/Message/MessageSimple/MessageStatus';
 import type { MessageTextProps } from '../../components/Message/MessageSimple/MessageTextContainer';
+import { MessageTimestampProps } from '../../components/Message/MessageSimple/MessageTimestamp';
 import type { ReactionListProps } from '../../components/Message/MessageSimple/ReactionList';
 import type { MarkdownRules } from '../../components/Message/MessageSimple/utils/renderText';
 import type { MessageActionsParams } from '../../components/Message/utils/messageActions';
@@ -216,6 +217,11 @@ export type MessagesContextValue<
    * Defaults to: [MessageSystem](https://getstream.io/chat/docs/sdk/reactnative/ui-components/message-system/)
    */
   MessageSystem: React.ComponentType<MessageSystemProps<StreamChatGenerics>>;
+  /**
+   * UI component for MessageTimestamp
+   * Defaults to: [MessageTimestamp](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/Message/MessageSimple/MessageTimestamp.tsx)
+   */
+  MessageTimestamp: React.ComponentType<MessageTimestampProps>;
   /**
    * UI component for OverlayReactionList
    */

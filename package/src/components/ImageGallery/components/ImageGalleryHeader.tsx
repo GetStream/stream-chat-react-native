@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Pressable, SafeAreaView, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import Animated, { Extrapolate, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 
@@ -8,7 +8,7 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import { Close } from '../../../icons';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { getDateString } from '../../../utils/getDateString';
+import { getDateString } from '../../../utils/i18n/getDateString';
 import type { Photo } from '../ImageGallery';
 
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent
@@ -70,6 +70,7 @@ type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamC
     opacity: Animated.SharedValue<number>;
     visible: Animated.SharedValue<number>;
     photo?: Photo<StreamChatGenerics>;
+    /* Lookup key in the language corresponding translations sheet to perform date formatting */
   };
 
 export const ImageGalleryHeader = <
@@ -98,7 +99,16 @@ export const ImageGalleryHeader = <
   const { t, tDateTimeParser } = useTranslationContext();
   const { setOverlay } = useOverlayContext();
 
-  const date = getDateString({ calendar: true, date: photo?.created_at, tDateTimeParser });
+  const date = useMemo(
+    () =>
+      getDateString({
+        date: photo?.created_at,
+        t,
+        tDateTimeParser,
+        timestampTranslationKey: 'timestamp/ImageGalleryHeader',
+      }),
+    [photo?.created_at, t, tDateTimeParser],
+  );
 
   const headerStyle = useAnimatedStyle<ViewStyle>(() => ({
     opacity: opacity.value,
