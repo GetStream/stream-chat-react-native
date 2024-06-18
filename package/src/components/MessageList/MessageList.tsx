@@ -1157,9 +1157,9 @@ const MessageListWithContext = <
       {!loading && (
         <>
           <View style={styles.stickyHeader}>
-            {messageListLengthAfterUpdate && StickyHeader && (
+            {messageListLengthAfterUpdate && StickyHeader ? (
               <StickyHeader date={stickyHeaderDate} DateHeader={DateHeader} />
-            )}
+            ) : null}
           </View>
           {!disableTypingIndicator && TypingIndicator && (
             <TypingIndicatorContainer>
