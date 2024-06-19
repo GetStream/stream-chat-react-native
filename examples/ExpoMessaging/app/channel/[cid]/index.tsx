@@ -1,6 +1,5 @@
 import React, { useContext, useEffect } from 'react';
 import { SafeAreaView, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Channel, MessageInput, MessageList, useAttachmentPickerContext } from 'stream-chat-expo';
 import { Stack, useRouter } from 'expo-router';
 import { AuthProgressLoader } from '../../../components/AuthProgressLoader';
@@ -25,7 +24,11 @@ export default function ChannelScreen() {
     <SafeAreaView>
       <Stack.Screen options={{ title: 'Channel Screen' }} />
       {channel && (
-        <Channel audioRecordingEnabled={true} channel={channel}>
+        <Channel
+          audioRecordingEnabled={true}
+          channel={channel}
+          keyboardVerticalOffset={headerHeight}
+        >
           <View style={{ flex: 1 }}>
             <MessageList
               onThreadSelect={(thread) => {
