@@ -533,6 +533,8 @@ export type Theme = {
       middleIcon: ViewStyle;
       radius: number;
       reactionBubble: ViewStyle;
+      reactionContainer: ViewStyle;
+      reactionCount: TextStyle;
       reactionSize: number;
       strokeSize: number;
     };
@@ -1119,6 +1121,8 @@ export const defaultTheme: Theme = {
       middleIcon: {},
       radius: 2, // not recommended to change this
       reactionBubble: {},
+      reactionContainer: {},
+      reactionCount: {},
       reactionSize: 24,
       strokeSize: 1, // not recommended to change this
     },

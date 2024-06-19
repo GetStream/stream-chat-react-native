@@ -117,6 +117,8 @@ const ReactionListWithContext = <
           middleIcon,
           radius: themeRadius,
           reactionBubble,
+          reactionContainer,
+          reactionCount,
           reactionSize: themeReactionSize,
           strokeSize: themeStrokeSize,
         },
@@ -246,6 +248,7 @@ const ReactionListWithContext = <
                   {
                     marginRight: index < reactions.length - 1 ? 5 : 0,
                   },
+                  reactionContainer,
                 ]}
               >
                 <Icon
@@ -256,7 +259,9 @@ const ReactionListWithContext = <
                   supportedReactions={supportedReactions}
                   type={reaction.type}
                 />
-                <Text style={[styles.reactionCount, { color: black }]}>{reaction.count}</Text>
+                <Text style={[styles.reactionCount, { color: black }, reactionCount]}>
+                  {reaction.count}
+                </Text>
               </View>
             ))}
           </TouchableOpacity>
