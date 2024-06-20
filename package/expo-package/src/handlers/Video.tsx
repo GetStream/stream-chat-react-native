@@ -12,7 +12,8 @@ export const Video = VideoComponent
           });
         };
         initializeSound();
-      });
+      }, []);
+
       return (
         <VideoComponent
           onPlaybackStatusUpdate={onPlaybackStatusUpdate}
