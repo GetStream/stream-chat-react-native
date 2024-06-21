@@ -1,11 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, ImageStyle, Keyboard, Platform, StyleSheet, ViewStyle } from 'react-native';
+import { Image, ImageStyle, Keyboard, StyleSheet, ViewStyle } from 'react-native';
 
-import {
-  PanGestureHandler,
-  PinchGestureHandler,
-  TapGestureHandler,
-} from 'react-native-gesture-handler';
+import { GestureDetector } from 'react-native-gesture-handler';
 
 import Animated, {
   Easing,
@@ -41,10 +37,7 @@ import {
 import { useImageGalleryGestures } from './hooks/useImageGalleryGestures';
 
 import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
-import {
-  OverlayProviderProps,
-  useOverlayContext,
-} from '../../contexts/overlayContext/OverlayContext';
+import { OverlayProviderProps } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useViewport } from '../../hooks/useViewport';
 import { isVideoPackageAvailable, VideoType } from '../../native';
@@ -52,8 +45,6 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
 import { getGiphyMimeType } from '../Attachment/utils/getGiphyMimeType';
-
-const isAndroid = Platform.OS === 'android';
 
 const MARGIN = 32;
 
@@ -146,7 +137,6 @@ export const ImageGallery = <
     },
   } = useTheme();
   const [gridPhotos, setGridPhotos] = useState<Photo<StreamChatGenerics>[]>([]);
-  const { overlay } = useOverlayContext();
   const { messages, selectedMessage, setSelectedMessage } =
     useImageGalleryContext<StreamChatGenerics>();
 
@@ -211,14 +201,6 @@ export const ImageGallery = <
    * Header visible value for animating in out
    */
   const headerFooterVisible = useSharedValue(1);
-
-  /**
-   * Gesture handler refs
-   */
-  const doubleTapRef = useRef<TapGestureHandler>(null);
-  const panRef = useRef<PanGestureHandler>(null);
-  const pinchRef = useRef<PinchGestureHandler>(null);
-  const singleTapRef = useRef<TapGestureHandler>(null);
 
   /**
    * Shared values for movement
@@ -353,7 +335,7 @@ export const ImageGallery = <
     }
   }, [uriForCurrentImage]);
 
-  const { onDoubleTap, onPan, onPinch, onSingleTap } = useImageGalleryGestures({
+  const { doubleTap, pan, pinch, singleTap } = useImageGalleryGestures({
     currentImageHeight,
     halfScreenHeight,
     halfScreenWidth,
@@ -518,38 +500,13 @@ export const ImageGallery = <
       style={[StyleSheet.absoluteFillObject, showScreenStyle]}
     >
       <Animated.View style={[StyleSheet.absoluteFillObject, containerBackground]} />
-      <TapGestureHandler
-        minPointers={1}
-        numberOfTaps={1}
-        onGestureEvent={onSingleTap}
-        ref={singleTapRef}
-        waitFor={[panRef, pinchRef, doubleTapRef]}
-      >
+      <GestureDetector gesture={singleTap}>
         <Animated.View style={StyleSheet.absoluteFillObject}>
-          <TapGestureHandler
-            maxDeltaX={8}
-            maxDeltaY={8}
-            maxDist={8}
-            minPointers={1}
-            numberOfTaps={2}
-            onGestureEvent={onDoubleTap}
-            ref={doubleTapRef}
-          >
+          <GestureDetector gesture={doubleTap}>
             <Animated.View style={StyleSheet.absoluteFillObject}>
-              <PinchGestureHandler
-                onGestureEvent={onPinch}
-                ref={pinchRef}
-                simultaneousHandlers={[panRef]}
-              >
+              <GestureDetector gesture={pinch}>
                 <Animated.View style={StyleSheet.absoluteFill}>
-                  <PanGestureHandler
-                    enabled={overlay === 'gallery'}
-                    maxPointers={isAndroid ? undefined : 1}
-                    minDist={10}
-                    onGestureEvent={onPan}
-                    ref={panRef}
-                    simultaneousHandlers={[pinchRef]}
-                  >
+                  <GestureDetector gesture={pan}>
                     <Animated.View style={StyleSheet.absoluteFill}>
                       <Animated.View style={[styles.animatedContainer, pagerStyle, pager]}>
                         {imageGalleryAttachments.map((photo, i) =>
@@ -609,13 +566,13 @@ export const ImageGallery = <
                         )}
                       </Animated.View>
                     </Animated.View>
-                  </PanGestureHandler>
+                  </GestureDetector>
                 </Animated.View>
-              </PinchGestureHandler>
+              </GestureDetector>
             </Animated.View>
-          </TapGestureHandler>
+          </GestureDetector>
         </Animated.View>
-      </TapGestureHandler>
+      </GestureDetector>
       <ImageGalleryHeader<StreamChatGenerics>
         opacity={headerFooterOpacity}
         photo={imageGalleryAttachments[selectedIndex]}

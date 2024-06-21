@@ -1,9 +1,7 @@
 import React from 'react';
-import { StyleProp, StyleSheet, Text, TextStyle, View } from 'react-native';
-import { TapGestureHandler } from 'react-native-gesture-handler';
-import Animated from 'react-native-reanimated';
-
-import { useMessageActionAnimation } from './hooks/useMessageActionAnimation';
+import { StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useViewport } from '../../hooks/useViewport';
@@ -67,6 +65,8 @@ const MessageActionListItemWithContext = <
 ) => {
   const { action, actionType, icon, index, length, title, titleStyle } = props;
   const { vw } = useViewport();
+  const opacity = useSharedValue(1);
+  const activeOpacity = 0.2;
 
   const {
     theme: {
@@ -75,10 +75,23 @@ const MessageActionListItemWithContext = <
     },
   } = useTheme();
 
-  const { animatedStyle, onTap } = useMessageActionAnimation({ action });
+  const animatedStyle = useAnimatedStyle<ViewStyle>(() => ({
+    opacity: opacity.value,
+  }));
+
+  const tap = Gesture.Tap()
+    .onStart(() => {
+      opacity.value = activeOpacity;
+    })
+    .onFinalize(() => {
+      opacity.value = 1;
+    })
+    .onEnd(() => {
+      runOnJS(action)();
+    });
 
   return (
-    <TapGestureHandler onHandlerStateChange={onTap}>
+    <GestureDetector gesture={tap}>
       <Animated.View
         style={[
           styles.row,
@@ -96,7 +109,7 @@ const MessageActionListItemWithContext = <
           {title}
         </Text>
       </Animated.View>
-    </TapGestureHandler>
+    </GestureDetector>
   );
 };
 

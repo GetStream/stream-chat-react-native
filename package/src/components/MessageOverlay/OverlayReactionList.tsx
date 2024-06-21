@@ -1,11 +1,10 @@
 import React from 'react';
 import { StyleSheet, useWindowDimensions, View, ViewStyle } from 'react-native';
-import { TapGestureHandler, TapGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
   interpolate,
   runOnJS,
-  useAnimatedGestureHandler,
   useAnimatedProps,
   useAnimatedReaction,
   useAnimatedStyle,
@@ -129,29 +128,43 @@ export const ReactionButton = <
   const hasShown = useSharedValue(0);
   const scale = useSharedValue(1);
   const selectedOpacity = useSharedValue(selected ? 1 : 0);
-
-  const onTap = useAnimatedGestureHandler<TapGestureHandlerStateChangeEvent>(
-    {
-      onEnd: () => {
-        runOnJS(triggerHaptic)('impactLight');
-        selectedOpacity.value = withTiming(selected ? 0 : 1, { duration: 250 }, () => {
-          if (handleReaction) {
-            runOnJS(handleReaction)(type);
-          }
-          runOnJS(setOverlay)('none');
-        });
-      },
-      onFinish: () => {
-        cancelAnimation(scale);
-        scale.value = withTiming(1, { duration: 100 });
-      },
-      onStart: () => {
-        cancelAnimation(scale);
-        scale.value = withTiming(1.5, { duration: 100 });
-      },
-    },
-    [handleReaction, selected, setOverlay, type],
-  );
+  const tap = Gesture.Tap()
+    .hitSlop({
+      bottom:
+        Number(reaction.paddingVertical || 0) ||
+        Number(reaction.paddingBottom || 0) ||
+        styles.reactionList.paddingVertical,
+      left:
+        (Number(reaction.paddingHorizontal || 0) ||
+          Number(reaction.paddingLeft || 0) ||
+          styles.notLastReaction.marginRight) / 2,
+      right:
+        (Number(reaction.paddingHorizontal || 0) ||
+          Number(reaction.paddingRight || 0) ||
+          styles.notLastReaction.marginRight) / 2,
+      top:
+        Number(reaction.paddingVertical || 0) ||
+        Number(reaction.paddingTop || 0) ||
+        styles.reactionList.paddingVertical,
+    })
+    .maxDuration(3000)
+    .onStart(() => {
+      cancelAnimation(scale);
+      scale.value = withTiming(1.5, { duration: 100 });
+    })
+    .onEnd(() => {
+      runOnJS(triggerHaptic)('impactLight');
+      selectedOpacity.value = withTiming(selected ? 0 : 1, { duration: 250 }, () => {
+        if (handleReaction) {
+          runOnJS(handleReaction)(type);
+        }
+        runOnJS(setOverlay)('none');
+      });
+    })
+    .onFinalize(() => {
+      cancelAnimation(scale);
+      scale.value = withTiming(1, { duration: 100 });
+    });
 
   useAnimatedReaction(
     () => {
@@ -192,28 +205,7 @@ export const ReactionButton = <
   }));
 
   return (
-    <TapGestureHandler
-      hitSlop={{
-        bottom:
-          Number(reaction.paddingVertical || 0) ||
-          Number(reaction.paddingBottom || 0) ||
-          styles.reactionList.paddingVertical,
-        left:
-          (Number(reaction.paddingHorizontal || 0) ||
-            Number(reaction.paddingLeft || 0) ||
-            styles.notLastReaction.marginRight) / 2,
-        right:
-          (Number(reaction.paddingHorizontal || 0) ||
-            Number(reaction.paddingRight || 0) ||
-            styles.notLastReaction.marginRight) / 2,
-        top:
-          Number(reaction.paddingVertical || 0) ||
-          Number(reaction.paddingTop || 0) ||
-          styles.reactionList.paddingVertical,
-      }}
-      maxDurationMs={3000}
-      onHandlerStateChange={onTap}
-    >
+    <GestureDetector gesture={tap}>
       <Animated.View
         style={[index !== numberOfReactions - 1 ? styles.notLastReaction : {}, reaction, iconStyle]}
       >
@@ -222,7 +214,7 @@ export const ReactionButton = <
           <Icon height={reactionSize} pathFill={accent_blue} width={reactionSize} />
         </Animated.View>
       </Animated.View>
-    </TapGestureHandler>
+    </GestureDetector>
   );
 };
 
