@@ -638,3 +638,17 @@ export const reduceMessagesToString = <
 >(
   messages: FormatMessageResponse<StreamChatGenerics>[],
 ): string => messages.map(stringifyMessage).join();
+
+/**
+ * Utility to get the file name from the path using regex.
+ * `[^/]+` matches one or more characters that are not a slash (/), ensuring we capture the filename part.
+ * `\.` matches the period before the file extension.
+ * `[^/]+$` matches one or more characters that are not a slash (/) until the end of the string, capturing the file extension.
+ * @param path string
+ * @returns string
+ */
+export const getFileNameFromPath = (path: string) => {
+  const pattern = /[^/]+\.[^/]+$/;
+  const match = path.match(pattern);
+  return match ? match[0] : '';
+};

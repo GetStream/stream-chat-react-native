@@ -64,6 +64,7 @@ import {
   FileState,
   FileStateValue,
   generateRandomId,
+  getFileNameFromPath,
   isBouncedMessage,
   TriggerSettings,
 } from '../../utils/utils';
@@ -1106,7 +1107,7 @@ export const MessageInputProvider = <
     let response = {} as SendFileAPIResponse;
 
     const uri = file.uri || '';
-    const filename = file.name ?? uri.replace(/^(file:\/\/|content:\/\/)/, '');
+    const filename = file.name ?? getFileNameFromPath(uri);
 
     try {
       const compressedUri = await compressedImageURI(file, value.compressImageQuality);
