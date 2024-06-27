@@ -312,7 +312,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     Array.isArray(prevReactions) && Array.isArray(nextReactions)
       ? prevReactions.length === nextReactions.length &&
         prevReactions.every(
-          ({ type }, index) => type === nextMessage.latest_reactions?.[index].type,
+          ({ count, type }, index) =>
+            type === nextMessage.latest_reactions?.[index].type &&
+            count === nextMessage.latest_reactions?.[index].count,
         )
       : prevReactions === nextReactions;
 
