@@ -124,6 +124,7 @@ export type MessageActionHandlers = {
   toggleBanUser: () => Promise<void>;
   toggleMuteUser: () => Promise<void>;
   toggleReaction: (reactionType: string) => Promise<void>;
+  unpinMessage: () => Promise<void>;
 };
 
 export type MessagePropsWithContext<
@@ -618,6 +619,7 @@ const MessageWithContext = <
     toggleBanUser: handleToggleBanUser,
     toggleMuteUser: handleToggleMuteUser,
     toggleReaction: handleToggleReaction,
+    unpinMessage: handleTogglePinMessage,
   };
 
   const onLongPressMessage =
