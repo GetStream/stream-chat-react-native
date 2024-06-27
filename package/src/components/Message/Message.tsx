@@ -101,7 +101,7 @@ export type MessageTouchableHandlerPayload<
   /**
    * Set of action handler functions for various message actions. You can use these functions to perform any action when give interaction occurs.
    */
-  actionHandlers?: MessageActionHandlers;
+  actionHandlers?: MessageActionHandlers<StreamChatGenerics>;
   /**
    * Additional message touchable handler info.
    */
@@ -112,7 +112,9 @@ export type MessageTouchableHandlerPayload<
   message?: MessageType<StreamChatGenerics>;
 };
 
-export type MessageActionHandlers = {
+export type MessageActionHandlers<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
   copyMessage: () => void;
   deleteMessage: () => void;
   editMessage: () => void;
@@ -125,6 +127,7 @@ export type MessageActionHandlers = {
   toggleMuteUser: () => Promise<void>;
   toggleReaction: (reactionType: string) => Promise<void>;
   unpinMessage: () => Promise<void>;
+  threadReply?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
 };
 
 export type MessagePropsWithContext<
@@ -607,7 +610,7 @@ const MessageWithContext = <
     setOverlay('message');
   };
 
-  const actionHandlers: MessageActionHandlers = {
+  const actionHandlers: MessageActionHandlers<StreamChatGenerics> = {
     copyMessage: handleCopyMessage,
     deleteMessage: handleDeleteMessage,
     editMessage: handleEditMessage,
@@ -616,6 +619,7 @@ const MessageWithContext = <
     quotedReply: handleQuotedReplyMessage,
     resendMessage: handleResendMessage,
     showMessageOverlay,
+    threadReply: handleThreadReply,
     toggleBanUser: handleToggleBanUser,
     toggleMuteUser: handleToggleMuteUser,
     toggleReaction: handleToggleReaction,
