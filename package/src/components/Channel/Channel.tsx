@@ -87,6 +87,7 @@ import { removeReservedFields } from '../../utils/removeReservedFields';
 import {
   defaultEmojiSearchIndex,
   generateRandomId,
+  getFileNameFromPath,
   isBouncedMessage,
   isLocalUrl,
   MessageStatusTypes,
@@ -1574,7 +1575,7 @@ const ChannelWithContext = <
           attachment.image_url &&
           isLocalUrl(attachment.image_url)
         ) {
-          const filename = image.name ?? image.uri.replace(/^(file:\/\/|content:\/\/)/, '');
+          const filename = image.name ?? getFileNameFromPath(image.uri);
           // if any upload is in progress, cancel it
           const controller = uploadAbortControllerRef.current.get(filename);
           if (controller) {
