@@ -114,9 +114,9 @@ export type MessageTouchableHandlerPayload<
 
 export type MessageActionHandlers = {
   copyMessage: () => void;
-  deleteMessage: () => Promise<void>;
+  deleteMessage: () => void;
   editMessage: () => void;
-  flagMessage: () => Promise<void>;
+  flagMessage: () => void;
   pinMessage: () => Promise<void>;
   quotedReply: () => void;
   resendMessage: () => Promise<void>;

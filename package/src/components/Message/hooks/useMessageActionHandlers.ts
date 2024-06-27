@@ -51,8 +51,24 @@ export const useMessageActionHandlers = <
     setClipboardString(message.text || '');
   };
 
-  const handleDeleteMessage = async () => {
-    await deleteMessage(message as MessageResponse<StreamChatGenerics>);
+  const handleDeleteMessage = () => {
+    if (message.id) {
+      Alert.alert(
+        t('Delete Message'),
+        t('Are you sure you want to permanently delete this message?'),
+        [
+          { style: 'cancel', text: t('Cancel') },
+          {
+            onPress: async () => {
+              await deleteMessage(message as MessageResponse<StreamChatGenerics>);
+            },
+            style: 'destructive',
+            text: t('Delete'),
+          },
+        ],
+        { cancelable: false },
+      );
+    }
   };
 
   const handleToggleMuteUser = async () => {
@@ -93,10 +109,28 @@ export const useMessageActionHandlers = <
     setEditingState(message);
   };
 
-  const handleFlagMessage = async () => {
+  const handleFlagMessage = () => {
     try {
-      await client.flagMessage(message.id);
-      Alert.alert(t('Message flagged'), t('The message has been reported to a moderator.'));
+      if (message.id) {
+        Alert.alert(
+          t('Flag Message'),
+          t('Do you want to send a copy of this message to a moderator for further investigation?'),
+          [
+            { style: 'cancel', text: t('Cancel') },
+            {
+              onPress: async () => {
+                await client.flagMessage(message.id);
+                Alert.alert(
+                  t('Message flagged'),
+                  t('The message has been reported to a moderator.'),
+                );
+              },
+              text: t('Flag'),
+            },
+          ],
+          { cancelable: false },
+        );
+      }
     } catch (_) {
       Alert.alert(
         t('Cannot Flag Message'),

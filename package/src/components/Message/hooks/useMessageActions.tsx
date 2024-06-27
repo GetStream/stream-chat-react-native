@@ -1,5 +1,4 @@
 import React from 'react';
-import { Alert } from 'react-native';
 
 import { useMessageActionHandlers } from './useMessageActionHandlers';
 
@@ -173,29 +172,11 @@ export const useMessageActions = <
 
   const deleteMessage: MessageActionType = {
     action: () => {
-      setOverlay('alert');
-      if (message.id) {
-        Alert.alert(
-          t('Delete Message'),
-          t('Are you sure you want to permanently delete this message?'),
-          [
-            { onPress: () => setOverlay('none'), text: t('Cancel') },
-            {
-              onPress: async () => {
-                setOverlay('none');
-                if (handleDelete) {
-                  handleDelete(message);
-                }
-
-                await handleDeleteMessage();
-              },
-              style: 'destructive',
-              text: t('Delete'),
-            },
-          ],
-          { cancelable: false },
-        );
+      setOverlay('none');
+      if (handleDelete) {
+        handleDelete(message);
       }
+      handleDeleteMessage();
     },
     actionType: 'deleteMessage',
     icon: <Delete fill={accent_red} size={32} />,
@@ -244,27 +225,12 @@ export const useMessageActions = <
 
   const flagMessage: MessageActionType = {
     action: () => {
-      setOverlay('alert');
-      if (message.id) {
-        Alert.alert(
-          t('Flag Message'),
-          t('Do you want to send a copy of this message to a moderator for further investigation?'),
-          [
-            { onPress: () => setOverlay('none'), text: t('Cancel') },
-            {
-              onPress: async () => {
-                setOverlay('none');
-                if (handleFlag) {
-                  handleFlag(message);
-                }
-                await handleFlagMessage();
-              },
-              text: t('Flag'),
-            },
-          ],
-          { cancelable: false },
-        );
+      setOverlay('none');
+      if (handleFlag) {
+        handleFlag(message);
       }
+
+      handleFlagMessage();
     },
     actionType: 'flagMessage',
     icon: <MessageFlag pathFill={grey} />,
