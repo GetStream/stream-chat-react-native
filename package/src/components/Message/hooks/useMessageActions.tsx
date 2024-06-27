@@ -100,8 +100,10 @@ export const useMessageActions = <
     },
   } = useTheme();
   const {
+    handleCopyMessage,
     handleDeleteMessage,
     handleEditMessage,
+    handleFlagMessage,
     handleQuotedReplyMessage,
     handleResendMessage,
     handleToggleBanUser,
@@ -161,7 +163,7 @@ export const useMessageActions = <
             if (handleCopy) {
               handleCopy(message);
             }
-            setClipboardString(message.text || '');
+            handleCopyMessage();
           },
           actionType: 'copyMessage',
           icon: <Copy pathFill={grey} />,
@@ -251,35 +253,11 @@ export const useMessageActions = <
             { onPress: () => setOverlay('none'), text: t('Cancel') },
             {
               onPress: async () => {
-                try {
-                  if (handleFlag) {
-                    handleFlag(message);
-                  }
-                  await client.flagMessage(message.id);
-                  Alert.alert(
-                    t('Message flagged'),
-                    t('The message has been reported to a moderator.'),
-                    [
-                      {
-                        onPress: () => setOverlay('none'),
-                        text: t('Ok'),
-                      },
-                    ],
-                  );
-                } catch (_) {
-                  Alert.alert(
-                    t('Cannot Flag Message'),
-                    t(
-                      'Flag action failed either due to a network issue or the message is already flagged',
-                    ),
-                    [
-                      {
-                        onPress: () => setOverlay('none'),
-                        text: t('Ok'),
-                      },
-                    ],
-                  );
+                setOverlay('none');
+                if (handleFlag) {
+                  handleFlag(message);
                 }
+                await handleFlagMessage();
               },
               text: t('Flag'),
             },

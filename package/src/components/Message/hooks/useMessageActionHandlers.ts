@@ -1,3 +1,5 @@
+import { Alert } from 'react-native';
+
 import type { MessageResponse } from 'stream-chat';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
@@ -5,6 +7,8 @@ import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { setClipboardString } from '../../../native';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useMessageActionHandlers = <
@@ -32,6 +36,7 @@ export const useMessageActionHandlers = <
   Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'enforceUniqueReaction'> &
   Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
   Pick<MessageContextValue<StreamChatGenerics>, 'message'>) => {
+  const { t } = useTranslationContext();
   const handleResendMessage = () => retrySendMessage(message);
 
   const handleQuotedReplyMessage = () => {
@@ -41,6 +46,10 @@ export const useMessageActionHandlers = <
   const isMuted = (client.mutedUsers || []).some(
     (mute) => mute.user.id === client.userID && mute.target.id === message.user?.id,
   );
+
+  const handleCopyMessage = () => {
+    setClipboardString(message.text || '');
+  };
 
   const handleDeleteMessage = async () => {
     await deleteMessage(message as MessageResponse<StreamChatGenerics>);
@@ -84,6 +93,18 @@ export const useMessageActionHandlers = <
     setEditingState(message);
   };
 
+  const handleFlagMessage = async () => {
+    try {
+      await client.flagMessage(message.id);
+      Alert.alert(t('Message flagged'), t('The message has been reported to a moderator.'));
+    } catch (_) {
+      Alert.alert(
+        t('Cannot Flag Message'),
+        t('Flag action failed either due to a network issue or the message is already flagged'),
+      );
+    }
+  };
+
   const handleToggleReaction = async (reactionType: string) => {
     const messageId = message.id;
     const own_reactions = message.own_reactions ?? [];
@@ -114,8 +135,10 @@ export const useMessageActionHandlers = <
   };
 
   return {
+    handleCopyMessage,
     handleDeleteMessage,
     handleEditMessage,
+    handleFlagMessage,
     handleQuotedReplyMessage,
     handleResendMessage,
     handleToggleBanUser,

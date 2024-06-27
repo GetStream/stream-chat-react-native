@@ -113,8 +113,10 @@ export type MessageTouchableHandlerPayload<
 };
 
 export type MessageActionHandlers = {
+  copyMessage: () => void;
   deleteMessage: () => Promise<void>;
   editMessage: () => void;
+  flagMessage: () => Promise<void>;
   pinMessage: () => Promise<void>;
   quotedReply: () => void;
   resendMessage: () => Promise<void>;
@@ -476,8 +478,10 @@ const MessageWithContext = <
   const ownCapabilities = useOwnCapabilitiesContext();
 
   const {
+    handleCopyMessage,
     handleDeleteMessage,
     handleEditMessage,
+    handleFlagMessage,
     handleQuotedReplyMessage,
     handleResendMessage,
     handleToggleBanUser,
@@ -603,8 +607,10 @@ const MessageWithContext = <
   };
 
   const actionHandlers: MessageActionHandlers = {
+    copyMessage: handleCopyMessage,
     deleteMessage: handleDeleteMessage,
     editMessage: handleEditMessage,
+    flagMessage: handleFlagMessage,
     pinMessage: handleTogglePinMessage,
     quotedReply: handleQuotedReplyMessage,
     resendMessage: handleResendMessage,
@@ -655,8 +661,10 @@ const MessageWithContext = <
     goToMessage,
     groupStyles,
     handleAction,
+    handleCopyMessage,
     handleDeleteMessage,
     handleEditMessage,
+    handleFlagMessage,
     handleQuotedReplyMessage,
     handleResendMessage,
     handleToggleBanUser,
