@@ -117,6 +117,8 @@ const ReactionListWithContext = <
           middleIcon,
           radius: themeRadius,
           reactionBubble,
+          reactionContainer,
+          reactionCount,
           reactionSize: themeReactionSize,
           strokeSize: themeStrokeSize,
         },
@@ -246,6 +248,7 @@ const ReactionListWithContext = <
                   {
                     marginRight: index < reactions.length - 1 ? 5 : 0,
                   },
+                  reactionContainer,
                 ]}
               >
                 <Icon
@@ -256,7 +259,9 @@ const ReactionListWithContext = <
                   supportedReactions={supportedReactions}
                   type={reaction.type}
                 />
-                <Text style={[styles.reactionCount, { color: black }]}>{reaction.count}</Text>
+                <Text style={[styles.reactionCount, { color: black }, reactionCount]}>
+                  {reaction.count}
+                </Text>
               </View>
             ))}
           </TouchableOpacity>
@@ -307,7 +312,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     Array.isArray(prevReactions) && Array.isArray(nextReactions)
       ? prevReactions.length === nextReactions.length &&
         prevReactions.every(
-          ({ type }, index) => type === nextMessage.latest_reactions?.[index].type,
+          ({ count, type }, index) =>
+            type === nextMessage.latest_reactions?.[index].type &&
+            count === nextMessage.latest_reactions?.[index].count,
         )
       : prevReactions === nextReactions;
 
