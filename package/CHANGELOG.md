@@ -1,5 +1,22 @@
 # Change Log
 
+## [5.33.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.32.1...v5.33.0) (2024-06-27)
+
+
+### Features
+
+* configure ReactionList reaction theme ([#2561](https://github.com/GetStream/stream-chat-react-native/issues/2561)) ([e89fa89](https://github.com/GetStream/stream-chat-react-native/commit/e89fa897a2c9ce0edb342e69938f0bcf0146e344))
+
+
+### Bug Fixes
+
+* .eslintrc.json warning ([dadce56](https://github.com/GetStream/stream-chat-react-native/commit/dadce5675ce2f7d348bbace19055926e97618d31))
+* audio for the video muted when the silent mode is on for iOS ([#2564](https://github.com/GetStream/stream-chat-react-native/issues/2564)) ([abf6f2a](https://github.com/GetStream/stream-chat-react-native/commit/abf6f2a7b0aae829fbf37d337d77da8237f762ac))
+* i18n in message rerender issue for MessageText component ([#2566](https://github.com/GetStream/stream-chat-react-native/issues/2566)) ([d8fecbd](https://github.com/GetStream/stream-chat-react-native/commit/d8fecbdb459796889109dc2998eccd3dac4b7182))
+* memoization check for i18n translations ([ab5ca71](https://github.com/GetStream/stream-chat-react-native/commit/ab5ca7151961feae4cdcb2796b34391fc7a50b2b))
+* memoization issue for ReactionList count ([#2571](https://github.com/GetStream/stream-chat-react-native/issues/2571)) ([99816a4](https://github.com/GetStream/stream-chat-react-native/commit/99816a4df09632ffa684489c45be52671364ae5d))
+* upload image issue when clicking a photo using expo-image-picker on Expo 51 ([#2559](https://github.com/GetStream/stream-chat-react-native/issues/2559)) ([d4b90fc](https://github.com/GetStream/stream-chat-react-native/commit/d4b90fc0720afc9d64e0fd99c8dd4ceebf3e2560))
+
 ### [5.32.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.32.0...v5.32.1) (2024-06-18)
 
 
