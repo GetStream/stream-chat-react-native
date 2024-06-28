@@ -129,6 +129,7 @@
     ],
     "Advanced Guides": [
       "guides/audio-messages-support",
+      "guides/date-time-formatting",
       "customization/typescript",
       "basics/troubleshooting",
       "basics/stream_chat_with_navigation",

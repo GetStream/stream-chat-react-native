@@ -2,6 +2,10 @@ import { SqliteClient } from '../../SqliteClient';
 import { tables } from '../../schema';
 import type { TableRowJoinedUser } from '../../types';
 
+/**
+ * Fetches reactions for a message from the database for messageIds.
+ * @param messageIds The message IDs for which reactions are to be fetched.
+ */
 export const selectReactionsForMessages = (
   messageIds: string[],
 ): TableRowJoinedUser<'reactions'>[] => {

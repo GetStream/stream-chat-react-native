@@ -1,5 +1,48 @@
 # Change Log
 
+## [5.33.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.32.1...v5.33.0) (2024-06-27)
+
+
+### Features
+
+* configure ReactionList reaction theme ([#2561](https://github.com/GetStream/stream-chat-react-native/issues/2561)) ([e89fa89](https://github.com/GetStream/stream-chat-react-native/commit/e89fa897a2c9ce0edb342e69938f0bcf0146e344))
+
+
+### Bug Fixes
+
+* .eslintrc.json warning ([dadce56](https://github.com/GetStream/stream-chat-react-native/commit/dadce5675ce2f7d348bbace19055926e97618d31))
+* audio for the video muted when the silent mode is on for iOS ([#2564](https://github.com/GetStream/stream-chat-react-native/issues/2564)) ([abf6f2a](https://github.com/GetStream/stream-chat-react-native/commit/abf6f2a7b0aae829fbf37d337d77da8237f762ac))
+* i18n in message rerender issue for MessageText component ([#2566](https://github.com/GetStream/stream-chat-react-native/issues/2566)) ([d8fecbd](https://github.com/GetStream/stream-chat-react-native/commit/d8fecbdb459796889109dc2998eccd3dac4b7182))
+* memoization check for i18n translations ([ab5ca71](https://github.com/GetStream/stream-chat-react-native/commit/ab5ca7151961feae4cdcb2796b34391fc7a50b2b))
+* memoization issue for ReactionList count ([#2571](https://github.com/GetStream/stream-chat-react-native/issues/2571)) ([99816a4](https://github.com/GetStream/stream-chat-react-native/commit/99816a4df09632ffa684489c45be52671364ae5d))
+* upload image issue when clicking a photo using expo-image-picker on Expo 51 ([#2559](https://github.com/GetStream/stream-chat-react-native/issues/2559)) ([d4b90fc](https://github.com/GetStream/stream-chat-react-native/commit/d4b90fc0720afc9d64e0fd99c8dd4ceebf3e2560))
+
+### [5.32.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.32.0...v5.32.1) (2024-06-18)
+
+
+### Bug Fixes
+
+* empty message list text string crash bug ([#2556](https://github.com/GetStream/stream-chat-react-native/issues/2556)) ([d518e0a](https://github.com/GetStream/stream-chat-react-native/commit/d518e0a2b1bc71db2b36506a136ba843b2f31baa))
+
+## [5.32.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.31.1...v5.32.0) (2024-06-17)
+
+
+### Features
+
+* global date time formatting through i18n ([#2552](https://github.com/GetStream/stream-chat-react-native/issues/2552)) ([0ad7016](https://github.com/GetStream/stream-chat-react-native/commit/0ad70167956d0392fd8d9d8af07a8c9bc7664790))
+* use queryReactions to fetch and show reactions in OverlayReactions. ([#2532](https://github.com/GetStream/stream-chat-react-native/issues/2532)) ([d7c8243](https://github.com/GetStream/stream-chat-react-native/commit/d7c82433c5ff6f483ae8b513565b4bb3adc05411))
+
+
+### Bug Fixes
+
+* add expo-clipboard to peer deps of expo-package ([#2537](https://github.com/GetStream/stream-chat-react-native/issues/2537)) ([ae279a1](https://github.com/GetStream/stream-chat-react-native/commit/ae279a1f8096d90a10c749441eb9d9acadd1c01d))
+* Correct japanese translation ([#2540](https://github.com/GetStream/stream-chat-react-native/issues/2540)) ([64b2f78](https://github.com/GetStream/stream-chat-react-native/commit/64b2f7817ce2516e9586f92be98102cde3a6b697))
+* derive reaction list from reaction_groups and show reaction count while maintaining the order ([#2523](https://github.com/GetStream/stream-chat-react-native/issues/2523)) ([46de441](https://github.com/GetStream/stream-chat-react-native/commit/46de441719fbac90ba099efa4b96467057b4fb2e))
+* empty message list UI and scrolling issue ([#2533](https://github.com/GetStream/stream-chat-react-native/issues/2533)) ([95e9dc5](https://github.com/GetStream/stream-chat-react-native/commit/95e9dc5e71f3860d196f3dad8ddd0c780052964e))
+* message edited label edited time stamp ([#2547](https://github.com/GetStream/stream-chat-react-native/issues/2547)) ([95abb46](https://github.com/GetStream/stream-chat-react-native/commit/95abb46a89d50f41755e94d2e612d11496bf6c5b))
+* store message_text_updated_at field in the offline DB ([#2548](https://github.com/GetStream/stream-chat-react-native/issues/2548)) ([ff86bca](https://github.com/GetStream/stream-chat-react-native/commit/ff86bcae435f1c2322981297559dde458cc49fbf))
+* use i18n-parser for build-translations and improve related scripts ([#2553](https://github.com/GetStream/stream-chat-react-native/issues/2553)) ([6037c4d](https://github.com/GetStream/stream-chat-react-native/commit/6037c4dfb258e6581faa1e525d22dfd8f1079ac5))
+
 ### [5.31.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.31.0...v5.31.1) (2024-05-28)
 
 

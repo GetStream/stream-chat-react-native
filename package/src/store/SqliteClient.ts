@@ -29,7 +29,7 @@ import type { PreparedQueries, Table } from './types';
  * This way usage @op-engineering/op-sqlite package is scoped to a single class/file.
  */
 export class SqliteClient {
-  static dbVersion = 4;
+  static dbVersion = 5;
 
   static dbName = DB_NAME;
   static dbLocation = DB_LOCATION;

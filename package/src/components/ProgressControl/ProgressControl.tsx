@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
-import { PanGestureHandler } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
   runOnJS,
-  useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
@@ -62,6 +61,25 @@ export const ProgressControl = React.memo(
         progressControl: { container, filledColor: filledColorFromTheme, filledStyles, thumb },
       },
     } = useTheme();
+    const pan = Gesture.Pan()
+      .maxPointers(1)
+      .onStart(() => {
+        if (onPlayPause) runOnJS(onPlayPause)(true);
+        cancelAnimation(translateX);
+        state.value = translateX.value;
+      })
+      .onChange((event) => {
+        state.value = translateX.value + event.translationX;
+        if (state.value > widthInNumbers) state.value = widthInNumbers;
+        else if (state.value < 0) state.value = 0;
+      })
+      .onEnd(() => {
+        translateX.value = state.value;
+        const dragFinishLocationInSeconds = (state.value / widthInNumbers) * duration;
+        if (onProgressDrag) runOnJS(onProgressDrag)(dragFinishLocationInSeconds);
+        if (onPlayPause) runOnJS(onPlayPause)(false);
+      })
+      .withTestId(testID);
 
     const state = useSharedValue(0);
     const translateX = useSharedValue(0);
@@ -83,43 +101,16 @@ export const ProgressControl = React.memo(
       transform: [{ translateX: state.value }],
     }));
 
-    const onGestureEvent = useAnimatedGestureHandler(
-      {
-        onActive: (event) => {
-          state.value = translateX.value + event.translationX;
-          if (state.value > widthInNumbers) state.value = widthInNumbers;
-          else if (state.value < 0) state.value = 0;
-        },
-        onFinish: () => {
-          translateX.value = state.value;
-          const dragFinishLocationInSeconds = (state.value / widthInNumbers) * duration;
-          if (onProgressDrag) runOnJS(onProgressDrag)(dragFinishLocationInSeconds);
-          if (onPlayPause) runOnJS(onPlayPause)(false);
-        },
-        onStart: () => {
-          if (onPlayPause) runOnJS(onPlayPause)(true);
-          cancelAnimation(translateX);
-          state.value = translateX.value;
-        },
-      },
-      [duration, widthInNumbers],
-    );
-
     return (
       <View
         style={[styles.container, { backgroundColor: grey_dark, width: widthInNumbers }, container]}
       >
         <Animated.View style={[styles.filledStyle, animatedStyles, filledStyles]} />
-
-        <PanGestureHandler
-          maxPointers={1}
-          onGestureEvent={onProgressDrag ? onGestureEvent : undefined}
-          testID={testID}
-        >
+        <GestureDetector gesture={pan}>
           <Animated.View style={[thumbStyles, thumb]}>
-            {onProgressDrag && <ProgressControlThumb />}
+            {onProgressDrag ? <ProgressControlThumb /> : null}
           </Animated.View>
-        </PanGestureHandler>
+        </GestureDetector>
       </View>
     );
   },

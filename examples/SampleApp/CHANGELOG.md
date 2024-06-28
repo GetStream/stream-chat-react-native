@@ -1,5 +1,33 @@
 # Change Log
 
+### [1.27.5](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.27.4...sampleapp@v1.27.5) (2024-06-27)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.27.4](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.27.3...sampleapp@v1.27.4) (2024-06-18)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.27.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.27.2...sampleapp@v1.27.3) (2024-06-17)
+
+
+### Bug Fixes
+
+* add expo-clipboard to peer deps of expo-package ([#2537](https://github.com/GetStream/stream-chat-react-native/issues/2537)) ([ae279a1](https://github.com/GetStream/stream-chat-react-native/commit/ae279a1f8096d90a10c749441eb9d9acadd1c01d))
+* example app TS issue and icons props issue ([#2544](https://github.com/GetStream/stream-chat-react-native/issues/2544)) ([4422664](https://github.com/GetStream/stream-chat-react-native/commit/4422664d68e2249b1eb9902ac24cd36802561662))
+* permissions issue on expo sample app on iOS and add docs for the same ([#2546](https://github.com/GetStream/stream-chat-react-native/issues/2546)) ([6dbc9bf](https://github.com/GetStream/stream-chat-react-native/commit/6dbc9bfa9ae8d095fe63e2eca9bbb971af9763ce))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.27.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.27.1...sampleapp@v1.27.2) (2024-05-28)
 
 

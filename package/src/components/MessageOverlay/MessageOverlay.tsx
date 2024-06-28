@@ -1,19 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Keyboard, Platform, SafeAreaView, StyleSheet, View, ViewStyle } from 'react-native';
-import {
-  PanGestureHandler,
-  PanGestureHandlerGestureEvent,
-  ScrollView,
-  State,
-  TapGestureHandler,
-} from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, ScrollView } from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
   Easing,
-  Extrapolate,
+  Extrapolation,
   interpolate,
   runOnJS,
-  useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
   withDecay,
@@ -44,10 +37,7 @@ import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContex
 import { useViewport } from '../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
-import {
-  OverlayReactions as DefaultOverlayReactions,
-  Reaction,
-} from '../MessageOverlay/OverlayReactions';
+import { OverlayReactions as DefaultOverlayReactions } from '../MessageOverlay/OverlayReactions';
 import type { ReplyProps } from '../Reply/Reply';
 
 const styles = StyleSheet.create({
@@ -211,24 +201,31 @@ const MessageOverlayWithContext = <
     fadeScreen();
   }, []);
 
-  const onPan = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
-    onActive: (evt) => {
-      translateY.value = offsetY.value + evt.translationY;
+  const pan = Gesture.Pan()
+    .enabled(overlay === 'message')
+    .maxPointers(1)
+    .minDistance(10)
+    .onBegin(() => {
+      cancelAnimation(translateY);
+      offsetY.value = translateY.value;
+    })
+    .onChange((event) => {
+      translateY.value = offsetY.value + event.translationY;
       overlayOpacity.value = interpolate(
         translateY.value,
         [0, halfScreenHeight],
         [1, 0.75],
-        Extrapolate.CLAMP,
+        Extrapolation.CLAMP,
       );
       scale.value = interpolate(
         translateY.value,
         [0, halfScreenHeight],
         [1, 0.85],
-        Extrapolate.CLAMP,
+        Extrapolation.CLAMP,
       );
-    },
-    onFinish: (evt) => {
-      const finalYPosition = evt.translationY + evt.velocityY * 0.1;
+    })
+    .onEnd((event) => {
+      const finalYPosition = event.translationY + event.velocityY * 0.1;
 
       if (finalYPosition > halfScreenHeight && translateY.value > 0) {
         cancelAnimation(translateY);
@@ -243,9 +240,9 @@ const MessageOverlayWithContext = <
           },
         );
         translateY.value =
-          evt.velocityY > 1000
+          event.velocityY > 1000
             ? withDecay({
-                velocity: evt.velocityY,
+                velocity: event.velocityY,
               })
             : withTiming(screenHeight, {
                 duration: 200,
@@ -256,12 +253,13 @@ const MessageOverlayWithContext = <
         scale.value = withTiming(1);
         overlayOpacity.value = withTiming(1);
       }
-    },
-    onStart: () => {
-      cancelAnimation(translateY);
-      offsetY.value = translateY.value;
-    },
-  });
+    });
+
+  const tap = Gesture.Tap()
+    .maxDistance(32)
+    .onEnd(() => {
+      runOnJS(setOverlay)('none');
+    });
 
   const panStyle = useAnimatedStyle<ViewStyle>(() => ({
     transform: [
@@ -302,14 +300,7 @@ const MessageOverlayWithContext = <
   const { Attachment, FileAttachmentGroup, Gallery, MessageAvatar, Reply } = messagesContext || {};
 
   const renderContent = (messageTextNumberOfLines?: number) => (
-    <TapGestureHandler
-      maxDist={32}
-      onHandlerStateChange={({ nativeEvent: { state } }) => {
-        if (state === State.END) {
-          setOverlay('none');
-        }
-      }}
-    >
+    <GestureDetector gesture={tap}>
       <Animated.View style={[styles.flex, panStyle]}>
         {message && (
           <View
@@ -464,30 +455,20 @@ const MessageOverlayWithContext = <
                 message={message}
               />
             )}
-            {!!messageReactionTitle &&
-            message.latest_reactions &&
-            message.latest_reactions.length > 0 ? (
+            {!!messageReactionTitle && (
               <OverlayReactions
                 alignment={alignment}
+                messageId={message.id}
                 OverlayReactionsAvatar={OverlayReactionsAvatar}
-                reactions={
-                  message.latest_reactions.map((reaction) => ({
-                    alignment: clientId && clientId === reaction.user?.id ? 'right' : 'left',
-                    id: reaction?.user?.id || '',
-                    image: reaction?.user?.image,
-                    name: reaction?.user?.name || reaction.user_id || '',
-                    type: reaction.type,
-                  })) as Reaction[]
-                }
                 showScreen={showScreen}
                 supportedReactions={messagesContext?.supportedReactions}
                 title={messageReactionTitle}
               />
-            ) : null}
+            )}
           </View>
         )}
       </Animated.View>
-    </TapGestureHandler>
+    </GestureDetector>
   );
 
   // Scroll will only be enabled for message overlay when we show actions.
@@ -504,12 +485,7 @@ const MessageOverlayWithContext = <
               pointerEvents={'auto'}
               style={[StyleSheet.absoluteFillObject, containerStyle]}
             >
-              <PanGestureHandler
-                enabled={overlay === 'message'}
-                maxPointers={1}
-                minDist={10}
-                onGestureEvent={onPan}
-              >
+              <GestureDetector gesture={pan}>
                 <Animated.View style={[StyleSheet.absoluteFillObject]}>
                   <SafeAreaView style={styles.flex}>
                     {isScrollEnabled ? (
@@ -531,7 +507,7 @@ const MessageOverlayWithContext = <
                     )}
                   </SafeAreaView>
                 </Animated.View>
-              </PanGestureHandler>
+              </GestureDetector>
             </Animated.View>
           </ThemeProvider>
         </MessageProvider>

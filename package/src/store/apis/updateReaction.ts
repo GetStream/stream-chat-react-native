@@ -34,8 +34,6 @@ export const updateReaction = ({
     }),
   );
 
-  let updatedReactionCounts: string | undefined;
-
   let updatedReactionGroups: string | undefined;
   if (message.reaction_groups) {
     const { reactionGroups } = mapMessageToStorable(message);
@@ -47,7 +45,6 @@ export const updateReaction = ({
     addedUser: storableUser,
     flush,
     updatedReaction: storableReaction,
-    updatedReactionCounts,
     updatedReactionGroups,
   });
 

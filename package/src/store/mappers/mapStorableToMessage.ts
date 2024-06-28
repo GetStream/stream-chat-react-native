@@ -19,7 +19,16 @@ export const mapStorableToMessage = <
   messageRow: TableRowJoinedUser<'messages'>;
   reactionRows: TableRowJoinedUser<'reactions'>[];
 }): MessageResponse<StreamChatGenerics> => {
-  const { createdAt, deletedAt, extraData, reactionGroups, updatedAt, user, ...rest } = messageRow;
+  const {
+    createdAt,
+    deletedAt,
+    extraData,
+    messageTextUpdatedAt,
+    reactionGroups,
+    updatedAt,
+    user,
+    ...rest
+  } = messageRow;
   const latestReactions =
     reactionRows?.map((reaction) => mapStorableToReaction<StreamChatGenerics>(reaction)) || [];
 
@@ -31,6 +40,7 @@ export const mapStorableToMessage = <
     created_at: createdAt,
     deleted_at: deletedAt,
     latest_reactions: latestReactions,
+    message_text_updated_at: messageTextUpdatedAt,
     own_reactions: ownReactions,
     reaction_groups: reactionGroups ? JSON.parse(reactionGroups) : {},
     updated_at: updatedAt,
