@@ -23,7 +23,7 @@ type ThreadPropsWithContext<
   Pick<MessagesContextValue<StreamChatGenerics>, 'MessageList'> &
   Pick<
     ThreadContextValue<StreamChatGenerics>,
-    'closeThread' | 'loadMoreThread' | 'reloadThread' | 'thread'
+    'closeThread' | 'loadMoreThread' | 'parentMessagePreventPress' | 'reloadThread' | 'thread'
   > & {
     /**
      * Additional props for underlying MessageInput component.
@@ -68,6 +68,7 @@ const ThreadWithContext = <
     MessageInput = DefaultMessageInput,
     MessageList,
     onThreadDismount,
+    parentMessagePreventPress = true,
     thread,
   } = props;
 
@@ -98,7 +99,9 @@ const ThreadWithContext = <
   return (
     <React.Fragment key={`thread-${thread.id}`}>
       <MessageList
-        FooterComponent={ThreadFooterComponent}
+        FooterComponent={() => (
+          <ThreadFooterComponent parentMessagePreventPress={parentMessagePreventPress} />
+        )}
         threadList
         {...additionalMessageListProps}
       />

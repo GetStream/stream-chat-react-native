@@ -22,6 +22,10 @@ export type ThreadContextValue<
   threadHasMore: boolean;
   threadLoadingMore: boolean;
   threadMessages: ChannelState<StreamChatGenerics>['threads'][string];
+  /**
+   * Boolean to enable/disable parent message press
+   */
+  parentMessagePreventPress?: boolean;
 };
 
 export const ThreadContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as ThreadContextValue);
