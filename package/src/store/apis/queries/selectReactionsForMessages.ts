@@ -1,4 +1,4 @@
-import { QuickSqliteClient } from '../../QuickSqliteClient';
+import { SqliteClient } from '../../SqliteClient';
 import { tables } from '../../schema';
 import type { TableRowJoinedUser } from '../../types';
 
@@ -17,11 +17,11 @@ export const selectReactionsForMessages = (
     .map((name) => `'${name}', b.${name}`)
     .join(', ');
 
-  QuickSqliteClient.logger?.('info', 'selectReactionsForMessages', {
+  SqliteClient.logger?.('info', 'selectReactionsForMessages', {
     messageIds,
   });
 
-  const result = QuickSqliteClient.executeSql(
+  const result = SqliteClient.executeSql(
     `SELECT
       json_object(
         'user', json_object(

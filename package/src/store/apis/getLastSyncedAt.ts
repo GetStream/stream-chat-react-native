@@ -1,4 +1,4 @@
-import { QuickSqliteClient } from '../QuickSqliteClient';
+import { SqliteClient } from '../SqliteClient';
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
 
 export const getLastSyncedAt = ({
@@ -6,8 +6,8 @@ export const getLastSyncedAt = ({
 }: {
   currentUserId: string;
 }): number | undefined => {
-  QuickSqliteClient.logger?.('info', 'getLastSyncedAt', { currentUserId });
-  const result = QuickSqliteClient.executeSql.apply(
+  SqliteClient.logger?.('info', 'getLastSyncedAt', { currentUserId });
+  const result = SqliteClient.executeSql.apply(
     null,
     createSelectQuery('userSyncStatus', ['*'], {
       userId: currentUserId,

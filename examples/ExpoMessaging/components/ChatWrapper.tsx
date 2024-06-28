@@ -1,5 +1,5 @@
 import React, { PropsWithChildren } from 'react';
-import { Chat, OverlayProvider, Streami18n } from 'stream-chat-expo';
+import { Chat, OverlayProvider, SqliteClient, Streami18n } from 'stream-chat-expo';
 import { useChatClient } from '../hooks/useChatClient';
 import { AuthProgressLoader } from './AuthProgressLoader';
 import { StreamChatGenerics } from '../types';
@@ -9,6 +9,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const streami18n = new Streami18n({
   language: 'en',
 });
+
+SqliteClient.logger = (level, message, extraData) => {
+  console.log(level, `SqliteClient: ${message}`, extraData);
+};
 
 export const ChatWrapper = ({ children }: PropsWithChildren<{}>) => {
   const { bottom } = useSafeAreaInsets();

@@ -72,6 +72,10 @@ PODS:
     - hermes-engine/Pre-built (= 0.73.6)
   - hermes-engine/Pre-built (0.73.6)
   - libevent (2.1.12)
+  - op-sqlite (6.0.4):
+    - React
+    - React-callinvoker
+    - React-Core
   - OpenSSL-Universal (1.1.1100)
   - PromisesObjC (2.4.0)
   - PromisesSwift (2.4.0):
@@ -957,10 +961,6 @@ PODS:
     - React-Core
   - react-native-netinfo (11.3.2):
     - React-Core
-  - react-native-quick-sqlite (8.0.2):
-    - React
-    - React-callinvoker
-    - React-Core
   - react-native-safe-area-context (4.9.0):
     - React-Core
   - react-native-video (6.0.0-beta.8):
@@ -1208,6 +1208,7 @@ DEPENDENCIES:
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - libevent (~> 2.1.12)
+  - "op-sqlite (from `../node_modules/@op-engineering/op-sqlite`)"
   - OpenSSL-Universal (= 1.1.1100)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
@@ -1238,7 +1239,6 @@ DEPENDENCIES:
   - react-native-flipper (from `../node_modules/react-native-flipper`)
   - "react-native-image-resizer (from `../node_modules/@bam.tech/react-native-image-resizer`)"
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
-  - react-native-quick-sqlite (from `../node_modules/react-native-quick-sqlite`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-video (from `../node_modules/react-native-video`)
   - React-nativeconfig (from `../node_modules/react-native/ReactCommon`)
@@ -1307,6 +1307,8 @@ EXTERNAL SOURCES:
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2024-02-20-RNv0.73.5-18f99ace4213052c5e7cdbcd39ee9766cd5df7e4
+  op-sqlite:
+    :path: "../node_modules/@op-engineering/op-sqlite"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -1359,8 +1361,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@bam.tech/react-native-image-resizer"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
-  react-native-quick-sqlite:
-    :path: "../node_modules/react-native-quick-sqlite"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-video:
@@ -1448,6 +1448,7 @@ SPEC CHECKSUMS:
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   hermes-engine: 9cecf9953a681df7556b8cc9c74905de8f3293c0
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
+  op-sqlite: 5688336af53053aa37f0ec3496487dc2734c91cc
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
@@ -1477,7 +1478,6 @@ SPEC CHECKSUMS:
   react-native-flipper: 9c1957af24b76493ba74f46d000a5c1d485e7731
   react-native-image-resizer: fd0c333eca55147bd55c5e054cac95dcd0da6814
   react-native-netinfo: 076df4f9b07f6670acf4ce9a75aac8d34c2e2ccc
-  react-native-quick-sqlite: 2b225dadc63b670f027111e58f6f169773f6d755
   react-native-safe-area-context: b97eb6f9e3b7f437806c2ce5983f479f8eb5de4b
   react-native-video: d440605e68cf173e70f0b25112455e3d86890663
   React-nativeconfig: b4d4e9901d4cabb57be63053fd2aa6086eb3c85f
@@ -1517,4 +1517,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 90406e1e85c82b37484f5d746afa45c0637bb4b3
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.14.3

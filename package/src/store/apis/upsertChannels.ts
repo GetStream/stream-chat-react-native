@@ -7,7 +7,7 @@ import { upsertMessages } from './upsertMessages';
 import { upsertReads } from './upsertReads';
 
 import { mapChannelDataToStorable } from '../mappers/mapChannelDataToStorable';
-import { QuickSqliteClient } from '../QuickSqliteClient';
+import { SqliteClient } from '../SqliteClient';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import type { PreparedQueries } from '../types';
 
@@ -29,7 +29,7 @@ export const upsertChannels = ({
 
   const channelIds = channels.map((channel) => channel.channel.cid);
 
-  QuickSqliteClient.logger?.('info', 'upsertChannels', {
+  SqliteClient.logger?.('info', 'upsertChannels', {
     channelIds,
   });
 
@@ -77,7 +77,7 @@ export const upsertChannels = ({
   }
 
   if (flush) {
-    QuickSqliteClient.executeSqlBatch(queries);
+    SqliteClient.executeSqlBatch(queries);
   }
 
   return queries;

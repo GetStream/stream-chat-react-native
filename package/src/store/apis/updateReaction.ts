@@ -3,7 +3,7 @@ import type { FormatMessageResponse, MessageResponse, ReactionResponse } from 's
 import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
-import { QuickSqliteClient } from '../QuickSqliteClient';
+import { SqliteClient } from '../SqliteClient';
 import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import type { PreparedQueries } from '../types';
@@ -41,7 +41,7 @@ export const updateReaction = ({
     queries.push(createUpdateQuery('messages', { reactionGroups }, { id: message.id }));
   }
 
-  QuickSqliteClient.logger?.('info', 'updateReaction', {
+  SqliteClient.logger?.('info', 'updateReaction', {
     addedUser: storableUser,
     flush,
     updatedReaction: storableReaction,
@@ -49,7 +49,7 @@ export const updateReaction = ({
   });
 
   if (flush) {
-    QuickSqliteClient.executeSqlBatch(queries);
+    SqliteClient.executeSqlBatch(queries);
   }
 
   return queries;

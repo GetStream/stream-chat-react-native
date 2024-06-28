@@ -1,4 +1,4 @@
-import { QuickSqliteClient } from '../QuickSqliteClient';
+import { SqliteClient } from '../SqliteClient';
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 
 export const deleteReactionsForMessage = ({
@@ -16,7 +16,7 @@ export const deleteReactionsForMessage = ({
     messageId,
   });
   if (flush) {
-    QuickSqliteClient.executeSql.apply(null, query);
+    SqliteClient.executeSql.apply(null, query);
   }
 
   return [query];

@@ -24,7 +24,7 @@ import { generateReaction } from '../../mock-builders/generator/reaction';
 import { generateUser } from '../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../mock-builders/mock';
 import { upsertChannels } from '../../store/apis';
-import { QuickSqliteClient } from '../../store/QuickSqliteClient';
+import { SqliteClient } from '../../store/SqliteClient';
 import { BetterSqlite } from '../../test-utils/BetterSqlite';
 
 test('Workaround to allow exporting tests', () => expect(true).toBe(true));
@@ -108,7 +108,7 @@ export const OptimisticUpdates = () => {
       channel.id = channelResponse.channel.id;
 
       // Populate the DB with channel
-      QuickSqliteClient.initializeDatabase();
+      SqliteClient.initializeDatabase();
       upsertChannels({
         channels: [channelResponse],
         isLatestMessagesSet: true,
@@ -116,8 +116,8 @@ export const OptimisticUpdates = () => {
     });
 
     afterEach(() => {
-      QuickSqliteClient.dropTables();
-      QuickSqliteClient.closeDB();
+      SqliteClient.dropTables();
+      SqliteClient.closeDB();
       cleanup();
     });
 

@@ -1,4 +1,4 @@
-import { QuickSqliteClient } from '../QuickSqliteClient';
+import { SqliteClient } from '../SqliteClient';
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 
 export const deleteChannel = ({ cid, flush = true }: { cid: string; flush?: boolean }) => {
@@ -6,13 +6,13 @@ export const deleteChannel = ({ cid, flush = true }: { cid: string; flush?: bool
     cid,
   });
 
-  QuickSqliteClient.logger?.('info', 'deleteChannel', {
+  SqliteClient.logger?.('info', 'deleteChannel', {
     cid,
     flush,
   });
 
   if (flush) {
-    QuickSqliteClient.executeSql.apply(null, query);
+    SqliteClient.executeSql.apply(null, query);
   }
 
   return [query];

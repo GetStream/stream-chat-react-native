@@ -2,7 +2,7 @@ import type { Channel } from 'stream-chat';
 
 import { DefaultStreamChatGenerics } from '../../types/types';
 import { mapChannelToStorable } from '../mappers/mapChannelToStorable';
-import { QuickSqliteClient } from '../QuickSqliteClient';
+import { SqliteClient } from '../SqliteClient';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 
 export const upsertChannelDataFromChannel = <
@@ -18,7 +18,7 @@ export const upsertChannelDataFromChannel = <
   if (!storableChannel) return;
   const query = createUpsertQuery('channels', storableChannel);
   if (flush) {
-    QuickSqliteClient.executeSqlBatch([query]);
+    SqliteClient.executeSqlBatch([query]);
   }
 
   return [query];

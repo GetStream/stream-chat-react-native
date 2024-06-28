@@ -1,4 +1,4 @@
-import { QuickSqliteClient } from '../QuickSqliteClient';
+import { SqliteClient } from '../SqliteClient';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 
 export const upsertUserSyncStatus = ({
@@ -13,10 +13,10 @@ export const upsertUserSyncStatus = ({
     userId: currentUserId,
   });
 
-  QuickSqliteClient.logger?.('info', 'upsertUserSyncStatus', {
+  SqliteClient.logger?.('info', 'upsertUserSyncStatus', {
     lastSyncedAt,
     userId: currentUserId,
   });
 
-  QuickSqliteClient.executeSql.apply(null, query);
+  SqliteClient.executeSql.apply(null, query);
 };

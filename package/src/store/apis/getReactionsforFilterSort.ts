@@ -5,7 +5,7 @@ import { selectReactionsForMessages } from './queries/selectReactionsForMessages
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
-import { QuickSqliteClient } from '../QuickSqliteClient';
+import { SqliteClient } from '../SqliteClient';
 
 /**
  * Fetches reactions for a message from the database based on the provided filters and sort.
@@ -29,7 +29,7 @@ export const getReactionsForFilterSort = <
     return null;
   }
 
-  QuickSqliteClient.logger?.('info', 'getReactionsForFilterSort', { filters, sort });
+  SqliteClient.logger?.('info', 'getReactionsForFilterSort', { filters, sort });
 
   const reactions = selectReactionsForMessages([currentMessageId]);
 

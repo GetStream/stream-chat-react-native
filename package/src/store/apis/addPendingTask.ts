@@ -1,5 +1,5 @@
 import { mapTaskToStorable } from '../mappers/mapTaskToStorable';
-import { QuickSqliteClient } from '../QuickSqliteClient';
+import { SqliteClient } from '../SqliteClient';
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import type { PendingTask } from '../types';
@@ -15,17 +15,17 @@ export const addPendingTask = (task: PendingTask) => {
   const storable = mapTaskToStorable(task);
   const { channelId, channelType, payload, type } = storable;
   const query = createUpsertQuery('pendingTasks', storable);
-  QuickSqliteClient.logger?.('info', 'addPendingTask', {
+  SqliteClient.logger?.('info', 'addPendingTask', {
     channelId,
     channelType,
     id: task.id,
     type,
   });
 
-  QuickSqliteClient.executeSql.apply(null, query);
+  SqliteClient.executeSql.apply(null, query);
 
   return () => {
-    QuickSqliteClient.logger?.('info', 'deletePendingTaskAfterAddition', {
+    SqliteClient.logger?.('info', 'deletePendingTaskAfterAddition', {
       channelId,
       channelType,
       id: task.id,
@@ -38,6 +38,6 @@ export const addPendingTask = (task: PendingTask) => {
       type,
     });
 
-    QuickSqliteClient.executeSql.apply(null, query);
+    SqliteClient.executeSql.apply(null, query);
   };
 };

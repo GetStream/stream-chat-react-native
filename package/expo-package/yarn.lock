@@ -1406,11 +1406,6 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@react-native-community/netinfo@^6.0.0":
-  version "6.2.1"
-  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-6.2.1.tgz#212487d84a3476268e278f4c017ff5c7f37e69c0"
-  integrity sha512-742sh+NMbPo59MaLRXBWwkT5K6HQPrmoS0pg0z9QuXshXieQIOTkqEEDMkQZS0QnS8fPFr8MxMPw/TAxH9b8Ig==
-
 "@react-native/normalize-color@^2.0.0":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@react-native/normalize-color/-/normalize-color-2.1.0.tgz#939b87a9849e81687d3640c5efa2a486ac266f91"

@@ -3,7 +3,7 @@ import type { FormatMessageResponse, MessageResponse } from 'stream-chat';
 import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
-import { QuickSqliteClient } from '../QuickSqliteClient';
+import { SqliteClient } from '../SqliteClient';
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
 import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
@@ -19,7 +19,7 @@ export const updateMessage = ({
 }) => {
   const queries: PreparedQueries[] = [];
 
-  const messages = QuickSqliteClient.executeSql.apply(
+  const messages = SqliteClient.executeSql.apply(
     null,
     createSelectQuery('messages', ['*'], {
       id: message.id,
@@ -69,14 +69,14 @@ export const updateMessage = ({
     queries.push(createUpsertQuery('reactions', storableReaction));
   });
 
-  QuickSqliteClient.logger?.('info', 'updateMessage', {
+  SqliteClient.logger?.('info', 'updateMessage', {
     message: storableMessage,
     reactions: storableReactions,
     users: storableUsers,
   });
 
   if (flush) {
-    QuickSqliteClient.executeSqlBatch(queries);
+    SqliteClient.executeSqlBatch(queries);
   }
 
   return queries;

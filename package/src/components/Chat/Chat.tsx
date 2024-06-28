@@ -24,7 +24,7 @@ import { useStreami18n } from '../../hooks/useStreami18n';
 import init from '../../init';
 
 import { SDK } from '../../native';
-import { QuickSqliteClient } from '../../store/QuickSqliteClient';
+import { SqliteClient } from '../../store/SqliteClient';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { DBSyncManager } from '../../utils/DBSyncManager';
 import type { Streami18n } from '../../utils/i18n/Streami18n';
@@ -204,7 +204,7 @@ const ChatWithContext = <
   useEffect(() => {
     if (userID && enableOfflineSupport) {
       setInitialisedDatabaseConfig({ initialised: false, userID });
-      QuickSqliteClient.initializeDatabase();
+      SqliteClient.initializeDatabase();
       DBSyncManager.init(client as unknown as StreamChat);
       setInitialisedDatabaseConfig({ initialised: true, userID });
     }

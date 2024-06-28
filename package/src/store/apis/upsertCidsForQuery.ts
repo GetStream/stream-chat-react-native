@@ -2,7 +2,7 @@ import type { ChannelFilters, ChannelSort } from 'stream-chat';
 
 import { convertFilterSortToQuery } from './utils/convertFilterSortToQuery';
 
-import { QuickSqliteClient } from '../QuickSqliteClient';
+import { SqliteClient } from '../SqliteClient';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 
 export const upsertCidsForQuery = ({
@@ -24,14 +24,14 @@ export const upsertCidsForQuery = ({
     id,
   });
 
-  QuickSqliteClient.logger?.('info', 'upsertCidsForQuery', {
+  SqliteClient.logger?.('info', 'upsertCidsForQuery', {
     cids: cidsString,
     flush,
     id,
   });
 
   if (flush) {
-    QuickSqliteClient.executeSql.apply(null, query);
+    SqliteClient.executeSql.apply(null, query);
   }
 
   return [query];

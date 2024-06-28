@@ -1,6 +1,6 @@
 import type { ChannelMemberResponse } from 'stream-chat';
 
-import { QuickSqliteClient } from '../QuickSqliteClient';
+import { SqliteClient } from '../SqliteClient';
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 
 export const deleteMember = ({
@@ -17,14 +17,14 @@ export const deleteMember = ({
     userId: member.user_id,
   });
 
-  QuickSqliteClient.logger?.('info', 'deleteMember', {
+  SqliteClient.logger?.('info', 'deleteMember', {
     cid,
     flush,
     userId: member.user_id,
   });
 
   if (flush) {
-    QuickSqliteClient.executeSql.apply(null, query);
+    SqliteClient.executeSql.apply(null, query);
   }
 
   return [query];
