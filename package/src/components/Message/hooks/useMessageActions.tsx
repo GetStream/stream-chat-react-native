@@ -1,5 +1,4 @@
 import React from 'react';
-import { Alert } from 'react-native';
 
 import { useMessageActionHandlers } from './useMessageActionHandlers';
 
@@ -100,8 +99,10 @@ export const useMessageActions = <
     },
   } = useTheme();
   const {
+    handleCopyMessage,
     handleDeleteMessage,
     handleEditMessage,
+    handleFlagMessage,
     handleQuotedReplyMessage,
     handleResendMessage,
     handleToggleBanUser,
@@ -161,7 +162,7 @@ export const useMessageActions = <
             if (handleCopy) {
               handleCopy(message);
             }
-            setClipboardString(message.text || '');
+            handleCopyMessage();
           },
           actionType: 'copyMessage',
           icon: <Copy pathFill={grey} />,
@@ -171,29 +172,11 @@ export const useMessageActions = <
 
   const deleteMessage: MessageActionType = {
     action: () => {
-      setOverlay('alert');
-      if (message.id) {
-        Alert.alert(
-          t('Delete Message'),
-          t('Are you sure you want to permanently delete this message?'),
-          [
-            { onPress: () => setOverlay('none'), text: t('Cancel') },
-            {
-              onPress: async () => {
-                setOverlay('none');
-                if (handleDelete) {
-                  handleDelete(message);
-                }
-
-                await handleDeleteMessage();
-              },
-              style: 'destructive',
-              text: t('Delete'),
-            },
-          ],
-          { cancelable: false },
-        );
+      setOverlay('none');
+      if (handleDelete) {
+        handleDelete(message);
       }
+      handleDeleteMessage();
     },
     actionType: 'deleteMessage',
     icon: <Delete fill={accent_red} size={32} />,
@@ -242,51 +225,12 @@ export const useMessageActions = <
 
   const flagMessage: MessageActionType = {
     action: () => {
-      setOverlay('alert');
-      if (message.id) {
-        Alert.alert(
-          t('Flag Message'),
-          t('Do you want to send a copy of this message to a moderator for further investigation?'),
-          [
-            { onPress: () => setOverlay('none'), text: t('Cancel') },
-            {
-              onPress: async () => {
-                try {
-                  if (handleFlag) {
-                    handleFlag(message);
-                  }
-                  await client.flagMessage(message.id);
-                  Alert.alert(
-                    t('Message flagged'),
-                    t('The message has been reported to a moderator.'),
-                    [
-                      {
-                        onPress: () => setOverlay('none'),
-                        text: t('Ok'),
-                      },
-                    ],
-                  );
-                } catch (_) {
-                  Alert.alert(
-                    t('Cannot Flag Message'),
-                    t(
-                      'Flag action failed either due to a network issue or the message is already flagged',
-                    ),
-                    [
-                      {
-                        onPress: () => setOverlay('none'),
-                        text: t('Ok'),
-                      },
-                    ],
-                  );
-                }
-              },
-              text: t('Flag'),
-            },
-          ],
-          { cancelable: false },
-        );
+      setOverlay('none');
+      if (handleFlag) {
+        handleFlag(message);
       }
+
+      handleFlagMessage();
     },
     actionType: 'flagMessage',
     icon: <MessageFlag pathFill={grey} />,
