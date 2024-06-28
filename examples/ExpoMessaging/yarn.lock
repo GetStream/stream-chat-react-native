@@ -3957,10 +3957,10 @@ expo-linking@~6.3.1:
     expo-constants "~16.0.0"
     invariant "^2.2.4"
 
-expo-media-library@~16.0.3:
-  version "16.0.3"
-  resolved "https://registry.yarnpkg.com/expo-media-library/-/expo-media-library-16.0.3.tgz#789277a827b9c04e59eef84aa11f4edcf5f1cfce"
-  integrity sha512-E++h+ZyVOXhGOKddeg/wjoEFH+JAGazcAsMpjAOT+/F69nrIEl27Fymi9XVAzooazp38dKrDBNeOJuWoXUdUAw==
+expo-media-library@~16.0.4:
+  version "16.0.4"
+  resolved "https://registry.yarnpkg.com/expo-media-library/-/expo-media-library-16.0.4.tgz#d6b264a201861a2eb055b8c181368d2e7f525ca4"
+  integrity sha512-nX9iN8+XAoERDVGPpDdUbhFwvfYdBpkgTAxwDOYL7heASYCOdxfqQtXy/jv1+QZpj0epaR6Owq/LUn1lVP3ykg==
 
 expo-modules-autolinking@1.11.1:
   version "1.11.1"
@@ -7237,10 +7237,10 @@ stream-buffers@2.2.x, stream-buffers@~2.2.0:
   version "0.0.0"
   uid ""
 
-stream-chat-react-native-core@5.32.1:
-  version "5.32.1"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.32.1.tgz#bfc61cb37eb66ffe748984be38e1041b27a55d98"
-  integrity sha512-3HK9sqXv4I0XTiyMxee0HkvLyKgraE4SkiRYO4ReI0B+D465trl3Uch1OWHKYRcaji97Ne322BMP+rMIm2b4OA==
+stream-chat-react-native-core@5.33.0:
+  version "5.33.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.33.0.tgz#14f04de90cbc8db011bab8db3fa84abe2dc2eaec"
+  integrity sha512-V9OJA9MrHzaCw5q16ZRbEktA1HamITbXPOkVZOjpDbb0OBcmedmOnD9C2NFIprc770lhllS/1MKBDr0GdQ9NXQ==
   dependencies:
     "@gorhom/bottom-sheet" "4.4.8"
     dayjs "1.10.5"
