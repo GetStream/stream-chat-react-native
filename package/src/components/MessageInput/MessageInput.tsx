@@ -1,16 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { NativeSyntheticEvent, StyleSheet, TextInputFocusEventData, View } from 'react-native';
 
-import {
-  GestureEvent,
-  PanGestureHandler,
-  PanGestureHandlerEventPayload,
-} from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolation,
   interpolate,
   runOnJS,
-  useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -591,10 +586,14 @@ const MessageInputWithContext = <
     triggerHaptic('impactMedium');
   };
 
-  const handleMicGestureEvent = useAnimatedGestureHandler<
-    GestureEvent<PanGestureHandlerEventPayload>
-  >({
-    onActive: (event) => {
+  const pan = Gesture.Pan()
+    .activateAfterLongPress(asyncMessagesMinimumPressDuration + 100)
+    .onStart(() => {
+      micPositionX.value = 0;
+      micPositionY.value = 0;
+      runOnJS(setMicLocked)(false);
+    })
+    .onChange((event) => {
       const newPositionX = event.translationX;
       const newPositionY = event.translationY;
 
@@ -604,8 +603,8 @@ const MessageInputWithContext = <
       if (newPositionY <= 0 && newPositionY >= Y_AXIS_POSITION) {
         micPositionY.value = newPositionY;
       }
-    },
-    onFinish: () => {
+    })
+    .onEnd(() => {
       if (micPositionY.value > Y_AXIS_POSITION / 2) {
         micPositionY.value = withSpring(0);
       } else {
@@ -618,13 +617,7 @@ const MessageInputWithContext = <
         micPositionX.value = withSpring(X_AXIS_POSITION);
         runOnJS(resetAudioRecording)();
       }
-    },
-    onStart: () => {
-      micPositionX.value = 0;
-      micPositionY.value = 0;
-      runOnJS(setMicLocked)(false);
-    },
-  });
+    });
 
   const animatedStyles = {
     lockIndicator: useAnimatedStyle(() => ({
@@ -781,10 +774,7 @@ const MessageInputWithContext = <
                   </View>
                 ))}
               {audioRecordingEnabled && !micLocked && (
-                <PanGestureHandler
-                  activateAfterLongPress={asyncMessagesMinimumPressDuration + 100}
-                  onGestureEvent={handleMicGestureEvent}
-                >
+                <GestureDetector gesture={pan}>
                   <Animated.View
                     style={[
                       styles.micButtonContainer,
@@ -798,7 +788,7 @@ const MessageInputWithContext = <
                       startVoiceRecording={startVoiceRecording}
                     />
                   </Animated.View>
-                </PanGestureHandler>
+                </GestureDetector>
               )}
             </>
           )}

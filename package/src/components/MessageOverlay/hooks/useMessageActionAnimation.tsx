@@ -1,5 +1,5 @@
 import type { ViewStyle } from 'react-native';
-import type { TapGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
+import { TapGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
 import {
   runOnJS,
   useAnimatedGestureHandler,
@@ -9,6 +9,10 @@ import {
 
 import type { MessageActionListItemProps } from '../MessageActionListItem';
 
+/**
+ * @deprecated
+ * The implementation is done in the component itself using new API of `react-native-gesture-handler`.
+ */
 export const useMessageActionAnimation = ({
   action,
   activeOpacity = 0.2,
