@@ -67,10 +67,12 @@ export function buildGalleryOfSingleImage<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   image,
+  resizableCDNHosts,
   sizeConfig,
 }: {
   image: Attachment<StreamChatGenerics>;
   sizeConfig: GallerySizeConfig;
+  resizableCDNHosts?: string[];
 }): GallerySizeAndThumbnailGrid {
   const container = getContainerSize({
     image,
@@ -79,6 +81,7 @@ export function buildGalleryOfSingleImage<
 
   const thumbnail = buildThumbnail({
     image,
+    resizableCDNHosts,
     ...container,
   });
 

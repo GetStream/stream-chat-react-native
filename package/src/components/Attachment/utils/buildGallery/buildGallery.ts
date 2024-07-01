@@ -30,14 +30,17 @@ export function buildGallery<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   images,
+  resizableCDNHosts,
   sizeConfig,
 }: {
   images: Attachment<StreamChatGenerics>[];
   sizeConfig: GallerySizeConfig;
+  resizableCDNHosts?: string[];
 }): GallerySizeAndThumbnailGrid {
   if (images.length === 1) {
     return buildGalleryOfSingleImage({
       image: images[0],
+      resizableCDNHosts,
       sizeConfig,
     });
   }
@@ -72,6 +75,7 @@ export function buildGallery<
     ],
     images: images.slice(0, 4),
     invertedDirections: true,
+    resizableCDNHosts,
     sizeConfig,
   });
 }

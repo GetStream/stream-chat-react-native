@@ -5,6 +5,7 @@ import { StreamChatRN } from './StreamChatRN';
 export type GetResizedImageUrlParams = {
   url: string;
   height?: string | number;
+  resizableCDNHosts?: string[];
   resize?: 'clip' | 'crop' | 'fill' | 'scale';
   width?: string | number;
 };
@@ -23,6 +24,7 @@ export type GetResizedImageUrlParams = {
  */
 export function getResizedImageUrl({
   height,
+  resizableCDNHosts,
   resize = 'clip',
   url,
   width,
@@ -38,7 +40,9 @@ export function getResizedImageUrl({
     // In case of old CDN we don't want to do any kind of resizing.
 
     const isResizableUrl =
-      StreamChatRN.config.resizableCDNHosts.some((rCDNh) => url.includes(rCDNh)) &&
+      (StreamChatRN.config.resizableCDNHosts ?? resizableCDNHosts).some((rCDNh) =>
+        url.includes(rCDNh),
+      ) &&
       originalHeight &&
       originalWidth;
 

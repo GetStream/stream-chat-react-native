@@ -139,12 +139,14 @@ export function buildThumbnailGrid<
   grid,
   images,
   invertedDirections = false,
+  resizableCDNHosts,
   sizeConfig,
 }: {
   grid: number[][];
   images: Attachment<StreamChatGenerics>[];
   invertedDirections: boolean;
   sizeConfig: GallerySizeConfig;
+  resizableCDNHosts?: string[];
 }): GallerySizeAndThumbnailGrid {
   const { gridHeight, gridWidth } = sizeConfig;
 
@@ -167,6 +169,7 @@ export function buildThumbnailGrid<
       const thumbnail = buildThumbnail({
         height: tHeight,
         image: currentImage,
+        resizableCDNHosts,
         resizeMode: 'cover',
         width: tWidth,
       });

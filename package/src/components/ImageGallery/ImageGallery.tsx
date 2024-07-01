@@ -40,6 +40,7 @@ import {
 
 import { useImageGalleryGestures } from './hooks/useImageGalleryGestures';
 
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import {
   OverlayProviderProps,
@@ -146,6 +147,7 @@ export const ImageGallery = <
     },
   } = useTheme();
   const [gridPhotos, setGridPhotos] = useState<Photo<StreamChatGenerics>[]>([]);
+  const { resizableCDNHosts } = useChatContext();
   const { overlay } = useOverlayContext();
   const { messages, selectedMessage, setSelectedMessage } =
     useImageGalleryContext<StreamChatGenerics>();
@@ -274,6 +276,7 @@ export const ImageGallery = <
             ? giphyURL
             : getResizedImageUrl({
                 height: fullWindowHeight,
+                resizableCDNHosts,
                 url: imageUrl,
                 width: fullWindowWidth,
               }),

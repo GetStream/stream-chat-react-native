@@ -13,6 +13,7 @@ import { getGalleryImageBorderRadius } from './utils/getGalleryImageBorderRadius
 import { openUrlSafely } from './utils/openUrlSafely';
 
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
   ImageGalleryContextValue,
   useImageGalleryContext,
@@ -103,7 +104,7 @@ const GalleryWithContext = <
     videos,
     VideoThumbnail,
   } = props;
-
+  const { resizableCDNHosts } = useChatContext();
   const {
     theme: {
       messageSimple: {
@@ -139,6 +140,7 @@ const GalleryWithContext = <
     () =>
       buildGallery({
         images: imagesAndVideos,
+        resizableCDNHosts,
         sizeConfig,
       }),
     [imagesAndVideosValue],

@@ -23,10 +23,12 @@ export function buildGalleryOfThreeImages<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   images,
+  resizableCDNHosts,
   sizeConfig,
 }: {
   images: Attachment<StreamChatGenerics>[];
   sizeConfig: GallerySizeConfig;
+  resizableCDNHosts?: string[];
 }): GallerySizeAndThumbnailGrid {
   // Find the most ladscape and most portrait image.
   const { landscapeImage, landscapeImageAspectRatio, portraitImage, portraitImageAspectRatio } =
@@ -77,6 +79,7 @@ export function buildGalleryOfThreeImages<
       grid: [[1], [1, 1]],
       images: landscapeImage ? moveToFront(images, landscapeImage) : images,
       invertedDirections: true,
+      resizableCDNHosts,
       sizeConfig,
     });
   } else {
@@ -93,6 +96,7 @@ export function buildGalleryOfThreeImages<
       grid: [[1], [1, 1]],
       images: portraitImage ? moveToFront(images, portraitImage) : images,
       invertedDirections: false,
+      resizableCDNHosts,
       sizeConfig,
     });
   }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Image, ImageProps, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useLoadingImage } from '../../hooks/useLoadingImage';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
@@ -39,6 +40,7 @@ export type GroupAvatarProps = {
  */
 export const GroupAvatar = (props: GroupAvatarProps) => {
   const { containerStyle, ImageComponent = Image, images, names, size, testID } = props;
+  const { resizableCDNHosts } = useChatContext();
   const {
     theme: {
       groupAvatar: { container, image },
@@ -149,6 +151,7 @@ export const GroupAvatar = (props: GroupAvatarProps) => {
                         }`
                     : getResizedImageUrl({
                         height,
+                        resizableCDNHosts,
                         url,
                         width,
                       }),

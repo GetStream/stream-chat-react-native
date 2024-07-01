@@ -11,10 +11,12 @@ export function buildGalleryOfTwoImages<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   images,
+  resizableCDNHosts,
   sizeConfig,
 }: {
   images: Attachment<StreamChatGenerics>[];
   sizeConfig: GallerySizeConfig;
+  resizableCDNHosts?: string[];
 }): GallerySizeAndThumbnailGrid {
   const aspectRatio1 = getAspectRatio(images[0]);
   const aspectRatio2 = getAspectRatio(images[1]);
@@ -36,6 +38,7 @@ export function buildGalleryOfTwoImages<
       grid: [[1], [1]],
       images,
       invertedDirections: true,
+      resizableCDNHosts,
       sizeConfig,
     });
   }
@@ -53,6 +56,7 @@ export function buildGalleryOfTwoImages<
       grid: [[1, 1]],
       images,
       invertedDirections: true,
+      resizableCDNHosts,
       sizeConfig,
     });
   }
@@ -61,6 +65,7 @@ export function buildGalleryOfTwoImages<
     grid: [[2, 1]],
     images: isLandscape1 ? images : images.reverse(),
     invertedDirections: true,
+    resizableCDNHosts,
     sizeConfig,
   });
 }

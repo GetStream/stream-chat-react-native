@@ -14,12 +14,14 @@ export function buildThumbnail<
 >({
   height,
   image,
+  resizableCDNHosts,
   resizeMode,
   width,
 }: {
   height: number;
   image: Attachment<StreamChatGenerics>;
   width: number;
+  resizableCDNHosts?: string[];
   resizeMode?: ImageResizeMode;
 }): Thumbnail {
   const { original_height: originalImageHeight, original_width: originalImageWidth } = image;
@@ -41,6 +43,7 @@ export function buildThumbnail<
     url: shouldResize
       ? getResizedImageUrl({
           height,
+          resizableCDNHosts,
           url: imageUrl,
           width,
         })
