@@ -9,6 +9,7 @@ import Thread from '../common-content/ui-components/channel/props/thread.mdx';
 import CloseThread from '../common-content/contexts/thread-context/close_thread.mdx';
 import LoadMoreThread from '../common-content/contexts/thread-context/load_more_thread.mdx';
 import OpenThread from '../common-content/contexts/thread-context/open_thread.mdx';
+import ParentMessagePreventPress from '../common-content/contexts/thread-context/parent_message_prevent_press.mdx';
 import ReloadThread from '../common-content/contexts/thread-context/reload_thread.mdx';
 import SetThreadLoadingMore from '../common-content/contexts/thread-context/set_thread_loading_more.mdx';
 import ThreadHasMore from '../common-content/contexts/thread-context/thread_has_more.mdx';
@@ -38,7 +39,7 @@ const value = useThreadContext();
 
 ## Value
 
-### <div class="label description">_forwarded from [Channel](../../core-components/channel#allowthreadmessagesinchannel)_ props</div> allowThreadMessagesInChannel {#allowthreadmessagesinchannel}
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#allowthreadmessagesinchannel)_ props</div> allowThreadMessagesInChannel `{#allowthreadmessagesinchannel}`
 
 <AllowThreadMessagesInChannel />
 
@@ -53,6 +54,10 @@ const value = useThreadContext();
 ### `openThread`
 
 <OpenThread />
+
+### `parentMessagePreventPress`
+
+<ParentMessagePreventPress />
 
 ### `reloadThread`
 
