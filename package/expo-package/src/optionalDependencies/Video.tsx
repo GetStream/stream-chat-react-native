@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-import { AudioComponent, VideoComponent } from '../optionalDependencies';
+import { AudioComponent, VideoComponent } from './AudioVideo';
 
 export const Video = VideoComponent
   ? ({ onPlaybackStatusUpdate, paused, resizeMode, style, uri, videoRef }) => {

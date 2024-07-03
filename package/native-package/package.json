@@ -16,14 +16,14 @@
   "peerDependencies": {
     "@bam.tech/react-native-image-resizer": ">=3.0.10",
     "@react-native-camera-roll/camera-roll": ">=5.0.0",
-    "@react-native-clipboard/clipboard": "^1.11.1",
+    "@react-native-clipboard/clipboard": ">=1.14.1",
     "react-native": ">=0.73.6",
     "react-native-audio-recorder-player": ">=3.6.4",
+    "react-native-blob-util": ">=0.19.9",
     "react-native-document-picker": ">=9.0.1",
-    "react-native-fs": ">=2.16.6",
     "react-native-haptic-feedback": ">=1.11.0",
     "react-native-image-crop-picker": ">=0.33.2",
-    "react-native-share": ">=4.1.0",
+    "react-native-share": ">=10.2.1",
     "react-native-video": ">=5.2.1"
   },
   "peerDependenciesMeta": {
@@ -44,6 +44,9 @@
     },
     "react-native-video": {
       "optional": true
+    },
+    "react-native-blob-util": {
+      "optional": true
     }
   },
   "scripts": {
@@ -54,7 +57,6 @@
     "@bam.tech/react-native-image-resizer": "^3.0.10",
     "@react-native-camera-roll/camera-roll": "^5.0.2",
     "react-native": ">=0.73.6",
-    "react-native-fs": ">=2.16.6",
     "react-native-image-crop-picker": "^0.38.0"
   }
 }

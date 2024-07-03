@@ -28,7 +28,6 @@ jest.mock('../../../native.ts', () => {
   const View = require('react-native/Libraries/Components/View/View');
   return {
     deleteFile: jest.fn(),
-    isVideoPackageAvailable: jest.fn(() => true),
     saveFile: jest.fn(),
     shareImage: jest.fn(),
     Video: View,

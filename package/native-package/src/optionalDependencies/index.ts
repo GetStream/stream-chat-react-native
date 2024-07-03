@@ -4,3 +4,6 @@ export * from './Video';
 export * from './triggerHaptic';
 export * from './setClipboardString';
 export * from './pickDocument';
+export * from './saveFile';
+export * from './deleteFile';
+export * from './Sound';

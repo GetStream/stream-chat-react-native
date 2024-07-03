@@ -5,7 +5,6 @@ import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 import { useViewport } from '../../../hooks/useViewport';
 import {
-  isVideoPackageAvailable,
   PlaybackStatus,
   Video,
   VideoPayloadData,
@@ -187,7 +186,7 @@ export const AnimatedGalleryVideo = React.memo(
           },
         ]}
       >
-        {isVideoPackageAvailable() && (
+        {Video ? (
           <Video
             onBuffer={onBuffer}
             onEnd={onEnd}
@@ -203,7 +202,7 @@ export const AnimatedGalleryVideo = React.memo(
             uri={source.uri}
             videoRef={videoRef}
           />
-        )}
+        ) : null}
         <Animated.View
           accessibilityLabel='Spinner'
           style={[

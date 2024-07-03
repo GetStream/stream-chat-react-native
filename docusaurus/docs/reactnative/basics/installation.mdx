@@ -56,7 +56,7 @@ Stream Chat React Native SDK requires installing some peer dependencies to provi
 <TabItem value='rncli'>
 
 ```bash title="Terminal"
-yarn add @react-native-camera-roll/camera-roll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-fs react-native-gesture-handler react-native-image-crop-picker @bam.tech/react-native-image-resizer react-native-reanimated react-native-svg
+yarn add @react-native-camera-roll/camera-roll @react-native-community/netinfo react-native-gesture-handler react-native-image-crop-picker @bam.tech/react-native-image-resizer react-native-reanimated react-native-svg
 ```
 
 </TabItem>
@@ -64,7 +64,7 @@ yarn add @react-native-camera-roll/camera-roll @react-native-community/netinfo @
 <TabItem value='expo'>
 
 ```bash title="Terminal"
-npx expo install @stream-io/flat-list-mvcp @react-native-community/netinfo expo-file-system expo-image-manipulator expo-image-picker expo-media-library react-native-gesture-handler react-native-reanimated react-native-svg
+npx expo install @react-native-community/netinfo expo-image-manipulator expo-image-picker expo-media-library react-native-gesture-handler react-native-reanimated react-native-svg
 ```
 
 </TabItem>
@@ -84,7 +84,6 @@ values={[
 
 - [`@react-native-camera-roll/camera-roll`](https://github.com/react-native-cameraroll/react-native-cameraroll) for accessing device gallery.
 - [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo) for accessing device gallery.
-- [`@stream-io/flat-list-mvcp`](https://github.com/GetStream/flat-list-mvcp) for bi-directional FlatList support.
 - [`react-native-fs`](https://github.com/itinance/react-native-fs) to perform file operations like save, delete, etc.
 - [`react-native-gesture-handler`](https://github.com/software-mansion/react-native-gesture-handler) to handle gestures within the SDK.
 - [`react-native-image-crop-picker`](https://github.com/ivpusic/react-native-image-crop-picker) to capture images to attach them in the message.
@@ -97,7 +96,6 @@ values={[
 
 - [`expo-media-library`](https://docs.expo.dev/versions/latest/sdk/media-library/) for accessing device gallery.
 - [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo) for accessing device gallery.
-- [`@stream-io/flat-list-mvcp`](https://github.com/GetStream/flat-list-mvcp) for bi-directional FlatList support.
 - [`expo-file-system`](https://docs.expo.dev/versions/latest/sdk/filesystem/) to perform file operations like save, delete, etc.
 - [`react-native-gesture-handler`](https://github.com/software-mansion/react-native-gesture-handler) to handle gestures within the SDK.
 - [`expo-image-picker`](https://docs.expo.dev/versions/latest/sdk/imagepicker/) to capture images to attach them in the message.
@@ -124,6 +122,7 @@ values={[
 
 - [`react-native-video`](https://github.com/react-native-video/react-native-video) for Video and Audio playback support.
 - [`react-native-audio-recorder-player`](https://github.com/hyochan/react-native-audio-recorder-player) for Audio recording and async audio messages support.
+- [`react-native-blob-util`](https://github.com/RonRadtke/react-native-blob-util) to perform file operations like save, delete, while sharing or access the cache directory while audio recording.
 - [`react-native-share`](https://github.com/react-native-share/react-native-share) for Attachment sharing support.
 - [`react-native-haptic-feedback`](https://github.com/junina-de/react-native-haptic-feedback) for user haptics feedback.
 - [`@react-native-clipboard/clipboard`](https://github.com/react-native-clipboard/clipboard) for Copy message support.
@@ -134,6 +133,7 @@ values={[
 <TabItem value="expo">
 
 - [`expo-av`](https://docs.expo.dev/versions/latest/sdk/av/) for Video and Audio playback, recording and async audio messages support.
+- [`expo-file-system`](https://docs.expo.dev/versions/latest/sdk/filesystem/) to perform file operations like save, delete, while sharing or access the cache directory while audio recording.
 - [`expo-sharing`](https://docs.expo.dev/versions/latest/sdk/sharing/) for Attachments sharing support.
 - [`expo-haptics`](https://docs.expo.dev/versions/latest/sdk/haptics/) for user haptics support.
 - [`expo-clipboard`](https://docs.expo.dev/versions/latest/sdk/clipboard/) for Copy message support.

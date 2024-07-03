@@ -15,7 +15,7 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { isAudioPackageAvailable } from '../../native';
+import { isSoundPackageAvailable } from '../../native';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
@@ -123,7 +123,7 @@ const FileAttachmentGroupWithContext = <
           ]}
         >
           {(file.type === 'audio' || file.type === 'voiceRecording') &&
-          isAudioPackageAvailable() ? (
+          isSoundPackageAvailable() ? (
             <AudioAttachment
               item={{
                 duration: file.duration,

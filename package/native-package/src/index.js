@@ -4,23 +4,23 @@ import { registerNativeHandlers } from 'stream-chat-react-native-core';
 
 import {
   compressImage,
-  deleteFile,
   getLocalAssetUri,
   getPhotos,
   iOS14RefreshGallerySelection,
   oniOS14GalleryLibrarySelectionChange,
-  saveFile,
-  Sound,
   takePhoto,
-  Video,
 } from './handlers';
 
 import {
   Audio,
+  deleteFile,
   pickDocument,
+  saveFile,
   setClipboardString,
   shareImage,
+  Sound,
   triggerHaptic,
+  Video,
 } from './optionalDependencies';
 
 registerNativeHandlers({

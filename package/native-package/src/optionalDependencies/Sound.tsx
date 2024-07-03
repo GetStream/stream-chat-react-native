@@ -1,6 +1,6 @@
 import React from 'react';
 
-import AudioVideoPlayer from '../optionalDependencies/Video';
+import AudioVideoPlayer from './AudioVideo';
 
 export const Sound = {
   initializeSound: null,
