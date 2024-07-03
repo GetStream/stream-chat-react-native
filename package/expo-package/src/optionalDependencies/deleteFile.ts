@@ -18,7 +18,7 @@ export const deleteFile = FileSystem
         await FileSystem.deleteAsync(uri, { idempotent: true });
         return true;
       } catch (error) {
-        console.log('File deletion failed...');
+        console.log('File deletion failed...', error);
         return false;
       }
     }

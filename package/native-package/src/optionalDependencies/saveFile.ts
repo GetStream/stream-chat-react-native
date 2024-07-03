@@ -17,6 +17,7 @@ export const saveFile = RNBlobUtil
 
         return path;
       } catch (error) {
+        console.log('Downloading image failed...', error);
         throw new Error('Downloading image failed...');
       }
     }

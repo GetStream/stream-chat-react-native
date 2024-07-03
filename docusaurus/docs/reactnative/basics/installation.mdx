@@ -8,13 +8,13 @@ import TabItem from '@theme/TabItem';
 
 Installation and usage of our Stream Chat React Native SDK is simple and involves the following steps:
 
-### Prerequisites
+## Prerequisites
 
 First things first, make sure you have set up the development environment for React Native. You can find the official guide [here](https://reactnative.dev/docs/environment-setup).
 
 For Expo, you can follow [this guide](https://docs.expo.dev/get-started/installation/).
 
-### Add Stream's Chat SDK and its peer dependencies
+## Add Stream's Chat SDK and its peer dependencies
 
 In order to install the Stream Chat React Native SDK, run the following command in your terminal of choice:
 
@@ -83,8 +83,7 @@ values={[
 <TabItem value='rncli'>
 
 - [`@react-native-camera-roll/camera-roll`](https://github.com/react-native-cameraroll/react-native-cameraroll) for accessing device gallery.
-- [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo) for accessing device gallery.
-- [`react-native-fs`](https://github.com/itinance/react-native-fs) to perform file operations like save, delete, etc.
+- [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo) for SDK to respond to network changes.
 - [`react-native-gesture-handler`](https://github.com/software-mansion/react-native-gesture-handler) to handle gestures within the SDK.
 - [`react-native-image-crop-picker`](https://github.com/ivpusic/react-native-image-crop-picker) to capture images to attach them in the message.
 - [`@bam.tech/react-native-image-resizer`](https://github.com/bamlab/react-native-image-resizer) to compress image uploads.
@@ -95,8 +94,7 @@ values={[
 <TabItem value="expo">
 
 - [`expo-media-library`](https://docs.expo.dev/versions/latest/sdk/media-library/) for accessing device gallery.
-- [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo) for accessing device gallery.
-- [`expo-file-system`](https://docs.expo.dev/versions/latest/sdk/filesystem/) to perform file operations like save, delete, etc.
+- [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo) for SDK to respond to network changes.
 - [`react-native-gesture-handler`](https://github.com/software-mansion/react-native-gesture-handler) to handle gestures within the SDK.
 - [`expo-image-picker`](https://docs.expo.dev/versions/latest/sdk/imagepicker/) to capture images to attach them in the message.
 - [`expo-image-manipulator`](https://docs.expo.dev/versions/latest/sdk/imagemanipulator/) to compress image uploads.
@@ -106,9 +104,214 @@ values={[
 </TabItem>
 </Tabs>
 
-### Optional Dependencies
+## Opt-in features
 
-There are a few optional dependencies that can be added to have more features within the SDK.
+There are a few features that can be optionally added within the SDK, which would need additional dependencies to be installed. These features are:
+
+### Video playing
+
+Play video and audio attachments within messages in the chat.
+
+<Tabs
+  defaultValue='rncli'
+  groupId='rn-platform'
+  values={[
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
+  ]}
+>
+<TabItem value='rncli'>
+
+```bash title="Terminal"
+yarn add react-native-video
+```
+
+</TabItem>
+<TabItem value='expo'>
+
+```bash title="Terminal"
+npx expo install expo-av
+```
+
+</TabItem>
+
+</Tabs>
+
+### Voice recording
+
+Record and send voice messages and play them back within the chat.
+
+<Tabs
+  defaultValue='rncli'
+  groupId='rn-platform'
+  values={[
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
+  ]}
+>
+<TabItem value='rncli'>
+
+```bash title="Terminal"
+yarn add react-native-audio-recorder-player react-native-blob-util
+```
+
+</TabItem>
+<TabItem value='expo'>
+
+```bash title="Terminal"
+npx expo install expo-av
+```
+
+</TabItem>
+
+</Tabs>
+
+### Attachment sharing
+
+Share attachments within the message to others.
+
+<Tabs
+  defaultValue='rncli'
+  groupId='rn-platform'
+  values={[
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
+  ]}
+>
+<TabItem value='rncli'>
+
+```bash title="Terminal"
+yarn add react-native-blob-util react-native-share
+```
+
+</TabItem>
+<TabItem value='expo'>
+
+```bash title="Terminal"
+npx expo install expo-sharing
+```
+
+</TabItem>
+
+</Tabs>
+
+### Haptic feedback
+
+Provide haptic feedback to the user.
+
+<Tabs
+  defaultValue='rncli'
+  groupId='rn-platform'
+  values={[
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
+  ]}
+>
+<TabItem value='rncli'>
+
+```bash title="Terminal"
+yarn add react-native-haptic-feedback
+```
+
+</TabItem>
+<TabItem value='expo'>
+
+```bash title="Terminal"
+npx expo install expo-haptics
+```
+
+</TabItem>
+
+</Tabs>
+
+### Copy message
+
+Copy the text message content to the clipboard.
+
+<Tabs
+  defaultValue='rncli'
+  groupId='rn-platform'
+  values={[
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
+  ]}
+>
+<TabItem value='rncli'>
+
+```bash title="Terminal"
+yarn add @react-native-clipboard/clipboard
+```
+
+</TabItem>
+<TabItem value='expo'>
+
+```bash title="Terminal"
+npx expo install expo-clipboard
+```
+
+</TabItem>
+
+</Tabs>
+
+### Share file attachments
+
+Share files from the device within the chat.
+
+<Tabs
+  defaultValue='rncli'
+  groupId='rn-platform'
+  values={[
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
+  ]}
+>
+<TabItem value='rncli'>
+
+```bash title="Terminal"
+yarn add react-native-document-picker
+```
+
+</TabItem>
+<TabItem value='expo'>
+
+```bash title="Terminal"
+npx expo install expo-document-picker
+```
+
+</TabItem>
+
+</Tabs>
+
+### Offline support
+
+Enable offline support in the app.
+
+<Tabs
+  defaultValue='rncli'
+  groupId='rn-platform'
+  values={[
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
+  ]}
+>
+<TabItem value='rncli'>
+
+```bash title="Terminal"
+yarn add @op-engineering/op-sqlite
+```
+
+</TabItem>
+<TabItem value='expo'>
+
+```bash title="Terminal"
+npx expo install @op-engineering/op-sqlite
+```
+
+</TabItem>
+
+</Tabs>
+
+The overall installation of the optional dependencies would look like this:
 
 <Tabs
 defaultValue='rncli'
@@ -147,7 +350,7 @@ values={[
 Please follow along the linked documentation of each optional dependencies so as to support them correctly in your application.
 :::
 
-### Configuring permissions
+## Configuring permissions
 
 Some dependencies(if you are using them on your application), require you to add additional permissions to the `Info.plist` file in iOS and `AndroidManifest.xml` file in Android. Please follow the steps mentioned in the links below for corresponding dependencies:
 
@@ -232,7 +435,7 @@ For Android on Expo, most of the most permissions are added automatically by lib
 </TabItem>
 </Tabs>
 
-### Additional Steps
+## Additional Steps
 
 Some dependencies require us to make changes to our application for all functionalities to be available.
 
@@ -327,7 +530,7 @@ values={[
 <TabItem value="iOS">
 
 ```bash title="Terminal"
-yarn ios
+yarn run ios
 ```
 
 </TabItem>
@@ -335,7 +538,7 @@ yarn ios
 <TabItem value="android">
 
 ```bash title="Terminal"
-yarn android
+yarn run android
 ```
 
 </TabItem>

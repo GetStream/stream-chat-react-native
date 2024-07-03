@@ -12,7 +12,7 @@ export const deleteFile = RNBlobUtil
         await RNBlobUtil.fs.unlink(uri);
         return true;
       } catch (error) {
-        console.log('File deletion failed...');
+        console.log('File deletion failed...', error);
         return false;
       }
     }

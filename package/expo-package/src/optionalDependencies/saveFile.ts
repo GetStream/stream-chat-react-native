@@ -19,6 +19,7 @@ export const saveFile = FileSystem
         const downloadedImage = await FileSystem.downloadAsync(fromUrl, path);
         return downloadedImage.uri;
       } catch (error) {
+        console.log('Downloading image failed...', error);
         throw new Error('Downloading image failed...');
       }
     }
