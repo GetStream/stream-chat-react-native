@@ -13,16 +13,16 @@
     "stream-chat-react-native-core": "5.33.0"
   },
   "peerDependencies": {
-    "expo": "^51.0.17",
-    "expo-av": "^14.0.6",
-    "expo-clipboard": "^6.0.3",
-    "expo-document-picker": "^12.0.2",
-    "expo-file-system": "^17.0.1",
-    "expo-haptics": "^13.0.1",
-    "expo-image-manipulator": "^12.0.5",
-    "expo-image-picker": "^15.0.6",
-    "expo-media-library": "^16.0.4",
-    "expo-sharing": "^12.0.1"
+    "expo": "^51.0.0",
+    "expo-av": "*",
+    "expo-clipboard": "*",
+    "expo-document-picker": "*",
+    "expo-file-system": "*",
+    "expo-haptics": "*",
+    "expo-image-manipulator": "*",
+    "expo-image-picker": "*",
+    "expo-media-library": "*",
+    "expo-sharing": "*"
   },
   "peerDependenciesMeta": {
     "expo-av": {
