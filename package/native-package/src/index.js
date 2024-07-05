@@ -8,7 +8,6 @@ import {
   getPhotos,
   iOS14RefreshGallerySelection,
   oniOS14GalleryLibrarySelectionChange,
-  takePhoto,
 } from './handlers';
 
 import {
@@ -19,6 +18,7 @@ import {
   setClipboardString,
   shareImage,
   Sound,
+  takePhoto,
   triggerHaptic,
   Video,
 } from './optionalDependencies';

@@ -337,11 +337,11 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     Sound = handlers.Sound;
   }
 
-  if (handlers.takePhoto) {
+  if (handlers.takePhoto !== undefined) {
     takePhoto = handlers.takePhoto;
   }
 
-  if (handlers.triggerHaptic) {
+  if (handlers.triggerHaptic !== undefined) {
     triggerHaptic = handlers.triggerHaptic;
   }
 
