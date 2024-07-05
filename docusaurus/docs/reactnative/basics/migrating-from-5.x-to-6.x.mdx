@@ -33,6 +33,19 @@ yarn remove react-native-image-resizer
 yarn add @bam.tech/react-native-image-resizer
 ```
 
+### Change `react-native-image-crop-picker` to `react-native-image-picker`
+
+The `react-native-image-crop-picker` package has been replaced with `react-native-image-picker`. This is a better alternative, and can help us with our new architecture endeavors.
+
+You can replace it by running the following commands:
+
+```bash
+yarn remove react-native-image-crop-picker
+yarn add react-native-image-picker
+```
+
+Also, the dependency is made optional now, so if you don't want to use the image picker, you can remove it from your project and the camera selector icon on the Attachment picker will be simply hidden for you.
+
 ### Change `react-native-quick-sqlite` to `op-sqlite`
 
 The `react-native-quick-sqlite` package has been replaced with `op-sqlite`. This is a faster alternative, and can help us with our new architecture endeavors.
