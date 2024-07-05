@@ -30,7 +30,7 @@ jest.mock('../../../native.ts', () => {
   const View = require('react-native/Libraries/Components/View/View');
 
   return {
-    isAudioPackageAvailable: jest.fn(() => true),
+    isSoundPackageAvailable: jest.fn(() => true),
     Sound: {
       Player: View,
     },

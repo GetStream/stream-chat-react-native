@@ -1,0 +1,83 @@
+---
+id: upgrading-from-v5
+title: Migration from 5.x to 6.x
+---
+
+:::note
+v6.0 is supported on React native version **0.72** onwards.
+:::
+
+## Changes
+
+The following are the crucial changes of the Stream Chat React Native SDK from version 5.x to 6.x:
+
+### Change `react-native-fs` to `react-native-blob-util`
+
+The `react-native-fs` package has been replaced to `react-native-blob-util` in favour of the former not being actively maintained. You can replace it by running the following commands:
+
+```bash
+yarn remove react-native-fs
+yarn add react-native-blob-util
+```
+
+### Change `react-native-image-resizer` to `@bam.tech/react-native-image-resizer`
+
+The `react-native-image-resizer` package has been replaced with `@bam.tech/react-native-image-resizer`.
+
+Since version 3.0.0, this library has been moved from `react-native-image-resizer` to `@bam.tech/react-native-image-resizer`.
+
+You can replace it by running the following commands:
+
+```bash
+yarn remove react-native-image-resizer
+yarn add @bam.tech/react-native-image-resizer
+```
+
+### Change `react-native-quick-sqlite` to `op-sqlite`
+
+The `react-native-quick-sqlite` package has been replaced with `op-sqlite`. This is a faster alternative, and can help us with our new architecture endeavors.
+
+You can replace it by running the following commands:
+
+```bash
+yarn remove react-native-quick-sqlite
+yarn add op-sqlite
+```
+
+### Remove the usage of `@stream-io/flat-list-mvcp`
+
+The dependency on `@stream-io/flat-list-mvcp` package has been removed in favour of React Native's [`FlatList`](https://reactnative.dev/docs/flatlist) component supporting [`maintainVisibleContentPosition`](https://reactnative.dev/docs/scrollview#maintainvisiblecontentposition) from React Native version `>=0.72`. You can replace it by using the `FlatList` component directly.
+
+```bash
+yarn remove @stream-io/flat-list-mvcp
+```
+
+```tsx
+// removed-line
+import { FlatList } from '@stream-io/flat-list-mvcp';
+import { registerNativeHandlers } from 'stream-chat-react-native';
+
+registerNativeHandlers({
+  // removed-line
+  FlatList: FlatList,
+});
+```
+
+This also involves not passing the `FlatList` component as a handler to [`registerNativeHandlers`](../customization/native-handlers.mdx#overriding-handlers) anymore.
+
+### Remove `NetInfo` from the native handlers
+
+The `NetInfo` package has been removed from the native handlers. This also involves not passing the `NetInfo` utility as a handler to [`registerNativeHandlers`](../customization/native-handlers.mdx#overriding-handlers) anymore.
+
+```tsx
+import { registerNativeHandlers } from 'stream-chat-react-native';
+
+registerNativeHandlers({
+  // removed-line
+  NetInfo: NetInfo,
+});
+```
+
+### Change the type of `quotedMessage` in `MessageInputContext`
+
+The type of `quotedMessage` is changed from `MessageType |  boolean` to `MessageType | undefined` for better in the `MessageInputContext`.

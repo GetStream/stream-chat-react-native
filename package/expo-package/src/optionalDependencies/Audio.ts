@@ -1,4 +1,4 @@
-import { AudioComponent } from '../optionalDependencies/Video';
+import { AudioComponent } from './AudioVideo';
 
 export enum AndroidOutputFormat {
   DEFAULT = 0,

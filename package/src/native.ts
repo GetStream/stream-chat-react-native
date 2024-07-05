@@ -289,7 +289,7 @@ type Handlers = {
 };
 
 export const registerNativeHandlers = (handlers: Handlers) => {
-  if (handlers.Audio) {
+  if (handlers.Audio !== undefined) {
     Audio = handlers.Audio;
   }
 
@@ -297,7 +297,7 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     compressImage = handlers.compressImage;
   }
 
-  if (handlers.deleteFile) {
+  if (handlers.deleteFile !== undefined) {
     deleteFile = handlers.deleteFile;
   }
 
@@ -321,7 +321,7 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     pickDocument = handlers.pickDocument;
   }
 
-  if (handlers.saveFile) {
+  if (handlers.saveFile !== undefined) {
     saveFile = handlers.saveFile;
   }
 
@@ -345,7 +345,7 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     triggerHaptic = handlers.triggerHaptic;
   }
 
-  if (handlers.Video) {
+  if (handlers.Video !== undefined) {
     Video = handlers.Video;
   }
 
@@ -354,6 +354,4 @@ export const registerNativeHandlers = (handlers: Handlers) => {
   }
 };
 
-export const isVideoPackageAvailable = () => !!Video;
-export const isAudioPackageAvailable = () => !!Sound.Player || !!Sound.initializeSound;
-export const isRecordingPackageAvailable = () => !!Audio;
+export const isSoundPackageAvailable = () => !!Sound.Player || !!Sound.initializeSound;

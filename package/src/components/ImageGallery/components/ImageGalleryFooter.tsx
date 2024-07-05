@@ -244,7 +244,8 @@ const ShareButton = ({ share, ShareIcon, shareMenuOpen }: ShareButtonProps) => {
     },
   } = useTheme();
 
-  if (shareImage === null) {
+  // If the shareImage, saveFile or deleteFile is null, we don't want to render the share button
+  if (shareImage === null || saveFile === null || deleteFile === null) {
     return null;
   }
 

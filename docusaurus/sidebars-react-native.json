@@ -144,6 +144,6 @@
       "guides/debug-mode-using-flipper-plugin",
       "guides/performance-guide"
     ],
-    "Migration Guides": ["basics/upgrading-from-v4"]
+    "Migration Guides": ["basics/upgrading-from-v4", "basics/upgrading-from-v5"]
   }
 }

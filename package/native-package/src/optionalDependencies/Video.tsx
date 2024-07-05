@@ -1,6 +1,6 @@
 import React from 'react';
 
-import AudioVideoPlayer from '../optionalDependencies/Video';
+import AudioVideoPlayer from './AudioVideo';
 export const Video = AudioVideoPlayer
   ? ({ onBuffer, onEnd, onLoad, onProgress, paused, repeat, resizeMode, style, uri, videoRef }) => (
       <AudioVideoPlayer

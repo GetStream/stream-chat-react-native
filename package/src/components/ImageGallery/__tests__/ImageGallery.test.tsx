@@ -24,7 +24,6 @@ import { ImageGallery } from '../ImageGallery';
 jest.mock('../../../native.ts', () => {
   const View = require('react-native/Libraries/Components/View/View');
   return {
-    isVideoPackageAvailable: jest.fn(() => true),
     Video: View,
   };
 });

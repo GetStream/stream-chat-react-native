@@ -1,5 +1,4 @@
 import { Platform } from 'react-native';
-import RNFS from 'react-native-fs';
 
 let RNShare;
 
@@ -9,10 +8,18 @@ try {
   console.log('react-native-share is not installed');
 }
 
+let RNBlobUtil;
+
+try {
+  RNBlobUtil = require('react-native-blob-util').default;
+} catch (e) {
+  console.log('react-native-blob-util is not installed');
+}
+
 export const shareImage = RNShare
   ? async ({ type, url }) => {
       try {
-        const base64Image = await RNFS.readFile(url, 'base64');
+        const base64Image = await RNBlobUtil.fs.readFile(url, 'base64');
         const base64Url = `data:${type};base64,${base64Image}`;
         await RNShare.open({
           activityItemSources:
@@ -35,9 +42,6 @@ export const shareImage = RNShare
                   },
                 ]
               : undefined,
-          // react-native-share has a typing issue, where their docs confirm that
-          // this property should be an array of strings, but the type is a string
-          // in the @types/react-native-share package.
           excludedActivityTypes: [] as unknown as string,
           failOnCancel: false,
           type,
@@ -45,7 +49,7 @@ export const shareImage = RNShare
         });
         return true;
       } catch (error) {
-        console.warn('Sharing failed...');
+        console.warn('Sharing failed...', error);
       }
     }
   : null;

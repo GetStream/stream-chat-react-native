@@ -1,4 +1,4 @@
-import { AudioComponent } from '../optionalDependencies/Video';
+import { AudioComponent } from './AudioVideo';
 
 export const Sound = {
   initializeSound: AudioComponent

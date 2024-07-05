@@ -1,7 +1,14 @@
 import { PermissionsAndroid, Platform } from 'react-native';
-import RNFS from 'react-native-fs';
 let AudioRecorderPackage;
 let audioRecorderPlayer;
+
+let RNBlobUtil;
+
+try {
+  RNBlobUtil = require('react-native-blob-util').default;
+} catch (e) {
+  console.log('react-native-blob-util is not installed');
+}
 
 try {
   AudioRecorderPackage = require('react-native-audio-recorder-player').default;
@@ -168,74 +175,74 @@ const verifyAndroidPermissions = async () => {
   return true;
 };
 
-export const Audio = AudioRecorderPackage
-  ? {
-      pausePlayer: async () => {
-        await audioRecorderPlayer.pausePlayer();
-      },
-      resumePlayer: async () => {
-        await audioRecorderPlayer.resumePlayer();
-      },
-      startPlayer: async (uri, _, onPlaybackStatusUpdate) => {
-        try {
-          const playback = await audioRecorderPlayer.startPlayer(uri);
-          console.log({ playback });
-          audioRecorderPlayer.addPlayBackListener((status) => {
-            onPlaybackStatusUpdate(status);
-          });
-        } catch (error) {
-          console.log('Error starting player', error);
-        }
-      },
-      startRecording: async (options: RecordingOptions, onRecordingStatusUpdate) => {
-        if (Platform.OS === 'android') {
+export const Audio =
+  AudioRecorderPackage && RNBlobUtil
+    ? {
+        pausePlayer: async () => {
+          await audioRecorderPlayer.pausePlayer();
+        },
+        resumePlayer: async () => {
+          await audioRecorderPlayer.resumePlayer();
+        },
+        startPlayer: async (uri, _, onPlaybackStatusUpdate) => {
           try {
-            await verifyAndroidPermissions();
-          } catch (err) {
-            console.warn('Audio Recording Permissions error', err);
-            return;
+            await audioRecorderPlayer.startPlayer(uri);
+            audioRecorderPlayer.addPlayBackListener((status) => {
+              onPlaybackStatusUpdate(status);
+            });
+          } catch (error) {
+            console.log('Error starting player', error);
           }
-        }
-        try {
-          const path = Platform.select({
-            android: `${RNFS.CachesDirectoryPath}/sound.aac`,
-            ios: 'sound.aac',
-          });
-          const audioSet = {
-            AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
-            AudioSourceAndroid: AudioSourceAndroidType.MIC,
-            AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.high,
-            AVFormatIDKeyIOS: AVEncodingOption.aac,
-            AVModeIOS: AVModeIOSOption.measurement,
-            AVNumberOfChannelsKeyIOS: 2,
-            OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS,
-          };
-          const recording = await audioRecorderPlayer.startRecorder(
-            path,
-            audioSet,
-            options?.isMeteringEnabled,
-          );
+        },
+        startRecording: async (options: RecordingOptions, onRecordingStatusUpdate) => {
+          if (Platform.OS === 'android') {
+            try {
+              await verifyAndroidPermissions();
+            } catch (err) {
+              console.warn('Audio Recording Permissions error', err);
+              return;
+            }
+          }
+          try {
+            const path = Platform.select({
+              android: `${RNBlobUtil.fs.dirs.CacheDir}/sound.aac`,
+              ios: 'sound.aac',
+            });
+            const audioSet = {
+              AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
+              AudioSourceAndroid: AudioSourceAndroidType.MIC,
+              AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.high,
+              AVFormatIDKeyIOS: AVEncodingOption.aac,
+              AVModeIOS: AVModeIOSOption.measurement,
+              AVNumberOfChannelsKeyIOS: 2,
+              OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS,
+            };
+            const recording = await audioRecorderPlayer.startRecorder(
+              path,
+              audioSet,
+              options?.isMeteringEnabled,
+            );
 
-          audioRecorderPlayer.addRecordBackListener((status) => {
-            onRecordingStatusUpdate(status);
-          });
-          return { accessGranted: true, recording };
-        } catch (error) {
-          console.error('Failed to start recording', error);
-          return { accessGranted: false, recording: null };
-        }
-      },
-      stopPlayer: async () => {
-        try {
-          await audioRecorderPlayer.stopPlayer();
-          audioRecorderPlayer.removePlayBackListener();
-        } catch (error) {
-          console.log(error);
-        }
-      },
-      stopRecording: async () => {
-        await audioRecorderPlayer.stopRecorder();
-        audioRecorderPlayer.removeRecordBackListener();
-      },
-    }
-  : null;
+            audioRecorderPlayer.addRecordBackListener((status) => {
+              onRecordingStatusUpdate(status);
+            });
+            return { accessGranted: true, recording };
+          } catch (error) {
+            console.error('Failed to start recording', error);
+            return { accessGranted: false, recording: null };
+          }
+        },
+        stopPlayer: async () => {
+          try {
+            await audioRecorderPlayer.stopPlayer();
+            audioRecorderPlayer.removePlayBackListener();
+          } catch (error) {
+            console.log(error);
+          }
+        },
+        stopRecording: async () => {
+          await audioRecorderPlayer.stopRecorder();
+          audioRecorderPlayer.removeRecordBackListener();
+        },
+      }
+    : null;

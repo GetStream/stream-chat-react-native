@@ -12,7 +12,7 @@ import {
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { Mic } from '../../../../icons/Mic';
-import { AudioRecordingReturnType, triggerHaptic } from '../../../../native';
+import { Audio, AudioRecordingReturnType, triggerHaptic } from '../../../../native';
 
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
@@ -103,6 +103,8 @@ const AudioRecordingButtonWithContext = <
       if (startVoiceRecording) startVoiceRecording();
     }
   };
+
+  if (!Audio) return null;
 
   return (
     <Pressable

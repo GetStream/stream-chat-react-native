@@ -39,7 +39,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import { isVideoPackageAvailable, triggerHaptic } from '../../native';
+import { triggerHaptic, Video } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import {
   hasOnlyEmojis,
@@ -378,7 +378,7 @@ const MessageWithContext = <
             if (cur.type === 'file') {
               acc.files.push(cur);
               acc.other = []; // remove other attachments if a file exists
-            } else if (cur.type === 'video' && !cur.og_scrape_url && isVideoPackageAvailable()) {
+            } else if (cur.type === 'video' && !cur.og_scrape_url && Video) {
               acc.videos.push({
                 image_url: cur.asset_url,
                 thumb_url: cur.thumb_url,

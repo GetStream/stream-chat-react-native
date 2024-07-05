@@ -38,6 +38,14 @@ This should be done outside of the component lifecycle to prevent unnecessarily 
 
 There are the handlers registered as they interact with different native API packages depending on if the SDK being used on Expo or React Native CLI.
 
+### Audio
+
+The handler used to play audio files and for voice recording.
+
+| React Native CLI                                                                                                                                                                        | Expo                                                       |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| [`react-native-audio-recorder-player`](https://github.com/hyochan/react-native-audio-recorder-player) & [`react-native-blob-util`](https://github.com/RonRadtke/react-native-blob-util) | [`expo-av`](https://docs.expo.dev/versions/latest/sdk/av/) |
+
 ### `compressImage`
 
 An `async` function that compresses an image and returns the local `uri` of the compressed image.
@@ -46,29 +54,21 @@ An `async` function that compresses an image and returns the local `uri` of the 
 | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
 | [`@bam.tech/react-native-image-resizer`](https://github.com/bamlab/react-native-image-resizer) | [`expo-image-manipulator`](https://docs.expo.io/versions/latest/sdk/imagemanipulator/) |
 
-### `setClipboardString`
-
-An function to copy strings or text in the message.
-
-| React Native CLI                                                                | Expo                                                                     |
-| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| [`react-native-clipboard`](https://github.com/react-native-clipboard/clipboard) | [`expo-clipboard`](https://docs.expo.dev/versions/latest/sdk/clipboard/) |
-
 ### `deleteFile`
 
 A function that deletes a file at a given local `uri`.
 
-| React Native CLI                                                 | Expo                                                                       |
-| ---------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| [`react-native-fs`](https://github.com/itinance/react-native-fs) | [`expo-file-system`](https://docs.expo.io/versions/latest/sdk/filesystem/) |
+| React Native CLI                                                                | Expo                                                                       |
+| ------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| [`react-native-blob-util`](https://github.com/RonRadtke/react-native-blob-util) | [`expo-file-system`](https://docs.expo.io/versions/latest/sdk/filesystem/) |
 
 ### `getLocalAssetUri`
 
 A function that gets the local `uri` of an image or remote asset.
 
-| React Native CLI                                                                                           | Expo                                                                            |
-| ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| [`@react-native-community/cameraroll`](https://github.com/react-native-cameraroll/react-native-cameraroll) | [`expo-media-library`](https://docs.expo.io/versions/latest/sdk/media-library/) |
+| React Native CLI                                                                                              | Expo                                                                            |
+| ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| [`@react-native-camera-roll/camera-roll`](https://github.com/react-native-cameraroll/react-native-cameraroll) | [`expo-media-library`](https://docs.expo.io/versions/latest/sdk/media-library/) |
 
 ### `getPhotos`
 
@@ -90,9 +90,9 @@ A function to open the document picker and return documents picked from it.
 
 A function to save a file from a URL to local storage.
 
-| React Native CLI                                                 | Expo                                                                       |
-| ---------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| [`react-native-fs`](https://github.com/itinance/react-native-fs) | [`expo-file-system`](https://docs.expo.io/versions/latest/sdk/filesystem/) |
+| React Native CLI                                                                | Expo                                                                       |
+| ------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| [`react-native-blob-util`](https://github.com/RonRadtke/react-native-blob-util) | [`expo-file-system`](https://docs.expo.io/versions/latest/sdk/filesystem/) |
 
 ### SDK
 
@@ -102,13 +102,21 @@ String identifying which package, `stream-chat-react-native` or `stream-chat-exp
 | -------------------------- | ------------------ |
 | _stream-chat-react-native_ | _stream-chat-expo_ |
 
+### `setClipboardString`
+
+An function to copy strings or text in the message.
+
+| React Native CLI                                                                | Expo                                                                     |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| [`react-native-clipboard`](https://github.com/react-native-clipboard/clipboard) | [`expo-clipboard`](https://docs.expo.dev/versions/latest/sdk/clipboard/) |
+
 ### `shareImage`
 
 A function to provide a given image to the native sharing functionality of the OS.
 
-| React Native CLI                                                                                                                                    | Expo                                                                |
-| --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| [`react-native-fs`](https://github.com/itinance/react-native-fs) & [`react-native-share`](https://github.com/react-native-share/react-native-share) | [`expo-sharing`](https://docs.expo.io/versions/latest/sdk/sharing/) |
+| React Native CLI                                                                                                                                                   | Expo                                                                                                                                             |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [`react-native-blob-util`](https://github.com/RonRadtke/react-native-blob-util) & [`react-native-share`](https://github.com/react-native-share/react-native-share) | [`expo-file-system`](https://docs.expo.io/versions/latest/sdk/filesystem/) & [`expo-sharing`](https://docs.expo.io/versions/latest/sdk/sharing/) |
 
 ### `takePhoto`
 
