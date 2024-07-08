@@ -9,6 +9,7 @@ import type {
   ChannelMemberResponse,
   CommandResponse,
   FormatMessageResponse,
+  MessageResponse,
   StreamChat,
   UserResponse,
 } from 'stream-chat';
@@ -614,7 +615,10 @@ export const stringifyMessage = <
   text,
   type,
   updated_at,
-}: FormatMessageResponse<StreamChatGenerics> | MessageType<StreamChatGenerics>): string =>
+}:
+  | MessageResponse<StreamChatGenerics>
+  | FormatMessageResponse<StreamChatGenerics>
+  | MessageType<StreamChatGenerics>): string =>
   `${
     latest_reactions ? latest_reactions.map(({ type, user }) => `${type}${user?.id}`).join() : ''
   }${
