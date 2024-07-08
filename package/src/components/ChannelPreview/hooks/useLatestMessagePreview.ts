@@ -8,6 +8,7 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 
 import { useTranslatedMessage } from '../../../hooks/useTranslatedMessage';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
+import { stringifyMessage } from '../../../utils/utils';
 
 type LatestMessage<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -218,18 +219,22 @@ export const useLatestMessagePreview = <
 >(
   channel: Channel<StreamChatGenerics>,
   forceUpdate: number,
+  lastMessage?:
+    | ReturnType<ChannelState<StreamChatGenerics>['formatMessage']>
+    | MessageResponse<StreamChatGenerics>,
 ) => {
   const { client } = useChatContext<StreamChatGenerics>();
   const { t } = useTranslationContext();
 
   const channelConfigExists = typeof channel?.getConfig === 'function';
 
-  const messages = channel.state.messages;
-  const message = messages.length ? messages[messages.length - 1] : undefined;
+  const translatedLastMessage = useTranslatedMessage<StreamChatGenerics>(
+    lastMessage || ({} as MessageResponse<StreamChatGenerics>),
+  );
 
-  const translatedLastMessage = useTranslatedMessage<StreamChatGenerics>(message);
-
-  const channelLastMessageString = `${message?.id}${message?.updated_at}`;
+  const channelLastMessageString = translatedLastMessage
+    ? stringifyMessage(translatedLastMessage)
+    : '';
 
   const [readEvents, setReadEvents] = useState(true);
   const [latestMessagePreview, setLatestMessagePreview] = useState<
