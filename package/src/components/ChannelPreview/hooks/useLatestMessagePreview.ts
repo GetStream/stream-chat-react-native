@@ -228,9 +228,7 @@ export const useLatestMessagePreview = <
 
   const channelConfigExists = typeof channel?.getConfig === 'function';
 
-  const translatedLastMessage = useTranslatedMessage<StreamChatGenerics>(
-    lastMessage || ({} as MessageResponse<StreamChatGenerics>),
-  );
+  const translatedLastMessage = useTranslatedMessage<StreamChatGenerics>(lastMessage);
 
   const channelLastMessageString = translatedLastMessage
     ? stringifyMessage(translatedLastMessage)
