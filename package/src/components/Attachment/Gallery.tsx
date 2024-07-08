@@ -289,7 +289,7 @@ const GalleryThumbnail = <
     theme: {
       colors: { overlay },
       messageSimple: {
-        gallery: { image, imageContainer, moreImagesContainer, moreImagesText },
+        gallery: { image, imageBorderRadius, imageContainer, moreImagesContainer, moreImagesText },
       },
     },
   } = useTheme();
@@ -366,7 +366,7 @@ const GalleryThumbnail = <
       {thumbnail.type === 'video' ? (
         <VideoThumbnail
           style={[
-            borderRadius,
+            imageBorderRadius ?? borderRadius,
             {
               height: thumbnail.height - 1,
               width: thumbnail.width - 1,
@@ -378,7 +378,7 @@ const GalleryThumbnail = <
       ) : (
         <View style={styles.imageContainerStyle}>
           <GalleryImageThumbnail
-            borderRadius={borderRadius}
+            borderRadius={imageBorderRadius ?? borderRadius}
             ImageLoadingFailedIndicator={ImageLoadingFailedIndicator}
             ImageLoadingIndicator={ImageLoadingIndicator}
             thumbnail={thumbnail}
