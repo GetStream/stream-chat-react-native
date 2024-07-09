@@ -7,3 +7,4 @@ export * from './saveFile';
 export * from './Audio';
 export * from './Sound';
 export * from './Video';
+export * from './takePhoto';
