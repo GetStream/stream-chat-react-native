@@ -7,3 +7,4 @@ export * from './pickDocument';
 export * from './saveFile';
 export * from './deleteFile';
 export * from './Sound';
+export * from './takePhoto';

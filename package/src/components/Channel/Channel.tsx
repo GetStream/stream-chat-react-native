@@ -81,7 +81,11 @@ import {
   ThumbsUpReaction,
   WutReaction,
 } from '../../icons';
-import { pickDocument } from '../../native';
+import {
+  isAudioRecorderAvailable,
+  isDocumentPickerAvailable,
+  isImagePickerAvailable,
+} from '../../native';
 import * as dbApi from '../../store/apis';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
@@ -439,7 +443,7 @@ const ChannelWithContext = <
     AudioAttachment = AudioAttachmentDefault,
     AudioAttachmentUploadPreview = AudioAttachmentDefault,
     AudioRecorder = AudioRecorderDefault,
-    audioRecordingEnabled = false,
+    audioRecordingEnabled = isAudioRecorderAvailable(),
     AudioRecordingInProgress = AudioRecordingInProgressDefault,
     AudioRecordingLockIndicator = AudioRecordingLockIndicatorDefault,
     AudioRecordingPreview = AudioRecordingPreviewDefault,
@@ -497,9 +501,10 @@ const ChannelWithContext = <
     handleReaction,
     handleRetry,
     handleThreadReply,
+    hasCameraPicker = isImagePickerAvailable(),
     hasCommands = true,
     // If pickDocument isn't available, default to hiding the file picker
-    hasFilePicker = pickDocument !== null,
+    hasFilePicker = isDocumentPickerAvailable(),
     hasImagePicker = true,
     hideDateSeparators = false,
     hideStickyDateHeader = false,
@@ -2232,6 +2237,7 @@ const ChannelWithContext = <
     editMessage,
     emojiSearchIndex,
     FileUploadPreview,
+    hasCameraPicker,
     hasCommands,
     hasFilePicker,
     hasImagePicker,

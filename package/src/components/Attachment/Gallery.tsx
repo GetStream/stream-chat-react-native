@@ -31,7 +31,7 @@ import {
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useLoadingImage } from '../../hooks/useLoadingImage';
-import { Video } from '../../native';
+import { isVideoPlayerAvailable } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getUrlWithoutParams } from '../../utils/utils';
 
@@ -311,7 +311,7 @@ const GalleryThumbnail = <
   const defaultOnPress = () => {
     // If the url is defined then only try to open the file.
     if (thumbnail.url) {
-      if (thumbnail.type === 'video' && !Video) {
+      if (thumbnail.type === 'video' && !isVideoPlayerAvailable()) {
         // This condition is kinda unreachable, since we render videos as file attachment if the video
         // library is not installed. But doesn't hurt to have extra safeguard, in case of some customizations.
         openUrlSafely(thumbnail.url);

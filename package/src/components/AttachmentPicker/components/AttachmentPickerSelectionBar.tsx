@@ -32,7 +32,14 @@ export const AttachmentPickerSelectionBar = () => {
   } = useAttachmentPickerContext();
   const { t } = useTranslationContext();
 
-  const { compressImageQuality, hasFilePicker, imageUploads, pickFile } = useMessageInputContext();
+  const {
+    compressImageQuality,
+    hasCameraPicker,
+    hasFilePicker,
+    hasImagePicker,
+    imageUploads,
+    pickFile,
+  } = useMessageInputContext();
 
   const {
     theme: {
@@ -76,18 +83,20 @@ export const AttachmentPickerSelectionBar = () => {
 
   return (
     <View style={[styles.container, container, { height: attachmentSelectionBarHeight }]}>
-      <TouchableOpacity
-        hitSlop={{ bottom: 15, top: 15 }}
-        onPress={() => setPicker('images')}
-        testID='upload-photo-touchable'
-      >
-        <View style={[styles.icon, icon]}>
-          <ImageSelectorIcon
-            numberOfImageUploads={imageUploads.length}
-            selectedPicker={selectedPicker}
-          />
-        </View>
-      </TouchableOpacity>
+      {hasImagePicker && (
+        <TouchableOpacity
+          hitSlop={{ bottom: 15, top: 15 }}
+          onPress={() => setPicker('images')}
+          testID='upload-photo-touchable'
+        >
+          <View style={[styles.icon, icon]}>
+            <ImageSelectorIcon
+              numberOfImageUploads={imageUploads.length}
+              selectedPicker={selectedPicker}
+            />
+          </View>
+        </TouchableOpacity>
+      )}
       {hasFilePicker && (
         <TouchableOpacity
           hitSlop={{ bottom: 15, top: 15 }}
@@ -102,18 +111,20 @@ export const AttachmentPickerSelectionBar = () => {
           </View>
         </TouchableOpacity>
       )}
-      <TouchableOpacity
-        hitSlop={{ bottom: 15, top: 15 }}
-        onPress={takeAndUploadImage}
-        testID='take-photo-touchable'
-      >
-        <View style={[styles.icon, icon]}>
-          <CameraSelectorIcon
-            numberOfImageUploads={imageUploads.length}
-            selectedPicker={selectedPicker}
-          />
-        </View>
-      </TouchableOpacity>
+      {hasCameraPicker ? (
+        <TouchableOpacity
+          hitSlop={{ bottom: 15, top: 15 }}
+          onPress={takeAndUploadImage}
+          testID='take-photo-touchable'
+        >
+          <View style={[styles.icon, icon]}>
+            <CameraSelectorIcon
+              numberOfImageUploads={imageUploads.length}
+              selectedPicker={selectedPicker}
+            />
+          </View>
+        </TouchableOpacity>
+      ) : null}
     </View>
   );
 };

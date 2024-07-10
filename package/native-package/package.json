@@ -22,7 +22,7 @@
     "react-native-blob-util": ">=0.19.9",
     "react-native-document-picker": ">=9.3.0",
     "react-native-haptic-feedback": ">=2.2.0",
-    "react-native-image-crop-picker": ">=0.41.2",
+    "react-native-image-picker": ">=7.1.2",
     "react-native-share": ">=10.2.1",
     "react-native-video": ">=5.2.1"
   },
@@ -37,6 +37,9 @@
       "optional": true
     },
     "react-native-haptic-feedback": {
+      "optional": true
+    },
+    "react-native-image-picker": {
       "optional": true
     },
     "react-native-audio-recorder-player": {
@@ -56,7 +59,6 @@
   "devDependencies": {
     "@bam.tech/react-native-image-resizer": "^3.0.10",
     "@react-native-camera-roll/camera-roll": "^7.8.0",
-    "react-native": "^0.73.6",
-    "react-native-image-crop-picker": "^0.41.2"
+    "react-native": "^0.73.6"
   }
 }

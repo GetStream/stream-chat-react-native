@@ -7,7 +7,14 @@ import { ImageGalleryVideoControl } from './ImageGalleryVideoControl';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Grid as GridIconDefault, Share as ShareIconDefault } from '../../../icons';
-import { deleteFile, saveFile, shareImage, VideoType } from '../../../native';
+import {
+  deleteFile,
+  isFileSystemAvailable,
+  isShareImageAvailable,
+  saveFile,
+  shareImage,
+  VideoType,
+} from '../../../native';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { Photo } from '../ImageGallery';
@@ -245,7 +252,7 @@ const ShareButton = ({ share, ShareIcon, shareMenuOpen }: ShareButtonProps) => {
   } = useTheme();
 
   // If the shareImage, saveFile or deleteFile is null, we don't want to render the share button
-  if (shareImage === null || saveFile === null || deleteFile === null) {
+  if (!isShareImageAvailable() || !isFileSystemAvailable()) {
     return null;
   }
 
