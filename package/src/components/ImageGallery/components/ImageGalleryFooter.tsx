@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
-import Animated, { Extrapolation, interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+  Extrapolation,
+  interpolate,
+  SharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 
 import { ImageGalleryVideoControl } from './ImageGalleryVideoControl';
 
@@ -11,10 +16,6 @@ import { deleteFile, saveFile, shareImage, VideoType } from '../../../native';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { Photo } from '../ImageGallery';
-
-const ReanimatedSafeAreaView = Animated.createAnimatedComponent
-  ? Animated.createAnimatedComponent(SafeAreaView)
-  : SafeAreaView;
 
 const styles = StyleSheet.create({
   centerContainer: {
@@ -94,7 +95,7 @@ type ImageGalleryFooterPropsWithContext<
   accessibilityLabel: string;
   duration: number;
   onPlayPause: () => void;
-  opacity: Animated.SharedValue<number>;
+  opacity: SharedValue<number>;
   openGridView: () => void;
   paused: boolean;
   photo: Photo<StreamChatGenerics>;
@@ -102,7 +103,7 @@ type ImageGalleryFooterPropsWithContext<
   progress: number;
   selectedIndex: number;
   videoRef: React.RefObject<VideoType>;
-  visible: Animated.SharedValue<number>;
+  visible: SharedValue<number>;
 };
 
 export const ImageGalleryFooterWithContext = <
@@ -179,51 +180,53 @@ export const ImageGalleryFooterWithContext = <
       accessibilityLabel={accessibilityLabel}
       onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
       pointerEvents={'box-none'}
-      style={styles.wrapper}
+      style={[styles.wrapper, footerStyle]}
     >
-      <ReanimatedSafeAreaView style={[container, footerStyle, { backgroundColor: white }]}>
-        {photo.type === 'video' ? (
-          videoControlElement ? (
-            videoControlElement({ duration, onPlayPause, paused, progress, videoRef })
-          ) : (
-            <ImageGalleryVideoControl
-              duration={duration}
-              onPlayPause={onPlayPause}
-              paused={paused}
-              progress={progress}
-              videoRef={videoRef}
-            />
-          )
-        ) : null}
-        <View style={[styles.innerContainer, innerContainer, { backgroundColor: white }]}>
-          {leftElement ? (
-            leftElement({ openGridView, photo, share, shareMenuOpen })
-          ) : (
-            <ShareButton share={share} ShareIcon={ShareIcon} shareMenuOpen={shareMenuOpen} />
-          )}
-          {centerElement ? (
-            centerElement({ openGridView, photo, share, shareMenuOpen })
-          ) : (
-            <View style={[styles.centerContainer, centerContainer]}>
-              <Text style={[styles.imageCountText, { color: black }, imageCountText]}>
-                {t<string>('{{ index }} of {{ photoLength }}', {
-                  index: photoLength - selectedIndex,
-                  photoLength,
-                })}
-              </Text>
-            </View>
-          )}
-          {rightElement ? (
-            rightElement({ openGridView, photo, share, shareMenuOpen })
-          ) : (
-            <TouchableOpacity onPress={openGridView}>
-              <View style={[styles.rightContainer, rightContainer]}>
-                {GridIcon ? GridIcon : <GridIconDefault />}
+      <SafeAreaView style={{ backgroundColor: white }}>
+        <View style={[container, { backgroundColor: white }]}>
+          {photo.type === 'video' ? (
+            videoControlElement ? (
+              videoControlElement({ duration, onPlayPause, paused, progress, videoRef })
+            ) : (
+              <ImageGalleryVideoControl
+                duration={duration}
+                onPlayPause={onPlayPause}
+                paused={paused}
+                progress={progress}
+                videoRef={videoRef}
+              />
+            )
+          ) : null}
+          <View style={[styles.innerContainer, innerContainer, { backgroundColor: white }]}>
+            {leftElement ? (
+              leftElement({ openGridView, photo, share, shareMenuOpen })
+            ) : (
+              <ShareButton share={share} ShareIcon={ShareIcon} shareMenuOpen={shareMenuOpen} />
+            )}
+            {centerElement ? (
+              centerElement({ openGridView, photo, share, shareMenuOpen })
+            ) : (
+              <View style={[styles.centerContainer, centerContainer]}>
+                <Text style={[styles.imageCountText, { color: black }, imageCountText]}>
+                  {t<string>('{{ index }} of {{ photoLength }}', {
+                    index: photoLength - selectedIndex,
+                    photoLength,
+                  })}
+                </Text>
               </View>
-            </TouchableOpacity>
-          )}
+            )}
+            {rightElement ? (
+              rightElement({ openGridView, photo, share, shareMenuOpen })
+            ) : (
+              <TouchableOpacity onPress={openGridView}>
+                <View style={[styles.rightContainer, rightContainer]}>
+                  {GridIcon ? GridIcon : <GridIconDefault />}
+                </View>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
-      </ReanimatedSafeAreaView>
+      </SafeAreaView>
     </Animated.View>
   );
 };

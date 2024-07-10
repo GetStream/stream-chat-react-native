@@ -5,6 +5,7 @@ import Animated, {
   cancelAnimation,
   interpolate,
   runOnJS,
+  SharedValue,
   useAnimatedProps,
   useAnimatedReaction,
   useAnimatedStyle,
@@ -96,7 +97,7 @@ type ReactionButtonProps<
   Icon: React.ComponentType<IconProps>;
   index: number;
   numberOfReactions: number;
-  showScreen: Animated.SharedValue<number>;
+  showScreen: SharedValue<number>;
   type: string;
 };
 
@@ -226,13 +227,13 @@ export type OverlayReactionListPropsWithContext<
 > &
   Pick<MessagesContextValue<StreamChatGenerics>, 'supportedReactions'> &
   Pick<OverlayContextValue, 'setOverlay'> & {
-    messageLayout: Animated.SharedValue<{
+    messageLayout: SharedValue<{
       x: number;
       y: number;
     }>;
     ownReactionTypes: string[];
     setReactionListHeight: React.Dispatch<React.SetStateAction<number>>;
-    showScreen: Animated.SharedValue<number>;
+    showScreen: SharedValue<number>;
     fill?: FillProps['fill'];
   };
 

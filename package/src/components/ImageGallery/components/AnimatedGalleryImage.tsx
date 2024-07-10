@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import type { ImageStyle, StyleProp } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 
 import { useViewport } from '../../../hooks/useViewport';
 
@@ -10,15 +10,15 @@ const oneEighth = 1 / 8;
 type Props = {
   accessibilityLabel: string;
   index: number;
-  offsetScale: Animated.SharedValue<number>;
+  offsetScale: SharedValue<number>;
   photo: { uri: string };
   previous: boolean;
-  scale: Animated.SharedValue<number>;
+  scale: SharedValue<number>;
   screenHeight: number;
   selected: boolean;
   shouldRender: boolean;
-  translateX: Animated.SharedValue<number>;
-  translateY: Animated.SharedValue<number>;
+  translateX: SharedValue<number>;
+  translateY: SharedValue<number>;
   style?: StyleProp<ImageStyle>;
 };
 

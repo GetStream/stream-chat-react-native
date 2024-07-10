@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import type { StyleProp } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 
 import { useViewport } from '../../../hooks/useViewport';
 import {
@@ -22,16 +22,16 @@ export type AnimatedGalleryVideoType = {
   handleLoad: (index: string, duration: number) => void;
   handleProgress: (index: string, progress: number, hasEnd?: boolean) => void;
   index: number;
-  offsetScale: Animated.SharedValue<number>;
+  offsetScale: SharedValue<number>;
   paused: boolean;
   previous: boolean;
-  scale: Animated.SharedValue<number>;
+  scale: SharedValue<number>;
   screenHeight: number;
   selected: boolean;
   shouldRender: boolean;
   source: { uri: string };
-  translateX: Animated.SharedValue<number>;
-  translateY: Animated.SharedValue<number>;
+  translateX: SharedValue<number>;
+  translateY: SharedValue<number>;
   videoRef: React.RefObject<VideoType>;
   repeat?: boolean;
   style?: StyleProp<ViewStyle>;

@@ -1,6 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { Pressable, SafeAreaView, StyleSheet, Text, View, ViewStyle } from 'react-native';
-import Animated, { Extrapolation, interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+  Extrapolation,
+  interpolate,
+  SharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
@@ -10,10 +15,6 @@ import { Close } from '../../../icons';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { getDateString } from '../../../utils/i18n/getDateString';
 import type { Photo } from '../ImageGallery';
-
-const ReanimatedSafeAreaView = Animated.createAnimatedComponent
-  ? Animated.createAnimatedComponent(SafeAreaView)
-  : SafeAreaView;
 
 const styles = StyleSheet.create({
   centerContainer: {
@@ -67,8 +68,8 @@ export type ImageGalleryHeaderCustomComponentProps<
 
 type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   ImageGalleryHeaderCustomComponentProps<StreamChatGenerics> & {
-    opacity: Animated.SharedValue<number>;
-    visible: Animated.SharedValue<number>;
+    opacity: SharedValue<number>;
+    visible: SharedValue<number>;
     photo?: Photo<StreamChatGenerics>;
     /* Lookup key in the language corresponding translations sheet to perform date formatting */
   };
@@ -124,12 +125,13 @@ export const ImageGalleryHeader = <
   };
 
   return (
-    <View
+    <Animated.View
       onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
       pointerEvents={'box-none'}
+      style={[container, headerStyle]}
     >
-      <ReanimatedSafeAreaView style={[{ backgroundColor: white }, container, headerStyle]}>
-        <View style={[styles.innerContainer, innerContainer]}>
+      <SafeAreaView style={{ backgroundColor: white }}>
+        <View style={[styles.innerContainer, { backgroundColor: white }, innerContainer]}>
           {leftElement ? (
             leftElement({ hideOverlay, photo })
           ) : (
@@ -155,8 +157,8 @@ export const ImageGalleryHeader = <
             <View style={[styles.rightContainer, rightContainer]} />
           )}
         </View>
-      </ReanimatedSafeAreaView>
-    </View>
+      </SafeAreaView>
+    </Animated.View>
   );
 };
 

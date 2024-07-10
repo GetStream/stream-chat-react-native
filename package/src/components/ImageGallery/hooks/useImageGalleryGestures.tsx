@@ -66,7 +66,6 @@ export const useImageGalleryGestures = ({
   const doubleTapRef = useRef<GestureType | undefined>(undefined);
   const panRef = useRef<GestureType | undefined>(undefined);
   const pinchRef = useRef<GestureType | undefined>(undefined);
-  const singleTapRef = useRef<GestureType | undefined>(undefined);
   const { overlay, setOverlay } = useOverlayContext();
   const isAndroid = Platform.OS === 'android';
 
@@ -164,7 +163,7 @@ export const useImageGalleryGestures = ({
     .enabled(overlay === 'gallery')
     .maxPointers(isAndroid ? 0 : 1)
     .minDistance(10)
-    .onStart(() => {
+    .onBegin(() => {
       if (!isPinch.value) {
         /**
          * Cancel any previous motion animation on translations when a touch
@@ -259,7 +258,7 @@ export const useImageGalleryGestures = ({
         overlayOpacity.value = localEvtScale;
       }
     })
-    .onEnd((event) => {
+    .onFinalize((event) => {
       if (!isPinch.value && event.numberOfPointers < 2) {
         /**
          * To determine if the fling should page to the next image we
@@ -484,7 +483,7 @@ export const useImageGalleryGestures = ({
        */
       hasPinched.value = HasPinched.FALSE;
     })
-    .onChange((event) => {
+    .onUpdate((event) => {
       /**
        * Android starts with a zero event with 1 touch instead of two
        * we therefore must wait to capture starting info until the double
@@ -661,12 +660,11 @@ export const useImageGalleryGestures = ({
   const singleTap = Gesture.Tap()
     .minPointers(1)
     .numberOfTaps(1)
-    .onEnd(() => {
+    .onStart(() => {
       cancelAnimation(headerFooterVisible);
       headerFooterVisible.value = headerFooterVisible.value > 0 ? withTiming(0) : withTiming(1);
     })
-    .requireExternalGestureToFail(panRef, pinchRef, doubleTapRef)
-    .withRef(singleTapRef);
+    .requireExternalGestureToFail(panRef, pinchRef, doubleTapRef);
 
   /**
    * Double tap handler to zoom back out and hide header and footer

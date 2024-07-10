@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BackHandler, Keyboard, Platform, StyleSheet } from 'react-native';
 
-import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
+import { FlatList } from 'react-native-gesture-handler';
+
+import BottomSheet from '@gorhom/bottom-sheet';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
@@ -270,7 +272,7 @@ export const AttachmentPicker = React.forwardRef(
           snapPoints={snapPoints}
         >
           {iOSLimited && <AttachmentPickerIOSSelectMorePhotos />}
-          <BottomSheetFlatList
+          <FlatList
             contentContainerStyle={[
               styles.container,
               { backgroundColor: white },

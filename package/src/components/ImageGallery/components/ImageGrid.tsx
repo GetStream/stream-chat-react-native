@@ -1,7 +1,9 @@
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
-import { BottomSheetFlatList, TouchableOpacity } from '@gorhom/bottom-sheet';
+import { FlatList } from 'react-native-gesture-handler';
+
+import { TouchableOpacity } from '@gorhom/bottom-sheet';
 
 import { VideoThumbnail } from '../../../components/Attachment/VideoThumbnail';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
@@ -155,7 +157,7 @@ export const ImageGrid = <
   }));
 
   return (
-    <BottomSheetFlatList<GridImageItem<StreamChatGenerics>>
+    <FlatList<GridImageItem<StreamChatGenerics>>
       accessibilityLabel='Image Grid'
       contentContainerStyle={[
         styles.contentContainer,

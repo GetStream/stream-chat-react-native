@@ -7,6 +7,7 @@ import Animated, {
   Extrapolation,
   interpolate,
   runOnJS,
+  SharedValue,
   useAnimatedStyle,
   useSharedValue,
   withDecay,
@@ -91,8 +92,8 @@ export type MessageOverlayPropsWithContext<
     | 'messageReactions'
     | 'messageTextNumberOfLines'
   > & {
-    overlayOpacity: Animated.SharedValue<number>;
-    showScreen?: Animated.SharedValue<number>;
+    overlayOpacity: SharedValue<number>;
+    showScreen?: SharedValue<number>;
   };
 
 const MessageOverlayWithContext = <

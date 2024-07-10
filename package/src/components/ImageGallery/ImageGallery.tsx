@@ -7,6 +7,7 @@ import Animated, {
   Easing,
   runOnJS,
   runOnUI,
+  SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -103,7 +104,7 @@ export type ImageGalleryCustomComponents<
 
 type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   ImageGalleryCustomComponents<StreamChatGenerics> & {
-    overlayOpacity: Animated.SharedValue<number>;
+    overlayOpacity: SharedValue<number>;
   } & Pick<
       OverlayProviderProps<StreamChatGenerics>,
       | 'giphyVersion'
