@@ -354,4 +354,12 @@ export const registerNativeHandlers = (handlers: Handlers) => {
   }
 };
 
+export const isImagePickerAvailable = () => !!takePhoto;
+export const isDocumentPickerAvailable = () => !!pickDocument;
+export const isClipboardAvailable = () => !!setClipboardString;
+export const isVideoPlayerAvailable = () => !!Video;
+export const isHapticFeedbackAvailable = () => !!triggerHaptic;
+export const isShareImageAvailable = () => !!shareImage;
+export const isFileSystemAvailable = () => !!saveFile || !!deleteFile;
+export const isAudioRecorderAvailable = () => !!Audio.startRecording;
 export const isSoundPackageAvailable = () => !!Sound.Player || !!Sound.initializeSound;

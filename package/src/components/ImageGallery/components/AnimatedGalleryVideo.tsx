@@ -5,6 +5,7 @@ import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 import { useViewport } from '../../../hooks/useViewport';
 import {
+  isVideoPlayerAvailable,
   PlaybackStatus,
   Video,
   VideoPayloadData,
@@ -186,7 +187,7 @@ export const AnimatedGalleryVideo = React.memo(
           },
         ]}
       >
-        {Video ? (
+        {isVideoPlayerAvailable() ? (
           <Video
             onBuffer={onBuffer}
             onEnd={onEnd}

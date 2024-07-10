@@ -45,5 +45,4 @@ export const triggerHaptic = Haptics
           Haptics.selectionAsync();
       }
     }
-  : // eslint-disable-next-line @typescript-eslint/no-empty-function
-    () => {};
+  : () => {};

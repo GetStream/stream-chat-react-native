@@ -40,7 +40,7 @@ import { useImageGalleryContext } from '../../contexts/imageGalleryContext/Image
 import { OverlayProviderProps } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useViewport } from '../../hooks/useViewport';
-import { Video, VideoType } from '../../native';
+import { isVideoPlayerAvailable, VideoType } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
@@ -229,7 +229,7 @@ export const ImageGallery = <
               !attachment.title_link &&
               !attachment.og_scrape_url &&
               getUrlOfImageAttachment(attachment)) ||
-            (Video && attachment.type === 'video'),
+            (isVideoPlayerAvailable() && attachment.type === 'video'),
         )
         .reverse() || [];
 

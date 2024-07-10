@@ -30,6 +30,9 @@ import { ImageGallery, ImageGalleryCustomComponents } from '../ImageGallery';
 jest.mock('../../../native.ts', () => {
   const View = require('react-native/Libraries/Components/View/View');
   return {
+    isFileSystemAvailable: jest.fn(() => true),
+    isShareImageAvailable: jest.fn(() => true),
+    isVideoPlayerAvailable: jest.fn(() => true),
     Video: View,
   };
 });
