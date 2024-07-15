@@ -1,5 +1,17 @@
 # Change Log
 
+### [5.33.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.33.0...v5.33.1) (2024-07-08)
+
+
+### Bug Fixes
+
+* add borderRadius theme property for Gallery image ([#2580](https://github.com/GetStream/stream-chat-react-native/issues/2580)) ([8d0e5a4](https://github.com/GetStream/stream-chat-react-native/commit/8d0e5a435e9868e8a5010723563795e01702584b))
+* add copy and flag message action handler to actionHandlers ([#2573](https://github.com/GetStream/stream-chat-react-native/issues/2573)) ([f264bf0](https://github.com/GetStream/stream-chat-react-native/commit/f264bf0fde4ea287250b5833b114187bf57ff0bc))
+* channel preview update on new message when coming from BG to FG ([#2585](https://github.com/GetStream/stream-chat-react-native/issues/2585)) ([ea688c3](https://github.com/GetStream/stream-chat-react-native/commit/ea688c3096b368fb245b0d28671791b5c66b248e))
+* show parent thread message on navigation through message action if its empty ([#2577](https://github.com/GetStream/stream-chat-react-native/issues/2577)) ([a40facd](https://github.com/GetStream/stream-chat-react-native/commit/a40facd09a620138db9bb27ba4df00de875b7c81))
+* sound in silent mode for audio attachments ([87b32c5](https://github.com/GetStream/stream-chat-react-native/commit/87b32c5a3560d401fcc12e04382f8b8733d7f792))
+* thread reaction list rerender and add prop to enable/disable press on parent message ([#2575](https://github.com/GetStream/stream-chat-react-native/issues/2575)) ([abf6cd8](https://github.com/GetStream/stream-chat-react-native/commit/abf6cd80487e2bf02312339d40253dacac9355cb))
+
 ## [5.33.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.32.1...v5.33.0) (2024-06-27)
 
 
