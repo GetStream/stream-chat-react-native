@@ -137,7 +137,7 @@ const CardWithContext = <
 
   const {
     theme: {
-      colors: { accent_blue, black, blue_alice, transparent, white },
+      colors: { accent_blue, black, blue_alice, static_black, static_white, transparent },
       messageSimple: {
         card: {
           authorName,
@@ -210,8 +210,10 @@ const CardWithContext = <
             style={[styles.cardCover, cover, stylesProp.cardCover]}
           >
             {isVideoCard ? (
-              <View style={[styles.playButtonStyle, roundedView, { backgroundColor: white }]}>
-                <Play height={height} pathFill={black} width={width} />
+              <View
+                style={[styles.playButtonStyle, roundedView, { backgroundColor: static_white }]}
+              >
+                <Play height={height} pathFill={static_black} width={width} />
               </View>
             ) : null}
           </ImageBackground>
