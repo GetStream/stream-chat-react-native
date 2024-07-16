@@ -84,7 +84,7 @@ const MessageSimpleWithContext = <
   const messageGroupedSingleOrBottom =
     groupStyles.includes('single') || groupStyles.includes('bottom');
 
-  const showReactions = hasReactions && ReactionList;
+  const showReactions = message.type !== 'deleted' && hasReactions && ReactionList;
 
   const lastMessageInMessageListStyles = [styles.lastMessageContainer, lastMessageContainer];
   const messageGroupedSingleOrBottomStyles = [
