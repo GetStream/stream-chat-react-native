@@ -1,6 +1,7 @@
 import { default as Dayjs } from 'dayjs';
 import 'dayjs/locale/nl';
 import localeData from 'dayjs/plugin/localeData';
+import moment from 'moment-timezone';
 
 import frTranslations from '../../i18n/fr.json';
 import nlTranslations from '../../i18n/nl.json';
@@ -17,6 +18,12 @@ const customDayjsLocaleConfig = {
   weekdaysMin: 'su_má_tý_mi_hó_fr_le'.split('_'),
   weekdaysShort: 'sun_mán_týs_mik_hós_frí_ley'.split('_'),
 };
+
+describe('Jest Timezone', () => {
+  it('global config should set the timezone to UTC', () => {
+    expect(new Date().getTimezoneOffset()).toBe(0);
+  });
+});
 
 describe('Streami18n instance - default', () => {
   const streami18nOptions = { logger: () => {} };
@@ -184,24 +191,56 @@ describe('setLanguage - switch to french', () => {
   });
 });
 
-describe('formatters property', () => {
-  it('contains the default timestampFormatter', () => {
-    expect(new Streami18n().formatters.timestampFormatter).toBeDefined();
-  });
-  it('allows to override the default timestampFormatter', async () => {
-    const i18n = new Streami18n({
-      formatters: { timestampFormatter: () => () => 'custom' },
-      translationsForLanguage: { abc: '{{ value | timestampFormatter }}' },
+describe('Streami18n timezone', () => {
+  describe.each([
+    ['Dayjs', Dayjs],
+    ['moment', moment],
+  ])('%s', (moduleName, module) => {
+    it('is by default the local timezone', () => {
+      const streamI18n = new Streami18n({ DateTimeParser: module });
+      const date = new Date();
+      expect(streamI18n.tDateTimeParser(date).format('H')).toBe(date.getHours().toString());
     });
-    await i18n.init();
-    expect(i18n.t('abc')).toBe('custom');
-  });
-  it('allows to add new custom formatter', async () => {
-    const i18n = new Streami18n({
-      formatters: { customFormatter: () => () => 'custom' },
-      translationsForLanguage: { abc: '{{ value | customFormatter }}' },
+
+    it('can be set to different timezone on init', () => {
+      const streamI18n = new Streami18n({ DateTimeParser: module, timezone: 'Europe/Prague' });
+      const date = new Date();
+      expect(streamI18n.tDateTimeParser(date).format('H')).not.toBe(date.getHours().toString());
+      expect(streamI18n.tDateTimeParser(date).format('H')).not.toBe(
+        (date.getUTCHours() - 2).toString(),
+      );
     });
-    await i18n.init();
-    expect(i18n.t('abc')).toBe('custom');
+
+    it('is ignored if datetime parser does not support timezones', () => {
+      const tz = module.tz;
+      delete module.tz;
+
+      const streamI18n = new Streami18n({ DateTimeParser: module, timezone: 'Europe/Prague' });
+      const date = new Date();
+      expect(streamI18n.tDateTimeParser(date).format('H')).toBe(date.getHours().toString());
+
+      module.tz = tz;
+    });
+    describe('formatters property', () => {
+      it('contains the default timestampFormatter', () => {
+        expect(new Streami18n().formatters.timestampFormatter).toBeDefined();
+      });
+      it('allows to override the default timestampFormatter', async () => {
+        const i18n = new Streami18n({
+          formatters: { timestampFormatter: () => () => 'custom' },
+          translationsForLanguage: { abc: '{{ value | timestampFormatter }}' },
+        });
+        await i18n.init();
+        expect(i18n.t('abc')).toBe('custom');
+      });
+      it('allows to add new custom formatter', async () => {
+        const i18n = new Streami18n({
+          formatters: { customFormatter: () => () => 'custom' },
+          translationsForLanguage: { abc: '{{ value | customFormatter }}' },
+        });
+        await i18n.init();
+        expect(i18n.t('abc')).toBe('custom');
+      });
+    });
   });
 });
