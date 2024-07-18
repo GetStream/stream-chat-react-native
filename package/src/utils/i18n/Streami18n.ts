@@ -527,17 +527,14 @@ export class Streami18n {
         finalOptions.disableDateTimeTranslations || !this.localeExists(this.currentLanguage)
           ? defaultLng
           : this.currentLanguage;
-      /**
-       * TS needs to know which is being called to accept the chain call
-       */
-      if (isDayJs(this.DateTimeParser)) {
-        return supportsTz(this.DateTimeParser)
+
+      // If the DateTimeParser is not a Dayjs instance, we assume it is a Moment instance.
+      if (!isDayJs(this.DateTimeParser)) {
+        return supportsTz(this.DateTimeParser) && this.timezone
           ? this.DateTimeParser(timestamp).tz(this.timezone).locale(language)
           : this.DateTimeParser(timestamp).locale(language);
       }
-      if (supportsTz(this.DateTimeParser) && this.timezone) {
-        return this.DateTimeParser(timestamp).tz(this.timezone).locale(language);
-      }
+
       return this.DateTimeParser(timestamp).locale(language);
     };
   }
