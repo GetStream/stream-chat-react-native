@@ -3,7 +3,6 @@ import calendar from 'dayjs/plugin/calendar';
 import localeData from 'dayjs/plugin/localeData';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import timezone from 'dayjs/plugin/timezone';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import utc from 'dayjs/plugin/utc';
 import i18n, { FallbackLng, TFunction } from 'i18next';
@@ -57,7 +56,6 @@ const defaultLng = 'en';
 
 Dayjs.extend(updateLocale);
 Dayjs.extend(utc);
-Dayjs.extend(timezone);
 
 Dayjs.updateLocale('en', {
   calendar: calendarFormats.en,
