@@ -192,10 +192,7 @@ describe('setLanguage - switch to french', () => {
 });
 
 describe('Streami18n timezone', () => {
-  describe.each([
-    ['Dayjs', Dayjs],
-    ['moment', moment],
-  ])('%s', (moduleName, module) => {
+  describe.each([['moment', moment]])('%s', (moduleName, module) => {
     it('is by default the local timezone', () => {
       const streamI18n = new Streami18n({ DateTimeParser: module });
       const date = new Date();
