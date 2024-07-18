@@ -1,6 +1,7 @@
 /* global require */
 // eslint-disable-next-line no-undef
 module.exports = {
+  globalSetup: './jest-global-setup.js',
   moduleNameMapper: {
     'mock-builders(.*)$': '<rootDir>/src/mock-builders$1',
   },

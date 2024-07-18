@@ -106,8 +106,8 @@ streami18n.registerTranslation('nl', {
 [`react-native-localize`](https://github.com/zoontek/react-native-localize#-react-native-localize) package provides a toolbox for React Native app localization. You can use this package to access user preferred locale, and use it to set language for chat components:
 
 ```tsx
-import *as RNLocalizefrom 'react-native-localize';
-const streami18n =new Streami18n();
+import * as RNLocalize from 'react-native-localize';
+const streami18n = new Streami18n();
 
 const userPreferredLocales = RNLocalize.getLocales();
 
@@ -176,14 +176,14 @@ const i18n =new Streami18n({
 Or by providing your own [Day.js](https://day.js.org/docs/en/installation/installation) object:
 
 ```tsx
-import Dayjsfrom 'dayjs';
+import Dayjs from 'dayjs';
 
 import 'dayjs/locale/nl';
 import 'dayjs/locale/it';
 // or if you want to include all locales
 import 'dayjs/min/locales';
 
-const i18n =new Streami18n({
+const i18n = new Streami18n({
   language: 'nl',
   DateTimeParser: Dayjs,
 });
@@ -194,6 +194,28 @@ If you would like to stick with English language for date-times in Stream compon
 ### Translating messages
 
 If your application has a user-base that speaks more than one language, Stream's Chat Client provides the option to automatically translate messages. For more information on using automatic machine translation for messages, see the [Chat Client Guide on Translation](https://getstream.io/chat/docs/react-native/translation/?language=javascript).
+
+### Timezone location
+
+To display date and time in different than machine's local timezone, you can provide the timezone parameter to the `Streami18n` constructor. The timezone value has to be a valid [timezone identifier string](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones). If no timezone parameter is provided, then the machine's local timezone is applied.
+
+:::note
+On our React Native SDK, the timezone is only supported through `moment-timezone` and not through the default `Dayjs`. This is because of the [following issue](https://github.com/iamkun/dayjs/issues/1377).
+
+So, to ensure this please pass the `moment-timezone` object to the `DateTimeParser` key of the `Streami18n` constructor.
+:::
+
+```tsx
+import { Streami18n } from 'stream-chat-react';
+import momentTimezone from 'moment-timezone';
+
+const streami18n = new Streami18n({
+  DateTimeParser: momentTimezone,
+  timezone: 'Europe/Budapest',
+});
+```
+
+Moment Timezone will automatically load and extend the moment module, then return the modified instance. This will also prevent multiple versions of moment being installed in a project.
 
 ## Options
 
