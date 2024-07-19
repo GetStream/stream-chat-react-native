@@ -18,7 +18,7 @@ import {
   MessageFlag,
   Mute,
   Pin,
-  SendUp,
+  Resend,
   ThreadReply,
   Unpin,
   UserDelete,
@@ -95,7 +95,7 @@ export const useMessageActions = <
   }) => {
   const {
     theme: {
-      colors: { accent_blue, accent_red, grey },
+      colors: { accent_red, grey },
     },
   } = useTheme();
   const {
@@ -179,7 +179,7 @@ export const useMessageActions = <
       handleDeleteMessage();
     },
     actionType: 'deleteMessage',
-    icon: <Delete fill={accent_red} size={32} />,
+    icon: <Delete fill={accent_red} size={24} />,
     title: t('Delete Message'),
     titleStyle: { color: accent_red },
   };
@@ -206,7 +206,7 @@ export const useMessageActions = <
       handleTogglePinMessage();
     },
     actionType: 'pinMessage',
-    icon: <Pin height={23} pathFill={grey} width={24} />,
+    icon: <Pin pathFill={grey} size={24} />,
     title: t('Pin to Conversation'),
   };
 
@@ -289,7 +289,7 @@ export const useMessageActions = <
       await handleResendMessage();
     },
     actionType: 'retry',
-    icon: <SendUp fill={accent_blue} size={32} />,
+    icon: <Resend pathFill={grey} />,
     title: t('Resend'),
   };
 
