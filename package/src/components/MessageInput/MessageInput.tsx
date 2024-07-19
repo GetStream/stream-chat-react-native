@@ -771,12 +771,7 @@ const MessageInputWithContext = <
                 ) : (
                   <View style={[styles.sendButtonContainer, sendButtonContainer]}>
                     <SendButton
-                      disabled={
-                        disabled ||
-                        sending.current ||
-                        !isValidMessage() ||
-                        (giphyActive && !isOnline)
-                      }
+                      disabled={sending.current || !isValidMessage() || (giphyActive && !isOnline)}
                     />
                   </View>
                 ))}
@@ -1071,7 +1066,8 @@ export const MessageInput = <
 
   const { t } = useTranslationContext();
 
-  if ((disabled || !ownCapabilities.sendMessage) && SendMessageDisallowedIndicator) {
+  // If the channel is frozen and the input is not in editing state.
+  if (!editing && !ownCapabilities.sendMessage && SendMessageDisallowedIndicator) {
     return <SendMessageDisallowedIndicator />;
   }
 

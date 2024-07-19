@@ -627,7 +627,7 @@ const MessageWithContext = <
   };
 
   const onLongPressMessage =
-    disabled || hasAttachmentActions || isBlockedMessage(message)
+    hasAttachmentActions || isBlockedMessage(message)
       ? () => null
       : onLongPressMessageProp
       ? (payload?: TouchableHandlerPayload) =>

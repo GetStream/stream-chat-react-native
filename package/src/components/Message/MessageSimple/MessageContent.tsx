@@ -116,7 +116,6 @@ const MessageContentWithContext = <
     additionalTouchableProps,
     alignment,
     Attachment,
-    disabled,
     FileAttachmentGroup,
     Gallery,
     groupStyles,
@@ -272,7 +271,7 @@ const MessageContentWithContext = <
   return (
     <TouchableOpacity
       activeOpacity={0.7}
-      disabled={disabled || preventPress}
+      disabled={preventPress}
       onLongPress={(event) => {
         if (onLongPress) {
           onLongPress({
