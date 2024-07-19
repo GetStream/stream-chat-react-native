@@ -2,11 +2,15 @@ import React from 'react';
 
 import { IconProps, RootPath, RootSvg } from './utils/base';
 
-export const Pin = (props: IconProps) => (
+type Props = IconProps & {
+  size: number;
+};
+
+export const Pin = (props: Props) => (
   <RootSvg
-    height={props.height}
-    viewBox={`0 0 ${props.height} ${props.width}`}
-    width={props.width}
+    height={props.size}
+    viewBox={`0 0 ${props.size} ${props.size}`}
+    width={props.size}
     {...props}
   >
     <RootPath
