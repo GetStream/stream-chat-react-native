@@ -6492,10 +6492,10 @@ react-native-url-polyfill@^1.3.0:
   dependencies:
     whatwg-url-without-unicode "8.0.0-3"
 
-react-native-video@6.0.0-beta.8:
-  version "6.0.0-beta.8"
-  resolved "https://registry.yarnpkg.com/react-native-video/-/react-native-video-6.0.0-beta.8.tgz#76597ea61d3791beb14731e9e469ddb86e88adf9"
-  integrity sha512-pWAJKhP6yt7sIe/u4vi292sWaHNgqSwZbKzauRKBHHEJr2pY/EG7Lis5hDI+rOJlQ0NmsPEurbUPH5TGQsFJFw==
+react-native-video@6.4.2:
+  version "6.4.2"
+  resolved "https://registry.yarnpkg.com/react-native-video/-/react-native-video-6.4.2.tgz#f1d8e7594d36aa513ba21aa86bcd6e11c2716915"
+  integrity sha512-8/8AVnamWJU80ZTWFFrLtpzfJeonSM8C8C8YycWAnjzro+FpJqpnQFFheVU2l2BSrnRTGA3eT2p4euXc+SByMw==
 
 react-native@*, react-native@^0.73.6:
   version "0.73.6"

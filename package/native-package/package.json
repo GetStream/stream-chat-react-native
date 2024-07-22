@@ -24,7 +24,7 @@
     "react-native-haptic-feedback": ">=2.2.0",
     "react-native-image-picker": ">=7.1.2",
     "react-native-share": ">=10.2.1",
-    "react-native-video": ">=5.2.1"
+    "react-native-video": ">=6.4.2"
   },
   "peerDependenciesMeta": {
     "@react-native-clipboard/clipboard": {
