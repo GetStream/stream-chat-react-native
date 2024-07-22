@@ -63,7 +63,6 @@ export type MessageContentPropsWithContext<
 > = Pick<
   MessageContextValue<StreamChatGenerics>,
   | 'alignment'
-  | 'disabled'
   | 'isEditedMessageOpen'
   | 'goToMessage'
   | 'groupStyles'
@@ -401,7 +400,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   nextProps: MessageContentPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
-    disabled: prevDisabled,
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
     hasReactions: prevHasReactions,
@@ -417,7 +415,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     t: prevT,
   } = prevProps;
   const {
-    disabled: nextDisabled,
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     hasReactions: nextHasReactions,
@@ -431,9 +428,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     otherAttachments: nextOtherAttachments,
     t: nextT,
   } = nextProps;
-
-  const disabledEqual = prevDisabled === nextDisabled;
-  if (!disabledEqual) return false;
 
   const hasReactionsEqual = prevHasReactions === nextHasReactions;
   if (!hasReactionsEqual) return false;
@@ -553,7 +547,6 @@ export const MessageContent = <
 ) => {
   const {
     alignment,
-    disabled,
     goToMessage,
     groupStyles,
     hasReactions,
@@ -597,7 +590,6 @@ export const MessageContent = <
         additionalTouchableProps,
         alignment,
         Attachment,
-        disabled,
         FileAttachmentGroup,
         Gallery,
         goToMessage,

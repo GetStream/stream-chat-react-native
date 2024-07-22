@@ -110,7 +110,7 @@ export type MessageContextValue<
   preventPress?: boolean;
   /** Whether or not the avatar show show next to Message */
   showAvatar?: boolean;
-} & Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'disabled' | 'members'>;
+} & Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'members'>;
 
 export const MessageContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as MessageContextValue,
