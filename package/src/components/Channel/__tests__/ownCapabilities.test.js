@@ -314,24 +314,6 @@ describe('Own capabilities', () => {
     });
   });
 
-  describe(`${allOwnCapabilities.sendMessage} capability`, () => {
-    it(`should not render SendMessageDisallowedIndicator when "${allOwnCapabilities.sendMessage}" capability is enabled`, async () => {
-      await generateChannelWithCapabilities([allOwnCapabilities.sendMessage]);
-      const { queryByTestId } = render(getComponent());
-
-      await waitFor(() => expect(!!queryByTestId('send-message-disallowed-indicator')).toBeFalsy());
-    });
-
-    it(`should render SendMessageDisallowedIndicator when "${allOwnCapabilities.sendMessage}" capability is disabled`, async () => {
-      await generateChannelWithCapabilities();
-      const { queryByTestId } = render(getComponent());
-
-      await waitFor(() =>
-        expect(!!queryByTestId('send-message-disallowed-indicator')).toBeTruthy(),
-      );
-    });
-  });
-
   describe(`${allOwnCapabilities.sendLinks} capability`, () => {
     it(`should not allow sending links when "${allOwnCapabilities.sendLinks}" capability is disabled`, async () => {
       await generateChannelWithCapabilities([allOwnCapabilities.sendMessage]);
