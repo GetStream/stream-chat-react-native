@@ -219,7 +219,7 @@ export type LocalMessageInputContext<
 
 export type InputMessageInputContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled'> & {
+> = {
   /**
    * Controls how many pixels to the top side the user has to scroll in order to lock the recording view and allow the user to lift their finger from the screen without stopping the recording.
    */
@@ -241,7 +241,7 @@ export type InputMessageInputContextValue<
    *
    * Defaults to and accepts same props as: [AttachButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/attach-button/)
    */
-  AttachButton: React.ComponentType<AttachButtonProps<StreamChatGenerics>>;
+  AttachButton: React.ComponentType<AttachButtonProps>;
   /**
    * Custom UI component for audio attachment upload preview.
    *
@@ -329,7 +329,7 @@ export type InputMessageInputContextValue<
    *
    * Defaults to and accepts same props as: [MoreOptionsButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/more-options-button/)
    */
-  MoreOptionsButton: React.ComponentType<MoreOptionsButtonProps<StreamChatGenerics>>;
+  MoreOptionsButton: React.ComponentType<MoreOptionsButtonProps>;
   /** Limit on the number of lines in the text input before scrolling */
   numberOfLines: number;
   quotedMessage: boolean | MessageType<StreamChatGenerics>;

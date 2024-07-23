@@ -2219,7 +2219,6 @@ const ChannelWithContext = <
     CommandsButton,
     compressImageQuality,
     CooldownTimer,
-    disabled: disabledValue,
     doDocUploadRequest,
     doImageUploadRequest,
     editing,

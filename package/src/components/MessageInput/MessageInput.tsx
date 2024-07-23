@@ -96,10 +96,7 @@ type MessageInputPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<AttachmentPickerContextValue, 'AttachmentPickerSelectionBar'> &
   Pick<ChatContextValue<StreamChatGenerics>, 'isOnline'> &
-  Pick<
-    ChannelContextValue<StreamChatGenerics>,
-    'disabled' | 'members' | 'threadList' | 'watchers'
-  > &
+  Pick<ChannelContextValue<StreamChatGenerics>, 'members' | 'threadList' | 'watchers'> &
   Pick<
     MessageInputContextValue<StreamChatGenerics>,
     | 'additionalTextInputProps'
@@ -184,7 +181,6 @@ const MessageInputWithContext = <
     closeAttachmentPicker,
     cooldownEndsAt,
     CooldownTimer,
-    disabled,
     editing,
     FileUploadPreview,
     fileUploads,
@@ -457,7 +453,8 @@ const MessageInputWithContext = <
         fileUploads.length > 0 ||
         mentionedUsers.length > 0 ||
         imageUploads.length > 0 ||
-        numberOfUploads > 0)
+        numberOfUploads > 0) &&
+      resetInput
     ) {
       resetInput();
     }
@@ -517,7 +514,6 @@ const MessageInputWithContext = <
   };
 
   const additionalTextInputContainerProps = {
-    editable: disabled ? false : undefined,
     ...additionalTextInputProps,
   };
 
@@ -844,7 +840,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     asyncMessagesSlideToCancelDistance: prevAsyncMessagesSlideToCancelDistance,
     asyncUploads: prevAsyncUploads,
     audioRecordingEnabled: prevAsyncMessagesEnabled,
-    disabled: prevDisabled,
     editing: prevEditing,
     fileUploads: prevFileUploads,
     giphyActive: prevGiphyActive,
@@ -867,7 +862,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     asyncMessagesSlideToCancelDistance: nextAsyncMessagesSlideToCancelDistance,
     asyncUploads: nextAsyncUploads,
     audioRecordingEnabled: nextAsyncMessagesEnabled,
-    disabled: nextDisabled,
     editing: nextEditing,
     fileUploads: nextFileUploads,
     giphyActive: nextGiphyActive,
@@ -905,9 +899,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const asyncMessagesSlideToCancelDistanceEqual =
     prevAsyncMessagesSlideToCancelDistance === nextAsyncMessagesSlideToCancelDistance;
   if (!asyncMessagesSlideToCancelDistanceEqual) return false;
-
-  const disabledEqual = prevDisabled === nextDisabled;
-  if (!disabledEqual) return false;
 
   const editingEqual = !!prevEditing === !!nextEditing;
   if (!editingEqual) return false;
@@ -998,7 +989,7 @@ export const MessageInput = <
   const { isOnline } = useChatContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
-  const { disabled, members, threadList, watchers } = useChannelContext<StreamChatGenerics>();
+  const { members, threadList, watchers } = useChannelContext<StreamChatGenerics>();
 
   const {
     additionalTextInputProps,
@@ -1095,7 +1086,6 @@ export const MessageInput = <
         closeAttachmentPicker,
         cooldownEndsAt,
         CooldownTimer,
-        disabled,
         editing,
         FileUploadPreview,
         fileUploads,
