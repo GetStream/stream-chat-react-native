@@ -38,7 +38,6 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
-import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import {
   SuggestionsContextValue,
   useSuggestionsContext,
@@ -987,9 +986,8 @@ export const MessageInput = <
 ) => {
   const { AttachmentPickerSelectionBar } = useAttachmentPickerContext();
   const { isOnline } = useChatContext();
-  const ownCapabilities = useOwnCapabilitiesContext();
 
-  const { members, threadList, watchers } = useChannelContext<StreamChatGenerics>();
+  const { disabled, members, threadList, watchers } = useChannelContext<StreamChatGenerics>();
 
   const {
     additionalTextInputProps,
@@ -1058,7 +1056,7 @@ export const MessageInput = <
   const { t } = useTranslationContext();
 
   // If the channel is frozen and the input is not in editing state.
-  if (!editing && !ownCapabilities.sendMessage && SendMessageDisallowedIndicator) {
+  if (!editing && disabled && SendMessageDisallowedIndicator) {
     return <SendMessageDisallowedIndicator />;
   }
 
