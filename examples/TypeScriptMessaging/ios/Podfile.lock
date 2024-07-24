@@ -73,9 +73,6 @@ PODS:
   - hermes-engine/Pre-built (0.73.6)
   - libevent (2.1.12)
   - OpenSSL-Universal (1.1.1100)
-  - PromisesObjC (2.4.0)
-  - PromisesSwift (2.4.0):
-    - PromisesObjC (= 2.4.0)
   - RCT-Folly (2022.05.16.00):
     - boost
     - DoubleConversion
@@ -963,14 +960,13 @@ PODS:
     - React-Core
   - react-native-safe-area-context (4.9.0):
     - React-Core
-  - react-native-video (6.0.0-beta.8):
+  - react-native-video (6.4.2):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
-    - react-native-video/Video (= 6.0.0-beta.8)
-  - react-native-video/Video (6.0.0-beta.8):
+    - react-native-video/Video (= 6.4.2)
+  - react-native-video/Video (6.4.2):
     - glog
-    - PromisesSwift
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
   - React-nativeconfig (0.73.6)
@@ -1288,8 +1284,6 @@ SPEC REPOS:
     - fmt
     - libevent
     - OpenSSL-Universal
-    - PromisesObjC
-    - PromisesSwift
     - SocketRocket
     - TOCropViewController
 
@@ -1449,8 +1443,6 @@ SPEC CHECKSUMS:
   hermes-engine: 9cecf9953a681df7556b8cc9c74905de8f3293c0
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
-  PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
-  PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
   RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
   RCTRequired: ca1d7414aba0b27efcfa2ccd37637edb1ab77d96
   RCTTypeSafety: 678e344fb976ff98343ca61dc62e151f3a042292
@@ -1479,7 +1471,7 @@ SPEC CHECKSUMS:
   react-native-netinfo: 299dad906cdbf3b67bcc6f693c807f98bdd127cc
   react-native-quick-sqlite: 2b225dadc63b670f027111e58f6f169773f6d755
   react-native-safe-area-context: b97eb6f9e3b7f437806c2ce5983f479f8eb5de4b
-  react-native-video: d440605e68cf173e70f0b25112455e3d86890663
+  react-native-video: da6a37174e0cf74ba3decdbe671a0bf8e309538c
   React-nativeconfig: b4d4e9901d4cabb57be63053fd2aa6086eb3c85f
   React-NativeModulesApple: cd26e56d56350e123da0c1e3e4c76cb58a05e1ee
   React-perflogger: 5f49905de275bac07ac7ea7f575a70611fa988f2
