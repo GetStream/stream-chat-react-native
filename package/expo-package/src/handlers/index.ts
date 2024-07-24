@@ -8,5 +8,4 @@ export * from './NetInfo';
 export * from './oniOS14GalleryLibrarySelectionChange';
 export * from './saveFile';
 export * from './Sound';
-export * from './takePhoto';
 export * from './Video';

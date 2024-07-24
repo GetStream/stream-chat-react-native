@@ -360,11 +360,11 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     Sound = handlers.Sound;
   }
 
-  if (handlers.takePhoto) {
+  if (handlers.takePhoto !== undefined) {
     takePhoto = handlers.takePhoto;
   }
 
-  if (handlers.triggerHaptic) {
+  if (handlers.triggerHaptic !== undefined) {
     triggerHaptic = handlers.triggerHaptic;
   }
 
@@ -377,6 +377,7 @@ export const registerNativeHandlers = (handlers: Handlers) => {
   }
 };
 
+export const isImagePickerAvailable = () => !!takePhoto;
 export const isVideoPackageAvailable = () => !!Video;
 export const isAudioPackageAvailable = () => !!Sound.Player || !!Sound.initializeSound;
 export const isRecordingPackageAvailable = () => !!Audio;

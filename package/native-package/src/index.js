@@ -13,7 +13,6 @@ import {
   oniOS14GalleryLibrarySelectionChange,
   saveFile,
   Sound,
-  takePhoto,
   Video,
 } from './handlers';
 
@@ -22,6 +21,7 @@ import {
   pickDocument,
   setClipboardString,
   shareImage,
+  takePhoto,
   triggerHaptic,
 } from './optionalDependencies';
 

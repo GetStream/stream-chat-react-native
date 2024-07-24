@@ -4,3 +4,4 @@ export * from './Video';
 export * from './triggerHaptic';
 export * from './setClipboardString';
 export * from './pickDocument';
+export * from './takePhoto';

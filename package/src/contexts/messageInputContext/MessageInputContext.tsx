@@ -307,6 +307,8 @@ export type InputMessageInputContextValue<
    */
   FileUploadPreview: React.ComponentType<FileUploadPreviewProps<StreamChatGenerics>>;
 
+  /** When false, CameraSelectorIcon will be hidden */
+  hasCameraPicker: boolean;
   /** When false, CommandsButton will be hidden */
   hasCommands: boolean;
   /** When false, FileSelectorIcon will be hidden */
