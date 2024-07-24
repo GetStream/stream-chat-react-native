@@ -21,7 +21,7 @@ import type { UserResponse } from 'stream-chat';
 import { useAudioController } from './hooks/useAudioController';
 import { useCountdown } from './hooks/useCountdown';
 
-import { ChatContextValue, useChatContext } from '../../contexts';
+import { ChatContextValue, useChatContext, useOwnCapabilitiesContext } from '../../contexts';
 import {
   AttachmentPickerContextValue,
   useAttachmentPickerContext,
@@ -986,6 +986,7 @@ export const MessageInput = <
 ) => {
   const { AttachmentPickerSelectionBar } = useAttachmentPickerContext();
   const { isOnline } = useChatContext();
+  const ownCapabilities = useOwnCapabilitiesContext();
 
   const { disabled, members, threadList, watchers } = useChannelContext<StreamChatGenerics>();
 
@@ -1055,8 +1056,11 @@ export const MessageInput = <
 
   const { t } = useTranslationContext();
 
-  // If the channel is frozen and the input is not in editing state.
-  if (!editing && disabled && SendMessageDisallowedIndicator) {
+  /**
+   * Disable the message input if the channel is frozen, or the user doesn't have the capability to send a message.
+   * Enable it in frozen mode, if it the input has editing state.
+   */
+  if (!editing && disabled && !ownCapabilities.sendMessage && SendMessageDisallowedIndicator) {
     return <SendMessageDisallowedIndicator />;
   }
 
