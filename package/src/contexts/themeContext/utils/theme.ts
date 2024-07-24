@@ -499,6 +499,12 @@ export type Theme = {
       moreImagesContainer: ViewStyle;
       moreImagesText: TextStyle;
       thumbnail: ViewStyle;
+      imageBorderRadius?: {
+        borderBottomLeftRadius: number;
+        borderBottomRightRadius: number;
+        borderTopLeftRadius: number;
+        borderTopRightRadius: number;
+      };
     };
     giphy: {
       buttonContainer: ViewStyle;
@@ -1002,8 +1008,8 @@ export const defaultTheme: Theme = {
         videoContainer: {},
       },
       playIcon: {
-        height: 24,
-        width: 24,
+        height: 32,
+        width: 32,
       },
     },
     container: {},
@@ -1079,6 +1085,7 @@ export const defaultTheme: Theme = {
       gridHeight: 195,
       gridWidth: 256,
       image: {},
+      imageBorderRadius: undefined,
       imageContainer: {},
       maxHeight: 300,
       maxWidth: 256,

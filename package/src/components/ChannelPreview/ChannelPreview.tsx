@@ -42,7 +42,7 @@ const ChannelPreviewWithContext = <
   const [forceUpdate, setForceUpdate] = useState(0);
   const [unread, setUnread] = useState(channel.countUnread());
 
-  const latestMessagePreview = useLatestMessagePreview(channel, forceUpdate);
+  const latestMessagePreview = useLatestMessagePreview(channel, forceUpdate, lastMessage);
 
   const channelLastMessage = channel.lastMessage();
   const channelLastMessageString = `${channelLastMessage?.id}${channelLastMessage?.updated_at}`;

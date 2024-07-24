@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import Dayjs from 'dayjs';
 
 import type { TFunction } from 'i18next';
-import type { Moment } from 'moment';
+import type { Moment } from 'moment-timezone';
 
 import type { TranslationLanguages } from 'stream-chat';
 

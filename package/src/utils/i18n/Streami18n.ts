@@ -4,9 +4,10 @@ import localeData from 'dayjs/plugin/localeData';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import updateLocale from 'dayjs/plugin/updateLocale';
+import utc from 'dayjs/plugin/utc';
 import i18n, { FallbackLng, TFunction } from 'i18next';
 
-import type moment from 'moment';
+import type momentTimezone from 'moment-timezone';
 
 import { calendarFormats } from './calendarFormats';
 import {
@@ -54,6 +55,7 @@ const defaultNS = 'translation';
 const defaultLng = 'en';
 
 Dayjs.extend(updateLocale);
+Dayjs.extend(utc);
 
 Dayjs.updateLocale('en', {
   calendar: calendarFormats.en,
@@ -147,18 +149,28 @@ const en_locale = {
   weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
 };
 
+type DateTimeParserModule = typeof Dayjs | typeof momentTimezone;
+
 // Type guards to check DayJs
-const isDayJs = (dateTimeParser: typeof Dayjs | typeof moment): dateTimeParser is typeof Dayjs =>
+const isDayJs = (dateTimeParser: DateTimeParserModule): dateTimeParser is typeof Dayjs =>
   (dateTimeParser as typeof Dayjs).extend !== undefined;
 
+type TimezoneParser = {
+  tz: momentTimezone.MomentTimezone | Dayjs.Dayjs;
+};
+
+const supportsTz = (dateTimeParser: unknown): dateTimeParser is TimezoneParser =>
+  (dateTimeParser as TimezoneParser).tz !== undefined;
+
 type Streami18nOptions = {
-  DateTimeParser?: typeof Dayjs | typeof moment;
+  DateTimeParser?: DateTimeParserModule;
   dayjsLocaleConfigForLanguage?: Partial<ILocale>;
   debug?: boolean;
   disableDateTimeTranslations?: boolean;
   formatters?: Partial<PredefinedFormatters> & CustomFormatters;
   language?: string;
   logger?: (msg?: string) => void;
+  timezone?: string;
   translationsForLanguage?: Partial<typeof enTranslations>;
 };
 
@@ -385,10 +397,14 @@ export class Streami18n {
    */
   logger: (msg?: string) => void;
   currentLanguage: string;
-  DateTimeParser: typeof Dayjs | typeof moment;
+  DateTimeParser: DateTimeParserModule;
   formatters: PredefinedFormatters & CustomFormatters = predefinedFormatters;
   isCustomDateTimeParser: boolean;
   i18nextConfig: I18NextConfig;
+  /**
+   * A valid TZ identifier string (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
+   */
+  timezone?: string;
 
   /**
    * Constructor accepts following options:
@@ -427,6 +443,7 @@ export class Streami18n {
 
     this.currentLanguage = finalOptions.language;
     this.DateTimeParser = finalOptions.DateTimeParser;
+    this.timezone = finalOptions.timezone;
     this.formatters = { ...predefinedFormatters, ...options?.formatters };
 
     try {
@@ -504,19 +521,19 @@ export class Streami18n {
     }
 
     this.tDateTimeParser = (timestamp) => {
-      if (finalOptions.disableDateTimeTranslations || !this.localeExists(this.currentLanguage)) {
-        /**
-         * TS needs to know which is being called to accept the chain call
-         */
-        if (isDayJs(this.DateTimeParser)) {
-          return this.DateTimeParser(timestamp).locale(defaultLng);
-        }
-        return this.DateTimeParser(timestamp).locale(defaultLng);
+      const language =
+        finalOptions.disableDateTimeTranslations || !this.localeExists(this.currentLanguage)
+          ? defaultLng
+          : this.currentLanguage;
+
+      // If the DateTimeParser is not a Dayjs instance, we assume it is a Moment instance.
+      if (!isDayJs(this.DateTimeParser)) {
+        return supportsTz(this.DateTimeParser) && this.timezone
+          ? this.DateTimeParser(timestamp).tz(this.timezone).locale(language)
+          : this.DateTimeParser(timestamp).locale(language);
       }
-      if (isDayJs(this.DateTimeParser)) {
-        return this.DateTimeParser(timestamp).locale(this.currentLanguage);
-      }
-      return this.DateTimeParser(timestamp).locale(this.currentLanguage);
+
+      return this.DateTimeParser(timestamp).locale(language);
     };
   }
 

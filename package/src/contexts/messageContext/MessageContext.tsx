@@ -38,8 +38,10 @@ export type MessageContextValue<
   groupStyles: GroupType[];
   /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
   handleAction: ActionHandler;
-  handleDeleteMessage: () => Promise<void>;
+  handleCopyMessage: () => void;
+  handleDeleteMessage: () => void;
   handleEditMessage: () => void;
+  handleFlagMessage: () => void;
   handleQuotedReplyMessage: () => void;
   handleResendMessage: () => Promise<void>;
   handleToggleBanUser: () => Promise<void>;
