@@ -6,11 +6,7 @@ import {
   Audio,
   compressImage,
   deleteFile,
-  getLocalAssetUri,
-  getPhotos,
-  iOS14RefreshGallerySelection,
   NetInfo,
-  oniOS14GalleryLibrarySelectionChange,
   saveFile,
   Sound,
   takePhoto,
@@ -18,6 +14,10 @@ import {
 } from './handlers';
 
 import {
+  getLocalAssetUri,
+  getPhotos,
+  iOS14RefreshGallerySelection,
+  oniOS14GalleryLibrarySelectionChange,
   pickDocument,
   setClipboardString,
   shareImage,

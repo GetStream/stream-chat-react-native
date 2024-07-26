@@ -3,3 +3,7 @@ export * from './shareImage';
 export * from './pickDocument';
 export * from './triggerHaptic';
 export * from './Video';
+export * from './oniOS14GalleryLibrarySelectionChange';
+export * from './iOS14RefreshGallerySelection';
+export * from './getLocalAssetUri';
+export * from './getPhotos';

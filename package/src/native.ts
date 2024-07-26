@@ -324,19 +324,19 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     NetInfo = handlers.NetInfo;
   }
 
-  if (handlers.getLocalAssetUri) {
+  if (handlers.getLocalAssetUri !== undefined) {
     getLocalAssetUri = handlers.getLocalAssetUri;
   }
 
-  if (handlers.getPhotos) {
+  if (handlers.getPhotos !== undefined) {
     getPhotos = handlers.getPhotos;
   }
 
-  if (handlers.iOS14RefreshGallerySelection) {
+  if (handlers.iOS14RefreshGallerySelection !== undefined) {
     iOS14RefreshGallerySelection = handlers.iOS14RefreshGallerySelection;
   }
 
-  if (handlers.oniOS14GalleryLibrarySelectionChange) {
+  if (handlers.oniOS14GalleryLibrarySelectionChange !== undefined) {
     oniOS14GalleryLibrarySelectionChange = handlers.oniOS14GalleryLibrarySelectionChange;
   }
 
@@ -380,3 +380,8 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 export const isVideoPackageAvailable = () => !!Video;
 export const isAudioPackageAvailable = () => !!Sound.Player || !!Sound.initializeSound;
 export const isRecordingPackageAvailable = () => !!Audio;
+export const isImageMediaLibraryAvailable = () =>
+  !!getPhotos &&
+  !!iOS14RefreshGallerySelection &&
+  !!oniOS14GalleryLibrarySelectionChange &&
+  !!getLocalAssetUri;

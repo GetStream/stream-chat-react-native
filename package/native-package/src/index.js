@@ -3,22 +3,14 @@ import { Platform } from 'react-native';
 import { FlatList } from '@stream-io/flat-list-mvcp';
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
 
-import {
-  compressImage,
-  deleteFile,
-  getLocalAssetUri,
-  getPhotos,
-  iOS14RefreshGallerySelection,
-  NetInfo,
-  oniOS14GalleryLibrarySelectionChange,
-  saveFile,
-  Sound,
-  takePhoto,
-  Video,
-} from './handlers';
+import { compressImage, deleteFile, NetInfo, saveFile, Sound, takePhoto, Video } from './handlers';
 
 import {
   Audio,
+  getLocalAssetUri,
+  getPhotos,
+  iOS14RefreshGallerySelection,
+  oniOS14GalleryLibrarySelectionChange,
   pickDocument,
   setClipboardString,
   shareImage,

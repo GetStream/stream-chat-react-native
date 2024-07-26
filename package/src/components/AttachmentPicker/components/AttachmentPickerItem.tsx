@@ -68,7 +68,8 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
   /* Patches video files with uri and mimetype */
   const patchVideoFile = async (files: File[]) => {
     // For the case of Expo CLI where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
-    const localAssetURI = Platform.OS === 'ios' && asset.id && (await getLocalAssetUri(asset.id));
+    const localAssetURI =
+      Platform.OS === 'ios' && asset.id && getLocalAssetUri && (await getLocalAssetUri(asset.id));
     const uri = localAssetURI || asset.uri || '';
     // We need a mime-type to upload a video file.
     const mimeType = lookup(asset.name) || 'multipart/form-data';
@@ -162,7 +163,8 @@ const AttachmentImage = (props: AttachmentImageProps) => {
   /* Patches image files with uri */
   const patchImageFile = async (images: Asset[]) => {
     // For the case of Expo CLI where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
-    const localAssetURI = Platform.OS === 'ios' && asset.id && (await getLocalAssetUri(asset.id));
+    const localAssetURI =
+      Platform.OS === 'ios' && asset.id && getLocalAssetUri && (await getLocalAssetUri(asset.id));
     const uri = localAssetURI || asset.uri || '';
     return [
       ...images,

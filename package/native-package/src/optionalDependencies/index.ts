@@ -4,3 +4,7 @@ export * from './Video';
 export * from './triggerHaptic';
 export * from './setClipboardString';
 export * from './pickDocument';
+export * from './getLocalAssetUri';
+export * from './iOS14RefreshGallerySelection';
+export * from './oniOS14GalleryLibrarySelectionChange';
+export * from './getPhotos';
