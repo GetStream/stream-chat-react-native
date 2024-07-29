@@ -1,5 +1,18 @@
 # Change Log
 
+### [1.27.7](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.27.6...sampleapp@v1.27.7) (2024-07-29)
+
+
+### Bug Fixes
+
+* card play icon theme and dark mode appearance ([#2593](https://github.com/GetStream/stream-chat-react-native/issues/2593)) ([1eb12c4](https://github.com/GetStream/stream-chat-react-native/commit/1eb12c48d5ac9e08f2baedfd933a0c62ccce7877))
+* upgrade react-native-video to a stable version 6.4.2 from the previously beta version ([#2601](https://github.com/GetStream/stream-chat-react-native/issues/2601)) ([9f03aa4](https://github.com/GetStream/stream-chat-react-native/commit/9f03aa4843b1a6535026088178eb590a5ef64400))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.27.6](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.27.5...sampleapp@v1.27.6) (2024-07-08)
 
 
