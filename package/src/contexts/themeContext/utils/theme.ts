@@ -1008,8 +1008,8 @@ export const defaultTheme: Theme = {
         videoContainer: {},
       },
       playIcon: {
-        height: 24,
-        width: 24,
+        height: 32,
+        width: 32,
       },
     },
     container: {},

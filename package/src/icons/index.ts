@@ -61,6 +61,7 @@ export * from './PPT';
 export * from './PPTX';
 export * from './RAR';
 export * from './Refresh';
+export * from './Resend';
 export * from './RTF';
 export * from './Search';
 export * from './SendCheck';
