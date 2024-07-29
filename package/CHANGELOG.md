@@ -1,5 +1,20 @@
 # Change Log
 
+## [5.34.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.33.1...v5.34.0) (2024-07-29)
+
+
+### Features
+
+* add timezone option to Streami18n instance using moment-timezone ([#2595](https://github.com/GetStream/stream-chat-react-native/issues/2595)) ([a7387a2](https://github.com/GetStream/stream-chat-react-native/commit/a7387a2f87fc04585950a2894b04c4d367563016))
+
+
+### Bug Fixes
+
+* card play icon theme and dark mode appearance ([#2593](https://github.com/GetStream/stream-chat-react-native/issues/2593)) ([1eb12c4](https://github.com/GetStream/stream-chat-react-native/commit/1eb12c48d5ac9e08f2baedfd933a0c62ccce7877))
+* delete message action UI and resend icon ([#2597](https://github.com/GetStream/stream-chat-react-native/issues/2597)) ([6cd283b](https://github.com/GetStream/stream-chat-react-native/commit/6cd283ba26131a33206f1b7fd7eff8bcea93d8b0))
+* do not show reactions bubble on deleted message ([#2594](https://github.com/GetStream/stream-chat-react-native/issues/2594)) ([ef677b8](https://github.com/GetStream/stream-chat-react-native/commit/ef677b84343c878d516eed397879b9a056a9cc8b))
+* upgrade react-native-video to a stable version 6.4.2 from the previously beta version ([#2601](https://github.com/GetStream/stream-chat-react-native/issues/2601)) ([9f03aa4](https://github.com/GetStream/stream-chat-react-native/commit/9f03aa4843b1a6535026088178eb590a5ef64400))
+
 ### [5.33.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.33.0...v5.33.1) (2024-07-08)
 
 
