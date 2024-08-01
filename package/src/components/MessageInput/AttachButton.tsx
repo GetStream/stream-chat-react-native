@@ -3,29 +3,17 @@ import type { GestureResponderEvent } from 'react-native';
 import { Pressable } from 'react-native';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
-import {
-  ChannelContextValue,
-  useChannelContext,
-} from '../../contexts/channelContext/ChannelContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Attach } from '../../icons/Attach';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
-
-type AttachButtonPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled'> & {
+type AttachButtonPropsWithContext = {
   /** Function that opens attachment options bottom sheet */
   handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
   selectedPicker?: 'images';
 };
 
-const AttachButtonWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: AttachButtonPropsWithContext<StreamChatGenerics>,
-) => {
-  const { disabled, handleOnPress, selectedPicker } = props;
+const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
+  const { handleOnPress, selectedPicker } = props;
   const {
     theme: {
       colors: { accent_blue, grey },
@@ -34,34 +22,18 @@ const AttachButtonWithContext = <
   } = useTheme();
 
   return (
-    <Pressable
-      disabled={disabled}
-      onPress={disabled ? () => null : handleOnPress}
-      style={[attachButton]}
-      testID='attach-button'
-    >
+    <Pressable onPress={handleOnPress} style={[attachButton]} testID='attach-button'>
       <Attach pathFill={selectedPicker === 'images' ? accent_blue : grey} />
     </Pressable>
   );
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: AttachButtonPropsWithContext<StreamChatGenerics>,
-  nextProps: AttachButtonPropsWithContext<StreamChatGenerics>,
+const areEqual = (
+  prevProps: AttachButtonPropsWithContext,
+  nextProps: AttachButtonPropsWithContext,
 ) => {
-  const {
-    disabled: prevDisabled,
-    handleOnPress: prevHandleOnPress,
-    selectedPicker: prevSelectedPicker,
-  } = prevProps;
-  const {
-    disabled: nextDisabled,
-    handleOnPress: nextHandleOnPress,
-    selectedPicker: nextSelectedPicker,
-  } = nextProps;
-
-  const disabledEqual = prevDisabled === nextDisabled;
-  if (!disabledEqual) return false;
+  const { handleOnPress: prevHandleOnPress, selectedPicker: prevSelectedPicker } = prevProps;
+  const { handleOnPress: nextHandleOnPress, selectedPicker: nextSelectedPicker } = nextProps;
 
   const handleOnPressEqual = prevHandleOnPress === nextHandleOnPress;
   if (!handleOnPressEqual) return false;
@@ -77,22 +49,15 @@ const MemoizedAttachButton = React.memo(
   areEqual,
 ) as typeof AttachButtonWithContext;
 
-export type AttachButtonProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<AttachButtonPropsWithContext<StreamChatGenerics>>;
+export type AttachButtonProps = Partial<AttachButtonPropsWithContext>;
 
 /**
  * UI Component for attach button in MessageInput component.
  */
-export const AttachButton = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: AttachButtonProps<StreamChatGenerics>,
-) => {
-  const { disabled = false } = useChannelContext<StreamChatGenerics>();
+export const AttachButton = (props: AttachButtonProps) => {
   const { selectedPicker } = useAttachmentPickerContext();
 
-  return <MemoizedAttachButton {...{ disabled, selectedPicker }} {...props} />;
+  return <MemoizedAttachButton {...{ selectedPicker }} {...props} />;
 };
 
 AttachButton.displayName = 'AttachButton{messageInput}';

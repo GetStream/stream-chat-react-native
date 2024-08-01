@@ -21,7 +21,7 @@ import type { UserResponse } from 'stream-chat';
 import { useAudioController } from './hooks/useAudioController';
 import { useCountdown } from './hooks/useCountdown';
 
-import { ChatContextValue, useChatContext } from '../../contexts';
+import { ChatContextValue, useChatContext, useOwnCapabilitiesContext } from '../../contexts';
 import {
   AttachmentPickerContextValue,
   useAttachmentPickerContext,
@@ -38,7 +38,6 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
-import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import {
   SuggestionsContextValue,
   useSuggestionsContext,
@@ -96,10 +95,7 @@ type MessageInputPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<AttachmentPickerContextValue, 'AttachmentPickerSelectionBar'> &
   Pick<ChatContextValue<StreamChatGenerics>, 'isOnline'> &
-  Pick<
-    ChannelContextValue<StreamChatGenerics>,
-    'disabled' | 'members' | 'threadList' | 'watchers'
-  > &
+  Pick<ChannelContextValue<StreamChatGenerics>, 'members' | 'threadList' | 'watchers'> &
   Pick<
     MessageInputContextValue<StreamChatGenerics>,
     | 'additionalTextInputProps'
@@ -184,7 +180,6 @@ const MessageInputWithContext = <
     closeAttachmentPicker,
     cooldownEndsAt,
     CooldownTimer,
-    disabled,
     editing,
     FileUploadPreview,
     fileUploads,
@@ -457,7 +452,8 @@ const MessageInputWithContext = <
         fileUploads.length > 0 ||
         mentionedUsers.length > 0 ||
         imageUploads.length > 0 ||
-        numberOfUploads > 0)
+        numberOfUploads > 0) &&
+      resetInput
     ) {
       resetInput();
     }
@@ -517,7 +513,6 @@ const MessageInputWithContext = <
   };
 
   const additionalTextInputContainerProps = {
-    editable: disabled ? false : undefined,
     ...additionalTextInputProps,
   };
 
@@ -771,12 +766,7 @@ const MessageInputWithContext = <
                 ) : (
                   <View style={[styles.sendButtonContainer, sendButtonContainer]}>
                     <SendButton
-                      disabled={
-                        disabled ||
-                        sending.current ||
-                        !isValidMessage() ||
-                        (giphyActive && !isOnline)
-                      }
+                      disabled={sending.current || !isValidMessage() || (giphyActive && !isOnline)}
                     />
                   </View>
                 ))}
@@ -849,7 +839,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     asyncMessagesSlideToCancelDistance: prevAsyncMessagesSlideToCancelDistance,
     asyncUploads: prevAsyncUploads,
     audioRecordingEnabled: prevAsyncMessagesEnabled,
-    disabled: prevDisabled,
     editing: prevEditing,
     fileUploads: prevFileUploads,
     giphyActive: prevGiphyActive,
@@ -872,7 +861,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     asyncMessagesSlideToCancelDistance: nextAsyncMessagesSlideToCancelDistance,
     asyncUploads: nextAsyncUploads,
     audioRecordingEnabled: nextAsyncMessagesEnabled,
-    disabled: nextDisabled,
     editing: nextEditing,
     fileUploads: nextFileUploads,
     giphyActive: nextGiphyActive,
@@ -910,9 +898,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const asyncMessagesSlideToCancelDistanceEqual =
     prevAsyncMessagesSlideToCancelDistance === nextAsyncMessagesSlideToCancelDistance;
   if (!asyncMessagesSlideToCancelDistanceEqual) return false;
-
-  const disabledEqual = prevDisabled === nextDisabled;
-  if (!disabledEqual) return false;
 
   const editingEqual = !!prevEditing === !!nextEditing;
   if (!editingEqual) return false;
@@ -1071,7 +1056,11 @@ export const MessageInput = <
 
   const { t } = useTranslationContext();
 
-  if ((disabled || !ownCapabilities.sendMessage) && SendMessageDisallowedIndicator) {
+  /**
+   * Disable the message input if the channel is frozen, or the user doesn't have the capability to send a message.
+   * Enable it in frozen mode, if it the input has editing state.
+   */
+  if (!editing && disabled && !ownCapabilities.sendMessage && SendMessageDisallowedIndicator) {
     return <SendMessageDisallowedIndicator />;
   }
 
@@ -1099,7 +1088,6 @@ export const MessageInput = <
         closeAttachmentPicker,
         cooldownEndsAt,
         CooldownTimer,
-        disabled,
         editing,
         FileUploadPreview,
         fileUploads,
