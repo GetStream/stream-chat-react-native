@@ -84,7 +84,7 @@ export const getPhotos = CameraRollDependency
         });
         const assets = results.edges.map((edge) => ({
           ...edge.node.image,
-          duration: edge.node.image.playableDuration,
+          duration: edge.node.image.playableDuration * 1000,
           // since we include filename, fileSize in the query, we can safely assume it will be defined
           name: edge.node.image.filename as string,
           size: edge.node.image.fileSize as number,

@@ -377,7 +377,7 @@ const GiphyWithContext = <
               giphyContainer,
             ]}
           >
-            <Lightning height={16} pathFill={white} width={16} />
+            <Lightning fill={white} size={16} />
             <Text style={[styles.giphyMaskText, { color: white }, giphyMaskText]}>
               {type?.toUpperCase()}
             </Text>

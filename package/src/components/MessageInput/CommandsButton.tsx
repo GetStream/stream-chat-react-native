@@ -46,11 +46,12 @@ const CommandsButtonWithContext = <
       testID='commands-button'
     >
       <Lightning
-        pathFill={
+        fill={
           suggestions && suggestions.data.some((suggestion) => isSuggestionCommand(suggestion))
             ? accent_blue
             : grey
         }
+        size={32}
       />
     </Pressable>
   );

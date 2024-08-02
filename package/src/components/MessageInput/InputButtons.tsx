@@ -54,7 +54,6 @@ export const InputButtonsWithContext = <
     setShowMoreOptions,
     showMoreOptions,
     text,
-    toggleAttachmentPicker,
   } = props;
 
   const {
@@ -77,7 +76,7 @@ export const InputButtonsWithContext = <
         <View
           style={[hasCommands ? styles.attachButtonContainer : undefined, attachButtonContainer]}
         >
-          <AttachButton handleOnPress={toggleAttachmentPicker} />
+          <AttachButton />
         </View>
       )}
       {hasCommands && !text && (

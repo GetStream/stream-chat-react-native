@@ -83,7 +83,7 @@ describe('ImageGallery', () => {
         videoItemComponent,
         'handleLoad',
         `photoId-${message.id}-${attachment.asset_url}`,
-        10,
+        10 * 1000,
       );
     });
 
@@ -144,7 +144,7 @@ describe('ImageGallery', () => {
         videoItemComponent,
         'handleProgress',
         `photoId-${message.id}-${attachment.asset_url}`,
-        0.3,
+        0.3 * 1000,
       );
     });
 
@@ -170,7 +170,7 @@ describe('ImageGallery', () => {
 
     act(() => {
       fireEvent(videoItemComponent, 'handleLoad', {
-        duration: 10,
+        duration: 10 * 1000,
       });
       fireEvent(videoItemComponent, 'handleProgress', {
         currentTime: undefined,
@@ -203,7 +203,7 @@ describe('ImageGallery', () => {
         videoItemComponent,
         'handleLoad',
         `photoId-${message.id}-${attachment.asset_url}`,
-        10,
+        10 * 1000,
       );
       fireEvent(videoItemComponent, 'handleEnd');
     });

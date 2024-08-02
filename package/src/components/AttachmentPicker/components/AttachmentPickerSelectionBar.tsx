@@ -1,12 +1,9 @@
 import React from 'react';
-import { Alert, Linking, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { useAttachmentPickerContext } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-
-import { takePhoto } from '../../../native';
 
 const styles = StyleSheet.create({
   container: {
@@ -27,12 +24,10 @@ export const AttachmentPickerSelectionBar = () => {
     FileSelectorIcon,
     ImageSelectorIcon,
     selectedPicker,
-    setSelectedImages,
     setSelectedPicker,
   } = useAttachmentPickerContext();
-  const { t } = useTranslationContext();
 
-  const { compressImageQuality, hasFilePicker, imageUploads, pickFile } = useMessageInputContext();
+  const { hasFilePicker, imageUploads, pickFile, takeAndUploadImage } = useMessageInputContext();
 
   const {
     theme: {
@@ -40,12 +35,12 @@ export const AttachmentPickerSelectionBar = () => {
     },
   } = useTheme();
 
-  const setPicker = (selection: 'images') => {
-    if (selectedPicker === selection) {
+  const setImagePicker = () => {
+    if (selectedPicker === 'images') {
       setSelectedPicker(undefined);
       closePicker();
     } else {
-      setSelectedPicker(selection);
+      setSelectedPicker('images');
     }
   };
 
@@ -55,30 +50,11 @@ export const AttachmentPickerSelectionBar = () => {
     pickFile();
   };
 
-  const takeAndUploadImage = async () => {
-    setSelectedPicker(undefined);
-    closePicker();
-    const photo = await takePhoto({ compressImageQuality });
-    if (photo.askToOpenSettings) {
-      Alert.alert(
-        t('Allow camera access in device settings'),
-        t('Device camera is used to take photos or videos.'),
-        [
-          { style: 'cancel', text: t('Cancel') },
-          { onPress: () => Linking.openSettings(), style: 'default', text: t('Open Settings') },
-        ],
-      );
-    }
-    if (!photo.cancelled) {
-      setSelectedImages((images) => [...images, photo]);
-    }
-  };
-
   return (
     <View style={[styles.container, container, { height: attachmentSelectionBarHeight }]}>
       <TouchableOpacity
         hitSlop={{ bottom: 15, top: 15 }}
-        onPress={() => setPicker('images')}
+        onPress={setImagePicker}
         testID='upload-photo-touchable'
       >
         <View style={[styles.icon, icon]}>

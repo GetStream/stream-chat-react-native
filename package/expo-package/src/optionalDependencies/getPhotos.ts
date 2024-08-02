@@ -41,7 +41,7 @@ export const getPhotos = MediaLibrary
           sortBy: [MediaLibrary.SortBy.modificationTime],
         });
         const assets = results.assets.map((asset) => ({
-          duration: asset.duration,
+          duration: asset.duration * 1000,
           height: asset.height,
           id: asset.id,
           name: asset.filename,

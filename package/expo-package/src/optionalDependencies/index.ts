@@ -7,3 +7,4 @@ export * from './oniOS14GalleryLibrarySelectionChange';
 export * from './iOS14RefreshGallerySelection';
 export * from './getLocalAssetUri';
 export * from './getPhotos';
+export * from './pickImage';

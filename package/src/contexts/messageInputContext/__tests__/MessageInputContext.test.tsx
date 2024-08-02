@@ -235,37 +235,4 @@ describe('MessageInputContext', () => {
       expect(result.current.text).toBe(`${initialProps.editing.text}@`);
     });
   });
-
-  it('openAttachmentPicker works', async () => {
-    jest.spyOn(NativeUtils, 'pickDocument').mockImplementation(
-      jest.fn().mockResolvedValue({
-        cancelled: false,
-        docs: [generateFileAttachment(), generateImageAttachment()],
-      }),
-    );
-    const initialProps = {
-      editing: message,
-      hasFilePicker: true,
-      hasImagePicker: false,
-    };
-    const { result } = renderHook(() => useMessageInputContext(), {
-      initialProps,
-      wrapper: (props) => (
-        <Wrapper
-          editing={initialProps.editing}
-          hasFilePicker={initialProps.hasFilePicker}
-          hasImagePicker={initialProps.hasImagePicker}
-          {...props}
-        />
-      ),
-    });
-
-    act(() => {
-      result.current.openAttachmentPicker();
-    });
-
-    await waitFor(async () => {
-      expect(await result.current.pickFile()).toBe(undefined);
-    });
-  });
 });
