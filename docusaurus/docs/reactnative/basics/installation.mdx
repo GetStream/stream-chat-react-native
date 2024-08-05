@@ -56,7 +56,7 @@ Stream Chat React Native SDK requires installing some peer dependencies to provi
 <TabItem value='rncli'>
 
 ```bash title="Terminal"
-yarn add @react-native-camera-roll/camera-roll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-fs react-native-gesture-handler react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-svg
+yarn add @react-native-camera-roll/camera-roll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-fs react-native-gesture-handler react-native-image-resizer react-native-reanimated react-native-svg
 ```
 
 </TabItem>
@@ -64,7 +64,7 @@ yarn add @react-native-camera-roll/camera-roll @react-native-community/netinfo @
 <TabItem value='expo'>
 
 ```bash title="Terminal"
-npx expo install @stream-io/flat-list-mvcp @react-native-community/netinfo expo-file-system expo-image-manipulator expo-image-picker expo-media-library react-native-gesture-handler react-native-reanimated react-native-svg
+npx expo install @stream-io/flat-list-mvcp @react-native-community/netinfo expo-file-system expo-image-manipulator expo-media-library react-native-gesture-handler react-native-reanimated react-native-svg
 ```
 
 </TabItem>
@@ -87,7 +87,6 @@ values={[
 - [`@stream-io/flat-list-mvcp`](https://github.com/GetStream/flat-list-mvcp) for bi-directional FlatList support.
 - [`react-native-fs`](https://github.com/itinance/react-native-fs) to perform file operations like save, delete, etc.
 - [`react-native-gesture-handler`](https://github.com/software-mansion/react-native-gesture-handler) to handle gestures within the SDK.
-- [`react-native-image-crop-picker`](https://github.com/ivpusic/react-native-image-crop-picker) to capture images to attach them in the message.
 - [`react-native-image-resizer`](https://github.com/bamlab/react-native-image-resizer) to compress image uploads.
 - [`react-native-reanimated`](https://github.com/software-mansion/react-native-reanimated) to compress image uploads.
 - [`react-native-svg`](https://github.com/react-native-svg/react-native-svg) for SVG support.
@@ -100,7 +99,6 @@ values={[
 - [`@stream-io/flat-list-mvcp`](https://github.com/GetStream/flat-list-mvcp) for bi-directional FlatList support.
 - [`expo-file-system`](https://docs.expo.dev/versions/latest/sdk/filesystem/) to perform file operations like save, delete, etc.
 - [`react-native-gesture-handler`](https://github.com/software-mansion/react-native-gesture-handler) to handle gestures within the SDK.
-- [`expo-image-picker`](https://docs.expo.dev/versions/latest/sdk/imagepicker/) to capture images to attach them in the message.
 - [`expo-image-manipulator`](https://docs.expo.dev/versions/latest/sdk/imagemanipulator/) to compress image uploads.
 - [`react-native-reanimated`](https://github.com/software-mansion/react-native-reanimated) to compress image uploads.
 - [`react-native-svg`](https://docs.expo.dev/versions/latest/sdk/svg/) for SVG support.
@@ -109,6 +107,10 @@ values={[
 </Tabs>
 
 ### Optional Dependencies
+
+:::note
+Starting from `v5.35.0` the `react-native-image-crop-picker` and `expo-image-picker` is no longer a required dependency. You can use it if you want to capture images to attach them in the message else feel free to uninstall it.
+:::
 
 There are a few optional dependencies that can be added to have more features within the SDK.
 
@@ -122,6 +124,7 @@ values={[
 >
 <TabItem value='rncli'>
 
+- [`react-native-image-crop-picker`](https://github.com/ivpusic/react-native-image-crop-picker) to capture images to attach them in the message.
 - [`react-native-video`](https://github.com/react-native-video/react-native-video) for Video and Audio playback support.
 - [`react-native-audio-recorder-player`](https://github.com/hyochan/react-native-audio-recorder-player) for Audio recording and async audio messages support.
 - [`react-native-share`](https://github.com/react-native-share/react-native-share) for Attachment sharing support.
@@ -134,6 +137,7 @@ values={[
 <TabItem value="expo">
 
 - [`expo-av`](https://docs.expo.dev/versions/latest/sdk/av/) for Video and Audio playback, recording and async audio messages support.
+- [`expo-image-picker`](https://docs.expo.dev/versions/latest/sdk/imagepicker/) to capture images to attach them in the message.
 - [`expo-sharing`](https://docs.expo.dev/versions/latest/sdk/sharing/) for Attachments sharing support.
 - [`expo-haptics`](https://docs.expo.dev/versions/latest/sdk/haptics/) for user haptics support.
 - [`expo-clipboard`](https://docs.expo.dev/versions/latest/sdk/clipboard/) for Copy message support.

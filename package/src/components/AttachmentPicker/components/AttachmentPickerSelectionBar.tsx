@@ -32,7 +32,8 @@ export const AttachmentPickerSelectionBar = () => {
   } = useAttachmentPickerContext();
   const { t } = useTranslationContext();
 
-  const { compressImageQuality, hasFilePicker, imageUploads, pickFile } = useMessageInputContext();
+  const { compressImageQuality, hasCameraPicker, hasFilePicker, imageUploads, pickFile } =
+    useMessageInputContext();
 
   const {
     theme: {
@@ -88,7 +89,7 @@ export const AttachmentPickerSelectionBar = () => {
           />
         </View>
       </TouchableOpacity>
-      {hasFilePicker && (
+      {hasFilePicker ? (
         <TouchableOpacity
           hitSlop={{ bottom: 15, top: 15 }}
           onPress={openFilePicker}
@@ -101,19 +102,21 @@ export const AttachmentPickerSelectionBar = () => {
             />
           </View>
         </TouchableOpacity>
-      )}
-      <TouchableOpacity
-        hitSlop={{ bottom: 15, top: 15 }}
-        onPress={takeAndUploadImage}
-        testID='take-photo-touchable'
-      >
-        <View style={[styles.icon, icon]}>
-          <CameraSelectorIcon
-            numberOfImageUploads={imageUploads.length}
-            selectedPicker={selectedPicker}
-          />
-        </View>
-      </TouchableOpacity>
+      ) : null}
+      {hasCameraPicker ? (
+        <TouchableOpacity
+          hitSlop={{ bottom: 15, top: 15 }}
+          onPress={takeAndUploadImage}
+          testID='take-photo-touchable'
+        >
+          <View style={[styles.icon, icon]}>
+            <CameraSelectorIcon
+              numberOfImageUploads={imageUploads.length}
+              selectedPicker={selectedPicker}
+            />
+          </View>
+        </TouchableOpacity>
+      ) : null}
     </View>
   );
 };

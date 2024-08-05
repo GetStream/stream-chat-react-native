@@ -21,7 +21,7 @@
     "expo-file-system": "*",
     "expo-haptics": "*",
     "expo-image-manipulator": "*",
-    "expo-image-picker": ">=14.1.0",
+    "expo-image-picker": "*",
     "expo-media-library": "*",
     "expo-sharing": "*"
   },
@@ -33,6 +33,9 @@
       "optional": true
     },
     "expo-document-picker": {
+      "optional": true
+    },
+    "expo-image-picker": {
       "optional": true
     },
     "expo-sharing": {
@@ -47,7 +50,6 @@
     "expo": "^44.0.0",
     "expo-file-system": "^11.0.2",
     "expo-image-manipulator": "^9.1.0",
-    "expo-image-picker": "^14.1.1",
     "expo-media-library": "~15.2.3"
   },
   "scripts": {
