@@ -608,6 +608,7 @@ export const stringifyMessage = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   deleted_at,
+  i18n,
   latest_reactions,
   reaction_groups,
   readBy,
@@ -631,7 +632,7 @@ export const stringifyMessage = <
           )
           .join()
       : ''
-  }${type}${deleted_at}${text}${readBy}${reply_count}${status}${updated_at}`;
+  }${type}${deleted_at}${text}${readBy}${reply_count}${status}${updated_at}${JSON.stringify(i18n)}`;
 
 /**
  * Reduces a list of messages to strings that are used in useEffect & useMemo

@@ -75,7 +75,7 @@ import {
   ThumbsUpReaction,
   WutReaction,
 } from '../../icons';
-import { FlatList as FlatListDefault, pickDocument } from '../../native';
+import { FlatList as FlatListDefault, isImagePickerAvailable, pickDocument } from '../../native';
 import * as dbApi from '../../store/apis';
 import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
@@ -492,6 +492,7 @@ const ChannelWithContext = <
     handleReaction,
     handleRetry,
     handleThreadReply,
+    hasCameraPicker = isImagePickerAvailable(),
     hasCommands = true,
     // If pickDocument isn't available, default to hiding the file picker
     hasFilePicker = pickDocument !== null,
@@ -2220,7 +2221,6 @@ const ChannelWithContext = <
     CommandsButton,
     compressImageQuality,
     CooldownTimer,
-    disabled: disabledValue,
     doDocUploadRequest,
     doImageUploadRequest,
     editing,
@@ -2228,6 +2228,7 @@ const ChannelWithContext = <
     emojiSearchIndex,
     FileUploadPreview,
     handleAttachButtonPress,
+    hasCameraPicker,
     hasCommands,
     hasFilePicker,
     hasImagePicker,

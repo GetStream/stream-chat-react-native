@@ -4,5 +4,4 @@ export * from './deleteFile';
 export * from './NetInfo';
 export * from './saveFile';
 export * from './Sound';
-export * from './takePhoto';
 export * from './Video';

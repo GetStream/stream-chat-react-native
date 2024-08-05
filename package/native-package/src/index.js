@@ -15,6 +15,7 @@ import {
   pickImage,
   setClipboardString,
   shareImage,
+  takePhoto,
   triggerHaptic,
 } from './optionalDependencies';
 

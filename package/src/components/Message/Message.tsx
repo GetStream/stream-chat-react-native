@@ -132,10 +132,7 @@ export type MessageActionHandlers<
 
 export type MessagePropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<
-  ChannelContextValue<StreamChatGenerics>,
-  'channel' | 'disabled' | 'enforceUniqueReaction' | 'members'
-> &
+> = Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'enforceUniqueReaction' | 'members'> &
   Pick<KeyboardContextValue, 'dismissKeyboard'> &
   Partial<Omit<MessageContextValue<StreamChatGenerics>, 'groupStyles' | 'message'>> &
   Pick<MessageContextValue<StreamChatGenerics>, 'groupStyles' | 'message'> &
@@ -245,7 +242,6 @@ const MessageWithContext = <
     chatContext,
     deleteMessage: deleteMessageFromContext,
     deleteReaction,
-    disabled,
     dismissKeyboard,
     dismissKeyboardOnMessageTouch,
     enableLongPress = true,
@@ -631,7 +627,7 @@ const MessageWithContext = <
   };
 
   const onLongPressMessage =
-    disabled || hasAttachmentActions || isBlockedMessage(message)
+    hasAttachmentActions || isBlockedMessage(message)
       ? () => null
       : onLongPressMessageProp
       ? (payload?: TouchableHandlerPayload) =>
@@ -666,7 +662,6 @@ const MessageWithContext = <
     actionsEnabled,
     alignment,
     channel,
-    disabled,
     files: attachments.files,
     goToMessage,
     groupStyles,
@@ -784,7 +779,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 ) => {
   const {
     chatContext: { mutedUsers: prevMutedUsers },
-    disabled: prevDisabled,
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
     isAttachmentEqual,
@@ -798,7 +792,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   } = prevProps;
   const {
     chatContext: { mutedUsers: nextMutedUsers },
-    disabled: nextDisabled,
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     isTargetedMessage: nextIsTargetedMessage,
@@ -809,9 +802,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     showUnreadUnderlay: nextShowUnreadUnderlay,
     t: nextT,
   } = nextProps;
-
-  const disabledEqual = prevDisabled === nextDisabled;
-  if (!disabledEqual) return false;
 
   const membersEqual = Object.keys(prevMembers).length === Object.keys(nextMembers).length;
   if (!membersEqual) return false;
@@ -939,8 +929,7 @@ export const Message = <
 >(
   props: MessageProps<StreamChatGenerics>,
 ) => {
-  const { channel, disabled, enforceUniqueReaction, members } =
-    useChannelContext<StreamChatGenerics>();
+  const { channel, enforceUniqueReaction, members } = useChannelContext<StreamChatGenerics>();
   const chatContext = useChatContext<StreamChatGenerics>();
   const { dismissKeyboard } = useKeyboardContext();
   const { setData } = useMessageOverlayContext<StreamChatGenerics>();
@@ -955,7 +944,6 @@ export const Message = <
       {...{
         channel,
         chatContext,
-        disabled,
         dismissKeyboard,
         enforceUniqueReaction,
         members,

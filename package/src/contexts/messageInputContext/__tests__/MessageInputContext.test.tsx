@@ -7,15 +7,11 @@ import type { AppSettingsAPIResponse, StreamChat } from 'stream-chat';
 
 import { ChatContextValue, ChatProvider } from '../../../contexts/chatContext/ChatContext';
 
-import {
-  generateFileAttachment,
-  generateImageAttachment,
-} from '../../../mock-builders/generator/attachment';
+import { generateImageAttachment } from '../../../mock-builders/generator/attachment';
 
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 
-import * as NativeUtils from '../../../native';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { FileState } from '../../../utils/utils';
 import {

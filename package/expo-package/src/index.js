@@ -9,7 +9,6 @@ import {
   NetInfo,
   saveFile,
   Sound,
-  takePhoto,
   Video,
 } from './handlers';
 
@@ -22,6 +21,7 @@ import {
   pickImage,
   setClipboardString,
   shareImage,
+  takePhoto,
   triggerHaptic,
 } from './optionalDependencies';
 

@@ -27,7 +27,6 @@ export const useCreateInputMessageInputContext = <
   CommandsButton,
   compressImageQuality,
   CooldownTimer,
-  disabled,
   doDocUploadRequest,
   doImageUploadRequest,
   editing,
@@ -35,6 +34,7 @@ export const useCreateInputMessageInputContext = <
   emojiSearchIndex,
   FileUploadPreview,
   handleAttachButtonPress,
+  hasCameraPicker,
   hasCommands,
   hasFilePicker,
   hasImagePicker,
@@ -97,7 +97,6 @@ export const useCreateInputMessageInputContext = <
       CommandsButton,
       compressImageQuality,
       CooldownTimer,
-      disabled,
       doDocUploadRequest,
       doImageUploadRequest,
       editing,
@@ -105,6 +104,7 @@ export const useCreateInputMessageInputContext = <
       emojiSearchIndex,
       FileUploadPreview,
       handleAttachButtonPress,
+      hasCameraPicker,
       hasCommands,
       hasFilePicker,
       hasImagePicker,
@@ -133,15 +133,7 @@ export const useCreateInputMessageInputContext = <
       StartAudioRecordingButton,
       UploadProgressIndicator,
     }),
-    [
-      compressImageQuality,
-      channelId,
-      disabled,
-      editingDep,
-      initialValue,
-      maxMessageLength,
-      quotedMessageId,
-    ],
+    [compressImageQuality, channelId, editingDep, initialValue, maxMessageLength, quotedMessageId],
   );
 
   return inputMessageInputContext;

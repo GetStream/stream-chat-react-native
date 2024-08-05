@@ -9,3 +9,4 @@ export * from './iOS14RefreshGallerySelection';
 export * from './oniOS14GalleryLibrarySelectionChange';
 export * from './getPhotos';
 export * from './pickImage';
+export * from './takePhoto';

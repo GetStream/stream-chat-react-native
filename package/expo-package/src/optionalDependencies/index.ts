@@ -8,3 +8,4 @@ export * from './iOS14RefreshGallerySelection';
 export * from './getLocalAssetUri';
 export * from './getPhotos';
 export * from './pickImage';
+export * from './takePhoto';
