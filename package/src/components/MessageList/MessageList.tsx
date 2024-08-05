@@ -1102,7 +1102,7 @@ const MessageListWithContext = <
       {/* Don't show the empty list indicator for Thread messages */}
       {processedMessageList.length === 0 && !thread ? (
         <View style={[styles.flex, { backgroundColor: white_snow }]} testID='empty-state'>
-          <EmptyStateIndicator listType='message' />
+          {EmptyStateIndicator ? <EmptyStateIndicator listType='message' /> : null}
         </View>
       ) : (
         <FlatList
