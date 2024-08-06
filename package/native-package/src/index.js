@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 import { FlatList } from '@stream-io/flat-list-mvcp';
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
 
-import { compressImage, deleteFile, NetInfo, saveFile, Sound, takePhoto, Video } from './handlers';
+import { compressImage, deleteFile, NetInfo, saveFile, Sound, Video } from './handlers';
 
 import {
   Audio,
