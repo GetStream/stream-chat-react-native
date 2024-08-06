@@ -15,8 +15,6 @@ export const getReadStates = <
   const readData: Record<string, number> = {};
 
   if (read) {
-    console.log('read', read);
-
     /**
      * Array is in reverse order so newest message is at 0,
      * we find the index of the first message that is older
@@ -31,7 +29,6 @@ export const getReadStates = <
 
       // loop messages sent by current user and add read data for other users in channel
       messages.forEach((msg) => {
-        console.log(msg.created_at, readState.last_read);
         if (msg.created_at && msg.created_at < readState.last_read) {
           userLastReadMsgId = msg.id;
 
