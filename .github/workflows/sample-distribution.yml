@@ -17,13 +17,7 @@ jobs:
     runs-on: [macos-14]
     steps:
       - uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.DOCUSAURUS_GH_TOKEN }}
-      - name: Install Ruby and Gems
-        uses: ruby/setup-ruby@v1
-        with:
-          working-directory: examples/SampleApp
-          bundler-cache: true
+      - uses: ./.github/actions/ruby-cache
       - name: Install && Build - SDK and Sample App
         uses: ./.github/actions/install-and-build-sdk
       - name: Cache iOS pods
@@ -39,8 +33,7 @@ jobs:
           timeout_minutes: 30
           max_attempts: 3
           command: |
-            cd examples/SampleApp
-            cd ios
+            cd examples/SampleApp/ios
             bundle exec pod install
       - name: Build and release Testflight QA
         env:
