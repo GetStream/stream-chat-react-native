@@ -64,8 +64,8 @@ const SendButtonWithContext = <
       testID='send-button'
     >
       {giphyActive && <Search pathFill={accent_blue} />}
-      {!giphyActive && disabled && <SendRight pathFill={grey_gainsboro} />}
-      {!giphyActive && !disabled && <SendUp pathFill={accent_blue} />}
+      {!giphyActive && disabled && <SendRight fill={grey_gainsboro} size={32} />}
+      {!giphyActive && !disabled && <SendUp fill={accent_blue} size={32} />}
     </TouchableOpacity>
   );
 };
