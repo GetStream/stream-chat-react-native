@@ -31,7 +31,7 @@ lane :android_app_size do |options|
 
   sh("cd #{android_project_dir} && ./gradlew assembleRelease")
 
-  file_size(app: app_path)
+  file_size(path: app_path)
 end
 
 #######################
@@ -154,7 +154,7 @@ lane :current_branch do
 end
 
 lane :file_size do |options|
-  File.size(options[:app]).to_f / 1024 / 1024
+  File.size(options[:path]).to_f / 1024 / 1024
 end
 
 lane :directory_size do |options|
