@@ -1,8 +1,11 @@
 default_platform(:ios)
+skip_docs
 
-ios_bundle_id = 'io.getstream.reactnative.SampleApp'
-xcode_project = './ios/SampleApp.xcodeproj'
-xcode_workspace = './ios/SampleApp.xcworkspace'
+bundle_id = 'io.getstream.reactnative.SampleApp'
+xcode_project = 'ios/SampleApp.xcodeproj'
+xcode_workspace = 'ios/SampleApp.xcworkspace'
+template_app_name = 'DemoApp'
+temp_dir = Dir.mktmpdir
 
 before_all do
   if is_ci
@@ -11,34 +14,65 @@ before_all do
   end
 end
 
-lane :deploy_to_firebase do
-  match_me
+after_all do
+  FileUtils.remove_entry(temp_dir)
+end
+
+###########################
+###### Android lanes ######
+###########################
+
+lane :android_app_size do |options|
+  options[:rn_project_dir] ||= create_template_project
+  android_project_dir = "#{options[:rn_project_dir]}/android"
+  app_path = "#{temp_dir}/#{template_app_name}/android/app/build/outputs/apk/release/app-release.apk"
+
+  FileUtils.rm_rf(app_path)
+
+  sh("cd #{android_project_dir} && ./gradlew assembleRelease")
+
+  file_size(app: app_path)
+end
+
+#######################
+###### iOS lanes ######
+#######################
+
+lane :ios_app_size do |options|
+  match_me unless options[:skip_match]
+
+  root_dir = 'Build/SDKSize'
+  archive_dir = "#{root_dir}/#{template_app_name}.xcarchive"
+  app_path = "../#{archive_dir}/Products/Applications/#{template_app_name}.app"
+
+  FileUtils.rm_rf("../#{root_dir}/")
+
+  options[:rn_project_dir] ||= create_template_project
+  ios_project_dir = "#{options[:rn_project_dir]}/ios"
+  update_project_team(
+    path: "#{ios_project_dir}/#{template_app_name}.xcodeproj",
+    teamid: File.read('Matchfile').match(/team_id\("(.*)"\)/)[1]
+  )
+
+  cocoapods(podfile: ios_project_dir, clean_install: true)
 
   gym(
-    workspace: xcode_workspace,
-    scheme: 'SampleApp',
+    workspace: "#{ios_project_dir}/#{template_app_name}.xcworkspace",
+    scheme: template_app_name,
+    archive_path: archive_dir,
     export_method: 'ad-hoc',
-    export_options: './fastlane/beta_gym_export_options.plist',
-    silent: true,
-    clean: true,
-    include_symbols: true,
-    output_directory: './dist',
-    xcargs: 'ENABLE_BITCODE=1'
+    export_options: './fastlane/beta_gym_export_options.plist'
   )
 
-  firebase_app_distribution(
-    app: '1:190151624402:ios:403df895972564bd658f0b',
-    groups: 'ios-react-native-testers',
-    release_notes: 'Lots of amazing new features to test out!'
-  )
+  directory_size(path: app_path)
 end
 
 lane :deploy_to_testflight_qa do |options|
   match_me
 
   settings_to_override = {
-    BUNDLE_IDENTIFIER: ios_bundle_id,
-    PROVISIONING_PROFILE_SPECIFIER: "match AppStore #{ios_bundle_id}"
+    BUNDLE_IDENTIFIER: bundle_id,
+    PROVISIONING_PROFILE_SPECIFIER: "match AppStore #{bundle_id}"
   }
 
   increment_version_number(
@@ -48,7 +82,7 @@ lane :deploy_to_testflight_qa do |options|
 
   current_build_number = app_store_build_number(
     live: false,
-    app_identifier: ios_bundle_id
+    app_identifier: bundle_id
   )
 
   increment_build_number(
@@ -83,18 +117,109 @@ lane :deploy_to_testflight_qa do |options|
       end
     end
   end
+end
 
-  desc "If `readonly: true` (by default), installs all Certs and Profiles necessary for development and ad-hoc.\nIf `readonly: false`, recreates all Profiles necessary for development and ad-hoc, updates them locally and remotely."
-  lane :match_me do
-    custom_match(
-      api_key: appstore_api_key,
-      app_identifier: [ios_bundle_id],
-      readonly: options[:readonly],
-      register_device: options[:register_device]
-    )
-  end
+private_lane :appstore_api_key do
+  @appstore_api_key ||= app_store_connect_api_key(
+    key_id: 'MT3PRT8TB7',
+    issuer_id: '69a6de96-0738-47e3-e053-5b8c7c11a4d1',
+    key_content: ENV.fetch('APPSTORE_API_KEY', nil),
+    in_house: false
+  )
+end
 
-  private_lane :appstore_api_key do
-    @appstore_api_key ||= app_store_connect_api_key
+desc "If `readonly: true` (by default), installs all Certs and Profiles necessary for development and ad-hoc.\nIf `readonly: false`, recreates all Profiles necessary for development and ad-hoc, updates them locally and remotely."
+lane :match_me do |options|
+  custom_match(
+    api_key: appstore_api_key,
+    app_identifier: [bundle_id],
+    readonly: options[:readonly],
+    register_device: options[:register_device]
+  )
+end
+
+##########################
+###### Common lanes ######
+##########################
+
+lane :current_branch do
+  branch = if ENV['GITHUB_PR_NUM'].to_s.empty?
+             git_branch
+           else
+             sh("gh pr view #{ENV.fetch('GITHUB_PR_NUM')} --json headRefName -q .headRefName").strip
+           end
+
+  UI.important("Current branch: #{branch} 🕊️")
+  branch
+end
+
+lane :file_size do |options|
+  File.size(options[:app]).to_f / 1024 / 1024
+end
+
+lane :directory_size do |options|
+  total_size = 0
+  Find.find(options[:path]) do |file|
+    total_size += File.size(file) if File.file?(file)
   end
+  total_size.to_f / 1024 / 1024
+end
+
+lane :create_template_project do
+  Dir.chdir(temp_dir) do
+    sh("npx @react-native-community/cli@latest init #{template_app_name} --install-pods false --package-name #{bundle_id}")
+    File.absolute_path(template_app_name)
+  end
+end
+
+lane :yarn_sdk do |options|
+  Dir.chdir(options[:path]) do
+    node_modules = [
+      # "stream-chat-react-native@https://github.com/GetStream/stream-chat-react-native.git##{current_branch}"
+      'stream-chat-react-native',
+      '@react-native-community/cameraroll',
+      '@react-native-community/netinfo',
+      '@stream-io/flat-list-mvcp',
+      'react-native-document-picker',
+      'react-native-fs',
+      'react-native-gesture-handler',
+      'react-native-haptic-feedback',
+      'react-native-haptic-feedback',
+      'react-native-image-crop-picker',
+      'react-native-image-resizer',
+      'react-native-reanimated',
+      'react-native-safe-area-context',
+      'react-native-share',
+      'react-native-svg'
+    ]
+    sh("yarn add #{node_modules.join(' ')}")
+  end
+end
+
+desc 'Install all root yarn dependencies'
+lane :yarn_dev do
+  root = '../../..'
+  Dir.chdir(root) { sh('yarn --frozen-lockfile') }
+  Dir.chdir("#{root}/package") { sh('yarn --frozen-lockfile') }
+  Dir.chdir("#{root}/package/native-package") { sh('yarn') }
+  Dir.chdir("#{root}/package/expo-package") { sh('yarn') }
+  Dir.chdir('..') { sh('yarn') }
+end
+
+lane :sdk_size do
+  rn_project_dir = create_template_project
+
+  android_app_size_without_sdk = android_app_size(rn_project_dir: rn_project_dir)
+  ios_app_size_without_sdk = ios_app_size(rn_project_dir: rn_project_dir)
+
+  yarn_sdk(path: rn_project_dir)
+
+  android_app_size_with_sdk = android_app_size(rn_project_dir: rn_project_dir)
+  ios_app_size_with_sdk = ios_app_size(rn_project_dir: rn_project_dir, skip_match: true)
+
+  android_sdk_size = (android_app_size_with_sdk - android_app_size_without_sdk).round(3)
+  ios_sdk_size = (ios_app_size_with_sdk - ios_app_size_without_sdk).round(3)
+
+  UI.success("✅ Android SDK Size: #{android_sdk_size}")
+  UI.success("✅ iOS SDK Size: #{ios_sdk_size}")
 end

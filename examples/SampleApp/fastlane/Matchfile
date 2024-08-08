@@ -1,4 +1,4 @@
-git_url("https://github.com/GetStream/ios-certificates")
+git_url("git@github.com:GetStream/ios-certificates.git")
 
 storage_mode("git")
 
