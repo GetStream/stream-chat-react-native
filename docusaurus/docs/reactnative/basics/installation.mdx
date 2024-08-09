@@ -56,7 +56,7 @@ Stream Chat React Native SDK requires installing some peer dependencies to provi
 <TabItem value='rncli'>
 
 ```bash title="Terminal"
-yarn add @react-native-camera-roll/camera-roll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-fs react-native-gesture-handler react-native-image-resizer react-native-reanimated react-native-svg
+yarn add @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-fs react-native-gesture-handler react-native-image-resizer react-native-reanimated react-native-svg
 ```
 
 </TabItem>
@@ -64,7 +64,7 @@ yarn add @react-native-camera-roll/camera-roll @react-native-community/netinfo @
 <TabItem value='expo'>
 
 ```bash title="Terminal"
-npx expo install @stream-io/flat-list-mvcp @react-native-community/netinfo expo-file-system expo-image-manipulator expo-media-library react-native-gesture-handler react-native-reanimated react-native-svg
+npx expo install @stream-io/flat-list-mvcp @react-native-community/netinfo expo-file-system expo-image-manipulator react-native-gesture-handler react-native-reanimated react-native-svg
 ```
 
 </TabItem>
@@ -82,7 +82,6 @@ values={[
 >
 <TabItem value='rncli'>
 
-- [`@react-native-camera-roll/camera-roll`](https://github.com/react-native-cameraroll/react-native-cameraroll) for accessing device gallery.
 - [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo) for accessing device gallery.
 - [`@stream-io/flat-list-mvcp`](https://github.com/GetStream/flat-list-mvcp) for bi-directional FlatList support.
 - [`react-native-fs`](https://github.com/itinance/react-native-fs) to perform file operations like save, delete, etc.
@@ -94,7 +93,6 @@ values={[
 </TabItem>
 <TabItem value="expo">
 
-- [`expo-media-library`](https://docs.expo.dev/versions/latest/sdk/media-library/) for accessing device gallery.
 - [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo) for accessing device gallery.
 - [`@stream-io/flat-list-mvcp`](https://github.com/GetStream/flat-list-mvcp) for bi-directional FlatList support.
 - [`expo-file-system`](https://docs.expo.dev/versions/latest/sdk/filesystem/) to perform file operations like save, delete, etc.
@@ -124,6 +122,7 @@ values={[
 >
 <TabItem value='rncli'>
 
+- [`@react-native-camera-roll/camera-roll`](https://github.com/react-native-cameraroll/react-native-cameraroll) for accessing device gallery.
 - [`react-native-image-crop-picker`](https://github.com/ivpusic/react-native-image-crop-picker) to capture images to attach them in the message.
 - [`react-native-video`](https://github.com/react-native-video/react-native-video) for Video and Audio playback support.
 - [`react-native-audio-recorder-player`](https://github.com/hyochan/react-native-audio-recorder-player) for Audio recording and async audio messages support.
@@ -132,11 +131,13 @@ values={[
 - [`@react-native-clipboard/clipboard`](https://github.com/react-native-clipboard/clipboard) for Copy message support.
 - [`react-native-document-picker`](https://github.com/rnmods/react-native-document-picker) to access device media files.
 - [`react-native-quick-sqlite`](https://github.com/margelo/react-native-quick-sqlite) to enable Offline support in the app.
+- [`react-native-image-picker`](https://github.com/react-native-image-picker/react-native-image-picker) to use native photo picker.
 
 </TabItem>
 <TabItem value="expo">
 
 - [`expo-av`](https://docs.expo.dev/versions/latest/sdk/av/) for Video and Audio playback, recording and async audio messages support.
+- [`expo-media-library`](https://docs.expo.dev/versions/latest/sdk/media-library/) for accessing device gallery.
 - [`expo-image-picker`](https://docs.expo.dev/versions/latest/sdk/imagepicker/) to capture images to attach them in the message.
 - [`expo-sharing`](https://docs.expo.dev/versions/latest/sdk/sharing/) for Attachments sharing support.
 - [`expo-haptics`](https://docs.expo.dev/versions/latest/sdk/haptics/) for user haptics support.
@@ -279,7 +280,7 @@ Please also follow the steps mentioned in the links below for corresponding depe
 
 - `react-native` - [additional installation steps](https://reactnative.dev/docs/image#gif-and-webp-support-on-android)
 - `react-native-image-crop-picker` - [additional installation steps](https://github.com/ivpusic/react-native-image-crop-picker#step-3)
-- `react-native-cameraroll` - [additional installation steps](https://github.com/react-native-cameraroll/react-native-cameraroll#permissions)
+- `@react-native-camera-roll/camera-roll` - [additional installation steps](https://github.com/react-native-cameraroll/react-native-cameraroll#permissions)
 
 Now you should be able to run the app on simulator by running following command:
 

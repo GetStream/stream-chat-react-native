@@ -7,7 +7,7 @@ import {
 } from '../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
-import { CircleClose, Lightning } from '../../../icons';
+import { CircleClose, GiphyLightning } from '../../../icons';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { AutoCompleteInput } from '../../AutoCompleteInput/AutoCompleteInput';
 import { useCountdown } from '../hooks/useCountdown';
@@ -23,9 +23,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 12,
     flexDirection: 'row',
-    height: 24,
     marginRight: 8,
     paddingHorizontal: 8,
+    paddingVertical: 4,
   },
   giphyText: {
     fontSize: 12,
@@ -80,7 +80,7 @@ export const InputGiphySearch = <
   return (
     <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
       <View style={[styles.giphyContainer, { backgroundColor: accent_blue }, giphyContainer]}>
-        <Lightning height={16} pathFill={white} width={16} />
+        <GiphyLightning fill={white} size={16} />
         <Text style={[styles.giphyText, { color: white }, giphyText]}>GIPHY</Text>
       </View>
 

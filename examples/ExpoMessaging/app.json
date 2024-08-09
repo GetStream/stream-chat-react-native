@@ -31,19 +31,9 @@
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
-    "experiments": {
-      "turboModules": true
-    },
     "scheme": "ExpoMessaging",
     "plugins": [
       "expo-router",
-      [
-        "expo-media-library",
-        {
-          "photosPermission": "$(PRODUCT_NAME) would like access to your photo gallery to share image in a message.",
-          "savePhotosPermission": "$(PRODUCT_NAME) would like to save photos to your photo gallery after downloading from a message."
-        }
-      ],
       [
         "expo-image-picker",
         {

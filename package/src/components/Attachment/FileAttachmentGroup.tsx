@@ -17,7 +17,7 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { isAudioPackageAvailable } from '../../native';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 
 export type FileAttachmentGroupPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -122,7 +122,7 @@ const FileAttachmentGroupWithContext = <
             attachmentContainer,
           ]}
         >
-          {(file.type === 'audio' || file.type === 'voiceRecording') &&
+          {(file.type === FileTypes.Audio || file.type === FileTypes.VoiceRecording) &&
           isAudioPackageAvailable() ? (
             <AudioAttachment
               item={{

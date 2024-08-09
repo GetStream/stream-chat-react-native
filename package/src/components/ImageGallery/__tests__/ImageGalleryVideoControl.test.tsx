@@ -54,7 +54,7 @@ describe('ImageGalleryOverlay', () => {
 
     render(
       getComponent({
-        duration: 3600,
+        duration: 3600 * 1000,
         progress: 1,
       }),
     );
@@ -73,7 +73,7 @@ describe('ImageGalleryOverlay', () => {
 
     render(
       getComponent({
-        duration: 60,
+        duration: 60 * 1000,
         progress: 0.5,
       }),
     );

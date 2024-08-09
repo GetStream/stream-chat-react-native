@@ -52,7 +52,7 @@ import {
 import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 
 const WAIT_FOR_SCROLL_TO_OFFSET_TIMEOUT = 150;
 const MAX_RETRIES_AFTER_SCROLL_FAILURE = 10;
@@ -973,7 +973,7 @@ const MessageListWithContext = <
       if (!isMessageTypeDeleted && message.attachments) {
         return message.attachments.some(
           (attachment) =>
-            attachment.type === 'image' &&
+            attachment.type === FileTypes.Image &&
             !attachment.title_link &&
             !attachment.og_scrape_url &&
             (attachment.image_url || attachment.thumb_url),
