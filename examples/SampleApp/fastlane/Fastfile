@@ -53,9 +53,17 @@ lane :ios_app_size do |options|
 
   options[:rn_project_dir] ||= create_template_project
   ios_project_dir = "#{options[:rn_project_dir]}/ios"
-  update_project_team(
-    path: "#{ios_project_dir}/#{template_app_name}.xcodeproj",
-    teamid: File.read('Matchfile').match(/team_id\("(.*)"\)/)[1]
+  xcodeproj_path = "#{ios_project_dir}/#{template_app_name}.xcodeproj"
+  team_id = File.read('Matchfile').match(/team_id\("(.*)"\)/)[1]
+
+  update_code_signing_settings(
+    use_automatic_signing: false,
+    path: xcodeproj_path,
+    team_id: team_id,
+    bundle_identifier: bundle_id,
+    code_sign_identity: 'iPhone Distribution',
+    sdk: "iphoneos*",
+    profile_name: "match AdHoc #{bundle_id}"
   )
 
   cocoapods(podfile: ios_project_dir, clean_install: true)
@@ -64,8 +72,8 @@ lane :ios_app_size do |options|
     workspace: "#{ios_project_dir}/#{template_app_name}.xcworkspace",
     scheme: template_app_name,
     archive_path: archive_dir,
-    export_method: 'app-store',
-    export_options: './fastlane/testflight_gym_export_options.plist'
+    export_method: 'ad-hoc',
+    export_options: './fastlane/beta_gym_export_options.plist'
   )
 
   directory_size(path: app_path)
