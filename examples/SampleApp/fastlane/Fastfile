@@ -237,7 +237,7 @@ lane :show_frameworks_sizes do |options|
   show_frameworks_size(
     branch_sizes: options[:sizes] || frameworks_sizes,
     github_repo: github_repo,
-    sdk_names: ['ios', 'android']
+    sdk_names: ['iOS', 'Android']
   )
 end
 
