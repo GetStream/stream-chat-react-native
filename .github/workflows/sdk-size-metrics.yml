@@ -17,10 +17,10 @@ jobs:
     name: Metrics
     runs-on: macos-14
     steps:
-      # - name: Connect Bot
-      #   uses: webfactory/ssh-agent@v0.7.0
-      #   with:
-      #     ssh-private-key: ${{ secrets.BOT_SSH_PRIVATE_KEY }}
+      - name: Connect Bot
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.BOT_SSH_PRIVATE_KEY }}
 
       - uses: actions/checkout@v3.1.0
 
