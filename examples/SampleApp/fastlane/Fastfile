@@ -26,6 +26,11 @@ lane :android_app_size do |options|
   options[:rn_project_dir] ||= create_template_project
   android_project_dir = "#{options[:rn_project_dir]}/android"
 
+
+  Dir.chdir(options[:rn_project_dir]) do
+    sh("yarn add @react-native-community/cli-platform-android")
+  end
+
   # FIXME: use only one option
   app_path = Dir.chdir(android_project_dir) do
     if options[:bundle]
