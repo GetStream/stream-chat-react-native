@@ -45,4 +45,4 @@ jobs:
           GITHUB_PR_NUM: ${{ github.event.pull_request.number }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           APPSTORE_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          GITHUB_TOKEN: '${{ secrets.CI_BOT_GITHUB_TOKEN }}'
