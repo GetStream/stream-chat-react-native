@@ -1,7 +1,6 @@
 import type { LegacyRef } from 'react';
 import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
-import type { TextInput, TextInputProps } from 'react-native';
-import { Alert, Keyboard } from 'react-native';
+import { Alert, Keyboard, Linking, TextInput, TextInputProps } from 'react-native';
 
 import uniq from 'lodash/uniq';
 import { lookup } from 'mime-types';
@@ -47,11 +46,12 @@ import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { Emoji } from '../../emoji-data';
-import { pickDocument } from '../../native';
-import type {
+import { pickDocument, pickImage, takePhoto } from '../../native';
+import {
   Asset,
   DefaultStreamChatGenerics,
   File,
+  FileTypes,
   FileUpload,
   ImageUpload,
   UnknownType,
@@ -159,6 +159,10 @@ export type LocalMessageInputContext<
   openCommandsPicker: () => void;
   openFilePicker: () => void;
   openMentionsPicker: () => void;
+  /**
+   * Function for picking a photo from native image picker and uploading it.
+   */
+  pickAndUploadImageFromNativePicker: () => Promise<void>;
   pickFile: () => Promise<void>;
   /**
    * Function for removing a file from the upload preview
@@ -202,6 +206,10 @@ export type LocalMessageInputContext<
   setShowMoreOptions: React.Dispatch<React.SetStateAction<boolean>>;
   setText: React.Dispatch<React.SetStateAction<string>>;
   showMoreOptions: boolean;
+  /**
+   * Function for taking a photo and uploading it
+   */
+  takeAndUploadImage: () => Promise<void>;
   text: string;
   toggleAttachmentPicker: () => void;
   /**
@@ -424,6 +432,11 @@ export type InputMessageInputContextValue<
    */
   emojiSearchIndex?: EmojiSearchIndex;
 
+  /**
+   * Handler for when the attach button is pressed.
+   */
+  handleAttachButtonPress?: () => void;
+
   /** Initial value to set on input */
   initialValue?: string;
   /**
@@ -536,7 +549,7 @@ export const MessageInputProvider = <
   }>({});
   const [giphyActive, setGiphyActive] = useState(false);
   const [sendThreadMessageInChannel, setSendThreadMessageInChannel] = useState(false);
-  const { editing, hasFilePicker, hasImagePicker, initialValue } = value;
+  const { editing, initialValue } = value;
   const {
     fileUploads,
     imageUploads,
@@ -626,21 +639,77 @@ export const MessageInputProvider = <
     }
   };
 
-  const openAttachmentPicker = () => {
-    if (hasImagePicker) {
-      Keyboard.dismiss();
-      setSelectedPicker('images');
-      openPicker();
-    } else if (hasFilePicker) {
-      pickFile();
+  /**
+   * Function for capturing a photo and uploading it
+   */
+  const takeAndUploadImage = async () => {
+    setSelectedPicker(undefined);
+    closePicker();
+    const photo = await takePhoto({ compressImageQuality: value.compressImageQuality });
+    if (photo.askToOpenSettings) {
+      Alert.alert(
+        t('Allow camera access in device settings'),
+        t('Device camera is used to take photos or videos.'),
+        [
+          { style: 'cancel', text: t('Cancel') },
+          { onPress: () => Linking.openSettings(), style: 'default', text: t('Open Settings') },
+        ],
+      );
+    }
+    if (!photo.cancelled) {
+      setSelectedImages((images) => [...images, photo]);
     }
   };
 
+  /**
+   * Function for picking a photo from native image picker and uploading it
+   */
+  const pickAndUploadImageFromNativePicker = async () => {
+    const result = await pickImage();
+    if (result.askToOpenSettings) {
+      Alert.alert(
+        t('Allow access to your Gallery'),
+        t('Device gallery permissions is used to take photos or videos.'),
+        [
+          { style: 'cancel', text: t('Cancel') },
+          { onPress: () => Linking.openSettings(), style: 'default', text: t('Open Settings') },
+        ],
+      );
+    }
+    if (result.assets && result.assets.length > 0) {
+      result.assets.forEach((asset) => {
+        if (asset.type.includes('image')) {
+          setSelectedImages((prevImages) => [...prevImages, asset]);
+        } else {
+          setSelectedFiles((prevFiles) => [
+            ...prevFiles,
+            { ...asset, mimeType: asset.type, type: FileTypes.Video },
+          ]);
+        }
+      });
+    }
+  };
+
+  /**
+   * Function to open the attachment picker if the MediaLibary is installed.
+   */
+  const openAttachmentPicker = () => {
+    Keyboard.dismiss();
+    setSelectedPicker('images');
+    openPicker();
+  };
+
+  /**
+   * Function to close the attachment picker if the MediaLibrary is installed.
+   */
   const closeAttachmentPicker = () => {
     setSelectedPicker(undefined);
     closePicker();
   };
 
+  /**
+   * Function to toggle the attachment picker if the MediaLibrary is installed.
+   */
   const toggleAttachmentPicker = () => {
     if (selectedPicker) {
       closeAttachmentPicker();
@@ -723,20 +792,20 @@ export const MessageInputProvider = <
       original_height: image.height,
       original_width: image.width,
       originalImage: image.file,
-      type: 'image',
+      type: FileTypes.Image,
     };
   };
 
   const mapFileUploadToAttachment = (file: FileUpload): Attachment<StreamChatGenerics> => {
-    if (file.type === 'image') {
+    if (file.type === FileTypes.Image) {
       return {
         fallback: file.file.name,
         image_url: file.url,
         mime_type: file.file.mimeType,
         originalFile: file.file,
-        type: 'image',
+        type: FileTypes.Image,
       };
-    } else if (file.type === 'audio') {
+    } else if (file.type === FileTypes.Audio) {
       return {
         asset_url: file.url || file.file.uri,
         duration: file.file.duration,
@@ -744,9 +813,9 @@ export const MessageInputProvider = <
         mime_type: file.file.mimeType,
         originalFile: file.file,
         title: file.file.name,
-        type: 'audio',
+        type: FileTypes.Audio,
       };
-    } else if (file.type === 'video') {
+    } else if (file.type === FileTypes.Video) {
       return {
         asset_url: file.url || file.file.uri,
         duration: file.file.duration,
@@ -755,9 +824,9 @@ export const MessageInputProvider = <
         originalFile: file.file,
         thumb_url: file.thumb_url,
         title: file.file.name,
-        type: 'video',
+        type: FileTypes.Video,
       };
-    } else if (file.type === 'voiceRecording') {
+    } else if (file.type === FileTypes.VoiceRecording) {
       return {
         asset_url: file.url || file.file.uri,
         duration: file.file.duration,
@@ -765,7 +834,7 @@ export const MessageInputProvider = <
         mime_type: file.file.mimeType,
         originalFile: file.file,
         title: file.file.name,
-        type: 'voiceRecording',
+        type: FileTypes.VoiceRecording,
         waveform_data: file.file.waveform_data,
       };
     } else {
@@ -775,7 +844,7 @@ export const MessageInputProvider = <
         mime_type: file.file.mimeType,
         originalFile: file.file,
         title: file.file.name,
-        type: 'file',
+        type: FileTypes.File,
       };
     }
   };
@@ -940,7 +1009,7 @@ export const MessageInputProvider = <
       const attachments = [
         {
           image_url: image.url,
-          type: 'image',
+          type: FileTypes.Image,
         },
       ] as StreamMessage<StreamChatGenerics>['attachments'];
 
@@ -1287,6 +1356,7 @@ export const MessageInputProvider = <
     openCommandsPicker,
     openFilePicker: pickFile,
     openMentionsPicker,
+    pickAndUploadImageFromNativePicker,
     pickFile,
     removeFile,
     removeImage,
@@ -1307,6 +1377,7 @@ export const MessageInputProvider = <
     setShowMoreOptions,
     setText,
     showMoreOptions,
+    takeAndUploadImage,
     text,
     thread,
     toggleAttachmentPicker,

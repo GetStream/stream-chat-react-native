@@ -28,6 +28,7 @@ jest.mock('../../../native.ts', () => {
   const View = require('react-native/Libraries/Components/View/View');
   return {
     deleteFile: jest.fn(),
+    isImageMediaLibraryAvailable: jest.fn(() => true),
     isVideoPackageAvailable: jest.fn(() => true),
     NetInfo: {
       addEventListener: jest.fn(),

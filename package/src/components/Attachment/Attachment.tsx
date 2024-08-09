@@ -13,7 +13,7 @@ import {
 } from '../../contexts/messagesContext/MessagesContext';
 import { isVideoPackageAvailable } from '../../native';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 
 export type ActionHandler = (name: string, value: string) => void;
 
@@ -55,7 +55,7 @@ const AttachmentWithContext = <
 
   const hasAttachmentActions = !!attachment.actions?.length;
 
-  if (attachment.type === 'giphy' || attachment.type === 'imgur') {
+  if (attachment.type === FileTypes.Giphy || attachment.type === FileTypes.Imgur) {
     return <Giphy attachment={attachment} giphyVersion={giphyVersion} />;
   }
 
@@ -63,7 +63,7 @@ const AttachmentWithContext = <
     return <UrlPreview {...attachment} />;
   }
 
-  if (attachment.type === 'image') {
+  if (attachment.type === FileTypes.Image) {
     return (
       <>
         <Gallery images={[attachment]} />
@@ -74,7 +74,7 @@ const AttachmentWithContext = <
     );
   }
 
-  if (attachment.type === 'video' && !attachment.og_scrape_url) {
+  if (attachment.type === FileTypes.Video && !attachment.og_scrape_url) {
     return isVideoPackageAvailable() ? (
       <>
         <Gallery videos={[attachment]} />
@@ -88,9 +88,9 @@ const AttachmentWithContext = <
   }
 
   if (
-    attachment.type === 'file' ||
-    attachment.type === 'audio' ||
-    attachment.type === 'voiceRecording'
+    attachment.type === FileTypes.File ||
+    attachment.type === FileTypes.Audio ||
+    attachment.type === FileTypes.VoiceRecording
   ) {
     return <FileAttachment attachment={attachment} />;
   }

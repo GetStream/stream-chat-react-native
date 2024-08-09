@@ -30,6 +30,7 @@ export * from './Flag';
 export * from './Folder';
 export * from './GenericFile';
 export * from './GiphyIcon';
+export * from './GiphyLightning';
 export * from './Grid';
 export * from './Group';
 export * from './HTML';

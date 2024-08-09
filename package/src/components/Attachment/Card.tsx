@@ -27,7 +27,7 @@ import {
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Play } from '../../icons/Play';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 import { ImageBackground } from '../ImageBackground';
 
@@ -160,7 +160,7 @@ const CardWithContext = <
 
   const defaultOnPress = () => openUrlSafely(og_scrape_url || uri);
 
-  const isVideoCard = type === 'video' && og_scrape_url;
+  const isVideoCard = type === FileTypes.Video && og_scrape_url;
 
   return (
     <TouchableOpacity
