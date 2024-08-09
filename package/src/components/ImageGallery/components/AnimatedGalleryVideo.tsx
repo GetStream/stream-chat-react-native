@@ -173,7 +173,6 @@ export const AnimatedGalleryVideo = React.memo(
       <Animated.View
         accessibilityLabel='Image Gallery Video'
         style={[
-          style,
           animatedViewStyles,
           {
             transform: [
@@ -185,6 +184,7 @@ export const AnimatedGalleryVideo = React.memo(
               { scale: oneEighth },
             ],
           },
+          style,
         ]}
       >
         {isVideoPackageAvailable() && (
