@@ -28,18 +28,18 @@ lane :android_app_size do |options|
 
 
   Dir.chdir(options[:rn_project_dir]) do
-    sh("yarn add @react-native-community/cli-platform-android")
+    sh("yarn add @react-native-community/cli-platform-android@3.0.3")
   end
 
   # FIXME: use only one option
   app_path = Dir.chdir(android_project_dir) do
     if options[:bundle]
-      sh("./gradlew bundleRelease")
+      sh("./gradlew clean bundleRelease")
       sh('wget https://github.com/google/bundletool/releases/download/1.17.1/bundletool-all-1.17.1.jar -O bundletool.jar') unless File.file?('bundletool.jar')
       sh("java -jar bundletool.jar build-apks --output=app.apks --bundle=app/build/outputs/bundle/release/app-release.aab --mode=universal")
       "#{android_project_dir}/app.apks"
     else
-      sh('./gradlew assembleRelease')
+      sh('./gradlew clean assembleRelease')
       "#{android_project_dir}/app/build/outputs/apk/release/app-release.apk"
     end
   end
