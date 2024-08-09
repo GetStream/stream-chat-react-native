@@ -12,28 +12,9 @@ export const getReadStates = <
     | ThreadContextValue<StreamChatGenerics>['threadMessages'],
   read?: ChannelContextValue<StreamChatGenerics>['read'],
 ) => {
-  const readData = messages.reduce((acc, cur) => {
-    if (cur.id) {
-      acc[cur.id] = false;
-    }
-    return acc;
-  }, {} as { [key: string]: boolean | number });
-
-  const filteredMessagesReversed = messages.filter((msg) => msg.updated_at).reverse();
+  const readData: Record<string, number> = {};
 
   if (read) {
-    /**
-     * Channel read state is stored by user and we only care about users who aren't the client
-     */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { [clientUserId ?? '']: _ignore, ...filteredRead } = read;
-    const members = Object.values(filteredRead);
-
-    /**
-     * Track number of members who have read previous messages
-     */
-    let memberReadCount = 0;
-
     /**
      * Array is in reverse order so newest message is at 0,
      * we find the index of the first message that is older
@@ -41,65 +22,37 @@ export const getReadStates = <
      * if there are no newer messages, the first message is
      * last read message.
      */
-    for (const message of filteredMessagesReversed) {
-      /**
-       * If all members are removed then they have read these
-       * messages. We do not increment memberReadCount for 1:1
-       * chats, so this should be true, not a number in that case.
-       */
-      if (!members.length) {
-        readData[message.id] = memberReadCount || true;
-      } else {
-        for (const member of members) {
-          /**
-           * If no last read continue, we can't remove the user
-           * because this would mark all messages in a new channel
-           * true until at least one other user reads a message.
-           */
-          if (!member.last_read) {
-            continue;
+    Object.values(read).forEach((readState) => {
+      if (!readState.last_read) return;
+
+      let userLastReadMsgId: string | undefined;
+
+      // loop messages sent by current user and add read data for other users in channel
+      messages.forEach((msg) => {
+        if (msg.created_at && msg.created_at < readState.last_read) {
+          userLastReadMsgId = msg.id;
+
+          // if true, save other user's read data for all messages they've read
+          if (!readData[userLastReadMsgId]) {
+            readData[userLastReadMsgId] = 0;
           }
 
-          /**
-           * If there there is a last read message add the user
-           * to the array of last reads for that message and remove
-           * the user from the list of users being checked
-           */
-          if (message.created_at < member.last_read) {
-            /**
-             * if this is a direct message the length will be 1
-             * as we already deleted the current user from the object
-             */
-            const numberOfReads = Object.keys(read).length;
-            if (numberOfReads === 1) {
-              readData[message.id] = true;
-            } else {
-              const currentMessageReadData = readData[message.id];
-              readData[message.id] =
-                typeof currentMessageReadData === 'boolean'
-                  ? memberReadCount + 1
-                  : currentMessageReadData + 1;
-            }
-            const userIndex = members.findIndex(({ user }) => user.id === member.user?.id);
-            if (userIndex !== -1) {
-              members.splice(userIndex, 1);
-              if (numberOfReads > 1) {
-                memberReadCount += 1;
-              }
-            }
+          // Only increment read count if the message is not sent by the current user
+          if (msg.user?.id !== clientUserId) {
+            readData[userLastReadMsgId] = readData[userLastReadMsgId] + 1;
           }
         }
+      });
 
-        /**
-         * If this is not the last message for a user this will still be
-         * set to false. But if other users have read further the number
-         * should be how many have read beyond this message.
-         */
-        if (readData[message.id] === false) {
-          readData[message.id] = memberReadCount || false;
+      // if true, only save read data for other user's last read message
+      if (userLastReadMsgId) {
+        if (!readData[userLastReadMsgId]) {
+          readData[userLastReadMsgId] = 0;
         }
+
+        readData[userLastReadMsgId] = readData[userLastReadMsgId] + 1;
       }
-    }
+    });
   }
 
   return readData;

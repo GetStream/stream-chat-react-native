@@ -64,7 +64,7 @@ export const ImageGalleryVideoControl = React.memo(
     return (
       <View style={[styles.videoContainer, videoContainer]}>
         <TouchableOpacity accessibilityLabel='Play Pause Button' onPress={handlePlayPause}>
-          <View style={[styles.roundedView, roundedView, { backgroundColor: static_white }]}>
+          <View style={[styles.roundedView, { backgroundColor: static_white }, roundedView]}>
             {paused ? (
               <Play accessibilityLabel='Play Icon' fill={static_black} height={32} width={32} />
             ) : (
@@ -74,7 +74,7 @@ export const ImageGalleryVideoControl = React.memo(
         </TouchableOpacity>
         <Text
           accessibilityLabel='Progress Duration'
-          style={[styles.durationTextStyle, durationTextStyle, { color: black }]}
+          style={[styles.durationTextStyle, { color: black }, durationTextStyle]}
         >
           {progressDuration}
         </Text>
@@ -88,7 +88,7 @@ export const ImageGalleryVideoControl = React.memo(
         />
         <Text
           accessibilityLabel='Video Duration'
-          style={[styles.durationTextStyle, durationTextStyle, { color: black }]}
+          style={[styles.durationTextStyle, { color: black }, durationTextStyle]}
         >
           {videoDuration}
         </Text>
