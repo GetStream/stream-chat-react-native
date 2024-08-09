@@ -40,7 +40,7 @@ jobs:
       - name: Run SDK Size Metrics
         run: bundle exec fastlane sdk_size
         working-directory: examples/SampleApp
-        timeout-minutes: 30
+        timeout-minutes: 60
         env:
           GITHUB_PR_NUM: ${{ github.event.pull_request.number }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
