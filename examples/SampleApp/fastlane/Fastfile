@@ -27,7 +27,7 @@ lane :android_app_size do |options|
   android_project_dir = "#{options[:rn_project_dir]}/android"
   aab_path = "#{android_project_dir}/app/build/outputs/bundle/release/app-release.aab"
   app_path = "#{android_project_dir}/app.apks"
-  FileUtils.rm_rf(app_path) if File.file?(app_path)
+  [aab_path, app_path].each { |f| FileUtils.rm_rf(f) if File.file?(f) }
 
   Dir.chdir(android_project_dir) do
     sh("./gradlew clean bundleRelease")
@@ -212,6 +212,10 @@ end
 
 lane :sdk_size do
   rn_project_dir = create_template_project
+
+  Dir.chdir(rn_project_dir) do
+    sh('yarn add react-native@0.74.5')
+  end
 
   android_app_size_without_sdk = android_app_size(rn_project_dir: rn_project_dir)
   ios_app_size_without_sdk = ios_app_size(rn_project_dir: rn_project_dir)
