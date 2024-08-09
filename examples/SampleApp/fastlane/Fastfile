@@ -226,8 +226,8 @@ lane :frameworks_sizes do
   ios_app_size_with_sdk = ios_app_size(rn_project_dir: rn_project_dir, skip_match: true)
 
   {
-    android: (android_app_size_with_sdk - android_app_size_without_sdk).round(2),
-    ios: (ios_app_size_with_sdk - ios_app_size_without_sdk).round(2)
+    Android: (android_app_size_with_sdk - android_app_size_without_sdk).round(2),
+    iOS: (ios_app_size_with_sdk - ios_app_size_without_sdk).round(2)
   }
 end
 
