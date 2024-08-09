@@ -16,8 +16,8 @@ const styles = StyleSheet.create({
   errorContainer: {
     alignItems: 'center',
     bottom: 0,
+    justifyContent: 'center',
     left: 0,
-    paddingTop: 16,
     position: 'absolute',
     right: 0,
   },
@@ -70,7 +70,7 @@ export const AttachmentPickerError = (props: AttachmentPickerErrorProps) => {
         styles.errorContainer,
         {
           backgroundColor: white_smoke,
-          height: attachmentPickerBottomSheetHeight ?? 308,
+          height: attachmentPickerBottomSheetHeight,
         },
         errorContainer,
       ]}
