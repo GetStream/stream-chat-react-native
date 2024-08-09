@@ -2,7 +2,12 @@ import { useEffect, useState } from 'react';
 
 import { Attachment } from 'stream-chat';
 
-import type { DefaultStreamChatGenerics, FileUpload, ImageUpload } from '../../../types/types';
+import {
+  DefaultStreamChatGenerics,
+  FileTypes,
+  FileUpload,
+  ImageUpload,
+} from '../../../types/types';
 import { generateRandomId } from '../../../utils/utils';
 
 import type { MessageInputContextValue } from '../MessageInputContext';
@@ -44,7 +49,7 @@ export const useMessageDetailsForState = <
   const mapAttachmentToFileUpload = (attachment: Attachment<StreamChatGenerics>): FileUpload => {
     const id = generateRandomId();
 
-    if (attachment.type === 'audio') {
+    if (attachment.type === FileTypes.Audio) {
       return {
         file: {
           duration: attachment.duration,
@@ -57,7 +62,7 @@ export const useMessageDetailsForState = <
         state: 'finished',
         url: attachment.asset_url,
       };
-    } else if (attachment.type === 'video') {
+    } else if (attachment.type === FileTypes.Video) {
       return {
         file: {
           mimeType: attachment.mime_type,
@@ -69,7 +74,7 @@ export const useMessageDetailsForState = <
         thumb_url: attachment.thumb_url,
         url: attachment.asset_url,
       };
-    } else if (attachment.type === 'voiceRecording') {
+    } else if (attachment.type === FileTypes.VoiceRecording) {
       return {
         file: {
           duration: attachment.duration,
@@ -83,7 +88,7 @@ export const useMessageDetailsForState = <
         state: 'finished',
         url: attachment.asset_url,
       };
-    } else if (attachment.type === 'file') {
+    } else if (attachment.type === FileTypes.File) {
       return {
         file: {
           mimeType: attachment.mime_type,
@@ -117,7 +122,7 @@ export const useMessageDetailsForState = <
       const attachments = Array.isArray(message.attachments) ? message.attachments : [];
 
       for (const attachment of attachments) {
-        if (attachment.type === 'image') {
+        if (attachment.type === FileTypes.Image) {
           const id = generateRandomId();
           newImageUploads.push({
             file: {

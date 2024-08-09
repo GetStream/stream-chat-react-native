@@ -35,7 +35,7 @@ import type { Trigger } from '../../utils/utils';
 const styles = StyleSheet.create({
   inputBox: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 16,
     includeFontPadding: false, // for android vertical text centering
     padding: 0, // removal of default text input padding on android
     paddingTop: 0, // removal of iOS top padding for weird centering

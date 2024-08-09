@@ -1,30 +1,96 @@
-import React from 'react';
-import type { GestureResponderEvent } from 'react-native';
+import React, { useState } from 'react';
+import type { GestureResponderEvent, LayoutChangeEvent, LayoutRectangle } from 'react-native';
 import { Pressable } from 'react-native';
 
+import { NativeAttachmentPicker } from './components/NativeAttachmentPicker';
+
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
+import { useMessageInputContext } from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Attach } from '../../icons/Attach';
 
-type AttachButtonPropsWithContext = {
+import { isImageMediaLibraryAvailable } from '../../native';
+import type { DefaultStreamChatGenerics } from '../../types/types';
+
+type AttachButtonPropsWithContext<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled'> & {
   /** Function that opens attachment options bottom sheet */
   handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
   selectedPicker?: 'images';
 };
 
-const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
-  const { handleOnPress, selectedPicker } = props;
+const AttachButtonWithContext = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  props: AttachButtonPropsWithContext<StreamChatGenerics>,
+) => {
+  const [showAttachButtonPicker, setShowAttachButtonPicker] = useState<boolean>(false);
+  const [attachButtonLayoutRectangle, setAttachButtonLayoutRectangle] = useState<LayoutRectangle>();
+  const { disabled, handleOnPress, selectedPicker } = props;
   const {
     theme: {
       colors: { accent_blue, grey },
       messageInput: { attachButton },
     },
   } = useTheme();
+  const { handleAttachButtonPress, toggleAttachmentPicker } = useMessageInputContext();
+
+  const onAttachButtonLayout = (event: LayoutChangeEvent) => {
+    const layout = event.nativeEvent.layout;
+    setAttachButtonLayoutRectangle((prev) => {
+      if (
+        prev &&
+        prev.width === layout.width &&
+        prev.height === layout.height &&
+        prev.x === layout.x &&
+        prev.y === layout.y
+      ) {
+        return prev;
+      }
+      return layout;
+    });
+  };
+
+  const attachButtonHandler = () => {
+    setShowAttachButtonPicker(true);
+  };
+
+  const onPressHandler = () => {
+    if (handleOnPress) {
+      handleOnPress();
+      return;
+    }
+    if (handleAttachButtonPress) {
+      handleAttachButtonPress();
+      return;
+    }
+    if (isImageMediaLibraryAvailable()) {
+      toggleAttachmentPicker();
+    } else {
+      attachButtonHandler();
+    }
+  };
 
   return (
-    <Pressable onPress={handleOnPress} style={[attachButton]} testID='attach-button'>
-      <Attach pathFill={selectedPicker === 'images' ? accent_blue : grey} />
-    </Pressable>
+    <>
+      <Pressable
+        disabled={disabled}
+        onLayout={onAttachButtonLayout}
+        onPress={disabled ? () => null : onPressHandler}
+        style={[attachButton]}
+        testID='attach-button'
+      >
+        <Attach fill={selectedPicker === 'images' ? accent_blue : grey} size={32} />
+      </Pressable>
+      {showAttachButtonPicker ? (
+        <NativeAttachmentPicker
+          attachButtonLayoutRectangle={attachButtonLayoutRectangle}
+          onRequestedClose={() => setShowAttachButtonPicker(false)}
+        />
+      ) : null}
+    </>
   );
 };
 

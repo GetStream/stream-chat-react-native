@@ -48,7 +48,7 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useViewport } from '../../hooks/useViewport';
 import { isVideoPackageAvailable, VideoType } from '../../native';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
 import { getGiphyMimeType } from '../Attachment/utils/getGiphyMimeType';
@@ -239,15 +239,15 @@ export const ImageGallery = <
       cur.attachments
         ?.filter(
           (attachment) =>
-            (attachment.type === 'giphy' &&
+            (attachment.type === FileTypes.Giphy &&
               (attachment.giphy?.[giphyVersion]?.url ||
                 attachment.thumb_url ||
                 attachment.image_url)) ||
-            (attachment.type === 'image' &&
+            (attachment.type === FileTypes.Image &&
               !attachment.title_link &&
               !attachment.og_scrape_url &&
               getUrlOfImageAttachment(attachment)) ||
-            (isVideoPackageAvailable() && attachment.type === 'video'),
+            (isVideoPackageAvailable() && attachment.type === FileTypes.Video),
         )
         .reverse() || [];
 
@@ -344,7 +344,7 @@ export const ImageGallery = <
       const imageHeight = Math.floor(height * (fullWindowWidth / width));
       setCurrentImageHeight(imageHeight > fullWindowHeight ? fullWindowHeight : imageHeight);
     } else if (photo?.uri) {
-      if (photo.type === 'image') {
+      if (photo.type === FileTypes.Image) {
         Image.getSize(photo.uri, (width, height) => {
           const imageHeight = Math.floor(height * (fullWindowWidth / width));
           setCurrentImageHeight(imageHeight > fullWindowHeight ? fullWindowHeight : imageHeight);
@@ -553,7 +553,7 @@ export const ImageGallery = <
                     <Animated.View style={StyleSheet.absoluteFill}>
                       <Animated.View style={[styles.animatedContainer, pagerStyle, pager]}>
                         {imageGalleryAttachments.map((photo, i) =>
-                          photo.type === 'video' ? (
+                          photo.type === FileTypes.Video ? (
                             <AnimatedGalleryVideo
                               attachmentId={photo.id}
                               handleEnd={handleEnd}

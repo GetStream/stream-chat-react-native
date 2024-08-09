@@ -46,7 +46,7 @@ const AutoCompleteSuggestionHeaderWithContext = <
   if (triggerType === 'command') {
     return (
       <View style={[styles.container, container]}>
-        <Lightning pathFill={accent_blue} />
+        <Lightning fill={accent_blue} size={32} />
         <Text style={[styles.title, { color: grey }, title]} testID='commands-header-title'>
           {t<string>('Instant Commands')}
         </Text>

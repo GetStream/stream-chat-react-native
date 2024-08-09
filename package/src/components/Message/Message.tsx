@@ -40,7 +40,7 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 
 import { isVideoPackageAvailable, triggerHaptic } from '../../native';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 import {
   hasOnlyEmojis,
   isBlockedMessage,
@@ -377,22 +377,26 @@ const MessageWithContext = <
     !isMessageTypeDeleted && Array.isArray(message.attachments)
       ? message.attachments.reduce(
           (acc, cur) => {
-            if (cur.type === 'file') {
+            if (cur.type === FileTypes.File) {
               acc.files.push(cur);
               acc.other = []; // remove other attachments if a file exists
-            } else if (cur.type === 'video' && !cur.og_scrape_url && isVideoPackageAvailable()) {
+            } else if (
+              cur.type === FileTypes.Video &&
+              !cur.og_scrape_url &&
+              isVideoPackageAvailable()
+            ) {
               acc.videos.push({
                 image_url: cur.asset_url,
                 thumb_url: cur.thumb_url,
-                type: 'video',
+                type: FileTypes.Video,
               });
               acc.other = [];
-            } else if (cur.type === 'video' && !cur.og_scrape_url) {
+            } else if (cur.type === FileTypes.Video && !cur.og_scrape_url) {
               acc.files.push(cur);
               acc.other = []; // remove other attachments if a file exists
-            } else if (cur.type === 'audio' || cur.type === 'voiceRecording') {
+            } else if (cur.type === FileTypes.Audio || cur.type === FileTypes.VoiceRecording) {
               acc.files.push(cur);
-            } else if (cur.type === 'image' && !cur.title_link && !cur.og_scrape_url) {
+            } else if (cur.type === FileTypes.Image && !cur.title_link && !cur.og_scrape_url) {
               /**
                * this next if is not combined with the above one for cases where we have
                * an image with no url links at all falling back to being an attachment
@@ -859,7 +863,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
       prevMessageAttachments.length === nextMessageAttachments.length &&
       prevMessageAttachments.every((attachment, index) => {
         const attachmentKeysEqual =
-          attachment.type === 'image'
+          attachment.type === FileTypes.Image
             ? attachment.image_url === nextMessageAttachments[index].image_url &&
               attachment.thumb_url === nextMessageAttachments[index].thumb_url
             : attachment.type === nextMessageAttachments[index].type;

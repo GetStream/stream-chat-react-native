@@ -118,6 +118,7 @@ type MessageInputPropsWithContext<
     | 'FileUploadPreview'
     | 'fileUploads'
     | 'giphyActive'
+    | 'hasImagePicker'
     | 'ImageUploadPreview'
     | 'imageUploads'
     | 'Input'
@@ -184,6 +185,7 @@ const MessageInputWithContext = <
     FileUploadPreview,
     fileUploads,
     giphyActive,
+    hasImagePicker,
     ImageUploadPreview,
     imageUploads,
     Input,
@@ -277,6 +279,9 @@ const MessageInputWithContext = <
   const fileUploadsLength = hasResetFiles ? fileUploads.length : 0;
   const imagesForInput = (!!thread && !!threadList) || (!thread && !threadList);
 
+  /**
+   * Reset the selected images when the component is unmounted.
+   */
   useEffect(() => {
     setSelectedImages([]);
     if (imageUploads.length) {
@@ -285,11 +290,15 @@ const MessageInputWithContext = <
     return () => setSelectedImages([]);
   }, []);
 
+  /**
+   * Reset the selected files when the component is unmounted.
+   */
   useEffect(() => {
     setSelectedFiles([]);
     if (fileUploads.length) {
       fileUploads.forEach((file) => removeFile(file.id));
     }
+
     return () => setSelectedFiles([]);
   }, []);
 
@@ -306,10 +315,10 @@ const MessageInputWithContext = <
   }, [fileUploadsLength, selectedFilesLength]);
 
   useEffect(() => {
-    if (imagesForInput === false && imageUploads.length) {
+    if (imagesForInput === false && imageUploadsLength) {
       imageUploads.forEach((image) => removeImage(image.id));
     }
-  }, [imagesForInput]);
+  }, [imagesForInput, imageUploadsLength]);
 
   const uploadImagesHandler = () => {
     const imageToUpload = selectedImages.find((selectedImage) => {
@@ -371,9 +380,9 @@ const MessageInputWithContext = <
   }, [selectedFilesLength]);
 
   useEffect(() => {
-    if (imagesForInput) {
+    if (imagesForInput && hasImagePicker) {
       if (imageUploadsLength < selectedImagesLength) {
-        /** User removed some image from seleted images within ImageUploadPreview. */
+        // /** User removed some image from seleted images within ImageUploadPreview. */
         const updatedSelectedImages = selectedImages.filter((selectedImage) => {
           const uploadedImage = imageUploads.find(
             (imageUpload) =>
@@ -400,36 +409,38 @@ const MessageInputWithContext = <
         );
       }
     }
-  }, [imageUploadsLength]);
+  }, [imageUploadsLength, hasImagePicker]);
 
   useEffect(() => {
-    if (fileUploadsLength < selectedFilesLength) {
-      /** User removed some video from seleted files within ImageUploadPreview. */
-      const updatedSelectedFiles = selectedFiles.filter((selectedFile) => {
-        const uploadedFile = fileUploads.find(
-          (fileUpload) =>
-            fileUpload.file.uri === selectedFile.uri || fileUpload.url === selectedFile.uri,
+    if (hasImagePicker) {
+      if (fileUploadsLength < selectedFilesLength) {
+        /** User removed some video from seleted files within ImageUploadPreview. */
+        const updatedSelectedFiles = selectedFiles.filter((selectedFile) => {
+          const uploadedFile = fileUploads.find(
+            (fileUpload) =>
+              fileUpload.file.uri === selectedFile.uri || fileUpload.url === selectedFile.uri,
+          );
+          return uploadedFile;
+        });
+        setSelectedFiles(updatedSelectedFiles);
+      } else if (fileUploadsLength > selectedFilesLength) {
+        /**
+         * User is editing some message which contains video attachments OR
+         * video attachment is added from custom image picker (other than the default bottom-sheet image picker)
+         * using `uploadNewFile` function from `MessageInputContext`.
+         **/
+        setSelectedFiles(
+          fileUploads.map((fileUpload) => ({
+            duration: fileUpload.file.duration,
+            mimeType: fileUpload.file.mimeType,
+            name: fileUpload.file.name,
+            size: fileUpload.file.size,
+            uri: fileUpload.file.uri,
+          })),
         );
-        return uploadedFile;
-      });
-      setSelectedFiles(updatedSelectedFiles);
-    } else if (fileUploadsLength > selectedFilesLength) {
-      /**
-       * User is editing some message which contains video attachments OR
-       * video attachment is added from custom image picker (other than the default bottom-sheet image picker)
-       * using `uploadNewFile` function from `MessageInputContext`.
-       **/
-      setSelectedFiles(
-        fileUploads.map((fileUpload) => ({
-          duration: fileUpload.file.duration,
-          mimeType: fileUpload.file.mimeType,
-          name: fileUpload.file.name,
-          size: fileUpload.file.size,
-          uri: fileUpload.file.uri,
-        })),
-      );
+      }
     }
-  }, [fileUploadsLength]);
+  }, [fileUploadsLength, hasImagePicker]);
 
   const editingExists = !!editing;
   useEffect(() => {
@@ -1012,6 +1023,7 @@ export const MessageInput = <
     FileUploadPreview,
     fileUploads,
     giphyActive,
+    hasImagePicker,
     ImageUploadPreview,
     imageUploads,
     Input,
@@ -1092,6 +1104,7 @@ export const MessageInput = <
         FileUploadPreview,
         fileUploads,
         giphyActive,
+        hasImagePicker,
         ImageUploadPreview,
         imageUploads,
         Input,
