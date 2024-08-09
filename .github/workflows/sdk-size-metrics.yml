@@ -32,6 +32,13 @@ jobs:
           java-version: '17'
           check-latest: true
 
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: 'yarn'
+
+      - run: yarn add react-native@0.74.5
+
       - name: Run SDK Size Metrics
         run: bundle exec fastlane sdk_size
         working-directory: examples/SampleApp
