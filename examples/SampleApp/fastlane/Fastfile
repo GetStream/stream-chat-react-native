@@ -64,8 +64,8 @@ lane :ios_app_size do |options|
     workspace: "#{ios_project_dir}/#{template_app_name}.xcworkspace",
     scheme: template_app_name,
     archive_path: archive_dir,
-    export_method: 'ad-hoc',
-    export_options: './fastlane/beta_gym_export_options.plist'
+    export_method: 'app-store',
+    export_options: './fastlane/testflight_gym_export_options.plist'
   )
 
   directory_size(path: app_path)
@@ -217,18 +217,18 @@ lane :sdk_size do
     sh('yarn add react-native@0.74.5')
   end
 
-  android_app_size_without_sdk = android_app_size(rn_project_dir: rn_project_dir)
+  # android_app_size_without_sdk = android_app_size(rn_project_dir: rn_project_dir)
   ios_app_size_without_sdk = ios_app_size(rn_project_dir: rn_project_dir)
 
   yarn_sdk(path: rn_project_dir)
 
-  android_app_size_with_sdk = android_app_size(rn_project_dir: rn_project_dir)
+  # android_app_size_with_sdk = android_app_size(rn_project_dir: rn_project_dir)
   ios_app_size_with_sdk = ios_app_size(rn_project_dir: rn_project_dir, skip_match: true)
 
-  android_sdk_size = (android_app_size_with_sdk - android_app_size_without_sdk).round(3)
+  # android_sdk_size = (android_app_size_with_sdk - android_app_size_without_sdk).round(3)
   ios_sdk_size = (ios_app_size_with_sdk - ios_app_size_without_sdk).round(3)
 
-  UI.success("✅ Android SDK Size: #{android_sdk_size}")
+  # UI.success("✅ Android SDK Size: #{android_sdk_size}")
   UI.success("✅ iOS SDK Size: #{ios_sdk_size}")
 end
 
