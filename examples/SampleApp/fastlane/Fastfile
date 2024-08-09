@@ -7,7 +7,7 @@ xcode_project = 'ios/SampleApp.xcodeproj'
 xcode_workspace = 'ios/SampleApp.xcworkspace'
 template_app_name = 'DemoApp'
 bundletool_version = '1.17.1'
-@force_check = true # FIXME: false
+@force_check = false
 temp_dir = Dir.mktmpdir
 
 before_all do
@@ -232,7 +232,7 @@ lane :frameworks_sizes do
 end
 
 lane :show_frameworks_sizes do |options|
-  next unless is_check_required(sources: ['package/'], force_check: @force_check)
+  # FIXME: next unless is_check_required(sources: ['package/'], force_check: @force_check)
 
   show_frameworks_size(
     branch_sizes: options[:sizes] || frameworks_sizes,
