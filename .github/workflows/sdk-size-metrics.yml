@@ -1,0 +1,36 @@
+name: SDK Size
+
+on:
+  pull_request:
+
+  workflow_dispatch:
+
+  push:
+    branches:
+      - develop
+
+env:
+  HOMEBREW_NO_INSTALL_CLEANUP: 1 # Disable cleanup for homebrew, we don't need it on CI
+
+jobs:
+  sdk_size:
+    name: Metrics
+    runs-on: macos-14
+    steps:
+      # - name: Connect Bot
+      #   uses: webfactory/ssh-agent@v0.7.0
+      #   with:
+      #     ssh-private-key: ${{ secrets.BOT_SSH_PRIVATE_KEY }}
+
+      - uses: actions/checkout@v3.1.0
+
+      - uses: ./.github/actions/ruby-cache
+
+      - name: Run SDK Size Metrics
+        run: bundle exec fastlane sdk_size
+        timeout-minutes: 30
+        env:
+          GITHUB_PR_NUM: ${{ github.event.pull_request.number }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          APPSTORE_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'

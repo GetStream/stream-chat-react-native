@@ -26,6 +26,7 @@ lane :android_app_size do |options|
   options[:rn_project_dir] ||= create_template_project
   android_project_dir = "#{options[:rn_project_dir]}/android"
 
+  # FIXME: use only one option
   app_path = Dir.chdir(android_project_dir) do
     if options[:bundle]
       sh("./gradlew bundleRelease")
@@ -229,4 +230,12 @@ lane :sdk_size do
 
   UI.success("✅ Android SDK Size: #{android_sdk_size}")
   UI.success("✅ iOS SDK Size: #{ios_sdk_size}")
+end
+
+private_lane :create_pr_comment do |options|
+  if is_ci && !options[:pr_num].to_s.empty?
+    last_comment = sh("gh pr view #{options[:pr_num]} --json comments --jq '.comments | map(select(.author.login == \"Stream-iOS-Bot\")) | last'")
+    edit_last_comment = options[:edit_last_comment_with_text] && last_comment.include?(options[:edit_last_comment_with_text]) ? '--edit-last' : ''
+    sh("gh pr comment #{options[:pr_num]} #{edit_last_comment} -b '#{options[:text]}'")
+  end
 end
