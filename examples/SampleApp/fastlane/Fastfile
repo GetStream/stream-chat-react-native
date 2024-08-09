@@ -1,16 +1,19 @@
 default_platform(:ios)
 skip_docs
 
+github_repo = ENV['GITHUB_REPOSITORY'] || 'GetStream/stream-chat-react-native'
 bundle_id = 'io.getstream.reactnative.SampleApp'
 xcode_project = 'ios/SampleApp.xcodeproj'
 xcode_workspace = 'ios/SampleApp.xcworkspace'
 template_app_name = 'DemoApp'
+bundletool_version = '1.17.1'
+@force_check = true # FIXME: false
 temp_dir = Dir.mktmpdir
 
 before_all do
   if is_ci
-    sh('git config --global user.name "Stream Bot"')
     setup_ci
+    setup_git_config
   end
 end
 
@@ -31,7 +34,7 @@ lane :android_app_size do |options|
 
   Dir.chdir(android_project_dir) do
     sh("./gradlew clean bundleRelease")
-    sh('wget https://github.com/google/bundletool/releases/download/1.17.1/bundletool-all-1.17.1.jar -O bundletool.jar') unless File.file?('bundletool.jar')
+    sh("wget https://github.com/google/bundletool/releases/download/#{bundletool_version}/bundletool-all-#{bundletool_version}.jar -O bundletool.jar") unless File.file?('bundletool.jar')
     sh("java -jar bundletool.jar build-apks --output=#{app_path} --bundle=#{aab_path} --mode=universal")
   end
 
@@ -154,17 +157,6 @@ end
 ###### Common lanes ######
 ##########################
 
-lane :current_branch do
-  branch = if ENV['GITHUB_PR_NUM'].to_s.empty?
-             git_branch
-           else
-             sh("gh pr view #{ENV.fetch('GITHUB_PR_NUM')} --json headRefName -q .headRefName").strip
-           end
-
-  UI.important("Current branch: #{branch} 🕊️")
-  branch
-end
-
 lane :file_size do |options|
   File.size(options[:path]).to_f / 1024 / 1024
 end
@@ -187,7 +179,7 @@ end
 lane :yarn_sdk do |options|
   Dir.chdir(options[:path]) do
     node_modules = [
-      # "stream-chat-react-native@https://github.com/GetStream/stream-chat-react-native.git##{current_branch}"
+      # FIXME: "stream-chat-react-native@https://github.com/GetStream/stream-chat-react-native.git##{current_branch}"
       'stream-chat-react-native',
       '@react-native-community/netinfo',
       '@stream-io/flat-list-mvcp',
@@ -218,7 +210,7 @@ lane :yarn_dev do
   Dir.chdir('..') { sh('yarn') }
 end
 
-lane :sdk_size do
+lane :frameworks_sizes do
   rn_project_dir = create_template_project
 
   Dir.chdir(rn_project_dir) do
@@ -233,17 +225,40 @@ lane :sdk_size do
   android_app_size_with_sdk = android_app_size(rn_project_dir: rn_project_dir)
   ios_app_size_with_sdk = ios_app_size(rn_project_dir: rn_project_dir, skip_match: true)
 
-  android_sdk_size = (android_app_size_with_sdk - android_app_size_without_sdk).round(3)
-  ios_sdk_size = (ios_app_size_with_sdk - ios_app_size_without_sdk).round(3)
-
-  UI.success("✅ Android SDK Size: #{android_sdk_size}")
-  UI.success("✅ iOS SDK Size: #{ios_sdk_size}")
+  {
+    android: (android_app_size_with_sdk - android_app_size_without_sdk).round(2),
+    ios: (ios_app_size_with_sdk - ios_app_size_without_sdk).round(2)
+  }
 end
 
-private_lane :create_pr_comment do |options|
-  if is_ci && !options[:pr_num].to_s.empty?
-    last_comment = sh("gh pr view #{options[:pr_num]} --json comments --jq '.comments | map(select(.author.login == \"Stream-SDK-Bot\")) | last'")
-    edit_last_comment = options[:edit_last_comment_with_text] && last_comment.include?(options[:edit_last_comment_with_text]) ? '--edit-last' : ''
-    sh("gh pr comment #{options[:pr_num]} #{edit_last_comment} -b '#{options[:text]}'")
-  end
+lane :show_frameworks_sizes do |options|
+  next unless is_check_required(sources: 'package/', force_check: @force_check)
+
+  show_frameworks_size(
+    branch_sizes: options[:sizes] || frameworks_sizes,
+    github_repo: github_repo,
+    sdk_names: ['ios', 'android']
+  )
+end
+
+lane :update_img_shields_sdk_sizes do
+  sizes = frameworks_sizes
+
+  # Read the file into a string
+  readme_path = '../../../README.md'
+  readme_content = File.read(readme_path)
+
+  # Define the new value for the badge
+  ios_size = "#{sizes[:ios]}MB"
+  android_size = "#{sizes[:android]}MB"
+
+  # Replace the value in the badge URL
+  readme_content.gsub!(%r{(https://img.shields.io/badge/iOS-)(.*?)(-blue)}, "\\1#{ios_size}\\3")
+  readme_content.gsub!(%r{(https://img.shields.io/badge/Android-)(.*?)(-blue)}, "\\1#{android_size}\\3")
+
+  # Write the updated content back to the file
+  File.write(readme_path, readme_content)
+
+  # Notify success
+  UI.success('Successfully updated the SDK size labels in README.md!')
 end

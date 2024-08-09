@@ -38,7 +38,7 @@ jobs:
           cache: 'yarn'
 
       - name: Run SDK Size Metrics
-        run: bundle exec fastlane sdk_size
+        run: bundle exec fastlane show_frameworks_sizes
         working-directory: examples/SampleApp
         timeout-minutes: 60
         env:

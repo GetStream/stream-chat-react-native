@@ -4,6 +4,11 @@
   <a href="https://getstream.io/chat/react-native-chat/tutorial/"><img src="https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/readme/cover.png" alt="react native chat" width="100%" /></a>
 </p>
 
+<p align="center">
+  <img id="stream-chat-rn-ios-label" alt="StreamChat React Native iOS" src="https://img.shields.io/badge/iOS-1.30MB-blue"/>
+  <img id="stream-chat-rn-android-label" alt="StreamChat React Native Android" src="https://img.shields.io/badge/Android-7.73MB-blue"/>
+</p>
+
 > The official React Native and Expo components for Stream Chat, a service for
 > building chat applications.
 
