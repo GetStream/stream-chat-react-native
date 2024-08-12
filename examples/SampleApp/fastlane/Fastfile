@@ -158,7 +158,7 @@ end
 ##########################
 
 lane :file_size do |options|
-  File.size(options[:path]).to_f / 1024 / 1024
+  File.size(options[:path]).to_f / 1024
 end
 
 lane :directory_size do |options|
@@ -166,7 +166,7 @@ lane :directory_size do |options|
   Find.find(options[:path]) do |file|
     total_size += File.size(file) if File.file?(file)
   end
-  total_size.to_f / 1024 / 1024
+  total_size.to_f / 1024
 end
 
 lane :create_template_project do
