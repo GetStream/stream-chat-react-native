@@ -31,9 +31,7 @@ lane :android_app_size do |options|
   app_path = "#{android_project_dir}/app/build/outputs/apk/release/app-release.apk"
   FileUtils.rm_rf(app_path) if File.file?(app_path)
 
-  Dir.chdir(android_project_dir) do
-    sh("./gradlew clean assembleRelease")
-  end
+  Dir.chdir(android_project_dir) { sh("./gradlew clean assembleRelease") }
 
   file_size(path: app_path)
 end
@@ -227,7 +225,7 @@ lane :frameworks_sizes do
 end
 
 lane :show_frameworks_sizes do |options|
-  # FIXME: next unless is_check_required(sources: ['package/'], force_check: @force_check)
+  next unless is_check_required(sources: ['package/'], force_check: @force_check)
 
   sizes = options[:sizes] || frameworks_sizes
   show_sdk_size(branch_sizes: sizes, github_repo: github_repo)
