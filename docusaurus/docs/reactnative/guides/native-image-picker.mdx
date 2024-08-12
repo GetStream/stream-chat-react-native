@@ -64,7 +64,7 @@ yarn add react-native-image-picker
 <TabItem value='expo'>
 
 ```bash title="Terminal"
-yarn add expo-image-picker
+npx expo install expo-image-picker
 ```
 
 </TabItem>
@@ -78,17 +78,18 @@ This shall give you a UI to select images from the gallery using native image pi
 Please follow the post installation steps as mentioned in the [react-native-image-picker](https://github.com/react-native-image-picker/react-native-image-picker?tab=readme-ov-file#post-install-steps).
 :::
 
-### Step 3: Add necessary customization(if any)
+### Step 3: Add customization(if necessary)
 
 You can customize what happens on clicking the [`AttachButton`](../ui-components/attach-button.mdx) by passing your own `onPress` function to the `handleAttachButtonPress` of the `Channel` component.
 
 ```jsx
+import { useCallback } from 'react';
 import { Channel } from 'stream-chat-react-native';
 
 const App = () => {
-  const handleAttachButtonPress = async () => {
+  const handleAttachButtonPress = useCallback(async () => {
     // Your custom logic here
-  };
+  }, []);
 
   return <Channel channel={channel} handleAttachButtonPress={handleAttachButtonPress} />;
 };
