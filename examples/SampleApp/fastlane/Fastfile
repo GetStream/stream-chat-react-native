@@ -226,15 +226,15 @@ lane :frameworks_sizes do
   ios_app_size_with_sdk = ios_app_size(rn_project_dir: rn_project_dir, skip_match: true)
 
   {
-    Android: (android_app_size_with_sdk - android_app_size_without_sdk).round(2),
-    iOS: (ios_app_size_with_sdk - ios_app_size_without_sdk).round(2)
+    Android: android_app_size_with_sdk - android_app_size_without_sdk,
+    iOS: ios_app_size_with_sdk - ios_app_size_without_sdk
   }
 end
 
 lane :show_frameworks_sizes do |options|
   # FIXME: next unless is_check_required(sources: ['package/'], force_check: @force_check)
 
-  show_frameworks_size(
+  show_sdk_size(
     branch_sizes: options[:sizes] || frameworks_sizes,
     github_repo: github_repo,
     sdk_names: ['iOS', 'Android']
@@ -242,23 +242,5 @@ lane :show_frameworks_sizes do |options|
 end
 
 lane :update_img_shields_sdk_sizes do
-  sizes = frameworks_sizes
-
-  # Read the file into a string
-  readme_path = '../../../README.md'
-  readme_content = File.read(readme_path)
-
-  # Define the new value for the badge
-  ios_size = "#{sizes[:ios]}MB"
-  android_size = "#{sizes[:android]}MB"
-
-  # Replace the value in the badge URL
-  readme_content.gsub!(%r{(https://img.shields.io/badge/iOS-)(.*?)(-blue)}, "\\1#{ios_size}\\3")
-  readme_content.gsub!(%r{(https://img.shields.io/badge/Android-)(.*?)(-blue)}, "\\1#{android_size}\\3")
-
-  # Write the updated content back to the file
-  File.write(readme_path, readme_content)
-
-  # Notify success
-  UI.success('Successfully updated the SDK size labels in README.md!')
+  update_sdk_size_in_readme(readme_path: '../../../README.md', sizes: frameworks_sizes)
 end
