@@ -153,7 +153,7 @@ end
 ##########################
 
 lane :file_size do |options|
-  File.size(options[:path]).to_f / 1024
+  File.size(options[:path]) / 1024.0
 end
 
 lane :directory_size do |options|
@@ -161,7 +161,7 @@ lane :directory_size do |options|
   Find.find(options[:path]) do |file|
     total_size += File.size(file) if File.file?(file)
   end
-  total_size.to_f / 1024
+  total_size / 1024.0
 end
 
 lane :create_template_project do
@@ -219,8 +219,8 @@ lane :frameworks_sizes do
   ios_app_size_with_sdk = ios_app_size(rn_project_dir: rn_project_dir, skip_match: true)
 
   {
-    Android: android_app_size_with_sdk - android_app_size_without_sdk,
-    iOS: ios_app_size_with_sdk - ios_app_size_without_sdk
+    Android: (android_app_size_with_sdk - android_app_size_without_sdk).round(0),
+    iOS: (ios_app_size_with_sdk - ios_app_size_without_sdk).round(0)
   }
 end
 
