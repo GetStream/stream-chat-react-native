@@ -213,8 +213,6 @@ end
 lane :frameworks_sizes do
   rn_project_dir = create_template_project
 
-  Dir.chdir(rn_project_dir) { sh("yarn add react-native@#{react_native_version}") }
-
   android_app_size_without_sdk = android_app_size(rn_project_dir: rn_project_dir)
   ios_app_size_without_sdk = ios_app_size(rn_project_dir: rn_project_dir)
 
