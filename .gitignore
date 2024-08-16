@@ -22,3 +22,4 @@ examples/SampleApp/tmp/
 index.android.bundle
 *.app
 *.DSYM.zip
+**/metrics/

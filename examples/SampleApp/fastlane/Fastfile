@@ -6,7 +6,7 @@ bundle_id = 'io.getstream.reactnative.SampleApp'
 xcode_project = 'ios/SampleApp.xcodeproj'
 xcode_workspace = 'ios/SampleApp.xcworkspace'
 template_app_name = 'DemoApp'
-react_native_version = '0.74.5'
+rn_version = '0.74.5'
 @force_check = false
 temp_dir = Dir.mktmpdir
 
@@ -64,6 +64,7 @@ lane :ios_app_size do |options|
     profile_name: "match AdHoc #{bundle_id}"
   )
 
+  FileUtils.rm_rf("#{ios_project_dir}/Podfile.lock") if File.file?("#{ios_project_dir}/Podfile.lock")
   cocoapods(podfile: ios_project_dir, clean_install: true)
 
   gym(
@@ -166,32 +167,36 @@ end
 
 lane :create_template_project do
   Dir.chdir(temp_dir) do
-    sh("npx @react-native-community/cli@latest init #{template_app_name} --install-pods false --package-name #{bundle_id}")
+    UI.important("Temp dir path: #{temp_dir} 👀")
+    sh("npx @react-native-community/cli@latest init #{template_app_name} --version #{rn_version} --install-pods false --package-name #{bundle_id}")
+    Dir.chdir(template_app_name) { sh("yarn add react-native@#{rn_version}") }
     File.absolute_path(template_app_name)
   end
 end
 
 lane :yarn_sdk do |options|
+  root_path = File.absolute_path('../../../')
+  package_path = 'package.json'
+  podfile_path = 'ios/Podfile'
+
+  Dir.chdir("#{root_path}/examples/TypeScriptMessaging") do
+    ['App.tsx', 'useStreamChatTheme.ts', package_path].each { |file| sh("cp #{file} #{options[:path]}") }
+  end
+
+  Dir.chdir("#{root_path}/examples/TypeScriptMessaging") do
+    [podfile_path].each { |file| sh("cp #{file} #{options[:path]}/ios") }
+  end
+
   Dir.chdir(options[:path]) do
-    node_modules = [
-      # FIXME: "stream-chat-react-native@https://github.com/GetStream/stream-chat-react-native.git##{current_branch}"
-      'stream-chat-react-native',
-      '@react-native-community/netinfo',
-      '@stream-io/flat-list-mvcp',
-      'add react-native-image-picker',
-      'react-native-document-picker',
-      'react-native-fs',
-      'react-native-gesture-handler',
-      'react-native-haptic-feedback',
-      'react-native-haptic-feedback',
-      'react-native-image-crop-picker',
-      'react-native-image-resizer',
-      'react-native-reanimated',
-      'react-native-safe-area-context',
-      'react-native-share',
-      'react-native-svg'
-    ]
-    sh("yarn add #{node_modules.join(' ')}")
+    package_content = File.read(package_path)
+    package_content.gsub!('../..', root_path)
+    File.write(package_path, package_content)
+
+    # podfile_content = File.read(podfile_path)
+    # podfile_content.gsub!(':path => config[:reactNativePath]', ':flipper_configuration => FlipperConfiguration.disabled, :path => config[:reactNativePath]')
+    # File.write(podfile_path, podfile_content)
+
+    sh('yarn')
   end
 end
 
