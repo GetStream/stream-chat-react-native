@@ -114,6 +114,7 @@ end
 lane :frameworks_sizes do
   Dir.chdir(root_path) do
     sh('yarn')
+    sh('yarn build')
     sh('pwd')
     sh('ls package/')
     sh('ls package/lib/')
