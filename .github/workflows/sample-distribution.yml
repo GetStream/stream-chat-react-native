@@ -31,10 +31,9 @@ jobs:
       #     key: ${{ runner.os }}-pods-${{ hashFiles('examples/SampleApp/ios/Podfile.lock') }}
       #     restore-keys: |
       #       ${{ runner.os }}-pods-
-
-      - name: iOS Pods setup
-        working-directory: examples/SampleApp/ios
-        run: bundle exec pod install
+      # - name: iOS Pods setup
+      #   working-directory: examples/SampleApp/ios
+      #   run: bundle exec pod install
       - name: Build and release Testflight QA
         working-directory: examples/SampleApp
         run: bundle exec fastlane deploy_to_testflight_qa deploy:${{ github.ref == 'refs/heads/develop' }};
