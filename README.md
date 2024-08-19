@@ -4,11 +4,6 @@
   <a href="https://getstream.io/chat/react-native-chat/tutorial/"><img src="https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/readme/cover.png" alt="react native chat" width="100%" /></a>
 </p>
 
-<p align="center">
-  <img id="stream-chat-rn-ios-label" alt="StreamChat React Native iOS" src="https://img.shields.io/badge/iOS-1.30%20MB-blue"/>
-  <img id="stream-chat-rn-android-label" alt="StreamChat React Native Android" src="https://img.shields.io/badge/Android-2.30%20MB-blue"/>
-</p>
-
 > The official React Native and Expo components for Stream Chat, a service for
 > building chat applications.
 
@@ -16,6 +11,7 @@
 [![NPM](https://img.shields.io/npm/v/stream-chat-react-native.svg)](https://www.npmjs.com/package/stream-chat-react-native)
 [![Build Status](https://github.com/GetStream/stream-chat-react-native/actions/workflows/release.yml/badge.svg)](https://github.com/GetStream/stream-chat-react-native/actions)
 [![Component Reference](https://img.shields.io/badge/docs-component%20reference-blue.svg)](https://getstream.io/chat/docs/sdk/reactnative)
+![JS Bundle Size](https://img.shields.io/badge/js_bundle_size-439%20KB-blue)
 
 <img align="right" src="https://getstream.imgix.net/images/ios-chat-tutorial/iphone_chat_art@3x.png?auto=format,enhance" width="50%" />
 
