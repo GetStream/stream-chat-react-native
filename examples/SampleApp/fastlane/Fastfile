@@ -21,17 +21,17 @@ end
 #######################
 
 lane :deploy_to_testflight_qa do |options|
-  # match_me
+  match_me
 
-  # settings_to_override = {
-  #   BUNDLE_IDENTIFIER: bundle_id,
-  #   PROVISIONING_PROFILE_SPECIFIER: "match AppStore #{bundle_id}"
-  # }
+  settings_to_override = {
+    BUNDLE_IDENTIFIER: bundle_id,
+    PROVISIONING_PROFILE_SPECIFIER: "match AppStore #{bundle_id}"
+  }
 
-  # increment_version_number(
-  #   version_number: load_json(json_path: './package.json')['version'],
-  #   xcodeproj: xcode_project
-  # )
+  increment_version_number(
+    version_number: load_json(json_path: './package.json')['version'],
+    xcodeproj: xcode_project
+  )
 
   current_build_number = app_store_build_number(
     api_key: appstore_api_key,
@@ -39,38 +39,38 @@ lane :deploy_to_testflight_qa do |options|
     app_identifier: bundle_id
   )
 
-  # increment_build_number(
-  #   build_number: current_build_number + 1,
-  #   xcodeproj: xcode_project
-  # )
+  increment_build_number(
+    build_number: current_build_number + 1,
+    xcodeproj: xcode_project
+  )
 
-  # gym(
-  #   workspace: xcode_workspace,
-  #   scheme: 'SampleApp',
-  #   export_method: 'app-store',
-  #   export_options: './fastlane/testflight_gym_export_options.plist',
-  #   silent: true,
-  #   clean: true,
-  #   xcargs: settings_to_override,
-  #   include_symbols: true,
-  #   output_directory: './dist'
-  # )
+  gym(
+    workspace: xcode_workspace,
+    scheme: 'SampleApp',
+    export_method: 'app-store',
+    export_options: './fastlane/testflight_gym_export_options.plist',
+    silent: true,
+    clean: true,
+    xcargs: settings_to_override,
+    include_symbols: true,
+    output_directory: './dist'
+  )
 
-  # if options[:deploy]
-  #   begin
-  #     upload_to_testflight(
-  #       groups: ['Testers'],
-  #       changelog: 'Lots of amazing new features to test out!',
-  #       reject_build_waiting_for_review: false
-  #     )
-  #   rescue StandardError => e
-  #     if e.message.include?('Another build is in review')
-  #       UI.important('Another build is already in beta review. Skipping beta review submission')
-  #     else
-  #       UI.user_error!(e)
-  #     end
-  #   end
-  # end
+  if options[:deploy]
+    begin
+      upload_to_testflight(
+        groups: ['Testers'],
+        changelog: 'Lots of amazing new features to test out!',
+        reject_build_waiting_for_review: false
+      )
+    rescue StandardError => e
+      if e.message.include?('Another build is in review')
+        UI.important('Another build is already in beta review. Skipping beta review submission')
+      else
+        UI.user_error!(e)
+      end
+    end
+  end
 end
 
 private_lane :appstore_api_key do
