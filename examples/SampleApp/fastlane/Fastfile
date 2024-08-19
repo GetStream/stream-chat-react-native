@@ -5,6 +5,7 @@ github_repo = ENV['GITHUB_REPOSITORY'] || 'GetStream/stream-chat-react-native'
 bundle_id = 'io.getstream.reactnative.SampleApp'
 xcode_project = 'ios/SampleApp.xcodeproj'
 xcode_workspace = 'ios/SampleApp.xcworkspace'
+root_path = File.absolute_path('../../../')
 sdk_size_ext = 'KB'
 @force_check = false
 
@@ -103,18 +104,17 @@ lane :file_size do |options|
 end
 
 lane :yarn_all do
-  root = '../../..'
-  Dir.chdir(root) { sh('yarn --frozen-lockfile') }
-  Dir.chdir("#{root}/package") { sh('yarn --frozen-lockfile') }
-  Dir.chdir("#{root}/package/native-package") { sh('yarn') }
-  Dir.chdir("#{root}/package/expo-package") { sh('yarn') }
+  Dir.chdir(root_path) { sh('yarn --frozen-lockfile') }
+  Dir.chdir("#{root_path}/package") { sh('yarn --frozen-lockfile') }
+  Dir.chdir("#{root_path}/package/native-package") { sh('yarn') }
+  Dir.chdir("#{root_path}/package/expo-package") { sh('yarn') }
   Dir.chdir('..') { sh('yarn') }
 end
 
 lane :frameworks_sizes do
-  root_path = File.absolute_path('../../../')
   Dir.chdir(root_path) do
-    sh("yarn minify-bundle")
+    sh('yarn')
+    sh('yarn minify-bundle')
     js_bundle_size = file_size(path: 'package/lib/module/bundle.min.js')
     { js_bundle_size: js_bundle_size }
   end
