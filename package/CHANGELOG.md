@@ -1,5 +1,24 @@
 # Change Log
 
+## [5.35.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.34.0...v5.35.0) (2024-08-19)
+
+
+### Features
+
+* make cameraroll library optional ([#2604](https://github.com/GetStream/stream-chat-react-native/issues/2604)) ([d7152f9](https://github.com/GetStream/stream-chat-react-native/commit/d7152f97967a0a63ff5fd612a6d42ab200de5c57))
+
+
+### Bug Fixes
+
+* attachment picker error component default height ([f0299cb](https://github.com/GetStream/stream-chat-react-native/commit/f0299cb71d5e3c36bda689c59dec29949a3b687d))
+* enable frozen channel message actions behaviour ([#2598](https://github.com/GetStream/stream-chat-react-native/issues/2598)) ([eb4ae4c](https://github.com/GetStream/stream-chat-react-native/commit/eb4ae4cabb1208e07b776bfadbad63fe4fe06a45))
+* image gallery component theme arrangment ([3926168](https://github.com/GetStream/stream-chat-react-native/commit/392616848f4e7aa9fef2da249d489b308cccfbb8))
+* make react-native-image-crop-picker optional ([#2603](https://github.com/GetStream/stream-chat-react-native/issues/2603)) ([3acc942](https://github.com/GetStream/stream-chat-react-native/commit/3acc9421e11dc3c26fa0225951214e43603d05e5))
+* message list empty state rerender null issue ([65447fe](https://github.com/GetStream/stream-chat-react-native/commit/65447fe282c473193c8d4b26be56f5f09f5b98c4))
+* message read state according to actual read count ([#2609](https://github.com/GetStream/stream-chat-react-native/issues/2609)) ([cfb9d81](https://github.com/GetStream/stream-chat-react-native/commit/cfb9d815dd75c120d446706cf5c7dd76912fdb05))
+* re render issue for message text around i18n ([#2607](https://github.com/GetStream/stream-chat-react-native/issues/2607)) ([a95a907](https://github.com/GetStream/stream-chat-react-native/commit/a95a9075817d6ff718a0d7c66c60ae56d2d28f1d))
+* Theme color overrides durationText ([#2613](https://github.com/GetStream/stream-chat-react-native/issues/2613)) ([965fac3](https://github.com/GetStream/stream-chat-react-native/commit/965fac395564e9366be45492f31f48c9c5242b5b))
+
 ## [5.34.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.33.1...v5.34.0) (2024-07-29)
 
 
