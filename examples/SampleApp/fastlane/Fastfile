@@ -8,17 +8,12 @@ xcode_workspace = 'ios/SampleApp.xcworkspace'
 template_app_name = 'DemoApp'
 rn_version = '0.74.5'
 @force_check = false
-temp_dir = Dir.mktmpdir
 
 before_all do
   if is_ci
     setup_ci
     setup_git_config
   end
-end
-
-after_all do
-  FileUtils.remove_entry(temp_dir)
 end
 
 ###########################
@@ -31,7 +26,7 @@ lane :android_app_size do |options|
   app_path = "#{android_project_dir}/app/build/outputs/apk/release/app-release.apk"
   FileUtils.rm_rf(app_path) if File.file?(app_path)
 
-  Dir.chdir(android_project_dir) { sh("./gradlew clean assembleRelease") }
+  Dir.chdir(android_project_dir) { sh("./gradlew clean assembleRelease -PreactNativeArchitectures=arm64-v8a") }
 
   file_size(path: app_path)
 end
@@ -165,42 +160,50 @@ lane :directory_size do |options|
   total_size / 1024.0
 end
 
-lane :create_template_project do
-  Dir.chdir(temp_dir) do
-    UI.important("Temp dir path: #{temp_dir} 👀")
+lane :create_template_project do |options|
+  Dir.chdir(options[:path]) do
     sh("npx @react-native-community/cli@latest init #{template_app_name} --version #{rn_version} --install-pods false --package-name #{bundle_id}")
     Dir.chdir(template_app_name) { sh("yarn add react-native@#{rn_version}") }
+
+    # Strip excess archs on Android
+    gradle_config_path = "#{options[:path]}/#{template_app_name}/android/app/build.gradle"
+    gradle_config = File.read(gradle_config_path)
+    gradle_config.gsub!('defaultConfig {', 'defaultConfig { ndk { abiFilters "arm64-v8a" }')
+    File.write(gradle_config_path, gradle_config)
+
     File.absolute_path(template_app_name)
   end
 end
 
-lane :yarn_sdk do |options|
+desc 'Install all SDK dependencies'
+lane :yarn_test do |options|
   root_path = File.absolute_path('../../../')
-  package_path = 'package.json'
-  podfile_path = 'ios/Podfile'
-
-  Dir.chdir("#{root_path}/examples/TypeScriptMessaging") do
-    ['App.tsx', 'useStreamChatTheme.ts', package_path].each { |file| sh("cp #{file} #{options[:path]}") }
-  end
-
-  Dir.chdir("#{root_path}/examples/TypeScriptMessaging") do
-    [podfile_path].each { |file| sh("cp #{file} #{options[:path]}/ios") }
-  end
+  dependencies = [
+    "stream-chat-react-native@link:#{root_path}/package/native-package",
+    "stream-chat-react-native-core@link:#{root_path}/package",
+    '@react-native-community/netinfo',
+    '@stream-io/flat-list-mvcp',
+    'add react-native-image-picker',
+    'react-native-document-picker',
+    'react-native-fs',
+    'react-native-gesture-handler',
+    'react-native-haptic-feedback',
+    'react-native-haptic-feedback',
+    'react-native-image-crop-picker',
+    'react-native-image-resizer',
+    'react-native-reanimated',
+    'react-native-safe-area-context',
+    'react-native-share',
+    'react-native-svg'
+  ]
 
   Dir.chdir(options[:path]) do
-    package_content = File.read(package_path)
-    package_content.gsub!('../..', root_path)
-    File.write(package_path, package_content)
-
-    # podfile_content = File.read(podfile_path)
-    # podfile_content.gsub!(':path => config[:reactNativePath]', ':flipper_configuration => FlipperConfiguration.disabled, :path => config[:reactNativePath]')
-    # File.write(podfile_path, podfile_content)
-
+    sh("yarn add #{dependencies.join(' ')}")
     sh('yarn')
   end
 end
 
-desc 'Install all root yarn dependencies'
+desc 'Install all root dependencies'
 lane :yarn_dev do
   root = '../../..'
   Dir.chdir(root) { sh('yarn --frozen-lockfile') }
@@ -211,26 +214,32 @@ lane :yarn_dev do
 end
 
 lane :frameworks_sizes do
-  rn_project_dir = create_template_project
+  temp_dir = Dir.mktmpdir
+  begin
+    rn_project_dir = create_template_project(path: temp_dir)
 
-  android_app_size_without_sdk = android_app_size(rn_project_dir: rn_project_dir)
-  ios_app_size_without_sdk = ios_app_size(rn_project_dir: rn_project_dir)
+    android_app_size_without_sdk = android_app_size(rn_project_dir: rn_project_dir)
+    ios_app_size_without_sdk = ios_app_size(rn_project_dir: rn_project_dir)
 
-  yarn_sdk(path: rn_project_dir)
+    yarn_test(path: rn_project_dir)
 
-  android_app_size_with_sdk = android_app_size(rn_project_dir: rn_project_dir)
-  ios_app_size_with_sdk = ios_app_size(rn_project_dir: rn_project_dir, skip_match: true)
+    android_app_size_with_sdk = android_app_size(rn_project_dir: rn_project_dir)
+    ios_app_size_with_sdk = ios_app_size(rn_project_dir: rn_project_dir, skip_match: true)
 
-  {
-    Android: (android_app_size_with_sdk - android_app_size_without_sdk).round(0),
-    iOS: (ios_app_size_with_sdk - ios_app_size_without_sdk).round(0)
-  }
+    {
+      Android: (android_app_size_with_sdk - android_app_size_without_sdk).round(0),
+      iOS: (ios_app_size_with_sdk - ios_app_size_without_sdk).round(0)
+    }
+  ensure
+    FileUtils.remove_entry(temp_dir)
+  end
 end
 
 lane :show_frameworks_sizes do |options|
   next unless is_check_required(sources: ['package/'], force_check: @force_check)
 
   sizes = options[:sizes] || frameworks_sizes
+  p sizes
   show_sdk_size(branch_sizes: sizes, github_repo: github_repo)
   update_img_shields_sdk_sizes(sizes: sizes, open_pr: options[:open_pr]) if options[:update_readme]
 end
