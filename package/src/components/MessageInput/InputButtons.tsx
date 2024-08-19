@@ -25,6 +25,7 @@ export type InputButtonsWithContextProps<
   | 'AttachButton'
   | 'CommandsButton'
   | 'giphyActive'
+  | 'hasCameraPicker'
   | 'hasCommands'
   | 'hasFilePicker'
   | 'hasImagePicker'
@@ -46,6 +47,7 @@ export const InputButtonsWithContext = <
     AttachButton,
     CommandsButton,
     giphyActive,
+    hasCameraPicker,
     hasCommands,
     hasFilePicker,
     hasImagePicker,
@@ -54,7 +56,6 @@ export const InputButtonsWithContext = <
     setShowMoreOptions,
     showMoreOptions,
     text,
-    toggleAttachmentPicker,
   } = props;
 
   const {
@@ -69,15 +70,15 @@ export const InputButtonsWithContext = <
     return null;
   }
 
-  return !showMoreOptions && (hasImagePicker || hasFilePicker) && hasCommands ? (
+  return !showMoreOptions && (hasCameraPicker || hasImagePicker || hasFilePicker) && hasCommands ? (
     <MoreOptionsButton handleOnPress={() => setShowMoreOptions(true)} />
   ) : (
     <>
-      {(hasImagePicker || hasFilePicker) && ownCapabilities.uploadFile && (
+      {(hasCameraPicker || hasImagePicker || hasFilePicker) && ownCapabilities.uploadFile && (
         <View
           style={[hasCommands ? styles.attachButtonContainer : undefined, attachButtonContainer]}
         >
-          <AttachButton handleOnPress={toggleAttachmentPicker} />
+          <AttachButton />
         </View>
       )}
       {hasCommands && !text && (
@@ -95,6 +96,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 ) => {
   const {
     giphyActive: prevGiphyActive,
+    hasCameraPicker: prevHasCameraPicker,
     hasCommands: prevHasCommands,
     hasFilePicker: prevHasFilePicker,
     hasImagePicker: prevHasImagePicker,
@@ -105,6 +107,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const {
     giphyActive: nextGiphyActive,
+    hasCameraPicker: nextHasCameraPicker,
     hasCommands: nextHasCommands,
     hasFilePicker: nextHasFilePicker,
     hasImagePicker: nextHasImagePicker,
@@ -112,6 +115,10 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     showMoreOptions: nextShowMoreOptions,
     text: nextText,
   } = nextProps;
+
+  if (prevHasCameraPicker !== nextHasCameraPicker) {
+    return false;
+  }
 
   if (prevHasImagePicker !== nextHasImagePicker) {
     return false;
@@ -158,6 +165,7 @@ export const InputButtons = <
     AttachButton,
     CommandsButton,
     giphyActive,
+    hasCameraPicker,
     hasCommands,
     hasFilePicker,
     hasImagePicker,
@@ -176,6 +184,7 @@ export const InputButtons = <
         AttachButton,
         CommandsButton,
         giphyActive,
+        hasCameraPicker,
         hasCommands,
         hasFilePicker,
         hasImagePicker,

@@ -944,11 +944,13 @@ PODS:
   - React-Mapbuffer (0.73.6):
     - glog
     - React-debug
-  - react-native-cameraroll (5.6.0):
-    - React-Core
   - react-native-document-picker (9.0.1):
     - React-Core
   - react-native-flipper (0.212.0):
+    - React-Core
+  - react-native-image-picker (7.1.2):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core
   - react-native-image-resizer (1.4.5):
     - React-Core
@@ -1148,15 +1150,15 @@ PODS:
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
-  - RNImageCropPicker (0.39.0):
+  - RNImageCropPicker (0.41.2):
     - React-Core
     - React-RCTImage
-    - RNImageCropPicker/QBImagePickerController (= 0.39.0)
-    - TOCropViewController
-  - RNImageCropPicker/QBImagePickerController (0.39.0):
+    - RNImageCropPicker/QBImagePickerController (= 0.41.2)
+    - TOCropViewController (~> 2.7.4)
+  - RNImageCropPicker/QBImagePickerController (0.41.2):
     - React-Core
     - React-RCTImage
-    - TOCropViewController
+    - TOCropViewController (~> 2.7.4)
   - RNReactNativeHapticFeedback (2.0.3):
     - React-Core
   - RNReanimated (3.7.1):
@@ -1173,7 +1175,7 @@ PODS:
   - RNSVG (14.1.0):
     - React-Core
   - SocketRocket (0.6.1)
-  - TOCropViewController (2.6.1)
+  - TOCropViewController (2.7.4)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -1229,9 +1231,9 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector-modern`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
-  - "react-native-cameraroll (from `../node_modules/@react-native-camera-roll/camera-roll`)"
   - react-native-document-picker (from `../node_modules/react-native-document-picker`)
   - react-native-flipper (from `../node_modules/react-native-flipper`)
+  - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-image-resizer (from `../node_modules/react-native-image-resizer`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-quick-sqlite (from `../node_modules/react-native-quick-sqlite`)
@@ -1343,12 +1345,12 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/logger"
   React-Mapbuffer:
     :path: "../node_modules/react-native/ReactCommon"
-  react-native-cameraroll:
-    :path: "../node_modules/@react-native-camera-roll/camera-roll"
   react-native-document-picker:
     :path: "../node_modules/react-native-document-picker"
   react-native-flipper:
     :path: "../node_modules/react-native-flipper"
+  react-native-image-picker:
+    :path: "../node_modules/react-native-image-picker"
   react-native-image-resizer:
     :path: "../node_modules/react-native-image-resizer"
   react-native-netinfo:
@@ -1464,9 +1466,9 @@ SPEC CHECKSUMS:
   React-jsinspector: 85583ef014ce53d731a98c66a0e24496f7a83066
   React-logger: 3eb80a977f0d9669468ef641a5e1fabbc50a09ec
   React-Mapbuffer: 84ea43c6c6232049135b1550b8c60b2faac19fab
-  react-native-cameraroll: 755bcc628148a90a7c9cf3f817a252be3a601bc5
   react-native-document-picker: 2b8f18667caee73a96708a82b284a4f40b30a156
   react-native-flipper: 9c1957af24b76493ba74f46d000a5c1d485e7731
+  react-native-image-picker: d3db110a3ded6e48c93aef7e8e51afdde8b16ed0
   react-native-image-resizer: d9fb629a867335bdc13230ac2a58702bb8c8828f
   react-native-netinfo: 299dad906cdbf3b67bcc6f693c807f98bdd127cc
   react-native-quick-sqlite: 2b225dadc63b670f027111e58f6f169773f6d755
@@ -1497,16 +1499,16 @@ SPEC CHECKSUMS:
   RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: 67fb54b3e6ca338a8044e85cd6f340265aa41091
-  RNImageCropPicker: 14fe1c29298fb4018f3186f455c475ab107da332
+  RNImageCropPicker: 771e2ca319d2cf92e04ebf334ece892ee9a6728f
   RNReactNativeHapticFeedback: afa5bf2794aecbb2dba2525329253da0d66656df
   RNReanimated: 15a855719335a6b655a214531e86d806edfd49da
   RNScreens: 17e2f657f1b09a71ec3c821368a04acbb7ebcb46
   RNShare: d82e10f6b7677f4b0048c23709bd04098d5aee6c
   RNSVG: ba3e7232f45e34b7b47e74472386cf4e1a676d0a
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
-  TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
+  TOCropViewController: 80b8985ad794298fb69d3341de183f33d1853654
   Yoga: d17d2cc8105eed528474683b42e2ea310e1daf61
 
 PODFILE CHECKSUM: 90406e1e85c82b37484f5d746afa45c0637bb4b3
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.15.2

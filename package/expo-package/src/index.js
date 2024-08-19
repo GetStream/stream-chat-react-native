@@ -6,21 +6,22 @@ import {
   Audio,
   compressImage,
   deleteFile,
-  getLocalAssetUri,
-  getPhotos,
-  iOS14RefreshGallerySelection,
   NetInfo,
-  oniOS14GalleryLibrarySelectionChange,
   saveFile,
   Sound,
-  takePhoto,
   Video,
 } from './handlers';
 
 import {
+  getLocalAssetUri,
+  getPhotos,
+  iOS14RefreshGallerySelection,
+  oniOS14GalleryLibrarySelectionChange,
   pickDocument,
+  pickImage,
   setClipboardString,
   shareImage,
+  takePhoto,
   triggerHaptic,
 } from './optionalDependencies';
 
@@ -35,6 +36,7 @@ registerNativeHandlers({
   NetInfo,
   oniOS14GalleryLibrarySelectionChange,
   pickDocument,
+  pickImage,
   saveFile,
   SDK: 'stream-chat-expo',
   setClipboardString,

@@ -1,13 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import dayjs from 'dayjs';
-
 import type { ImageGalleryFooterVideoControlProps } from './ImageGalleryFooter';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import { Pause, Play } from '../../../icons';
+import { getDurationLabelFromDuration } from '../../../utils/utils';
 import { ProgressControl } from '../../ProgressControl/ProgressControl';
 
 const styles = StyleSheet.create({
@@ -37,19 +36,11 @@ export const ImageGalleryVideoControl = React.memo(
   (props: ImageGalleryFooterVideoControlProps) => {
     const { duration, onPlayPause, paused, progress, videoRef } = props;
 
-    const videoDuration = duration
-      ? duration / 3600 >= 1
-        ? dayjs.duration(duration, 'second').format('HH:mm:ss')
-        : dayjs.duration(duration, 'second').format('mm:ss')
-      : null;
+    const videoDuration = getDurationLabelFromDuration(duration);
 
     const progressValueInSeconds = progress * duration;
 
-    const progressDuration = progressValueInSeconds
-      ? progressValueInSeconds / 3600 >= 1
-        ? dayjs.duration(progressValueInSeconds, 'second').format('HH:mm:ss')
-        : dayjs.duration(progressValueInSeconds, 'second').format('mm:ss')
-      : null;
+    const progressDuration = getDurationLabelFromDuration(progressValueInSeconds);
 
     const {
       theme: {
@@ -73,7 +64,7 @@ export const ImageGalleryVideoControl = React.memo(
     return (
       <View style={[styles.videoContainer, videoContainer]}>
         <TouchableOpacity accessibilityLabel='Play Pause Button' onPress={handlePlayPause}>
-          <View style={[styles.roundedView, roundedView, { backgroundColor: static_white }]}>
+          <View style={[styles.roundedView, { backgroundColor: static_white }, roundedView]}>
             {paused ? (
               <Play accessibilityLabel='Play Icon' fill={static_black} height={32} width={32} />
             ) : (
@@ -83,9 +74,9 @@ export const ImageGalleryVideoControl = React.memo(
         </TouchableOpacity>
         <Text
           accessibilityLabel='Progress Duration'
-          style={[styles.durationTextStyle, durationTextStyle, { color: black }]}
+          style={[styles.durationTextStyle, { color: black }, durationTextStyle]}
         >
-          {progressDuration ? progressDuration : '00:00'}
+          {progressDuration}
         </Text>
         <ProgressControl
           duration={duration}
@@ -97,9 +88,9 @@ export const ImageGalleryVideoControl = React.memo(
         />
         <Text
           accessibilityLabel='Video Duration'
-          style={[styles.durationTextStyle, durationTextStyle, { color: black }]}
+          style={[styles.durationTextStyle, { color: black }, durationTextStyle]}
         >
-          {videoDuration ? videoDuration : '00:00'}
+          {videoDuration}
         </Text>
       </View>
     );

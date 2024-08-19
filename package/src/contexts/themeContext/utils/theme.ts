@@ -318,6 +318,11 @@ export type Theme = {
     inputBoxContainer: ViewStyle;
     micButtonContainer: ViewStyle;
     moreOptionsButton: ViewStyle;
+    nativeAttachmentPicker: {
+      buttonContainer: ViewStyle;
+      buttonDimmerStyle: ViewStyle;
+      container: ViewStyle;
+    };
     optionsContainer: ViewStyle;
     replyContainer: ViewStyle;
     searchIcon: IconProps;
@@ -885,6 +890,11 @@ export const defaultTheme: Theme = {
     inputBoxContainer: {},
     micButtonContainer: {},
     moreOptionsButton: {},
+    nativeAttachmentPicker: {
+      buttonContainer: {},
+      buttonDimmerStyle: {},
+      container: {},
+    },
     optionsContainer: {},
     replyContainer: {},
     searchIcon: {},
