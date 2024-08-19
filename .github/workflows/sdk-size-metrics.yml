@@ -39,6 +39,6 @@ jobs:
         env:
           GITHUB_PR_NUM: ${{ github.event.pull_request.number }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          APPSTORE_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
+          APPSTORE_API_KEY: ${{ secrets.APPSTORE_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.CI_BOT_GITHUB_TOKEN }}
           UPDATE_README: ${{ github.ref == 'refs/heads/main' }}
