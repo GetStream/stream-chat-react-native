@@ -24,13 +24,13 @@ jobs:
       - uses: ./.github/actions/ruby-cache
       # - name: Install && Build - SDK and Sample App
       #   uses: ./.github/actions/install-and-build-sdk
-      - name: Cache iOS pods
-        uses: actions/cache@v2
-        with:
-          path: examples/SampleApp/ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('examples/SampleApp/ios/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
+      # - name: Cache iOS pods
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: examples/SampleApp/ios/Pods
+      #     key: ${{ runner.os }}-pods-${{ hashFiles('examples/SampleApp/ios/Podfile.lock') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-pods-
       - name: iOS Pods setup
         working-directory: examples/SampleApp/ios
         run: bundle exec pod install
