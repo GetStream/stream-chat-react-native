@@ -31,6 +31,7 @@ jobs:
       #     key: ${{ runner.os }}-pods-${{ hashFiles('examples/SampleApp/ios/Podfile.lock') }}
       #     restore-keys: |
       #       ${{ runner.os }}-pods-
+
       - name: iOS Pods setup
         working-directory: examples/SampleApp/ios
         run: bundle exec pod install
