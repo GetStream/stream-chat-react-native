@@ -108,17 +108,12 @@ lane :yarn_all do
   Dir.chdir("#{root_path}/package") { sh('yarn --frozen-lockfile') }
   Dir.chdir("#{root_path}/package/native-package") { sh('yarn') }
   Dir.chdir("#{root_path}/package/expo-package") { sh('yarn') }
-  Dir.chdir('..') { sh('yarn') }
 end
 
 lane :frameworks_sizes do
   Dir.chdir(root_path) do
-    sh('yarn')
+    yarn_all
     sh('yarn build')
-    sh('pwd')
-    sh('ls package/')
-    sh('ls package/lib/')
-    sh('ls package/lib/module/')
     sh('yarn minify-bundle')
     js_bundle_size = file_size(path: 'package/lib/module/bundle.min.js')
     { js_bundle_size: js_bundle_size }
