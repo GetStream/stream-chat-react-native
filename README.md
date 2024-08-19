@@ -6,7 +6,7 @@
 
 <p align="center">
   <img id="stream-chat-rn-ios-label" alt="StreamChat React Native iOS" src="https://img.shields.io/badge/iOS-1.30%20MB-blue"/>
-  <img id="stream-chat-rn-android-label" alt="StreamChat React Native Android" src="https://img.shields.io/badge/Android-7.73%20MB-blue"/>
+  <img id="stream-chat-rn-android-label" alt="StreamChat React Native Android" src="https://img.shields.io/badge/Android-2.30%20MB-blue"/>
 </p>
 
 > The official React Native and Expo components for Stream Chat, a service for
