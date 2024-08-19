@@ -114,6 +114,10 @@ end
 lane :frameworks_sizes do
   Dir.chdir(root_path) do
     sh('yarn')
+    sh('pwd')
+    sh('ls package/')
+    sh('ls package/lib/')
+    sh('ls package/lib/module/')
     sh('yarn minify-bundle')
     js_bundle_size = file_size(path: 'package/lib/module/bundle.min.js')
     { js_bundle_size: js_bundle_size }
