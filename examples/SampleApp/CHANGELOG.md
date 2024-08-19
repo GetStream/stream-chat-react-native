@@ -1,5 +1,18 @@
 # Change Log
 
+### [1.27.8](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.27.7...sampleapp@v1.27.8) (2024-08-19)
+
+
+### Bug Fixes
+
+* make react-native-image-crop-picker optional ([#2603](https://github.com/GetStream/stream-chat-react-native/issues/2603)) ([3acc942](https://github.com/GetStream/stream-chat-react-native/commit/3acc9421e11dc3c26fa0225951214e43603d05e5))
+* message read state according to actual read count ([#2609](https://github.com/GetStream/stream-chat-react-native/issues/2609)) ([cfb9d81](https://github.com/GetStream/stream-chat-react-native/commit/cfb9d815dd75c120d446706cf5c7dd76912fdb05))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.27.7](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.27.6...sampleapp@v1.27.7) (2024-07-29)
 
 
