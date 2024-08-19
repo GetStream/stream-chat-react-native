@@ -18,7 +18,8 @@
     "husky": "^6.0.0",
     "jest": "^27.0.6",
     "lerna": "^4.0.0",
-    "semantic-release": "^17.4.4"
+    "semantic-release": "^17.4.4",
+    "uglify-js": "^3.19.2"
   },
   "husky": {
     "hooks": {
@@ -38,6 +39,7 @@
     "build": "yarn lerna-workspaces run build",
     "test:coverage": "yarn lerna-workspaces run test:coverage",
     "test:unit": "yarn lerna-workspaces run test:unit",
+    "minify-bundle": "yarn && uglifyjs package/lib/module/**/*.js -o package/lib/module/bundle.min.js -c -m",
     "detox-sample-android:build": "detox build --configuration android.sample.release",
     "detox-sample-ios:build": "detox build --configuration ios.sample.release",
     "detox-sample-android:test": "PLATFORM=android detox test --configuration android.sample.release e2e/entries/SampleApp.e2e.js",

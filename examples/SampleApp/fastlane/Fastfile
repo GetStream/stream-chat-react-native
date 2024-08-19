@@ -5,8 +5,7 @@ github_repo = ENV['GITHUB_REPOSITORY'] || 'GetStream/stream-chat-react-native'
 bundle_id = 'io.getstream.reactnative.SampleApp'
 xcode_project = 'ios/SampleApp.xcodeproj'
 xcode_workspace = 'ios/SampleApp.xcworkspace'
-template_app_name = 'DemoApp'
-rn_version = '0.74.5'
+sdk_size_ext = 'KB'
 @force_check = false
 
 before_all do
@@ -16,62 +15,9 @@ before_all do
   end
 end
 
-###########################
-###### Android lanes ######
-###########################
-
-lane :android_app_size do |options|
-  options[:rn_project_dir] ||= create_template_project
-  android_project_dir = "#{options[:rn_project_dir]}/android"
-  app_path = "#{android_project_dir}/app/build/outputs/apk/release/app-release.apk"
-  FileUtils.rm_rf(app_path) if File.file?(app_path)
-
-  Dir.chdir(android_project_dir) { sh("./gradlew clean assembleRelease -PreactNativeArchitectures=arm64-v8a") }
-
-  file_size(path: app_path)
-end
-
 #######################
 ###### iOS lanes ######
 #######################
-
-lane :ios_app_size do |options|
-  match_me unless options[:skip_match]
-
-  root_dir = 'Build/SDKSize'
-  archive_dir = "#{root_dir}/#{template_app_name}.xcarchive"
-  app_path = "../#{archive_dir}/Products/Applications/#{template_app_name}.app"
-
-  FileUtils.rm_rf("../#{root_dir}/")
-
-  options[:rn_project_dir] ||= create_template_project
-  ios_project_dir = "#{options[:rn_project_dir]}/ios"
-  xcodeproj_path = "#{ios_project_dir}/#{template_app_name}.xcodeproj"
-  team_id = File.read('Matchfile').match(/team_id\("(.*)"\)/)[1]
-
-  update_code_signing_settings(
-    use_automatic_signing: false,
-    path: xcodeproj_path,
-    team_id: team_id,
-    bundle_identifier: bundle_id,
-    code_sign_identity: 'iPhone Distribution',
-    sdk: "iphoneos*",
-    profile_name: "match AdHoc #{bundle_id}"
-  )
-
-  FileUtils.rm_rf("#{ios_project_dir}/Podfile.lock") if File.file?("#{ios_project_dir}/Podfile.lock")
-  cocoapods(podfile: ios_project_dir, clean_install: true)
-
-  gym(
-    workspace: "#{ios_project_dir}/#{template_app_name}.xcworkspace",
-    scheme: template_app_name,
-    archive_path: archive_dir,
-    export_method: 'ad-hoc',
-    export_options: './fastlane/beta_gym_export_options.plist'
-  )
-
-  directory_size(path: app_path)
-end
 
 lane :deploy_to_testflight_qa do |options|
   match_me
@@ -144,6 +90,10 @@ lane :match_me do |options|
   )
 end
 
+###########################
+###### Android lanes ######
+###########################
+
 ##########################
 ###### Common lanes ######
 ##########################
@@ -152,59 +102,7 @@ lane :file_size do |options|
   File.size(options[:path]) / 1024.0
 end
 
-lane :directory_size do |options|
-  total_size = 0
-  Find.find(options[:path]) do |file|
-    total_size += File.size(file) if File.file?(file)
-  end
-  total_size / 1024.0
-end
-
-lane :create_template_project do |options|
-  Dir.chdir(options[:path]) do
-    sh("npx @react-native-community/cli@latest init #{template_app_name} --version #{rn_version} --install-pods false --package-name #{bundle_id}")
-    Dir.chdir(template_app_name) { sh("yarn add react-native@#{rn_version}") }
-
-    # Strip excess archs on Android
-    gradle_config_path = "#{options[:path]}/#{template_app_name}/android/app/build.gradle"
-    gradle_config = File.read(gradle_config_path)
-    gradle_config.gsub!('defaultConfig {', 'defaultConfig { ndk { abiFilters "arm64-v8a" }')
-    File.write(gradle_config_path, gradle_config)
-
-    File.absolute_path(template_app_name)
-  end
-end
-
-desc 'Install all SDK dependencies'
-lane :yarn_test do |options|
-  root_path = File.absolute_path('../../../')
-  dependencies = [
-    "stream-chat-react-native@link:#{root_path}/package/native-package",
-    "stream-chat-react-native-core@link:#{root_path}/package",
-    '@react-native-community/netinfo',
-    '@stream-io/flat-list-mvcp',
-    'add react-native-image-picker',
-    'react-native-document-picker',
-    'react-native-fs',
-    'react-native-gesture-handler',
-    'react-native-haptic-feedback',
-    'react-native-haptic-feedback',
-    'react-native-image-crop-picker',
-    'react-native-image-resizer',
-    'react-native-reanimated',
-    'react-native-safe-area-context',
-    'react-native-share',
-    'react-native-svg'
-  ]
-
-  Dir.chdir(options[:path]) do
-    sh("yarn add #{dependencies.join(' ')}")
-    sh('yarn')
-  end
-end
-
-desc 'Install all root dependencies'
-lane :yarn_dev do
+lane :yarn_all do
   root = '../../..'
   Dir.chdir(root) { sh('yarn --frozen-lockfile') }
   Dir.chdir("#{root}/package") { sh('yarn --frozen-lockfile') }
@@ -214,32 +112,19 @@ lane :yarn_dev do
 end
 
 lane :frameworks_sizes do
-  temp_dir = Dir.mktmpdir
-  begin
-    rn_project_dir = create_template_project(path: temp_dir)
-
-    android_app_size_without_sdk = android_app_size(rn_project_dir: rn_project_dir)
-    ios_app_size_without_sdk = ios_app_size(rn_project_dir: rn_project_dir)
-
-    yarn_test(path: rn_project_dir)
-
-    android_app_size_with_sdk = android_app_size(rn_project_dir: rn_project_dir)
-    ios_app_size_with_sdk = ios_app_size(rn_project_dir: rn_project_dir, skip_match: true)
-
-    {
-      Android: (android_app_size_with_sdk - android_app_size_without_sdk).round(0),
-      iOS: (ios_app_size_with_sdk - ios_app_size_without_sdk).round(0)
-    }
-  ensure
-    FileUtils.remove_entry(temp_dir)
+  root_path = File.absolute_path('../../../')
+  Dir.chdir(root_path) do
+    sh("yarn minify-bundle")
+    js_bundle_size = file_size(path: 'package/lib/module/bundle.min.js')
+    { js_bundle_size: js_bundle_size }
   end
 end
 
 lane :show_frameworks_sizes do |options|
-  next unless is_check_required(sources: ['package/'], force_check: @force_check)
+  # FIXME: next unless is_check_required(sources: ['package/'], force_check: @force_check)
 
   sizes = options[:sizes] || frameworks_sizes
-  show_sdk_size(branch_sizes: sizes, github_repo: github_repo)
+  show_sdk_size(branch_sizes: sizes, github_repo: github_repo, size_ext: sdk_size_ext)
   update_img_shields_sdk_sizes(sizes: sizes, open_pr: options[:open_pr]) if options[:update_readme]
 end
 
@@ -247,6 +132,7 @@ lane :update_img_shields_sdk_sizes do |options|
   update_sdk_size_in_readme(
     readme_path: '../../README.md',
     open_pr: options[:open_pr] || false,
-    sizes: options[:sizes] || frameworks_sizes
+    sizes: options[:sizes] || frameworks_sizes,
+    size_ext: sdk_size_ext
   )
 end
