@@ -13,3 +13,13 @@ e2e/.env
 .DS_STORE
 *.db
 .idea
+
+# Testing
+examples/SampleApp/fastlane/fastlane.log
+examples/SampleApp/fastlane/report.xml
+examples/SampleApp/fastlane/metrics/
+examples/SampleApp/tmp/
+index.android.bundle
+*.app
+*.DSYM.zip
+**/metrics/
