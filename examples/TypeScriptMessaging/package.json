@@ -14,7 +14,6 @@
   "dependencies": {
     "@bam.tech/react-native-image-resizer": "^3.0.10",
     "@op-engineering/op-sqlite": "^6.0.4",
-    "@react-native-camera-roll/camera-roll": "^7.8.0",
     "@react-native-clipboard/clipboard": "^1.10.0",
     "@react-native-community/netinfo": "^11.3.2",
     "@react-navigation/native": "^6.1.17",

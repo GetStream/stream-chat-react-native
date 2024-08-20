@@ -950,10 +950,6 @@ PODS:
     - React-debug
   - react-native-blob-util (0.19.9):
     - React-Core
-  - react-native-cameraroll (7.8.1):
-    - glog
-    - RCT-Folly (= 2022.05.16.00)
-    - React-Core
   - react-native-document-picker (9.3.0):
     - React-Core
   - react-native-flipper (0.212.0):
@@ -1226,7 +1222,6 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - react-native-blob-util (from `../node_modules/react-native-blob-util`)
-  - "react-native-cameraroll (from `../node_modules/@react-native-camera-roll/camera-roll`)"
   - react-native-document-picker (from `../node_modules/react-native-document-picker`)
   - react-native-flipper (from `../node_modules/react-native-flipper`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
@@ -1340,8 +1335,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   react-native-blob-util:
     :path: "../node_modules/react-native-blob-util"
-  react-native-cameraroll:
-    :path: "../node_modules/@react-native-camera-roll/camera-roll"
   react-native-document-picker:
     :path: "../node_modules/react-native-document-picker"
   react-native-flipper:
@@ -1457,7 +1450,6 @@ SPEC CHECKSUMS:
   React-logger: 3eb80a977f0d9669468ef641a5e1fabbc50a09ec
   React-Mapbuffer: 84ea43c6c6232049135b1550b8c60b2faac19fab
   react-native-blob-util: 18b510205c080a453574a7d2344d64673d0ad9af
-  react-native-cameraroll: 433f793bc2eb3bcb65c9e166f4225eae7876d056
   react-native-document-picker: 5b97e24a7f1a1e4a50a72c540a043f32d29a70a2
   react-native-flipper: 9c1957af24b76493ba74f46d000a5c1d485e7731
   react-native-image-picker: d3db110a3ded6e48c93aef7e8e51afdde8b16ed0
@@ -1498,4 +1490,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 90406e1e85c82b37484f5d746afa45c0637bb4b3
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.14.3
