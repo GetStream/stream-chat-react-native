@@ -8,9 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: ./.github/actions/ruby-cache
       - uses: errata-ai/vale-action@reviewdog
         with:
-          version: 2.30.0
+          version: 3.0.3
           # added, diff_context, file, nofilter
           # Default is added: results are filtered for added/modified files. Set to no filter when all files need to be checked.
           # More info: https://github.com/errata-ai/vale-action and https://github.com/reviewdog/reviewdog#filter-mode
