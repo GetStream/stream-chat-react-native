@@ -87,7 +87,7 @@ import {
   isImagePickerAvailable,
 } from '../../native';
 import * as dbApi from '../../store/apis';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
 import { compressedImageURI } from '../../utils/compressImage';
 import { DBSyncManager } from '../../utils/DBSyncManager';
@@ -490,6 +490,7 @@ const ChannelWithContext = <
     Giphy = GiphyDefault,
     giphyEnabled,
     giphyVersion = 'fixed_height',
+    handleAttachButtonPress,
     handleBlock,
     handleCopy,
     handleDelete,
@@ -1581,7 +1582,7 @@ const ChannelWithContext = <
         const file = attachment.originalFile;
         // check if image_url is not a remote url
         if (
-          attachment.type === 'image' &&
+          attachment.type === FileTypes.Image &&
           image?.uri &&
           attachment.image_url &&
           isLocalUrl(attachment.image_url)
@@ -1609,10 +1610,10 @@ const ChannelWithContext = <
         }
 
         if (
-          (attachment.type === 'file' ||
-            attachment.type === 'audio' ||
-            attachment.type === 'voiceRecording' ||
-            attachment.type === 'video') &&
+          (attachment.type === FileTypes.File ||
+            attachment.type === FileTypes.Audio ||
+            attachment.type === FileTypes.VoiceRecording ||
+            attachment.type === FileTypes.Video) &&
           attachment.asset_url &&
           isLocalUrl(attachment.asset_url) &&
           file?.uri
@@ -2230,13 +2231,13 @@ const ChannelWithContext = <
     CommandsButton,
     compressImageQuality,
     CooldownTimer,
-    disabled: disabledValue,
     doDocUploadRequest,
     doImageUploadRequest,
     editing,
     editMessage,
     emojiSearchIndex,
     FileUploadPreview,
+    handleAttachButtonPress,
     hasCameraPicker,
     hasCommands,
     hasFilePicker,

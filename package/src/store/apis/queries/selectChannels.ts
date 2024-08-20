@@ -1,5 +1,5 @@
-import { SqliteClient } from '../../SqliteClient';
 import { createSelectQuery } from '../../sqlite-utils/createSelectQuery';
+import { SqliteClient } from '../../SqliteClient';
 import type { TableRowJoinedUser } from '../../types';
 
 export const selectChannels = ({

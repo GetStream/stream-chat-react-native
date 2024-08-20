@@ -1,5 +1,5 @@
-import { SqliteClient } from '../../SqliteClient';
 import { tables } from '../../schema';
+import { SqliteClient } from '../../SqliteClient';
 import type { TableRowJoinedUser } from '../../types';
 
 /**

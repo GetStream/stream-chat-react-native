@@ -10,8 +10,8 @@ import { upsertChannels } from '../../../store/apis/upsertChannels';
 import { upsertMembers } from '../../../store/apis/upsertMembers';
 import { upsertMessages } from '../../../store/apis/upsertMessages';
 import { upsertReads } from '../../../store/apis/upsertReads';
-import { SqliteClient } from '../../../store/SqliteClient';
 import { createSelectQuery } from '../../../store/sqlite-utils/createSelectQuery';
+import { SqliteClient } from '../../../store/SqliteClient';
 import { PreparedQueries } from '../../../store/types';
 import { DefaultStreamChatGenerics } from '../../../types/types';
 

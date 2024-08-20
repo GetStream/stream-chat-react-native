@@ -7,8 +7,8 @@ import { upsertMessages } from './upsertMessages';
 import { upsertReads } from './upsertReads';
 
 import { mapChannelDataToStorable } from '../mappers/mapChannelDataToStorable';
-import { SqliteClient } from '../SqliteClient';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
+import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries } from '../types';
 
 export const upsertChannels = ({

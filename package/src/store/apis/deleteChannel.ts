@@ -1,5 +1,5 @@
-import { SqliteClient } from '../SqliteClient';
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
+import { SqliteClient } from '../SqliteClient';
 
 export const deleteChannel = ({ cid, flush = true }: { cid: string; flush?: boolean }) => {
   const query = createDeleteQuery('channels', {

@@ -1,5 +1,5 @@
-import { SqliteClient } from '../SqliteClient';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
+import { SqliteClient } from '../SqliteClient';
 
 export const upsertUserSyncStatus = ({
   currentUserId,

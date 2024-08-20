@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FlatList, I18nManager, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import dayjs from 'dayjs';
-
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
 import { ChatContextValue, useChatContext } from '../../contexts';
@@ -21,7 +19,11 @@ import { Warning } from '../../icons/Warning';
 import { isSoundPackageAvailable } from '../../native';
 import type { DefaultStreamChatGenerics, FileUpload } from '../../types/types';
 import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
-import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../utils/utils';
+import {
+  getDurationLabelFromDuration,
+  getIndicatorTypeForFileState,
+  ProgressIndicatorTypes,
+} from '../../utils/utils';
 import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
 import { WritingDirectionAwareText } from '../RTLComponents/WritingDirectionAwareText';
 
@@ -97,19 +99,6 @@ const UnsupportedFileTypeOrFileSizeIndicator = ({
     },
   } = useTheme();
 
-  const ONE_HOUR_IN_SECONDS = 3600;
-  let durationLabel = '00:00';
-  const videoDuration = item.file.duration;
-
-  if (videoDuration) {
-    const isDurationLongerThanHour = videoDuration / ONE_HOUR_IN_SECONDS >= 1;
-    const formattedDurationParam = isDurationLongerThanHour ? 'HH:mm:ss' : 'mm:ss';
-    const formattedVideoDuration = dayjs
-      .duration(videoDuration, 'second')
-      .format(formattedDurationParam);
-    durationLabel = formattedVideoDuration;
-  }
-
   const { t } = useTranslationContext();
 
   return indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
@@ -126,7 +115,9 @@ const UnsupportedFileTypeOrFileSizeIndicator = ({
     </View>
   ) : (
     <WritingDirectionAwareText style={[styles.fileSizeText, { color: grey }, fileSizeText]}>
-      {videoDuration ? durationLabel : getFileSizeDisplayText(item.file.size)}
+      {item.file.duration
+        ? getDurationLabelFromDuration(item.file.duration)
+        : getFileSizeDisplayText(item.file.size)}
     </WritingDirectionAwareText>
   );
 };

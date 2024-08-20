@@ -1,7 +1,7 @@
 import type { ChannelMemberResponse } from 'stream-chat';
 
-import { SqliteClient } from '../SqliteClient';
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
+import { SqliteClient } from '../SqliteClient';
 
 export const deleteMember = ({
   cid,

@@ -1682,7 +1682,7 @@ exports[`Thread should match thread snapshot 1`] = `
                 {
                   "busy": undefined,
                   "checked": undefined,
-                  "disabled": false,
+                  "disabled": undefined,
                   "expanded": undefined,
                   "selected": undefined,
                 }
@@ -1701,6 +1701,7 @@ exports[`Thread should match thread snapshot 1`] = `
               onBlur={[Function]}
               onClick={[Function]}
               onFocus={[Function]}
+              onLayout={[Function]}
               onResponderGrant={[Function]}
               onResponderMove={[Function]}
               onResponderRelease={[Function]}
@@ -1716,14 +1717,14 @@ exports[`Thread should match thread snapshot 1`] = `
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={24}
-                bbWidth={24}
+                bbHeight={32}
+                bbWidth={32}
+                fill="#7A7A7A"
                 focusable={false}
-                height={24}
+                height={32}
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
-                pathFill="#7A7A7A"
                 style={
                   [
                     {
@@ -1732,40 +1733,86 @@ exports[`Thread should match thread snapshot 1`] = `
                     },
                     {
                       "flex": 0,
-                      "height": 24,
-                      "width": 24,
+                      "height": 32,
+                      "width": 32,
                     },
                   ]
                 }
-                vbHeight={24}
-                vbWidth={24}
-                width={24}
+                vbHeight={32}
+                vbWidth={32}
+                width={32}
               >
                 <RNSVGGroup
                   fill={
                     {
-                      "payload": 4278190080,
+                      "payload": 4286216826,
                       "type": 0,
                     }
                   }
+                  propList={
+                    [
+                      "fill",
+                    ]
+                  }
                 >
-                  <RNSVGPath
-                    clipRule={0}
-                    d="M13.468 2.888a5.07 5.07 0 012.983.635 5.07 5.07 0 012.041 2.265c.45 1.01.546 2.254-.144 3.449l-4.5 7.794a3.232 3.232 0 01-1.427 1.294c-.757.342-1.696.367-2.671-.196-.975-.563-1.422-1.389-1.506-2.215a3.233 3.233 0 01.408-1.883l4-6.928a1 1 0 011.732 1l-4 6.928c-.087.15-.176.425-.15.682.02.196.105.447.516.684.41.237.671.185.85.105.236-.107.43-.32.516-.47l4.5-7.795c.31-.538.29-1.093.049-1.636a3.072 3.072 0 00-1.214-1.346 3.072 3.072 0 00-1.773-.378c-.591.062-1.082.322-1.392.86l-5 8.66c-.654 1.133-.286 3.3 1.964 4.598 2.25 1.3 4.31.535 4.964-.598l3.5-6.062a1 1 0 111.732 1l-3.5 6.062c-1.345 2.33-4.75 3.031-7.696 1.33-2.946-1.7-4.042-5-2.696-7.33l5-8.66c.69-1.195 1.815-1.733 2.914-1.85z"
+                  <RNSVGGroup
+                    clipPath="id"
                     fill={
                       {
-                        "payload": 4286216826,
+                        "payload": 4278190080,
                         "type": 0,
                       }
                     }
-                    fillRule={0}
-                    propList={
-                      [
-                        "fill",
-                        "fillRule",
-                      ]
-                    }
-                  />
+                  >
+                    <RNSVGPath
+                      d="M17.5245 9.33332L14.8579 9.33332L14.8579 14.6666L9.52453 14.6666L9.52453 17.3333L14.8579 17.3333L14.8579 22.6667L17.5245 22.6667L17.5245 17.3333L22.8579 17.3333L22.8579 14.6666L17.5245 14.6666L17.5245 9.33332ZM16.1912 2.66665C8.83119 2.66665 2.85786 8.63998 2.85786 16C2.85786 23.36 8.83119 29.3333 16.1912 29.3333C23.5512 29.3333 29.5245 23.36 29.5245 16C29.5245 8.63998 23.5512 2.66665 16.1912 2.66665ZM16.1912 26.6667C10.3112 26.6666 5.52453 21.88 5.52453 16C5.52453 10.12 10.3112 5.33332 16.1912 5.33332C22.0712 5.33332 26.8579 10.12 26.8579 16C26.8579 21.88 22.0712 26.6666 16.1912 26.6667Z"
+                      fill={
+                        {
+                          "payload": 4286216826,
+                          "type": 0,
+                        }
+                      }
+                      propList={
+                        [
+                          "fill",
+                        ]
+                      }
+                    />
+                  </RNSVGGroup>
+                  <RNSVGDefs>
+                    <RNSVGClipPath
+                      fill={
+                        {
+                          "payload": 4278190080,
+                          "type": 0,
+                        }
+                      }
+                      name="id"
+                    >
+                      <RNSVGRect
+                        fill={
+                          {
+                            "payload": 4278190080,
+                            "type": 0,
+                          }
+                        }
+                        height={32}
+                        matrix={
+                          [
+                            1,
+                            0,
+                            0,
+                            1,
+                            0.191406,
+                            0,
+                          ]
+                        }
+                        width={32}
+                        x={0}
+                        y={0}
+                      />
+                    </RNSVGClipPath>
+                  </RNSVGDefs>
                 </RNSVGGroup>
               </RNSVGSvgView>
             </View>
@@ -1778,7 +1825,7 @@ exports[`Thread should match thread snapshot 1`] = `
                 {
                   "busy": undefined,
                   "checked": undefined,
-                  "disabled": false,
+                  "disabled": undefined,
                   "expanded": undefined,
                   "selected": undefined,
                 }
@@ -1812,14 +1859,14 @@ exports[`Thread should match thread snapshot 1`] = `
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={24}
-                bbWidth={24}
+                bbHeight={32}
+                bbWidth={32}
+                fill="#7A7A7A"
                 focusable={false}
-                height={24}
+                height={32}
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
-                pathFill="#7A7A7A"
                 style={
                   [
                     {
@@ -1828,37 +1875,39 @@ exports[`Thread should match thread snapshot 1`] = `
                     },
                     {
                       "flex": 0,
-                      "height": 24,
-                      "width": 24,
+                      "height": 32,
+                      "width": 32,
                     },
                   ]
                 }
-                vbHeight={24}
-                vbWidth={24}
-                width={24}
+                vbHeight={32}
+                vbWidth={32}
+                width={32}
               >
                 <RNSVGGroup
                   fill={
                     {
-                      "payload": 4278190080,
+                      "payload": 4286216826,
                       "type": 0,
                     }
                   }
+                  propList={
+                    [
+                      "fill",
+                    ]
+                  }
                 >
                   <RNSVGPath
-                    clipRule={0}
-                    d="M11.636 4H16l-2.91 5.818H16L10.546 20l1.09-7.273H8L11.636 4z"
+                    d="M14.8522 28H13.5188L14.8522 18.6667H10.1855C9.01218 18.6667 9.74551 17.6667 9.77218 17.6267C11.4922 14.5867 14.0788 10.0533 17.5322 4H18.8655L17.5322 13.3333H22.2122C22.7455 13.3333 23.0388 13.5867 22.7455 14.2133C17.4788 23.4 14.8522 28 14.8522 28Z"
                     fill={
                       {
                         "payload": 4286216826,
                         "type": 0,
                       }
                     }
-                    fillRule={0}
                     propList={
                       [
                         "fill",
-                        "fillRule",
                       ]
                     }
                   />
@@ -1914,7 +1963,7 @@ exports[`Thread should match thread snapshot 1`] = `
                 [
                   {
                     "flex": 1,
-                    "fontSize": 14,
+                    "fontSize": 16,
                     "includeFontPadding": false,
                     "padding": 0,
                     "paddingTop": 0,

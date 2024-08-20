@@ -38,7 +38,7 @@ export const useCreateChatContext = <
       resizableCDNHosts,
       setActiveChannel,
     }),
-    [channelId, clientValues, connectionRecovering, isOnline, mutedUsersLength],
+    [appSettings, channelId, clientValues, connectionRecovering, isOnline, mutedUsersLength],
   );
 
   return chatContext;

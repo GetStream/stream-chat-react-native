@@ -56,7 +56,7 @@ Stream Chat React Native SDK requires installing some peer dependencies to provi
 <TabItem value='rncli'>
 
 ```bash title="Terminal"
-yarn add @react-native-camera-roll/camera-roll @react-native-community/netinfo react-native-gesture-handler @bam.tech/react-native-image-resizer react-native-reanimated react-native-svg
+yarn add @react-native-community/netinfo react-native-gesture-handler @bam.tech/react-native-image-resizer react-native-reanimated react-native-svg
 ```
 
 </TabItem>
@@ -64,7 +64,7 @@ yarn add @react-native-camera-roll/camera-roll @react-native-community/netinfo r
 <TabItem value='expo'>
 
 ```bash title="Terminal"
-npx expo install @react-native-community/netinfo expo-image-manipulator expo-media-library react-native-gesture-handler react-native-reanimated react-native-svg
+npx expo install @react-native-community/netinfo expo-image-manipulator react-native-gesture-handler react-native-reanimated react-native-svg
 ```
 
 </TabItem>
@@ -82,7 +82,6 @@ values={[
 >
 <TabItem value='rncli'>
 
-- [`@react-native-camera-roll/camera-roll`](https://github.com/react-native-cameraroll/react-native-cameraroll) for accessing device gallery.
 - [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo) for SDK to respond to network changes.
 - [`react-native-gesture-handler`](https://github.com/software-mansion/react-native-gesture-handler) to handle gestures within the SDK.
 - [`@bam.tech/react-native-image-resizer`](https://github.com/bamlab/react-native-image-resizer) to compress image uploads.
@@ -92,7 +91,6 @@ values={[
 </TabItem>
 <TabItem value="expo">
 
-- [`expo-media-library`](https://docs.expo.dev/versions/latest/sdk/media-library/) for accessing device gallery.
 - [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo) for SDK to respond to network changes.
 - [`react-native-gesture-handler`](https://github.com/software-mansion/react-native-gesture-handler) to handle gestures within the SDK.
 - [`expo-image-manipulator`](https://docs.expo.dev/versions/latest/sdk/imagemanipulator/) to compress image uploads.
@@ -162,6 +160,60 @@ npx expo install expo-av
 
 </TabItem>
 
+</Tabs>
+
+#### Configuring permissions
+
+<Tabs
+defaultValue='rncli'
+groupId='rn-platform'
+values={[
+  { label: 'RN CLI', value: 'rncli' },
+  { label: 'Expo', value: 'expo' },
+]}
+>
+<TabItem value='rncli'>
+
+- [`react-native-audio-recorder-player`](https://github.com/hyochan/react-native-audio-recorder-player?tab=readme-ov-file#post-installation) for microphone access for voice recording.
+
+An example `AndroidManifest.xml` would look like this with permissions:
+
+```xml
+  <uses-permission android:name="android.permission.RECORD_AUDIO" />
+```
+
+An example `Info.plist` would look like this with permissions:
+
+```xml
+<key>NSMicrophoneUsageDescription</key>
+<string>$(PRODUCT_NAME) would like to use your microphone for voice recording.</string>
+```
+
+</TabItem>
+<TabItem value="expo">
+
+- [`expo-av`](https://docs.expo.dev/versions/latest/sdk/av/#configuration-in-appjsonappconfigjs) for microphone access for voice recording.
+
+An example `app.json` config for expo would look like this to add permissions to the `Info.plist` on iOS, using the config plugins:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-av",
+        {
+          "microphonePermission": "$(PRODUCT_NAME) would like to use your microphone for voice recording."
+        }
+      ]
+    ]
+  }
+}
+```
+
+For Android on Expo, most of the most permissions are added automatically by libraries that you use in your app either with config plugins or with a package-level `AndroidManifest.xml`. Read more [here](https://docs.expo.dev/guides/permissions/#android).
+
+</TabItem>
 </Tabs>
 
 ### Attachment sharing
@@ -310,6 +362,229 @@ npx expo install expo-image-picker
 
 </Tabs>
 
+#### Configuring permissions
+
+<Tabs
+defaultValue='rncli'
+groupId='rn-platform'
+values={[
+  { label: 'RN CLI', value: 'rncli' },
+  { label: 'Expo', value: 'expo' },
+]}
+>
+<TabItem value='rncli'>
+
+- [`react-native-image-picker`](https://github.com/react-native-image-picker/react-native-image-picker?tab=readme-ov-file#post-install-steps) for camera access.
+
+On Android, an example `AndroidManifest.xml` would look like this with permissions:
+
+```xml
+  <uses-permission android:name="android.permission.CAMERA" />
+```
+
+On iOS, An example `Info.plist` would look like this with permissions:
+
+```xml
+<key>NSCameraUsageDescription</key>
+<string>$(PRODUCT_NAME) would like to use your camera to share image in a message.</string>
+```
+
+</TabItem>
+<TabItem value="expo">
+
+- [`expo-image-picker`](https://docs.expo.dev/versions/latest/sdk/imagepicker/#configuration-in-appjsonappconfigjs) for camera access.
+
+An example `app.json` config for expo would look like this to add permissions to the `Info.plist` on iOS, using the config plugins:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "$(PRODUCT_NAME) would like to use your camera to share image in a message."
+        }
+      ]
+    ]
+  }
+}
+```
+
+</TabItem>
+</Tabs>
+
+### Pick image using Native Image Picker
+
+Pick gallery image using native image picker and upload them as attachments in the chat.
+
+<Tabs
+  defaultValue='rncli'
+  groupId='rn-platform'
+  values={[
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
+  ]}
+>
+<TabItem value='rncli'>
+
+```bash title="Terminal"
+yarn add react-native-image-picker
+```
+
+</TabItem>
+
+<TabItem value='expo'>
+
+```bash title="Terminal"
+npx expo install expo-image-picker
+```
+
+</TabItem>
+
+</Tabs>
+
+#### Configuring permissions
+
+<Tabs
+defaultValue='rncli'
+groupId='rn-platform'
+values={[
+  { label: 'RN CLI', value: 'rncli' },
+  { label: 'Expo', value: 'expo' },
+]}
+>
+<TabItem value='rncli'>
+
+- [`react-native-image-picker`](https://github.com/react-native-image-picker/react-native-image-picker?tab=readme-ov-file#post-install-steps) for camera access.
+
+On android, there are no permissions required.
+
+On iOS, An example `Info.plist` would look like this with permissions:
+
+```xml
+<key>NSPhotoLibraryUsageDescription</key>
+<string>$(PRODUCT_NAME) would like access to your photo gallery to share image in a message.</string>
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>$(PRODUCT_NAME) would like to save photos to your photo gallery after downloading from a message.</string>
+```
+
+</TabItem>
+<TabItem value="expo">
+
+- [`expo-image-picker`](https://docs.expo.dev/versions/latest/sdk/imagepicker/#configuration-in-appjsonappconfigjs) for camera access.
+
+An example `app.json` config for expo would look like this to add permissions to the `Info.plist` on iOS, using the config plugins:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "$(PRODUCT_NAME) would like to use your device gallery to attach image in a message."
+        }
+      ]
+    ]
+  }
+}
+```
+
+</TabItem>
+</Tabs>
+
+### Built-in image media library
+
+Pick image using built-in media library and upload them as attachments in the chat.
+
+<Tabs
+  defaultValue='rncli'
+  groupId='rn-platform'
+  values={[
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
+  ]}
+>
+<TabItem value='rncli'>
+
+```bash title="Terminal"
+yarn add @react-native-camera-roll/camera-roll
+```
+
+</TabItem>
+
+<TabItem value='expo'>
+
+```bash title="Terminal"
+npx expo install expo-media-library
+```
+
+</TabItem>
+
+</Tabs>
+
+#### Configuring permissions
+
+<Tabs
+defaultValue='rncli'
+groupId='rn-platform'
+values={[
+  { label: 'RN CLI', value: 'rncli' },
+  { label: 'Expo', value: 'expo' },
+]}
+>
+<TabItem value='rncli'>
+
+- [`@react-native-camera-roll/camera-roll`](https://github.com/react-native-cameraroll/react-native-cameraroll?tab=readme-ov-file#permissions) for gallery/photo library access.
+
+An example `AndroidManifest.xml` would look like this with permissions:
+
+```xml
+  <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+  <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    android:maxSdkVersion="32" />
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+```
+
+An example `Info.plist` would look like this with permissions:
+
+```xml
+<key>NSPhotoLibraryUsageDescription</key>
+<string>$(PRODUCT_NAME) would like access to your photo gallery to share image in a message.</string>
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>$(PRODUCT_NAME) would like to save photos to your photo gallery after downloading from a message.</string>
+```
+
+</TabItem>
+<TabItem value="expo">
+
+- [`expo-media-library`](https://docs.expo.dev/versions/latest/sdk/media-library/#configurable-properties) for gallery/photo library access.
+
+An example `app.json` config for expo would look like this to add permissions to the `Info.plist` on iOS, using the config plugins:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "$(PRODUCT_NAME) would like access to your photo gallery to share image in a message.",
+          "savePhotosPermission": "$(PRODUCT_NAME) would like to save photos to your photo gallery after downloading from a message."
+        }
+      ]
+    ]
+  }
+}
+```
+
+For Android on Expo, most of the most permissions are added automatically by libraries that you use in your app either with config plugins or with a package-level `AndroidManifest.xml`. Read more [here](https://docs.expo.dev/guides/permissions/#android).
+
+</TabItem>
+</Tabs>
+
 ### Offline support
 
 Enable offline support in the app.
@@ -351,6 +626,7 @@ values={[
 >
 <TabItem value='rncli'>
 
+- [`@react-native-camera-roll/camera-roll`](https://github.com/react-native-cameraroll/react-native-cameraroll) for accessing device gallery.
 - [`react-native-video`](https://github.com/react-native-video/react-native-video) for Video and Audio playback support.
 - [`react-native-audio-recorder-player`](https://github.com/hyochan/react-native-audio-recorder-player) for Audio recording and async audio messages support.
 - [`react-native-blob-util`](https://github.com/RonRadtke/react-native-blob-util) to perform file operations like save, delete, while sharing or access the cache directory while audio recording.
@@ -366,11 +642,12 @@ values={[
 
 - [`expo-av`](https://docs.expo.dev/versions/latest/sdk/av/) for Video and Audio playback, recording and async audio messages support.
 - [`expo-file-system`](https://docs.expo.dev/versions/latest/sdk/filesystem/) to perform file operations like save, delete, while sharing or access the cache directory while audio recording.
+- [`expo-media-library`](https://docs.expo.dev/versions/latest/sdk/media-library/) for accessing device gallery.
 - [`expo-sharing`](https://docs.expo.dev/versions/latest/sdk/sharing/) for Attachments sharing support.
 - [`expo-haptics`](https://docs.expo.dev/versions/latest/sdk/haptics/) for user haptics support.
 - [`expo-clipboard`](https://docs.expo.dev/versions/latest/sdk/clipboard/) for Copy message support.
 - [`expo-document-picker`](https://docs.expo.dev/versions/latest/sdk/document-picker/) to access device media files.
-- [`expo-image-picker`](https://docs.expo.dev/versions/latest/sdk/imagepicker/) to capture images to attach them in the message.
+- [`expo-image-picker`](https://docs.expo.dev/versions/latest/sdk/imagepicker/) to capture images to attach them in the message or use native image picker.
 - [`@op-engineering/op-sqlite`](https://github.com/OP-Engineering/op-sqlite) to enable Offline support in the app.
 
 </TabItem>
@@ -379,91 +656,6 @@ values={[
 :::note
 Please follow along the linked documentation of each optional dependencies so as to support them correctly in your application.
 :::
-
-## Configuring permissions
-
-Some dependencies(if you are using them on your application), require you to add additional permissions to the `Info.plist` file in iOS and `AndroidManifest.xml` file in Android. Please follow the steps mentioned in the links below for corresponding dependencies:
-
-<Tabs
-defaultValue='rncli'
-groupId='rn-platform'
-values={[
-  { label: 'RN CLI', value: 'rncli' },
-  { label: 'Expo', value: 'expo' },
-]}
->
-<TabItem value='rncli'>
-
-- [`@react-native-camera-roll/camera-roll`](https://github.com/react-native-cameraroll/react-native-cameraroll?tab=readme-ov-file#permissions) for gallery/photo library access.
-- [`react-native-image-picker`](https://github.com/react-native-image-picker/react-native-image-picker?tab=readme-ov-file#post-install-steps) for camera access.
-- [`react-native-audio-recorder-player`](https://github.com/hyochan/react-native-audio-recorder-player?tab=readme-ov-file#post-installation) for microphone access for voice recording.
-
-An example `AndroidManifest.xml` would look like this with permissions:
-
-```xml
-  <uses-permission android:name="android.permission.CAMERA" />
-  <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-  <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-  <uses-permission android:name="android.permission.RECORD_AUDIO" />
-  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
-    android:maxSdkVersion="32" />
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-```
-
-An example `Info.plist` would look like this with permissions:
-
-```xml
-<key>NSPhotoLibraryUsageDescription</key>
-<string>$(PRODUCT_NAME) would like access to your photo gallery to share image in a message.</string>
-<key>NSPhotoLibraryAddUsageDescription</key>
-<string>$(PRODUCT_NAME) would like to save photos to your photo gallery after downloading from a message.</string>
-<key>NSCameraUsageDescription</key>
-<string>$(PRODUCT_NAME) would like to use your camera to share image in a message.</string>
-<key>NSMicrophoneUsageDescription</key>
-<string>$(PRODUCT_NAME) would like to use your microphone for voice recording.</string>
-```
-
-</TabItem>
-<TabItem value="expo">
-
-- [`expo-media-library`](https://docs.expo.dev/versions/latest/sdk/media-library/#configurable-properties) for gallery/photo library access.
-- [`expo-image-picker`](https://docs.expo.dev/versions/latest/sdk/imagepicker/#configuration-in-appjsonappconfigjs) for camera access.
-- [`expo-av`](https://docs.expo.dev/versions/latest/sdk/av/#configuration-in-appjsonappconfigjs) for microphone access for voice recording.
-
-An example `app.json` config for expo would look like this to add permissions to the `Info.plist` on iOS, using the config plugins:
-
-```json
-{
-  "expo": {
-    "plugins": [
-      [
-        "expo-media-library",
-        {
-          "photosPermission": "$(PRODUCT_NAME) would like access to your photo gallery to share image in a message.",
-          "savePhotosPermission": "$(PRODUCT_NAME) would like to save photos to your photo gallery after downloading from a message."
-        }
-      ],
-      [
-        "expo-image-picker",
-        {
-          "cameraPermission": "$(PRODUCT_NAME) would like to use your camera to share image in a message."
-        }
-      ],
-      [
-        "expo-av",
-        {
-          "microphonePermission": "$(PRODUCT_NAME) would like to use your microphone for voice recording."
-        }
-      ]
-    ]
-  }
-}
-```
-
-For Android on Expo, most of the most permissions are added automatically by libraries that you use in your app either with config plugins or with a package-level `AndroidManifest.xml`. Read more [here](https://docs.expo.dev/guides/permissions/#android).
-
-</TabItem>
-</Tabs>
 
 ## Additional Steps
 
@@ -507,8 +699,6 @@ The entry point of your app exists usually either in `index.js` or `App.tsx` fil
 Please also follow the steps mentioned in the links below for corresponding dependencies:
 
 - `react-native` - [additional installation steps](https://reactnative.dev/docs/image#gif-and-webp-support-on-android)
-- `react-native-image-picker` - [additional installation steps](https://github.com/react-native-image-picker/react-native-image-picker?tab=readme-ov-file#post-install-steps)
-- `react-native-cameraroll` - [additional installation steps](https://github.com/react-native-cameraroll/react-native-cameraroll#permissions)
 
 Now you should be able to run the app on simulator by running following command:
 
