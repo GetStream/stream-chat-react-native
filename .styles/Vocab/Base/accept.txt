@@ -43,3 +43,5 @@ CDNs
 haptics
 async
 Podfile
+pickFile
+onChange
