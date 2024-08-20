@@ -3,11 +3,11 @@ import type { FormatMessageResponse, MessageResponse } from 'stream-chat';
 import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
-import { SqliteClient } from '../SqliteClient';
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
 import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
+import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries } from '../types';
 
 export const updateMessage = ({

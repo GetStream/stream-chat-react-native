@@ -1,5 +1,5 @@
-import { SqliteClient } from '../SqliteClient';
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
+import { SqliteClient } from '../SqliteClient';
 
 export const deletePendingTask = ({ id }: { id: number }) => {
   const query = createDeleteQuery('pendingTasks', {

@@ -1,7 +1,7 @@
 import type { TableRowJoinedUser } from '../../../store/types';
 
-import { SqliteClient } from '../../SqliteClient';
 import { tables } from '../../schema';
+import { SqliteClient } from '../../SqliteClient';
 
 export const selectMembersForChannels = (cids: string[]): TableRowJoinedUser<'members'>[] => {
   const questionMarks = Array(cids.length).fill('?').join(',');

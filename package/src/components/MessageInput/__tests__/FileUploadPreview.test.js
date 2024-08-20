@@ -32,6 +32,7 @@ jest.mock('../../../native.ts', () => {
   return {
     isAudioRecorderAvailable: jest.fn(() => true),
     isDocumentPickerAvailable: jest.fn(() => true),
+    isImageMediaLibraryAvailable: jest.fn(() => true),
     isImagePickerAvailable: jest.fn(() => true),
     isSoundPackageAvailable: jest.fn(() => true),
     Sound: {

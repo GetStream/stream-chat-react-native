@@ -1,8 +1,8 @@
 import type { ChannelFilters, ChannelSort } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { SqliteClient } from '../../SqliteClient';
 import { createSelectQuery } from '../../sqlite-utils/createSelectQuery';
+import { SqliteClient } from '../../SqliteClient';
 
 import { convertFilterSortToQuery } from '../utils/convertFilterSortToQuery';
 

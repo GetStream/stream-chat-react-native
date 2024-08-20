@@ -12,7 +12,7 @@ import {
   SoundReturnType,
   triggerHaptic,
 } from '../../../native';
-import { File } from '../../../types/types';
+import { File, FileTypes } from '../../../types/types';
 import { resampleWaveformData } from '../utils/audioSampling';
 import { normalizeAudioLevel } from '../utils/normalizeAudioLevel';
 
@@ -250,7 +250,7 @@ export const useAudioController = () => {
       duration: durationInSeconds,
       mimeType: 'audio/aac',
       name: `audio_recording_${date}.aac`,
-      type: 'voiceRecording',
+      type: FileTypes.VoiceRecording,
       uri: typeof recording !== 'string' ? (recording?.getURI() as string) : (recording as string),
       waveform_data: resampledWaveformData,
     };

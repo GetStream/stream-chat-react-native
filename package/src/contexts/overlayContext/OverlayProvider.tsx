@@ -30,6 +30,7 @@ import { OverlayBackdrop } from '../../components/MessageOverlay/OverlayBackdrop
 import { useStreami18n } from '../../hooks/useStreami18n';
 
 import { useViewport } from '../../hooks/useViewport';
+import { isImageMediaLibraryAvailable } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { AttachmentPickerProvider } from '../attachmentPickerContext/AttachmentPickerContext';
 import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
@@ -253,7 +254,9 @@ export const OverlayProvider = <
                     overlayOpacity={overlayOpacity}
                   />
                 )}
-                <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
+                {isImageMediaLibraryAvailable() ? (
+                  <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
+                ) : null}
               </ThemeProvider>
             </ImageGalleryProvider>
           </AttachmentPickerProvider>

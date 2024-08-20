@@ -29,6 +29,7 @@ jest.mock('../../../native.ts', () => {
   return {
     deleteFile: jest.fn(),
     isFileSystemAvailable: jest.fn(() => true),
+    isImageMediaLibraryAvailable: jest.fn(() => true),
     isShareImageAvailable: jest.fn(() => true),
     isVideoPlayerAvailable: jest.fn(() => true),
     saveFile: jest.fn(),

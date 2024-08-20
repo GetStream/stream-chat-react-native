@@ -1,7 +1,7 @@
 import { mapTaskToStorable } from '../mappers/mapTaskToStorable';
-import { SqliteClient } from '../SqliteClient';
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
+import { SqliteClient } from '../SqliteClient';
 import type { PendingTask } from '../types';
 
 /*

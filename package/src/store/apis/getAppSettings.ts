@@ -1,7 +1,7 @@
 import type { AppSettingsAPIResponse } from 'stream-chat';
 
-import { SqliteClient } from '../SqliteClient';
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
+import { SqliteClient } from '../SqliteClient';
 
 export const getAppSettings = ({
   currentUserId,

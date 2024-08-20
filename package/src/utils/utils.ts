@@ -1,5 +1,6 @@
 import type React from 'react';
 
+import dayjs from 'dayjs';
 import EmojiRegex from 'emoji-regex';
 import type { DebouncedFunc } from 'lodash';
 import debounce from 'lodash/debounce';
@@ -607,6 +608,7 @@ export const stringifyMessage = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   deleted_at,
+  i18n,
   latest_reactions,
   reaction_groups,
   readBy,
@@ -630,7 +632,7 @@ export const stringifyMessage = <
           )
           .join()
       : ''
-  }${type}${deleted_at}${text}${readBy}${reply_count}${status}${updated_at}`;
+  }${type}${deleted_at}${text}${readBy}${reply_count}${status}${updated_at}${JSON.stringify(i18n)}`;
 
 /**
  * Reduces a list of messages to strings that are used in useEffect & useMemo
@@ -655,4 +657,23 @@ export const getFileNameFromPath = (path: string) => {
   const pattern = /[^/]+\.[^/]+$/;
   const match = path.match(pattern);
   return match ? match[0] : '';
+};
+
+/**
+ * Utility to get the duration label from the duration in seconds.
+ * @param duration number
+ * @returns string
+ */
+export const getDurationLabelFromDuration = (duration: number) => {
+  const ONE_HOUR_IN_SECONDS = 3600;
+  const ONE_HOUR_IN_MILLISECONDS = ONE_HOUR_IN_SECONDS * 1000;
+  let durationLabel = '00:00';
+  const isDurationLongerThanHour = duration / ONE_HOUR_IN_MILLISECONDS >= 1;
+  const formattedDurationParam = isDurationLongerThanHour ? 'HH:mm:ss' : 'mm:ss';
+  const formattedVideoDuration = dayjs
+    .duration(duration, 'milliseconds')
+    .format(formattedDurationParam);
+  durationLabel = formattedVideoDuration;
+
+  return durationLabel;
 };

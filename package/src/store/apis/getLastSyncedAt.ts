@@ -1,5 +1,5 @@
-import { SqliteClient } from '../SqliteClient';
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
+import { SqliteClient } from '../SqliteClient';
 
 export const getLastSyncedAt = ({
   currentUserId,

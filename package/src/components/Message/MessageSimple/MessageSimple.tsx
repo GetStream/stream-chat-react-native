@@ -31,13 +31,7 @@ export type MessageSimplePropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageContextValue<StreamChatGenerics>,
-  | 'alignment'
-  | 'channel'
-  | 'disabled'
-  | 'isEditedMessageOpen'
-  | 'groupStyles'
-  | 'hasReactions'
-  | 'message'
+  'alignment' | 'channel' | 'isEditedMessageOpen' | 'groupStyles' | 'hasReactions' | 'message'
 > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
@@ -125,7 +119,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 ) => {
   const {
     channel: prevChannel,
-    disabled: prevDisabled,
     groupStyles: prevGroupStyles,
     hasReactions: prevHasReactions,
     isEditedMessageOpen: prevIsEditedMessageOpen,
@@ -134,16 +127,12 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   } = prevProps;
   const {
     channel: nextChannel,
-    disabled: nextDisabled,
     groupStyles: nextGroupStyles,
     hasReactions: nextHasReactions,
     isEditedMessageOpen: nextIsEditedMessageOpen,
     message: nextMessage,
     myMessageTheme: nextMyMessageTheme,
   } = nextProps;
-
-  const disabledEqual = prevDisabled === nextDisabled;
-  if (!disabledEqual) return false;
 
   const hasReactionsEqual = prevHasReactions === nextHasReactions;
   if (!hasReactionsEqual) return false;
@@ -231,7 +220,7 @@ export const MessageSimple = <
 >(
   props: MessageSimpleProps<StreamChatGenerics>,
 ) => {
-  const { alignment, channel, disabled, groupStyles, hasReactions, isEditedMessageOpen, message } =
+  const { alignment, channel, groupStyles, hasReactions, isEditedMessageOpen, message } =
     useMessageContext<StreamChatGenerics>();
   const {
     enableMessageGroupingByUser,
@@ -246,7 +235,6 @@ export const MessageSimple = <
       {...{
         alignment,
         channel,
-        disabled,
         enableMessageGroupingByUser,
         groupStyles,
         hasReactions,

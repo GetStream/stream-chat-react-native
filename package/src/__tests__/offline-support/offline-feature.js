@@ -35,8 +35,8 @@ import { generateReaction } from '../../mock-builders/generator/reaction';
 import { generateUser } from '../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../mock-builders/mock';
 import { convertFilterSortToQuery } from '../../store/apis/utils/convertFilterSortToQuery';
-import { SqliteClient } from '../../store/SqliteClient';
 import { tables } from '../../store/schema';
+import { SqliteClient } from '../../store/SqliteClient';
 import { BetterSqlite } from '../../test-utils/BetterSqlite';
 
 /**

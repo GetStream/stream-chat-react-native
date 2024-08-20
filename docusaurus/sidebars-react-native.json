@@ -130,6 +130,7 @@
     "Advanced Guides": [
       "guides/audio-messages-support",
       "guides/date-time-formatting",
+      "guides/native-image-picker",
       "customization/typescript",
       "basics/troubleshooting",
       "basics/stream_chat_with_navigation",

@@ -51,7 +51,7 @@ export const AnimatedGalleryImage = React.memo(
      * image as it is scaled. If the scale is less than one they stay in
      * place as to not come into the screen when the image shrinks.
      */
-    const AnimatedGalleryImageStyle = useAnimatedStyle<ImageStyle>(() => {
+    const animatedGalleryImageStyle = useAnimatedStyle<ImageStyle>(() => {
       const xScaleOffset = -7 * screenWidth * (0.5 + index);
       const yScaleOffset = -screenHeight * 3.5;
       return {
@@ -91,8 +91,7 @@ export const AnimatedGalleryImage = React.memo(
         resizeMode={'contain'}
         source={{ uri: photo.uri }}
         style={[
-          style,
-          AnimatedGalleryImageStyle,
+          animatedGalleryImageStyle,
           {
             transform: [
               { scaleX: -1 },
@@ -103,6 +102,7 @@ export const AnimatedGalleryImage = React.memo(
               { scale: oneEighth },
             ],
           },
+          style,
         ]}
       />
     );
