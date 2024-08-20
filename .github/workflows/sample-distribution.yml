@@ -16,14 +16,12 @@ jobs:
     name: Build SampleApp iOS and Deploy-${{ github.ref == 'refs/heads/develop' }}
     runs-on: [macos-14]
     steps:
+      - name: Connect Bot
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.BOT_SSH_PRIVATE_KEY }}
       - uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.DOCUSAURUS_GH_TOKEN }}
-      - name: Install Ruby and Gems
-        uses: ruby/setup-ruby@v1
-        with:
-          working-directory: examples/SampleApp
-          bundler-cache: true
+      - uses: ./.github/actions/ruby-cache
       - name: Install && Build - SDK and Sample App
         uses: ./.github/actions/install-and-build-sdk
       - name: Cache iOS pods
@@ -34,24 +32,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pods-
       - name: iOS Pods setup
-        uses: nick-invision/retry@v2
-        with:
-          timeout_minutes: 30
-          max_attempts: 3
-          command: |
-            cd examples/SampleApp
-            cd ios
-            bundle exec pod install
+        working-directory: examples/SampleApp/ios
+        run: bundle exec pod install
       - name: Build and release Testflight QA
+        working-directory: examples/SampleApp
+        run: bundle exec fastlane deploy_to_testflight_qa deploy:${{ github.ref == 'refs/heads/develop' }};
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
-          APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
-          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
-          APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
-        run: |
-          cd examples/SampleApp
-          bundle exec fastlane deploy_to_testflight_qa deploy:${{ github.ref == 'refs/heads/develop' }};
+          APPSTORE_API_KEY: ${{ secrets.APPSTORE_API_KEY }}
 
   build_and_deploy_android_s3:
     name: Build SampleApp Android and Deploy-${{ github.ref == 'refs/heads/develop' }}
@@ -66,14 +55,13 @@ jobs:
       - name: Install && Build - SDK and Sample App
         uses: ./.github/actions/install-and-build-sdk
       - name: Build
+        working-directory: examples/SampleApp
         run: |
-          cd examples/SampleApp
           mkdir android/app/src/main/assets
           mkdir tmp
           yarn react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest tmp
           cd android
           rm -rf $HOME/.gradle/caches/ && ./gradlew assembleRelease
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         if: ${{ github.ref == 'refs/heads/develop' }}
