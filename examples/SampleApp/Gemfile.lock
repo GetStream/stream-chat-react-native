@@ -19,7 +19,7 @@ GEM
     ast (2.4.2)
     atomos (0.1.3)
     aws-eventstream (1.3.0)
-    aws-partitions (1.965.0)
+    aws-partitions (1.966.0)
     aws-sdk-core (3.201.5)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.651.0)
@@ -323,6 +323,9 @@ DEPENDENCIES
   fastlane-plugin-stream_actions (= 0.3.65)
   rubocop-performance
   rubocop-require_tools
+
+RUBY VERSION
+   ruby 3.3.4p94
 
 BUNDLED WITH
    2.5.17
