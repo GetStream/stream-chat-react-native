@@ -23,8 +23,7 @@ import {
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useLoadingImage } from '../../hooks/useLoadingImage';
-import { GiphyIcon } from '../../icons';
-import { Lightning } from '../../icons/Lightning';
+import { GiphyIcon, GiphyLightning } from '../../icons';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
@@ -377,7 +376,7 @@ const GiphyWithContext = <
               giphyContainer,
             ]}
           >
-            <Lightning fill={white} size={16} />
+            <GiphyLightning fill={white} size={16} />
             <Text style={[styles.giphyMaskText, { color: white }, giphyMaskText]}>
               {type?.toUpperCase()}
             </Text>
