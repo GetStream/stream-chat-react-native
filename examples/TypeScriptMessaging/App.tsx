@@ -9,7 +9,6 @@ import {
   Channel,
   ChannelList,
   Chat,
-  DebugContextProvider,
   MessageInput,
   MessageList,
   OverlayProvider,
@@ -23,7 +22,6 @@ import {
 
 import { useStreamChatTheme } from './useStreamChatTheme';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useFlipper } from 'stream-chat-react-native-devtools';
 
 LogBox.ignoreAllLogs(true);
 
@@ -238,57 +236,55 @@ const App = () => {
   }, []);
 
   return (
-    <DebugContextProvider useFlipper={useFlipper}>
-      <NavigationContainer
-        theme={{
-          colors: {
-            ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
-          },
-          dark: colorScheme === 'dark',
-        }}
-      >
-        <AppContext.Provider value={{ channel, setChannel, setThread, thread }}>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <OverlayProvider<StreamChatGenerics>
-              bottomInset={bottom}
-              i18nInstance={streami18n}
-              value={{ style: theme }}
-            >
-              <Chat client={chatClient} i18nInstance={streami18n} enableOfflineSupport>
-                {clientReady && (
-                  <Stack.Navigator
-                    initialRouteName='ChannelList'
-                    screenOptions={{
-                      headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
-                    }}
-                  >
-                    <Stack.Screen
-                      component={ChannelScreen}
-                      name='Channel'
-                      options={() => ({
-                        headerBackTitle: 'Back',
-                        headerRight: EmptyHeader,
-                        headerTitle: channel?.data?.name,
-                      })}
-                    />
-                    <Stack.Screen
-                      component={ChannelListScreen}
-                      name='ChannelList'
-                      options={{ headerTitle: 'Channel List' }}
-                    />
-                    <Stack.Screen
-                      component={ThreadScreen}
-                      name='Thread'
-                      options={() => ({ headerLeft: EmptyHeader })}
-                    />
-                  </Stack.Navigator>
-                )}
-              </Chat>
-            </OverlayProvider>
-          </GestureHandlerRootView>
-        </AppContext.Provider>
-      </NavigationContainer>
-    </DebugContextProvider>
+    <NavigationContainer
+      theme={{
+        colors: {
+          ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
+        },
+        dark: colorScheme === 'dark',
+      }}
+    >
+      <AppContext.Provider value={{ channel, setChannel, setThread, thread }}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <OverlayProvider<StreamChatGenerics>
+            bottomInset={bottom}
+            i18nInstance={streami18n}
+            value={{ style: theme }}
+          >
+            <Chat client={chatClient} i18nInstance={streami18n} enableOfflineSupport>
+              {clientReady && (
+                <Stack.Navigator
+                  initialRouteName='ChannelList'
+                  screenOptions={{
+                    headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
+                  }}
+                >
+                  <Stack.Screen
+                    component={ChannelScreen}
+                    name='Channel'
+                    options={() => ({
+                      headerBackTitle: 'Back',
+                      headerRight: EmptyHeader,
+                      headerTitle: channel?.data?.name,
+                    })}
+                  />
+                  <Stack.Screen
+                    component={ChannelListScreen}
+                    name='ChannelList'
+                    options={{ headerTitle: 'Channel List' }}
+                  />
+                  <Stack.Screen
+                    component={ThreadScreen}
+                    name='Thread'
+                    options={() => ({ headerLeft: EmptyHeader })}
+                  />
+                </Stack.Navigator>
+              )}
+            </Chat>
+          </OverlayProvider>
+        </GestureHandlerRootView>
+      </AppContext.Provider>
+    </NavigationContainer>
   );
 };
 
