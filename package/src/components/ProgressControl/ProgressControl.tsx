@@ -49,6 +49,8 @@ export const ProgressControl = React.memo(
       testID,
       width,
     } = props;
+    const state = useSharedValue(0);
+    const translateX = useSharedValue(0);
     const { width: windowWidth } = Dimensions.get('screen');
     const widthInNumbers = width
       ? typeof width === 'string'
@@ -81,8 +83,6 @@ export const ProgressControl = React.memo(
       })
       .withTestId(testID);
 
-    const state = useSharedValue(0);
-    const translateX = useSharedValue(0);
     const filledColor = filledColorFromProp || filledColorFromTheme;
 
     useEffect(() => {
@@ -127,7 +127,6 @@ export const ProgressControl = React.memo(
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 50,
     height,
   },
   filledStyle: {
@@ -137,15 +136,15 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 0.2,
     elevation: 6,
-    height: 20,
+    height: 30,
     shadowOffset: {
       height: 3,
       width: 0,
     },
     shadowOpacity: 0.27,
     shadowRadius: 4.65,
-    top: -11,
-    width: 5,
+    top: -15,
+    width: 6,
   },
 });
 ProgressControl.displayName = 'ProgressControl';

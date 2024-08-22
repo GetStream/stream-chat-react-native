@@ -11,6 +11,7 @@ import {
   withTiming,
 } from 'react-native-reanimated';
 
+import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { triggerHaptic } from '../../../native';
 
@@ -60,6 +61,7 @@ export const useImageGalleryGestures = ({
   translateY: SharedValue<number>;
   translationX: SharedValue<number>;
 }) => {
+  const { setMessages, setSelectedMessage } = useImageGalleryContext();
   /**
    * Gesture handler refs
    */
@@ -403,6 +405,7 @@ export const useImageGalleryGestures = ({
           cancelAnimation(translateX);
           cancelAnimation(translateY);
           cancelAnimation(scale);
+
           overlayOpacity.value = withTiming(
             0,
             {
@@ -410,6 +413,8 @@ export const useImageGalleryGestures = ({
               easing: Easing.out(Easing.ease),
             },
             () => {
+              runOnJS(setSelectedMessage)(undefined);
+              runOnJS(setMessages)([]);
               runOnJS(setOverlay)('none');
             },
           );
@@ -662,6 +667,7 @@ export const useImageGalleryGestures = ({
     .minPointers(1)
     .numberOfTaps(1)
     .onEnd(() => {
+      console.log('single tap');
       cancelAnimation(headerFooterVisible);
       headerFooterVisible.value = headerFooterVisible.value > 0 ? withTiming(0) : withTiming(1);
     })

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Image, ImageStyle, Keyboard, StyleSheet, ViewStyle } from 'react-native';
 
-import { GestureDetector } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import Animated, {
   Easing,
@@ -500,77 +500,71 @@ export const ImageGallery = <
       style={[StyleSheet.absoluteFillObject, showScreenStyle]}
     >
       <Animated.View style={[StyleSheet.absoluteFillObject, containerBackground]} />
-      <GestureDetector gesture={singleTap}>
+      <GestureDetector gesture={Gesture.Simultaneous(singleTap, doubleTap, pinch, pan)}>
         <Animated.View style={StyleSheet.absoluteFillObject}>
-          <GestureDetector gesture={doubleTap}>
-            <Animated.View style={StyleSheet.absoluteFillObject}>
-              <GestureDetector gesture={pinch}>
-                <Animated.View style={StyleSheet.absoluteFill}>
-                  <GestureDetector gesture={pan}>
-                    <Animated.View style={StyleSheet.absoluteFill}>
-                      <Animated.View style={[styles.animatedContainer, pagerStyle, pager]}>
-                        {imageGalleryAttachments.map((photo, i) =>
-                          photo.type === FileTypes.Video ? (
-                            <AnimatedGalleryVideo
-                              attachmentId={photo.id}
-                              handleEnd={handleEnd}
-                              handleLoad={handleLoad}
-                              handleProgress={handleProgress}
-                              index={i}
-                              key={`${photo.uri}-${i}`}
-                              offsetScale={offsetScale}
-                              paused={photo.paused || false}
-                              previous={selectedIndex > i}
-                              repeat={true}
-                              scale={scale}
-                              screenHeight={fullWindowHeight}
-                              selected={selectedIndex === i}
-                              shouldRender={Math.abs(selectedIndex - i) < 4}
-                              source={{ uri: photo.uri }}
-                              style={[
-                                {
-                                  height: fullWindowHeight * 8,
-                                  marginRight: MARGIN,
-                                  width: fullWindowWidth * 8,
-                                },
-                                slide,
-                              ]}
-                              translateX={translateX}
-                              translateY={translateY}
-                              videoRef={videoRef}
-                            />
-                          ) : (
-                            <AnimatedGalleryImage
-                              accessibilityLabel={'Image Item'}
-                              index={i}
-                              key={`${photo.uri}-${i}`}
-                              offsetScale={offsetScale}
-                              photo={photo}
-                              previous={selectedIndex > i}
-                              scale={scale}
-                              screenHeight={fullWindowHeight}
-                              selected={selectedIndex === i}
-                              shouldRender={Math.abs(selectedIndex - i) < 4}
-                              style={[
-                                {
-                                  height: fullWindowHeight * 8,
-                                  marginRight: MARGIN,
-                                  width: fullWindowWidth * 8,
-                                },
-                                slide,
-                              ]}
-                              translateX={translateX}
-                              translateY={translateY}
-                            />
-                          ),
-                        )}
-                      </Animated.View>
-                    </Animated.View>
-                  </GestureDetector>
+          <Animated.View style={StyleSheet.absoluteFillObject}>
+            <Animated.View style={StyleSheet.absoluteFill}>
+              <Animated.View style={StyleSheet.absoluteFill}>
+                <Animated.View style={[styles.animatedContainer, pagerStyle, pager]}>
+                  {imageGalleryAttachments.map((photo, i) =>
+                    photo.type === FileTypes.Video ? (
+                      <AnimatedGalleryVideo
+                        attachmentId={photo.id}
+                        handleEnd={handleEnd}
+                        handleLoad={handleLoad}
+                        handleProgress={handleProgress}
+                        index={i}
+                        key={`${photo.uri}-${i}`}
+                        offsetScale={offsetScale}
+                        paused={photo.paused || false}
+                        previous={selectedIndex > i}
+                        repeat={true}
+                        scale={scale}
+                        screenHeight={fullWindowHeight}
+                        selected={selectedIndex === i}
+                        shouldRender={Math.abs(selectedIndex - i) < 4}
+                        source={{ uri: photo.uri }}
+                        style={[
+                          {
+                            height: fullWindowHeight * 8,
+                            marginRight: MARGIN,
+                            width: fullWindowWidth * 8,
+                          },
+                          slide,
+                        ]}
+                        translateX={translateX}
+                        translateY={translateY}
+                        videoRef={videoRef}
+                      />
+                    ) : (
+                      <AnimatedGalleryImage
+                        accessibilityLabel={'Image Item'}
+                        index={i}
+                        key={`${photo.uri}-${i}`}
+                        offsetScale={offsetScale}
+                        photo={photo}
+                        previous={selectedIndex > i}
+                        scale={scale}
+                        screenHeight={fullWindowHeight}
+                        selected={selectedIndex === i}
+                        shouldRender={Math.abs(selectedIndex - i) < 4}
+                        style={[
+                          {
+                            height: fullWindowHeight * 8,
+                            marginRight: MARGIN,
+                            width: fullWindowWidth * 8,
+                          },
+                          slide,
+                        ]}
+                        translateX={translateX}
+                        translateY={translateY}
+                      />
+                    ),
+                  )}
                 </Animated.View>
-              </GestureDetector>
+              </Animated.View>
             </Animated.View>
-          </GestureDetector>
+          </Animated.View>
         </Animated.View>
       </GestureDetector>
       <ImageGalleryHeader<StreamChatGenerics>
