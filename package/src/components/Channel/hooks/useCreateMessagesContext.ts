@@ -189,6 +189,7 @@ export const useCreateMessagesContext = <
       UrlPreview,
       VideoThumbnail,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       additionalTouchablePropsLength,
       channelId,

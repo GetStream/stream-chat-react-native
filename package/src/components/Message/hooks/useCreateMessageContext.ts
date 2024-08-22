@@ -100,6 +100,7 @@ export const useCreateMessageContext = <
       threadList,
       videos,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       actionsEnabled,
       quotedMessageDeletedValue,

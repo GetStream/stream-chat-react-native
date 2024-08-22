@@ -72,6 +72,7 @@ export const ProgressControl = React.memo(
         state.value = progress * widthInNumbers;
         translateX.value = progress * widthInNumbers;
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [progress, widthInNumbers]);
 
     const animatedStyles = useAnimatedStyle(() => ({

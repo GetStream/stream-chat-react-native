@@ -158,6 +158,7 @@ const FileUploadPreviewWithContext = <
         progress: 0,
       })),
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileUploads.length]);
 
   // Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here and the duration is set.

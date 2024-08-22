@@ -45,6 +45,7 @@ export const useStreami18n = (i18nInstance?: Streami18n) => {
       unsubscribeOnTFuncOverrideListener();
       unsubscribeOnLanguageChangeListener();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [i18nInstance]);
 
   return translators;

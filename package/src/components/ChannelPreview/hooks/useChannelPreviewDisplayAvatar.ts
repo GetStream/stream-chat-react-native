@@ -72,6 +72,7 @@ export const useChannelPreviewDisplayAvatar = <
 
   useEffect(() => {
     setDisplayAvatar(getChannelPreviewDisplayAvatar(channel, client));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, image, name]);
 
   return displayAvatar;

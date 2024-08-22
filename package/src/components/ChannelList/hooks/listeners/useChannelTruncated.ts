@@ -38,5 +38,6 @@ export const useChannelTruncated = <
 
     const listener = client?.on('channel.truncated', handleEvent);
     return () => listener?.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };

@@ -155,6 +155,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
         soundRef.current.unloadAsync();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // This is needed for expo applications where the rerender doesn't occur on time thefore you need to update the state of the sound.

@@ -129,6 +129,7 @@ const AutoCompleteInputWithContext = <
 
   useEffect(() => {
     handleChange(text, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text]);
 
   const startTracking = (trigger: Trigger) => {

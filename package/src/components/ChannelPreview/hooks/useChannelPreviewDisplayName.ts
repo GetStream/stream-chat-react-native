@@ -106,6 +106,7 @@ export const useChannelPreviewDisplayName = <
         members,
       }),
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelName, currentUserId, characterLimit, numOfMembers]);
 
   return displayName;
