@@ -666,8 +666,7 @@ export const useImageGalleryGestures = ({
   const singleTap = Gesture.Tap()
     .minPointers(1)
     .numberOfTaps(1)
-    .onEnd(() => {
-      console.log('single tap');
+    .onStart(() => {
       cancelAnimation(headerFooterVisible);
       headerFooterVisible.value = headerFooterVisible.value > 0 ? withTiming(0) : withTiming(1);
     })
