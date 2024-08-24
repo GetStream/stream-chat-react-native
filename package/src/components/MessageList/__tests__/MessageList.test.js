@@ -367,12 +367,14 @@ describe('MessageList', () => {
     const user1 = generateUser();
 
     const mockedLongMessagesList = [];
+    // we need a long enough list to make sure elements aren't preloaded by the underlying FlatList
     for (let i = 0; i <= 150; i += 1) {
       mockedLongMessagesList.push(generateMessage({ timestamp: new Date(), user: user1 }));
     }
     // could be any message that are not the initially processed ones
     const { id: targetedMessageId, text: targetedMessageText } = mockedLongMessagesList[3];
-    const { text: latestMessageText } = mockedLongMessagesList[mockedLongMessagesList.length - 1];
+    const latestMessageText = mockedLongMessagesList[mockedLongMessagesList.length - 1].text;
+
     const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
       messages: mockedLongMessagesList,
