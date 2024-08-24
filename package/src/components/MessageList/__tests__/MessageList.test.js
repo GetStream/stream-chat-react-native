@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { act, cleanup, render, waitFor } from '@testing-library/react-native';
+import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
@@ -360,6 +360,42 @@ describe('MessageList', () => {
             resolve(true);
           }),
       },
+    });
+  });
+
+  it('should scroll to a message even if out of the loaded window', async () => {
+    const user1 = generateUser();
+
+    const mockedLongMessagesList = [];
+    for (let i = 0; i <= 150; i += 1) {
+      mockedLongMessagesList.push(generateMessage({ timestamp: new Date(), user: user1 }));
+    }
+    // could be any message that are not the initially processed ones
+    const { id: targetedMessageId, text: targetedMessageText } = mockedLongMessagesList[3];
+    const { text: latestMessageText } = mockedLongMessagesList[mockedLongMessagesList.length - 1];
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: user1 })],
+      messages: mockedLongMessagesList,
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+
+    render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList targetedMessage={targetedMessageId} />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText(targetedMessageText)).toBeOnTheScreen();
+      expect(() => screen.getByText(latestMessageText)).toThrow();
     });
   });
 });

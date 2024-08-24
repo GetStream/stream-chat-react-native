@@ -964,7 +964,7 @@ const MessageListWithContext = <
         });
       }
       // the message we want to scroll to has not been loaded in the state yet
-      loadChannelAroundMessage({ messageId: messageIdToScroll })
+      loadChannelAroundMessage({ messageId: messageIdToScroll });
     }, 50);
   }, [targetedMessage, initialScrollToFirstUnreadMessage]);
 
