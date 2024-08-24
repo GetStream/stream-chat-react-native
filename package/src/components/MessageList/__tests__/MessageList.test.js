@@ -371,7 +371,7 @@ describe('MessageList', () => {
     for (let i = 0; i <= 150; i += 1) {
       mockedLongMessagesList.push(generateMessage({ timestamp: new Date(), user: user1 }));
     }
-    // could be any message that are not the initially processed ones
+    // could be any message that is not within the initially processed ones
     const { id: targetedMessageId, text: targetedMessageText } = mockedLongMessagesList[3];
     const latestMessageText = mockedLongMessagesList[mockedLongMessagesList.length - 1].text;
 
