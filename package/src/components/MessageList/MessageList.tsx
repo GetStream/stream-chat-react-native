@@ -963,6 +963,8 @@ const MessageListWithContext = <
           viewPosition: 0.5, // try to place message in the center of the screen
         });
       }
+      // the message we want to scroll to has not been loaded in the state yet
+      loadChannelAroundMessage({ messageId: messageIdToScroll })
     }, 50);
   }, [targetedMessage, initialScrollToFirstUnreadMessage]);
 
