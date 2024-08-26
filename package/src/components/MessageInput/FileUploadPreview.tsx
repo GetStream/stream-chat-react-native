@@ -285,16 +285,16 @@ const FileUploadPreviewWithContext = <
               </View>
             </View>
           )}
-          <TouchableOpacity
-            onPress={() => {
-              removeFile(item.id);
-            }}
-            style={[styles.dismiss, { backgroundColor: grey_gainsboro }, dismiss]}
-            testID='remove-file-upload-preview'
-          >
-            <Close pathFill={grey_dark} />
-          </TouchableOpacity>
         </UploadProgressIndicator>
+        <TouchableOpacity
+          onPress={() => {
+            removeFile(item.id);
+          }}
+          style={[styles.dismiss, { backgroundColor: grey_gainsboro }, dismiss]}
+          testID='remove-file-upload-preview'
+        >
+          <Close pathFill={grey_dark} />
+        </TouchableOpacity>
       </>
     );
   };
