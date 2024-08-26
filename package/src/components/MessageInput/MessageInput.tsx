@@ -268,6 +268,7 @@ const MessageInputWithContext = <
     setMaxNumberOfFiles(maxNumberOfFiles ?? 10);
 
     return closeAttachmentPicker;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const [hasResetImages, setHasResetImages] = useState(false);
@@ -288,6 +289,7 @@ const MessageInputWithContext = <
       imageUploads.forEach((image) => removeImage(image.id));
     }
     return () => setSelectedImages([]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /**
@@ -300,24 +302,28 @@ const MessageInputWithContext = <
     }
 
     return () => setSelectedFiles([]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (hasResetImages === false && imageUploadsLength === 0 && selectedImagesLength === 0) {
       setHasResetImages(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageUploadsLength, selectedImagesLength]);
 
   useEffect(() => {
     if (hasResetFiles === false && fileUploadsLength === 0 && selectedFilesLength === 0) {
       setHasResetFiles(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileUploadsLength, selectedFilesLength]);
 
   useEffect(() => {
     if (imagesForInput === false && imageUploadsLength) {
       imageUploads.forEach((image) => removeImage(image.id));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagesForInput, imageUploadsLength]);
 
   const uploadImagesHandler = () => {
@@ -353,6 +359,7 @@ const MessageInputWithContext = <
         removeImagesHandler();
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedImagesLength]);
 
   useEffect(() => {
@@ -377,6 +384,7 @@ const MessageInputWithContext = <
       );
       filesToRemove.forEach((file) => removeFile(file.id));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFilesLength]);
 
   useEffect(() => {
@@ -409,6 +417,7 @@ const MessageInputWithContext = <
         );
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageUploadsLength, hasImagePicker]);
 
   useEffect(() => {
@@ -440,6 +449,7 @@ const MessageInputWithContext = <
         );
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileUploadsLength, hasImagePicker]);
 
   const editingExists = !!editing;
@@ -468,6 +478,7 @@ const MessageInputWithContext = <
     ) {
       resetInput();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editingExists]);
 
   const asyncIdsString = asyncIds.join();
@@ -484,6 +495,7 @@ const MessageInputWithContext = <
       asyncIds.forEach((id) => sendMessageAsync(id));
       sending.current = false;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [asyncIdsString, asyncUploadsString, sendMessageAsync]);
 
   const getMembers = () => {
@@ -544,6 +556,7 @@ const MessageInputWithContext = <
         if (setFocused) setFocused(true);
       },
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [additionalTextInputProps],
   );
 

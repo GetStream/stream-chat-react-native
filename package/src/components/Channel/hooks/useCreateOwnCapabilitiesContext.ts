@@ -41,6 +41,7 @@ export const useCreateOwnCapabilitiesContext = <
     return () => {
       listener.unsubscribe();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const ownCapabilitiesContext: OwnCapabilitiesContextValue = useMemo(() => {
@@ -56,6 +57,7 @@ export const useCreateOwnCapabilitiesContext = <
     );
 
     return ownCapabilitiesContext;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channel.id, overrideCapabilitiesStr, own_capabilities]);
 
   return ownCapabilitiesContext;

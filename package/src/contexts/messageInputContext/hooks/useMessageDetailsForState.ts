@@ -34,6 +34,7 @@ export const useMessageDetailsForState = <
     if (fileUploads.length || imageUploads.length) {
       setShowMoreOptions(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text, imageUploads.length, fileUploads.length]);
 
   const messageValue =
@@ -44,6 +45,7 @@ export const useMessageDetailsForState = <
       const mentionedUsers = message.mentioned_users.map((user) => user.id);
       setMentionedUsers(mentionedUsers);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messageValue]);
 
   const mapAttachmentToFileUpload = (attachment: Attachment<StreamChatGenerics>): FileUpload => {
@@ -148,6 +150,7 @@ export const useMessageDetailsForState = <
         setImageUploads(newImageUploads);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messageValue]);
 
   return {

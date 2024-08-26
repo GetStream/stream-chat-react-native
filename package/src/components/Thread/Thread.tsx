@@ -80,6 +80,7 @@ const ThreadWithContext = <
     if (thread?.id && thread.reply_count) {
       loadMoreThreadAsync();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(
@@ -91,6 +92,7 @@ const ThreadWithContext = <
         onThreadDismount();
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 
