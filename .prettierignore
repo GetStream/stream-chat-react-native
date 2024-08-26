@@ -3,8 +3,5 @@
 **/dist/
 **/.expo/
 **/vendor/
-*.md
-*.mdx
 package/src/components/docs/
 package/lib/
-docusaurus/
