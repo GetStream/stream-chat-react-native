@@ -8,6 +8,7 @@ import {
 import Animated, {
   Easing,
   runOnJS,
+  SharedValue,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -16,7 +17,7 @@ import Animated, {
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 type Props = {
-  animatedBottomSheetIndex: Animated.SharedValue<number>;
+  animatedBottomSheetIndex: SharedValue<number>;
   closeGridView: () => void;
   currentBottomSheetIndex: number;
 };

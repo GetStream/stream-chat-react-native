@@ -1,6 +1,11 @@
 import React from 'react';
 import { StyleSheet, ViewStyle } from 'react-native';
-import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import Animated, {
+  interpolate,
+  SharedValue,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 
 import { MessageActionListItem as DefaultMessageActionListItem } from './MessageActionListItem';
 
@@ -25,7 +30,7 @@ export type MessageActionListPropsWithContext<
   | 'messageReactions'
 > &
   Pick<MessageOverlayData<StreamChatGenerics>, 'alignment' | 'messageActions'> & {
-    showScreen: Animated.SharedValue<number>;
+    showScreen: SharedValue<number>;
   };
 
 const MessageActionListWithContext = <

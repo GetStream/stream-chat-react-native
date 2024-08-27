@@ -1,6 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { Pressable, SafeAreaView, StyleSheet, Text, View, ViewStyle } from 'react-native';
-import Animated, { Extrapolation, interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+  Extrapolation,
+  interpolate,
+  SharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
@@ -10,41 +15,6 @@ import { Close } from '../../../icons';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { getDateString } from '../../../utils/i18n/getDateString';
 import type { Photo } from '../ImageGallery';
-
-const ReanimatedSafeAreaView = Animated.createAnimatedComponent
-  ? Animated.createAnimatedComponent(SafeAreaView)
-  : SafeAreaView;
-
-const styles = StyleSheet.create({
-  centerContainer: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
-  date: {
-    fontSize: 12,
-    fontWeight: '500',
-    marginTop: 4,
-    opacity: 0.5,
-  },
-  innerContainer: {
-    flexDirection: 'row',
-    height: 56,
-  },
-  leftContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    marginLeft: 8,
-  },
-  rightContainer: {
-    marginRight: 8,
-    width: 24, // Width of icon currently on left
-  },
-  userName: {
-    fontSize: 16,
-    fontWeight: '700',
-  },
-});
 
 export type ImageGalleryHeaderCustomComponent<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -67,8 +37,8 @@ export type ImageGalleryHeaderCustomComponentProps<
 
 type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   ImageGalleryHeaderCustomComponentProps<StreamChatGenerics> & {
-    opacity: Animated.SharedValue<number>;
-    visible: Animated.SharedValue<number>;
+    opacity: SharedValue<number>;
+    visible: SharedValue<number>;
     photo?: Photo<StreamChatGenerics>;
     /* Lookup key in the language corresponding translations sheet to perform date formatting */
   };
@@ -88,7 +58,6 @@ export const ImageGalleryHeader = <
           centerContainer,
           container,
           dateText,
-          innerContainer,
           leftContainer,
           rightContainer,
           usernameText,
@@ -128,8 +97,8 @@ export const ImageGalleryHeader = <
       onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
       pointerEvents={'box-none'}
     >
-      <ReanimatedSafeAreaView style={[{ backgroundColor: white }, container, headerStyle]}>
-        <View style={[styles.innerContainer, innerContainer]}>
+      <Animated.View style={headerStyle}>
+        <SafeAreaView style={[styles.container, { backgroundColor: white }, container]}>
           {leftElement ? (
             leftElement({ hideOverlay, photo })
           ) : (
@@ -154,10 +123,43 @@ export const ImageGalleryHeader = <
           ) : (
             <View style={[styles.rightContainer, rightContainer]} />
           )}
-        </View>
-      </ReanimatedSafeAreaView>
+        </SafeAreaView>
+      </Animated.View>
     </View>
   );
 };
 
 ImageGalleryHeader.displayName = 'ImageGalleryHeader{imageGallery{header}}';
+
+const styles = StyleSheet.create({
+  centerContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 4,
+  },
+  date: {
+    fontSize: 12,
+    fontWeight: '500',
+    marginBottom: 8,
+    opacity: 0.5,
+  },
+  leftContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    marginLeft: 8,
+  },
+  rightContainer: {
+    marginRight: 8,
+    width: 24, // Width of icon currently on left
+  },
+  userName: {
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+});

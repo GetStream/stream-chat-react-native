@@ -5,7 +5,7 @@ import Animated, {
   cancelAnimation,
   interpolate,
   runOnJS,
-  useAnimatedProps,
+  SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
@@ -13,7 +13,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import Svg, { Circle, CircleProps, FillProps } from 'react-native-svg';
+import { FillProps } from 'react-native-svg';
 
 import {
   MessageOverlayData,
@@ -41,10 +41,6 @@ import { triggerHaptic } from '../../native';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
-
-const AnimatedCircle = Animated.createAnimatedComponent
-  ? Animated.createAnimatedComponent(Circle)
-  : Circle;
 
 const styles = StyleSheet.create({
   notLastReaction: {
@@ -96,7 +92,7 @@ type ReactionButtonProps<
   Icon: React.ComponentType<IconProps>;
   index: number;
   numberOfReactions: number;
-  showScreen: Animated.SharedValue<number>;
+  showScreen: SharedValue<number>;
   type: string;
 };
 
@@ -226,13 +222,13 @@ export type OverlayReactionListPropsWithContext<
 > &
   Pick<MessagesContextValue<StreamChatGenerics>, 'supportedReactions'> &
   Pick<OverlayContextValue, 'setOverlay'> & {
-    messageLayout: Animated.SharedValue<{
+    messageLayout: SharedValue<{
       x: number;
       y: number;
     }>;
     ownReactionTypes: string[];
     setReactionListHeight: React.Dispatch<React.SetStateAction<number>>;
-    showScreen: Animated.SharedValue<number>;
+    showScreen: SharedValue<number>;
     fill?: FillProps['fill'];
   };
 
@@ -290,16 +286,20 @@ const OverlayReactionListWithContext = <
     };
   });
 
-  const animatedBigCircleProps = useAnimatedProps<CircleProps>(() => ({
-    cx: messageLayout.value.x - radius * 3,
-    cy: messageLayout.value.y - radius * 3,
-    r: radius * 2,
+  const animatedBigCircleStyle = useAnimatedStyle<ViewStyle>(() => ({
+    borderRadius: radius,
+    height: radius * 2,
+    left: messageLayout.value.x - radius * 3,
+    top: messageLayout.value.y - radius * 3,
+    width: radius * 2,
   }));
 
-  const animateSmallCircleProps = useAnimatedProps<CircleProps>(() => ({
-    cx: messageLayout.value.x - radius,
-    cy: messageLayout.value.y,
-    r: radius,
+  const animatedSmallCircleStyle = useAnimatedStyle<ViewStyle>(() => ({
+    borderRadius: radius / 2,
+    height: radius,
+    left: messageLayout.value.x - radius,
+    top: messageLayout.value.y,
+    width: radius,
   }));
 
   const showScreenStyle = useAnimatedStyle<ViewStyle>(
@@ -336,10 +336,11 @@ const OverlayReactionListWithContext = <
         }}
         style={showScreenStyle}
       >
-        <Svg>
-          <AnimatedCircle animatedProps={animatedBigCircleProps} fill={fill || white_snow} />
-          <AnimatedCircle animatedProps={animateSmallCircleProps} fill={fill || white_snow} />
-        </Svg>
+        <Animated.View style={[animatedBigCircleStyle, { backgroundColor: fill || white_snow }]} />
+        <Animated.View
+          style={[animatedSmallCircleStyle, { backgroundColor: fill || white_snow }]}
+        />
+
         <Animated.View
           onLayout={({
             nativeEvent: {

@@ -1,7 +1,12 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, useWindowDimensions, View, ViewStyle } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import Animated, {
+  interpolate,
+  SharedValue,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 
 import { ReactionSortBase } from 'stream-chat';
 
@@ -86,7 +91,7 @@ export type Reaction = {
 export type OverlayReactionsProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<MessageOverlayContextValue<StreamChatGenerics>, 'OverlayReactionsAvatar'> & {
-  showScreen: Animated.SharedValue<number>;
+  showScreen: SharedValue<number>;
   title: string;
   alignment?: Alignment;
   messageId?: string;
