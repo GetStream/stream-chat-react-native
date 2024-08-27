@@ -1,6 +1,5 @@
 import React from 'react';
-import type Animated from 'react-native-reanimated';
-import { useSharedValue } from 'react-native-reanimated';
+import { SharedValue, useSharedValue } from 'react-native-reanimated';
 
 import { render, renderHook, waitFor } from '@testing-library/react-native';
 
@@ -10,8 +9,8 @@ import { ImageGalleryHeader } from '../ImageGalleryHeader';
 
 it('doesnt fail if fromNow is not available on first render', async () => {
   try {
-    let sharedValueOpacity: Animated.SharedValue<number>;
-    let sharedValueVisible: Animated.SharedValue<number>;
+    let sharedValueOpacity: SharedValue<number>;
+    let sharedValueVisible: SharedValue<number>;
     renderHook(() => {
       sharedValueOpacity = useSharedValue(1);
       sharedValueVisible = useSharedValue(1);
