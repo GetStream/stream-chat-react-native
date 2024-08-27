@@ -44,8 +44,8 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import { triggerHaptic } from '../../native';
-import type { Asset, DefaultStreamChatGenerics } from '../../types/types';
+import { isImageMediaLibraryAvailable, triggerHaptic } from '../../native';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 
 const styles = StyleSheet.create({
@@ -315,7 +315,7 @@ const MessageInputWithContext = <
     }
   }, [imagesForInput, imageUploadsLength]);
 
-  const uploadImagesHandler = () => {
+  const uploadImagesHandler = async () => {
     const imageToUpload = selectedImages.find((selectedImage) => {
       const uploadedImage = imageUploads.find(
         (imageUpload) =>
@@ -324,7 +324,7 @@ const MessageInputWithContext = <
       return !uploadedImage;
     });
 
-    if (imageToUpload) uploadNewImage(imageToUpload);
+    if (imageToUpload) await uploadNewImage(imageToUpload);
   };
 
   const removeImagesHandler = () => {
@@ -339,16 +339,21 @@ const MessageInputWithContext = <
   };
 
   useEffect(() => {
-    if (imagesForInput) {
-      if (selectedImagesLength > imageUploadsLength) {
-        /** User selected an image in bottom sheet attachment picker */
-        uploadImagesHandler();
-      } else {
-        /** User de-selected an image in bottom sheet attachment picker */
-        removeImagesHandler();
+    const uploadOrRemoveImage = async () => {
+      if (imagesForInput) {
+        if (selectedImagesLength > imageUploadsLength) {
+          /** User selected an image in bottom sheet attachment picker */
+          await uploadImagesHandler();
+        } else {
+          /** User de-selected an image in bottom sheet attachment picker */
+          await removeImagesHandler();
+        }
       }
-    }
-  }, [selectedImagesLength]);
+    };
+    // If image picker is not available, don't do anything
+    if (!isImageMediaLibraryAvailable()) return;
+    uploadOrRemoveImage();
+  }, [selectedImagesLength, imageUploadsLength]);
 
   useEffect(() => {
     if (selectedFilesLength > fileUploadsLength) {
@@ -375,7 +380,7 @@ const MessageInputWithContext = <
   }, [selectedFilesLength]);
 
   useEffect(() => {
-    if (imagesForInput && hasImagePicker) {
+    if (imagesForInput && isImageMediaLibraryAvailable()) {
       if (imageUploadsLength < selectedImagesLength) {
         // /** User removed some image from seleted images within ImageUploadPreview. */
         const updatedSelectedImages = selectedImages.filter((selectedImage) => {
@@ -386,22 +391,6 @@ const MessageInputWithContext = <
           return uploadedImage;
         });
         setSelectedImages(updatedSelectedImages);
-      } else if (imageUploadsLength > selectedImagesLength) {
-        /**
-         * User is editing some message which contains image attachments OR
-         * image attachment is added from custom image picker (other than the default bottomsheet image picker)
-         * using `uploadNewImage` function from `MessageInputContext`.
-         **/
-        setSelectedImages(
-          imageUploads
-            .map((imageUpload) => ({
-              height: imageUpload.file.height,
-              source: imageUpload.file.source,
-              uri: imageUpload.url || imageUpload.file.uri,
-              width: imageUpload.file.width,
-            }))
-            .filter(Boolean) as Asset[],
-        );
       }
     }
   }, [imageUploadsLength, hasImagePicker]);
