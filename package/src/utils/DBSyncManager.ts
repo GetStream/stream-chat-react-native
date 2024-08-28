@@ -56,14 +56,6 @@ export class DBSyncManager {
    * @param client
    */
   static init = async (client: StreamChat) => {
-    const { initialized, userID: initializedWithUserID } = this.initializationConfig;
-    if (initialized && initializedWithUserID === client.user?.id) {
-      // The DBSyncManager has already been initialized with the same client state,
-      // we should skip the initialization process. This can typically happen if the
-      // component initializing it (Chat for example) gets unmounted and then remounted
-      // within the lifecycle of the app.
-      return;
-    }
     this.client = client;
     // If the websocket connection is already active, then straightaway
     // call the sync api and also execute pending api calls.
@@ -76,8 +68,9 @@ export class DBSyncManager {
 
     // If a listener has already been registered, unsubscribe from it so
     // that it can be reinstated. This can happen if we reconnect with a
-    // different user for example, which would otherwise cause the old
-    // listener to produce a memory leak.
+    // different user or the component invoking the init() function gets
+    // unmounted and then remounted again. This part of the code makes
+    // sure the stale listener doesn't produce a memory leak.
     if (this.connectionChangedListener) {
       this.connectionChangedListener.unsubscribe();
     }
@@ -92,7 +85,6 @@ export class DBSyncManager {
         this.listeners.forEach((l) => l(false));
       }
     });
-    this.initializationConfig = { initialized: true, userID: client.user?.id };
   };
 
   /**

@@ -229,7 +229,9 @@ describe('Chat', () => {
         <Chat client={chatClientWithUser} enableOfflineSupport key={1} />
       );
 
-      jest.spyOn(DBSyncManager.connectionChangedListener, 'unsubscribe');
+      // the unsubscribe fn changes during init(), so we keep a reference to the spy
+      const unsubscribeSpy = jest.spyOn(DBSyncManager.connectionChangedListener, 'unsubscribe');
+      const listenersAfterInitialMount = chatClientWithUser.listeners['connection.changed'];
 
       // remount
       rerender(
@@ -238,7 +240,8 @@ describe('Chat', () => {
 
       await waitFor(() => {
         expect(DBSyncManager.init).toHaveBeenCalledTimes(2);
-        expect(DBSyncManager.connectionChangedListener.unsubscribe).toHaveBeenCalledTimes(1);
+        expect(unsubscribeSpy).toHaveBeenCalledTimes(2);
+        expect(chatClientWithUser.listeners['connection.changed'].length).toBe(listenersAfterInitialMount.length);
       });
     });
 
@@ -254,6 +257,7 @@ describe('Chat', () => {
       // the unsubscribe fn changes during init(), so we keep a reference to the spy
       const unsubscribeSpy = jest.spyOn(DBSyncManager.connectionChangedListener, 'unsubscribe');
       await act( async () => { await setUser(chatClientWithUser, { id: 'testID2' });});
+      const listenersAfterInitialMount = chatClientWithUser.listeners['connection.changed'];
 
       // rerender with different user ID
       rerender(
@@ -263,6 +267,32 @@ describe('Chat', () => {
       await waitFor(() => {
         expect(DBSyncManager.init).toHaveBeenCalledTimes(2);
         expect(unsubscribeSpy).toHaveBeenCalledTimes(1);
+        expect(chatClientWithUser.listeners['connection.changed'].length).toBe(listenersAfterInitialMount.length);
+      });
+    });
+
+    it('makes sure DBSyncManager state stays intact during normal rerenders', async () => {
+      const chatClientWithUser = await getTestClientWithUser({ id: 'testID' });
+      jest.spyOn(DBSyncManager, 'init');
+
+      // initial render
+      const { rerender } = render(
+        <Chat client={chatClientWithUser} enableOfflineSupport />
+      );
+
+      // the unsubscribe fn changes during init(), so we keep a reference to the spy
+      const unsubscribeSpy = jest.spyOn(DBSyncManager.connectionChangedListener, 'unsubscribe');
+      const listenersAfterInitialMount = chatClientWithUser.listeners['connection.changed'];
+
+      // rerender
+      rerender(
+        <Chat client={chatClientWithUser} enableOfflineSupport/>
+      );
+
+      await waitFor(() => {
+        expect(DBSyncManager.init).toHaveBeenCalledTimes(1);
+        expect(unsubscribeSpy).toHaveBeenCalledTimes(0);
+        expect(chatClientWithUser.listeners['connection.changed'].length).toBe(listenersAfterInitialMount.length);
       });
     });
   });
