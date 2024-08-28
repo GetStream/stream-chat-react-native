@@ -657,7 +657,7 @@ export const MessageInputProvider = <
       );
     }
     if (!photo.cancelled) {
-      setSelectedImages((images) => [...images, photo]);
+      await uploadNewImage(photo);
     }
   };
 
@@ -677,14 +677,11 @@ export const MessageInputProvider = <
       );
     }
     if (result.assets && result.assets.length > 0) {
-      result.assets.forEach((asset) => {
+      result.assets.forEach(async (asset) => {
         if (asset.type.includes('image')) {
-          setSelectedImages((prevImages) => [...prevImages, asset]);
+          await uploadNewImage(asset);
         } else {
-          setSelectedFiles((prevFiles) => [
-            ...prevFiles,
-            { ...asset, mimeType: asset.type, type: FileTypes.Video },
-          ]);
+          await uploadNewFile({ ...asset, mimeType: asset.type, type: FileTypes.Video });
         }
       });
     }
@@ -740,7 +737,7 @@ export const MessageInputProvider = <
     });
 
     if (!result.cancelled && result.assets) {
-      result.assets.forEach((asset) => {
+      result.assets.forEach(async (asset) => {
         /**
          * TODO: The current tight coupling of images to the image
          * picker does not allow images picked from the file picker
@@ -748,7 +745,7 @@ export const MessageInputProvider = <
          * This should be updated alongside allowing image a file
          * uploads together.
          */
-        uploadNewFile(asset);
+        await uploadNewFile(asset);
       });
     }
   };
@@ -1291,7 +1288,7 @@ export const MessageInputProvider = <
     ]);
 
     if (isAllowed) {
-      uploadFile({ newFile });
+      await uploadFile({ newFile });
     }
   };
 
@@ -1333,7 +1330,7 @@ export const MessageInputProvider = <
     ]);
 
     if (isAllowed) {
-      uploadImage({ newImage });
+      await uploadImage({ newImage });
     }
   };
 
