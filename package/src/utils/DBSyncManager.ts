@@ -38,6 +38,10 @@ export class DBSyncManager {
   static syncStatus = false;
   static listeners: Array<(status: boolean) => void> = [];
   static client: StreamChat | null = null;
+  static connectionChangedListener: { unsubscribe: () => void } | null = null;
+  static initializationConfig: { initialized: boolean; userID?: string | undefined } = {
+    initialized: false,
+  };
 
   /**
    * Returns weather channel states in local DB are synced with backend or not.
@@ -52,6 +56,15 @@ export class DBSyncManager {
    * @param client
    */
   static init = async (client: StreamChat) => {
+    const { initialized, userID: initializedWithUserID } = this.initializationConfig;
+    if (initialized && initializedWithUserID === client.user?.id) {
+      // The DBSyncManager has already been initialized with the same client state,
+      // we should skip the initialization process. This can typically happen if the
+      // component initializing it (Chat for example) gets unmounted and then remounted
+      // within the lifecycle of the app.
+      return;
+    }
+    console.log('ISE: INIT CALLED', this.connectionChangedListener);
     this.client = client;
     // If the websocket connection is already active, then straightaway
     // call the sync api and also execute pending api calls.
@@ -62,7 +75,15 @@ export class DBSyncManager {
       this.listeners.forEach((l) => l(true));
     }
 
-    this.client.on('connection.changed', async (event) => {
+    // If a listener has already been registered, unsubscribe from it so
+    // that it can be reinstated. This can happen if we reconnect with a
+    // different user for example, which would otherwise cause the old
+    // listener to produce a memory leak.
+    if (this.connectionChangedListener) {
+      this.connectionChangedListener.unsubscribe();
+    }
+
+    this.connectionChangedListener = this.client.on('connection.changed', async (event) => {
       if (event.online) {
         await this.syncAndExecutePendingTasks();
         this.syncStatus = true;
@@ -72,6 +93,7 @@ export class DBSyncManager {
         this.listeners.forEach((l) => l(false));
       }
     });
+    this.initializationConfig = { initialized: true, userID: client.user?.id };
   };
 
   /**
