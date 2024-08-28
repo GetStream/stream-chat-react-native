@@ -43,8 +43,6 @@ export const takePhoto = ImagePicker
           // since we only support single photo upload for now we will only be focusing on 0'th element.
           const photo = assets && assets[0];
 
-          console.log(photo);
-
           if (canceled === false && photo && photo.height && photo.width && photo.uri) {
             let size: Size = {};
             if (Platform.OS === 'android') {
