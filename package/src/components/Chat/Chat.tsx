@@ -217,7 +217,7 @@ const ChatWithContext = <
 
   // In case something went wrong, make sure to also unsubscribe the listener
   // on unmount if it exists to prevent a memory leak.
-  useEffect(() => () => DBSyncManager.connectionChangedListener?.unsubscribe());
+  useEffect(() => () => DBSyncManager.connectionChangedListener?.unsubscribe(), []);
 
   const initialisedDatabase =
     initialisedDatabaseConfig.initialised && userID === initialisedDatabaseConfig.userID;
