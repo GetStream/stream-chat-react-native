@@ -141,6 +141,7 @@ const GalleryWithContext = <
         images: imagesAndVideos,
         sizeConfig,
       }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [imagesAndVideosValue],
   );
 

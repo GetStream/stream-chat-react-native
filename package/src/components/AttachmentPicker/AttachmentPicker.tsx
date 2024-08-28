@@ -137,6 +137,7 @@ export const AttachmentPicker = React.forwardRef(
         }
         setLoadingPhotos(false);
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentIndex, selectedPicker, loadingPhotos]);
 
     // we need to use ref here to avoid running effect when getMorePhotos changes
@@ -172,6 +173,7 @@ export const AttachmentPicker = React.forwardRef(
       const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
       return () => backHandler.remove();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedPicker, closePicker]);
 
     useEffect(() => {
@@ -196,6 +198,7 @@ export const AttachmentPicker = React.forwardRef(
           Keyboard.removeListener(keyboardShowEvent, onKeyboardOpenHandler);
         }
       };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [closePicker, selectedPicker]);
 
     useEffect(() => {
@@ -208,6 +211,7 @@ export const AttachmentPicker = React.forwardRef(
           setPhotoError(false);
         }
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentIndex, loadingPhotos]);
 
     useEffect(() => {

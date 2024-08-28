@@ -43,5 +43,6 @@ export const useUserPresence = <
     return () => {
       listeners?.forEach((l) => l?.unsubscribe());
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };

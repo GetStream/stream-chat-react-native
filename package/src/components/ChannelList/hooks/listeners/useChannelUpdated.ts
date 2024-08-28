@@ -50,5 +50,6 @@ export const useChannelUpdated = <
 
     const listener = client?.on('channel.updated', handleEvent);
     return () => listener?.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };

@@ -258,6 +258,7 @@ export const useLatestMessagePreview = <
         setReadEvents(read_events);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelConfigExists]);
 
   useEffect(
@@ -271,6 +272,7 @@ export const useLatestMessagePreview = <
           t,
         }),
       ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [channelLastMessageString, forceUpdate, readEvents, readStatus],
   );
 

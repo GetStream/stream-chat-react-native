@@ -197,6 +197,7 @@ const ChatWithContext = <
           data: client.user,
         });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [client, enableOfflineSupport]);
 
   const setActiveChannel = (newChannel?: Channel<StreamChatGenerics>) => setChannel(newChannel);
@@ -208,6 +209,7 @@ const ChatWithContext = <
       DBSyncManager.init(client as unknown as StreamChat);
       setInitialisedDatabaseConfig({ initialised: true, userID });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userID, enableOfflineSupport]);
 
   const initialisedDatabase =
