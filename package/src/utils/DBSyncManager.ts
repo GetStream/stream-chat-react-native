@@ -64,7 +64,6 @@ export class DBSyncManager {
       // within the lifecycle of the app.
       return;
     }
-    console.log('ISE: INIT CALLED', this.connectionChangedListener);
     this.client = client;
     // If the websocket connection is already active, then straightaway
     // call the sync api and also execute pending api calls.
