@@ -102,6 +102,7 @@ export const useIsOnline = <
       chatListeners.forEach((listener) => listener.unsubscribe?.());
       unsubscribeNetInfo?.();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clientExists]);
 
   return { connectionRecovering, isOnline };

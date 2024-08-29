@@ -69,16 +69,19 @@ export const useFetchReactions = <
     } catch (error) {
       console.log('Error fetching reactions: ', error);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [client, messageId, reactionType, sortString, next, enableOfflineSupport]);
 
   const loadNextPage = useCallback(async () => {
     if (next) {
       await fetchReactions();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchReactions]);
 
   useEffect(() => {
     fetchReactions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messageId, reactionType, sortString]);
 
   return { loading, loadNextPage, reactions };

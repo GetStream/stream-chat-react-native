@@ -34,6 +34,7 @@ export const useCreatePaginatedMessageListContext = <
       setLoadingMore,
       setLoadingMoreRecent,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       channelId,
       hasMore,

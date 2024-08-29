@@ -68,6 +68,7 @@ import OpenAttachmentPicker from '../common-content/contexts/message-input-conte
 import OpenCommandsPicker from '../common-content/contexts/message-input-context/open_commands_picker.mdx';
 import OpenFilePicker from '../common-content/contexts/message-input-context/open_file_picker.mdx';
 import OpenMentionsPicker from '../common-content/contexts/message-input-context/open_mentions_picker.mdx';
+import PickAndUploadImageFromNativePicker from '../common-content/contexts/message-input-context/pick_and_upload_image_from_native_picker.mdx';
 import QuotedMessage from '../common-content/contexts/message-input-context/quoted_message.mdx';
 import RemoveFile from '../common-content/contexts/message-input-context/remove_file.mdx';
 import RemoveImage from '../common-content/contexts/message-input-context/remove_image.mdx';
@@ -84,6 +85,7 @@ import SetSendThreadMessageInChannel from '../common-content/contexts/message-in
 import SetShowMoreOptions from '../common-content/contexts/message-input-context/set_show_more_options.mdx';
 import SetText from '../common-content/contexts/message-input-context/set_text.mdx';
 import ShowMoreOptions from '../common-content/contexts/message-input-context/show_more_options.mdx';
+import TakeAndUploadImage from '../common-content/contexts/message-input-context/take_and_upload_image.mdx';
 import Text from '../common-content/contexts/message-input-context/text.mdx';
 import ToggleAttachmentPicker from '../common-content/contexts/message-input-context/toggle_attachment_picker.mdx';
 import TriggerSettings from '../common-content/contexts/message-input-context/trigger_settings.mdx';
@@ -244,17 +246,17 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 <SendMessage />
 
-<!-- ### setInputRef -->
+{/* ### setInputRef */}
 
-<!-- ### setQuotedMessageState -->
+{/* ### setQuotedMessageState */}
 
 ### `appendText`
 
 <AppendText />
 
-<!-- ### asyncIds -->
+{/* ### asyncIds */}
 
-<!-- ### asyncUploads -->
+{/* ### asyncUploads */}
 
 ### closeAttachmentPicker
 
@@ -288,9 +290,9 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 <NumberOfUploads />
 
-<!-- ### onChange -->
+{/* ### onChange */}
 
-<!-- ### onSelectItem -->
+{/* ### onSelectItem */}
 
 ### openAttachmentPicker
 
@@ -308,7 +310,11 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 <OpenMentionsPicker />
 
-<!-- ### pickFile -->
+### `pickAndUploadImageFromNativePicker`
+
+<PickAndUploadImageFromNativePicker />
+
+{/* ### pickFile */}
 
 ### `removeFile`
 
@@ -326,17 +332,17 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 <SelectedPicker />
 
-<!-- ### sending -->
+{/* ### sending */}
 
-<!-- ### sendMessageAsync -->
+{/* ### sendMessageAsync */}
 
 ### sendThreadMessageInChannel
 
 <SendThreadMessageInChannel />
 
-<!-- ### setAsyncIds -->
+{/* ### setAsyncIds */}
 
-<!-- ### setAsyncUploads -->
+{/* ### setAsyncUploads */}
 
 ### setFileUploads
 
@@ -377,6 +383,10 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 ### showMoreOptions
 
 <ShowMoreOptions />
+
+### `takeAndUploadImage`
+
+<TakeAndUploadImage />
 
 ### text
 

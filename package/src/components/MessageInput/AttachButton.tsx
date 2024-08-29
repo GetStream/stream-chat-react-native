@@ -54,7 +54,7 @@ const AttachButtonWithContext = <
   };
 
   const attachButtonHandler = () => {
-    setShowAttachButtonPicker(true);
+    setShowAttachButtonPicker((prevShowAttachButtonPicker) => !prevShowAttachButtonPicker);
   };
 
   const onPressHandler = () => {

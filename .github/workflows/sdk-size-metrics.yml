@@ -1,0 +1,44 @@
+name: SDK Size
+
+on:
+  pull_request:
+
+  workflow_dispatch:
+
+  push:
+    branches:
+      - develop
+      - main
+
+env:
+  HOMEBREW_NO_INSTALL_CLEANUP: 1 # Disable cleanup for homebrew, we don't need it on CI
+
+jobs:
+  sdk_size:
+    name: Metrics
+    runs-on: ubuntu-latest
+    steps:
+      - name: Connect Bot
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.BOT_SSH_PRIVATE_KEY }}
+
+      - uses: actions/checkout@v3.1.0
+
+      - uses: ./.github/actions/ruby-cache
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: 'yarn'
+
+      - name: Run SDK Size Metrics
+        run: bundle exec fastlane show_frameworks_sizes update_readme:$UPDATE_README open_pr:$UPDATE_README
+        working-directory: examples/SampleApp
+        timeout-minutes: 60
+        env:
+          GITHUB_PR_NUM: ${{ github.event.pull_request.number }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          APPSTORE_API_KEY: ${{ secrets.APPSTORE_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.CI_BOT_GITHUB_TOKEN }}
+          UPDATE_README: ${{ github.ref == 'refs/heads/main' }}

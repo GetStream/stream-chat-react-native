@@ -232,6 +232,7 @@ export const useCreateMessageInputContext = <
       uploadNewImage,
       UploadProgressIndicator,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       asyncIdsLength,
       asyncUploadsValue,

@@ -7,7 +7,7 @@ In this guide we will learn how date a time formatting can be customized within 
 
 ## SDK components displaying date & time
 
-The following components provided by the SDK display datetime:
+The following components provided by the SDK display date time:
 
 - `ChannelPreviewStatus` - Component showing last message date and time in `ChannelList`.
 - `ImageGalleryHeader` - Component showing the header in the `ImageGallery`.
@@ -19,7 +19,7 @@ The following components provided by the SDK display datetime:
 
 ## Format Customization
 
-The datetime format can be customized by providing date format through the `i18n` JSON.
+The date time format can be customized by providing date format through the `i18n` JSON.
 
 ### Date & time formatting with i18n service
 
@@ -31,7 +31,7 @@ Formatting via i18n service allows for SDK wide configuration. The configuration
 - Allows for high re-usability - apply the same configuration in multiple places via the same translation key.
 - Allows for custom formatting logic.
 
-The default datetime formatting configuration is stored in the JSON translation files. The default translation keys are namespaced with prefix `timestamp/` followed by the component name. For example, the message date formatting can be targeted via `timestamp/MessageTimestamp`, because the underlying component is called `MessageTimestamp`.
+The default date time formatting configuration is stored in the JSON translation files. The default translation keys are namespaced with prefix `timestamp/` followed by the component name. For example, the message date formatting can be targeted via `timestamp/MessageTimestamp`, because the underlying component is called `MessageTimestamp`.
 
 We can apply custom configuration in all the translation JSON files. It could look similar to the following example key-value pair.
 
@@ -79,11 +79,11 @@ Let's dissect the example:
 
 **Params**:
 
-- `calendar` - This is a boolean field to decide if the date format should be in calendar format or not. The default value is `false`.
+- `calendar` - This is a `Boolean` field to decide if the date format should be in calendar format or not. The default value is `false`.
 - `calendarFormats` - This is an object that contains the formats for the calendar. The default value is `{ sameDay: 'LT', nextDay: 'LT', nextWeek: 'dddd', lastDay: 'dddd', lastWeek: 'dddd', sameElse: 'L' }`.
 - `format` - This is a string that contains the format of the date.
 
-If calendar formatting is enabled, the dates are formatted with time-relative words ("yesterday at ...", "last ..."). The calendar strings can be further customized with `calendarFormats` object. The `calendarFormats` object has to cover all the formatting cases as shows the example below:
+If calendar formatting is enabled, the dates are formatted with time-relative words (`"yesterday at ..."`, `"last ..."`). The calendar strings can be further customized with `calendarFormats` object. The `calendarFormats` object has to cover all the formatting cases as shows the example below:
 
 ```js
 {
@@ -106,7 +106,7 @@ If `calendar` formatting is enabled, the `format` prop would be ignored. So to a
 The described rules follow the formatting rules required by the i18n library used under the hood - `i18next`. You can learn more about the rules in [the formatting section of the `i18next` documentation](https://www.i18next.com/translation-function/formatting#basic-usage).
 :::
 
-### Custom datetime formatter functions
+### Custom date time formatter functions
 
 Besides overriding the configuration parameters, we can override the default `timestampFormatter` function by providing custom `Streami18n` instance:
 
