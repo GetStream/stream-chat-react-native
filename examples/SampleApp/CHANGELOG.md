@@ -1,5 +1,17 @@
 # Change Log
 
+## [1.28.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.27.8...sampleapp@v1.28.0) (2024-08-29)
+
+
+### Features
+
+* Implement SDK Size analysis on CI ([#2612](https://github.com/GetStream/stream-chat-react-native/issues/2612)) ([8812be4](https://github.com/GetStream/stream-chat-react-native/commit/8812be4dc32f3fb1c2da1d7fa07ae1df576ab85d))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.27.8](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.27.7...sampleapp@v1.27.8) (2024-08-19)
 
 
