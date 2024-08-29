@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FlatList, I18nManager, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { UploadProgressIndicator } from './UploadProgressIndicator';
@@ -300,7 +300,7 @@ const FileUploadPreviewWithContext = <
     );
   };
 
-  const fileUploadsLength = useMemo(() => fileUploads.length, [fileUploads.length]);
+  const fileUploadsLength = fileUploads.length;
 
   useEffect(() => {
     if (fileUploadsLength && flatListRef.current) {
