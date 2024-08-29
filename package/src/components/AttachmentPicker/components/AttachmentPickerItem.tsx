@@ -5,7 +5,7 @@ import { Alert, ImageBackground, Platform, StyleSheet, Text, View } from 'react-
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { lookup } from 'mime-types';
 
-import type { AttachmentPickerContextValue } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import { AttachmentPickerContextValue } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useViewport } from '../../../hooks/useViewport';
 import { Recorder } from '../../../icons';
@@ -23,7 +23,6 @@ type AttachmentPickerItemType = Pick<
   selected: boolean;
   numberOfAttachmentPickerImageColumns?: number;
 };
-
 type AttachmentImageProps = Omit<AttachmentPickerItemType, 'setSelectedFiles' | 'selectedFiles'>;
 
 type AttachmentVideoProps = Omit<AttachmentPickerItemType, 'setSelectedImages' | 'selectedImages'>;

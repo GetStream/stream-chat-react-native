@@ -1,5 +1,12 @@
-import type { LegacyRef } from 'react';
-import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  LegacyRef,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Alert, Keyboard, Linking, TextInput, TextInputProps } from 'react-native';
 
 import uniq from 'lodash/uniq';
@@ -46,7 +53,7 @@ import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { Emoji } from '../../emoji-data';
-import { pickDocument, pickImage, takePhoto } from '../../native';
+import { isImageMediaLibraryAvailable, pickDocument, pickImage, takePhoto } from '../../native';
 import {
   Asset,
   DefaultStreamChatGenerics,
@@ -690,30 +697,30 @@ export const MessageInputProvider = <
   /**
    * Function to open the attachment picker if the MediaLibary is installed.
    */
-  const openAttachmentPicker = () => {
+  const openAttachmentPicker = useCallback(() => {
     Keyboard.dismiss();
     setSelectedPicker('images');
     openPicker();
-  };
+  }, [openPicker, setSelectedPicker]);
 
   /**
    * Function to close the attachment picker if the MediaLibrary is installed.
    */
-  const closeAttachmentPicker = () => {
+  const closeAttachmentPicker = useCallback(() => {
     setSelectedPicker(undefined);
     closePicker();
-  };
+  }, [closePicker, setSelectedPicker]);
 
   /**
    * Function to toggle the attachment picker if the MediaLibrary is installed.
    */
-  const toggleAttachmentPicker = () => {
+  const toggleAttachmentPicker = useCallback(() => {
     if (selectedPicker) {
       closeAttachmentPicker();
     } else {
       openAttachmentPicker();
     }
-  };
+  }, [closeAttachmentPicker, openAttachmentPicker, selectedPicker]);
 
   const onSelectItem = (item: UserResponse<StreamChatGenerics>) => {
     setMentionedUsers((prevMentionedUsers) => [...prevMentionedUsers, item.id]);
@@ -750,21 +757,35 @@ export const MessageInputProvider = <
     }
   };
 
-  const removeFile = (id: string) => {
-    if (fileUploads.some((file) => file.id === id)) {
-      setFileUploads((prevFileUploads) => prevFileUploads.filter((file) => file.id !== id));
-      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
-    }
-  };
+  const removeFile = useCallback(
+    (id: string) => {
+      if (fileUploads.some((file) => file.id === id)) {
+        setFileUploads((prevFileUploads) => prevFileUploads.filter((file) => file.id !== id));
+        setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
+      }
+    },
+    [fileUploads, setFileUploads, setNumberOfUploads],
+  );
 
-  const removeImage = (id: string) => {
-    if (imageUploads.some((image) => image.id === id)) {
-      setImageUploads((prevImageUploads) => prevImageUploads.filter((image) => image.id !== id));
-      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
-    }
-  };
+  const removeImage = useCallback(
+    (id: string) => {
+      if (imageUploads.some((image) => image.id === id)) {
+        setImageUploads((prevImageUploads) => prevImageUploads.filter((image) => image.id !== id));
+        setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
+      }
+    },
+    [imageUploads, setImageUploads, setNumberOfUploads],
+  );
 
   const resetInput = (pendingAttachments: Attachment<StreamChatGenerics>[] = []) => {
+    /**
+     * If the MediaLibrary is available, reset the selected files and images
+     */
+    if (isImageMediaLibraryAvailable()) {
+      setSelectedFiles([]);
+      setSelectedImages([]);
+    }
+
     setFileUploads([]);
     setGiphyActive(false);
     setShowMoreOptions(true);
@@ -1250,87 +1271,98 @@ export const MessageInputProvider = <
   };
 
   const uploadNewFile = async (file: File) => {
-    const id: string = generateRandomId();
-    const fileConfig = getFileUploadConfig();
-    const { size_limit } = fileConfig;
+    try {
+      const id: string = generateRandomId();
+      const fileConfig = getFileUploadConfig();
+      const { size_limit } = fileConfig;
 
-    const isAllowed = isUploadAllowed({ config: fileConfig, file });
+      const isAllowed = isUploadAllowed({ config: fileConfig, file });
 
-    const sizeLimit = size_limit || MAX_FILE_SIZE_TO_UPLOAD;
+      const sizeLimit = size_limit || MAX_FILE_SIZE_TO_UPLOAD;
 
-    if (file.size && file.size > sizeLimit) {
-      Alert.alert(
-        t('File is too large: {{ size }}, maximum upload size is {{ limit }}', {
-          limit: prettifyFileSize(sizeLimit),
-          size: prettifyFileSize(file.size),
-        }),
-      );
-      setSelectedFiles(selectedFiles.filter((selectedFile) => selectedFile.uri !== file.uri));
-      return;
-    }
+      if (file.size && file.size > sizeLimit) {
+        Alert.alert(
+          t('File is too large: {{ size }}, maximum upload size is {{ limit }}', {
+            limit: prettifyFileSize(sizeLimit),
+            size: prettifyFileSize(file.size),
+          }),
+        );
+        setSelectedFiles(selectedFiles.filter((selectedFile) => selectedFile.uri !== file.uri));
+        return;
+      }
 
-    const fileState = isAllowed ? FileState.UPLOADING : FileState.NOT_SUPPORTED;
+      const fileState = isAllowed ? FileState.UPLOADING : FileState.NOT_SUPPORTED;
 
-    // If file type is explicitly provided while upload we use it, else we derive the file type.
-    const fileType = file.type || file.mimeType?.split('/')[0];
+      // If file type is explicitly provided while upload we use it, else we derive the file type.
+      const fileType = file.type || file.mimeType?.split('/')[0];
 
-    const newFile: FileUpload = {
-      duration: file.duration || 0,
-      file,
-      id: file.id || id,
-      state: fileState,
-      type: fileType,
-    };
+      const newFile: FileUpload = {
+        duration: file.duration || 0,
+        file,
+        id: file.id || id,
+        state: fileState,
+        type: fileType,
+        url: file.uri,
+      };
 
-    await Promise.all([
-      setFileUploads((prevFileUploads) => prevFileUploads.concat([newFile])),
-      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
-    ]);
+      await Promise.all([
+        setFileUploads((prevFileUploads) => prevFileUploads.concat([newFile])),
+        setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
+      ]);
 
-    if (isAllowed) {
-      await uploadFile({ newFile });
+      if (isAllowed) {
+        await uploadFile({ newFile });
+      }
+    } catch (error) {
+      console.log('Error uploading file', error);
     }
   };
 
   const uploadNewImage = async (image: Partial<Asset>) => {
-    const id = generateRandomId();
-    const imageUploadConfig = getImageUploadConfig();
+    try {
+      const id = generateRandomId();
+      const imageUploadConfig = getImageUploadConfig();
 
-    const { size_limit } = imageUploadConfig;
+      const { size_limit } = imageUploadConfig;
 
-    const isAllowed = isUploadAllowed({ config: imageUploadConfig, file: image });
+      const isAllowed = isUploadAllowed({ config: imageUploadConfig, file: image });
 
-    const sizeLimit = size_limit || MAX_FILE_SIZE_TO_UPLOAD;
+      const sizeLimit = size_limit || MAX_FILE_SIZE_TO_UPLOAD;
 
-    if (image.size && image?.size > sizeLimit) {
-      Alert.alert(
-        t('File is too large: {{ size }}, maximum upload size is {{ limit }}', {
-          limit: prettifyFileSize(sizeLimit),
-          size: prettifyFileSize(image.size),
-        }),
-      );
-      setSelectedImages(selectedImages.filter((selectedImage) => selectedImage.uri !== image.uri));
-      return;
-    }
+      if (image.size && image?.size > sizeLimit) {
+        Alert.alert(
+          t('File is too large: {{ size }}, maximum upload size is {{ limit }}', {
+            limit: prettifyFileSize(sizeLimit),
+            size: prettifyFileSize(image.size),
+          }),
+        );
+        setSelectedImages(
+          selectedImages.filter((selectedImage) => selectedImage.uri !== image.uri),
+        );
+        return;
+      }
 
-    const imageState = isAllowed ? FileState.UPLOADING : FileState.NOT_SUPPORTED;
+      const imageState = isAllowed ? FileState.UPLOADING : FileState.NOT_SUPPORTED;
 
-    const newImage: ImageUpload = {
-      file: image,
-      height: image.height,
-      id,
-      state: imageState,
-      url: image.uri,
-      width: image.width,
-    };
+      const newImage: ImageUpload = {
+        file: image,
+        height: image.height,
+        id,
+        state: imageState,
+        url: image.uri,
+        width: image.width,
+      };
 
-    await Promise.all([
-      setImageUploads((prevImageUploads) => prevImageUploads.concat([newImage])),
-      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
-    ]);
+      await Promise.all([
+        setImageUploads((prevImageUploads) => prevImageUploads.concat([newImage])),
+        setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
+      ]);
 
-    if (isAllowed) {
-      await uploadImage({ newImage });
+      if (isAllowed) {
+        await uploadImage({ newImage });
+      }
+    } catch (error) {
+      console.log('Error uploading image', error);
     }
   };
 
