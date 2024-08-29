@@ -2017,10 +2017,10 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@gorhom/bottom-sheet@4.4.8":
-  version "4.4.8"
-  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-4.4.8.tgz#cfc1b342e9151acecbb846bd67638211382a350e"
-  integrity sha512-5QgM91NJjbqKxI8RjZ9ujjynaPzAM1iQKExK3+L+ZbEnziIq8tgOekhiBUut9sBZAQA4nhLxWV6Rt/HGpgCldQ==
+"@gorhom/bottom-sheet@^4.6.4":
+  version "4.6.4"
+  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-4.6.4.tgz#387d0f0f21e3470eb8575498cb81ce96f5108e79"
+  integrity sha512-0itLMblLBvepE065w3a60S030c2rNUsGshPC7wbWDm31VyqoaU2xjzh/ojH62YIJOcobBr5QoC30IxBBKDGovQ==
   dependencies:
     "@gorhom/portal" "1.0.14"
     invariant "^2.2.4"
