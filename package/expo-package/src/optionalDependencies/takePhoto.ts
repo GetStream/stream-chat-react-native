@@ -74,6 +74,7 @@ export const takePhoto = ImagePicker
 
             return {
               cancelled: false,
+              size: photo.fileSize,
               source: 'camera',
               uri: photo.uri,
               ...size,

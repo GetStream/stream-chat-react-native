@@ -49,7 +49,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import { triggerHaptic } from '../../native';
+import { isImageMediaLibraryAvailable, triggerHaptic } from '../../native';
 import type { Asset, DefaultStreamChatGenerics } from '../../types/types';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 
@@ -118,7 +118,6 @@ type MessageInputPropsWithContext<
     | 'FileUploadPreview'
     | 'fileUploads'
     | 'giphyActive'
-    | 'hasImagePicker'
     | 'ImageUploadPreview'
     | 'imageUploads'
     | 'Input'
@@ -185,7 +184,6 @@ const MessageInputWithContext = <
     FileUploadPreview,
     fileUploads,
     giphyActive,
-    hasImagePicker,
     ImageUploadPreview,
     imageUploads,
     Input,
@@ -349,46 +347,71 @@ const MessageInputWithContext = <
     imagesToRemove.forEach((image) => removeImage(image.id));
   };
 
+  const uploadFilesHandler = async () => {
+    const fileToUpload = selectedFiles.find((selectedFile) => {
+      const uploadedFile = fileUploads.find(
+        (fileUpload) =>
+          fileUpload.file.uri === selectedFile.uri || fileUpload.url === selectedFile.uri,
+      );
+      return !uploadedFile;
+    });
+    if (fileToUpload) await uploadNewFile(fileToUpload);
+  };
+
+  const removeFilesHandler = () => {
+    const filesToRemove = fileUploads.filter(
+      (fileUpload) =>
+        !selectedFiles.find(
+          (selectedFile) =>
+            selectedFile.uri === fileUpload.file.uri || selectedFile.uri === fileUpload.url,
+        ),
+    );
+    filesToRemove.forEach((file) => removeFile(file.id));
+  };
+
+  /**
+   * When a user selects or deselects an image in the image picker using media library.
+   */
   useEffect(() => {
-    if (imagesForInput) {
-      if (selectedImagesLength > imageUploadsLength) {
-        /** User selected an image in bottom sheet attachment picker */
-        uploadImagesHandler();
-      } else {
-        /** User de-selected an image in bottom sheet attachment picker */
-        removeImagesHandler();
+    const uploadOrRemoveImage = async () => {
+      if (imagesForInput) {
+        if (selectedImagesLength > imageUploadsLength) {
+          /** User selected an image in bottom sheet attachment picker */
+          await uploadImagesHandler();
+        } else {
+          /** User de-selected an image in bottom sheet attachment picker */
+          removeImagesHandler();
+        }
       }
-    }
+    };
+    // If image picker is not available, don't do anything
+    if (!isImageMediaLibraryAvailable()) return;
+    uploadOrRemoveImage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedImagesLength]);
 
+  /**
+   * When a user selects or deselects a video in the image picker using media library.
+   */
   useEffect(() => {
-    if (selectedFilesLength > fileUploadsLength) {
-      /** User selected a video in bottom sheet attachment picker */
-      const fileToUpload = selectedFiles.find((selectedFile) => {
-        const uploadedFile = fileUploads.find(
-          (fileUpload) =>
-            fileUpload.file.uri === selectedFile.uri || fileUpload.url === selectedFile.uri,
-        );
-        return !uploadedFile;
-      });
-      if (fileToUpload) uploadNewFile(fileToUpload);
-    } else {
-      /** User de-selected a video in bottom sheet attachment picker */
-      const filesToRemove = fileUploads.filter(
-        (fileUpload) =>
-          !selectedFiles.find(
-            (selectedFile) =>
-              selectedFile.uri === fileUpload.file.uri || selectedFile.uri === fileUpload.url,
-          ),
-      );
-      filesToRemove.forEach((file) => removeFile(file.id));
-    }
+    const uploadOrRemoveFile = async () => {
+      if (selectedFilesLength > fileUploadsLength) {
+        /** User selected a video in bottom sheet attachment picker */
+        await uploadFilesHandler();
+      } else {
+        /** User de-selected a video in bottom sheet attachment picker */
+        removeFilesHandler();
+      }
+    };
+    uploadOrRemoveFile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFilesLength]);
 
+  /**
+   * This is for image attachments selected from attachment picker.
+   */
   useEffect(() => {
-    if (imagesForInput && hasImagePicker) {
+    if (imagesForInput && isImageMediaLibraryAvailable()) {
       if (imageUploadsLength < selectedImagesLength) {
         // /** User removed some image from seleted images within ImageUploadPreview. */
         const updatedSelectedImages = selectedImages.filter((selectedImage) => {
@@ -401,9 +424,7 @@ const MessageInputWithContext = <
         setSelectedImages(updatedSelectedImages);
       } else if (imageUploadsLength > selectedImagesLength) {
         /**
-         * User is editing some message which contains image attachments OR
-         * image attachment is added from custom image picker (other than the default bottomsheet image picker)
-         * using `uploadNewImage` function from `MessageInputContext`.
+         * User is editing some message which contains image attachments.
          **/
         setSelectedImages(
           imageUploads
@@ -418,10 +439,13 @@ const MessageInputWithContext = <
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imageUploadsLength, hasImagePicker]);
+  }, [imageUploadsLength]);
 
+  /**
+   * This is for video attachments selected from attachment picker.
+   */
   useEffect(() => {
-    if (hasImagePicker) {
+    if (isImageMediaLibraryAvailable()) {
       if (fileUploadsLength < selectedFilesLength) {
         /** User removed some video from seleted files within ImageUploadPreview. */
         const updatedSelectedFiles = selectedFiles.filter((selectedFile) => {
@@ -434,9 +458,7 @@ const MessageInputWithContext = <
         setSelectedFiles(updatedSelectedFiles);
       } else if (fileUploadsLength > selectedFilesLength) {
         /**
-         * User is editing some message which contains video attachments OR
-         * video attachment is added from custom image picker (other than the default bottom-sheet image picker)
-         * using `uploadNewFile` function from `MessageInputContext`.
+         * User is editing some message which contains video attachments.
          **/
         setSelectedFiles(
           fileUploads.map((fileUpload) => ({
@@ -450,9 +472,10 @@ const MessageInputWithContext = <
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fileUploadsLength, hasImagePicker]);
+  }, [fileUploadsLength]);
 
   const editingExists = !!editing;
+
   useEffect(() => {
     if (editing && inputBoxRef.current) {
       inputBoxRef.current.focus();
@@ -1036,7 +1059,6 @@ export const MessageInput = <
     FileUploadPreview,
     fileUploads,
     giphyActive,
-    hasImagePicker,
     ImageUploadPreview,
     imageUploads,
     Input,
@@ -1117,7 +1139,6 @@ export const MessageInput = <
         FileUploadPreview,
         fileUploads,
         giphyActive,
-        hasImagePicker,
         ImageUploadPreview,
         imageUploads,
         Input,

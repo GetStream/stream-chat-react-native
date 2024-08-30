@@ -10,7 +10,9 @@ try {
 export const pickImage = ImagePicker
   ? async () => {
       try {
-        const result = await ImagePicker.launchImageLibrary({ mediaType: 'mixed' });
+        const result = await ImagePicker.launchImageLibrary({
+          mediaType: 'mixed',
+        });
         const canceled = result.didCancel;
         const errorCode = result.errorCode;
 
@@ -20,7 +22,7 @@ export const pickImage = ImagePicker
         if (!canceled) {
           const assets = result.assets.map((asset) => ({
             ...asset,
-            duration: asset.duration * 1000, // in milliseconds
+            duration: asset.duration ? asset.duration * 1000 : undefined, // in milliseconds
             name: asset.fileName,
             size: asset.fileSize,
             source: 'picker',
