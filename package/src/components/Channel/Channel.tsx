@@ -687,6 +687,7 @@ const ChannelWithContext = <
       loadMoreFinished.cancel();
       loadMoreThreadFinished.cancel();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelId, messageId]);
 
   const threadPropsExists = !!threadProps;
@@ -700,6 +701,7 @@ const ChannelWithContext = <
     } else {
       setThread(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [threadPropsExists, shouldSyncChannel]);
 
   const handleAppBackground = useCallback(() => {
@@ -712,6 +714,7 @@ const ChannelWithContext = <
         type: 'typing.stop',
       } as StreamEvent<StreamChatGenerics>);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [thread?.id, channelId]);
 
   useAppStateListener(undefined, handleAppBackground);
@@ -816,6 +819,7 @@ const ChannelWithContext = <
     return () => {
       channelSubscriptions.forEach((s) => s.unsubscribe());
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelId, shouldSyncChannel]);
 
   // subscribe to the generic all channel event
@@ -853,6 +857,7 @@ const ChannelWithContext = <
     };
     const { unsubscribe } = channel.on(handleEvent);
     return unsubscribe;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelId, thread?.id, shouldSyncChannel]);
 
   // subscribe to channel.deleted event
@@ -864,6 +869,7 @@ const ChannelWithContext = <
     });
 
     return unsubscribe;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelId]);
 
   useEffect(() => {
@@ -873,6 +879,7 @@ const ChannelWithContext = <
 
     const { unsubscribe } = client.on('notification.mark_read', handleEvent);
     return unsubscribe;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const channelQueryCallRef = useRef(
@@ -1068,6 +1075,7 @@ const ChannelWithContext = <
       // now restart it since its done
       restartSetsMergeFuncRef.current();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetedMessage]);
 
   /**
@@ -1371,6 +1379,7 @@ const ChannelWithContext = <
     return () => {
       connectionChangedSubscription.unsubscribe();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enableOfflineSupport, shouldSyncChannel]);
 
   const reloadChannel = () =>
@@ -1835,6 +1844,7 @@ const ChannelWithContext = <
      * Where the deps are [channelId, hasMore, loadingMoreRecent, loadingMore]
      * and only those deps should be used here because of that
      */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [channelId, hasMore, loadingMore],
   );
 
@@ -1906,6 +1916,7 @@ const ChannelWithContext = <
      * Where the deps are [channelId, hasMore, loadingMoreRecent, loadingMore, hasNoMoreRecentMessagesToLoad]
      * and and only those deps should be used here because of that
      */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [channelId, hasNoMoreRecentMessagesToLoad],
   );
 
@@ -2096,6 +2107,7 @@ const ChannelWithContext = <
       setThread(message);
       setThreadMessages(newThreadMessages);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [setThread, setThreadMessages],
   );
 

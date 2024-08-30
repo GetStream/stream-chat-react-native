@@ -151,6 +151,7 @@ export const ImageGallery = <
   const quarterScreenHeight = fullWindowHeight / 4;
   const snapPoints = React.useMemo(
     () => [(fullWindowHeight * 3) / 4, fullWindowHeight - imageGalleryGridHandleHeight],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 
@@ -184,6 +185,7 @@ export const ImageGallery = <
   useEffect(() => {
     Keyboard.dismiss();
     showScreen();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /**
@@ -278,6 +280,7 @@ export const ImageGallery = <
 
   useEffect(() => {
     setImageGalleryAttachments(photos);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /**
@@ -307,6 +310,7 @@ export const ImageGallery = <
     );
 
     runOnUI(updatePosition)(newIndex);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedMessage, photoLength]);
 
   /**
@@ -334,6 +338,7 @@ export const ImageGallery = <
         });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uriForCurrentImage]);
 
   const { doubleTap, pan, pinch, singleTap } = useImageGalleryGestures({

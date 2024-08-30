@@ -6,7 +6,7 @@ import { StreamChat } from 'stream-chat';
 const apiKey = 'API_KEY';
 const token = 'dummy_token';
 
-const setUser = (client, user) =>
+export const setUser = (client, user) =>
   new Promise((resolve) => {
     client.connectionId = 'dumm_connection_id';
     client.user = user;

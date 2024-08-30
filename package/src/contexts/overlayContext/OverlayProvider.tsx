@@ -189,6 +189,7 @@ export const OverlayProvider = <
     } else {
       overlayOpacity.value = withTiming(0);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [overlay]);
 
   const attachmentPickerContext = {

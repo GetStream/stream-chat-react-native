@@ -52,6 +52,7 @@ const ChannelPreviewWithContext = <
       setUnread(channel.countUnread());
     });
     return unsubscribe;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -65,6 +66,7 @@ const ChannelPreviewWithContext = <
 
     const newUnreadCount = channel.countUnread();
     setUnread(newUnreadCount);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelLastMessageString, channelListForceUpdate]);
 
   useEffect(() => {
@@ -92,6 +94,7 @@ const ChannelPreviewWithContext = <
     ];
 
     return () => listeners.forEach((l) => l.unsubscribe());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -105,6 +108,7 @@ const ChannelPreviewWithContext = <
 
     const listener = channel.on('message.read', handleReadEvent);
     return () => listener.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <Preview channel={channel} latestMessagePreview={latestMessagePreview} unread={unread} />;

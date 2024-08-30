@@ -47,6 +47,7 @@ export const useAppSettings = <
     }
 
     enforeAppSettings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [client, isOnline, initialisedDatabase]);
 
   return appSettings;

@@ -1,5 +1,23 @@
 # Change Log
 
+## [5.36.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.35.0...v5.36.0) (2024-08-29)
+
+
+### Features
+
+* Implement SDK Size analysis on CI ([#2612](https://github.com/GetStream/stream-chat-react-native/issues/2612)) ([8812be4](https://github.com/GetStream/stream-chat-react-native/commit/8812be4dc32f3fb1c2da1d7fa07ae1df576ab85d))
+
+
+### Bug Fixes
+
+* appSettings rerender issue in the ChatContext ([#2620](https://github.com/GetStream/stream-chat-react-native/issues/2620)) ([190be2f](https://github.com/GetStream/stream-chat-react-native/commit/190be2f6a4f12d11918a0d9a6917abbe7af49d29))
+* giphy lightning icon in giphy attachments ([0a385db](https://github.com/GetStream/stream-chat-react-native/commit/0a385dba4b0a8d96f3d7555c74a7b72c290a81b9))
+* image gallery footer safe area view theme style order ([4832f10](https://github.com/GetStream/stream-chat-react-native/commit/4832f10c3634b9e0571519ea81b03b47dfa5ee2d))
+* inability to cancel file uploads ([#2632](https://github.com/GetStream/stream-chat-react-native/issues/2632)) ([b9e904b](https://github.com/GetStream/stream-chat-react-native/commit/b9e904b10360805f96c45ec28338553a21ec26ad))
+* issue closing native attachment picker icons when attach button is tapped ([e139a53](https://github.com/GetStream/stream-chat-react-native/commit/e139a53200fbf3c8e63cc98aa5b5c33a8a875496))
+* memory leak during remount or user change ([#2639](https://github.com/GetStream/stream-chat-react-native/issues/2639)) ([338d445](https://github.com/GetStream/stream-chat-react-native/commit/338d445f648cbcd9d274a371c1f3689308d38fa3))
+* targeting message outside bounds ([#2630](https://github.com/GetStream/stream-chat-react-native/issues/2630)) ([ec9ea53](https://github.com/GetStream/stream-chat-react-native/commit/ec9ea537b7a3bc2dd265b1f7c07974689eac4e76))
+
 ## [5.35.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.34.0...v5.35.0) (2024-08-19)
 
 

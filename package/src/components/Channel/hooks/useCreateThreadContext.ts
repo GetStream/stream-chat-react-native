@@ -36,6 +36,7 @@ export const useCreateThreadContext = <
       threadLoadingMore,
       threadMessages,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       allowThreadMessagesInChannel,
       threadHasMore,

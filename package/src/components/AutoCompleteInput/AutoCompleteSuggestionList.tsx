@@ -95,6 +95,7 @@ export const AutoCompleteSuggestionListWithContext = <
     return triggerType === 'emoji' || triggerType === 'command'
       ? totalItemHeight + AUTO_COMPLETE_SUGGESTION_LIST_HEADER_HEIGHT
       : totalItemHeight;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [itemHeight, data.length]);
 
   const renderItem = ({ item }: { item: Suggestion<StreamChatGenerics> }) => {

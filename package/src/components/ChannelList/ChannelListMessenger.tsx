@@ -157,10 +157,6 @@ const ChannelListMessengerWithContext = <
     }
   };
 
-  if (loadingChannels) {
-    return <LoadingIndicator listType='channel' />;
-  }
-
   return (
     <>
       <FlatList

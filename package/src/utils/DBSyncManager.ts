@@ -38,6 +38,7 @@ export class DBSyncManager {
   static syncStatus = false;
   static listeners: Array<(status: boolean) => void> = [];
   static client: StreamChat | null = null;
+  static connectionChangedListener: { unsubscribe: () => void } | null = null;
 
   /**
    * Returns weather channel states in local DB are synced with backend or not.
@@ -62,7 +63,16 @@ export class DBSyncManager {
       this.listeners.forEach((l) => l(true));
     }
 
-    this.client.on('connection.changed', async (event) => {
+    // If a listener has already been registered, unsubscribe from it so
+    // that it can be reinstated. This can happen if we reconnect with a
+    // different user or the component invoking the init() function gets
+    // unmounted and then remounted again. This part of the code makes
+    // sure the stale listener doesn't produce a memory leak.
+    if (this.connectionChangedListener) {
+      this.connectionChangedListener.unsubscribe();
+    }
+
+    this.connectionChangedListener = this.client.on('connection.changed', async (event) => {
       if (event.online) {
         await this.syncAndExecutePendingTasks();
         this.syncStatus = true;

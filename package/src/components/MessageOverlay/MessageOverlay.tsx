@@ -157,6 +157,7 @@ const MessageOverlayWithContext = <
 
   const modifiedTheme = useMemo(
     () => mergeThemes({ style: myMessageTheme, theme }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [myMessageThemeString, theme],
   );
 
@@ -200,6 +201,7 @@ const MessageOverlayWithContext = <
   useEffect(() => {
     Keyboard.dismiss();
     fadeScreen();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const pan = Gesture.Pan()

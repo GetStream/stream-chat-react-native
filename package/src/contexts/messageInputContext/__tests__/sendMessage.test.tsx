@@ -12,6 +12,7 @@ import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { FileState } from '../../../utils/utils';
+import * as AttachmentPickerContext from '../../attachmentPickerContext/AttachmentPickerContext';
 import {
   InputMessageInputContextValue,
   MessageInputContextValue,
@@ -39,6 +40,10 @@ const Wrapper = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultS
 
 const newMessage = generateMessage({ id: 'new-id' });
 describe("MessageInputContext's sendMessage", () => {
+  jest.spyOn(AttachmentPickerContext, 'useAttachmentPickerContext').mockImplementation(() => ({
+    setSelectedFiles: jest.fn(),
+    setSelectedImages: jest.fn(),
+  }));
   const message: boolean | MessageType<DefaultStreamChatGenerics> = generateMessage({
     created_at: 'Sat Jul 02 2022 23:55:13 GMT+0530 (India Standard Time)',
     id: '7a85f744-cc89-4f82-a1d4-5456432cc8bf',
