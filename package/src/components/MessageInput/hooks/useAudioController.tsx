@@ -42,6 +42,7 @@ export const useAudioController = () => {
   useEffect(
     () => () => {
       stopVoicePlayer();
+      deleteVoiceRecording();
     },
     [],
   );
@@ -162,6 +163,7 @@ export const useAudioController = () => {
    * Function to start voice recording.
    */
   const startVoiceRecording = async () => {
+    console.log('ISE: START RECORDING')
     if (!Audio) return;
     setRecordingStatus('recording');
     const recordingInfo = await Audio.startRecording(
@@ -171,6 +173,7 @@ export const useAudioController = () => {
       onRecordingStatusUpdate,
     );
     const accessGranted = recordingInfo.accessGranted;
+    console.log('ACCESS GRANTED: ', accessGranted)
     if (accessGranted) {
       setPermissionsGranted(true);
       const recording = recordingInfo.recording;
@@ -240,6 +243,7 @@ export const useAudioController = () => {
     if (!paused) {
       await stopVoicePlayer();
     }
+    console.log('ISE: R: ', recordingStatus)
     if (recordingStatus === 'recording') {
       await stopVoiceRecording();
     }

@@ -219,9 +219,17 @@ export const Audio = AudioRecorderPackage
           audioRecorderPlayer.addRecordBackListener((status) => {
             onRecordingStatusUpdate(status);
           });
+          console.log('ISE: PERMISSIONS: ', recording);
           return { accessGranted: true, recording };
         } catch (error) {
           console.error('Failed to start recording', error);
+          // There is currently a bug in react-native-audio-recorder-player and we
+          // need to do this until it gets fixed. More information can be found here:
+          // https://github.com/hyochan/react-native-audio-recorder-player/pull/625
+          // eslint-disable-next-line no-underscore-dangle
+          audioRecorderPlayer._isRecording = false;
+          // eslint-disable-next-line no-underscore-dangle
+          audioRecorderPlayer._hasPausedRecord = false;
           return { accessGranted: false, recording: null };
         }
       },
@@ -234,8 +242,12 @@ export const Audio = AudioRecorderPackage
         }
       },
       stopRecording: async () => {
-        await audioRecorderPlayer.stopRecorder();
-        audioRecorderPlayer.removeRecordBackListener();
+        try {
+          await audioRecorderPlayer.stopRecorder();
+          audioRecorderPlayer.removeRecordBackListener();
+        } catch (error) {
+          console.log(error);
+        }
       },
     }
   : null;
