@@ -163,9 +163,7 @@ export const useAudioController = () => {
    * Function to start voice recording.
    */
   const startVoiceRecording = async () => {
-    console.log('ISE: START RECORDING')
     if (!Audio) return;
-    setRecordingStatus('recording');
     const recordingInfo = await Audio.startRecording(
       {
         isMeteringEnabled: true,
@@ -173,7 +171,6 @@ export const useAudioController = () => {
       onRecordingStatusUpdate,
     );
     const accessGranted = recordingInfo.accessGranted;
-    console.log('ACCESS GRANTED: ', accessGranted)
     if (accessGranted) {
       setPermissionsGranted(true);
       const recording = recordingInfo.recording;
@@ -181,6 +178,7 @@ export const useAudioController = () => {
         recording.setProgressUpdateInterval(Platform.OS === 'android' ? 100 : 60);
       }
       setRecording(recording);
+      setRecordingStatus('recording');
       await stopVoicePlayer();
     } else {
       setPermissionsGranted(false);
@@ -243,7 +241,6 @@ export const useAudioController = () => {
     if (!paused) {
       await stopVoicePlayer();
     }
-    console.log('ISE: R: ', recordingStatus)
     if (recordingStatus === 'recording') {
       await stopVoiceRecording();
     }

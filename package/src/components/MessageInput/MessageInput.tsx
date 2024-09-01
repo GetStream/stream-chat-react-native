@@ -645,14 +645,16 @@ const MessageInputWithContext = <
         micPositionY.value = newPositionY;
       }
     })
-    .onFinalize(() => {
+    .onEnd(() => {
       const belowThresholdY = micPositionY.value > Y_AXIS_POSITION / 2;
       const belowThresholdX = micPositionX.value > X_AXIS_POSITION / 2;
 
       if (belowThresholdY && belowThresholdX) {
         micPositionY.value = withSpring(0);
         micPositionX.value = withSpring(0);
-        runOnJS(uploadVoiceRecording)(asyncMessagesMultiSendEnabled);
+        if (recordingStatus === 'recording') {
+          runOnJS(uploadVoiceRecording)(asyncMessagesMultiSendEnabled);
+        }
         return;
       }
 

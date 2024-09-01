@@ -219,7 +219,6 @@ export const Audio = AudioRecorderPackage
           audioRecorderPlayer.addRecordBackListener((status) => {
             onRecordingStatusUpdate(status);
           });
-          console.log('ISE: PERMISSIONS: ', recording);
           return { accessGranted: true, recording };
         } catch (error) {
           console.error('Failed to start recording', error);
