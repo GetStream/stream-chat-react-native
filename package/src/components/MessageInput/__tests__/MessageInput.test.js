@@ -140,7 +140,7 @@ describe('MessageInput', () => {
         <Channel audioRecordingEnabled channel={channel}>
           <MessageInput />
         </Channel>
-      </Chat>
+      </Chat>,
     );
 
     await userBot.longPress(queryByTestId('audio-button'), { duration: 1000 });
@@ -172,7 +172,7 @@ describe('MessageInput', () => {
         <Channel audioRecordingEnabled channel={channel}>
           <MessageInput />
         </Channel>
-      </Chat>
+      </Chat>,
     );
 
     await userBot.press(queryByTestId('audio-button'));
