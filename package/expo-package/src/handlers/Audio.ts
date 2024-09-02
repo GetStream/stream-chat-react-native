@@ -1,4 +1,4 @@
-import { AudioComponent } from '../optionalDependencies/Video';
+import { AudioComponent, RecordingObject } from '../optionalDependencies/Video';
 
 export enum AndroidOutputFormat {
   DEFAULT = 0,
@@ -220,8 +220,13 @@ const sleep = (ms: number) =>
   });
 
 export const Audio = AudioComponent
-  ? {
-      startRecording: async (recordingOptions: RecordingOptions, onRecordingStatusUpdate) => {
+  ? class {
+      recording: typeof RecordingObject | null;
+
+      constructor() {
+        this.recording = null;
+      }
+      async startRecording(recordingOptions: RecordingOptions, onRecordingStatusUpdate) {
         try {
           const permissions = await AudioComponent.getPermissionsAsync();
           const permissionsStatus = permissions.status;
@@ -280,20 +285,23 @@ export const Audio = AudioComponent
             options,
             onRecordingStatusUpdate,
           );
+          this.recording = recording;
           return { accessGranted: true, recording };
         } catch (error) {
           console.error('Failed to start recording', error);
           return { accessGranted: false, recording: null };
         }
-      },
-      stopRecording: async () => {
+      }
+      async stopRecording() {
         try {
+          await this.recording.stopAndUnloadAsync();
           await AudioComponent.setAudioModeAsync({
             allowsRecordingIOS: false,
           });
+          this.recording = null;
         } catch (error) {
           console.log('Error stopping recoding', error);
         }
-      },
+      }
     }
   : null;

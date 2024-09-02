@@ -169,14 +169,15 @@ const verifyAndroidPermissions = async () => {
 };
 
 export const Audio = AudioRecorderPackage
-  ? {
-      pausePlayer: async () => {
+  ? class {
+      constructor() {}
+      async pausePlayer() {
         await audioRecorderPlayer.pausePlayer();
-      },
-      resumePlayer: async () => {
+      }
+      async resumePlayer() {
         await audioRecorderPlayer.resumePlayer();
-      },
-      startPlayer: async (uri, _, onPlaybackStatusUpdate) => {
+      }
+      async startPlayer(uri, _, onPlaybackStatusUpdate) {
         try {
           const playback = await audioRecorderPlayer.startPlayer(uri);
           console.log({ playback });
@@ -186,8 +187,8 @@ export const Audio = AudioRecorderPackage
         } catch (error) {
           console.log('Error starting player', error);
         }
-      },
-      startRecording: async (options: RecordingOptions, onRecordingStatusUpdate) => {
+      }
+      async startRecording(options: RecordingOptions, onRecordingStatusUpdate) {
         if (Platform.OS === 'android') {
           try {
             await verifyAndroidPermissions();
@@ -231,22 +232,22 @@ export const Audio = AudioRecorderPackage
           audioRecorderPlayer._hasPausedRecord = false;
           return { accessGranted: false, recording: null };
         }
-      },
-      stopPlayer: async () => {
+      }
+      async stopPlayer() {
         try {
           await audioRecorderPlayer.stopPlayer();
           audioRecorderPlayer.removePlayBackListener();
         } catch (error) {
           console.log(error);
         }
-      },
-      stopRecording: async () => {
+      }
+      async stopRecording() {
         try {
           await audioRecorderPlayer.stopRecorder();
           audioRecorderPlayer.removeRecordBackListener();
         } catch (error) {
           console.log(error);
         }
-      },
+      }
     }
   : null;
