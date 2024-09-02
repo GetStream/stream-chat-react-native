@@ -240,8 +240,6 @@ export type AudioType = {
   stopPlayer?: () => Promise<void>;
 };
 
-export let Audio: AudioType;
-
 export let Sound: SoundType;
 
 export type VideoProgressData = {

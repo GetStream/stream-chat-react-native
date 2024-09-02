@@ -45,7 +45,6 @@ export const useAudioController = () => {
   // and cleanup during unmounting (stopping both the player and a potential recording).
   useEffect(() => {
     if (AudioClass) {
-      // @ts-ignore
       Audio = new AudioClass();
     }
     return () => {
