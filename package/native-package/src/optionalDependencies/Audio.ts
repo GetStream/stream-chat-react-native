@@ -170,13 +170,13 @@ const verifyAndroidPermissions = async () => {
 
 export const Audio = AudioRecorderPackage
   ? class {
-      async pausePlayer() {
+      pausePlayer = async () => {
         await audioRecorderPlayer.pausePlayer();
-      }
-      async resumePlayer() {
+      };
+      resumePlayer = async () => {
         await audioRecorderPlayer.resumePlayer();
-      }
-      async startPlayer(uri, _, onPlaybackStatusUpdate) {
+      };
+      startPlayer = async (uri, _, onPlaybackStatusUpdate) => {
         try {
           const playback = await audioRecorderPlayer.startPlayer(uri);
           console.log({ playback });
@@ -186,8 +186,8 @@ export const Audio = AudioRecorderPackage
         } catch (error) {
           console.log('Error starting player', error);
         }
-      }
-      async startRecording(options: RecordingOptions, onRecordingStatusUpdate) {
+      };
+      startRecording = async (options: RecordingOptions, onRecordingStatusUpdate) => {
         if (Platform.OS === 'android') {
           try {
             await verifyAndroidPermissions();
@@ -231,22 +231,22 @@ export const Audio = AudioRecorderPackage
           audioRecorderPlayer._hasPausedRecord = false;
           return { accessGranted: false, recording: null };
         }
-      }
-      async stopPlayer() {
+      };
+      stopPlayer = async () => {
         try {
           await audioRecorderPlayer.stopPlayer();
           audioRecorderPlayer.removePlayBackListener();
         } catch (error) {
           console.log(error);
         }
-      }
-      async stopRecording() {
+      };
+      stopRecording = async () => {
         try {
           await audioRecorderPlayer.stopRecorder();
           audioRecorderPlayer.removeRecordBackListener();
         } catch (error) {
           console.log(error);
         }
-      }
+      };
     }
   : null;

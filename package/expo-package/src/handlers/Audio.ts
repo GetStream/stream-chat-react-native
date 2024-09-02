@@ -223,7 +223,7 @@ export const Audio = AudioComponent
   ? class {
       recording: typeof RecordingObject | null = null;
 
-      async startRecording(recordingOptions: RecordingOptions, onRecordingStatusUpdate) {
+      startRecording = async (recordingOptions: RecordingOptions, onRecordingStatusUpdate) => {
         try {
           const permissions = await AudioComponent.getPermissionsAsync();
           const permissionsStatus = permissions.status;
@@ -288,8 +288,8 @@ export const Audio = AudioComponent
           console.error('Failed to start recording', error);
           return { accessGranted: false, recording: null };
         }
-      }
-      async stopRecording() {
+      };
+      stopRecording = async () => {
         try {
           await this.recording.stopAndUnloadAsync();
           await AudioComponent.setAudioModeAsync({
@@ -299,6 +299,6 @@ export const Audio = AudioComponent
         } catch (error) {
           console.log('Error stopping recoding', error);
         }
-      }
+      };
     }
   : null;
