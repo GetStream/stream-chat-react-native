@@ -19,6 +19,7 @@ registerNativeHandlers({
     startPlayer = jest.fn()
     stopPlayer = jest.fn()
     stopRecording = jest.fn()
+    startRecording = jest.fn(() => ({ accessGranted: true, recording: 'some-recording-path' }))
   },
   compressImage: () => null,
   deleteFile: () => null,
