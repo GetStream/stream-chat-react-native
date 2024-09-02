@@ -39,7 +39,7 @@ export const useMessageActions = <
   deleteMessage: deleteMessageFromContext,
   deleteReaction,
   enforceUniqueReaction,
-  handleBlock,
+  handleBan,
   handleCopy,
   handleDelete,
   handleEdit,
@@ -65,7 +65,7 @@ export const useMessageActions = <
   MessagesContextValue<StreamChatGenerics>,
   | 'deleteMessage'
   | 'sendReaction'
-  | 'handleBlock'
+  | 'handleBan'
   | 'handleCopy'
   | 'handleDelete'
   | 'handleEdit'
@@ -138,20 +138,20 @@ export const useMessageActions = <
     (mute) => mute.user.id === client.userID && mute.target.id === message.user?.id,
   );
 
-  const blockUser: MessageActionType = {
+  const banUser: MessageActionType = {
     action: async () => {
       setOverlay('none');
       if (message.user?.id) {
-        if (handleBlock) {
-          handleBlock(message);
+        if (handleBan) {
+          handleBan(message);
         }
 
         await handleToggleBanUser();
       }
     },
-    actionType: 'blockUser',
+    actionType: 'banUser',
     icon: <UserDelete pathFill={grey} />,
-    title: message.user?.banned ? t('Unblock User') : t('Block User'),
+    title: message.user?.banned ? t('Unban User') : t('Ban User'),
   };
 
   const copyMessage: MessageActionType | undefined =
@@ -307,7 +307,7 @@ export const useMessageActions = <
   };
 
   return {
-    blockUser,
+    banUser,
     copyMessage,
     deleteMessage,
     editMessage,

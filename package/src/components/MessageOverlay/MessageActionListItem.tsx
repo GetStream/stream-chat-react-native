@@ -11,7 +11,7 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { MessageOverlayPropsWithContext } from '../MessageOverlay/MessageOverlay';
 
 export type ActionType =
-  | 'blockUser'
+  | 'banUser'
   | 'copyMessage'
   | 'deleteMessage'
   | 'editMessage'
@@ -32,7 +32,7 @@ export type MessageActionType = {
   action: () => void;
   /**
    * Type of the action performed.
-   * Eg: 'blockUser', 'copyMessage', 'deleteMessage', 'editMessage', 'flagMessage', 'muteUser', 'pinMessage', 'selectReaction', 'reply', 'retry', 'quotedReply', 'threadReply', 'unpinMessage'
+   * Eg: 'banUser', 'copyMessage', 'deleteMessage', 'editMessage', 'flagMessage', 'muteUser', 'pinMessage', 'selectReaction', 'reply', 'retry', 'quotedReply', 'threadReply', 'unpinMessage'
    */
   actionType: ActionType;
   /**
