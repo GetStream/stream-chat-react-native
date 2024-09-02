@@ -221,11 +221,8 @@ const sleep = (ms: number) =>
 
 export const Audio = AudioComponent
   ? class {
-      recording: typeof RecordingObject | null;
+      recording: typeof RecordingObject | null = null;
 
-      constructor() {
-        this.recording = null;
-      }
       async startRecording(recordingOptions: RecordingOptions, onRecordingStatusUpdate) {
         try {
           const permissions = await AudioComponent.getPermissionsAsync();

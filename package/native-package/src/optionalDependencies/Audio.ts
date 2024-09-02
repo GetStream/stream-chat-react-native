@@ -170,7 +170,6 @@ const verifyAndroidPermissions = async () => {
 
 export const Audio = AudioRecorderPackage
   ? class {
-      constructor() {}
       async pausePlayer() {
         await audioRecorderPlayer.pausePlayer();
       }
