@@ -4,9 +4,8 @@ import { Alert, Platform } from 'react-native';
 
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import {
-  Audio as AudioClass,
+  Audio,
   AudioRecordingReturnType,
-  AudioType,
   PlaybackStatus,
   RecordingStatus,
   Sound,
@@ -18,8 +17,6 @@ import { resampleWaveformData } from '../utils/audioSampling';
 import { normalizeAudioLevel } from '../utils/normalizeAudioLevel';
 
 export type RecordingStatusStates = 'idle' | 'recording' | 'stopped';
-
-let Audio: AudioType;
 
 /**
  * The hook that controls all the async audio core features including start/stop or recording, player, upload/delete of the recorded audio.
@@ -41,17 +38,15 @@ export const useAudioController = () => {
   // For playback support in Expo CLI apps
   const soundRef = useRef<SoundReturnType | null>(null);
 
-  // This effect controls the creation of an AudioClass instance during mounting
-  // and cleanup during unmounting (stopping both the player and a potential recording).
-  useEffect(() => {
-    if (AudioClass) {
-      Audio = new AudioClass();
-    }
-    return () => {
+  // This effect stop the player from playing and stops audio recording on
+  // the audio SDK side on unmount.
+  useEffect(
+    () => () => {
       stopVoicePlayer();
       stopSDKVoiceRecording();
-    };
-  }, []);
+    },
+    [],
+  );
 
   useEffect(() => {
     if (isScheduledForSubmit) {
