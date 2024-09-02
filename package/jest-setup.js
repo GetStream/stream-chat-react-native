@@ -15,9 +15,10 @@ export const setNetInfoFetchMock = (fn) => {
   netInfoFetch = fn;
 };
 registerNativeHandlers({
-  Audio: {
-    startPlayer: jest.fn(),
-    stopPlayer: jest.fn(),
+  Audio: class {
+    startPlayer = jest.fn()
+    stopPlayer = jest.fn()
+    stopRecording = jest.fn()
   },
   compressImage: () => null,
   deleteFile: () => null,

@@ -240,6 +240,10 @@ export type AudioType = {
   stopPlayer?: () => Promise<void>;
 };
 
+type AudioConstructSignature = new () => AudioType;
+
+export let Audio: AudioConstructSignature;
+
 export let Sound: SoundType;
 
 export type VideoProgressData = {
@@ -286,7 +290,7 @@ export type VideoType = {
 export let Video: React.ComponentType<VideoType>;
 
 type Handlers = {
-  Audio?: AudioType;
+  Audio?: AudioConstructSignature;
   compressImage?: CompressImage;
   deleteFile?: DeleteFile;
   FlatList?: typeof DefaultFlatList;
