@@ -40,6 +40,7 @@ export const useMessageActions = <
   deleteReaction,
   enforceUniqueReaction,
   handleBan,
+  handleBlock,
   handleCopy,
   handleDelete,
   handleEdit,
@@ -66,6 +67,7 @@ export const useMessageActions = <
   | 'deleteMessage'
   | 'sendReaction'
   | 'handleBan'
+  | 'handleBlock'
   | 'handleCopy'
   | 'handleDelete'
   | 'handleEdit'
@@ -152,6 +154,25 @@ export const useMessageActions = <
     actionType: 'banUser',
     icon: <UserDelete pathFill={grey} />,
     title: message.user?.banned ? t('Unban User') : t('Ban User'),
+  };
+
+  /**
+   * @deprecated use `banUser` instead
+   */
+  const blockUser: MessageActionType = {
+    action: async () => {
+      setOverlay('none');
+      if (message.user?.id) {
+        if (handleBlock) {
+          handleBlock(message);
+        }
+
+        await handleToggleBanUser();
+      }
+    },
+    actionType: 'blockUser',
+    icon: <UserDelete pathFill={grey} />,
+    title: message.user?.banned ? t('Unblock User') : t('Block User'),
   };
 
   const copyMessage: MessageActionType | undefined =
@@ -308,6 +329,7 @@ export const useMessageActions = <
 
   return {
     banUser,
+    blockUser,
     copyMessage,
     deleteMessage,
     editMessage,

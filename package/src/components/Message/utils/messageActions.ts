@@ -21,6 +21,10 @@ export type MessageActionsParams<
   retry: MessageActionType;
   threadReply: MessageActionType;
   unpinMessage: MessageActionType;
+  /**
+   * @deprecated use `banUser` instead.
+   */
+  blockUser?: MessageActionType;
   copyMessage?: MessageActionType;
 } & Pick<MessageContextValue<StreamChatGenerics>, 'message' | 'isMyMessage'>;
 
@@ -32,6 +36,7 @@ export const messageActions = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   banUser,
+  blockUser,
   copyMessage,
   deleteMessage,
   editMessage,
@@ -90,7 +95,7 @@ export const messageActions = <
   }
 
   if (!isMyMessage && ownCapabilities.banChannelMembers) {
-    actions.push(banUser);
+    actions.push(banUser || blockUser);
   }
 
   if (

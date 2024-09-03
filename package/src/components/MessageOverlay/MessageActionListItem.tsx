@@ -12,6 +12,7 @@ import type { MessageOverlayPropsWithContext } from '../MessageOverlay/MessageOv
 
 export type ActionType =
   | 'banUser'
+  | 'blockUser'
   | 'copyMessage'
   | 'deleteMessage'
   | 'editMessage'
@@ -32,9 +33,9 @@ export type MessageActionType = {
   action: () => void;
   /**
    * Type of the action performed.
-   * Eg: 'banUser', 'copyMessage', 'deleteMessage', 'editMessage', 'flagMessage', 'muteUser', 'pinMessage', 'selectReaction', 'reply', 'retry', 'quotedReply', 'threadReply', 'unpinMessage'
+   * Eg: 'banUser', 'blockUser', 'copyMessage', 'deleteMessage', 'editMessage', 'flagMessage', 'muteUser', 'pinMessage', 'selectReaction', 'reply', 'retry', 'quotedReply', 'threadReply', 'unpinMessage'
    */
-  actionType: ActionType;
+  actionType: ActionType | string;
   /**
    * Title for action button.
    */

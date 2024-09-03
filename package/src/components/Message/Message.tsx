@@ -143,6 +143,7 @@ export type MessagePropsWithContext<
     | 'dismissKeyboardOnMessageTouch'
     | 'forceAlignMessages'
     | 'handleBan'
+    | 'handleBlock'
     | 'handleCopy'
     | 'handleDelete'
     | 'handleEdit'
@@ -250,6 +251,7 @@ const MessageWithContext = <
     goToMessage,
     groupStyles = ['bottom'],
     handleBan,
+    handleBlock,
     handleCopy,
     handleDelete,
     handleEdit,
@@ -508,6 +510,7 @@ const MessageWithContext = <
 
   const {
     banUser,
+    blockUser,
     copyMessage,
     deleteMessage,
     editMessage,
@@ -526,6 +529,7 @@ const MessageWithContext = <
     deleteReaction,
     enforceUniqueReaction,
     handleBan,
+    handleBlock,
     handleCopy,
     handleDelete,
     handleEdit,
@@ -565,6 +569,7 @@ const MessageWithContext = <
         ? messageActionsProp
         : messageActionsProp({
             banUser,
+            blockUser,
             copyMessage,
             deleteMessage,
             dismissOverlay,
