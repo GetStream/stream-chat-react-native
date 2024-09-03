@@ -89,7 +89,9 @@ export const messageActions = <
     actions.push(unpinMessage);
   }
 
-  actions.push(banUser);
+  if (!isMyMessage && ownCapabilities.banChannelMembers) {
+    actions.push(banUser);
+  }
 
   if (
     (isMyMessage && ownCapabilities.deleteOwnMessage) ||
