@@ -6,6 +6,7 @@ import { useTheme } from 'stream-chat-react-native';
 import { UnreadCountBadge } from './UnreadCountBadge';
 
 import { ChatsTab } from '../icons/ChatsTab';
+import { ThreadsTab } from '../icons/ThreadsTab';
 import { MentionsTab } from '../icons/MentionsTab';
 
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
@@ -50,6 +51,13 @@ export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
           iconActive: <ChatsTab active />,
           notification: <UnreadCountBadge />,
           title: 'Chats',
+        };
+      case 'ThreadsScreen':
+        return {
+          icon: <ThreadsTab />,
+          iconActive: <ThreadsTab active />,
+          notification: <UnreadCountBadge />,
+          title: 'Threads',
         };
       case 'MentionsScreen':
         return {
