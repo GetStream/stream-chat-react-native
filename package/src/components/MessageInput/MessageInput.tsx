@@ -737,12 +737,12 @@ const MessageInputWithContext = <
                 progress={progress}
                 waveformData={waveformData}
               />
-            ) : (
+            ) : micLocked ? (
               <AudioRecordingInProgress
                 recordingDuration={recordingDuration}
                 waveformData={waveformData}
               />
-            )}
+            ) : null}
           </>
         )}
 
