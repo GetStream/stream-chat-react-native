@@ -180,7 +180,7 @@ const AudioRecorderWithContext = <
   } else {
     return (
       <>
-        <View style={[styles.micContainer, micContainer]}>
+        <View style={[styles.micContainer, micContainer]} testID='recording-active-container'>
           <Mic fill={recordingDuration !== 0 ? accent_red : grey_dark} size={32} {...micIcon} />
           <Text style={[styles.durationLabel, { color: grey_dark }]}>
             {recordingDuration ? dayjs.duration(recordingDuration).format('mm:ss') : null}

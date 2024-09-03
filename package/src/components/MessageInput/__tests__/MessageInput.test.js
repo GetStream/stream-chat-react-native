@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Alert } from 'react-native';
 
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
+import { cleanup, fireEvent, render, userEvent, waitFor } from '@testing-library/react-native';
 
 import * as AttachmentPickerUtils from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
@@ -16,6 +16,7 @@ import {
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { Audio } from '../../../native';
 import { AttachmentPickerSelectionBar } from '../../AttachmentPicker/components/AttachmentPickerSelectionBar';
 import { CameraSelectorIcon } from '../../AttachmentPicker/components/CameraSelectorIcon';
 import { FileSelectorIcon } from '../../AttachmentPicker/components/FileSelectorIcon';
@@ -126,5 +127,63 @@ describe('MessageInput', () => {
 
     // Both for files and for images triggered in one test itself.
     expect(Alert.alert).toHaveBeenCalledTimes(4);
+  });
+
+  it('should start the audio recorder on long press and cleanup on unmount', async () => {
+    jest.clearAllMocks();
+
+    await initializeChannel(generateChannelResponse());
+    const userBot = userEvent.setup();
+
+    const { queryByTestId, unmount } = render(
+      <Chat client={chatClient}>
+        <Channel audioRecordingEnabled channel={channel}>
+          <MessageInput />
+        </Channel>
+      </Chat>,
+    );
+
+    await userBot.longPress(queryByTestId('audio-button'), { duration: 1000 });
+
+    await waitFor(() => {
+      expect(Audio.startRecording).toHaveBeenCalledTimes(1);
+      expect(Audio.stopRecording).not.toHaveBeenCalled();
+      expect(queryByTestId('recording-active-container')).toBeTruthy();
+      expect(Alert.alert).not.toHaveBeenCalledWith('Hold to start recording.');
+    });
+
+    unmount();
+
+    await waitFor(() => {
+      expect(Audio.stopRecording).toHaveBeenCalledTimes(1);
+      // once when starting the recording, once on unmount
+      expect(Audio.stopPlayer).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  it('should trigger an alert if a normal press happened on audio recording', async () => {
+    jest.clearAllMocks();
+
+    await initializeChannel(generateChannelResponse());
+    const userBot = userEvent.setup();
+
+    const { queryByTestId } = render(
+      <Chat client={chatClient}>
+        <Channel audioRecordingEnabled channel={channel}>
+          <MessageInput />
+        </Channel>
+      </Chat>,
+    );
+
+    await userBot.press(queryByTestId('audio-button'));
+
+    await waitFor(() => {
+      expect(Audio.startRecording).not.toHaveBeenCalled();
+      expect(Audio.stopRecording).not.toHaveBeenCalled();
+      expect(queryByTestId('recording-active-container')).not.toBeTruthy();
+      // This is sort of a brittle test, but there doesn't seem to be another way
+      // to target alerts. The reason why it's here is because we had a bug with it.
+      expect(Alert.alert).toHaveBeenCalledWith('Hold to start recording.');
+    });
   });
 });
