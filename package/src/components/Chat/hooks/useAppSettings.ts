@@ -18,12 +18,23 @@ export const useAppSettings = <
   const isMounted = useIsMountedRef();
 
   useEffect(() => {
-    async function enforeAppSettings() {
+    const enforceAppSettingsWithoutOfflineSupport = async () => {
+      try {
+        const appSettings = await client.getAppSettings();
+        if (isMounted.current) {
+          setAppSettings(appSettings);
+        }
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error(`An error occurred while getting app settings: ${error}`);
+        }
+      }
+    };
+
+    const enforceAppSettingsWithOfflineSupport = async () => {
       if (!client.userID) return;
 
-      if (enableOfflineSupport && !initialisedDatabase) return;
-
-      if (!isOnline && enableOfflineSupport) {
+      if (!isOnline) {
         const appSettings = dbApi.getAppSettings({ currentUserId: client.userID });
         setAppSettings(appSettings);
         return;
@@ -33,16 +44,23 @@ export const useAppSettings = <
         const appSettings = await client.getAppSettings();
         if (isMounted.current) {
           setAppSettings(appSettings);
-          enableOfflineSupport &&
-            dbApi.upsertAppSettings({
-              appSettings,
-              currentUserId: client.userID as string,
-            });
+          dbApi.upsertAppSettings({
+            appSettings,
+            currentUserId: client.userID as string,
+          });
         }
       } catch (error: unknown) {
         if (error instanceof Error) {
           console.error(`An error occurred while getting app settings: ${error}`);
         }
+      }
+    };
+
+    async function enforeAppSettings() {
+      if (enableOfflineSupport) {
+        await enforceAppSettingsWithOfflineSupport();
+      } else {
+        await enforceAppSettingsWithoutOfflineSupport();
       }
     }
 
