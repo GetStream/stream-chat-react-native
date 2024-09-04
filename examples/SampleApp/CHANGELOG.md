@@ -1,5 +1,20 @@
 # Change Log
 
+### [1.28.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.28.0...sampleapp@v1.28.1) (2024-09-04)
+
+
+### Bug Fixes
+
+* change Block user action to Ban user action and UI cookbook for blocking users ([#2649](https://github.com/GetStream/stream-chat-react-native/issues/2649)) ([327aeac](https://github.com/GetStream/stream-chat-react-native/commit/327aeacfd024f88f41630fafce57a991771f2426))
+* overlay provider crash issue due to bug in bottom sheet ([#2644](https://github.com/GetStream/stream-chat-react-native/issues/2644)) ([9330cf5](https://github.com/GetStream/stream-chat-react-native/commit/9330cf58e1ec639bd9bc0333133226c844cf473a))
+* SampleApp crash on start ([#2642](https://github.com/GetStream/stream-chat-react-native/issues/2642)) ([54fe1b7](https://github.com/GetStream/stream-chat-react-native/commit/54fe1b7fb5eb4a8cc5ebddc8fdfa9aa211624050))
+* upgrade firebase versions to fix crash ([#2646](https://github.com/GetStream/stream-chat-react-native/issues/2646)) ([f5822dd](https://github.com/GetStream/stream-chat-react-native/commit/f5822dddbae97ce7433f77c96ddbc5129a35e009))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ## [1.28.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.27.8...sampleapp@v1.28.0) (2024-08-29)
 
 
