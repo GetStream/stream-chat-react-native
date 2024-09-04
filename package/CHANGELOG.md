@@ -1,5 +1,16 @@
 # Change Log
 
+### [5.36.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.36.0...v5.36.1) (2024-09-04)
+
+
+### Bug Fixes
+
+* audio recording variety bugs ([#2648](https://github.com/GetStream/stream-chat-react-native/issues/2648)) ([2011eb2](https://github.com/GetStream/stream-chat-react-native/commit/2011eb24ece9895fe9dc8eadc49660cf019c311f))
+* change Block user action to Ban user action and UI cookbook for blocking users ([#2649](https://github.com/GetStream/stream-chat-react-native/issues/2649)) ([327aeac](https://github.com/GetStream/stream-chat-react-native/commit/327aeacfd024f88f41630fafce57a991771f2426))
+* loading skeleton in the Channel List unnecessary display ([#2645](https://github.com/GetStream/stream-chat-react-native/issues/2645)) ([08fc71b](https://github.com/GetStream/stream-chat-react-native/commit/08fc71b7e42ca2ea0fcd72517a7a46a7b0aecddd))
+* multiple image upload issue using native image picker and generic improvements for upload ([#2638](https://github.com/GetStream/stream-chat-react-native/issues/2638)) ([0b9f18a](https://github.com/GetStream/stream-chat-react-native/commit/0b9f18a69484ca7c0087bd0bec56b7fb44dcdbbf))
+* overlay provider crash issue due to bug in bottom sheet ([#2644](https://github.com/GetStream/stream-chat-react-native/issues/2644)) ([9330cf5](https://github.com/GetStream/stream-chat-react-native/commit/9330cf58e1ec639bd9bc0333133226c844cf473a))
+
 ## [5.36.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.35.0...v5.36.0) (2024-08-29)
 
 
