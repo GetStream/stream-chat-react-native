@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
-import { FlatList, FlatListProps, Text } from 'react-native';
+import { FlatList, FlatListProps } from 'react-native';
 
 import { Thread, ThreadManagerState } from 'stream-chat';
+
+import { ThreadListItem } from './ThreadListItem';
 
 import { useChatContext } from '../../contexts';
 import { useStateStore } from '../../hooks';
@@ -14,13 +16,18 @@ export type ThreadListProps = {
 
 export const ThreadList = (props: ThreadListProps) => {
   const { client } = useChatContext();
+  useEffect(() => {
+    client.threads.activate();
+    return () => {
+      client.threads.deactivate();
+    };
+  }, [client]);
   const [threads] = useStateStore(client.threads.state, selector);
-  console.log('TR: ', threads.length);
 
   return (
     <FlatList
       data={threads}
-      renderItem={() => <Text>I AM A THREAD LIST ITEM.</Text>}
+      renderItem={({ item: thread }) => <ThreadListItem thread={thread} />}
       {...props.additionalFlatListProps}
     />
   );

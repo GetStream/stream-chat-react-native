@@ -40,7 +40,6 @@ export const ThreadListScreen: React.FC<ThreadsScreenProps> = () => {
       colors: { white_snow },
     },
   } = useTheme();
-  // const { chatClient } = useAppContext();
 
   return (
     <View
