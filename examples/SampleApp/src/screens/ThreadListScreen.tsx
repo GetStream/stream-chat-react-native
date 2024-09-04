@@ -1,18 +1,11 @@
-import React, { useMemo, useRef } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
-import { AtMentions, useTheme } from 'stream-chat-react-native';
-import { MessageResponse } from 'stream-chat';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { useTheme, ThreadList } from 'stream-chat-react-native';
 
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
-import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
-import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessages';
-import { useScrollToTop } from '@react-navigation/native';
-
 import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { BottomTabNavigatorParamList } from '../types';
-import { useAppContext } from '../context/AppContext';
-import type { StreamChatGenerics } from '../types';
 
 const styles = StyleSheet.create({
   container: {
@@ -59,9 +52,7 @@ export const ThreadListScreen: React.FC<ThreadsScreenProps> = () => {
       ]}
     >
       <ChatScreenHeader />
-      <>
-        <Text>Thread List goes here :^)</Text>
-      </>
+      <ThreadList />
     </View>
   );
 };

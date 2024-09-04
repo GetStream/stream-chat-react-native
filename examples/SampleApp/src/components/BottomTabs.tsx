@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from 'stream-chat-react-native';
+import { useChatContext, useTheme } from 'stream-chat-react-native';
 
 import { UnreadCountBadge } from './UnreadCountBadge';
 
@@ -10,6 +10,7 @@ import { ThreadsTab } from '../icons/ThreadsTab';
 import { MentionsTab } from '../icons/MentionsTab';
 
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import type { Route } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   notification: {
@@ -34,41 +35,103 @@ const styles = StyleSheet.create({
   },
 });
 
+const getTab = (key: string) => {
+  switch (key) {
+    case 'ChatScreen':
+      return {
+        icon: <ChatsTab />,
+        iconActive: <ChatsTab active />,
+        notification: <UnreadCountBadge />,
+        title: 'Chats',
+      };
+    case 'ThreadsScreen':
+      return {
+        icon: <ThreadsTab />,
+        iconActive: <ThreadsTab active />,
+        notification: <UnreadCountBadge />,
+        title: 'Threads',
+      };
+    case 'MentionsScreen':
+      return {
+        icon: <MentionsTab />,
+        iconActive: <MentionsTab active />,
+        title: 'Mentions',
+      };
+    default:
+      return null;
+  }
+};
+
+type TabProps = Pick<BottomTabBarProps, 'navigation' | 'state'> & {
+  index: number;
+  route: Route<string>;
+};
+
+const Tab = (props: TabProps) => {
+  const { navigation, state, route, index } = props;
+  const {
+    theme: {
+      colors: { black, grey },
+    },
+  } = useTheme();
+  const { client } = useChatContext();
+  const tab = getTab(route.name);
+
+  const isFocused = state.index === index;
+
+  useEffect(() => {
+    if (state.index === index) {
+      if (route.name === 'ThreadsScreen') {
+        client.threads.activate();
+      } else {
+        client.threads.deactivate();
+      }
+    }
+  }, [state.index, index, client, route]);
+
+  if (!tab) {
+    return null;
+  }
+
+  const onPress = () => {
+    navigation.emit({
+      canPreventDefault: true,
+      target: route.key,
+      type: 'tabPress',
+    });
+    if (!isFocused) {
+      navigation.navigate(route.name);
+    }
+  };
+
+  return (
+    <TouchableOpacity key={index} onPress={onPress} style={styles.tabContainer}>
+      <View>
+        {isFocused ? tab.iconActive : tab.icon}
+        {tab.notification && <View style={styles.notification}>{tab.notification}</View>}
+      </View>
+      <Text
+        style={[
+          styles.tabTitle,
+          {
+            color: isFocused ? black : grey,
+          },
+        ]}
+      >
+        {tab.title}
+      </Text>
+    </TouchableOpacity>
+  );
+};
+
 export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
   const { navigation, state } = props;
   const {
     theme: {
-      colors: { black, grey, white },
+      colors: { white },
     },
   } = useTheme();
   const { bottom } = useSafeAreaInsets();
-
-  const getTab = (key: string) => {
-    switch (key) {
-      case 'ChatScreen':
-        return {
-          icon: <ChatsTab />,
-          iconActive: <ChatsTab active />,
-          notification: <UnreadCountBadge />,
-          title: 'Chats',
-        };
-      case 'ThreadsScreen':
-        return {
-          icon: <ThreadsTab />,
-          iconActive: <ThreadsTab active />,
-          notification: <UnreadCountBadge />,
-          title: 'Threads',
-        };
-      case 'MentionsScreen':
-        return {
-          icon: <MentionsTab />,
-          iconActive: <MentionsTab active />,
-          title: 'Mentions',
-        };
-      default:
-        return null;
-    }
-  };
 
   return (
     <View
@@ -80,45 +143,9 @@ export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
         },
       ]}
     >
-      {state.routes.map((route, index) => {
-        const tab = getTab(route.name);
-
-        if (!tab) {
-          return null;
-        }
-
-        const isFocused = state.index === index;
-
-        const onPress = () => {
-          navigation.emit({
-            canPreventDefault: true,
-            target: route.key,
-            type: 'tabPress',
-          });
-          if (!isFocused) {
-            navigation.navigate(route.name);
-          }
-        };
-
-        return (
-          <TouchableOpacity key={index} onPress={onPress} style={styles.tabContainer}>
-            <View>
-              {isFocused ? tab.iconActive : tab.icon}
-              {tab.notification && <View style={styles.notification}>{tab.notification}</View>}
-            </View>
-            <Text
-              style={[
-                styles.tabTitle,
-                {
-                  color: isFocused ? black : grey,
-                },
-              ]}
-            >
-              {tab.title}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
+      {state.routes.map((route, index) => (
+        <Tab route={route} index={index} navigation={navigation} state={state} />
+      ))}
     </View>
   );
 };

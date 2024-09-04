@@ -168,3 +168,4 @@ export * from './Spinner/Spinner';
 
 export * from './Thread/Thread';
 export * from './Thread/components/ThreadFooterComponent';
+export * from './ThreadList/ThreadList';
