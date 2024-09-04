@@ -121,7 +121,8 @@
       "guides/customize-autocomplete-suggestion-list",
       "guides/channel-background-customization",
       "guides/message-customization",
-      "guides/file-compression"
+      "guides/file-compression",
+      "guides/blocking-users"
     ],
     "State and Offline Support": [
       "state-and-offline-support/state-overview",
