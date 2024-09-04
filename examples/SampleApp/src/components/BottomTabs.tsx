@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useChatContext, useTheme } from 'stream-chat-react-native';
+import { useTheme } from 'stream-chat-react-native';
 
 import { UnreadCountBadge } from './UnreadCountBadge';
 
@@ -74,20 +74,9 @@ const Tab = (props: TabProps) => {
       colors: { black, grey },
     },
   } = useTheme();
-  const { client } = useChatContext();
   const tab = getTab(route.name);
 
   const isFocused = state.index === index;
-
-  useEffect(() => {
-    if (state.index === index) {
-      if (route.name === 'ThreadsScreen') {
-        client.threads.activate();
-      } else {
-        client.threads.deactivate();
-      }
-    }
-  }, [state.index, index, client, route]);
 
   if (!tab) {
     return null;

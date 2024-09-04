@@ -14,12 +14,8 @@ export type ThreadListProps = {
 
 export const ThreadList = (props: ThreadListProps) => {
   const { client } = useChatContext();
-  useEffect(() => {
-    client.threads.activate();
-    return () => client.threads.deactivate();
-  }, [client]);
   const [threads] = useStateStore(client.threads.state, selector);
-  console.log('T: ', threads.length);
+  console.log('TR: ', threads.length);
 
   return (
     <FlatList
