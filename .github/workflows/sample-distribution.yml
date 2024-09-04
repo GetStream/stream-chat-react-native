@@ -9,7 +9,7 @@ on:
     paths:
       - '.github/workflows/sample-distribution.yml'
       - 'package/**'
-      - 'packages/examples/SampleApp/**'
+      - 'examples/SampleApp/**'
 
 jobs:
   build_and_deploy_ios_testflight_qa:

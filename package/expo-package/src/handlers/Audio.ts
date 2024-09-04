@@ -1,4 +1,4 @@
-import { AudioComponent } from '../optionalDependencies/Video';
+import { AudioComponent, RecordingObject } from '../optionalDependencies/Video';
 
 export enum AndroidOutputFormat {
   DEFAULT = 0,
@@ -212,56 +212,93 @@ export type RecordingOptions = {
   keepAudioActiveHint?: boolean;
 };
 
-export const Audio = AudioComponent
-  ? {
-      startRecording: async (recordingOptions: RecordingOptions, onRecordingStatusUpdate) => {
-        try {
-          const permissionsGranted = await AudioComponent.getPermissionsAsync().granted;
-          if (!permissionsGranted) {
-            await AudioComponent.requestPermissionsAsync();
-          }
-          await AudioComponent.setAudioModeAsync({
-            allowsRecordingIOS: true,
-            playsInSilentModeIOS: true,
-          });
-          const androidOptions = {
-            audioEncoder: AndroidAudioEncoder.AAC,
-            extension: '.aac',
-            outputFormat: AndroidOutputFormat.AAC_ADTS,
-          };
-          const iosOptions = {
-            audioQuality: IOSAudioQuality.HIGH,
-            bitRate: 128000,
-            extension: '.aac',
-            numberOfChannels: 2,
-            outputFormat: IOSOutputFormat.MPEG4AAC,
-            sampleRate: 44100,
-          };
-          const options = {
-            ...recordingOptions,
-            android: androidOptions,
-            ios: iosOptions,
-            web: {},
-          };
+const sleep = (ms: number) =>
+  new Promise<void>((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, ms);
+  });
 
-          const { recording } = await AudioComponent.Recording.createAsync(
-            options,
-            onRecordingStatusUpdate,
-          );
-          return { accessGranted: true, recording };
-        } catch (error) {
-          console.error('Failed to start recording', error);
-          return { accessGranted: false, recording: null };
-        }
-      },
-      stopRecording: async () => {
-        try {
-          await AudioComponent.setAudioModeAsync({
-            allowsRecordingIOS: false,
-          });
-        } catch (error) {
-          console.log('Error stopping recoding', error);
-        }
-      },
+class _Audio {
+  recording: typeof RecordingObject | null = null;
+
+  startRecording = async (recordingOptions: RecordingOptions, onRecordingStatusUpdate) => {
+    try {
+      const permissions = await AudioComponent.getPermissionsAsync();
+      const permissionsStatus = permissions.status;
+      let permissionsGranted = permissions.granted;
+
+      // If permissions have not been determined yet, ask the user for permissions.
+      if (permissionsStatus === 'undetermined') {
+        const newPermissions = await AudioComponent.requestPermissionsAsync();
+        permissionsGranted = newPermissions.granted;
+      }
+
+      // If they are explicitly denied after this, exit early by throwing an error
+      // that will be caught in the catch block below (as a single source of not
+      // starting the player). The player would error itself anyway if we did not do
+      // this, but there's no reason to run the asynchronous calls when we know
+      // immediately that the player will not be run.
+      if (!permissionsGranted) {
+        throw new Error('Missing audio recording permission.');
+      }
+      await AudioComponent.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+      const androidOptions = {
+        audioEncoder: AndroidAudioEncoder.AAC,
+        extension: '.aac',
+        outputFormat: AndroidOutputFormat.AAC_ADTS,
+      };
+      const iosOptions = {
+        audioQuality: IOSAudioQuality.HIGH,
+        bitRate: 128000,
+        extension: '.aac',
+        numberOfChannels: 2,
+        outputFormat: IOSOutputFormat.MPEG4AAC,
+        sampleRate: 44100,
+      };
+      const options = {
+        ...recordingOptions,
+        android: androidOptions,
+        ios: iosOptions,
+        web: {},
+      };
+
+      // This is a band-aid fix for this (still unresolved) issue on Expo's side:
+      // https://github.com/expo/expo/issues/21782. It only occurs whenever we get
+      // the permissions dialog and actually select "Allow", causing the player to
+      // throw an error and send the wrong data downstream. So, if the original
+      // permissions.status is 'undetermined', meaning we got to here by allowing
+      // permissions - we sleep for 500ms before proceeding. Any subsequent calls
+      // to startRecording() will not invoke the sleep.
+      if (permissionsStatus === 'undetermined') {
+        await sleep(500);
+      }
+
+      const { recording } = await AudioComponent.Recording.createAsync(
+        options,
+        onRecordingStatusUpdate,
+      );
+      this.recording = recording;
+      return { accessGranted: true, recording };
+    } catch (error) {
+      console.error('Failed to start recording', error);
+      return { accessGranted: false, recording: null };
     }
-  : null;
+  };
+  stopRecording = async () => {
+    try {
+      await this.recording.stopAndUnloadAsync();
+      await AudioComponent.setAudioModeAsync({
+        allowsRecordingIOS: false,
+      });
+      this.recording = null;
+    } catch (error) {
+      console.log('Error stopping recoding', error);
+    }
+  };
+}
+
+export const Audio = AudioComponent ? new _Audio() : null;
