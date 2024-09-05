@@ -18,6 +18,9 @@ export const useAppSettings = <
   const isMounted = useIsMountedRef();
 
   useEffect(() => {
+    /**
+     * Fetches app settings from the backend when offline support is disabled.
+     */
     const enforceAppSettingsWithoutOfflineSupport = async () => {
       try {
         const appSettings = await client.getAppSettings();
@@ -31,6 +34,10 @@ export const useAppSettings = <
       }
     };
 
+    /**
+     * Fetches app settings from the local database when offline support is enabled if internet is off else fetches from the backend.
+     * Note: We need to set the app settings from the local database when offline as the client will not have the app settings in memory. For this we store it for the `client.userID`.
+     */
     const enforceAppSettingsWithOfflineSupport = async () => {
       if (!client.userID) return;
 
