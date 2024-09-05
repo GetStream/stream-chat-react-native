@@ -37,6 +37,8 @@ export const useAppSettings = <
     /**
      * Fetches app settings from the local database when offline support is enabled if internet is off else fetches from the backend.
      * Note: We need to set the app settings from the local database when offline as the client will not have the app settings in memory. For this we store it for the `client.userID`.
+     *
+     * TODO: Remove client.userID usage for offline support case.
      */
     const enforceAppSettingsWithOfflineSupport = async () => {
       if (!client.userID) return;
