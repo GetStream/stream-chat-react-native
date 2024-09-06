@@ -23,6 +23,7 @@ import { generateMarkdownText } from './generateMarkdownText';
 import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
 import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
+import { escapeRegExp } from '../../../../utils/utils';
 import type { MessageType } from '../../../MessageList/hooks/useMessageList';
 
 const defaultMarkdownStyles: MarkdownStyle = {
@@ -210,10 +211,6 @@ export const renderText = <
       </Text>
     );
   };
-
-  function escapeRegExp(text: string) {
-    return text.replace(/[-[\]{}()*+?.,/\\^$|#]/g, '\\$&');
-  }
 
   // take the @ mentions and turn them into markdown?
   // translate links
