@@ -14,6 +14,7 @@ export type ThreadContextValue<
 > = {
   allowThreadMessagesInChannel: boolean;
   closeThread: () => void;
+  loadMoreRecentThread: () => Promise<void>;
   loadMoreThread: () => Promise<void>;
   openThread: (message: MessageType<StreamChatGenerics>) => void;
   reloadThread: () => void;

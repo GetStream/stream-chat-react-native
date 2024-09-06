@@ -1,14 +1,14 @@
 import React, { useCallback } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { Thread, ThreadState } from 'stream-chat';
+import { Channel, Thread, ThreadState } from 'stream-chat';
 
 import { useStateStore } from '../../hooks';
 import { Avatar } from '../Avatar/Avatar';
 
 export type ThreadListItemProps = {
-  onThreadSelect: (thread: Thread) => void;
   thread: Thread;
+  onThreadSelect?: (thread: Thread, channel: Channel) => void;
 };
 
 export const ThreadListItem = (props: ThreadListItemProps) => {
@@ -16,11 +16,11 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
 
   const selector = useCallback(
     (nextValue: ThreadState) =>
-      [nextValue.replies.at(-1), nextValue.parentMessage, nextValue.channel.data] as const,
+      [nextValue.replies.at(-1), nextValue.parentMessage, nextValue.channel] as const,
     [],
   );
 
-  const [lastReply, parentMessage, channelData] = useStateStore(thread.state, selector);
+  const [lastReply, parentMessage, channel] = useStateStore(thread.state, selector);
 
   // if (lastReply) {
   //   console.log('ISE: LAST: ', Object.keys(lastReply.user));
@@ -33,7 +33,7 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
     <TouchableOpacity
       onPress={() => {
         if (onThreadSelect) {
-          onThreadSelect(thread);
+          onThreadSelect(thread, channel);
         }
       }}
       style={{
@@ -44,7 +44,7 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
         marginVertical: 8,
       }}
     >
-      <Text>{channelData?.name}</Text>
+      <Text>{channel?.data?.name}</Text>
       <Text numberOfLines={1}>{parentMessage?.text}</Text>
       <View style={{ flexDirection: 'row', marginBottom: 14, marginHorizontal: 8, marginTop: 6 }}>
         <Avatar

@@ -73,6 +73,10 @@ const ThreadWithContext = <
   } = props;
 
   useEffect(() => {
+    if (thread?.activate) {
+      // @ts-ignore
+      thread.activate();
+    }
     const loadMoreThreadAsync = async () => {
       await loadMoreThread();
     };
@@ -80,21 +84,21 @@ const ThreadWithContext = <
     if (thread?.id && thread.reply_count) {
       loadMoreThreadAsync();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
-  useEffect(
-    () => () => {
+    return () => {
+      if (thread?.deactivate) {
+        // @ts-ignore
+        thread.deactivate();
+      }
       if (closeThreadOnDismount) {
         closeThread();
       }
       if (onThreadDismount) {
         onThreadDismount();
       }
-    },
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
+  }, []);
 
   if (!thread) return null;
 

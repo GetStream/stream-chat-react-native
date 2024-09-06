@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { FlatList, FlatListProps } from 'react-native';
 
-import { Thread, ThreadManagerState } from 'stream-chat';
+import { Channel, Thread, ThreadManagerState } from 'stream-chat';
 
 import { ThreadListItem } from './ThreadListItem';
 
@@ -12,6 +12,7 @@ const selector = (nextValue: ThreadManagerState) => [nextValue.threads] as const
 
 export type ThreadListProps = {
   additionalFlatListProps?: Partial<FlatListProps<Thread>>;
+  onThreadSelect?: (thread: Thread, channel: Channel) => void;
 };
 
 export const ThreadList = (props: ThreadListProps) => {
@@ -27,7 +28,9 @@ export const ThreadList = (props: ThreadListProps) => {
   return (
     <FlatList
       data={threads}
-      renderItem={({ item: thread }) => <ThreadListItem thread={thread} />}
+      renderItem={({ item: thread }) => (
+        <ThreadListItem onThreadSelect={props.onThreadSelect} thread={thread} />
+      )}
       {...props.additionalFlatListProps}
     />
   );

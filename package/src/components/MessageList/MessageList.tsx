@@ -151,7 +151,10 @@ type MessageListPropsWithContext<
     | 'TypingIndicator'
     | 'TypingIndicatorContainer'
   > &
-  Pick<ThreadContextValue<StreamChatGenerics>, 'loadMoreThread' | 'thread'> & {
+  Pick<
+    ThreadContextValue<StreamChatGenerics>,
+    'loadMoreRecentThread' | 'loadMoreThread' | 'thread'
+  > & {
     /**
      * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
      * to attach some additional props to underlying FlatList, you can add it to following prop.
@@ -253,6 +256,7 @@ const MessageListWithContext = <
     LoadingIndicator,
     loadMore,
     loadMoreRecent,
+    loadMoreRecentThread,
     loadMoreThread,
     markRead,
     Message,
@@ -740,7 +744,12 @@ const MessageListWithContext = <
     if (onEndReachedInPromise.current) {
       await onEndReachedInPromise.current;
     }
-    onStartReachedInPromise.current = loadMoreRecent(limit).then(callback).catch(onError);
+    onStartReachedInPromise.current = (
+      // todo: fixme to work with threads v2
+      loadMoreRecent(limit)
+    )
+      .then(callback)
+      .catch(onError);
   };
 
   /**
@@ -1102,6 +1111,7 @@ const MessageListWithContext = <
     );
   }
 
+  console.log('ISE P: ', processedMessageList.length, new Date().toISOString());
   return (
     <View
       style={[styles.container, { backgroundColor: white_snow }, container]}
@@ -1237,7 +1247,7 @@ export const MessageList = <
   const { hasNoMoreRecentMessagesToLoad, loadMore, loadMoreRecent } =
     usePaginatedMessageListContext<StreamChatGenerics>();
   const { overlay } = useOverlayContext();
-  const { loadMoreThread, thread } = useThreadContext<StreamChatGenerics>();
+  const { loadMoreRecentThread, loadMoreThread, thread } = useThreadContext<StreamChatGenerics>();
 
   return (
     <MessageListWithContext
@@ -1264,6 +1274,7 @@ export const MessageList = <
         LoadingIndicator,
         loadMore,
         loadMoreRecent,
+        loadMoreRecentThread,
         loadMoreThread,
         markRead,
         Message,

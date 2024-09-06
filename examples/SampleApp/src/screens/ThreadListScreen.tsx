@@ -6,6 +6,7 @@ import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { BottomTabNavigatorParamList } from '../types';
+import { useNavigation } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   container: {
@@ -40,6 +41,7 @@ export const ThreadListScreen: React.FC<ThreadsScreenProps> = () => {
       colors: { white_snow },
     },
   } = useTheme();
+  const navigation = useNavigation();
 
   return (
     <View
@@ -51,7 +53,14 @@ export const ThreadListScreen: React.FC<ThreadsScreenProps> = () => {
       ]}
     >
       <ChatScreenHeader />
-      <ThreadList />
+      <ThreadList
+        onThreadSelect={(thread, channel) => {
+          navigation.navigate('ThreadScreen', {
+            thread,
+            channel,
+          });
+        }}
+      />
     </View>
   );
 };

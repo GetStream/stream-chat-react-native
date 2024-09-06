@@ -9,12 +9,16 @@ import {
   useTheme,
   useTypingString,
 } from 'stream-chat-react-native';
+import { useStateStore } from 'stream-chat-react-native-core/src';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 
 import type { RouteProp } from '@react-navigation/native';
 
 import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
+import { ThreadState } from 'stream-chat';
+
+const selector = (nextValue: ThreadState) => [nextValue.parentMessage] as const;
 
 const styles = StyleSheet.create({
   container: {
@@ -32,13 +36,20 @@ export type ThreadHeaderProps = {
   thread: ThreadContextValue<StreamChatGenerics>['thread'];
 };
 
+// TODO: Move this in the SDK itself, no reason for it not to be there. The React SDK has it too.
 const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
   const typing = useTypingString();
+  let subtitleText = thread?.user?.name
+
+  if (subtitleText == null) {
+    const [parentMessage] = useStateStore(thread?.state, selector) || [];
+    subtitleText = parentMessage?.user?.name;
+  }
 
   return (
     <ScreenHeader
       inSafeArea
-      subtitleText={typing ? typing : `with ${thread?.user?.name}`}
+      subtitleText={typing ? typing : `with ${subtitleText}`}
       titleText='Thread Reply'
     />
   );

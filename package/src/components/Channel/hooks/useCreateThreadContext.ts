@@ -1,8 +1,16 @@
-import { useMemo } from 'react';
+import { ThreadState } from 'stream-chat';
 
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
+import { useStateStore } from '../../../hooks';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { reduceMessagesToString } from '../../../utils/utils';
+
+const selector = (nextValue: ThreadState) =>
+  [
+    nextValue.replies,
+    nextValue.pagination.isLoadingPrev,
+    nextValue.pagination.isLoadingNext,
+    nextValue.parentMessage,
+  ] as const;
 
 export const useCreateThreadContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -18,35 +26,33 @@ export const useCreateThreadContext = <
   threadLoadingMore,
   threadMessages,
 }: ThreadContextValue<StreamChatGenerics>) => {
-  const threadId = thread?.id;
-  const threadReplyCount = thread?.reply_count;
-  const threadLatestReactions = thread?.latest_reactions;
-  const threadMessagesStr = reduceMessagesToString(threadMessages);
+  const [latestReplies, isLoadingPrev, isLoadingNext, parentMessage] =
+    useStateStore(thread?.state, selector) ?? [];
 
-  const threadContext: ThreadContextValue<StreamChatGenerics> = useMemo(
-    () => ({
-      allowThreadMessagesInChannel,
-      closeThread,
-      loadMoreThread,
-      openThread,
-      reloadThread,
-      setThreadLoadingMore,
-      thread,
-      threadHasMore,
-      threadLoadingMore,
-      threadMessages,
-    }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      allowThreadMessagesInChannel,
-      threadHasMore,
-      threadId,
-      threadLoadingMore,
-      threadMessagesStr,
-      threadReplyCount,
-      threadLatestReactions,
-    ],
-  );
+  // console.log('ISE: LATEST REPLIES TEST: ', threadMessages.length, latestReplies?.length, thread?.activate)
 
-  return threadContext;
+  const contextAdapter = thread?.activate
+    ? {
+        loadMoreRecentThread: thread.loadNextPage,
+        loadMoreThread: thread.loadPrevPage,
+        thread: parentMessage,
+        threadLoadingMore: isLoadingPrev,
+        threadLoadingMoreRecent: isLoadingNext,
+        threadMessages: latestReplies,
+      }
+    : {};
+
+  return {
+    allowThreadMessagesInChannel,
+    closeThread,
+    loadMoreThread,
+    openThread,
+    reloadThread,
+    setThreadLoadingMore,
+    thread,
+    threadHasMore,
+    threadLoadingMore,
+    threadMessages,
+    ...contextAdapter,
+  };
 };

@@ -826,7 +826,7 @@ const ChannelWithContext = <
             setThreadMessages(updatedThreadMessages);
           }
 
-          if (channel && thread?.id && event.message?.id === thread.id) {
+          if (channel && thread?.id && event.message?.id === thread.id && !thread.activate) {
             const updatedThread = channel.state.formatMessage(event.message);
             setThread(updatedThread);
           }
@@ -1218,7 +1218,7 @@ const ChannelWithContext = <
       loadMoreThreadFinished(updatedHasMore, updatedThreadMessages);
       const { messages } = await channel.getMessagesById([parentID]);
       const [threadMessage] = messages;
-      if (threadMessage) {
+      if (threadMessage && !thread.activate) {
         const formattedMessage = channel.state.formatMessage(threadMessage);
         setThread(formattedMessage);
       }
@@ -1742,6 +1742,7 @@ const ChannelWithContext = <
       commands: [],
       messageInput: '',
     });
+    thread?.upsertReplyLocally?.({ message: messagePreview });
 
     if (enableOfflineSupport) {
       // While sending a message, we add the message to local db with failed status, so that
@@ -1967,6 +1968,7 @@ const ChannelWithContext = <
         setThreadMessages(channel.state.threads[thread.id] || []);
       }
     }
+    thread?.deleteReplyLocally?.({ message });
 
     if (enableOfflineSupport) {
       dbApi.deleteMessage({
@@ -2041,6 +2043,11 @@ const ChannelWithContext = <
         deleted_at: new Date().toISOString(),
         type: 'deleted',
       });
+
+      if (thread && thread.deleteReplyLocally) {
+        console.log('DELETING MESSAGE: ', message)
+        thread.upsertReplyLocally({ message })
+      }
 
       const data = await DBSyncManager.queueTask<StreamChatGenerics>({
         client,
