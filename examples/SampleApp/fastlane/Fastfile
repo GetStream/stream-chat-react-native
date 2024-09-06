@@ -133,6 +133,7 @@ lane :update_img_shields_sdk_sizes do |options|
   update_sdk_size_in_readme(
     readme_path: '../../README.md',
     open_pr: options[:open_pr] || false,
+    pr_title: 'chore: update sdk size',
     sizes: options[:sizes] || frameworks_sizes,
     size_ext: sdk_size_ext
   )
