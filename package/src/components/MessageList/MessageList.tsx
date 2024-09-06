@@ -277,6 +277,7 @@ const MessageListWithContext = <
     StickyHeader,
     targetedMessage,
     thread,
+    threadInstance,
     threadList = false,
     TypingIndicator,
     TypingIndicatorContainer,
@@ -746,7 +747,7 @@ const MessageListWithContext = <
     }
     onStartReachedInPromise.current = (
       // todo: fixme to work with threads v2
-      loadMoreRecent(limit)
+      threadList && !!threadInstance ? loadMoreRecentThread(limit) : loadMoreRecent(limit)
     )
       .then(callback)
       .catch(onError);
@@ -1111,7 +1112,6 @@ const MessageListWithContext = <
     );
   }
 
-  console.log('ISE P: ', processedMessageList.length, new Date().toISOString());
   return (
     <View
       style={[styles.container, { backgroundColor: white_snow }, container]}
@@ -1247,7 +1247,7 @@ export const MessageList = <
   const { hasNoMoreRecentMessagesToLoad, loadMore, loadMoreRecent } =
     usePaginatedMessageListContext<StreamChatGenerics>();
   const { overlay } = useOverlayContext();
-  const { loadMoreRecentThread, loadMoreThread, thread } = useThreadContext<StreamChatGenerics>();
+  const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } = useThreadContext<StreamChatGenerics>();
 
   return (
     <MessageListWithContext
@@ -1292,6 +1292,7 @@ export const MessageList = <
         StickyHeader,
         targetedMessage,
         thread,
+        threadInstance,
         threadList,
         TypingIndicator,
         TypingIndicatorContainer,

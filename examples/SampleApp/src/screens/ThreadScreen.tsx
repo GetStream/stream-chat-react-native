@@ -42,7 +42,7 @@ const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
   let subtitleText = thread?.user?.name
 
   if (subtitleText == null) {
-    const [parentMessage] = useStateStore(thread?.state, selector) || [];
+    const [parentMessage] = useStateStore(thread?.threadInstance?.state, selector) || [];
     subtitleText = parentMessage?.user?.name;
   }
 

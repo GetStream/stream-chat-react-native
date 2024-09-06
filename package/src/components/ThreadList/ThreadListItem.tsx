@@ -5,10 +5,15 @@ import { Channel, Thread, ThreadState } from 'stream-chat';
 
 import { useStateStore } from '../../hooks';
 import { Avatar } from '../Avatar/Avatar';
+import { ThreadType } from '../../contexts';
+import { MessageType } from '../../../lib/typescript';
 
 export type ThreadListItemProps = {
   thread: Thread;
-  onThreadSelect?: (thread: Thread, channel: Channel) => void;
+  onThreadSelect?: (
+    thread: ThreadType,
+    channel: Channel,
+  ) => void;
 };
 
 export const ThreadListItem = (props: ThreadListItemProps) => {
@@ -27,13 +32,11 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
   // }
   // debugger
 
-  console.log('ISE: ', lastReply?.user?.image);
-
   return (
     <TouchableOpacity
       onPress={() => {
         if (onThreadSelect) {
-          onThreadSelect(thread, channel);
+          onThreadSelect({ thread: parentMessage as MessageType, threadInstance: thread }, channel);
         }
       }}
       style={{

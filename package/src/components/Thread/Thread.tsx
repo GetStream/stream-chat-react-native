@@ -23,7 +23,12 @@ type ThreadPropsWithContext<
   Pick<MessagesContextValue<StreamChatGenerics>, 'MessageList'> &
   Pick<
     ThreadContextValue<StreamChatGenerics>,
-    'closeThread' | 'loadMoreThread' | 'parentMessagePreventPress' | 'reloadThread' | 'thread'
+    | 'closeThread'
+    | 'loadMoreThread'
+    | 'parentMessagePreventPress'
+    | 'reloadThread'
+    | 'thread'
+    | 'threadInstance'
   > & {
     /**
      * Additional props for underlying MessageInput component.
@@ -70,12 +75,13 @@ const ThreadWithContext = <
     onThreadDismount,
     parentMessagePreventPress = true,
     thread,
+    threadInstance,
   } = props;
 
   useEffect(() => {
-    if (thread?.activate) {
+    if (threadInstance?.activate) {
       // @ts-ignore
-      thread.activate();
+      threadInstance.activate();
     }
     const loadMoreThreadAsync = async () => {
       await loadMoreThread();
@@ -86,9 +92,9 @@ const ThreadWithContext = <
     }
 
     return () => {
-      if (thread?.deactivate) {
+      if (threadInstance?.deactivate) {
         // @ts-ignore
-        thread.deactivate();
+        threadInstance.deactivate();
       }
       if (closeThreadOnDismount) {
         closeThread();
@@ -96,7 +102,7 @@ const ThreadWithContext = <
       if (onThreadDismount) {
         onThreadDismount();
       }
-    };
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -22,20 +22,21 @@ export const useCreateThreadContext = <
   reloadThread,
   setThreadLoadingMore,
   thread,
+  threadInstance,
   threadHasMore,
   threadLoadingMore,
   threadMessages,
 }: ThreadContextValue<StreamChatGenerics>) => {
-  const [latestReplies, isLoadingPrev, isLoadingNext, parentMessage] =
-    useStateStore(thread?.state, selector) ?? [];
+  const [latestReplies, isLoadingPrev, isLoadingNext] =
+    useStateStore(threadInstance?.state, selector) ?? [];
 
   // console.log('ISE: LATEST REPLIES TEST: ', threadMessages.length, latestReplies?.length, thread?.activate)
+  console.log('ISE: MSGS', threadMessages?.length, latestReplies?.length)
 
-  const contextAdapter = thread?.activate
+  const contextAdapter = !!threadInstance
     ? {
-        loadMoreRecentThread: thread.loadNextPage,
-        loadMoreThread: thread.loadPrevPage,
-        thread: parentMessage,
+        loadMoreRecentThread: threadInstance.loadNextPage,
+        loadMoreThread: threadInstance.loadPrevPage,
         threadLoadingMore: isLoadingPrev,
         threadLoadingMoreRecent: isLoadingNext,
         threadMessages: latestReplies,
@@ -53,6 +54,7 @@ export const useCreateThreadContext = <
     threadHasMore,
     threadLoadingMore,
     threadMessages,
+    loadMoreRecentThread: () => {},
     ...contextAdapter,
   };
 };
