@@ -2120,13 +2120,14 @@ const ChannelWithContext = <
    */
   const openThread: ThreadContextValue<StreamChatGenerics>['openThread'] = useCallback(
     (message) => {
-      const newThreadMessages = message?.id ? channel?.state?.threads[message.id] || [] : [];
       setThread(message);
-      setThreadMessages(newThreadMessages);
-      console.log('ISE: SET THREAD MESSAGES TO8: ')
+      // This was causing inconsistencies within the thread state as well as being responsible
+      // of threads essentially never unloading (due to all of the previous threads + 50 loading
+      // every time we'd run this). It seemingly has no impact (other than a performance boost)
+      // and having it was causing issues with the Threads V2 architecture.
+      // setThreadMessages(newThreadMessages);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [setThread, setThreadMessages],
+    [setThread],
   );
 
   const closeThread: ThreadContextValue<StreamChatGenerics>['closeThread'] = useCallback(() => {
