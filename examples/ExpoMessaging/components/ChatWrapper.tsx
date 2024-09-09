@@ -1,6 +1,5 @@
 import React, { PropsWithChildren } from 'react';
-import { Chat, OverlayProvider, Streami18n } from 'stream-chat-expo';
-import { useChatClient } from '../hooks/useChatClient';
+import { Chat, OverlayProvider, Streami18n, useCreateChatClient } from 'stream-chat-expo';
 import { AuthProgressLoader } from './AuthProgressLoader';
 import { StreamChatGenerics } from '../types';
 import { STREAM_API_KEY, user, userToken } from '../constants';
@@ -12,7 +11,7 @@ const streami18n = new Streami18n({
 
 export const ChatWrapper = ({ children }: PropsWithChildren<{}>) => {
   const { bottom } = useSafeAreaInsets();
-  const chatClient = useChatClient({
+  const chatClient = useCreateChatClient({
     apiKey: STREAM_API_KEY,
     userData: user,
     tokenOrProvider: userToken,
@@ -24,7 +23,7 @@ export const ChatWrapper = ({ children }: PropsWithChildren<{}>) => {
 
   return (
     <OverlayProvider<StreamChatGenerics> bottomInset={bottom} i18nInstance={streami18n}>
-      <Chat client={chatClient} i18nInstance={streami18n} enableOfflineSupport={true}>
+      <Chat client={chatClient} i18nInstance={streami18n}>
         {children}
       </Chat>
     </OverlayProvider>
