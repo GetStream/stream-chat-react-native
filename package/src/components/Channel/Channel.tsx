@@ -2122,7 +2122,7 @@ const ChannelWithContext = <
       // and having it was causing issues with the Threads V2 architecture.
       // setThreadMessages(newThreadMessages);
     },
-    [setThread],
+    [channel, setThread],
   );
 
   const closeThread: ThreadContextValue<StreamChatGenerics>['closeThread'] = useCallback(() => {
