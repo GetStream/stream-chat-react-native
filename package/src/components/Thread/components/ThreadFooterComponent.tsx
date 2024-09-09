@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
 import {
@@ -17,6 +17,10 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 const styles = StyleSheet.create({
   absolute: { position: 'absolute' },
+  activityIndicatorContainer: {
+    padding: 10,
+    width: '100%',
+  },
   messagePadding: {
     paddingHorizontal: 8,
   },
@@ -39,6 +43,25 @@ type ThreadFooterComponentPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<MessagesContextValue<StreamChatGenerics>, 'Message'> &
   Pick<ThreadContextValue<StreamChatGenerics>, 'parentMessagePreventPress' | 'thread'>;
+
+const ThreadFooterLoadMoreIndicator = () => {
+  const { threadLoadingMore } = useThreadContext();
+  const {
+    theme: {
+      colors: { accent_blue },
+    },
+  } = useTheme();
+
+  if (!threadLoadingMore) {
+    return null;
+  }
+
+  return (
+    <View style={styles.activityIndicatorContainer}>
+      <ActivityIndicator color={accent_blue} size='small' />
+    </View>
+  );
+};
 
 const ThreadFooterComponentWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -111,6 +134,7 @@ const ThreadFooterComponentWithContext = <
               })}
         </Text>
       </View>
+      <ThreadFooterLoadMoreIndicator />
     </View>
   );
 };
@@ -163,7 +187,8 @@ export const ThreadFooterComponent = <
   props: ThreadFooterComponentProps<StreamChatGenerics>,
 ) => {
   const { Message } = useMessagesContext<StreamChatGenerics>();
-  const { parentMessagePreventPress, thread } = useThreadContext<StreamChatGenerics>();
+  const { parentMessagePreventPress, thread, threadLoadingMore } =
+    useThreadContext<StreamChatGenerics>();
 
   return (
     <MemoizedThreadFooter
@@ -171,6 +196,7 @@ export const ThreadFooterComponent = <
         Message,
         parentMessagePreventPress,
         thread,
+        threadLoadingMore,
       }}
       {...props}
     />

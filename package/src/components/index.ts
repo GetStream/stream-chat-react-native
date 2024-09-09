@@ -138,7 +138,6 @@ export * from './MessageList/hooks/useTypingString';
 export * from './MessageList/InlineDateSeparator';
 export * from './MessageList/InlineLoadingMoreIndicator';
 export * from './MessageList/InlineLoadingMoreRecentIndicator';
-export * from './MessageList/InlineLoadingMoreThreadIndicator';
 export * from './MessageList/InlineUnreadIndicator';
 export * from './MessageList/MessageList';
 export * from './MessageList/MessageSystem';

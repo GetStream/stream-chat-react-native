@@ -25,6 +25,7 @@ export type ThreadContextValue<
   thread: MessageType<StreamChatGenerics> | null;
   threadHasMore: boolean;
   threadLoadingMore: boolean;
+  threadLoadingMoreRecent: boolean;
   threadMessages: ChannelState<StreamChatGenerics>['threads'][string];
   loadMoreRecentThread?: (limit?: number) => Promise<void>;
   /**

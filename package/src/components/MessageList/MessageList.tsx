@@ -20,7 +20,7 @@ import { useShouldScrollToRecentOnNewOwnMessage } from './hooks/useShouldScrollT
 
 import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
 import { InlineLoadingMoreRecentIndicator } from './InlineLoadingMoreRecentIndicator';
-import { InlineLoadingMoreThreadIndicator } from './InlineLoadingMoreThreadIndicator';
+import { InlineLoadingMoreRecentThreadIndicator } from './InlineLoadingMoreRecentThreadIndicator';
 import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
 
 import {
@@ -228,9 +228,9 @@ const MessageListWithContext = <
 >(
   props: MessageListPropsWithContext<StreamChatGenerics>,
 ) => {
-  const LoadingMoreIndicator = props.threadList
-    ? InlineLoadingMoreThreadIndicator
-    : InlineLoadingMoreIndicator;
+  const LoadingMoreRecentIndicator = props.threadList
+    ? InlineLoadingMoreRecentThreadIndicator
+    : InlineLoadingMoreRecentIndicator;
   const {
     additionalFlatListProps,
     channel,
@@ -241,9 +241,9 @@ const MessageListWithContext = <
     disableTypingIndicator,
     EmptyStateIndicator,
     FlatList,
-    FooterComponent = LoadingMoreIndicator,
+    FooterComponent = InlineLoadingMoreIndicator,
     hasNoMoreRecentMessagesToLoad,
-    HeaderComponent = InlineLoadingMoreRecentIndicator,
+    HeaderComponent = LoadingMoreRecentIndicator,
     hideStickyDateHeader,
     initialScrollToFirstUnreadMessage,
     InlineDateSeparator,
@@ -745,12 +745,14 @@ const MessageListWithContext = <
     if (onEndReachedInPromise.current) {
       await onEndReachedInPromise.current;
     }
-    onStartReachedInPromise.current = (
-      // todo: fixme to work with threads v2
-      threadList && !!threadInstance ? loadMoreRecentThread(limit) : loadMoreRecent(limit)
-    )
-      .then(callback)
-      .catch(onError);
+    onStartReachedInPromise.current = // todo: fixme to work with threads v2
+      (
+        threadList && !!threadInstance && loadMoreRecentThread
+          ? loadMoreRecentThread(limit)
+          : loadMoreRecent(limit)
+      )
+        .then(callback)
+        .catch(onError);
   };
 
   /**
@@ -1247,7 +1249,8 @@ export const MessageList = <
   const { hasNoMoreRecentMessagesToLoad, loadMore, loadMoreRecent } =
     usePaginatedMessageListContext<StreamChatGenerics>();
   const { overlay } = useOverlayContext();
-  const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } = useThreadContext<StreamChatGenerics>();
+  const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } =
+    useThreadContext<StreamChatGenerics>();
 
   return (
     <MessageListWithContext
