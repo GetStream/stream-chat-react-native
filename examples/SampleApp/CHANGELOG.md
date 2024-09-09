@@ -1,5 +1,17 @@
 # Change Log
 
+### [1.28.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.28.1...sampleapp@v1.28.2) (2024-09-09)
+
+
+### Bug Fixes
+
+* sdk size pr ([#2657](https://github.com/GetStream/stream-chat-react-native/issues/2657)) ([233faa1](https://github.com/GetStream/stream-chat-react-native/commit/233faa128842fda9a272dc1f3455112f93a701c5))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.28.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.28.0...sampleapp@v1.28.1) (2024-09-04)
 
 
