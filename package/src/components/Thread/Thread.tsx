@@ -80,7 +80,6 @@ const ThreadWithContext = <
 
   useEffect(() => {
     if (threadInstance?.activate) {
-      // @ts-ignore
       threadInstance.activate();
     }
     const loadMoreThreadAsync = async () => {
@@ -147,7 +146,7 @@ export const Thread = <
   const { client } = useChatContext<StreamChatGenerics>();
   const { threadList } = useChannelContext<StreamChatGenerics>();
   const { MessageList } = useMessagesContext<StreamChatGenerics>();
-  const { closeThread, loadMoreThread, reloadThread, thread } =
+  const { closeThread, loadMoreThread, reloadThread, thread, threadInstance } =
     useThreadContext<StreamChatGenerics>();
 
   if (thread?.id && !threadList) {
@@ -165,6 +164,7 @@ export const Thread = <
         MessageList,
         reloadThread,
         thread,
+        threadInstance,
       }}
       {...props}
     />

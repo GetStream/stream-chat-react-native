@@ -603,7 +603,7 @@ const ChannelWithContext = <
   // const threadProps = (
   //   threadFromProps?.threadState ? threadFromProps.thread : threadFromProps
   // ) as MessageType<StreamChatGenerics>;
-  const { threadInstance, thread: threadProps } = threadFromProps
+  const { thread: threadProps, threadInstance } = threadFromProps;
 
   const {
     theme: {
@@ -694,7 +694,6 @@ const ChannelWithContext = <
       setThread(threadProps);
       if (channel && threadProps?.id) {
         setThreadMessages(channel.state.threads?.[threadProps.id] || []);
-        console.log('ISE: SET THREAD MESSAGES TO1: ', channel.state.threads?.[threadProps.id] || [], threadInstance?.id)
       }
     } else {
       setThread(null);
@@ -832,8 +831,6 @@ const ChannelWithContext = <
             const updatedThreadMessages =
               (thread.id && channel && channel.state.threads[thread.id]) || threadMessages;
             setThreadMessages(updatedThreadMessages);
-            console.log('ISE: SET THREAD MESSAGES TO2: ', updatedThreadMessages)
-
           }
 
           if (channel && thread?.id && event.message?.id === thread.id && !thread.activate) {
@@ -1022,7 +1019,6 @@ const ChannelWithContext = <
             await channel.state.loadMessageIntoState(messageIdToLoadAround, thread.id);
             setThreadLoadingMore(false);
             setThreadMessages(channel.state.threads[thread.id]);
-            console.log('ISE: SET THREAD MESSAGES TO3: ', channel.state.threads[thread.id])
             setTargetedMessage(messageIdToLoadAround);
           } catch (err) {
             if (err instanceof Error) {
@@ -1346,7 +1342,6 @@ const ChannelWithContext = <
       if (thread && failedThreadMessages.length) {
         channel.state.addMessagesSorted(failedThreadMessages);
         setThreadMessages([...channel.state.threads[thread.id]]);
-        console.log('ISE: SET THREAD MESSAGES TO4: ')
       }
     } catch (err) {
       if (err instanceof Error) {
@@ -1520,7 +1515,6 @@ const ChannelWithContext = <
       if (thread && updatedMessage.parent_id) {
         extraState.threadMessages = channel.state.threads[updatedMessage.parent_id] || [];
         setThreadMessages(extraState.threadMessages);
-        console.log('ISE: SET THREAD MESSAGES TO5: ')
       }
 
       setMessages([...channel.state.messages]);
@@ -1537,7 +1531,6 @@ const ChannelWithContext = <
       if (thread && newMessage.parent_id) {
         const threadMessages = channel.state.threads[newMessage.parent_id] || [];
         setThreadMessages(threadMessages);
-        console.log('ISE: SET THREAD MESSAGES TO6: ')
       }
       setMessages(channel.state.messages);
     }
@@ -1980,7 +1973,6 @@ const ChannelWithContext = <
       setMessages(channel.state.messages);
       if (thread) {
         setThreadMessages(channel.state.threads[thread.id] || []);
-        console.log('ISE: SET THREAD MESSAGES TO7: ')
       }
     }
     // todo: check if it should it be delete or upsert
@@ -2121,6 +2113,9 @@ const ChannelWithContext = <
   const openThread: ThreadContextValue<StreamChatGenerics>['openThread'] = useCallback(
     (message) => {
       setThread(message);
+      // TODO: Check if this causes issues and if it should be throttled like the other methods.
+      // Also check if it causes any issues with channel state
+      channel.markRead({ thread_id: message.id });
       // This was causing inconsistencies within the thread state as well as being responsible
       // of threads essentially never unloading (due to all of the previous threads + 50 loading
       // every time we'd run this). It seemingly has no impact (other than a performance boost)
@@ -2145,7 +2140,6 @@ const ChannelWithContext = <
         setThreadHasMore(newThreadHasMore);
         setThreadLoadingMore(false);
         setThreadMessages(updatedThreadMessages);
-        console.log('ISE: SET THREAD MESSAGES TO9: ')
       },
       defaultDebounceInterval,
       debounceOptions,

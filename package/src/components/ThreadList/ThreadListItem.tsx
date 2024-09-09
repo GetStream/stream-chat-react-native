@@ -3,29 +3,35 @@ import { Text, TouchableOpacity, View } from 'react-native';
 
 import { Channel, Thread, ThreadState } from 'stream-chat';
 
+import { MessageType } from '../../../lib/typescript';
+import { ThreadType, useChatContext } from '../../contexts';
 import { useStateStore } from '../../hooks';
 import { Avatar } from '../Avatar/Avatar';
-import { ThreadType } from '../../contexts';
-import { MessageType } from '../../../lib/typescript';
 
 export type ThreadListItemProps = {
   thread: Thread;
-  onThreadSelect?: (
-    thread: ThreadType,
-    channel: Channel,
-  ) => void;
+  onThreadSelect?: (thread: ThreadType, channel: Channel) => void;
 };
 
 export const ThreadListItem = (props: ThreadListItemProps) => {
+  const { client } = useChatContext();
   const { onThreadSelect, thread } = props;
 
   const selector = useCallback(
     (nextValue: ThreadState) =>
-      [nextValue.replies.at(-1), nextValue.parentMessage, nextValue.channel] as const,
-    [],
+      [
+        nextValue.replies.at(-1),
+        (client.userID && nextValue.read[client.userID]?.unreadMessageCount) || 0,
+        nextValue.parentMessage,
+        nextValue.channel,
+      ] as const,
+    [client],
   );
 
-  const [lastReply, parentMessage, channel] = useStateStore(thread.state, selector);
+  const [lastReply, ownUnreadMessageCount, parentMessage, channel] = useStateStore(
+    thread.state,
+    selector,
+  );
 
   // if (lastReply) {
   //   console.log('ISE: LAST: ', Object.keys(lastReply.user));
@@ -48,7 +54,12 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
       }}
     >
       <Text>{channel?.data?.name}</Text>
-      <Text numberOfLines={1}>{parentMessage?.text}</Text>
+      <View style={{ flexDirection: 'row' }}>
+        <Text numberOfLines={1} style={{ flex: 1 }}>
+          {parentMessage?.text}
+        </Text>
+        <Text style={{ alignSelf: 'flex-end' }}>{ownUnreadMessageCount}</Text>
+      </View>
       <View style={{ flexDirection: 'row', marginBottom: 14, marginHorizontal: 8, marginTop: 6 }}>
         <Avatar
           containerStyle={{ marginRight: 8 }}
