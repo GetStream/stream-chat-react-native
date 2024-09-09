@@ -1,5 +1,13 @@
 # Change Log
 
+### [5.36.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.36.1...v5.36.2) (2024-09-09)
+
+
+### Bug Fixes
+
+* issue with loading app settings when the connectUser is not called on app ([#2654](https://github.com/GetStream/stream-chat-react-native/issues/2654)) ([9421a33](https://github.com/GetStream/stream-chat-react-native/commit/9421a33d22671aa560c30f426d4b7a7e22d0afb1))
+* unable to upload file due to special characters in the file name ([#2656](https://github.com/GetStream/stream-chat-react-native/issues/2656)) ([c2dacb2](https://github.com/GetStream/stream-chat-react-native/commit/c2dacb27a6a26d04f2012d8e57e2621bffdbbb0d))
+
 ### [5.36.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.36.0...v5.36.1) (2024-09-04)
 
 
