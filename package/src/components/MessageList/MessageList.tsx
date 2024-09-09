@@ -52,7 +52,7 @@ import {
 import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 
 const WAIT_FOR_SCROLL_TO_OFFSET_TIMEOUT = 150;
 const MAX_RETRIES_AFTER_SCROLL_FAILURE = 10;
@@ -290,6 +290,7 @@ const MessageListWithContext = <
 
   const modifiedTheme = useMemo(
     () => mergeThemes({ style: myMessageTheme, theme }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [myMessageThemeString, theme],
   );
 
@@ -469,6 +470,7 @@ const MessageListWithContext = <
     if (getShouldMarkReadAutomatically()) {
       markRead();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, scrollToBottomButtonVisible, isInitialScrollDone]);
 
   useEffect(() => {
@@ -535,6 +537,7 @@ const MessageListWithContext = <
 
     messageListLengthBeforeUpdate.current = messageListLengthAfterUpdate;
     topMessageBeforeUpdate.current = topMessageAfterUpdate;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     threadList,
     hasNoMoreRecentMessagesToLoad,
@@ -582,6 +585,7 @@ const MessageListWithContext = <
         }, 150); // flatlist might take a bit to update, so a small delay is needed
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawMessageList, threadList]);
 
   // TODO: do not apply on RN 0.73 and above
@@ -963,7 +967,10 @@ const MessageListWithContext = <
           viewPosition: 0.5, // try to place message in the center of the screen
         });
       }
+      // the message we want to scroll to has not been loaded in the state yet
+      loadChannelAroundMessage({ messageId: messageIdToScroll });
     }, 50);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetedMessage, initialScrollToFirstUnreadMessage]);
 
   const messagesWithImages =
@@ -973,7 +980,7 @@ const MessageListWithContext = <
       if (!isMessageTypeDeleted && message.attachments) {
         return message.attachments.some(
           (attachment) =>
-            attachment.type === 'image' &&
+            attachment.type === FileTypes.Image &&
             !attachment.title_link &&
             !attachment.og_scrape_url &&
             (attachment.image_url || attachment.thumb_url),
@@ -1009,6 +1016,7 @@ const MessageListWithContext = <
     ) {
       setMessages(messagesWithImages as MessageType<StreamChatGenerics>[]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     imageString,
     isListActive,

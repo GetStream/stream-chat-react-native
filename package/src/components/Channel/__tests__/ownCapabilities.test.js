@@ -107,17 +107,17 @@ describe('Own capabilities', () => {
   });
 
   describe(`${allOwnCapabilities.banChannelMembers} capability`, () => {
-    it(`should render "Block User" message action when ${allOwnCapabilities.banChannelMembers} capability is enabled`, async () => {
+    it(`should render "Ban User" message action when ${allOwnCapabilities.banChannelMembers} capability is enabled`, async () => {
       await generateChannelWithCapabilities([allOwnCapabilities.banChannelMembers]);
       const { queryByTestId } = await renderChannelAndOpenMessageActionsList(receivedMessage);
-      expect(!!queryByTestId('blockUser-list-item')).toBeTruthy();
+      expect(!!queryByTestId('banUser-list-item')).toBeTruthy();
     });
 
-    it(`should not render "Block User" message action when ${allOwnCapabilities.banChannelMembers} capability is disabled`, async () => {
+    it(`should not render "Ban User" message action when ${allOwnCapabilities.banChannelMembers} capability is disabled`, async () => {
       await generateChannelWithCapabilities();
 
       const { queryByTestId } = await renderChannelAndOpenMessageActionsList(receivedMessage);
-      expect(!!queryByTestId('blockUser-list-item')).toBeFalsy();
+      expect(!!queryByTestId('banUser-list-item')).toBeFalsy();
     });
 
     it(`should override capability from "overrideOwnCapability.banChannelMembers" prop`, async () => {
@@ -128,7 +128,7 @@ describe('Own capabilities', () => {
           banChannelMembers: false,
         },
       });
-      expect(!!queryByTestId('blockUser-list-item')).toBeFalsy();
+      expect(!!queryByTestId('banUser-list-item')).toBeFalsy();
     });
   });
 

@@ -12,6 +12,9 @@ export const AttachmentPickerIOSSelectMorePhotos = () => {
       colors: { accent_blue, white },
     },
   } = useTheme();
+
+  if (!iOS14RefreshGallerySelection) return null;
+
   return (
     <Pressable
       onPress={iOS14RefreshGallerySelection}

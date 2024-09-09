@@ -57,5 +57,6 @@ export const useNewMessage = <
 
     const listener = client?.on('message.new', handleEvent);
     return () => listener?.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };

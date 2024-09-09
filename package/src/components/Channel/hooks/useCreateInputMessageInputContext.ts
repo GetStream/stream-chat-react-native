@@ -33,6 +33,7 @@ export const useCreateInputMessageInputContext = <
   editMessage,
   emojiSearchIndex,
   FileUploadPreview,
+  handleAttachButtonPress,
   hasCameraPicker,
   hasCommands,
   hasFilePicker,
@@ -102,6 +103,7 @@ export const useCreateInputMessageInputContext = <
       editMessage,
       emojiSearchIndex,
       FileUploadPreview,
+      handleAttachButtonPress,
       hasCameraPicker,
       hasCommands,
       hasFilePicker,
@@ -131,6 +133,7 @@ export const useCreateInputMessageInputContext = <
       StartAudioRecordingButton,
       UploadProgressIndicator,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [compressImageQuality, channelId, editingDep, initialValue, maxMessageLength, quotedMessageId],
   );
 

@@ -112,5 +112,6 @@ export const useProcessReactions = <
       hasReactions: unsortedReactions.length > 0,
       totalReactionCount: unsortedReactions.reduce((total, { count }) => total + count, 0),
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reaction_groups, own_reactions?.length, latest_reactions?.length, sortReactions]);
 };

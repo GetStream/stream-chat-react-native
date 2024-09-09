@@ -38,7 +38,8 @@ export const useCreateChatContext = <
       resizableCDNHosts,
       setActiveChannel,
     }),
-    [channelId, clientValues, connectionRecovering, isOnline, mutedUsersLength],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [appSettings, channelId, clientValues, connectionRecovering, isOnline, mutedUsersLength],
   );
 
   return chatContext;

@@ -84,6 +84,7 @@ export const useCreateChannelContext = <
       watcherCount,
       watchers,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       channelId,
       disabled,

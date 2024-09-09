@@ -2,15 +2,14 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { NativeSyntheticEvent, StyleSheet, TextInputFocusEventData, View } from 'react-native';
 
 import {
-  GestureEvent,
-  PanGestureHandler,
+  Gesture,
+  GestureDetector,
   PanGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolation,
   interpolate,
   runOnJS,
-  useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -49,7 +48,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import { triggerHaptic } from '../../native';
+import { isImageMediaLibraryAvailable, triggerHaptic } from '../../native';
 import type { Asset, DefaultStreamChatGenerics } from '../../types/types';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 
@@ -104,6 +103,7 @@ type MessageInputPropsWithContext<
     | 'asyncMessagesLockDistance'
     | 'asyncMessagesMinimumPressDuration'
     | 'asyncMessagesSlideToCancelDistance'
+    | 'asyncMessagesMultiSendEnabled'
     | 'asyncUploads'
     | 'AudioRecorder'
     | 'AudioRecordingInProgress'
@@ -168,6 +168,7 @@ const MessageInputWithContext = <
     asyncIds,
     asyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration,
+    asyncMessagesMultiSendEnabled,
     asyncMessagesSlideToCancelDistance,
     asyncUploads,
     AttachmentPickerSelectionBar,
@@ -266,6 +267,7 @@ const MessageInputWithContext = <
     setMaxNumberOfFiles(maxNumberOfFiles ?? 10);
 
     return closeAttachmentPicker;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const [hasResetImages, setHasResetImages] = useState(false);
@@ -277,39 +279,51 @@ const MessageInputWithContext = <
   const fileUploadsLength = hasResetFiles ? fileUploads.length : 0;
   const imagesForInput = (!!thread && !!threadList) || (!thread && !threadList);
 
+  /**
+   * Reset the selected images when the component is unmounted.
+   */
   useEffect(() => {
     setSelectedImages([]);
     if (imageUploads.length) {
       imageUploads.forEach((image) => removeImage(image.id));
     }
     return () => setSelectedImages([]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /**
+   * Reset the selected files when the component is unmounted.
+   */
   useEffect(() => {
     setSelectedFiles([]);
     if (fileUploads.length) {
       fileUploads.forEach((file) => removeFile(file.id));
     }
+
     return () => setSelectedFiles([]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (hasResetImages === false && imageUploadsLength === 0 && selectedImagesLength === 0) {
       setHasResetImages(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageUploadsLength, selectedImagesLength]);
 
   useEffect(() => {
     if (hasResetFiles === false && fileUploadsLength === 0 && selectedFilesLength === 0) {
       setHasResetFiles(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileUploadsLength, selectedFilesLength]);
 
   useEffect(() => {
-    if (imagesForInput === false && imageUploads.length) {
+    if (imagesForInput === false && imageUploadsLength) {
       imageUploads.forEach((image) => removeImage(image.id));
     }
-  }, [imagesForInput]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imagesForInput, imageUploadsLength]);
 
   const uploadImagesHandler = () => {
     const imageToUpload = selectedImages.find((selectedImage) => {
@@ -334,46 +348,73 @@ const MessageInputWithContext = <
     imagesToRemove.forEach((image) => removeImage(image.id));
   };
 
+  const uploadFilesHandler = async () => {
+    const fileToUpload = selectedFiles.find((selectedFile) => {
+      const uploadedFile = fileUploads.find(
+        (fileUpload) =>
+          fileUpload.file.uri === selectedFile.uri || fileUpload.url === selectedFile.uri,
+      );
+      return !uploadedFile;
+    });
+    if (fileToUpload) await uploadNewFile(fileToUpload);
+  };
+
+  const removeFilesHandler = () => {
+    const filesToRemove = fileUploads.filter(
+      (fileUpload) =>
+        !selectedFiles.find(
+          (selectedFile) =>
+            selectedFile.uri === fileUpload.file.uri || selectedFile.uri === fileUpload.url,
+        ),
+    );
+    filesToRemove.forEach((file) => removeFile(file.id));
+  };
+
+  /**
+   * When a user selects or deselects an image in the image picker using media library.
+   */
   useEffect(() => {
-    if (imagesForInput) {
-      if (selectedImagesLength > imageUploadsLength) {
-        /** User selected an image in bottom sheet attachment picker */
-        uploadImagesHandler();
-      } else {
-        /** User de-selected an image in bottom sheet attachment picker */
-        removeImagesHandler();
+    const uploadOrRemoveImage = async () => {
+      if (imagesForInput) {
+        if (selectedImagesLength > imageUploadsLength) {
+          /** User selected an image in bottom sheet attachment picker */
+          await uploadImagesHandler();
+        } else {
+          /** User de-selected an image in bottom sheet attachment picker */
+          removeImagesHandler();
+        }
       }
-    }
+    };
+    // If image picker is not available, don't do anything
+    if (!isImageMediaLibraryAvailable()) return;
+    uploadOrRemoveImage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedImagesLength]);
 
+  /**
+   * When a user selects or deselects a video in the image picker using media library.
+   */
   useEffect(() => {
-    if (selectedFilesLength > fileUploadsLength) {
-      /** User selected a video in bottom sheet attachment picker */
-      const fileToUpload = selectedFiles.find((selectedFile) => {
-        const uploadedFile = fileUploads.find(
-          (fileUpload) =>
-            fileUpload.file.uri === selectedFile.uri || fileUpload.url === selectedFile.uri,
-        );
-        return !uploadedFile;
-      });
-      if (fileToUpload) uploadNewFile(fileToUpload);
-    } else {
-      /** User de-selected a video in bottom sheet attachment picker */
-      const filesToRemove = fileUploads.filter(
-        (fileUpload) =>
-          !selectedFiles.find(
-            (selectedFile) =>
-              selectedFile.uri === fileUpload.file.uri || selectedFile.uri === fileUpload.url,
-          ),
-      );
-      filesToRemove.forEach((file) => removeFile(file.id));
-    }
+    const uploadOrRemoveFile = async () => {
+      if (selectedFilesLength > fileUploadsLength) {
+        /** User selected a video in bottom sheet attachment picker */
+        await uploadFilesHandler();
+      } else {
+        /** User de-selected a video in bottom sheet attachment picker */
+        removeFilesHandler();
+      }
+    };
+    uploadOrRemoveFile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFilesLength]);
 
+  /**
+   * This is for image attachments selected from attachment picker.
+   */
   useEffect(() => {
-    if (imagesForInput) {
+    if (imagesForInput && isImageMediaLibraryAvailable()) {
       if (imageUploadsLength < selectedImagesLength) {
-        /** User removed some image from seleted images within ImageUploadPreview. */
+        // /** User removed some image from seleted images within ImageUploadPreview. */
         const updatedSelectedImages = selectedImages.filter((selectedImage) => {
           const uploadedImage = imageUploads.find(
             (imageUpload) =>
@@ -384,9 +425,7 @@ const MessageInputWithContext = <
         setSelectedImages(updatedSelectedImages);
       } else if (imageUploadsLength > selectedImagesLength) {
         /**
-         * User is editing some message which contains image attachments OR
-         * image attachment is added from custom image picker (other than the default bottomsheet image picker)
-         * using `uploadNewImage` function from `MessageInputContext`.
+         * User is editing some message which contains image attachments.
          **/
         setSelectedImages(
           imageUploads
@@ -400,38 +439,44 @@ const MessageInputWithContext = <
         );
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageUploadsLength]);
 
+  /**
+   * This is for video attachments selected from attachment picker.
+   */
   useEffect(() => {
-    if (fileUploadsLength < selectedFilesLength) {
-      /** User removed some video from seleted files within ImageUploadPreview. */
-      const updatedSelectedFiles = selectedFiles.filter((selectedFile) => {
-        const uploadedFile = fileUploads.find(
-          (fileUpload) =>
-            fileUpload.file.uri === selectedFile.uri || fileUpload.url === selectedFile.uri,
+    if (isImageMediaLibraryAvailable()) {
+      if (fileUploadsLength < selectedFilesLength) {
+        /** User removed some video from seleted files within ImageUploadPreview. */
+        const updatedSelectedFiles = selectedFiles.filter((selectedFile) => {
+          const uploadedFile = fileUploads.find(
+            (fileUpload) =>
+              fileUpload.file.uri === selectedFile.uri || fileUpload.url === selectedFile.uri,
+          );
+          return uploadedFile;
+        });
+        setSelectedFiles(updatedSelectedFiles);
+      } else if (fileUploadsLength > selectedFilesLength) {
+        /**
+         * User is editing some message which contains video attachments.
+         **/
+        setSelectedFiles(
+          fileUploads.map((fileUpload) => ({
+            duration: fileUpload.file.duration,
+            mimeType: fileUpload.file.mimeType,
+            name: fileUpload.file.name,
+            size: fileUpload.file.size,
+            uri: fileUpload.file.uri,
+          })),
         );
-        return uploadedFile;
-      });
-      setSelectedFiles(updatedSelectedFiles);
-    } else if (fileUploadsLength > selectedFilesLength) {
-      /**
-       * User is editing some message which contains video attachments OR
-       * video attachment is added from custom image picker (other than the default bottom-sheet image picker)
-       * using `uploadNewFile` function from `MessageInputContext`.
-       **/
-      setSelectedFiles(
-        fileUploads.map((fileUpload) => ({
-          duration: fileUpload.file.duration,
-          mimeType: fileUpload.file.mimeType,
-          name: fileUpload.file.name,
-          size: fileUpload.file.size,
-          uri: fileUpload.file.uri,
-        })),
-      );
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileUploadsLength]);
 
   const editingExists = !!editing;
+
   useEffect(() => {
     if (editing && inputBoxRef.current) {
       inputBoxRef.current.focus();
@@ -457,6 +502,7 @@ const MessageInputWithContext = <
     ) {
       resetInput();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editingExists]);
 
   const asyncIdsString = asyncIds.join();
@@ -473,6 +519,7 @@ const MessageInputWithContext = <
       asyncIds.forEach((id) => sendMessageAsync(id));
       sending.current = false;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [asyncIdsString, asyncUploadsString, sendMessageAsync]);
 
   const getMembers = () => {
@@ -533,6 +580,7 @@ const MessageInputWithContext = <
         if (setFocused) setFocused(true);
       },
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [additionalTextInputProps],
   );
 
@@ -577,19 +625,16 @@ const MessageInputWithContext = <
 
   const resetAudioRecording = async () => {
     await deleteVoiceRecording();
-    micPositionX.value = 0;
   };
 
   const micLockHandler = () => {
     setMicLocked(true);
-    micPositionY.value = 0;
     triggerHaptic('impactMedium');
   };
 
-  const handleMicGestureEvent = useAnimatedGestureHandler<
-    GestureEvent<PanGestureHandlerEventPayload>
-  >({
-    onActive: (event) => {
+  const panGestureMic = Gesture.Pan()
+    .activateAfterLongPress(asyncMessagesMinimumPressDuration + 100)
+    .onChange((event: PanGestureHandlerEventPayload) => {
       const newPositionX = event.translationX;
       const newPositionY = event.translationY;
 
@@ -599,27 +644,38 @@ const MessageInputWithContext = <
       if (newPositionY <= 0 && newPositionY >= Y_AXIS_POSITION) {
         micPositionY.value = newPositionY;
       }
-    },
-    onFinish: () => {
-      if (micPositionY.value > Y_AXIS_POSITION / 2) {
+    })
+    .onEnd(() => {
+      const belowThresholdY = micPositionY.value > Y_AXIS_POSITION / 2;
+      const belowThresholdX = micPositionX.value > X_AXIS_POSITION / 2;
+
+      if (belowThresholdY && belowThresholdX) {
         micPositionY.value = withSpring(0);
-      } else {
+        micPositionX.value = withSpring(0);
+        if (recordingStatus === 'recording') {
+          runOnJS(uploadVoiceRecording)(asyncMessagesMultiSendEnabled);
+        }
+        return;
+      }
+
+      if (!belowThresholdY) {
         micPositionY.value = withSpring(Y_AXIS_POSITION);
         runOnJS(micLockHandler)();
       }
-      if (micPositionX.value > X_AXIS_POSITION / 2) {
-        micPositionX.value = withSpring(0);
-      } else {
+
+      if (!belowThresholdX) {
         micPositionX.value = withSpring(X_AXIS_POSITION);
         runOnJS(resetAudioRecording)();
       }
-    },
-    onStart: () => {
+
+      micPositionX.value = 0;
+      micPositionY.value = 0;
+    })
+    .onStart(() => {
       micPositionX.value = 0;
       micPositionY.value = 0;
       runOnJS(setMicLocked)(false);
-    },
-  });
+    });
 
   const animatedStyles = {
     lockIndicator: useAnimatedStyle(() => ({
@@ -673,21 +729,20 @@ const MessageInputWithContext = <
               micLocked={micLocked}
               style={animatedStyles.lockIndicator}
             />
-            {micLocked &&
-              (recordingStatus === 'stopped' ? (
-                <AudioRecordingPreview
-                  onVoicePlayerPlayPause={onVoicePlayerPlayPause}
-                  paused={paused}
-                  position={position}
-                  progress={progress}
-                  waveformData={waveformData}
-                />
-              ) : (
-                <AudioRecordingInProgress
-                  recordingDuration={recordingDuration}
-                  waveformData={waveformData}
-                />
-              ))}
+            {recordingStatus === 'stopped' ? (
+              <AudioRecordingPreview
+                onVoicePlayerPlayPause={onVoicePlayerPlayPause}
+                paused={paused}
+                position={position}
+                progress={progress}
+                waveformData={waveformData}
+              />
+            ) : micLocked ? (
+              <AudioRecordingInProgress
+                recordingDuration={recordingDuration}
+                waveformData={waveformData}
+              />
+            ) : null}
           </>
         )}
 
@@ -771,10 +826,7 @@ const MessageInputWithContext = <
                   </View>
                 ))}
               {audioRecordingEnabled && !micLocked && (
-                <PanGestureHandler
-                  activateAfterLongPress={asyncMessagesMinimumPressDuration + 100}
-                  onGestureEvent={handleMicGestureEvent}
-                >
+                <GestureDetector gesture={panGestureMic}>
                   <Animated.View
                     style={[
                       styles.micButtonContainer,
@@ -788,7 +840,7 @@ const MessageInputWithContext = <
                       startVoiceRecording={startVoiceRecording}
                     />
                   </Animated.View>
-                </PanGestureHandler>
+                </GestureDetector>
               )}
             </>
           )}
@@ -995,6 +1047,7 @@ export const MessageInput = <
     asyncIds,
     asyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration,
+    asyncMessagesMultiSendEnabled,
     asyncMessagesSlideToCancelDistance,
     asyncUploads,
     AudioRecorder,
@@ -1071,6 +1124,7 @@ export const MessageInput = <
         asyncIds,
         asyncMessagesLockDistance,
         asyncMessagesMinimumPressDuration,
+        asyncMessagesMultiSendEnabled,
         asyncMessagesSlideToCancelDistance,
         asyncUploads,
         AttachmentPickerSelectionBar,

@@ -77,7 +77,7 @@ import {
 } from '../../icons';
 import { FlatList as FlatListDefault, isImagePickerAvailable, pickDocument } from '../../native';
 import * as dbApi from '../../store/apis';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
 import { compressedImageURI } from '../../utils/compressImage';
 import { DBSyncManager } from '../../utils/DBSyncManager';
@@ -271,6 +271,7 @@ export type ChannelPropsWithContext<
       | 'getMessagesGroupStyles'
       | 'Giphy'
       | 'giphyVersion'
+      | 'handleBan'
       | 'handleBlock'
       | 'handleCopy'
       | 'handleDelete'
@@ -480,6 +481,8 @@ const ChannelWithContext = <
     Giphy = GiphyDefault,
     giphyEnabled,
     giphyVersion = 'fixed_height',
+    handleAttachButtonPress,
+    handleBan,
     handleBlock,
     handleCopy,
     handleDelete,
@@ -659,7 +662,9 @@ const ChannelWithContext = <
 
       if (messageId) {
         loadChannelAroundMessage({ messageId });
-      } else if (
+      }
+      // The condition, where if the count of unread messages is greater than 4, then scroll to the first unread message.
+      else if (
         initialScrollToFirstUnreadMessage &&
         channel.countUnread() > scrollToFirstUnreadThreshold
       ) {
@@ -676,6 +681,7 @@ const ChannelWithContext = <
       loadMoreFinished.cancel();
       loadMoreThreadFinished.cancel();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelId, messageId]);
 
   const threadPropsExists = !!threadProps;
@@ -689,6 +695,7 @@ const ChannelWithContext = <
     } else {
       setThread(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [threadPropsExists, shouldSyncChannel]);
 
   const handleAppBackground = useCallback(() => {
@@ -701,6 +708,7 @@ const ChannelWithContext = <
         type: 'typing.stop',
       } as StreamEvent<StreamChatGenerics>);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [thread?.id, channelId]);
 
   useAppStateListener(undefined, handleAppBackground);
@@ -805,6 +813,7 @@ const ChannelWithContext = <
     return () => {
       channelSubscriptions.forEach((s) => s.unsubscribe());
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelId, shouldSyncChannel]);
 
   // subscribe to the generic all channel event
@@ -842,6 +851,7 @@ const ChannelWithContext = <
     };
     const { unsubscribe } = channel.on(handleEvent);
     return unsubscribe;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelId, thread?.id, shouldSyncChannel]);
 
   // subscribe to channel.deleted event
@@ -853,6 +863,7 @@ const ChannelWithContext = <
     });
 
     return unsubscribe;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelId]);
 
   useEffect(() => {
@@ -862,6 +873,7 @@ const ChannelWithContext = <
 
     const { unsubscribe } = client.on('notification.mark_read', handleEvent);
     return unsubscribe;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const channelQueryCallRef = useRef(
@@ -1057,6 +1069,7 @@ const ChannelWithContext = <
       // now restart it since its done
       restartSetsMergeFuncRef.current();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetedMessage]);
 
   /**
@@ -1360,6 +1373,7 @@ const ChannelWithContext = <
     return () => {
       connectionChangedSubscription.unsubscribe();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enableOfflineSupport, shouldSyncChannel]);
 
   const reloadChannel = () =>
@@ -1571,7 +1585,7 @@ const ChannelWithContext = <
         const file = attachment.originalFile;
         // check if image_url is not a remote url
         if (
-          attachment.type === 'image' &&
+          attachment.type === FileTypes.Image &&
           image?.uri &&
           attachment.image_url &&
           isLocalUrl(attachment.image_url)
@@ -1599,10 +1613,10 @@ const ChannelWithContext = <
         }
 
         if (
-          (attachment.type === 'file' ||
-            attachment.type === 'audio' ||
-            attachment.type === 'voiceRecording' ||
-            attachment.type === 'video') &&
+          (attachment.type === FileTypes.File ||
+            attachment.type === FileTypes.Audio ||
+            attachment.type === FileTypes.VoiceRecording ||
+            attachment.type === FileTypes.Video) &&
           attachment.asset_url &&
           isLocalUrl(attachment.asset_url) &&
           file?.uri
@@ -1824,6 +1838,7 @@ const ChannelWithContext = <
      * Where the deps are [channelId, hasMore, loadingMoreRecent, loadingMore]
      * and only those deps should be used here because of that
      */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [channelId, hasMore, loadingMore],
   );
 
@@ -1895,6 +1910,7 @@ const ChannelWithContext = <
      * Where the deps are [channelId, hasMore, loadingMoreRecent, loadingMore, hasNoMoreRecentMessagesToLoad]
      * and and only those deps should be used here because of that
      */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [channelId, hasNoMoreRecentMessagesToLoad],
   );
 
@@ -2085,6 +2101,7 @@ const ChannelWithContext = <
       setThread(message);
       setThreadMessages(newThreadMessages);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [setThread, setThreadMessages],
   );
 
@@ -2226,6 +2243,7 @@ const ChannelWithContext = <
     editMessage,
     emojiSearchIndex,
     FileUploadPreview,
+    handleAttachButtonPress,
     hasCameraPicker,
     hasCommands,
     hasFilePicker,
@@ -2296,6 +2314,7 @@ const ChannelWithContext = <
     getMessagesGroupStyles,
     Giphy,
     giphyVersion,
+    handleBan,
     handleBlock,
     handleCopy,
     handleDelete,

@@ -32,7 +32,7 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useLoadingImage } from '../../hooks/useLoadingImage';
 import { isVideoPackageAvailable } from '../../native';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 import { getUrlWithoutParams } from '../../utils/utils';
 
 export type GalleryPropsWithContext<
@@ -141,6 +141,7 @@ const GalleryWithContext = <
         images: imagesAndVideos,
         sizeConfig,
       }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [imagesAndVideosValue],
   );
 
@@ -311,7 +312,7 @@ const GalleryThumbnail = <
   const defaultOnPress = () => {
     // If the url is defined then only try to open the file.
     if (thumbnail.url) {
-      if (thumbnail.type === 'video' && !isVideoPackageAvailable()) {
+      if (thumbnail.type === FileTypes.Video && !isVideoPackageAvailable()) {
         // This condition is kinda unreachable, since we render videos as file attachment if the video
         // library is not installed. But doesn't hurt to have extra safeguard, in case of some customizations.
         openUrlSafely(thumbnail.url);
@@ -363,7 +364,7 @@ const GalleryThumbnail = <
       testID={`gallery-${invertedDirections ? 'row' : 'column'}-${colIndex}-item-${rowIndex}`}
       {...additionalTouchableProps}
     >
-      {thumbnail.type === 'video' ? (
+      {thumbnail.type === FileTypes.Video ? (
         <VideoThumbnail
           style={[
             imageBorderRadius ?? borderRadius,

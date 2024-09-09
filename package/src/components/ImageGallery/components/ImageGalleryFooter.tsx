@@ -9,7 +9,7 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import { Grid as GridIconDefault, Share as ShareIconDefault } from '../../../icons';
 import { deleteFile, saveFile, shareImage, VideoType } from '../../../native';
 
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+import { DefaultStreamChatGenerics, FileTypes } from '../../../types/types';
 import type { Photo } from '../ImageGallery';
 
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent
@@ -181,8 +181,8 @@ export const ImageGalleryFooterWithContext = <
       pointerEvents={'box-none'}
       style={styles.wrapper}
     >
-      <ReanimatedSafeAreaView style={[container, { backgroundColor: white }, footerStyle]}>
-        {photo.type === 'video' ? (
+      <ReanimatedSafeAreaView style={[{ backgroundColor: white }, footerStyle, container]}>
+        {photo.type === FileTypes.Video ? (
           videoControlElement ? (
             videoControlElement({ duration, onPlayPause, paused, progress, videoRef })
           ) : (

@@ -25,11 +25,13 @@ export const useScreenDimensions = (rounded?: boolean) => {
     return () => subscriptions?.remove();
   }, []);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const vw = (percentageWidth: number) => {
     const value = screenDimensions.width * (percentageWidth / 100);
     return rounded ? Math.round(value) : value;
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const vh = (percentageHeight: number) => {
     const value = screenDimensions.height * (percentageHeight / 100);
     return rounded ? Math.round(value) : value;

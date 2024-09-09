@@ -1,5 +1,53 @@
 # Change Log
 
+### [5.36.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.36.0...v5.36.1) (2024-09-04)
+
+
+### Bug Fixes
+
+* audio recording variety bugs ([#2648](https://github.com/GetStream/stream-chat-react-native/issues/2648)) ([2011eb2](https://github.com/GetStream/stream-chat-react-native/commit/2011eb24ece9895fe9dc8eadc49660cf019c311f))
+* change Block user action to Ban user action and UI cookbook for blocking users ([#2649](https://github.com/GetStream/stream-chat-react-native/issues/2649)) ([327aeac](https://github.com/GetStream/stream-chat-react-native/commit/327aeacfd024f88f41630fafce57a991771f2426))
+* loading skeleton in the Channel List unnecessary display ([#2645](https://github.com/GetStream/stream-chat-react-native/issues/2645)) ([08fc71b](https://github.com/GetStream/stream-chat-react-native/commit/08fc71b7e42ca2ea0fcd72517a7a46a7b0aecddd))
+* multiple image upload issue using native image picker and generic improvements for upload ([#2638](https://github.com/GetStream/stream-chat-react-native/issues/2638)) ([0b9f18a](https://github.com/GetStream/stream-chat-react-native/commit/0b9f18a69484ca7c0087bd0bec56b7fb44dcdbbf))
+* overlay provider crash issue due to bug in bottom sheet ([#2644](https://github.com/GetStream/stream-chat-react-native/issues/2644)) ([9330cf5](https://github.com/GetStream/stream-chat-react-native/commit/9330cf58e1ec639bd9bc0333133226c844cf473a))
+
+## [5.36.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.35.0...v5.36.0) (2024-08-29)
+
+
+### Features
+
+* Implement SDK Size analysis on CI ([#2612](https://github.com/GetStream/stream-chat-react-native/issues/2612)) ([8812be4](https://github.com/GetStream/stream-chat-react-native/commit/8812be4dc32f3fb1c2da1d7fa07ae1df576ab85d))
+
+
+### Bug Fixes
+
+* appSettings rerender issue in the ChatContext ([#2620](https://github.com/GetStream/stream-chat-react-native/issues/2620)) ([190be2f](https://github.com/GetStream/stream-chat-react-native/commit/190be2f6a4f12d11918a0d9a6917abbe7af49d29))
+* giphy lightning icon in giphy attachments ([0a385db](https://github.com/GetStream/stream-chat-react-native/commit/0a385dba4b0a8d96f3d7555c74a7b72c290a81b9))
+* image gallery footer safe area view theme style order ([4832f10](https://github.com/GetStream/stream-chat-react-native/commit/4832f10c3634b9e0571519ea81b03b47dfa5ee2d))
+* inability to cancel file uploads ([#2632](https://github.com/GetStream/stream-chat-react-native/issues/2632)) ([b9e904b](https://github.com/GetStream/stream-chat-react-native/commit/b9e904b10360805f96c45ec28338553a21ec26ad))
+* issue closing native attachment picker icons when attach button is tapped ([e139a53](https://github.com/GetStream/stream-chat-react-native/commit/e139a53200fbf3c8e63cc98aa5b5c33a8a875496))
+* memory leak during remount or user change ([#2639](https://github.com/GetStream/stream-chat-react-native/issues/2639)) ([338d445](https://github.com/GetStream/stream-chat-react-native/commit/338d445f648cbcd9d274a371c1f3689308d38fa3))
+* targeting message outside bounds ([#2630](https://github.com/GetStream/stream-chat-react-native/issues/2630)) ([ec9ea53](https://github.com/GetStream/stream-chat-react-native/commit/ec9ea537b7a3bc2dd265b1f7c07974689eac4e76))
+
+## [5.35.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.34.0...v5.35.0) (2024-08-19)
+
+
+### Features
+
+* make cameraroll library optional ([#2604](https://github.com/GetStream/stream-chat-react-native/issues/2604)) ([d7152f9](https://github.com/GetStream/stream-chat-react-native/commit/d7152f97967a0a63ff5fd612a6d42ab200de5c57))
+
+
+### Bug Fixes
+
+* attachment picker error component default height ([f0299cb](https://github.com/GetStream/stream-chat-react-native/commit/f0299cb71d5e3c36bda689c59dec29949a3b687d))
+* enable frozen channel message actions behaviour ([#2598](https://github.com/GetStream/stream-chat-react-native/issues/2598)) ([eb4ae4c](https://github.com/GetStream/stream-chat-react-native/commit/eb4ae4cabb1208e07b776bfadbad63fe4fe06a45))
+* image gallery component theme arrangment ([3926168](https://github.com/GetStream/stream-chat-react-native/commit/392616848f4e7aa9fef2da249d489b308cccfbb8))
+* make react-native-image-crop-picker optional ([#2603](https://github.com/GetStream/stream-chat-react-native/issues/2603)) ([3acc942](https://github.com/GetStream/stream-chat-react-native/commit/3acc9421e11dc3c26fa0225951214e43603d05e5))
+* message list empty state rerender null issue ([65447fe](https://github.com/GetStream/stream-chat-react-native/commit/65447fe282c473193c8d4b26be56f5f09f5b98c4))
+* message read state according to actual read count ([#2609](https://github.com/GetStream/stream-chat-react-native/issues/2609)) ([cfb9d81](https://github.com/GetStream/stream-chat-react-native/commit/cfb9d815dd75c120d446706cf5c7dd76912fdb05))
+* re render issue for message text around i18n ([#2607](https://github.com/GetStream/stream-chat-react-native/issues/2607)) ([a95a907](https://github.com/GetStream/stream-chat-react-native/commit/a95a9075817d6ff718a0d7c66c60ae56d2d28f1d))
+* Theme color overrides durationText ([#2613](https://github.com/GetStream/stream-chat-react-native/issues/2613)) ([965fac3](https://github.com/GetStream/stream-chat-react-native/commit/965fac395564e9366be45492f31f48c9c5242b5b))
+
 ## [5.34.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.33.1...v5.34.0) (2024-07-29)
 
 

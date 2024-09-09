@@ -197,18 +197,27 @@ const ChatWithContext = <
           data: client.user,
         });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [client, enableOfflineSupport]);
 
   const setActiveChannel = (newChannel?: Channel<StreamChatGenerics>) => setChannel(newChannel);
 
   useEffect(() => {
     if (userID && enableOfflineSupport) {
+      // This acts as a lock for some very rare occurrences of concurrency
+      // issues we've encountered before with the QuickSqliteClient being
+      // uninitialized before it's being invoked.
       setInitialisedDatabaseConfig({ initialised: false, userID });
       QuickSqliteClient.initializeDatabase();
-      DBSyncManager.init(client as unknown as StreamChat);
       setInitialisedDatabaseConfig({ initialised: true, userID });
+      DBSyncManager.init(client as unknown as StreamChat);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userID, enableOfflineSupport]);
+
+  // In case something went wrong, make sure to also unsubscribe the listener
+  // on unmount if it exists to prevent a memory leak.
+  useEffect(() => () => DBSyncManager.connectionChangedListener?.unsubscribe(), []);
 
   const initialisedDatabase =
     initialisedDatabaseConfig.initialised && userID === initialisedDatabaseConfig.userID;

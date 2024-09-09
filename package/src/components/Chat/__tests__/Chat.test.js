@@ -9,7 +9,8 @@ import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import dispatchConnectionChangedEvent from '../../../mock-builders/event/connectionChanged';
 import dispatchConnectionRecoveredEvent from '../../../mock-builders/event/connectionRecovered';
-import { getTestClient } from '../../../mock-builders/mock';
+import { getTestClient, getTestClientWithUser, setUser } from '../../../mock-builders/mock';
+import { DBSyncManager } from '../../../utils/DBSyncManager';
 import { Streami18n } from '../../../utils/i18n/Streami18n';
 import { Chat } from '../Chat';
 
@@ -24,7 +25,10 @@ const TranslationContextConsumer = ({ fn }) => {
 };
 
 describe('Chat', () => {
-  afterEach(cleanup);
+  afterEach(() => {
+    cleanup();
+    jest.clearAllMocks();
+  });
   const chatClient = getTestClient();
 
   it('renders children without crashing', async () => {
@@ -213,6 +217,80 @@ describe('Chat', () => {
         expect(context.t).toBe(newI18nInstance.t);
         expect(context.tDateTimeParser).not.toBe(i18nInstance.tDateTimeParser);
         expect(context.tDateTimeParser).toBe(newI18nInstance.tDateTimeParser);
+      });
+    });
+
+    it('makes sure DBSyncManager listeners are cleaned up after Chat remount', async () => {
+      const chatClientWithUser = await getTestClientWithUser({ id: 'testID' });
+      jest.spyOn(DBSyncManager, 'init');
+
+      // initial mount and render
+      const { rerender } = render(
+        <Chat client={chatClientWithUser} enableOfflineSupport key={1} />,
+      );
+
+      // the unsubscribe fn changes during init(), so we keep a reference to the spy
+      const unsubscribeSpy = jest.spyOn(DBSyncManager.connectionChangedListener, 'unsubscribe');
+      const listenersAfterInitialMount = chatClientWithUser.listeners['connection.changed'];
+
+      // remount
+      rerender(<Chat client={chatClientWithUser} enableOfflineSupport key={2} />);
+
+      await waitFor(() => {
+        expect(DBSyncManager.init).toHaveBeenCalledTimes(2);
+        expect(unsubscribeSpy).toHaveBeenCalledTimes(2);
+        expect(chatClientWithUser.listeners['connection.changed'].length).toBe(
+          listenersAfterInitialMount.length,
+        );
+      });
+    });
+
+    it('makes sure DBSyncManager listeners are cleaned up if the user changes', async () => {
+      const chatClientWithUser = await getTestClientWithUser({ id: 'testID1' });
+      jest.spyOn(DBSyncManager, 'init');
+
+      // initial render
+      const { rerender } = render(<Chat client={chatClientWithUser} enableOfflineSupport />);
+
+      // the unsubscribe fn changes during init(), so we keep a reference to the spy
+      const unsubscribeSpy = jest.spyOn(DBSyncManager.connectionChangedListener, 'unsubscribe');
+      await act(async () => {
+        await setUser(chatClientWithUser, { id: 'testID2' });
+      });
+      const listenersAfterInitialMount = chatClientWithUser.listeners['connection.changed'];
+
+      // rerender with different user ID
+      rerender(<Chat client={chatClientWithUser} enableOfflineSupport />);
+
+      await waitFor(() => {
+        expect(DBSyncManager.init).toHaveBeenCalledTimes(2);
+        expect(unsubscribeSpy).toHaveBeenCalledTimes(1);
+        expect(chatClientWithUser.listeners['connection.changed'].length).toBe(
+          listenersAfterInitialMount.length,
+        );
+      });
+    });
+
+    it('makes sure DBSyncManager state stays intact during normal rerenders', async () => {
+      const chatClientWithUser = await getTestClientWithUser({ id: 'testID' });
+      jest.spyOn(DBSyncManager, 'init');
+
+      // initial render
+      const { rerender } = render(<Chat client={chatClientWithUser} enableOfflineSupport />);
+
+      // the unsubscribe fn changes during init(), so we keep a reference to the spy
+      const unsubscribeSpy = jest.spyOn(DBSyncManager.connectionChangedListener, 'unsubscribe');
+      const listenersAfterInitialMount = chatClientWithUser.listeners['connection.changed'];
+
+      // rerender
+      rerender(<Chat client={chatClientWithUser} enableOfflineSupport />);
+
+      await waitFor(() => {
+        expect(DBSyncManager.init).toHaveBeenCalledTimes(1);
+        expect(unsubscribeSpy).toHaveBeenCalledTimes(0);
+        expect(chatClientWithUser.listeners['connection.changed'].length).toBe(
+          listenersAfterInitialMount.length,
+        );
       });
     });
   });

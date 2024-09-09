@@ -1,125 +1,140 @@
-# This file contains the fastlane.tools configuration
-# You can find the documentation at https://docs.fastlane.tools
-#
-# For a list of all available actions, check out
-#
-#     https://docs.fastlane.tools/actions
-#
-# For a list of all available plugins, check out
-#
-#     https://docs.fastlane.tools/plugins/available-plugins
-#
-
-# Uncomment the line if you want fastlane to automatically update itself
-# update_fastlane
 default_platform(:ios)
+skip_docs
 
+github_repo = ENV['GITHUB_REPOSITORY'] || 'GetStream/stream-chat-react-native'
+bundle_id = 'io.getstream.reactnative.SampleApp'
+xcode_project = 'ios/SampleApp.xcodeproj'
+xcode_workspace = 'ios/SampleApp.xcworkspace'
+root_path = File.absolute_path('../../../')
+sdk_size_ext = 'KB'
+@force_check = false
 
 before_all do
   if is_ci
-    setup_ci()
+    setup_ci
+    setup_git_config
   end
 end
 
+#######################
+###### iOS lanes ######
+#######################
 
-desc "Installs all Certs and Profiles necessary for development and ad-hoc"
-lane :match_me do
-  match(
-    type: "adhoc",
-    app_identifier: [
-        "io.getstream.reactnative.SampleApp",
-    ],
-    readonly: true,
-    force_for_new_devices: !is_ci
+lane :deploy_to_testflight_qa do |options|
+  match_me
+
+  settings_to_override = {
+    BUNDLE_IDENTIFIER: bundle_id,
+    PROVISIONING_PROFILE_SPECIFIER: "match AppStore #{bundle_id}"
+  }
+
+  increment_version_number(
+    version_number: load_json(json_path: './package.json')['version'],
+    xcodeproj: xcode_project
   )
-end
 
-desc "Installs all Certs and Profiles necessary for appstore"
-lane :match_appstore do
-  match(
-    type: "appstore",
-    app_identifier: [
-        "io.getstream.reactnative.SampleApp",
-    ],
-    readonly: is_ci
+  current_build_number = app_store_build_number(
+    api_key: appstore_api_key,
+    live: false,
+    app_identifier: bundle_id
   )
-end
 
-platform :ios do
-  desc "Deploy build to Firebase"
-  lane :deploy_to_firebase do
-      match_me
+  increment_build_number(
+    build_number: current_build_number + 1,
+    xcodeproj: xcode_project
+  )
 
-        gym(
-            workspace: "./ios/SampleApp.xcworkspace",
-            scheme: "SampleApp",
-            export_method: "ad-hoc",
-            export_options: "./fastlane/beta_gym_export_options.plist",
-            silent: true,
-            clean: true,
-            include_symbols: true,
-            output_directory: "./dist",
-            xcargs: "ENABLE_BITCODE=1"
-        )
+  gym(
+    workspace: xcode_workspace,
+    scheme: 'SampleApp',
+    export_method: 'app-store',
+    export_options: './fastlane/testflight_gym_export_options.plist',
+    silent: true,
+    clean: true,
+    xcargs: settings_to_override,
+    include_symbols: true,
+    output_directory: './dist'
+  )
 
-        firebase_app_distribution(
-            app: "1:190151624402:ios:403df895972564bd658f0b",
-            groups: "ios-react-native-testers",
-            release_notes: "Lots of amazing new features to test out!"
-        )
-  end
-end
-
-platform :ios do
-  desc "Deploy build to TestFlight QA"
-  lane :deploy_to_testflight_qa do |options|
-      app_store_connect_api_key()
-
-      match_appstore
-
-      settings_to_override = {
-        :BUNDLE_IDENTIFIER => "io.getstream.reactnative.SampleApp",
-        :PROVISIONING_PROFILE_SPECIFIER => "match AppStore io.getstream.reactnative.SampleApp"
-      }
-
-      package = load_json(json_path: "./package.json")
-      increment_version_number(version_number: package["version"], xcodeproj: "./ios/SampleApp.xcodeproj")
-      current_build_number = app_store_build_number(
-        live: false,
-        app_identifier: "io.getstream.reactnative.SampleApp",
+  if options[:deploy]
+    begin
+      upload_to_testflight(
+        groups: ['Testers'],
+        changelog: 'Lots of amazing new features to test out!',
+        reject_build_waiting_for_review: false
       )
-      increment_build_number(
-        build_number: current_build_number + 1,
-        xcodeproj: "./ios/SampleApp.xcodeproj"
-      )
-
-      gym(
-          workspace: "./ios/SampleApp.xcworkspace",
-          scheme: "SampleApp",
-          export_method: "app-store",
-          export_options: "./fastlane/testflight_gym_export_options.plist",
-          silent: true,
-          clean: true,
-          xcargs: settings_to_override,
-          include_symbols: true,
-          output_directory: "./dist",
-      )
-
-      if options[:deploy]
-        begin
-          upload_to_testflight(
-              groups: ['Testers'],
-              changelog: "Lots of amazing new features to test out!",
-              reject_build_waiting_for_review: false
-          )
-        rescue Exception => e
-          if e.message.include? "Another build is in review"
-            UI.important("Another build is already in beta review. Skipping beta review submission")
-          else
-            raise
-          end
-        end
+    rescue StandardError => e
+      if e.message.include?('Another build is in review')
+        UI.important('Another build is already in beta review. Skipping beta review submission')
+      else
+        UI.user_error!(e)
       end
-
+    end
   end
+end
+
+private_lane :appstore_api_key do
+  @appstore_api_key ||= app_store_connect_api_key(
+    key_id: 'MT3PRT8TB7',
+    issuer_id: '69a6de96-0738-47e3-e053-5b8c7c11a4d1',
+    key_content: ENV.fetch('APPSTORE_API_KEY', nil),
+    in_house: false
+  )
+end
+
+desc "If `readonly: true` (by default), installs all Certs and Profiles necessary for development and ad-hoc.\nIf `readonly: false`, recreates all Profiles necessary for development and ad-hoc, updates them locally and remotely."
+lane :match_me do |options|
+  custom_match(
+    api_key: appstore_api_key,
+    app_identifier: [bundle_id],
+    readonly: options[:readonly],
+    register_device: options[:register_device]
+  )
+end
+
+###########################
+###### Android lanes ######
+###########################
+
+##########################
+###### Common lanes ######
+##########################
+
+lane :file_size do |options|
+  File.size(options[:path]) / 1024.0
+end
+
+lane :yarn_all do
+  Dir.chdir(root_path) { sh('yarn --frozen-lockfile') }
+  Dir.chdir("#{root_path}/package") { sh('yarn --frozen-lockfile') }
+  Dir.chdir("#{root_path}/package/native-package") { sh('yarn') }
+  Dir.chdir("#{root_path}/package/expo-package") { sh('yarn') }
+end
+
+lane :frameworks_sizes do
+  Dir.chdir(root_path) do
+    yarn_all
+    sh('yarn build')
+    sh('yarn minify-bundle')
+    js_bundle_size = file_size(path: 'package/lib/module/bundle.min.js')
+    { js_bundle_size: js_bundle_size }
+  end
+end
+
+lane :show_frameworks_sizes do |options|
+  next unless is_check_required(sources: ['package/'], force_check: @force_check)
+
+  sizes = options[:sizes] || frameworks_sizes
+  show_sdk_size(branch_sizes: sizes, github_repo: github_repo, size_ext: sdk_size_ext)
+  update_img_shields_sdk_sizes(sizes: sizes, open_pr: options[:open_pr]) if options[:update_readme]
+end
+
+lane :update_img_shields_sdk_sizes do |options|
+  update_sdk_size_in_readme(
+    readme_path: '../../README.md',
+    open_pr: options[:open_pr] || false,
+    pr_title: 'chore: update sdk size',
+    sizes: options[:sizes] || frameworks_sizes,
+    size_ext: sdk_size_ext
+  )
 end

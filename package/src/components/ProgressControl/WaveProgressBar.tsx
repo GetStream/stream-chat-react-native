@@ -75,12 +75,14 @@ export const WaveProgressBar = React.memo(
       state.value = stageProgress * (WAVEFORM_WIDTH * 2);
       setEndPosition(state.value);
       setCurrentWaveformProgress(stageProgress);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [progress]);
 
     const stringifiedWaveformData = waveformData.toString();
 
     const resampledWaveformData = useMemo(
       () => resampleWaveformData(waveformData, amplitudesCount),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       [amplitudesCount, stringifiedWaveformData],
     );
 

@@ -44,5 +44,6 @@ export const useChannelHidden = <
 
     const listener = client?.on('channel.hidden', handleEvent);
     return () => listener?.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };

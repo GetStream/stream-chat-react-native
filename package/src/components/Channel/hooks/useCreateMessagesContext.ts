@@ -31,6 +31,7 @@ export const useCreateMessagesContext = <
   getMessagesGroupStyles,
   Giphy,
   giphyVersion,
+  handleBan,
   handleBlock,
   handleCopy,
   handleDelete,
@@ -128,6 +129,7 @@ export const useCreateMessagesContext = <
       getMessagesGroupStyles,
       Giphy,
       giphyVersion,
+      handleBan,
       handleBlock,
       handleCopy,
       handleDelete,
@@ -189,6 +191,7 @@ export const useCreateMessagesContext = <
       UrlPreview,
       VideoThumbnail,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       additionalTouchablePropsLength,
       channelId,

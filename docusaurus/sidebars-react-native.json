@@ -122,6 +122,7 @@
       "guides/channel-background-customization",
       "guides/message-customization",
       "guides/file-compression",
+      "guides/blocking-users",
       "guides/live-location-sharing"
     ],
     "State and Offline Support": [
@@ -131,6 +132,7 @@
     "Advanced Guides": [
       "guides/audio-messages-support",
       "guides/date-time-formatting",
+      "guides/native-image-picker",
       "customization/typescript",
       "basics/troubleshooting",
       "basics/stream_chat_with_navigation",
@@ -143,7 +145,8 @@
         "Push Notifications": ["guides/push-notifications-v1", "guides/push-notifications-v2"]
       },
       "guides/debug-mode-using-flipper-plugin",
-      "guides/performance-guide"
+      "guides/performance-guide",
+      "guides/deeplinking"
     ],
     "Migration Guides": ["basics/upgrading-from-v4"]
   }

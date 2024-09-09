@@ -80,7 +80,7 @@ export const AutoCompleteSuggestionCommandIcon = <
     default:
       return (
         <View style={[styles.iconContainer, { backgroundColor: accent_blue }, iconContainer]}>
-          <Lightning height={16} pathFill={white} width={16} />
+          <Lightning fill={white} size={16} />
         </View>
       );
   }

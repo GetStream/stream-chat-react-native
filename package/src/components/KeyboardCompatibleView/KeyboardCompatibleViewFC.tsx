@@ -108,10 +108,12 @@ export const KeyboardCompatibleView = ({
 
       unsetKeyboardListeners();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     updateBottomIfNecessary();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keyboardEvent.current]);
 
   const dismissKeyboard: () => Promise<void> | undefined = () => {

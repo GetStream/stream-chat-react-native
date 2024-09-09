@@ -368,6 +368,7 @@ export const ChannelList = <
       filters,
       sort,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelIdsStr, staticChannelsActive]);
 
   const channelsContext = useCreateChannelsContext({
