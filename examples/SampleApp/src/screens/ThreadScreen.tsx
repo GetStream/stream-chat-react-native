@@ -39,10 +39,10 @@ export type ThreadHeaderProps = {
 // TODO: Move this in the SDK itself, no reason for it not to be there. The React SDK has it too.
 const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
   const typing = useTypingString();
-  let subtitleText = thread?.user?.name
+  let subtitleText = thread?.user?.name;
+  const [parentMessage] = useStateStore(thread?.threadInstance?.state, selector) || [];
 
   if (subtitleText == null) {
-    const [parentMessage] = useStateStore(thread?.threadInstance?.state, selector) || [];
     subtitleText = parentMessage?.user?.name;
   }
 

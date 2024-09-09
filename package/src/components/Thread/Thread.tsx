@@ -101,7 +101,7 @@ const ThreadWithContext = <
       if (onThreadDismount) {
         onThreadDismount();
       }
-    }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
