@@ -26,11 +26,11 @@ export const ChatScreen: React.FC<Props> = () => (
   // eslint-disable-next-line react/no-unstable-nested-components
   <Tab.Navigator tabBar={(props) => <BottomTabs {...props} />}>
     <Tab.Screen component={ChannelListScreen} name='ChatScreen' options={{ headerShown: false }} />
+    <Tab.Screen component={MentionsScreen} name='MentionsScreen' options={{ headerShown: false }} />
     <Tab.Screen
       component={ThreadListScreen}
       name='ThreadsScreen'
       options={{ headerShown: false }}
     />
-    <Tab.Screen component={MentionsScreen} name='MentionsScreen' options={{ headerShown: false }} />
   </Tab.Navigator>
 );

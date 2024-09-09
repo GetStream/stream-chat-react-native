@@ -81,6 +81,7 @@
   "timestamp/MessageEditedTimestamp": "{{ timestamp |  timestampFormatter(calendar: true) }}",
   "timestamp/MessageSystem": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageTimestamp": "{{ timestamp | timestampFormatter(format: LT) }}",
+  "timestamp/ThreadListItem": "{{ timestamp | timestampFormatter(format: LT) }}",
   "timestamp/StickyHeader": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "{{ firstUser }} and {{ nonSelfUserLength }} more are typing": "{{ firstUser }} and {{ nonSelfUserLength }} more are typing",
   "{{ index }} of {{ photoLength }}": "{{ index }} of {{ photoLength }}",

@@ -1749,7 +1749,7 @@ const ChannelWithContext = <
       commands: [],
       messageInput: '',
     });
-    // threadInstance?.upsertReplyLocally?.({ message: messagePreview });
+    threadInstance?.upsertReplyLocally?.({ message: messagePreview });
 
     if (enableOfflineSupport) {
       // While sending a message, we add the message to local db with failed status, so that
@@ -2052,7 +2052,7 @@ const ChannelWithContext = <
         type: 'deleted',
       });
 
-      // threadInstance?.upsertReplyLocally({ message });
+      threadInstance?.upsertReplyLocally({ message });
 
       const data = await DBSyncManager.queueTask<StreamChatGenerics>({
         client,

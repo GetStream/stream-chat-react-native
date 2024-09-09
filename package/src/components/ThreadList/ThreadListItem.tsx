@@ -1,21 +1,24 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import { Channel, Thread, ThreadState } from 'stream-chat';
 
 import { MessageType } from '../../../lib/typescript';
-import { ThreadType, useChatContext } from '../../contexts';
+import { ThreadType, useChatContext, useTranslationContext } from '../../contexts';
 import { useStateStore } from '../../hooks';
+import { getDateString } from '../../utils/i18n/getDateString';
 import { Avatar } from '../Avatar/Avatar';
 
 export type ThreadListItemProps = {
   thread: Thread;
   onThreadSelect?: (thread: ThreadType, channel: Channel) => void;
+  timestampTranslationKey?: string;
 };
 
 export const ThreadListItem = (props: ThreadListItemProps) => {
   const { client } = useChatContext();
-  const { onThreadSelect, thread } = props;
+  const { t, tDateTimeParser } = useTranslationContext();
+  const { onThreadSelect, thread, timestampTranslationKey = 'timestamp/ThreadListItem' } = props;
 
   const selector = useCallback(
     (nextValue: ThreadState) =>
@@ -31,6 +34,20 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
   const [lastReply, ownUnreadMessageCount, parentMessage, channel] = useStateStore(
     thread.state,
     selector,
+  );
+
+  const timestamp = lastReply?.created_at;
+
+  // TODO: Please rethink this, we have the same line of code in about 5 places in the SDK.
+  const dateString = useMemo(
+    () =>
+      getDateString({
+        date: timestamp,
+        t,
+        tDateTimeParser,
+        timestampTranslationKey,
+      }),
+    [timestamp, t, tDateTimeParser, timestampTranslationKey],
   );
 
   // if (lastReply) {
@@ -69,7 +86,12 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
         />
         <View style={{ flex: 1 }}>
           <Text>{lastReply?.user?.name}</Text>
-          <Text numberOfLines={1}>{lastReply?.text}</Text>
+          <View style={{ flexDirection: 'row' }}>
+            <Text numberOfLines={1} style={{ flex: 1 }}>
+              {lastReply?.text}
+            </Text>
+            <Text style={{ alignSelf: 'flex-end' }}>{dateString}</Text>
+          </View>
         </View>
       </View>
     </TouchableOpacity>

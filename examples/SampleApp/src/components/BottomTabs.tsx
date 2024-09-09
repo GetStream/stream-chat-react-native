@@ -94,7 +94,7 @@ const Tab = (props: TabProps) => {
   };
 
   return (
-    <TouchableOpacity key={index} onPress={onPress} style={styles.tabContainer}>
+    <TouchableOpacity onPress={onPress} style={styles.tabContainer}>
       <View>
         {isFocused ? tab.iconActive : tab.icon}
         {tab.notification && <View style={styles.notification}>{tab.notification}</View>}
@@ -133,7 +133,7 @@ export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
       ]}
     >
       {state.routes.map((route, index) => (
-        <Tab route={route} index={index} navigation={navigation} state={state} />
+        <Tab key={index} route={route} index={index} navigation={navigation} state={state} />
       ))}
     </View>
   );
