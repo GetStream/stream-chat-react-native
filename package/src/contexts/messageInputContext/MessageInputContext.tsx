@@ -87,6 +87,15 @@ import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
+/**
+ * Function to escape special characters except . in a string and replace with '_'
+ * @param text
+ * @returns string
+ */
+function escapeRegExp(text: string) {
+  return text.replace(/[[\]{}()*+?,\\^$|#\s]/g, '_');
+}
+
 export type EmojiSearchIndex = {
   search: (query: string) => PromiseLike<Array<Emoji>> | Array<Emoji> | null;
 };
@@ -1149,6 +1158,9 @@ export const MessageInputProvider = <
   const uploadFile = async ({ newFile }: { newFile: FileUpload }) => {
     const { file, id } = newFile;
 
+    // The file name can have special characters, so we escape it.
+    const filename = escapeRegExp(file.name);
+
     setFileUploads(getUploadSetStateAction(id, FileState.UPLOADING));
 
     let response: Partial<SendFileAPIResponse> = {};
@@ -1157,17 +1169,17 @@ export const MessageInputProvider = <
         response = await value.doDocUploadRequest(file, channel);
       } else if (channel && file.uri) {
         uploadAbortControllerRef.current.set(
-          file.name,
+          filename,
           client.createAbortControllerForNextRequest(),
         );
         // Compress images selected through file picker when uploading them
         if (file.mimeType?.includes('image')) {
           const compressedUri = await compressedImageURI(file, value.compressImageQuality);
-          response = await channel.sendFile(compressedUri, file.name, file.mimeType);
+          response = await channel.sendFile(compressedUri, filename, file.mimeType);
         } else {
-          response = await channel.sendFile(file.uri, file.name, file.mimeType);
+          response = await channel.sendFile(file.uri, filename, file.mimeType);
         }
-        uploadAbortControllerRef.current.delete(file.name);
+        uploadAbortControllerRef.current.delete(filename);
       }
 
       const extraData: Partial<FileUpload> = {
@@ -1181,7 +1193,7 @@ export const MessageInputProvider = <
         (error.name === 'AbortError' || error.name === 'CanceledError')
       ) {
         // nothing to do
-        uploadAbortControllerRef.current.delete(file.name);
+        uploadAbortControllerRef.current.delete(filename);
         return;
       }
       handleFileOrImageUploadError(error, false, id);
@@ -1198,7 +1210,8 @@ export const MessageInputProvider = <
     let response = {} as SendFileAPIResponse;
 
     const uri = file.uri || '';
-    const filename = file.name ?? getFileNameFromPath(uri);
+    // The file name can have special characters, so we escape it.
+    const filename = escapeRegExp(file.name ?? getFileNameFromPath(uri));
 
     try {
       const compressedUri = await compressedImageURI(file, value.compressImageQuality);
