@@ -7,8 +7,8 @@ In this cookbook, we will build a simple live location sharing message feature u
 
 The goal is to create two screens:
 
-* Chat screen with the live location shown on map in a message
-* A detailed map screen that is shown when the live location is tapped
+- Chat screen with the live location shown on map in a message
+- A detailed map screen that is shown when the live location is tapped
 
 ## Setup
 
@@ -21,8 +21,8 @@ yarn add @react-native-community/geolocation
 yarn add react-native-maps
 ```
 
-* `@react-native-community/geolocation` library is used to watch the current location of the user and then send it in the message
-* `react-native-maps` is used to display the location of the user using the native maps present on iOS and Android 
+- `@react-native-community/geolocation` library is used to watch the current location of the user and then send it in the message
+- `react-native-maps` is used to display the location of the user using the native maps present on iOS and Android
 
 ### Configure location permissions
 
@@ -65,7 +65,7 @@ const messageWithLocation = {
       type: 'location',
       latitude: 50.212312,
       longitude: -71.212659,
-      ended_at: '2012-07-14T01:00:00+01:00'
+      ended_at: '2012-07-14T01:00:00+01:00',
     },
   ],
 };
@@ -74,8 +74,8 @@ const messageWithLocation = {
 In Typescript, we can define this in type using generics,
 
 ```ts
-import {DefaultStreamChatGenerics} from 'stream-chat-react-native';
-import {StreamChat} from 'stream-chat';
+import { DefaultStreamChatGenerics } from 'stream-chat-react-native';
+import { StreamChat } from 'stream-chat';
 
 type LocalAttachmentType = DefaultStreamChatGenerics['attachmentType'] & {
   latitude?: number;
@@ -87,7 +87,6 @@ export type StreamChatGenerics = DefaultStreamChatGenerics & {
   attachmentType: LocalAttachmentType;
 };
 
-
 // and use the generics when creating the client
 const client = StreamChat.getInstance<StreamChatGenerics>('<ADD_YOUR_STREAM_API_KEY_HERE>');
 ```
@@ -96,9 +95,8 @@ const client = StreamChat.getInstance<StreamChatGenerics>('<ADD_YOUR_STREAM_API_
 
 In order for the location to be started or stopped in different screens. Lets add the start or stop methods in a React Context.
 
-* The `Geolocation.watchPosition` method is used to watch the location of the user.
-* The `client.updateMessage` method is used to update an existing message with the new location.
-
+- The `Geolocation.watchPosition` method is used to watch the location of the user.
+- The `client.updateMessage` method is used to update an existing message with the new location.
 
 Below is an implementation of the context:
 
@@ -145,7 +143,7 @@ export const LiveLocationContextProvider = (
 
   const lastLocationRef = React.useRef<GeolocationResponse>();
 
-  // watch live location and update message 
+  // watch live location and update message
   const startLiveLocation = React.useCallback(
     (id: string) => {
       const watchId = Geolocation.watchPosition(
@@ -274,7 +272,7 @@ const InputButtons: NonNullable<
 > = props => {
   const {channel: currentChannel} = useChannelContext();
   const {startLiveLocation} = useLiveLocationContext();
- 
+
   const sendLiveLocation = async () => {
     Geolocation.getCurrentPosition(
       async position => {
@@ -418,7 +416,7 @@ const MapCard = ({
     </>
   );
 };
- 
+
 const Card: NonNullable<
   React.ComponentProps<typeof Channel>['Card']
 > = props => {
@@ -445,13 +443,11 @@ export default Card;
 Default UI components and context providers from the SDK are memoized for performance purposes adhering the `FlatList` performance optimization rules, and it will not trigger re-renders upon updates to custom properties on attachment.This can be solved by providing the `isAttachmentEqual` function prop in the `Channel` component which checks for changes in custom properties which you may have been defined on attachment.
 
 ```ts
-const isAttachmentEqual: NonNullable<
-  React.ComponentProps<typeof Channel<StreamChatGenerics>>['isAttachmentEqual']
-> = (prevAttachment, nextAttachment) => {
-  if (
-    prevAttachment.type === 'location' &&
-    nextAttachment.type === 'location'
-  ) {
+const isAttachmentEqual: NonNullable<React.ComponentProps<typeof Channel<StreamChatGenerics>>['isAttachmentEqual']> = (
+  prevAttachment,
+  nextAttachment,
+) => {
+  if (prevAttachment.type === 'location' && nextAttachment.type === 'location') {
     return (
       prevAttachment.latitude === nextAttachment.latitude &&
       prevAttachment.longitude === nextAttachment.longitude &&
@@ -466,23 +462,23 @@ On the tap of a message, we want to navigate to the detail map. This can be done
 
 ```ts
 const onPressMessage: NonNullable<
-    React.ComponentProps<typeof Channel<StreamChatGenerics>>['onPressMessage']
-  > = payload => {
-    const {message, defaultHandler, emitter} = payload;
-    if (emitter === 'messageContent') {
-      if (message?.attachments?.[0]?.type === 'location') {
-        // here we use react-navigation to define screens
-        // and we pass the initial data to the screen
-        navigation.navigate('MapDetail', {
-          messageId: message.id,
-          latitude: message.attachments[0].latitude!,
-          longitude: message.attachments[0].longitude!,
-          ended_at: message.attachments[0].ended_at,
-        });
-      }
+  React.ComponentProps<typeof Channel<StreamChatGenerics>>['onPressMessage']
+> = payload => {
+  const { message, defaultHandler, emitter } = payload;
+  if (emitter === 'messageContent') {
+    if (message?.attachments?.[0]?.type === 'location') {
+      // here we use react-navigation to define screens
+      // and we pass the initial data to the screen
+      navigation.navigate('MapDetail', {
+        messageId: message.id,
+        latitude: message.attachments[0].latitude!,
+        longitude: message.attachments[0].longitude!,
+        ended_at: message.attachments[0].ended_at,
+      });
     }
-    defaultHandler?.();
-  };
+  }
+  defaultHandler?.();
+};
 ```
 
 ## Step 4: Add the relevant props to the Channel component
@@ -515,8 +511,9 @@ You should now be able to see the following attachment on the message on tap of 
 In this screen, we display the coordinates of the map in a full screen map. Additionally we also show the button to stop sharing the location.
 
 We use the `channel.on` method to listen to the following events:
-* The `message.updated` event is used to watch the location updates and then update the map.
-* The `message.deleted` method is used to exit the screen if the message was deleted.
+
+- The `message.updated` event is used to watch the location updates and then update the map.
+- The `message.deleted` method is used to exit the screen if the message was deleted.
 
 Here is an example implementation of the screen:
 
@@ -633,3 +630,7 @@ export default MapDetailScreen;
 You should now be able to see the following screen with a detailed map:
 
 ![Preview of chat screen](../assets/guides/live-location-sharing/detail-screen.png)
+
+## Sample code
+
+This cookbook is available as a full fledged app sample at our [react-native-samples](https://github.com/GetStream/react-native-samples/tree/develop/projects/LiveLocationStreamChatSample) repository.
