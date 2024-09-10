@@ -53,6 +53,7 @@ Add your API key to your manifest file (`android/app/src/main/AndroidManifest.xm
      android:value="Your Google maps API Key Here"/>
 </application>
 ```
+
 ## Implementation outline
 
 We will use a custom attachment with a `type` set to `location`. This custom attachment will be part of the message the app sends to the channel. This attachment will carry the latest longitude, latitude, and timestamp when the location sharing has been stopped.
@@ -60,6 +61,7 @@ We will use a custom attachment with a `type` set to `location`. This custom att
 On the sharer side, the application itself will poll for location updates and whenever a new location is emitted, it will update the appropriate message/attachment through our `channel.updateMessage()` APIs.
 
 On the recipient side, the application will listen for `message.updated` events and will update the interactive maps accordingly.
+
 ## The attachment object
 
 We need to know the latitude and longitude data in a message to show the location. Additionally, we need the time when the live location sharing was stopped. To have this lets have our message to have the following structure:
