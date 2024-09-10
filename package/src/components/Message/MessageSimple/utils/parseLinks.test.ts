@@ -31,6 +31,7 @@ describe('parseLinksFromText', () => {
     ['[https://www.google.com](https://www.google.com)', undefined],
     ['[abc]()', undefined],
     ['[](https://www.google.com)', undefined],
+    ['slack:some-slack', undefined],
   ])('Returns the encoded value of %p as %p', (link, expected) => {
     const result = parseLinksFromText(link);
     expect(result[0]?.url).toBe(expected);
