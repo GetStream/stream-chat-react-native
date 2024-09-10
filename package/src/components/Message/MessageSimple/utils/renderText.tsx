@@ -133,7 +133,8 @@ export const renderText = <
   };
 
   const onLink = (url: string) => {
-    const pattern = new RegExp(/^\S+:\/\//);
+    // Matching these: https://reactnative.dev/docs/0.73/linking?syntax=ios#built-in-url-schemes
+    const pattern = new RegExp(/^(mailto:|tel:|sms:|\S+:\/\/)/);
     if (!pattern.test(url)) {
       url = 'http://' + url;
     }
