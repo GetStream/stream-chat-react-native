@@ -44,7 +44,7 @@ type ThreadFooterComponentPropsWithContext<
 > = Pick<MessagesContextValue<StreamChatGenerics>, 'Message'> &
   Pick<ThreadContextValue<StreamChatGenerics>, 'parentMessagePreventPress' | 'thread'>;
 
-const ThreadFooterLoadMoreIndicator = () => {
+export const InlineLoadingMoreThreadIndicator = () => {
   const { threadLoadingMore } = useThreadContext();
   const {
     theme: {
@@ -134,7 +134,7 @@ const ThreadFooterComponentWithContext = <
               })}
         </Text>
       </View>
-      <ThreadFooterLoadMoreIndicator />
+      <InlineLoadingMoreThreadIndicator />
     </View>
   );
 };

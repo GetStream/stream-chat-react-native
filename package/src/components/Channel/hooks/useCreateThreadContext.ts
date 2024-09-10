@@ -32,8 +32,6 @@ export const useCreateThreadContext = <
 
   // console.log('ISE: LATEST REPLIES TEST: ', threadMessages.length, latestReplies?.length, thread?.activate)
   // console.log('ISE: MSGS', threadMessages?.length, latestReplies?.length)
-  console.log('ISE: PREV: ', isLoadingPrev)
-  console.log('ISE: NEXT: ', isLoadingNext)
 
   const contextAdapter = threadInstance
     ? {
