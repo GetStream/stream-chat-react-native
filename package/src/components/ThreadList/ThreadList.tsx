@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
-import { FlatList, FlatListProps, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, FlatListProps, Text, TouchableOpacity } from 'react-native';
 
 import { Channel, Thread, ThreadManagerState } from 'stream-chat';
 
 import { ThreadListItem } from './ThreadListItem';
 
 import { ThreadType, useChatContext } from '../../contexts';
-import { useStateStore, useViewport } from '../../hooks';
-import { MessageBubbleEmpty, Reload } from '../../icons';
+import { useStateStore } from '../../hooks';
+import { Reload } from '../../icons';
 import { EmptyStateIndicator } from '../Indicators/EmptyStateIndicator';
 import { LoadingIndicator } from '../Indicators/LoadingIndicator';
 
@@ -41,7 +41,7 @@ export const ThreadListUnreadBanner = () => {
         paddingVertical: 14,
       }}
     >
-      <Text style={{ flex: 1, color: 'white', fontSize: 16, alignSelf: 'flex-start' }}>
+      <Text style={{ alignSelf: 'flex-start', color: 'white', flex: 1, fontSize: 16 }}>
         {unseenThreadIds.length} unread threads
       </Text>
       <Reload pathFill={'white'} />
