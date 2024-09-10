@@ -1,5 +1,17 @@
 # Change Log
 
+## [1.29.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.28.2...sampleapp@v1.29.0) (2024-09-10)
+
+
+### Features
+
+* add live location sharing cookbook ([#2659](https://github.com/GetStream/stream-chat-react-native/issues/2659)) ([8ee1375](https://github.com/GetStream/stream-chat-react-native/commit/8ee1375771018ab0d7607f6c8f6f8e0599aeeb02))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.28.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.28.1...sampleapp@v1.28.2) (2024-09-09)
 
 
