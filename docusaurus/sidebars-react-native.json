@@ -122,7 +122,8 @@
       "guides/channel-background-customization",
       "guides/message-customization",
       "guides/file-compression",
-      "guides/blocking-users"
+      "guides/blocking-users",
+      "guides/live-location-sharing"
     ],
     "State and Offline Support": [
       "state-and-offline-support/state-overview",
