@@ -1,5 +1,12 @@
 # Change Log
 
+## [5.37.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.36.2...v5.37.0) (2024-09-10)
+
+
+### Features
+
+* add live location sharing cookbook ([#2659](https://github.com/GetStream/stream-chat-react-native/issues/2659)) ([8ee1375](https://github.com/GetStream/stream-chat-react-native/commit/8ee1375771018ab0d7607f6c8f6f8e0599aeeb02))
+
 ### [5.36.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.36.1...v5.36.2) (2024-09-09)
 
 
