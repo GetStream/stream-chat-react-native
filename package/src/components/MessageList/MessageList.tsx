@@ -153,7 +153,7 @@ type MessageListPropsWithContext<
   > &
   Pick<
     ThreadContextValue<StreamChatGenerics>,
-    'loadMoreRecentThread' | 'loadMoreThread' | 'thread'
+    'loadMoreRecentThread' | 'loadMoreThread' | 'thread' | 'threadInstance'
   > & {
     /**
      * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
@@ -748,7 +748,7 @@ const MessageListWithContext = <
     onStartReachedInPromise.current = // todo: fixme to work with threads v2
       (
         threadList && !!threadInstance && loadMoreRecentThread
-          ? loadMoreRecentThread(limit)
+          ? loadMoreRecentThread({ limit })
           : loadMoreRecent(limit)
       )
         .then(callback)

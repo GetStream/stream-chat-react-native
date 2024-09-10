@@ -2410,8 +2410,8 @@ const ChannelWithContext = <
     reloadThread,
     setThreadLoadingMore,
     thread,
-    threadInstance,
     threadHasMore,
+    threadInstance,
     threadLoadingMore,
     threadMessages,
   });

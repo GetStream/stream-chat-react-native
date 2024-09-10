@@ -3,11 +3,11 @@ import { Text, TouchableOpacity, View } from 'react-native';
 
 import { Channel, Thread, ThreadState } from 'stream-chat';
 
-import { MessageType } from '../../../lib/typescript';
 import { ThreadType, useChatContext, useTranslationContext } from '../../contexts';
 import { useStateStore } from '../../hooks';
 import { getDateString } from '../../utils/i18n/getDateString';
 import { Avatar } from '../Avatar/Avatar';
+import { MessageType } from '../MessageList/hooks/useMessageList';
 
 export type ThreadListItemProps = {
   thread: Thread;

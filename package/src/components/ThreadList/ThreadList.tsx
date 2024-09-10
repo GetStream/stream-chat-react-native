@@ -5,7 +5,7 @@ import { Channel, Thread, ThreadManagerState } from 'stream-chat';
 
 import { ThreadListItem } from './ThreadListItem';
 
-import { useChatContext } from '../../contexts';
+import { ThreadType, useChatContext } from '../../contexts';
 import { useStateStore } from '../../hooks';
 
 const selector = (nextValue: ThreadManagerState) => [nextValue.threads] as const;
@@ -14,7 +14,7 @@ const unseenThreadIdsSelector = (nextValue: ThreadManagerState) =>
 
 export type ThreadListProps = {
   additionalFlatListProps?: Partial<FlatListProps<Thread>>;
-  onThreadSelect?: (thread: Thread, channel: Channel) => void;
+  onThreadSelect?: (thread: ThreadType, channel: Channel) => void;
 };
 
 export const ThreadListUnreadBanner = () => {

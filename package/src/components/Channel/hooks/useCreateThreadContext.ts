@@ -40,7 +40,7 @@ export const useCreateThreadContext = <
         threadInstance,
         threadLoadingMore: isLoadingPrev,
         threadLoadingMoreRecent: isLoadingNext,
-        threadMessages: latestReplies,
+        threadMessages: latestReplies ?? [],
       }
     : {};
 

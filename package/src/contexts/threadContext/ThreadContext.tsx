@@ -24,15 +24,15 @@ export type ThreadContextValue<
   setThreadLoadingMore: React.Dispatch<React.SetStateAction<boolean>>;
   thread: MessageType<StreamChatGenerics> | null;
   threadHasMore: boolean;
-  threadLoadingMore: boolean;
-  threadLoadingMoreRecent: boolean;
   threadMessages: ChannelState<StreamChatGenerics>['threads'][string];
-  loadMoreRecentThread?: (limit?: number) => Promise<void>;
+  loadMoreRecentThread?: (opts: { limit?: number }) => Promise<void>;
   /**
    * Boolean to enable/disable parent message press
    */
   parentMessagePreventPress?: boolean;
   threadInstance?: Thread | null;
+  threadLoadingMore?: boolean;
+  threadLoadingMoreRecent?: boolean;
 };
 
 export const ThreadContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as ThreadContextValue);
