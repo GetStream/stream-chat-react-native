@@ -5,6 +5,7 @@ import { Channel, Thread, ThreadState } from 'stream-chat';
 
 import { ThreadType, useChatContext, useTranslationContext } from '../../contexts';
 import { useStateStore } from '../../hooks';
+import { MessageBubble } from '../../icons';
 import { getDateString } from '../../utils/i18n/getDateString';
 import { Avatar } from '../Avatar/Avatar';
 import { MessageType } from '../MessageList/hooks/useMessageList';
@@ -70,7 +71,10 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
         marginVertical: 8,
       }}
     >
-      <Text>{channel?.data?.name}</Text>
+      <View style={{ flexDirection: 'row' }}>
+        <MessageBubble />
+        <Text>{channel?.data?.name || 'N/A'}</Text>
+      </View>
       <View style={{ flexDirection: 'row' }}>
         <Text numberOfLines={1} style={{ flex: 1 }}>
           {parentMessage?.text}

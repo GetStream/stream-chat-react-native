@@ -1,14 +1,18 @@
 import React, { useEffect } from 'react';
-import { FlatList, FlatListProps, Text, TouchableOpacity } from 'react-native';
+import { FlatList, FlatListProps, Text, TouchableOpacity, View } from 'react-native';
 
 import { Channel, Thread, ThreadManagerState } from 'stream-chat';
 
 import { ThreadListItem } from './ThreadListItem';
 
 import { ThreadType, useChatContext } from '../../contexts';
-import { useStateStore } from '../../hooks';
+import { useStateStore, useViewport } from '../../hooks';
+import { MessageBubbleEmpty, Reload } from '../../icons';
+import { EmptyStateIndicator } from '../Indicators/EmptyStateIndicator';
+import { LoadingIndicator } from '../Indicators/LoadingIndicator';
 
-const selector = (nextValue: ThreadManagerState) => [nextValue.threads] as const;
+const selector = (nextValue: ThreadManagerState) =>
+  [nextValue.threads, nextValue.pagination.isLoading] as const;
 const unseenThreadIdsSelector = (nextValue: ThreadManagerState) =>
   [nextValue.unseenThreadIds] as const;
 
@@ -30,16 +34,24 @@ export const ThreadListUnreadBanner = () => {
       style={{
         backgroundColor: '#080707',
         borderRadius: 16,
+        flexDirection: 'row',
         marginHorizontal: 8,
         marginVertical: 6,
         paddingHorizontal: 16,
         paddingVertical: 14,
       }}
     >
-      <Text style={{ color: 'white', fontSize: 16 }}>{unseenThreadIds.length} unread threads</Text>
+      <Text style={{ flex: 1, color: 'white', fontSize: 16, alignSelf: 'flex-start' }}>
+        {unseenThreadIds.length} unread threads
+      </Text>
+      <Reload pathFill={'white'} />
     </TouchableOpacity>
   );
 };
+
+const ThreadListEmptyPlaceholder = () => <EmptyStateIndicator listType='threads' />;
+
+const ThreadListLoadingIndicator = () => <LoadingIndicator listType='threads' />;
 
 export const ThreadList = (props: ThreadListProps) => {
   const { client } = useChatContext();
@@ -49,13 +61,15 @@ export const ThreadList = (props: ThreadListProps) => {
       client.threads.deactivate();
     };
   }, [client]);
-  const [threads] = useStateStore(client.threads.state, selector);
+  const [threads, isLoading] = useStateStore(client.threads.state, selector);
 
   return (
     <>
       <ThreadListUnreadBanner />
       <FlatList
+        contentContainerStyle={{ flexGrow: 1 }}
         data={threads}
+        ListEmptyComponent={isLoading ? ThreadListLoadingIndicator : ThreadListEmptyPlaceholder}
         renderItem={({ item: thread }) => (
           <ThreadListItem onThreadSelect={props.onThreadSelect} thread={thread} />
         )}

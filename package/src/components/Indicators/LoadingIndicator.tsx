@@ -39,7 +39,7 @@ const LoadingIndicatorWrapper = ({ text }: LoadingIndicatorWrapperProps) => {
 };
 
 export type LoadingProps = {
-  listType?: 'channel' | 'message' | 'default';
+  listType?: 'channel' | 'message' | 'threads' | 'default';
   loadingText?: string;
 };
 
@@ -60,6 +60,8 @@ export const LoadingIndicator = (props: LoadingProps) => {
       return <LoadingIndicatorWrapper text={t('Loading channels...')} />;
     case 'message':
       return <LoadingIndicatorWrapper text={t('Loading messages...')} />;
+    case 'threads':
+      return <LoadingIndicatorWrapper text={t('Loading threads...')} />;
     default:
       return <LoadingIndicatorWrapper text={t('Loading...')} />;
   }
