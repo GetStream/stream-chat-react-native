@@ -132,17 +132,10 @@ export const renderText = <
     },
   };
 
-  const onLink = (url: string) => {
-    // Matching these: https://reactnative.dev/docs/0.73/linking?syntax=ios#built-in-url-schemes
-    const pattern = new RegExp(/^(mailto:|tel:|sms:|\S+:\/\/)/);
-    if (!pattern.test(url)) {
-      url = 'http://' + url;
-    }
-
-    return onLinkParams
+  const onLink = (url: string) =>
+    onLinkParams
       ? onLinkParams(url)
       : Linking.canOpenURL(url).then((canOpenUrl) => canOpenUrl && Linking.openURL(url));
-  };
 
   let previousLink: string | undefined;
   const linkReact: ReactNodeOutput = (node, output, { ...state }) => {
