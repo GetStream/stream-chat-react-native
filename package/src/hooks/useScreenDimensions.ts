@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Dimensions } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { Dimensions, ScaledSize } from 'react-native';
 
 /**
  * A custom hook that provides functions to calculate dimensions based on
@@ -9,10 +9,10 @@ import { Dimensions } from 'react-native';
  * @returns {Object} An object containing functions vh and vw.
  */
 export const useScreenDimensions = (rounded?: boolean) => {
-  const [screenDimensions, setScreenDimensions] = useState(Dimensions.get('screen'));
+  const [screenDimensions, setScreenDimensions] = useState(() => Dimensions.get('screen'));
 
   useEffect(() => {
-    const subscriptions = Dimensions.addEventListener('change', ({ screen }) => {
+    const handleChange = ({ screen }: { screen: ScaledSize }) => {
       setScreenDimensions((prev) => {
         const { height, width } = screen;
         if (prev.height !== height || prev.width !== width) {
@@ -20,24 +20,35 @@ export const useScreenDimensions = (rounded?: boolean) => {
         }
         return prev;
       });
-    });
+    };
+    const subscription = Dimensions.addEventListener('change', handleChange);
 
-    return () => subscriptions?.remove();
+    // We might have missed an update between calling `get` in render and
+    // `addEventListener` in this handler, so we set it here. If there was
+    // no change, React will filter out this update as a no-op.
+    // pattern ref: react-native-repo/packages/react-native/Libraries/Utilities/useWindowDimensions.js
+    handleChange({ screen: Dimensions.get('screen') });
+
+    return () => {
+      subscription.remove();
+    };
   }, []);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const vw = (percentageWidth: number) => {
-    const value = screenDimensions.width * (percentageWidth / 100);
-    return rounded ? Math.round(value) : value;
-  };
+  const vw = useCallback(
+    (percentageWidth: number) => {
+      const value = screenDimensions.width * (percentageWidth / 100);
+      return rounded ? Math.round(value) : value;
+    },
+    [rounded, screenDimensions.width],
+  );
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const vh = (percentageHeight: number) => {
-    const value = screenDimensions.height * (percentageHeight / 100);
-    return rounded ? Math.round(value) : value;
-  };
+  const vh = useCallback(
+    (percentageHeight: number) => {
+      const value = screenDimensions.height * (percentageHeight / 100);
+      return rounded ? Math.round(value) : value;
+    },
+    [rounded, screenDimensions.height],
+  );
 
-  const screenDimensionFunctions = useMemo(() => ({ vh, vw }), [vh, vw]);
-
-  return screenDimensionFunctions;
+  return { vh, vw };
 };
