@@ -103,7 +103,6 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
   //   console.log('ISE: LAST: ', Object.keys(lastReply.user));
   // }
   // debugger
-  console.log('ISE: UNREAD: ', ownUnreadMessageCount)
 
   return (
     <TouchableOpacity
