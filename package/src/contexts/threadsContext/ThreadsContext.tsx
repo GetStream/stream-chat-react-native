@@ -20,6 +20,7 @@ export type ThreadsContextValue<
   ThreadListEmptyPlaceholder?: React.ComponentType;
   ThreadListItem?: React.ComponentType;
   ThreadListLoadingIndicator?: React.ComponentType;
+  ThreadListUnreadBanner?: React.ComponentType;
 };
 
 export const ThreadsContext = React.createContext(
