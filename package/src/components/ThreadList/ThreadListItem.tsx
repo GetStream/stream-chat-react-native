@@ -1,14 +1,14 @@
 import React, { useCallback, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { Channel, FormatMessageResponse, Thread, ThreadState } from 'stream-chat';
+import { Thread, ThreadState } from 'stream-chat';
 
+import { TranslationContextValue, useChatContext, useTranslationContext } from '../../contexts';
 import {
-  ThreadType,
-  TranslationContextValue,
-  useChatContext,
-  useTranslationContext,
-} from '../../contexts';
+  ThreadListItemProvider,
+  useThreadListItemContext,
+} from '../../contexts/threadsContext/ThreadListItemContext';
+import { useThreadsContext } from '../../contexts/threadsContext/ThreadsContext';
 import { useStateStore } from '../../hooks';
 import { MessageBubble } from '../../icons';
 import { getDateString } from '../../utils/i18n/getDateString';
@@ -17,7 +17,6 @@ import { MessageType } from '../MessageList/hooks/useMessageList';
 
 export type ThreadListItemProps = {
   thread: Thread;
-  onThreadSelect?: (thread: ThreadType, channel: Channel) => void;
   timestampTranslationKey?: string;
 };
 
@@ -36,7 +35,7 @@ const getTitleFromMessage = ({
 }: {
   t: TranslationContextValue['t'];
   currentUserId?: string;
-  message?: FormatMessageResponse;
+  message?: MessageType | undefined;
 }) => {
   const attachment = message?.attachments?.at(0);
 
@@ -64,45 +63,12 @@ const getTitleFromMessage = ({
   }`;
 };
 
-export const ThreadListItem = (props: ThreadListItemProps) => {
+export const ThreadListItemComponent = () => {
+  const { channel, dateString, lastReply, ownUnreadMessageCount, parentMessage, thread } =
+    useThreadListItemContext();
+  const { onThreadSelect } = useThreadsContext();
   const { client } = useChatContext();
-  const { t, tDateTimeParser } = useTranslationContext();
-  const { onThreadSelect, thread, timestampTranslationKey = 'timestamp/ThreadListItem' } = props;
-
-  const selector = useCallback(
-    (nextValue: ThreadState) =>
-      [
-        nextValue.replies.at(-1),
-        (client.userID && nextValue.read[client.userID]?.unreadMessageCount) || 0,
-        nextValue.parentMessage,
-        nextValue.channel,
-      ] as const,
-    [client],
-  );
-
-  const [lastReply, ownUnreadMessageCount, parentMessage, channel] = useStateStore(
-    thread.state,
-    selector,
-  );
-
-  const timestamp = lastReply?.created_at;
-
-  // TODO: Please rethink this, we have the same line of code in about 5 places in the SDK.
-  const dateString = useMemo(
-    () =>
-      getDateString({
-        date: timestamp,
-        t,
-        tDateTimeParser,
-        timestampTranslationKey,
-      }),
-    [timestamp, t, tDateTimeParser, timestampTranslationKey],
-  );
-
-  // if (lastReply) {
-  //   console.log('ISE: LAST: ', Object.keys(lastReply.user));
-  // }
-  // debugger
+  const { t } = useTranslationContext();
 
   return (
     <TouchableOpacity
@@ -140,12 +106,68 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
           <Text>{lastReply?.user?.name}</Text>
           <View style={{ flexDirection: 'row' }}>
             <Text numberOfLines={1} style={{ flex: 1 }}>
-              {getTitleFromMessage({ currentUserId: client.userID, message: lastReply, t })}
+              {getTitleFromMessage({
+                currentUserId: client.userID,
+                message: lastReply,
+                t,
+              })}
             </Text>
             <Text style={{ alignSelf: 'flex-end' }}>{dateString}</Text>
           </View>
         </View>
       </View>
     </TouchableOpacity>
+  );
+};
+
+export const ThreadListItem = (props: ThreadListItemProps) => {
+  const { client } = useChatContext();
+  const { t, tDateTimeParser } = useTranslationContext();
+  const { thread, timestampTranslationKey = 'timestamp/ThreadListItem' } = props;
+  const { ThreadListItem = ThreadListItemComponent } = useThreadsContext();
+
+  const selector = useCallback(
+    (nextValue: ThreadState) =>
+      [
+        nextValue.replies.at(-1),
+        (client.userID && nextValue.read[client.userID]?.unreadMessageCount) || 0,
+        nextValue.parentMessage,
+        nextValue.channel,
+      ] as const,
+    [client],
+  );
+
+  const [lastReply, ownUnreadMessageCount, parentMessage, channel] = useStateStore(
+    thread.state,
+    selector,
+  );
+
+  const timestamp = lastReply?.created_at;
+
+  // TODO: Please rethink this, we have the same line of code in about 5 places in the SDK.
+  const dateString = useMemo(
+    () =>
+      getDateString({
+        date: timestamp,
+        t,
+        tDateTimeParser,
+        timestampTranslationKey,
+      }),
+    [timestamp, t, tDateTimeParser, timestampTranslationKey],
+  );
+
+  return (
+    <ThreadListItemProvider
+      value={{
+        channel,
+        dateString,
+        lastReply,
+        ownUnreadMessageCount,
+        parentMessage,
+        thread,
+      }}
+    >
+      <ThreadListItem />
+    </ThreadListItemProvider>
   );
 };
