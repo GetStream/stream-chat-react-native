@@ -78,24 +78,40 @@ export const ThreadListItemComponent = () => {
         }
       }}
       style={{
-        borderColor: 'black',
-        borderStyle: 'solid',
-        borderWidth: 1,
         flex: 1,
-        marginVertical: 8,
+        paddingHorizontal: 8,
+        paddingVertical: 14,
       }}
     >
       <View style={{ flexDirection: 'row' }}>
         <MessageBubble />
-        <Text>{channel?.data?.name || 'N/A'}</Text>
+        <Text style={{ fontSize: 14, fontWeight: '500' }}>{channel?.data?.name || 'N/A'}</Text>
       </View>
-      <View style={{ flexDirection: 'row' }}>
-        <Text numberOfLines={1} style={{ flex: 1 }}>
+      <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+        <Text numberOfLines={1} style={{ color: '#7E828B', flex: 1, fontSize: 12 }}>
           {t<string>('replied to')}: {getTitleFromMessage({ message: parentMessage, t })}
         </Text>
-        <Text style={{ alignSelf: 'flex-end' }}>{ownUnreadMessageCount}</Text>
+        <View
+          style={{
+            alignItems: 'center',
+            alignSelf: 'flex-end',
+            backgroundColor: '#FF3842',
+            borderRadius: 50,
+            height: 22,
+            justifyContent: 'center',
+            width: 22,
+          }}
+        >
+          <Text
+            style={{
+              color: 'white',
+            }}
+          >
+            {ownUnreadMessageCount}
+          </Text>
+        </View>
       </View>
-      <View style={{ flexDirection: 'row', marginBottom: 14, marginHorizontal: 8, marginTop: 6 }}>
+      <View style={{ flexDirection: 'row', marginTop: 6 }}>
         <Avatar
           containerStyle={{ marginRight: 8 }}
           image={lastReply?.user?.image as string}
@@ -103,16 +119,19 @@ export const ThreadListItemComponent = () => {
           size={40}
         />
         <View style={{ flex: 1 }}>
-          <Text>{lastReply?.user?.name}</Text>
+          <Text style={{ fontSize: 14, fontWeight: '500' }}>{lastReply?.user?.name}</Text>
           <View style={{ flexDirection: 'row' }}>
-            <Text numberOfLines={1} style={{ flex: 1 }}>
+            <Text
+              numberOfLines={1}
+              style={{ color: '#7E828B', flex: 1, fontSize: 14, marginTop: 4 }}
+            >
               {getTitleFromMessage({
                 currentUserId: client.userID,
                 message: lastReply,
                 t,
               })}
             </Text>
-            <Text style={{ alignSelf: 'flex-end' }}>{dateString}</Text>
+            <Text style={{ alignSelf: 'flex-end', color: '#7E828B' }}>{dateString}</Text>
           </View>
         </View>
       </View>
