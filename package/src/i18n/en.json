@@ -89,5 +89,10 @@
   "{{ replyCount }} Replies": "{{ replyCount }} Replies",
   "{{ replyCount }} Thread Replies": "{{ replyCount }} Thread Replies",
   "{{ user }} is typing": "{{ user }} is typing",
-  "🏙 Attachment...": "🏙 Attachment..."
+  "🏙 Attachment...": "🏙 Attachment...",
+  "This reply was deleted": "This reply was deleted",
+  "The source message was deleted": "The source message was deleted",
+  "Voice message": "Voice message",
+  "replied to": "replied to",
+  "No threads here yet": "No threads here yet"
 }
