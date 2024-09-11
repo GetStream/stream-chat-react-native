@@ -6739,9 +6739,9 @@ serialize-error@^2.1.0:
   integrity sha512-ghgmKt5o4Tly5yEG/UJp8qTd0AN7Xalw4XBtDEKP655B699qMEtra1WlXeE6WIvdEG481JvRxULKsInq/iNysw==
 
 serve-static@^1.13.1:
-  version "1.15.0"
-  resolved "https://registry.yarnpkg.com/serve-static/-/serve-static-1.15.0.tgz#faaef08cffe0a1a62f60cad0c4e513cff0ac9540"
-  integrity sha512-XGuRDNjXUijsUL0vl6nSD7cwURuzEgglbOaFuZM9g3kwDXOWVTck0jLzjPzGD+TazWbboZYu52/9/XPdUgne9g==
+  version "1.16.0"
+  resolved "https://registry.yarnpkg.com/serve-static/-/serve-static-1.16.0.tgz#2bf4ed49f8af311b519c46f272bf6ac3baf38a92"
+  integrity sha512-pDLK8zwl2eKaYrs8mrPZBJua4hMplRWJ1tIFksVC3FtBEBnl8dxgeHtsaMS8DhS9i4fLObaon6ABoc4/hQGdPA==
   dependencies:
     encodeurl "~1.0.2"
     escape-html "~1.0.3"
@@ -6899,10 +6899,10 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-stream-chat-react-native-core@5.36.1:
-  version "5.36.1"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.36.1.tgz#4d3fd3354916a783b77a37c684dd8c126dfd7e10"
-  integrity sha512-5r2zIOsKE+jXkId/V0BnnO/6HY0/HSjjhS1gDrij1vTGBiTXijlDu0SD+L0fNpEsy7k5qoJMSXoyRZKlrEAAZQ==
+stream-chat-react-native-core@5.37.0:
+  version "5.37.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.37.0.tgz#39bc4c1f702bb80af2a0fdc7e6ea7fdd12a05368"
+  integrity sha512-Z/yRDVAD1e/flDnCjQG1XpNNY+YMaFLzThAeQUYfdHgFna8nrfiTOuA4/6BIharjAtWCcQ7SqTztHY0pkhRv8g==
   dependencies:
     "@gorhom/bottom-sheet" "^4.6.4"
     dayjs "1.10.5"
@@ -6918,8 +6918,20 @@ stream-chat-react-native-core@5.36.1:
     stream-chat "8.38.0"
 
 "stream-chat-react-native-core@link:../../package":
-  version "0.0.0"
-  uid ""
+  version "5.37.0"
+  dependencies:
+    "@gorhom/bottom-sheet" "^4.6.4"
+    dayjs "1.10.5"
+    emoji-regex "^10.3.0"
+    i18next "^21.6.14"
+    intl-pluralrules "^2.0.1"
+    linkifyjs "^4.1.1"
+    lodash-es "4.17.21"
+    mime-types "^2.1.34"
+    path "0.12.7"
+    react-native-markdown-package "1.8.2"
+    react-native-url-polyfill "^1.3.0"
+    stream-chat "8.38.0"
 
 stream-chat-react-native-devtools@^1.1.0:
   version "1.1.0"
@@ -6927,8 +6939,10 @@ stream-chat-react-native-devtools@^1.1.0:
   integrity sha512-r2f8YyM9ZtCUYKtyIvUcsYDiWD0Dx9mdUMzjNGL+dn15RkM84k4ZWaFmuT/FLEdUCUZE/fSy2XoxrbRq5smIpQ==
 
 "stream-chat-react-native@link:../../package/native-package":
-  version "0.0.0"
-  uid ""
+  version "5.37.0"
+  dependencies:
+    es6-symbol "^3.1.3"
+    stream-chat-react-native-core "5.37.0"
 
 stream-chat@8.38.0:
   version "8.38.0"
