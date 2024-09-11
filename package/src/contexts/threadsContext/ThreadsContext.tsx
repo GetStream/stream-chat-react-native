@@ -16,6 +16,7 @@ export type ThreadsContextValue<
   isLoading: boolean;
   threads: Thread<StreamChatGenerics>[];
   additionalFlatListProps?: Partial<FlatListProps<Thread>>;
+  loadMore?: () => Promise<void>;
   onThreadSelect?: (thread: ThreadType, channel: Channel) => void;
   ThreadListEmptyPlaceholder?: React.ComponentType;
   ThreadListItem?: React.ComponentType;

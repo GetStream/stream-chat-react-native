@@ -40,6 +40,7 @@ const ThreadListComponent = () => {
   const {
     additionalFlatListProps,
     isLoading,
+    loadMore,
     ThreadListEmptyPlaceholder = DefaultThreadListEmptyPlaceholder,
     ThreadListLoadingIndicator = DefaultThreadListLoadingIndicator,
     ThreadListUnreadBanner = DefaultThreadListBanner,
@@ -52,6 +53,7 @@ const ThreadListComponent = () => {
         contentContainerStyle={{ flexGrow: 1 }}
         data={threads}
         ListEmptyComponent={isLoading ? ThreadListLoadingIndicator : ThreadListEmptyPlaceholder}
+        onEndReached={loadMore}
         renderItem={DefaultThreadListItem}
         {...additionalFlatListProps}
       />
@@ -71,7 +73,9 @@ export const ThreadList = (props: ThreadListProps) => {
   const [threads, isLoading] = useStateStore(client.threads.state, selector);
 
   return (
-    <ThreadsProvider value={{ isLoading, threads, ...props }}>
+    <ThreadsProvider
+      value={{ isLoading, loadMore: client.threads.loadNextPage, threads, ...props }}
+    >
       <ThreadList />
     </ThreadsProvider>
   );
