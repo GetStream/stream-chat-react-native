@@ -1,9 +1,14 @@
 import React, { useCallback, useMemo } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { Thread, ThreadState } from 'stream-chat';
 
-import { TranslationContextValue, useChatContext, useTranslationContext } from '../../contexts';
+import {
+  TranslationContextValue,
+  useChatContext,
+  useTheme,
+  useTranslationContext,
+} from '../../contexts';
 import {
   ThreadListItemProvider,
   useThreadListItemContext,
@@ -19,6 +24,41 @@ export type ThreadListItemProps = {
   thread: Thread;
   timestampTranslationKey?: string;
 };
+
+const styles = StyleSheet.create({
+  boldText: { fontSize: 14, fontWeight: '500' },
+  contentRow: {
+    flexDirection: 'row',
+    marginTop: 6,
+  },
+  contentTextWrapper: {
+    flex: 1,
+    marginLeft: 8,
+  },
+  dateText: { alignSelf: 'flex-end' },
+  headerRow: {
+    flexDirection: 'row',
+  },
+  infoRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  lastReplyText: { flex: 1, fontSize: 14, marginTop: 4 },
+  parentMessageText: { flex: 1, fontSize: 12 },
+  touchableWrapper: {
+    flex: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 14,
+  },
+  unreadBubbleWrapper: {
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+    borderRadius: 50,
+    height: 22,
+    justifyContent: 'center',
+    width: 22,
+  },
+});
 
 export const attachmentTypeIconMap = {
   audio: '🔈',
@@ -69,6 +109,12 @@ export const ThreadListItemComponent = () => {
   const { onThreadSelect } = useThreadsContext();
   const { client } = useChatContext();
   const { t } = useTranslationContext();
+  const {
+    theme: {
+      colors: { accent_red, text_low_emphasis, white },
+      threadListItem,
+    },
+  } = useTheme();
 
   return (
     <TouchableOpacity
@@ -77,53 +123,55 @@ export const ThreadListItemComponent = () => {
           onThreadSelect({ thread: parentMessage as MessageType, threadInstance: thread }, channel);
         }
       }}
-      style={{
-        flex: 1,
-        paddingHorizontal: 8,
-        paddingVertical: 14,
-      }}
+      style={[styles.touchableWrapper, threadListItem.touchableWrapper]}
     >
-      <View style={{ flexDirection: 'row' }}>
+      <View style={[styles.headerRow, threadListItem.headerRow]}>
         <MessageBubble />
-        <Text style={{ fontSize: 14, fontWeight: '500' }}>{channel?.data?.name || 'N/A'}</Text>
+        <Text style={[styles.boldText, threadListItem.boldText]}>
+          {channel?.data?.name || 'N/A'}
+        </Text>
       </View>
-      <View style={{ alignItems: 'center', flexDirection: 'row' }}>
-        <Text numberOfLines={1} style={{ color: '#7E828B', flex: 1, fontSize: 12 }}>
+      <View style={[styles.infoRow, threadListItem.infoRow]}>
+        <Text
+          numberOfLines={1}
+          style={[
+            styles.parentMessageText,
+            { color: text_low_emphasis },
+            threadListItem.parentMessageText,
+          ]}
+        >
           {t<string>('replied to')}: {getTitleFromMessage({ message: parentMessage, t })}
         </Text>
-        <View
-          style={{
-            alignItems: 'center',
-            alignSelf: 'flex-end',
-            backgroundColor: '#FF3842',
-            borderRadius: 50,
-            height: 22,
-            justifyContent: 'center',
-            width: 22,
-          }}
-        >
-          <Text
-            style={{
-              color: 'white',
-            }}
+        {ownUnreadMessageCount > 0 ? (
+          <View
+            style={[
+              styles.unreadBubbleWrapper,
+              { backgroundColor: accent_red },
+              threadListItem.unreadBubbleWrapper,
+            ]}
           >
-            {ownUnreadMessageCount}
-          </Text>
-        </View>
+            <Text style={[{ color: white }, threadListItem.unreadBubbleText]}>
+              {ownUnreadMessageCount}
+            </Text>
+          </View>
+        ) : null}
       </View>
-      <View style={{ flexDirection: 'row', marginTop: 6 }}>
+      <View style={[styles.contentRow, threadListItem.contentRow]}>
         <Avatar
-          containerStyle={{ marginRight: 8 }}
           image={lastReply?.user?.image as string}
           online={lastReply?.user?.online}
           size={40}
         />
-        <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 14, fontWeight: '500' }}>{lastReply?.user?.name}</Text>
-          <View style={{ flexDirection: 'row' }}>
+        <View style={[styles.contentTextWrapper, threadListItem.contentTextWrapper]}>
+          <Text style={[styles.boldText, threadListItem.boldText]}>{lastReply?.user?.name}</Text>
+          <View style={[styles.headerRow, threadListItem.headerRow]}>
             <Text
               numberOfLines={1}
-              style={{ color: '#7E828B', flex: 1, fontSize: 14, marginTop: 4 }}
+              style={[
+                styles.lastReplyText,
+                { color: text_low_emphasis },
+                threadListItem.lastReplyText,
+              ]}
             >
               {getTitleFromMessage({
                 currentUserId: client.userID,
@@ -131,7 +179,9 @@ export const ThreadListItemComponent = () => {
                 t,
               })}
             </Text>
-            <Text style={{ alignSelf: 'flex-end', color: '#7E828B' }}>{dateString}</Text>
+            <Text style={[styles.dateText, { color: text_low_emphasis }, threadListItem.dateText]}>
+              {dateString}
+            </Text>
           </View>
         </View>
       </View>
