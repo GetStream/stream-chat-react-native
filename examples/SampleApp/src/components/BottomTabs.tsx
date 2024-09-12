@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from 'stream-chat-react-native';
 
-import { UnreadCountBadge } from './UnreadCountBadge';
+import { ChannelsUnreadCountBadge, ThreadsUnreadCountBadge } from './UnreadCountBadge';
 
 import { ChatsTab } from '../icons/ChatsTab';
 import { ThreadsTab } from '../icons/ThreadsTab';
@@ -11,7 +11,6 @@ import { MentionsTab } from '../icons/MentionsTab';
 
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import type { Route } from '@react-navigation/native';
-import { ThreadsUnreadCountBadge } from './ThreadsUnreadCountBadge.tsx';
 
 const styles = StyleSheet.create({
   notification: {
@@ -42,7 +41,7 @@ const getTab = (key: string) => {
       return {
         icon: <ChatsTab />,
         iconActive: <ChatsTab active />,
-        notification: <UnreadCountBadge />,
+        notification: <ChannelsUnreadCountBadge />,
         title: 'Chats',
       };
     case 'ThreadsScreen':
