@@ -11,6 +11,7 @@ import { MentionsTab } from '../icons/MentionsTab';
 
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import type { Route } from '@react-navigation/native';
+import { ThreadsUnreadCountBadge } from './ThreadsUnreadCountBadge.tsx';
 
 const styles = StyleSheet.create({
   notification: {
@@ -48,7 +49,7 @@ const getTab = (key: string) => {
       return {
         icon: <ThreadsTab />,
         iconActive: <ThreadsTab active />,
-        notification: <UnreadCountBadge />,
+        notification: <ThreadsUnreadCountBadge />,
         title: 'Threads',
       };
     case 'MentionsScreen':

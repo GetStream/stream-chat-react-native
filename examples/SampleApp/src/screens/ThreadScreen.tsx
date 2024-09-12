@@ -9,7 +9,7 @@ import {
   useTheme,
   useTypingString,
 } from 'stream-chat-react-native';
-import { useStateStore } from 'stream-chat-react-native-core/src';
+import { useStateStore } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 
@@ -40,7 +40,7 @@ export type ThreadHeaderProps = {
 const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
   const typing = useTypingString();
   let subtitleText = thread?.user?.name;
-  const [parentMessage] = useStateStore(thread?.threadInstance?.state, selector) || [];
+  const [parentMessage] = useStateStore(thread?.threadInstance?.state ?? undefined, selector) || [];
 
   if (subtitleText == null) {
     subtitleText = parentMessage?.user?.name;
