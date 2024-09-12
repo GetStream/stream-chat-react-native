@@ -1110,6 +1110,10 @@ const ChannelWithContext = <
       isCurrent: false,
       isLatest: true,
       messages: [],
+      pagination: {
+        hasNext: true,
+        hasPrev: true,
+      },
     });
   });
 
