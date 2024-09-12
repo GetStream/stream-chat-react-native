@@ -127,31 +127,33 @@ export const Generic = () => {
           user,
         }),
       );
-      const messages = messagesOverride || Array(10)
-        .fill(1)
-        .map(() => {
-          const id = uuidv4();
-          const user = usersForMembers[getRandomInt(0, usersForMembers.length - 1)];
+      const messages =
+        messagesOverride ||
+        Array(10)
+          .fill(1)
+          .map(() => {
+            const id = uuidv4();
+            const user = usersForMembers[getRandomInt(0, usersForMembers.length - 1)];
 
-          const begin = getRandomInt(0, usersForMembers.length - 2); // begin shouldn't be the end of users.length
-          const end = getRandomInt(begin + 1, usersForMembers.length - 1);
+            const begin = getRandomInt(0, usersForMembers.length - 2); // begin shouldn't be the end of users.length
+            const end = getRandomInt(begin + 1, usersForMembers.length - 1);
 
-          const usersForReactions = usersForMembers.slice(begin, end);
-          const reactions = usersForReactions.map((user) =>
-            generateReaction({
-              message_id: id,
+            const usersForReactions = usersForMembers.slice(begin, end);
+            const reactions = usersForReactions.map((user) =>
+              generateReaction({
+                message_id: id,
+                user,
+              }),
+            );
+            allReactions.push(...reactions);
+            return generateMessage({
+              cid,
+              id,
+              latest_reactions: reactions,
               user,
-            }),
-          );
-          allReactions.push(...reactions);
-          return generateMessage({
-            cid,
-            id,
-            latest_reactions: reactions,
-            user,
-            userId: user.id,
+              userId: user.id,
+            });
           });
-        });
 
       const reads = members.map((member) => ({
         last_read: new Date(new Date().setDate(new Date().getDate() - getRandomInt(0, 20))),
@@ -314,7 +316,7 @@ export const Generic = () => {
       expectAllChannelsWithStateToBeInDB(screen.queryAllByLabelText);
     });
 
-    it('should still store properly', async () => {
+    it('should fetch channels from the db correctly even if they are empty', async () => {
       const emptyChannel = createChannel([]);
       useMockedApis(chatClient, [queryChannelsApi([emptyChannel])]);
       jest.spyOn(chatClient, 'hydrateActiveChannels');
