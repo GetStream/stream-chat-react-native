@@ -5,19 +5,6 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { Spinner } from '../Spinner/Spinner';
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
-  loadingText: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginTop: 20,
-  },
-});
-
 type LoadingIndicatorWrapperProps = { text: string };
 
 const LoadingIndicatorWrapper = ({ text }: LoadingIndicatorWrapperProps) => {
@@ -66,3 +53,16 @@ export const LoadingIndicator = (props: LoadingProps) => {
 };
 
 LoadingIndicator.displayName = 'LoadingIndicator{loadingIndicator}';
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  loadingText: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginTop: 20,
+  },
+});

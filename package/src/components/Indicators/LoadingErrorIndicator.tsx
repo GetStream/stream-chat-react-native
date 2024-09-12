@@ -4,24 +4,6 @@ import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    height: '100%',
-    justifyContent: 'center',
-    width: '100%',
-  },
-  errorText: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginTop: 20,
-  },
-  retryText: {
-    fontSize: 30,
-    fontWeight: '600',
-  },
-});
-
 type LoadingErrorWrapperProps = {
   text: string;
   onPress?: () => void;
@@ -85,3 +67,21 @@ export const LoadingErrorIndicator = (props: LoadingErrorProps) => {
 };
 
 LoadingErrorIndicator.displayName = 'LoadingErrorIndicator{loadingErrorIndicator}';
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    height: '100%',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  errorText: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginTop: 20,
+  },
+  retryText: {
+    fontSize: 30,
+    fontWeight: '600',
+  },
+});
