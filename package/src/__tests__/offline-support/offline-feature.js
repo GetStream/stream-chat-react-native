@@ -115,7 +115,7 @@ export const Generic = () => {
     let allReactions;
     let allReads;
     const getRandomInt = (lower, upper) => Math.floor(lower + Math.random() * (upper - lower + 1));
-    const createChannel = () => {
+    const createChannel = (messagesOverride) => {
       const id = uuidv4();
       const cid = `messaging:${id}`;
       const begin = getRandomInt(0, allUsers.length - 2); // begin shouldn't be the end of users.length
@@ -127,7 +127,7 @@ export const Generic = () => {
           user,
         }),
       );
-      const messages = Array(10)
+      const messages = messagesOverride || Array(10)
         .fill(1)
         .map(() => {
           const id = uuidv4();
@@ -189,6 +189,7 @@ export const Generic = () => {
     afterEach(() => {
       BetterSqlite.dropAllTables();
       cleanup();
+      jest.clearAllMocks();
     });
 
     const filters = {
@@ -311,6 +312,21 @@ export const Generic = () => {
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       expectAllChannelsWithStateToBeInDB(screen.queryAllByLabelText);
+    });
+
+    it('should still store properly', async () => {
+      const emptyChannel = createChannel([]);
+      useMockedApis(chatClient, [queryChannelsApi([emptyChannel])]);
+      jest.spyOn(chatClient, 'hydrateActiveChannels');
+
+      renderComponent();
+      await act(() => dispatchConnectionChangedEvent(chatClient));
+      await waitFor(() => {
+        expect(screen.getByTestId('channel-list')).toBeTruthy();
+        expect(screen.getByTestId(emptyChannel.cid)).toBeTruthy();
+        expect(chatClient.hydrateActiveChannels).toHaveBeenCalledTimes(2);
+        expect(chatClient.hydrateActiveChannels.mock.calls[0][0]).toStrictEqual([emptyChannel]);
+      });
     });
 
     it('should add a new message to database', async () => {
