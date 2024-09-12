@@ -43,10 +43,10 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
           {
             "marginRight": 2,
           },
-          {},
           {
             "opacity": -0.3333333333333333,
           },
+          {},
         ]
       }
     />
@@ -62,10 +62,10 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
           {
             "marginHorizontal": 2,
           },
-          {},
           {
             "opacity": 0.3333333333333333,
           },
+          {},
         ]
       }
     />
@@ -81,10 +81,10 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
           {
             "marginLeft": 2,
           },
-          {},
           {
             "opacity": 1,
           },
+          {},
         ]
       }
     />
