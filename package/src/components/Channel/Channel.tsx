@@ -276,6 +276,7 @@ export type ChannelPropsWithContext<
       | 'getMessagesGroupStyles'
       | 'Giphy'
       | 'giphyVersion'
+      | 'handleBan'
       | 'handleBlock'
       | 'handleCopy'
       | 'handleDelete'
@@ -485,6 +486,7 @@ const ChannelWithContext = <
     giphyEnabled,
     giphyVersion = 'fixed_height',
     handleAttachButtonPress,
+    handleBan,
     handleBlock,
     handleCopy,
     handleDelete,
@@ -667,7 +669,9 @@ const ChannelWithContext = <
 
       if (messageId) {
         loadChannelAroundMessage({ messageId });
-      } else if (
+      }
+      // The condition, where if the count of unread messages is greater than 4, then scroll to the first unread message.
+      else if (
         initialScrollToFirstUnreadMessage &&
         channel.countUnread() > scrollToFirstUnreadThreshold
       ) {
@@ -2334,6 +2338,7 @@ const ChannelWithContext = <
     getMessagesGroupStyles,
     Giphy,
     giphyVersion,
+    handleBan,
     handleBlock,
     handleCopy,
     handleDelete,

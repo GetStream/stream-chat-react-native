@@ -6,7 +6,7 @@ import type { MessageActionType } from '../../MessageOverlay/MessageActionListIt
 export type MessageActionsParams<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
-  blockUser: MessageActionType;
+  banUser: MessageActionType;
   deleteMessage: MessageActionType;
   dismissOverlay: () => void;
   editMessage: MessageActionType;
@@ -21,6 +21,10 @@ export type MessageActionsParams<
   retry: MessageActionType;
   threadReply: MessageActionType;
   unpinMessage: MessageActionType;
+  /**
+   * @deprecated use `banUser` instead.
+   */
+  blockUser?: MessageActionType;
   copyMessage?: MessageActionType;
 } & Pick<MessageContextValue<StreamChatGenerics>, 'message' | 'isMyMessage'>;
 
@@ -31,6 +35,7 @@ export type MessageActionsProp<
 export const messageActions = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
+  banUser,
   blockUser,
   copyMessage,
   deleteMessage,
@@ -90,7 +95,7 @@ export const messageActions = <
   }
 
   if (!isMyMessage && ownCapabilities.banChannelMembers) {
-    actions.push(blockUser);
+    actions.push(banUser || blockUser);
   }
 
   if (

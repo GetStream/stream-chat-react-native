@@ -677,3 +677,12 @@ export const getDurationLabelFromDuration = (duration: number) => {
 
   return durationLabel;
 };
+
+/**
+ * Utility to escape special characters in a string.
+ * @param text
+ * @returns string
+ */
+export function escapeRegExp(text: string) {
+  return text.replace(/[-[\]{}()*+?.,/\\^$|#]/g, '\\$&');
+}

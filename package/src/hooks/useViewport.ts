@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Dimensions } from 'react-native';
+import { useCallback } from 'react';
+import { useWindowDimensions } from 'react-native';
 
 /**
  * A custom hook that provides functions to calculate dimensions based on
@@ -9,35 +9,23 @@ import { Dimensions } from 'react-native';
  * @returns {Object} An object containing functions vh and vw.
  */
 export const useViewport = (rounded?: boolean) => {
-  const [viewportDimensions, setViewportDimensions] = useState(Dimensions.get('window'));
+  const viewportDimensions = useWindowDimensions();
 
-  useEffect(() => {
-    const subscriptions = Dimensions.addEventListener('change', ({ window }) => {
-      setViewportDimensions((prev) => {
-        const { height, width } = window;
-        if (prev.height !== height || prev.width !== width) {
-          return window;
-        }
-        return prev;
-      });
-    });
+  const vw = useCallback(
+    (percentageWidth: number) => {
+      const value = viewportDimensions.width * (percentageWidth / 100);
+      return rounded ? Math.round(value) : value;
+    },
+    [rounded, viewportDimensions.width],
+  );
 
-    return () => subscriptions?.remove();
-  }, []);
+  const vh = useCallback(
+    (percentageHeight: number) => {
+      const value = viewportDimensions.height * (percentageHeight / 100);
+      return rounded ? Math.round(value) : value;
+    },
+    [rounded, viewportDimensions.height],
+  );
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const vw = (percentageWidth: number) => {
-    const value = viewportDimensions.width * (percentageWidth / 100);
-    return rounded ? Math.round(value) : value;
-  };
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const vh = (percentageHeight: number) => {
-    const value = viewportDimensions.height * (percentageHeight / 100);
-    return rounded ? Math.round(value) : value;
-  };
-
-  const viewportFunctions = useMemo(() => ({ vh, vw }), [vh, vw]);
-
-  return viewportFunctions;
+  return { vh, vw };
 };

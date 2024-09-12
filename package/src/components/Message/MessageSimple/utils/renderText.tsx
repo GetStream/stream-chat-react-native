@@ -23,6 +23,7 @@ import { generateMarkdownText } from './generateMarkdownText';
 import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
 import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
+import { escapeRegExp } from '../../../../utils/utils';
 import type { MessageType } from '../../../MessageList/hooks/useMessageList';
 
 const defaultMarkdownStyles: MarkdownStyle = {
@@ -131,16 +132,10 @@ export const renderText = <
     },
   };
 
-  const onLink = (url: string) => {
-    const pattern = new RegExp(/^\S+:\/\//);
-    if (!pattern.test(url)) {
-      url = 'http://' + url;
-    }
-
-    return onLinkParams
+  const onLink = (url: string) =>
+    onLinkParams
       ? onLinkParams(url)
       : Linking.canOpenURL(url).then((canOpenUrl) => canOpenUrl && Linking.openURL(url));
-  };
 
   let previousLink: string | undefined;
   const linkReact: ReactNodeOutput = (node, output, { ...state }) => {
@@ -210,10 +205,6 @@ export const renderText = <
       </Text>
     );
   };
-
-  function escapeRegExp(text: string) {
-    return text.replace(/[-[\]{}()*+?.,/\\^$|#]/g, '\\$&');
-  }
 
   // take the @ mentions and turn them into markdown?
   // translate links
