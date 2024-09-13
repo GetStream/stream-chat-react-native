@@ -2116,7 +2116,9 @@ const ChannelWithContext = <
       setThread(message);
       // TODO: Check if this causes issues and if it should be throttled like the other methods.
       // Also check if it causes any issues with channel state
-      channel.markRead({ thread_id: message.id });
+      if (channel.initialized) {
+        channel.markRead({ thread_id: message.id });
+      }
       // This was causing inconsistencies within the thread state as well as being responsible
       // of threads essentially never unloading (due to all of the previous threads + 50 loading
       // every time we'd run this). It seemingly has no impact (other than a performance boost)
