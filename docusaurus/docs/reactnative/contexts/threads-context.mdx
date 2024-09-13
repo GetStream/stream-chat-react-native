@@ -5,11 +5,11 @@ title: ThreadsContext
 
 import Channel from '../common-content/ui-components/channel/props/channel.mdx';
 
-import AdditionalFlatListProps from '../common-content/contexts/threads-context/additional-flatlist-props.mdx'
-import OnThreadSelect from '../common-content/contexts/threads-context/on-thread-select.mdx'
-import ThreadListEmptyPlaceholder from '../common-content/contexts/threads-context/thread-list-empty-placeholder.mdx'
-import ThreadListLoadingIndicator from '../common-content/contexts/threads-context/thread-list-loading-indicator.mdx'
-import ThreadListUnreadBanner from '../common-content/contexts/threads-context/thread-list-unread-banner.mdx'
+import AdditionalFlatListProps from '../common-content/contexts/threads-context/additional-flatlist-props.mdx';
+import OnThreadSelect from '../common-content/contexts/threads-context/on-thread-select.mdx';
+import ThreadListEmptyPlaceholder from '../common-content/contexts/threads-context/thread-list-empty-placeholder.mdx';
+import ThreadListLoadingIndicator from '../common-content/contexts/threads-context/thread-list-loading-indicator.mdx';
+import ThreadListUnreadBanner from '../common-content/contexts/threads-context/thread-list-unread-banner.mdx';
 
 The `ThreadsContext` is provided by the [`ThreadList`](../../ui-components/thread-list) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
 
@@ -36,21 +36,21 @@ const value = useThreadsContext();
 
 ## Value
 
-### `isLoading` *
+### `isLoading` \*
 
 A boolean flag that lets us know whether the threads are currently loading or not.
 
 | Type    | Default |
 | ------- | ------- |
-| boolean |  false  |
+| boolean | false   |
 
-### `threads` *
+### `threads` \*
 
 An array of [Thread](https://github.com/GetStream/stream-chat-js/blob/master/src/thread.ts) instances that are used as input for rendering the `ThreadList`.
 
-| Type    |
-| ------- |
-| array   |
+| Type  |
+| ----- |
+| array |
 
 ### `additionalFlatListProps`
 
@@ -104,8 +104,8 @@ const ThreadListItem = () => {
     <TouchableOpacity onPress={() => onThreadSelect(thread, channel)}>
       <Text>{parentMessage?.text || 'Text not available !'}</Text>
     </TouchableOpacity>
-  )
-}
+  );
+};
 
 const App = () => {
   return (

@@ -5,7 +5,7 @@ title: ThreadListItemContext
 
 import Channel from '../common-content/ui-components/channel/props/channel.mdx';
 
-import Thread from '../common-content/contexts/thread-list-item-context/thread.mdx'
+import Thread from '../common-content/contexts/thread-list-item-context/thread.mdx';
 
 The `ThreadListItemContext` is provided by the [`ThreadListItem`](../../ui-components/thread-list-item) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
 
@@ -40,35 +40,34 @@ const value = useThreadListItemContext();
 
 A formatted date string that can be used as a thread timestamp. The default format is `HH:MM`.
 
-| Type    |
-| ------- |
-| string   |
+| Type   |
+| ------ |
+| string |
 
 ### `lastReply`
 
 A [Message instance](https://github.com/GetStream/stream-chat-react-native/blob/493cdffcb5b2ee915b2f420e359ad685966a0dbe/package/src/components/MessageList/hooks/useMessageList.ts#L35) providing the latest message reply in the thread.
 
-| Type                              |
-| --------------------------------- |
-| MessageType   |
+| Type        |
+| ----------- |
+| MessageType |
 
 ### `ownUnreadMessageCount`
 
 A number providing the number of unread messages for the particular thread.
 
-| Type    |
-| ------- |
-| number   |
+| Type   |
+| ------ |
+| number |
 
 ### `parentMessage`
 
 A [Message instance](https://github.com/GetStream/stream-chat-react-native/blob/493cdffcb5b2ee915b2f420e359ad685966a0dbe/package/src/components/MessageList/hooks/useMessageList.ts#L35) providing the parent message of the thread.
 
-| Type                              |
-| --------------------------------- |
-| MessageType   |
+| Type        |
+| ----------- |
+| MessageType |
 
 ### `thread`
 
 <Thread />
-
