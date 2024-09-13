@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useTheme, ThreadList } from 'stream-chat-react-native';
 
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
@@ -22,14 +22,6 @@ const styles = StyleSheet.create({
     paddingTop: 28,
   },
 });
-
-const EmptyThreadsIndicator = () => {
-  return (
-    <View style={styles.emptyIndicatorContainer}>
-      <Text style={styles.emptyIndicatorText}>No threads found.</Text>
-    </View>
-  );
-};
 
 export type ThreadsScreenProps = {
   navigation: StackNavigationProp<BottomTabNavigatorParamList, 'MentionsScreen'>;

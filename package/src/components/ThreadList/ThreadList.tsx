@@ -28,6 +28,7 @@ export type ThreadListProps<
   | 'onThreadSelect'
   | 'ThreadListEmptyPlaceholder'
   | 'ThreadListLoadingIndicator'
+  | 'ThreadListUnreadBanner'
 > & { ThreadList?: React.ComponentType };
 
 export const DefaultThreadListEmptyPlaceholder = () => <EmptyStateIndicator listType='threads' />;
