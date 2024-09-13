@@ -252,7 +252,7 @@ const queryUsers = async <
       onReady(usersWithoutClientUserId);
     }
   } catch (error) {
-    console.log('Error querying users:', error);
+    console.warn('Error querying users:', error);
   }
 };
 
