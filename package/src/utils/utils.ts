@@ -2,12 +2,11 @@ import type React from 'react';
 
 import dayjs from 'dayjs';
 import EmojiRegex from 'emoji-regex';
-import type { DebouncedFunc } from 'lodash';
+import { DebouncedFunc } from 'lodash';
 import debounce from 'lodash/debounce';
 import type {
   Channel,
   ChannelMemberAPIResponse,
-  ChannelMemberResponse,
   CommandResponse,
   FormatMessageResponse,
   MessageResponse,
@@ -152,14 +151,7 @@ const getMembers = <
   channel: Channel<StreamChatGenerics>,
 ) => {
   const members = channel.state.members;
-
-  return Object.values(members).length
-    ? (
-        Object.values(members).filter((member) => member.user) as Array<
-          ChannelMemberResponse<StreamChatGenerics> & { user: UserResponse<StreamChatGenerics> }
-        >
-      ).map((member) => member.user)
-    : [];
+  return members ? Object.values(members).map(({ user }) => user) : [];
 };
 
 const getWatchers = <
@@ -168,7 +160,7 @@ const getWatchers = <
   channel: Channel<StreamChatGenerics>,
 ) => {
   const watchers = channel.state.watchers;
-  return Object.values(watchers).length ? [...Object.values(watchers)] : [];
+  return watchers ? Object.values(watchers) : [];
 };
 
 const getMembersAndWatchers = <
@@ -176,17 +168,21 @@ const getMembersAndWatchers = <
 >(
   channel: Channel<StreamChatGenerics>,
 ) => {
-  const users = [...getMembers(channel), ...getWatchers(channel)];
+  const members = getMembers(channel);
+  const watchers = getWatchers(channel);
+  console.log(members, watchers);
+  const users = [...members, ...watchers];
 
-  return Object.values(
-    users.reduce((acc, cur) => {
-      if (!acc[cur.id]) {
-        acc[cur.id] = cur;
-      }
+  // make sure we don't list users twice
+  const uniqueUsers = {} as Record<string, UserResponse<StreamChatGenerics>>;
 
-      return acc;
-    }, {} as { [key: string]: SuggestionUser<StreamChatGenerics> }),
-  );
+  users.forEach((user) => {
+    if (user && !uniqueUsers[user.id]) {
+      uniqueUsers[user.id] = user;
+    }
+  });
+
+  return Object.values(uniqueUsers);
 };
 
 const queryMembers = async <
@@ -234,32 +230,30 @@ const queryUsers = async <
     mentionAllAppUsersQuery?: MentionAllAppUsersQuery<StreamChatGenerics>;
   } = {},
 ): Promise<void> => {
-  if (typeof query === 'string') {
+  if (!query) return;
+  try {
     const {
       limit = defaultAutoCompleteSuggestionsLimit,
       mentionAllAppUsersQuery = defaultMentionAllAppUsersQuery,
     } = options;
+
     const filters = {
-      id: { $ne: client.userID },
+      $or: [{ id: { $autocomplete: query } }, { name: { $autocomplete: query } }],
       ...mentionAllAppUsersQuery?.filters,
     };
 
-    if (query) {
-      // @ts-ignore
-      filters.$or = [{ id: { $autocomplete: query } }, { name: { $autocomplete: query } }];
-    }
-
-    const response = await client.queryUsers(
+    const { users } = await client.queryUsers(
       // @ts-ignore
       filters,
       { id: 1, ...mentionAllAppUsersQuery?.sort },
       { limit, ...mentionAllAppUsersQuery?.options },
     );
-    const users: SuggestionUser<StreamChatGenerics>[] = [];
-    response.users.forEach((user) => isUserResponse(user) && users.push(user));
+    const usersWithoutClientUserId = users.filter((user) => user.id !== client.userID);
     if (onReady && users) {
-      onReady(users);
+      onReady(usersWithoutClientUserId);
     }
+  } catch (error) {
+    console.log('Error querying users:', error);
   }
 };
 
