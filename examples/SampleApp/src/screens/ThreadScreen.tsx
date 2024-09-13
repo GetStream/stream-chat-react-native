@@ -36,7 +36,6 @@ export type ThreadHeaderProps = {
   thread: ThreadContextValue<StreamChatGenerics>['thread'];
 };
 
-// TODO: Move this in the SDK itself, no reason for it not to be there. The React SDK has it too.
 const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
   const typing = useTypingString();
   let subtitleText = thread?.user?.name;

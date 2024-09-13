@@ -745,14 +745,13 @@ const MessageListWithContext = <
     if (onEndReachedInPromise.current) {
       await onEndReachedInPromise.current;
     }
-    onStartReachedInPromise.current = // todo: fixme to work with threads v2
-      (
-        threadList && !!threadInstance && loadMoreRecentThread
-          ? loadMoreRecentThread({ limit })
-          : loadMoreRecent(limit)
-      )
-        .then(callback)
-        .catch(onError);
+    onStartReachedInPromise.current = (
+      threadList && !!threadInstance && loadMoreRecentThread
+        ? loadMoreRecentThread({ limit })
+        : loadMoreRecent(limit)
+    )
+      .then(callback)
+      .catch(onError);
   };
 
   /**
