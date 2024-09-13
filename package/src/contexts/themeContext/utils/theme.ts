@@ -27,8 +27,8 @@ export const Colors = {
   static_black: '#000000',
   static_white: '#ffffff',
   targetedMessageBackground: '#FBF4DD', // dark mode = #302D22
-  text_low_emphasis: '#7E828B',
   text_high_emphasis: '#080707',
+  text_low_emphasis: '#7E828B',
   transparent: 'transparent',
   white: '#FFFFFF',
   white_smoke: '#F2F2F2',

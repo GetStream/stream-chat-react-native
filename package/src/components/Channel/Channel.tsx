@@ -2539,11 +2539,11 @@ export const Channel = <
         setTyping,
         setWatcherCount,
         setWatchers,
+        thread,
         threadMessages,
         typing,
         watcherCount,
         watchers,
-        thread,
       }}
     />
   );
