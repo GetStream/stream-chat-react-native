@@ -1,0 +1,127 @@
+---
+id: threads-context
+title: ThreadsContext
+---
+
+import Channel from '../common-content/ui-components/channel/props/channel.mdx';
+
+import AdditionalFlatListProps from '../common-content/contexts/threads-context/additional-flatlist-props.mdx'
+import OnThreadSelect from '../common-content/contexts/threads-context/on-thread-select.mdx'
+import ThreadListEmptyPlaceholder from '../common-content/contexts/threads-context/thread-list-empty-placeholder.mdx'
+import ThreadListLoadingIndicator from '../common-content/contexts/threads-context/thread-list-loading-indicator.mdx'
+import ThreadListUnreadBanner from '../common-content/contexts/threads-context/thread-list-unread-banner.mdx'
+
+The `ThreadsContext` is provided by the [`ThreadList`](../../ui-components/thread-list) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
+
+The `ThreadsContext` needs to be used within the [`Chat` component](../../core-components/chat) as it depends on the [`ChatContext`](./chat-context).
+
+## Basic Usage
+
+The `ThreadsContext` can be consumed by any of the child components of `Chat` as following:
+
+```tsx
+import { useContext } from 'react';
+import { ThreadsContext } from 'stream-chat-react-native';
+
+const value = useContext(ThreadsContext);
+```
+
+Alternatively, you can also use `useThreadsContext` hook provided by library to consume `ThreadContext`.
+
+```tsx
+import { useThreadsContext } from 'stream-chat-react-native';
+
+const value = useThreadsContext();
+```
+
+## Value
+
+### `isLoading` *
+
+A boolean flag that lets us know whether the threads are currently loading or not.
+
+| Type    | Default |
+| ------- | ------- |
+| boolean |  false  |
+
+### `threads` *
+
+An array of [Thread](https://github.com/GetStream/stream-chat-js/blob/master/src/thread.ts) instances that are used as input for rendering the `ThreadList`.
+
+| Type    |
+| ------- |
+| array   |
+
+### `additionalFlatListProps`
+
+<AdditionalFlatListProps />
+
+### `loadMore`
+
+A method that can be invoked to load more `threads`. Returns a promise.
+
+| Type                  |
+| --------------------- |
+| `() => Promise<void>` |
+
+### `onThreadSelect`
+
+<OnThreadSelect />
+
+#### `channel`
+
+<Channel />
+
+### `ThreadListEmptyPlaceholder`
+
+<ThreadListEmptyPlaceholder />
+
+### `ThreadListItem`
+
+A custom UI component used to render each item within the `ThreadList`. It will override the UI of the [default `ThreadListItem`](./thread-list-item) while still keeping all of the data.
+
+| Type          | Default                                                                                                                                  |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| ComponentType | [`ThreadListItem`](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ThreadList/ThreadListItem.tsx) |
+
+Example usage:
+
+```tsx
+import { Text, TouchableOpacity } from 'react-native';
+import {
+  OverlayProvider,
+  Chat,
+  ThreadList,
+  useThreadListItemContext,
+  useThreadsContext,
+} from 'stream-chat-react-native';
+
+const ThreadListItem = () => {
+  const { parentMessage, thread, channel } = useThreadListItemContext();
+  const { onThreadSelect } = useThreadsContext();
+
+  return (
+    <TouchableOpacity onPress={() => onThreadSelect(thread, channel)}>
+      <Text>{parentMessage?.text || 'Text not available !'}</Text>
+    </TouchableOpacity>
+  )
+}
+
+const App = () => {
+  return (
+    <OverlayProvider>
+      <Chat client={client}>
+        <ThreadList ThreadListItem={ThreadListItem} />
+      </Chat>
+    </OverlayProvider>
+  );
+};
+```
+
+### `ThreadListLoadingIndicator`
+
+<ThreadListLoadingIndicator />
+
+### `ThreadListUnreadBanner`
+
+<ThreadListUnreadBanner />
