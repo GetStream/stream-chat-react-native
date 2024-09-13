@@ -21,7 +21,6 @@ export const InlineLoadingMoreRecentIndicatorWithContext = ({
   loadingMoreRecent,
 }: InlineLoadingMoreRecentThreadIndicatorPropsWithContext) => {
   const { theme } = useTheme();
-  console.log('ISE: RECENT', loadingMoreRecent);
 
   const {
     colors: { accent_blue },

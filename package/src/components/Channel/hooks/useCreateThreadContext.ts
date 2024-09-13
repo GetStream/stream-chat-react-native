@@ -30,9 +30,6 @@ export const useCreateThreadContext = <
   const [latestReplies, isLoadingPrev, isLoadingNext] =
     useStateStore(threadInstance?.state, selector) ?? [];
 
-  // console.log('ISE: LATEST REPLIES TEST: ', threadMessages.length, latestReplies?.length, thread?.activate)
-  // console.log('ISE: MSGS', threadMessages?.length, latestReplies?.length)
-
   const contextAdapter = threadInstance
     ? {
         loadMoreRecentThread: threadInstance.loadNextPage,
