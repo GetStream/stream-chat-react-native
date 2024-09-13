@@ -4,8 +4,6 @@ import { useTheme } from 'stream-chat-react-native';
 
 import { IconProps } from '../utils/base';
 
-// TODO: Replace this with an actual icon that makes sense
-
 export const ThreadsTab: React.FC<IconProps> = ({ active, height = 24, width = 24 }) => {
   const {
     theme: {
@@ -16,7 +14,7 @@ export const ThreadsTab: React.FC<IconProps> = ({ active, height = 24, width = 2
     <Svg fill='none' height={height} viewBox={`0 0 ${height} ${width}`} width={width}>
       <Path
         clipRule='evenodd'
-        d='M12 5C7.46774 5 4 8.24148 4 12C4 15.7585 7.46774 19 12 19C12.6209 19 13.224 18.9381 13.8023 18.8215C13.9231 18.7971 14.0473 18.7953 14.1687 18.8161L19.4315 19.717L18.3869 17.0167C18.258 16.6833 18.3168 16.3064 18.5412 16.0282C19.4673 14.8799 20 13.4904 20 12C20 8.24148 16.5323 5 12 5ZM2 12C2 6.92196 6.59113 3 12 3C17.4089 3 22 6.92196 22 12C22 13.7774 21.4276 15.4282 20.4527 16.8133L21.9327 20.6392C22.0625 20.9749 22.0019 21.3545 21.774 21.6332C21.5461 21.9118 21.1861 22.0464 20.8313 21.9857L14.0104 20.8181C13.3601 20.9375 12.6877 21 12 21C6.59113 21 2 17.078 2 12Z'
+        d='M4 4H20V16H5.17L4 17.17V4ZM4 2C2.9 2 2.01 2.9 2.01 4L2 22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2H4ZM6 12H14V14H6V12ZM6 9H18V11H6V9ZM6 6H18V8H6V6Z'
         fill={active ? black : grey}
         fillRule='evenodd'
       />
