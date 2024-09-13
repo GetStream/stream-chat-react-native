@@ -152,16 +152,6 @@ export const usePaginatedUsers = (): PaginatedUsers => {
 
       const usersWithoutClientUserId = users.filter((user) => user.id !== chatClient.userID);
 
-      // Dumb check to avoid duplicates
-      if (
-        query === searchText &&
-        usersWithoutClientUserId.length > 0 &&
-        results.findIndex((r) => usersWithoutClientUserId[0].id === r.id) > -1
-      ) {
-        queryInProgress.current = false;
-        return;
-      }
-
       setResults((r) => {
         if (query !== searchText) {
           return usersWithoutClientUserId;

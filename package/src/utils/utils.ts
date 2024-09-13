@@ -11,7 +11,7 @@ import type {
   FormatMessageResponse,
   MessageResponse,
   StreamChat,
-  UserResponse,
+  User,
 } from 'stream-chat';
 
 import { IconProps } from '../../src/icons/utils/base';
@@ -173,15 +173,17 @@ const getMembersAndWatchers = <
   const users = [...members, ...watchers];
 
   // make sure we don't list users twice
-  const uniqueUsers = {} as Record<string, UserResponse<StreamChatGenerics>>;
+  const seenUsers = new Set<string>();
+  const uniqueUsers: User[] = [];
 
-  users.forEach((user) => {
-    if (user && !uniqueUsers[user.id]) {
-      uniqueUsers[user.id] = user;
+  for (const user of users) {
+    if (user && !seenUsers.has(user.id)) {
+      uniqueUsers.push(user);
+      seenUsers.add(user.id);
     }
-  });
+  }
 
-  return Object.values(uniqueUsers);
+  return uniqueUsers;
 };
 
 const queryMembers = async <
