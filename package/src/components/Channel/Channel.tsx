@@ -1112,16 +1112,13 @@ const ChannelWithContext = <
     if (!currentLatestSet) return;
     // unmark the current latest set
     currentLatestSet.isLatest = false;
-    // adding the empty set will cause our currentLatestSet to have a next
-    // one, albeit empty
-    currentLatestSet.pagination.hasNext = true;
     // create a new set with empty latest messages
     channel.state.messageSets.push({
       isCurrent: false,
       isLatest: true,
       messages: [],
       pagination: {
-        hasNext: false,
+        hasNext: true,
         hasPrev: true,
       },
     });

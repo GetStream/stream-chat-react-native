@@ -207,7 +207,7 @@ const CardWithContext = <
             imageStyle={styles.cardCover}
             resizeMode='cover'
             source={{ uri: makeImageCompatibleUrl(uri) }}
-            style={[styles.cardCover, cover, stylesProp.cardCover]}
+            style={[styles.cardCover, stylesProp.cardCover, cover]}
           >
             {isVideoCard ? (
               <View

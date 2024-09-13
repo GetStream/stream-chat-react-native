@@ -40,9 +40,9 @@ export const getChannels = <
   // Enrich the channels with state
   return channels.map((c) => ({
     ...mapStorableToChannel<StreamChatGenerics>(c),
-    members: cidVsMembers[c.cid],
-    messages: cidVsMessages[c.cid],
+    members: cidVsMembers[c.cid] || [],
+    messages: cidVsMessages[c.cid] || [],
     pinned_messages: [],
-    read: cidVsReads[c.cid],
+    read: cidVsReads[c.cid] || [],
   }));
 };
