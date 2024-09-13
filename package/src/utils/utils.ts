@@ -489,54 +489,9 @@ export const ACITriggerSettings = <
         mentionAllAppUsersQuery: defaultMentionAllAppUsersQuery,
       },
     ) => {
-      try {
-        if (options?.mentionAllAppUsersEnabled) {
-          return (queryUsersDebounced as DebouncedFunc<QueryUsersFunction<StreamChatGenerics>>)(
-            client,
-            query,
-            (data) => {
-              if (onReady) {
-                onReady(data, query);
-              }
-            },
-            {
-              limit: options.limit,
-              mentionAllAppUsersQuery: options.mentionAllAppUsersQuery,
-            },
-          );
-        }
-
-        /**
-         * By default, we return maximum 100 members via queryChannels api call.
-         * Thus it is safe to assume, that if number of members in channel.state is < 100,
-         * then all the members are already available on client side and we don't need to
-         * make any api call to queryMembers endpoint.
-         */
-        if (!query || Object.values(channel.state.members).length < 100) {
-          const users = getMembersAndWatchers(channel);
-
-          const matchingUsers = users.filter((user) => {
-            if (!query) return true;
-            if (user.name?.toLowerCase().indexOf(query.toLowerCase()) !== -1) {
-              return true;
-            }
-            if (user.id.toLowerCase().indexOf(query.toLowerCase()) !== -1) {
-              return true;
-            }
-            return false;
-          });
-
-          const data = matchingUsers.slice(0, options?.limit);
-
-          if (onReady) {
-            onReady(data, query);
-          }
-
-          return data;
-        }
-
-        return (queryMembersDebounced as DebouncedFunc<QueryMembersFunction<StreamChatGenerics>>)(
-          channel,
+      if (options?.mentionAllAppUsersEnabled) {
+        return (queryUsersDebounced as DebouncedFunc<QueryUsersFunction<StreamChatGenerics>>)(
+          client,
           query,
           (data) => {
             if (onReady) {
@@ -545,11 +500,52 @@ export const ACITriggerSettings = <
           },
           {
             limit: options.limit,
+            mentionAllAppUsersQuery: options.mentionAllAppUsersQuery,
           },
         );
-      } catch (error) {
-        console.log('Error in user dataProvider:', error);
       }
+
+      /**
+       * By default, we return maximum 100 members via queryChannels api call.
+       * Thus it is safe to assume, that if number of members in channel.state is < 100,
+       * then all the members are already available on client side and we don't need to
+       * make any api call to queryMembers endpoint.
+       */
+      if (!query || Object.values(channel.state.members).length < 100) {
+        const users = getMembersAndWatchers(channel);
+
+        const matchingUsers = users.filter((user) => {
+          if (!query) return true;
+          if (user.name?.toLowerCase().indexOf(query.toLowerCase()) !== -1) {
+            return true;
+          }
+          if (user.id.toLowerCase().indexOf(query.toLowerCase()) !== -1) {
+            return true;
+          }
+          return false;
+        });
+
+        const data = matchingUsers.slice(0, options?.limit);
+
+        if (onReady) {
+          onReady(data, query);
+        }
+
+        return data;
+      }
+
+      return (queryMembersDebounced as DebouncedFunc<QueryMembersFunction<StreamChatGenerics>>)(
+        channel,
+        query,
+        (data) => {
+          if (onReady) {
+            onReady(data, query);
+          }
+        },
+        {
+          limit: options.limit,
+        },
+      );
     },
     output: (entity) => ({
       caretPosition: 'next',
