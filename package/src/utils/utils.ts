@@ -170,7 +170,6 @@ const getMembersAndWatchers = <
 ) => {
   const members = getMembers(channel);
   const watchers = getWatchers(channel);
-  console.log(members, watchers);
   const users = [...members, ...watchers];
 
   // make sure we don't list users twice
