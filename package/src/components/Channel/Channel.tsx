@@ -837,7 +837,7 @@ const ChannelWithContext = <
             setThreadMessages(updatedThreadMessages);
           }
 
-          if (channel && thread?.id && event.message?.id === thread.id && !thread.activate) {
+          if (channel && thread?.id && event.message?.id === thread.id && !threadInstance) {
             const updatedThread = channel.state.formatMessage(event.message);
             setThread(updatedThread);
           }
@@ -1226,7 +1226,7 @@ const ChannelWithContext = <
       loadMoreThreadFinished(updatedHasMore, updatedThreadMessages);
       const { messages } = await channel.getMessagesById([parentID]);
       const [threadMessage] = messages;
-      if (threadMessage && !thread.activate) {
+      if (threadMessage && !threadInstance) {
         const formattedMessage = channel.state.formatMessage(threadMessage);
         setThread(formattedMessage);
       }
