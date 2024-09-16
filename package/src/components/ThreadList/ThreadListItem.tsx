@@ -18,6 +18,7 @@ import { useStateStore } from '../../hooks';
 import { MessageBubble } from '../../icons';
 import { getDateString } from '../../utils/i18n/getDateString';
 import { Avatar } from '../Avatar/Avatar';
+import { useChannelPreviewDisplayName } from '../ChannelPreview/hooks/useChannelPreviewDisplayName';
 import { MessageType } from '../MessageList/hooks/useMessageList';
 
 export type ThreadListItemProps = {
@@ -106,6 +107,7 @@ const getTitleFromMessage = ({
 export const ThreadListItemComponent = () => {
   const { channel, dateString, lastReply, ownUnreadMessageCount, parentMessage, thread } =
     useThreadListItemContext();
+  const displayName = useChannelPreviewDisplayName(channel);
   const { onThreadSelect } = useThreadsContext();
   const { client } = useChatContext();
   const { t } = useTranslationContext();
@@ -124,12 +126,11 @@ export const ThreadListItemComponent = () => {
         }
       }}
       style={[styles.touchableWrapper, threadListItem.touchableWrapper]}
+      testID='thread-list-item'
     >
       <View style={[styles.headerRow, threadListItem.headerRow]}>
         <MessageBubble />
-        <Text style={[styles.boldText, threadListItem.boldText]}>
-          {channel?.data?.name || 'N/A'}
-        </Text>
+        <Text style={[styles.boldText, threadListItem.boldText]}>{displayName || 'N/A'}</Text>
       </View>
       <View style={[styles.infoRow, threadListItem.infoRow]}>
         <Text

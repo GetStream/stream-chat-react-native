@@ -53,10 +53,12 @@ const ThreadListComponent = () => {
       <FlatList
         contentContainerStyle={{ flexGrow: 1 }}
         data={threads}
+        keyExtractor={(props) => props.id}
         ListEmptyComponent={isLoading ? ThreadListLoadingIndicator : ThreadListEmptyPlaceholder}
         onEndReached={loadMore}
         renderItem={DefaultThreadListItem}
         {...additionalFlatListProps}
+        testID='thread-flatlist'
       />
     </>
   );
