@@ -1718,6 +1718,8 @@ const ChannelWithContext = <
         } else {
           updateMessage(messageResponse.message);
         }
+
+        threadInstance?.upsertReplyLocally?.({ message: messageResponse.message });
       }
     } catch (err) {
       console.log(err);
@@ -1752,7 +1754,7 @@ const ChannelWithContext = <
       commands: [],
       messageInput: '',
     });
-    threadInstance?.upsertReplyLocally?.({ message: messagePreview });
+    // threadInstance?.upsertReplyLocally?.({ message: messagePreview });
 
     if (enableOfflineSupport) {
       // While sending a message, we add the message to local db with failed status, so that
