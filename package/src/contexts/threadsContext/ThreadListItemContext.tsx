@@ -11,6 +11,7 @@ export type ThreadListItemContextValue<
 > = {
   channel: Channel<StreamChatGenerics>;
   dateString: string | number | undefined;
+  deletedAtDateString: string | number | undefined;
   lastReply: MessageType<StreamChatGenerics> | undefined;
   ownUnreadMessageCount: number;
   parentMessage: MessageType<StreamChatGenerics> | undefined;

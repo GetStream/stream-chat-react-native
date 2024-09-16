@@ -105,8 +105,15 @@ const getTitleFromMessage = ({
 };
 
 export const ThreadListItemComponent = () => {
-  const { channel, dateString, lastReply, ownUnreadMessageCount, parentMessage, thread } =
-    useThreadListItemContext();
+  const {
+    channel,
+    dateString,
+    deletedAtDateString,
+    lastReply,
+    ownUnreadMessageCount,
+    parentMessage,
+    thread,
+  } = useThreadListItemContext();
   const displayName = useChannelPreviewDisplayName(channel);
   const { onThreadSelect } = useThreadsContext();
   const { client } = useChatContext();
@@ -143,7 +150,7 @@ export const ThreadListItemComponent = () => {
         >
           {t<string>('replied to')}: {getTitleFromMessage({ message: parentMessage, t })}
         </Text>
-        {ownUnreadMessageCount > 0 ? (
+        {ownUnreadMessageCount > 0 && !deletedAtDateString ? (
           <View
             style={[
               styles.unreadBubbleWrapper,
@@ -174,14 +181,16 @@ export const ThreadListItemComponent = () => {
                 threadListItem.lastReplyText,
               ]}
             >
-              {getTitleFromMessage({
-                currentUserId: client.userID,
-                message: lastReply,
-                t,
-              })}
+              {deletedAtDateString
+                ? 'This thread was deleted.'
+                : getTitleFromMessage({
+                    currentUserId: client.userID,
+                    message: lastReply,
+                    t,
+                  })}
             </Text>
             <Text style={[styles.dateText, { color: text_low_emphasis }, threadListItem.dateText]}>
-              {dateString}
+              {deletedAtDateString ?? dateString}
             </Text>
           </View>
         </View>
@@ -203,11 +212,12 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
         (client.userID && nextValue.read[client.userID]?.unreadMessageCount) || 0,
         nextValue.parentMessage,
         nextValue.channel,
+        nextValue.deletedAt,
       ] as const,
     [client],
   );
 
-  const [lastReply, ownUnreadMessageCount, parentMessage, channel] = useStateStore(
+  const [lastReply, ownUnreadMessageCount, parentMessage, channel, deletedAt] = useStateStore(
     thread.state,
     selector,
   );
@@ -225,12 +235,23 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
       }),
     [timestamp, t, tDateTimeParser, timestampTranslationKey],
   );
+  const deletedAtDateString = useMemo(
+    () =>
+      getDateString({
+        date: deletedAt as Date | undefined,
+        t,
+        tDateTimeParser,
+        timestampTranslationKey,
+      }),
+    [deletedAt, t, tDateTimeParser, timestampTranslationKey],
+  );
 
   return (
     <ThreadListItemProvider
       value={{
         channel,
         dateString,
+        deletedAtDateString,
         lastReply,
         ownUnreadMessageCount,
         parentMessage,
