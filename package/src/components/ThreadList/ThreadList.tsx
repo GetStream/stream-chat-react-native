@@ -18,7 +18,7 @@ import { EmptyStateIndicator } from '../Indicators/EmptyStateIndicator';
 import { LoadingIndicator } from '../Indicators/LoadingIndicator';
 
 const selector = (nextValue: ThreadManagerState) =>
-  [nextValue.threads, nextValue.pagination.isLoading] as const;
+  [nextValue.threads, nextValue.pagination.isLoading, nextValue.pagination.isLoadingNext] as const;
 
 export type ThreadListProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -34,6 +34,7 @@ export type ThreadListProps<
 export const DefaultThreadListEmptyPlaceholder = () => <EmptyStateIndicator listType='threads' />;
 
 export const DefaultThreadListLoadingIndicator = () => <LoadingIndicator listType='threads' />;
+export const DefaultThreadListLoadingNextIndicator = () => <LoadingIndicator />;
 
 const DefaultThreadListItem = (props: { item: Thread }) => <ThreadListItem thread={props.item} />;
 
@@ -41,9 +42,11 @@ const ThreadListComponent = () => {
   const {
     additionalFlatListProps,
     isLoading,
+    isLoadingNext,
     loadMore,
     ThreadListEmptyPlaceholder = DefaultThreadListEmptyPlaceholder,
     ThreadListLoadingIndicator = DefaultThreadListLoadingIndicator,
+    ThreadListLoadingMoreIndicator = DefaultThreadListLoadingNextIndicator,
     ThreadListUnreadBanner = DefaultThreadListBanner,
     threads,
   } = useThreadsContext();
@@ -55,6 +58,7 @@ const ThreadListComponent = () => {
         data={threads}
         keyExtractor={(props) => props.id}
         ListEmptyComponent={isLoading ? ThreadListLoadingIndicator : ThreadListEmptyPlaceholder}
+        ListFooterComponent={isLoadingNext ? ThreadListLoadingMoreIndicator : null}
         onEndReached={loadMore}
         renderItem={DefaultThreadListItem}
         {...additionalFlatListProps}
@@ -73,11 +77,11 @@ export const ThreadList = (props: ThreadListProps) => {
       client.threads.deactivate();
     };
   }, [client]);
-  const [threads, isLoading] = useStateStore(client.threads.state, selector);
+  const [threads, isLoading, isLoadingNext] = useStateStore(client.threads.state, selector);
 
   return (
     <ThreadsProvider
-      value={{ isLoading, loadMore: client.threads.loadNextPage, threads, ...props }}
+      value={{ isLoading, isLoadingNext, loadMore: client.threads.loadNextPage, threads, ...props }}
     >
       <ThreadList />
     </ThreadsProvider>

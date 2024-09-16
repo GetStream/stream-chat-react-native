@@ -14,6 +14,7 @@ export type ThreadsContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   isLoading: boolean;
+  isLoadingNext: boolean;
   threads: Thread<StreamChatGenerics>[];
   additionalFlatListProps?: Partial<FlatListProps<Thread>>;
   loadMore?: () => Promise<void>;
@@ -21,6 +22,7 @@ export type ThreadsContextValue<
   ThreadListEmptyPlaceholder?: React.ComponentType;
   ThreadListItem?: React.ComponentType;
   ThreadListLoadingIndicator?: React.ComponentType;
+  ThreadListLoadingMoreIndicator?: React.ComponentType;
   ThreadListUnreadBanner?: React.ComponentType;
 };
 
