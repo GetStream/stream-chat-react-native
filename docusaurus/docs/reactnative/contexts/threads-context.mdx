@@ -9,6 +9,7 @@ import AdditionalFlatListProps from '../common-content/contexts/threads-context/
 import OnThreadSelect from '../common-content/contexts/threads-context/on-thread-select.mdx';
 import ThreadListEmptyPlaceholder from '../common-content/contexts/threads-context/thread-list-empty-placeholder.mdx';
 import ThreadListLoadingIndicator from '../common-content/contexts/threads-context/thread-list-loading-indicator.mdx';
+import ThreadListLoadingMoreIndicator from '../common-content/contexts/threads-context/thread-list-loading-more-indicator.mdx';
 import ThreadListUnreadBanner from '../common-content/contexts/threads-context/thread-list-unread-banner.mdx';
 
 The `ThreadsContext` is provided by the [`ThreadList`](../../ui-components/thread-list) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
@@ -39,6 +40,14 @@ const value = useThreadsContext();
 ### `isLoading` \*
 
 A boolean flag that lets us know whether the threads are currently loading or not.
+
+| Type    | Default |
+| ------- | ------- |
+| boolean | false   |
+
+### `isLoadingMore` \*
+
+A boolean flag that lets us whether the next page of threads is being loaded or not.
 
 | Type    | Default |
 | ------- | ------- |
@@ -121,6 +130,10 @@ const App = () => {
 ### `ThreadListLoadingIndicator`
 
 <ThreadListLoadingIndicator />
+
+### `ThreadListLoadingMoreIndicator`
+
+<ThreadListLoadingMoreIndicator />
 
 ### `ThreadListUnreadBanner`
 
