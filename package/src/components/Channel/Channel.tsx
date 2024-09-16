@@ -1722,7 +1722,9 @@ const ChannelWithContext = <
     } catch (err) {
       console.log(err);
       message.status = MessageStatusTypes.FAILED;
-      updateMessage({ ...message, cid: channel.cid });
+      const updatedMessage = { ...message, cid: channel.cid };
+      updateMessage(updatedMessage);
+      threadInstance?.upsertReplyLocally?.({ message: updatedMessage });
 
       if (enableOfflineSupport) {
         dbApi.updateMessage({
@@ -2014,7 +2016,7 @@ const ChannelWithContext = <
 
     setMessages(channel.state.messages);
 
-    await DBSyncManager.queueTask<StreamChatGenerics>({
+    const sendReactionResponse = await DBSyncManager.queueTask<StreamChatGenerics>({
       client,
       task: {
         channelId: channel.id,
@@ -2024,6 +2026,9 @@ const ChannelWithContext = <
         type: 'send-reaction',
       },
     });
+    if (sendReactionResponse?.message) {
+      threadInstance?.upsertReplyLocally?.({ message: sendReactionResponse.message });
+    }
   };
 
   const deleteMessage: MessagesContextValue<StreamChatGenerics>['deleteMessage'] = async (
@@ -2046,14 +2051,15 @@ const ChannelWithContext = <
       DBSyncManager.dropPendingTasks({ messageId: message.id });
       removeMessage(message);
     } else {
-      updateMessage({
+      const updatedMessage = {
         ...message,
         cid: channel.cid,
         deleted_at: new Date().toISOString(),
         type: 'deleted',
-      });
+      };
+      updateMessage(updatedMessage);
 
-      threadInstance?.upsertReplyLocally({ message });
+      threadInstance?.upsertReplyLocally({ message: updatedMessage });
 
       const data = await DBSyncManager.queueTask<StreamChatGenerics>({
         client,

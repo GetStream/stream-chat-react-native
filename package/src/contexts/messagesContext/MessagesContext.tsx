@@ -247,7 +247,11 @@ export type MessagesContextValue<
    * Defaults to: [ScrollToBottomButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/scroll-to-bottom-button/)
    */
   ScrollToBottomButton: React.ComponentType<ScrollToBottomButtonProps>;
-  sendReaction: (type: string, messageId: string) => Promise<void>;
+  sendReaction: (
+    type: string,
+    messageId: string,
+    message?: MessageType<StreamChatGenerics>,
+  ) => Promise<void>;
   setEditingState: (message?: MessageType<StreamChatGenerics>) => void;
   setQuotedMessageState: (message: MessageType<StreamChatGenerics> | boolean) => void;
   supportedReactions: ReactionData[];

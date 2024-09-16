@@ -57,7 +57,7 @@ export const EmptyStateIndicator = ({ listType }: EmptyStateProps) => {
       );
     case 'threads':
       return (
-        <View style={[messageContainer]}>
+        <View style={[styles.container]}>
           <MessageBubbleEmpty height={width} pathFill={'#B4BBBA'} width={width} />
           <Text style={{ color: '#7E828B' }}>{t<string>('No threads here yet')}...</Text>
         </View>
