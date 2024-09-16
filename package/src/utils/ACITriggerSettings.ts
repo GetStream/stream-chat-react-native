@@ -23,6 +23,12 @@ const getCommands = <
   channel: Channel<StreamChatGenerics>,
 ) => channel.getConfig()?.commands || [];
 
+export type TriggerSettingsOutputType = {
+  caretPosition: string;
+  key: string;
+  text: string;
+};
+
 export type TriggerSettings<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
@@ -38,11 +44,7 @@ export type TriggerSettings<
         limit?: number;
       },
     ) => SuggestionCommand<StreamChatGenerics>[];
-    output: (entity: CommandResponse<StreamChatGenerics>) => {
-      caretPosition: string;
-      key: string;
-      text: string;
-    };
+    output: (entity: CommandResponse<StreamChatGenerics>) => TriggerSettingsOutputType;
     type: SuggestionComponentType;
   };
   ':'?: {
@@ -51,11 +53,7 @@ export type TriggerSettings<
       _: string,
       onReady?: (data: Emoji[], q: Emoji['name']) => void,
     ) => Emoji[] | Promise<Emoji[]>;
-    output: (entity: Emoji) => {
-      caretPosition: string;
-      key: string;
-      text: string;
-    };
+    output: (entity: Emoji) => TriggerSettingsOutputType;
     type: SuggestionComponentType;
   };
   '@'?: {
@@ -73,11 +71,7 @@ export type TriggerSettings<
         mentionAllAppUsersQuery?: MentionAllAppUsersQuery<StreamChatGenerics>;
       },
     ) => SuggestionUser<StreamChatGenerics>[] | Promise<void> | void;
-    output: (entity: SuggestionUser<StreamChatGenerics>) => {
-      caretPosition: string;
-      key: string;
-      text: string;
-    };
+    output: (entity: SuggestionUser<StreamChatGenerics>) => TriggerSettingsOutputType;
     type: SuggestionComponentType;
   };
 };
@@ -120,36 +114,41 @@ export const ACITriggerSettings = <
 }: ACITriggerSettingsParams<StreamChatGenerics>): TriggerSettings<StreamChatGenerics> => ({
   '/': {
     dataProvider: (query, text, onReady, options = {}) => {
-      if (text.indexOf('/') !== 0) return [];
+      try {
+        if (text.indexOf('/') !== 0) return [];
 
-      const { limit = defaultAutoCompleteSuggestionsLimit } = options;
-      const selectedCommands = !query
-        ? getCommands(channel)
-        : getCommands(channel).filter((command) => query && command.name?.indexOf(query) !== -1);
+        const { limit = defaultAutoCompleteSuggestionsLimit } = options;
+        const selectedCommands = !query
+          ? getCommands(channel)
+          : getCommands(channel).filter((command) => query && command.name?.indexOf(query) !== -1);
 
-      // sort alphabetically unless the you're matching the first char
-      selectedCommands.sort((a, b) => {
-        let nameA = a.name?.toLowerCase() || '';
-        let nameB = b.name?.toLowerCase() || '';
-        if (query && nameA.indexOf(query) === 0) {
-          nameA = `0${nameA}`;
+        // sort alphabetically unless the you're matching the first char
+        selectedCommands.sort((a, b) => {
+          let nameA = a.name?.toLowerCase() || '';
+          let nameB = b.name?.toLowerCase() || '';
+          if (query && nameA.indexOf(query) === 0) {
+            nameA = `0${nameA}`;
+          }
+          if (query && nameB.indexOf(query) === 0) {
+            nameB = `0${nameB}`;
+          }
+          if (nameA < nameB) return -1;
+          if (nameA > nameB) return 1;
+
+          return 0;
+        });
+
+        const result = selectedCommands.slice(0, limit);
+
+        if (onReady) {
+          onReady(result, query);
         }
-        if (query && nameB.indexOf(query) === 0) {
-          nameB = `0${nameB}`;
-        }
-        if (nameA < nameB) return -1;
-        if (nameA > nameB) return 1;
 
-        return 0;
-      });
-
-      const result = selectedCommands.slice(0, limit);
-
-      if (onReady) {
-        onReady(result, query);
+        return result;
+      } catch (error) {
+        console.warn('Error querying commands while using "/":', error);
+        throw error;
       }
-
-      return result;
     },
     output: (entity) => ({
       caretPosition: 'next',
@@ -160,15 +159,20 @@ export const ACITriggerSettings = <
   },
   ':': {
     dataProvider: async (query, _, onReady) => {
-      if (!query) return [];
+      try {
+        if (!query) return [];
 
-      const emojis = (await emojiSearchIndex?.search(query)) ?? [];
+        const emojis = (await emojiSearchIndex?.search(query)) ?? [];
 
-      if (onReady) {
-        onReady(emojis, query);
+        if (onReady) {
+          onReady(emojis, query);
+        }
+
+        return emojis;
+      } catch (error) {
+        console.warn('Error querying emojis while using ":":', error);
+        throw error;
       }
-
-      return emojis;
     },
     output: (entity) => ({
       caretPosition: 'next',

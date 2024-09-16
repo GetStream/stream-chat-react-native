@@ -112,33 +112,38 @@ export const isEditedMessage = <
  */
 export const defaultEmojiSearchIndex: EmojiSearchIndex = {
   search: (query) => {
-    const results = [];
+    try {
+      const results = [];
 
-    for (const emoji of compiledEmojis) {
-      if (results.length >= 10) return results;
-      if (emoji.names.some((name) => name.includes(query))) {
-        // Aggregate skins as different toned emojis - if skins are present
-        if (emoji.skins) {
-          results.push({
-            ...emoji,
-            name: `${emoji.name}-tone-1`,
-            skins: undefined,
-          });
-          emoji.skins.forEach((tone, index) =>
+      for (const emoji of compiledEmojis) {
+        if (results.length >= 10) return results;
+        if (emoji.names.some((name) => name.includes(query))) {
+          // Aggregate skins as different toned emojis - if skins are present
+          if (emoji.skins) {
             results.push({
               ...emoji,
-              name: `${emoji.name}-tone-${index + 2}`,
+              name: `${emoji.name}-tone-1`,
               skins: undefined,
-              unicode: tone,
-            }),
-          );
-        } else {
-          results.push(emoji);
+            });
+            emoji.skins.forEach((tone, index) =>
+              results.push({
+                ...emoji,
+                name: `${emoji.name}-tone-${index + 2}`,
+                skins: undefined,
+                unicode: tone,
+              }),
+            );
+          } else {
+            results.push(emoji);
+          }
         }
       }
-    }
 
-    return results;
+      return results;
+    } catch (error) {
+      console.warn('Error searching emojis:', error);
+      throw error;
+    }
   },
 };
 

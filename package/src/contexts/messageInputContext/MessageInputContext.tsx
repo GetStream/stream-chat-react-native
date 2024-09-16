@@ -1075,25 +1075,30 @@ export const MessageInputProvider = <
   };
 
   const getTriggerSettings = () => {
-    let triggerSettings: TriggerSettings<StreamChatGenerics> = {};
-    if (channel) {
-      if (value.autoCompleteTriggerSettings) {
-        triggerSettings = value.autoCompleteTriggerSettings({
-          channel,
-          client,
-          emojiSearchIndex: value.emojiSearchIndex,
-          onMentionSelectItem: onSelectItem,
-        });
-      } else {
-        triggerSettings = ACITriggerSettings<StreamChatGenerics>({
-          channel,
-          client,
-          emojiSearchIndex: value.emojiSearchIndex,
-          onMentionSelectItem: onSelectItem,
-        });
+    try {
+      let triggerSettings: TriggerSettings<StreamChatGenerics> = {};
+      if (channel) {
+        if (value.autoCompleteTriggerSettings) {
+          triggerSettings = value.autoCompleteTriggerSettings({
+            channel,
+            client,
+            emojiSearchIndex: value.emojiSearchIndex,
+            onMentionSelectItem: onSelectItem,
+          });
+        } else {
+          triggerSettings = ACITriggerSettings<StreamChatGenerics>({
+            channel,
+            client,
+            emojiSearchIndex: value.emojiSearchIndex,
+            onMentionSelectItem: onSelectItem,
+          });
+        }
       }
+      return triggerSettings;
+    } catch (error) {
+      console.warn('Error in getting trigger settings', error);
+      throw error;
     }
-    return triggerSettings;
   };
 
   const triggerSettings = getTriggerSettings();
