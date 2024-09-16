@@ -63,17 +63,19 @@ import {
   ImageUpload,
   UnknownType,
 } from '../../types/types';
-import { compressedImageURI } from '../../utils/compressImage';
-import { removeReservedFields } from '../../utils/removeReservedFields';
 import {
   ACITriggerSettings,
   ACITriggerSettingsParams,
+  TriggerSettings,
+} from '../../utils/ACITriggerSettings';
+import { compressedImageURI } from '../../utils/compressImage';
+import { removeReservedFields } from '../../utils/removeReservedFields';
+import {
   FileState,
   FileStateValue,
   generateRandomId,
   getFileNameFromPath,
   isBouncedMessage,
-  TriggerSettings,
 } from '../../utils/utils';
 import { useAttachmentPickerContext } from '../attachmentPickerContext/AttachmentPickerContext';
 import { ChannelContextValue, useChannelContext } from '../channelContext/ChannelContext';
