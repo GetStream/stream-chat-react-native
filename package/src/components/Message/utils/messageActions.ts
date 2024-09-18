@@ -12,7 +12,14 @@ export type MessageActionsParams<
   editMessage: MessageActionType;
   error: boolean | Error;
   flagMessage: MessageActionType;
+  /**
+   * Determines if the message actions are visible.
+   */
+  isMessageActionsVisible: boolean;
   isThreadMessage: boolean;
+  /**
+   * @deprecated use `isMessageActionsVisible` instead.
+   */
   messageReactions: boolean;
   muteUser: MessageActionType;
   ownCapabilities: OwnCapabilitiesContextValue;
@@ -42,6 +49,7 @@ export const messageActions = <
   editMessage,
   error,
   flagMessage,
+  isMessageActionsVisible,
   isMyMessage,
   isThreadMessage,
   message,
@@ -53,8 +61,8 @@ export const messageActions = <
   threadReply,
   unpinMessage,
 }: MessageActionsParams<StreamChatGenerics>) => {
-  if (messageReactions) {
-    return undefined;
+  if (messageReactions || !isMessageActionsVisible) {
+    return [];
   }
 
   const actions: Array<MessageActionType> = [];

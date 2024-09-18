@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 let ImagePicker;
 
 try {
@@ -15,15 +16,18 @@ if (!ImagePicker) {
 export const pickImage = ImagePicker
   ? async () => {
       try {
-        const permissionCheck = await ImagePicker.getMediaLibraryPermissionsAsync();
-        const canRequest = permissionCheck.canAskAgain;
-        let permissionGranted = permissionCheck.granted;
-        if (!permissionGranted) {
-          if (canRequest) {
-            const response = await ImagePicker.requestMediaLibraryPermissionsAsync();
-            permissionGranted = response.granted;
-          } else {
-            return { askToOpenSettings: true, cancelled: true };
+        let permissionGranted = true;
+        if (Platform.OS === 'ios') {
+          const permissionCheck = await ImagePicker.getMediaLibraryPermissionsAsync();
+          const canRequest = permissionCheck.canAskAgain;
+          permissionGranted = permissionCheck.granted;
+          if (!permissionGranted) {
+            if (canRequest) {
+              const response = await ImagePicker.requestMediaLibraryPermissionsAsync();
+              permissionGranted = response.granted;
+            } else {
+              return { askToOpenSettings: true, cancelled: true };
+            }
           }
         }
         if (permissionGranted) {

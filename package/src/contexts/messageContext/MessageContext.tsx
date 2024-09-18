@@ -125,7 +125,7 @@ export type MessageContextValue<
   reactions: ReactionSummary[];
   /** React set state function to set the state of `isEditedMessageOpen` */
   setIsEditedMessageOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  showMessageOverlay: (messageReactions?: boolean, error?: boolean) => void;
+  showMessageOverlay: (isMessageActionsVisible?: boolean, error?: boolean) => void;
   showMessageStatus: boolean;
   /** Whether or not the Message is part of a Thread */
   threadList: boolean;

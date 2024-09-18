@@ -1110,6 +1110,10 @@ const ChannelWithContext = <
       isCurrent: false,
       isLatest: true,
       messages: [],
+      pagination: {
+        hasNext: true,
+        hasPrev: true,
+      },
     });
   });
 
@@ -2215,6 +2219,17 @@ const ChannelWithContext = <
     watchers,
   });
 
+  // This is mainly a hack to get around an issue with sendMessage not being passed correctly as a
+  // useMemo() dependency. The easy fix is to add it to the dependency array, however that would mean
+  // that this (very used) context is essentially going to cause rerenders on pretty much every Channel
+  // render, since sendMessage is an inline function. Wrapping it in useCallback() is one way to fix it
+  // but it is definitely not trivial, especially considering it depends on other inline functions that
+  // are not wrapped in a useCallback() themselves hence creating a huge cascading change. Can be removed
+  // once our memoization issues are fixed in most places in the app or we move to a reactive state store.
+  const sendMessageRef =
+    useRef<InputMessageInputContextValue<StreamChatGenerics>['sendMessage']>(sendMessage);
+  sendMessageRef.current = sendMessage;
+
   const inputMessageInputContext = useCreateInputMessageInputContext<StreamChatGenerics>({
     additionalTextInputProps,
     asyncMessagesLockDistance,
@@ -2265,7 +2280,7 @@ const ChannelWithContext = <
     quotedMessage,
     SendButton,
     sendImageAsync,
-    sendMessage,
+    sendMessage: (...args) => sendMessageRef.current(...args),
     SendMessageDisallowedIndicator,
     setInputRef,
     setQuotedMessageState,

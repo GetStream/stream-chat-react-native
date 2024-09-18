@@ -6,33 +6,6 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 import { useViewport } from '../../hooks/useViewport';
 import { ChatIcon, MessageIcon } from '../../icons';
 
-const styles = StyleSheet.create({
-  channelContainer: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
-  channelDetails: {
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  channelTitle: {
-    fontSize: 16,
-    paddingBottom: 8,
-    paddingTop: 16,
-  },
-  messageContainer: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
-  messageTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    paddingBottom: 8,
-  },
-});
-
 export type EmptyStateProps = {
   listType?: 'channel' | 'message' | 'default';
 };
@@ -41,7 +14,13 @@ export const EmptyStateIndicator = ({ listType }: EmptyStateProps) => {
   const {
     theme: {
       colors: { black, grey, grey_gainsboro },
-      emptyStateIndicator: { channelContainer, channelDetails, channelTitle },
+      emptyStateIndicator: {
+        channelContainer,
+        channelDetails,
+        channelTitle,
+        messageContainer,
+        messageTitle,
+      },
     },
   } = useTheme();
   const { vw } = useViewport();
@@ -51,7 +30,7 @@ export const EmptyStateIndicator = ({ listType }: EmptyStateProps) => {
   switch (listType) {
     case 'channel':
       return (
-        <View style={[styles.channelContainer, channelContainer]}>
+        <View style={[styles.container, channelContainer]}>
           <MessageIcon height={width} pathFill={grey_gainsboro} width={width} />
           <Text
             style={[styles.channelTitle, { color: black }, channelTitle]}
@@ -69,14 +48,36 @@ export const EmptyStateIndicator = ({ listType }: EmptyStateProps) => {
       );
     case 'message':
       return (
-        <View style={[styles.messageContainer]}>
+        <View style={[styles.container, messageContainer]}>
           <ChatIcon height={width} pathFill={grey_gainsboro} width={width} />
-          <Text style={[styles.messageTitle, { color: grey_gainsboro }]}>
+          <Text style={[styles.messageTitle, { color: grey_gainsboro }, messageTitle]}>
             {t<string>('No chats here yet…')}
           </Text>
         </View>
       );
     default:
-      return <Text style={{ color: black }}>No items exist</Text>;
+      return <Text style={[{ color: black }, messageContainer]}>No items exist</Text>;
   }
 };
+
+const styles = StyleSheet.create({
+  channelDetails: {
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  channelTitle: {
+    fontSize: 16,
+    paddingBottom: 8,
+    paddingTop: 16,
+  },
+  container: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  messageTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    paddingBottom: 8,
+  },
+});

@@ -132,16 +132,10 @@ export const renderText = <
     },
   };
 
-  const onLink = (url: string) => {
-    const pattern = new RegExp(/^\S+:\/\//);
-    if (!pattern.test(url)) {
-      url = 'http://' + url;
-    }
-
-    return onLinkParams
+  const onLink = (url: string) =>
+    onLinkParams
       ? onLinkParams(url)
       : Linking.canOpenURL(url).then((canOpenUrl) => canOpenUrl && Linking.openURL(url));
-  };
 
   let previousLink: string | undefined;
   const linkReact: ReactNodeOutput = (node, output, { ...state }) => {

@@ -62,8 +62,8 @@ export const LoadingDot = (props: Props) => {
           width: diameter,
         },
         style,
-        loadingDot,
         dotStyle,
+        loadingDot,
       ]}
     />
   );

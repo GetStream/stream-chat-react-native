@@ -28,9 +28,12 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 import type { Emoji } from '../../emoji-data';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { isCommandTrigger, isEmojiTrigger, isMentionTrigger } from '../../utils/utils';
-
-import type { Trigger } from '../../utils/utils';
+import {
+  isCommandTrigger,
+  isEmojiTrigger,
+  isMentionTrigger,
+  Trigger,
+} from '../../utils/ACITriggerSettings';
 
 const styles = StyleSheet.create({
   inputBox: {
