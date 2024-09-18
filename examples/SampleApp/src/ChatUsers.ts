@@ -20,6 +20,10 @@ export const USER_TOKENS: Record<string, string> = {
   vir: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidmlyIn0.Whk_WyeN9TIuNahSu3KFVRTohF7HDbQq9Ka17kZ6zq4',
   vishal:
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidmlzaGFsIn0.HOlVh-ZyQnjyuL20G-67RTgKufBuAH-I-gbEELFlass',
+  ivan5:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiaXZhbjUifQ.c3nq6rlnqyNeCRcwiW0VQ413nHl99pF72Ia2V_N84yU',
+  rodolphe:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoicm9kb2xwaGUifQ.tLl-I8ADBhTKB-x5FB9jK4-am0dELLXgydM6VN9rTL8',
 };
 export const USERS: Record<string, UserResponse<StreamChatGenerics>> = {
   neil: {
@@ -58,6 +62,19 @@ export const USERS: Record<string, UserResponse<StreamChatGenerics>> = {
     image: 'https://ca.slack-edge.com/T02RM6X6B-UHGDQJ8A0-31658896398c-512',
     name: 'Vishal Narkhede',
   },
+
+  // for the purposes of testing threads
+  ivan5: {
+    id: 'ivan5',
+    image: 'https://ca.slack-edge.com/T02RM6X6B-U07GZ78U6BC-9ab8d6408182-192',
+    name: 'Ivan Sekovanikj',
+  },
+  rodolphe: {
+    id: 'rodolphe',
+    image: 'https://ca.slack-edge.com/T02RM6X6B-U05C1DG31LJ-3e1ec816128d-192',
+    name: 'Rodolphe Irany',
+  },
+
   // e2e test users should be last ones in the list
 
   e2etest1: {
