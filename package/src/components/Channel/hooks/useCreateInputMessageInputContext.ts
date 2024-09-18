@@ -134,15 +134,7 @@ export const useCreateInputMessageInputContext = <
       UploadProgressIndicator,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      compressImageQuality,
-      channelId,
-      editingDep,
-      initialValue,
-      maxMessageLength,
-      quotedMessageId,
-      sendMessage,
-    ],
+    [compressImageQuality, channelId, editingDep, initialValue, maxMessageLength, quotedMessageId],
   );
 
   return inputMessageInputContext;
