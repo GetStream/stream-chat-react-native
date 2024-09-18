@@ -1,5 +1,19 @@
 # Change Log
 
+### [1.29.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.29.0...sampleapp@v1.29.1) (2024-09-18)
+
+
+### Bug Fixes
+
+* bump fastlane plugin version ([#2665](https://github.com/GetStream/stream-chat-react-native/issues/2665)) ([aea64f1](https://github.com/GetStream/stream-chat-react-native/commit/aea64f11b6b4875d49407e9e9f63ba3f0af85e02))
+* pagination typescript errors and db synchronization bugs ([#2669](https://github.com/GetStream/stream-chat-react-native/issues/2669)) ([493cdff](https://github.com/GetStream/stream-chat-react-native/commit/493cdffcb5b2ee915b2f420e359ad685966a0dbe))
+* remove  nin and ne  operator usage in the SDK and the sample app ([#2672](https://github.com/GetStream/stream-chat-react-native/issues/2672)) ([3497bcb](https://github.com/GetStream/stream-chat-react-native/commit/3497bcb1be88b550372db5f77a48a287161036eb))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ## [1.29.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.28.2...sampleapp@v1.29.0) (2024-09-10)
 
 
