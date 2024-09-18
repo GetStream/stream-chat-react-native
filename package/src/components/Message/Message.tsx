@@ -359,7 +359,7 @@ const MessageWithContext = <
         setIsBounceDialogOpen(true);
         return;
       }
-      showMessageOverlay(false, true);
+      showMessageOverlay(true, true);
     } else if (quotedMessage) {
       onPressQuotedMessage(quotedMessage);
     }
@@ -561,7 +561,7 @@ const MessageWithContext = <
 
   const { userLanguage } = useTranslationContext();
 
-  const showMessageOverlay = async (isMessageActionsVisible = false, error = errorOrFailed) => {
+  const showMessageOverlay = async (isMessageActionsVisible = true, error = errorOrFailed) => {
     await dismissKeyboard();
 
     const isThreadMessage = threadList || !!message.parent_id;
@@ -664,7 +664,7 @@ const MessageWithContext = <
             return;
           }
           triggerHaptic('impactMedium');
-          showMessageOverlay(false);
+          showMessageOverlay(true);
         }
       : () => null;
 
