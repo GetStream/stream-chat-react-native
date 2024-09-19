@@ -1,7 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { NativeSyntheticEvent, StyleSheet, TextInputFocusEventData, View } from 'react-native';
 
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import {
+  Gesture,
+  GestureDetector,
+  PanGestureHandlerEventPayload,
+} from 'react-native-gesture-handler';
 import Animated, {
   Extrapolation,
   interpolate,
@@ -99,6 +103,7 @@ type MessageInputPropsWithContext<
     | 'asyncMessagesLockDistance'
     | 'asyncMessagesMinimumPressDuration'
     | 'asyncMessagesSlideToCancelDistance'
+    | 'asyncMessagesMultiSendEnabled'
     | 'asyncUploads'
     | 'AudioRecorder'
     | 'AudioRecordingInProgress'
@@ -163,6 +168,7 @@ const MessageInputWithContext = <
     asyncIds,
     asyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration,
+    asyncMessagesMultiSendEnabled,
     asyncMessagesSlideToCancelDistance,
     asyncUploads,
     AttachmentPickerSelectionBar,
@@ -619,23 +625,16 @@ const MessageInputWithContext = <
 
   const resetAudioRecording = async () => {
     await deleteVoiceRecording();
-    micPositionX.value = 0;
   };
 
   const micLockHandler = () => {
     setMicLocked(true);
-    micPositionY.value = 0;
     triggerHaptic('impactMedium');
   };
 
-  const pan = Gesture.Pan()
+  const panGestureMic = Gesture.Pan()
     .activateAfterLongPress(asyncMessagesMinimumPressDuration + 100)
-    .onStart(() => {
-      micPositionX.value = 0;
-      micPositionY.value = 0;
-      runOnJS(setMicLocked)(false);
-    })
-    .onChange((event) => {
+    .onChange((event: PanGestureHandlerEventPayload) => {
       const newPositionX = event.translationX;
       const newPositionY = event.translationY;
 
@@ -647,18 +646,35 @@ const MessageInputWithContext = <
       }
     })
     .onEnd(() => {
-      if (micPositionY.value > Y_AXIS_POSITION / 2) {
+      const belowThresholdY = micPositionY.value > Y_AXIS_POSITION / 2;
+      const belowThresholdX = micPositionX.value > X_AXIS_POSITION / 2;
+
+      if (belowThresholdY && belowThresholdX) {
         micPositionY.value = withSpring(0);
-      } else {
+        micPositionX.value = withSpring(0);
+        if (recordingStatus === 'recording') {
+          runOnJS(uploadVoiceRecording)(asyncMessagesMultiSendEnabled);
+        }
+        return;
+      }
+
+      if (!belowThresholdY) {
         micPositionY.value = withSpring(Y_AXIS_POSITION);
         runOnJS(micLockHandler)();
       }
-      if (micPositionX.value > X_AXIS_POSITION / 2) {
-        micPositionX.value = withSpring(0);
-      } else {
+
+      if (!belowThresholdX) {
         micPositionX.value = withSpring(X_AXIS_POSITION);
         runOnJS(resetAudioRecording)();
       }
+
+      micPositionX.value = 0;
+      micPositionY.value = 0;
+    })
+    .onStart(() => {
+      micPositionX.value = 0;
+      micPositionY.value = 0;
+      runOnJS(setMicLocked)(false);
     });
 
   const animatedStyles = {
@@ -713,21 +729,20 @@ const MessageInputWithContext = <
               micLocked={micLocked}
               style={animatedStyles.lockIndicator}
             />
-            {micLocked &&
-              (recordingStatus === 'stopped' ? (
-                <AudioRecordingPreview
-                  onVoicePlayerPlayPause={onVoicePlayerPlayPause}
-                  paused={paused}
-                  position={position}
-                  progress={progress}
-                  waveformData={waveformData}
-                />
-              ) : (
-                <AudioRecordingInProgress
-                  recordingDuration={recordingDuration}
-                  waveformData={waveformData}
-                />
-              ))}
+            {recordingStatus === 'stopped' ? (
+              <AudioRecordingPreview
+                onVoicePlayerPlayPause={onVoicePlayerPlayPause}
+                paused={paused}
+                position={position}
+                progress={progress}
+                waveformData={waveformData}
+              />
+            ) : micLocked ? (
+              <AudioRecordingInProgress
+                recordingDuration={recordingDuration}
+                waveformData={waveformData}
+              />
+            ) : null}
           </>
         )}
 
@@ -811,7 +826,7 @@ const MessageInputWithContext = <
                   </View>
                 ))}
               {audioRecordingEnabled && !micLocked && (
-                <GestureDetector gesture={pan}>
+                <GestureDetector gesture={panGestureMic}>
                   <Animated.View
                     style={[
                       styles.micButtonContainer,
@@ -1032,6 +1047,7 @@ export const MessageInput = <
     asyncIds,
     asyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration,
+    asyncMessagesMultiSendEnabled,
     asyncMessagesSlideToCancelDistance,
     asyncUploads,
     AudioRecorder,
@@ -1108,6 +1124,7 @@ export const MessageInput = <
         asyncIds,
         asyncMessagesLockDistance,
         asyncMessagesMinimumPressDuration,
+        asyncMessagesMultiSendEnabled,
         asyncMessagesSlideToCancelDistance,
         asyncUploads,
         AttachmentPickerSelectionBar,

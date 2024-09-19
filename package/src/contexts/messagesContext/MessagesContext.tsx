@@ -315,6 +315,16 @@ export type MessagesContextValue<
    */
   forceAlignMessages?: Alignment | boolean;
   getMessagesGroupStyles?: typeof getGroupStyles;
+  /**
+   * Handler to access when a ban user action is invoked.
+   * @param message
+   */
+  handleBan?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
+  /**
+   * @deprecated
+   * Handler to access when a block user action is invoked.
+   * @param message
+   */
   handleBlock?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
   /** Handler to access when a copy message action is invoked */
   handleCopy?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
@@ -379,6 +389,7 @@ export type MessagesContextValue<
    * ```
    * <Channel
    *   messageActions={({
+   *     banUser,
    *     blockUser,
    *     copyMessage,
    *     deleteMessage,

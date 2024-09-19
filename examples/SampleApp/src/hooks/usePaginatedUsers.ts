@@ -121,9 +121,6 @@ export const usePaginatedUsers = (): PaginatedUsers => {
     try {
       queryInProgress.current = true;
       const filter: UserFilters = {
-        id: {
-          $nin: [chatClient?.userID],
-        },
         role: 'user',
       };
 
@@ -143,7 +140,7 @@ export const usePaginatedUsers = (): PaginatedUsers => {
         return;
       }
 
-      const res = await chatClient?.queryUsers(
+      const { users } = await chatClient?.queryUsers(
         filter,
         { name: 1 },
         {
@@ -153,33 +150,25 @@ export const usePaginatedUsers = (): PaginatedUsers => {
         },
       );
 
-      if (!res?.users) {
-        queryInProgress.current = false;
-        return;
-      }
-
-      // Dumb check to avoid duplicates
-      if (query === searchText && results.findIndex((r) => res?.users[0].id === r.id) > -1) {
-        queryInProgress.current = false;
-        return;
-      }
+      const usersWithoutClientUserId = users.filter((user) => user.id !== chatClient.userID);
 
       setResults((r) => {
         if (query !== searchText) {
-          return res?.users;
+          return usersWithoutClientUserId;
         }
-        return r.concat(res?.users || []);
+        return r.concat(usersWithoutClientUserId);
       });
 
-      if (res?.users.length < 10 && (offset.current === 0 || query === searchText)) {
+      if (usersWithoutClientUserId.length < 10 && (offset.current === 0 || query === searchText)) {
         hasMoreResults.current = false;
       }
 
       if (!query && offset.current === 0) {
-        setInitialResults(res?.users || []);
+        setInitialResults(usersWithoutClientUserId);
       }
     } catch (e) {
       // do nothing;
+      console.log('Error fetching users', e);
     }
     queryInProgress.current = false;
     setLoading(false);

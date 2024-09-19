@@ -1,5 +1,51 @@
 # Change Log
 
+## [5.38.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.37.0...v5.38.0) (2024-09-18)
+
+
+### Features
+
+* add create chat client hook for easy usage ([#2660](https://github.com/GetStream/stream-chat-react-native/issues/2660)) ([68cc67a](https://github.com/GetStream/stream-chat-react-native/commit/68cc67a4e40628f7bd050ca584caa00e55c824ca))
+
+
+### Bug Fixes
+
+* add theme properties for EmptyStateIndicator for message list ([#2667](https://github.com/GetStream/stream-chat-react-native/issues/2667)) ([2944c07](https://github.com/GetStream/stream-chat-react-native/commit/2944c077e2a372bb5c6deb84b040fa2202035f69))
+* apply card cover theme property order ([c5951bc](https://github.com/GetStream/stream-chat-react-native/commit/c5951bc43c8e584501c98f2780689802f9edebd7))
+* avoid prepending http before native supported url schemes ([#2661](https://github.com/GetStream/stream-chat-react-native/issues/2661)) ([9f873ca](https://github.com/GetStream/stream-chat-react-native/commit/9f873ca34163e188735879ef8b57b248dd3c1a61))
+* bad memoisation in window, screen dimension listener hooks ([#2664](https://github.com/GetStream/stream-chat-react-native/issues/2664)) ([de2724a](https://github.com/GetStream/stream-chat-react-native/commit/de2724a137bbb1f07e76390d28a73b9456b050ff))
+* deprecate messageReactions prop and use isMessageActionsVisible instead for messageActions ([#2676](https://github.com/GetStream/stream-chat-react-native/issues/2676)) ([b9b5cd7](https://github.com/GetStream/stream-chat-react-native/commit/b9b5cd7b487f3ea36049784eee60382027d7ddb9))
+* pagination typescript errors and db synchronization bugs ([#2669](https://github.com/GetStream/stream-chat-react-native/issues/2669)) ([493cdff](https://github.com/GetStream/stream-chat-react-native/commit/493cdffcb5b2ee915b2f420e359ad685966a0dbe))
+* properly resolve sendMessage during memoization ([#2675](https://github.com/GetStream/stream-chat-react-native/issues/2675)) ([87d85c6](https://github.com/GetStream/stream-chat-react-native/commit/87d85c63b078bb018dd93316e1ef8374e864c23f))
+* remove  nin and ne  operator usage in the SDK and the sample app ([#2672](https://github.com/GetStream/stream-chat-react-native/issues/2672)) ([3497bcb](https://github.com/GetStream/stream-chat-react-native/commit/3497bcb1be88b550372db5f77a48a287161036eb))
+* request image access permissions for iOS only for native image picking ([#2677](https://github.com/GetStream/stream-chat-react-native/issues/2677)) ([680b6c8](https://github.com/GetStream/stream-chat-react-native/commit/680b6c8049b11eeb346867199f3102b563875fb7))
+
+## [5.37.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.36.2...v5.37.0) (2024-09-10)
+
+
+### Features
+
+* add live location sharing cookbook ([#2659](https://github.com/GetStream/stream-chat-react-native/issues/2659)) ([8ee1375](https://github.com/GetStream/stream-chat-react-native/commit/8ee1375771018ab0d7607f6c8f6f8e0599aeeb02))
+
+### [5.36.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.36.1...v5.36.2) (2024-09-09)
+
+
+### Bug Fixes
+
+* issue with loading app settings when the connectUser is not called on app ([#2654](https://github.com/GetStream/stream-chat-react-native/issues/2654)) ([9421a33](https://github.com/GetStream/stream-chat-react-native/commit/9421a33d22671aa560c30f426d4b7a7e22d0afb1))
+* unable to upload file due to special characters in the file name ([#2656](https://github.com/GetStream/stream-chat-react-native/issues/2656)) ([c2dacb2](https://github.com/GetStream/stream-chat-react-native/commit/c2dacb27a6a26d04f2012d8e57e2621bffdbbb0d))
+
+### [5.36.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.36.0...v5.36.1) (2024-09-04)
+
+
+### Bug Fixes
+
+* audio recording variety bugs ([#2648](https://github.com/GetStream/stream-chat-react-native/issues/2648)) ([2011eb2](https://github.com/GetStream/stream-chat-react-native/commit/2011eb24ece9895fe9dc8eadc49660cf019c311f))
+* change Block user action to Ban user action and UI cookbook for blocking users ([#2649](https://github.com/GetStream/stream-chat-react-native/issues/2649)) ([327aeac](https://github.com/GetStream/stream-chat-react-native/commit/327aeacfd024f88f41630fafce57a991771f2426))
+* loading skeleton in the Channel List unnecessary display ([#2645](https://github.com/GetStream/stream-chat-react-native/issues/2645)) ([08fc71b](https://github.com/GetStream/stream-chat-react-native/commit/08fc71b7e42ca2ea0fcd72517a7a46a7b0aecddd))
+* multiple image upload issue using native image picker and generic improvements for upload ([#2638](https://github.com/GetStream/stream-chat-react-native/issues/2638)) ([0b9f18a](https://github.com/GetStream/stream-chat-react-native/commit/0b9f18a69484ca7c0087bd0bec56b7fb44dcdbbf))
+* overlay provider crash issue due to bug in bottom sheet ([#2644](https://github.com/GetStream/stream-chat-react-native/issues/2644)) ([9330cf5](https://github.com/GetStream/stream-chat-react-native/commit/9330cf58e1ec639bd9bc0333133226c844cf473a))
+
 ## [5.36.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.35.0...v5.36.0) (2024-08-29)
 
 

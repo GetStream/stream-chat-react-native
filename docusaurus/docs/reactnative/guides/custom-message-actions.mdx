@@ -58,10 +58,10 @@ messageActions={({
   editMessage, // MessageAction | null;
   error, // boolean;
   flagMessage, // MessageAction | null;
+  isMessageActionsVisible, // boolean;
   isMyMessage, // boolean;
   isThreadMessage, // boolean;
   message, // MessageType<At, Ch, Co, Ev, Me, Re, Us>;
-  messageReactions, // boolean;
   reply, // MessageAction | null;
   retry, // MessageAction | null;
   threadReply, // MessageAction | null;
@@ -390,7 +390,8 @@ These functions will be called right before the underlying default handlers.
 Please note that these intercepts will neither change the standard functions nor block them.
 :::
 
-- `handleBlock`
+- `handleBan`
+- `handleBlock`(deprecated)
 - `handleCopy`
 - `handleDelete`
 - `handleEdit`

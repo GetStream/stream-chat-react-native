@@ -4,7 +4,7 @@ import { DarkTheme, DefaultTheme, NavigationContainer, RouteProp } from '@react-
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Channel as ChannelType, ChannelSort, StreamChat } from 'stream-chat';
+import { Channel as ChannelType, ChannelSort } from 'stream-chat';
 import {
   Channel,
   ChannelList,
@@ -17,11 +17,13 @@ import {
   Thread,
   ThreadContextValue,
   useAttachmentPickerContext,
+  useCreateChatClient,
   useOverlayContext,
 } from 'stream-chat-react-native';
 
 import { useStreamChatTheme } from './useStreamChatTheme';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { AuthProgressLoader } from './AuthProgressLoader';
 
 LogBox.ignoreAllLogs(true);
 
@@ -60,7 +62,7 @@ SqliteClient.logger = (level, message, extraData) => {
   console.log(level, `SqliteClient: ${message}`, extraData);
 };
 
-const chatClient = StreamChat.getInstance<StreamChatGenerics>('q95x9hkbyd6p');
+const apiKey = 'q95x9hkbyd6p';
 const userToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoicm9uIn0.eRVjxLvd4aqCEHY_JRa97g6k7WpHEhxL7Z4K4yTot1c';
 
@@ -217,83 +219,80 @@ type AppContextType = {
 const AppContext = React.createContext({} as AppContextType);
 
 const App = () => {
-  const colorScheme = useColorScheme();
   const { bottom } = useSafeAreaInsets();
   const theme = useStreamChatTheme();
+  const { channel } = useContext(AppContext);
 
-  const [channel, setChannel] = useState<ChannelType<StreamChatGenerics>>();
-  const [clientReady, setClientReady] = useState(false);
-  const [thread, setThread] = useState<ThreadContextValue<StreamChatGenerics>['thread']>();
+  const chatClient = useCreateChatClient({
+    apiKey,
+    userData: user,
+    tokenOrProvider: userToken,
+  });
 
-  useEffect(() => {
-    const setupClient = async () => {
-      const connectPromise = chatClient.connectUser(user, userToken);
-      setClientReady(true);
-      await connectPromise;
-    };
-
-    setupClient();
-  }, []);
+  if (!chatClient) {
+    return <AuthProgressLoader />;
+  }
 
   return (
-    <NavigationContainer
-      theme={{
-        colors: {
-          ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
-        },
-        dark: colorScheme === 'dark',
-      }}
+    <OverlayProvider<StreamChatGenerics>
+      bottomInset={bottom}
+      i18nInstance={streami18n}
+      value={{ style: theme }}
     >
-      <AppContext.Provider value={{ channel, setChannel, setThread, thread }}>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <OverlayProvider<StreamChatGenerics>
-            bottomInset={bottom}
-            i18nInstance={streami18n}
-            value={{ style: theme }}
-          >
-            <Chat client={chatClient} i18nInstance={streami18n} enableOfflineSupport>
-              {clientReady && (
-                <Stack.Navigator
-                  initialRouteName='ChannelList'
-                  screenOptions={{
-                    headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
-                  }}
-                >
-                  <Stack.Screen
-                    component={ChannelScreen}
-                    name='Channel'
-                    options={() => ({
-                      headerBackTitle: 'Back',
-                      headerRight: EmptyHeader,
-                      headerTitle: channel?.data?.name,
-                    })}
-                  />
-                  <Stack.Screen
-                    component={ChannelListScreen}
-                    name='ChannelList'
-                    options={{ headerTitle: 'Channel List' }}
-                  />
-                  <Stack.Screen
-                    component={ThreadScreen}
-                    name='Thread'
-                    options={() => ({ headerLeft: EmptyHeader })}
-                  />
-                </Stack.Navigator>
-              )}
-            </Chat>
-          </OverlayProvider>
-        </GestureHandlerRootView>
-      </AppContext.Provider>
-    </NavigationContainer>
+      <Chat client={chatClient} i18nInstance={streami18n} enableOfflineSupport>
+        <Stack.Navigator
+          initialRouteName='ChannelList'
+          screenOptions={{
+            headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
+          }}
+        >
+          <Stack.Screen
+            component={ChannelScreen}
+            name='Channel'
+            options={() => ({
+              headerBackTitle: 'Back',
+              headerRight: EmptyHeader,
+              headerTitle: channel?.data?.name,
+            })}
+          />
+          <Stack.Screen
+            component={ChannelListScreen}
+            name='ChannelList'
+            options={{ headerTitle: 'Channel List' }}
+          />
+          <Stack.Screen
+            component={ThreadScreen}
+            name='Thread'
+            options={() => ({ headerLeft: EmptyHeader })}
+          />
+        </Stack.Navigator>
+      </Chat>
+    </OverlayProvider>
   );
 };
 
 export default () => {
+  const [channel, setChannel] = useState<ChannelType<StreamChatGenerics>>();
+  const [thread, setThread] = useState<ThreadContextValue<StreamChatGenerics>['thread']>();
   const theme = useStreamChatTheme();
+  const colorScheme = useColorScheme();
 
   return (
     <SafeAreaProvider style={{ backgroundColor: theme.colors?.white_snow || '#FCFCFC' }}>
-      <App />
+      <NavigationContainer
+        theme={{
+          colors: {
+            ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
+          },
+          dark: colorScheme === 'dark',
+        }}
+      >
+        <AppContext.Provider value={{ channel, setChannel, setThread, thread }}>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <App />
+          </GestureHandlerRootView>
+        </AppContext.Provider>
+      </NavigationContainer>
     </SafeAreaProvider>
   );
 };
