@@ -38,10 +38,12 @@ export const useAudioController = () => {
   // For playback support in Expo CLI apps
   const soundRef = useRef<SoundReturnType | null>(null);
 
-  // Effect to stop the player when the component unmounts
+  // This effect stop the player from playing and stops audio recording on
+  // the audio SDK side on unmount.
   useEffect(
     () => () => {
       stopVoicePlayer();
+      stopSDKVoiceRecording();
     },
     [],
   );
@@ -159,7 +161,7 @@ export const useAudioController = () => {
    * Function to start voice recording.
    */
   const startVoiceRecording = async () => {
-    setRecordingStatus('recording');
+    if (!Audio) return;
     const recordingInfo = await Audio.startRecording(
       {
         isMeteringEnabled: true,
@@ -174,6 +176,7 @@ export const useAudioController = () => {
         recording.setProgressUpdateInterval(Platform.OS === 'android' ? 100 : 60);
       }
       setRecording(recording);
+      setRecordingStatus('recording');
       await stopVoicePlayer();
     } else {
       setPermissionsGranted(false);
@@ -183,20 +186,20 @@ export const useAudioController = () => {
   };
 
   /**
+   * A function that takes care of stopping the voice recording from the library's
+   * side only. Meant to be used as a pure function (during unmounting for instance)
+   * hence this approach.
+   */
+  const stopSDKVoiceRecording = async () => {
+    if (!Audio) return;
+    await Audio.stopRecording();
+  };
+
+  /**
    * Function to stop voice recording.
    */
   const stopVoiceRecording = async () => {
-    if (recording) {
-      // For Expo CLI
-      if (typeof recording !== 'string') {
-        await recording.stopAndUnloadAsync();
-        await Audio.stopRecording();
-      }
-      // For RN CLI
-      else {
-        await Audio.stopRecording();
-      }
-    }
+    await stopSDKVoiceRecording();
     setRecordingStatus('stopped');
   };
 

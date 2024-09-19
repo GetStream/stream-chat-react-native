@@ -167,6 +167,8 @@ export type Theme = {
     channelContainer: ViewStyle;
     channelDetails: TextStyle;
     channelTitle: TextStyle;
+    messageContainer: ViewStyle;
+    messageTitle: TextStyle;
   };
   groupAvatar: {
     container: ViewStyle;
@@ -752,6 +754,8 @@ export const defaultTheme: Theme = {
     channelContainer: {},
     channelDetails: {},
     channelTitle: {},
+    messageContainer: {},
+    messageTitle: {},
   },
   groupAvatar: {
     container: {},

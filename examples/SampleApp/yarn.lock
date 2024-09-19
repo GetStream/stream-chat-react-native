@@ -1217,14 +1217,6 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.57.0.tgz#a5417ae8427873f1dd08b70b3574b453e67b5f7f"
   integrity sha512-Ys+3g2TaW7gADOJzPt83SJtCDhMjndcDMFVQ/Tj9iA1BfJzFKD9mAUXT3OenpuPHbI6P/myECxRJrofUsDx/5g==
 
-"@gorhom/bottom-sheet@4.4.8":
-  version "4.4.8"
-  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-4.4.8.tgz#cfc1b342e9151acecbb846bd67638211382a350e"
-  integrity sha512-5QgM91NJjbqKxI8RjZ9ujjynaPzAM1iQKExK3+L+ZbEnziIq8tgOekhiBUut9sBZAQA4nhLxWV6Rt/HGpgCldQ==
-  dependencies:
-    "@gorhom/portal" "1.0.14"
-    invariant "^2.2.4"
-
 "@gorhom/bottom-sheet@^4.6.4":
   version "4.6.4"
   resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-4.6.4.tgz#387d0f0f21e3470eb8575498cb81ce96f5108e79"
@@ -1765,18 +1757,18 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-11.3.2.tgz#e63201d0b87ad42d086d1003be48ae7b327f0594"
   integrity sha512-YsaS3Dutnzqd1BEoeC+DEcuNJedYRkN6Ef3kftT5Sm8ExnCF94C/nl4laNxuvFli3+Jz8Df3jO25Jn8A9S0h4w==
 
-"@react-native-firebase/app@^19.0.0":
-  version "19.0.0"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-19.0.0.tgz#a0368a46d7a142512a47bb645f0e7e4a604c5724"
-  integrity sha512-QcT4fJQjoEmvmRKDiEsLf5MBAgejlBGCAuAgXT/TBxE8/lrLubhlHVokodQvP0trjcVoA8L+HSEQFX2eIc3BPA==
+"@react-native-firebase/app@^19.3.0":
+  version "19.3.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-19.3.0.tgz#d243d31ce0ed6082292a14d42ed11d536831018b"
+  integrity sha512-Y4Jlu7s7JasCcOktAN9LC+7SvMeAG04008OxtbhDK9rpatVznJqRSkMefIIwN2yBs94MWo9b61e+7v5IRMbQdw==
   dependencies:
     opencollective-postinstall "^2.0.3"
     superstruct "^0.6.2"
 
-"@react-native-firebase/messaging@^19.0.0":
-  version "19.0.0"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-19.0.0.tgz#f949dd100e1c391bc0949729e18a83ef03a94276"
-  integrity sha512-KeGQHLhnDThCZZqWm67Qf4NI7qMsUF9eNbrJ39OFeqbinJK2TSQcTZcRPNwfwreCZfkkBdeV3sk0YNPoddlx/w==
+"@react-native-firebase/messaging@^19.3.0":
+  version "19.3.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-19.3.0.tgz#fb75719e812e68b2936676c6e4aabfd598f52dc7"
+  integrity sha512-5nxX2jzRVMG/LwHQygQhl0X/j23FYY8Hn6T8xV3VnYk/O6PXbiQZVpbN5dM7F21aVf4wCFXJnn3jkHIbMP/MYw==
 
 "@react-native/assets-registry@0.73.1":
   version "0.73.1"
@@ -5718,18 +5710,6 @@ mkdirp@^1.0.4:
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
 
-moment-timezone@^0.5.45:
-  version "0.5.45"
-  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.45.tgz#cb685acd56bac10e69d93c536366eb65aa6bcf5c"
-  integrity sha512-HIWmqA86KcmCAhnMAN0wuDOARV/525R2+lOLotuGFzn4HO+FH+/645z2wx0Dt3iDv6/p61SIvKnDstISainhLQ==
-  dependencies:
-    moment "^2.29.4"
-
-moment@^2.29.4:
-  version "2.30.1"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.30.1.tgz#f8c91c07b7a786e30c59926df530b4eac96974ae"
-  integrity sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==
-
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
@@ -6357,10 +6337,10 @@ react-native-reanimated@^3.7.0:
     convert-source-map "^2.0.0"
     invariant "^2.2.4"
 
-react-native-safe-area-context@^4.10.7:
-  version "4.10.7"
-  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-4.10.7.tgz#91d04e510bf96e3c38bec2beb7ae37347522a503"
-  integrity sha512-Lq+gtuIF28mMtBacFchGpO1KHMTvzeb3ji1HAVnMTPe3qWR46Tb4AlztZTvTwUnpZ8JVaC9sKXnJHKmuaIQwXA==
+react-native-safe-area-context@4.8.0-rc.0:
+  version "4.8.0-rc.0"
+  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-4.8.0-rc.0.tgz#9b3ba33cf1613905a51079d5ba887a2124b92d0c"
+  integrity sha512-dv6bl1xS4bX5aWzATnsZRsiG4Ijub72yud2Vbv1qoIytxviH02TRdmAg72StJi5HC/NkK13uKrvzBcHUEX16xA==
 
 react-native-screens@^3.32.0:
   version "3.32.0"
@@ -6956,12 +6936,12 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-stream-chat-react-native-core@5.36.0:
-  version "5.36.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.36.0.tgz#c8a7d5e22481a198bd4d2e3ed50ab6f73f09aa0b"
-  integrity sha512-9UpKXe+/+wfm4ubEjE6oRxc/oTnTSApwqNAvDzdH6cDjSDR/m/+VN3VSxFHrIptm8DHO1nteMzHXcXQwpJZaVA==
+stream-chat-react-native-core@5.38.0:
+  version "5.38.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.38.0.tgz#3d394a8ea9ab8d9a06a47000ff90a44daae35aaa"
+  integrity sha512-l9wF3Y+caFL1J2urw+Od0U2JNkW4ff/o4rlpmIOe92Ow14kuQOrejKo1XJbC6riJBVpnrtT1tj8SfVeS2crW0Q==
   dependencies:
-    "@gorhom/bottom-sheet" "4.4.8"
+    "@gorhom/bottom-sheet" "^4.6.4"
     dayjs "1.10.5"
     emoji-regex "^10.3.0"
     i18next "^21.6.14"
@@ -6972,7 +6952,7 @@ stream-chat-react-native-core@5.36.0:
     path "0.12.7"
     react-native-markdown-package "1.8.2"
     react-native-url-polyfill "^1.3.0"
-    stream-chat "8.31.0"
+    stream-chat "8.39.0"
 
 "stream-chat-react-native-core@link:../../package":
   version "0.0.0"
@@ -6982,10 +6962,10 @@ stream-chat-react-native-core@5.36.0:
   version "0.0.0"
   uid ""
 
-stream-chat@8.31.0:
-  version "8.31.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.31.0.tgz#387ed3109ac930e222bf260d98afc37dd1fcb1ac"
-  integrity sha512-lORUtfDYljoAgRv7QHUADH1QTGydSWo+U8KmUKwv7BZyUZ2JGwh6VZbu9WL4Nmo7PDU7N/Ug0Q5PE59S6WE+OA==
+stream-chat@8.39.0:
+  version "8.39.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.39.0.tgz#f4cb86bd5cac4c1272c24cd66ed4752bcda8d717"
+  integrity sha512-zQZR1tPrgGBbu+Gnv9F9KQx3OPUMvb0FN+39BEjkjgjRPm2JYhF78jfcYutQMiC538t3V+NgFGgj5N4sZvSsUA==
   dependencies:
     "@babel/runtime" "^7.16.3"
     "@types/jsonwebtoken" "~9.0.0"

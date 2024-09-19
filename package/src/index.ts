@@ -11,8 +11,11 @@ export * from './icons';
 
 export * from './types/types';
 
+export * from './utils/ACITriggerSettings';
 export * from './utils/patchMessageTextCommand';
 export * from './utils/i18n/Streami18n';
+export * from './utils/queryMembers';
+export * from './utils/queryUsers';
 export * from './utils/utils';
 export * from './utils/StreamChatRN';
 

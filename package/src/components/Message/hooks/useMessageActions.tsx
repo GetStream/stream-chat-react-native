@@ -23,7 +23,6 @@ import {
   Unpin,
   UserDelete,
 } from '../../../icons';
-import { isClipboardAvailable } from '../../../native';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { removeReservedFields } from '../../../utils/removeReservedFields';
 import { MessageStatusTypes } from '../../../utils/utils';
@@ -39,6 +38,7 @@ export const useMessageActions = <
   deleteMessage: deleteMessageFromContext,
   deleteReaction,
   enforceUniqueReaction,
+  handleBan,
   handleBlock,
   handleCopy,
   handleDelete,
@@ -65,6 +65,7 @@ export const useMessageActions = <
   MessagesContextValue<StreamChatGenerics>,
   | 'deleteMessage'
   | 'sendReaction'
+  | 'handleBan'
   | 'handleBlock'
   | 'handleCopy'
   | 'handleDelete'
@@ -138,6 +139,25 @@ export const useMessageActions = <
     (mute) => mute.user.id === client.userID && mute.target.id === message.user?.id,
   );
 
+  const banUser: MessageActionType = {
+    action: async () => {
+      setOverlay('none');
+      if (message.user?.id) {
+        if (handleBan) {
+          handleBan(message);
+        }
+
+        await handleToggleBanUser();
+      }
+    },
+    actionType: 'banUser',
+    icon: <UserDelete pathFill={grey} />,
+    title: message.user?.banned ? t('Unban User') : t('Ban User'),
+  };
+
+  /**
+   * @deprecated use `banUser` instead
+   */
   const blockUser: MessageActionType = {
     action: async () => {
       setOverlay('none');
@@ -154,20 +174,18 @@ export const useMessageActions = <
     title: message.user?.banned ? t('Unblock User') : t('Block User'),
   };
 
-  const copyMessage: MessageActionType | undefined = isClipboardAvailable()
-    ? {
-        action: () => {
-          setOverlay('none');
-          if (handleCopy) {
-            handleCopy(message);
-          }
-          handleCopyMessage();
-        },
-        actionType: 'copyMessage',
-        icon: <Copy pathFill={grey} />,
-        title: t('Copy Message'),
+  const copyMessage: MessageActionType = {
+    action: () => {
+      setOverlay('none');
+      if (handleCopy) {
+        handleCopy(message);
       }
-    : undefined;
+      handleCopyMessage();
+    },
+    actionType: 'copyMessage',
+    icon: <Copy pathFill={grey} />,
+    title: t('Copy Message'),
+  };
 
   const deleteMessage: MessageActionType = {
     action: () => {
@@ -306,6 +324,7 @@ export const useMessageActions = <
   };
 
   return {
+    banUser,
     blockUser,
     copyMessage,
     deleteMessage,

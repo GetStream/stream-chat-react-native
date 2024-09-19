@@ -122,6 +122,10 @@ export type MessageActionHandlers<
   pinMessage: () => Promise<void>;
   quotedReply: () => void;
   resendMessage: () => Promise<void>;
+  /**
+   * @deprecated
+   * TODO: This seems useless for the action handlers here so can be removed.
+   */
   showMessageOverlay: () => void;
   toggleBanUser: () => Promise<void>;
   toggleMuteUser: () => Promise<void>;
@@ -142,6 +146,7 @@ export type MessagePropsWithContext<
     | 'deleteMessage'
     | 'dismissKeyboardOnMessageTouch'
     | 'forceAlignMessages'
+    | 'handleBan'
     | 'handleBlock'
     | 'handleCopy'
     | 'handleDelete'
@@ -249,6 +254,7 @@ const MessageWithContext = <
     forceAlignMessages = false,
     goToMessage,
     groupStyles = ['bottom'],
+    handleBan,
     handleBlock,
     handleCopy,
     handleDelete,
@@ -353,7 +359,7 @@ const MessageWithContext = <
         setIsBounceDialogOpen(true);
         return;
       }
-      showMessageOverlay(false, true);
+      showMessageOverlay(true, true);
     } else if (quotedMessage) {
       onPressQuotedMessage(quotedMessage);
     }
@@ -507,6 +513,7 @@ const MessageWithContext = <
   });
 
   const {
+    banUser,
     blockUser,
     copyMessage,
     deleteMessage,
@@ -525,6 +532,7 @@ const MessageWithContext = <
     deleteMessage: deleteMessageFromContext,
     deleteReaction,
     enforceUniqueReaction,
+    handleBan,
     handleBlock,
     handleCopy,
     handleDelete,
@@ -553,7 +561,7 @@ const MessageWithContext = <
 
   const { userLanguage } = useTranslationContext();
 
-  const showMessageOverlay = async (messageReactions = false, error = errorOrFailed) => {
+  const showMessageOverlay = async (isMessageActionsVisible = true, error = errorOrFailed) => {
     await dismissKeyboard();
 
     const isThreadMessage = threadList || !!message.parent_id;
@@ -564,6 +572,7 @@ const MessageWithContext = <
       typeof messageActionsProp !== 'function'
         ? messageActionsProp
         : messageActionsProp({
+            banUser,
             blockUser,
             copyMessage,
             deleteMessage,
@@ -571,10 +580,11 @@ const MessageWithContext = <
             editMessage,
             error,
             flagMessage,
+            isMessageActionsVisible,
             isMyMessage,
             isThreadMessage,
             message,
-            messageReactions,
+            messageReactions: isMessageActionsVisible === false,
             muteUser,
             ownCapabilities,
             pinMessage,
@@ -595,7 +605,7 @@ const MessageWithContext = <
       message,
       messageActions: messageActions?.filter(Boolean) as MessageActionListItemProps[] | undefined,
       messageContext: { ...messageContext, preventPress: true },
-      messageReactionTitle: !error && messageReactions ? t('Message Reactions') : undefined,
+      messageReactionTitle: !error && !isMessageActionsVisible ? t('Message Reactions') : undefined,
       messagesContext: { ...messagesContext, messageContentOrder },
       onlyEmojis,
       otherAttachments: attachments.other,
@@ -654,7 +664,7 @@ const MessageWithContext = <
             return;
           }
           triggerHaptic('impactMedium');
-          showMessageOverlay(false);
+          showMessageOverlay(true);
         }
       : () => null;
 

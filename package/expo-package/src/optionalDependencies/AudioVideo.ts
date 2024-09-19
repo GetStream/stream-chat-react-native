@@ -1,9 +1,11 @@
 let VideoComponent;
 let AudioComponent;
+let RecordingObject;
 try {
   const audioVideoPackage = require('expo-av');
   VideoComponent = audioVideoPackage.Video;
   AudioComponent = audioVideoPackage.Audio;
+  RecordingObject = audioVideoPackage.RecordingObject;
 } catch (e) {
   // do nothing
 }
@@ -14,4 +16,4 @@ if (!VideoComponent || !AudioComponent) {
   );
 }
 
-export { AudioComponent, VideoComponent };
+export { AudioComponent, VideoComponent, RecordingObject };

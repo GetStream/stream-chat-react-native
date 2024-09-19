@@ -23,20 +23,44 @@ We recommend using only one instance of `Chat` provider per application unless a
 
 ```tsx
 import { StreamChat } from 'stream-chat';
-import { ChannelList, Chat, OverlayProvider } from 'stream-chat-react-native';
+import { ChannelList, Chat, OverlayProvider, useCreateChatClient } from 'stream-chat-react-native';
 
-const client = StreamChat.getInstance('api_key');
+// highlight-start
+const chatApiKey = 'REPLACE_WITH_API_KEY';
+const chatUserId = 'REPLACE_WITH_USER_ID';
+const chatUserName = 'REPLACE_WITH_USER_NAME';
+const chatUserToken = 'REPLACE_WITH_USER_TOKEN';
+// highlight-end
 
-export const App = () => (
-  <OverlayProvider>
-    // highlight-next-line
-    <Chat client={client}>
-      <ChannelList />
+const user = {
+  id: chatUserId,
+  name: chatUserName,
+};
+
+export const App = () => {
+  // highlight-start
+  const chatClient = useCreateChatClient({
+    apiKey: chatApiKey,
+    userData: user,
+    tokenOrProvider: chatUserToken,
+  });
+  // highlight-end
+
+  return (
+    <OverlayProvider>
       // highlight-next-line
-    </Chat>
-  </OverlayProvider>
-);
+      <Chat client={chatClient}>
+        <ChannelList />
+        // highlight-next-line
+      </Chat>
+    </OverlayProvider>
+  );
+};
 ```
+
+:::tip
+You can use the `useCreateChatClient` hook from `stream-chat-react-native`/`stream-chat-expo` to create a client instance and automatically connect/disconnect a user as per the example above, for simplicity.
+:::
 
 ## Context Providers
 
