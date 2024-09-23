@@ -80,6 +80,13 @@ export const ThreadList = (props: ThreadListProps) => {
       client.threads.deactivate();
     }
   }, [client, isFocused]);
+
+  useEffect(() => {
+    if (!client) return;
+
+    client.threads.reload({ force: true });
+  }, [client]);
+
   const [threads, isLoading, isLoadingNext] = useStateStore(client.threads.state, selector);
 
   return (
