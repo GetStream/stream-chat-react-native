@@ -137,7 +137,9 @@ export const ThreadListItemComponent = () => {
     >
       <View style={[styles.headerRow, threadListItem.headerRow]}>
         <MessageBubble />
-        <Text style={[styles.boldText, threadListItem.boldText]}>{displayName || 'N/A'}</Text>
+        <Text style={[styles.boldText, { color: text_low_emphasis }, threadListItem.boldText]}>
+          {displayName || 'N/A'}
+        </Text>
       </View>
       <View style={[styles.infoRow, threadListItem.infoRow]}>
         <Text
@@ -171,7 +173,9 @@ export const ThreadListItemComponent = () => {
           size={40}
         />
         <View style={[styles.contentTextWrapper, threadListItem.contentTextWrapper]}>
-          <Text style={[styles.boldText, threadListItem.boldText]}>{lastReply?.user?.name}</Text>
+          <Text style={[styles.boldText, { color: text_low_emphasis }, threadListItem.boldText]}>
+            {lastReply?.user?.name}
+          </Text>
           <View style={[styles.headerRow, threadListItem.headerRow]}>
             <Text
               numberOfLines={1}

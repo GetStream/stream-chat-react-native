@@ -24,6 +24,8 @@ const getChatStyle = (colorScheme: ColorSchemeName): DeepPartial<Theme> => ({
           overlay: '#FFFFFFCC', // CC = 80% opacity
           shadow_icon: '#00000080', // 80 = 50% opacity
           targetedMessageBackground: '#333024',
+          text_high_emphasis: '#FFFFFF',
+          text_low_emphasis: '#FFFFFF',
           transparent: 'transparent',
           white: '#101418',
           white_smoke: '#13151B',
@@ -48,6 +50,8 @@ const getChatStyle = (colorScheme: ColorSchemeName): DeepPartial<Theme> => ({
           overlay: '#00000099', // 99 = 60% opacity
           shadow_icon: '#00000040', // 40 = 25% opacity; x=0, y=0, radius=4
           targetedMessageBackground: '#FBF4DD', // dark mode = #302D22
+          text_high_emphasis: '#080707',
+          text_low_emphasis: '#7E828B',
           transparent: 'transparent',
           white: '#FFFFFF',
           white_smoke: '#F2F2F2',
