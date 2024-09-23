@@ -13,6 +13,7 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 export type ThreadsContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
+  isFocused: boolean;
   isLoading: boolean;
   isLoadingNext: boolean;
   threads: Thread<StreamChatGenerics>[];

@@ -25,6 +25,7 @@ export type ThreadListProps<
 > = Pick<
   ThreadsContextValue<StreamChatGenerics>,
   | 'additionalFlatListProps'
+  | 'isFocused'
   | 'onThreadSelect'
   | 'ThreadListEmptyPlaceholder'
   | 'ThreadListLoadingIndicator'
@@ -69,14 +70,16 @@ const ThreadListComponent = () => {
 };
 
 export const ThreadList = (props: ThreadListProps) => {
-  const { ThreadList = ThreadListComponent } = props;
+  const { isFocused = true, ThreadList = ThreadListComponent } = props;
   const { client } = useChatContext();
   useEffect(() => {
-    client.threads.activate();
-    return () => {
+    if (!client) return;
+    if (isFocused) {
+      client.threads.activate();
+    } else {
       client.threads.deactivate();
-    };
-  }, [client]);
+    }
+  }, [client, isFocused]);
   const [threads, isLoading, isLoadingNext] = useStateStore(client.threads.state, selector);
 
   return (

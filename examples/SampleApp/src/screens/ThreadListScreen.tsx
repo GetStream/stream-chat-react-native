@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTheme, ThreadList } from 'stream-chat-react-native';
 
@@ -6,7 +6,8 @@ import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { BottomTabNavigatorParamList } from '../types';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { useChatClient } from '../hooks/useChatClient.ts';
 
 const styles = StyleSheet.create({
   container: {
@@ -34,6 +35,12 @@ export const ThreadListScreen: React.FC<ThreadsScreenProps> = () => {
     },
   } = useTheme();
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
+  const { chatClient } = useChatClient();
+
+  useEffect(() => {
+    chatClient?.threads?.reload?.({ force: true });
+  }, [chatClient]);
 
   return (
     <View
@@ -46,6 +53,7 @@ export const ThreadListScreen: React.FC<ThreadsScreenProps> = () => {
     >
       <ChatScreenHeader />
       <ThreadList
+        isFocused={isFocused}
         onThreadSelect={(thread, channel) => {
           navigation.navigate('ThreadScreen', {
             thread,
