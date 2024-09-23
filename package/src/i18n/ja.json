@@ -90,6 +90,7 @@
   "timestamp/MessageSystem": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageTimestamp": "{{ timestamp | timestampFormatter(format: LT) }}",
   "timestamp/StickyHeader": "{{ timestamp | timestampFormatter(calendar: true) }}",
+  "timestamp/ThreadListItem": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[昨日]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[明日]\",\"nextWeek\":\"dddd [の] LT\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
   "{{ firstUser }} and {{ nonSelfUserLength }} more are typing": "{{ firstUser }}と{{ nonSelfUserLength }}人がタイピングしています",
   "{{ index }} of {{ photoLength }}": "{{ index }} / {{ photoLength }}",
   "{{ replyCount }} Replies": "{{ replyCount }}件の返信",

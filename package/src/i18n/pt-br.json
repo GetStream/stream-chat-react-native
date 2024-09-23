@@ -90,6 +90,7 @@
   "timestamp/MessageSystem": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageTimestamp": "{{ timestamp | timestampFormatter(format: LT) }}",
   "timestamp/StickyHeader": "{{ timestamp | timestampFormatter(calendar: true) }}",
+  "timestamp/ThreadListItem": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[Ontem]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[Amanhã]\",\"nextWeek\":\"dddd [às] LT\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
   "{{ firstUser }} and {{ nonSelfUserLength }} more are typing": "{{ firstUser }} e mais {{ nonSelfUserLength }} pessoa(s) estão digitando",
   "{{ index }} of {{ photoLength }}": "{{ index }} de {{ photoLength }}",
   "{{ replyCount }} Replies": "{{ replyCount }} Respostas",

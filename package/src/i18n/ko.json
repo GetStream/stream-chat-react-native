@@ -90,6 +90,7 @@
   "timestamp/MessageSystem": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageTimestamp": "{{ timestamp | timestampFormatter(format: LT) }}",
   "timestamp/StickyHeader": "{{ timestamp | timestampFormatter(calendar: true) }}",
+  "timestamp/ThreadListItem": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[어제]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[내일]\",\"nextWeek\":\"dddd [LT에]\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
   "{{ firstUser }} and {{ nonSelfUserLength }} more are typing": "{{ firstUser }} 외 {{ nonSelfUserLength }}명이 입력 중입니다",
   "{{ index }} of {{ photoLength }}": "{{ index }} / {{ photoLength }}",
   "{{ replyCount }} Replies": "{{ replyCount }} 답글",

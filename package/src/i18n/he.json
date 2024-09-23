@@ -90,6 +90,7 @@
   "timestamp/MessageSystem": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageTimestamp": "{{ timestamp | timestampFormatter(format: LT) }}",
   "timestamp/StickyHeader": "{{ timestamp | timestampFormatter(calendar: true) }}",
+  "timestamp/ThreadListItem": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[אתמול]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[מחר]\",\"nextWeek\":\"dddd [בשעה] LT\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
   "{{ firstUser }} and {{ nonSelfUserLength }} more are typing": "{{ firstUser }} ו-{{ nonSelfUserLength }} משתמש/ים אחר/ים מקלידים",
   "{{ index }} of {{ photoLength }}": "{{ index }} מתוך {{ photoLength }}",
   "{{ replyCount }} Replies": "{{ replyCount }} תגובות",

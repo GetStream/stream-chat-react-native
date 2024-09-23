@@ -90,6 +90,7 @@
   "timestamp/MessageSystem": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageTimestamp": "{{ timestamp | timestampFormatter(format: LT) }}",
   "timestamp/StickyHeader": "{{ timestamp | timestampFormatter(calendar: true) }}",
+  "timestamp/ThreadListItem": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[Dün]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[Yarın]\",\"nextWeek\":\"dddd [saat] LT\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
   "{{ firstUser }} and {{ nonSelfUserLength }} more are typing": "{{ firstUser }} ve {{ nonSelfUserLength }} kişi daha yazıyor",
   "{{ index }} of {{ photoLength }}": "{{ index }} / {{ photoLength }}",
   "{{ replyCount }} Replies": "{{ replyCount }} Cevap",
