@@ -660,30 +660,34 @@ const MessageListWithContext = <
         threadList={threadList}
       />
     );
-    return (
-      <View style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}>
-        {wrapMessageInTheme ? (
-          <>
-            {shouldApplyAndroidWorkaround && renderDateSeperator}
-            <ThemeProvider mergedStyle={modifiedTheme}>
-              <View testID={`message-list-item-${index}`}>{renderMessage}</View>
-            </ThemeProvider>
-            {!shouldApplyAndroidWorkaround && renderDateSeperator}
-            {/* Adding indicator below the messages, since the list is inverted */}
-            {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
-          </>
-        ) : (
-          <>
-            <View testID={`message-list-item-${index}`}>
-              {shouldApplyAndroidWorkaround && renderDateSeperator}
-              {renderMessage}
-            </View>
-            {!shouldApplyAndroidWorkaround && renderDateSeperator}
-            {/* Adding indicator below the messages, since the list is inverted */}
-            {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
-          </>
-        )}
-      </View>
+    return wrapMessageInTheme ? (
+      <>
+        {shouldApplyAndroidWorkaround && renderDateSeperator}
+        <ThemeProvider mergedStyle={modifiedTheme}>
+          <View
+            style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}
+            testID={`message-list-item-${index}`}
+          >
+            {renderMessage}
+          </View>
+        </ThemeProvider>
+        {!shouldApplyAndroidWorkaround && renderDateSeperator}
+        {/* Adding indicator below the messages, since the list is inverted */}
+        {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
+      </>
+    ) : (
+      <>
+        <View
+          style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}
+          testID={`message-list-item-${index}`}
+        >
+          {shouldApplyAndroidWorkaround && renderDateSeperator}
+          {renderMessage}
+        </View>
+        {!shouldApplyAndroidWorkaround && renderDateSeperator}
+        {/* Adding indicator below the messages, since the list is inverted */}
+        {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
+      </>
     );
   };
 
