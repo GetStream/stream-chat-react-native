@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { FlatList } from 'react-native';
+import { FlatList, View } from 'react-native';
 
 import { Thread, ThreadManagerState } from 'stream-chat';
 
@@ -51,6 +51,15 @@ const ThreadListComponent = () => {
     ThreadListUnreadBanner = DefaultThreadListBanner,
     threads,
   } = useThreadsContext();
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1 }}>
+        <ThreadListLoadingIndicator />
+      </View>
+    );
+  }
+
   return (
     <>
       <ThreadListUnreadBanner />
@@ -58,12 +67,12 @@ const ThreadListComponent = () => {
         contentContainerStyle={{ flexGrow: 1 }}
         data={threads}
         keyExtractor={(props) => props.id}
-        ListEmptyComponent={isLoading ? ThreadListLoadingIndicator : ThreadListEmptyPlaceholder}
+        ListEmptyComponent={ThreadListEmptyPlaceholder}
         ListFooterComponent={isLoadingNext ? ThreadListLoadingMoreIndicator : null}
         onEndReached={loadMore}
         renderItem={DefaultThreadListItem}
-        {...additionalFlatListProps}
         testID='thread-flatlist'
+        {...additionalFlatListProps}
       />
     </>
   );
@@ -72,6 +81,7 @@ const ThreadListComponent = () => {
 export const ThreadList = (props: ThreadListProps) => {
   const { isFocused = true, ThreadList = ThreadListComponent } = props;
   const { client } = useChatContext();
+
   useEffect(() => {
     if (!client) return;
     if (isFocused) {
@@ -85,6 +95,10 @@ export const ThreadList = (props: ThreadListProps) => {
     if (!client) return;
 
     client.threads.reload({ force: true });
+
+    return () => {
+      client.threads.deactivate();
+    };
   }, [client]);
 
   const [threads, isLoading, isLoadingNext] = useStateStore(client.threads.state, selector);
