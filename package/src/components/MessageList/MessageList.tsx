@@ -1085,6 +1085,16 @@ const MessageListWithContext = <
     [shouldApplyAndroidWorkaround, HeaderComponent],
   );
 
+  const ItemSeparatorComponent = additionalFlatListProps?.ItemSeparatorComponent;
+  const WrappedItemSeparatorComponent = useCallback(
+    () => (
+      <View style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}>
+        {ItemSeparatorComponent ? <ItemSeparatorComponent /> : null}
+      </View>
+    ),
+    [ItemSeparatorComponent, shouldApplyAndroidWorkaround],
+  );
+
   // We need to omit the style related props from the additionalFlatListProps and add them directly instead of spreading
   let additionalFlatListPropsExcludingStyle:
     | Omit<
@@ -1109,13 +1119,6 @@ const MessageListWithContext = <
       </View>
     );
   }
-
-  const ItemSeparatorComponent = additionalFlatListProps?.ItemSeparatorComponent;
-  const WrappedItemSeparatorComponent = () => (
-    <View style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}>
-      {ItemSeparatorComponent ? <ItemSeparatorComponent /> : null}
-    </View>
-  );
 
   return (
     <View
