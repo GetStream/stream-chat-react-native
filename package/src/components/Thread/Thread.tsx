@@ -92,7 +92,6 @@ const ThreadWithContext = <
 
     return () => {
       if (threadInstance?.deactivate) {
-        // @ts-ignore
         threadInstance.deactivate();
       }
       if (closeThreadOnDismount) {

@@ -602,9 +602,6 @@ const ChannelWithContext = <
     watchers,
   } = props;
 
-  // const threadProps = (
-  //   threadFromProps?.threadState ? threadFromProps.thread : threadFromProps
-  // ) as MessageType<StreamChatGenerics>;
   const { thread: threadProps, threadInstance } = threadFromProps;
 
   const {
@@ -1980,8 +1977,6 @@ const ChannelWithContext = <
         setThreadMessages(channel.state.threads[thread.id] || []);
       }
     }
-    // todo: check if it should it be delete or upsert
-    // threadInstance?.deleteReplyLocally?.({ message });
 
     if (enableOfflineSupport) {
       dbApi.deleteMessage({
@@ -2122,8 +2117,7 @@ const ChannelWithContext = <
   const openThread: ThreadContextValue<StreamChatGenerics>['openThread'] = useCallback(
     (message) => {
       setThread(message);
-      // TODO: Check if this causes issues and if it should be throttled like the other methods.
-      // Also check if it causes any issues with channel state
+
       if (channel.initialized) {
         channel.markRead({ thread_id: message.id });
       }
