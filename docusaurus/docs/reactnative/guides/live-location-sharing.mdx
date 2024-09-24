@@ -448,7 +448,7 @@ const styles = StyleSheet.create({
 export default Card;
 ```
 
-Default UI components and context providers from the SDK are memoized for performance purposes adhering the `FlatList` performance optimization rules, and it will not trigger re-renders upon updates to custom properties on attachment.This can be solved by providing the `isAttachmentEqual` function prop in the `Channel` component which checks for changes in custom properties which you may have been defined on attachment.
+Default UI components and context providers from the SDK are memoized for performance purposes adhering the `FlatList` performance optimization rules, and it will not trigger re-renders upon updates to custom properties on attachment. This can be solved by providing the `isAttachmentEqual` function prop in the `Channel` component which checks for changes in custom properties which you may have been defined on attachment.
 
 ```ts
 const isAttachmentEqual: NonNullable<React.ComponentProps<typeof Channel<StreamChatGenerics>>['isAttachmentEqual']> = (
@@ -466,7 +466,7 @@ const isAttachmentEqual: NonNullable<React.ComponentProps<typeof Channel<StreamC
 };
 ```
 
-On the tap of a message, we want to navigate to the detail map. This can be done by by providing the `onPressMessage` function prop in the `Channel` component which is the callback executed when a message is tapped.
+On the tap of a message, we want to navigate to the detail map. This can be done by providing the `onPressMessage` function prop in the `Channel` component which is the callback executed when a message is tapped.
 
 ```ts
 const onPressMessage: NonNullable<

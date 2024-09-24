@@ -6837,10 +6837,10 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-stream-chat-react-native-core@5.37.0:
-  version "5.37.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.37.0.tgz#39bc4c1f702bb80af2a0fdc7e6ea7fdd12a05368"
-  integrity sha512-Z/yRDVAD1e/flDnCjQG1XpNNY+YMaFLzThAeQUYfdHgFna8nrfiTOuA4/6BIharjAtWCcQ7SqTztHY0pkhRv8g==
+stream-chat-react-native-core@5.38.0:
+  version "5.38.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.38.0.tgz#3d394a8ea9ab8d9a06a47000ff90a44daae35aaa"
+  integrity sha512-l9wF3Y+caFL1J2urw+Od0U2JNkW4ff/o4rlpmIOe92Ow14kuQOrejKo1XJbC6riJBVpnrtT1tj8SfVeS2crW0Q==
   dependencies:
     "@gorhom/bottom-sheet" "^4.6.4"
     dayjs "1.10.5"
@@ -6853,7 +6853,7 @@ stream-chat-react-native-core@5.37.0:
     path "0.12.7"
     react-native-markdown-package "1.8.2"
     react-native-url-polyfill "^1.3.0"
-    stream-chat "8.38.0"
+    stream-chat "8.39.0"
 
 "stream-chat-react-native-core@link:../../package":
   version "0.0.0"
@@ -6863,10 +6863,10 @@ stream-chat-react-native-core@5.37.0:
   version "0.0.0"
   uid ""
 
-stream-chat@8.38.0:
-  version "8.38.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.38.0.tgz#b7a82faf7734d010a5797ecb2420cc5ea8a40f7c"
-  integrity sha512-hhnbKaH1aqYYySN8+YX8kIyDqcsNhAxQEMxCmhIIBA8i8FSK6/X4dYe/Z0VHlwxUQAf95si5iR1jZCOeAiiOiw==
+stream-chat@8.39.0:
+  version "8.39.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.39.0.tgz#f4cb86bd5cac4c1272c24cd66ed4752bcda8d717"
+  integrity sha512-zQZR1tPrgGBbu+Gnv9F9KQx3OPUMvb0FN+39BEjkjgjRPm2JYhF78jfcYutQMiC538t3V+NgFGgj5N4sZvSsUA==
   dependencies:
     "@babel/runtime" "^7.16.3"
     "@types/jsonwebtoken" "~9.0.0"

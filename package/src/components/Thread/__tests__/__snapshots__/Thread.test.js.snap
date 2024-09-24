@@ -34,6 +34,7 @@ exports[`Thread should match thread snapshot 1`] = `
       testID="message-flat-list-wrapper"
     >
       <RCTScrollView
+        ItemSeparatorComponent={[Function]}
         ListFooterComponent={null}
         ListHeaderComponent={[Function]}
         contentContainerStyle={
@@ -246,6 +247,11 @@ exports[`Thread should match thread snapshot 1`] = `
             }
           >
             <View
+              style={
+                [
+                  undefined,
+                ]
+              }
               testID="message-list-item-0"
             >
               <View
@@ -540,6 +546,13 @@ exports[`Thread should match thread snapshot 1`] = `
                 </View>
               </View>
             </View>
+            <View
+              style={
+                [
+                  undefined,
+                ]
+              }
+            />
           </View>
           <View
             onFocusCapture={[Function]}
@@ -560,6 +573,11 @@ exports[`Thread should match thread snapshot 1`] = `
             }
           >
             <View
+              style={
+                [
+                  undefined,
+                ]
+              }
               testID="message-list-item-1"
             >
               <View
@@ -854,6 +872,13 @@ exports[`Thread should match thread snapshot 1`] = `
                 </View>
               </View>
             </View>
+            <View
+              style={
+                [
+                  undefined,
+                ]
+              }
+            />
           </View>
           <View
             onFocusCapture={[Function]}
@@ -874,6 +899,11 @@ exports[`Thread should match thread snapshot 1`] = `
             }
           >
             <View
+              style={
+                [
+                  undefined,
+                ]
+              }
               testID="message-list-item-2"
             >
               <View

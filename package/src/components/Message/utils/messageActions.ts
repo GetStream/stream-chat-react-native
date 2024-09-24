@@ -1,5 +1,6 @@
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type { OwnCapabilitiesContextValue } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
+import { setClipboardString } from '../../../native';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
 
@@ -7,12 +8,20 @@ export type MessageActionsParams<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   banUser: MessageActionType;
+  copyMessage: MessageActionType;
   deleteMessage: MessageActionType;
   dismissOverlay: () => void;
   editMessage: MessageActionType;
   error: boolean | Error;
   flagMessage: MessageActionType;
+  /**
+   * Determines if the message actions are visible.
+   */
+  isMessageActionsVisible: boolean;
   isThreadMessage: boolean;
+  /**
+   * @deprecated use `isMessageActionsVisible` instead.
+   */
   messageReactions: boolean;
   muteUser: MessageActionType;
   ownCapabilities: OwnCapabilitiesContextValue;
@@ -25,7 +34,6 @@ export type MessageActionsParams<
    * @deprecated use `banUser` instead.
    */
   blockUser?: MessageActionType;
-  copyMessage?: MessageActionType;
 } & Pick<MessageContextValue<StreamChatGenerics>, 'message' | 'isMyMessage'>;
 
 export type MessageActionsProp<
@@ -42,6 +50,7 @@ export const messageActions = <
   editMessage,
   error,
   flagMessage,
+  isMessageActionsVisible,
   isMyMessage,
   isThreadMessage,
   message,
@@ -53,8 +62,8 @@ export const messageActions = <
   threadReply,
   unpinMessage,
 }: MessageActionsParams<StreamChatGenerics>) => {
-  if (messageReactions) {
-    return undefined;
+  if (messageReactions || !isMessageActionsVisible) {
+    return [];
   }
 
   const actions: Array<MessageActionType> = [];
@@ -78,7 +87,7 @@ export const messageActions = <
     actions.push(editMessage);
   }
 
-  if (copyMessage !== undefined && message.text && !error) {
+  if (setClipboardString !== null && message.text && !error) {
     actions.push(copyMessage);
   }
 

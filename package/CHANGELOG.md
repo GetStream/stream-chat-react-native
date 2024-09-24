@@ -1,5 +1,25 @@
 # Change Log
 
+## [5.38.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.37.0...v5.38.0) (2024-09-18)
+
+
+### Features
+
+* add create chat client hook for easy usage ([#2660](https://github.com/GetStream/stream-chat-react-native/issues/2660)) ([68cc67a](https://github.com/GetStream/stream-chat-react-native/commit/68cc67a4e40628f7bd050ca584caa00e55c824ca))
+
+
+### Bug Fixes
+
+* add theme properties for EmptyStateIndicator for message list ([#2667](https://github.com/GetStream/stream-chat-react-native/issues/2667)) ([2944c07](https://github.com/GetStream/stream-chat-react-native/commit/2944c077e2a372bb5c6deb84b040fa2202035f69))
+* apply card cover theme property order ([c5951bc](https://github.com/GetStream/stream-chat-react-native/commit/c5951bc43c8e584501c98f2780689802f9edebd7))
+* avoid prepending http before native supported url schemes ([#2661](https://github.com/GetStream/stream-chat-react-native/issues/2661)) ([9f873ca](https://github.com/GetStream/stream-chat-react-native/commit/9f873ca34163e188735879ef8b57b248dd3c1a61))
+* bad memoisation in window, screen dimension listener hooks ([#2664](https://github.com/GetStream/stream-chat-react-native/issues/2664)) ([de2724a](https://github.com/GetStream/stream-chat-react-native/commit/de2724a137bbb1f07e76390d28a73b9456b050ff))
+* deprecate messageReactions prop and use isMessageActionsVisible instead for messageActions ([#2676](https://github.com/GetStream/stream-chat-react-native/issues/2676)) ([b9b5cd7](https://github.com/GetStream/stream-chat-react-native/commit/b9b5cd7b487f3ea36049784eee60382027d7ddb9))
+* pagination typescript errors and db synchronization bugs ([#2669](https://github.com/GetStream/stream-chat-react-native/issues/2669)) ([493cdff](https://github.com/GetStream/stream-chat-react-native/commit/493cdffcb5b2ee915b2f420e359ad685966a0dbe))
+* properly resolve sendMessage during memoization ([#2675](https://github.com/GetStream/stream-chat-react-native/issues/2675)) ([87d85c6](https://github.com/GetStream/stream-chat-react-native/commit/87d85c63b078bb018dd93316e1ef8374e864c23f))
+* remove  nin and ne  operator usage in the SDK and the sample app ([#2672](https://github.com/GetStream/stream-chat-react-native/issues/2672)) ([3497bcb](https://github.com/GetStream/stream-chat-react-native/commit/3497bcb1be88b550372db5f77a48a287161036eb))
+* request image access permissions for iOS only for native image picking ([#2677](https://github.com/GetStream/stream-chat-react-native/issues/2677)) ([680b6c8](https://github.com/GetStream/stream-chat-react-native/commit/680b6c8049b11eeb346867199f3102b563875fb7))
+
 ## [5.37.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.36.2...v5.37.0) (2024-09-10)
 
 

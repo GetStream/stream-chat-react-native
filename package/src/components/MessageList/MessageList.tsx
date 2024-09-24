@@ -88,10 +88,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const InvertedCellRendererComponent = (props: React.PropsWithChildren<unknown>) => (
-  <View {...props} style={styles.invertAndroid} />
-);
-
 const keyExtractor = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
@@ -639,7 +635,7 @@ const MessageListWithContext = <
 
     if (message.type === 'system') {
       return (
-        <>
+        <View style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}>
           <View testID={`message-list-item-${index}`}>
             <MessageSystem
               message={message}
@@ -647,7 +643,7 @@ const MessageListWithContext = <
             />
           </View>
           {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
-        </>
+        </View>
       );
     }
 
@@ -673,7 +669,12 @@ const MessageListWithContext = <
       <>
         {shouldApplyAndroidWorkaround && renderDateSeperator}
         <ThemeProvider mergedStyle={modifiedTheme}>
-          <View testID={`message-list-item-${index}`}>{renderMessage}</View>
+          <View
+            style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}
+            testID={`message-list-item-${index}`}
+          >
+            {renderMessage}
+          </View>
         </ThemeProvider>
         {!shouldApplyAndroidWorkaround && renderDateSeperator}
         {/* Adding indicator below the messages, since the list is inverted */}
@@ -681,7 +682,10 @@ const MessageListWithContext = <
       </>
     ) : (
       <>
-        <View testID={`message-list-item-${index}`}>
+        <View
+          style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}
+          testID={`message-list-item-${index}`}
+        >
           {shouldApplyAndroidWorkaround && renderDateSeperator}
           {renderMessage}
         </View>
@@ -1092,14 +1096,28 @@ const MessageListWithContext = <
     [shouldApplyAndroidWorkaround, HeaderComponent],
   );
 
+  const ItemSeparatorComponent = additionalFlatListProps?.ItemSeparatorComponent;
+  const WrappedItemSeparatorComponent = useCallback(
+    () => (
+      <View style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}>
+        {ItemSeparatorComponent ? <ItemSeparatorComponent /> : null}
+      </View>
+    ),
+    [ItemSeparatorComponent, shouldApplyAndroidWorkaround],
+  );
+
   // We need to omit the style related props from the additionalFlatListProps and add them directly instead of spreading
   let additionalFlatListPropsExcludingStyle:
-    | Omit<NonNullable<typeof additionalFlatListProps>, 'style' | 'contentContainerStyle'>
+    | Omit<
+        NonNullable<typeof additionalFlatListProps>,
+        'style' | 'contentContainerStyle' | 'ItemSeparatorComponent'
+      >
     | undefined;
 
   if (additionalFlatListProps) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { contentContainerStyle, style, ...rest } = additionalFlatListProps;
+    const { contentContainerStyle, ItemSeparatorComponent, style, ...rest } =
+      additionalFlatListProps;
     additionalFlatListPropsExcludingStyle = rest;
   }
 
@@ -1125,9 +1143,6 @@ const MessageListWithContext = <
         </View>
       ) : (
         <FlatList
-          CellRendererComponent={
-            shouldApplyAndroidWorkaround ? InvertedCellRendererComponent : undefined
-          }
           contentContainerStyle={[
             styles.contentContainer,
             additionalFlatListProps?.contentContainerStyle,
@@ -1137,6 +1152,7 @@ const MessageListWithContext = <
           data={processedMessageList}
           extraData={disabled || !hasNoMoreRecentMessagesToLoad}
           inverted={shouldApplyAndroidWorkaround ? false : inverted}
+          ItemSeparatorComponent={WrappedItemSeparatorComponent}
           keyboardShouldPersistTaps='handled'
           keyExtractor={keyExtractor}
           ListFooterComponent={ListFooterComponent}
