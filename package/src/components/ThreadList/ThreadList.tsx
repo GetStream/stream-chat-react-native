@@ -94,10 +94,15 @@ export const ThreadList = (props: ThreadListProps) => {
   useEffect(() => {
     if (!client) return;
 
+    const listener = client.on('connection.recovered', () => {
+      client.threads.reload({ force: true });
+    });
+
     client.threads.reload({ force: true });
 
     return () => {
       client.threads.deactivate();
+      listener.unsubscribe();
     };
   }, [client]);
 
