@@ -23,7 +23,6 @@ import {
   Unpin,
   UserDelete,
 } from '../../../icons';
-import { setClipboardString } from '../../../native';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { removeReservedFields } from '../../../utils/removeReservedFields';
 import { MessageStatusTypes } from '../../../utils/utils';
@@ -175,21 +174,18 @@ export const useMessageActions = <
     title: message.user?.banned ? t('Unblock User') : t('Block User'),
   };
 
-  const copyMessage: MessageActionType | undefined =
-    setClipboardString !== null
-      ? {
-          action: () => {
-            setOverlay('none');
-            if (handleCopy) {
-              handleCopy(message);
-            }
-            handleCopyMessage();
-          },
-          actionType: 'copyMessage',
-          icon: <Copy pathFill={grey} />,
-          title: t('Copy Message'),
-        }
-      : undefined;
+  const copyMessage: MessageActionType = {
+    action: () => {
+      setOverlay('none');
+      if (handleCopy) {
+        handleCopy(message);
+      }
+      handleCopyMessage();
+    },
+    actionType: 'copyMessage',
+    icon: <Copy pathFill={grey} />,
+    title: t('Copy Message'),
+  };
 
   const deleteMessage: MessageActionType = {
     action: () => {

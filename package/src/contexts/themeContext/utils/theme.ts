@@ -584,6 +584,9 @@ export type Theme = {
       icon: ViewStyle;
       title: TextStyle;
     };
+    messageActionsList: {
+      container: ViewStyle;
+    };
     padding: number;
     reactions: {
       avatarContainer: ViewStyle;
@@ -1187,6 +1190,9 @@ export const defaultTheme: Theme = {
       actionContainer: {},
       icon: {},
       title: {},
+    },
+    messageActionsList: {
+      container: {},
     },
     padding: 8,
     reactions: {

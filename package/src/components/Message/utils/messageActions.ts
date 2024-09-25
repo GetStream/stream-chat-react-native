@@ -1,5 +1,6 @@
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type { OwnCapabilitiesContextValue } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
+import { setClipboardString } from '../../../native';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
 
@@ -7,6 +8,7 @@ export type MessageActionsParams<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   banUser: MessageActionType;
+  copyMessage: MessageActionType;
   deleteMessage: MessageActionType;
   dismissOverlay: () => void;
   editMessage: MessageActionType;
@@ -32,7 +34,6 @@ export type MessageActionsParams<
    * @deprecated use `banUser` instead.
    */
   blockUser?: MessageActionType;
-  copyMessage?: MessageActionType;
 } & Pick<MessageContextValue<StreamChatGenerics>, 'message' | 'isMyMessage'>;
 
 export type MessageActionsProp<
@@ -86,7 +87,7 @@ export const messageActions = <
     actions.push(editMessage);
   }
 
-  if (copyMessage !== undefined && message.text && !error) {
+  if (setClipboardString !== null && message.text && !error) {
     actions.push(copyMessage);
   }
 
