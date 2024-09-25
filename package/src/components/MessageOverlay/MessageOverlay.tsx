@@ -6,12 +6,11 @@ import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/typ
 
 import { MessageActionType } from './MessageActionListItem';
 
-import { useMessageContext } from '../../contexts/messageContext/MessageContext';
+import { MessageContextValue } from '../../contexts/messageContext/MessageContext';
 import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
-import { OverlayProviderProps } from '../../contexts/overlayContext/OverlayContext';
 import { DefaultStreamChatGenerics } from '../../types/types';
 
 export type MessageOverlayProps<
@@ -27,11 +26,8 @@ export type MessageOverlayProps<
     | 'OverlayReactionsItem'
   >
 > &
-  Partial<
-    Pick<OverlayProviderProps<StreamChatGenerics>, 'isMyMessage' | 'isThreadMessage' | 'message'>
-  > & {
+  Partial<Pick<MessageContextValue<StreamChatGenerics>, 'message'>> & {
     closeMessageActionsBottomSheet: () => void;
-    isErrorInMessage: boolean;
     isMessageActionsVisible: boolean;
     messageActions: MessageActionType[];
     messageActionsBottomSheetRef: React.RefObject<BottomSheetModalMethods>;
@@ -46,10 +42,7 @@ export const MessageOverlay = <
   const {
     closeMessageActionsBottomSheet,
     handleReaction,
-    isErrorInMessage,
     isMessageActionsVisible,
-    isMyMessage: propIsMyMessage,
-    isThreadMessage,
     message,
     MessageActionList: propMessageActionList,
     MessageActionListItem: propMessageActionListItem,
@@ -68,9 +61,7 @@ export const MessageOverlay = <
     OverlayReactionsAvatar: contextOverlayReactionsAvatar,
     OverlayReactionsItem: contextOverlayReactionsItem,
   } = useMessagesContext();
-  const { isMyMessage: contextIsMyMessage } = useMessageContext();
   const snapPoints = useMemo(() => ['50%', '50%'], []);
-  const isMyMessage = propIsMyMessage ?? contextIsMyMessage;
   const MessageActionList = propMessageActionList ?? contextMessageActionList;
   const MessageActionListItem = propMessageActionListItem ?? contextMessageActionListItem;
   const OverlayReactionList = propOverlayReactionList ?? contextOverlayReactionList;
@@ -81,14 +72,6 @@ export const MessageOverlay = <
   const handleSheetChanges = useCallback((index: number) => {
     console.log('handleSheetChanges', index);
   }, []);
-
-  const messageActionProps = {
-    error: isErrorInMessage,
-    isMyMessage,
-    isThreadMessage,
-    message,
-    messageActions,
-  };
 
   return (
     <BottomSheetModal
@@ -110,7 +93,7 @@ export const MessageOverlay = <
             {messageActions?.length ? (
               <MessageActionList
                 MessageActionListItem={MessageActionListItem}
-                {...messageActionProps}
+                messageActions={messageActions}
               />
             ) : null}
           </>

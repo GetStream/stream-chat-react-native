@@ -770,10 +770,7 @@ const MessageWithContext = <
             <MessageOverlay
               closeMessageActionsBottomSheet={closeMessageActionsBottomSheet}
               handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
-              isErrorInMessage={isErrorInMessage}
               isMessageActionsVisible={isMessageActionsVisible}
-              isMyMessage={isMyMessage}
-              isThreadMessage={isThreadMessage}
               message={message}
               MessageActionList={MessageActionList}
               MessageActionListItem={MessageActionListItem}

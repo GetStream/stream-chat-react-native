@@ -164,7 +164,7 @@ export type MessagesContextValue<
    *
    * **Default** [MessageActionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageOverlay/MessageActions.tsx)
    */
-  MessageActionList: React.ComponentType<MessageActionListProps<StreamChatGenerics>>;
+  MessageActionList: React.ComponentType<MessageActionListProps>;
   MessageActionListItem: React.ComponentType<MessageActionListItemProps>;
 
   /**
