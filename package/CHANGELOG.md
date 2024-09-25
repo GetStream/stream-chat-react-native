@@ -1,5 +1,17 @@
 # Change Log
 
+## [5.39.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.38.1...v5.39.0) (2024-09-25)
+
+
+### Features
+
+* threads v2 ([#2668](https://github.com/GetStream/stream-chat-react-native/issues/2668)) ([39a2fb3](https://github.com/GetStream/stream-chat-react-native/commit/39a2fb3650305d99316c0cb53e18386db0f5c841))
+
+
+### Bug Fixes
+
+* threads v2 minor improvements and docs fixes ([#2689](https://github.com/GetStream/stream-chat-react-native/issues/2689)) ([61c47b5](https://github.com/GetStream/stream-chat-react-native/commit/61c47b55545ef027490c451a4229fc63a4f6e22f))
+
 ### [5.38.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.38.0...v5.38.1) (2024-09-25)
 
 
