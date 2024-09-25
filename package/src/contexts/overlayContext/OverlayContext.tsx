@@ -10,7 +10,6 @@ import type { MessageType } from '../../components/MessageList/hooks/useMessageL
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { Streami18n } from '../../utils/i18n/Streami18n';
 import type { AttachmentPickerContextValue } from '../attachmentPickerContext/AttachmentPickerContext';
-import type { MessageOverlayContextValue } from '../messageOverlayContext/MessageOverlayContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
@@ -18,7 +17,7 @@ import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-export type Overlay = 'alert' | 'gallery' | 'message' | 'none';
+export type Overlay = 'alert' | 'gallery' | 'none';
 
 export type OverlayContextValue = {
   overlay: Overlay;
@@ -48,17 +47,7 @@ export type OverlayProviderProps<
       | 'topInset'
     >
   > &
-  ImageGalleryCustomComponents<StreamChatGenerics> &
-  Partial<
-    Pick<
-      MessageOverlayContextValue<StreamChatGenerics>,
-      | 'MessageActionList'
-      | 'MessageActionListItem'
-      | 'OverlayReactionList'
-      | 'OverlayReactions'
-      | 'OverlayReactionsAvatar'
-    >
-  > & {
+  ImageGalleryCustomComponents<StreamChatGenerics> & {
     autoPlayVideo?: boolean;
     /**
      * The giphy version to render - check the keys of the [Image Object](https://developers.giphy.com/docs/api/schema#image-object) for possible values. Uses 'fixed_height' by default
@@ -73,15 +62,6 @@ export type OverlayProviderProps<
     isMyMessage?: boolean;
     isThreadMessage?: boolean;
     message?: MessageType<StreamChatGenerics>;
-    /**
-     * @deprecated use the following instead:
-     *  messageActions={(params) => {
-     *    const actions = messageActions({ ...params, isMessageActionsVisible: false });
-     *    return actions;
-     *  }}
-     */
-    messageReactions?: boolean;
-    messageTextNumberOfLines?: number;
     numberOfImageGalleryGridColumns?: number;
     openPicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
     value?: Partial<OverlayContextValue>;

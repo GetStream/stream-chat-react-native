@@ -67,6 +67,13 @@ export type DefaultAttachmentType = UnknownType & {
   waveform_data?: number[];
 };
 
+export type Reaction = {
+  id: string;
+  name: string;
+  type: string;
+  image?: string;
+};
+
 interface DefaultUserType extends UnknownType {
   image?: string;
 }

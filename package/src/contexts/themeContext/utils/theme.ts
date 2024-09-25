@@ -20,6 +20,7 @@ export const Colors = {
   grey_whisper: '#ECEBEB',
   icon_background: '#FFFFFF',
   label_bg_transparent: '#00000033', // 33 = 20% opacity
+  light_blue: '#E0F0FF',
   light_gray: '#DBDDE1',
   modal_shadow: '#00000099', // 99 = 60% opacity; x=0, y= 1, radius=4
   overlay: '#000000CC', // CC = 80% opacity
@@ -236,6 +237,9 @@ export type Theme = {
   loadingIndicator: {
     container: ViewStyle;
     loadingText: TextStyle;
+  };
+  messageActionList: {
+    container: ViewStyle;
   };
   messageInput: {
     attachButton: ViewStyle;
@@ -584,24 +588,29 @@ export type Theme = {
       title: TextStyle;
     };
     padding: number;
+    reactionButton: {
+      filledColor: ColorValue;
+      unfilledColor: ColorValue;
+    };
     reactions: {
       avatarContainer: ViewStyle;
       avatarName: TextStyle;
       avatarSize: number;
       container: ViewStyle;
-      flatListContainer: ViewStyle;
+      flatlistColumnContainer: ViewStyle;
+      flatlistContainer: ViewStyle;
       radius: number;
       reactionBubble: ViewStyle;
       reactionBubbleBackground: ViewStyle;
       reactionBubbleBorderRadius: number;
+      reactionSelectorContainer: ViewStyle;
+      reactionsText: TextStyle;
       title: TextStyle;
     };
     reactionsList: {
-      radius: number;
-      reaction: ViewStyle;
-      reactionList: ViewStyle;
-      reactionListBorderRadius: number;
-      reactionSize: number;
+      buttonContainer: ViewStyle;
+      container: ViewStyle;
+      reactionIconSize: number;
     };
   };
   progressControl: {
@@ -822,6 +831,9 @@ export const defaultTheme: Theme = {
   loadingIndicator: {
     container: {},
     loadingText: {},
+  },
+  messageActionList: {
+    container: {},
   },
   messageInput: {
     attachButton: {},
@@ -1187,24 +1199,29 @@ export const defaultTheme: Theme = {
       title: {},
     },
     padding: 8,
+    reactionButton: {
+      filledColor: Colors.accent_blue,
+      unfilledColor: Colors.grey,
+    },
     reactions: {
       avatarContainer: {},
       avatarName: {},
       avatarSize: 64,
       container: {},
-      flatListContainer: {},
+      flatlistColumnContainer: {},
+      flatlistContainer: {},
       radius: 2,
       reactionBubble: {},
       reactionBubbleBackground: {},
       reactionBubbleBorderRadius: 24,
+      reactionSelectorContainer: {},
+      reactionsText: {},
       title: {},
     },
     reactionsList: {
-      radius: 2.5,
-      reaction: {},
-      reactionList: {},
-      reactionListBorderRadius: 24,
-      reactionSize: 24,
+      buttonContainer: {},
+      container: {},
+      reactionIconSize: 24,
     },
   },
   progressControl: {

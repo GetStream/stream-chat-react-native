@@ -1,5 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
+
+import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 
 import type { Attachment, UserResponse } from 'stream-chat';
 
@@ -20,17 +22,9 @@ import {
 } from '../../contexts/keyboardContext/KeyboardContext';
 import { MessageContextValue, MessageProvider } from '../../contexts/messageContext/MessageContext';
 import {
-  MessageOverlayContextValue,
-  useMessageOverlayContext,
-} from '../../contexts/messageOverlayContext/MessageOverlayContext';
-import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
-import {
-  OverlayContextValue,
-  useOverlayContext,
-} from '../../contexts/overlayContext/OverlayContext';
 import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
@@ -53,7 +47,7 @@ import {
   isMessageWithStylesReadByAndDateSeparator,
   MessageType,
 } from '../MessageList/hooks/useMessageList';
-import type { MessageActionListItemProps } from '../MessageOverlay/MessageActionListItem';
+import { MessageOverlay } from '../MessageOverlay/MessageOverlay';
 
 export type TouchableEmitter =
   | 'fileAttachment'
@@ -159,6 +153,8 @@ export type MessagePropsWithContext<
     | 'handleRetry'
     | 'handleThreadReply'
     | 'isAttachmentEqual'
+    | 'MessageActionList'
+    | 'MessageActionListItem'
     | 'messageActions'
     | 'messageContentOrder'
     | 'MessageBounce'
@@ -167,6 +163,9 @@ export type MessagePropsWithContext<
     | 'onPressInMessage'
     | 'onPressMessage'
     | 'OverlayReactionList'
+    | 'OverlayReactions'
+    | 'OverlayReactionsAvatar'
+    | 'OverlayReactionsItem'
     | 'removeMessage'
     | 'deleteReaction'
     | 'retrySendMessage'
@@ -176,8 +175,6 @@ export type MessagePropsWithContext<
     | 'supportedReactions'
     | 'updateMessage'
   > &
-  Pick<MessageOverlayContextValue<StreamChatGenerics>, 'setData'> &
-  Pick<OverlayContextValue, 'setOverlay'> &
   Pick<ThreadContextValue<StreamChatGenerics>, 'openThread'> &
   Pick<TranslationContextValue, 't'> & {
     chatContext: ChatContextValue<StreamChatGenerics>;
@@ -238,8 +235,10 @@ const MessageWithContext = <
 >(
   props: MessagePropsWithContext<StreamChatGenerics>,
 ) => {
+  const [isErrorInMessage, setIsErrorInMessage] = useState(false);
   const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
   const [isEditedMessageOpen, setIsEditedMessageOpen] = useState(false);
+  const [isMessageActionsVisible, setIsMessageActionsVisible] = useState(true);
   const isMessageTypeDeleted = props.message.type === 'deleted';
 
   const {
@@ -270,6 +269,8 @@ const MessageWithContext = <
     lastReceivedId,
     members,
     message,
+    MessageActionList,
+    MessageActionListItem,
     messageActions: messageActionsProp = defaultMessageActions,
     MessageBounce,
     messageContentOrder: messageContentOrderProp,
@@ -284,14 +285,15 @@ const MessageWithContext = <
     onThreadSelect,
     openThread,
     OverlayReactionList,
+    OverlayReactions,
+    OverlayReactionsAvatar,
+    OverlayReactionsItem,
     preventPress,
     removeMessage,
     retrySendMessage,
     selectReaction,
     sendReaction,
-    setData,
     setEditingState,
-    setOverlay,
     setQuotedMessageState,
     showAvatar,
     showMessageStatus,
@@ -309,6 +311,21 @@ const MessageWithContext = <
       messageSimple: { targetedMessageContainer, targetedMessageUnderlay },
     },
   } = useTheme();
+  const messageActionsBottomSheetRef = useRef<BottomSheetModal>(null);
+
+  const openMessageActionsBottomSheet = () => {
+    if (messageActionsBottomSheetRef.current?.present) {
+      messageActionsBottomSheetRef.current.present();
+    } else {
+      console.warn('bottom and top insets must be set for the image picker to work correctly');
+    }
+  };
+
+  const closeMessageActionsBottomSheet = () => {
+    if (messageActionsBottomSheetRef.current?.dismiss) {
+      messageActionsBottomSheetRef.current.dismiss();
+    }
+  };
 
   const actionsEnabled =
     message.type === 'regular' && message.status === MessageStatusTypes.RECEIVED;
@@ -346,6 +363,7 @@ const MessageWithContext = <
     }
     const quotedMessage = message.quoted_message as MessageType<StreamChatGenerics>;
     if (error) {
+      setIsErrorInMessage(true);
       /**
        * If its a Blocked message, we don't do anything as per specs.
        */
@@ -359,7 +377,7 @@ const MessageWithContext = <
         setIsBounceDialogOpen(true);
         return;
       }
-      showMessageOverlay(true, true);
+      showMessageOverlay();
     } else if (quotedMessage) {
       onPressQuotedMessage(quotedMessage);
     }
@@ -531,6 +549,7 @@ const MessageWithContext = <
     client,
     deleteMessage: deleteMessageFromContext,
     deleteReaction,
+    dismissOverlay: closeMessageActionsBottomSheet,
     enforceUniqueReaction,
     handleBan,
     handleBlock,
@@ -552,72 +571,44 @@ const MessageWithContext = <
     selectReaction,
     sendReaction,
     setEditingState,
-    setOverlay,
     setQuotedMessageState,
     supportedReactions,
     t,
     updateMessage,
   });
 
-  const { userLanguage } = useTranslationContext();
+  // const { userLanguage } = useTranslationContext();
+  const isThreadMessage = threadList || !!message.parent_id;
 
-  const showMessageOverlay = async (isMessageActionsVisible = true, error = errorOrFailed) => {
+  const messageActions =
+    typeof messageActionsProp !== 'function'
+      ? messageActionsProp
+      : messageActionsProp({
+          banUser,
+          blockUser,
+          copyMessage,
+          deleteMessage,
+          dismissOverlay: closeMessageActionsBottomSheet,
+          editMessage,
+          error: isErrorInMessage,
+          flagMessage,
+          isMessageActionsVisible,
+          isMyMessage,
+          isThreadMessage,
+          message,
+          muteUser,
+          ownCapabilities,
+          pinMessage,
+          quotedReply,
+          retry,
+          threadReply,
+          unpinMessage,
+        });
+
+  const showMessageOverlay = async (isVisible = true) => {
+    setIsMessageActionsVisible(isVisible);
     await dismissKeyboard();
-
-    const isThreadMessage = threadList || !!message.parent_id;
-
-    const dismissOverlay = () => setOverlay('none');
-
-    const messageActions =
-      typeof messageActionsProp !== 'function'
-        ? messageActionsProp
-        : messageActionsProp({
-            banUser,
-            blockUser,
-            copyMessage,
-            deleteMessage,
-            dismissOverlay,
-            editMessage,
-            error,
-            flagMessage,
-            isMessageActionsVisible,
-            isMyMessage,
-            isThreadMessage,
-            message,
-            messageReactions: isMessageActionsVisible === false,
-            muteUser,
-            ownCapabilities,
-            pinMessage,
-            quotedReply,
-            retry,
-            threadReply,
-            unpinMessage,
-          });
-
-    setData({
-      alignment,
-      chatContext,
-      clientId: client.userID,
-      files: attachments.files,
-      groupStyles,
-      handleReaction: ownCapabilities.sendReaction ? handleReaction : undefined,
-      images: attachments.images,
-      message,
-      messageActions: messageActions?.filter(Boolean) as MessageActionListItemProps[] | undefined,
-      messageContext: { ...messageContext, preventPress: true },
-      messageReactionTitle: !error && !isMessageActionsVisible ? t('Message Reactions') : undefined,
-      messagesContext: { ...messagesContext, messageContentOrder },
-      onlyEmojis,
-      otherAttachments: attachments.other,
-      OverlayReactionList,
-      ownCapabilities,
-      supportedReactions,
-      threadList,
-      userLanguage,
-      videos: attachments.videos,
-    });
-
-    setOverlay('message');
+    openMessageActionsBottomSheet();
   };
 
   const actionHandlers: MessageActionHandlers<StreamChatGenerics> = {
@@ -664,7 +655,7 @@ const MessageWithContext = <
             return;
           }
           triggerHaptic('impactMedium');
-          showMessageOverlay(true);
+          showMessageOverlay();
         }
       : () => null;
 
@@ -776,6 +767,23 @@ const MessageWithContext = <
           <MessageProvider value={messageContext}>
             <MessageSimple />
             {isBounceDialogOpen && <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />}
+            <MessageOverlay
+              closeMessageActionsBottomSheet={closeMessageActionsBottomSheet}
+              handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
+              isErrorInMessage={isErrorInMessage}
+              isMessageActionsVisible={isMessageActionsVisible}
+              isMyMessage={isMyMessage}
+              isThreadMessage={isThreadMessage}
+              message={message}
+              MessageActionList={MessageActionList}
+              MessageActionListItem={MessageActionListItem}
+              messageActions={messageActions}
+              messageActionsBottomSheetRef={messageActionsBottomSheetRef}
+              OverlayReactionList={OverlayReactionList}
+              OverlayReactions={OverlayReactions}
+              OverlayReactionsAvatar={OverlayReactionsAvatar}
+              OverlayReactionsItem={OverlayReactionsItem}
+            />
           </MessageProvider>
         </View>
       </View>
@@ -942,9 +950,7 @@ export const Message = <
   const { channel, enforceUniqueReaction, members } = useChannelContext<StreamChatGenerics>();
   const chatContext = useChatContext<StreamChatGenerics>();
   const { dismissKeyboard } = useKeyboardContext();
-  const { setData } = useMessageOverlayContext<StreamChatGenerics>();
   const messagesContext = useMessagesContext<StreamChatGenerics>();
-  const { setOverlay } = useOverlayContext();
   const { openThread } = useThreadContext<StreamChatGenerics>();
   const { t } = useTranslationContext();
 
@@ -959,8 +965,6 @@ export const Message = <
         members,
         messagesContext,
         openThread,
-        setData,
-        setOverlay,
         t,
       }}
       {...props}

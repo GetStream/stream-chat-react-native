@@ -1,12 +1,7 @@
 import React from 'react';
-import { StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { Pressable, StyleProp, StyleSheet, Text, TextStyle, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useViewport } from '../../hooks/useViewport';
-import type { DefaultStreamChatGenerics } from '../../types/types';
-import type { MessageOverlayPropsWithContext } from '../MessageOverlay/MessageOverlay';
 
 export type ActionType =
   | 'banUser'
@@ -48,110 +43,41 @@ export type MessageActionType = {
   titleStyle?: StyleProp<TextStyle>;
 };
 
-export type MessageActionListItemProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = MessageActionType &
-  Pick<
-    MessageOverlayPropsWithContext<StreamChatGenerics>,
-    'error' | 'isMyMessage' | 'isThreadMessage' | 'message' | 'messageReactions'
-  > & {
-    index: number;
-    length: number;
-  };
-
-const MessageActionListItemWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageActionListItemProps<StreamChatGenerics>,
-) => {
-  const { action, actionType, icon, index, length, title, titleStyle } = props;
-  const { vw } = useViewport();
-  const opacity = useSharedValue(1);
-  const activeOpacity = 0.2;
-
-  const {
-    theme: {
-      colors: { black, border },
-      overlay: { messageActions },
-    },
-  } = useTheme();
-
-  const animatedStyle = useAnimatedStyle<ViewStyle>(() => ({
-    opacity: opacity.value,
-  }));
-
-  const tap = Gesture.Tap()
-    .onStart(() => {
-      opacity.value = activeOpacity;
-    })
-    .onFinalize(() => {
-      opacity.value = 1;
-    })
-    .onEnd(() => {
-      runOnJS(action)();
-    });
-
-  return (
-    <GestureDetector gesture={tap}>
-      <Animated.View
-        style={[
-          styles.row,
-          {
-            minWidth: vw(65),
-          },
-          index !== length - 1 ? { ...styles.bottomBorder, borderBottomColor: border } : {},
-          animatedStyle,
-          messageActions.actionContainer,
-        ]}
-        testID={`${actionType}-list-item`}
-      >
-        <View style={messageActions.icon}>{icon}</View>
-        <Text style={[styles.titleStyle, { color: black }, titleStyle, messageActions.title]}>
-          {title}
-        </Text>
-      </Animated.View>
-    </GestureDetector>
-  );
-};
-
-const messageActionIsEqual = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  prevProps: MessageActionListItemProps<StreamChatGenerics>,
-  nextProps: MessageActionListItemProps<StreamChatGenerics>,
-) => prevProps.length === nextProps.length;
-
-export const MemoizedMessageActionListItem = React.memo(
-  MessageActionListItemWithContext,
-  messageActionIsEqual,
-) as typeof MessageActionListItemWithContext;
-
 /**
  * MessageActionListItem - A high-level component that implements all the logic required for a `MessageAction` in a `MessageActionList`
  */
-export const MessageActionListItem = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageActionListItemProps<StreamChatGenerics>,
-) => <MemoizedMessageActionListItem {...props} />;
+export type MessageActionListItemProps = MessageActionType;
+
+export const MessageActionListItem = (props: MessageActionListItemProps) => {
+  const { action, actionType, icon, title, titleStyle } = props;
+
+  const {
+    theme: {
+      colors: { black },
+      overlay: {
+        messageActions: { actionContainer, icon: iconTheme, title: titleTheme },
+      },
+    },
+  } = useTheme();
+
+  return (
+    <Pressable onPress={action}>
+      <View style={[styles.container, actionContainer]} testID={`${actionType}-list-item`}>
+        <View style={iconTheme}>{icon}</View>
+        <Text style={[styles.titleStyle, { color: black }, titleStyle, titleTheme]}>{title}</Text>
+      </View>
+    </Pressable>
+  );
+};
 
 const styles = StyleSheet.create({
-  bottomBorder: {
-    borderBottomWidth: 1,
-  },
   container: {
-    borderRadius: 16,
-    marginTop: 8,
-    maxWidth: 275,
-  },
-  row: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: 8,
   },
   titleStyle: {
-    paddingLeft: 20,
+    paddingLeft: 16,
   },
 });

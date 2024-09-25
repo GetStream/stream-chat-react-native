@@ -7,6 +7,7 @@ import {
   View,
 } from 'react-native';
 
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import debounce from 'lodash/debounce';
 import omit from 'lodash/omit';
 import throttle from 'lodash/throttle';
@@ -171,7 +172,12 @@ import { ScrollToBottomButton as ScrollToBottomButtonDefault } from '../MessageL
 import { StickyHeader as StickyHeaderDefault } from '../MessageList/StickyHeader';
 import { TypingIndicator as TypingIndicatorDefault } from '../MessageList/TypingIndicator';
 import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../MessageList/TypingIndicatorContainer';
+import { MessageActionList as MessageActionListDefault } from '../MessageOverlay/MessageActionList';
+import { MessageActionListItem as MessageActionListItemDefault } from '../MessageOverlay/MessageActionListItem';
 import { OverlayReactionList as OverlayReactionListDefault } from '../MessageOverlay/OverlayReactionList';
+import { OverlayReactions as OverlayReactionDefault } from '../MessageOverlay/OverlayReactions';
+import { OverlayReactionsAvatar as OverlayReactionsAvatarDefault } from '../MessageOverlay/OverlayReactionsAvatar';
+import { OverlayReactionsItem as OverlayReactionsItemDefault } from '../MessageOverlay/OverlayReactionsItem';
 import { Reply as ReplyDefault } from '../Reply/Reply';
 
 const styles = StyleSheet.create({
@@ -301,6 +307,8 @@ export type ChannelPropsWithContext<
       | 'ImageLoadingIndicator'
       | 'markdownRules'
       | 'Message'
+      | 'MessageActionList'
+      | 'MessageActionListItem'
       | 'messageActions'
       | 'MessageAvatar'
       | 'MessageBounce'
@@ -319,12 +327,16 @@ export type ChannelPropsWithContext<
       | 'MessageStatus'
       | 'MessageSystem'
       | 'MessageText'
+      | 'messageTextNumberOfLines'
       | 'MessageTimestamp'
       | 'myMessageTheme'
       | 'onLongPressMessage'
       | 'onPressInMessage'
       | 'onPressMessage'
+      | 'OverlayReactions'
       | 'OverlayReactionList'
+      | 'OverlayReactionsAvatar'
+      | 'OverlayReactionsItem'
       | 'ReactionList'
       | 'Reply'
       | 'ScrollToBottomButton'
@@ -540,6 +552,8 @@ const ChannelWithContext = <
     mentionAllAppUsersEnabled = false,
     mentionAllAppUsersQuery,
     Message = MessageDefault,
+    MessageActionList = MessageActionListDefault,
+    MessageActionListItem = MessageActionListItemDefault,
     messageActions,
     MessageAvatar = MessageAvatarDefault,
     MessageBounce = MessageBounceDefault,
@@ -560,6 +574,7 @@ const ChannelWithContext = <
     MessageStatus = MessageStatusDefault,
     MessageSystem = MessageSystemDefault,
     MessageText,
+    messageTextNumberOfLines,
     MessageTimestamp = MessageTimestampDefault,
     MoreOptionsButton = MoreOptionsButtonDefault,
     myMessageTheme,
@@ -571,6 +586,9 @@ const ChannelWithContext = <
     onPressInMessage,
     onPressMessage,
     OverlayReactionList = OverlayReactionListDefault,
+    OverlayReactions = OverlayReactionDefault,
+    OverlayReactionsAvatar = OverlayReactionsAvatarDefault,
+    OverlayReactionsItem = OverlayReactionsItemDefault,
     overrideOwnCapabilities,
     ReactionList = ReactionListDefault,
     read,
@@ -2360,6 +2378,8 @@ const ChannelWithContext = <
     legacyImageViewerSwipeBehaviour,
     markdownRules,
     Message,
+    MessageActionList,
+    MessageActionListItem,
     messageActions,
     MessageAvatar,
     MessageBounce,
@@ -2378,12 +2398,16 @@ const ChannelWithContext = <
     MessageStatus,
     MessageSystem,
     MessageText,
+    messageTextNumberOfLines,
     MessageTimestamp,
     myMessageTheme,
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
     OverlayReactionList,
+    OverlayReactions,
+    OverlayReactionsAvatar,
+    OverlayReactionsItem,
     ReactionList,
     removeMessage,
     Reply,
@@ -2455,7 +2479,9 @@ const ChannelWithContext = <
                 <ThreadProvider<StreamChatGenerics> value={threadContext}>
                   <SuggestionsProvider<StreamChatGenerics> value={suggestionsContext}>
                     <MessageInputProvider<StreamChatGenerics> value={inputMessageInputContext}>
-                      <View style={{ height: '100%' }}>{children}</View>
+                      <BottomSheetModalProvider>
+                        <View style={{ height: '100%' }}>{children}</View>
+                      </BottomSheetModalProvider>
                     </MessageInputProvider>
                   </SuggestionsProvider>
                 </ThreadProvider>

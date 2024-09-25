@@ -1,8 +1,7 @@
 import React from 'react';
 
-import type { Reaction } from './OverlayReactions';
-
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { Reaction } from '../../types/types';
 import { Avatar, AvatarProps } from '../Avatar/Avatar';
 
 export type OverlayReactionsAvatarProps = {

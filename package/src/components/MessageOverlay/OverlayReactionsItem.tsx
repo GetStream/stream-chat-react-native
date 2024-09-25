@@ -1,23 +1,20 @@
 import React from 'react';
 
 import { StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle } from 'react-native-svg';
 
 import { ReactionResponse } from 'stream-chat';
 
-import { Reaction } from './OverlayReactions';
-
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
-import type { MessageOverlayContextValue } from '../../contexts/messageOverlayContext/MessageOverlayContext';
+import { MessagesContextValue } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Unknown } from '../../icons';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import type { DefaultStreamChatGenerics, Reaction } from '../../types/types';
 import { ReactionData } from '../../utils/utils';
 
 export type OverlayReactionsItemProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessageOverlayContextValue<StreamChatGenerics>, 'OverlayReactionsAvatar'> & {
+> = Pick<MessagesContextValue<StreamChatGenerics>, 'OverlayReactionsAvatar'> & {
   reaction: Reaction;
   supportedReactions: ReactionData[];
 };
@@ -45,14 +42,13 @@ export const OverlayReactionsItem = <
   const { id, name, type } = reaction;
   const {
     theme: {
-      colors: { accent_blue, black, grey_gainsboro, white },
+      colors: { accent_blue, black, grey, grey_gainsboro, white },
       overlay: {
         reactions: {
           avatarContainer,
           avatarName,
           avatarSize,
           radius,
-          reactionBubble,
           reactionBubbleBackground,
           reactionBubbleBorderRadius,
         },
@@ -60,7 +56,7 @@ export const OverlayReactionsItem = <
     },
   } = useTheme();
   const { client } = useChatContext();
-  const alignment = client.userID && client.userID === id ? 'right' : 'left';
+  const alignment = client.userID && client.userID === id ? 'left' : 'right';
   const x = avatarSize / 2 - (avatarSize / (radius * 4)) * (alignment === 'left' ? 1 : -1);
   const y = avatarSize - radius;
 
@@ -79,70 +75,25 @@ export const OverlayReactionsItem = <
     <View style={[styles.avatarContainer, avatarContainer]}>
       <View style={styles.avatarInnerContainer}>
         <OverlayReactionsAvatar reaction={reaction} size={avatarSize} />
-        <View style={[StyleSheet.absoluteFill]}>
-          <Svg>
-            <Circle
-              cx={x - (radius * 2 - radius / 4) * (alignment === 'left' ? 1 : -1)}
-              cy={y - radius * 2 - radius / 4}
-              fill={alignment === 'left' ? grey_gainsboro : white}
-              r={radius * 2}
-              stroke={alignment === 'left' ? white : grey_gainsboro}
-              strokeWidth={radius / 2}
-            />
-            <Circle
-              cx={x}
-              cy={y}
-              fill={alignment === 'left' ? grey_gainsboro : white}
-              r={radius}
-              stroke={alignment === 'left' ? white : grey_gainsboro}
-              strokeWidth={radius / 2}
-            />
-          </Svg>
-          <View
-            style={[
-              styles.reactionBubbleBackground,
-              {
-                backgroundColor: alignment === 'left' ? grey_gainsboro : white,
-                borderColor: alignment === 'left' ? white : grey_gainsboro,
-                borderWidth: radius / 2,
-                left,
-                top,
-              },
-              reactionBubbleBackground,
-            ]}
+        <View
+          style={[
+            styles.reactionBubbleBackground,
+            {
+              backgroundColor: grey_gainsboro,
+              borderColor: alignment === 'left' ? white : grey_gainsboro,
+              borderWidth: radius / 2,
+              left,
+              top,
+            },
+            reactionBubbleBackground,
+          ]}
+        >
+          <ReactionIcon
+            pathFill={alignment === 'left' ? accent_blue : grey}
+            size={(reactionBubbleBorderRadius || styles.reactionBubbleBackground.borderRadius) / 2}
+            supportedReactions={supportedReactions}
+            type={type}
           />
-          <View style={[StyleSheet.absoluteFill]}>
-            <Svg>
-              <Circle
-                cx={x - (radius * 2 - radius / 4) * (alignment === 'left' ? 1 : -1)}
-                cy={y - radius * 2 - radius / 4}
-                fill={alignment === 'left' ? grey_gainsboro : white}
-                r={radius * 2 - radius / 2}
-              />
-            </Svg>
-          </View>
-          <View
-            style={[
-              styles.reactionBubble,
-              {
-                backgroundColor: alignment === 'left' ? grey_gainsboro : white,
-                height:
-                  (reactionBubbleBorderRadius || styles.reactionBubble.borderRadius) - radius / 2,
-                left,
-                top,
-                width:
-                  (reactionBubbleBorderRadius || styles.reactionBubble.borderRadius) - radius / 2,
-              },
-              reactionBubble,
-            ]}
-          >
-            <ReactionIcon
-              pathFill={accent_blue}
-              size={(reactionBubbleBorderRadius || styles.reactionBubble.borderRadius) / 2}
-              supportedReactions={supportedReactions}
-              type={type}
-            />
-          </View>
         </View>
       </View>
       <View style={styles.avatarNameContainer}>
@@ -156,7 +107,7 @@ export const OverlayReactionsItem = <
 
 const styles = StyleSheet.create({
   avatarContainer: {
-    padding: 8,
+    marginBottom: 8,
   },
   avatarInnerContainer: {
     alignSelf: 'center',
@@ -173,15 +124,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexGrow: 1,
   },
-  reactionBubble: {
+  reactionBubbleBackground: {
     alignItems: 'center',
     borderRadius: 24,
-    justifyContent: 'center',
-    position: 'absolute',
-  },
-  reactionBubbleBackground: {
-    borderRadius: 24,
     height: 24,
+    justifyContent: 'center',
     position: 'absolute',
     width: 24,
   },

@@ -19,10 +19,6 @@ export type MessageActionsParams<
    */
   isMessageActionsVisible: boolean;
   isThreadMessage: boolean;
-  /**
-   * @deprecated use `isMessageActionsVisible` instead.
-   */
-  messageReactions: boolean;
   muteUser: MessageActionType;
   ownCapabilities: OwnCapabilitiesContextValue;
   pinMessage: MessageActionType;
@@ -54,7 +50,6 @@ export const messageActions = <
   isMyMessage,
   isThreadMessage,
   message,
-  messageReactions,
   ownCapabilities,
   pinMessage,
   quotedReply,
@@ -62,7 +57,7 @@ export const messageActions = <
   threadReply,
   unpinMessage,
 }: MessageActionsParams<StreamChatGenerics>) => {
-  if (messageReactions || !isMessageActionsVisible) {
+  if (!isMessageActionsVisible) {
     return [];
   }
 

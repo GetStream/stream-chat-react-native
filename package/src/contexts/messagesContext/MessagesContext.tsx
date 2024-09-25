@@ -45,8 +45,15 @@ import type { MessageSystemProps } from '../../components/MessageList/MessageSys
 import type { ScrollToBottomButtonProps } from '../../components/MessageList/ScrollToBottomButton';
 import { TypingIndicatorContainerProps } from '../../components/MessageList/TypingIndicatorContainer';
 import type { getGroupStyles } from '../../components/MessageList/utils/getGroupStyles';
-import type { MessageActionType } from '../../components/MessageOverlay/MessageActionListItem';
+import { MessageActionListProps } from '../../components/MessageOverlay/MessageActionList';
+import type {
+  MessageActionListItemProps,
+  MessageActionType,
+} from '../../components/MessageOverlay/MessageActionListItem';
 import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
+import { OverlayReactionsProps } from '../../components/MessageOverlay/OverlayReactions';
+import { OverlayReactionsAvatarProps } from '../../components/MessageOverlay/OverlayReactionsAvatar';
+import { OverlayReactionsItemProps } from '../../components/MessageOverlay/OverlayReactionsItem';
 import type { ReplyProps } from '../../components/Reply/Reply';
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
@@ -153,6 +160,14 @@ export type MessagesContextValue<
 
   Message: React.ComponentType<MessageProps<StreamChatGenerics>>;
   /**
+   * Custom UI component for rendering [message actions](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/2.png) in overlay.
+   *
+   * **Default** [MessageActionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageOverlay/MessageActions.tsx)
+   */
+  MessageActionList: React.ComponentType<MessageActionListProps<StreamChatGenerics>>;
+  MessageActionListItem: React.ComponentType<MessageActionListItemProps>;
+
+  /**
    * UI component for MessageAvatar
    * Defaults to: [MessageAvatar](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageAvatar.tsx)
    **/
@@ -168,6 +183,7 @@ export type MessagesContextValue<
   MessageContent: React.ComponentType<MessageContentProps<StreamChatGenerics>>;
   /** Order to render the message content */
   messageContentOrder: MessageContentType[];
+
   /**
    * UI component for MessageDeleted
    * Defaults to: [MessageDeleted](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageSimple/MessageDeleted.tsx)
@@ -227,6 +243,14 @@ export type MessagesContextValue<
    */
   OverlayReactionList: React.ComponentType<OverlayReactionListProps<StreamChatGenerics>>;
   /**
+   * Custom UI component for rendering [reactions list](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/2.png), in overlay (which shows up on long press on message).
+   *
+   * **Default** [OverlayReactions](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageOverlay/OverlayReactions.tsx)
+   */
+  OverlayReactions: React.ComponentType<OverlayReactionsProps<StreamChatGenerics>>;
+  OverlayReactionsAvatar: React.ComponentType<OverlayReactionsAvatarProps>;
+  OverlayReactionsItem: React.ComponentType<OverlayReactionsItemProps>;
+  /**
    * UI component for ReactionList
    * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionList.tsx)
    */
@@ -249,7 +273,6 @@ export type MessagesContextValue<
   sendReaction: (type: string, messageId: string) => Promise<void>;
   setEditingState: (message?: MessageType<StreamChatGenerics>) => void;
   setQuotedMessageState: (message?: MessageType<StreamChatGenerics>) => void;
-  supportedReactions: ReactionData[];
   /**
    * UI component for TypingIndicator
    * Defaults to: [TypingIndicator](https://getstream.io/chat/docs/sdk/reactnative/ui-components/typing-indicator/)
@@ -415,7 +438,10 @@ export type MessagesContextValue<
   MessageHeader?: React.ComponentType<MessageFooterProps<StreamChatGenerics>>;
   /** Custom UI component for message text */
   MessageText?: React.ComponentType<MessageTextProps<StreamChatGenerics>>;
-
+  /**
+   * The number of lines of the message text to be displayed
+   */
+  messageTextNumberOfLines?: number;
   /**
    * Theme provided only to messages that are the current users
    */
@@ -510,6 +536,8 @@ export type MessagesContextValue<
   selectReaction?: (
     message: MessageType<StreamChatGenerics>,
   ) => (reactionType: string) => Promise<void>;
+
+  supportedReactions?: ReactionData[];
 
   targetedMessage?: string;
 };

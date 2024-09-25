@@ -1,138 +1,94 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, useWindowDimensions, View, ViewStyle } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
-import Animated, {
-  interpolate,
-  SharedValue,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { ReactionSortBase } from 'stream-chat';
 
 import { useFetchReactions } from './hooks/useFetchReactions';
+import { ReactionButton } from './ReactionButton';
 
-import { OverlayReactionsItem } from './OverlayReactionsItem';
-
-import type { Alignment } from '../../contexts/messageContext/MessageContext';
-import type { MessageOverlayContextValue } from '../../contexts/messageOverlayContext/MessageOverlayContext';
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
-  LOLReaction,
-  LoveReaction,
-  ThumbsDownReaction,
-  ThumbsUpReaction,
-  WutReaction,
-} from '../../icons';
-
-import type { DefaultStreamChatGenerics } from '../../types/types';
-import type { ReactionData } from '../../utils/utils';
-
-const styles = StyleSheet.create({
-  avatarContainer: {
-    padding: 8,
-  },
-  container: {
-    alignItems: 'center',
-    borderRadius: 16,
-    marginTop: 8,
-    width: '100%',
-  },
-  flatListContainer: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  flatListContentContainer: {
-    alignItems: 'center',
-    paddingBottom: 12,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '700',
-    paddingTop: 16,
-  },
-  unseenItemContainer: {
-    opacity: 0,
-    position: 'absolute',
-  },
-});
-
-const reactionData: ReactionData[] = [
-  {
-    Icon: LoveReaction,
-    type: 'love',
-  },
-  {
-    Icon: ThumbsUpReaction,
-    type: 'like',
-  },
-  {
-    Icon: ThumbsDownReaction,
-    type: 'sad',
-  },
-  {
-    Icon: LOLReaction,
-    type: 'haha',
-  },
-  {
-    Icon: WutReaction,
-    type: 'wow',
-  },
-];
-
-export type Reaction = {
-  alignment: Alignment;
-  id: string;
-  name: string;
-  type: string;
-  image?: string;
-};
+  MessagesContextValue,
+  useMessagesContext,
+} from '../../contexts/messagesContext/MessagesContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { DefaultStreamChatGenerics, Reaction } from '../../types/types';
+import { ReactionData } from '../../utils/utils';
+import { MessageType } from '../MessageList/hooks/useMessageList';
 
 export type OverlayReactionsProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessageOverlayContextValue<StreamChatGenerics>, 'OverlayReactionsAvatar'> & {
-  showScreen: SharedValue<number>;
-  title: string;
-  alignment?: Alignment;
-  messageId?: string;
+> = Pick<
+  MessagesContextValue<StreamChatGenerics>,
+  'OverlayReactionsAvatar' | 'OverlayReactionsItem' | 'supportedReactions'
+> & {
+  message?: MessageType<StreamChatGenerics>;
   reactions?: Reaction[];
-  supportedReactions?: ReactionData[];
 };
 
 const sort: ReactionSortBase = {
   created_at: -1,
 };
 
-/**
- * OverlayReactions - A high level component which implements all the logic required for message overlay reactions
- */
 export const OverlayReactions = (props: OverlayReactionsProps) => {
-  const [itemHeight, setItemHeight] = React.useState(0);
   const {
-    alignment: overlayAlignment,
-    messageId,
-    OverlayReactionsAvatar,
+    message,
+    OverlayReactionsAvatar: propOverlayReactionsAvatar,
+    OverlayReactionsItem: propOverlayReactionsItem,
     reactions: propReactions,
-    showScreen,
-    supportedReactions = reactionData,
-    title,
+    supportedReactions: propSupportedReactions,
   } = props;
-  const layoutHeight = useSharedValue(0);
-  const layoutWidth = useSharedValue(0);
+  const reactionTypes = Object.keys(message?.reaction_groups ?? {});
+  const [selectedReaction, setSelectedReaction] = React.useState<string | undefined>(
+    reactionTypes[0],
+  );
+  const {
+    OverlayReactionsAvatar: contextOverlayReactionsAvatar,
+    OverlayReactionsItem: contextOverlayReactionsItem,
+    supportedReactions: contextSupportedReactions,
+  } = useMessagesContext();
+  const supportedReactions = propSupportedReactions ?? contextSupportedReactions;
+  const OverlayReactionsAvatar = propOverlayReactionsAvatar ?? contextOverlayReactionsAvatar;
+  const OverlayReactionsItem = propOverlayReactionsItem ?? contextOverlayReactionsItem;
+  const messageReactions = reactionTypes.reduce<ReactionData[]>((acc, reaction) => {
+    const reactionData = supportedReactions?.find(
+      (supportedReaction) => supportedReaction.type === reaction,
+    );
+    if (reactionData) {
+      acc.push(reactionData);
+    }
+    return acc;
+  }, []);
+
   const {
     loading,
     loadNextPage,
     reactions: fetchedReactions,
   } = useFetchReactions({
-    messageId,
+    messageId: message?.id,
+    reactionType: selectedReaction,
     sort,
   });
+
+  const {
+    theme: {
+      overlay: {
+        reactions: {
+          container,
+          flatlistColumnContainer,
+          flatlistContainer,
+          reactionSelectorContainer,
+          reactionsText,
+        },
+      },
+    },
+  } = useTheme();
+  const { t } = useTranslationContext();
 
   const reactions = useMemo(
     () =>
       propReactions ||
       (fetchedReactions.map((reaction) => ({
-        alignment: 'left',
         id: reaction.user?.id,
         image: reaction.user?.image,
         name: reaction.user?.name,
@@ -141,115 +97,70 @@ export const OverlayReactions = (props: OverlayReactionsProps) => {
     [propReactions, fetchedReactions],
   );
 
-  const {
-    theme: {
-      colors: { black, white },
-      overlay: {
-        padding: overlayPadding,
-        reactions: { avatarContainer, avatarSize, container, flatListContainer, title: titleStyle },
-      },
-    },
-  } = useTheme();
-
-  const width = useWindowDimensions().width;
-
-  const supportedReactionTypes = supportedReactions.map(
-    (supportedReaction) => supportedReaction.type,
-  );
-
-  const filteredReactions = reactions.filter((reaction) =>
-    supportedReactionTypes.includes(reaction.type),
-  );
-
-  const numColumns = Math.floor(
-    (width -
-      overlayPadding * 2 -
-      ((Number(flatListContainer.paddingHorizontal || 0) ||
-        styles.flatListContainer.paddingHorizontal) +
-        (Number(avatarContainer.padding || 0) || styles.avatarContainer.padding)) *
-        2) /
-      (avatarSize + (Number(avatarContainer.padding || 0) || styles.avatarContainer.padding) * 2),
-  );
-
   const renderItem = ({ item }: { item: Reaction }) => (
     <OverlayReactionsItem
       OverlayReactionsAvatar={OverlayReactionsAvatar}
       reaction={item}
-      supportedReactions={supportedReactions}
+      supportedReactions={supportedReactions || []}
     />
   );
 
-  const showScreenStyle = useAnimatedStyle<ViewStyle>(
-    () => ({
-      transform: [
-        {
-          translateY: interpolate(showScreen.value, [0, 1], [-layoutHeight.value / 2, 0]),
-        },
-        {
-          translateX: interpolate(
-            showScreen.value,
-            [0, 1],
-            [overlayAlignment === 'left' ? -layoutWidth.value / 2 : layoutWidth.value / 2, 0],
-          ),
-        },
-        {
-          scale: showScreen.value,
-        },
-      ],
-    }),
-    [overlayAlignment],
+  const renderHeader = () => (
+    <Text style={[styles.reactionsText, reactionsText]}>{t<string>('Message Reactions')}</Text>
   );
 
+  const onSelectReaction = (reactionType: string) => {
+    setSelectedReaction(reactionType);
+  };
+
   return (
-    <>
-      <Animated.View
-        onLayout={({ nativeEvent: { layout } }) => {
-          layoutWidth.value = layout.width;
-          layoutHeight.value = layout.height;
-        }}
-        style={[
-          styles.container,
-          { backgroundColor: white, opacity: itemHeight ? 1 : 0 },
-          container,
-          showScreenStyle,
-        ]}
-      >
-        <Text style={[styles.title, { color: black }, titleStyle]}>{title}</Text>
-        {!loading && (
-          <FlatList
-            contentContainerStyle={styles.flatListContentContainer}
-            data={filteredReactions}
-            key={numColumns}
-            keyExtractor={({ id, name }, index) => `${name}${id}_${index}`}
-            numColumns={numColumns}
-            onEndReached={loadNextPage}
-            renderItem={renderItem}
-            scrollEnabled={filteredReactions.length / numColumns > 1}
-            style={[
-              styles.flatListContainer,
-              flatListContainer,
-              {
-                // we show the item height plus a little extra to tease for scrolling if there are more than one row
-                maxHeight:
-                  itemHeight + (filteredReactions.length / numColumns > 1 ? itemHeight / 4 : 8),
-              },
-            ]}
+    <View style={[styles.container, container]} testID='overlay-reactions'>
+      <View style={[styles.reactionSelectorContainer, reactionSelectorContainer]}>
+        {messageReactions?.map(({ Icon, type }, index) => (
+          <ReactionButton
+            Icon={Icon}
+            key={`${type}_${index}`}
+            onPress={onSelectReaction}
+            selected={selectedReaction === type}
+            type={type}
           />
-        )}
-        {/* The below view is unseen by the user, we use it to compute the height that the item must be */}
-        {!loading && (
-          <View
-            onLayout={({ nativeEvent: { layout } }) => {
-              setItemHeight(layout.height);
-            }}
-            style={[styles.unseenItemContainer, styles.flatListContentContainer]}
-          >
-            {renderItem({ item: filteredReactions[0] })}
-          </View>
-        )}
-      </Animated.View>
-    </>
+        ))}
+      </View>
+
+      {!loading ? (
+        <FlatList
+          columnWrapperStyle={[styles.flatListColumnContainer, flatlistColumnContainer]}
+          contentContainerStyle={[styles.flatListContainer, flatlistContainer]}
+          data={reactions}
+          keyExtractor={(item) => item.id}
+          ListHeaderComponent={renderHeader}
+          numColumns={4}
+          onEndReached={loadNextPage}
+          renderItem={renderItem}
+        />
+      ) : null}
+    </View>
   );
 };
 
-OverlayReactions.displayName = 'OverlayReactions{overlay{reactions}}';
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  flatListColumnContainer: {
+    justifyContent: 'space-evenly',
+  },
+  flatListContainer: {
+    justifyContent: 'center',
+  },
+  reactionSelectorContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+  },
+  reactionsText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginVertical: 16,
+    textAlign: 'center',
+  },
+});

@@ -52,6 +52,8 @@ export const useCreateMessagesContext = <
   legacyImageViewerSwipeBehaviour,
   markdownRules,
   Message,
+  MessageActionList,
+  MessageActionListItem,
   messageActions,
   MessageAvatar,
   MessageBounce,
@@ -70,12 +72,16 @@ export const useCreateMessagesContext = <
   MessageStatus,
   MessageSystem,
   MessageText,
+  messageTextNumberOfLines,
   MessageTimestamp,
   myMessageTheme,
   onLongPressMessage,
   onPressInMessage,
   onPressMessage,
   OverlayReactionList,
+  OverlayReactions,
+  OverlayReactionsAvatar,
+  OverlayReactionsItem,
   ReactionList,
   removeMessage,
   Reply,
@@ -101,7 +107,7 @@ export const useCreateMessagesContext = <
   const additionalTouchablePropsLength = Object.keys(additionalTouchableProps || {}).length;
   const markdownRulesLength = Object.keys(markdownRules || {}).length;
   const messageContentOrderValue = messageContentOrder.join();
-  const supportedReactionsLength = supportedReactions.length;
+  const supportedReactionsLength = supportedReactions?.length;
 
   const messagesContext: MessagesContextValue<StreamChatGenerics> = useMemo(
     () => ({
@@ -150,6 +156,8 @@ export const useCreateMessagesContext = <
       legacyImageViewerSwipeBehaviour,
       markdownRules,
       Message,
+      MessageActionList,
+      MessageActionListItem,
       messageActions,
       MessageAvatar,
       MessageBounce,
@@ -168,12 +176,16 @@ export const useCreateMessagesContext = <
       MessageStatus,
       MessageSystem,
       MessageText,
+      messageTextNumberOfLines,
       MessageTimestamp,
       myMessageTheme,
       onLongPressMessage,
       onPressInMessage,
       onPressMessage,
       OverlayReactionList,
+      OverlayReactions,
+      OverlayReactionsAvatar,
+      OverlayReactionsItem,
       ReactionList,
       removeMessage,
       Reply,

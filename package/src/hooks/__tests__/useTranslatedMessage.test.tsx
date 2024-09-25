@@ -6,10 +6,6 @@ import { render, screen, waitFor } from '@testing-library/react-native';
 import type { MessageResponse } from 'stream-chat';
 
 import {
-  MessageOverlayContextValue,
-  MessageOverlayProvider,
-} from '../../contexts/messageOverlayContext/MessageOverlayContext';
-import {
   TranslationContextValue,
   TranslationProvider,
 } from '../../contexts/translationContext/TranslationContext';
@@ -21,7 +17,7 @@ type TestComponentProps = {
 
 const TestComponent = ({ message }: TestComponentProps) => {
   const translatedMessage = useTranslatedMessage(message);
-  return <Text>{translatedMessage.text}</Text>;
+  return <Text>{translatedMessage?.text}</Text>;
 };
 
 describe('useTranslatedMessage', () => {
@@ -92,11 +88,9 @@ describe('useTranslatedMessage', () => {
      * in the provider.
      * */
     render(
-      <MessageOverlayProvider
-        value={{ userLanguage: 'nl' } as unknown as MessageOverlayContextValue}
-      >
+      <TranslationProvider value={{ userLanguage: 'nl' } as TranslationContextValue}>
         <TestComponent message={message} />
-      </MessageOverlayProvider>,
+      </TranslationProvider>,
     );
 
     await waitFor(() => {

@@ -48,13 +48,13 @@ const isOwnReaction = <
   ownReactions?: ReactionResponse<StreamChatGenerics>[] | null,
 ) => (ownReactions ? ownReactions.some((reaction) => reaction.type === reactionType) : false);
 
-const isSupportedReaction = (reactionType: string, supportedReactions: ReactionData[]) =>
+const isSupportedReaction = (reactionType: string, supportedReactions?: ReactionData[]) =>
   supportedReactions
     ? supportedReactions.some((reactionOption) => reactionOption.type === reactionType)
     : false;
 
-const getEmojiByReactionType = (reactionType: string, supportedReactions: ReactionData[]) =>
-  supportedReactions.find(({ type }) => type === reactionType)?.Icon ?? null;
+const getEmojiByReactionType = (reactionType: string, supportedReactions?: ReactionData[]) =>
+  supportedReactions ? supportedReactions.find(({ type }) => type === reactionType)?.Icon : null;
 
 const getLatestReactedUserNames = (reactionType: string, latestReactions?: ReactionResponse[]) =>
   latestReactions
