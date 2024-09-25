@@ -1,5 +1,17 @@
 # Change Log
 
+### [1.29.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.29.1...sampleapp@v1.29.2) (2024-09-25)
+
+
+### Bug Fixes
+
+* update yarn.lock for the project ([#2681](https://github.com/GetStream/stream-chat-react-native/issues/2681)) ([84d678c](https://github.com/GetStream/stream-chat-react-native/commit/84d678cddefafb9cc90318fab3cf4103b3a78167))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.29.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.29.0...sampleapp@v1.29.1) (2024-09-18)
 
 
