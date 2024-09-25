@@ -1,5 +1,17 @@
 # Change Log
 
+### [5.38.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.38.0...v5.38.1) (2024-09-25)
+
+
+### Bug Fixes
+
+* add message action list container theme ([11a2034](https://github.com/GetStream/stream-chat-react-native/commit/11a2034bf6ed5ac4f2eea180eaf13176a3942bc9))
+* changing orientation attachment picker issues ([#2687](https://github.com/GetStream/stream-chat-react-native/issues/2687)) ([b6dfbb9](https://github.com/GetStream/stream-chat-react-native/commit/b6dfbb9f5e267a7c904852ad1c667b96d59ebd93))
+* copy message action type for message actions ([#2679](https://github.com/GetStream/stream-chat-react-native/issues/2679)) ([6398b73](https://github.com/GetStream/stream-chat-react-native/commit/6398b7380dfe7365f4e3cbba5943f51649f762f2))
+* issue with message.status in MessageTextContainer ([#2683](https://github.com/GetStream/stream-chat-react-native/issues/2683)) ([a703d82](https://github.com/GetStream/stream-chat-react-native/commit/a703d82bcba357cf978105967d94e86b0c651f70))
+* properly invert list manually android ([#2685](https://github.com/GetStream/stream-chat-react-native/issues/2685)) ([2b5bf07](https://github.com/GetStream/stream-chat-react-native/commit/2b5bf0762d83edfb5e59fafd13b5d4c5e08bb37a))
+* update yarn.lock for the project ([#2681](https://github.com/GetStream/stream-chat-react-native/issues/2681)) ([84d678c](https://github.com/GetStream/stream-chat-react-native/commit/84d678cddefafb9cc90318fab3cf4103b3a78167))
+
 ## [5.38.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.37.0...v5.38.0) (2024-09-18)
 
 
