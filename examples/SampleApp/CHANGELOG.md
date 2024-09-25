@@ -1,5 +1,17 @@
 # Change Log
 
+## [1.30.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.29.2...sampleapp@v1.30.0) (2024-09-25)
+
+
+### Features
+
+* threads v2 ([#2668](https://github.com/GetStream/stream-chat-react-native/issues/2668)) ([39a2fb3](https://github.com/GetStream/stream-chat-react-native/commit/39a2fb3650305d99316c0cb53e18386db0f5c841))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.29.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.29.1...sampleapp@v1.29.2) (2024-09-25)
 
 
