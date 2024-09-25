@@ -27,6 +27,7 @@ export type ThreadListProps<
   | 'additionalFlatListProps'
   | 'isFocused'
   | 'onThreadSelect'
+  | 'ThreadListItem'
   | 'ThreadListEmptyPlaceholder'
   | 'ThreadListLoadingIndicator'
   | 'ThreadListUnreadBanner'
