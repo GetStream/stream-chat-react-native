@@ -23,7 +23,12 @@ type ThreadPropsWithContext<
   Pick<MessagesContextValue<StreamChatGenerics>, 'MessageList'> &
   Pick<
     ThreadContextValue<StreamChatGenerics>,
-    'closeThread' | 'loadMoreThread' | 'parentMessagePreventPress' | 'reloadThread' | 'thread'
+    | 'closeThread'
+    | 'loadMoreThread'
+    | 'parentMessagePreventPress'
+    | 'reloadThread'
+    | 'thread'
+    | 'threadInstance'
   > & {
     /**
      * Additional props for underlying MessageInput component.
@@ -70,9 +75,13 @@ const ThreadWithContext = <
     onThreadDismount,
     parentMessagePreventPress = true,
     thread,
+    threadInstance,
   } = props;
 
   useEffect(() => {
+    if (threadInstance?.activate) {
+      threadInstance.activate();
+    }
     const loadMoreThreadAsync = async () => {
       await loadMoreThread();
     };
@@ -80,21 +89,20 @@ const ThreadWithContext = <
     if (thread?.id && thread.reply_count) {
       loadMoreThreadAsync();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
-  useEffect(
-    () => () => {
+    return () => {
+      if (threadInstance?.deactivate) {
+        threadInstance.deactivate();
+      }
       if (closeThreadOnDismount) {
         closeThread();
       }
       if (onThreadDismount) {
         onThreadDismount();
       }
-    },
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
+  }, []);
 
   if (!thread) return null;
 
@@ -137,7 +145,7 @@ export const Thread = <
   const { client } = useChatContext<StreamChatGenerics>();
   const { threadList } = useChannelContext<StreamChatGenerics>();
   const { MessageList } = useMessagesContext<StreamChatGenerics>();
-  const { closeThread, loadMoreThread, reloadThread, thread } =
+  const { closeThread, loadMoreThread, reloadThread, thread, threadInstance } =
     useThreadContext<StreamChatGenerics>();
 
   if (thread?.id && !threadList) {
@@ -155,6 +163,7 @@ export const Thread = <
         MessageList,
         reloadThread,
         thread,
+        threadInstance,
       }}
       {...props}
     />

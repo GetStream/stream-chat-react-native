@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { ChannelState } from 'stream-chat';
+import { ChannelState, Thread } from 'stream-chat';
 
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
@@ -8,6 +8,10 @@ import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
+
+export type ThreadType<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = { thread: MessageType<StreamChatGenerics>; threadInstance: Thread };
 
 export type ThreadContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -20,12 +24,15 @@ export type ThreadContextValue<
   setThreadLoadingMore: React.Dispatch<React.SetStateAction<boolean>>;
   thread: MessageType<StreamChatGenerics> | null;
   threadHasMore: boolean;
-  threadLoadingMore: boolean;
   threadMessages: ChannelState<StreamChatGenerics>['threads'][string];
+  loadMoreRecentThread?: (opts: { limit?: number }) => Promise<void>;
   /**
    * Boolean to enable/disable parent message press
    */
   parentMessagePreventPress?: boolean;
+  threadInstance?: Thread | null;
+  threadLoadingMore?: boolean;
+  threadLoadingMoreRecent?: boolean;
 };
 
 export const ThreadContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as ThreadContextValue);

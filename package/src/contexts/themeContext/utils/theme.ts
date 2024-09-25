@@ -27,6 +27,8 @@ export const Colors = {
   static_black: '#000000',
   static_white: '#ffffff',
   targetedMessageBackground: '#FBF4DD', // dark mode = #302D22
+  text_high_emphasis: '#080707',
+  text_low_emphasis: '#7E828B',
   transparent: 'transparent',
   white: '#FFFFFF',
   white_smoke: '#F2F2F2',
@@ -637,6 +639,23 @@ export type Theme = {
       threadHeight?: number;
     };
   };
+  threadListItem: {
+    boldText: TextStyle;
+    contentRow: ViewStyle;
+    contentTextWrapper: ViewStyle;
+    dateText: TextStyle;
+    headerRow: ViewStyle;
+    infoRow: ViewStyle;
+    lastReplyText: TextStyle;
+    parentMessageText: TextStyle;
+    touchableWrapper: ViewStyle;
+    unreadBubbleText: TextStyle;
+    unreadBubbleWrapper: ViewStyle;
+  };
+  threadListUnreadBanner: {
+    text: TextStyle;
+    touchableWrapper: ViewStyle;
+  };
   typingIndicator: {
     container: ViewStyle;
     text: TextStyle & {
@@ -1240,6 +1259,23 @@ export const defaultTheme: Theme = {
     newThread: {
       text: {},
     },
+  },
+  threadListItem: {
+    boldText: {},
+    contentRow: {},
+    contentTextWrapper: {},
+    dateText: {},
+    headerRow: {},
+    infoRow: {},
+    lastReplyText: {},
+    parentMessageText: {},
+    touchableWrapper: {},
+    unreadBubbleText: {},
+    unreadBubbleWrapper: {},
+  },
+  threadListUnreadBanner: {
+    text: {},
+    touchableWrapper: {},
   },
   typingIndicator: {
     container: {},

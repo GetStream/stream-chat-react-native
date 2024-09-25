@@ -96,6 +96,9 @@
         "Thread": ["ui-components/thread", "contexts/thread-context"]
       },
       {
+        "Thread List": ["ui-components/thread-list", "ui-components/thread-list-item"]
+      },
+      {
         "Contexts": [
           "customization/contexts",
           "contexts/attachment-picker-context",
@@ -107,7 +110,9 @@
           "contexts/suggestions-context",
           "contexts/theme-context",
           "contexts/translation-context",
-          "contexts/typing-context"
+          "contexts/typing-context",
+          "contexts/threads-context",
+          "contexts/thread-list-item-context"
         ]
       }
     ],

@@ -76,13 +76,6 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
     const { vw } = useViewport();
     const navigation = useNavigation();
 
-    if (loading && !refreshing && (!messages || messages.length === 0)) {
-      return (
-        <View style={styles.indicatorContainer}>
-          <Spinner />
-        </View>
-      );
-    }
     if (!messages && !refreshing) {
       return null;
     }
@@ -111,7 +104,15 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
           // TODO: Remove the following filter once we have two way scroll functionality on threads.
           data={messages ? messages.filter(({ parent_id }) => !parent_id) : []}
           keyboardDismissMode='on-drag'
-          ListEmptyComponent={EmptySearchIndicator}
+          ListEmptyComponent={
+            loading && !refreshing && (!messages || messages.length === 0) ? (
+              <View style={styles.indicatorContainer}>
+                <Spinner />
+              </View>
+            ) : (
+              EmptySearchIndicator
+            )
+          }
           onEndReached={loadMore}
           onRefresh={refreshList}
           ref={scrollRef}
