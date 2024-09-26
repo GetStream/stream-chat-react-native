@@ -99,8 +99,6 @@ export const ThreadList = (props: ThreadListProps) => {
       client.threads.reload({ force: true });
     });
 
-    client.threads.reload({ force: true });
-
     return () => {
       client.threads.deactivate();
       listener.unsubscribe();
