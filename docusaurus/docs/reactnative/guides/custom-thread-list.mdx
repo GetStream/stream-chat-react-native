@@ -71,7 +71,7 @@ const ThreadListScreen = () => {
       <Chat client={client}>
         <ThreadList
           isFocused={isFocused}
-          {/* here we can reuse the same method as we would in the ChannelList component */}
+          // here we can reuse the same method as we would in the ChannelList component
           onThreadSelect={(thread, channel) => {
             navigation.navigate('ThreadScreen', {
               thread,
@@ -91,7 +91,7 @@ For this, we can override how the `ThreadListItem` is rendered within the list.
 
 ```tsx
 import { TouchableOpacity, Text } from 'react-native';
-import { OverlayProvider, Chat, ThreadList, useThreadsContext, useThreadListItemContext } from 'stream-chat-react-native';
+import { OverlayProvider, Chat, ThreadList, useThreadsContext, useThreadListItemContext, MessageType } from 'stream-chat-react-native';
 
 // any navigation library hook/method can be used for this
 import { useNavigation, useIsFocused } from '@react-navigation/native';
@@ -103,11 +103,12 @@ const ThreadListItem = () => {
   const { channel, thread, parentMessage } = useThreadListItemContext();
   return (
     <TouchableOpacity
+      style={{ backgroundColor: 'red', padding: 5 }}
       onPress={() => {
         if (onThreadSelect) {
           // since we are overriding the behaviour of the item it is mandatory to pass the parameters in the
           // below to onThreadSelect()
-          onThreadSelect({ thread: parentMessage, threadInstance: thread }, channel);
+          onThreadSelect({ thread: parentMessage as MessageType, threadInstance: thread }, channel);
         }
       }}
      >
@@ -179,7 +180,7 @@ const CustomBanner = () => {
 
   // display the banner
   return (
-     <View style={{ flex: 1, paddingVertical: 15, paddingHorizontal: 5 }}>
+     <View style={{ paddingVertical: 15, paddingHorizontal: 5 }}>
        <Text>You have {unreadCount} unread threads !</Text>
      </View>
   );
@@ -250,7 +251,7 @@ const CustomBanner = () => {
 
   // display the banner
   return (
-     <View style={{ flex: 1, paddingVertical: 15, paddingHorizontal: 5 }}>
+     <View style={{ paddingVertical: 15, paddingHorizontal: 5 }}>
        <Text>You have {unreadCount} unread threads !</Text>
      </View>
   );
