@@ -51,6 +51,7 @@ export const ReactionButton = (props: ReactionButtonProps) => {
         { backgroundColor: pressed ? light_blue : white },
         buttonContainer,
       ]}
+      testID={`reaction-button-${type}`}
     >
       <Icon
         height={reactionIconSize}

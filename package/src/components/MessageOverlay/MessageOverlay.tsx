@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
-import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 
 import { MessageActionType } from './MessageActionListItem';
@@ -93,7 +93,8 @@ export const MessageOverlay = <
 
   return (
     <BottomSheetModal
-      enableDismissOnClose
+      backdropComponent={BottomSheetBackdrop}
+      enablePanDownToClose
       index={1}
       onChange={handleSheetChanges}
       onDismiss={closeMessageActionsBottomSheet}
