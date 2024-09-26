@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { useChatContext } from '../../../contexts';
 import { useAttachmentPickerContext } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
@@ -15,6 +16,34 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
   },
 });
+
+export const CreatePollModalContent = (props: { setShowModal: (val: boolean) => void }) => {
+  const { setShowModal } = props;
+  const { sendMessage } = useMessageInputContext();
+  const { client } = useChatContext();
+
+  const createAndSendPoll = useCallback(async () => {
+    // TODO: replace with stateful name
+    const pollName = 'testing-polls';
+    const poll = await client.polls.createPoll({ name: pollName });
+    console.log('CREATED POLL: ', poll.id);
+    await sendMessage({ customMessageData: { poll_id: poll.id as string } });
+  }, [client, sendMessage]);
+
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <TouchableOpacity onPress={() => setShowModal(false)}>
+          <Text>BACK</Text>
+        </TouchableOpacity>
+        <Text>THIS IS A MODAL</Text>
+        <TouchableOpacity onPress={createAndSendPoll}>
+          <Text>SEND</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+};
 
 export const AttachmentPickerSelectionBar = () => {
   const [showModal, setShowModal] = React.useState(false);
@@ -105,17 +134,7 @@ export const AttachmentPickerSelectionBar = () => {
         </View>
       </TouchableOpacity>
       <Modal animationType='slide' onRequestClose={() => setShowModal(false)} visible={showModal}>
-        <SafeAreaView style={{ flex: 1 }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <TouchableOpacity onPress={() => setShowModal(false)}>
-              <Text>BACK</Text>
-            </TouchableOpacity>
-            <Text>THIS IS A MODAL</Text>
-            <TouchableOpacity onPress={() => console.log('SENDING MESSAGE ACTION FIRED')}>
-              <Text>SEND</Text>
-            </TouchableOpacity>
-          </View>
-        </SafeAreaView>
+        <CreatePollModalContent setShowModal={setShowModal} />
       </Modal>
     </View>
   );

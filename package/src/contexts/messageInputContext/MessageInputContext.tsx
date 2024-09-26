@@ -965,7 +965,7 @@ export const MessageInputProvider = <
     }
 
     // Disallow sending message if its empty.
-    if (!prevText && attachments.length === 0) {
+    if (!prevText && attachments.length === 0 && !customMessageData?.poll_id) {
       sending.current = false;
       return;
     }
