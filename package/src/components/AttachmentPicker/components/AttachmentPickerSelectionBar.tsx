@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { useAttachmentPickerContext } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
@@ -17,10 +17,12 @@ const styles = StyleSheet.create({
 });
 
 export const AttachmentPickerSelectionBar = () => {
+  const [showModal, setShowModal] = React.useState(false);
   const {
     attachmentSelectionBarHeight,
     CameraSelectorIcon,
     closePicker,
+    CreatePollIcon,
     FileSelectorIcon,
     ImageSelectorIcon,
     selectedPicker,
@@ -93,6 +95,28 @@ export const AttachmentPickerSelectionBar = () => {
           </View>
         </TouchableOpacity>
       ) : null}
+      <TouchableOpacity
+        hitSlop={{ bottom: 15, top: 15 }}
+        onPress={() => setShowModal(true)}
+        testID='create-poll-touchable'
+      >
+        <View style={[styles.icon, icon]}>
+          <CreatePollIcon />
+        </View>
+      </TouchableOpacity>
+      <Modal animationType='slide' onRequestClose={() => setShowModal(false)} visible={showModal}>
+        <SafeAreaView style={{ flex: 1 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <TouchableOpacity onPress={() => setShowModal(false)}>
+              <Text>BACK</Text>
+            </TouchableOpacity>
+            <Text>THIS IS A MODAL</Text>
+            <TouchableOpacity onPress={() => console.log('SENDING MESSAGE ACTION FIRED')}>
+              <Text>SEND</Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </Modal>
     </View>
   );
 };
