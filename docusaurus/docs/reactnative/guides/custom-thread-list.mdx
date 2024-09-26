@@ -39,14 +39,18 @@ As a next step, let's make sure that the `ThreadList` updates internally only wh
 
 ```tsx
 import { OverlayProvider, Chat, ThreadList } from 'stream-chat-react-native';
+// highlight-start
 // any navigation library hook/method can be used for this
 import { useIsFocused } from '@react-navigation/native';
+// highlight-end
 
 const ThreadListScreen = () => {
+  // highlight-next-line
   const isFocused = useIsFocused();
   return (
     <OverlayProvider>
       <Chat client={client}>
+        // highlight-next-line
         <ThreadList isFocused={isFocused} />
       </Chat>
     </OverlayProvider>
@@ -61,16 +65,19 @@ The `ThreadList` should display as intended now and refresh only when we're look
 ```tsx
 import { OverlayProvider, Chat, ThreadList } from 'stream-chat-react-native';
 // any navigation library hook/method can be used for this
+// highlight-next-line
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 
 const ThreadListScreen = () => {
   const isFocused = useIsFocused();
+  // highlight-next-line
   const navigation = useNavigation();
   return (
     <OverlayProvider>
       <Chat client={client}>
         <ThreadList
           isFocused={isFocused}
+          // highlight-start
           // here we can reuse the same method as we would in the ChannelList component
           onThreadSelect={(thread, channel) => {
             navigation.navigate('ThreadScreen', {
@@ -78,6 +85,7 @@ const ThreadListScreen = () => {
               channel,
             });
           }}
+          // highlight-end
         />
       </Chat>
     </OverlayProvider>
@@ -91,11 +99,21 @@ For this, we can override how the `ThreadListItem` is rendered within the list.
 
 ```tsx
 import { TouchableOpacity, Text } from 'react-native';
-import { OverlayProvider, Chat, ThreadList, useThreadsContext, useThreadListItemContext, MessageType } from 'stream-chat-react-native';
+// highlight-start
+import {
+  OverlayProvider,
+  Chat,
+  ThreadList,
+  useThreadsContext,
+  useThreadListItemContext,
+  MessageType,
+} from 'stream-chat-react-native';
+// highlight-end
 
 // any navigation library hook/method can be used for this
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 
+// highlight-start
 const ThreadListItem = () => {
   // we grab the definition of the navigation function from the ThreadsContext
   const { onThreadSelect } = useThreadsContext();
@@ -116,6 +134,7 @@ const ThreadListItem = () => {
     </TouchableOpacity>
   )
 }
+// highlight-end
 
 const ThreadListScreen = () => {
   const isFocused = useIsFocused();
@@ -132,6 +151,7 @@ const ThreadListScreen = () => {
               channel,
             });
           }}
+          // highlight-next-line
           ThreadListItem={ThreadListItem}
         />
       </Chat>
@@ -146,31 +166,24 @@ For that, we can rely on using the [state store](../state-and-offline-support/st
 
 ```tsx
 import { TouchableOpacity, Text, View } from 'react-native';
-import { OverlayProvider, Chat, ThreadList, useThreadsContext, useThreadListItemContext, useStateStore } from 'stream-chat-react-native';
+import {
+  OverlayProvider,
+  Chat,
+  ThreadList,
+  useThreadsContext,
+  useThreadListItemContext,
+  MessageType,
+  // highlight-next-line
+  useStateStore,
+} from 'stream-chat-react-native';
+// highlight-next-line
 import { ThreadManagerState } from 'stream-chat';
 // any navigation library hook/method can be used for this
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 
-const ThreadListItem = () => {
-  // we grab the definition of the navigation function from the ThreadsContext
-  const { onThreadSelect } = useThreadsContext();
-  // we grab the actual thread, channel and its parent message from the ThreadListItemContext
-  const { channel, thread, parentMessage } = useThreadListItemContext();
-  return (
-    <TouchableOpacity
-      onPress={() => {
-        if (onThreadSelect) {
-          // since we are overriding the behaviour of the item it is mandatory to pass the parameters in the
-          // below to onThreadSelect()
-          onThreadSelect({ thread: parentMessage, threadInstance: thread }, channel);
-        }
-      }}
-     >
-      <Text>{thread?.id}</Text>
-    </TouchableOpacity>
-  )
-}
+// ...
 
+// highlight-start
 // create a selector for unreadThreadCount
 const selector = (nextValue: ThreadManagerState) => [nextValue.unreadThreadCount];
 
@@ -185,6 +198,7 @@ const CustomBanner = () => {
      </View>
   );
 };
+// highlight-end
 
 const ThreadListScreen = () => {
   const isFocused = useIsFocused();
@@ -192,8 +206,10 @@ const ThreadListScreen = () => {
   return (
     <OverlayProvider>
       <Chat client={client}>
+        // highlight-start
         {/* it's important that the banner is also a child of <Chat /> */}
         <CustomBanner />
+        // highlight-end
         <ThreadList
           isFocused={isFocused}
           {/* here we can reuse the same method as we would in the ChannelList component */}
@@ -216,47 +232,9 @@ And as a final step, we would like each item in the `ThreadList` to be separated
 Finally, our screen would look like this:
 
 ```tsx
-import { TouchableOpacity, Text, View } from 'react-native';
-import { OverlayProvider, Chat, ThreadList, useThreadsContext, useThreadListItemContext, useStateStore } from 'stream-chat-react-native';
-import { ThreadManagerState } from 'stream-chat';
-// any navigation library hook/method can be used for this
-import { useNavigation, useIsFocused } from '@react-navigation/native';
+// ...
 
-const ThreadListItem = () => {
-  // we grab the definition of the navigation function from the ThreadsContext
-  const { onThreadSelect } = useThreadsContext();
-  // we grab the actual thread, channel and its parent message from the ThreadListItemContext
-  const { channel, thread, parentMessage } = useThreadListItemContext();
-  return (
-    <TouchableOpacity
-      onPress={() => {
-        if (onThreadSelect) {
-          // since we are overriding the behaviour of the item it is mandatory to pass the parameters in the
-          // below to onThreadSelect()
-          onThreadSelect({ thread: parentMessage, threadInstance: thread }, channel);
-        }
-      }}
-     >
-      <Text>{thread?.id}</Text>
-    </TouchableOpacity>
-  )
-}
-
-// create a selector for unreadThreadCount
-const selector = (nextValue: ThreadManagerState) => [nextValue.unreadThreadCount];
-
-const CustomBanner = () => {
-  // use our utility hook to access the store
-  const [unreadCount] = useStateStore(client?.threads?.state, selector);
-
-  // display the banner
-  return (
-     <View style={{ paddingVertical: 15, paddingHorizontal: 5 }}>
-       <Text>You have {unreadCount} unread threads !</Text>
-     </View>
-  );
-};
-
+// highlight-next-line
 const ItemSeparatorComponent = () => <View style={{ paddingVertical: 5 }} />
 
 const ThreadListScreen = () => {
@@ -277,9 +255,11 @@ const ThreadListScreen = () => {
             });
           }}
           ThreadListItem={ThreadListItem}
+          // highlight-start
           additionalFlatListProps={{
             ItemSeparatorComponent,
           }}
+          // highlight-end
         />
       </Chat>
     </OverlayProvider>
