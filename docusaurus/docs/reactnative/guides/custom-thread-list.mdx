@@ -35,6 +35,8 @@ const ThreadListScreen = () => {
 
 This alone should be enough to already display all of the threads the user is involved in using the standard UI.
 
+![Step 1 Preview](../assets/guides/custom-thread-list/custom-thread-list-step-1.png)
+
 As a next step, let's make sure that the `ThreadList` updates internally only when the screen is in focus. For this purpose, we can use the `isFocused` property like so:
 
 ```tsx
@@ -160,7 +162,11 @@ const ThreadListScreen = () => {
 };
 ```
 
-Now we should have successfully rendered the thread list items. As a second to last step, we would like to display a banner right on top of the list telling us how many unread threads we have in total just so that we can keep track.
+Now we should have successfully rendered the thread list items.
+
+![Step 2 Preview](../assets/guides/custom-thread-list/custom-thread-list-step-2.png)
+
+As a second to last step, we would like to display a banner right on top of the list telling us how many unread threads we have in total just so that we can keep track.
 
 For that, we can rely on using the [state store](../state-and-offline-support/state-overview.mdx#thread-and-threadmanager) our SDK exposes and the [`useStateStore` hook](../state-and-offline-support/state-overview.mdx#usestatestore-hook):
 
@@ -227,6 +233,8 @@ const ThreadListScreen = () => {
 };
 ```
 
+![Step 3 Preview](../assets/guides/custom-thread-list/custom-thread-list-step-3.png)
+
 And as a final step, we would like each item in the `ThreadList` to be separated by 10 pixels. For this, we can use the [`FlatList` properties](https://reactnative.dev/docs/flatlist#props) that can be accessed through the `additionalFlatListProps` prop.
 
 Finally, our screen would look like this:
@@ -267,4 +275,7 @@ const ThreadListScreen = () => {
 };
 ```
 
+![Step 4 Preview](../assets/guides/custom-thread-list/custom-thread-list-step-4.png)
+
 We now have an entirely custom `ThreadList` that we can further modify to our liking.
+
