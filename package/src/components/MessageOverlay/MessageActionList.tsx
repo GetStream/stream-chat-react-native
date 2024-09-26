@@ -7,6 +7,9 @@ import { MessagesContextValue } from '../../contexts/messagesContext/MessagesCon
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 export type MessageActionListProps = Pick<MessagesContextValue, 'MessageActionListItem'> & {
+  /**
+   * An array of message actions to render
+   */
   messageActions?: MessageActionType[];
 };
 

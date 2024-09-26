@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { FillProps } from 'react-native-svg';
 
 import { ReactionButton } from './ReactionButton';
 
@@ -16,9 +15,20 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 export type OverlayReactionListProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<MessagesContextValue<StreamChatGenerics>, 'supportedReactions'> & {
+  /**
+   * Function to dismiss the action bottom sheet.
+   * @returns void
+   */
   dismissOverlay: () => void;
+  /**
+   * An array of reaction types that the current user has reacted with
+   */
   ownReactionTypes: string[];
-  fill?: FillProps['fill'];
+  /**
+   * Function to handle reaction on press
+   * @param reactionType
+   * @returns
+   */
   handleReaction?: (reactionType: string) => Promise<void>;
 };
 

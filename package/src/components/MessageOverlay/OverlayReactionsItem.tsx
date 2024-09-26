@@ -15,15 +15,30 @@ import { ReactionData } from '../../utils/utils';
 export type OverlayReactionsItemProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<MessagesContextValue<StreamChatGenerics>, 'OverlayReactionsAvatar'> & {
+  /**
+   * The reaction object
+   */
   reaction: Reaction;
+  /**
+   * An array of supported reactions
+   */
   supportedReactions: ReactionData[];
 };
 
 type ReactionIconProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ReactionResponse<StreamChatGenerics>, 'type'> & {
+  /**
+   * The fill color for the reaction icon
+   */
   pathFill: string;
+  /**
+   * The size of the reaction icon
+   */
   size: number;
+  /**
+   * An array of supported reactions
+   */
   supportedReactions: ReactionData[];
 };
 

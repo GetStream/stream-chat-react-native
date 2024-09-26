@@ -5,6 +5,9 @@ import { Reaction } from '../../types/types';
 import { Avatar, AvatarProps } from '../Avatar/Avatar';
 
 export type OverlayReactionsAvatarProps = {
+  /**
+   * The reaction object
+   */
   reaction: Reaction;
 } & Partial<Pick<AvatarProps, 'size'>>;
 

@@ -27,10 +27,28 @@ export type MessageOverlayProps<
   >
 > &
   Partial<Pick<MessageContextValue<StreamChatGenerics>, 'message'>> & {
+    /**
+     * Function to close the message actions bottom sheet
+     * @returns void
+     */
     closeMessageActionsBottomSheet: () => void;
+    /**
+     * Boolean to determine if there are message actions
+     */
     isMessageActionsVisible: boolean;
+    /**
+     * An array of message actions to render
+     */
     messageActions: MessageActionType[];
+    /**
+     * Reference to the bottom sheet modal
+     */
     messageActionsBottomSheetRef: React.RefObject<BottomSheetModalMethods>;
+    /**
+     * Function to handle reaction on press
+     * @param reactionType
+     * @returns
+     */
     handleReaction?: (reactionType: string) => Promise<void>;
   };
 

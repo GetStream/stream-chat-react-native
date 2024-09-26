@@ -22,7 +22,13 @@ export type OverlayReactionsProps<
   MessagesContextValue<StreamChatGenerics>,
   'OverlayReactionsAvatar' | 'OverlayReactionsItem' | 'supportedReactions'
 > & {
+  /**
+   * The message object
+   */
   message?: MessageType<StreamChatGenerics>;
+  /**
+   * An array of reactions
+   */
   reactions?: Reaction[];
 };
 
