@@ -11,18 +11,16 @@ In this cookbook we'll go over how we can create and customize a screen containi
 
 This cookbook assumes that you've already set up a separate screen that is able to display a single [`Thread`](../ui-components/thread.mdx) along with all of its replies. If this is indeed the case, there are no changes that you will need to do in order to have it working for the `ThreadList` screen.
 
-It also assumes that the thread reply capability is enabled within the app and that you have a functioning `chatClient` that is used elsewhere.
+It also assumes that you have a functioning `chatClient` that is used elsewhere.
 
 For illustration purposes, we are going to be using the `React Navigation` library for navigation (however, any navigation library can be used).
 
 ### Creating the screen
 
-Creating the `ThreadList` screen is simple. All you need to do is invoke the [`ThreadList` component](../ui-components/thread-list.mdx) inside of the `Chat` one, like so:
+Here is how you add the [`ThreadList` component](../ui-components/thread-list.mdx) in a new screen example:
 
 ```tsx
 import { OverlayProvider, Chat, ThreadList } from 'stream-chat-react-native';
-// a basic chat client
-import { client } from 'chat-client.tsx';
 
 const ThreadListScreen = () => {
   return (
@@ -41,8 +39,6 @@ As a next step, let's make sure that the `ThreadList` updates internally only wh
 
 ```tsx
 import { OverlayProvider, Chat, ThreadList } from 'stream-chat-react-native';
-// a basic chat client
-import { client } from 'chat-client.tsx';
 // any navigation library hook/method can be used for this
 import { useIsFocused } from '@react-navigation/native';
 
@@ -64,8 +60,6 @@ The `ThreadList` should display as intended now and refresh only when we're look
 
 ```tsx
 import { OverlayProvider, Chat, ThreadList } from 'stream-chat-react-native';
-// a basic chat client
-import { client } from 'chat-client.tsx';
 // any navigation library hook/method can be used for this
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 
@@ -91,15 +85,14 @@ const ThreadListScreen = () => {
 };
 ```
 
-Now we should be able to navigate to any thread displayed in the list without an issue. For the next step, let's assume that we do not need all of the information displayed in each item within the `ThreadList` - but instead are really only interested in displaying the ID of each thread. We also want these to be separated by exactly 10 pixels apart.
+Now we should be able to navigate to any thread displayed in the list. For the next step, let's assume that we do not need all of the information displayed in each item within the `ThreadList` - but instead are really only interested in displaying the ID of each thread. We also want these to be separated by exactly 10 pixels apart.
 
 For this, we can override how the `ThreadListItem` is rendered within the list.
 
 ```tsx
 import { TouchableOpacity, Text } from 'react-native';
 import { OverlayProvider, Chat, ThreadList, useThreadsContext, useThreadListItemContext } from 'stream-chat-react-native';
-// a basic chat client
-import { client } from 'chat-client.tsx';
+
 // any navigation library hook/method can be used for this
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 
@@ -148,14 +141,12 @@ const ThreadListScreen = () => {
 
 Now we should have successfully rendered the thread list items. As a second to last step, we would like to display a banner right on top of the list telling us how many unread threads we have in total just so that we can keep track.
 
-For that, we can rely on using the state store our SDK exposes:
+For that, we can rely on using the [state store](../state-and-offline-support/state-overview.mdx#thread-and-threadmanager) our SDK exposes and the [`useStateStore` hook](../state-and-offline-support/state-overview.mdx#usestatestore-hook):
 
 ```tsx
 import { TouchableOpacity, Text, View } from 'react-native';
 import { OverlayProvider, Chat, ThreadList, useThreadsContext, useThreadListItemContext, useStateStore } from 'stream-chat-react-native';
 import { ThreadManagerState } from 'stream-chat';
-// a basic chat client
-import { client } from 'chat-client.tsx';
 // any navigation library hook/method can be used for this
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 
@@ -219,9 +210,7 @@ const ThreadListScreen = () => {
 };
 ```
 
-You may find more information on how `useStateStore` works [here](../state-and-offline-support/state-overview.mdx#thread-and-threadmanager).
-
-And as a final step, we would like each item in the `ThreadList` to be separated by 10 pixels. Since we do not have a specific property for this purpose, we can always rely on the `FlatList` properties that can be accessed through the `additionalFlatListProps` property.
+And as a final step, we would like each item in the `ThreadList` to be separated by 10 pixels. For this, we can use the [`FlatList` properties](https://reactnative.dev/docs/flatlist#props) that can be accessed through the `additionalFlatListProps` prop.
 
 Finally, our screen would look like this:
 
@@ -229,8 +218,6 @@ Finally, our screen would look like this:
 import { TouchableOpacity, Text, View } from 'react-native';
 import { OverlayProvider, Chat, ThreadList, useThreadsContext, useThreadListItemContext, useStateStore } from 'stream-chat-react-native';
 import { ThreadManagerState } from 'stream-chat';
-// a basic chat client
-import { client } from 'chat-client.tsx';
 // any navigation library hook/method can be used for this
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 
