@@ -132,7 +132,13 @@ describe('ChatContext', () => {
 });
 
 describe('TranslationContext', () => {
-  afterEach(cleanup);
+  beforeEach(() => {
+    jest.spyOn(DBSyncManager, 'init');
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+  });
   const chatClient = getTestClient();
   it('exposes the translation context', async () => {
     let context;
@@ -226,7 +232,6 @@ describe('TranslationContext', () => {
 
   it('makes sure DBSyncManager listeners are cleaned up after Chat remount', async () => {
     const chatClientWithUser = await getTestClientWithUser({ id: 'testID' });
-    jest.spyOn(DBSyncManager, 'init');
 
     // initial mount and render
     const { rerender } = render(<Chat client={chatClientWithUser} enableOfflineSupport key={1} />);
@@ -249,7 +254,6 @@ describe('TranslationContext', () => {
 
   it('makes sure DBSyncManager listeners are cleaned up if the user changes', async () => {
     const chatClientWithUser = await getTestClientWithUser({ id: 'testID1' });
-    jest.spyOn(DBSyncManager, 'init');
 
     // initial render
     const { rerender } = render(<Chat client={chatClientWithUser} enableOfflineSupport />);
@@ -275,7 +279,6 @@ describe('TranslationContext', () => {
 
   it('makes sure DBSyncManager state stays intact during normal rerenders', async () => {
     const chatClientWithUser = await getTestClientWithUser({ id: 'testID' });
-    jest.spyOn(DBSyncManager, 'init');
 
     // initial render
     const { rerender } = render(<Chat client={chatClientWithUser} enableOfflineSupport />);
