@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Modal, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 import { useAttachmentPickerContext } from '../../../contexts';
@@ -8,6 +8,7 @@ export const CreatePollButton = (props: { style: ViewStyle | ViewStyle[] }) => {
   const { style } = props;
   const [showModal, setShowModal] = useState(false);
   const { CreatePollIcon } = useAttachmentPickerContext();
+  const handleClose = useCallback(() => setShowModal(false), []);
   return (
     <>
       <TouchableOpacity
@@ -20,7 +21,7 @@ export const CreatePollButton = (props: { style: ViewStyle | ViewStyle[] }) => {
         </View>
       </TouchableOpacity>
       <Modal animationType='slide' onRequestClose={() => setShowModal(false)} visible={showModal}>
-        <CreatePollContent setShowModal={setShowModal} />
+        <CreatePollContent handleClose={handleClose} />
       </Modal>
     </>
   );
