@@ -1,11 +1,13 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
+import { CreatePollData } from 'stream-chat';
+
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type CreatePollContentContextValue = {
-  createAndSendPoll: () => Promise<void>;
+  createAndSendPoll: (pollData: CreatePollData) => Promise<void>;
   handleClose: () => void;
 };
 
