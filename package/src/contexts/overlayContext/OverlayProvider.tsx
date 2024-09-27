@@ -21,13 +21,13 @@ import { AttachmentPickerErrorImage as DefaultAttachmentPickerErrorImage } from 
 import { AttachmentPickerIOSSelectMorePhotos as DefaultAttachmentPickerIOSSelectMorePhotos } from '../../components/AttachmentPicker/components/AttachmentPickerIOSSelectMorePhotos';
 import { AttachmentPickerSelectionBar as DefaultAttachmentPickerSelectionBar } from '../../components/AttachmentPicker/components/AttachmentPickerSelectionBar';
 import { CameraSelectorIcon as DefaultCameraSelectorIcon } from '../../components/AttachmentPicker/components/CameraSelectorIcon';
-import { CreatePollIcon as DefaultCreatePollIcon } from '../../components/AttachmentPicker/components/CreatePollIcon';
 import { FileSelectorIcon as DefaultFileSelectorIcon } from '../../components/AttachmentPicker/components/FileSelectorIcon';
 import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../../components/AttachmentPicker/components/ImageOverlaySelectedComponent';
 import { ImageSelectorIcon as DefaultImageSelectorIcon } from '../../components/AttachmentPicker/components/ImageSelectorIcon';
 import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
 import { MessageOverlay } from '../../components/MessageOverlay/MessageOverlay';
 import { OverlayBackdrop } from '../../components/MessageOverlay/OverlayBackdrop';
+import { CreatePollIcon as DefaultCreatePollIcon } from '../../components/Poll/components/CreatePollIcon';
 import { useStreami18n } from '../../hooks/useStreami18n';
 
 import { useViewport } from '../../hooks/useViewport';

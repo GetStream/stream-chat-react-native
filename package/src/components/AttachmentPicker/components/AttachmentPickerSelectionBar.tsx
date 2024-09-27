@@ -1,10 +1,10 @@
-import React, { useCallback } from 'react';
-import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import { useChatContext } from '../../../contexts';
 import { useAttachmentPickerContext } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { CreatePollButton } from '../../Poll/components/CreatePollButton';
 
 const styles = StyleSheet.create({
   container: {
@@ -17,41 +17,11 @@ const styles = StyleSheet.create({
   },
 });
 
-export const CreatePollModalContent = (props: { setShowModal: (val: boolean) => void }) => {
-  const { setShowModal } = props;
-  const { sendMessage } = useMessageInputContext();
-  const { client } = useChatContext();
-
-  const createAndSendPoll = useCallback(async () => {
-    // TODO: replace with stateful name
-    const pollName = 'testing-polls';
-    const poll = await client.polls.createPoll({ name: pollName });
-    console.log('CREATED POLL: ', poll.id);
-    await sendMessage({ customMessageData: { poll_id: poll.id as string } });
-  }, [client, sendMessage]);
-
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <TouchableOpacity onPress={() => setShowModal(false)}>
-          <Text>BACK</Text>
-        </TouchableOpacity>
-        <Text>THIS IS A MODAL</Text>
-        <TouchableOpacity onPress={createAndSendPoll}>
-          <Text>SEND</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
-  );
-};
-
 export const AttachmentPickerSelectionBar = () => {
-  const [showModal, setShowModal] = React.useState(false);
   const {
     attachmentSelectionBarHeight,
     CameraSelectorIcon,
     closePicker,
-    CreatePollIcon,
     FileSelectorIcon,
     ImageSelectorIcon,
     selectedPicker,
@@ -124,18 +94,7 @@ export const AttachmentPickerSelectionBar = () => {
           </View>
         </TouchableOpacity>
       ) : null}
-      <TouchableOpacity
-        hitSlop={{ bottom: 15, top: 15 }}
-        onPress={() => setShowModal(true)}
-        testID='create-poll-touchable'
-      >
-        <View style={[styles.icon, icon]}>
-          <CreatePollIcon />
-        </View>
-      </TouchableOpacity>
-      <Modal animationType='slide' onRequestClose={() => setShowModal(false)} visible={showModal}>
-        <CreatePollModalContent setShowModal={setShowModal} />
-      </Modal>
+      <CreatePollButton style={[styles.icon, icon]} />
     </View>
   );
 };
