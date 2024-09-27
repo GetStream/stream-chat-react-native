@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 // RNGR's FlatList ist currently breaking the pull-to-refresh behaviour on Android
 // See https://github.com/software-mansion/react-native-gesture-handler/issues/598
-import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 
 import type { Channel } from 'stream-chat';
 
@@ -181,8 +181,9 @@ const ChannelListMessengerWithContext = <
         onEndReached={onEndReached}
         onEndReachedThreshold={loadMoreThreshold}
         onMomentumScrollBegin={() => (onEndReachedCalledDuringCurrentScrollRef.current = false)}
+        onRefresh={refreshList}
         ref={setFlatListRef}
-        refreshControl={<RefreshControl onRefresh={refreshList} refreshing={refreshing} />}
+        refreshing={refreshing}
         renderItem={renderItem}
         style={[styles.flatList, { backgroundColor: white_snow }, flatList]}
         testID='channel-list-messenger'
