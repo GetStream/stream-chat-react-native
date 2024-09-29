@@ -1,6 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import { SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+import { ScrollView } from 'react-native-gesture-handler';
+
 import { CreatePollData, PollOptionData } from 'stream-chat';
 
 import {
@@ -9,6 +11,31 @@ import {
   useCreatePollContentContext,
   useMessageInputContext,
 } from '../../contexts';
+
+const CreatePollOption = ({
+  handleChangeText,
+  index,
+  option,
+}: {
+  handleChangeText: (newText: string, index: number) => void;
+  index: number;
+  option: PollOptionData;
+}) => (
+  <TextInput
+    onChangeText={(newText) => handleChangeText(newText, index)}
+    placeholder='Option'
+    style={{
+      backgroundColor: '#F7F7F8',
+      borderRadius: 12,
+      marginTop: 8,
+      paddingHorizontal: 16,
+      paddingVertical: 18,
+    }}
+    value={option.text}
+  />
+);
+
+const MemoizedCreatePollOption = React.memo(CreatePollOption);
 
 export const CreatePollContentWithContext = () => {
   const [pollTitle, setPollTitle] = useState('');
@@ -19,30 +46,11 @@ export const CreatePollContentWithContext = () => {
 
   const { createAndSendPoll, handleClose } = useCreatePollContentContext();
 
-  const CreatePollOption = (option, index) => {
-    const updateOptions = (newText) => {
-      const newPollOptions = [...pollOptions];
-      newPollOptions.splice(index, 1, { ...newPollOptions[index], text: newText });
-      setPollOptions(newPollOptions);
-    };
-    return (
-      <TextInput
-        key={index}
-        onChangeText={updateOptions}
-        placeholder='Option'
-        style={{
-          backgroundColor: '#F7F7F8',
-          borderRadius: 12,
-          marginTop: 8,
-          paddingHorizontal: 16,
-          paddingVertical: 18,
-        }}
-        value={pollOptions[index].text}
-      />
+  const updateOptions = useCallback((newText: string, index: number) => {
+    setPollOptions((prevOptions) =>
+      prevOptions.map((option, idx) => (idx === index ? { ...option, text: newText } : option)),
     );
-  };
-
-  console.log('ISE: ', pollOptions)
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -57,37 +65,46 @@ export const CreatePollContentWithContext = () => {
           <Text>SEND</Text>
         </TouchableOpacity>
       </View>
-      <View style={{ margin: 16 }}>
-        <Text style={{ fontSize: 16 }}>Questions</Text>
-        <TextInput
-          onChangeText={setPollTitle}
-          placeholder='Ask a question'
-          style={{
-            backgroundColor: '#F7F7F8',
-            borderRadius: 12,
-            marginTop: 8,
-            paddingHorizontal: 16,
-            paddingVertical: 18,
-          }}
-          value={pollTitle}
-        />
-      </View>
-      <View style={{ margin: 16 }}>
-        <Text style={{ fontSize: 16 }}>Options</Text>
-        {pollOptions.map(CreatePollOption)}
-        <TouchableOpacity
-          onPress={() => setPollOptions([...pollOptions, { text: '' }])}
-          style={{
-            backgroundColor: '#F7F7F8',
-            borderRadius: 12,
-            marginTop: 8,
-            paddingHorizontal: 16,
-            paddingVertical: 18,
-          }}
-        >
-          <Text>Add an option</Text>
-        </TouchableOpacity>
-      </View>
+      <ScrollView style={{ flex: 1, margin: 16 }}>
+        <View>
+          <Text style={{ fontSize: 16 }}>Questions</Text>
+          <TextInput
+            onChangeText={setPollTitle}
+            placeholder='Ask a question'
+            style={{
+              backgroundColor: '#F7F7F8',
+              borderRadius: 12,
+              marginTop: 8,
+              paddingHorizontal: 16,
+              paddingVertical: 18,
+            }}
+            value={pollTitle}
+          />
+        </View>
+        <View style={{ marginTop: 16 }}>
+          <Text style={{ fontSize: 16 }}>Options</Text>
+          {pollOptions.map((option, index) => (
+            <MemoizedCreatePollOption
+              handleChangeText={updateOptions}
+              index={index}
+              key={index}
+              option={option}
+            />
+          ))}
+          <TouchableOpacity
+            onPress={() => setPollOptions([...pollOptions, { text: '' }])}
+            style={{
+              backgroundColor: '#F7F7F8',
+              borderRadius: 12,
+              marginTop: 8,
+              paddingHorizontal: 16,
+              paddingVertical: 18,
+            }}
+          >
+            <Text>Add an option</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -103,6 +120,7 @@ export const CreatePollContent = (props: { handleClose: () => void }) => {
       const poll = await client.polls.createPoll(pollData);
       console.log('CREATED POLL: ', poll.id);
       await sendMessage({ customMessageData: { poll_id: poll.id as string } });
+      // console.log('ISE: SENDING: ', pollData.options);
       handleClose();
     },
     [client, sendMessage, handleClose],
