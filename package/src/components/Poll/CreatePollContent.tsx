@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
 
@@ -11,6 +11,7 @@ import {
   useCreatePollContentContext,
   useMessageInputContext,
 } from '../../contexts';
+import { DragHandle } from '../../icons';
 
 const CreatePollOption = ({
   handleChangeText,
@@ -21,25 +22,33 @@ const CreatePollOption = ({
   index: number;
   option: PollOptionData;
 }) => (
-  <TextInput
-    onChangeText={(newText) => handleChangeText(newText, index)}
-    placeholder='Option'
+  <View
     style={{
+      alignItems: 'center',
       backgroundColor: '#F7F7F8',
       borderRadius: 12,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
       marginTop: 8,
       paddingHorizontal: 16,
       paddingVertical: 18,
     }}
-    value={option.text}
-  />
+  >
+    <TextInput
+      onChangeText={(newText) => handleChangeText(newText, index)}
+      placeholder='Option'
+      style={{ flex: 1, fontSize: 16 }}
+      value={option.text}
+    />
+    <DragHandle pathFill='#7E828B' />
+  </View>
 );
 
 const MemoizedCreatePollOption = React.memo(CreatePollOption);
 
 export const CreatePollContentWithContext = () => {
   const [pollTitle, setPollTitle] = useState('');
-  const [pollOptions, setPollOptions] = useState<PollOptionData[]>([]);
+  const [pollOptions, setPollOptions] = useState<PollOptionData[]>([{ text: '' }]);
   const [multipleAnswersAllowed, setMultipleAnswersAllowed] = useState(false);
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [optionSuggestionsAllowed, setOptionSuggestionsAllowed] = useState(false);
@@ -74,6 +83,7 @@ export const CreatePollContentWithContext = () => {
             style={{
               backgroundColor: '#F7F7F8',
               borderRadius: 12,
+              fontSize: 16,
               marginTop: 8,
               paddingHorizontal: 16,
               paddingVertical: 18,
@@ -81,7 +91,7 @@ export const CreatePollContentWithContext = () => {
             value={pollTitle}
           />
         </View>
-        <View style={{ marginTop: 16 }}>
+        <View style={{ marginVertical: 16 }}>
           <Text style={{ fontSize: 16 }}>Options</Text>
           {pollOptions.map((option, index) => (
             <MemoizedCreatePollOption
@@ -101,8 +111,59 @@ export const CreatePollContentWithContext = () => {
               paddingVertical: 18,
             }}
           >
-            <Text>Add an option</Text>
+            <Text style={{ fontSize: 16 }}>Add an option</Text>
           </TouchableOpacity>
+        </View>
+        <View
+          style={{
+            alignItems: 'center',
+            backgroundColor: '#F7F7F8',
+            borderRadius: 12,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginTop: 16,
+            paddingHorizontal: 16,
+            paddingVertical: 18,
+          }}
+        >
+          <Text style={{ fontSize: 16 }}>Multiple answers</Text>
+          <Switch
+            onValueChange={() => setMultipleAnswersAllowed(!multipleAnswersAllowed)}
+            value={multipleAnswersAllowed}
+          />
+        </View>
+        <View
+          style={{
+            alignItems: 'center',
+            backgroundColor: '#F7F7F8',
+            borderRadius: 12,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginTop: 16,
+            paddingHorizontal: 16,
+            paddingVertical: 18,
+          }}
+        >
+          <Text style={{ fontSize: 16 }}>Anonymous poll</Text>
+          <Switch onValueChange={() => setIsAnonymous(!isAnonymous)} value={isAnonymous} />
+        </View>
+        <View
+          style={{
+            alignItems: 'center',
+            backgroundColor: '#F7F7F8',
+            borderRadius: 12,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginTop: 16,
+            paddingHorizontal: 16,
+            paddingVertical: 18,
+          }}
+        >
+          <Text style={{ fontSize: 16 }}>Multiple answers</Text>
+          <Switch
+            onValueChange={() => setOptionSuggestionsAllowed(!optionSuggestionsAllowed)}
+            value={optionSuggestionsAllowed}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
