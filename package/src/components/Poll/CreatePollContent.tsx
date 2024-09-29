@@ -3,7 +3,7 @@ import { SafeAreaView, Switch, Text, TextInput, TouchableOpacity, View } from 'r
 
 import { ScrollView } from 'react-native-gesture-handler';
 
-import { CreatePollData, PollOptionData } from 'stream-chat';
+import { CreatePollData, PollOptionData, VotingVisibility } from 'stream-chat';
 
 import {
   CreatePollContentProvider,
@@ -69,7 +69,15 @@ export const CreatePollContentWithContext = () => {
         </TouchableOpacity>
         <Text>Create Poll</Text>
         <TouchableOpacity
-          onPress={() => createAndSendPoll({ name: pollTitle, options: pollOptions })}
+          onPress={() =>
+            createAndSendPoll({
+              allow_user_suggested_options: optionSuggestionsAllowed,
+              enforce_unique_vote: !multipleAnswersAllowed,
+              name: pollTitle,
+              options: pollOptions,
+              voting_visibility: isAnonymous ? VotingVisibility.anonymous : VotingVisibility.public,
+            })
+          }
         >
           <Text>SEND</Text>
         </TouchableOpacity>
@@ -159,7 +167,7 @@ export const CreatePollContentWithContext = () => {
             paddingVertical: 18,
           }}
         >
-          <Text style={{ fontSize: 16 }}>Multiple answers</Text>
+          <Text style={{ fontSize: 16 }}>Suggest an option</Text>
           <Switch
             onValueChange={() => setOptionSuggestionsAllowed(!optionSuggestionsAllowed)}
             value={optionSuggestionsAllowed}
