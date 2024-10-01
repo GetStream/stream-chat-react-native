@@ -12,7 +12,6 @@ import {
 import { Gesture, GestureDetector, ScrollView } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
-  runOnJS,
   SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
@@ -45,18 +44,6 @@ type CurrentOptionPositionsCache = {
 };
 
 const OPTION_HEIGHT = 69;
-const getInitialPositions = (size: number): CurrentOptionPositionsCache => {
-  const cache: CurrentOptionPositionsCache = { inverseIndexCache: {}, positionCache: {} };
-  for (let i = 0; i < size; i++) {
-    cache.positionCache[i] = {
-      updatedIndex: i,
-      updatedTop: i * OPTION_HEIGHT,
-    };
-    cache.inverseIndexCache[i] = i;
-  }
-  return cache;
-};
-
 const CreatePollOption = ({
   boundaries,
   currentOptionPositions,
@@ -65,7 +52,6 @@ const CreatePollOption = ({
   index,
   isDragging,
   option,
-  reorderOptions,
 }: {
   currentOptionPositions: SharedValue<CurrentOptionPositionsCache>;
   draggedItemId: SharedValue<number | null>;
@@ -97,10 +83,10 @@ const CreatePollOption = ({
     () => currentOptionPositions.value,
   );
 
-  //used for swapping with currentIndex
+  // used for swapping with currentIndex
   const newIndex = useSharedValue<number | null>(null);
 
-  //used for swapping with newIndex
+  // used for swapping with newIndex
   const currentIndex = useSharedValue<number | null>(null);
 
   useAnimatedReaction(
@@ -153,7 +139,8 @@ const CreatePollOption = ({
           currentOptionPositionsDerived.value.inverseIndexCache[currentIndex.value];
 
         if (newIndexItemKey !== undefined && currentDragIndexItemKey !== undefined) {
-          // we update updatedTop and updatedIndex as next time we want to do calculations from new top value and new index
+          // if we indeed have a candidate for a new index, we update our cache so that
+          // it can be reflected through animations
           currentOptionPositions.value = {
             inverseIndexCache: {
               ...currentOptionPositionsDerived.value.inverseIndexCache,
@@ -180,7 +167,6 @@ const CreatePollOption = ({
       }
     })
     .onEnd(() => {
-      // stop dragging
       if (currentIndex.value === null || newIndex.value === null) {
         return;
       }
@@ -204,10 +190,9 @@ const CreatePollOption = ({
           },
         };
       }
-      //stop dragging
+      // stop dragging
       isDragging.value = withDelay(200, withSpring(0));
       console.log(currentOptionPositionsDerived.value);
-      runOnJS(reorderOptions)(currentOptionPositionsDerived.value.inverseIndexCache);
     });
 
   return (
@@ -263,33 +248,17 @@ export const CreatePollContentWithContext = () => {
 
   const { createAndSendPoll, handleClose } = useCreatePollContentContext();
 
-  const pollOptionsRef = useRef(pollOptions);
-
   const updateOption = useCallback((newText: string, index: number) => {
     setPollOptions((prevOptions) =>
       prevOptions.map((option, idx) => (idx === index ? { ...option, text: newText } : option)),
     );
   }, []);
 
-  const reorderOptions = useCallback(
-    (lookupTable) => {
-      console.log('LOOKUP TABLE: ', lookupTable);
-      const currentPollOptions = Object.assign({}, pollOptions);
-      const newPollOptions = [];
-
-      for (let i = 0; i < pollOptions.length; i++) {
-        newPollOptions.push(currentPollOptions[lookupTable[i]]);
-      }
-      // actually setting the state messes the animations up a bit, so we update the ref and use that instead
-      pollOptionsRef.current = newPollOptions;
-    },
-    [pollOptions],
-  );
-
   // positions lookup map
-  const currentOptionPositions = useSharedValue<CurrentOptionPositionsCache>(
-    getInitialPositions(pollOptions.length),
-  );
+  const currentOptionPositions = useSharedValue<CurrentOptionPositionsCache>({
+    inverseIndexCache: { 0: 0 },
+    positionCache: { 0: { updatedIndex: 0, updatedTop: 0 } },
+  });
   // used to know if drag is happening or not
   const isDragging = useSharedValue<0 | 1>(0);
   // this will hold id for item which user started dragging
@@ -308,15 +277,23 @@ export const CreatePollContentWithContext = () => {
         </TouchableOpacity>
         <Text>Create Poll</Text>
         <TouchableOpacity
-          onPress={() =>
+          onPress={() => {
+            const currentPollOptions = Object.assign({}, pollOptions);
+            const reorderedPollOptions = [];
+
+            for (let i = 0; i < pollOptions.length; i++) {
+              reorderedPollOptions.push(
+                currentPollOptions[currentOptionPositions.value.inverseIndexCache[i]],
+              );
+            }
             createAndSendPoll({
               allow_user_suggested_options: optionSuggestionsAllowed,
               enforce_unique_vote: !multipleAnswersAllowed,
               name: pollTitle,
-              options: pollOptionsRef.current,
+              options: reorderedPollOptions,
               voting_visibility: isAnonymous ? VotingVisibility.anonymous : VotingVisibility.public,
-            })
-          }
+            });
+          }}
         >
           <Text>SEND</Text>
         </TouchableOpacity>
@@ -351,7 +328,6 @@ export const CreatePollContentWithContext = () => {
                 isDragging={isDragging}
                 key={index}
                 option={option}
-                reorderOptions={reorderOptions}
               />
             ))}
           </View>
@@ -371,10 +347,6 @@ export const CreatePollContentWithContext = () => {
                   },
                 },
               };
-              pollOptionsRef.current = [
-                ...pollOptionsRef.current,
-                { text: String(pollOptions.length + 1) },
-              ];
               setPollOptions([...pollOptions, { text: String(pollOptions.length + 1) }]);
             }}
             style={{
