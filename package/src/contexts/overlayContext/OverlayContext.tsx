@@ -44,6 +44,7 @@ export type OverlayProviderProps<
       | 'bottomInset'
       | 'CameraSelectorIcon'
       | 'CreatePollIcon'
+      | 'createPollOptionHeight'
       | 'FileSelectorIcon'
       | 'ImageSelectorIcon'
       | 'topInset'

@@ -66,6 +66,12 @@ export type AttachmentPickerContextValue = {
    */
   CreatePollIcon: React.ComponentType;
   /**
+   * A property that defines the constant height of the options within the poll creation screen.
+   *
+   * **Default: ** 70
+   */
+  createPollOptionHeight: number;
+  /**
    * Custom UI component for [file selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
    *
    * **Default: ** [FileSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/FileSelectorIcon.tsx)

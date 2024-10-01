@@ -101,6 +101,7 @@ export const OverlayProvider = <
       }
     },
     CreatePollIcon = DefaultCreatePollIcon,
+    createPollOptionHeight,
     FileSelectorIcon = DefaultFileSelectorIcon,
     giphyVersion,
     i18nInstance,
@@ -203,6 +204,7 @@ export const OverlayProvider = <
     CameraSelectorIcon,
     closePicker: () => closePicker(bottomSheetRef),
     CreatePollIcon,
+    createPollOptionHeight,
     FileSelectorIcon,
     ImageSelectorIcon,
     openPicker: () => openPicker(bottomSheetRef),

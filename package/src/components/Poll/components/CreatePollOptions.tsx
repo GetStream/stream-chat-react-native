@@ -14,6 +14,7 @@ import Animated, {
 
 import { PollOptionData } from 'stream-chat';
 
+import { useAttachmentPickerContext } from '../../../contexts';
 import { DragHandle } from '../../../icons';
 
 export type CurrentOptionPositionsCache = {
@@ -47,7 +48,8 @@ export const CreatePollOption = ({
   isDragging: SharedValue<1 | 0>;
   option: PollOptionData;
 }) => {
-  const top = useSharedValue(index * OPTION_HEIGHT);
+  const { createPollOptionHeight = OPTION_HEIGHT } = useAttachmentPickerContext();
+  const top = useSharedValue(index * createPollOptionHeight);
   const isDraggingDerived = useDerivedValue(() => isDragging.value);
 
   const draggedItemIdDerived = useDerivedValue(() => draggedItemId.value);
@@ -81,7 +83,7 @@ export const CreatePollOption = ({
     (currentValue, previousValue) => {
       if (currentValue !== previousValue) {
         top.value = withSpring(
-          currentOptionPositionsDerived.value.positionCache[index].updatedIndex * OPTION_HEIGHT,
+          currentOptionPositionsDerived.value.positionCache[index].updatedIndex * createPollOptionHeight,
         );
       }
     },
@@ -113,7 +115,7 @@ export const CreatePollOption = ({
       top.value = newTop;
 
       // calculate the new index where drag is headed to
-      newIndex.value = Math.floor((newTop + OPTION_HEIGHT / 2) / OPTION_HEIGHT);
+      newIndex.value = Math.floor((newTop + createPollOptionHeight / 2) / createPollOptionHeight);
 
       // swap the items present at newIndex and currentIndex
       if (newIndex.value !== currentIndex.value) {
@@ -143,7 +145,7 @@ export const CreatePollOption = ({
               [newIndexItemKey]: {
                 ...currentOptionPositionsDerived.value.positionCache[newIndexItemKey],
                 updatedIndex: currentIndex.value,
-                updatedTop: currentIndex.value * OPTION_HEIGHT,
+                updatedTop: currentIndex.value * createPollOptionHeight,
               },
             },
           };
@@ -158,7 +160,7 @@ export const CreatePollOption = ({
         return;
       }
 
-      top.value = withSpring(newIndex.value * OPTION_HEIGHT);
+      top.value = withSpring(newIndex.value * createPollOptionHeight);
 
       // find original id of the item that currently resides at currentIndex
       const currentDragIndexItemKey =
@@ -172,7 +174,7 @@ export const CreatePollOption = ({
             ...currentOptionPositionsDerived.value.positionCache,
             [currentDragIndexItemKey]: {
               ...currentOptionPositionsDerived.value.positionCache[currentDragIndexItemKey],
-              updatedTop: newIndex.value * OPTION_HEIGHT,
+              updatedTop: newIndex.value * createPollOptionHeight,
             },
           },
         };
@@ -231,6 +233,7 @@ export const CreatePollOptions = (props: {
   pollOptions: PollOptionData[];
   setPollOptions: Dispatch<SetStateAction<PollOptionData[]>>;
 }) => {
+  const { createPollOptionHeight = OPTION_HEIGHT } = useAttachmentPickerContext();
   const { currentOptionPositions, pollOptions, setPollOptions } = props;
   const updateOption = useCallback(
     (newText: string, index: number) => {
@@ -247,13 +250,13 @@ export const CreatePollOptions = (props: {
   const draggedItemId = useSharedValue<number | null>(null);
 
   const boundaries = useMemo(
-    () => ({ maxBound: (pollOptions.length - 1) * OPTION_HEIGHT, minBound: 0 }),
+    () => ({ maxBound: (pollOptions.length - 1) * createPollOptionHeight, minBound: 0 }),
     [pollOptions],
   );
   return (
     <View style={{ marginVertical: 16 }}>
       <Text style={{ fontSize: 16 }}>Options</Text>
-      <View style={{ height: OPTION_HEIGHT * pollOptions.length }}>
+      <View style={{ height: createPollOptionHeight * pollOptions.length }}>
         {pollOptions.map((option, index) => (
           <MemoizedCreatePollOption
             boundaries={boundaries}
@@ -279,7 +282,7 @@ export const CreatePollOptions = (props: {
               ...currentOptionPositions.value.positionCache,
               [newIndex]: {
                 updatedIndex: newIndex,
-                updatedTop: newIndex * OPTION_HEIGHT,
+                updatedTop: newIndex * createPollOptionHeight,
               },
             },
           };
