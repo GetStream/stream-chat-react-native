@@ -33,22 +33,28 @@ import {
 import { DragHandle } from '../../icons';
 
 type CurrentOptionPositionsCache = {
-  [key: number]: {
-    updatedIndex: number;
-    updatedTop: number;
+  inverseIndexCache: {
+    [key: number]: number;
+  };
+  positionCache: {
+    [key: number]: {
+      updatedIndex: number;
+      updatedTop: number;
+    };
   };
 };
 
 const OPTION_HEIGHT = 69;
 const getInitialPositions = (size: number): CurrentOptionPositionsCache => {
-  const songPositions: CurrentOptionPositionsCache = {};
+  const cache: CurrentOptionPositionsCache = { inverseIndexCache: {}, positionCache: {} };
   for (let i = 0; i < size; i++) {
-    songPositions[i] = {
+    cache.positionCache[i] = {
       updatedIndex: i,
       updatedTop: i * OPTION_HEIGHT,
     };
+    cache.inverseIndexCache[i] = i;
   }
-  return songPositions;
+  return cache;
 };
 
 const CreatePollOption = ({
@@ -99,7 +105,7 @@ const CreatePollOption = ({
 
   const getKeyOfValue = (value: number, obj: CurrentOptionPositionsCache): number | undefined => {
     'worklet';
-    for (const [key, val] of Object.entries(obj)) {
+    for (const [key, val] of Object.entries(obj.positionCache)) {
       if (val.updatedIndex === value) {
         return Number(key);
       }
@@ -108,11 +114,11 @@ const CreatePollOption = ({
   };
 
   useAnimatedReaction(
-    () => currentOptionPositionsDerived.value[index].updatedIndex,
+    () => currentOptionPositionsDerived.value.positionCache[index].updatedIndex,
     (currentValue, previousValue) => {
       if (currentValue !== previousValue) {
         top.value = withSpring(
-          currentOptionPositionsDerived.value[index].updatedIndex * OPTION_HEIGHT,
+          currentOptionPositionsDerived.value.positionCache[index].updatedIndex * OPTION_HEIGHT,
         );
       }
     },
@@ -120,21 +126,22 @@ const CreatePollOption = ({
 
   const gesture = Gesture.Pan()
     .onStart(() => {
-      //start dragging
+      // start dragging
       isDragging.value = withSpring(1);
 
-      //keep track of dragged item
+      // keep track of dragged item
       draggedItemId.value = index;
 
-      //store dragged item id for future swap
-      currentIndex.value = currentOptionPositionsDerived.value[index].updatedIndex;
+      // store dragged item id for future swap
+      currentIndex.value = currentOptionPositionsDerived.value.positionCache[index].updatedIndex;
     })
     .onUpdate((e) => {
       if (draggedItemIdDerived.value === null || currentIndex.value === null) {
         return;
       }
       const newTop =
-        currentOptionPositionsDerived.value[draggedItemIdDerived.value].updatedTop + e.translationY;
+        currentOptionPositionsDerived.value.positionCache[draggedItemIdDerived.value].updatedTop +
+        e.translationY;
       // we add a small leeway to account for sharp animations which tend to bug out otherwise
       if (newTop < boundaries.minBound - 10 || newTop > boundaries.maxBound + 10) {
         // out of bounds, exit out of the animation early
@@ -142,72 +149,78 @@ const CreatePollOption = ({
       }
       top.value = newTop;
 
-      //calculate the new index where drag is headed to
+      // calculate the new index where drag is headed to
       newIndex.value = Math.floor((newTop + OPTION_HEIGHT / 2) / OPTION_HEIGHT);
 
-      //swap the items present at newIndex and currentIndex
+      // swap the items present at newIndex and currentIndex
       if (newIndex.value !== currentIndex.value) {
-        //find id of the item that currently resides at newIndex
+        // find id of the item that currently resides at newIndex
         const newIndexItemKey = getKeyOfValue(newIndex.value, currentOptionPositionsDerived.value);
 
-        //find id of the item that currently resides at currentIndex
+        // find id of the item that currently resides at currentIndex
         const currentDragIndexItemKey = getKeyOfValue(
           currentIndex.value,
           currentOptionPositionsDerived.value,
         );
 
         if (newIndexItemKey !== undefined && currentDragIndexItemKey !== undefined) {
-          //we update updatedTop and updatedIndex as next time we want to do calculations from new top value and new index
+          // we update updatedTop and updatedIndex as next time we want to do calculations from new top value and new index
           currentOptionPositions.value = {
-            ...currentOptionPositionsDerived.value,
-            [currentDragIndexItemKey]: {
-              ...currentOptionPositionsDerived.value[currentDragIndexItemKey],
-              updatedIndex: newIndex.value,
+            inverseIndexCache: {
+              ...currentOptionPositionsDerived.value.inverseIndexCache,
+              [newIndex.value]: currentDragIndexItemKey,
+              [currentIndex.value]: newIndexItemKey,
             },
-            [newIndexItemKey]: {
-              ...currentOptionPositionsDerived.value[newIndexItemKey],
-              updatedIndex: currentIndex.value,
-              updatedTop: currentIndex.value * OPTION_HEIGHT,
+            positionCache: {
+              ...currentOptionPositionsDerived.value.positionCache,
+              [currentDragIndexItemKey]: {
+                ...currentOptionPositionsDerived.value.positionCache[currentDragIndexItemKey],
+                updatedIndex: newIndex.value,
+              },
+              [newIndexItemKey]: {
+                ...currentOptionPositionsDerived.value.positionCache[newIndexItemKey],
+                updatedIndex: currentIndex.value,
+                updatedTop: currentIndex.value * OPTION_HEIGHT,
+              },
             },
           };
 
-          //update new index as current index
+          // update new index as current index
           currentIndex.value = newIndex.value;
         }
       }
     })
     .onEnd(() => {
-      //stop dragging
+      // stop dragging
       if (currentIndex.value === null || newIndex.value === null) {
         return;
       }
 
       top.value = withSpring(newIndex.value * OPTION_HEIGHT);
 
-      //find original id of the item that currently resides at currentIndex
+      // find original id of the item that currently resides at currentIndex
       const currentDragIndexItemKey = getKeyOfValue(
         currentIndex.value,
         currentOptionPositionsDerived.value,
       );
 
       if (currentDragIndexItemKey !== undefined) {
-        //update the values for item whose drag we just stopped
+        // update the values for item whose drag we just stopped
         currentOptionPositions.value = {
           ...currentOptionPositionsDerived.value,
-          [currentDragIndexItemKey]: {
-            ...currentOptionPositionsDerived.value[currentDragIndexItemKey],
-            updatedTop: newIndex.value * OPTION_HEIGHT,
+          positionCache: {
+            ...currentOptionPositionsDerived.value.positionCache,
+            [currentDragIndexItemKey]: {
+              ...currentOptionPositionsDerived.value.positionCache[currentDragIndexItemKey],
+              updatedTop: newIndex.value * OPTION_HEIGHT,
+            },
           },
         };
       }
       //stop dragging
       isDragging.value = withDelay(200, withSpring(0));
       console.log(currentOptionPositionsDerived.value);
-      const lookupTable = Object.keys(currentOptionPositionsDerived.value).reduce((acc, curr) => {
-        acc[currentOptionPositionsDerived.value[curr].updatedIndex] = curr;
-        return acc;
-      }, {});
-      runOnJS(reorderOptions)(lookupTable);
+      runOnJS(reorderOptions)(currentOptionPositionsDerived.value.inverseIndexCache);
     });
 
   return (
@@ -362,10 +375,16 @@ export const CreatePollContentWithContext = () => {
             onPress={() => {
               const newIndex = pollOptions.length;
               currentOptionPositions.value = {
-                ...currentOptionPositions.value,
-                [newIndex]: {
-                  updatedIndex: newIndex,
-                  updatedTop: newIndex * OPTION_HEIGHT,
+                inverseIndexCache: {
+                  ...currentOptionPositions.value.inverseIndexCache,
+                  [newIndex]: newIndex,
+                },
+                positionCache: {
+                  ...currentOptionPositions.value.positionCache,
+                  [newIndex]: {
+                    updatedIndex: newIndex,
+                    updatedTop: newIndex * OPTION_HEIGHT,
+                  },
                 },
               };
               setPollOptions([...pollOptions, { text: String(pollOptions.length + 1) }]);
