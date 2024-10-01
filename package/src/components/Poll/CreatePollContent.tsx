@@ -103,16 +103,6 @@ const CreatePollOption = ({
   //used for swapping with newIndex
   const currentIndex = useSharedValue<number | null>(null);
 
-  const getKeyOfValue = (value: number, obj: CurrentOptionPositionsCache): number | undefined => {
-    'worklet';
-    for (const [key, val] of Object.entries(obj.positionCache)) {
-      if (val.updatedIndex === value) {
-        return Number(key);
-      }
-    }
-    return undefined; // Return undefined if the value is not found
-  };
-
   useAnimatedReaction(
     () => currentOptionPositionsDerived.value.positionCache[index].updatedIndex,
     (currentValue, previousValue) => {
@@ -155,13 +145,12 @@ const CreatePollOption = ({
       // swap the items present at newIndex and currentIndex
       if (newIndex.value !== currentIndex.value) {
         // find id of the item that currently resides at newIndex
-        const newIndexItemKey = getKeyOfValue(newIndex.value, currentOptionPositionsDerived.value);
+        const newIndexItemKey =
+          currentOptionPositionsDerived.value.inverseIndexCache[newIndex.value];
 
         // find id of the item that currently resides at currentIndex
-        const currentDragIndexItemKey = getKeyOfValue(
-          currentIndex.value,
-          currentOptionPositionsDerived.value,
-        );
+        const currentDragIndexItemKey =
+          currentOptionPositionsDerived.value.inverseIndexCache[currentIndex.value];
 
         if (newIndexItemKey !== undefined && currentDragIndexItemKey !== undefined) {
           // we update updatedTop and updatedIndex as next time we want to do calculations from new top value and new index
@@ -199,10 +188,8 @@ const CreatePollOption = ({
       top.value = withSpring(newIndex.value * OPTION_HEIGHT);
 
       // find original id of the item that currently resides at currentIndex
-      const currentDragIndexItemKey = getKeyOfValue(
-        currentIndex.value,
-        currentOptionPositionsDerived.value,
-      );
+      const currentDragIndexItemKey =
+        currentOptionPositionsDerived.value.inverseIndexCache[currentIndex.value];
 
       if (currentDragIndexItemKey !== undefined) {
         // update the values for item whose drag we just stopped
@@ -286,6 +273,7 @@ export const CreatePollContentWithContext = () => {
 
   const reorderOptions = useCallback(
     (lookupTable) => {
+      console.log('LOOKUP TABLE: ', lookupTable);
       const currentPollOptions = Object.assign({}, pollOptions);
       const newPollOptions = [];
 
@@ -297,10 +285,6 @@ export const CreatePollContentWithContext = () => {
     },
     [pollOptions],
   );
-
-  useEffect(() => {
-    pollOptionsRef.current = pollOptions;
-  }, [pollOptions]);
 
   // positions lookup map
   const currentOptionPositions = useSharedValue<CurrentOptionPositionsCache>(
@@ -387,6 +371,10 @@ export const CreatePollContentWithContext = () => {
                   },
                 },
               };
+              pollOptionsRef.current = [
+                ...pollOptionsRef.current,
+                { text: String(pollOptions.length + 1) },
+              ];
               setPollOptions([...pollOptions, { text: String(pollOptions.length + 1) }]);
             }}
             style={{
