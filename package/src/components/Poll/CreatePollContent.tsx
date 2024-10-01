@@ -18,7 +18,7 @@ import {
 
 export const CreatePollContentWithContext = () => {
   const [pollTitle, setPollTitle] = useState('');
-  const [pollOptions, setPollOptions] = useState<PollOptionData[]>([{ text: '1' }]);
+  const [pollOptions, setPollOptions] = useState<PollOptionData[]>([{ text: '' }]);
   const [multipleAnswersAllowed, setMultipleAnswersAllowed] = useState(false);
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [optionSuggestionsAllowed, setOptionSuggestionsAllowed] = useState(false);

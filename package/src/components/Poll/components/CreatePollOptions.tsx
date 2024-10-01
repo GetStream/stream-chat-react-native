@@ -207,7 +207,6 @@ export const CreatePollOption = ({
         }}
       >
         <TextInput
-          multiline={true}
           onChangeText={(newText) => handleChangeText(newText, index)}
           placeholder='Option'
           style={{
@@ -251,7 +250,7 @@ export const CreatePollOptions = (props: {
 
   const boundaries = useMemo(
     () => ({ maxBound: (pollOptions.length - 1) * createPollOptionHeight, minBound: 0 }),
-    [pollOptions],
+    [createPollOptionHeight, pollOptions.length],
   );
   return (
     <View style={{ marginVertical: 16 }}>
@@ -286,7 +285,7 @@ export const CreatePollOptions = (props: {
               },
             },
           };
-          setPollOptions([...pollOptions, { text: String(pollOptions.length + 1) }]);
+          setPollOptions([...pollOptions, { text: '' }]);
         }}
         style={{
           backgroundColor: '#F7F7F8',
