@@ -1,7 +1,26 @@
-import React, { useCallback, useState } from 'react';
-import { SafeAreaView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  LayoutChangeEvent,
+  SafeAreaView,
+  Switch,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
-import { ScrollView } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, ScrollView } from 'react-native-gesture-handler';
+import Animated, {
+  interpolate,
+  runOnJS,
+  SharedValue,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withDelay,
+  withSpring,
+} from 'react-native-reanimated';
 
 import { CreatePollData, PollOptionData, VotingVisibility } from 'stream-chat';
 
@@ -13,53 +32,276 @@ import {
 } from '../../contexts';
 import { DragHandle } from '../../icons';
 
+type CurrentOptionPositionsCache = {
+  [key: number]: {
+    updatedIndex: number;
+    updatedTop: number;
+  };
+};
+
+const OPTION_HEIGHT = 69;
+const getInitialPositions = (size: number): CurrentOptionPositionsCache => {
+  const songPositions: CurrentOptionPositionsCache = {};
+  for (let i = 0; i < size; i++) {
+    songPositions[i] = {
+      updatedIndex: i,
+      updatedTop: i * OPTION_HEIGHT,
+    };
+  }
+  return songPositions;
+};
+
 const CreatePollOption = ({
+  boundaries,
+  currentOptionPositions,
+  draggedItemId,
   handleChangeText,
   index,
+  isDragging,
   option,
+  reorderOptions,
 }: {
+  currentOptionPositions: SharedValue<CurrentOptionPositionsCache>;
+  draggedItemId: SharedValue<number | null>;
   handleChangeText: (newText: string, index: number) => void;
   index: number;
+  isDragging: SharedValue<1 | 0>;
   option: PollOptionData;
-}) => (
-  <View
-    style={{
-      alignItems: 'center',
-      backgroundColor: '#F7F7F8',
-      borderRadius: 12,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginTop: 8,
-      paddingHorizontal: 16,
-      paddingVertical: 18,
-    }}
-  >
-    <TextInput
-      onChangeText={(newText) => handleChangeText(newText, index)}
-      placeholder='Option'
-      style={{ flex: 1, fontSize: 16 }}
-      value={option.text}
-    />
-    <DragHandle pathFill='#7E828B' />
-  </View>
-);
+}) => {
+  const top = useSharedValue(index * OPTION_HEIGHT);
+  const isDraggingDerived = useDerivedValue(() => isDragging.value);
+
+  const draggedItemIdDerived = useDerivedValue(() => draggedItemId.value);
+
+  const isCurrentDraggingItem = useDerivedValue(
+    () => isDraggingDerived.value && draggedItemIdDerived.value === index,
+  );
+
+  const animatedStyles = useAnimatedStyle(() => ({
+    top: top.value,
+    transform: [
+      {
+        scale: isCurrentDraggingItem.value
+          ? interpolate(isDraggingDerived.value, [0, 1], [1, 1.025])
+          : interpolate(isDraggingDerived.value, [0, 1], [1, 0.98]),
+      },
+    ],
+  }));
+  const currentOptionPositionsDerived = useDerivedValue<CurrentOptionPositionsCache>(
+    () => currentOptionPositions.value,
+  );
+
+  //used for swapping with currentIndex
+  const newIndex = useSharedValue<number | null>(null);
+
+  //used for swapping with newIndex
+  const currentIndex = useSharedValue<number | null>(null);
+
+  const getKeyOfValue = (value: number, obj: CurrentOptionPositionsCache): number | undefined => {
+    'worklet';
+    for (const [key, val] of Object.entries(obj)) {
+      if (val.updatedIndex === value) {
+        return Number(key);
+      }
+    }
+    return undefined; // Return undefined if the value is not found
+  };
+
+  useAnimatedReaction(
+    () => currentOptionPositionsDerived.value[index].updatedIndex,
+    (currentValue, previousValue) => {
+      if (currentValue !== previousValue) {
+        top.value = withSpring(
+          currentOptionPositionsDerived.value[index].updatedIndex * OPTION_HEIGHT,
+        );
+      }
+    },
+  );
+
+  const gesture = Gesture.Pan()
+    .onStart(() => {
+      //start dragging
+      isDragging.value = withSpring(1);
+
+      //keep track of dragged item
+      draggedItemId.value = index;
+
+      //store dragged item id for future swap
+      currentIndex.value = currentOptionPositionsDerived.value[index].updatedIndex;
+    })
+    .onUpdate((e) => {
+      if (draggedItemIdDerived.value === null || currentIndex.value === null) {
+        return;
+      }
+      const newTop =
+        currentOptionPositionsDerived.value[draggedItemIdDerived.value].updatedTop + e.translationY;
+      // we add a small leeway to account for sharp animations which tend to bug out otherwise
+      if (newTop < boundaries.minBound - 10 || newTop > boundaries.maxBound + 10) {
+        // out of bounds, exit out of the animation early
+        return;
+      }
+      top.value = newTop;
+
+      //calculate the new index where drag is headed to
+      newIndex.value = Math.floor((newTop + OPTION_HEIGHT / 2) / OPTION_HEIGHT);
+
+      //swap the items present at newIndex and currentIndex
+      if (newIndex.value !== currentIndex.value) {
+        //find id of the item that currently resides at newIndex
+        const newIndexItemKey = getKeyOfValue(newIndex.value, currentOptionPositionsDerived.value);
+
+        //find id of the item that currently resides at currentIndex
+        const currentDragIndexItemKey = getKeyOfValue(
+          currentIndex.value,
+          currentOptionPositionsDerived.value,
+        );
+
+        if (newIndexItemKey !== undefined && currentDragIndexItemKey !== undefined) {
+          //we update updatedTop and updatedIndex as next time we want to do calculations from new top value and new index
+          currentOptionPositions.value = {
+            ...currentOptionPositionsDerived.value,
+            [currentDragIndexItemKey]: {
+              ...currentOptionPositionsDerived.value[currentDragIndexItemKey],
+              updatedIndex: newIndex.value,
+            },
+            [newIndexItemKey]: {
+              ...currentOptionPositionsDerived.value[newIndexItemKey],
+              updatedIndex: currentIndex.value,
+              updatedTop: currentIndex.value * OPTION_HEIGHT,
+            },
+          };
+
+          //update new index as current index
+          currentIndex.value = newIndex.value;
+        }
+      }
+    })
+    .onEnd(() => {
+      //stop dragging
+      if (currentIndex.value === null || newIndex.value === null) {
+        return;
+      }
+
+      top.value = withSpring(newIndex.value * OPTION_HEIGHT);
+
+      //find original id of the item that currently resides at currentIndex
+      const currentDragIndexItemKey = getKeyOfValue(
+        currentIndex.value,
+        currentOptionPositionsDerived.value,
+      );
+
+      if (currentDragIndexItemKey !== undefined) {
+        //update the values for item whose drag we just stopped
+        currentOptionPositions.value = {
+          ...currentOptionPositionsDerived.value,
+          [currentDragIndexItemKey]: {
+            ...currentOptionPositionsDerived.value[currentDragIndexItemKey],
+            updatedTop: newIndex.value * OPTION_HEIGHT,
+          },
+        };
+      }
+      //stop dragging
+      isDragging.value = withDelay(200, withSpring(0));
+      console.log(currentOptionPositionsDerived.value);
+      const lookupTable = Object.keys(currentOptionPositionsDerived.value).reduce((acc, curr) => {
+        acc[currentOptionPositionsDerived.value[curr].updatedIndex] = curr;
+        return acc;
+      }, {});
+      runOnJS(reorderOptions)(lookupTable);
+    });
+
+  return (
+    <Animated.View
+      style={[
+        {
+          position: 'absolute',
+          width: '100%',
+        },
+        animatedStyles,
+      ]}
+    >
+      <View
+        style={{
+          alignItems: 'center',
+          backgroundColor: '#F7F7F8',
+          borderRadius: 12,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginTop: 8,
+          paddingHorizontal: 16,
+          paddingVertical: 18,
+        }}
+      >
+        <TextInput
+          multiline={true}
+          onChangeText={(newText) => handleChangeText(newText, index)}
+          placeholder='Option'
+          style={{
+            flex: 1,
+            fontSize: 16,
+          }}
+          value={option.text}
+        />
+        <GestureDetector gesture={gesture}>
+          <Animated.View>
+            <DragHandle pathFill='#7E828B' />
+          </Animated.View>
+        </GestureDetector>
+      </View>
+    </Animated.View>
+  );
+};
 
 const MemoizedCreatePollOption = React.memo(CreatePollOption);
 
 export const CreatePollContentWithContext = () => {
   const [pollTitle, setPollTitle] = useState('');
-  const [pollOptions, setPollOptions] = useState<PollOptionData[]>([{ text: '' }]);
+  const [pollOptions, setPollOptions] = useState<PollOptionData[]>([{ text: '1' }]);
   const [multipleAnswersAllowed, setMultipleAnswersAllowed] = useState(false);
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [optionSuggestionsAllowed, setOptionSuggestionsAllowed] = useState(false);
 
   const { createAndSendPoll, handleClose } = useCreatePollContentContext();
 
-  const updateOptions = useCallback((newText: string, index: number) => {
+  const pollOptionsRef = useRef(pollOptions);
+
+  const updateOption = useCallback((newText: string, index: number) => {
     setPollOptions((prevOptions) =>
       prevOptions.map((option, idx) => (idx === index ? { ...option, text: newText } : option)),
     );
   }, []);
+
+  const reorderOptions = useCallback(
+    (lookupTable) => {
+      const currentPollOptions = Object.assign({}, pollOptions);
+      const newPollOptions = [];
+
+      for (let i = 0; i < pollOptions.length; i++) {
+        newPollOptions.push(currentPollOptions[lookupTable[i]]);
+      }
+      // actually setting the state messes the animations up a bit, so we update the ref and use that instead
+      pollOptionsRef.current = newPollOptions;
+    },
+    [pollOptions],
+  );
+
+  useEffect(() => {
+    pollOptionsRef.current = pollOptions;
+  }, [pollOptions]);
+
+  // positions lookup map
+  const currentOptionPositions = useSharedValue<CurrentOptionPositionsCache>(
+    getInitialPositions(pollOptions.length),
+  );
+  // used to know if drag is happening or not
+  const isDragging = useSharedValue<0 | 1>(0);
+  // this will hold id for item which user started dragging
+  const draggedItemId = useSharedValue<number | null>(null);
+
+  const boundaries = useMemo(
+    () => ({ maxBound: (pollOptions.length - 1) * OPTION_HEIGHT, minBound: 0 }),
+    [pollOptions],
+  );
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -74,7 +316,7 @@ export const CreatePollContentWithContext = () => {
               allow_user_suggested_options: optionSuggestionsAllowed,
               enforce_unique_vote: !multipleAnswersAllowed,
               name: pollTitle,
-              options: pollOptions,
+              options: pollOptionsRef.current,
               voting_visibility: isAnonymous ? VotingVisibility.anonymous : VotingVisibility.public,
             })
           }
@@ -101,16 +343,33 @@ export const CreatePollContentWithContext = () => {
         </View>
         <View style={{ marginVertical: 16 }}>
           <Text style={{ fontSize: 16 }}>Options</Text>
-          {pollOptions.map((option, index) => (
-            <MemoizedCreatePollOption
-              handleChangeText={updateOptions}
-              index={index}
-              key={index}
-              option={option}
-            />
-          ))}
+          <View style={{ height: OPTION_HEIGHT * pollOptions.length }}>
+            {pollOptions.map((option, index) => (
+              <MemoizedCreatePollOption
+                boundaries={boundaries}
+                currentOptionPositions={currentOptionPositions}
+                draggedItemId={draggedItemId}
+                handleChangeText={updateOption}
+                index={index}
+                isDragging={isDragging}
+                key={index}
+                option={option}
+                reorderOptions={reorderOptions}
+              />
+            ))}
+          </View>
           <TouchableOpacity
-            onPress={() => setPollOptions([...pollOptions, { text: '' }])}
+            onPress={() => {
+              const newIndex = pollOptions.length;
+              currentOptionPositions.value = {
+                ...currentOptionPositions.value,
+                [newIndex]: {
+                  updatedIndex: newIndex,
+                  updatedTop: newIndex * OPTION_HEIGHT,
+                },
+              };
+              setPollOptions([...pollOptions, { text: String(pollOptions.length + 1) }]);
+            }}
             style={{
               backgroundColor: '#F7F7F8',
               borderRadius: 12,
@@ -186,10 +445,10 @@ export const CreatePollContent = (props: { handleClose: () => void }) => {
   const createAndSendPoll = useCallback(
     async (pollData: CreatePollData) => {
       // TODO: replace with stateful name
-      const poll = await client.polls.createPoll(pollData);
-      console.log('CREATED POLL: ', poll.id);
-      await sendMessage({ customMessageData: { poll_id: poll.id as string } });
-      // console.log('ISE: SENDING: ', pollData.options);
+      // const poll = await client.polls.createPoll(pollData);
+      // console.log('CREATED POLL: ', poll.id);
+      // await sendMessage({ customMessageData: { poll_id: poll.id as string } });
+      console.log('ISE: SENDING: ', pollData.options);
       handleClose();
     },
     [client, sendMessage, handleClose],

@@ -1131,8 +1131,6 @@ const MessageListWithContext = <
     );
   }
 
-  console.log('ISE: PROCESSED: ', processedMessageList?.[0], processedMessageList?.length)
-
   return (
     <View
       style={[styles.container, { backgroundColor: white_snow }, container]}
