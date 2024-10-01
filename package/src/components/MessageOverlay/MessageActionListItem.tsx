@@ -62,7 +62,10 @@ export const MessageActionListItem = (props: MessageActionListItemProps) => {
 
   return (
     <Pressable onPress={action}>
-      <View style={[styles.container, actionContainer]} testID={`${actionType}-list-item`}>
+      <View
+        accessibilityLabel={`${actionType} action list item`}
+        style={[styles.container, actionContainer]}
+      >
         <View style={iconTheme}>{icon}</View>
         <Text style={[styles.titleStyle, { color: black }, titleStyle, titleTheme]}>{title}</Text>
       </View>

@@ -21,7 +21,7 @@ describe('MessageActionListItem', () => {
   };
 
   it('should render correctly with given props', () => {
-    const { getByTestId, getByText } = render(
+    const { getByLabelText, getByText } = render(
       <ThemeProvider theme={defaultTheme}>
         <MessageActionListItem {...defaultProps} />
       </ThemeProvider>,
@@ -31,17 +31,17 @@ describe('MessageActionListItem', () => {
 
     expect(getByText('Icon')).toBeTruthy();
 
-    expect(getByTestId('copyMessage-list-item')).toBeTruthy();
+    expect(getByLabelText('copyMessage action list item')).toBeTruthy();
   });
 
   it('should call the action callback when pressed', () => {
-    const { getByTestId } = render(
+    const { getByLabelText } = render(
       <ThemeProvider theme={defaultTheme}>
         <MessageActionListItem {...defaultProps} />
       </ThemeProvider>,
     );
 
-    fireEvent.press(getByTestId('copyMessage-list-item'));
+    fireEvent.press(getByLabelText('copyMessage action list item'));
 
     expect(mockAction).toHaveBeenCalled();
   });

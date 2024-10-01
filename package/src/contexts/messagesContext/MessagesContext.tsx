@@ -50,6 +50,7 @@ import type {
   MessageActionListItemProps,
   MessageActionType,
 } from '../../components/MessageOverlay/MessageActionListItem';
+import { MessageOverlayProps } from '../../components/MessageOverlay/MessageOverlay';
 import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
 import { OverlayReactionsProps } from '../../components/MessageOverlay/OverlayReactions';
 import { OverlayReactionsAvatarProps } from '../../components/MessageOverlay/OverlayReactionsAvatar';
@@ -203,6 +204,10 @@ export type MessagesContextValue<
    */
   MessageFooter: React.ComponentType<MessageFooterProps<StreamChatGenerics>>;
   MessageList: React.ComponentType<MessageListProps<StreamChatGenerics>>;
+  /**
+   * UI component for MessageOverlay
+   */
+  MessageOverlay: React.ComponentType<MessageOverlayProps<StreamChatGenerics>>;
   /**
    * Custom message pinned component
    */

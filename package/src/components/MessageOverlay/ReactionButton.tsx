@@ -45,13 +45,13 @@ export const ReactionButton = (props: ReactionButtonProps) => {
 
   return (
     <Pressable
+      accessibilityLabel={`reaction-button-${type}-${selected ? 'selected' : 'unselected'}`}
       onPress={onPressHandler}
       style={({ pressed }) => [
         styles.reactionButton,
         { backgroundColor: pressed ? light_blue : white },
         buttonContainer,
       ]}
-      testID={`reaction-button-${type}`}
     >
       <Icon
         height={reactionIconSize}

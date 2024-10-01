@@ -38,27 +38,27 @@ describe('ReactionButton', () => {
   });
 
   it('should call onPress function with the correct reaction type when pressed', () => {
-    const { getByTestId } = render(
+    const { getByLabelText } = render(
       <ThemeProvider theme={defaultTheme}>
         <ReactionButton {...defaultProps} />
       </ThemeProvider>,
     );
 
     // Simulate a press event
-    fireEvent.press(getByTestId('reaction-button-like'));
+    fireEvent.press(getByLabelText('reaction-button-like-unselected'));
 
     // Verify if the mock function has been called with the correct reaction type
     expect(mockOnPress).toHaveBeenCalledWith('like');
   });
 
   it('should not call onPress when the onPress prop is not provided', () => {
-    const { getByTestId } = render(
+    const { getByLabelText } = render(
       <ThemeProvider theme={defaultTheme}>
         <ReactionButton {...defaultProps} onPress={undefined} />
       </ThemeProvider>,
     );
 
-    fireEvent.press(getByTestId('reaction-button-like'));
+    fireEvent.press(getByLabelText('reaction-button-like-unselected'));
 
     expect(mockOnPress).not.toHaveBeenCalled();
   });

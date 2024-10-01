@@ -18,9 +18,11 @@ import { MessageType } from '../MessageList/hooks/useMessageList';
 
 export type OverlayReactionsProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<
-  MessagesContextValue<StreamChatGenerics>,
-  'OverlayReactionsAvatar' | 'OverlayReactionsItem' | 'supportedReactions'
+> = Partial<
+  Pick<
+    MessagesContextValue<StreamChatGenerics>,
+    'OverlayReactionsAvatar' | 'OverlayReactionsItem' | 'supportedReactions'
+  >
 > & {
   /**
    * The message object
@@ -56,6 +58,7 @@ export const OverlayReactions = (props: OverlayReactionsProps) => {
   const supportedReactions = propSupportedReactions ?? contextSupportedReactions;
   const OverlayReactionsAvatar = propOverlayReactionsAvatar ?? contextOverlayReactionsAvatar;
   const OverlayReactionsItem = propOverlayReactionsItem ?? contextOverlayReactionsItem;
+
   const messageReactions = reactionTypes.reduce<ReactionData[]>((acc, reaction) => {
     const reactionData = supportedReactions?.find(
       (supportedReaction) => supportedReaction.type === reaction,
@@ -107,7 +110,7 @@ export const OverlayReactions = (props: OverlayReactionsProps) => {
     <OverlayReactionsItem
       OverlayReactionsAvatar={OverlayReactionsAvatar}
       reaction={item}
-      supportedReactions={supportedReactions || []}
+      supportedReactions={supportedReactions ?? []}
     />
   );
 
@@ -120,7 +123,10 @@ export const OverlayReactions = (props: OverlayReactionsProps) => {
   };
 
   return (
-    <View style={[styles.container, container]} testID='overlay-reactions'>
+    <View
+      accessibilityLabel='User Reactions on long press message'
+      style={[styles.container, container]}
+    >
       <View style={[styles.reactionSelectorContainer, reactionSelectorContainer]}>
         {messageReactions?.map(({ Icon, type }, index) => (
           <ReactionButton
@@ -135,6 +141,7 @@ export const OverlayReactions = (props: OverlayReactionsProps) => {
 
       {!loading ? (
         <FlatList
+          accessibilityLabel='reaction-flat-list'
           columnWrapperStyle={[styles.flatListColumnContainer, flatlistColumnContainer]}
           contentContainerStyle={[styles.flatListContainer, flatlistContainer]}
           data={reactions}

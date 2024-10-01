@@ -6,7 +6,10 @@ import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/typ
 
 import { MessageActionType } from './MessageActionListItem';
 
-import { MessageContextValue } from '../../contexts/messageContext/MessageContext';
+import {
+  MessageContextValue,
+  useMessageContext,
+} from '../../contexts/messageContext/MessageContext';
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -31,11 +34,7 @@ export type MessageOverlayProps<
      * Function to close the message actions bottom sheet
      * @returns void
      */
-    closeMessageActionsBottomSheet: () => void;
-    /**
-     * Boolean to determine if there are message actions
-     */
-    isMessageActionsVisible: boolean;
+    closeMessageOverlay: () => void;
     /**
      * An array of message actions to render
      */
@@ -44,6 +43,10 @@ export type MessageOverlayProps<
      * Reference to the bottom sheet modal
      */
     messageActionsBottomSheetRef: React.RefObject<BottomSheetModalMethods>;
+    /**
+     * Boolean to determine if there are message actions
+     */
+    showMessageReactions: boolean;
     /**
      * Function to handle reaction on press
      * @param reactionType
@@ -58,10 +61,9 @@ export const MessageOverlay = <
   props: MessageOverlayProps<StreamChatGenerics>,
 ) => {
   const {
-    closeMessageActionsBottomSheet,
+    closeMessageOverlay,
     handleReaction,
-    isMessageActionsVisible,
-    message,
+    message: propMessage,
     MessageActionList: propMessageActionList,
     MessageActionListItem: propMessageActionListItem,
     messageActions,
@@ -70,6 +72,7 @@ export const MessageOverlay = <
     OverlayReactions: propOverlayReactions,
     OverlayReactionsAvatar: propOverlayReactionsAvatar,
     OverlayReactionsItem: propOverlayReactionsItem,
+    showMessageReactions,
   } = props;
   const {
     MessageActionList: contextMessageActionList,
@@ -78,7 +81,8 @@ export const MessageOverlay = <
     OverlayReactions: contextOverlayReactions,
     OverlayReactionsAvatar: contextOverlayReactionsAvatar,
     OverlayReactionsItem: contextOverlayReactionsItem,
-  } = useMessagesContext();
+  } = useMessagesContext<StreamChatGenerics>();
+  const { message: contextMessage } = useMessageContext<StreamChatGenerics>();
   const snapPoints = useMemo(() => ['50%', '50%'], []);
   const MessageActionList = propMessageActionList ?? contextMessageActionList;
   const MessageActionListItem = propMessageActionListItem ?? contextMessageActionListItem;
@@ -86,6 +90,7 @@ export const MessageOverlay = <
   const OverlayReactions = propOverlayReactions ?? contextOverlayReactions;
   const OverlayReactionsAvatar = propOverlayReactionsAvatar ?? contextOverlayReactionsAvatar;
   const OverlayReactionsItem = propOverlayReactionsItem ?? contextOverlayReactionsItem;
+  const message = propMessage ?? contextMessage;
 
   const handleSheetChanges = useCallback((index: number) => {
     console.log('handleSheetChanges', index);
@@ -95,33 +100,31 @@ export const MessageOverlay = <
     <BottomSheetModal
       backdropComponent={BottomSheetBackdrop}
       enablePanDownToClose
-      index={1}
+      index={0}
       onChange={handleSheetChanges}
-      onDismiss={closeMessageActionsBottomSheet}
+      onDismiss={closeMessageOverlay}
       ref={messageActionsBottomSheetRef}
       snapPoints={snapPoints}
     >
       <BottomSheetView style={styles.contentContainer}>
-        {isMessageActionsVisible ? (
-          <>
-            <OverlayReactionList
-              dismissOverlay={closeMessageActionsBottomSheet}
-              handleReaction={handleReaction}
-              ownReactionTypes={message?.own_reactions?.map((reaction) => reaction.type) || []}
-            />
-            {messageActions?.length ? (
-              <MessageActionList
-                MessageActionListItem={MessageActionListItem}
-                messageActions={messageActions}
-              />
-            ) : null}
-          </>
-        ) : (
+        {showMessageReactions ? (
           <OverlayReactions
             message={message}
             OverlayReactionsAvatar={OverlayReactionsAvatar}
             OverlayReactionsItem={OverlayReactionsItem}
           />
+        ) : (
+          <>
+            <OverlayReactionList
+              dismissOverlay={closeMessageOverlay}
+              handleReaction={handleReaction}
+              ownReactionTypes={message?.own_reactions?.map((reaction) => reaction.type) || []}
+            />
+            <MessageActionList
+              MessageActionListItem={MessageActionListItem}
+              messageActions={messageActions}
+            />
+          </>
         )}
       </BottomSheetView>
     </BottomSheetModal>

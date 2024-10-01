@@ -21,8 +21,10 @@ export const MessageActionList = (props: MessageActionListProps) => {
     },
   } = useTheme();
 
+  if (messageActions?.length === 0) return null;
+
   return (
-    <View style={[styles.container, container]} testID='message-action-list'>
+    <View accessibilityLabel='Message action list' style={[styles.container, container]}>
       {messageActions?.map((messageAction, index) => (
         <MessageActionListItem
           key={messageAction.title}

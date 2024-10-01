@@ -1,13 +1,12 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
-
-import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 
 import type { Attachment, UserResponse } from 'stream-chat';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
 import { useMessageActions } from './hooks/useMessageActions';
+import { useMessageActionsOverlay } from './hooks/useMessageActionsOverlay';
 import { useProcessReactions } from './hooks/useProcessReactions';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
 
@@ -47,7 +46,6 @@ import {
   isMessageWithStylesReadByAndDateSeparator,
   MessageType,
 } from '../MessageList/hooks/useMessageList';
-import { MessageOverlay } from '../MessageOverlay/MessageOverlay';
 
 export type TouchableEmitter =
   | 'fileAttachment'
@@ -153,8 +151,7 @@ export type MessagePropsWithContext<
     | 'handleRetry'
     | 'handleThreadReply'
     | 'isAttachmentEqual'
-    | 'MessageActionList'
-    | 'MessageActionListItem'
+    | 'MessageOverlay'
     | 'messageActions'
     | 'messageContentOrder'
     | 'MessageBounce'
@@ -162,10 +159,6 @@ export type MessagePropsWithContext<
     | 'onLongPressMessage'
     | 'onPressInMessage'
     | 'onPressMessage'
-    | 'OverlayReactionList'
-    | 'OverlayReactions'
-    | 'OverlayReactionsAvatar'
-    | 'OverlayReactionsItem'
     | 'removeMessage'
     | 'deleteReaction'
     | 'retrySendMessage'
@@ -236,10 +229,13 @@ const MessageWithContext = <
   props: MessagePropsWithContext<StreamChatGenerics>,
 ) => {
   const [isErrorInMessage, setIsErrorInMessage] = useState(false);
+  const [showMessageReactions, setShowMessageReactions] = useState(true);
   const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
   const [isEditedMessageOpen, setIsEditedMessageOpen] = useState(false);
-  const [isMessageActionsVisible, setIsMessageActionsVisible] = useState(true);
   const isMessageTypeDeleted = props.message.type === 'deleted';
+
+  const { messageActionsBottomSheetRef, messageOverlayVisible, setMessageOverlayVisible } =
+    useMessageActionsOverlay();
 
   const {
     channel,
@@ -269,11 +265,10 @@ const MessageWithContext = <
     lastReceivedId,
     members,
     message,
-    MessageActionList,
-    MessageActionListItem,
     messageActions: messageActionsProp = defaultMessageActions,
     MessageBounce,
     messageContentOrder: messageContentOrderProp,
+    MessageOverlay,
     messagesContext,
     MessageSimple,
     onLongPress: onLongPressProp,
@@ -284,10 +279,6 @@ const MessageWithContext = <
     onPressMessage: onPressMessageProp,
     onThreadSelect,
     openThread,
-    OverlayReactionList,
-    OverlayReactions,
-    OverlayReactionsAvatar,
-    OverlayReactionsItem,
     preventPress,
     removeMessage,
     retrySendMessage,
@@ -311,20 +302,15 @@ const MessageWithContext = <
       messageSimple: { targetedMessageContainer, targetedMessageUnderlay },
     },
   } = useTheme();
-  const messageActionsBottomSheetRef = useRef<BottomSheetModal>(null);
 
-  const openMessageActionsBottomSheet = () => {
-    if (messageActionsBottomSheetRef.current?.present) {
-      messageActionsBottomSheetRef.current.present();
-    } else {
-      console.warn('bottom and top insets must be set for the image picker to work correctly');
-    }
+  const showMessageOverlay = async (showMessageReactions = false) => {
+    setMessageOverlayVisible(true);
+    setShowMessageReactions(showMessageReactions);
+    await dismissKeyboard();
   };
 
-  const closeMessageActionsBottomSheet = () => {
-    if (messageActionsBottomSheetRef.current?.dismiss) {
-      messageActionsBottomSheetRef.current.dismiss();
-    }
+  const closeMessageOverlay = () => {
+    setMessageOverlayVisible(false);
   };
 
   const actionsEnabled =
@@ -549,7 +535,7 @@ const MessageWithContext = <
     client,
     deleteMessage: deleteMessageFromContext,
     deleteReaction,
-    dismissOverlay: closeMessageActionsBottomSheet,
+    dismissOverlay: closeMessageOverlay,
     enforceUniqueReaction,
     handleBan,
     handleBlock,
@@ -588,11 +574,10 @@ const MessageWithContext = <
           blockUser,
           copyMessage,
           deleteMessage,
-          dismissOverlay: closeMessageActionsBottomSheet,
+          dismissOverlay: closeMessageOverlay,
           editMessage,
           error: isErrorInMessage,
           flagMessage,
-          isMessageActionsVisible,
           isMyMessage,
           isThreadMessage,
           message,
@@ -601,15 +586,10 @@ const MessageWithContext = <
           pinMessage,
           quotedReply,
           retry,
+          showMessageReactions,
           threadReply,
           unpinMessage,
         });
-
-  const showMessageOverlay = async (isVisible = true) => {
-    setIsMessageActionsVisible(isVisible);
-    await dismissKeyboard();
-    openMessageActionsBottomSheet();
-  };
 
   const actionHandlers: MessageActionHandlers<StreamChatGenerics> = {
     copyMessage: handleCopyMessage,
@@ -767,20 +747,15 @@ const MessageWithContext = <
           <MessageProvider value={messageContext}>
             <MessageSimple />
             {isBounceDialogOpen && <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />}
-            <MessageOverlay
-              closeMessageActionsBottomSheet={closeMessageActionsBottomSheet}
-              handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
-              isMessageActionsVisible={isMessageActionsVisible}
-              message={message}
-              MessageActionList={MessageActionList}
-              MessageActionListItem={MessageActionListItem}
-              messageActions={messageActions}
-              messageActionsBottomSheetRef={messageActionsBottomSheetRef}
-              OverlayReactionList={OverlayReactionList}
-              OverlayReactions={OverlayReactions}
-              OverlayReactionsAvatar={OverlayReactionsAvatar}
-              OverlayReactionsItem={OverlayReactionsItem}
-            />
+            {messageOverlayVisible ? (
+              <MessageOverlay
+                closeMessageOverlay={closeMessageOverlay}
+                handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
+                messageActions={messageActions}
+                messageActionsBottomSheetRef={messageActionsBottomSheetRef}
+                showMessageReactions={showMessageReactions}
+              />
+            ) : null}
           </MessageProvider>
         </View>
       </View>

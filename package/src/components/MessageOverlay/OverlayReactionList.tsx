@@ -8,6 +8,7 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 
+import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { triggerHaptic } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
@@ -54,6 +55,7 @@ export const OverlayReactionList = <
       },
     },
   } = useTheme();
+  const own_capabilities = useOwnCapabilitiesContext();
 
   const supportedReactions = propSupportedReactions || contextSupportedReactions;
 
@@ -65,8 +67,15 @@ export const OverlayReactionList = <
     dismissOverlay();
   };
 
+  if (!own_capabilities.sendReaction) {
+    return null;
+  }
+
   return (
-    <View style={[styles.container, container]} testID='overlay-reaction-list'>
+    <View
+      accessibilityLabel='Reaction Selector on long pressing message'
+      style={[styles.container, container]}
+    >
       {supportedReactions?.map(({ Icon, type }, index) => (
         <ReactionButton
           Icon={Icon}

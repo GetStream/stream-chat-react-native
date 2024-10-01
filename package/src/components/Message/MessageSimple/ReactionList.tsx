@@ -211,7 +211,7 @@ const ReactionListWithContext = <
             onPress={(event) => {
               if (onPress) {
                 onPress({
-                  defaultHandler: () => showMessageOverlay(false),
+                  defaultHandler: () => showMessageOverlay(true),
                   emitter: 'reactionList',
                   event,
                 });
@@ -220,7 +220,7 @@ const ReactionListWithContext = <
             onPressIn={(event) => {
               if (onPressIn) {
                 onPressIn({
-                  defaultHandler: () => showMessageOverlay(false),
+                  defaultHandler: () => showMessageOverlay(true),
                   emitter: 'reactionList',
                   event,
                 });

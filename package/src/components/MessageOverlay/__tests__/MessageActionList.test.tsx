@@ -23,13 +23,13 @@ const defaultProps = {
 
 describe('MessageActionList', () => {
   it('should render correctly with provided message actions', () => {
-    const { getByTestId, getByText } = render(
+    const { getByLabelText, getByText } = render(
       <ThemeProvider theme={defaultTheme}>
         <MessageActionList {...defaultProps} />
       </ThemeProvider>,
     );
 
-    expect(getByTestId('message-action-list')).toBeTruthy();
+    expect(getByLabelText('Message action list')).toBeTruthy();
 
     expect(getByText('Copy Message')).toBeTruthy();
     expect(getByText('Delete Message')).toBeTruthy();

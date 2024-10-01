@@ -2,8 +2,6 @@ import React from 'react';
 
 import { StyleSheet, Text, View } from 'react-native';
 
-import { ReactionResponse } from 'stream-chat';
-
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { MessagesContextValue } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -23,28 +21,6 @@ export type OverlayReactionsItemProps<
    * An array of supported reactions
    */
   supportedReactions: ReactionData[];
-};
-
-type ReactionIconProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ReactionResponse<StreamChatGenerics>, 'type'> & {
-  /**
-   * The fill color for the reaction icon
-   */
-  pathFill: string;
-  /**
-   * The size of the reaction icon
-   */
-  size: number;
-  /**
-   * An array of supported reactions
-   */
-  supportedReactions: ReactionData[];
-};
-
-const ReactionIcon = ({ pathFill, size, supportedReactions, type }: ReactionIconProps) => {
-  const Icon = supportedReactions.find((reaction) => reaction.type === type)?.Icon || Unknown;
-  return <Icon height={size} pathFill={pathFill} width={size} />;
 };
 
 export const OverlayReactionsItem = <
@@ -86,8 +62,13 @@ export const OverlayReactionsItem = <
     radius -
     (Number(reactionBubbleBackground.height || 0) || styles.reactionBubbleBackground.height);
 
+  const Icon = supportedReactions.find((reaction) => reaction.type === type)?.Icon ?? Unknown;
+
   return (
-    <View style={[styles.avatarContainer, avatarContainer]}>
+    <View
+      accessibilityLabel='Individual User Reaction on long press message'
+      style={[styles.avatarContainer, avatarContainer]}
+    >
       <View style={styles.avatarInnerContainer}>
         <OverlayReactionsAvatar reaction={reaction} size={avatarSize} />
         <View
@@ -103,11 +84,10 @@ export const OverlayReactionsItem = <
             reactionBubbleBackground,
           ]}
         >
-          <ReactionIcon
+          <Icon
+            height={reactionBubbleBorderRadius / 2}
             pathFill={alignment === 'left' ? accent_blue : grey}
-            size={(reactionBubbleBorderRadius || styles.reactionBubbleBackground.borderRadius) / 2}
-            supportedReactions={supportedReactions}
-            type={type}
+            width={reactionBubbleBorderRadius / 2}
           />
         </View>
       </View>

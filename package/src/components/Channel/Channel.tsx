@@ -174,6 +174,7 @@ import { TypingIndicator as TypingIndicatorDefault } from '../MessageList/Typing
 import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../MessageList/TypingIndicatorContainer';
 import { MessageActionList as MessageActionListDefault } from '../MessageOverlay/MessageActionList';
 import { MessageActionListItem as MessageActionListItemDefault } from '../MessageOverlay/MessageActionListItem';
+import { MessageOverlay as MessageOverlayDefault } from '../MessageOverlay/MessageOverlay';
 import { OverlayReactionList as OverlayReactionListDefault } from '../MessageOverlay/OverlayReactionList';
 import { OverlayReactions as OverlayReactionDefault } from '../MessageOverlay/OverlayReactions';
 import { OverlayReactionsAvatar as OverlayReactionsAvatarDefault } from '../MessageOverlay/OverlayReactionsAvatar';
@@ -320,6 +321,7 @@ export type ChannelPropsWithContext<
       | 'MessageFooter'
       | 'MessageHeader'
       | 'MessageList'
+      | 'MessageOverlay'
       | 'MessagePinnedHeader'
       | 'MessageReplies'
       | 'MessageRepliesAvatars'
@@ -566,6 +568,7 @@ const ChannelWithContext = <
     MessageHeader,
     messageId,
     MessageList = MessageListDefault,
+    MessageOverlay = MessageOverlayDefault,
     MessagePinnedHeader = MessagePinnedHeaderDefault,
     MessageReplies = MessageRepliesDefault,
     MessageRepliesAvatars = MessageRepliesAvatarsDefault,
@@ -2391,6 +2394,7 @@ const ChannelWithContext = <
     MessageFooter,
     MessageHeader,
     MessageList,
+    MessageOverlay,
     MessagePinnedHeader,
     MessageReplies,
     MessageRepliesAvatars,
