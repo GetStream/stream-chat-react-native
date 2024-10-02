@@ -13,7 +13,7 @@ import {
   VideoType,
 } from '../../../native';
 
-import { Spinner } from '../../Spinner/Spinner';
+import { Spinner } from '../../UIComponents/Spinner';
 
 const oneEighth = 1 / 8;
 

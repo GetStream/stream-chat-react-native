@@ -8,6 +8,11 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 export type MessageActionListProps = Pick<MessagesContextValue, 'MessageActionListItem'> & {
   /**
+   * Function to close the message actions bottom sheet
+   * @returns void
+   */
+  dismissOverlay?: () => void;
+  /**
    * An array of message actions to render
    */
   messageActions?: MessageActionType[];

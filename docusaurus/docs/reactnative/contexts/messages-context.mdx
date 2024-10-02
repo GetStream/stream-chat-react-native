@@ -42,6 +42,8 @@ import InlineUnreadIndicator from '../common-content/ui-components/channel/props
 import IsAttachmentEqual from '../common-content/ui-components/channel/props/is_attachment_equal.mdx';
 import LegacyImageViewerSwipeBehaviour from '../common-content/ui-components/channel/props/legacy_image_viewer_swipe_behaviour.mdx';
 import MarkdownRules from '../common-content/ui-components/channel/props/markdown_rules.mdx';
+import MessageActionList from '../common-content/ui-components/channel/props/message-action-list.mdx';
+import MessageActionListItem from '../common-content/ui-components/channel/props/message-action-list-item.mdx';
 import MessageAvatar from '../common-content/ui-components/channel/props/message-avatar.mdx';
 import MessageBounce from '../common-content/ui-components/channel/props/message-bounce.mdx';
 import MessageContent from '../common-content/ui-components/channel/props/message-content.mdx';
@@ -52,17 +54,22 @@ import MessageEditedTimestamp from '../common-content/ui-components/channel/prop
 import MessageError from '../common-content/ui-components/channel/props/message-error.mdx';
 import MessageFooter from '../common-content/ui-components/channel/props/message-footer.mdx';
 import MessageHeader from '../common-content/ui-components/channel/props/message-header.mdx';
+import MessageOverlay from '../common-content/ui-components/channel/props/message-overlay.mdx';
 import MessageReplies from '../common-content/ui-components/channel/props/message-replies.mdx';
 import MessageRepliesAvatars from '../common-content/ui-components/channel/props/message-replies-avatars.mdx';
 import MessageSimple from '../common-content/ui-components/channel/props/message-simple.mdx';
 import MessageStatus from '../common-content/ui-components/channel/props/message-status.mdx';
 import MessageSystem from '../common-content/ui-components/channel/props/message-system.mdx';
 import MessageText from '../common-content/ui-components/channel/props/message-text.mdx';
+import MessageTextNumberOfLines from '../common-content/ui-components/channel/props/message-text-number-of-lines.mdx';
 import MyMessageTheme from '../common-content/ui-components/channel/props/my_message_theme.mdx';
 import OnLongPressMessage from '../common-content/ui-components/channel/props/on_long_press_message.mdx';
 import OnPressInMessage from '../common-content/ui-components/channel/props/on_press_in_message.mdx';
 import OnPressMessage from '../common-content/ui-components/channel/props/on_press_message.mdx';
-import OverlayReactionList from '../common-content/ui-components/overlay-provider/props/overlay_reaction_list.mdx';
+import OverlayReactionList from '../common-content/ui-components/channel/props/overlay-reaction-list.mdx';
+import OverlayReactionsAvatar from '../common-content/ui-components/channel/props/overlay-reactions-avatar.mdx';
+import OverlayReactionsItem from '../common-content/ui-components/channel/props/overlay-reactions-item.mdx';
+import OverlayReactions from '../common-content/ui-components/channel/props/overlay-reactions.mdx';
 import ReactionList from '../common-content/ui-components/channel/props/reaction-list.mdx';
 import Reply from '../common-content/ui-components/channel/props/reply.mdx';
 import ScrollToBottomButton from '../common-content/ui-components/channel/props/scroll-to-bottom-button.mdx';
@@ -182,6 +189,10 @@ Id of current channel.
 ### <div class="label description">_forwarded from [Channel](../../core-components/channel#mymessagetheme)_ props</div> myMessageTheme {#mymessagetheme}
 
 <MyMessageTheme />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messagetextnumberoflines)_ props</div> messageTextNumberOfLines {#messagetextnumberoflines}
+
+<MessageTextNumberOfLines />
 
 ### <div class="label description">_forwarded from [Channel](../../core-components/channel#onlongpressmessage)_ props</div> onLongPressMessage {#onlongpressmessage}
 
@@ -327,6 +338,14 @@ Upserts a given message in local channel state. Please note that this function d
 
 <Message /> -->
 
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messageactionlist)_ props</div> MessageActionList {#messageactionlist}
+
+<MessageActionList />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messageactionlistitem)_ props</div> MessageActionListItem {#messageactionlistitem}
+
+<MessageActionListItem />
+
 ### <div class="label description">_forwarded from [Channel](../../core-components/channel#messageavatar)_ props</div> MessageAvatar {#messageavatar}
 
 <MessageAvatar />
@@ -359,6 +378,10 @@ Upserts a given message in local channel state. Please note that this function d
 
 <MessageHeader />
 
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messageoverlay)_ props</div> MessageOverlay {#messageoverlay}
+
+<MessageOverlay />
+
 <!-- ### <div class="label description">_forwarded from [Channel](../../core-components/channel#messagelist)_ props</div> MessageList {#messagelist}
 
 <MessageList /> -->
@@ -390,6 +413,18 @@ Upserts a given message in local channel state. Please note that this function d
 ### <div class="label description">_forwarded from [Channel](../../core-components/channel#overlayreactionlist)_ props</div> OverlayReactionList {#overlayreactionlist}
 
 <OverlayReactionList />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#overlayreactionsavatar)_ props</div> OverlayReactionsAvatar {#overlayreactionsavatar}
+
+<OverlayReactionsAvatar />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#overlayreactionsitem)_ props</div> OverlayReactionsItem {#overlayreactionsitem}
+
+<OverlayReactionsItem />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#overlayreactions)_ props</div> OverlayReactions {#overlayreactions}
+
+<OverlayReactions />
 
 ### <div class="label description">_forwarded from [Channel](../../core-components/channel#reactionlist)_ props</div> ReactionList {#reactionlist}
 

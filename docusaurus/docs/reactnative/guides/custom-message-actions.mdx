@@ -45,9 +45,9 @@ You can customize each one of the default actions using props on the [`Channel c
 
 The channel component accepts a prop called `messageActions`. You can use this prop as a callback function to render message actions selectively.
 
-The arguments to this function is an object with all the default message actions as [`MessageAction`](#messageaction) objects. The function should return an array of MessageAction objects to render in a [MessageActionList](../common-content/ui-components/overlay-provider/props/message_action_list.mdx) within the message overlay, that is shown when a user long presses a message in a MessageList.
+The arguments to this function is an object with all the default message actions as [`MessageAction`](#messageaction) objects. The function should return an array of MessageAction objects to render in a [MessageActionList](../common-content/ui-components/channel/props/message_action_list.mdx) within the message overlay, that is shown when a user long presses a message in a MessageList.
 
-You can also customize each one of the default actions using the `messageActions` prop passed to the OverlayProvider as shown in the example below. The OverlayProvider component makes these props available in the `MessageOverlayContext` context.
+You can also customize each one of the default actions using the `messageActions` prop passed to the Channel component as shown in the example below.
 
 ```tsx
 messageActions={({
@@ -272,7 +272,7 @@ import { messageActions as defaultMessageActions, Mute as MuteIcon } from 'strea
 
 ## How to customize message action UI
 
-[`OverlayProvider`](../core-components/overlay-provider.mdx) component accepts props called - `MessageActionList` and `MessageActionListItem`. They both serve a different purpose.
+The [`Channel`](../core-components/channel.mdx) component accepts props called - `MessageActionList` and `MessageActionListItem`. They both serve a different purpose.
 
 - `MessageActionList` - Allows full customizability of the message action list and allows users to add/define their own message action along with the style they prefer for the application.
 - `MessageActionListItem` - Allows customizability of an item in a message action list.
@@ -282,15 +282,18 @@ import { messageActions as defaultMessageActions, Mute as MuteIcon } from 'strea
 An example for the usage of `MessageActionList` component is as follows. You can obviously have your own logic in the component.
 
 ```tsx
-import { MessageActionListItem, OverlayProvider, useOverlayContext } from 'stream-chat-react-native';
+import { Alert } from 'react-native';
+import { Channel, MessageActionListItem, useMessageContext } from 'stream-chat-react-native';
 
 const CustomMessageActionList = () => {
-  const { setOverlay } = useOverlayContext();
+  const { dismissOverlay } = useMessageContext();
   const messageActions = [
     {
       action: function () {
         Alert.alert('Edit Message action called.');
-        setOverlay('none');
+        if (dismissOverlay) {
+          dismissOverlay();
+        }
       },
       actionType: 'editMessage',
       title: 'Edit messagee',
@@ -298,7 +301,9 @@ const CustomMessageActionList = () => {
     {
       action: function () {
         Alert.alert('Delete message action');
-        setOverlay('none');
+        if (dismissOverlay) {
+          dismissOverlay();
+        }
       },
       actionType: 'deleteMessage',
       title: 'Delete Message',
@@ -313,9 +318,9 @@ const CustomMessageActionList = () => {
   );
 };
 
-<OverlayProvider MessageActionList={CustomMessageActionList}>
-  {/* Underlying Channel, MessageList and Message components */}
-</OverlayProvider>;
+<Channel MessageActionList={CustomMessageActionList}>
+  {/* Underlying MessageList and MessageInput components */}
+</Channel>;
 ```
 
 Notice that the `MessageActionList` is a simple prop which just accepts your own component for the message action overlay. The content, styles and the action logic are all defined by the user itself.
@@ -347,7 +352,7 @@ You can use these props to provide your own component.
 An example for the `MessageActionListItem` component customization is as following:
 
 ```tsx
-import { MessageActionListItem, OverlayProvider, useMessageActionAnimation } from 'stream-chat-react-native';
+import { Channel, MessageActionListItem, useMessageActionAnimation } from 'stream-chat-react-native';
 
 const CustomMessageActionListItem = ({ action, actionType, ...rest }) => {
   const { onTap } = useMessageActionAnimation({ action: action });
@@ -372,9 +377,9 @@ const CustomMessageActionListItem = ({ action, actionType, ...rest }) => {
   }
 };
 
-<OverlayProvider MessageActionListItem={CustomMessageActionListItem}>
-  {/* Underlying Channel, MessageList and Message components */}
-</OverlayProvider>;
+<Channel MessageActionListItem={CustomMessageActionListItem}>
+  {/* Underlying MessageList and MessageInput components */}
+</Channel>;
 ```
 
 Note: The `useMessageActionAnimation` hook takes in the `action` for the message action and this would give some utilities like `ontap`, `animatedStyle` and the `opacity` value which would be helpful with the Animated View which can be used in support of the package `react-native-reanimated`.
@@ -413,7 +418,7 @@ Following example demonstrates how to add analytics tracking to "Copy Message" a
 To disable a particular action you can return `null` for a particular action type in the MessageActionListItem prop. An example to the situation would be as follows:
 
 ```tsx
-import { MessageActionListItem, OverlayProvider, useMessageActionAnimation } from 'stream-chat-react-native';
+import { Channel, MessageActionListItem, useMessageActionAnimation } from 'stream-chat-react-native';
 
 const CustomMessageActionListItem = ({ action, actionType, ...rest }) => {
   if (actionType === 'pinMessage') {
@@ -423,7 +428,7 @@ const CustomMessageActionListItem = ({ action, actionType, ...rest }) => {
   }
 };
 
-<OverlayProvider MessageActionListItem={CustomMessageActionListItem}>
-  {/* Underlying Channel, MessageList and Message components */}
-</OverlayProvider>;
+<Channel MessageActionListItem={CustomMessageActionListItem}>
+  {/* Underlying MessageList and MessageInput components */}
+</Channel>;
 ```

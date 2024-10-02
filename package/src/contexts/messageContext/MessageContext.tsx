@@ -125,12 +125,21 @@ export type MessageContextValue<
   reactions: ReactionSummary[];
   /** React set state function to set the state of `isEditedMessageOpen` */
   setIsEditedMessageOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  showMessageOverlay: (showMessageReactions?: boolean, error?: boolean) => void;
+  /**
+   * Function to show the overlay with all the message actions.
+   * @param showMessageReactions
+   * @returns void
+   */
+  showMessageOverlay: (showMessageReactions?: boolean) => void;
   showMessageStatus: boolean;
   /** Whether or not the Message is part of a Thread */
   threadList: boolean;
   /** The videos attached to a message */
   videos: Attachment<StreamChatGenerics>[];
+  /**
+   * Function to dismiss the overlay
+   */
+  dismissOverlay?: () => void;
   goToMessage?: (messageId: string) => void;
   /** Latest message id on current channel */
   lastReceivedId?: string;

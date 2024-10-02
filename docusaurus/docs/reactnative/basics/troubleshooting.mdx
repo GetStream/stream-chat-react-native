@@ -295,7 +295,7 @@ This includes ensuring you import `react-native-gesture-handler` at the top of y
 import 'react-native-gesture-handler';
 ```
 
-Also do not forget to wrap your component tree(probably above `OverlayProvider`) with `<GestureHandlerRootView>` or `gestureHandlerRootHOC` as mentioned in [RNGH Installation docs](https://docs.swmansion.com/react-native-gesture-handler/docs/installation#js). Not doing so, can cause unusual behaviour with the `MessageOverlay` and `Imagegallery` gestures.
+Also do not forget to wrap your component tree(probably above `OverlayProvider`) with `<GestureHandlerRootView>` or `gestureHandlerRootHOC` as mentioned in [RNGH Installation docs](https://docs.swmansion.com/react-native-gesture-handler/docs/installation#js). Not doing so, can cause unusual behaviour with the `Imagegallery` gestures.
 
 ```tsx
 <GestureHandlerRootView style={{ flex: 1 }}>

@@ -164,7 +164,9 @@ export * from './ProgressControl/ProgressControl';
 
 export * from './Reply/Reply';
 
-export * from './Spinner/Spinner';
+export * from './UIComponents/BottomSheetModal';
+export * from './UIComponents/ImageBackground';
+export * from './UIComponents/Spinner';
 
 export * from './Thread/Thread';
 export * from './Thread/components/ThreadFooterComponent';

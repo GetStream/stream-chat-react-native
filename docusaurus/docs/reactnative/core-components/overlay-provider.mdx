@@ -28,13 +28,12 @@ export const App = () => (
 
 ## Context Providers
 
-`OverlayProvider` contains providers for the `AttachmentPickerContext`, `ImageGalleryContext`, `MessageOverlayContext`, `OverlayContext`, `ThemeContext`, and `TranslationContext`. These can be accessed using the corresponding hooks.
+`OverlayProvider` contains providers for the `AttachmentPickerContext`, `ImageGalleryContext`, `OverlayContext`, `ThemeContext`, and `TranslationContext`. These can be accessed using the corresponding hooks.
 
 | Context                                                                                                                                                                  | Hook                       |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------- |
 | [`AttachmentPickerContext`](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/contexts/attachmentPickerContext/AttachmentPickerContext.tsx) | useAttachmentPickerContext |
 | [`ImageGalleryContext`](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/contexts/imageGalleryContext/ImageGalleryContext.tsx)             | useImageGalleryContext     |
-| [`MessageOverlayContext`](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/contexts/messageOverlayContext/MessageOverlayContext.tsx)       | useMessageOverlayContext   |
 | [`OverlayContext`](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/contexts/overlayContext/OverlayContext.tsx)                            | useOverlayContext          |
 | [`ThemeContext`](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/contexts/themeContext/ThemeContext.tsx)                                  | useTheme                   |
 | [`TranslationContext`](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/contexts/translationContext/TranslationContext.tsx)                | useTranslationContext      |
@@ -149,14 +148,6 @@ The [`SnapPoints`](https://gorhom.github.io/react-native-bottom-sheet/props#snap
 | Type  | Default                        |
 | ----- | ------------------------------ |
 | Array | `[0, (screenHeight * 9) / 10]` |
-
-### `messageTextNumberOfLines`
-
-Number of lines for the message text in the Message Overlay.
-
-| Type   | Default |
-| ------ | ------- |
-| Number | 5       |
 
 ### `numberOfAttachmentImagesToLoadPerCall`
 
@@ -289,43 +280,3 @@ Image selector component displayed in the attachment selector bar.
 | Type          | Default                                                                                                                                                                        |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | ComponentType | `undefined` \| [`ImageSelectorIcon`](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/ImageSelectorIcon.tsx) |
-
-### `MessageActionList`
-
-Component for rendering a message action list within the message overlay.
-
-| Type          | Default                                                                                                                                                           |
-| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ComponentType | `undefined` \| [`MessageActionList`](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageOverlay/MessageActionList.tsx) |
-
-### `MessageActionListItem`
-
-Component for rendering message action list items within a message action list.
-
-| Type          | Default                                                                                                                                                                   |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ComponentType | `undefined` \| [`MessageActionListItem`](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageOverlay/MessageActionListItem.tsx) |
-
-### `OverlayReactionList`
-
-Reaction selector component displayed within the message overlay when user long presses a message.
-
-| Type          | Default                                                                                                                                                                  |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| ComponentType | `undefined` \| [`OverlayReactionList`](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/MessageOverlay/OverlayReactionList.tsx) |
-
-### `OverlayReactions`
-
-List of reactions component within the message overlay.
-
-| Type          | Default                                                                                                                                                            |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| ComponentType | `undefined` \| [`OverlayReactions`](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/MessageOverlay/OverlayReactions.tsx) |
-
-### `OverlayReactionsAvatar`
-
-Component for rendering an avatar in the message reaction overlay.
-
-| Type          | Default                                                                                                                                                                        |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| ComponentType | `undefined` \| [`OverlayReactionsAvatar`](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/MessageOverlay/OverlayReactionsAvatar.tsx) |

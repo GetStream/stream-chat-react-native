@@ -7,7 +7,6 @@ import {
   View,
 } from 'react-native';
 
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import debounce from 'lodash/debounce';
 import omit from 'lodash/omit';
 import throttle from 'lodash/throttle';
@@ -577,7 +576,7 @@ const ChannelWithContext = <
     MessageStatus = MessageStatusDefault,
     MessageSystem = MessageSystemDefault,
     MessageText,
-    messageTextNumberOfLines,
+    messageTextNumberOfLines = 5,
     MessageTimestamp = MessageTimestampDefault,
     MoreOptionsButton = MoreOptionsButtonDefault,
     myMessageTheme,
@@ -2483,9 +2482,7 @@ const ChannelWithContext = <
                 <ThreadProvider<StreamChatGenerics> value={threadContext}>
                   <SuggestionsProvider<StreamChatGenerics> value={suggestionsContext}>
                     <MessageInputProvider<StreamChatGenerics> value={inputMessageInputContext}>
-                      <BottomSheetModalProvider>
-                        <View style={{ height: '100%' }}>{children}</View>
-                      </BottomSheetModalProvider>
+                      <View style={{ height: '100%' }}>{children}</View>
                     </MessageInputProvider>
                   </SuggestionsProvider>
                 </ThreadProvider>
