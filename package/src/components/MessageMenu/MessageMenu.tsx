@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { useWindowDimensions } from 'react-native';
+
 import { MessageActionType } from './MessageActionListItem';
 
 import {
@@ -71,6 +73,7 @@ export const MessageMenu = <
     showMessageReactions,
     visible,
   } = props;
+  const { height } = useWindowDimensions();
   const {
     MessageActionList: contextMessageActionList,
     MessageActionListItem: contextMessageActionListItem,
@@ -90,7 +93,11 @@ export const MessageMenu = <
   const message = propMessage ?? contextMessage;
 
   return (
-    <BottomSheetModal onClose={dismissOverlay} visible={visible}>
+    <BottomSheetModal
+      height={messageActions.length === 0 && !showMessageReactions ? height / 5 : height / 2}
+      onClose={dismissOverlay}
+      visible={visible}
+    >
       {showMessageReactions ? (
         <MessageUserReactions
           message={message}
