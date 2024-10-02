@@ -667,12 +667,12 @@ const MessageListWithContext = <
     );
     return wrapMessageInTheme ? (
       <>
-        {shouldApplyAndroidWorkaround && renderDateSeperator}
         <ThemeProvider mergedStyle={modifiedTheme}>
           <View
             style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}
             testID={`message-list-item-${index}`}
           >
+            {shouldApplyAndroidWorkaround && renderDateSeperator}
             {renderMessage}
           </View>
         </ThemeProvider>
