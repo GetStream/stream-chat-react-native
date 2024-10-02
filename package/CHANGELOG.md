@@ -1,5 +1,13 @@
 # Change Log
 
+### [5.39.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.39.0...v5.39.1) (2024-10-02)
+
+
+### Bug Fixes
+
+* expo refresh control and audio bugs ([#2695](https://github.com/GetStream/stream-chat-react-native/issues/2695)) ([b548a71](https://github.com/GetStream/stream-chat-react-native/commit/b548a717610d2b8863210828ea2ccd4cbf100ea0))
+* own message custom theme bug ([#2696](https://github.com/GetStream/stream-chat-react-native/issues/2696)) ([4e2596b](https://github.com/GetStream/stream-chat-react-native/commit/4e2596b631d9a4ea510573cf0f055d2824d35a2d))
+
 ## [5.39.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.38.1...v5.39.0) (2024-09-25)
 
 
