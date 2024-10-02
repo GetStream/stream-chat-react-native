@@ -1,19 +1,18 @@
-// OverlayReactionsAvatar.test.tsx
 import React from 'react';
 
 import { render } from '@testing-library/react-native';
 
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
-import { OverlayReactionsAvatar } from '../OverlayReactionsAvatar';
+import { MessageUserReactionsAvatar } from '../MessageUserReactionsAvatar';
 
-describe('OverlayReactionsAvatar', () => {
+describe('MessageUserReactionsAvatar', () => {
   const reaction = { id: 'test-user', image: 'image-url', name: 'Test User', type: 'like' }; // Mock reaction data
 
   it('should render Avatar with correct image, name, and default size', () => {
     const { queryByTestId } = render(
       <ThemeProvider theme={defaultTheme}>
-        <OverlayReactionsAvatar reaction={reaction} />
+        <MessageUserReactionsAvatar reaction={reaction} />
       </ThemeProvider>,
     );
 
@@ -26,7 +25,7 @@ describe('OverlayReactionsAvatar', () => {
 
     const { queryByTestId } = render(
       <ThemeProvider theme={defaultTheme}>
-        <OverlayReactionsAvatar reaction={reaction} size={customSize} />
+        <MessageUserReactionsAvatar reaction={reaction} size={customSize} />
       </ThemeProvider>,
     );
 

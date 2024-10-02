@@ -7,7 +7,7 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 
 import { Colors, defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import { OverlayReactionsItem } from '../OverlayReactionsItem';
+import { MessageUserReactionsItem } from '../MessageUserReactionsItem';
 
 jest.mock('../../../icons', () => ({
   Unknown: () => null,
@@ -32,8 +32,8 @@ const renderComponent = async (props = {}, clientUserID = 'user2') =>
       value={{ client: await getTestClientWithUser({ id: clientUserID }) } as ChatContextValue}
     >
       <ThemeProvider theme={defaultTheme}>
-        <OverlayReactionsItem
-          OverlayReactionsAvatar={MockOverlayReactionsAvatar}
+        <MessageUserReactionsItem
+          MessageUserReactionsAvatar={MockOverlayReactionsAvatar}
           reaction={mockReaction}
           supportedReactions={mockSupportedReactions}
           {...props}
@@ -42,7 +42,7 @@ const renderComponent = async (props = {}, clientUserID = 'user2') =>
     </ChatProvider>,
   );
 
-describe('OverlayReactionsItem', () => {
+describe('MessageUserReactionsItem', () => {
   it('renders correctly', async () => {
     const { getByLabelText, getByText } = await renderComponent();
     expect(getByLabelText('Individual User Reaction on long press message')).toBeTruthy();

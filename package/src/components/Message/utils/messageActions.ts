@@ -2,7 +2,7 @@ import type { MessageContextValue } from '../../../contexts/messageContext/Messa
 import type { OwnCapabilitiesContextValue } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { isClipboardAvailable } from '../../../native';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
+import type { MessageActionType } from '../../MessageMenu/MessageActionListItem';
 
 export type MessageActionsParams<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

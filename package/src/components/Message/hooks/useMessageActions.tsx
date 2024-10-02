@@ -27,7 +27,7 @@ import { removeReservedFields } from '../../../utils/removeReservedFields';
 import { MessageStatusTypes } from '../../../utils/utils';
 
 import type { MessageType } from '../../MessageList/hooks/useMessageList';
-import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
+import type { MessageActionType } from '../../MessageMenu/MessageActionListItem';
 
 export type MessageActionsHookProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -59,9 +59,8 @@ export type MessageActionsHookProps<
   Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'enforceUniqueReaction'> &
   Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
   Pick<ThreadContextValue<StreamChatGenerics>, 'openThread'> &
-  Pick<MessageContextValue<StreamChatGenerics>, 'message'> &
+  Pick<MessageContextValue<StreamChatGenerics>, 'dismissOverlay' | 'message'> &
   Pick<TranslationContextValue, 't'> & {
-    dismissOverlay: () => void;
     onThreadSelect?: (message: MessageType<StreamChatGenerics>) => void;
   };
 

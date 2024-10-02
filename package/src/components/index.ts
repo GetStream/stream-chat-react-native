@@ -152,13 +152,12 @@ export * from './MessageList/utils/getGroupStyles';
 export * from './MessageList/utils/getLastReceivedMessage';
 export * from './MessageList/utils/getReadStates';
 
-export * from './MessageOverlay/hooks/useMessageActionAnimation';
-export * from './MessageOverlay/MessageActionList';
-export * from './MessageOverlay/MessageActionListItem';
-export * from './MessageOverlay/MessageOverlay';
-export * from './MessageOverlay/OverlayReactions';
-export * from './MessageOverlay/OverlayReactionsAvatar';
-export * from './MessageOverlay/OverlayReactionList';
+export * from './MessageMenu/MessageActionList';
+export * from './MessageMenu/MessageActionListItem';
+export * from './MessageMenu/MessageMenu';
+export * from './MessageMenu/MessageUserReactions';
+export * from './MessageMenu/MessageUserReactionsAvatar';
+export * from './MessageMenu/MessageReactionPicker';
 
 export * from './ProgressControl/ProgressControl';
 

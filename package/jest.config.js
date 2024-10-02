@@ -28,4 +28,5 @@ module.exports = {
     '^.+\\.[t|j]sx?$': 'babel-jest',
   },
   transformIgnorePatterns: ['node_modules/!(react-native-reanimated)'],
+  verbose: true,
 };

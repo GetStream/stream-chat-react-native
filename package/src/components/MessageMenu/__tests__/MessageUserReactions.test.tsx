@@ -6,7 +6,6 @@ import { fireEvent, render } from '@testing-library/react-native';
 
 import { ReactionResponse } from 'stream-chat';
 
-import { MessageType } from '../../../components/MessageList/hooks/useMessageList';
 import {
   MessagesContextValue,
   MessagesProvider,
@@ -18,9 +17,10 @@ import {
   TranslationProvider,
 } from '../../../contexts/translationContext/TranslationContext';
 import { generateMessage } from '../../../mock-builders/generator/message';
+import { MessageType } from '../../MessageList/hooks/useMessageList';
 import * as useFetchReactionsModule from '../hooks/useFetchReactions';
-import { OverlayReactions } from '../OverlayReactions';
-import { OverlayReactionsItemProps } from '../OverlayReactionsItem';
+import { MessageUserReactions } from '../MessageUserReactions';
+import { MessageUserReactionsItemProps } from '../MessageUserReactionsItem';
 
 const mockTranslations = {
   t: jest.fn((key) => key),
@@ -39,7 +39,7 @@ const defaultProps = {
   supportedReactions: mockSupportedReactions,
 };
 
-describe('OverlayReactions when the supportedReactions are defined', () => {
+describe('MessageUserReactions when the supportedReactions are defined', () => {
   beforeAll(() => {
     const mockLoadNextPage = jest.fn();
 
@@ -66,14 +66,14 @@ describe('OverlayReactions when the supportedReactions are defined', () => {
           <MessagesProvider
             value={
               {
-                OverlayReactionsAvatar: () => null,
-                OverlayReactionsItem: (props: OverlayReactionsItemProps) => (
+                MessageUserReactionsAvatar: () => null,
+                MessageUserReactionsItem: (props: MessageUserReactionsItemProps) => (
                   <Text>{props.reaction.id + ' ' + props.reaction.type}</Text>
                 ),
               } as unknown as MessagesContextValue
             }
           >
-            <OverlayReactions {...defaultProps} {...props} />
+            <MessageUserReactions {...defaultProps} {...props} />
           </MessagesProvider>
         </TranslationProvider>
       </ThemeProvider>,
@@ -140,20 +140,20 @@ const renderComponent = (props = {}) =>
         <MessagesProvider
           value={
             {
-              OverlayReactionsAvatar: () => null,
-              OverlayReactionsItem: (props: OverlayReactionsItemProps) => (
+              MessageUserReactionsAvatar: () => null,
+              MessageUserReactionsItem: (props: MessageUserReactionsItemProps) => (
                 <Text>{props.reaction.id + ' ' + props.reaction.type}</Text>
               ),
             } as unknown as MessagesContextValue
           }
         >
-          <OverlayReactions {...defaultProps} {...props} />
+          <MessageUserReactions {...defaultProps} {...props} />
         </MessagesProvider>
       </TranslationProvider>
     </ThemeProvider>,
   );
 
-describe("OverlayReactions when the supportedReactions aren't defined", () => {
+describe("MessageUserReactions when the supportedReactions aren't defined", () => {
   it("don't render reaction buttons that is of unsupported type", () => {
     const { queryAllByLabelText } = renderComponent({
       message: { ...generateMessage(), reaction_groups: undefined },
@@ -165,7 +165,7 @@ describe("OverlayReactions when the supportedReactions aren't defined", () => {
   });
 });
 
-describe('OverlayReactions when the reactions are in loading phase', () => {
+describe('MessageUserReactions when the reactions are in loading phase', () => {
   beforeAll(() => {
     const mockLoadNextPage = jest.fn();
 

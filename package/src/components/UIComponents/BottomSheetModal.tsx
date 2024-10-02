@@ -1,14 +1,22 @@
-import React, { PropsWithChildren, useEffect, useRef } from 'react';
+import React, { PropsWithChildren, useEffect } from 'react';
 import {
   Animated,
   Keyboard,
   KeyboardEvent,
   Modal,
-  PanResponder,
   StyleSheet,
   useWindowDimensions,
   View,
 } from 'react-native';
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+  GestureUpdateEvent,
+  PanGestureHandlerEventPayload,
+} from 'react-native-gesture-handler';
+
+import { runOnJS } from 'react-native-reanimated';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
@@ -40,51 +48,29 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     },
   } = useTheme();
 
-  const panY = useRef(new Animated.Value(windowHeight)).current;
-  const resetPositionAnim = Animated.timing(panY, {
-    duration: 300,
+  const translateY = new Animated.Value(height);
+
+  const openAnimation = Animated.timing(translateY, {
+    duration: 200,
     toValue: 0,
     useNativeDriver: true,
   });
 
-  const closeAnim = Animated.timing(panY, {
-    duration: 300,
+  const closeAnimation = Animated.timing(translateY, {
+    duration: 50,
     toValue: height,
     useNativeDriver: true,
   });
 
-  const translateY = panY.interpolate({
-    inputRange: [-1, 0, 1],
-    outputRange: [0, 0, 1],
-  });
-
   const handleDismiss = () => {
-    closeAnim.start(() => onClose());
+    closeAnimation.start(() => onClose());
   };
 
   useEffect(() => {
     if (visible) {
-      resetPositionAnim.start();
+      openAnimation.start();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible]);
-
-  const panResponders = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderMove: (_event, gestureState) => {
-        panY.setValue(Math.max(gestureState.dy, 0));
-      },
-      onPanResponderRelease: (_event, gestureState) => {
-        if (gestureState.dy > windowHeight / 3) {
-          handleDismiss();
-        } else {
-          resetPositionAnim.start();
-        }
-      },
-      onStartShouldSetPanResponder: () => true,
-    }),
-  ).current;
+  }, [visible, openAnimation]);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', keyboardDidShow);
@@ -98,7 +84,7 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
   }, []);
 
   const keyboardDidShow = (event: KeyboardEvent) => {
-    Animated.timing(panY, {
+    Animated.timing(translateY, {
       duration: 250,
       toValue: -event.endCoordinates.height,
       useNativeDriver: true,
@@ -106,35 +92,51 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
   };
 
   const keyboardDidHide = () => {
-    Animated.timing(panY, {
+    Animated.timing(translateY, {
       duration: 250,
       toValue: 0,
       useNativeDriver: true,
     }).start();
   };
 
-  if (!visible) {
-    return null;
-  }
+  const handleUpdate = (event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
+    const translationY = Math.max(event.translationY, 0);
+    translateY.setValue(translationY);
+  };
+
+  const gesture = Gesture.Pan()
+    .onUpdate((event) => {
+      runOnJS(handleUpdate)(event);
+    })
+    .onEnd((event) => {
+      if (event.velocityY > 500 || event.translationY > height / 2) {
+        runOnJS(handleDismiss)();
+      } else {
+        runOnJS(openAnimation.start)();
+      }
+    });
 
   return (
     <Modal animationType='fade' onRequestClose={handleDismiss} transparent visible={visible}>
-      <View style={[styles.overlay, { backgroundColor: overlay }]}>
-        <Animated.View
-          style={[
-            styles.container,
-            {
-              backgroundColor: white_snow,
-              height,
-              transform: [{ translateY }],
-            },
-          ]}
-          {...panResponders.panHandlers}
-        >
-          <View style={[styles.handle, { backgroundColor: grey, width: windowWidth / 4 }]} />
-          {children}
-        </Animated.View>
-      </View>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <View style={[styles.overlay, { backgroundColor: overlay }]}>
+          <GestureDetector gesture={gesture}>
+            <Animated.View
+              style={[
+                styles.container,
+                {
+                  backgroundColor: white_snow,
+                  height,
+                  transform: [{ translateY }],
+                },
+              ]}
+            >
+              <View style={[styles.handle, { backgroundColor: grey, width: windowWidth / 4 }]} />
+              <View style={styles.contentContainer}>{children}</View>
+            </Animated.View>
+          </GestureDetector>
+        </View>
+      </GestureHandlerRootView>
     </Modal>
   );
 };
@@ -147,6 +149,10 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 16,
+  },
+  contentContainer: {
+    flex: 1,
+    marginTop: 8,
   },
   handle: {
     alignSelf: 'center',

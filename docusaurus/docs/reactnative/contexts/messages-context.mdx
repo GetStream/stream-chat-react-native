@@ -54,7 +54,7 @@ import MessageEditedTimestamp from '../common-content/ui-components/channel/prop
 import MessageError from '../common-content/ui-components/channel/props/message-error.mdx';
 import MessageFooter from '../common-content/ui-components/channel/props/message-footer.mdx';
 import MessageHeader from '../common-content/ui-components/channel/props/message-header.mdx';
-import MessageOverlay from '../common-content/ui-components/channel/props/message-overlay.mdx';
+import MessageMenu from '../common-content/ui-components/channel/props/message-menu.mdx';
 import MessageReplies from '../common-content/ui-components/channel/props/message-replies.mdx';
 import MessageRepliesAvatars from '../common-content/ui-components/channel/props/message-replies-avatars.mdx';
 import MessageSimple from '../common-content/ui-components/channel/props/message-simple.mdx';
@@ -66,10 +66,10 @@ import MyMessageTheme from '../common-content/ui-components/channel/props/my_mes
 import OnLongPressMessage from '../common-content/ui-components/channel/props/on_long_press_message.mdx';
 import OnPressInMessage from '../common-content/ui-components/channel/props/on_press_in_message.mdx';
 import OnPressMessage from '../common-content/ui-components/channel/props/on_press_message.mdx';
-import OverlayReactionList from '../common-content/ui-components/channel/props/overlay-reaction-list.mdx';
-import OverlayReactionsAvatar from '../common-content/ui-components/channel/props/overlay-reactions-avatar.mdx';
-import OverlayReactionsItem from '../common-content/ui-components/channel/props/overlay-reactions-item.mdx';
-import OverlayReactions from '../common-content/ui-components/channel/props/overlay-reactions.mdx';
+import MessageReactionPicker from '../common-content/ui-components/channel/props/message-reaction-picker.mdx';
+import MessageUserReactionsAvatar from '../common-content/ui-components/channel/props/message-user-reactions-avatar.mdx';
+import MessageUserReactionsItem from '../common-content/ui-components/channel/props/message-user-reactions-item.mdx';
+import MessageUserReactions from '../common-content/ui-components/channel/props/message-user-reactions.mdx';
 import ReactionList from '../common-content/ui-components/channel/props/reaction-list.mdx';
 import Reply from '../common-content/ui-components/channel/props/reply.mdx';
 import ScrollToBottomButton from '../common-content/ui-components/channel/props/scroll-to-bottom-button.mdx';
@@ -378,9 +378,9 @@ Upserts a given message in local channel state. Please note that this function d
 
 <MessageHeader />
 
-### <div class="label description">_forwarded from [Channel](../../core-components/channel#messageoverlay)_ props</div> MessageOverlay {#messageoverlay}
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messagemenu)_ props</div> MessageMenu {#messagemenu}
 
-<MessageOverlay />
+<MessageMenu />
 
 <!-- ### <div class="label description">_forwarded from [Channel](../../core-components/channel#messagelist)_ props</div> MessageList {#messagelist}
 
@@ -410,21 +410,21 @@ Upserts a given message in local channel state. Please note that this function d
 
 <MessageText />
 
-### <div class="label description">_forwarded from [Channel](../../core-components/channel#overlayreactionlist)_ props</div> OverlayReactionList {#overlayreactionlist}
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messagereactionpicker)_ props</div> MessageReactionPicker {#messagereactionpicker}
 
-<OverlayReactionList />
+<MessageReactionPicker />
 
-### <div class="label description">_forwarded from [Channel](../../core-components/channel#overlayreactionsavatar)_ props</div> OverlayReactionsAvatar {#overlayreactionsavatar}
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messageuserreactionsavatar)_ props</div> MessageUserReactionsAvatar {#messageuserreactionsavatar}
 
-<OverlayReactionsAvatar />
+<MessageUserReactionsAvatar />
 
-### <div class="label description">_forwarded from [Channel](../../core-components/channel#overlayreactionsitem)_ props</div> OverlayReactionsItem {#overlayreactionsitem}
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messageuserreactionsitem)_ props</div> MessageUserReactionsItem {#messageuserreactionsitem}
 
-<OverlayReactionsItem />
+<MessageUserReactionsItem />
 
-### <div class="label description">_forwarded from [Channel](../../core-components/channel#overlayreactions)_ props</div> OverlayReactions {#overlayreactions}
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messageuserreactions)_ props</div> MessageUserReactions {#messageuserreactions}
 
-<OverlayReactions />
+<MessageUserReactions />
 
 ### <div class="label description">_forwarded from [Channel](../../core-components/channel#reactionlist)_ props</div> ReactionList {#reactionlist}
 

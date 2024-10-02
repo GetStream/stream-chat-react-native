@@ -1,5 +1,4 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
 
 import { MessageActionType } from './MessageActionListItem';
 
@@ -14,17 +13,17 @@ import {
 import { DefaultStreamChatGenerics } from '../../types/types';
 import { BottomSheetModal } from '../UIComponents/BottomSheetModal';
 
-export type MessageOverlayProps<
+export type MessageMenuProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<
   Pick<
     MessagesContextValue<StreamChatGenerics>,
     | 'MessageActionList'
     | 'MessageActionListItem'
-    | 'OverlayReactionList'
-    | 'OverlayReactions'
-    | 'OverlayReactionsAvatar'
-    | 'OverlayReactionsItem'
+    | 'MessageReactionPicker'
+    | 'MessageUserReactions'
+    | 'MessageUserReactionsAvatar'
+    | 'MessageUserReactionsItem'
   >
 > &
   Partial<Pick<MessageContextValue<StreamChatGenerics>, 'message'>> & {
@@ -53,10 +52,10 @@ export type MessageOverlayProps<
     handleReaction?: (reactionType: string) => Promise<void>;
   };
 
-export const MessageOverlay = <
+export const MessageMenu = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageOverlayProps<StreamChatGenerics>,
+  props: MessageMenuProps<StreamChatGenerics>,
 ) => {
   const {
     dismissOverlay,
@@ -65,60 +64,53 @@ export const MessageOverlay = <
     MessageActionList: propMessageActionList,
     MessageActionListItem: propMessageActionListItem,
     messageActions,
-    OverlayReactionList: propOverlayReactionList,
-    OverlayReactions: propOverlayReactions,
-    OverlayReactionsAvatar: propOverlayReactionsAvatar,
-    OverlayReactionsItem: propOverlayReactionsItem,
+    MessageReactionPicker: propMessageReactionPicker,
+    MessageUserReactions: propMessageUserReactions,
+    MessageUserReactionsAvatar: propMessageUserReactionsAvatar,
+    MessageUserReactionsItem: propMessageUserReactionsItem,
     showMessageReactions,
     visible,
   } = props;
   const {
     MessageActionList: contextMessageActionList,
     MessageActionListItem: contextMessageActionListItem,
-    OverlayReactionList: contextOverlayReactionList,
-    OverlayReactions: contextOverlayReactions,
-    OverlayReactionsAvatar: contextOverlayReactionsAvatar,
-    OverlayReactionsItem: contextOverlayReactionsItem,
+    MessageReactionPicker: contextMessageReactionPicker,
+    MessageUserReactions: contextMessageUserReactions,
+    MessageUserReactionsAvatar: contextMessageUserReactionsAvatar,
+    MessageUserReactionsItem: contextMessageUserReactionsItem,
   } = useMessagesContext<StreamChatGenerics>();
   const { message: contextMessage } = useMessageContext<StreamChatGenerics>();
   const MessageActionList = propMessageActionList ?? contextMessageActionList;
   const MessageActionListItem = propMessageActionListItem ?? contextMessageActionListItem;
-  const OverlayReactionList = propOverlayReactionList ?? contextOverlayReactionList;
-  const OverlayReactions = propOverlayReactions ?? contextOverlayReactions;
-  const OverlayReactionsAvatar = propOverlayReactionsAvatar ?? contextOverlayReactionsAvatar;
-  const OverlayReactionsItem = propOverlayReactionsItem ?? contextOverlayReactionsItem;
+  const MessageReactionPicker = propMessageReactionPicker ?? contextMessageReactionPicker;
+  const MessageUserReactions = propMessageUserReactions ?? contextMessageUserReactions;
+  const MessageUserReactionsAvatar =
+    propMessageUserReactionsAvatar ?? contextMessageUserReactionsAvatar;
+  const MessageUserReactionsItem = propMessageUserReactionsItem ?? contextMessageUserReactionsItem;
   const message = propMessage ?? contextMessage;
 
   return (
     <BottomSheetModal onClose={dismissOverlay} visible={visible}>
-      <View style={styles.contentContainer}>
-        {showMessageReactions ? (
-          <OverlayReactions
-            message={message}
-            OverlayReactionsAvatar={OverlayReactionsAvatar}
-            OverlayReactionsItem={OverlayReactionsItem}
+      {showMessageReactions ? (
+        <MessageUserReactions
+          message={message}
+          MessageUserReactionsAvatar={MessageUserReactionsAvatar}
+          MessageUserReactionsItem={MessageUserReactionsItem}
+        />
+      ) : (
+        <>
+          <MessageReactionPicker
+            dismissOverlay={dismissOverlay}
+            handleReaction={handleReaction}
+            ownReactionTypes={message?.own_reactions?.map((reaction) => reaction.type) || []}
           />
-        ) : (
-          <>
-            <OverlayReactionList
-              dismissOverlay={dismissOverlay}
-              handleReaction={handleReaction}
-              ownReactionTypes={message?.own_reactions?.map((reaction) => reaction.type) || []}
-            />
-            <MessageActionList
-              dismissOverlay={dismissOverlay}
-              MessageActionListItem={MessageActionListItem}
-              messageActions={messageActions}
-            />
-          </>
-        )}
-      </View>
+          <MessageActionList
+            dismissOverlay={dismissOverlay}
+            MessageActionListItem={MessageActionListItem}
+            messageActions={messageActions}
+          />
+        </>
+      )}
     </BottomSheetModal>
   );
 };
-
-const styles = StyleSheet.create({
-  contentContainer: {
-    flex: 1,
-  },
-});

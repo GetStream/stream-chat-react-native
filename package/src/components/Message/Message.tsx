@@ -150,7 +150,7 @@ export type MessagePropsWithContext<
     | 'handleRetry'
     | 'handleThreadReply'
     | 'isAttachmentEqual'
-    | 'MessageOverlay'
+    | 'MessageMenu'
     | 'messageActions'
     | 'messageContentOrder'
     | 'MessageBounce'
@@ -235,7 +235,7 @@ const MessageWithContext = <
     messageActions: messageActionsProp = defaultMessageActions,
     MessageBounce,
     messageContentOrder: messageContentOrderProp,
-    MessageOverlay,
+    MessageMenu,
     messagesContext,
     MessageSimple,
     onLongPressMessage: onLongPressMessageProp,
@@ -268,9 +268,9 @@ const MessageWithContext = <
   } = useTheme();
 
   const showMessageOverlay = async (showMessageReactions = false) => {
-    setMessageOverlayVisible(true);
-    setShowMessageReactions(showMessageReactions);
     await dismissKeyboard();
+    setShowMessageReactions(showMessageReactions);
+    setMessageOverlayVisible(true);
   };
 
   const dismissOverlay = () => {
@@ -699,7 +699,7 @@ const MessageWithContext = <
             <MessageSimple />
             {isBounceDialogOpen && <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />}
             {messageOverlayVisible ? (
-              <MessageOverlay
+              <MessageMenu
                 dismissOverlay={dismissOverlay}
                 handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
                 messageActions={messageActions}

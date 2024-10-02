@@ -13,7 +13,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { triggerHaptic } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
-export type OverlayReactionListProps<
+export type MessageReactionPickerProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<MessagesContextValue<StreamChatGenerics>, 'supportedReactions'> & {
   /**
@@ -34,12 +34,12 @@ export type OverlayReactionListProps<
 };
 
 /**
- * OverlayReactionList - A high level component which implements all the logic required for a message overlay reaction list
+ * MessageReactionPicker - A high level component which implements all the logic required for a message overlay reaction list
  */
-export const OverlayReactionList = <
+export const MessageReactionPicker = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: OverlayReactionListProps<StreamChatGenerics>,
+  props: MessageReactionPickerProps<StreamChatGenerics>,
 ) => {
   const {
     dismissOverlay,
@@ -97,5 +97,3 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
 });
-
-OverlayReactionList.displayName = 'OverlayReactionList{overlay{reactionList}}';

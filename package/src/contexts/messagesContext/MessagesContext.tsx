@@ -45,16 +45,16 @@ import type { MessageSystemProps } from '../../components/MessageList/MessageSys
 import type { ScrollToBottomButtonProps } from '../../components/MessageList/ScrollToBottomButton';
 import { TypingIndicatorContainerProps } from '../../components/MessageList/TypingIndicatorContainer';
 import type { getGroupStyles } from '../../components/MessageList/utils/getGroupStyles';
-import { MessageActionListProps } from '../../components/MessageOverlay/MessageActionList';
+import { MessageActionListProps } from '../../components/MessageMenu/MessageActionList';
 import type {
   MessageActionListItemProps,
   MessageActionType,
-} from '../../components/MessageOverlay/MessageActionListItem';
-import { MessageOverlayProps } from '../../components/MessageOverlay/MessageOverlay';
-import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
-import { OverlayReactionsProps } from '../../components/MessageOverlay/OverlayReactions';
-import { OverlayReactionsAvatarProps } from '../../components/MessageOverlay/OverlayReactionsAvatar';
-import { OverlayReactionsItemProps } from '../../components/MessageOverlay/OverlayReactionsItem';
+} from '../../components/MessageMenu/MessageActionListItem';
+import { MessageMenuProps } from '../../components/MessageMenu/MessageMenu';
+import type { MessageReactionPickerProps } from '../../components/MessageMenu/MessageReactionPicker';
+import { MessageUserReactionsProps } from '../../components/MessageMenu/MessageUserReactions';
+import { MessageUserReactionsAvatarProps } from '../../components/MessageMenu/MessageUserReactionsAvatar';
+import { MessageUserReactionsItemProps } from '../../components/MessageMenu/MessageUserReactionsItem';
 import type { ReplyProps } from '../../components/Reply/Reply';
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
@@ -161,13 +161,17 @@ export type MessagesContextValue<
 
   Message: React.ComponentType<MessageProps<StreamChatGenerics>>;
   /**
-   * Custom UI component for rendering [message actions](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/2.png) in overlay.
+   * Custom UI component for rendering Message actions in message menu.
    *
-   * **Default** [MessageActionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageOverlay/MessageActions.tsx)
+   * **Default** [MessageActionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageMenu/MessageActionList.tsx)
    */
   MessageActionList: React.ComponentType<MessageActionListProps>;
+  /**
+   * Custom UI component for rendering Message action item in message menu.
+   *
+   * **Default** [MessageActionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageMenu/MessageActionList.tsx)
+   */
   MessageActionListItem: React.ComponentType<MessageActionListItemProps>;
-
   /**
    * UI component for MessageAvatar
    * Defaults to: [MessageAvatar](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageAvatar.tsx)
@@ -184,7 +188,6 @@ export type MessagesContextValue<
   MessageContent: React.ComponentType<MessageContentProps<StreamChatGenerics>>;
   /** Order to render the message content */
   messageContentOrder: MessageContentType[];
-
   /**
    * UI component for MessageDeleted
    * Defaults to: [MessageDeleted](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageSimple/MessageDeleted.tsx)
@@ -205,14 +208,17 @@ export type MessagesContextValue<
   MessageFooter: React.ComponentType<MessageFooterProps<StreamChatGenerics>>;
   MessageList: React.ComponentType<MessageListProps<StreamChatGenerics>>;
   /**
-   * UI component for MessageOverlay
+   * UI component for MessageMenu
    */
-  MessageOverlay: React.ComponentType<MessageOverlayProps<StreamChatGenerics>>;
+  MessageMenu: React.ComponentType<MessageMenuProps<StreamChatGenerics>>;
   /**
    * Custom message pinned component
    */
   MessagePinnedHeader: React.ComponentType<MessagePinnedHeaderProps<StreamChatGenerics>>;
-
+  /**
+   * UI component for MessageReactionPicker
+   */
+  MessageReactionPicker: React.ComponentType<MessageReactionPickerProps<StreamChatGenerics>>;
   /**
    * UI component for MessageReplies
    * Defaults to: [MessageReplies](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageSimple/MessageReplies.tsx)
@@ -244,17 +250,23 @@ export type MessagesContextValue<
    */
   MessageTimestamp: React.ComponentType<MessageTimestampProps>;
   /**
-   * UI component for OverlayReactionList
-   */
-  OverlayReactionList: React.ComponentType<OverlayReactionListProps<StreamChatGenerics>>;
-  /**
-   * Custom UI component for rendering [reactions list](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/2.png), in overlay (which shows up on long press on message).
+   * Custom UI component for rendering user reactions, in message menu.
    *
-   * **Default** [OverlayReactions](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageOverlay/OverlayReactions.tsx)
+   * **Default** [MessageUserReactions](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageMenu/MessageUserReactions.tsx)
    */
-  OverlayReactions: React.ComponentType<OverlayReactionsProps<StreamChatGenerics>>;
-  OverlayReactionsAvatar: React.ComponentType<OverlayReactionsAvatarProps>;
-  OverlayReactionsItem: React.ComponentType<OverlayReactionsItemProps>;
+  MessageUserReactions: React.ComponentType<MessageUserReactionsProps<StreamChatGenerics>>;
+  /**
+   * Custom UI component for rendering user reactions avatar under `MessageUserReactionsItem`, in message menu.
+   *
+   * **Default** [MessageUserReactionsAvatar](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageMenu/MessageUserReactionsAvatar.tsx)
+   */
+  MessageUserReactionsAvatar: React.ComponentType<MessageUserReactionsAvatarProps>;
+  /**
+   * Custom UI component for rendering individual user reactions item under `MessageUserReactions`, in message menu.
+   *
+   * **Default** [MessageUserReactionsItem](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageMenu/MessageUserReactionsItem.tsx)
+   */
+  MessageUserReactionsItem: React.ComponentType<MessageUserReactionsItemProps>;
   /**
    * UI component for ReactionList
    * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionList.tsx)

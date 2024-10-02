@@ -16,12 +16,12 @@ import { DefaultStreamChatGenerics, Reaction } from '../../types/types';
 import { ReactionData } from '../../utils/utils';
 import { MessageType } from '../MessageList/hooks/useMessageList';
 
-export type OverlayReactionsProps<
+export type MessageUserReactionsProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<
   Pick<
     MessagesContextValue<StreamChatGenerics>,
-    'OverlayReactionsAvatar' | 'OverlayReactionsItem' | 'supportedReactions'
+    'MessageUserReactionsAvatar' | 'MessageUserReactionsItem' | 'supportedReactions'
   >
 > & {
   /**
@@ -38,11 +38,11 @@ const sort: ReactionSortBase = {
   created_at: -1,
 };
 
-export const OverlayReactions = (props: OverlayReactionsProps) => {
+export const MessageUserReactions = (props: MessageUserReactionsProps) => {
   const {
     message,
-    OverlayReactionsAvatar: propOverlayReactionsAvatar,
-    OverlayReactionsItem: propOverlayReactionsItem,
+    MessageUserReactionsAvatar: propMessageUserReactionsAvatar,
+    MessageUserReactionsItem: propMessageUserReactionsItem,
     reactions: propReactions,
     supportedReactions: propSupportedReactions,
   } = props;
@@ -51,13 +51,14 @@ export const OverlayReactions = (props: OverlayReactionsProps) => {
     reactionTypes[0],
   );
   const {
-    OverlayReactionsAvatar: contextOverlayReactionsAvatar,
-    OverlayReactionsItem: contextOverlayReactionsItem,
+    MessageUserReactionsAvatar: contextMessageUserReactionsAvatar,
+    MessageUserReactionsItem: contextMessageUserReactionsItem,
     supportedReactions: contextSupportedReactions,
   } = useMessagesContext();
   const supportedReactions = propSupportedReactions ?? contextSupportedReactions;
-  const OverlayReactionsAvatar = propOverlayReactionsAvatar ?? contextOverlayReactionsAvatar;
-  const OverlayReactionsItem = propOverlayReactionsItem ?? contextOverlayReactionsItem;
+  const MessageUserReactionsAvatar =
+    propMessageUserReactionsAvatar ?? contextMessageUserReactionsAvatar;
+  const MessageUserReactionsItem = propMessageUserReactionsItem ?? contextMessageUserReactionsItem;
 
   const messageReactions = reactionTypes.reduce<ReactionData[]>((acc, reaction) => {
     const reactionData = supportedReactions?.find(
@@ -107,8 +108,8 @@ export const OverlayReactions = (props: OverlayReactionsProps) => {
   );
 
   const renderItem = ({ item }: { item: Reaction }) => (
-    <OverlayReactionsItem
-      OverlayReactionsAvatar={OverlayReactionsAvatar}
+    <MessageUserReactionsItem
+      MessageUserReactionsAvatar={MessageUserReactionsAvatar}
       reaction={item}
       supportedReactions={supportedReactions ?? []}
     />

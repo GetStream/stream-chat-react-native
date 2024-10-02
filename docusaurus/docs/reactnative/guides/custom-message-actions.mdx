@@ -6,7 +6,7 @@ title: Custom Message Actions
 import messageActions from '../assets/guides/custom-message-actions/message_actions.png';
 import myMessageActions from '../assets/guides/custom-message-actions/my_message_actions.png';
 
-Message actions pop up in message overlay, when you long-press a message. We have provided a granular control over these actions.
+Message actions pop up in message menu, when you long-press a message. We have provided a granular control over these actions.
 By default we render the following actions (as shown in screenshots)
 
 <table>
@@ -45,7 +45,7 @@ You can customize each one of the default actions using props on the [`Channel c
 
 The channel component accepts a prop called `messageActions`. You can use this prop as a callback function to render message actions selectively.
 
-The arguments to this function is an object with all the default message actions as [`MessageAction`](#messageaction) objects. The function should return an array of MessageAction objects to render in a [MessageActionList](../common-content/ui-components/channel/props/message_action_list.mdx) within the message overlay, that is shown when a user long presses a message in a MessageList.
+The arguments to this function is an object with all the default message actions as [`MessageAction`](#messageaction) objects. The function should return an array of MessageAction objects to render in a [MessageActionList](../common-content/ui-components/channel/props/message_action_list.mdx) within the message menu, that is shown when a user long presses a message in a MessageList.
 
 You can also customize each one of the default actions using the `messageActions` prop passed to the Channel component as shown in the example below.
 
@@ -75,7 +75,7 @@ messageActions={({
 
 ### MessageAction
 
-When you long press a message, it opens up a message overlay and renders all the actions available on message. MessageAction is an object consisting of all the parameters required to render a single action button, in message overlay.
+When you long press a message, it opens up a message menu and renders all the actions available on message. MessageAction is an object consisting of all the parameters required to render a single action button, in message menu.
 
 #### Example
 
@@ -291,9 +291,7 @@ const CustomMessageActionList = () => {
     {
       action: function () {
         Alert.alert('Edit Message action called.');
-        if (dismissOverlay) {
-          dismissOverlay();
-        }
+        dismissOverlay();
       },
       actionType: 'editMessage',
       title: 'Edit messagee',
@@ -301,9 +299,7 @@ const CustomMessageActionList = () => {
     {
       action: function () {
         Alert.alert('Delete message action');
-        if (dismissOverlay) {
-          dismissOverlay();
-        }
+        dismissOverlay();
       },
       actionType: 'deleteMessage',
       title: 'Delete Message',

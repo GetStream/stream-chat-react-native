@@ -13,7 +13,7 @@ import {
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { triggerHaptic } from '../../../native';
-import { OverlayReactionList } from '../OverlayReactionList';
+import { MessageReactionPicker } from '../MessageReactionPicker';
 
 jest.mock('../../../native', () => ({
   triggerHaptic: jest.fn(),
@@ -37,13 +37,13 @@ const renderComponent = (props = {}, ownCapabilities = { sendReaction: true }) =
         <MessagesProvider
           value={{ supportedReactions: mockSupportedReactions } as unknown as MessagesContextValue}
         >
-          <OverlayReactionList {...defaultProps} {...props} />
+          <MessageReactionPicker {...defaultProps} {...props} />
         </MessagesProvider>
       </OwnCapabilitiesProvider>
     </ThemeProvider>,
   );
 
-describe('OverlayReactionList', () => {
+describe('MessageReactionPicker', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });

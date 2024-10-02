@@ -10,9 +10,9 @@ import { Unknown } from '../../icons';
 import type { DefaultStreamChatGenerics, Reaction } from '../../types/types';
 import { ReactionData } from '../../utils/utils';
 
-export type OverlayReactionsItemProps<
+export type MessageUserReactionsItemProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessagesContextValue<StreamChatGenerics>, 'OverlayReactionsAvatar'> & {
+> = Pick<MessagesContextValue<StreamChatGenerics>, 'MessageUserReactionsAvatar'> & {
   /**
    * The reaction object
    */
@@ -23,13 +23,13 @@ export type OverlayReactionsItemProps<
   supportedReactions: ReactionData[];
 };
 
-export const OverlayReactionsItem = <
+export const MessageUserReactionsItem = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
-  OverlayReactionsAvatar,
+  MessageUserReactionsAvatar,
   reaction,
   supportedReactions,
-}: OverlayReactionsItemProps<StreamChatGenerics>) => {
+}: MessageUserReactionsItemProps<StreamChatGenerics>) => {
   const { id, name, type } = reaction;
   const {
     theme: {
@@ -70,7 +70,7 @@ export const OverlayReactionsItem = <
       style={[styles.avatarContainer, avatarContainer]}
     >
       <View style={styles.avatarInnerContainer}>
-        <OverlayReactionsAvatar reaction={reaction} size={avatarSize} />
+        <MessageUserReactionsAvatar reaction={reaction} size={avatarSize} />
         <View
           style={[
             styles.reactionBubbleBackground,
