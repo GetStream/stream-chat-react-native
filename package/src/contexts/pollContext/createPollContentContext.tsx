@@ -7,8 +7,8 @@ import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type CreatePollContentContextValue = {
+  closePollCreationDialog: () => void;
   createAndSendPoll: (pollData: CreatePollData) => Promise<void>;
-  handleClose: () => void;
 };
 
 export const CreatePollContentContext = React.createContext(

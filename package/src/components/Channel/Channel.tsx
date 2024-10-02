@@ -416,7 +416,9 @@ export type ChannelPropsWithContext<
      * Tells if channel is rendering a thread list
      */
     threadList?: boolean;
-  };
+  } & Partial<
+    Pick<InputMessageInputContextValue, 'openPollCreationDialog' | 'closePollCreationDialog'>
+  >;
 
 const ChannelWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -455,6 +457,7 @@ const ChannelWithContext = <
     channel,
     children,
     client,
+    closePollCreationDialog,
     CommandsButton = CommandsButtonDefault,
     compressImageQuality,
     CooldownTimer = CooldownTimerDefault,
@@ -499,8 +502,8 @@ const ChannelWithContext = <
     handleRetry,
     handleThreadReply,
     hasCameraPicker = isImagePickerAvailable(),
-    hasCommands = true,
     // If pickDocument isn't available, default to hiding the file picker
+    hasCommands = true,
     hasFilePicker = pickDocument !== null,
     hasImagePicker = true,
     hideDateSeparators = false,
@@ -564,6 +567,7 @@ const ChannelWithContext = <
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
+    openPollCreationDialog,
     OverlayReactionList = OverlayReactionListDefault,
     overrideOwnCapabilities,
     ReactionList = ReactionListDefault,
@@ -2270,6 +2274,7 @@ const ChannelWithContext = <
     channelId,
     clearEditingState,
     clearQuotedMessageState,
+    closePollCreationDialog,
     CommandsButton,
     compressImageQuality,
     CooldownTimer,
@@ -2298,6 +2303,7 @@ const ChannelWithContext = <
     MoreOptionsButton,
     numberOfLines,
     onChangeText,
+    openPollCreationDialog,
     quotedMessage,
     SendButton,
     sendImageAsync,

@@ -4,7 +4,6 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useAttachmentPickerContext } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { CreatePollButton } from '../../Poll/components/CreatePollButton';
 
 const styles = StyleSheet.create({
   container: {
@@ -22,14 +21,21 @@ export const AttachmentPickerSelectionBar = () => {
     attachmentSelectionBarHeight,
     CameraSelectorIcon,
     closePicker,
+    CreatePollIcon,
     FileSelectorIcon,
     ImageSelectorIcon,
     selectedPicker,
     setSelectedPicker,
   } = useAttachmentPickerContext();
 
-  const { hasCameraPicker, hasFilePicker, imageUploads, pickFile, takeAndUploadImage } =
-    useMessageInputContext();
+  const {
+    hasCameraPicker,
+    hasFilePicker,
+    imageUploads,
+    openPollCreationDialog,
+    pickFile,
+    takeAndUploadImage,
+  } = useMessageInputContext();
 
   const {
     theme: {
@@ -50,6 +56,12 @@ export const AttachmentPickerSelectionBar = () => {
     setSelectedPicker(undefined);
     closePicker();
     pickFile();
+  };
+
+  const openPollCreationModal = () => {
+    setSelectedPicker(undefined);
+    closePicker();
+    openPollCreationDialog?.();
   };
 
   return (
@@ -94,7 +106,15 @@ export const AttachmentPickerSelectionBar = () => {
           </View>
         </TouchableOpacity>
       ) : null}
-      <CreatePollButton style={[styles.icon, icon]} />
+      <TouchableOpacity
+        hitSlop={{ bottom: 15, top: 15 }}
+        onPress={openPollCreationModal}
+        testID='create-poll-touchable'
+      >
+        <View style={[styles.icon, icon]}>
+          <CreatePollIcon />
+        </View>
+      </TouchableOpacity>
     </View>
   );
 };

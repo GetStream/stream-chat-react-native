@@ -311,6 +311,7 @@ export type InputMessageInputContextValue<
 
   clearEditingState: () => void;
   clearQuotedMessageState: () => void;
+  closePollCreationDialog: () => void;
   /**
    * Custom UI component for commands button.
    *
@@ -360,6 +361,7 @@ export type InputMessageInputContextValue<
   MoreOptionsButton: React.ComponentType<MoreOptionsButtonProps>;
   /** Limit on the number of lines in the text input before scrolling */
   numberOfLines: number;
+  openPollCreationDialog: () => void;
   quotedMessage: boolean | MessageType<StreamChatGenerics>;
   /**
    * Custom UI component for send button.
@@ -370,6 +372,7 @@ export type InputMessageInputContextValue<
   sendImageAsync: boolean;
   sendMessage: (message: Partial<StreamMessage<StreamChatGenerics>>) => Promise<void>;
   setQuotedMessageState: (message: MessageType<StreamChatGenerics>) => void;
+  showPollCreationDialog: boolean;
   /**
    * Custom UI component to render checkbox with text ("Also send to channel") in Thread's input box.
    * When ticked, message will also be sent in parent channel.
@@ -377,6 +380,7 @@ export type InputMessageInputContextValue<
   ShowThreadMessageInChannelButton: React.ComponentType<{
     threadList?: boolean;
   }>;
+
   /**
    * Custom UI component for audio recording mic button.
    *
@@ -389,7 +393,6 @@ export type InputMessageInputContextValue<
    * **Default** [UploadProgressIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/UploadProgressIndicator.tsx)
    */
   UploadProgressIndicator: React.ComponentType<UploadProgressIndicatorProps>;
-
   /**
    * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
    *
@@ -411,6 +414,7 @@ export type InputMessageInputContextValue<
    * Image picker defaults to 0.8 for iOS and 1 for Android
    */
   compressImageQuality?: number;
+
   /**
    * Override file upload request
    *
@@ -423,6 +427,7 @@ export type InputMessageInputContextValue<
     file: File,
     channel: ChannelContextValue<StreamChatGenerics>['channel'],
   ) => Promise<SendFileAPIResponse>;
+
   /**
    * Override image upload request
    *
@@ -449,12 +454,10 @@ export type InputMessageInputContextValue<
    * Prop to override the default emoji search index in auto complete suggestion list.
    */
   emojiSearchIndex?: EmojiSearchIndex;
-
   /**
    * Handler for when the attach button is pressed.
    */
   handleAttachButtonPress?: () => void;
-
   /** Initial value to set on input */
   initialValue?: string;
   /**
@@ -567,7 +570,17 @@ export const MessageInputProvider = <
   }>({});
   const [giphyActive, setGiphyActive] = useState(false);
   const [sendThreadMessageInChannel, setSendThreadMessageInChannel] = useState(false);
-  const { editing, initialValue } = value;
+  const [showPollCreationDialog, setShowPollCreationDialog] = useState(false);
+
+  const defaultOpenPollCreationDialog = useCallback(() => setShowPollCreationDialog(true), []);
+  const defaultClosePollCreationDialog = useCallback(() => setShowPollCreationDialog(false), []);
+
+  const {
+    closePollCreationDialog = defaultClosePollCreationDialog,
+    editing,
+    initialValue,
+    openPollCreationDialog = defaultOpenPollCreationDialog,
+  } = value;
   const {
     fileUploads,
     imageUploads,
@@ -1437,9 +1450,11 @@ export const MessageInputProvider = <
     uploadNewFile,
     uploadNewImage,
     ...value,
+    closePollCreationDialog,
+    openPollCreationDialog,
     sendMessage, // overriding the originally passed in sendMessage
+    showPollCreationDialog,
   });
-
   return (
     <MessageInputContext.Provider
       value={messageInputContext as unknown as MessageInputContextValue}

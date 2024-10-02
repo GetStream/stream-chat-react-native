@@ -23,7 +23,7 @@ export const CreatePollContentWithContext = () => {
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [optionSuggestionsAllowed, setOptionSuggestionsAllowed] = useState(false);
 
-  const { createAndSendPoll, handleClose } = useCreatePollContentContext();
+  const { closePollCreationDialog, createAndSendPoll } = useCreatePollContentContext();
 
   // positions and index lookup map
   // TODO: Please rethink the structure of this, bidirectional data flow is not great
@@ -35,7 +35,7 @@ export const CreatePollContentWithContext = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <TouchableOpacity onPress={() => handleClose()}>
+        <TouchableOpacity onPress={closePollCreationDialog}>
           <Text>BACK</Text>
         </TouchableOpacity>
         <Text>Create Poll</Text>
@@ -139,9 +139,8 @@ export const CreatePollContentWithContext = () => {
   );
 };
 
-export const CreatePollContent = (props: { handleClose: () => void }) => {
-  const { handleClose } = props;
-  const { sendMessage } = useMessageInputContext();
+export const CreatePollContent = () => {
+  const { closePollCreationDialog, sendMessage } = useMessageInputContext();
   const { client } = useChatContext();
 
   const createAndSendPoll = useCallback(
@@ -151,13 +150,13 @@ export const CreatePollContent = (props: { handleClose: () => void }) => {
       // console.log('CREATED POLL: ', poll.id);
       // await sendMessage({ customMessageData: { poll_id: poll.id as string } });
       console.log('ISE: SENDING: ', pollData.options);
-      handleClose();
+      closePollCreationDialog();
     },
-    [client, sendMessage, handleClose],
+    [client, sendMessage, closePollCreationDialog],
   );
 
   return (
-    <CreatePollContentProvider value={{ createAndSendPoll, handleClose }}>
+    <CreatePollContentProvider value={{ closePollCreationDialog, createAndSendPoll }}>
       <CreatePollContentWithContext />
     </CreatePollContentProvider>
   );
