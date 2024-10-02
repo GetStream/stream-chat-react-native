@@ -7,6 +7,7 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { CameraSelectorIcon } from '../../AttachmentPicker/components/CameraSelectorIcon';
 import { FileSelectorIcon } from '../../AttachmentPicker/components/FileSelectorIcon';
 import { ImageSelectorIcon } from '../../AttachmentPicker/components/ImageSelectorIcon';
+import { CreatePollIcon } from '../../Poll/components/CreatePollIcon';
 
 type NativeAttachmentPickerProps = {
   onRequestedClose: () => void;
@@ -38,6 +39,7 @@ export const NativeAttachmentPicker = ({
   const {
     hasFilePicker,
     hasImagePicker,
+    openPollCreationDialog,
     pickAndUploadImageFromNativePicker,
     pickFile,
     takeAndUploadImage,
@@ -91,7 +93,11 @@ export const NativeAttachmentPicker = ({
     width: size,
   };
 
-  const onClose = ({ onPressHandler }: { onPressHandler?: () => Promise<void> }) => {
+  const onClose = ({
+    onPressHandler,
+  }: {
+    onPressHandler?: (() => Promise<void>) | (() => void);
+  }) => {
     if (onPressHandler) {
       onPressHandler();
     }
@@ -103,7 +109,9 @@ export const NativeAttachmentPicker = ({
     }).start(onRequestedClose);
   };
 
-  const buttons = [];
+  const buttons = [
+    { icon: <CreatePollIcon />, id: 'Poll', onPressHandler: openPollCreationDialog },
+  ];
 
   if (hasImagePicker) {
     buttons.push({
