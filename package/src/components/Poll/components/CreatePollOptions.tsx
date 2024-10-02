@@ -186,14 +186,6 @@ export const CreatePollOption = ({
     <Animated.View
       style={[
         {
-          position: 'absolute',
-          width: '100%',
-        },
-        animatedStyles,
-      ]}
-    >
-      <View
-        style={{
           alignItems: 'center',
           backgroundColor: '#F7F7F8',
           borderRadius: 12,
@@ -202,23 +194,26 @@ export const CreatePollOption = ({
           marginTop: 8,
           paddingHorizontal: 16,
           paddingVertical: 18,
+          position: 'absolute',
+          width: '100%',
+        },
+        animatedStyles,
+      ]}
+    >
+      <TextInput
+        onChangeText={(newText) => handleChangeText(newText, index)}
+        placeholder='Option'
+        style={{
+          fontSize: 16,
+          paddingVertical: 0, // android is adding extra padding so we remove it
         }}
-      >
-        <TextInput
-          onChangeText={(newText) => handleChangeText(newText, index)}
-          placeholder='Option'
-          style={{
-            flex: 1,
-            fontSize: 16,
-          }}
-          value={option.text}
-        />
-        <GestureDetector gesture={gesture}>
-          <Animated.View>
-            <DragHandle pathFill='#7E828B' />
-          </Animated.View>
-        </GestureDetector>
-      </View>
+        value={option.text}
+      />
+      <GestureDetector gesture={gesture}>
+        <Animated.View>
+          <DragHandle pathFill='#7E828B' />
+        </Animated.View>
+      </GestureDetector>
     </Animated.View>
   );
 };
