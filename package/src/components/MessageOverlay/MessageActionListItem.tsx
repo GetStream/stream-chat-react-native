@@ -61,7 +61,7 @@ export const MessageActionListItem = (props: MessageActionListItemProps) => {
   } = useTheme();
 
   return (
-    <Pressable onPress={action}>
+    <Pressable onPress={action} style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}>
       <View
         accessibilityLabel={`${actionType} action list item`}
         style={[styles.container, actionContainer]}
