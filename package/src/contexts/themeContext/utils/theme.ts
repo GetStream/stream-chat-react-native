@@ -606,7 +606,6 @@ export type Theme = {
       timeIcon: IconProps;
     };
     targetedMessageContainer: ViewStyle;
-    targetedMessageUnderlay: ViewStyle;
     videoThumbnail: {
       container: ViewStyle;
       roundedView: ViewStyle;
@@ -1215,7 +1214,6 @@ export const defaultTheme: Theme = {
       },
     },
     targetedMessageContainer: {},
-    targetedMessageUnderlay: {},
     videoThumbnail: {
       container: {},
       roundedView: {},

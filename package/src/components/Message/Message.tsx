@@ -263,7 +263,8 @@ const MessageWithContext = <
   const {
     theme: {
       colors: { bg_gradient_start, targetedMessageBackground },
-      messageSimple: { targetedMessageContainer, targetedMessageUnderlay },
+      messageSimple: { targetedMessageContainer },
+      screenPadding,
     },
   } = useTheme();
 
@@ -674,40 +675,32 @@ const MessageWithContext = <
     <MessageProvider value={messageContext}>
       <View
         style={[
-          message.pinned && {
-            ...targetedMessageContainer,
-            backgroundColor: targetedMessageBackground,
+          style,
+          {
+            backgroundColor: showUnreadUnderlay ? bg_gradient_start : undefined,
           },
         ]}
-        testID='message-wrapper'
       >
         <View
           style={[
-            style,
-            {
-              backgroundColor: showUnreadUnderlay ? bg_gradient_start : undefined,
-            },
+            { paddingHorizontal: screenPadding },
+            isTargetedMessage || message.pinned
+              ? { backgroundColor: targetedMessageBackground, ...targetedMessageContainer }
+              : {},
           ]}
+          testID='message-wrapper'
         >
-          <View
-            style={[
-              isTargetedMessage
-                ? { backgroundColor: targetedMessageBackground, ...targetedMessageUnderlay }
-                : {},
-            ]}
-          >
-            <MessageSimple />
-            {isBounceDialogOpen && <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />}
-            {messageOverlayVisible ? (
-              <MessageMenu
-                dismissOverlay={dismissOverlay}
-                handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
-                messageActions={messageActions}
-                showMessageReactions={showMessageReactions}
-                visible={messageOverlayVisible}
-              />
-            ) : null}
-          </View>
+          <MessageSimple />
+          {isBounceDialogOpen && <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />}
+          {messageOverlayVisible ? (
+            <MessageMenu
+              dismissOverlay={dismissOverlay}
+              handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
+              messageActions={messageActions}
+              showMessageReactions={showMessageReactions}
+              visible={messageOverlayVisible}
+            />
+          ) : null}
         </View>
       </View>
     </MessageProvider>

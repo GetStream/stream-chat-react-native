@@ -34,7 +34,9 @@ describe('ReactionButton', () => {
     );
 
     // Check if the unselected pathFill color is rendered by the mock Icon
-    expect(getByText(defaultTheme.overlay.reactionButton.unfilledColor.toString())).toBeTruthy();
+    expect(
+      getByText(defaultTheme.messageMenu.reactionButton.unfilledColor.toString()),
+    ).toBeTruthy();
   });
 
   it('should call onPress function with the correct reaction type when pressed', () => {
@@ -70,6 +72,6 @@ describe('ReactionButton', () => {
       </ThemeProvider>,
     );
 
-    expect(getByText(defaultTheme.overlay.reactionButton.filledColor.toString())).toBeTruthy();
+    expect(getByText(defaultTheme.messageMenu.reactionButton.filledColor.toString())).toBeTruthy();
   });
 });
