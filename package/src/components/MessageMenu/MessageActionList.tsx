@@ -22,7 +22,9 @@ export const MessageActionList = (props: MessageActionListProps) => {
   const { MessageActionListItem, messageActions } = props;
   const {
     theme: {
-      messageActionList: { container },
+      messageMenu: {
+        actionList: { container },
+      },
     },
   } = useTheme();
 

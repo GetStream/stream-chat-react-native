@@ -34,8 +34,8 @@ export const MessageUserReactionsItem = <
   const {
     theme: {
       colors: { accent_blue, black, grey, grey_gainsboro, white },
-      overlay: {
-        reactions: {
+      messageMenu: {
+        userReactions: {
           avatarContainer,
           avatarName,
           avatarSize,

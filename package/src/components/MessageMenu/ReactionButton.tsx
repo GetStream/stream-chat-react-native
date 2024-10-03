@@ -30,9 +30,9 @@ export const ReactionButton = (props: ReactionButtonProps) => {
   const {
     theme: {
       colors: { light_blue, white },
-      overlay: {
+      messageMenu: {
         reactionButton: { filledColor, unfilledColor },
-        reactionsList: { buttonContainer, reactionIconSize },
+        reactionPicker: { buttonContainer, reactionIconSize },
       },
     },
   } = useTheme();

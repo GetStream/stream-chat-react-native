@@ -54,8 +54,8 @@ export const MessageActionListItem = (props: MessageActionListItemProps) => {
   const {
     theme: {
       colors: { black },
-      overlay: {
-        messageActions: { actionContainer, icon: iconTheme, title: titleTheme },
+      messageMenu: {
+        actionListItem: { container, icon: iconTheme, title: titleTheme },
       },
     },
   } = useTheme();
@@ -64,7 +64,7 @@ export const MessageActionListItem = (props: MessageActionListItemProps) => {
     <Pressable onPress={action} style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}>
       <View
         accessibilityLabel={`${actionType} action list item`}
-        style={[styles.container, actionContainer]}
+        style={[styles.container, container]}
       >
         <View style={iconTheme}>{icon}</View>
         <Text style={[styles.titleStyle, { color: black }, titleStyle, titleTheme]}>{title}</Text>

@@ -238,9 +238,7 @@ export type Theme = {
     container: ViewStyle;
     loadingText: TextStyle;
   };
-  messageActionList: {
-    container: ViewStyle;
-  };
+
   messageInput: {
     attachButton: ViewStyle;
     attachButtonContainer: ViewStyle;
@@ -408,6 +406,40 @@ export type Theme = {
       chevronColor?: ColorValue;
     };
     typingIndicatorContainer: ViewStyle;
+  };
+  messageMenu: {
+    actionList: {
+      container: ViewStyle;
+    };
+    actionListItem: {
+      container: ViewStyle;
+      icon: ViewStyle;
+      title: TextStyle;
+    };
+    reactionButton: {
+      filledColor: ColorValue;
+      unfilledColor: ColorValue;
+    };
+    reactionPicker: {
+      buttonContainer: ViewStyle;
+      container: ViewStyle;
+      reactionIconSize: number;
+    };
+    userReactions: {
+      avatarContainer: ViewStyle;
+      avatarName: TextStyle;
+      avatarSize: number;
+      container: ViewStyle;
+      flatlistColumnContainer: ViewStyle;
+      flatlistContainer: ViewStyle;
+      radius: number;
+      reactionBubble: ViewStyle;
+      reactionBubbleBackground: ViewStyle;
+      reactionBubbleBorderRadius: number;
+      reactionSelectorContainer: ViewStyle;
+      reactionsText: TextStyle;
+      title: TextStyle;
+    };
   };
   messageSimple: {
     actions: {
@@ -578,39 +610,6 @@ export type Theme = {
     videoThumbnail: {
       container: ViewStyle;
       roundedView: ViewStyle;
-    };
-  };
-  overlay: {
-    container: ViewStyle;
-    messageActions: {
-      actionContainer: ViewStyle;
-      icon: ViewStyle;
-      title: TextStyle;
-    };
-    padding: number;
-    reactionButton: {
-      filledColor: ColorValue;
-      unfilledColor: ColorValue;
-    };
-    reactions: {
-      avatarContainer: ViewStyle;
-      avatarName: TextStyle;
-      avatarSize: number;
-      container: ViewStyle;
-      flatlistColumnContainer: ViewStyle;
-      flatlistContainer: ViewStyle;
-      radius: number;
-      reactionBubble: ViewStyle;
-      reactionBubbleBackground: ViewStyle;
-      reactionBubbleBorderRadius: number;
-      reactionSelectorContainer: ViewStyle;
-      reactionsText: TextStyle;
-      title: TextStyle;
-    };
-    reactionsList: {
-      buttonContainer: ViewStyle;
-      container: ViewStyle;
-      reactionIconSize: number;
     };
   };
   progressControl: {
@@ -832,9 +831,6 @@ export const defaultTheme: Theme = {
     container: {},
     loadingText: {},
   },
-  messageActionList: {
-    container: {},
-  },
   messageInput: {
     attachButton: {},
     attachButtonContainer: {},
@@ -988,6 +984,40 @@ export const defaultTheme: Theme = {
       wrapper: {},
     },
     typingIndicatorContainer: {},
+  },
+  messageMenu: {
+    actionList: {
+      container: {},
+    },
+    actionListItem: {
+      container: {},
+      icon: {},
+      title: {},
+    },
+    reactionButton: {
+      filledColor: Colors.accent_blue,
+      unfilledColor: Colors.grey,
+    },
+    reactionPicker: {
+      buttonContainer: {},
+      container: {},
+      reactionIconSize: 24,
+    },
+    userReactions: {
+      avatarContainer: {},
+      avatarName: {},
+      avatarSize: 64,
+      container: {},
+      flatlistColumnContainer: {},
+      flatlistContainer: {},
+      radius: 2,
+      reactionBubble: {},
+      reactionBubbleBackground: {},
+      reactionBubbleBorderRadius: 24,
+      reactionSelectorContainer: {},
+      reactionsText: {},
+      title: {},
+    },
   },
   messageSimple: {
     actions: {
@@ -1191,39 +1221,7 @@ export const defaultTheme: Theme = {
       roundedView: {},
     },
   },
-  overlay: {
-    container: {},
-    messageActions: {
-      actionContainer: {},
-      icon: {},
-      title: {},
-    },
-    padding: 8,
-    reactionButton: {
-      filledColor: Colors.accent_blue,
-      unfilledColor: Colors.grey,
-    },
-    reactions: {
-      avatarContainer: {},
-      avatarName: {},
-      avatarSize: 64,
-      container: {},
-      flatlistColumnContainer: {},
-      flatlistContainer: {},
-      radius: 2,
-      reactionBubble: {},
-      reactionBubbleBackground: {},
-      reactionBubbleBorderRadius: 24,
-      reactionSelectorContainer: {},
-      reactionsText: {},
-      title: {},
-    },
-    reactionsList: {
-      buttonContainer: {},
-      container: {},
-      reactionIconSize: 24,
-    },
-  },
+
   progressControl: {
     container: {},
     filledColor: '',

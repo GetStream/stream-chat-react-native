@@ -50,8 +50,8 @@ export const MessageReactionPicker = <
   const { supportedReactions: contextSupportedReactions } = useMessagesContext();
   const {
     theme: {
-      overlay: {
-        reactionsList: { container },
+      messageMenu: {
+        reactionPicker: { container },
       },
     },
   } = useTheme();

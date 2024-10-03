@@ -82,8 +82,8 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
 
   const {
     theme: {
-      overlay: {
-        reactions: {
+      messageMenu: {
+        userReactions: {
           container,
           flatlistColumnContainer,
           flatlistContainer,
