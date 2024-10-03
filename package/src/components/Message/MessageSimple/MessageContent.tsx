@@ -26,6 +26,7 @@ import {
 import { useViewport } from '../../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { MessageStatusTypes } from '../../../utils/utils';
+import { Poll } from '../../Poll/Poll';
 
 const styles = StyleSheet.create({
   containerInner: {
@@ -377,6 +378,8 @@ const MessageContentWithContext = <
                 );
               case 'gallery':
                 return <Gallery key={`gallery_${messageContentOrderIndex}`} />;
+              case 'poll':
+                return message.poll_id && message.poll ? <Poll /> : null;
               case 'text':
               default:
                 return otherAttachments.length && otherAttachments[0].actions ? null : (
