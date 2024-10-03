@@ -173,9 +173,9 @@ export const CreatePollContent = () => {
   const createAndSendPoll = useCallback(
     async (pollData: CreatePollData) => {
       // TODO: replace with stateful name
-      // const poll = await client.polls.createPoll(pollData);
-      // console.log('CREATED POLL: ', poll.id);
-      // await sendMessage({ customMessageData: { poll_id: poll.id as string } });
+      const poll = await client.polls.createPoll(pollData);
+      console.log('CREATED POLL: ', poll.id);
+      await sendMessage({ customMessageData: { poll_id: poll.id as string } });
       console.log('ISE: SENDING: ', pollData.options);
       closePollCreationDialog();
     },

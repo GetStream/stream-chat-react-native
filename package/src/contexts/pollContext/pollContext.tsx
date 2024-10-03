@@ -10,6 +10,8 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 export type PollContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
+  maxNumberOfVotes: number;
+  name: string;
   poll: Poll<StreamChatGenerics>;
 };
 
