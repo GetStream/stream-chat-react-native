@@ -695,12 +695,14 @@ export const MessageInputProvider = <
       );
     }
 
+    // RN CLI
     if (numberOfUploads >= value.maxNumberOfFiles) {
       Alert.alert('Maximum number of files reached');
       return;
     }
 
     if (result.assets && result.assets.length > 0) {
+      // Expo
       if (result.assets.length > value.maxNumberOfFiles) {
         Alert.alert('Maximum number of files reached');
         return;
