@@ -694,7 +694,17 @@ export const MessageInputProvider = <
         ],
       );
     }
+
+    if (numberOfUploads >= value.maxNumberOfFiles) {
+      Alert.alert('Maximum number of files reached');
+      return;
+    }
+
     if (result.assets && result.assets.length > 0) {
+      if (result.assets.length > value.maxNumberOfFiles) {
+        Alert.alert('Maximum number of files reached');
+        return;
+      }
       result.assets.forEach(async (asset) => {
         if (asset.type.includes('image')) {
           await uploadNewImage(asset);
