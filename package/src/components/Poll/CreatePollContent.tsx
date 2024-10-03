@@ -20,6 +20,7 @@ export const CreatePollContentWithContext = () => {
   const [pollTitle, setPollTitle] = useState('');
   const [pollOptions, setPollOptions] = useState<PollOptionData[]>([{ text: '' }]);
   const [multipleAnswersAllowed, setMultipleAnswersAllowed] = useState(false);
+  const [maxVotesPerPerson, setMaxVotesPerPerson] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [optionSuggestionsAllowed, setOptionSuggestionsAllowed] = useState(false);
 
@@ -83,23 +84,49 @@ export const CreatePollContentWithContext = () => {
           pollOptions={pollOptions}
           setPollOptions={setPollOptions}
         />
-        <View
-          style={{
-            alignItems: 'center',
-            backgroundColor: '#F7F7F8',
-            borderRadius: 12,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginTop: 16,
-            paddingHorizontal: 16,
-            paddingVertical: 18,
-          }}
-        >
-          <Text style={{ fontSize: 16 }}>Multiple answers</Text>
-          <Switch
-            onValueChange={() => setMultipleAnswersAllowed(!multipleAnswersAllowed)}
-            value={multipleAnswersAllowed}
-          />
+        <View style={{ backgroundColor: '#F7F7F8', borderRadius: 12, marginTop: 16 }}>
+          <View
+            style={{
+              alignItems: 'center',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              paddingHorizontal: 16,
+              paddingVertical: 18,
+            }}
+          >
+            <Text style={{ fontSize: 16 }}>Multiple answers</Text>
+            <Switch
+              onValueChange={() => setMultipleAnswersAllowed(!multipleAnswersAllowed)}
+              value={multipleAnswersAllowed}
+            />
+          </View>
+          {multipleAnswersAllowed ? (
+            <View
+              style={{
+                alignItems: 'flex-start',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                paddingHorizontal: 16,
+                paddingVertical: 18,
+              }}
+            >
+              {maxVotesPerPerson.length > 0 &&
+              (Number(maxVotesPerPerson) < 1 || Number(maxVotesPerPerson) > 10) ? (
+                <Text
+                  style={{ color: '#FF3842', fontSize: 12, left: 16, position: 'absolute', top: 0 }}
+                >
+                  Type a number from 1 to 10
+                </Text>
+              ) : null}
+              <TextInput
+                inputMode='numeric'
+                onChangeText={setMaxVotesPerPerson}
+                placeholder='Maximum votes per person'
+                style={{ flex: 1, fontSize: 16 }}
+                value={maxVotesPerPerson}
+              />
+            </View>
+          ) : null}
         </View>
         <View
           style={{
