@@ -10,26 +10,20 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { PinHeader } from '../../../icons';
 
-const styles = StyleSheet.create({
-  container: {
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  label: {},
-});
-
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
-export type MessagePinnedHeaderPropsWithContext<
+export type MessagePinnedHeaderProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessageContextValue<StreamChatGenerics>, 'message'>;
+> = Partial<Pick<MessageContextValue<StreamChatGenerics>, 'message'>>;
 
-const MessagePinnedHeaderWithContext = <
+export const MessagePinnedHeader = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessagePinnedHeaderPropsWithContext<StreamChatGenerics>,
+  props: MessagePinnedHeaderProps<StreamChatGenerics>,
 ) => {
-  const { message } = props;
+  const { message: propMessage } = props;
+  const { message: contextMessage } = useMessageContext<StreamChatGenerics>();
+  const message = propMessage || contextMessage;
   const {
     theme: {
       colors: { grey },
@@ -41,7 +35,7 @@ const MessagePinnedHeaderWithContext = <
   const { client } = useChatContext();
   return (
     <View style={[styles.container, container]} testID='message-pinned'>
-      <PinHeader pathFill={grey} />
+      <PinHeader fill={grey} size={16} />
       <Text style={[{ color: grey }, styles.label, label]}>
         {t<string>('Pinned by')}{' '}
         {message?.pinned_by?.id === client?.user?.id ? t<string>('You') : message?.pinned_by?.name}
@@ -50,47 +44,13 @@ const MessagePinnedHeaderWithContext = <
   );
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: MessagePinnedHeaderPropsWithContext<StreamChatGenerics>,
-  nextProps: MessagePinnedHeaderPropsWithContext<StreamChatGenerics>,
-) => {
-  const { message: prevMessage } = prevProps;
-  const { message: nextMessage } = nextProps;
-  const messageEqual =
-    prevMessage.deleted_at === nextMessage.deleted_at &&
-    prevMessage.status === nextMessage.status &&
-    prevMessage.type === nextMessage.type &&
-    prevMessage.text === nextMessage.text &&
-    prevMessage.pinned === nextMessage.pinned;
-  if (!messageEqual) return false;
-  return true;
-};
-
-const MemoizedMessagePinnedHeader = React.memo(
-  MessagePinnedHeaderWithContext,
-  areEqual,
-) as typeof MessagePinnedHeaderWithContext;
-
-export type MessagePinnedHeaderProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<MessagePinnedHeaderPropsWithContext<StreamChatGenerics>>;
-
-export const MessagePinnedHeader = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessagePinnedHeaderProps<StreamChatGenerics>,
-) => {
-  const { lastGroupMessage, message } = useMessageContext<StreamChatGenerics>();
-
-  return (
-    <MemoizedMessagePinnedHeader
-      {...{
-        lastGroupMessage,
-        message,
-      }}
-      {...props}
-    />
-  );
-};
-
-MessagePinnedHeader.displayName = 'MessagePinnedHeader{messageSimple{pinned}}';
+const styles = StyleSheet.create({
+  container: {
+    alignContent: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  label: {
+    marginLeft: 4,
+  },
+});

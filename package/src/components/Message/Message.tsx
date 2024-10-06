@@ -74,7 +74,7 @@ export type FileAttachmentTouchableHandlerPayload<
   additionalInfo?: { attachment?: Attachment<StreamChatGenerics> };
 };
 
-export type TouchableHandlerPayload = {
+export type PressableHandlerPayload = {
   defaultHandler?: () => void;
   event?: GestureResponderEvent;
 } & (
@@ -86,9 +86,9 @@ export type TouchableHandlerPayload = {
   | FileAttachmentTouchableHandlerPayload
 );
 
-export type MessageTouchableHandlerPayload<
+export type MessagePressableHandlerPayload<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = TouchableHandlerPayload & {
+> = PressableHandlerPayload & {
   /**
    * Set of action handler functions for various message actions. You can use these functions to perform any action when give interaction occurs.
    */
@@ -129,7 +129,9 @@ export type MessagePropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'enforceUniqueReaction' | 'members'> &
   Pick<KeyboardContextValue, 'dismissKeyboard'> &
-  Partial<Omit<MessageContextValue<StreamChatGenerics>, 'groupStyles' | 'message'>> &
+  Partial<
+    Omit<MessageContextValue<StreamChatGenerics>, 'groupStyles' | 'handleReaction' | 'message'>
+  > &
   Pick<MessageContextValue<StreamChatGenerics>, 'groupStyles' | 'message'> &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
@@ -572,29 +574,16 @@ const MessageWithContext = <
     unpinMessage: handleTogglePinMessage,
   };
 
-  const onLongPressMessage =
-    hasAttachmentActions || isBlockedMessage(message)
-      ? () => null
-      : onLongPressMessageProp
-      ? (payload?: TouchableHandlerPayload) =>
-          onLongPressMessageProp({
-            actionHandlers,
-            defaultHandler: payload?.defaultHandler || showMessageOverlay,
-            emitter: payload?.emitter || 'message',
-            event: payload?.event,
-            message,
-          })
-      : enableLongPress
-      ? () => {
-          // If a message is bounced, on long press the message bounce options modal should open.
-          if (isBouncedMessage(message)) {
-            setIsBounceDialogOpen(true);
-            return;
-          }
-          triggerHaptic('impactMedium');
-          showMessageOverlay();
-        }
-      : () => null;
+  const onLongPress = () => {
+    if (hasAttachmentActions || isBlockedMessage(message) || !enableLongPress) return;
+    // If a message is bounced, on long press the message bounce options modal should open.
+    if (isBouncedMessage(message)) {
+      setIsBounceDialogOpen(true);
+      return;
+    }
+    triggerHaptic('impactMedium');
+    showMessageOverlay();
+  };
 
   const messageContext = useCreateMessageContext({
     actionsEnabled,
@@ -610,11 +599,11 @@ const MessageWithContext = <
     handleEditMessage,
     handleFlagMessage,
     handleQuotedReplyMessage,
+    handleReaction,
     handleResendMessage,
     handleToggleBanUser,
     handleToggleMuteUser,
-    handleToggleReaction,
-    hasReactions,
+    hasReactions: hasReactions && message.type !== 'deleted',
     images: attachments.images,
     isEditedMessageOpen,
     isMyMessage,
@@ -624,7 +613,24 @@ const MessageWithContext = <
     message,
     messageContentOrder,
     myMessageTheme: messagesContext.myMessageTheme,
-    onLongPress: onLongPressMessage,
+    onLongPress: (payload) => {
+      const onLongPressArgs = {
+        actionHandlers,
+        defaultHandler: payload?.defaultHandler || onLongPress,
+        emitter: payload?.emitter || 'message',
+        event: payload?.event,
+        message,
+      };
+
+      const handleOnLongPress = () => {
+        if (onLongPressMessageProp) return onLongPressMessageProp(onLongPressArgs);
+        if (payload?.defaultHandler) return payload.defaultHandler();
+
+        return onLongPress();
+      };
+
+      handleOnLongPress();
+    },
     onlyEmojis,
     onOpenThread,
     onPress: (payload) => {
@@ -683,8 +689,8 @@ const MessageWithContext = <
       >
         <View
           style={[
-            { paddingHorizontal: screenPadding },
-            isTargetedMessage || message.pinned
+            { marginTop: 2, paddingHorizontal: screenPadding },
+            (isTargetedMessage || message.pinned) && !isMessageTypeDeleted
               ? { backgroundColor: targetedMessageBackground, ...targetedMessageContainer }
               : {},
           ]}
@@ -849,7 +855,9 @@ const MemoizedMessage = React.memo(MessageWithContext, areEqual) as typeof Messa
 
 export type MessageProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<Omit<MessagePropsWithContext<StreamChatGenerics>, 'groupStyles' | 'message'>> &
+> = Partial<
+  Omit<MessagePropsWithContext<StreamChatGenerics>, 'groupStyles' | 'handleReaction' | 'message'>
+> &
   Pick<MessagePropsWithContext<StreamChatGenerics>, 'groupStyles' | 'message'>;
 
 /**

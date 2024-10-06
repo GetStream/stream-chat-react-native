@@ -2,8 +2,8 @@ import React from 'react';
 import {
   AnimatableNumericValue,
   LayoutChangeEvent,
+  Pressable,
   StyleSheet,
-  TouchableOpacity,
   View,
 } from 'react-native';
 
@@ -28,11 +28,13 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { MessageStatusTypes } from '../../../utils/utils';
 
 const styles = StyleSheet.create({
+  container: {
+    flexShrink: 1,
+  },
   containerInner: {
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     borderWidth: 1,
-    overflow: 'hidden',
   },
   leftAlignContent: {
     justifyContent: 'flex-start',
@@ -66,10 +68,7 @@ export type MessageContentPropsWithContext<
   | 'isEditedMessageOpen'
   | 'goToMessage'
   | 'groupStyles'
-  | 'hasReactions'
   | 'isMyMessage'
-  | 'lastGroupMessage'
-  | 'members'
   | 'message'
   | 'messageContentOrder'
   | 'onLongPress'
@@ -78,25 +77,17 @@ export type MessageContentPropsWithContext<
   | 'onPressIn'
   | 'otherAttachments'
   | 'preventPress'
-  | 'showMessageStatus'
   | 'threadList'
 > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
-    | 'additionalTouchableProps'
+    | 'additionalPressableProps'
     | 'Attachment'
     | 'FileAttachmentGroup'
     | 'Gallery'
     | 'isAttachmentEqual'
-    | 'MessageFooter'
-    | 'MessageHeader'
-    | 'MessageDeleted'
     | 'MessageError'
-    | 'MessagePinnedHeader'
-    | 'MessageReplies'
-    | 'MessageStatus'
     | 'myMessageTheme'
-    | 'onPressInMessage'
     | 'Reply'
   > &
   Pick<TranslationContextValue, 't'> & {
@@ -112,25 +103,16 @@ const MessageContentWithContext = <
   props: MessageContentPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
-    additionalTouchableProps,
+    additionalPressableProps,
     alignment,
     Attachment,
     FileAttachmentGroup,
     Gallery,
     groupStyles,
-    hasReactions,
     isMyMessage,
-    lastGroupMessage,
-    members,
     message,
     messageContentOrder,
-    MessageDeleted,
     MessageError,
-    MessageFooter,
-    MessageHeader,
-    MessagePinnedHeader,
-    MessageReplies,
-    MessageStatus,
     onLongPress,
     onlyEmojis,
     onPress,
@@ -139,13 +121,12 @@ const MessageContentWithContext = <
     preventPress,
     Reply,
     setMessageContentWidth,
-    showMessageStatus,
     threadList,
   } = props;
 
   const {
     theme: {
-      colors: { blue_alice, grey_gainsboro, grey_whisper, transparent, white },
+      colors: { blue_alice, grey_gainsboro, grey_whisper, transparent },
       messageSimple: {
         content: {
           container: {
@@ -156,17 +137,14 @@ const MessageContentWithContext = <
             borderRadiusS,
             borderTopLeftRadius,
             borderTopRightRadius,
-            ...container
           },
           containerInner,
-          errorContainer,
           receiverMessageBackgroundColor,
           replyBorder,
           replyContainer,
           senderMessageBackgroundColor,
           wrapper,
         },
-        reactionList: { radius, reactionSize },
       },
     },
   } = useTheme();
@@ -182,8 +160,6 @@ const MessageContentWithContext = <
 
   const error = message.type === 'error' || message.status === MessageStatusTypes.FAILED;
 
-  const groupStyle = `${alignment}_${groupStyles?.[0]?.toLowerCase?.()}`;
-
   const hasThreadReplies = !!message?.reply_count;
 
   let noBorder = onlyEmojis && !message.quoted_message;
@@ -195,22 +171,9 @@ const MessageContentWithContext = <
     }
   }
 
-  const isMessageTypeDeleted = message.type === 'deleted';
-
-  if (isMessageTypeDeleted) {
-    return (
-      <MessageDeleted
-        date={message.created_at}
-        groupStyle={groupStyle}
-        noBorder={noBorder}
-        onLayout={onLayout}
-      />
-    );
-  }
-
   const isMessageReceivedOrErrorType = !isMyMessage || error;
 
-  let backgroundColor = senderMessageBackgroundColor || grey_gainsboro;
+  let backgroundColor = senderMessageBackgroundColor;
   if (onlyEmojis && !message.quoted_message) {
     backgroundColor = transparent;
   } else if (otherAttachments.length) {
@@ -220,7 +183,7 @@ const MessageContentWithContext = <
       backgroundColor = blue_alice;
     }
   } else if (isMessageReceivedOrErrorType) {
-    backgroundColor = receiverMessageBackgroundColor || white;
+    backgroundColor = receiverMessageBackgroundColor;
   }
 
   const repliesCurveColor = !isMessageReceivedOrErrorType ? backgroundColor : grey_gainsboro;
@@ -268,8 +231,7 @@ const MessageContentWithContext = <
   };
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.7}
+    <Pressable
       disabled={preventPress}
       onLongPress={(event) => {
         if (onLongPress) {
@@ -295,33 +257,9 @@ const MessageContentWithContext = <
           });
         }
       }}
-      testID='message-content'
-      {...additionalTouchableProps}
-      /**
-       * Border radii are useful for the case of error message types only.
-       * Otherwise background is transparent, so border radius is not really visible.
-       */
-      style={[
-        isMyMessage ? styles.rightAlignItems : styles.leftAlignItems,
-        { paddingTop: hasReactions ? reactionSize / 2 + radius : 2 },
-        error ? errorContainer : {},
-        container,
-      ]}
+      style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+      {...additionalPressableProps}
     >
-      {MessageHeader && (
-        <MessageHeader
-          alignment={alignment}
-          date={message.created_at}
-          isDeleted={isMessageTypeDeleted}
-          lastGroupMessage={lastGroupMessage}
-          members={members}
-          message={message}
-          MessageStatus={MessageStatus}
-          otherAttachments={otherAttachments}
-          showMessageStatus={showMessageStatus}
-        />
-      )}
-      {message.pinned && <MessagePinnedHeader />}
       <View onLayout={onLayout} style={wrapper}>
         {hasThreadReplies && !threadList && !noBorder && (
           <View
@@ -389,9 +327,7 @@ const MessageContentWithContext = <
         </View>
         {error && <MessageError />}
       </View>
-      <MessageReplies noBorder={noBorder} repliesCurveColor={repliesCurveColor} />
-      <MessageFooter date={message.created_at} isDeleted={!!isMessageTypeDeleted} />
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
@@ -402,11 +338,8 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const {
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
-    hasReactions: prevHasReactions,
     isAttachmentEqual,
     isEditedMessageOpen: prevIsEditedMessageOpen,
-    lastGroupMessage: prevLastGroupMessage,
-    members: prevMembers,
     message: prevMessage,
     messageContentOrder: prevMessageContentOrder,
     myMessageTheme: prevMyMessageTheme,
@@ -417,10 +350,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const {
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
-    hasReactions: nextHasReactions,
     isEditedMessageOpen: nextIsEditedMessageOpen,
-    lastGroupMessage: nextLastGroupMessage,
-    members: nextMembers,
     message: nextMessage,
     messageContentOrder: nextMessageContentOrder,
     myMessageTheme: nextMyMessageTheme,
@@ -428,12 +358,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     otherAttachments: nextOtherAttachments,
     t: nextT,
   } = nextProps;
-
-  const hasReactionsEqual = prevHasReactions === nextHasReactions;
-  if (!hasReactionsEqual) return false;
-
-  const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
-  if (!lastGroupMessageEqual) return false;
 
   const goToMessageChangedAndMatters =
     nextMessage.quoted_message_id && prevGoToMessage !== nextGoToMessage;
@@ -449,9 +373,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     prevOtherAttachments.length === nextOtherAttachments.length &&
     prevOtherAttachments?.[0]?.actions?.length === nextOtherAttachments?.[0]?.actions?.length;
   if (!otherAttachmentsEqual) return false;
-
-  const membersEqual = Object.keys(prevMembers).length === Object.keys(nextMembers).length;
-  if (!membersEqual) return false;
 
   const groupStylesEqual =
     prevGroupStyles.length === nextGroupStyles.length &&
@@ -549,12 +470,9 @@ export const MessageContent = <
     alignment,
     goToMessage,
     groupStyles,
-    hasReactions,
     isEditedMessageOpen,
     isMyMessage,
-    lastGroupMessage,
     lastReceivedId,
-    members,
     message,
     messageContentOrder,
     onLongPress,
@@ -563,22 +481,15 @@ export const MessageContent = <
     onPressIn,
     otherAttachments,
     preventPress,
-    showMessageStatus,
     threadList,
   } = useMessageContext<StreamChatGenerics>();
   const {
-    additionalTouchableProps,
+    additionalPressableProps,
     Attachment,
     FileAttachmentGroup,
     Gallery,
     isAttachmentEqual,
-    MessageDeleted,
     MessageError,
-    MessageFooter,
-    MessageHeader,
-    MessagePinnedHeader,
-    MessageReplies,
-    MessageStatus,
     myMessageTheme,
     Reply,
   } = useMessagesContext<StreamChatGenerics>();
@@ -587,29 +498,20 @@ export const MessageContent = <
   return (
     <MemoizedMessageContent<StreamChatGenerics>
       {...{
-        additionalTouchableProps,
+        additionalPressableProps,
         alignment,
         Attachment,
         FileAttachmentGroup,
         Gallery,
         goToMessage,
         groupStyles,
-        hasReactions,
         isAttachmentEqual,
         isEditedMessageOpen,
         isMyMessage,
-        lastGroupMessage,
         lastReceivedId,
-        members,
         message,
         messageContentOrder,
-        MessageDeleted,
         MessageError,
-        MessageFooter,
-        MessageHeader,
-        MessagePinnedHeader,
-        MessageReplies,
-        MessageStatus,
         myMessageTheme,
         onLongPress,
         onlyEmojis,
@@ -618,7 +520,6 @@ export const MessageContent = <
         otherAttachments,
         preventPress,
         Reply,
-        showMessageStatus,
         t,
         threadList,
       }}
@@ -626,5 +527,3 @@ export const MessageContent = <
     />
   );
 };
-
-MessageContent.displayName = 'MessageContent{messageSimple{content}}';

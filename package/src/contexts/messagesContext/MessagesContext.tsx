@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { FlatList, TouchableOpacityProps } from 'react-native';
+import { FlatList, PressableProps } from 'react-native';
 
 import type { Attachment, ChannelState, MessageResponse } from 'stream-chat';
 
@@ -17,8 +17,8 @@ import type { ImageLoadingFailedIndicatorProps } from '../../components/Attachme
 import type { ImageLoadingIndicatorProps } from '../../components/Attachment/ImageLoadingIndicator';
 import type { VideoThumbnailProps } from '../../components/Attachment/VideoThumbnail';
 import type {
+  MessagePressableHandlerPayload,
   MessageProps,
-  MessageTouchableHandlerPayload,
 } from '../../components/Message/Message';
 import type { MessageAvatarProps } from '../../components/Message/MessageSimple/MessageAvatar';
 import type { MessageBounceProps } from '../../components/Message/MessageSimple/MessageBounce';
@@ -34,7 +34,8 @@ import type { MessageSimpleProps } from '../../components/Message/MessageSimple/
 import type { MessageStatusProps } from '../../components/Message/MessageSimple/MessageStatus';
 import type { MessageTextProps } from '../../components/Message/MessageSimple/MessageTextContainer';
 import { MessageTimestampProps } from '../../components/Message/MessageSimple/MessageTimestamp';
-import type { ReactionListProps } from '../../components/Message/MessageSimple/ReactionList';
+import { ReactionListBottomProps } from '../../components/Message/MessageSimple/ReactionList/ReactionListBottom';
+import type { ReactionListTopProps } from '../../components/Message/MessageSimple/ReactionList/ReactionListTop';
 import type { MarkdownRules } from '../../components/Message/MessageSimple/utils/renderText';
 import type { MessageActionsParams } from '../../components/Message/utils/messageActions';
 import type { DateHeaderProps } from '../../components/MessageList/DateHeader';
@@ -267,11 +268,7 @@ export type MessagesContextValue<
    * **Default** [MessageUserReactionsItem](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageMenu/MessageUserReactionsItem.tsx)
    */
   MessageUserReactionsItem: React.ComponentType<MessageUserReactionsItemProps>;
-  /**
-   * UI component for ReactionList
-   * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionList.tsx)
-   */
-  ReactionList: React.ComponentType<ReactionListProps<StreamChatGenerics>>;
+
   removeMessage: (message: { id: string; parent_id?: string }) => void;
   /**
    * UI component for Reply
@@ -315,12 +312,12 @@ export type MessagesContextValue<
   UrlPreview: React.ComponentType<CardProps<StreamChatGenerics>>;
   VideoThumbnail: React.ComponentType<VideoThumbnailProps>;
   /**
-   * Provide any additional props for `TouchableOpacity` which wraps inner MessageContent component here.
-   * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
+   * Provide any additional props for `Pressable` which wraps inner MessageContent component here.
+   * Please check docs for Pressable for supported props - https://reactnative.dev/docs/pressable#props
    *
    * @overrideType Object
    */
-  additionalTouchableProps?: Omit<TouchableOpacityProps, 'style'>;
+  additionalPressableProps?: Omit<PressableProps, 'style'>;
   /**
    * Custom UI component to override default cover (between Header and Footer) of Card component.
    * Accepts the same props as Card component.
@@ -489,7 +486,7 @@ export type MessagesContextValue<
    * />
    * ```
    */
-  onLongPressMessage?: (payload: MessageTouchableHandlerPayload<StreamChatGenerics>) => void;
+  onLongPressMessage?: (payload: MessagePressableHandlerPayload<StreamChatGenerics>) => void;
   /**
    * Add onPressIn handler for attachments. You have access to payload of that handler as param:
    *
@@ -516,7 +513,7 @@ export type MessagesContextValue<
    * />
    * ```
    */
-  onPressInMessage?: (payload: MessageTouchableHandlerPayload<StreamChatGenerics>) => void;
+  onPressInMessage?: (payload: MessagePressableHandlerPayload<StreamChatGenerics>) => void;
   /**
    * Override onPress handler for message. You have access to payload of that handler as param:
    *
@@ -543,7 +540,23 @@ export type MessagesContextValue<
    * />
    * ```
    */
-  onPressMessage?: (payload: MessageTouchableHandlerPayload<StreamChatGenerics>) => void;
+  onPressMessage?: (payload: MessagePressableHandlerPayload<StreamChatGenerics>) => void;
+
+  /**
+   * UI component for ReactionListTop
+   * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionList.tsx)
+   */
+  ReactionListBottom?: React.ComponentType<ReactionListBottomProps<StreamChatGenerics>>;
+  /**
+   * The position of the reaction list in the message
+   */
+  reactionListPosition?: 'top' | 'bottom';
+
+  /**
+   * UI component for ReactionListTop
+   * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionList.tsx)
+   */
+  ReactionListTop?: React.ComponentType<ReactionListTopProps<StreamChatGenerics>>;
 
   /**
    * Full override of the reaction function on Message and Message Overlay

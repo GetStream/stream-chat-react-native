@@ -5,8 +5,8 @@ import type { Attachment } from 'stream-chat';
 import type { ActionHandler } from '../../components/Attachment/Attachment';
 import { ReactionSummary } from '../../components/Message/hooks/useProcessReactions';
 import type {
-  MessageTouchableHandlerPayload,
-  TouchableHandlerPayload,
+  MessagePressableHandlerPayload,
+  PressableHandlerPayload,
 } from '../../components/Message/Message';
 import type { GroupType, MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
@@ -82,7 +82,6 @@ export type MessageContextValue<
    * @returns Promise<void>
    */
   handleToggleMuteUser: () => Promise<void>;
-  handleToggleReaction: (reactionType: string) => Promise<void>;
   /** Whether or not message has reactions */
   hasReactions: boolean;
   /** The images attached to a message */
@@ -107,7 +106,7 @@ export type MessageContextValue<
    *
    * @param payload   Payload object for onLongPress event
    */
-  onLongPress: (payload: TouchableHandlerPayload) => void;
+  onLongPress: (payload: PressableHandlerPayload) => void;
   /** Whether the message is only text and the text is only emojis */
   onlyEmojis: boolean;
   /** Handler to open a thread on a message */
@@ -122,8 +121,8 @@ export type MessageContextValue<
    *
    * @param payload   Payload object for onPress event
    */
-  onPress: (payload: MessageTouchableHandlerPayload) => void;
-  onPressIn: ((payload: TouchableHandlerPayload) => void) | null;
+  onPress: (payload: MessagePressableHandlerPayload) => void;
+  onPressIn: ((payload: PressableHandlerPayload) => void) | null;
   /** The images attached to a message */
   otherAttachments: Attachment<StreamChatGenerics>[];
   reactions: ReactionSummary[];
@@ -141,6 +140,12 @@ export type MessageContextValue<
   /** The videos attached to a message */
   videos: Attachment<StreamChatGenerics>[];
   goToMessage?: (messageId: string) => void;
+  /**
+   * Function to handle reaction on message
+   * @param reactionType
+   * @returns
+   */
+  handleReaction?: (reactionType: string) => Promise<void>;
   /** Latest message id on current channel */
   lastReceivedId?: string;
   /**

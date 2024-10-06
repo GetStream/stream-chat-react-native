@@ -139,7 +139,8 @@ import { MessageRepliesAvatars as MessageRepliesAvatarsDefault } from '../Messag
 import { MessageSimple as MessageSimpleDefault } from '../Message/MessageSimple/MessageSimple';
 import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/MessageStatus';
 import { MessageTimestamp as MessageTimestampDefault } from '../Message/MessageSimple/MessageTimestamp';
-import { ReactionList as ReactionListDefault } from '../Message/MessageSimple/ReactionList';
+import { ReactionListBottom as ReactionListBottomDefault } from '../Message/MessageSimple/ReactionList/ReactionListBottom';
+import { ReactionListTop as ReactionListTopDefault } from '../Message/MessageSimple/ReactionList/ReactionListTop';
 import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButton';
 import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
 import { AudioRecorder as AudioRecorderDefault } from '../MessageInput/components/AudioRecorder/AudioRecorder';
@@ -266,7 +267,7 @@ export type ChannelPropsWithContext<
   Partial<
     Pick<
       MessagesContextValue<StreamChatGenerics>,
-      | 'additionalTouchableProps'
+      | 'additionalPressableProps'
       | 'Attachment'
       | 'AttachmentActions'
       | 'AudioAttachment'
@@ -338,7 +339,9 @@ export type ChannelPropsWithContext<
       | 'MessageReactionPicker'
       | 'MessageUserReactionsAvatar'
       | 'MessageUserReactionsItem'
-      | 'ReactionList'
+      | 'ReactionListBottom'
+      | 'reactionListPosition'
+      | 'ReactionListTop'
       | 'Reply'
       | 'ScrollToBottomButton'
       | 'selectReaction'
@@ -444,8 +447,8 @@ const ChannelWithContext = <
 ) => {
   const {
     additionalKeyboardAvoidingViewProps,
+    additionalPressableProps,
     additionalTextInputProps,
-    additionalTouchableProps,
     allowThreadMessagesInChannel = true,
     asyncMessagesLockDistance = 50,
     asyncMessagesMinimumPressDuration = 500,
@@ -592,7 +595,9 @@ const ChannelWithContext = <
     onPressInMessage,
     onPressMessage,
     overrideOwnCapabilities,
-    ReactionList = ReactionListDefault,
+    ReactionListBottom = ReactionListBottomDefault,
+    reactionListPosition = 'top',
+    ReactionListTop = ReactionListTopDefault,
     read,
     Reply = ReplyDefault,
     ScrollToBottomButton = ScrollToBottomButtonDefault,
@@ -2334,7 +2339,7 @@ const ChannelWithContext = <
   });
 
   const messagesContext = useCreateMessagesContext({
-    additionalTouchableProps,
+    additionalPressableProps,
     Attachment,
     AttachmentActions,
     AudioAttachment,
@@ -2411,7 +2416,9 @@ const ChannelWithContext = <
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
-    ReactionList,
+    ReactionListBottom,
+    reactionListPosition,
+    ReactionListTop,
     removeMessage,
     Reply,
     retrySendMessage,
