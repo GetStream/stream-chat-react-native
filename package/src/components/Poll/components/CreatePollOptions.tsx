@@ -204,6 +204,7 @@ export const CreatePollOption = ({
         onChangeText={(newText) => handleChangeText(newText, index)}
         placeholder='Option'
         style={{
+          flex: 1, // check if it causes trouble on Android
           fontSize: 16,
           paddingVertical: 0, // android is adding extra padding so we remove it
         }}
