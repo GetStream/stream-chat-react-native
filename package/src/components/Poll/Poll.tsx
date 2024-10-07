@@ -30,7 +30,7 @@ const selector = (nextValue: PollState) =>
 const selector2 = (nextValue: PollState) =>
   [nextValue.latest_votes_by_option, nextValue.maxVotedOptionIds] as const;
 
-const PollOption2 = ({ option }: { option: PollOptionClass }) => {
+const PollOption = ({ option }: { option: PollOptionClass }) => {
   const { optionVoteCounts, ownVotesByOptionId, poll } = usePollContext();
   const { message } = useMessageContext();
 
@@ -76,8 +76,6 @@ const PollOption2 = ({ option }: { option: PollOptionClass }) => {
     </View>
   );
 };
-
-const PollOption = React.memo(PollOption2);
 
 const PollWithContext = () => {
   const [showResults, setShowResults] = useState(false);
