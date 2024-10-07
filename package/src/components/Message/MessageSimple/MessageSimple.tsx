@@ -132,11 +132,14 @@ const MessageSimpleWithContext = <
   } = useMessageData({});
 
   const lastMessageInMessageListStyles = [styles.lastMessageContainer, lastMessageContainer];
-  const messageGroupedSingleOrBottomStyles = [
-    styles.messageGroupedSingleOrBottomContainer,
-    messageGroupedSingleOrBottomContainer,
-  ];
-  const messageGroupedTopStyles = [styles.messageGroupedTopContainer, messageGroupedTopContainer];
+  const messageGroupedSingleOrBottomStyles = {
+    ...styles.messageGroupedSingleOrBottomContainer,
+    ...messageGroupedSingleOrBottomContainer,
+  };
+  const messageGroupedTopStyles = {
+    ...styles.messageGroupedTopContainer,
+    ...messageGroupedTopContainer,
+  };
 
   const onLayout: (event: LayoutChangeEvent) => void = ({
     nativeEvent: {
@@ -204,7 +207,7 @@ const MessageSimpleWithContext = <
             isMessageErrorType ? errorContainer : {},
             contentContainer,
           ]}
-          testID='message-content'
+          testID='message-components'
         >
           <View
             style={[
@@ -232,7 +235,11 @@ const MessageSimpleWithContext = <
           </View>
 
           <View style={[styles.contentWrapper, contentWrapper]}>
-            <MessageContent setMessageContentWidth={setMessageContentWidth} />
+            <MessageContent
+              backgroundColor={backgroundColor}
+              noBorder={noBorder}
+              setMessageContentWidth={setMessageContentWidth}
+            />
             {reactionListPosition === 'top' && ReactionListTop ? (
               <ReactionListTop messageContentWidth={messageContentWidth} />
             ) : null}

@@ -46,7 +46,10 @@ export const useMessageData = <
   const isMessageTypeDeleted = message.type === 'deleted';
   const isMessageReceivedOrErrorType = !isMyMessage || isMessageErrorType;
 
+  const hasThreadReplies = !!message?.reply_count;
+
   return {
+    hasThreadReplies,
     isMessageErrorType,
     isMessageReceivedOrErrorType,
     isMessageTypeDeleted,

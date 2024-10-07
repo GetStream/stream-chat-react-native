@@ -2,10 +2,11 @@
 
 exports[`MessagePinnedHeader should render message pinned 1`] = `
 <View
+  accessibilityLabel="Message Pinned Header"
   style={
     [
       {
-        "alignContent": "center",
+        "alignItems": "center",
         "flexDirection": "row",
         "justifyContent": "center",
       },
@@ -77,6 +78,7 @@ exports[`MessagePinnedHeader should render message pinned 1`] = `
           "color": "#7A7A7A",
         },
         {
+          "fontSize": 12,
           "marginLeft": 4,
         },
         {},

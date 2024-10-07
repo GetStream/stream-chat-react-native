@@ -174,12 +174,7 @@ export const ReactionListTop = <
     supportedReactionTypes?.includes(reaction.type),
   );
 
-  if (
-    !hasSupportedReactions ||
-    messageContentWidth === 0 ||
-    reactions.length === 0 ||
-    !hasReactions
-  ) {
+  if (!hasSupportedReactions || messageContentWidth === 0 || !hasReactions) {
     return null;
   }
 
@@ -201,6 +196,7 @@ export const ReactionListTop = <
 
   return (
     <TouchableOpacity
+      accessibilityLabel='Reaction List Top'
       disabled={preventPress}
       onLongPress={(event) => {
         if (onLongPress) {
@@ -240,7 +236,6 @@ export const ReactionListTop = <
         alignmentLeft ? { left: position } : { right: position },
         container,
       ]}
-      testID='reaction-list'
     >
       {reactions.map((reaction, index) => (
         <ReactionListTopItem

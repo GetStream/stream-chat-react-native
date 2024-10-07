@@ -204,7 +204,6 @@ const MessageWithContext = <
   const [showMessageReactions, setShowMessageReactions] = useState(true);
   const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
   const [isEditedMessageOpen, setIsEditedMessageOpen] = useState(false);
-  const isMessageTypeDeleted = props.message.type === 'deleted';
 
   const {
     channel,
@@ -261,6 +260,7 @@ const MessageWithContext = <
     threadList = false,
     updateMessage,
   } = props;
+  const isMessageTypeDeleted = message.type === 'deleted';
   const { client } = chatContext;
   const {
     theme: {

@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   AnimatableNumericValue,
+  ColorValue,
   LayoutChangeEvent,
   Pressable,
   StyleSheet,
@@ -25,7 +26,7 @@ import {
 
 import { useViewport } from '../../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { MessageStatusTypes } from '../../../utils/utils';
+import { useMessageData } from '../hooks/useMessageData';
 
 const styles = StyleSheet.create({
   container: {
@@ -72,7 +73,6 @@ export type MessageContentPropsWithContext<
   | 'message'
   | 'messageContentOrder'
   | 'onLongPress'
-  | 'onlyEmojis'
   | 'onPress'
   | 'onPressIn'
   | 'otherAttachments'
@@ -92,6 +92,14 @@ export type MessageContentPropsWithContext<
   > &
   Pick<TranslationContextValue, 't'> & {
     setMessageContentWidth: React.Dispatch<React.SetStateAction<number>>;
+    /**
+     * Background color for the message content
+     */
+    backgroundColor?: ColorValue;
+    /**
+     * If the message has no border radius
+     */
+    noBorder?: boolean;
   };
 
 /**
@@ -106,6 +114,7 @@ const MessageContentWithContext = <
     additionalPressableProps,
     alignment,
     Attachment,
+    backgroundColor,
     FileAttachmentGroup,
     Gallery,
     groupStyles,
@@ -113,8 +122,8 @@ const MessageContentWithContext = <
     message,
     messageContentOrder,
     MessageError,
+    noBorder,
     onLongPress,
-    onlyEmojis,
     onPress,
     onPressIn,
     otherAttachments,
@@ -126,7 +135,7 @@ const MessageContentWithContext = <
 
   const {
     theme: {
-      colors: { blue_alice, grey_gainsboro, grey_whisper, transparent },
+      colors: { grey_gainsboro, grey_whisper },
       messageSimple: {
         content: {
           container: {
@@ -139,10 +148,8 @@ const MessageContentWithContext = <
             borderTopRightRadius,
           },
           containerInner,
-          receiverMessageBackgroundColor,
           replyBorder,
           replyContainer,
-          senderMessageBackgroundColor,
           wrapper,
         },
       },
@@ -158,33 +165,7 @@ const MessageContentWithContext = <
     setMessageContentWidth(width);
   };
 
-  const error = message.type === 'error' || message.status === MessageStatusTypes.FAILED;
-
-  const hasThreadReplies = !!message?.reply_count;
-
-  let noBorder = onlyEmojis && !message.quoted_message;
-  if (otherAttachments.length) {
-    if (otherAttachments[0].type === 'giphy' && !isMyMessage) {
-      noBorder = false;
-    } else {
-      noBorder = true;
-    }
-  }
-
-  const isMessageReceivedOrErrorType = !isMyMessage || error;
-
-  let backgroundColor = senderMessageBackgroundColor;
-  if (onlyEmojis && !message.quoted_message) {
-    backgroundColor = transparent;
-  } else if (otherAttachments.length) {
-    if (otherAttachments[0].type === 'giphy') {
-      backgroundColor = message.quoted_message ? grey_gainsboro : transparent;
-    } else {
-      backgroundColor = blue_alice;
-    }
-  } else if (isMessageReceivedOrErrorType) {
-    backgroundColor = receiverMessageBackgroundColor;
-  }
+  const { hasThreadReplies, isMessageErrorType, isMessageReceivedOrErrorType } = useMessageData({});
 
   const repliesCurveColor = !isMessageReceivedOrErrorType ? backgroundColor : grey_gainsboro;
 
@@ -325,7 +306,7 @@ const MessageContentWithContext = <
             }
           })}
         </View>
-        {error && <MessageError />}
+        {isMessageErrorType && <MessageError />}
       </View>
     </Pressable>
   );
@@ -343,7 +324,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     message: prevMessage,
     messageContentOrder: prevMessageContentOrder,
     myMessageTheme: prevMyMessageTheme,
-    onlyEmojis: prevOnlyEmojis,
     otherAttachments: prevOtherAttachments,
     t: prevT,
   } = prevProps;
@@ -354,7 +334,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     message: nextMessage,
     messageContentOrder: nextMessageContentOrder,
     myMessageTheme: nextMyMessageTheme,
-    onlyEmojis: nextOnlyEmojis,
     otherAttachments: nextOtherAttachments,
     t: nextT,
   } = nextProps;
@@ -365,9 +344,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const isEditedMessageOpenEqual = prevIsEditedMessageOpen === nextIsEditedMessageOpen;
   if (!isEditedMessageOpenEqual) return false;
-
-  const onlyEmojisEqual = prevOnlyEmojis === nextOnlyEmojis;
-  if (!onlyEmojisEqual) return false;
 
   const otherAttachmentsEqual =
     prevOtherAttachments.length === nextOtherAttachments.length &&
@@ -476,7 +452,6 @@ export const MessageContent = <
     message,
     messageContentOrder,
     onLongPress,
-    onlyEmojis,
     onPress,
     onPressIn,
     otherAttachments,
@@ -514,7 +489,6 @@ export const MessageContent = <
         MessageError,
         myMessageTheme,
         onLongPress,
-        onlyEmojis,
         onPress,
         onPressIn,
         otherAttachments,

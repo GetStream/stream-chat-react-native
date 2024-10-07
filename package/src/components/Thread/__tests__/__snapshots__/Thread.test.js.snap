@@ -273,12 +273,9 @@ exports[`Thread should match thread snapshot 1`] = `
                           "alignItems": "flex-end",
                           "flexDirection": "row",
                         },
-                        [
-                          {
-                            "marginBottom": 8,
-                          },
-                          {},
-                        ],
+                        {
+                          "marginBottom": 8,
+                        },
                         {
                           "justifyContent": "flex-start",
                         },
@@ -360,7 +357,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           },
                         ]
                       }
-                      testID="message-content"
+                      testID="message-components"
                     >
                       <View
                         style={
@@ -612,12 +609,9 @@ exports[`Thread should match thread snapshot 1`] = `
                           "alignItems": "flex-end",
                           "flexDirection": "row",
                         },
-                        [
-                          {
-                            "marginBottom": 8,
-                          },
-                          {},
-                        ],
+                        {
+                          "marginBottom": 8,
+                        },
                         {
                           "justifyContent": "flex-start",
                         },
@@ -699,7 +693,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           },
                         ]
                       }
-                      testID="message-content"
+                      testID="message-components"
                     >
                       <View
                         style={
@@ -951,12 +945,9 @@ exports[`Thread should match thread snapshot 1`] = `
                           "alignItems": "flex-end",
                           "flexDirection": "row",
                         },
-                        [
-                          {
-                            "marginBottom": 8,
-                          },
-                          {},
-                        ],
+                        {
+                          "marginBottom": 8,
+                        },
                         {
                           "justifyContent": "flex-start",
                         },
@@ -1038,7 +1029,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           },
                         ]
                       }
-                      testID="message-content"
+                      testID="message-components"
                     >
                       <View
                         style={
@@ -1420,7 +1411,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               },
                             ]
                           }
-                          testID="message-content"
+                          testID="message-components"
                         >
                           <View
                             style={

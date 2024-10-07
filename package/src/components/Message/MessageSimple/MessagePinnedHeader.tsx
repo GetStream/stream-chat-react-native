@@ -34,7 +34,11 @@ export const MessagePinnedHeader = <
   const { t } = useTranslationContext();
   const { client } = useChatContext();
   return (
-    <View style={[styles.container, container]} testID='message-pinned'>
+    <View
+      accessibilityLabel='Message Pinned Header'
+      style={[styles.container, container]}
+      testID='message-pinned'
+    >
       <PinHeader fill={grey} size={16} />
       <Text style={[{ color: grey }, styles.label, label]}>
         {t<string>('Pinned by')}{' '}
@@ -46,11 +50,12 @@ export const MessagePinnedHeader = <
 
 const styles = StyleSheet.create({
   container: {
-    alignContent: 'center',
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
   },
   label: {
+    fontSize: 12,
     marginLeft: 4,
   },
 });

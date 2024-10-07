@@ -91,6 +91,7 @@ export const ReactionListBottomItem = <
 
   return (
     <Pressable
+      accessibilityLabel='Reaction List Bottom Item'
       disabled={preventPress}
       key={reaction.type}
       onLongPress={(event) => {
@@ -232,12 +233,12 @@ export const ReactionListBottom = <
     supportedReactionTypes?.includes(reaction.type),
   );
 
-  if (!hasSupportedReactions || reactions.length === 0 || !hasReactions) {
+  if (!hasSupportedReactions || !hasReactions) {
     return null;
   }
 
   return (
-    <View style={[styles.container, container]}>
+    <View accessibilityLabel='Reaction List Bottom' style={[styles.container, container]}>
       {reactions.map((reaction, index) => (
         <ReactionListBottomItem
           key={index}
