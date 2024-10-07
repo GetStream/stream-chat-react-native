@@ -43,35 +43,44 @@ const PollOption = ({ option }: { option: PollOptionClass }) => {
   }, [message.id, option.id, ownVotesByOptionId, poll]);
 
   const [latestVotesByOption, maxVotedOptionIds] = useStateStore(poll.state, selector2);
+
   const relevantVotes = useMemo(
     () => latestVotesByOption[option.id]?.slice(0, 2) || [],
     [latestVotesByOption, option.id],
   );
-  console.log('ISE: LATEST: ', latestVotesByOption[option.id], relevantVotes);
+  const maxVotes = useMemo(() => maxVotedOptionIds?.[0] ? optionVoteCounts[maxVotedOptionIds[0]] : 0, [maxVotedOptionIds, optionVoteCounts]);
+  const votes = optionVoteCounts[option.id] || 0;
+  console.log('OPTION ID: ', optionVoteCounts, maxVotedOptionIds);
 
   return (
-    <View style={{ flexDirection: 'row' }}>
-      <TouchableOpacity
-        onPress={toggleVote}
-        style={{
-          width: 15,
-          height: 15,
-          backgroundColor: ownVotesByOptionId[option.id] ? 'red' : 'white',
-          borderWidth: 1,
-          borderColor: 'black',
-        }}
-      />
-      <Text style={{ flex: 1 }}>{option.text}</Text>
+    <View>
       <View style={{ flexDirection: 'row' }}>
-        {relevantVotes.map((vote: PollVote) => (
-          <Avatar
-            // containerStyle={{ position: 'absolute', right: index * 15 }}
-            image={vote.user.image as string}
-            key={vote.id}
-            size={20}
-          />
-        ))}
-        <Text style={{ marginLeft: 2 }}>{optionVoteCounts[option.id] || 0}</Text>
+        <TouchableOpacity
+          onPress={toggleVote}
+          style={{
+            width: 15,
+            height: 15,
+            backgroundColor: ownVotesByOptionId[option.id] ? 'red' : 'white',
+            borderWidth: 1,
+            borderColor: 'black',
+          }}
+        />
+        <Text style={{ flex: 1 }}>{option.text}</Text>
+        <View style={{ flexDirection: 'row' }}>
+          {relevantVotes.map((vote: PollVote) => (
+            <Avatar
+              // containerStyle={{ position: 'absolute', right: index * 15 }}
+              image={vote.user.image as string}
+              key={vote.id}
+              size={20}
+            />
+          ))}
+          <Text style={{ marginLeft: 2 }}>{votes}</Text>
+        </View>
+      </View>
+      <View style={{ flex: 1, height: 4, borderRadius: 4, flexDirection: 'row' }}>
+        <View style={{ backgroundColor: '#005DFF', flex: maxVotes > 0 ? votes / maxVotes : 0 }} />
+        <View style={{ backgroundColor: 'grey', flex: maxVotes > 0 ? (maxVotes - votes) / maxVotes : 1 }} />
       </View>
     </View>
   );
