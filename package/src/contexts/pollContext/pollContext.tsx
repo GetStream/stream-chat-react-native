@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { Poll, PollOptionData } from 'stream-chat';
+import { Poll, PollOption } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
@@ -12,7 +12,7 @@ export type PollContextValue<
 > = {
   maxNumberOfVotes: number;
   name: string;
-  options: PollOptionData<StreamChatGenerics>[];
+  options: PollOption<StreamChatGenerics>[];
   optionVoteCounts: Record<string, number>;
   poll: Poll<StreamChatGenerics>;
 };
