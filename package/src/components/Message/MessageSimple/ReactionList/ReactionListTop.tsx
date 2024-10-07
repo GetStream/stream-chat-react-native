@@ -91,7 +91,6 @@ export type ReactionListTopProps<
     MessageContextValue<StreamChatGenerics>,
     | 'alignment'
     | 'hasReactions'
-    | 'message'
     | 'onLongPress'
     | 'onPress'
     | 'onPressIn'

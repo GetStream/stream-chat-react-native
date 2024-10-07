@@ -66,9 +66,9 @@ export type MessageContentPropsWithContext<
 > = Pick<
   MessageContextValue<StreamChatGenerics>,
   | 'alignment'
-  | 'isEditedMessageOpen'
   | 'goToMessage'
   | 'groupStyles'
+  | 'isEditedMessageOpen'
   | 'isMyMessage'
   | 'message'
   | 'messageContentOrder'
