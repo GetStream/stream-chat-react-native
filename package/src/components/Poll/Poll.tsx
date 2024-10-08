@@ -1,5 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Modal, SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  FlatList,
+  Modal,
+  SafeAreaView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import {
   Poll as PollClass,
@@ -8,6 +16,8 @@ import {
   PollState,
   PollVote,
 } from 'stream-chat';
+
+import { usePollAnswersPagination } from './hooks/usePollAnswersPagination';
 
 import {
   PollContextProvider,
@@ -23,6 +33,7 @@ const selector = (nextValue: PollState) =>
   [
     nextValue.vote_counts_by_option,
     nextValue.ownVotesByOptionId,
+    nextValue.answers_count,
     nextValue.options,
     nextValue.name,
     nextValue.max_votes_allowed,
@@ -106,11 +117,11 @@ const PollOption = ({ option }: { option: PollOptionClass }) => {
   const [latestVotesByOption, maxVotedOptionIds] = useStateStore(poll.state, selector2);
 
   const relevantVotes = useMemo(
-    () => latestVotesByOption[option.id]?.slice(0, 2) || [],
+    () => latestVotesByOption?.[option.id]?.slice(0, 2) || [],
     [latestVotesByOption, option.id],
   );
   const maxVotes = useMemo(
-    () => (maxVotedOptionIds?.[0] ? optionVoteCounts[maxVotedOptionIds[0]] : 0),
+    () => (maxVotedOptionIds?.[0] && optionVoteCounts ? optionVoteCounts[maxVotedOptionIds[0]] : 0),
     [maxVotedOptionIds, optionVoteCounts],
   );
   const votes = optionVoteCounts[option.id] || 0;
@@ -165,11 +176,69 @@ const PollOption = ({ option }: { option: PollOptionClass }) => {
   );
 };
 
+const PollAnswersList = ({
+  addComment,
+  close,
+}: {
+  addComment: (text: string) => void;
+  close: () => void;
+}) => {
+  const { hasNextPage, loadMore, pollAnswers } = usePollAnswersPagination();
+  const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
+
+  console.log('ISE: ANSWERS: ', pollAnswers);
+
+  return (
+    <View>
+      <TouchableOpacity onPress={close}>
+        <Text>BACK</Text>
+      </TouchableOpacity>
+      <Text>Poll Comments</Text>
+      <FlatList
+        data={pollAnswers}
+        // keyExtractor={(item) => item.id}
+        onEndReached={() => hasNextPage && loadMore()}
+        renderItem={({ item }) => {
+          return (
+            <>
+              <Text>{item.answer_text}</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Avatar
+                  // containerStyle={{ position: 'absolute', right: index * 15 }}
+                  image={item.user.image as string}
+                  size={20}
+                />
+                <Text>{item.created_at}</Text>
+              </View>
+            </>
+          );
+        }}
+      />
+      <TouchableOpacity
+        onPress={() => setShowAddCommentDialog(true)}
+        style={{
+          marginHorizontal: 16,
+          alignItems: 'center',
+        }}
+      >
+        <Text>Add a comment</Text>
+      </TouchableOpacity>
+      <PollInputDialog
+        closeDialog={() => setShowAddCommentDialog(false)}
+        onSubmit={(value) => addComment(value)}
+        title='Add a comment'
+        visible={showAddCommentDialog}
+      />
+    </View>
+  );
+};
 const PollWithContext = () => {
+  const [showAllOptions, setShowAllOptions] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [showAnswers, setShowAnswers] = useState(false);
   const [showAddOptionDialog, setShowAddOptionDialog] = useState(false);
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
-  const { addComment, addOption, maxNumberOfVotes, name, options } = usePollContext();
+  const { addComment, addOption, answersCount, maxNumberOfVotes, name, options } = usePollContext();
   const subtitle = maxNumberOfVotes ? `Select up to ${maxNumberOfVotes}` : 'Select one or more';
 
   return (
@@ -182,7 +251,7 @@ const PollWithContext = () => {
       {options && options.length > 10 ? (
         <>
           <TouchableOpacity
-            onPress={() => setShowResults(true)}
+            onPress={() => setShowAllOptions(true)}
             style={{
               marginHorizontal: 16,
               alignItems: 'center',
@@ -192,11 +261,11 @@ const PollWithContext = () => {
           </TouchableOpacity>
           <Modal
             animationType='slide'
-            onRequestClose={() => setShowResults(false)}
-            visible={showResults}
+            onRequestClose={() => setShowAllOptions(false)}
+            visible={showAllOptions}
           >
             <SafeAreaView style={{ flex: 1 }}>
-              <TouchableOpacity onPress={() => setShowResults(false)}>
+              <TouchableOpacity onPress={() => setShowAllOptions(false)}>
                 <Text>BACK</Text>
               </TouchableOpacity>
               <Text>{name}</Text>
@@ -207,6 +276,24 @@ const PollWithContext = () => {
           </Modal>
         </>
       ) : null}
+      <TouchableOpacity
+        onPress={() => setShowAnswers(true)}
+        style={{
+          marginHorizontal: 16,
+          alignItems: 'center',
+        }}
+      >
+        <Text>Show {answersCount} comments</Text>
+      </TouchableOpacity>
+      <Modal
+        animationType='slide'
+        onRequestClose={() => setShowAnswers(false)}
+        visible={showAnswers}
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          <PollAnswersList addComment={addComment} close={() => setShowAnswers(false)} />
+        </SafeAreaView>
+      </Modal>
       <TouchableOpacity
         onPress={() => setShowAddOptionDialog(true)}
         style={{
@@ -250,10 +337,8 @@ export const Poll = ({ poll: pollData }: { poll: PollResponse }) => {
     [client, pollData],
   );
 
-  const [optionVoteCounts, ownVotesByOptionId, options, name, maxNumberOfVotes] = useStateStore(
-    poll.state,
-    selector,
-  );
+  const [optionVoteCounts, ownVotesByOptionId, answersCount, options, name, maxNumberOfVotes] =
+    useStateStore(poll.state, selector);
 
   const addOption = useCallback(
     (optionText: string) => poll.createOption({ text: optionText }),
@@ -280,6 +365,7 @@ export const Poll = ({ poll: pollData }: { poll: PollResponse }) => {
         ownVotesByOptionId,
         addOption,
         addComment,
+        answersCount,
       }}
     >
       <PollWithContext />
