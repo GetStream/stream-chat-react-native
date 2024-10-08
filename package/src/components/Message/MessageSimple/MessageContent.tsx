@@ -379,7 +379,9 @@ const MessageContentWithContext = <
               case 'gallery':
                 return <Gallery key={`gallery_${messageContentOrderIndex}`} />;
               case 'poll':
-                return message.poll_id && message.poll ? <Poll poll={message.poll} /> : null;
+                return message.poll_id && message.poll ? (
+                  <Poll key={`poll_${message.poll_id}`} poll={message.poll} />
+                ) : null;
               case 'text':
               default:
                 return otherAttachments.length && otherAttachments[0].actions ? null : (

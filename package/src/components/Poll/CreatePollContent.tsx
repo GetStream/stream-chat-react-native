@@ -23,6 +23,7 @@ export const CreatePollContentWithContext = () => {
   const [maxVotesPerPerson, setMaxVotesPerPerson] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [optionSuggestionsAllowed, setOptionSuggestionsAllowed] = useState(false);
+  const [commentsAllowed, setCommentsAllowed] = useState(false);
 
   const { closePollCreationDialog, createAndSendPoll } = useCreatePollContentContext();
 
@@ -51,6 +52,7 @@ export const CreatePollContentWithContext = () => {
               );
             }
             createAndSendPoll({
+              allow_answers: commentsAllowed,
               allow_user_suggested_options: optionSuggestionsAllowed,
               enforce_unique_vote: !multipleAnswersAllowed,
               name: pollTitle,
@@ -159,6 +161,24 @@ export const CreatePollContentWithContext = () => {
           <Switch
             onValueChange={() => setOptionSuggestionsAllowed(!optionSuggestionsAllowed)}
             value={optionSuggestionsAllowed}
+          />
+        </View>
+        <View
+          style={{
+            alignItems: 'center',
+            backgroundColor: '#F7F7F8',
+            borderRadius: 12,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginTop: 16,
+            paddingHorizontal: 16,
+            paddingVertical: 18,
+          }}
+        >
+          <Text style={{ fontSize: 16 }}>Add a comment</Text>
+          <Switch
+            onValueChange={() => setCommentsAllowed(!commentsAllowed)}
+            value={commentsAllowed}
           />
         </View>
       </ScrollView>

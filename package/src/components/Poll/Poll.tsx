@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Modal, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Alert, Modal, SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import {
   Poll as PollClass,
@@ -16,7 +16,7 @@ import {
   usePollContext,
 } from '../../contexts';
 import { useStateStore } from '../../hooks';
-import * as dbApi from '../../store/apis';
+// import * as dbApi from '../../store/apis';
 import { Avatar } from '../Avatar/Avatar';
 
 const selector = (nextValue: PollState) =>
@@ -31,10 +31,69 @@ const selector = (nextValue: PollState) =>
 const selector2 = (nextValue: PollState) =>
   [nextValue.latest_votes_by_option, nextValue.maxVotedOptionIds] as const;
 
+const PollInputDialog = ({ closeDialog, onSubmit, title, visible }) => {
+  const [dialogInput, setDialogInput] = useState('');
+
+  return (
+    <Modal animationType='fade' onRequestClose={closeDialog} transparent={true} visible={visible}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'rgba(0, 0, 0, 0.2)',
+        }}
+      >
+        <View
+          style={{
+            width: '80%',
+            paddingHorizontal: 16,
+            paddingTop: 32,
+            paddingBottom: 20,
+            borderRadius: 16,
+            backgroundColor: 'white',
+          }}
+        >
+          <Text style={{ fontSize: 17, lineHeight: 20, fontWeight: 500 }}>{title}</Text>
+          <TextInput
+            onChangeText={setDialogInput}
+            placeholder='Ask a question'
+            style={{
+              fontSize: 16,
+              height: 36,
+              alignItems: 'center',
+              padding: 0,
+              borderColor: 'gray',
+              borderRadius: 18,
+              borderWidth: 1,
+              paddingHorizontal: 16,
+              marginTop: 16,
+            }}
+            value={dialogInput}
+          />
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 52 }}>
+            <TouchableOpacity onPress={closeDialog}>
+              <Text style={{ color: '#005DFF', fontSize: 17, fontWeight: 500 }}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                onSubmit(dialogInput);
+                closeDialog();
+              }}
+              style={{ marginLeft: 32 }}
+            >
+              <Text style={{ color: '#005DFF', fontSize: 17, fontWeight: 500 }}>SEND</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
 const PollOption = ({ option }: { option: PollOptionClass }) => {
   const { optionVoteCounts, ownVotesByOptionId, poll } = usePollContext();
   const { message } = useMessageContext();
-  console.log('ISE: UPDATING POLL WITH ID: ', poll.id)
 
   const toggleVote = useCallback(async () => {
     if (ownVotesByOptionId[option.id]) {
@@ -108,14 +167,16 @@ const PollOption = ({ option }: { option: PollOptionClass }) => {
 
 const PollWithContext = () => {
   const [showResults, setShowResults] = useState(false);
-  const { maxNumberOfVotes, name, options } = usePollContext();
+  const [showAddOptionDialog, setShowAddOptionDialog] = useState(false);
+  const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
+  const { addComment, addOption, maxNumberOfVotes, name, options } = usePollContext();
   const subtitle = maxNumberOfVotes ? `Select up to ${maxNumberOfVotes}` : 'Select one or more';
 
   return (
     <View style={{ padding: 15, width: 270 }}>
       <Text>{name}</Text>
       <Text>{subtitle}</Text>
-      {options?.map((option: PollOptionClass) => (
+      {options?.slice(0, 10)?.map((option: PollOptionClass) => (
         <PollOption key={option.id} option={option} />
       ))}
       {options && options.length > 10 ? (
@@ -146,29 +207,80 @@ const PollWithContext = () => {
           </Modal>
         </>
       ) : null}
+      <TouchableOpacity
+        onPress={() => setShowAddOptionDialog(true)}
+        style={{
+          marginHorizontal: 16,
+          alignItems: 'center',
+        }}
+      >
+        <Text>Suggest an option</Text>
+      </TouchableOpacity>
+      <PollInputDialog
+        closeDialog={() => setShowAddOptionDialog(false)}
+        onSubmit={(value) => addOption(value)}
+        title='Suggest an option'
+        visible={showAddOptionDialog}
+      />
+      <TouchableOpacity
+        onPress={() => setShowAddCommentDialog(true)}
+        style={{
+          marginHorizontal: 16,
+          alignItems: 'center',
+        }}
+      >
+        <Text>Add a comment</Text>
+      </TouchableOpacity>
+      <PollInputDialog
+        closeDialog={() => setShowAddCommentDialog(false)}
+        onSubmit={(value) => addComment(value)}
+        title='Add a comment'
+        visible={showAddCommentDialog}
+      />
     </View>
   );
 };
 
 export const Poll = ({ poll: pollData }: { poll: PollResponse }) => {
   const { client } = useChatContext();
+  const { message } = useMessageContext();
 
   const poll = useMemo<PollClass>(
     () => new PollClass({ client, poll: pollData }),
     [client, pollData],
   );
-  useEffect(() => {
-    poll.registerSubscriptions();
-    return poll.unregisterSubscriptions;
-  }, [poll]);
 
   const [optionVoteCounts, ownVotesByOptionId, options, name, maxNumberOfVotes] = useStateStore(
     poll.state,
     selector,
   );
+
+  const addOption = useCallback(
+    (optionText: string) => poll.createOption({ text: optionText }),
+    [poll],
+  );
+  const addComment = useCallback(
+    (answerText: string) => poll.addAnswer(answerText, message.id),
+    [message.id, poll],
+  );
+
+  useEffect(() => {
+    poll.registerSubscriptions();
+    return poll.unregisterSubscriptions;
+  }, [poll]);
+
   return (
     <PollContextProvider
-      value={{ maxNumberOfVotes, options, optionVoteCounts, poll, name, ownVotesByOptionId }}
+      value={{
+        maxNumberOfVotes,
+        options,
+        optionVoteCounts,
+        poll,
+        name,
+        ownVotesByOptionId,
+        addOption,
+        addComment,
+      }}
     >
       <PollWithContext />
     </PollContextProvider>

@@ -723,8 +723,6 @@ const MessageInputWithContext = <
     })),
   };
 
-  console.log('ISE: ', showPollCreationDialog);
-
   return (
     <>
       <View
