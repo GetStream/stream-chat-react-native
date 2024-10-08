@@ -1542,6 +1542,8 @@ const ChannelWithContext = <
     attachments,
     mentioned_users,
     parent_id,
+    poll,
+    poll_id,
     text,
     ...extraFields
   }: Partial<StreamMessage<StreamChatGenerics>>) => {
@@ -1563,6 +1565,8 @@ const ChannelWithContext = <
           id: userId,
         })) || [],
       parent_id,
+      poll,
+      poll_id,
       reactions: [],
       status: MessageStatusTypes.SENDING,
       text,

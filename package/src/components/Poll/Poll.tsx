@@ -16,6 +16,7 @@ import {
   usePollContext,
 } from '../../contexts';
 import { useStateStore } from '../../hooks';
+import * as dbApi from '../../store/apis';
 import { Avatar } from '../Avatar/Avatar';
 
 const selector = (nextValue: PollState) =>
@@ -33,6 +34,7 @@ const selector2 = (nextValue: PollState) =>
 const PollOption = ({ option }: { option: PollOptionClass }) => {
   const { optionVoteCounts, ownVotesByOptionId, poll } = usePollContext();
   const { message } = useMessageContext();
+  console.log('ISE: UPDATING POLL WITH ID: ', poll.id)
 
   const toggleVote = useCallback(async () => {
     if (ownVotesByOptionId[option.id]) {
@@ -48,9 +50,22 @@ const PollOption = ({ option }: { option: PollOptionClass }) => {
     () => latestVotesByOption[option.id]?.slice(0, 2) || [],
     [latestVotesByOption, option.id],
   );
-  const maxVotes = useMemo(() => maxVotedOptionIds?.[0] ? optionVoteCounts[maxVotedOptionIds[0]] : 0, [maxVotedOptionIds, optionVoteCounts]);
+  const maxVotes = useMemo(
+    () => (maxVotedOptionIds?.[0] ? optionVoteCounts[maxVotedOptionIds[0]] : 0),
+    [maxVotedOptionIds, optionVoteCounts],
+  );
   const votes = optionVoteCounts[option.id] || 0;
-  console.log('OPTION ID: ', optionVoteCounts, maxVotedOptionIds);
+  // TODO: Just a reminder to take care of offline mode.
+  // useEffect(() => {
+  //   const pollState = poll.state.getLatestValue();
+  //   dbApi.updateMessage({
+  //     message: {
+  //       ...message,
+  //       poll_id: poll.id,
+  //       poll: { ...pollState, own_votes: pollState.ownVotes, id: poll.id },
+  //     },
+  //   });
+  // }, [optionVoteCounts]);
 
   return (
     <View>
@@ -75,12 +90,17 @@ const PollOption = ({ option }: { option: PollOptionClass }) => {
               size={20}
             />
           ))}
-          <Text style={{ marginLeft: 2 }}>{votes}</Text>
+          <Text style={{ marginLeft: 2 }}>{optionVoteCounts[option.id] || 0}</Text>
         </View>
       </View>
       <View style={{ flex: 1, height: 4, borderRadius: 4, flexDirection: 'row' }}>
         <View style={{ backgroundColor: '#005DFF', flex: maxVotes > 0 ? votes / maxVotes : 0 }} />
-        <View style={{ backgroundColor: 'grey', flex: maxVotes > 0 ? (maxVotes - votes) / maxVotes : 1 }} />
+        <View
+          style={{
+            backgroundColor: 'grey',
+            flex: maxVotes > 0 ? (maxVotes - votes) / maxVotes : 1,
+          }}
+        />
       </View>
     </View>
   );
