@@ -33,6 +33,7 @@ const selector = (nextValue: PollState) =>
   [
     nextValue.vote_counts_by_option,
     nextValue.ownVotesByOptionId,
+    nextValue.latest_votes_by_option,
     nextValue.answers_count,
     nextValue.latestCastOrUpdatedAnswer,
     nextValue.latestRemovedAnswer,
@@ -230,13 +231,100 @@ const PollAnswersList = ({
     </View>
   );
 };
+
+const PollResults = ({ close }: { close: () => void }) => {
+  const { latestVotesByOption, name, options, optionVoteCounts } = usePollContext();
+  const [showAllVotes, setShowAllVotes] = useState(false);
+
+  const sortedOptions = [...options].sort(
+    (a, b) => (optionVoteCounts[b.id] ?? 0) - (optionVoteCounts[a.id] ?? 0),
+  );
+  return (
+    <>
+      <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity onPress={close}>
+          <Text>BACK</Text>
+        </TouchableOpacity>
+        <Text style={{ marginLeft: 32 }}>Poll Results</Text>
+      </View>
+      <Text>{name}</Text>
+      {sortedOptions.map((option) => (
+        <View
+          key={`results_${option.id}`}
+          style={{
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            backgroundColor: '#F7F7F8',
+            borderRadius: 12,
+            marginTop: 8,
+          }}
+        >
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text>{option.text}</Text>
+            <Text>{optionVoteCounts[option.id] ?? 0} votes</Text>
+          </View>
+          {(latestVotesByOption?.[option.id] ?? []).map((vote: PollVote) => (
+            <View
+              key={`results_vote_${vote.id}`}
+              style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+            >
+              <View style={{ flexDirection: 'row' }}>
+                <Avatar
+                  // containerStyle={{ position: 'absolute', right: index * 15 }}
+                  image={vote.user.image as string}
+                  key={vote.id}
+                  size={20}
+                />
+                <Text>{vote.user.name}</Text>
+              </View>
+              <Text>{vote.created_at}</Text>
+            </View>
+          ))}
+          <TouchableOpacity
+            onPress={() => setShowAllVotes(true)}
+            style={{
+              marginHorizontal: 16,
+              alignItems: 'center',
+            }}
+          >
+            <Text>View Results</Text>
+          </TouchableOpacity>
+          {showAllVotes ? (
+            <Modal
+              animationType='fade'
+              onRequestClose={() => setShowAllVotes(false)}
+              visible={showAllVotes}
+            >
+              <SafeAreaView style={{ flex: 1, marginHorizontal: 16 }}>
+                <View style={{ flexDirection: 'row' }}>
+                  <TouchableOpacity
+                    onPress={() => setShowAllVotes(false)}
+                    style={{
+                      marginHorizontal: 16,
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Text>BACK</Text>
+                  </TouchableOpacity>
+                  <Text>{option.text}</Text>
+                </View>
+              </SafeAreaView>
+            </Modal>
+          ) : null}
+        </View>
+      ))}
+    </>
+  );
+};
+
 const PollWithContext = () => {
   const [showAllOptions, setShowAllOptions] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [showAnswers, setShowAnswers] = useState(false);
   const [showAddOptionDialog, setShowAddOptionDialog] = useState(false);
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
-  const { addComment, addOption, answersCount, maxNumberOfVotes, name, options } = usePollContext();
+  const { addComment, addOption, answersCount, endVote, maxNumberOfVotes, name, options } =
+    usePollContext();
   const subtitle = maxNumberOfVotes ? `Select up to ${maxNumberOfVotes}` : 'Select one or more';
 
   return (
@@ -257,21 +345,23 @@ const PollWithContext = () => {
           >
             <Text>See all {options.length} options</Text>
           </TouchableOpacity>
-          <Modal
-            animationType='slide'
-            onRequestClose={() => setShowAllOptions(false)}
-            visible={showAllOptions}
-          >
-            <SafeAreaView style={{ flex: 1 }}>
-              <TouchableOpacity onPress={() => setShowAllOptions(false)}>
-                <Text>BACK</Text>
-              </TouchableOpacity>
-              <Text>{name}</Text>
-              {options?.map((option: PollOptionClass) => (
-                <PollOption key={option.id} option={option} />
-              ))}
-            </SafeAreaView>
-          </Modal>
+          {showAllOptions ? (
+            <Modal
+              animationType='slide'
+              onRequestClose={() => setShowAllOptions(false)}
+              visible={showAllOptions}
+            >
+              <SafeAreaView style={{ flex: 1 }}>
+                <TouchableOpacity onPress={() => setShowAllOptions(false)}>
+                  <Text>BACK</Text>
+                </TouchableOpacity>
+                <Text>{name}</Text>
+                {options?.map((option: PollOptionClass) => (
+                  <PollOption key={option.id} option={option} />
+                ))}
+              </SafeAreaView>
+            </Modal>
+          ) : null}
         </>
       ) : null}
       <TouchableOpacity
@@ -281,7 +371,7 @@ const PollWithContext = () => {
           alignItems: 'center',
         }}
       >
-        <Text>Show {answersCount} comments</Text>
+        <Text>View {answersCount} comments</Text>
       </TouchableOpacity>
       <Modal
         animationType='slide'
@@ -322,6 +412,35 @@ const PollWithContext = () => {
         title='Add a comment'
         visible={showAddCommentDialog}
       />
+      <TouchableOpacity
+        onPress={() => setShowResults(true)}
+        style={{
+          marginHorizontal: 16,
+          alignItems: 'center',
+        }}
+      >
+        <Text>View Results</Text>
+      </TouchableOpacity>
+      {showResults ? (
+        <Modal
+          animationType='slide'
+          onRequestClose={() => setShowResults(false)}
+          visible={showResults}
+        >
+          <SafeAreaView style={{ flex: 1, marginHorizontal: 16 }}>
+            <PollResults close={() => setShowResults(false)} />
+          </SafeAreaView>
+        </Modal>
+      ) : null}
+      <TouchableOpacity
+        onPress={endVote}
+        style={{
+          marginHorizontal: 16,
+          alignItems: 'center',
+        }}
+      >
+        <Text>End Vote</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -338,6 +457,7 @@ export const Poll = ({ poll: pollData }: { poll: PollResponse }) => {
   const [
     optionVoteCounts,
     ownVotesByOptionId,
+    latestVotesByOption,
     answersCount,
     latestCastOrUpdatedAnswer,
     latestRemovedAnswer,
@@ -354,6 +474,7 @@ export const Poll = ({ poll: pollData }: { poll: PollResponse }) => {
     (answerText: string) => poll.addAnswer(answerText, message.id),
     [message.id, poll],
   );
+  const endVote = useCallback(() => poll.close(), [poll]);
 
   useEffect(() => {
     poll.registerSubscriptions();
@@ -374,6 +495,8 @@ export const Poll = ({ poll: pollData }: { poll: PollResponse }) => {
         answersCount,
         latestCastOrUpdatedAnswer,
         latestRemovedAnswer,
+        endVote,
+        latestVotesByOption,
       }}
     >
       <PollWithContext />
