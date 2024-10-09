@@ -31,7 +31,6 @@ import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
 import { VideoThumbnail } from '../Attachment/VideoThumbnail';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
-import { useChatContext } from '../../contexts/chatContext/ChatContext';
 
 const styles = StyleSheet.create({
   container: {
@@ -143,7 +142,6 @@ const ReplyWithContext = <
     styles: stylesProp = {},
     t,
   } = props;
-  const { resizableCDNHosts } = useChatContext();
 
   const [error, setError] = useState(false);
 
@@ -232,7 +230,6 @@ const ReplyWithContext = <
                     (stylesProp.imageAttachment?.height as number) ||
                     (imageAttachment?.height as number) ||
                     styles.imageAttachment.height,
-                  resizableCDNHosts,
                   url: (lastAttachment.image_url ||
                     lastAttachment.thumb_url ||
                     lastAttachment.og_scrape_url) as string,

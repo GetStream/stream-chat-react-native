@@ -22,12 +22,7 @@ export type MessageActionListPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   OverlayProviderProps<StreamChatGenerics>,
-  | 'MessageActionListItem'
-  | 'error'
-  | 'isMyMessage'
-  | 'isThreadMessage'
-  | 'message'
-  | 'messageReactions'
+  'MessageActionListItem' | 'error' | 'isMyMessage' | 'isThreadMessage' | 'message'
 > &
   Pick<MessageOverlayData<StreamChatGenerics>, 'alignment' | 'messageActions'> & {
     showScreen: SharedValue<number>;
@@ -46,7 +41,6 @@ const MessageActionListWithContext = <
     message,
     MessageActionListItem = DefaultMessageActionListItem,
     messageActions,
-    messageReactions,
     showScreen,
   } = props;
 
@@ -55,7 +49,6 @@ const MessageActionListWithContext = <
     isMyMessage,
     isThreadMessage,
     message,
-    messageReactions,
   };
   const { vw } = useViewport();
 
@@ -135,7 +128,7 @@ export type MessageActionListProps<
 > = Partial<Omit<MessageActionListPropsWithContext<StreamChatGenerics>, 'showScreen'>> &
   Pick<
     MessageActionListPropsWithContext<StreamChatGenerics>,
-    'showScreen' | 'message' | 'isMyMessage' | 'error' | 'isThreadMessage' | 'messageReactions'
+    'showScreen' | 'message' | 'isMyMessage' | 'error' | 'isThreadMessage'
   >;
 
 /**

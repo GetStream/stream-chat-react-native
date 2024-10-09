@@ -282,7 +282,6 @@ export type ChannelPropsWithContext<
       | 'Giphy'
       | 'giphyVersion'
       | 'handleBan'
-      | 'handleBlock'
       | 'handleCopy'
       | 'handleDelete'
       | 'handleEdit'
@@ -493,7 +492,6 @@ const ChannelWithContext = <
     giphyVersion = 'fixed_height',
     handleAttachButtonPress,
     handleBan,
-    handleBlock,
     handleCopy,
     handleDelete,
     handleEdit,
@@ -2228,7 +2226,6 @@ const ChannelWithContext = <
     Giphy,
     giphyVersion,
     handleBan,
-    handleBlock,
     handleCopy,
     handleDelete,
     handleEdit,
