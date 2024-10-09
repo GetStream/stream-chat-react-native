@@ -86,7 +86,7 @@ exports[`MessagePinnedHeader should render message pinned 1`] = `
     }
   >
     Pinned by
-
+     
     You
   </Text>
 </View>
