@@ -34,6 +34,8 @@ const selector = (nextValue: PollState) =>
     nextValue.vote_counts_by_option,
     nextValue.ownVotesByOptionId,
     nextValue.answers_count,
+    nextValue.latestCastOrUpdatedAnswer,
+    nextValue.latestRemovedAnswer,
     nextValue.options,
     nextValue.name,
     nextValue.max_votes_allowed,
@@ -186,8 +188,6 @@ const PollAnswersList = ({
   const { hasNextPage, loadMore, pollAnswers } = usePollAnswersPagination();
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
 
-  console.log('ISE: ANSWERS: ', pollAnswers);
-
   return (
     <View>
       <TouchableOpacity onPress={close}>
@@ -198,21 +198,19 @@ const PollAnswersList = ({
         data={pollAnswers}
         // keyExtractor={(item) => item.id}
         onEndReached={() => hasNextPage && loadMore()}
-        renderItem={({ item }) => {
-          return (
-            <>
-              <Text>{item.answer_text}</Text>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Avatar
-                  // containerStyle={{ position: 'absolute', right: index * 15 }}
-                  image={item.user.image as string}
-                  size={20}
-                />
-                <Text>{item.created_at}</Text>
-              </View>
-            </>
-          );
-        }}
+        renderItem={({ item }) => (
+          <>
+            <Text>{item.answer_text}</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <Avatar
+                // containerStyle={{ position: 'absolute', right: index * 15 }}
+                image={item.user.image as string}
+                size={20}
+              />
+              <Text>{item.created_at}</Text>
+            </View>
+          </>
+        )}
       />
       <TouchableOpacity
         onPress={() => setShowAddCommentDialog(true)}
@@ -337,8 +335,16 @@ export const Poll = ({ poll: pollData }: { poll: PollResponse }) => {
     [client, pollData],
   );
 
-  const [optionVoteCounts, ownVotesByOptionId, answersCount, options, name, maxNumberOfVotes] =
-    useStateStore(poll.state, selector);
+  const [
+    optionVoteCounts,
+    ownVotesByOptionId,
+    answersCount,
+    latestCastOrUpdatedAnswer,
+    latestRemovedAnswer,
+    options,
+    name,
+    maxNumberOfVotes,
+  ] = useStateStore(poll.state, selector);
 
   const addOption = useCallback(
     (optionText: string) => poll.createOption({ text: optionText }),
@@ -366,6 +372,8 @@ export const Poll = ({ poll: pollData }: { poll: PollResponse }) => {
         addOption,
         addComment,
         answersCount,
+        latestCastOrUpdatedAnswer,
+        latestRemovedAnswer,
       }}
     >
       <PollWithContext />

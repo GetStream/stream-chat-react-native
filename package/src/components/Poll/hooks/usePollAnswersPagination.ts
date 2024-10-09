@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 import type { PollAnswer, PollAnswersQueryParams } from 'stream-chat';
 
@@ -13,7 +13,7 @@ type UsePollAnswersPaginationParams = {
 export const usePollAnswersPagination = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({ paginationParams }: UsePollAnswersPaginationParams = {}) => {
-  const { poll } = usePollContext();
+  const { latestCastOrUpdatedAnswer, latestRemovedAnswer, poll } = usePollContext();
 
   // fixme: proper response type
   const paginationFn = useCallback<PaginationFn<PollAnswer<StreamChatGenerics>>>(
@@ -28,14 +28,27 @@ export const usePollAnswersPagination = <
     [paginationParams, poll],
   );
 
-  const {
-    error,
-    hasNextPage,
-    items: pollAnswers,
-    loading,
-    loadMore,
-    next,
-  } = useCursorPaginator(paginationFn, true);
+  const { error, hasNextPage, items, loading, loadMore, next } = useCursorPaginator(
+    paginationFn,
+    true,
+  );
+
+  const pollAnswers1 = useMemo(() => {
+    if (latestCastOrUpdatedAnswer) {
+      return [
+        latestCastOrUpdatedAnswer,
+        ...items.filter((item) => item.user_id !== latestCastOrUpdatedAnswer.user_id),
+      ];
+    }
+
+    return items;
+  }, [items, latestCastOrUpdatedAnswer]);
+  const pollAnswers = useMemo(() => {
+    if (latestRemovedAnswer) {
+      return pollAnswers1.filter((item) => item.user_id === latestRemovedAnswer.user_id);
+    }
+    return pollAnswers1;
+  }, [latestRemovedAnswer, pollAnswers1]);
 
   return {
     error,
