@@ -24,7 +24,7 @@ const getComponent = (props: Partial<ImageGridHandleProps> = {}) => {
 
   return (
     <TranslationProvider value={{ t } as unknown as TranslationContextValue}>
-      <ThemeProvider style={defaultTheme}>
+      <ThemeProvider theme={defaultTheme}>
         <ImageGridHandle {...(props as unknown as ImageGridHandleProps)} />
       </ThemeProvider>
     </TranslationProvider>

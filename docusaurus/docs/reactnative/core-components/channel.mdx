@@ -101,16 +101,20 @@ import MaxMessageLength from '../common-content/ui-components/channel/props/max_
 import MaxNumberOfFiles from '../common-content/ui-components/channel/props/max_number_of_files.mdx';
 import MentionAllAppUsersEnabled from '../common-content/ui-components/channel/props/mention_all_app_users_enabled.mdx';
 import MentionAllAppUsersQuery from '../common-content/ui-components/channel/props/mention_all_app_users_query.mdx';
+import Message from '../common-content/ui-components/channel/props/message.mdx';
+import MessageActionListItem from '../common-content/ui-components/channel/props/message-action-list-item.mdx';
+import MessageActionList from '../common-content/ui-components/channel/props/message-action-list.mdx';
+import MessageActions from '../common-content/ui-components/channel/props/message_actions.mdx';
 import MessageAvatar from '../common-content/ui-components/channel/props/message-avatar.mdx';
 import MessageBounce from '../common-content/ui-components/channel/props/message-bounce.mdx';
 import MessageContent from '../common-content/ui-components/channel/props/message-content.mdx';
-import MessageActions from '../common-content/ui-components/channel/props/message_actions.mdx';
 import MessageContentOrder from '../common-content/ui-components/channel/props/message_content_order.mdx';
 import MessageDeleted from '../common-content/ui-components/channel/props/message-deleted.mdx';
 import MessageEditedTimestamp from '../common-content/ui-components/channel/props/message-edited-timestamp.mdx';
 import MessageError from '../common-content/ui-components/channel/props/message-error.mdx';
 import MessageFooter from '../common-content/ui-components/channel/props/message-footer.mdx';
 import MessageHeader from '../common-content/ui-components/channel/props/message-header.mdx';
+import MessageMenu from '../common-content/ui-components/channel/props/message-menu.mdx';
 import MessagePinnedHeader from '../common-content/ui-components/channel/props/message-pinned-header.mdx';
 import MessageReplies from '../common-content/ui-components/channel/props/message-replies.mdx';
 import MessageRepliesAvatars from '../common-content/ui-components/channel/props/message-replies-avatars.mdx';
@@ -118,6 +122,7 @@ import MessageSimple from '../common-content/ui-components/channel/props/message
 import MessageStatus from '../common-content/ui-components/channel/props/message-status.mdx';
 import MessageSystem from '../common-content/ui-components/channel/props/message-system.mdx';
 import MessageText from '../common-content/ui-components/channel/props/message-text.mdx';
+import MessageTextNumberOfLines from '../common-content/ui-components/channel/props/message-text-number-of-lines.mdx';
 import MoreOptionsButton from '../common-content/ui-components/channel/props/more-options-button.mdx';
 import MyMessageTheme from '../common-content/ui-components/channel/props/my_message_theme.mdx';
 import NewMessageStateUpdateThrottleInterval from '../common-content/ui-components/channel/props/new_message_state_update_throttle_interval.mdx';
@@ -126,7 +131,10 @@ import OnChangeText from '../common-content/ui-components/channel/props/on_chang
 import OnLongPressMessage from '../common-content/ui-components/channel/props/on_long_press_message.mdx';
 import OnPressInMessage from '../common-content/ui-components/channel/props/on_press_in_message.mdx';
 import OnPressMessage from '../common-content/ui-components/channel/props/on_press_message.mdx';
-import OverlayReactionList from '../common-content/ui-components/overlay-provider/props/overlay_reaction_list.mdx';
+import MessageReactionPicker from '../common-content/ui-components/channel/props/message-reaction-picker.mdx';
+import MessageUserReactionsAvatar from '../common-content/ui-components/channel/props/message-user-reactions-avatar.mdx';
+import MessageUserReactionsItem from '../common-content/ui-components/channel/props/message-user-reactions-item.mdx';
+import MessageUserReactions from '../common-content/ui-components/channel/props/message-user-reactions.mdx';
 import OverrideOwnCapabilities from '../common-content/ui-components/channel/props/override_own_capabilities.mdx';
 import ReactionList from '../common-content/ui-components/channel/props/reaction-list.mdx';
 import Reply from '../common-content/ui-components/channel/props/reply.mdx';
@@ -639,6 +647,10 @@ Load the channel at a specified message instead of the most recent message.
 
 <MessageContentOrder />
 
+### `messageTextNumberOfLines`
+
+<MessageTextNumberOfLines />
+
 <!-- ### messages
 
 Provide a custom array of messages to render in `MessageList`. -->
@@ -898,7 +910,19 @@ Component to render full screen error indicator, when channel fails to load.
 
 <LoadingIndicator />
 
+<!--
 ### Message
+
+<Message />
+-->
+
+### MessageActionList
+
+<MessageActionList />
+
+### MessageActionListItem
+
+<MessageActionListItem />
 
 ### MessageAvatar
 
@@ -932,6 +956,10 @@ Component to render full screen error indicator, when channel fails to load.
 
 <MessageHeader />
 
+### MessageMenu
+
+<MessageMenu />
+
 ### MessagePinnedHeader
 
 <MessagePinnedHeader />
@@ -962,6 +990,22 @@ Component to render full screen error indicator, when channel fails to load.
 
 <MessageText />
 
+### MessageReactionPicker
+
+<MessageReactionPicker />
+
+### MessageUserReactionsAvatar
+
+<MessageUserReactionsAvatar />
+
+### MessageUserReactionsItem
+
+<MessageUserReactionsItem />
+
+### MessageUserReactions
+
+<MessageUserReactions />
+
 ### MoreOptionsButton
 
 <MoreOptionsButton />
@@ -969,10 +1013,6 @@ Component to render full screen error indicator, when channel fails to load.
 ### NetworkDownIndicator
 
 <NetworkDownIndicator />
-
-### OverlayReactionList
-
-<OverlayReactionList />
 
 ### ReactionList
 

@@ -660,7 +660,7 @@ const MessageListWithContext = <
         message={message}
         onThreadSelect={onThreadSelect}
         showUnreadUnderlay={showUnreadUnderlay}
-        style={[{ paddingHorizontal: screenPadding }, messageContainer]}
+        style={[messageContainer]}
         threadList={threadList}
       />
     );

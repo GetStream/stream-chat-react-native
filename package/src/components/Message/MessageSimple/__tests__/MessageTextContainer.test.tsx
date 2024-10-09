@@ -30,7 +30,7 @@ describe('MessageTextContainer', () => {
       user: { ...staticUser, image: undefined },
     });
     const { getByTestId, getByText, rerender, toJSON } = render(
-      <ThemeProvider style={defaultTheme}>
+      <ThemeProvider theme={defaultTheme}>
         <MessageTextContainer message={message as unknown as MessageType} />
       </ThemeProvider>,
     );
@@ -41,7 +41,7 @@ describe('MessageTextContainer', () => {
     });
 
     rerender(
-      <ThemeProvider style={defaultTheme}>
+      <ThemeProvider theme={defaultTheme}>
         <MessageTextContainer
           message={message as unknown as MessageType}
           MessageText={({ message }) => <Text testID='message-text'>{message?.text}</Text>}
@@ -60,7 +60,7 @@ describe('MessageTextContainer', () => {
     });
 
     rerender(
-      <ThemeProvider style={defaultTheme}>
+      <ThemeProvider theme={defaultTheme}>
         <MessageTextContainer message={staticMessage as unknown as MessageType} />
       </ThemeProvider>,
     );

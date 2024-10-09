@@ -80,6 +80,8 @@ export const useFetchReactions = <
   }, [fetchReactions]);
 
   useEffect(() => {
+    setReactions([]);
+    setNext(undefined);
     fetchReactions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messageId, reactionType, sortString]);

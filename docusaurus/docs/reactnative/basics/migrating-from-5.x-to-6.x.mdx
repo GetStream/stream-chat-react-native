@@ -7,11 +7,11 @@ title: Migration from 5.x to 6.x
 v6.0 is supported on React native version **0.72** and above.
 :::
 
-## Changes
+## Dependency changes
 
 The following are the crucial changes of the Stream Chat React Native SDK from version 5.x to 6.x:
 
-### Change `react-native-fs` to `react-native-blob-util`
+#### Change `react-native-fs` to `react-native-blob-util`
 
 The `react-native-fs` package has been replaced to `react-native-blob-util` in favour of the former not being actively maintained. You can replace it by running the following commands:
 
@@ -20,7 +20,7 @@ yarn remove react-native-fs
 yarn add react-native-blob-util
 ```
 
-### Change `react-native-image-resizer` to `@bam.tech/react-native-image-resizer`
+#### Change `react-native-image-resizer` to `@bam.tech/react-native-image-resizer`
 
 The `react-native-image-resizer` package has been replaced with `@bam.tech/react-native-image-resizer`.
 
@@ -33,7 +33,7 @@ yarn remove react-native-image-resizer
 yarn add @bam.tech/react-native-image-resizer
 ```
 
-### Change `react-native-image-crop-picker` to `react-native-image-picker`
+#### Change `react-native-image-crop-picker` to `react-native-image-picker`
 
 The `react-native-image-crop-picker` package has been replaced with `react-native-image-picker`. This is a better alternative, and can help us with our new architecture endeavors.
 
@@ -46,7 +46,7 @@ yarn add react-native-image-picker
 
 Also, the dependency is made optional now, so if you don't want to use the image picker, you can remove it from your project and the camera selector icon on the Attachment picker will be simply hidden for you.
 
-### Change `react-native-quick-sqlite` to `op-sqlite`
+#### Change `react-native-quick-sqlite` to `op-sqlite`
 
 The `react-native-quick-sqlite` package has been replaced with `op-sqlite`. This is a faster alternative, and can help us with our new architecture endeavors.
 
@@ -57,7 +57,7 @@ yarn remove react-native-quick-sqlite
 yarn add op-sqlite
 ```
 
-### Remove the usage of `@stream-io/flat-list-mvcp`
+#### Remove the usage of `@stream-io/flat-list-mvcp`
 
 The dependency on `@stream-io/flat-list-mvcp` package has been removed in favour of React Native's [`FlatList`](https://reactnative.dev/docs/flatlist) component supporting [`maintainVisibleContentPosition`](https://reactnative.dev/docs/scrollview#maintainvisiblecontentposition) from React Native version `>=0.72`. You can replace it by using the `FlatList` component directly.
 
@@ -78,7 +78,68 @@ registerNativeHandlers({
 
 This also involves not passing the `FlatList` component as a handler to [`registerNativeHandlers`](../customization/native-handlers.mdx#overriding-handlers) anymore.
 
-### Remove `NetInfo` from the native handlers
+## SDK changes
+
+#### Introduce new Message Menu design
+
+The Message Menu design has been revamped to provide a better user experience. The new design is more intuitive and provides a better user experience.
+
+![Message Menu](../assets/basics/migrating-from-5.x-to-6.x/message_actions.png)
+
+:::note
+The previous overlay design has been replaced with a bottom sheet modal design.
+:::
+
+#### Removed `MessageOverlayContext` and `MessageOverlayProvider`
+
+The `MessageOverlayContext` and `MessageOverlayProvider` have been removed.
+
+#### Removed props from `OverlayProvider`
+
+The following props have been removed from the `OverlayProvider`:
+
+- `MessageActionList`
+- `MessageActionListItem`
+- `OverlayReactions`
+- `OverlayReactionsAvatar`
+- `OverlayReactionsItem`
+- `messageTextNumberOfLines`
+- `error`, `isMyMessage`, `isThreadMessage`, `message` and `messageReactions`
+
+#### New `Channel` props
+
+The props from the `OverlayProvider` have been moved to the `Channel` component. The following props have been added to the `Channel` component:
+
+- `MessageActionList`
+- `MessageActionListItem`
+- `OverlayReactions` is changed to `MessageUserReactions`
+- `OverlayReactionsAvatar` is changed to `MessageUserReactionsAvatar`
+- `OverlayReactionsItem` is changed to `MessageUserReactionsItem`
+- `messageTextNumberOfLines`
+
+#### Removed `MessageOverlay` in favour of `MessageMenu`.
+
+The `MessageOverlay` component has been removed in favour of `MessageMenu`. The `MessageMenu` component is a more versatile and feature-rich component that can be used to show more than just reactions and actions.
+
+The `MessageOverlay` component is removed from top level `OverlayProvider` and is replaced with `MessageMenu` in the level of the `Message` component.
+
+#### Remove prop from `Message` component.
+
+The following props have been removed from the `Message` component:
+
+- `setData`
+- `setOverlay`
+- `onLongPress`
+- `onPress`
+- `onPressIn`
+
+The later 3 props are removed in favour of similar props on MessagesContext and is therefore not needed. The `setData` prop is removed in favour of the removal of `MessageOverlayContext` and the `setOverlay` is not needed as we don't set the message overlay in `OverlayProvider`.
+
+#### Added `BottomSheetModal` component
+
+The version introduces a very basic `BottomSheetModal` component that can be used to show a modal at the bottom of the screen. This can be used to show the message actions and reactions.
+
+#### Remove `NetInfo` from the native handlers
 
 The `NetInfo` package has been removed from the native handlers. This also involves not passing the `NetInfo` utility as a handler to [`registerNativeHandlers`](../customization/native-handlers.mdx#overriding-handlers) anymore.
 
@@ -91,6 +152,14 @@ registerNativeHandlers({
 });
 ```
 
-### Change the type of `quotedMessage` in `MessageInputContext`
+#### Change the type of `quotedMessage` in `MessageInputContext`
 
 The type of `quotedMessage` is changed from `MessageType |  boolean` to `MessageType | undefined` for better in the `MessageInputContext`.
+
+## Other changes
+
+- The `useMessageActions` hook doesn't take `setOverlay` anymore but takes in `dismissOverlay`.
+- The MessageContext has a new prop - `dismissOverlay`. The definition of `showMessageOverlay` is changed to `(showMessageReactions?: boolean) => void`.
+- The `isMessageActionsVisible` is changed to `showMessageReactions` in `messageAction.ts`.
+- Removed the `useMessageActionAnimation` hook.
+- Removed `alignment` prop from `MessagePinnedHeader` component.

@@ -2,7 +2,7 @@ import type { MessageContextValue } from '../../../contexts/messageContext/Messa
 import type { OwnCapabilitiesContextValue } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { isClipboardAvailable } from '../../../native';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
+import type { MessageActionType } from '../../MessageMenu/MessageActionListItem';
 
 export type MessageActionsParams<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -14,20 +14,16 @@ export type MessageActionsParams<
   editMessage: MessageActionType;
   error: boolean | Error;
   flagMessage: MessageActionType;
-  /**
-   * Determines if the message actions are visible.
-   */
-  isMessageActionsVisible: boolean;
   isThreadMessage: boolean;
-  /**
-   * @deprecated use `isMessageActionsVisible` instead.
-   */
-  messageReactions: boolean;
   muteUser: MessageActionType;
   ownCapabilities: OwnCapabilitiesContextValue;
   pinMessage: MessageActionType;
   quotedReply: MessageActionType;
   retry: MessageActionType;
+  /**
+   * Determines if the message actions are visible.
+   */
+  showMessageReactions: boolean;
   threadReply: MessageActionType;
   unpinMessage: MessageActionType;
   /**
@@ -50,19 +46,18 @@ export const messageActions = <
   editMessage,
   error,
   flagMessage,
-  isMessageActionsVisible,
   isMyMessage,
   isThreadMessage,
   message,
-  messageReactions,
   ownCapabilities,
   pinMessage,
   quotedReply,
   retry,
+  showMessageReactions,
   threadReply,
   unpinMessage,
 }: MessageActionsParams<StreamChatGenerics>) => {
-  if (messageReactions || !isMessageActionsVisible) {
+  if (showMessageReactions) {
     return [];
   }
 

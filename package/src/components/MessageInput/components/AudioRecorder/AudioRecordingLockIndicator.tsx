@@ -80,6 +80,5 @@ const styles = StyleSheet.create({
     padding: 8,
     position: 'absolute',
     right: 0,
-    zIndex: 1,
   },
 });

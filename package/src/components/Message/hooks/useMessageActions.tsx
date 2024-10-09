@@ -6,7 +6,6 @@ import type { ChannelContextValue } from '../../../contexts/channelContext/Chann
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
-import type { OverlayContextValue } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
@@ -28,40 +27,11 @@ import { removeReservedFields } from '../../../utils/removeReservedFields';
 import { MessageStatusTypes } from '../../../utils/utils';
 
 import type { MessageType } from '../../MessageList/hooks/useMessageList';
-import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
+import type { MessageActionType } from '../../MessageMenu/MessageActionListItem';
 
-export const useMessageActions = <
+export type MessageActionsHookProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
-  channel,
-  client,
-  deleteMessage: deleteMessageFromContext,
-  deleteReaction,
-  enforceUniqueReaction,
-  handleBan,
-  handleBlock,
-  handleCopy,
-  handleDelete,
-  handleEdit,
-  handleFlag,
-  handleMute,
-  handlePinMessage,
-  handleQuotedReply,
-  handleReaction: handleReactionProp,
-  handleRetry,
-  handleThreadReply,
-  message,
-  onThreadSelect,
-  openThread,
-  retrySendMessage,
-  selectReaction,
-  sendReaction,
-  setEditingState,
-  setOverlay,
-  setQuotedMessageState,
-  supportedReactions,
-  t,
-}: Pick<
+> = Pick<
   MessagesContextValue<StreamChatGenerics>,
   | 'deleteMessage'
   | 'sendReaction'
@@ -88,12 +58,44 @@ export const useMessageActions = <
 > &
   Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'enforceUniqueReaction'> &
   Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
-  Pick<OverlayContextValue, 'setOverlay'> &
   Pick<ThreadContextValue<StreamChatGenerics>, 'openThread'> &
-  Pick<MessageContextValue<StreamChatGenerics>, 'message'> &
+  Pick<MessageContextValue<StreamChatGenerics>, 'dismissOverlay' | 'message'> &
   Pick<TranslationContextValue, 't'> & {
     onThreadSelect?: (message: MessageType<StreamChatGenerics>) => void;
-  }) => {
+  };
+
+export const useMessageActions = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>({
+  channel,
+  client,
+  deleteMessage: deleteMessageFromContext,
+  deleteReaction,
+  dismissOverlay,
+  enforceUniqueReaction,
+  handleBan,
+  handleBlock,
+  handleCopy,
+  handleDelete,
+  handleEdit,
+  handleFlag,
+  handleMute,
+  handlePinMessage,
+  handleQuotedReply,
+  handleReaction: handleReactionProp,
+  handleRetry,
+  handleThreadReply,
+  message,
+  onThreadSelect,
+  openThread,
+  retrySendMessage,
+  selectReaction,
+  sendReaction,
+  setEditingState,
+  setQuotedMessageState,
+  supportedReactions,
+  t,
+}: MessageActionsHookProps<StreamChatGenerics>) => {
   const {
     theme: {
       colors: { accent_red, grey },
@@ -141,7 +143,7 @@ export const useMessageActions = <
 
   const banUser: MessageActionType = {
     action: async () => {
-      setOverlay('none');
+      dismissOverlay();
       if (message.user?.id) {
         if (handleBan) {
           handleBan(message);
@@ -160,7 +162,7 @@ export const useMessageActions = <
    */
   const blockUser: MessageActionType = {
     action: async () => {
-      setOverlay('none');
+      dismissOverlay();
       if (message.user?.id) {
         if (handleBlock) {
           handleBlock(message);
@@ -176,7 +178,7 @@ export const useMessageActions = <
 
   const copyMessage: MessageActionType = {
     action: () => {
-      setOverlay('none');
+      dismissOverlay();
       if (handleCopy) {
         handleCopy(message);
       }
@@ -189,7 +191,7 @@ export const useMessageActions = <
 
   const deleteMessage: MessageActionType = {
     action: () => {
-      setOverlay('none');
+      dismissOverlay();
       if (handleDelete) {
         handleDelete(message);
       }
@@ -203,7 +205,7 @@ export const useMessageActions = <
 
   const editMessage: MessageActionType = {
     action: () => {
-      setOverlay('none');
+      dismissOverlay();
       if (handleEdit) {
         handleEdit(message);
       }
@@ -216,7 +218,7 @@ export const useMessageActions = <
 
   const pinMessage: MessageActionType = {
     action: () => {
-      setOverlay('none');
+      dismissOverlay();
       if (handlePinMessage) {
         handlePinMessage(message);
       }
@@ -229,7 +231,7 @@ export const useMessageActions = <
 
   const unpinMessage: MessageActionType = {
     action: () => {
-      setOverlay('none');
+      dismissOverlay();
       if (handlePinMessage) {
         handlePinMessage(message);
       }
@@ -242,7 +244,7 @@ export const useMessageActions = <
 
   const flagMessage: MessageActionType = {
     action: () => {
-      setOverlay('none');
+      dismissOverlay();
       if (handleFlag) {
         handleFlag(message);
       }
@@ -268,7 +270,7 @@ export const useMessageActions = <
 
   const muteUser: MessageActionType = {
     action: async () => {
-      setOverlay('none');
+      dismissOverlay();
       if (message.user?.id) {
         if (handleMute) {
           handleMute(message);
@@ -284,7 +286,7 @@ export const useMessageActions = <
 
   const quotedReply: MessageActionType = {
     action: () => {
-      setOverlay('none');
+      dismissOverlay();
       if (handleQuotedReply) {
         handleQuotedReply(message);
       }
@@ -297,7 +299,7 @@ export const useMessageActions = <
 
   const retry: MessageActionType = {
     action: async () => {
-      setOverlay('none');
+      dismissOverlay();
       const messageWithoutReservedFields = removeReservedFields(message);
       if (handleRetry) {
         handleRetry(messageWithoutReservedFields as MessageType<StreamChatGenerics>);
@@ -312,7 +314,7 @@ export const useMessageActions = <
 
   const threadReply: MessageActionType = {
     action: () => {
-      setOverlay('none');
+      dismissOverlay();
       if (handleThreadReply) {
         handleThreadReply(message);
       }

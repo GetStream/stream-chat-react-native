@@ -79,7 +79,7 @@ To do this make sure your `Channel` components are always aware of the thread st
 
 ## Image gallery not full screen
 
-If the image viewer or message overlay is not covering the full screen, for instance it is rendering below or behind a Header, it is likely the `OverlayProvider` is not setup in the correct location within the application.
+If the image viewer or message menu is not covering the full screen, for instance it is rendering below or behind a Header, it is likely the `OverlayProvider` is not setup in the correct location within the application.
 Please refer to the [Stream Chat with Navigation](./navigation.mdx) documentation to properly place the `OverlayProvider` in relation to your navigation solution or other components.
 
 ## Image picker incorrect height
@@ -295,7 +295,7 @@ This includes ensuring you import `react-native-gesture-handler` at the top of y
 import 'react-native-gesture-handler';
 ```
 
-Also do not forget to wrap your component tree(probably above `OverlayProvider`) with `<GestureHandlerRootView>` or `gestureHandlerRootHOC` as mentioned in [RNGH Installation docs](https://docs.swmansion.com/react-native-gesture-handler/docs/installation#js). Not doing so, can cause unusual behaviour with the `MessageOverlay` and `Imagegallery` gestures.
+Also do not forget to wrap your component tree(probably above `OverlayProvider`) with `<GestureHandlerRootView>` or `gestureHandlerRootHOC` as mentioned in [RNGH Installation docs](https://docs.swmansion.com/react-native-gesture-handler/docs/installation#js). Not doing so, can cause unusual behaviour with the `Imagegallery` gestures.
 
 ```tsx
 <GestureHandlerRootView style={{ flex: 1 }}>

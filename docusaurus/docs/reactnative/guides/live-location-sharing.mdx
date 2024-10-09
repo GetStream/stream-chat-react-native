@@ -341,7 +341,6 @@ import {
   Channel,
   Card as DefaultCard,
   useMessageContext,
-  useMessageOverlayContext,
   useOverlayContext,
 } from 'stream-chat-react-native';
 import {useLiveLocationContext} from './LiveLocationContext';
@@ -361,9 +360,8 @@ const MapCard = ({
   const {stopLiveLocation} = useLiveLocationContext();
 
   const {isMyMessage, message} = useMessageContext();
-  const {data} = useMessageOverlayContext();
   const {overlay} = useOverlayContext();
-  const overlayId = data?.message?.id;
+  const overlayId = message?.id;
   // is this message shown on overlay? If yes, then don't show the button
   const isOverlayOpen = overlay === 'message' && overlayId === message.id;
   const showStopSharingButton = !ended_at && isMyMessage && !isOverlayOpen;
