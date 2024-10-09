@@ -5,10 +5,9 @@ import type { Channel, ChannelState } from 'stream-chat';
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
 import { StickyHeaderProps } from '../../components/MessageList/StickyHeader';
-import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
-import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type ChannelContextValue<
@@ -78,24 +77,7 @@ export type ChannelContextValue<
    * @param messageId If undefined, channel will be loaded at most recent message.
    */
   loadChannelAroundMessage: ({ messageId }: { messageId?: string }) => Promise<void>;
-  /**
-   * @deprecated use loadChannelAroundMessage instead
-   *
-   * Loads channel at specific message
-   *
-   * @param messageId If undefined, channel will be loaded at most recent message.
-   * @param before Number of message to query before messageId
-   * @param after Number of message to query after messageId
-   */
-  loadChannelAtMessage: ({
-    after,
-    before,
-    messageId,
-  }: {
-    after?: number;
-    before?: number;
-    messageId?: string;
-  }) => Promise<void>;
+
   loading: boolean;
   /**
    * Custom loading indicator to override the Stream default
@@ -222,30 +204,4 @@ export const useChannelContext = <
   }
 
   return contextValue;
-};
-
-/**
- * @deprecated
- *
- * This will be removed in the next major version.
- *
- * Typescript currently does not support partial inference so if ChatContext
- * typing is desired while using the HOC withChannelContext the Props for the
- * wrapped component must be provided as the first generic.
- */
-export const withChannelContext = <
-  P extends UnknownType,
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  Component: React.ComponentType<P>,
-): React.ComponentType<Omit<P, keyof ChannelContextValue<StreamChatGenerics>>> => {
-  const WithChannelContextComponent = (
-    props: Omit<P, keyof ChannelContextValue<StreamChatGenerics>>,
-  ) => {
-    const channelContext = useChannelContext<StreamChatGenerics>();
-
-    return <Component {...(props as P)} {...channelContext} />;
-  };
-  WithChannelContextComponent.displayName = `WithChannelContext${getDisplayName(Component)}`;
-  return WithChannelContextComponent;
 };

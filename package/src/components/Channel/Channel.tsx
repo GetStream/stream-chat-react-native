@@ -1083,28 +1083,6 @@ const ChannelWithContext = <
   }, [targetedMessage]);
 
   /**
-   * @deprecated use loadChannelAroundMessage instead
-   *
-   * Loads channel at specific message
-   *
-   * @param messageId If undefined, channel will be loaded at most recent message.
-   * @param before Number of message to query before messageId
-   * @param after Number of message to query after messageId
-   */
-  const loadChannelAtMessage: ChannelContextValue<StreamChatGenerics>['loadChannelAtMessage'] = ({
-    after = 2,
-    before = 30,
-    messageId,
-  }) =>
-    channelQueryCallRef.current(async () => {
-      await queryAtMessage({ after, before, messageId });
-
-      if (messageId) {
-        setTargetedMessage(messageId);
-      }
-    });
-
-  /**
    * Utility method to mark that current set if latest into two.
    * With an empty latest set
    * This is useful when we know that we dont know the latest messages anymore
@@ -1398,95 +1376,6 @@ const ChannelWithContext = <
       channel?.state.setIsUpToDate(true);
       setHasNoMoreRecentMessagesToLoad(true);
     });
-
-  /**
-   * @deprecated
-   * Makes a query to load messages at particular message id.
-   *
-   * @param messageId Targeted message id
-   * @param before Number of messages to load before messageId
-   * @param after Number of messages to load after messageId
-   */
-  const queryAtMessage = async ({
-    after = 10,
-    before = 10,
-    messageId,
-  }: Parameters<ChannelContextValue<StreamChatGenerics>['loadChannelAtMessage']>[0]) => {
-    if (!channel) return;
-    channel.state.setIsUpToDate(false);
-    hasOverlappingRecentMessagesRef.current = false;
-    clearInterval(mergeSetsIntervalRef.current);
-    channel.state.clearMessages();
-    setMessages([]);
-    if (!messageId) {
-      await channel.query({
-        messages: {
-          limit: before,
-        },
-        watch: true,
-      });
-
-      channel.state.setIsUpToDate(true);
-      return;
-    }
-
-    await queryBeforeMessage(messageId, before);
-    await queryAfterMessage(messageId, after);
-  };
-
-  /**
-   * @deprecated
-   * Makes a query to load messages before particular message id.
-   *
-   * @param messageId Targeted message id
-   * @param limit Number of messages to load
-   */
-  const queryBeforeMessage = async (messageId: string, limit = 5) => {
-    if (!channel) return;
-
-    await channel.query({
-      messages: {
-        id_lt: messageId,
-        limit,
-      },
-      watch: true,
-    });
-
-    channel.state.setIsUpToDate(false);
-  };
-
-  /**
-   * @deprecated
-   * Makes a query to load messages later than particular message id.
-   *
-   * @param messageId Targeted message id
-   * @param limit Number of messages to load.
-   */
-  const queryAfterMessage = async (messageId: string, limit = 5) => {
-    if (!channel) return;
-    const state = await channel.query({
-      messages: {
-        id_gte: messageId,
-        limit,
-      },
-      watch: true,
-    });
-
-    if (state.messages.length < limit) {
-      // make current set as the latest
-      const currentSet = channel.state.messageSets.find((set) => set.isCurrent);
-      if (currentSet && !currentSet.isLatest) {
-        channel.state.messageSets = channel.state.messageSets.filter((set) => !set.isLatest);
-        currentSet.isLatest = true;
-      }
-      channel.state.setIsUpToDate(true);
-      setHasNoMoreRecentMessagesToLoad(true);
-    } else {
-      splitLatestCurrentMessageSetRef.current();
-      channel.state.setIsUpToDate(false);
-      setHasNoMoreRecentMessagesToLoad(false);
-    }
-  };
 
   // In case the channel is disconnected which may happen when channel is deleted,
   // underlying js client throws an error. Following function ensures that Channel component
@@ -2209,7 +2098,6 @@ const ChannelWithContext = <
     isOwner,
     lastRead,
     loadChannelAroundMessage,
-    loadChannelAtMessage,
     loading,
     LoadingIndicator,
     markRead,
