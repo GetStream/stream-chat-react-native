@@ -67,7 +67,6 @@ import {
   FileTypes,
   FileUpload,
   ImageUpload,
-  UnknownType,
 } from '../../types/types';
 import {
   ACITriggerSettings,
@@ -92,7 +91,6 @@ import { useThreadContext } from '../threadContext/ThreadContext';
 import { useTranslationContext } from '../translationContext/TranslationContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
-import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 /**
@@ -1467,32 +1465,4 @@ export const useMessageInputContext = <
   }
 
   return contextValue;
-};
-
-/**
- * @deprecated
- *
- * This will be removed in the next major version.
- *
- * Typescript currently does not support partial inference so if ChatContext
- * typing is desired while using the HOC withMessageInputContext the Props for the
- * wrapped component must be provided as the first generic.
- */
-export const withMessageInputContext = <
-  P extends UnknownType,
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  Component: React.ComponentType<P>,
-): React.ComponentType<Omit<P, keyof MessageInputContextValue<StreamChatGenerics>>> => {
-  const WithMessageInputContextComponent = (
-    props: Omit<P, keyof MessageInputContextValue<StreamChatGenerics>>,
-  ) => {
-    const messageInputContext = useMessageInputContext<StreamChatGenerics>();
-
-    return <Component {...(props as P)} {...messageInputContext} />;
-  };
-  WithMessageInputContextComponent.displayName = `WithMessageInputContext${getDisplayName(
-    Component,
-  )}`;
-  return WithMessageInputContextComponent;
 };

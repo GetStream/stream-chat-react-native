@@ -12,10 +12,7 @@ import { getChannel } from '../../utils';
 type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   {
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>;
-    onMessageNew?: (
-      setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
-      event: Event<StreamChatGenerics>,
-    ) => void;
+
     onNewMessageNotification?: (
       setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
       event: Event<StreamChatGenerics>,
@@ -25,7 +22,6 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
 export const useNewMessageNotification = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
-  onMessageNew,
   onNewMessageNotification,
   setChannels,
 }: Parameters<StreamChatGenerics>) => {
@@ -33,12 +29,7 @@ export const useNewMessageNotification = <
 
   useEffect(() => {
     const handleEvent = async (event: Event<StreamChatGenerics>) => {
-      if (typeof onMessageNew === 'function') {
-        onMessageNew(setChannels, event);
-        console.warn(
-          'onMessageNew is deprecated and will be removed in future release. Please use onNewMessageNotification to establish the same behaviour',
-        );
-      } else if (typeof onNewMessageNotification === 'function') {
+      if (typeof onNewMessageNotification === 'function') {
         onNewMessageNotification(setChannels, event);
       } else {
         if (event.channel?.id && event.channel?.type) {

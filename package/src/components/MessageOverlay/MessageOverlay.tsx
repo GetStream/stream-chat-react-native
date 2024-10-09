@@ -85,12 +85,7 @@ export type MessageOverlayPropsWithContext<
   Pick<OverlayContextValue, 'overlay' | 'setOverlay'> &
   Pick<
     OverlayProviderProps<StreamChatGenerics>,
-    | 'error'
-    | 'isMyMessage'
-    | 'isThreadMessage'
-    | 'message'
-    | 'messageReactions'
-    | 'messageTextNumberOfLines'
+    'error' | 'isMyMessage' | 'isThreadMessage' | 'message' | 'messageTextNumberOfLines'
   > & {
     overlayOpacity: SharedValue<number>;
     showScreen?: SharedValue<number>;
@@ -117,7 +112,6 @@ const MessageOverlayWithContext = <
     MessageActionListItem,
     messageActions,
     messageContext,
-    messageReactions,
     messageReactionTitle,
     messagesContext,
     messageTextNumberOfLines = DefaultMessageTextNumberOfLines,
@@ -139,7 +133,6 @@ const MessageOverlayWithContext = <
     isMyMessage,
     isThreadMessage,
     message,
-    messageReactions,
   };
 
   const { theme } = useTheme();
@@ -571,7 +564,7 @@ export type MessageOverlayProps<
   Pick<MessageOverlayPropsWithContext<StreamChatGenerics>, 'overlayOpacity'> &
   Pick<
     MessageOverlayPropsWithContext<StreamChatGenerics>,
-    'isMyMessage' | 'error' | 'isThreadMessage' | 'message' | 'messageReactions'
+    'isMyMessage' | 'error' | 'isThreadMessage' | 'message'
   >;
 
 /**

@@ -7,8 +7,6 @@ import type { Moment } from 'moment-timezone';
 
 import type { TranslationLanguages } from 'stream-chat';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
-import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export const DEFAULT_USER_LANGUAGE: TranslationLanguages = 'en';
@@ -59,31 +57,4 @@ export const useTranslationContext = () => {
   }
 
   return contextValue;
-};
-
-/**
- * @deprecated
- *
- * This will be removed in the next major version.
- *
- * Typescript currently does not support partial inference so if ChatContext
- * typing is desired while using the HOC withTranslationContext the Props for the
- * wrapped component must be provided as the first generic.
- */
-export const withTranslationContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  Component: React.ComponentType<StreamChatGenerics>,
-): React.ComponentType<Omit<StreamChatGenerics, keyof TranslationContextValue>> => {
-  const WithTranslationContextComponent = (
-    props: Omit<StreamChatGenerics, keyof TranslationContextValue>,
-  ) => {
-    const translationContext = useTranslationContext();
-
-    return <Component {...(props as StreamChatGenerics)} {...translationContext} />;
-  };
-  WithTranslationContextComponent.displayName = `WithTranslationContext${getDisplayName(
-    Component as React.ComponentType,
-  )}`;
-  return WithTranslationContextComponent;
 };

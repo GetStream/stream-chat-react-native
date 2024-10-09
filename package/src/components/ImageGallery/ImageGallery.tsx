@@ -638,6 +638,7 @@ const styles = StyleSheet.create({
   animatedContainer: {
     alignItems: 'center',
     flexDirection: 'row',
+    backgroundColor: 'red',
   },
 });
 

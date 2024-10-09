@@ -6,10 +6,9 @@ import type { AutoCompleteSuggestionHeaderProps } from '../../components/AutoCom
 import type { AutoCompleteSuggestionItemProps } from '../../components/AutoCompleteInput/AutoCompleteSuggestionItem';
 import type { AutoCompleteSuggestionListProps } from '../../components/AutoCompleteInput/AutoCompleteSuggestionList';
 import type { Emoji } from '../../emoji-data';
-import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
-import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type SuggestionComponentType = 'command' | 'emoji' | 'mention';
@@ -147,32 +146,4 @@ export const useSuggestionsContext = <
   }
 
   return contextValue;
-};
-
-/**
- * @deprecated
- *
- * This will be removed in the next major version.
- *
- * Typescript currently does not support partial inference so if ChatContext
- * typing is desired while using the HOC withSuggestionsContext the Props for the
- * wrapped component must be provided as the first generic.
- */
-export const withSuggestionsContext = <
-  P extends UnknownType,
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  Component: React.ComponentType<P>,
-): React.ComponentType<Omit<P, keyof SuggestionsContextValue<StreamChatGenerics>>> => {
-  const WithSuggestionsContextComponent = (
-    props: Omit<P, keyof SuggestionsContextValue<StreamChatGenerics>>,
-  ) => {
-    const suggestionsContext = useSuggestionsContext<StreamChatGenerics>();
-
-    return <Component {...(props as P)} {...suggestionsContext} />;
-  };
-  WithSuggestionsContextComponent.displayName = `WithSuggestionsContext${getDisplayName(
-    Component,
-  )}`;
-  return WithSuggestionsContextComponent;
 };

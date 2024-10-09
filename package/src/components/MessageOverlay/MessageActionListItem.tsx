@@ -53,7 +53,7 @@ export type MessageActionListItemProps<
 > = MessageActionType &
   Pick<
     MessageOverlayPropsWithContext<StreamChatGenerics>,
-    'error' | 'isMyMessage' | 'isThreadMessage' | 'message' | 'messageReactions'
+    'error' | 'isMyMessage' | 'isThreadMessage' | 'message'
   > & {
     index: number;
     length: number;
