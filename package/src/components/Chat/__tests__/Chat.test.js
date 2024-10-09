@@ -132,7 +132,10 @@ describe('ChatContext', () => {
 });
 
 describe('TranslationContext', () => {
-  afterEach(cleanup);
+  afterEach(() => {
+    cleanup();
+    jest.clearAllMocks();
+  });
   const chatClient = getTestClient();
   it('exposes the translation context', async () => {
     let context;
