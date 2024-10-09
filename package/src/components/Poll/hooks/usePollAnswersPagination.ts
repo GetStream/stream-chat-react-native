@@ -33,22 +33,20 @@ export const usePollAnswersPagination = <
     true,
   );
 
-  const pollAnswers1 = useMemo(() => {
+  const pollAnswers = useMemo(() => {
+    let pollAnswers = items;
     if (latestCastOrUpdatedAnswer) {
-      return [
+      pollAnswers = [
         latestCastOrUpdatedAnswer,
-        ...items.filter((item) => item.user_id !== latestCastOrUpdatedAnswer.user_id),
+        ...pollAnswers.filter((answer) => answer.user_id !== latestCastOrUpdatedAnswer.user_id),
       ];
     }
 
-    return items;
-  }, [items, latestCastOrUpdatedAnswer]);
-  const pollAnswers = useMemo(() => {
     if (latestRemovedAnswer) {
-      return pollAnswers1.filter((item) => item.user_id === latestRemovedAnswer.user_id);
+      pollAnswers = pollAnswers.filter((item) => item.user_id === latestRemovedAnswer.user_id);
     }
-    return pollAnswers1;
-  }, [latestRemovedAnswer, pollAnswers1]);
+    return pollAnswers;
+  }, [items, latestCastOrUpdatedAnswer, latestRemovedAnswer]);
 
   return {
     error,
