@@ -75,6 +75,7 @@ const MessageDeletedWithContext = <
         alignment === 'left' ? styles.leftAlignItems : styles.rightAlignItems,
         deletedContainer,
       ]}
+      testID='message-deleted'
     >
       <View
         style={[
@@ -94,7 +95,6 @@ const MessageDeletedWithContext = <
           noBorder ? { borderWidth: 0 } : {},
           deletedContainerInner,
         ]}
-        testID='message-content-wrapper'
       >
         <MessageTextContainer<StreamChatGenerics>
           markdownStyles={merge({ em: { color: grey } }, deletedText)}

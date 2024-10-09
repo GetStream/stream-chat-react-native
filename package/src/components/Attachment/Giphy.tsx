@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Attachment } from 'stream-chat';
 
@@ -151,7 +151,7 @@ export type GiphyPropsWithContext<
   Pick<
     MessagesContextValue<StreamChatGenerics>,
     | 'giphyVersion'
-    | 'additionalTouchableProps'
+    | 'additionalPressableProps'
     | 'ImageLoadingIndicator'
     | 'ImageLoadingFailedIndicator'
   > & {
@@ -164,7 +164,7 @@ const GiphyWithContext = <
   props: GiphyPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
-    additionalTouchableProps,
+    additionalPressableProps,
     attachment,
     giphyVersion,
     handleAction,
@@ -260,7 +260,7 @@ const GiphyWithContext = <
       </View>
       <View>
         <View style={styles.actionsRow}>
-          <TouchableOpacity
+          <Pressable
             onPress={() => {
               if (actions?.[2].name && actions?.[2].value && handleAction) {
                 handleAction(actions[2].name, actions[2].value);
@@ -274,8 +274,8 @@ const GiphyWithContext = <
             testID={`${actions?.[2].value}-action-button`}
           >
             <Text style={[styles.cancel, { color: grey }, cancel]}>{actions?.[2].text}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+          </Pressable>
+          <Pressable
             onPress={() => {
               if (actions?.[1].name && actions?.[1].value && handleAction) {
                 handleAction(actions[1].name, actions[1].value);
@@ -289,8 +289,8 @@ const GiphyWithContext = <
             testID={`${actions?.[1].value}-action-button`}
           >
             <Text style={[styles.shuffle, { color: grey }, shuffle]}>{actions?.[1].text}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+          </Pressable>
+          <Pressable
             onPress={() => {
               if (actions?.[0].name && actions?.[0].value && handleAction) {
                 handleAction(actions[0].name, actions[0].value);
@@ -300,12 +300,12 @@ const GiphyWithContext = <
             testID={`${actions?.[0].value}-action-button`}
           >
             <Text style={[styles.send, { color: accent_blue }, send]}>{actions?.[0].text}</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
     </View>
   ) : (
-    <TouchableOpacity
+    <Pressable
       disabled={preventPress}
       onLongPress={(event) => {
         if (onLongPress) {
@@ -333,7 +333,7 @@ const GiphyWithContext = <
         }
       }}
       testID='giphy-attachment'
-      {...additionalTouchableProps}
+      {...additionalPressableProps}
     >
       <View
         style={[
@@ -383,7 +383,7 @@ const GiphyWithContext = <
           </View>
         </View>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
@@ -451,7 +451,7 @@ export const Giphy = <
   const { handleAction, isMyMessage, message, onLongPress, onPress, onPressIn, preventPress } =
     useMessageContext<StreamChatGenerics>();
   const { ImageComponent } = useChatContext<StreamChatGenerics>();
-  const { additionalTouchableProps, giphyVersion } = useMessagesContext<StreamChatGenerics>();
+  const { additionalPressableProps, giphyVersion } = useMessagesContext<StreamChatGenerics>();
   const { setMessages, setSelectedMessage } = useImageGalleryContext<StreamChatGenerics>();
   const { setOverlay } = useOverlayContext();
 
@@ -466,7 +466,7 @@ export const Giphy = <
   return (
     <MemoizedGiphy
       {...{
-        additionalTouchableProps,
+        additionalPressableProps,
         giphyVersion,
         handleAction,
         ImageComponent,

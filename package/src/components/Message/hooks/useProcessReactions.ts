@@ -1,6 +1,6 @@
 import { ComponentType, useMemo } from 'react';
 
-import { ReactionResponse } from 'stream-chat';
+import { ReactionGroupResponse, ReactionResponse } from 'stream-chat';
 
 import {
   MessagesContextValue,
@@ -8,7 +8,6 @@ import {
 } from '../../../contexts/messagesContext/MessagesContext';
 import { DefaultStreamChatGenerics } from '../../../types/types';
 import { ReactionData } from '../../../utils/utils';
-import { ReactionListProps } from '../MessageSimple/ReactionList';
 
 export type ReactionSummary = {
   own: boolean;
@@ -23,12 +22,20 @@ export type ReactionSummary = {
 
 export type ReactionsComparator = (a: ReactionSummary, b: ReactionSummary) => number;
 
+export type MessageReactionsData<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  /** An array of the reaction objects to display in the list */
+  latest_reactions?: ReactionResponse<StreamChatGenerics>[];
+  /** An array of the own reaction objects to distinguish own reactions visually */
+  own_reactions?: ReactionResponse<StreamChatGenerics>[] | null;
+  /** An object containing summary for each reaction type on a message */
+  reaction_groups?: Record<string, ReactionGroupResponse> | null;
+};
+
 type UseProcessReactionsParams<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<
-  ReactionListProps<StreamChatGenerics>,
-  'own_reactions' | 'reaction_groups' | 'latest_reactions'
-> &
+> = MessageReactionsData<StreamChatGenerics> &
   Partial<Pick<MessagesContextValue<StreamChatGenerics>, 'supportedReactions'>> & {
     sortReactions?: ReactionsComparator;
   };

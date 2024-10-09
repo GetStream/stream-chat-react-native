@@ -32,7 +32,7 @@ You can customize each one of the default actions using props on the [`Channel c
 
 The channel component accepts a prop called `messageActions`. You can use this prop as a callback function to render message actions selectively.
 
-The arguments to this function is an object with all the default message actions as [`MessageActionType`](#messageaction) objects. The function should return an array of MessageAction objects to render in a [MessageActionList](../common-content/ui-components/channel/props/message_action_list.mdx) within the message menu, that is shown when a user long presses a message in a MessageList.
+The arguments to this function is an object with all the default message actions as [`MessageActionType`](#messageaction) objects. The function should return an array of MessageAction objects to render in a [MessageActionList](../common-content/ui-components/channel/props/message-action-list.mdx) within the message menu, that is shown when a user long presses a message in a MessageList.
 
 You can also customize each one of the default actions using the `messageActions` prop passed to the Channel component as shown in the example below.
 
@@ -117,9 +117,9 @@ Styles for underlying Text component of action title.
 | ------------------------------------------------------------------------- |
 | [`Text Style Props`](https://reactnative.dev/docs/text-style-props#props) |
 
-### MessageTouchableHandlerPayload
+### MessagePressableHandlerPayload
 
-`MessageTouchableHandlerPayload` object is provided as parameter to callback handlers such as `onLongPressMessage`, `onPressMessage` for user interaction with message.
+`MessagePressableHandlerPayload` object is provided as parameter to callback handlers such as `onLongPressMessage`, `onPressMessage` for user interaction with message.
 
 #### Example
 
@@ -144,7 +144,7 @@ Styles for underlying Text component of action title.
 
 #### `additionalInfo`
 
-Additional message touchable handler info.
+Additional message pressable handler info.
 
 | Type   |
 | ------ |

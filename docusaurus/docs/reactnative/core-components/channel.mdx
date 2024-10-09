@@ -25,7 +25,7 @@ import AutoCompleteSuggestionItem from '../common-content/ui-components/channel/
 import AutoCompleteSuggestionList from '../common-content/ui-components/channel/props/autocomplete_suggestion_list.mdx';
 import AutoCompleteSuggestionsLimit from '../common-content/ui-components/channel/props/auto_complete_suggestions_limit.mdx';
 import AutoCompleteTriggerSettings from '../common-content/ui-components/channel/props/auto_complete_trigger_settings.mdx';
-import AdditionalTouchableProps from '../common-content/ui-components/channel/props/additional_touchable_props.mdx';
+import AdditionalPressableProps from '../common-content/ui-components/channel/props/additional_pressable_props.mdx';
 import AttachButton from '../common-content/ui-components/channel/props/attach_button.mdx';
 import Attachment from '../common-content/ui-components/channel/props/attachment.mdx';
 import AttachmentActions from '../common-content/ui-components/channel/props/attachment_actions.mdx';
@@ -136,7 +136,9 @@ import MessageUserReactionsAvatar from '../common-content/ui-components/channel/
 import MessageUserReactionsItem from '../common-content/ui-components/channel/props/message-user-reactions-item.mdx';
 import MessageUserReactions from '../common-content/ui-components/channel/props/message-user-reactions.mdx';
 import OverrideOwnCapabilities from '../common-content/ui-components/channel/props/override_own_capabilities.mdx';
-import ReactionList from '../common-content/ui-components/channel/props/reaction-list.mdx';
+import ReactionListBottom from '../common-content/ui-components/channel/props/reaction-list-bottom.mdx';
+import ReactionListPosition from '../common-content/ui-components/channel/props/reaction-list-position.mdx';
+import ReactionListTop from '../common-content/ui-components/channel/props/reaction-list-top.mdx';
 import Reply from '../common-content/ui-components/channel/props/reply.mdx';
 import ScrollToBottomButton from '../common-content/ui-components/channel/props/scroll-to-bottom-button.mdx';
 import SelectReaction from '../common-content/ui-components/channel/props/select_reaction.mdx';
@@ -284,9 +286,9 @@ This is often the header height.
 
 <AdditionalTextInputProps />
 
-### additionalTouchableProps
+### additionalPressableProps
 
-<AdditionalTouchableProps />
+<AdditionalPressableProps />
 
 ### allowThreadMessagesInChannel
 
@@ -687,6 +689,10 @@ Provide a custom array of messages to render in `MessageList`. -->
 
 <OverrideOwnCapabilities />
 
+### reactionListPosition
+
+<ReactionListPosition />
+
 <!-- ### openSuggestions -->
 
 ### selectReaction
@@ -1014,9 +1020,13 @@ Component to render full screen error indicator, when channel fails to load.
 
 <NetworkDownIndicator />
 
-### ReactionList
+### ReactionListBottom
 
-<ReactionList />
+<ReactionListBottom />
+
+### ReactionListTop
+
+<ReactionListTop />
 
 ### Reply
 
