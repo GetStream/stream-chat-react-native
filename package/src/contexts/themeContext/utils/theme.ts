@@ -1245,7 +1245,6 @@ export const defaultTheme: Theme = {
       },
     },
     targetedMessageContainer: {},
-
     videoThumbnail: {
       container: {},
       roundedView: {},

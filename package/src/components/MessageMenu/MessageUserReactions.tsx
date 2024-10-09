@@ -60,15 +60,19 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     propMessageUserReactionsAvatar ?? contextMessageUserReactionsAvatar;
   const MessageUserReactionsItem = propMessageUserReactionsItem ?? contextMessageUserReactionsItem;
 
-  const messageReactions = reactionTypes.reduce<ReactionData[]>((acc, reaction) => {
-    const reactionData = supportedReactions?.find(
-      (supportedReaction) => supportedReaction.type === reaction,
-    );
-    if (reactionData) {
-      acc.push(reactionData);
-    }
-    return acc;
-  }, []);
+  const messageReactions = useMemo(
+    () =>
+      reactionTypes.reduce<ReactionData[]>((acc, reaction) => {
+        const reactionData = supportedReactions?.find(
+          (supportedReaction) => supportedReaction.type === reaction,
+        );
+        if (reactionData) {
+          acc.push(reactionData);
+        }
+        return acc;
+      }, []),
+    [reactionTypes, supportedReactions],
+  );
 
   const {
     loading,
