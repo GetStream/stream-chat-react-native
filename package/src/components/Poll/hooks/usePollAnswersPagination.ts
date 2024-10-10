@@ -47,7 +47,7 @@ export const usePollAnswersPagination = ({
 
   useEffect(() => {
     if (!loadFirstPage || pollAnswers.length) return;
-    loadMore(cursorRef.current);
+    loadMore();
   }, [loadFirstPage, loadMore, pollAnswers]);
 
   useEffect(() => {
