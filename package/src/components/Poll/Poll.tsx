@@ -10,7 +10,7 @@ import {
 } from 'stream-chat';
 
 import { PollInputDialog } from './components/PollInputDialog';
-import { PollResultsItem } from './components/PollResultItem';
+import { PollResults } from './components/PollResults';
 import { usePollAnswersPagination } from './hooks/usePollAnswersPagination';
 
 import {
@@ -161,28 +161,6 @@ const PollAnswersList = ({
         visible={showAddCommentDialog}
       />
     </View>
-  );
-};
-
-const PollResults = ({ close }: { close: () => void }) => {
-  const { name, options, optionVoteCounts } = usePollContext();
-
-  const sortedOptions = [...options].sort(
-    (a, b) => (optionVoteCounts[b.id] ?? 0) - (optionVoteCounts[a.id] ?? 0),
-  );
-  return (
-    <>
-      <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity onPress={close}>
-          <Text>BACK</Text>
-        </TouchableOpacity>
-        <Text style={{ marginLeft: 32 }}>Poll Results</Text>
-      </View>
-      <Text>{name}</Text>
-      {sortedOptions.map((option) => (
-        <PollResultsItem key={option.id} option={option} />
-      ))}
-    </>
   );
 };
 

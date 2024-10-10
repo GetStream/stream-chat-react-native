@@ -1,10 +1,11 @@
 import React from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 
-import { PollOption } from '../../../../../../stream-chat-js';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { Avatar } from '../../Avatar/Avatar';
-import { usePollOptionVotesPagination } from '../hooks/usePollOptionVotesPagination';
+import { PollOption } from 'stream-chat';
+
+import type { DefaultStreamChatGenerics } from '../../../../types/types';
+import { Avatar } from '../../../Avatar/Avatar';
+import { usePollOptionVotesPagination } from '../../hooks/usePollOptionVotesPagination';
 
 export type PollOptionFullResultsProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

@@ -3,10 +3,10 @@ import { Modal, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
 
 import { PollOptionFullResults } from './PollOptionFullResults';
 
-import { PollOption, PollVote } from '../../../../../../stream-chat-js';
-import { usePollContext } from '../../../contexts';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { Avatar } from '../../Avatar/Avatar';
+import { PollOption, PollVote } from 'stream-chat';
+import { usePollContext } from '../../../../contexts';
+import type { DefaultStreamChatGenerics } from '../../../../types/types';
+import { Avatar } from '../../../Avatar/Avatar';
 
 export type PollResultItemProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
