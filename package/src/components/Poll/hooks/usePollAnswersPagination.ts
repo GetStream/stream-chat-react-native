@@ -76,7 +76,7 @@ export const usePollAnswersPagination = ({
       castedListeners.forEach((listener) => listener.unsubscribe());
       removedListener.unsubscribe();
     };
-  }, [client, pollAnswers]);
+  }, [client, poll, pollAnswers]);
 
   return {
     error,

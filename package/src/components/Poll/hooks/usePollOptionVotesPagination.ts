@@ -81,7 +81,7 @@ export const usePollOptionVotesPagination = ({
       castedListeners.forEach((listener) => listener.unsubscribe());
       removedListener.unsubscribe();
     };
-  }, [client, option, votes]);
+  }, [client, option, poll, votes]);
 
   return {
     error,
