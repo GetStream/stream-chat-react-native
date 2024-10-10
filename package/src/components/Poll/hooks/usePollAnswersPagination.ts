@@ -53,6 +53,7 @@ export const usePollAnswersPagination = ({
   useEffect(() => {
     const castedListeners = ['poll.vote_casted', 'poll.vote_changed'].map((eventName) =>
       client.on(eventName, (event) => {
+        if (event.poll?.id && event.poll.id !== poll.id) return;
         const vote = event.poll_vote;
         if (vote && isVoteAnswer(vote)) {
           setPollAnswers([
@@ -64,6 +65,7 @@ export const usePollAnswersPagination = ({
     );
 
     const removedListener = client.on('poll.vote_removed', (event) => {
+      if (event.poll?.id && event.poll.id !== poll.id) return;
       const vote = event.poll_vote;
       if (vote && isVoteAnswer(vote)) {
         setPollAnswers(pollAnswers.filter((item) => item.user_id !== vote.user_id));

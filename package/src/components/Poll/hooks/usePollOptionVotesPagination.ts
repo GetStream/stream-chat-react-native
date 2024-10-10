@@ -53,9 +53,11 @@ export const usePollOptionVotesPagination = ({
     loadMore();
   }, [loadFirstPage, loadMore, votes]);
 
+  // TODO: Possibly generalize these in a utility hook.
   useEffect(() => {
     const castedListeners = ['poll.vote_casted', 'poll.vote_changed'].map((eventName) =>
       client.on(eventName, (event) => {
+        if (event.poll?.id && event.poll.id !== poll.id) return;
         const vote = event.poll_vote;
         if (vote && !isVoteAnswer(vote)) {
           if (vote.option_id === option.id) {
@@ -68,6 +70,7 @@ export const usePollOptionVotesPagination = ({
     );
 
     const removedListener = client.on('poll.vote_removed', (event) => {
+      if (event.poll?.id && event.poll.id !== poll.id) return;
       const vote = event.poll_vote;
       if (vote && !isVoteAnswer(vote) && vote.option_id === option.id) {
         setVotes(votes.filter((v) => v.user_id !== vote.user_id));
