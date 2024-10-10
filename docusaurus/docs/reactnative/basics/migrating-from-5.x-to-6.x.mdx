@@ -94,3 +94,10 @@ registerNativeHandlers({
 ### Change the type of `quotedMessage` in `MessageInputContext`
 
 The type of `quotedMessage` is changed from `MessageType |  boolean` to `MessageType | undefined` for better in the `MessageInputContext`.
+
+## Remove the deprecated code
+
+- Remove `loadChannelAtMessage` from channel context.
+- Remove the `handleDeleteMessage`, `handleEditMessage`, `handleQuotedReplyMessage`, `handleResendMessage`, `handleToggleBanUser` and `handleToggleMuteUser` from the message context.
+- Remove the `onMessageNew` prop from the `ChannelList` component. Use the `onNewMessage` prop instead.
+- Remove the `handleBlock` prop from the `Channel` component.
