@@ -138,9 +138,9 @@ export const Poll = ({ poll: pollData }: { poll: PollResponse }) => {
   );
 
   const [
-    optionVoteCounts,
+    vote_counts_by_option,
     ownVotesByOptionId,
-    latestVotesByOption,
+    latest_votes_by_option,
     answers_count,
     options,
     name,
@@ -177,10 +177,10 @@ export const Poll = ({ poll: pollData }: { poll: PollResponse }) => {
         endVote,
         enforce_unique_vote,
         is_closed,
-        latestVotesByOption,
+        latest_votes_by_option,
         max_votes_allowed,
         name,
-        optionVoteCounts,
+        vote_counts_by_option,
         options,
         ownVotesByOptionId,
         poll,

@@ -12,12 +12,12 @@ export type PollResultsProps = {
 };
 
 export const PollResults = ({ close }: PollResultsProps) => {
-  const { name, options, optionVoteCounts } = usePollContext();
+  const { name, options, vote_counts_by_option } = usePollContext();
 
   const sortedOptions = useMemo(
     () =>
-      [...options].sort((a, b) => (optionVoteCounts[b.id] ?? 0) - (optionVoteCounts[a.id] ?? 0)),
-    [optionVoteCounts, options],
+      [...options].sort((a, b) => (vote_counts_by_option[b.id] ?? 0) - (vote_counts_by_option[a.id] ?? 0)),
+    [vote_counts_by_option, options],
   );
 
   return (

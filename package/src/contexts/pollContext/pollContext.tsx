@@ -10,11 +10,11 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 export type PollContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
-  latestVotesByOption: PollState['latest_votes_by_option'];
+  latest_votes_by_option: PollState['latest_votes_by_option'];
   maxNumberOfVotes: number;
   name: string;
   options: PollOption<StreamChatGenerics>[];
-  optionVoteCounts: Record<string, number>;
+  vote_counts_by_option: Record<string, number>;
   poll: Poll<StreamChatGenerics>;
 };
 

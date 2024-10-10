@@ -15,7 +15,7 @@ export type PollResultItemProps<
 };
 
 export const PollResultsItem = ({ option }: PollResultItemProps) => {
-  const { latestVotesByOption, optionVoteCounts } = usePollContext();
+  const { latest_votes_by_option, vote_counts_by_option } = usePollContext();
   const [showAllVotes, setShowAllVotes] = useState(false);
   return (
     <View
@@ -30,9 +30,9 @@ export const PollResultsItem = ({ option }: PollResultItemProps) => {
     >
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <Text>{option.text}</Text>
-        <Text>{optionVoteCounts[option.id] ?? 0} votes</Text>
+        <Text>{vote_counts_by_option[option.id] ?? 0} votes</Text>
       </View>
-      {(latestVotesByOption?.[option.id] ?? []).map((vote: PollVote) => (
+      {(latest_votes_by_option?.[option.id] ?? []).map((vote: PollVote) => (
         <View
           key={`results_vote_${vote.id}`}
           style={{ flexDirection: 'row', justifyContent: 'space-between' }}

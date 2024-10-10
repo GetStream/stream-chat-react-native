@@ -37,7 +37,7 @@ export const ShowAllOptionsContent = ({ close }: ShowAllOptionsContentProps) => 
 };
 
 export const PollOption = ({ option }: PollOptionProps) => {
-  const { optionVoteCounts, ownVotesByOptionId, poll } = usePollContext();
+  const { vote_counts_by_option, ownVotesByOptionId, poll } = usePollContext();
   const { message } = useMessageContext();
 
   const toggleVote = useCallback(async () => {
@@ -48,17 +48,17 @@ export const PollOption = ({ option }: PollOptionProps) => {
     }
   }, [message.id, option.id, ownVotesByOptionId, poll]);
 
-  const [latestVotesByOption, maxVotedOptionIds] = useStateStore(poll.state, selector);
+  const [latest_votes_by_option, maxVotedOptionIds] = useStateStore(poll.state, selector);
 
   const relevantVotes = useMemo(
-    () => latestVotesByOption?.[option.id]?.slice(0, 2) || [],
-    [latestVotesByOption, option.id],
+    () => latest_votes_by_option?.[option.id]?.slice(0, 2) || [],
+    [latest_votes_by_option, option.id],
   );
   const maxVotes = useMemo(
-    () => (maxVotedOptionIds?.[0] && optionVoteCounts ? optionVoteCounts[maxVotedOptionIds[0]] : 0),
-    [maxVotedOptionIds, optionVoteCounts],
+    () => (maxVotedOptionIds?.[0] && vote_counts_by_option ? vote_counts_by_option[maxVotedOptionIds[0]] : 0),
+    [maxVotedOptionIds, vote_counts_by_option],
   );
-  const votes = optionVoteCounts[option.id] || 0;
+  const votes = vote_counts_by_option[option.id] || 0;
   // TODO: Just a reminder to take care of offline mode.
   // useEffect(() => {
   //   const pollState = poll.state.getLatestValue();
@@ -69,7 +69,7 @@ export const PollOption = ({ option }: PollOptionProps) => {
   //       poll: { ...pollState, own_votes: pollState.ownVotes, id: poll.id },
   //     },
   //   });
-  // }, [optionVoteCounts]);
+  // }, [vote_counts_by_option]);
 
   return (
     <View>
@@ -94,7 +94,7 @@ export const PollOption = ({ option }: PollOptionProps) => {
               size={20}
             />
           ))}
-          <Text style={{ marginLeft: 2 }}>{optionVoteCounts[option.id] || 0}</Text>
+          <Text style={{ marginLeft: 2 }}>{vote_counts_by_option[option.id] || 0}</Text>
         </View>
       </View>
       <View style={{ borderRadius: 4, flex: 1, flexDirection: 'row', height: 4 }}>
