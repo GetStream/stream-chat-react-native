@@ -5,32 +5,41 @@ title: Global Config
 ---
 
 The core of Stream Chat for React Native is it's ability to be customized to your needs.
-The new `Global Config` feature allows you to enable and disable features of the library and alter the default behavior of the SDK.
-
-:::info
-This will be not be the recommended way of setting the config in the next major version of the SDK that is v6.
-
-Use the `resizableCDNHosts` prop in the [`Chat`](../core-components/chat.mdx) component instead.
-:::
+The new `Global Chat Config` feature allows you to enable and disable features of the library and alter the default behavior of the SDK.
 
 ## When to use global config
 
-When you want to alter the default behavior of the SDK or it's components.
-Please check the available options below to see if there is a config option that fits your needs.
+When you want to alter the default behavior of the SDK such as changing the CDN hosts.
 
 ## How to use and alter the global config
 
-Altering the global config can be done by calling the `setConfig` function on the `StreamChatRN` object.
-Make sure to call this function before any other components are rendered at the root of your application (App.tsx in most cases).
+The `ChatConfigProvider` is a context provider that can be used to provide global configuration to the chat application.
+
+The `resizableCDNHosts` can be configured by wrapping the root of your Chat application with `ChatConfigProvider` as follows:
 
 ```tsx
-import { StreamChatRN } from 'stream-chat-react-native';
+import { Chat, ChatConfigProvider, OverlayProvider } from 'stream-chat-react-native';
 
-StreamChatRN.setConfig({
-  resizableCDNHosts: ['https://my-company-cdn.com'],
-  // future config options
-});
+const App = () => {
+  return (
+    <ChatConfigProvider
+      value={{
+        resizableCDNHosts: ['cdn.example.com'],
+      }}
+    >
+      <OverlayProvider>
+        <Chat client={client}>
+          <ChannelList />
+        </Chat>
+      </OverlayProvider>
+    </ChatConfigProvider>
+  );
+};
 ```
+
+:::note
+If nothing is provided, the `resizableCDNHosts` will default to `['.stream-io-cdn.com']`.
+:::
 
 ## Available config features/Options
 

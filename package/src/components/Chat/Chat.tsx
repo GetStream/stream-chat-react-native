@@ -28,7 +28,6 @@ import { SqliteClient } from '../../store/SqliteClient';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { DBSyncManager } from '../../utils/DBSyncManager';
 import type { Streami18n } from '../../utils/i18n/Streami18n';
-import { StreamChatRN } from '../../utils/StreamChatRN';
 import { version } from '../../version.json';
 
 init();
@@ -36,7 +35,7 @@ init();
 export type ChatProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
-  Partial<Pick<ChatContextValue<StreamChatGenerics>, 'ImageComponent' | 'resizableCDNHosts'>> & {
+  Partial<Pick<ChatContextValue<StreamChatGenerics>, 'ImageComponent'>> & {
     /**
      * When false, ws connection won't be disconnection upon backgrounding the app.
      * To receive push notifications, its necessary that user doesn't have active
@@ -143,7 +142,6 @@ const ChatWithContext = <
     enableOfflineSupport = false,
     i18nInstance,
     ImageComponent = Image,
-    resizableCDNHosts = ['.stream-io-cdn.com'],
     style,
   } = props;
 
@@ -177,9 +175,6 @@ const ChatWithContext = <
   const isDebugModeEnabled = __DEV__ && debugRef && debugRef.current;
 
   const userID = client.userID;
-
-  // Set the `resizableCDNHosts` as per the prop.
-  StreamChatRN.setConfig({ resizableCDNHosts });
 
   useEffect(() => {
     if (client) {
@@ -233,7 +228,6 @@ const ChatWithContext = <
     ImageComponent,
     isOnline,
     mutedUsers,
-    resizableCDNHosts,
     setActiveChannel,
   });
 

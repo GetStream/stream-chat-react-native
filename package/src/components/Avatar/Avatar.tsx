@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import Svg, { Circle, CircleProps } from 'react-native-svg';
 
+import { useChatConfigContext } from '../../contexts/chatConfigContext/ChatConfigContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useLoadingImage } from '../../hooks/useLoadingImage';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
@@ -72,6 +73,7 @@ export const Avatar = (props: AvatarProps) => {
     size,
     testID,
   } = props;
+  const { resizableCDNHosts } = useChatConfigContext();
   const {
     theme: {
       avatar: { container, image, presenceIndicator, presenceIndicatorContainer },
@@ -120,6 +122,7 @@ export const Avatar = (props: AvatarProps) => {
                       }`
                   : getResizedImageUrl({
                       height: size,
+                      resizableCDNHosts,
                       url: imageProp,
                       width: size,
                     }),

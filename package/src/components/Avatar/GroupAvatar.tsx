@@ -1,9 +1,11 @@
 import React from 'react';
 import { Image, ImageProps, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
+import { useChatConfigContext } from '../../contexts/chatConfigContext/ChatConfigContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useLoadingImage } from '../../hooks/useLoadingImage';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
+
 const randomImageBaseUrl = 'https://getstream.io/random_png/';
 const randomSvgBaseUrl = 'https://getstream.io/random_svg/';
 const streamCDN = 'stream-io-cdn.com';
@@ -39,6 +41,7 @@ export type GroupAvatarProps = {
  */
 export const GroupAvatar = (props: GroupAvatarProps) => {
   const { containerStyle, ImageComponent = Image, images, names, size, testID } = props;
+  const { resizableCDNHosts } = useChatConfigContext();
   const {
     theme: {
       groupAvatar: { container, image },
@@ -149,6 +152,7 @@ export const GroupAvatar = (props: GroupAvatarProps) => {
                         }`
                     : getResizedImageUrl({
                         height,
+                        resizableCDNHosts,
                         url,
                         width,
                       }),

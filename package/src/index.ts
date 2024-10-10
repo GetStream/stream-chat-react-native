@@ -17,7 +17,6 @@ export * from './utils/i18n/Streami18n';
 export * from './utils/queryMembers';
 export * from './utils/queryUsers';
 export * from './utils/utils';
-export * from './utils/StreamChatRN';
 
 export { default as enTranslations } from './i18n/en.json';
 export { default as frTranslations } from './i18n/fr.json';

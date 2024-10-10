@@ -8,20 +8,26 @@ import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
 import { getResizedImageUrl } from '../../../../utils/getResizedImageUrl';
 import { getUrlOfImageAttachment } from '../../../../utils/getUrlOfImageAttachment';
+import { ChatConfigContextValue } from '../../../../contexts/chatConfigContext/ChatConfigContext';
+
+export type BuildThumbnailProps<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<ChatConfigContextValue, 'resizableCDNHosts'> & {
+  height: number;
+  image: Attachment<StreamChatGenerics>;
+  width: number;
+  resizeMode?: ImageResizeMode;
+};
 
 export function buildThumbnail<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   height,
   image,
+  resizableCDNHosts,
   resizeMode,
   width,
-}: {
-  height: number;
-  image: Attachment<StreamChatGenerics>;
-  width: number;
-  resizeMode?: ImageResizeMode;
-}): Thumbnail {
+}: BuildThumbnailProps<StreamChatGenerics>): Thumbnail {
   const { original_height: originalImageHeight, original_width: originalImageWidth } = image;
 
   // Only resize if the original image is larger than the thumbnail container size.
@@ -41,6 +47,7 @@ export function buildThumbnail<
     url: shouldResize
       ? getResizedImageUrl({
           height,
+          resizableCDNHosts,
           url: imageUrl,
           width,
         })
