@@ -31,6 +31,8 @@ const selector = (nextValue: PollState) =>
     nextValue.options,
     nextValue.name,
     nextValue.max_votes_allowed,
+    nextValue.is_closed,
+    nextValue.enforce_unique_vote,
   ] as const;
 
 const PollWithContext = () => {
@@ -39,9 +41,23 @@ const PollWithContext = () => {
   const [showAnswers, setShowAnswers] = useState(false);
   const [showAddOptionDialog, setShowAddOptionDialog] = useState(false);
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
-  const { addComment, addOption, answersCount, endVote, maxNumberOfVotes, name, options } =
-    usePollContext();
-  const subtitle = maxNumberOfVotes ? `Select up to ${maxNumberOfVotes}` : 'Select one or more';
+  const {
+    addComment,
+    addOption,
+    answersCount,
+    endVote,
+    enforce_unique_vote,
+    is_closed,
+    max_votes_allowed,
+    name,
+    options,
+  } = usePollContext();
+  const subtitle = useMemo(() => {
+    if (is_closed) return 'Vote ended';
+    if (enforce_unique_vote) return 'Select one';
+    if (max_votes_allowed) return `Select up to ${max_votes_allowed}`;
+    return 'Select one or more';
+  }, [is_closed, enforce_unique_vote, max_votes_allowed]);
 
   return (
     <View style={{ padding: 15, width: 270 }}>
@@ -171,7 +187,9 @@ export const Poll = ({ poll: pollData }: { poll: PollResponse }) => {
     answersCount,
     options,
     name,
-    maxNumberOfVotes,
+    max_votes_allowed,
+    is_closed,
+    enforce_unique_vote,
   ] = useStateStore(poll.state, selector);
 
   const addOption = useCallback(
@@ -192,7 +210,9 @@ export const Poll = ({ poll: pollData }: { poll: PollResponse }) => {
   return (
     <PollContextProvider
       value={{
-        maxNumberOfVotes,
+        max_votes_allowed,
+        is_closed,
+        enforce_unique_vote,
         options,
         optionVoteCounts,
         poll,

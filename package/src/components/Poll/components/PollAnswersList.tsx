@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 
 import { PollInputDialog } from './PollInputDialog';
-import { usePollAnswersPagination } from '../hooks/usePollAnswersPagination';
 
 import { Avatar } from '../../Avatar/Avatar';
+import { usePollAnswersPagination } from '../hooks/usePollAnswersPagination';
 
 export type PollAnswersListProps = {
   addComment: (text: string) => void;
@@ -16,7 +16,7 @@ export const PollAnswersList = ({ addComment, close }: PollAnswersListProps) => 
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <TouchableOpacity onPress={close}>
         <Text>BACK</Text>
       </TouchableOpacity>
@@ -24,20 +24,16 @@ export const PollAnswersList = ({ addComment, close }: PollAnswersListProps) => 
       <FlatList
         contentContainerStyle={{ flex: 1 }}
         data={pollAnswers}
-        // keyExtractor={(item) => item.id}
+        keyExtractor={(item) => `poll_answer_${item.id}`}
         onEndReached={() => hasNextPage && loadMore()}
         renderItem={({ item }) => (
-          <>
+          <View>
             <Text>{item.answer_text}</Text>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Avatar
-                // containerStyle={{ position: 'absolute', right: index * 15 }}
-                image={item.user?.image as string}
-                size={20}
-              />
+              <Avatar image={item.user?.image as string} size={20} />
               <Text>{item.created_at}</Text>
             </View>
-          </>
+          </View>
         )}
       />
       <TouchableOpacity

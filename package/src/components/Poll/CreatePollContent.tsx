@@ -51,6 +51,7 @@ export const CreatePollContentWithContext = () => {
                 currentPollOptions[currentOptionPositions.value.inverseIndexCache[i]],
               );
             }
+            const parsedMaxVotesPerPerson = Number(maxVotesPerPerson);
             createAndSendPoll({
               allow_answers: commentsAllowed,
               allow_user_suggested_options: optionSuggestionsAllowed,
@@ -58,6 +59,9 @@ export const CreatePollContentWithContext = () => {
               name: pollTitle,
               options: reorderedPollOptions,
               voting_visibility: isAnonymous ? VotingVisibility.anonymous : VotingVisibility.public,
+              ...(!isNaN(parsedMaxVotesPerPerson) && parsedMaxVotesPerPerson > 0
+                ? { max_votes_allowed: parsedMaxVotesPerPerson }
+                : {}),
             });
           }}
         >
