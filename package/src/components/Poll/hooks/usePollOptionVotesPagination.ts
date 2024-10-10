@@ -46,7 +46,7 @@ export const usePollOptionVotesPagination = ({
     }
     queryInProgress.current = false;
     setLoading(false);
-  }, [paginationParams, poll]);
+  }, [optionFilter, paginationParams, poll]);
 
   useEffect(() => {
     if (!loadFirstPage || votes.length) return;

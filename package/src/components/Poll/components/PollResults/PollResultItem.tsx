@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Modal, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, SafeAreaView, Text, View } from 'react-native';
 
-import { PollOption, PollVote } from 'stream-chat';
+import { PollOption, PollVote as PollVoteClass } from 'stream-chat';
 
 import { PollOptionFullResults } from './PollOptionFullResults';
 
@@ -15,6 +15,24 @@ export type PollResultItemProps<
 > = {
   option: PollOption<StreamChatGenerics>;
 };
+
+export const PollVote = (vote: PollVoteClass) => (
+  <View
+    key={`results_vote_${vote.id}`}
+    style={{
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 16,
+      paddingVertical: 8,
+    }}
+  >
+    <View style={{ flexDirection: 'row' }}>
+      <Avatar image={vote.user?.image as string} key={vote.id} size={20} />
+      <Text style={{ fontSize: 14, marginLeft: 2 }}>{vote.user?.name}</Text>
+    </View>
+    <Text style={{ color: '#7E828B', fontSize: 14 }}>{vote.created_at}</Text>
+  </View>
+);
 
 export const PollResultsItem = ({ option }: PollResultItemProps) => {
   const { latest_votes_by_option, vote_counts_by_option } = usePollContext();
@@ -36,23 +54,7 @@ export const PollResultsItem = ({ option }: PollResultItemProps) => {
         </Text>
       </View>
       <View style={{ marginTop: 16 }}>
-        {(latest_votes_by_option?.[option.id] ?? []).map((vote: PollVote) => (
-          <View
-            key={`results_vote_${vote.id}`}
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              marginBottom: 16,
-              paddingVertical: 8,
-            }}
-          >
-            <View style={{ flexDirection: 'row' }}>
-              <Avatar image={vote.user?.image as string} key={vote.id} size={20} />
-              <Text style={{ fontSize: 14, marginLeft: 2 }}>{vote.user?.name}</Text>
-            </View>
-            <Text>{vote.created_at}</Text>
-          </View>
-        ))}
+        {(latest_votes_by_option?.[option.id] ?? []).slice(0, 5).map(PollVote)}
       </View>
       <ShowAllVotesButton onPress={() => setShowAllVotes(true)} option={option} />
       {showAllVotes ? (
@@ -61,7 +63,7 @@ export const PollResultsItem = ({ option }: PollResultItemProps) => {
           onRequestClose={() => setShowAllVotes(false)}
           visible={showAllVotes}
         >
-          <SafeAreaView style={{ flex: 1, marginHorizontal: 16 }}>
+          <SafeAreaView style={{ flex: 1 }}>
             <PollOptionFullResults close={() => setShowAllVotes(false)} option={option} />
           </SafeAreaView>
         </Modal>
