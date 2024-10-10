@@ -1,13 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  FlatList,
-  Modal,
-  SafeAreaView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, Modal, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 
 import {
   Poll as PollClass,
@@ -17,6 +9,7 @@ import {
   PollVote,
 } from 'stream-chat';
 
+import { PollInputDialog } from './components/PollInputDialog';
 import { usePollAnswersPagination } from './hooks/usePollAnswersPagination';
 
 import { usePollOptionVotesPagination } from './hooks/usePollOptionVotesPagination';
@@ -44,66 +37,6 @@ const selector = (nextValue: PollState) =>
 
 const selector2 = (nextValue: PollState) =>
   [nextValue.latest_votes_by_option, nextValue.maxVotedOptionIds] as const;
-
-const PollInputDialog = ({ closeDialog, onSubmit, title, visible }) => {
-  const [dialogInput, setDialogInput] = useState('');
-
-  return (
-    <Modal animationType='fade' onRequestClose={closeDialog} transparent={true} visible={visible}>
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: 'rgba(0, 0, 0, 0.2)',
-        }}
-      >
-        <View
-          style={{
-            width: '80%',
-            paddingHorizontal: 16,
-            paddingTop: 32,
-            paddingBottom: 20,
-            borderRadius: 16,
-            backgroundColor: 'white',
-          }}
-        >
-          <Text style={{ fontSize: 17, lineHeight: 20, fontWeight: 500 }}>{title}</Text>
-          <TextInput
-            onChangeText={setDialogInput}
-            placeholder='Ask a question'
-            style={{
-              fontSize: 16,
-              height: 36,
-              alignItems: 'center',
-              padding: 0,
-              borderColor: 'gray',
-              borderRadius: 18,
-              borderWidth: 1,
-              paddingHorizontal: 16,
-              marginTop: 16,
-            }}
-            value={dialogInput}
-          />
-          <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 52 }}>
-            <TouchableOpacity onPress={closeDialog}>
-              <Text style={{ color: '#005DFF', fontSize: 17, fontWeight: 500 }}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                onSubmit(dialogInput);
-                closeDialog();
-              }}
-              style={{ marginLeft: 32 }}
-            >
-              <Text style={{ color: '#005DFF', fontSize: 17, fontWeight: 500 }}>SEND</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </Modal>
-  );
-};
 
 const PollOption = ({ option }: { option: PollOptionClass }) => {
   const { optionVoteCounts, ownVotesByOptionId, poll } = usePollContext();
