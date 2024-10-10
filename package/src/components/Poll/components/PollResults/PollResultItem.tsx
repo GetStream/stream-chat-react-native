@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Modal, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 
+import { PollOption, PollVote } from 'stream-chat';
+
 import { PollOptionFullResults } from './PollOptionFullResults';
 
-import { PollOption, PollVote } from 'stream-chat';
 import { usePollContext } from '../../../../contexts';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { Avatar } from '../../../Avatar/Avatar';
+import { ShowAllVotesButton } from '../Button';
 
 export type PollResultItemProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -19,45 +21,40 @@ export const PollResultsItem = ({ option }: PollResultItemProps) => {
   const [showAllVotes, setShowAllVotes] = useState(false);
   return (
     <View
-      key={`results_${option.id}`}
       style={{
         backgroundColor: '#F7F7F8',
         borderRadius: 12,
-        marginTop: 8,
+        marginBottom: 8,
         paddingHorizontal: 16,
         paddingVertical: 12,
       }}
     >
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Text>{option.text}</Text>
-        <Text>{vote_counts_by_option[option.id] ?? 0} votes</Text>
+        <Text style={{ flex: 1, fontSize: 16, fontWeight: '500' }}>{option.text}</Text>
+        <Text style={{ fontSize: 16, marginLeft: 16 }}>
+          {vote_counts_by_option[option.id] ?? 0} votes
+        </Text>
       </View>
-      {(latest_votes_by_option?.[option.id] ?? []).map((vote: PollVote) => (
-        <View
-          key={`results_vote_${vote.id}`}
-          style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-        >
-          <View style={{ flexDirection: 'row' }}>
-            <Avatar
-              // containerStyle={{ position: 'absolute', right: index * 15 }}
-              image={vote.user?.image as string}
-              key={vote.id}
-              size={20}
-            />
-            <Text>{vote.user?.name}</Text>
+      <View style={{ marginTop: 16 }}>
+        {(latest_votes_by_option?.[option.id] ?? []).map((vote: PollVote) => (
+          <View
+            key={`results_vote_${vote.id}`}
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginBottom: 16,
+              paddingVertical: 8,
+            }}
+          >
+            <View style={{ flexDirection: 'row' }}>
+              <Avatar image={vote.user?.image as string} key={vote.id} size={20} />
+              <Text style={{ fontSize: 14, marginLeft: 2 }}>{vote.user?.name}</Text>
+            </View>
+            <Text>{vote.created_at}</Text>
           </View>
-          <Text>{vote.created_at}</Text>
-        </View>
-      ))}
-      <TouchableOpacity
-        onPress={() => setShowAllVotes(true)}
-        style={{
-          alignItems: 'center',
-          marginHorizontal: 16,
-        }}
-      >
-        <Text>View Results</Text>
-      </TouchableOpacity>
+        ))}
+      </View>
+      <ShowAllVotesButton onPress={() => setShowAllVotes(true)} option={option} />
       {showAllVotes ? (
         <Modal
           animationType='fade'

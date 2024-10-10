@@ -66,20 +66,29 @@ export const VoteButton = ({ onPress, option }: PollButtonProps & { option: Poll
   return (
     <TouchableOpacity
       onPress={onPress}
-      style={{
-        alignItems: 'center',
-        backgroundColor: ownVotesByOptionId[option.id] ? '#005DFF' : 'transparent',
-        borderColor: ownVotesByOptionId[option.id] ? '#005DFF' : '#B4BBBA',
-        borderRadius: 18,
-        borderWidth: 1,
-        height: 18,
-        justifyContent: 'center',
-        width: 18,
-      }}
+      style={[
+        styles.voteContainer,
+        {
+          backgroundColor: ownVotesByOptionId[option.id] ? '#005DFF' : 'transparent',
+          borderColor: ownVotesByOptionId[option.id] ? '#005DFF' : '#B4BBBA',
+        },
+      ]}
     >
       {ownVotesByOptionId[option.id] ? <Check height={15} pathFill='white' width={20} /> : null}
     </TouchableOpacity>
   );
+};
+
+export const ShowAllVotesButton = ({
+  onPress,
+  option,
+}: PollButtonProps & { option: PollOption }) => {
+  const { vote_counts_by_option } = usePollContext();
+  return vote_counts_by_option && vote_counts_by_option?.[option.id] > 5 ? (
+    <TouchableOpacity onPress={onPress} style={[styles.container]}>
+      <Text style={[styles.text]}>Show All</Text>
+    </TouchableOpacity>
+  ) : null;
 };
 
 const styles = StyleSheet.create({
@@ -89,4 +98,12 @@ const styles = StyleSheet.create({
     paddingVertical: 11,
   },
   text: { color: '#005DFF', fontSize: 16 },
+  voteContainer: {
+    alignItems: 'center',
+    borderRadius: 18,
+    borderWidth: 1,
+    height: 18,
+    justifyContent: 'center',
+    width: 18,
+  },
 });
