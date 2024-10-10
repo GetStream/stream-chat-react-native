@@ -16,6 +16,26 @@ export type PollOptionProps = {
   option: PollOptionClass;
 };
 
+export type ShowAllOptionsContentProps = {
+  close: () => void;
+};
+
+export const ShowAllOptionsContent = ({ close }: ShowAllOptionsContentProps) => {
+  const { name, options } = usePollContext();
+
+  return (
+    <>
+      <TouchableOpacity onPress={close}>
+        <Text>BACK</Text>
+      </TouchableOpacity>
+      <Text>{name}</Text>
+      {options?.map((option: PollOptionClass) => (
+        <PollOption key={option.id} option={option} />
+      ))}
+    </>
+  );
+};
+
 export const PollOption = ({ option }: PollOptionProps) => {
   const { optionVoteCounts, ownVotesByOptionId, poll } = usePollContext();
   const { message } = useMessageContext();
@@ -31,7 +51,7 @@ export const PollOption = ({ option }: PollOptionProps) => {
   const [latestVotesByOption, maxVotedOptionIds] = useStateStore(poll.state, selector);
 
   const relevantVotes = useMemo(
-    () => latestVotesByOption[option.id]?.slice(0, 2) || [],
+    () => latestVotesByOption?.[option.id]?.slice(0, 2) || [],
     [latestVotesByOption, option.id],
   );
   const maxVotes = useMemo(

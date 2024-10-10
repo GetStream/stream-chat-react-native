@@ -10,7 +10,7 @@ import {
 
 import { PollAnswersList } from './components/PollAnswersList';
 import { PollInputDialog } from './components/PollInputDialog';
-import { PollOption } from './components/PollOption';
+import { PollOption, ShowAllOptionsContent } from './components/PollOption';
 import { PollResults } from './components/PollResults';
 
 import {
@@ -68,13 +68,7 @@ const PollWithContext = () => {
               visible={showAllOptions}
             >
               <SafeAreaView style={{ flex: 1 }}>
-                <TouchableOpacity onPress={() => setShowAllOptions(false)}>
-                  <Text>BACK</Text>
-                </TouchableOpacity>
-                <Text>{name}</Text>
-                {options?.map((option: PollOptionClass) => (
-                  <PollOption key={option.id} option={option} />
-                ))}
+                <ShowAllOptionsContent close={() => setShowAllOptions(false)} />
               </SafeAreaView>
             </Modal>
           ) : null}
