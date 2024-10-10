@@ -6,13 +6,15 @@ import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
 
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { getAspectRatio } from '../getAspectRatio';
+import { ChatConfigContextValue } from '../../../../contexts/chatConfigContext/ChatConfigContext';
 
 export function buildGalleryOfTwoImages<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   images,
+  resizableCDNHosts,
   sizeConfig,
-}: {
+}: Pick<ChatConfigContextValue, 'resizableCDNHosts'> & {
   images: Attachment<StreamChatGenerics>[];
   sizeConfig: GallerySizeConfig;
 }): GallerySizeAndThumbnailGrid {
@@ -36,6 +38,7 @@ export function buildGalleryOfTwoImages<
       grid: [[1], [1]],
       images,
       invertedDirections: true,
+      resizableCDNHosts,
       sizeConfig,
     });
   }
@@ -53,6 +56,7 @@ export function buildGalleryOfTwoImages<
       grid: [[1, 1]],
       images,
       invertedDirections: true,
+      resizableCDNHosts,
       sizeConfig,
     });
   }
@@ -61,6 +65,7 @@ export function buildGalleryOfTwoImages<
     grid: [[2, 1]],
     images: isLandscape1 ? images : images.reverse(),
     invertedDirections: true,
+    resizableCDNHosts,
     sizeConfig,
   });
 }
