@@ -1,52 +1,91 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import type { PollAnswer, PollOptionVotesQueryParams, PollVote } from 'stream-chat';
+import uniqBy from 'lodash/uniqBy';
+import { isVoteAnswer, PollOption, PollOptionVotesQueryParams, PollVote } from 'stream-chat';
 
-import { usePollContext } from '../../../contexts';
-import { PaginationFn, useCursorPaginator } from '../../../hooks/useCursorPaginator';
+import { useChatContext, usePollContext } from '../../../contexts';
 import { DefaultStreamChatGenerics } from '../../../types/types';
 
 type UsePollOptionVotesPaginationParams = {
-  paginationParams: PollOptionVotesQueryParams;
+  option: PollOption;
+  loadFirstPage?: boolean;
+  paginationParams?: PollOptionVotesQueryParams;
 };
 
-export const usePollOptionVotesPagination = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const usePollOptionVotesPagination = ({
+  loadFirstPage = true,
+  option,
   paginationParams,
 }: UsePollOptionVotesPaginationParams) => {
   const { poll } = usePollContext();
+  const { client } = useChatContext();
 
-  // fixme: proper response type
-  const paginationFn = useCallback<
-    PaginationFn<PollVote<StreamChatGenerics> | PollAnswer<StreamChatGenerics>>
-  >(
-    async (next) => {
+  const [votes, setVotes] = useState<PollVote[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error>();
+  const cursorRef = useRef<string | null>();
+  const queryInProgress = useRef(false);
+  const optionFilter = useMemo(() => ({ option_id: option.id }), [option.id]);
+
+  const loadMore = useCallback(async () => {
+    if (cursorRef.current === null || queryInProgress.current) return;
+    const next = cursorRef.current;
+
+    setLoading(true);
+    queryInProgress.current = true;
+    try {
       const { next: newNext, votes } = await poll.queryOptionVotes({
-        filter: paginationParams.filter,
+        filter: { ...optionFilter, ...paginationParams?.filter },
         options: !next ? paginationParams?.options : { ...paginationParams?.options, next },
         sort: { created_at: -1, ...paginationParams?.sort },
       });
-      return { items: votes, next: newNext };
-    },
-    [paginationParams, poll],
-  );
+      cursorRef.current = newNext || null;
+      setVotes((prev) => uniqBy([...prev, ...votes], 'id'));
+    } catch (e) {
+      setError(e as Error);
+    }
+    queryInProgress.current = false;
+    setLoading(false);
+  }, [paginationParams, poll]);
 
-  const {
-    error,
-    hasNextPage,
-    items: votes,
-    loading,
-    loadMore,
-    next,
-  } = useCursorPaginator(paginationFn, true);
+  useEffect(() => {
+    if (!loadFirstPage || votes.length) return;
+    loadMore();
+  }, [loadFirstPage, loadMore, votes]);
+
+  useEffect(() => {
+    const castedListeners = ['poll.vote_casted', 'poll.vote_changed'].map((eventName) =>
+      client.on(eventName, (event) => {
+        const vote = event.poll_vote;
+        if (vote && !isVoteAnswer(vote)) {
+          if (vote.option_id === option.id) {
+            setVotes([vote, ...votes.filter((v) => v.user_id !== vote.user_id)]);
+          } else if (eventName === 'poll.vote_changed') {
+            setVotes(votes.filter((v) => v.user_id !== vote.user_id));
+          }
+        }
+      }),
+    );
+
+    const removedListener = client.on('poll.vote_removed', (event) => {
+      const vote = event.poll_vote;
+      if (vote && !isVoteAnswer(vote) && vote.option_id === option.id) {
+        setVotes(votes.filter((v) => v.user_id !== vote.user_id));
+      }
+    });
+
+    return () => {
+      castedListeners.forEach((listener) => listener.unsubscribe());
+      removedListener.unsubscribe();
+    };
+  }, [client, option, votes]);
 
   return {
     error,
-    hasNextPage,
+    hasNextPage: cursorRef.current !== null,
     loading,
     loadMore,
-    next,
+    next: cursorRef.current,
     votes,
   };
 };

@@ -1,59 +1,87 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
+import uniqBy from 'lodash/uniqBy';
 import type { PollAnswer, PollAnswersQueryParams } from 'stream-chat';
+import { isVoteAnswer } from 'stream-chat';
 
-import { usePollContext } from '../../../contexts';
-import { PaginationFn, useCursorPaginator } from '../../../hooks/useCursorPaginator';
-import { DefaultStreamChatGenerics } from '../../../types/types';
+import { useChatContext, usePollContext } from '../../../contexts';
 
 type UsePollAnswersPaginationParams = {
+  loadFirstPage?: boolean;
   paginationParams?: PollAnswersQueryParams;
 };
 
-export const usePollAnswersPagination = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({ paginationParams }: UsePollAnswersPaginationParams = {}) => {
-  const { latestCastOrUpdatedAnswer, latestRemovedAnswer, poll } = usePollContext();
+export const usePollAnswersPagination = ({
+  loadFirstPage = true,
+  paginationParams,
+}: UsePollAnswersPaginationParams = {}) => {
+  const { poll } = usePollContext();
+  const { client } = useChatContext();
 
-  // fixme: proper response type
-  const paginationFn = useCallback<PaginationFn<PollAnswer<StreamChatGenerics>>>(
-    async (next) => {
-      const { next: newNext, votes } = await poll.queryAnswers({
+  const [pollAnswers, setPollAnswers] = useState<PollAnswer[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error>();
+  const cursorRef = useRef<string | null>();
+  const queryInProgress = useRef(false);
+
+  const loadMore = useCallback(async () => {
+    if (cursorRef.current === null || queryInProgress.current) return;
+    const next = cursorRef.current;
+
+    setLoading(true);
+    queryInProgress.current = true;
+    try {
+      const { next: newNext, votes: answers } = await poll.queryAnswers({
         filter: paginationParams?.filter,
         options: !next ? paginationParams?.options : { ...paginationParams?.options, next },
         sort: { created_at: -1, ...paginationParams?.sort },
       });
-      return { items: votes, next: newNext };
-    },
-    [paginationParams, poll],
-  );
-
-  const { error, hasNextPage, items, loading, loadMore, next } = useCursorPaginator(
-    paginationFn,
-    true,
-  );
-
-  const pollAnswers = useMemo(() => {
-    let pollAnswers = items;
-    if (latestCastOrUpdatedAnswer) {
-      pollAnswers = [
-        latestCastOrUpdatedAnswer,
-        ...pollAnswers.filter((answer) => answer.user_id !== latestCastOrUpdatedAnswer.user_id),
-      ];
+      cursorRef.current = newNext || null;
+      setPollAnswers((prev) => uniqBy([...prev, ...answers], 'id'));
+    } catch (e) {
+      setError(e as Error);
     }
+    queryInProgress.current = false;
+    setLoading(false);
+  }, [paginationParams, poll]);
 
-    if (latestRemovedAnswer) {
-      pollAnswers = pollAnswers.filter((item) => item.user_id === latestRemovedAnswer.user_id);
-    }
-    return pollAnswers;
-  }, [items, latestCastOrUpdatedAnswer, latestRemovedAnswer]);
+  useEffect(() => {
+    if (!loadFirstPage || pollAnswers.length) return;
+    loadMore(cursorRef.current);
+  }, [loadFirstPage, loadMore, pollAnswers]);
+
+  useEffect(() => {
+    const castedListeners = ['poll.vote_casted', 'poll.vote_changed'].map((eventName) =>
+      client.on(eventName, (event) => {
+        const vote = event.poll_vote;
+        if (vote && isVoteAnswer(vote)) {
+          setPollAnswers([
+            vote,
+            ...pollAnswers.filter((answer) => answer.user_id !== vote.user_id),
+          ]);
+        }
+      }),
+    );
+
+    const removedListener = client.on('poll.vote_removed', (event) => {
+      const vote = event.poll_vote;
+      if (vote && isVoteAnswer(vote)) {
+        setPollAnswers(pollAnswers.filter((item) => item.user_id !== vote.user_id));
+      }
+    });
+
+    return () => {
+      castedListeners.forEach((listener) => listener.unsubscribe());
+      removedListener.unsubscribe();
+    };
+  }, [client, pollAnswers]);
 
   return {
     error,
-    hasNextPage,
+    hasNextPage: cursorRef.current !== null,
     loading,
     loadMore,
-    next,
+    next: cursorRef.current,
     pollAnswers,
   };
 };

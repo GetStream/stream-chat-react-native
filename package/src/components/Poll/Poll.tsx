@@ -19,6 +19,8 @@ import {
 
 import { usePollAnswersPagination } from './hooks/usePollAnswersPagination';
 
+import { usePollOptionVotesPagination } from './hooks/usePollOptionVotesPagination';
+
 import {
   PollContextProvider,
   useChatContext,
@@ -34,6 +36,8 @@ const selector = (nextValue: PollState) =>
     nextValue.vote_counts_by_option,
     nextValue.ownVotesByOptionId,
     nextValue.latest_votes_by_option,
+    nextValue.latestCastOrUpdatedVote,
+    nextValue.latestRemovedVote,
     nextValue.answers_count,
     nextValue.latestCastOrUpdatedAnswer,
     nextValue.latestRemovedAnswer,
@@ -233,8 +237,7 @@ const PollAnswersList = ({
 };
 
 const PollResults = ({ close }: { close: () => void }) => {
-  const { latestVotesByOption, name, options, optionVoteCounts } = usePollContext();
-  const [showAllVotes, setShowAllVotes] = useState(false);
+  const { name, options, optionVoteCounts } = usePollContext();
 
   const sortedOptions = [...options].sort(
     (a, b) => (optionVoteCounts[b.id] ?? 0) - (optionVoteCounts[a.id] ?? 0),
@@ -249,71 +252,108 @@ const PollResults = ({ close }: { close: () => void }) => {
       </View>
       <Text>{name}</Text>
       {sortedOptions.map((option) => (
+        <PollResultsItem key={option.id} option={option} />
+      ))}
+    </>
+  );
+};
+
+const PollResultsItem = ({ option }) => {
+  const { latestVotesByOption, optionVoteCounts } = usePollContext();
+  const [showAllVotes, setShowAllVotes] = useState(false);
+  return (
+    <View
+      key={`results_${option.id}`}
+      style={{
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#F7F7F8',
+        borderRadius: 12,
+        marginTop: 8,
+      }}
+    >
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Text>{option.text}</Text>
+        <Text>{optionVoteCounts[option.id] ?? 0} votes</Text>
+      </View>
+      {(latestVotesByOption?.[option.id] ?? []).map((vote: PollVote) => (
         <View
-          key={`results_${option.id}`}
+          key={`results_vote_${vote.id}`}
+          style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+        >
+          <View style={{ flexDirection: 'row' }}>
+            <Avatar
+              // containerStyle={{ position: 'absolute', right: index * 15 }}
+              image={vote.user.image as string}
+              key={vote.id}
+              size={20}
+            />
+            <Text>{vote.user.name}</Text>
+          </View>
+          <Text>{vote.created_at}</Text>
+        </View>
+      ))}
+      <TouchableOpacity
+        onPress={() => setShowAllVotes(true)}
+        style={{
+          marginHorizontal: 16,
+          alignItems: 'center',
+        }}
+      >
+        <Text>View Results</Text>
+      </TouchableOpacity>
+      {showAllVotes ? (
+        <Modal
+          animationType='fade'
+          onRequestClose={() => setShowAllVotes(false)}
+          visible={showAllVotes}
+        >
+          <SafeAreaView style={{ flex: 1, marginHorizontal: 16 }}>
+            <PollOptionFullResults close={() => setShowAllVotes(false)} option={option} />
+          </SafeAreaView>
+        </Modal>
+      ) : null}
+    </View>
+  );
+};
+
+const PollOptionFullResults = ({ close, option }: { option: PollOptionClass }) => {
+  // console.log('ISE: OPTION: ', option.id);
+  const { hasNextPage, loadMore, votes } = usePollOptionVotesPagination({ option });
+  return (
+    <View>
+      <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity
+          onPress={close}
           style={{
-            paddingHorizontal: 16,
-            paddingVertical: 12,
-            backgroundColor: '#F7F7F8',
-            borderRadius: 12,
-            marginTop: 8,
+            marginHorizontal: 16,
+            alignItems: 'center',
           }}
         >
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text>{option.text}</Text>
-            <Text>{optionVoteCounts[option.id] ?? 0} votes</Text>
-          </View>
-          {(latestVotesByOption?.[option.id] ?? []).map((vote: PollVote) => (
-            <View
-              key={`results_vote_${vote.id}`}
-              style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-            >
+          <Text>BACK</Text>
+        </TouchableOpacity>
+        <Text>{option.text}</Text>
+      </View>
+      <FlatList
+        data={votes}
+        // keyExtractor={(item) => item.id}
+        onEndReached={() => hasNextPage && loadMore()}
+        renderItem={({ item }) => (
+          <>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <View style={{ flexDirection: 'row' }}>
                 <Avatar
                   // containerStyle={{ position: 'absolute', right: index * 15 }}
-                  image={vote.user.image as string}
-                  key={vote.id}
+                  image={item.user.image as string}
                   size={20}
                 />
-                <Text>{vote.user.name}</Text>
               </View>
-              <Text>{vote.created_at}</Text>
+              <Text>{item.created_at}</Text>
             </View>
-          ))}
-          <TouchableOpacity
-            onPress={() => setShowAllVotes(true)}
-            style={{
-              marginHorizontal: 16,
-              alignItems: 'center',
-            }}
-          >
-            <Text>View Results</Text>
-          </TouchableOpacity>
-          {showAllVotes ? (
-            <Modal
-              animationType='fade'
-              onRequestClose={() => setShowAllVotes(false)}
-              visible={showAllVotes}
-            >
-              <SafeAreaView style={{ flex: 1, marginHorizontal: 16 }}>
-                <View style={{ flexDirection: 'row' }}>
-                  <TouchableOpacity
-                    onPress={() => setShowAllVotes(false)}
-                    style={{
-                      marginHorizontal: 16,
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Text>BACK</Text>
-                  </TouchableOpacity>
-                  <Text>{option.text}</Text>
-                </View>
-              </SafeAreaView>
-            </Modal>
-          ) : null}
-        </View>
-      ))}
-    </>
+          </>
+        )}
+      />
+    </View>
   );
 };
 
@@ -458,6 +498,8 @@ export const Poll = ({ poll: pollData }: { poll: PollResponse }) => {
     optionVoteCounts,
     ownVotesByOptionId,
     latestVotesByOption,
+    latestCastOrUpdatedVote,
+    latestRemovedVote,
     answersCount,
     latestCastOrUpdatedAnswer,
     latestRemovedAnswer,
@@ -497,6 +539,8 @@ export const Poll = ({ poll: pollData }: { poll: PollResponse }) => {
         latestRemovedAnswer,
         endVote,
         latestVotesByOption,
+        latestCastOrUpdatedVote,
+        latestRemovedVote,
       }}
     >
       <PollWithContext />
