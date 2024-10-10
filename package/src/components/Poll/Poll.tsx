@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Modal, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, SafeAreaView, Text, View } from 'react-native';
 
 import {
   Poll as PollClass,
@@ -8,6 +8,14 @@ import {
   PollState,
 } from 'stream-chat';
 
+import {
+  AddCommentButton,
+  EndVoteButton,
+  ShowAllCommentsButton,
+  ShowAllOptionsButton,
+  SuggestOptionButton,
+  ViewResultsButton,
+} from './components/Button';
 import { PollAnswersList } from './components/PollAnswersList';
 import { PollInputDialog } from './components/PollInputDialog';
 import { PollOption, ShowAllOptionsContent } from './components/PollOption';
@@ -33,6 +41,8 @@ const selector = (nextValue: PollState) =>
     nextValue.max_votes_allowed,
     nextValue.is_closed,
     nextValue.enforce_unique_vote,
+    nextValue.allow_answers,
+    nextValue.allow_user_suggested_options,
   ] as const;
 
 const PollWithContext = () => {
@@ -44,7 +54,6 @@ const PollWithContext = () => {
   const {
     addComment,
     addOption,
-    answersCount,
     endVote,
     enforce_unique_vote,
     is_closed,
@@ -66,39 +75,19 @@ const PollWithContext = () => {
       {options?.slice(0, 10)?.map((option: PollOptionClass) => (
         <PollOption key={option.id} option={option} />
       ))}
-      {options && options.length > 10 ? (
-        <>
-          <TouchableOpacity
-            onPress={() => setShowAllOptions(true)}
-            style={{
-              alignItems: 'center',
-              marginHorizontal: 16,
-            }}
-          >
-            <Text>See all {options.length} options</Text>
-          </TouchableOpacity>
-          {showAllOptions ? (
-            <Modal
-              animationType='slide'
-              onRequestClose={() => setShowAllOptions(false)}
-              visible={showAllOptions}
-            >
-              <SafeAreaView style={{ flex: 1 }}>
-                <ShowAllOptionsContent close={() => setShowAllOptions(false)} />
-              </SafeAreaView>
-            </Modal>
-          ) : null}
-        </>
+      <ShowAllOptionsButton onPress={() => setShowAllOptions(true)} />
+      {showAllOptions ? (
+        <Modal
+          animationType='slide'
+          onRequestClose={() => setShowAllOptions(false)}
+          visible={showAllOptions}
+        >
+          <SafeAreaView style={{ flex: 1 }}>
+            <ShowAllOptionsContent close={() => setShowAllOptions(false)} />
+          </SafeAreaView>
+        </Modal>
       ) : null}
-      <TouchableOpacity
-        onPress={() => setShowAnswers(true)}
-        style={{
-          alignItems: 'center',
-          marginHorizontal: 16,
-        }}
-      >
-        <Text>View {answersCount} comments</Text>
-      </TouchableOpacity>
+      <ShowAllCommentsButton onPress={() => setShowAnswers(true)} />
       <Modal
         animationType='slide'
         onRequestClose={() => setShowAnswers(false)}
@@ -108,45 +97,21 @@ const PollWithContext = () => {
           <PollAnswersList addComment={addComment} close={() => setShowAnswers(false)} />
         </SafeAreaView>
       </Modal>
-      <TouchableOpacity
-        onPress={() => setShowAddOptionDialog(true)}
-        style={{
-          alignItems: 'center',
-          marginHorizontal: 16,
-        }}
-      >
-        <Text>Suggest an option</Text>
-      </TouchableOpacity>
+      <SuggestOptionButton onPress={() => setShowAddOptionDialog(true)} />
       <PollInputDialog
         closeDialog={() => setShowAddOptionDialog(false)}
         onSubmit={(value) => addOption(value)}
         title='Suggest an option'
         visible={showAddOptionDialog}
       />
-      <TouchableOpacity
-        onPress={() => setShowAddCommentDialog(true)}
-        style={{
-          alignItems: 'center',
-          marginHorizontal: 16,
-        }}
-      >
-        <Text>Add a comment</Text>
-      </TouchableOpacity>
+      <AddCommentButton onPress={() => setShowAddCommentDialog(true)} />
       <PollInputDialog
         closeDialog={() => setShowAddCommentDialog(false)}
         onSubmit={(value) => addComment(value)}
         title='Add a comment'
         visible={showAddCommentDialog}
       />
-      <TouchableOpacity
-        onPress={() => setShowResults(true)}
-        style={{
-          alignItems: 'center',
-          marginHorizontal: 16,
-        }}
-      >
-        <Text>View Results</Text>
-      </TouchableOpacity>
+      <ViewResultsButton onPress={() => setShowResults(true)} />
       {showResults ? (
         <Modal
           animationType='slide'
@@ -158,15 +123,7 @@ const PollWithContext = () => {
           </SafeAreaView>
         </Modal>
       ) : null}
-      <TouchableOpacity
-        onPress={endVote}
-        style={{
-          alignItems: 'center',
-          marginHorizontal: 16,
-        }}
-      >
-        <Text>End Vote</Text>
-      </TouchableOpacity>
+      <EndVoteButton onPress={endVote} />
     </View>
   );
 };
@@ -184,12 +141,14 @@ export const Poll = ({ poll: pollData }: { poll: PollResponse }) => {
     optionVoteCounts,
     ownVotesByOptionId,
     latestVotesByOption,
-    answersCount,
+    answers_count,
     options,
     name,
     max_votes_allowed,
     is_closed,
     enforce_unique_vote,
+    allow_answers,
+    allow_user_suggested_options,
   ] = useStateStore(poll.state, selector);
 
   const addOption = useCallback(
@@ -210,19 +169,21 @@ export const Poll = ({ poll: pollData }: { poll: PollResponse }) => {
   return (
     <PollContextProvider
       value={{
-        max_votes_allowed,
-        is_closed,
-        enforce_unique_vote,
-        options,
-        optionVoteCounts,
-        poll,
-        name,
-        ownVotesByOptionId,
-        addOption,
         addComment,
-        answersCount,
+        addOption,
+        allow_answers,
+        allow_user_suggested_options,
+        answers_count,
         endVote,
+        enforce_unique_vote,
+        is_closed,
         latestVotesByOption,
+        max_votes_allowed,
+        name,
+        optionVoteCounts,
+        options,
+        ownVotesByOptionId,
+        poll,
       }}
     >
       <PollWithContext />
