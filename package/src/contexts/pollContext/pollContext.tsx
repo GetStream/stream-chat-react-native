@@ -14,8 +14,8 @@ export type PollContextValue<
   maxNumberOfVotes: number;
   name: string;
   options: PollOption<StreamChatGenerics>[];
-  vote_counts_by_option: Record<string, number>;
   poll: Poll<StreamChatGenerics>;
+  vote_counts_by_option: Record<string, number>;
 };
 
 export const PollContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as PollContextValue);

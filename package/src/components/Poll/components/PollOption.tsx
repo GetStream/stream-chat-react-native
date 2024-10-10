@@ -4,9 +4,12 @@ import { Text, TouchableOpacity, View } from 'react-native';
 
 import { PollOption as PollOptionClass, PollState, PollVote } from 'stream-chat';
 
+import { VoteButton } from './Button';
+
 import { useMessageContext, usePollContext } from '../../../contexts';
 import { useStateStore } from '../../../hooks';
 
+import { Check } from '../../../icons';
 import { Avatar } from '../../Avatar/Avatar';
 
 const selector = (nextValue: PollState) =>
@@ -37,7 +40,7 @@ export const ShowAllOptionsContent = ({ close }: ShowAllOptionsContentProps) => 
 };
 
 export const PollOption = ({ option }: PollOptionProps) => {
-  const { vote_counts_by_option, ownVotesByOptionId, poll } = usePollContext();
+  const { ownVotesByOptionId, poll, vote_counts_by_option } = usePollContext();
   const { message } = useMessageContext();
 
   const toggleVote = useCallback(async () => {
@@ -55,7 +58,10 @@ export const PollOption = ({ option }: PollOptionProps) => {
     [latest_votes_by_option, option.id],
   );
   const maxVotes = useMemo(
-    () => (maxVotedOptionIds?.[0] && vote_counts_by_option ? vote_counts_by_option[maxVotedOptionIds[0]] : 0),
+    () =>
+      maxVotedOptionIds?.[0] && vote_counts_by_option
+        ? vote_counts_by_option[maxVotedOptionIds[0]]
+        : 0,
     [maxVotedOptionIds, vote_counts_by_option],
   );
   const votes = vote_counts_by_option[option.id] || 0;
@@ -72,19 +78,10 @@ export const PollOption = ({ option }: PollOptionProps) => {
   // }, [vote_counts_by_option]);
 
   return (
-    <View>
+    <View style={{ marginTop: 8, paddingVertical: 8 }}>
       <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity
-          onPress={toggleVote}
-          style={{
-            backgroundColor: ownVotesByOptionId[option.id] ? 'red' : 'white',
-            borderColor: 'black',
-            borderWidth: 1,
-            height: 15,
-            width: 15,
-          }}
-        />
-        <Text style={{ flex: 1 }}>{option.text}</Text>
+        <VoteButton onPress={toggleVote} option={option} />
+        <Text style={{ flex: 1, fontSize: 16, marginLeft: 4 }}>{option.text}</Text>
         <View style={{ flexDirection: 'row' }}>
           {relevantVotes.map((vote: PollVote) => (
             <Avatar
@@ -97,7 +94,7 @@ export const PollOption = ({ option }: PollOptionProps) => {
           <Text style={{ marginLeft: 2 }}>{vote_counts_by_option[option.id] || 0}</Text>
         </View>
       </View>
-      <View style={{ borderRadius: 4, flex: 1, flexDirection: 'row', height: 4 }}>
+      <View style={{ borderRadius: 4, flex: 1, flexDirection: 'row', height: 4, marginTop: 2 }}>
         <View style={{ backgroundColor: '#005DFF', flex: maxVotes > 0 ? votes / maxVotes : 0 }} />
         <View
           style={{

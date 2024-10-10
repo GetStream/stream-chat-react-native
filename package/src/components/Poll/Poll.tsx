@@ -70,11 +70,15 @@ const PollWithContext = () => {
 
   return (
     <View style={{ padding: 15, width: 270 }}>
-      <Text>{name}</Text>
-      <Text>{subtitle}</Text>
-      {options?.slice(0, 10)?.map((option: PollOptionClass) => (
-        <PollOption key={option.id} option={option} />
-      ))}
+      <Text style={{ color: '#080707', fontSize: 16, fontWeight: '500' }}>
+        {name}
+      </Text>
+      <Text style={{ color: '#7E828B', fontSize: 12 }}>{subtitle}</Text>
+      <View style={{ marginTop: 12 }}>
+        {options?.slice(0, 10)?.map((option: PollOptionClass) => (
+          <PollOption key={option.id} option={option} />
+        ))}
+      </View>
       <ShowAllOptionsButton onPress={() => setShowAllOptions(true)} />
       {showAllOptions ? (
         <Modal

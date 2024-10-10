@@ -1,7 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
+import { PollOption } from '../../../../../../stream-chat-js';
 import { usePollContext } from '../../../contexts';
+import { Check } from '../../../icons';
 
 export type PollButtonProps = {
   onPress: () => void;
@@ -58,10 +60,33 @@ export const ShowAllOptionsButton = ({ onPress }: PollButtonProps) => {
   ) : null;
 };
 
+export const VoteButton = ({ onPress, option }: PollButtonProps & { option: PollOption }) => {
+  const { ownVotesByOptionId } = usePollContext();
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={{
+        alignItems: 'center',
+        backgroundColor: ownVotesByOptionId[option.id] ? '#005DFF' : 'transparent',
+        borderColor: ownVotesByOptionId[option.id] ? '#005DFF' : '#B4BBBA',
+        borderRadius: 18,
+        borderWidth: 1,
+        height: 18,
+        justifyContent: 'center',
+        width: 18,
+      }}
+    >
+      {ownVotesByOptionId[option.id] ? <Check height={15} pathFill='white' width={20} /> : null}
+    </TouchableOpacity>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     marginHorizontal: 16,
+    paddingVertical: 11,
   },
-  text: {},
+  text: { color: '#005DFF', fontSize: 16 },
 });
