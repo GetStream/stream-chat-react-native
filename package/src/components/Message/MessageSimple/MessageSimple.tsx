@@ -88,28 +88,26 @@ const MessageSimpleWithContext = <
   const messageGroupedTopStyles = [styles.messageGroupedTopContainer, messageGroupedTopContainer];
 
   return (
-    <>
-      <View
-        style={[
-          styles.container,
-          messageGroupedSingleOrBottom
-            ? isVeryLastMessage && enableMessageGroupingByUser
-              ? lastMessageInMessageListStyles
-              : messageGroupedSingleOrBottomStyles
-            : messageGroupedTopStyles,
-          {
-            justifyContent: alignment === 'left' ? 'flex-start' : 'flex-end',
-            marginTop: showReactions ? 2 : 0,
-          },
-          container,
-        ]}
-        testID='message-simple-wrapper'
-      >
-        {alignment === 'left' && <MessageAvatar />}
-        <MessageContent setMessageContentWidth={setMessageContentWidth} />
-        {showReactions && <ReactionList messageContentWidth={messageContentWidth} />}
-      </View>
-    </>
+    <View
+      style={[
+        styles.container,
+        messageGroupedSingleOrBottom
+          ? isVeryLastMessage && enableMessageGroupingByUser
+            ? lastMessageInMessageListStyles
+            : messageGroupedSingleOrBottomStyles
+          : messageGroupedTopStyles,
+        {
+          justifyContent: alignment === 'left' ? 'flex-start' : 'flex-end',
+          marginTop: showReactions ? 2 : 0,
+        },
+        container,
+      ]}
+      testID='message-simple-wrapper'
+    >
+      {alignment === 'left' && <MessageAvatar />}
+      <MessageContent setMessageContentWidth={setMessageContentWidth} />
+      {showReactions && <ReactionList messageContentWidth={messageContentWidth} />}
+    </View>
   );
 };
 

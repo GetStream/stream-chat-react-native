@@ -5,13 +5,7 @@
       "ui-components/overview",
       "customization/theming",
       {
-        "Overlay Provider": [
-          "core-components/overlay-provider",
-          "ui-components/overlay-reaction-list",
-          "ui-components/overlay-reactions-avatar",
-          "ui-components/overlay-reactions",
-          "contexts/overlay-context"
-        ]
+        "Overlay Provider": ["core-components/overlay-provider", "contexts/overlay-context"]
       },
       {
         "Chat": ["core-components/chat", "contexts/chat-context"]
@@ -101,7 +95,6 @@
           "contexts/attachment-picker-context",
           "contexts/image-gallery-context",
           "contexts/keyboard-context",
-          "contexts/message-overlay-context",
           "contexts/own-capabilities-context",
           "contexts/paginated-message-list-context",
           "contexts/suggestions-context",

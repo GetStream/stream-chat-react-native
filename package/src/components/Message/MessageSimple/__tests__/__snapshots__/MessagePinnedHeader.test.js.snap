@@ -8,9 +8,6 @@ exports[`MessagePinnedHeader should render message pinned 1`] = `
         "display": "flex",
         "flexDirection": "row",
       },
-      {
-        "justifyContent": "flex-start",
-      },
       {},
     ]
   }

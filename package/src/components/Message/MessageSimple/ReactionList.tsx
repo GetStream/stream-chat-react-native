@@ -29,13 +29,13 @@ export type MessageReactions = {
 
 type Props = Pick<IconProps, 'pathFill' | 'style'> & {
   size: number;
-  supportedReactions: ReactionData[];
   type: string;
+  supportedReactions?: ReactionData[];
 };
 
 const Icon = ({ pathFill, size, style, supportedReactions, type }: Props) => {
   const ReactionIcon =
-    supportedReactions.find((reaction) => reaction.type === type)?.Icon || Unknown;
+    supportedReactions?.find((reaction) => reaction.type === type)?.Icon || Unknown;
 
   return (
     <View>
@@ -57,9 +57,8 @@ export type ReactionListPropsWithContext<
   | 'reactions'
   | 'showMessageOverlay'
 > &
-  Pick<MessagesContextValue<StreamChatGenerics>, 'targetedMessage'> & {
+  Pick<MessagesContextValue<StreamChatGenerics>, 'targetedMessage' | 'supportedReactions'> & {
     messageContentWidth: number;
-    supportedReactions: ReactionData[];
     fill?: string;
     /** An array of the reaction objects to display in the list */
     latest_reactions?: ReactionResponse<StreamChatGenerics>[];
@@ -129,11 +128,12 @@ const ReactionListWithContext = <
 
   const width = useWindowDimensions().width;
 
-  const supportedReactionTypes = supportedReactions.map(
+  const supportedReactionTypes = supportedReactions?.map(
     (supportedReaction) => supportedReaction.type,
   );
+
   const hasSupportedReactions = reactions.some((reaction) =>
-    supportedReactionTypes.includes(reaction.type),
+    supportedReactionTypes?.includes(reaction.type),
   );
 
   if (!hasSupportedReactions || messageContentWidth === 0) {
@@ -211,7 +211,7 @@ const ReactionListWithContext = <
             onPress={(event) => {
               if (onPress) {
                 onPress({
-                  defaultHandler: () => showMessageOverlay(false),
+                  defaultHandler: () => showMessageOverlay(true),
                   emitter: 'reactionList',
                   event,
                 });
@@ -220,7 +220,7 @@ const ReactionListWithContext = <
             onPressIn={(event) => {
               if (onPressIn) {
                 onPressIn({
-                  defaultHandler: () => showMessageOverlay(false),
+                  defaultHandler: () => showMessageOverlay(true),
                   emitter: 'reactionList',
                   event,
                 });

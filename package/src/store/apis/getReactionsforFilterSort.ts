@@ -39,5 +39,7 @@ export const getReactionsForFilterSort = <
     return [];
   }
 
-  return getReactions({ reactions });
+  const filteredReactions = reactions.filter((reaction) => reaction.type === filters?.type);
+
+  return getReactions({ reactions: filteredReactions });
 };

@@ -28,21 +28,35 @@ const { setOverlay } = useOverlayContext();
 
 ## Value
 
-### overlay
+### `overlay`
 
 Current active overlay. Overlay gets rendered in following cases
 
 - 'alert' - For delete message confirmation alert box
 - 'gallery' - When image viewer/gallery is opened
-- 'message' - When message overlay is opened by long pressing a message
 - 'none' - Default value
 
-| Type                                        |
-| ------------------------------------------- |
-| enum('alert', 'gallery', 'message', 'none') |
+| Type                             |
+| -------------------------------- |
+| enum('alert', 'gallery', 'none') |
 
 ### `setOverlay`
 
 <SetOverlay />
 
-<!-- ### style -->
+### `style`
+
+A `theme` object to customize the styles of SDK components.
+Detailed information on theming can be found in the [customization documentation](../customization/theme.mdx).
+
+:::note
+
+Themes are inherited from parent providers.
+A [theme provided to the `OverlayProvider`](../core-components/overlay-provider.mdx#value) will be the base theme `style` is merged into.
+Themes are not hoisted though, therefore a theme provided to `Chat` will not change overlay components such as the attachment picker.
+
+:::
+
+| Type   |
+| ------ |
+| Object |

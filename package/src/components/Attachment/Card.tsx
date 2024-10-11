@@ -29,7 +29,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Play } from '../../icons/Play';
 import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 import { makeImageCompatibleUrl } from '../../utils/utils';
-import { ImageBackground } from '../ImageBackground';
+import { ImageBackground } from '../UIComponents/ImageBackground';
 
 const styles = StyleSheet.create({
   authorName: { fontSize: 14.5, fontWeight: '600' },

@@ -8,7 +8,6 @@ import { generateUser } from '../../../mock-builders/generator/user';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import {
   InputMessageInputContextValue,
-  MessageInputContextValue,
   MessageInputProvider,
   useMessageInputContext,
 } from '../MessageInputContext';
@@ -24,7 +23,7 @@ const Wrapper = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultS
     value={
       {
         ...rest,
-      } as MessageInputContextValue<StreamChatGenerics>
+      } as InputMessageInputContextValue<StreamChatGenerics>
     }
   >
     {children}

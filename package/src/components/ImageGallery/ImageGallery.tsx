@@ -37,6 +37,7 @@ import {
 
 import { useImageGalleryGestures } from './hooks/useImageGalleryGestures';
 
+import { useChatConfigContext } from '../../contexts/chatConfigContext/ChatConfigContext';
 import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import { OverlayProviderProps } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -131,6 +132,7 @@ export const ImageGallery = <
   const [imageGalleryAttachments, setImageGalleryAttachments] = useState<
     Photo<StreamChatGenerics>[]
   >([]);
+  const { resizableCDNHosts } = useChatConfigContext();
   const {
     theme: {
       colors: { white_snow },
@@ -259,6 +261,7 @@ export const ImageGallery = <
             ? giphyURL
             : getResizedImageUrl({
                 height: fullWindowHeight,
+                resizableCDNHosts,
                 url: imageUrl,
                 width: fullWindowWidth,
               }),

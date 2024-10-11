@@ -22,14 +22,14 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export type MessagePinnedHeaderPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessageContextValue<StreamChatGenerics>, 'alignment' | 'message'>;
+> = Pick<MessageContextValue<StreamChatGenerics>, 'message'>;
 
 const MessagePinnedHeaderWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessagePinnedHeaderPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { alignment, message } = props;
+  const { message } = props;
   const {
     theme: {
       colors: { grey },
@@ -40,16 +40,7 @@ const MessagePinnedHeaderWithContext = <
   const { t } = useTranslationContext();
   const { client } = useChatContext();
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          justifyContent: alignment === 'left' ? 'flex-start' : 'flex-end',
-        },
-        container,
-      ]}
-      testID='message-pinned'
-    >
+    <View style={[styles.container, container]} testID='message-pinned'>
       <PinHeader pathFill={grey} />
       <Text style={[{ color: grey }, styles.label, label]}>
         {t<string>('Pinned by')}{' '}
@@ -89,12 +80,11 @@ export const MessagePinnedHeader = <
 >(
   props: MessagePinnedHeaderProps<StreamChatGenerics>,
 ) => {
-  const { alignment, lastGroupMessage, message } = useMessageContext<StreamChatGenerics>();
+  const { lastGroupMessage, message } = useMessageContext<StreamChatGenerics>();
 
   return (
     <MemoizedMessagePinnedHeader
       {...{
-        alignment,
         lastGroupMessage,
         message,
       }}

@@ -25,6 +25,10 @@ export type MessageContextValue<
   actionsEnabled: boolean;
   /** Position of the message, either 'right' or 'left' */
   alignment: Alignment;
+  /**
+   * Function to dismiss the overlay
+   */
+  dismissOverlay: () => void;
   /** The files attached to a message */
   files: Attachment<StreamChatGenerics>[];
   /**
@@ -83,7 +87,12 @@ export type MessageContextValue<
   reactions: ReactionSummary[];
   /** React set state function to set the state of `isEditedMessageOpen` */
   setIsEditedMessageOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  showMessageOverlay: (isMessageActionsVisible?: boolean, error?: boolean) => void;
+  /**
+   * Function to show the menu with all the message actions.
+   * @param showMessageReactions
+   * @returns void
+   */
+  showMessageOverlay: (showMessageReactions?: boolean) => void;
   showMessageStatus: boolean;
   /** Whether or not the Message is part of a Thread */
   threadList: boolean;

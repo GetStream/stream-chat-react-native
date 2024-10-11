@@ -171,7 +171,13 @@ import { ScrollToBottomButton as ScrollToBottomButtonDefault } from '../MessageL
 import { StickyHeader as StickyHeaderDefault } from '../MessageList/StickyHeader';
 import { TypingIndicator as TypingIndicatorDefault } from '../MessageList/TypingIndicator';
 import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../MessageList/TypingIndicatorContainer';
-import { OverlayReactionList as OverlayReactionListDefault } from '../MessageOverlay/OverlayReactionList';
+import { MessageActionList as MessageActionListDefault } from '../MessageMenu/MessageActionList';
+import { MessageActionListItem as MessageActionListItemDefault } from '../MessageMenu/MessageActionListItem';
+import { MessageMenu as MessageMenuDefault } from '../MessageMenu/MessageMenu';
+import { MessageReactionPicker as MessageReactionPickerDefault } from '../MessageMenu/MessageReactionPicker';
+import { MessageUserReactions as MessageUserReactionsDefault } from '../MessageMenu/MessageUserReactions';
+import { MessageUserReactionsAvatar as MessageUserReactionsAvatarDefault } from '../MessageMenu/MessageUserReactionsAvatar';
+import { MessageUserReactionsItem as MessageUserReactionsItemDefault } from '../MessageMenu/MessageUserReactionsItem';
 import { Reply as ReplyDefault } from '../Reply/Reply';
 
 const styles = StyleSheet.create({
@@ -300,6 +306,8 @@ export type ChannelPropsWithContext<
       | 'ImageLoadingIndicator'
       | 'markdownRules'
       | 'Message'
+      | 'MessageActionList'
+      | 'MessageActionListItem'
       | 'messageActions'
       | 'MessageAvatar'
       | 'MessageBounce'
@@ -311,6 +319,7 @@ export type ChannelPropsWithContext<
       | 'MessageFooter'
       | 'MessageHeader'
       | 'MessageList'
+      | 'MessageMenu'
       | 'MessagePinnedHeader'
       | 'MessageReplies'
       | 'MessageRepliesAvatars'
@@ -318,12 +327,16 @@ export type ChannelPropsWithContext<
       | 'MessageStatus'
       | 'MessageSystem'
       | 'MessageText'
+      | 'messageTextNumberOfLines'
       | 'MessageTimestamp'
+      | 'MessageUserReactions'
       | 'myMessageTheme'
       | 'onLongPressMessage'
       | 'onPressInMessage'
       | 'onPressMessage'
-      | 'OverlayReactionList'
+      | 'MessageReactionPicker'
+      | 'MessageUserReactionsAvatar'
+      | 'MessageUserReactionsItem'
       | 'ReactionList'
       | 'Reply'
       | 'ScrollToBottomButton'
@@ -538,6 +551,8 @@ const ChannelWithContext = <
     mentionAllAppUsersEnabled = false,
     mentionAllAppUsersQuery,
     Message = MessageDefault,
+    MessageActionList = MessageActionListDefault,
+    MessageActionListItem = MessageActionListItemDefault,
     messageActions,
     MessageAvatar = MessageAvatarDefault,
     MessageBounce = MessageBounceDefault,
@@ -550,7 +565,9 @@ const ChannelWithContext = <
     MessageHeader,
     messageId,
     MessageList = MessageListDefault,
+    MessageMenu = MessageMenuDefault,
     MessagePinnedHeader = MessagePinnedHeaderDefault,
+    MessageReactionPicker = MessageReactionPickerDefault,
     MessageReplies = MessageRepliesDefault,
     MessageRepliesAvatars = MessageRepliesAvatarsDefault,
     messages,
@@ -558,7 +575,11 @@ const ChannelWithContext = <
     MessageStatus = MessageStatusDefault,
     MessageSystem = MessageSystemDefault,
     MessageText,
+    messageTextNumberOfLines = 5,
     MessageTimestamp = MessageTimestampDefault,
+    MessageUserReactions = MessageUserReactionsDefault,
+    MessageUserReactionsAvatar = MessageUserReactionsAvatarDefault,
+    MessageUserReactionsItem = MessageUserReactionsItemDefault,
     MoreOptionsButton = MoreOptionsButtonDefault,
     myMessageTheme,
     NetworkDownIndicator = NetworkDownIndicatorDefault,
@@ -568,7 +589,6 @@ const ChannelWithContext = <
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
-    OverlayReactionList = OverlayReactionListDefault,
     overrideOwnCapabilities,
     ReactionList = ReactionListDefault,
     read,
@@ -2245,6 +2265,8 @@ const ChannelWithContext = <
     legacyImageViewerSwipeBehaviour,
     markdownRules,
     Message,
+    MessageActionList,
+    MessageActionListItem,
     messageActions,
     MessageAvatar,
     MessageBounce,
@@ -2256,19 +2278,24 @@ const ChannelWithContext = <
     MessageFooter,
     MessageHeader,
     MessageList,
+    MessageMenu,
     MessagePinnedHeader,
+    MessageReactionPicker,
     MessageReplies,
     MessageRepliesAvatars,
     MessageSimple,
     MessageStatus,
     MessageSystem,
     MessageText,
+    messageTextNumberOfLines,
     MessageTimestamp,
+    MessageUserReactions,
+    MessageUserReactionsAvatar,
+    MessageUserReactionsItem,
     myMessageTheme,
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
-    OverlayReactionList,
     ReactionList,
     removeMessage,
     Reply,
