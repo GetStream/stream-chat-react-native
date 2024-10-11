@@ -356,11 +356,11 @@ describe('ChannelList', () => {
         });
       });
 
-      it('should call the `onMessageNew` function prop, if provided', async () => {
-        const onMessageNew = jest.fn();
+      it('should call the `onNewMessage` function prop, if provided', async () => {
+        const onNewMessage = jest.fn();
         render(
           <Chat client={chatClient}>
-            <ChannelList {...props} onMessageNew={onMessageNew} />
+            <ChannelList {...props} onNewMessage={onNewMessage} />
           </Chat>,
         );
 
@@ -368,10 +368,10 @@ describe('ChannelList', () => {
           expect(screen.getByTestId('channel-list')).toBeTruthy();
         });
 
-        act(() => dispatchNotificationMessageNewEvent(chatClient, testChannel2.channel));
+        act(() => dispatchMessageNewEvent(chatClient, testChannel2.channel));
 
         await waitFor(() => {
-          expect(onMessageNew).toHaveBeenCalledTimes(1);
+          expect(onNewMessage).toHaveBeenCalledTimes(1);
         });
       });
 
