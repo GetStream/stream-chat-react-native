@@ -36,6 +36,7 @@ const selector = (nextValue: PollState) =>
     nextValue.ownVotesByOptionId,
     nextValue.latest_votes_by_option,
     nextValue.answers_count,
+    nextValue.ownAnswer,
     nextValue.options,
     nextValue.name,
     nextValue.max_votes_allowed,
@@ -100,19 +101,23 @@ const PollWithContext = () => {
         </SafeAreaView>
       </Modal>
       <SuggestOptionButton onPress={() => setShowAddOptionDialog(true)} />
-      <PollInputDialog
-        closeDialog={() => setShowAddOptionDialog(false)}
-        onSubmit={(value) => addOption(value)}
-        title='Suggest an option'
-        visible={showAddOptionDialog}
-      />
+      {showAddOptionDialog ? (
+        <PollInputDialog
+          closeDialog={() => setShowAddOptionDialog(false)}
+          onSubmit={(value) => addOption(value)}
+          title='Suggest an option'
+          visible={showAddOptionDialog}
+        />
+      ) : null}
       <AddCommentButton onPress={() => setShowAddCommentDialog(true)} />
-      <PollInputDialog
-        closeDialog={() => setShowAddCommentDialog(false)}
-        onSubmit={(value) => addComment(value)}
-        title='Add a comment'
-        visible={showAddCommentDialog}
-      />
+      {showAddCommentDialog ? (
+        <PollInputDialog
+          closeDialog={() => setShowAddCommentDialog(false)}
+          onSubmit={(value) => addComment(value)}
+          title='Add a comment'
+          visible={showAddCommentDialog}
+        />
+      ) : null}
       <ViewResultsButton onPress={() => setShowResults(true)} />
       {showResults ? (
         <Modal
@@ -144,6 +149,7 @@ export const Poll = ({ poll: pollData }: { poll: PollResponse }) => {
     ownVotesByOptionId,
     latest_votes_by_option,
     answers_count,
+    ownAnswer,
     options,
     name,
     max_votes_allowed,
@@ -184,6 +190,7 @@ export const Poll = ({ poll: pollData }: { poll: PollResponse }) => {
         name,
         vote_counts_by_option,
         options,
+        ownAnswer,
         ownVotesByOptionId,
         poll,
       }}

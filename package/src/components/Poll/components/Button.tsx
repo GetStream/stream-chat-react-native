@@ -42,6 +42,15 @@ export const ShowAllCommentsButton = ({ onPress }: PollButtonProps) => {
   ) : null;
 };
 
+export const AnswerListAddCommentButton = ({ onPress }: PollButtonProps) => {
+  const { ownAnswer } = usePollContext();
+  return (
+    <TouchableOpacity onPress={onPress} style={[styles.answerListAddCommentContainer]}>
+      <Text style={[styles.text]}>{ownAnswer ? 'Update your comment' : 'Add a comment'}</Text>
+    </TouchableOpacity>
+  );
+};
+
 export const SuggestOptionButton = ({ onPress }: PollButtonProps) => {
   const { allow_user_suggested_options } = usePollContext();
   return allow_user_suggested_options ? (
@@ -92,6 +101,13 @@ export const ShowAllVotesButton = ({
 };
 
 const styles = StyleSheet.create({
+  answerListAddCommentContainer: {
+    alignItems: 'center',
+    backgroundColor: '#F7F7F8',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 18,
+  },
   container: {
     alignItems: 'center',
     marginHorizontal: 16,
