@@ -4065,17 +4065,10 @@ fast-levenshtein@^2.0.6:
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
   integrity sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==
 
-fast-xml-parser@^4.0.12:
-  version "4.2.3"
-  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-4.2.3.tgz#32a52703905aab240191812303f10d3d751ebd76"
-  integrity sha512-3wwn8WJZwUPwv7nU2hxIwKdxpwVexw8AYrUSG0prEPZXKbLBmz3eBlqvj+gB7lDY26MHDKCw7A8G2zoVO/Sf9A==
-  dependencies:
-    strnum "^1.0.5"
-
-fast-xml-parser@^4.2.4:
-  version "4.3.5"
-  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-4.3.5.tgz#e2f2a2ae8377e9c3dc321b151e58f420ca7e5ccc"
-  integrity sha512-sWvP1Pl8H03B8oFJpFR3HE31HUfwtX7Rlf9BNsvdpujD4n7WMhfmu8h9wOV2u+c1k0ZilTADhPqypzx2J690ZQ==
+fast-xml-parser@^4.0.12, fast-xml-parser@^4.2.4:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-4.5.0.tgz#2882b7d01a6825dfdf909638f2de0256351def37"
+  integrity sha512-/PlTQCI96+fZMAOLMZK4CWG1ItCbfZ/0jx7UIJFChPNrx7tcEgerUgWbeieCM9MfHInUDyK8DWYZ+YrywDJuTg==
   dependencies:
     strnum "^1.0.5"
 
@@ -6899,10 +6892,10 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-stream-chat-react-native-core@5.38.0:
-  version "5.38.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.38.0.tgz#3d394a8ea9ab8d9a06a47000ff90a44daae35aaa"
-  integrity sha512-l9wF3Y+caFL1J2urw+Od0U2JNkW4ff/o4rlpmIOe92Ow14kuQOrejKo1XJbC6riJBVpnrtT1tj8SfVeS2crW0Q==
+stream-chat-react-native-core@5.39.1:
+  version "5.39.1"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.39.1.tgz#ce6060d921b618446e54fc68402f4edf30f0c068"
+  integrity sha512-iXUqiBIAb0wj6jDH9zNIosYnwR0azCRTnKchxqo/YNGoMwQB/BqZl+ucyLlYBsbrtIYrmiLe2Tj5ufNe72u5Gg==
   dependencies:
     "@gorhom/bottom-sheet" "^4.6.4"
     dayjs "1.10.5"
@@ -6915,11 +6908,23 @@ stream-chat-react-native-core@5.38.0:
     path "0.12.7"
     react-native-markdown-package "1.8.2"
     react-native-url-polyfill "^1.3.0"
-    stream-chat "8.39.0"
+    stream-chat "8.40.8"
 
 "stream-chat-react-native-core@link:../../package":
-  version "0.0.0"
-  uid ""
+  version "5.39.1"
+  dependencies:
+    "@gorhom/bottom-sheet" "^4.6.4"
+    dayjs "1.10.5"
+    emoji-regex "^10.3.0"
+    i18next "^21.6.14"
+    intl-pluralrules "^2.0.1"
+    linkifyjs "^4.1.1"
+    lodash-es "4.17.21"
+    mime-types "^2.1.34"
+    path "0.12.7"
+    react-native-markdown-package "1.8.2"
+    react-native-url-polyfill "^1.3.0"
+    stream-chat "8.40.8"
 
 stream-chat-react-native-devtools@^1.1.0:
   version "1.1.0"
@@ -6927,13 +6932,15 @@ stream-chat-react-native-devtools@^1.1.0:
   integrity sha512-r2f8YyM9ZtCUYKtyIvUcsYDiWD0Dx9mdUMzjNGL+dn15RkM84k4ZWaFmuT/FLEdUCUZE/fSy2XoxrbRq5smIpQ==
 
 "stream-chat-react-native@link:../../package/native-package":
-  version "0.0.0"
-  uid ""
+  version "5.39.1"
+  dependencies:
+    es6-symbol "^3.1.3"
+    stream-chat-react-native-core "5.39.1"
 
-stream-chat@8.39.0:
-  version "8.39.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.39.0.tgz#f4cb86bd5cac4c1272c24cd66ed4752bcda8d717"
-  integrity sha512-zQZR1tPrgGBbu+Gnv9F9KQx3OPUMvb0FN+39BEjkjgjRPm2JYhF78jfcYutQMiC538t3V+NgFGgj5N4sZvSsUA==
+stream-chat@8.40.8:
+  version "8.40.8"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.40.8.tgz#0f5320bd8b03d1cbff377f8c7ae2f8afe24d0515"
+  integrity sha512-nYLvYAkrvXRzuPO52TIofNiInCkDdXrnBc/658297lC6hzrHNc87mmTht264BXmXLlpasTNP3rLKxR6MxhpgKg==
   dependencies:
     "@babel/runtime" "^7.16.3"
     "@types/jsonwebtoken" "~9.0.0"
@@ -6943,7 +6950,7 @@ stream-chat@8.39.0:
     form-data "^4.0.0"
     isomorphic-ws "^4.0.1"
     jsonwebtoken "~9.0.0"
-    ws "^7.4.4"
+    ws "^7.5.10"
 
 strict-uri-encode@^2.0.0:
   version "2.0.0"
@@ -7481,10 +7488,15 @@ ws@^6.2.2:
   dependencies:
     async-limiter "~1.0.0"
 
-ws@^7, ws@^7.4.4, ws@^7.5.1:
+ws@^7, ws@^7.5.1:
   version "7.5.9"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.9.tgz#54fa7db29f4c7cec68b1ddd3a89de099942bb591"
   integrity sha512-F+P9Jil7UiSKSkppIiD94dN07AwvFixvLIj1Og1Rl9GGMuNipJnV9JzjD6XuqmAeiswGvUmNLjr5cFuXwNS77Q==
+
+ws@^7.5.10:
+  version "7.5.10"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.10.tgz#58b5c20dc281633f6c19113f39b349bd8bd558d9"
+  integrity sha512-+dbF1tHwZpXcbOJdVOkzLDxZP1ailvSxM6ZweXTegylPny803bFhA+vqBYw4s31NSAk4S2Qz+AKXK9a4wkdjcQ==
 
 xtend@~4.0.1:
   version "4.0.2"
