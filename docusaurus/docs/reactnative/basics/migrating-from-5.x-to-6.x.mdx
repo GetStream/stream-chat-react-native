@@ -90,6 +90,36 @@ The Message Menu design has been revamped to provide a better user experience. T
 The previous overlay design has been replaced with a bottom sheet modal design.
 :::
 
+#### Remove `StreamChatRN` and introduce `ChatConfigContext`
+
+The `StreamChatRN` global config is removed in favour of the `ChatConfigContext`. The `ChatConfigContext` is a more versatile and feature-rich context that can be used to provide any global configuration to the chat application.
+
+The `resizableCDNHosts` can be configured by wrapping the root of your Chat application with `ChatConfigProvider` as follows:
+
+```tsx
+import { Chat, ChatConfigProvider, OverlayProvider } from 'stream-chat-react-native';
+
+const App = () => {
+  return (
+    <ChatConfigProvider
+      value={{
+        resizableCDNHosts: ['cdn.example.com'],
+      }}
+    >
+      <OverlayProvider>
+        <Chat client={client}>
+          <ChannelList />
+        </Chat>
+      </OverlayProvider>
+    </ChatConfigProvider>
+  );
+};
+```
+
+:::note
+If nothing is provided, the `resizableCDNHosts` will default to `['.stream-io-cdn.com']`.
+:::
+
 #### Removed `MessageOverlayContext` and `MessageOverlayProvider`
 
 The `MessageOverlayContext` and `MessageOverlayProvider` have been removed.

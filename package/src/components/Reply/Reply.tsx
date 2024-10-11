@@ -8,6 +8,7 @@ import merge from 'lodash/merge';
 
 import type { Attachment } from 'stream-chat';
 
+import { useChatConfigContext } from '../../contexts/chatConfigContext/ChatConfigContext';
 import { useMessageContext } from '../../contexts/messageContext/MessageContext';
 import {
   MessageInputContext,
@@ -142,6 +143,7 @@ const ReplyWithContext = <
     styles: stylesProp = {},
     t,
   } = props;
+  const { resizableCDNHosts } = useChatConfigContext();
 
   const [error, setError] = useState(false);
 
@@ -230,6 +232,7 @@ const ReplyWithContext = <
                     (stylesProp.imageAttachment?.height as number) ||
                     (imageAttachment?.height as number) ||
                     styles.imageAttachment.height,
+                  resizableCDNHosts,
                   url: (lastAttachment.image_url ||
                     lastAttachment.thumb_url ||
                     lastAttachment.og_scrape_url) as string,

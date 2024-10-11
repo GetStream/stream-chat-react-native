@@ -10,6 +10,11 @@ import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
 
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
+import {
+  ChatConfigContextValue,
+  chatConfigContextDefaultvalue,
+} from '../../../../contexts/chatConfigContext/ChatConfigContext';
+
 /**
  * Builds and returns a gallery of optimized images to be rendered on UI.
  * This function take a object parameter with following properties:
@@ -30,14 +35,16 @@ export function buildGallery<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   images,
+  resizableCDNHosts = chatConfigContextDefaultvalue.resizableCDNHosts,
   sizeConfig,
-}: {
+}: Pick<ChatConfigContextValue, 'resizableCDNHosts'> & {
   images: Attachment<StreamChatGenerics>[];
   sizeConfig: GallerySizeConfig;
 }): GallerySizeAndThumbnailGrid {
   if (images.length === 1) {
     return buildGalleryOfSingleImage({
       image: images[0],
+      resizableCDNHosts,
       sizeConfig,
     });
   }
@@ -45,6 +52,7 @@ export function buildGallery<
   if (images.length === 2) {
     return buildGalleryOfTwoImages({
       images,
+      resizableCDNHosts,
       sizeConfig,
     });
   }
@@ -52,6 +60,7 @@ export function buildGallery<
   if (images.length === 3) {
     return buildGalleryOfThreeImages({
       images,
+      resizableCDNHosts,
       sizeConfig,
     });
   }
@@ -72,6 +81,7 @@ export function buildGallery<
     ],
     images: images.slice(0, 4),
     invertedDirections: true,
+    resizableCDNHosts,
     sizeConfig,
   });
 }
