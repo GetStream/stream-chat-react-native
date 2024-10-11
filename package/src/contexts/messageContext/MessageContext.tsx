@@ -13,10 +13,8 @@ import type { ChannelContextValue } from '../../contexts/channelContext/ChannelC
 import type { MessageContentType } from '../../contexts/messagesContext/MessagesContext';
 import type { DeepPartial } from '../../contexts/themeContext/ThemeContext';
 import type { Theme } from '../../contexts/themeContext/utils/theme';
-import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
-
-import { getDisplayName } from '../utils/getDisplayName';
 
 export type Alignment = 'right' | 'left';
 
@@ -42,46 +40,7 @@ export type MessageContextValue<
   groupStyles: GroupType[];
   /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
   handleAction: ActionHandler;
-  /**
-   * @deprecated
-   * @returns Promise<void>
-   */
-  handleCopyMessage: () => void;
-  /**
-   * @deprecated
-   * @returns Promise<void>
-   */
-  handleDeleteMessage: () => void;
-  /**
-   * @deprecated
-   * @returns Promise<void>
-   */
-  handleEditMessage: () => void;
-  /**
-   * @deprecated
-   * @returns Promise<void>
-   */
-  handleFlagMessage: () => void;
-  /**
-   * @deprecated
-   * @returns Promise<void>
-   */
-  handleQuotedReplyMessage: () => void;
-  /**
-   * @deprecated
-   * @returns Promise<void>
-   */
-  handleResendMessage: () => Promise<void>;
-  /**
-   * @deprecated
-   * @returns Promise<void>
-   */
-  handleToggleBanUser: () => Promise<void>;
-  /**
-   * @deprecated
-   * @returns Promise<void>
-   */
-  handleToggleMuteUser: () => Promise<void>;
+  handleToggleReaction: (reactionType: string) => Promise<void>;
   /** Whether or not message has reactions */
   hasReactions: boolean;
   /** The images attached to a message */
@@ -183,30 +142,4 @@ export const useMessageContext = <
   ) as unknown as MessageContextValue<StreamChatGenerics>;
 
   return contextValue;
-};
-
-/**
- * @deprecated
- *
- * This will be removed in the next major version.
- *
- * Typescript currently does not support partial inference so if ChatContext
- * typing is desired while using the HOC withMessageContext the Props for the
- * wrapped component must be provided as the first generic.
- */
-export const withMessageContext = <
-  P extends UnknownType,
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  Component: React.ComponentType<P>,
-): React.ComponentType<Omit<P, keyof MessageContextValue<StreamChatGenerics>>> => {
-  const WithMessageContextComponent = (
-    props: Omit<P, keyof MessageContextValue<StreamChatGenerics>>,
-  ) => {
-    const messageContext = useMessageContext<StreamChatGenerics>();
-
-    return <Component {...(props as P)} {...messageContext} />;
-  };
-  WithMessageContextComponent.displayName = `WithMessageContext${getDisplayName(Component)}`;
-  return WithMessageContextComponent;
 };

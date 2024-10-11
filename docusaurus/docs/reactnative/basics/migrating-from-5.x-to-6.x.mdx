@@ -98,6 +98,36 @@ We have introduced a new ReactionList design that is more intuitive and provides
 
 You can switch to `bottom` reaction list design by setting the [`reactionListPosition`](../core-components/channel.mdx#reactionlistposition) prop to `bottom` in the `Channel` component. The Reaction list component can be completely customized by providing a custom component to the [`ReactionListTop`](../core-components/channel.mdx#reactionlisttop) prop in the `Channel` component for top reactions list and [`ReactionListBottom`](../core-components/channel.mdx#reactionlistbottom) prop for bottom reactions list. The default mode is `top` as it was in the previous version.
 
+#### Remove `StreamChatRN` and introduce `ChatConfigContext`
+
+The `StreamChatRN` global config is removed in favour of the `ChatConfigContext`. The `ChatConfigContext` is a more versatile and feature-rich context that can be used to provide any global configuration to the chat application.
+
+The `resizableCDNHosts` can be configured by wrapping the root of your Chat application with `ChatConfigProvider` as follows:
+
+```tsx
+import { Chat, ChatConfigProvider, OverlayProvider } from 'stream-chat-react-native';
+
+const App = () => {
+  return (
+    <ChatConfigProvider
+      value={{
+        resizableCDNHosts: ['cdn.example.com'],
+      }}
+    >
+      <OverlayProvider>
+        <Chat client={client}>
+          <ChannelList />
+        </Chat>
+      </OverlayProvider>
+    </ChatConfigProvider>
+  );
+};
+```
+
+:::note
+If nothing is provided, the `resizableCDNHosts` will default to `['.stream-io-cdn.com']`.
+:::
+
 #### Removed `MessageOverlayContext` and `MessageOverlayProvider`
 
 The `MessageOverlayContext` and `MessageOverlayProvider` have been removed.
@@ -184,6 +214,13 @@ The type of `quotedMessage` is changed from `MessageType |  boolean` to `Message
 #### Refactor of theme object
 
 The default theme object has been refactored to provide a better customization experience. The theme object is now more organized and provides better control over the customization. You can check the object [here](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/contexts/themeContext/utils/theme.ts).
+
+#### Remove the deprecated code
+
+- We have removed `loadChannelAtMessage` from channel context because it was no more used.
+- We have removed the `handleDeleteMessage`, `handleEditMessage`, `handleQuotedReplyMessage`, `handleResendMessage`, `handleToggleBanUser` and `handleToggleMuteUser` from the message context because it was no more used. To customize the message actions follow the [customization documentation](../guides/custom-message-actions.mdx).
+- Remove the `onMessageNew` prop from the [`ChannelList`](../core-components/channel-list.mdx) component. Use the [`onNewMessage`](../core-components/channel-list.mdx#onnewmessage) prop instead.
+- Remove the `handleBlock` prop from the `Channel` component. Use [`handleBan`](../core-components/channel.mdx#handleban) instead.
 
 ## Other changes
 

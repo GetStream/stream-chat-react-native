@@ -113,11 +113,6 @@ export type MessageActionHandlers<
   pinMessage: () => Promise<void>;
   quotedReply: () => void;
   resendMessage: () => Promise<void>;
-  /**
-   * @deprecated
-   * TODO: This seems useless for the action handlers here so can be removed.
-   */
-  showMessageOverlay: () => void;
   toggleBanUser: () => Promise<void>;
   toggleMuteUser: () => Promise<void>;
   toggleReaction: (reactionType: string) => Promise<void>;
@@ -140,7 +135,6 @@ export type MessagePropsWithContext<
     | 'dismissKeyboardOnMessageTouch'
     | 'forceAlignMessages'
     | 'handleBan'
-    | 'handleBlock'
     | 'handleCopy'
     | 'handleDelete'
     | 'handleEdit'
@@ -218,7 +212,6 @@ const MessageWithContext = <
     goToMessage,
     groupStyles = ['bottom'],
     handleBan,
-    handleBlock,
     handleCopy,
     handleDelete,
     handleEdit,
@@ -485,7 +478,6 @@ const MessageWithContext = <
 
   const {
     banUser,
-    blockUser,
     copyMessage,
     deleteMessage,
     editMessage,
@@ -505,7 +497,6 @@ const MessageWithContext = <
     dismissOverlay,
     enforceUniqueReaction,
     handleBan,
-    handleBlock,
     handleCopy,
     handleDelete,
     handleEdit,
@@ -538,7 +529,6 @@ const MessageWithContext = <
       ? messageActionsProp
       : messageActionsProp({
           banUser,
-          blockUser,
           copyMessage,
           deleteMessage,
           dismissOverlay,
@@ -566,7 +556,6 @@ const MessageWithContext = <
     pinMessage: handleTogglePinMessage,
     quotedReply: handleQuotedReplyMessage,
     resendMessage: handleResendMessage,
-    showMessageOverlay,
     threadReply: handleThreadReply,
     toggleBanUser: handleToggleBanUser,
     toggleMuteUser: handleToggleMuteUser,
@@ -594,16 +583,9 @@ const MessageWithContext = <
     goToMessage,
     groupStyles,
     handleAction,
-    handleCopyMessage,
-    handleDeleteMessage,
-    handleEditMessage,
-    handleFlagMessage,
-    handleQuotedReplyMessage,
     handleReaction,
-    handleResendMessage,
-    handleToggleBanUser,
-    handleToggleMuteUser,
-    hasReactions: hasReactions && message.type !== 'deleted',
+    handleToggleReaction,
+    hasReactions,
     images: attachments.images,
     isEditedMessageOpen,
     isMyMessage,

@@ -1,7 +1,8 @@
 import { ComponentType, useMemo } from 'react';
 
-import { MessageResponse, ReactionResponse } from 'stream-chat';
+import { ReactionGroupResponse, ReactionResponse } from 'stream-chat';
 
+import { MessageType } from '../../../components/MessageList/hooks/useMessageList';
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -24,10 +25,14 @@ export type ReactionsComparator = (a: ReactionSummary, b: ReactionSummary) => nu
 
 export type MessageReactionsData<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<
-  MessageResponse<StreamChatGenerics>,
-  'own_reactions' | 'latest_reactions' | 'reaction_groups'
->;
+> = {
+  /** An array of the reaction objects to display in the list */
+  latest_reactions?: ReactionResponse<StreamChatGenerics>[];
+  /** An array of the own reaction objects to distinguish own reactions visually */
+  own_reactions?: ReactionResponse<StreamChatGenerics>[] | null;
+  /** An object containing summary for each reaction type on a message */
+  reaction_groups?: Record<string, ReactionGroupResponse> | null;
+};
 
 type UseProcessReactionsParams<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

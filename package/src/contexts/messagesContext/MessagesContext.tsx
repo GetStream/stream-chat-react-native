@@ -57,7 +57,7 @@ import { MessageUserReactionsProps } from '../../components/MessageMenu/MessageU
 import { MessageUserReactionsAvatarProps } from '../../components/MessageMenu/MessageUserReactionsAvatar';
 import { MessageUserReactionsItemProps } from '../../components/MessageMenu/MessageUserReactionsItem';
 import type { ReplyProps } from '../../components/Reply/Reply';
-import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
 import type { Alignment } from '../messageContext/MessageContext';
 import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
@@ -65,7 +65,6 @@ import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
-import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type MessageContentType = 'attachments' | 'files' | 'gallery' | 'quoted_reply' | 'text';
@@ -357,12 +356,6 @@ export type MessagesContextValue<
    * @param message
    */
   handleBan?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
-  /**
-   * @deprecated
-   * Handler to access when a block user action is invoked.
-   * @param message
-   */
-  handleBlock?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
   /** Handler to access when a copy message action is invoked */
   handleCopy?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
   /** Handler to access when a delete message action is invoked */
@@ -603,30 +596,4 @@ export const useMessagesContext = <
   }
 
   return contextValue;
-};
-
-/**
- * @deprecated
- *
- * This will be removed in the next major version.
- *
- * Typescript currently does not support partial inference so if ChatContext
- * typing is desired while using the HOC withMessagesContext the Props for the
- * wrapped component must be provided as the first generic.
- */
-export const withMessagesContext = <
-  P extends UnknownType,
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  Component: React.ComponentType<P>,
-): React.ComponentType<Omit<P, keyof MessagesContextValue<StreamChatGenerics>>> => {
-  const WithMessagesContextComponent = (
-    props: Omit<P, keyof MessagesContextValue<StreamChatGenerics>>,
-  ) => {
-    const messagesContext = useMessagesContext<StreamChatGenerics>();
-
-    return <Component {...(props as P)} {...messagesContext} />;
-  };
-  WithMessagesContextComponent.displayName = `WithMessagesContext${getDisplayName(Component)}`;
-  return WithMessagesContextComponent;
 };

@@ -6,6 +6,7 @@ import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
 
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { getAspectRatio } from '../getAspectRatio';
+import { ChatConfigContextValue } from '../../../../contexts/chatConfigContext/ChatConfigContext';
 
 /** function to move item to the front of the array */
 function moveToFront<T>(array: T[], item: T): T[] {
@@ -23,8 +24,9 @@ export function buildGalleryOfThreeImages<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   images,
+  resizableCDNHosts,
   sizeConfig,
-}: {
+}: Pick<ChatConfigContextValue, 'resizableCDNHosts'> & {
   images: Attachment<StreamChatGenerics>[];
   sizeConfig: GallerySizeConfig;
 }): GallerySizeAndThumbnailGrid {
@@ -77,6 +79,7 @@ export function buildGalleryOfThreeImages<
       grid: [[1], [1, 1]],
       images: landscapeImage ? moveToFront(images, landscapeImage) : images,
       invertedDirections: true,
+      resizableCDNHosts,
       sizeConfig,
     });
   } else {
@@ -93,6 +96,7 @@ export function buildGalleryOfThreeImages<
       grid: [[1], [1, 1]],
       images: portraitImage ? moveToFront(images, portraitImage) : images,
       invertedDirections: false,
+      resizableCDNHosts,
       sizeConfig,
     });
   }
