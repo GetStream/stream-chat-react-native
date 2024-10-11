@@ -2,6 +2,8 @@ import React, { useCallback, useMemo } from 'react';
 
 import { Text, TouchableOpacity, View } from 'react-native';
 
+import { ScrollView } from 'react-native-gesture-handler';
+
 import { PollOption as PollOptionClass, PollState, PollVote } from 'stream-chat';
 
 import { VoteButton } from './Button';
@@ -9,7 +11,6 @@ import { VoteButton } from './Button';
 import { useMessageContext, usePollContext } from '../../../contexts';
 import { useStateStore } from '../../../hooks';
 
-import { Check } from '../../../icons';
 import { Avatar } from '../../Avatar/Avatar';
 
 const selector = (nextValue: PollState) =>
@@ -17,6 +18,7 @@ const selector = (nextValue: PollState) =>
 
 export type PollOptionProps = {
   option: PollOptionClass;
+  showProgressBar?: boolean;
 };
 
 export type ShowAllOptionsContentProps = {
@@ -28,18 +30,44 @@ export const ShowAllOptionsContent = ({ close }: ShowAllOptionsContentProps) => 
 
   return (
     <>
-      <TouchableOpacity onPress={close}>
-        <Text>BACK</Text>
-      </TouchableOpacity>
-      <Text>{name}</Text>
-      {options?.map((option: PollOptionClass) => (
-        <PollOption key={option.id} option={option} />
-      ))}
+      <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity onPress={close}>
+          <Text>BACK</Text>
+        </TouchableOpacity>
+        <Text style={{ fontSize: 16, fontWeight: '500', marginLeft: 32 }}>Poll Options</Text>
+      </View>
+      <ScrollView style={{ flex: 1, marginBottom: 16, padding: 16 }}>
+        <View
+          style={{
+            backgroundColor: '#F7F7F8',
+            borderRadius: 12,
+            paddingHorizontal: 16,
+            paddingVertical: 18,
+          }}
+        >
+          <Text style={{ fontSize: 16, fontWeight: '500' }}>{name}</Text>
+        </View>
+        <View
+          style={{
+            backgroundColor: '#F7F7F8',
+            borderRadius: 12,
+            marginTop: 32,
+            paddingBottom: 18,
+            paddingHorizontal: 16,
+          }}
+        >
+          {options?.map((option: PollOptionClass) => (
+            <View key={`full_poll_options_${option.id}`} style={{ paddingVertical: 16 }}>
+              <PollOption key={option.id} option={option} showProgressBar={false} />
+            </View>
+          ))}
+        </View>
+      </ScrollView>
     </>
   );
 };
 
-export const PollOption = ({ option }: PollOptionProps) => {
+export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) => {
   const { ownVotesByOptionId, poll, vote_counts_by_option } = usePollContext();
   const { message } = useMessageContext();
 
@@ -94,15 +122,17 @@ export const PollOption = ({ option }: PollOptionProps) => {
           <Text style={{ marginLeft: 2 }}>{vote_counts_by_option[option.id] || 0}</Text>
         </View>
       </View>
-      <View style={{ borderRadius: 4, flex: 1, flexDirection: 'row', height: 4, marginTop: 2 }}>
-        <View style={{ backgroundColor: '#005DFF', flex: maxVotes > 0 ? votes / maxVotes : 0 }} />
-        <View
-          style={{
-            backgroundColor: 'grey',
-            flex: maxVotes > 0 ? (maxVotes - votes) / maxVotes : 1,
-          }}
-        />
-      </View>
+      {showProgressBar ? (
+        <View style={{ borderRadius: 4, flex: 1, flexDirection: 'row', height: 4, marginTop: 2 }}>
+          <View style={{ backgroundColor: '#005DFF', flex: maxVotes > 0 ? votes / maxVotes : 0 }} />
+          <View
+            style={{
+              backgroundColor: 'grey',
+              flex: maxVotes > 0 ? (maxVotes - votes) / maxVotes : 1,
+            }}
+          />
+        </View>
+      ) : null}
     </View>
   );
 };
