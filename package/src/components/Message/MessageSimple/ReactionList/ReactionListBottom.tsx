@@ -242,16 +242,14 @@ export const ReactionListBottom = <
       {reactions.map((reaction, index) => (
         <ReactionListBottomItem
           key={index}
-          {...{
-            handleReaction,
-            onLongPress,
-            onPress,
-            onPressIn,
-            preventPress,
-            reaction,
-            showMessageOverlay,
-            supportedReactions,
-          }}
+          handleReaction={handleReaction}
+          onLongPress={onLongPress}
+          onPress={onPress}
+          onPressIn={onPressIn}
+          preventPress={preventPress}
+          reaction={reaction}
+          showMessageOverlay={showMessageOverlay}
+          supportedReactions={supportedReactions}
         />
       ))}
     </View>

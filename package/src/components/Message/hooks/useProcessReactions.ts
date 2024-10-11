@@ -1,6 +1,6 @@
 import { ComponentType, useMemo } from 'react';
 
-import { ReactionGroupResponse, ReactionResponse } from 'stream-chat';
+import { MessageResponse, ReactionResponse } from 'stream-chat';
 
 import {
   MessagesContextValue,
@@ -24,14 +24,10 @@ export type ReactionsComparator = (a: ReactionSummary, b: ReactionSummary) => nu
 
 export type MessageReactionsData<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
-  /** An array of the reaction objects to display in the list */
-  latest_reactions?: ReactionResponse<StreamChatGenerics>[];
-  /** An array of the own reaction objects to distinguish own reactions visually */
-  own_reactions?: ReactionResponse<StreamChatGenerics>[] | null;
-  /** An object containing summary for each reaction type on a message */
-  reaction_groups?: Record<string, ReactionGroupResponse> | null;
-};
+> = Pick<
+  MessageResponse<StreamChatGenerics>,
+  'own_reactions' | 'latest_reactions' | 'reaction_groups'
+>;
 
 type UseProcessReactionsParams<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -52,7 +48,7 @@ const isOwnReaction = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   reactionType: string,
-  ownReactions?: ReactionResponse<StreamChatGenerics>[] | null,
+  ownReactions?: MessageReactionsData<StreamChatGenerics>['own_reactions'],
 ) => (ownReactions ? ownReactions.some((reaction) => reaction.type === reactionType) : false);
 
 const isSupportedReaction = (reactionType: string, supportedReactions?: ReactionData[]) =>

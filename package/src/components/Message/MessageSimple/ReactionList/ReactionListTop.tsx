@@ -239,7 +239,10 @@ export const ReactionListTop = <
       {reactions.map((reaction, index) => (
         <ReactionListTopItem
           key={reaction.type}
-          {...{ index, reaction, reactions, supportedReactions }}
+          index={index}
+          reaction={reaction}
+          reactions={reactions}
+          supportedReactions={supportedReactions}
         />
       ))}
     </TouchableOpacity>
