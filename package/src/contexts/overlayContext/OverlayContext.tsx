@@ -13,7 +13,6 @@ import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
-import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type Overlay = 'alert' | 'gallery' | 'none';
@@ -72,31 +71,4 @@ export const useOverlayContext = () => {
   }
 
   return contextValue;
-};
-
-/**
- * @deprecated
- *
- * This will be removed in the next major version.
- *
- * Typescript currently does not support partial inference so if ChatContext
- * typing is desired while using the HOC withOverlayContext the Props for the
- * wrapped component must be provided as the first generic.
- */
-export const withOverlayContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  Component: React.ComponentType<StreamChatGenerics>,
-): React.ComponentType<Omit<StreamChatGenerics, keyof OverlayContextValue>> => {
-  const WithOverlayContextComponent = (
-    props: Omit<StreamChatGenerics, keyof OverlayContextValue>,
-  ) => {
-    const overlayContext = useOverlayContext();
-
-    return <Component {...(props as StreamChatGenerics)} {...overlayContext} />;
-  };
-  WithOverlayContextComponent.displayName = `WithOverlayContext${getDisplayName(
-    Component as React.ComponentType,
-  )}`;
-  return WithOverlayContextComponent;
 };
