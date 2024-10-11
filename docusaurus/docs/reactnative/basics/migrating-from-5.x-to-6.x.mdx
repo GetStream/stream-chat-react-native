@@ -189,9 +189,9 @@ The type of `quotedMessage` is changed from `MessageType |  boolean` to `Message
 #### Remove the deprecated code
 
 - We have removed `loadChannelAtMessage` from channel context because it was no more used.
-- We have removed the `handleDeleteMessage`, `handleEditMessage`, `handleQuotedReplyMessage`, `handleResendMessage`, `handleToggleBanUser` and `handleToggleMuteUser` from the message context because it was no more used.
-- Remove the `onMessageNew` prop from the `ChannelList` component. Use the `onNewMessage` prop instead.
-- Remove the `handleBlock` prop from the `Channel` component.
+- We have removed the `handleDeleteMessage`, `handleEditMessage`, `handleQuotedReplyMessage`, `handleResendMessage`, `handleToggleBanUser` and `handleToggleMuteUser` from the message context because it was no more used. To customize the message actions follow the [customization documentation](../guides/custom-message-actions.mdx).
+- Remove the `onMessageNew` prop from the [`ChannelList`](../core-components/channel-list.mdx) component. Use the [`onNewMessage`](../core-components/channel-list.mdx#onnewmessage) prop instead.
+- Remove the `handleBlock` prop from the `Channel` component. Use [`handleBan`](../core-components/channel.mdx#handleban) instead.
 
 ## Other changes
 
