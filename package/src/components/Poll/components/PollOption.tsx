@@ -68,7 +68,7 @@ export const ShowAllOptionsContent = ({ close }: ShowAllOptionsContentProps) => 
 };
 
 export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) => {
-  const { ownVotesByOptionId, poll, vote_counts_by_option } = usePollContext();
+  const { ownVotesByOptionId, poll, vote_counts_by_option, is_closed } = usePollContext();
   const { message } = useMessageContext();
 
   const toggleVote = useCallback(async () => {
@@ -124,7 +124,15 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
       </View>
       {showProgressBar ? (
         <View style={{ borderRadius: 4, flex: 1, flexDirection: 'row', height: 4, marginTop: 2 }}>
-          <View style={{ backgroundColor: '#005DFF', flex: maxVotes > 0 ? votes / maxVotes : 0 }} />
+          <View
+            style={{
+              backgroundColor:
+                is_closed && maxVotedOptionIds.length === 1 && maxVotedOptionIds[0] === option.id
+                  ? '#1FE06F'
+                  : '#005DFF',
+              flex: maxVotes > 0 ? votes / maxVotes : 0,
+            }}
+          />
           <View
             style={{
               backgroundColor: 'grey',
