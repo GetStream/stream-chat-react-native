@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import { PollOption } from '../../../../../../stream-chat-js';
-import { usePollContext } from '../../../contexts';
+import { useChatContext, usePollContext } from '../../../contexts';
 import { Check } from '../../../icons';
 
 export type PollButtonProps = {
@@ -16,17 +16,18 @@ export const ViewResultsButton = ({ onPress }: PollButtonProps) => (
 );
 
 export const EndVoteButton = ({ onPress }: PollButtonProps) => {
-  const { is_closed } = usePollContext();
-  return is_closed ? null : (
+  const { created_by, is_closed } = usePollContext();
+  const { client } = useChatContext();
+  return !is_closed && created_by.id === client.userID ? (
     <TouchableOpacity onPress={onPress} style={[styles.container]}>
       <Text style={[styles.text]}>End Vote</Text>
     </TouchableOpacity>
-  );
+  ) : null;
 };
 
 export const AddCommentButton = ({ onPress }: PollButtonProps) => {
-  const { allow_answers } = usePollContext();
-  return allow_answers ? (
+  const { allow_answers, is_closed } = usePollContext();
+  return !is_closed && allow_answers ? (
     <TouchableOpacity onPress={onPress} style={[styles.container]}>
       <Text style={[styles.text]}>Add a comment</Text>
     </TouchableOpacity>
@@ -52,8 +53,8 @@ export const AnswerListAddCommentButton = ({ onPress }: PollButtonProps) => {
 };
 
 export const SuggestOptionButton = ({ onPress }: PollButtonProps) => {
-  const { allow_user_suggested_options } = usePollContext();
-  return allow_user_suggested_options ? (
+  const { allow_user_suggested_options, is_closed } = usePollContext();
+  return !is_closed && allow_user_suggested_options ? (
     <TouchableOpacity onPress={onPress} style={[styles.container]}>
       <Text style={[styles.text]}>Suggest an option</Text>
     </TouchableOpacity>
@@ -70,9 +71,9 @@ export const ShowAllOptionsButton = ({ onPress }: PollButtonProps) => {
 };
 
 export const VoteButton = ({ onPress, option }: PollButtonProps & { option: PollOption }) => {
-  const { ownVotesByOptionId } = usePollContext();
+  const { is_closed, ownVotesByOptionId } = usePollContext();
 
-  return (
+  return !is_closed ? (
     <TouchableOpacity
       onPress={onPress}
       style={[
@@ -85,7 +86,7 @@ export const VoteButton = ({ onPress, option }: PollButtonProps & { option: Poll
     >
       {ownVotesByOptionId[option.id] ? <Check height={15} pathFill='white' width={20} /> : null}
     </TouchableOpacity>
-  );
+  ) : null;
 };
 
 export const ShowAllVotesButton = ({

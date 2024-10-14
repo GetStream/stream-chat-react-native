@@ -34,6 +34,7 @@ const selector = (nextValue: PollState) =>
     nextValue.enforce_unique_vote,
     nextValue.allow_answers,
     nextValue.allow_user_suggested_options,
+    nextValue.created_by,
   ] as const;
 
 const PollWithContext = () => {
@@ -141,6 +142,7 @@ export const Poll = ({ poll }: { poll: PollClass }) => {
     enforce_unique_vote,
     allow_answers,
     allow_user_suggested_options,
+    created_by,
   ] = useStateStore(poll.state, selector);
 
   const addOption = useCallback(
@@ -161,6 +163,7 @@ export const Poll = ({ poll }: { poll: PollClass }) => {
         allow_answers,
         allow_user_suggested_options,
         answers_count,
+        created_by,
         endVote,
         enforce_unique_vote,
         is_closed,
