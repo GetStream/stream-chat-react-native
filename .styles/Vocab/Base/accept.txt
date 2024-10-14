@@ -47,3 +47,4 @@ boolean
 Async
 subscribable
 memoizing
+Boolean
