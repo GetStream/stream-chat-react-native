@@ -53,9 +53,11 @@ export const PollResultsItem = ({ option }: PollResultItemProps) => {
           {vote_counts_by_option[option.id] ?? 0} votes
         </Text>
       </View>
-      <View style={{ marginTop: 16 }}>
-        {(latest_votes_by_option?.[option.id] ?? []).slice(0, 5).map(PollVote)}
-      </View>
+      {latest_votes_by_option?.[option.id]?.length > 0 ? (
+        <View style={{ marginTop: 16 }}>
+          {(latest_votes_by_option?.[option.id] ?? []).slice(0, 5).map(PollVote)}
+        </View>
+      ) : null}
       <ShowAllVotesButton onPress={() => setShowAllVotes(true)} option={option} />
       {showAllVotes ? (
         <Modal
