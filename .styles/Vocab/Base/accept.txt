@@ -43,3 +43,7 @@ CDNs
 haptics
 async
 Podfile
+boolean
+Async
+subscribable
+memoizing
