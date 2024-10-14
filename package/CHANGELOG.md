@@ -1,5 +1,14 @@
 # Change Log
 
+### [5.39.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.39.1...v5.39.2) (2024-10-14)
+
+
+### Bug Fixes
+
+* load channel at the very end when messageId is undefined ([#2706](https://github.com/GetStream/stream-chat-react-native/issues/2706)) ([dbfc01e](https://github.com/GetStream/stream-chat-react-native/commit/dbfc01e4aa8875c12aa5f3b5c807164d1e7fe29c))
+* native picker max images ([#2699](https://github.com/GetStream/stream-chat-react-native/issues/2699)) ([8d3ef4d](https://github.com/GetStream/stream-chat-react-native/commit/8d3ef4dd84a0bd8b885f67a115832dd9beb2a6a6))
+* user online real time change ([#2705](https://github.com/GetStream/stream-chat-react-native/issues/2705)) ([78d83fd](https://github.com/GetStream/stream-chat-react-native/commit/78d83fdbd2238c914c733c83e2e74ca162efcef0))
+
 ### [5.39.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.39.0...v5.39.1) (2024-10-02)
 
 
