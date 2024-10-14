@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import type { Channel, StreamChat } from 'stream-chat';
 
+import { useChannelsContext } from '../../../contexts';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
@@ -37,6 +38,7 @@ export const useChannelPreviewDisplayPresence = <
   channel: Channel<StreamChatGenerics>,
 ) => {
   const { client } = useChatContext<StreamChatGenerics>();
+  const { forceUpdate } = useChannelsContext<StreamChatGenerics>();
 
   const currentUserId = client.userID;
   const members = Object.values(channel.state.members).filter(
@@ -49,7 +51,7 @@ export const useChannelPreviewDisplayPresence = <
   useEffect(() => {
     setDisplayPresence(getChannelPreviewDisplayPresence(channel, client));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channelMemberOnline]);
+  }, [channelMemberOnline, forceUpdate]);
 
   return displayPresence;
 };
