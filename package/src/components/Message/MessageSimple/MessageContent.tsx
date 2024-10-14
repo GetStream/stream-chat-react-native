@@ -9,6 +9,7 @@ import {
 
 import { MessageTextContainer } from './MessageTextContainer';
 
+import { useChatContext } from '../../../contexts';
 import {
   MessageContextValue,
   useMessageContext,
@@ -143,6 +144,7 @@ const MessageContentWithContext = <
     showMessageStatus,
     threadList,
   } = props;
+  const { client } = useChatContext();
 
   const {
     theme: {
@@ -379,8 +381,13 @@ const MessageContentWithContext = <
               case 'gallery':
                 return <Gallery key={`gallery_${messageContentOrderIndex}`} />;
               case 'poll':
-                return message.poll_id && message.poll ? (
-                  <Poll key={`poll_${message.poll_id}`} poll={message.poll} />
+                return message.poll_id &&
+                  message.poll &&
+                  client.polls.fromState(message.poll_id) ? (
+                  <Poll
+                    key={`poll_${message.poll_id}`}
+                    poll={client.polls.fromState(message.poll_id)}
+                  />
                 ) : null;
               case 'text':
               default:

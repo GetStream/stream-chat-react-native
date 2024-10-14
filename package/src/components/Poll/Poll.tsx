@@ -1,12 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Modal, SafeAreaView, Text, View } from 'react-native';
 
-import {
-  Poll as PollClass,
-  PollOption as PollOptionClass,
-  PollResponse,
-  PollState,
-} from 'stream-chat';
+import { Poll as PollClass, PollOption as PollOptionClass, PollState } from 'stream-chat';
 
 import {
   AddCommentButton,
@@ -21,12 +16,7 @@ import { PollInputDialog } from './components/PollInputDialog';
 import { PollOption, ShowAllOptionsContent } from './components/PollOption';
 import { PollResults } from './components/PollResults';
 
-import {
-  PollContextProvider,
-  useChatContext,
-  useMessageContext,
-  usePollContext,
-} from '../../contexts';
+import { PollContextProvider, useMessageContext, usePollContext } from '../../contexts';
 import { useStateStore } from '../../hooks';
 // import * as dbApi from '../../store/apis';
 
@@ -135,14 +125,8 @@ const PollWithContext = () => {
   );
 };
 
-export const Poll = ({ poll: pollData }: { poll: PollResponse }) => {
-  const { client } = useChatContext();
+export const Poll = ({ poll }: { poll: PollClass }) => {
   const { message } = useMessageContext();
-
-  const poll = useMemo<PollClass>(
-    () => new PollClass({ client, poll: pollData }),
-    [client, pollData],
-  );
 
   const [
     vote_counts_by_option,
@@ -168,11 +152,6 @@ export const Poll = ({ poll: pollData }: { poll: PollResponse }) => {
     [message.id, poll],
   );
   const endVote = useCallback(() => poll.close(), [poll]);
-
-  useEffect(() => {
-    poll.registerSubscriptions();
-    return poll.unregisterSubscriptions;
-  }, [poll]);
 
   return (
     <PollContextProvider
