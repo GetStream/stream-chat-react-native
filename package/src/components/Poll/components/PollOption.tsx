@@ -68,7 +68,7 @@ export const ShowAllOptionsContent = ({ close }: ShowAllOptionsContentProps) => 
 };
 
 export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) => {
-  const { ownVotesByOptionId, poll, vote_counts_by_option, is_closed } = usePollContext();
+  const { is_closed, ownVotesByOptionId, poll, vote_counts_by_option } = usePollContext();
   const { message } = useMessageContext();
 
   const toggleVote = useCallback(async () => {
@@ -112,12 +112,7 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
         <Text style={{ flex: 1, fontSize: 16, marginLeft: 4 }}>{option.text}</Text>
         <View style={{ flexDirection: 'row' }}>
           {relevantVotes.map((vote: PollVote) => (
-            <Avatar
-              // containerStyle={{ position: 'absolute', right: index * 15 }}
-              image={vote.user?.image as string}
-              key={vote.id}
-              size={20}
-            />
+            <Avatar image={vote.user?.image as string} key={vote.id} size={20} />
           ))}
           <Text style={{ marginLeft: 2 }}>{vote_counts_by_option[option.id] || 0}</Text>
         </View>
