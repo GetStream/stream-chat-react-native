@@ -23,3 +23,6 @@ index.android.bundle
 *.app
 *.DSYM.zip
 **/metrics/
+
+#docusaurus
+docusaurus/shared
