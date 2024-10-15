@@ -127,6 +127,7 @@ export class DBSyncManager {
         try {
           const result = await this.client.sync(cids, lastSyncedAtDate.toISOString());
           const queries = result.events.reduce<PreparedQueries[]>((queries, event) => {
+            console.log('EVENT TO SYNC: ', event);
             queries = queries.concat(handleEventToSyncDB(event, client, false));
             return queries;
           }, []);
