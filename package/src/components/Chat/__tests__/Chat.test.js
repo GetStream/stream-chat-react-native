@@ -135,6 +135,7 @@ describe('TranslationContext', () => {
   beforeEach(() => {
     jest.spyOn(DBSyncManager, 'init');
   });
+
   afterEach(() => {
     jest.clearAllMocks();
     cleanup();
