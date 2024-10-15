@@ -241,8 +241,8 @@ export const ReactionListBottom = <
     <View accessibilityLabel='Reaction List Bottom' style={[styles.container, container]}>
       {reactions.map((reaction, index) => (
         <ReactionListBottomItem
-          key={index}
           handleReaction={handleReaction}
+          key={index}
           onLongPress={onLongPress}
           onPress={onPress}
           onPressIn={onPressIn}

@@ -5,6 +5,7 @@ import { Alert, ImageBackground, Platform, StyleSheet, Text, View } from 'react-
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { lookup } from 'mime-types';
 
+import { useTranslationContext } from '../../../contexts';
 import { AttachmentPickerContextValue } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useViewport } from '../../../hooks/useViewport';
@@ -39,6 +40,7 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
     setSelectedFiles,
   } = props;
   const { vw } = useViewport();
+  const { t } = useTranslationContext();
 
   const {
     theme: {
@@ -76,7 +78,7 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
 
   const updateSelectedFiles = async () => {
     if (numberOfUploads >= maxNumberOfFiles) {
-      Alert.alert('Maximum number of files reached');
+      Alert.alert(t('Maximum number of files reached'));
       return;
     }
     const files = await patchVideoFile(selectedFiles);
@@ -143,6 +145,7 @@ const AttachmentImage = (props: AttachmentImageProps) => {
     },
   } = useTheme();
   const { vw } = useViewport();
+  const { t } = useTranslationContext();
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 
@@ -165,7 +168,7 @@ const AttachmentImage = (props: AttachmentImageProps) => {
 
   const updateSelectedImages = async () => {
     if (numberOfUploads >= maxNumberOfFiles) {
-      Alert.alert('Maximum number of files reached');
+      Alert.alert(t('Maximum number of files reached'));
       return;
     }
     const images = await patchImageFile(selectedImages);

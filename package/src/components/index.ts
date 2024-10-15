@@ -140,7 +140,6 @@ export * from './MessageList/hooks/useTypingString';
 export * from './MessageList/InlineDateSeparator';
 export * from './MessageList/InlineLoadingMoreIndicator';
 export * from './MessageList/InlineLoadingMoreRecentIndicator';
-export * from './MessageList/InlineLoadingMoreThreadIndicator';
 export * from './MessageList/InlineUnreadIndicator';
 export * from './MessageList/MessageList';
 export * from './MessageList/MessageSystem';
@@ -170,3 +169,4 @@ export * from './UIComponents/Spinner';
 
 export * from './Thread/Thread';
 export * from './Thread/components/ThreadFooterComponent';
+export * from './ThreadList/ThreadList';

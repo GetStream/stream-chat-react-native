@@ -4,9 +4,9 @@ import { buildThumbnailGrid } from './buildThumbnailGrid';
 
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
 
+import { ChatConfigContextValue } from '../../../../contexts/chatConfigContext/ChatConfigContext';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { getAspectRatio } from '../getAspectRatio';
-import { ChatConfigContextValue } from '../../../../contexts/chatConfigContext/ChatConfigContext';
 
 /** function to move item to the front of the array */
 function moveToFront<T>(array: T[], item: T): T[] {

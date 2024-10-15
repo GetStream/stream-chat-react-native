@@ -34,6 +34,7 @@ exports[`Thread should match thread snapshot 1`] = `
       testID="message-flat-list-wrapper"
     >
       <RCTScrollView
+        ItemSeparatorComponent={[Function]}
         ListFooterComponent={null}
         ListHeaderComponent={[Function]}
         contentContainerStyle={
@@ -53,6 +54,7 @@ exports[`Thread should match thread snapshot 1`] = `
               "attachments": [],
               "created_at": 2020-05-05T14:50:00.000Z,
               "dateSeparator": undefined,
+              "deleted_at": null,
               "groupStyles": [
                 "single",
               ],
@@ -61,6 +63,7 @@ exports[`Thread should match thread snapshot 1`] = `
               "message_text_updated_at": "2020-05-05T14:50:00.000Z",
               "parent_id": "b4612a73-fa2b-5787-bf71-1adc8f291a04",
               "pinned_at": null,
+              "reaction_groups": null,
               "readBy": false,
               "status": "received",
               "text": "Message6",
@@ -82,6 +85,7 @@ exports[`Thread should match thread snapshot 1`] = `
               "attachments": [],
               "created_at": 2020-05-05T14:50:00.000Z,
               "dateSeparator": undefined,
+              "deleted_at": null,
               "groupStyles": [
                 "single",
               ],
@@ -90,6 +94,7 @@ exports[`Thread should match thread snapshot 1`] = `
               "message_text_updated_at": "2020-05-05T14:50:00.000Z",
               "parent_id": "b4612a73-fa2b-5787-bf71-1adc8f291a04",
               "pinned_at": null,
+              "reaction_groups": null,
               "readBy": false,
               "status": "received",
               "text": "Message5",
@@ -111,6 +116,7 @@ exports[`Thread should match thread snapshot 1`] = `
               "attachments": [],
               "created_at": 2020-05-05T14:50:00.000Z,
               "dateSeparator": 2020-05-05T14:50:00.000Z,
+              "deleted_at": null,
               "groupStyles": [
                 "single",
               ],
@@ -119,6 +125,7 @@ exports[`Thread should match thread snapshot 1`] = `
               "message_text_updated_at": "2020-05-05T14:50:00.000Z",
               "parent_id": "b4612a73-fa2b-5787-bf71-1adc8f291a04",
               "pinned_at": null,
+              "reaction_groups": null,
               "readBy": false,
               "status": "received",
               "text": "Message4",
@@ -240,6 +247,11 @@ exports[`Thread should match thread snapshot 1`] = `
             }
           >
             <View
+              style={
+                [
+                  undefined,
+                ]
+              }
               testID="message-list-item-0"
             >
               <View
@@ -556,6 +568,13 @@ exports[`Thread should match thread snapshot 1`] = `
                 </View>
               </View>
             </View>
+            <View
+              style={
+                [
+                  undefined,
+                ]
+              }
+            />
           </View>
           <View
             onFocusCapture={[Function]}
@@ -576,6 +595,11 @@ exports[`Thread should match thread snapshot 1`] = `
             }
           >
             <View
+              style={
+                [
+                  undefined,
+                ]
+              }
               testID="message-list-item-1"
             >
               <View
@@ -892,6 +916,13 @@ exports[`Thread should match thread snapshot 1`] = `
                 </View>
               </View>
             </View>
+            <View
+              style={
+                [
+                  undefined,
+                ]
+              }
+            />
           </View>
           <View
             onFocusCapture={[Function]}
@@ -912,6 +943,11 @@ exports[`Thread should match thread snapshot 1`] = `
             }
           >
             <View
+              style={
+                [
+                  undefined,
+                ]
+              }
               testID="message-list-item-2"
             >
               <View

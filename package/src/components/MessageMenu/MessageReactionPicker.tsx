@@ -95,7 +95,10 @@ export const MessageReactionPicker = <
     })) ?? [];
 
   return (
-    <View style={[styles.container, container]}>
+    <View
+      accessibilityLabel='Reaction Selector on long pressing message'
+      style={[styles.container, container]}
+    >
       <FlatList
         contentContainerStyle={[styles.contentContainer, contentContainer]}
         data={reactions}

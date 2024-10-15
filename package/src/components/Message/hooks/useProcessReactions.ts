@@ -2,6 +2,7 @@ import { ComponentType, useMemo } from 'react';
 
 import { ReactionGroupResponse, ReactionResponse } from 'stream-chat';
 
+import { useChatContext } from '../../../contexts';
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -83,6 +84,7 @@ export const useProcessReactions = <
   props: UseProcessReactionsParams<StreamChatGenerics>,
 ) => {
   const { supportedReactions: contextSupportedReactions } = useMessagesContext();
+  const { client } = useChatContext<StreamChatGenerics>();
 
   const {
     latest_reactions,
@@ -120,5 +122,12 @@ export const useProcessReactions = <
       totalReactionCount: unsortedReactions.reduce((total, { count }) => total + count, 0),
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reaction_groups, own_reactions?.length, latest_reactions?.length, sortReactions]);
+  }, [
+    client.userID,
+    reaction_groups,
+    own_reactions,
+    latest_reactions,
+    supportedReactions,
+    sortReactions,
+  ]);
 };

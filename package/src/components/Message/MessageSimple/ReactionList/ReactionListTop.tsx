@@ -238,8 +238,8 @@ export const ReactionListTop = <
     >
       {reactions.map((reaction, index) => (
         <ReactionListTopItem
-          key={reaction.type}
           index={index}
+          key={reaction.type}
           reaction={reaction}
           reactions={reactions}
           supportedReactions={supportedReactions}

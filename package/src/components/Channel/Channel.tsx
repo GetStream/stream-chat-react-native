@@ -24,6 +24,7 @@ import {
   StreamChat,
   Event as StreamEvent,
   Message as StreamMessage,
+  Thread,
 } from 'stream-chat';
 
 import { useCreateChannelContext } from './hooks/useCreateChannelContext';
@@ -66,7 +67,11 @@ import {
   SuggestionsProvider,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { ThreadContextValue, ThreadProvider } from '../../contexts/threadContext/ThreadContext';
+import {
+  ThreadContextValue,
+  ThreadProvider,
+  ThreadType,
+} from '../../contexts/threadContext/ThreadContext';
 import {
   TranslationContextValue,
   useTranslationContext,
@@ -351,10 +356,9 @@ export type ChannelPropsWithContext<
       | 'VideoThumbnail'
     >
   > &
-  Partial<
-    Pick<ThreadContextValue<StreamChatGenerics>, 'allowThreadMessagesInChannel' | 'thread'>
-  > & {
+  Partial<Pick<ThreadContextValue<StreamChatGenerics>, 'allowThreadMessagesInChannel'>> & {
     shouldSyncChannel: boolean;
+    thread: ThreadType<StreamChatGenerics>;
     /**
      * Additional props passed to keyboard avoiding view
      */
@@ -618,7 +622,7 @@ const ChannelWithContext = <
     StickyHeader = StickyHeaderDefault,
     supportedReactions = reactionData,
     t,
-    thread: threadProps,
+    thread: threadFromProps,
     threadList,
     threadMessages,
     typing,
@@ -630,6 +634,8 @@ const ChannelWithContext = <
     watcherCount,
     watchers,
   } = props;
+
+  const { thread: threadProps, threadInstance } = threadFromProps;
 
   const {
     theme: {
@@ -649,9 +655,7 @@ const ChannelWithContext = <
   const [quotedMessage, setQuotedMessage] = useState<MessageType<StreamChatGenerics> | undefined>(
     undefined,
   );
-  const [thread, setThread] = useState<ThreadContextValue<StreamChatGenerics>['thread']>(
-    threadProps || null,
-  );
+  const [thread, setThread] = useState<MessageType<StreamChatGenerics> | null>(threadProps || null);
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
 
@@ -702,6 +706,14 @@ const ChannelWithContext = <
         channel.countUnread() > scrollToFirstUnreadThreshold
       ) {
         loadChannelAtFirstUnreadMessage();
+      }
+      // If the messageId is undefined and the last message and the current message id do not match we load the channel at the very bottom.
+      else if (
+        channel.state.messages?.[channel.state.messages.length - 1]?.id !==
+          channel.state.latestMessages?.[channel.state.latestMessages.length - 1]?.id &&
+        !messageId
+      ) {
+        await loadChannel();
       }
     };
 
@@ -863,7 +875,7 @@ const ChannelWithContext = <
             setThreadMessages(updatedThreadMessages);
           }
 
-          if (channel && thread?.id && event.message?.id === thread.id) {
+          if (channel && thread?.id && event.message?.id === thread.id && !threadInstance) {
             const updatedThread = channel.state.formatMessage(event.message);
             setThread(updatedThread);
           }
@@ -1230,7 +1242,7 @@ const ChannelWithContext = <
       loadMoreThreadFinished(updatedHasMore, updatedThreadMessages);
       const { messages } = await channel.getMessagesById([parentID]);
       const [threadMessage] = messages;
-      if (threadMessage) {
+      if (threadMessage && !threadInstance) {
         const formattedMessage = channel.state.formatMessage(threadMessage);
         setThread(formattedMessage);
       }
@@ -1633,11 +1645,15 @@ const ChannelWithContext = <
         } else {
           updateMessage(messageResponse.message);
         }
+
+        threadInstance?.upsertReplyLocally?.({ message: messageResponse.message });
       }
     } catch (err) {
       console.log(err);
       message.status = MessageStatusTypes.FAILED;
-      updateMessage({ ...message, cid: channel.cid });
+      const updatedMessage = { ...message, cid: channel.cid };
+      updateMessage(updatedMessage);
+      threadInstance?.upsertReplyLocally?.({ message: updatedMessage });
 
       if (enableOfflineSupport) {
         dbApi.updateMessage({
@@ -1665,6 +1681,7 @@ const ChannelWithContext = <
       commands: [],
       messageInput: '',
     });
+    threadInstance?.upsertReplyLocally?.({ message: messagePreview });
 
     if (enableOfflineSupport) {
       // While sending a message, we add the message to local db with failed status, so that
@@ -1926,7 +1943,7 @@ const ChannelWithContext = <
 
     setMessages(channel.state.messages);
 
-    await DBSyncManager.queueTask<StreamChatGenerics>({
+    const sendReactionResponse = await DBSyncManager.queueTask<StreamChatGenerics>({
       client,
       task: {
         channelId: channel.id,
@@ -1936,6 +1953,9 @@ const ChannelWithContext = <
         type: 'send-reaction',
       },
     });
+    if (sendReactionResponse?.message) {
+      threadInstance?.upsertReplyLocally?.({ message: sendReactionResponse.message });
+    }
   };
 
   const deleteMessage: MessagesContextValue<StreamChatGenerics>['deleteMessage'] = async (
@@ -1958,12 +1978,15 @@ const ChannelWithContext = <
       DBSyncManager.dropPendingTasks({ messageId: message.id });
       removeMessage(message);
     } else {
-      updateMessage({
+      const updatedMessage = {
         ...message,
         cid: channel.cid,
         deleted_at: new Date().toISOString(),
         type: 'deleted',
-      });
+      };
+      updateMessage(updatedMessage);
+
+      threadInstance?.upsertReplyLocally({ message: updatedMessage });
 
       const data = await DBSyncManager.queueTask<StreamChatGenerics>({
         client,
@@ -2023,12 +2046,18 @@ const ChannelWithContext = <
    */
   const openThread: ThreadContextValue<StreamChatGenerics>['openThread'] = useCallback(
     (message) => {
-      const newThreadMessages = message?.id ? channel?.state?.threads[message.id] || [] : [];
       setThread(message);
-      setThreadMessages(newThreadMessages);
+
+      if (channel.initialized) {
+        channel.markRead({ thread_id: message.id });
+      }
+      // This was causing inconsistencies within the thread state as well as being responsible
+      // of threads essentially never unloading (due to all of the previous threads + 50 loading
+      // every time we'd run this). It seemingly has no impact (other than a performance boost)
+      // and having it was causing issues with the Threads V2 architecture.
+      // setThreadMessages(newThreadMessages);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [setThread, setThreadMessages],
+    [channel, setThread],
   );
 
   const closeThread: ThreadContextValue<StreamChatGenerics>['closeThread'] = useCallback(() => {
@@ -2336,6 +2365,7 @@ const ChannelWithContext = <
     setThreadLoadingMore,
     thread,
     threadHasMore,
+    threadInstance,
     threadLoadingMore,
     threadMessages,
   });
@@ -2408,7 +2438,18 @@ export const Channel = <
   const { client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
   const { t } = useTranslationContext();
 
-  const shouldSyncChannel = props.thread?.id ? !!props.threadList : true;
+  const threadFromProps = props?.thread;
+  const threadMessage = (
+    threadFromProps?.threadInstance ? threadFromProps.thread : threadFromProps
+  ) as MessageType<StreamChatGenerics>;
+  const threadInstance = threadFromProps?.threadInstance as Thread;
+
+  const thread: ThreadType<StreamChatGenerics> = {
+    thread: threadMessage,
+    threadInstance,
+  };
+
+  const shouldSyncChannel = threadMessage?.id ? !!props.threadList : true;
 
   const {
     members,
@@ -2427,7 +2468,7 @@ export const Channel = <
     watchers,
   } = useChannelState<StreamChatGenerics>(
     props.channel,
-    props.threadList ? props.thread?.id : undefined,
+    props.threadList ? threadMessage?.id : undefined,
   );
 
   return (
@@ -2450,6 +2491,7 @@ export const Channel = <
         setTyping,
         setWatcherCount,
         setWatchers,
+        thread,
         threadMessages,
         typing,
         watcherCount,

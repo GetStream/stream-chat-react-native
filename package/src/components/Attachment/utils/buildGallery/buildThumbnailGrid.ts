@@ -2,6 +2,7 @@ import type { Attachment } from 'stream-chat';
 
 import { buildThumbnail } from './buildThumbnail';
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig, ThumbnailGrid } from './types';
+
 import { ChatConfigContextValue } from '../../../../contexts/chatConfigContext/ChatConfigContext';
 
 import type { DefaultStreamChatGenerics } from '../../../../types/types';

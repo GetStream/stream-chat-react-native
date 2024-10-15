@@ -4,10 +4,10 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useViewport } from '../../hooks/useViewport';
-import { ChatIcon, MessageIcon } from '../../icons';
+import { ChatIcon, MessageBubbleEmpty, MessageIcon } from '../../icons';
 
 export type EmptyStateProps = {
-  listType?: 'channel' | 'message' | 'default';
+  listType?: 'channel' | 'message' | 'threads' | 'default';
 };
 
 export const EmptyStateIndicator = ({ listType }: EmptyStateProps) => {
@@ -53,6 +53,13 @@ export const EmptyStateIndicator = ({ listType }: EmptyStateProps) => {
           <Text style={[styles.messageTitle, { color: grey_gainsboro }, messageTitle]}>
             {t<string>('No chats here yet…')}
           </Text>
+        </View>
+      );
+    case 'threads':
+      return (
+        <View style={[styles.container]}>
+          <MessageBubbleEmpty height={width} pathFill={'#B4BBBA'} width={width} />
+          <Text style={{ color: '#7E828B' }}>{t<string>('No threads here yet')}...</Text>
         </View>
       );
     default:

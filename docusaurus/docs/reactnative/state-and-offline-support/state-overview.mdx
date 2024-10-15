@@ -247,3 +247,121 @@ To disconnect a user you can call `disconnect` on the client.
 ```ts
 await client.disconnectUser();
 ```
+
+## Thread and ThreadManager
+
+With the new [threads feature](../guides/custom-thread-list.mdx) we've decided to refresh our state management and moved to a subscribable POJO with selector based system to make developer experience better when it came to rendering information provided by our `StreamChat` client.
+
+:::note
+This change is currently only available within `StreamChat.threads` but will be reused across the whole SDK later on.
+:::
+
+### Why POJO (State Object)
+
+Our SDK holds and provides A LOT of information to our integrators and each of those integrators sometimes require different data or forms of data to display to their users. All of this important data now lives within something we call state object and through custom-tailored selectors our integrators can access the combination of data they require without any extra overhead and performance to match.
+
+### What are Selectors
+
+Selectors are functions provided by integrators that run whenever state object changes. These selectors should return piece of that state that is important for the appropriate component that renders that piece of information. Selectors itself should not do any heavy data computations that could resolve in generating new data each time the selector runs (arrays and objects), use pre-built hooks with computed state values or build your own if your codebase requires it.
+
+#### Rules of Selectors
+
+1. Selectors should return array of data sorted by their "change factor"; meaning values that change often should come first for the best performance.
+
+```ts
+const selector = (nextValue: ThreadManagerState) => [
+  nextValue.unreadThreadsCount, // <-- changes often
+  nextValue.active, // <-- changes less often
+  nextvalue.lastConnectionDownAt, // <-- changes rarely
+];
+```
+
+2. Selectors should live outside components scope or should be memoized if it requires "outside" information (`userId` for `read` object for example). Not memoizing selectors (or not stabilizing them) will lead to bad performance as each time your component re-renders, the selector function is created anew and `useSimpleStateStore` goes through unsubscribe and resubscribe process unnecessarily.
+
+```tsx
+// ❌ not okay
+const Component1 = () => {
+  const [latestReply] = useStateStore(thread.state, (nextValue: ThreadState) => [nextValue.latestReplies.at(-1)]);
+
+  return <Text>{latestReply.text}</Text>;
+};
+
+// ✅ okay
+const selector = (nextValue: ThreadState) => [nextValue.latestReplies.at(-1)];
+
+const Component2 = () => {
+  const [latestReply] = useStateStore(thread.state, selector);
+
+  return <Text>{latestReply.text}</Text>;
+};
+
+// ✅ also okay
+const Component3 = ({ userId }: { userId: string }) => {
+  const selector = useCallback((nextValue: ThreadState) => [nextValue.read[userId].unread_messages], [userId]);
+
+  const [unreadMessagesCount] = useStateStore(thread.state, selector);
+
+  return <Text>{unreadMessagesCount}</Text>;
+};
+```
+
+3. Break your components down to the smallest reasonable parts that each take care of the appropriate piece of state if it makes sense to do so.
+
+### Accessing Reactive State
+
+Our SDK currently allows to access two of these state structures - in [Thread](https://github.com/GetStream/stream-chat-js/blob/master/src/thread.ts) and [ThreadManager](https://github.com/GetStream/stream-chat-js/blob/master/src/thread_manager.ts) instances under `state` property.
+
+#### Vanilla
+
+```ts
+import { StreamChat } from 'stream-chat';
+
+const client = new StreamChat(/*...*/);
+
+// calls console.log with the whole state object whenever it changes
+client.threads.state.subscribe(console.log);
+
+let latestThreads;
+client.threads.state.subscribeWithSelector(
+  // called each time theres a change in the state object
+  nextValue => [nextValue.threads],
+  // called only when threads change (selected value)
+  ([threads]) => {
+    latestThreads = threads;
+  },
+);
+
+// returns lastest state object
+const state = client.threads.state.getLatestValue();
+
+const [thread] = latestThreads;
+
+// thread instances come with the same functionality
+thread?.state.subscribe(/*...*/);
+thread?.state.subscribeWithSelector(/*...*/);
+thread?.state.getLatestValue(/*...*/);
+```
+
+#### useStateStore Hook
+
+For the ease of use - the React SDK comes with the appropriate state access hook which wraps `SimpleStateStore.subscribeWithSelector` API for the React-based applications.
+
+```tsx
+import { useStateStore } from 'stream-chat-react-native';
+import type { ThreadManagerState } from 'stream-chat';
+
+const selector = (nextValue: ThreadManagerState) => [nextValue.threads] as const;
+
+const CustomThreadList = () => {
+  const { client } = useChatContext();
+  const [threads] = useStateStore(client.threads.state, selector);
+
+  return (
+    <View>
+      {threads.map(thread => (
+        <Text key={thread.id}>{thread.id}</Text>
+      ))}
+    </View>
+  );
+};
+```

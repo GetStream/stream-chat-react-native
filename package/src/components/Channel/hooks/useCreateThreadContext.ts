@@ -1,8 +1,16 @@
-import { useMemo } from 'react';
+import { ThreadState } from 'stream-chat';
 
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
+import { useStateStore } from '../../../hooks';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { reduceMessagesToString } from '../../../utils/utils';
+
+const selector = (nextValue: ThreadState) =>
+  [
+    nextValue.replies,
+    nextValue.pagination.isLoadingPrev,
+    nextValue.pagination.isLoadingNext,
+    nextValue.parentMessage,
+  ] as const;
 
 export const useCreateThreadContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -15,38 +23,35 @@ export const useCreateThreadContext = <
   setThreadLoadingMore,
   thread,
   threadHasMore,
+  threadInstance,
   threadLoadingMore,
   threadMessages,
 }: ThreadContextValue<StreamChatGenerics>) => {
-  const threadId = thread?.id;
-  const threadReplyCount = thread?.reply_count;
-  const threadLatestReactions = thread?.latest_reactions;
-  const threadMessagesStr = reduceMessagesToString(threadMessages);
+  const [latestReplies, isLoadingPrev, isLoadingNext] =
+    useStateStore(threadInstance?.state, selector) ?? [];
 
-  const threadContext: ThreadContextValue<StreamChatGenerics> = useMemo(
-    () => ({
-      allowThreadMessagesInChannel,
-      closeThread,
-      loadMoreThread,
-      openThread,
-      reloadThread,
-      setThreadLoadingMore,
-      thread,
-      threadHasMore,
-      threadLoadingMore,
-      threadMessages,
-    }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      allowThreadMessagesInChannel,
-      threadHasMore,
-      threadId,
-      threadLoadingMore,
-      threadMessagesStr,
-      threadReplyCount,
-      threadLatestReactions,
-    ],
-  );
+  const contextAdapter = threadInstance
+    ? {
+        loadMoreRecentThread: threadInstance.loadNextPage,
+        loadMoreThread: threadInstance.loadPrevPage,
+        threadInstance,
+        threadLoadingMore: isLoadingPrev,
+        threadLoadingMoreRecent: isLoadingNext,
+        threadMessages: latestReplies ?? [],
+      }
+    : {};
 
-  return threadContext;
+  return {
+    allowThreadMessagesInChannel,
+    closeThread,
+    loadMoreThread,
+    openThread,
+    reloadThread,
+    setThreadLoadingMore,
+    thread,
+    threadHasMore,
+    threadLoadingMore,
+    threadMessages,
+    ...contextAdapter,
+  };
 };

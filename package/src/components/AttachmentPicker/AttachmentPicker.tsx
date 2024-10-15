@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { BackHandler, Keyboard, Platform, StyleSheet } from 'react-native';
 
 import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
@@ -256,15 +256,11 @@ export const AttachmentPicker = React.forwardRef(
      * Snap points changing cause a rerender of the position,
      * this is an issue if you are calling close on the bottom sheet.
      */
-    const snapPoints = useMemo(
-      () => [initialSnapPoint, finalSnapPoint],
-      [initialSnapPoint, finalSnapPoint],
-    );
+    const snapPoints = [initialSnapPoint, finalSnapPoint];
 
     return (
       <>
         <BottomSheet
-          containerHeight={fullScreenHeight}
           enablePanDownToClose={true}
           handleComponent={
             /**

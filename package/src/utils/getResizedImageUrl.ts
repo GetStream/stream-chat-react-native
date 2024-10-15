@@ -1,8 +1,8 @@
 import { PixelRatio } from 'react-native';
 
 import {
-  ChatConfigContextValue,
   chatConfigContextDefaultvalue,
+  ChatConfigContextValue,
 } from '../contexts/chatConfigContext/ChatConfigContext';
 
 export type GetResizedImageUrlParams = Pick<ChatConfigContextValue, 'resizableCDNHosts'> & {
@@ -26,8 +26,8 @@ export type GetResizedImageUrlParams = Pick<ChatConfigContextValue, 'resizableCD
  */
 export function getResizedImageUrl({
   height,
-  resize = 'clip',
   resizableCDNHosts = chatConfigContextDefaultvalue.resizableCDNHosts,
+  resize = 'clip',
   url,
   width,
 }: GetResizedImageUrlParams) {
