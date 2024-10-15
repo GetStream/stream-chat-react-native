@@ -424,6 +424,7 @@ export type Theme = {
     reactionPicker: {
       buttonContainer: ViewStyle;
       container: ViewStyle;
+      contentContainer: ViewStyle;
       reactionIconSize: number;
     };
     userReactions: {
@@ -431,6 +432,7 @@ export type Theme = {
       avatarName: TextStyle;
       avatarSize: number;
       container: ViewStyle;
+      contentContainer: ViewStyle;
       flatlistColumnContainer: ViewStyle;
       flatlistContainer: ViewStyle;
       radius: number;
@@ -1015,6 +1017,7 @@ export const defaultTheme: Theme = {
     reactionPicker: {
       buttonContainer: {},
       container: {},
+      contentContainer: {},
       reactionIconSize: 24,
     },
     userReactions: {
@@ -1022,6 +1025,7 @@ export const defaultTheme: Theme = {
       avatarName: {},
       avatarSize: 64,
       container: {},
+      contentContainer: {},
       flatlistColumnContainer: {},
       flatlistContainer: {},
       radius: 2,

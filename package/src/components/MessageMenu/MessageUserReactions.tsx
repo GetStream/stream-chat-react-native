@@ -38,6 +38,21 @@ const sort: ReactionSortBase = {
   created_at: -1,
 };
 
+export type ReactionSelectorItemType = ReactionData & {
+  onSelectReaction: (type: string) => void;
+  selectedReaction?: string;
+};
+
+const renderSelectorItem = ({ index, item }: { index: number; item: ReactionSelectorItemType }) => (
+  <ReactionButton
+    Icon={item.Icon}
+    key={`${item.type}_${index}`}
+    onPress={item.onSelectReaction}
+    selected={item.selectedReaction === item.type}
+    type={item.type}
+  />
+);
+
 export const MessageUserReactions = (props: MessageUserReactionsProps) => {
   const {
     message,
@@ -59,6 +74,10 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
   const MessageUserReactionsAvatar =
     propMessageUserReactionsAvatar ?? contextMessageUserReactionsAvatar;
   const MessageUserReactionsItem = propMessageUserReactionsItem ?? contextMessageUserReactionsItem;
+
+  const onSelectReaction = (reactionType: string) => {
+    setSelectedReaction(reactionType);
+  };
 
   const messageReactions = useMemo(
     () =>
@@ -89,6 +108,7 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
       messageMenu: {
         userReactions: {
           container,
+          contentContainer,
           flatlistColumnContainer,
           flatlistContainer,
           reactionSelectorContainer,
@@ -123,9 +143,11 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     <Text style={[styles.reactionsText, reactionsText]}>{t<string>('Message Reactions')}</Text>
   );
 
-  const onSelectReaction = (reactionType: string) => {
-    setSelectedReaction(reactionType);
-  };
+  const selectorReactions: ReactionSelectorItemType[] = messageReactions.map((reaction) => ({
+    ...reaction,
+    onSelectReaction,
+    selectedReaction,
+  }));
 
   return (
     <View
@@ -133,15 +155,13 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
       style={[styles.container, container]}
     >
       <View style={[styles.reactionSelectorContainer, reactionSelectorContainer]}>
-        {messageReactions?.map(({ Icon, type }, index) => (
-          <ReactionButton
-            Icon={Icon}
-            key={`${type}_${index}`}
-            onPress={onSelectReaction}
-            selected={selectedReaction === type}
-            type={type}
-          />
-        ))}
+        <FlatList
+          contentContainerStyle={[styles.contentContainer, contentContainer]}
+          data={selectorReactions}
+          horizontal
+          keyExtractor={(item) => item.type}
+          renderItem={renderSelectorItem}
+        />
       </View>
 
       {!loading ? (
@@ -164,6 +184,11 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  contentContainer: {
+    flexGrow: 1,
+    justifyContent: 'space-around',
+    marginVertical: 16,
   },
   flatListColumnContainer: {
     justifyContent: 'space-evenly',

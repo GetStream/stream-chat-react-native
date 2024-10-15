@@ -49,7 +49,7 @@ export const ReactionButton = (props: ReactionButtonProps) => {
       onPress={onPressHandler}
       style={({ pressed }) => [
         styles.reactionButton,
-        { backgroundColor: pressed ? light_blue : white },
+        { backgroundColor: pressed || selected ? light_blue : white },
         buttonContainer,
       ]}
     >
