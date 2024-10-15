@@ -210,6 +210,16 @@ const ChatWithContext = <
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userID, enableOfflineSupport]);
 
+  useEffect(() => {
+    if (!client) return;
+
+    client.threads.registerSubscriptions();
+
+    return () => {
+      client.threads.unregisterSubscriptions();
+    };
+  }, [client]);
+
   // In case something went wrong, make sure to also unsubscribe the listener
   // on unmount if it exists to prevent a memory leak.
   useEffect(() => () => DBSyncManager.connectionChangedListener?.unsubscribe(), []);

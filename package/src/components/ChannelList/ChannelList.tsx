@@ -337,6 +337,7 @@ export const ChannelList = <
 
   useUserPresence({
     setChannels,
+    setForceUpdate,
   });
 
   const channelIdsStr = channels?.reduce((acc, channel) => `${acc}${channel.cid}`, '');

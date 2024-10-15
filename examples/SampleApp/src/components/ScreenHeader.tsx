@@ -4,7 +4,7 @@ import { CompositeNavigationProp, useNavigation } from '@react-navigation/native
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAttachmentPickerContext, useTheme } from 'stream-chat-react-native';
 
-import { UnreadCountBadge } from './UnreadCountBadge';
+import { ChannelsUnreadCountBadge } from './UnreadCountBadge';
 
 import { GoBack } from '../icons/GoBack';
 
@@ -74,7 +74,7 @@ export const BackButton: React.FC<{
       <GoBack />
       {!!showUnreadCountBadge && (
         <View style={styles.backButtonUnreadCount}>
-          <UnreadCountBadge />
+          <ChannelsUnreadCountBadge />
         </View>
       )}
     </TouchableOpacity>

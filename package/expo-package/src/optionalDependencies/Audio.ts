@@ -290,10 +290,12 @@ class _Audio {
   };
   stopRecording = async () => {
     try {
-      await this.recording.stopAndUnloadAsync();
-      await AudioComponent.setAudioModeAsync({
-        allowsRecordingIOS: false,
-      });
+      if (this.recording) {
+        await this.recording.stopAndUnloadAsync();
+        await AudioComponent.setAudioModeAsync({
+          allowsRecordingIOS: false,
+        });
+      }
       this.recording = null;
     } catch (error) {
       console.log('Error stopping recoding', error);

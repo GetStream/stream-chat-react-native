@@ -2,6 +2,7 @@ import { ComponentType, useMemo } from 'react';
 
 import { ReactionResponse } from 'stream-chat';
 
+import { useChatContext } from '../../../contexts';
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -46,7 +47,15 @@ const isOwnReaction = <
 >(
   reactionType: string,
   ownReactions?: ReactionResponse<StreamChatGenerics>[] | null,
-) => (ownReactions ? ownReactions.some((reaction) => reaction.type === reactionType) : false);
+  latestReactions?: ReactionResponse<StreamChatGenerics>[] | null,
+  userID?: string,
+) =>
+  (ownReactions ? ownReactions.some((reaction) => reaction.type === reactionType) : false) ||
+  (latestReactions
+    ? latestReactions.some(
+        (reaction) => reaction?.user?.id === userID && reaction.type === reactionType,
+      )
+    : false);
 
 const isSupportedReaction = (reactionType: string, supportedReactions?: ReactionData[]) =>
   supportedReactions
@@ -76,6 +85,7 @@ export const useProcessReactions = <
   props: UseProcessReactionsParams<StreamChatGenerics>,
 ) => {
   const { supportedReactions: contextSupportedReactions } = useMessagesContext();
+  const { client } = useChatContext<StreamChatGenerics>();
 
   const {
     latest_reactions,
@@ -100,7 +110,12 @@ export const useProcessReactions = <
           Icon: getEmojiByReactionType(reactionType, supportedReactions),
           lastReactionAt: last_reaction_at ? new Date(last_reaction_at) : null,
           latestReactedUserNames,
-          own: isOwnReaction<StreamChatGenerics>(reactionType, own_reactions),
+          own: isOwnReaction<StreamChatGenerics>(
+            reactionType,
+            own_reactions,
+            latest_reactions,
+            client.userID,
+          ),
           type: reactionType,
           unlistedReactedUserCount: count - latestReactedUserNames.length,
         };
@@ -112,6 +127,12 @@ export const useProcessReactions = <
       hasReactions: unsortedReactions.length > 0,
       totalReactionCount: unsortedReactions.reduce((total, { count }) => total + count, 0),
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reaction_groups, own_reactions?.length, latest_reactions?.length, sortReactions]);
+  }, [
+    client.userID,
+    reaction_groups,
+    own_reactions,
+    latest_reactions,
+    supportedReactions,
+    sortReactions,
+  ]);
 };

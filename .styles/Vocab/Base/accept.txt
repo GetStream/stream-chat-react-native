@@ -45,3 +45,8 @@ async
 Podfile
 pickFile
 onChange
+boolean
+Async
+subscribable
+memoizing
+Boolean

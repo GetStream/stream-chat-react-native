@@ -331,8 +331,8 @@ const MessageWithContext = <
     forceAlignMessages && (forceAlignMessages === 'left' || forceAlignMessages === 'right')
       ? forceAlignMessages
       : isMyMessage
-      ? 'right'
-      : 'left';
+        ? 'right'
+        : 'left';
 
   /**
    * attachments contain files/images or other attachments
@@ -565,25 +565,25 @@ const MessageWithContext = <
     hasAttachmentActions || isBlockedMessage(message)
       ? () => null
       : onLongPressMessageProp
-      ? (payload?: TouchableHandlerPayload) =>
-          onLongPressMessageProp({
-            actionHandlers,
-            defaultHandler: payload?.defaultHandler || showMessageOverlay,
-            emitter: payload?.emitter || 'message',
-            event: payload?.event,
-            message,
-          })
-      : enableLongPress
-      ? () => {
-          // If a message is bounced, on long press the message bounce options modal should open.
-          if (isBouncedMessage(message)) {
-            setIsBounceDialogOpen(true);
-            return;
-          }
-          triggerHaptic('impactMedium');
-          showMessageOverlay();
-        }
-      : () => null;
+        ? (payload?: TouchableHandlerPayload) =>
+            onLongPressMessageProp({
+              actionHandlers,
+              defaultHandler: payload?.defaultHandler || showMessageOverlay,
+              emitter: payload?.emitter || 'message',
+              event: payload?.event,
+              message,
+            })
+        : enableLongPress
+          ? () => {
+              // If a message is bounced, on long press the message bounce options modal should open.
+              if (isBouncedMessage(message)) {
+                setIsBounceDialogOpen(true);
+                return;
+              }
+              triggerHaptic('impactMedium');
+              showMessageOverlay();
+            }
+          : () => null;
 
   const messageContext = useCreateMessageContext({
     actionsEnabled,
