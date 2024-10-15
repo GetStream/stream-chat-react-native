@@ -1,6 +1,6 @@
 import { ComponentType, useMemo } from 'react';
 
-import { ReactionResponse } from 'stream-chat';
+import { ReactionGroupResponse, ReactionResponse } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts';
 import {
@@ -9,7 +9,6 @@ import {
 } from '../../../contexts/messagesContext/MessagesContext';
 import { DefaultStreamChatGenerics } from '../../../types/types';
 import { ReactionData } from '../../../utils/utils';
-import { ReactionListProps } from '../MessageSimple/ReactionList';
 
 export type ReactionSummary = {
   own: boolean;
@@ -24,12 +23,20 @@ export type ReactionSummary = {
 
 export type ReactionsComparator = (a: ReactionSummary, b: ReactionSummary) => number;
 
+export type MessageReactionsData<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  /** An array of the reaction objects to display in the list */
+  latest_reactions?: ReactionResponse<StreamChatGenerics>[];
+  /** An array of the own reaction objects to distinguish own reactions visually */
+  own_reactions?: ReactionResponse<StreamChatGenerics>[] | null;
+  /** An object containing summary for each reaction type on a message */
+  reaction_groups?: Record<string, ReactionGroupResponse> | null;
+};
+
 type UseProcessReactionsParams<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<
-  ReactionListProps<StreamChatGenerics>,
-  'own_reactions' | 'reaction_groups' | 'latest_reactions'
-> &
+> = MessageReactionsData<StreamChatGenerics> &
   Partial<Pick<MessagesContextValue<StreamChatGenerics>, 'supportedReactions'>> & {
     sortReactions?: ReactionsComparator;
   };
@@ -46,16 +53,8 @@ const isOwnReaction = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   reactionType: string,
-  ownReactions?: ReactionResponse<StreamChatGenerics>[] | null,
-  latestReactions?: ReactionResponse<StreamChatGenerics>[] | null,
-  userID?: string,
-) =>
-  (ownReactions ? ownReactions.some((reaction) => reaction.type === reactionType) : false) ||
-  (latestReactions
-    ? latestReactions.some(
-        (reaction) => reaction?.user?.id === userID && reaction.type === reactionType,
-      )
-    : false);
+  ownReactions?: MessageReactionsData<StreamChatGenerics>['own_reactions'],
+) => (ownReactions ? ownReactions.some((reaction) => reaction.type === reactionType) : false);
 
 const isSupportedReaction = (reactionType: string, supportedReactions?: ReactionData[]) =>
   supportedReactions
@@ -110,12 +109,7 @@ export const useProcessReactions = <
           Icon: getEmojiByReactionType(reactionType, supportedReactions),
           lastReactionAt: last_reaction_at ? new Date(last_reaction_at) : null,
           latestReactedUserNames,
-          own: isOwnReaction<StreamChatGenerics>(
-            reactionType,
-            own_reactions,
-            latest_reactions,
-            client.userID,
-          ),
+          own: isOwnReaction<StreamChatGenerics>(reactionType, own_reactions),
           type: reactionType,
           unlistedReactedUserCount: count - latestReactedUserNames.length,
         };
@@ -127,6 +121,7 @@ export const useProcessReactions = <
       hasReactions: unsortedReactions.length > 0,
       totalReactionCount: unsortedReactions.reduce((total, { count }) => total + count, 0),
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     client.userID,
     reaction_groups,

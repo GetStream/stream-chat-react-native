@@ -3,7 +3,7 @@ id: messages-context
 title: MessagesContext
 ---
 
-import AdditionalTouchableProps from '../common-content/ui-components/channel/props/additional_touchable_props.mdx';
+import AdditionalPressableProps from '../common-content/ui-components/channel/props/additional_pressable_props.mdx';
 import Attachment from '../common-content/ui-components/channel/props/attachment.mdx';
 import AttachmentActions from '../common-content/ui-components/channel/props/attachment_actions.mdx';
 import AudioAttachment from '../common-content/ui-components/channel/props/audio_attachment.mdx';
@@ -69,7 +69,9 @@ import MessageReactionPicker from '../common-content/ui-components/channel/props
 import MessageUserReactionsAvatar from '../common-content/ui-components/channel/props/message-user-reactions-avatar.mdx';
 import MessageUserReactionsItem from '../common-content/ui-components/channel/props/message-user-reactions-item.mdx';
 import MessageUserReactions from '../common-content/ui-components/channel/props/message-user-reactions.mdx';
-import ReactionList from '../common-content/ui-components/channel/props/reaction-list.mdx';
+import ReactionListBottom from '../common-content/ui-components/channel/props/reaction-list-bottom.mdx';
+import ReactionListPosition from '../common-content/ui-components/channel/props/reaction-list-position.mdx';
+import ReactionListTop from '../common-content/ui-components/channel/props/reaction-list-top.mdx';
 import Reply from '../common-content/ui-components/channel/props/reply.mdx';
 import ScrollToBottomButton from '../common-content/ui-components/channel/props/scroll-to-bottom-button.mdx';
 import SelectReaction from '../common-content/ui-components/channel/props/select_reaction.mdx';
@@ -81,9 +83,9 @@ import VideoThumbnail from '../common-content/ui-components/channel/props/video_
 
 ## Value
 
-### <div class="label description">_forwarded from [Channel](../../core-components/channel#additionaltouchableprops)_ props</div> additionalTouchableProps {#additionaltouchableprops}
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#additionalpressableprops)_ props</div> additionalPressableProps {#additionalpressableprops}
 
-<AdditionalTouchableProps />
+<AdditionalPressableProps />
 
 ### `channelId`
 
@@ -200,6 +202,10 @@ Id of current channel.
 ### <div class="label description">_forwarded from [Channel](../../core-components/channel#onpressmessage)_ props</div> onPressMessage {#onpressmessage}
 
 <OnPressMessage />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#reactionlistposition)_ props</div> reactionListPosition {#reactionlistposition}
+
+<ReactionListPosition />
 
 ### `removeMessage`
 
@@ -421,9 +427,25 @@ Upserts a given message in local channel state. Please note that this function d
 
 <MessageUserReactions />
 
-### <div class="label description">_forwarded from [Channel](../../core-components/channel#reactionlist)_ props</div> ReactionList {#reactionlist}
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messageuserreactionsavatar)_ props</div> MessageUserReactionsAvatar {#messageuserreactionsavatar}
 
-<ReactionList />
+<MessageUserReactionsAvatar />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messageuserreactionsitem)_ props</div> MessageUserReactionsItem {#messageuserreactionsitem}
+
+<MessageUserReactionsItem />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messageuserreactions)_ props</div> MessageUserReactions {#messageuserreactions}
+
+<MessageUserReactions />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#reactionlistbottom)_ props</div> ReactionListBottom {#reactionlistbottom}
+
+<ReactionListBottom />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#reactionlisttop)_ props</div> ReactionListTop {#reactionlisttop}
+
+<ReactionListTop />
 
 ### <div class="label description">_forwarded from [Channel](../../core-components/channel#scrolltobottombutton)_ props</div> ScrollToBottomButton {#scrolltobottombutton}
 

@@ -45,6 +45,8 @@ async
 Podfile
 pickFile
 onChange
+pressable
+Pressable
 boolean
 Async
 subscribable

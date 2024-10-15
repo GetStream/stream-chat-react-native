@@ -4,11 +4,11 @@ import type { Attachment } from 'stream-chat';
 
 import type { Thumbnail } from './types';
 
+import { ChatConfigContextValue } from '../../../../contexts/chatConfigContext/ChatConfigContext';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
 import { getResizedImageUrl } from '../../../../utils/getResizedImageUrl';
 import { getUrlOfImageAttachment } from '../../../../utils/getUrlOfImageAttachment';
-import { ChatConfigContextValue } from '../../../../contexts/chatConfigContext/ChatConfigContext';
 
 export type BuildThumbnailProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

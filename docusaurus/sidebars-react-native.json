@@ -81,7 +81,8 @@
           "ui-components/message-replies",
           "ui-components/message-status",
           "ui-components/message-system",
-          "ui-components/reaction-list",
+          "ui-components/reaction-list-bottom",
+          "ui-components/reaction-list-top",
           "ui-components/video-thumbnail",
           "contexts/message-context"
         ]

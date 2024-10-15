@@ -1,9 +1,9 @@
 ---
-id: message-touchable-handler-payload
-title: MessageTouchableHandlerPayload
+id: message-pressable-handler-payload
+title: MessagePressableHandlerPayload
 ---
 
-`MessageTouchableHandlerPayload` object is provided as parameter to callback handlers such as `onLongPressMessage`, `onPressMessage`
+`MessagePressableHandlerPayload` object is provided as parameter to callback handlers such as `onLongPressMessage`, `onPressMessage`
 for user interaction with message.
 
 ## Example
@@ -47,7 +47,7 @@ Location within message, where the interaction occurred.
 
 ### event
 
-Native event object which could either be coming from TouchableOpacity or `react-native-gesture-handler`
+Native event object which could either be coming from React Native's `Pressable` or `react-native-gesture-handler`
 
 | Type   |
 | ------ |

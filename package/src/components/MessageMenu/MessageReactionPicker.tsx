@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 
 import { ReactionButton } from './ReactionButton';
 
@@ -12,6 +12,7 @@ import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { triggerHaptic } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
+import { ReactionData } from '../../utils/utils';
 
 export type MessageReactionPickerProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -33,6 +34,21 @@ export type MessageReactionPickerProps<
   handleReaction?: (reactionType: string) => Promise<void>;
 };
 
+export type ReactionPickerItemType = ReactionData & {
+  onSelectReaction: (type: string) => void;
+  ownReactionTypes: string[];
+};
+
+const renderItem = ({ index, item }: { index: number; item: ReactionPickerItemType }) => (
+  <ReactionButton
+    Icon={item.Icon}
+    key={`${item.type}_${index}`}
+    onPress={item.onSelectReaction}
+    selected={item.ownReactionTypes.includes(item.type)}
+    type={item.type}
+  />
+);
+
 /**
  * MessageReactionPicker - A high level component which implements all the logic required for a message overlay reaction list
  */
@@ -51,7 +67,7 @@ export const MessageReactionPicker = <
   const {
     theme: {
       messageMenu: {
-        reactionPicker: { container },
+        reactionPicker: { container, contentContainer },
       },
     },
   } = useTheme();
@@ -71,29 +87,36 @@ export const MessageReactionPicker = <
     return null;
   }
 
+  const reactions: ReactionPickerItemType[] =
+    supportedReactions?.map((reaction) => ({
+      ...reaction,
+      onSelectReaction,
+      ownReactionTypes,
+    })) ?? [];
+
   return (
     <View
       accessibilityLabel='Reaction Selector on long pressing message'
       style={[styles.container, container]}
     >
-      {supportedReactions?.map(({ Icon, type }, index) => (
-        <ReactionButton
-          Icon={Icon}
-          key={`${type}_${index}`}
-          onPress={onSelectReaction}
-          selected={ownReactionTypes.includes(type)}
-          type={type}
-        />
-      ))}
+      <FlatList
+        contentContainerStyle={[styles.contentContainer, contentContainer]}
+        data={reactions}
+        horizontal
+        keyExtractor={(item) => item.type}
+        renderItem={renderItem}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-    paddingHorizontal: 16,
+    alignSelf: 'stretch',
+  },
+  contentContainer: {
+    flexGrow: 1,
+    justifyContent: 'space-around',
+    marginVertical: 16,
   },
 });

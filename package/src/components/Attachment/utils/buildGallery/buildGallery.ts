@@ -8,12 +8,11 @@ import { buildThumbnailGrid } from './buildThumbnailGrid';
 
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
 
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
-
 import {
-  ChatConfigContextValue,
   chatConfigContextDefaultvalue,
+  ChatConfigContextValue,
 } from '../../../../contexts/chatConfigContext/ChatConfigContext';
+import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
 /**
  * Builds and returns a gallery of optimized images to be rendered on UI.

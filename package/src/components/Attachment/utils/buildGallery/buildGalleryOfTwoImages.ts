@@ -4,9 +4,9 @@ import { buildThumbnailGrid } from './buildThumbnailGrid';
 
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
 
+import { ChatConfigContextValue } from '../../../../contexts/chatConfigContext/ChatConfigContext';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { getAspectRatio } from '../getAspectRatio';
-import { ChatConfigContextValue } from '../../../../contexts/chatConfigContext/ChatConfigContext';
 
 export function buildGalleryOfTwoImages<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

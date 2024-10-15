@@ -6,7 +6,7 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
 export const useCreateMessagesContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
-  additionalTouchableProps,
+  additionalPressableProps,
   Attachment,
   AttachmentActions,
   AudioAttachment,
@@ -82,7 +82,9 @@ export const useCreateMessagesContext = <
   onLongPressMessage,
   onPressInMessage,
   onPressMessage,
-  ReactionList,
+  ReactionListBottom,
+  reactionListPosition,
+  ReactionListTop,
   removeMessage,
   Reply,
   retrySendMessage,
@@ -104,14 +106,14 @@ export const useCreateMessagesContext = <
    */
   channelId?: string;
 }) => {
-  const additionalTouchablePropsLength = Object.keys(additionalTouchableProps || {}).length;
+  const additionalTouchablePropsLength = Object.keys(additionalPressableProps || {}).length;
   const markdownRulesLength = Object.keys(markdownRules || {}).length;
   const messageContentOrderValue = messageContentOrder.join();
   const supportedReactionsLength = supportedReactions?.length;
 
   const messagesContext: MessagesContextValue<StreamChatGenerics> = useMemo(
     () => ({
-      additionalTouchableProps,
+      additionalPressableProps,
       Attachment,
       AttachmentActions,
       AudioAttachment,
@@ -186,7 +188,9 @@ export const useCreateMessagesContext = <
       onLongPressMessage,
       onPressInMessage,
       onPressMessage,
-      ReactionList,
+      ReactionListBottom,
+      reactionListPosition,
+      ReactionListTop,
       removeMessage,
       Reply,
       retrySendMessage,

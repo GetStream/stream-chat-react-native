@@ -4,6 +4,7 @@ import type { CircleProps, StopProps } from 'react-native-svg';
 import type { IconProps } from '../../../icons/utils/base';
 
 export const DEFAULT_STATUS_ICON_SIZE = 16;
+export const BASE_AVATAR_SIZE = 32;
 
 export const Colors = {
   accent_blue: '#005FFF',
@@ -425,6 +426,7 @@ export type Theme = {
     reactionPicker: {
       buttonContainer: ViewStyle;
       container: ViewStyle;
+      contentContainer: ViewStyle;
       reactionIconSize: number;
     };
     userReactions: {
@@ -432,6 +434,7 @@ export type Theme = {
       avatarName: TextStyle;
       avatarSize: number;
       container: ViewStyle;
+      contentContainer: ViewStyle;
       flatlistColumnContainer: ViewStyle;
       flatlistContainer: ViewStyle;
       radius: number;
@@ -518,6 +521,7 @@ export type Theme = {
       senderMessageBackgroundColor?: ColorValue;
       timestampText?: TextStyle;
     };
+    contentWrapper: ViewStyle;
     file: {
       container: ViewStyle;
       details: ViewStyle;
@@ -566,6 +570,7 @@ export type Theme = {
       shuffle: TextStyle;
       title: TextStyle;
     };
+    headerWrapper: ViewStyle;
     lastMessageContainer: ViewStyle;
     loadingIndicator: {
       container: ViewStyle;
@@ -577,16 +582,28 @@ export type Theme = {
       container: ViewStyle;
       label: TextStyle;
     };
-    reactionList: {
+    reactionListBottom: {
       container: ViewStyle;
-      iconFillColor: ColorValue;
-      middleIcon: ViewStyle;
-      radius: number;
-      reactionBubble: ViewStyle;
-      reactionContainer: ViewStyle;
-      reactionCount: TextStyle;
-      reactionSize: number;
-      strokeSize: number;
+      item: {
+        container: ViewStyle;
+        countText: TextStyle;
+        icon: ViewStyle;
+        iconFillColor: ColorValue;
+        iconSize: number;
+        iconUnFillColor: ColorValue;
+      };
+    };
+    reactionListTop: {
+      container: ViewStyle;
+      item: {
+        container: ViewStyle;
+        icon: ViewStyle;
+        iconFillColor: ColorValue;
+        iconSize: number;
+        iconUnFillColor: ColorValue;
+        reactionSize: number;
+      };
+      position: number;
     };
     replies: {
       avatar: ViewStyle;
@@ -700,7 +717,7 @@ export const defaultTheme: Theme = {
     speedChangeButtonText: {},
   },
   avatar: {
-    BASE_AVATAR_SIZE: 32,
+    BASE_AVATAR_SIZE,
     container: {},
     image: {
       borderRadius: 16,
@@ -1019,6 +1036,7 @@ export const defaultTheme: Theme = {
     reactionPicker: {
       buttonContainer: {},
       container: {},
+      contentContainer: {},
       reactionIconSize: 24,
     },
     userReactions: {
@@ -1026,6 +1044,7 @@ export const defaultTheme: Theme = {
       avatarName: {},
       avatarSize: 64,
       container: {},
+      contentContainer: {},
       flatlistColumnContainer: {},
       flatlistContainer: {},
       radius: 2,
@@ -1052,8 +1071,8 @@ export const defaultTheme: Theme = {
         marginLeft: 8,
       },
       spacer: {
-        height: 28,
-        width: 32, // same as BASE_AVATAR_SIZE
+        height: BASE_AVATAR_SIZE,
+        width: BASE_AVATAR_SIZE, // same as BASE_AVATAR_SIZE
       },
     },
     card: {
@@ -1132,14 +1151,17 @@ export const defaultTheme: Theme = {
       metaText: {
         fontSize: 12,
       },
+      receiverMessageBackgroundColor: Colors.grey_gainsboro,
       replyBorder: {},
       replyContainer: {},
+      senderMessageBackgroundColor: Colors.light_blue,
       textContainer: {
         onlyEmojiMarkdown: { text: { fontSize: 50 } },
       },
       timestampText: {},
       wrapper: {},
     },
+    contentWrapper: {},
     file: {
       container: {},
       details: {},
@@ -1183,6 +1205,7 @@ export const defaultTheme: Theme = {
       shuffle: {},
       title: {},
     },
+    headerWrapper: {},
     lastMessageContainer: {},
     loadingIndicator: {
       container: {},
@@ -1194,16 +1217,28 @@ export const defaultTheme: Theme = {
       container: {},
       label: {},
     },
-    reactionList: {
+    reactionListBottom: {
       container: {},
-      iconFillColor: '',
-      middleIcon: {},
-      radius: 2, // not recommended to change this
-      reactionBubble: {},
-      reactionContainer: {},
-      reactionCount: {},
-      reactionSize: 24,
-      strokeSize: 1, // not recommended to change this
+      item: {
+        container: {},
+        countText: {},
+        icon: {},
+        iconFillColor: Colors.accent_blue,
+        iconSize: 16,
+        iconUnFillColor: Colors.grey,
+      },
+    },
+    reactionListTop: {
+      container: {},
+      item: {
+        container: {},
+        icon: {},
+        iconFillColor: Colors.accent_blue,
+        iconSize: 24,
+        iconUnFillColor: Colors.grey,
+        reactionSize: 24,
+      },
+      position: 16,
     },
     replies: {
       avatar: {},

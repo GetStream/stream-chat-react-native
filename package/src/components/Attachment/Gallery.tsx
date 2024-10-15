@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Attachment } from 'stream-chat';
 
@@ -53,7 +53,7 @@ export type GalleryPropsWithContext<
   > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
-    | 'additionalTouchableProps'
+    | 'additionalPressableProps'
     | 'legacyImageViewerSwipeBehaviour'
     | 'VideoThumbnail'
     | 'ImageLoadingIndicator'
@@ -84,7 +84,7 @@ const GalleryWithContext = <
   props: GalleryPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
-    additionalTouchableProps,
+    additionalPressableProps,
     alignment,
     groupStyles,
     hasThreadReplies,
@@ -200,7 +200,7 @@ const GalleryWithContext = <
 
               return (
                 <GalleryThumbnail
-                  additionalTouchableProps={additionalTouchableProps}
+                  additionalPressableProps={additionalPressableProps}
                   borderRadius={borderRadius}
                   colIndex={colIndex}
                   ImageLoadingFailedIndicator={ImageLoadingFailedIndicator}
@@ -251,7 +251,7 @@ type GalleryThumbnailProps<
   thumbnail: Thumbnail;
 } & Pick<
   MessagesContextValue<StreamChatGenerics>,
-  | 'additionalTouchableProps'
+  | 'additionalPressableProps'
   | 'legacyImageViewerSwipeBehaviour'
   | 'VideoThumbnail'
   | 'ImageLoadingIndicator'
@@ -267,7 +267,7 @@ type GalleryThumbnailProps<
 const GalleryThumbnail = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
-  additionalTouchableProps,
+  additionalPressableProps,
   borderRadius,
   colIndex,
   ImageLoadingFailedIndicator,
@@ -326,8 +326,7 @@ const GalleryThumbnail = <
   };
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.8}
+    <Pressable
       disabled={preventPress}
       key={`gallery-item-${message.id}/${colIndex}/${rowIndex}/${imagesAndVideos.length}`}
       onLongPress={(event) => {
@@ -356,16 +355,17 @@ const GalleryThumbnail = <
           });
         }
       }}
-      style={[
+      style={({ pressed }) => [
         styles.imageContainer,
         {
           height: thumbnail.height,
+          opacity: pressed ? 0.8 : 1,
           width: thumbnail.width,
         },
         imageContainer,
       ]}
       testID={`gallery-${invertedDirections ? 'row' : 'column'}-${colIndex}-item-${rowIndex}`}
-      {...additionalTouchableProps}
+      {...additionalPressableProps}
     >
       {thumbnail.type === FileTypes.Video ? (
         <VideoThumbnail
@@ -403,7 +403,7 @@ const GalleryThumbnail = <
           </Text>
         </View>
       ) : null}
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
@@ -555,7 +555,7 @@ export const Gallery = <
   props: GalleryProps<StreamChatGenerics>,
 ) => {
   const {
-    additionalTouchableProps: propAdditionalTouchableProps,
+    additionalPressableProps: propAdditionalPressableProps,
     alignment: propAlignment,
     groupStyles: propGroupStyles,
     hasThreadReplies,
@@ -590,7 +590,7 @@ export const Gallery = <
     videos: contextVideos,
   } = useMessageContext<StreamChatGenerics>();
   const {
-    additionalTouchableProps: contextAdditionalTouchableProps,
+    additionalPressableProps: contextAdditionalPressableProps,
     ImageLoadingFailedIndicator: ContextImageLoadingFailedIndicator,
     ImageLoadingIndicator: ContextImageLoadingIndicator,
     legacyImageViewerSwipeBehaviour,
@@ -605,7 +605,7 @@ export const Gallery = <
 
   if (!images.length && !videos.length) return null;
 
-  const additionalTouchableProps = propAdditionalTouchableProps || contextAdditionalTouchableProps;
+  const additionalPressableProps = propAdditionalPressableProps || contextAdditionalPressableProps;
   const alignment = propAlignment || contextAlignment;
   const groupStyles = propGroupStyles || contextGroupStyles;
   const onLongPress = propOnLongPress || contextOnLongPress;
@@ -625,7 +625,7 @@ export const Gallery = <
   return (
     <MemoizedGallery
       {...{
-        additionalTouchableProps,
+        additionalPressableProps,
         alignment,
         channelId: message?.cid,
         groupStyles,

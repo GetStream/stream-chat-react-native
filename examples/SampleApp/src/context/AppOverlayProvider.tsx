@@ -7,8 +7,6 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { OverlayBackdrop } from 'stream-chat-react-native';
-
 import { AppOverlayContext, AppOverlayContextValue } from './AppOverlayContext';
 
 import { BottomSheetOverlay } from '../components/BottomSheetOverlay';
@@ -17,6 +15,7 @@ import { UserInfoOverlay } from '../components/UserInfoOverlay';
 import { BottomSheetOverlayProvider } from './BottomSheetOverlayContext';
 import { ChannelInfoOverlayProvider } from './ChannelInfoOverlayContext';
 import { UserInfoOverlayProvider } from './UserInfoOverlayContext';
+import { OverlayBackdrop } from '../components/OverlayBackdrop';
 
 export const AppOverlayProvider = (
   props: React.PropsWithChildren<{

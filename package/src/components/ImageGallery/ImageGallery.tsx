@@ -640,8 +640,8 @@ export const clamp = (value: number, lowerBound: number, upperBound: number) => 
 const styles = StyleSheet.create({
   animatedContainer: {
     alignItems: 'center',
-    flexDirection: 'row',
     backgroundColor: 'red',
+    flexDirection: 'row',
   },
 });
 
