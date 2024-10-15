@@ -2,7 +2,6 @@ import { ComponentType, useMemo } from 'react';
 
 import { ReactionGroupResponse, ReactionResponse } from 'stream-chat';
 
-import { MessageType } from '../../../components/MessageList/hooks/useMessageList';
 import {
   MessagesContextValue,
   useMessagesContext,
