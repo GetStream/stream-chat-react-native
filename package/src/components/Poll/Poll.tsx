@@ -1,7 +1,7 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Modal, SafeAreaView, Text, View } from 'react-native';
 
-import { Poll as PollClass, PollOption as PollOptionClass, PollState } from 'stream-chat';
+import { Poll as PollClass, PollOption as PollOptionClass } from 'stream-chat';
 
 import {
   AddCommentButton,
@@ -16,25 +16,9 @@ import { PollInputDialog } from './components/PollInputDialog';
 import { PollOption, ShowAllOptionsContent } from './components/PollOption';
 import { PollResults } from './components/PollResults';
 
-import { PollContextProvider, useMessageContext, usePollContext } from '../../contexts';
-import { useStateStore } from '../../hooks';
+import { usePollState } from './hooks/usePollState';
 
-const selector = (nextValue: PollState) =>
-  [
-    nextValue.vote_counts_by_option,
-    nextValue.ownVotesByOptionId,
-    nextValue.latest_votes_by_option,
-    nextValue.answers_count,
-    nextValue.ownAnswer,
-    nextValue.options,
-    nextValue.name,
-    nextValue.max_votes_allowed,
-    nextValue.is_closed,
-    nextValue.enforce_unique_vote,
-    nextValue.allow_answers,
-    nextValue.allow_user_suggested_options,
-    nextValue.created_by,
-  ] as const;
+import { PollContextProvider, useMessageContext } from '../../contexts';
 
 const PollWithContext = () => {
   const [showAllOptions, setShowAllOptions] = useState(false);
@@ -51,7 +35,7 @@ const PollWithContext = () => {
     max_votes_allowed,
     name,
     options,
-  } = usePollContext();
+  } = usePollState();
   const subtitle = useMemo(() => {
     if (is_closed) return 'Vote ended';
     if (enforce_unique_vote) return 'Select one';
@@ -81,15 +65,17 @@ const PollWithContext = () => {
         </Modal>
       ) : null}
       <ShowAllCommentsButton onPress={() => setShowAnswers(true)} />
-      <Modal
-        animationType='slide'
-        onRequestClose={() => setShowAnswers(false)}
-        visible={showAnswers}
-      >
-        <SafeAreaView style={{ flex: 1 }}>
-          <PollAnswersList addComment={addComment} close={() => setShowAnswers(false)} />
-        </SafeAreaView>
-      </Modal>
+      {showAnswers ? (
+        <Modal
+          animationType='slide'
+          onRequestClose={() => setShowAnswers(false)}
+          visible={showAnswers}
+        >
+          <SafeAreaView style={{ flex: 1 }}>
+            <PollAnswersList addComment={addComment} close={() => setShowAnswers(false)} />
+          </SafeAreaView>
+        </Modal>
+      ) : null}
       <SuggestOptionButton onPress={() => setShowAddOptionDialog(true)} />
       {showAddOptionDialog ? (
         <PollInputDialog
@@ -128,51 +114,10 @@ const PollWithContext = () => {
 export const Poll = ({ poll }: { poll: PollClass }) => {
   const { message } = useMessageContext();
 
-  const [
-    vote_counts_by_option,
-    ownVotesByOptionId,
-    latest_votes_by_option,
-    answers_count,
-    ownAnswer,
-    options,
-    name,
-    max_votes_allowed,
-    is_closed,
-    enforce_unique_vote,
-    allow_answers,
-    allow_user_suggested_options,
-    created_by,
-  ] = useStateStore(poll.state, selector);
-
-  const addOption = useCallback(
-    (optionText: string) => poll.createOption({ text: optionText }),
-    [poll],
-  );
-  const addComment = useCallback(
-    (answerText: string) => poll.addAnswer(answerText, message.id),
-    [message.id, poll],
-  );
-  const endVote = useCallback(() => poll.close(), [poll]);
-
   return (
     <PollContextProvider
       value={{
-        addComment,
-        addOption,
-        allow_answers,
-        allow_user_suggested_options,
-        answers_count,
-        created_by,
-        endVote,
-        enforce_unique_vote,
-        is_closed,
-        latest_votes_by_option,
-        max_votes_allowed,
-        name,
-        vote_counts_by_option,
-        options,
-        ownAnswer,
-        ownVotesByOptionId,
+        message,
         poll,
       }}
     >

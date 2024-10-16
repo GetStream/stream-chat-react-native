@@ -4,9 +4,8 @@ import uniqBy from 'lodash/uniqBy';
 import { isVoteAnswer, PollOption, PollOptionVotesQueryParams, PollVote } from 'stream-chat';
 
 import { useChatContext, usePollContext } from '../../../contexts';
-import { DefaultStreamChatGenerics } from '../../../types/types';
 
-type UsePollOptionVotesPaginationParams = {
+export type UsePollOptionVotesPaginationParams = {
   option: PollOption;
   loadFirstPage?: boolean;
   paginationParams?: PollOptionVotesQueryParams;

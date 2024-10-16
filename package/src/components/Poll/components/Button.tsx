@@ -2,8 +2,9 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import { PollOption } from '../../../../../../stream-chat-js';
-import { useChatContext, usePollContext } from '../../../contexts';
+import { useChatContext } from '../../../contexts';
 import { Check } from '../../../icons';
+import { usePollState } from '../hooks/usePollState';
 
 export type PollButtonProps = {
   onPress: () => void;
@@ -16,9 +17,9 @@ export const ViewResultsButton = ({ onPress }: PollButtonProps) => (
 );
 
 export const EndVoteButton = ({ onPress }: PollButtonProps) => {
-  const { created_by, is_closed } = usePollContext();
+  const { created_by, is_closed } = usePollState();
   const { client } = useChatContext();
-  return !is_closed && created_by.id === client.userID ? (
+  return !is_closed && created_by?.id === client.userID ? (
     <TouchableOpacity onPress={onPress} style={[styles.container]}>
       <Text style={[styles.text]}>End Vote</Text>
     </TouchableOpacity>
@@ -26,7 +27,7 @@ export const EndVoteButton = ({ onPress }: PollButtonProps) => {
 };
 
 export const AddCommentButton = ({ onPress }: PollButtonProps) => {
-  const { allow_answers, is_closed } = usePollContext();
+  const { allow_answers, is_closed } = usePollState();
   return !is_closed && allow_answers ? (
     <TouchableOpacity onPress={onPress} style={[styles.container]}>
       <Text style={[styles.text]}>Add a comment</Text>
@@ -35,7 +36,7 @@ export const AddCommentButton = ({ onPress }: PollButtonProps) => {
 };
 
 export const ShowAllCommentsButton = ({ onPress }: PollButtonProps) => {
-  const { answers_count } = usePollContext();
+  const { answers_count } = usePollState();
   return answers_count && answers_count > 0 ? (
     <TouchableOpacity onPress={onPress} style={[styles.container]}>
       <Text style={[styles.text]}>View {answers_count} comments</Text>
@@ -44,7 +45,7 @@ export const ShowAllCommentsButton = ({ onPress }: PollButtonProps) => {
 };
 
 export const AnswerListAddCommentButton = ({ onPress }: PollButtonProps) => {
-  const { ownAnswer } = usePollContext();
+  const { ownAnswer } = usePollState();
   return (
     <TouchableOpacity onPress={onPress} style={[styles.answerListAddCommentContainer]}>
       <Text style={[styles.text]}>{ownAnswer ? 'Update your comment' : 'Add a comment'}</Text>
@@ -53,7 +54,7 @@ export const AnswerListAddCommentButton = ({ onPress }: PollButtonProps) => {
 };
 
 export const SuggestOptionButton = ({ onPress }: PollButtonProps) => {
-  const { allow_user_suggested_options, is_closed } = usePollContext();
+  const { allow_user_suggested_options, is_closed } = usePollState();
   return !is_closed && allow_user_suggested_options ? (
     <TouchableOpacity onPress={onPress} style={[styles.container]}>
       <Text style={[styles.text]}>Suggest an option</Text>
@@ -62,7 +63,7 @@ export const SuggestOptionButton = ({ onPress }: PollButtonProps) => {
 };
 
 export const ShowAllOptionsButton = ({ onPress }: PollButtonProps) => {
-  const { options } = usePollContext();
+  const { options } = usePollState();
   return options && options.length > 10 ? (
     <TouchableOpacity onPress={onPress} style={[styles.container]}>
       <Text style={[styles.text]}>See all {options.length} options</Text>
@@ -71,7 +72,7 @@ export const ShowAllOptionsButton = ({ onPress }: PollButtonProps) => {
 };
 
 export const VoteButton = ({ onPress, option }: PollButtonProps & { option: PollOption }) => {
-  const { is_closed, ownVotesByOptionId } = usePollContext();
+  const { is_closed, ownVotesByOptionId } = usePollState();
 
   return !is_closed ? (
     <TouchableOpacity
@@ -93,7 +94,7 @@ export const ShowAllVotesButton = ({
   onPress,
   option,
 }: PollButtonProps & { option: PollOption }) => {
-  const { vote_counts_by_option } = usePollContext();
+  const { vote_counts_by_option } = usePollState();
   return vote_counts_by_option && vote_counts_by_option?.[option.id] > 5 ? (
     <TouchableOpacity onPress={onPress} style={[styles.container]}>
       <Text style={[styles.text]}>Show All</Text>

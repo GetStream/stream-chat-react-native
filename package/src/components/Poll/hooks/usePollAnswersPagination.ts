@@ -6,7 +6,7 @@ import { isVoteAnswer } from 'stream-chat';
 
 import { useChatContext, usePollContext } from '../../../contexts';
 
-type UsePollAnswersPaginationParams = {
+export type UsePollAnswersPaginationParams = {
   loadFirstPage?: boolean;
   paginationParams?: PollAnswersQueryParams;
 };

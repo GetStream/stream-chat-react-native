@@ -4,20 +4,23 @@ import { Text, TouchableOpacity, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
 
-import omit from 'lodash/omit';
 import { PollOption as PollOptionClass, PollState, PollVote } from 'stream-chat';
 
 import { VoteButton } from './Button';
 
-import type { PollResponse } from '../../../../../../stream-chat-js/src';
-import { useMessageContext, usePollContext } from '../../../contexts';
-import { useStateStore } from '../../../hooks';
+import { useChatContext, useMessageContext, usePollContext } from '../../../contexts';
 
 import * as dbApi from '../../../store/apis';
+import { DefaultStreamChatGenerics } from '../../../types/types';
 import { Avatar } from '../../Avatar/Avatar';
+import { usePollState } from '../hooks/usePollState';
+import { usePollStateStore } from '../hooks/usePollStateStore';
 
-const selector = (nextValue: PollState) =>
-  [nextValue.latest_votes_by_option, nextValue.maxVotedOptionIds] as const;
+type PollOptionSelectorReturnValue = [Record<string, PollVote[]>, string[]];
+
+const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  nextValue: PollState<StreamChatGenerics>,
+): PollOptionSelectorReturnValue => [nextValue.latest_votes_by_option, nextValue.maxVotedOptionIds];
 
 export type PollOptionProps = {
   option: PollOptionClass;
@@ -29,7 +32,7 @@ export type ShowAllOptionsContentProps = {
 };
 
 export const ShowAllOptionsContent = ({ close }: ShowAllOptionsContentProps) => {
-  const { name, options } = usePollContext();
+  const { name, options } = usePollState();
 
   return (
     <>
@@ -71,7 +74,9 @@ export const ShowAllOptionsContent = ({ close }: ShowAllOptionsContentProps) => 
 };
 
 export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) => {
-  const { is_closed, ownVotesByOptionId, poll, vote_counts_by_option } = usePollContext();
+  const { enableOfflineSupport } = useChatContext();
+  const { is_closed, ownVotesByOptionId, vote_counts_by_option } = usePollState();
+  const { poll } = usePollContext();
   const { message } = useMessageContext();
 
   const toggleVote = useCallback(async () => {
@@ -82,7 +87,7 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
     }
   }, [message.id, option.id, ownVotesByOptionId, poll]);
 
-  const [latest_votes_by_option, maxVotedOptionIds] = useStateStore(poll.state, selector);
+  const [latest_votes_by_option, maxVotedOptionIds] = usePollStateStore(selector);
 
   const relevantVotes = useMemo(
     () => latest_votes_by_option?.[option.id]?.slice(0, 2) || [],
@@ -97,20 +102,22 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
   );
   const votes = vote_counts_by_option[option.id] || 0;
   useEffect(() => {
-    const pollState = poll.data;
-    dbApi.updateMessage({
-      message: {
-        ...message,
-        // TODO: set the poll response properly here
-        poll: {
-          ...pollState,
-          id: poll.id,
-          own_votes: pollState.ownVotes,
+    if (enableOfflineSupport) {
+      const pollState = poll.data;
+      dbApi.updateMessage({
+        message: {
+          ...message,
+          // TODO: set the poll response properly here
+          poll: {
+            ...pollState,
+            id: poll.id,
+            own_votes: pollState.ownVotes,
+          },
+          poll_id: poll.id,
         },
-        poll_id: poll.id,
-      },
-    });
-  }, [message, poll, vote_counts_by_option]);
+      });
+    }
+  }, [enableOfflineSupport, message, poll, vote_counts_by_option]);
 
   return (
     <View style={{ marginTop: 8, paddingVertical: 8 }}>
