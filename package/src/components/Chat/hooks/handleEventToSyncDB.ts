@@ -241,5 +241,6 @@ export const handleEventToSyncDB = <
       });
     }
   }
+
   return [];
 };

@@ -18,7 +18,6 @@ import { PollResults } from './components/PollResults';
 
 import { PollContextProvider, useMessageContext, usePollContext } from '../../contexts';
 import { useStateStore } from '../../hooks';
-// import * as dbApi from '../../store/apis';
 
 const selector = (nextValue: PollState) =>
   [

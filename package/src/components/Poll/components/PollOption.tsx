@@ -1,16 +1,19 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
 
+import omit from 'lodash/omit';
 import { PollOption as PollOptionClass, PollState, PollVote } from 'stream-chat';
 
 import { VoteButton } from './Button';
 
+import type { PollResponse } from '../../../../../../stream-chat-js/src';
 import { useMessageContext, usePollContext } from '../../../contexts';
 import { useStateStore } from '../../../hooks';
 
+import * as dbApi from '../../../store/apis';
 import { Avatar } from '../../Avatar/Avatar';
 
 const selector = (nextValue: PollState) =>
@@ -93,17 +96,21 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
     [maxVotedOptionIds, vote_counts_by_option],
   );
   const votes = vote_counts_by_option[option.id] || 0;
-  // TODO: Just a reminder to take care of offline mode.
-  // useEffect(() => {
-  //   const pollState = poll.state.getLatestValue();
-  //   dbApi.updateMessage({
-  //     message: {
-  //       ...message,
-  //       poll_id: poll.id,
-  //       poll: { ...pollState, own_votes: pollState.ownVotes, id: poll.id },
-  //     },
-  //   });
-  // }, [vote_counts_by_option]);
+  useEffect(() => {
+    const pollState = poll.data;
+    dbApi.updateMessage({
+      message: {
+        ...message,
+        // TODO: set the poll response properly here
+        poll: {
+          ...pollState,
+          id: poll.id,
+          own_votes: pollState.ownVotes,
+        },
+        poll_id: poll.id,
+      },
+    });
+  }, [message, poll, vote_counts_by_option]);
 
   return (
     <View style={{ marginTop: 8, paddingVertical: 8 }}>

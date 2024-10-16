@@ -206,9 +206,6 @@ export const usePaginatedChannels = <
             offlineMode: true,
             skipInitialization: [], // passing empty array will clear out the existing messages from channel state, this removes the possibility of duplicate messages
           });
-          for (const channel of channelsFromDB) {
-            client.polls.hydratePollCache(channel.messages, true);
-          }
 
           setChannels(offlineChannels);
           setStaticChannelsActive(true);
@@ -227,7 +224,7 @@ export const usePaginatedChannels = <
       listener = DBSyncManager.onSyncStatusChange(async (syncStatus) => {
         if (syncStatus) {
           loadOfflineChannels();
-          // await reloadList();
+          await reloadList();
           setForceUpdate((u) => u + 1);
         }
       });

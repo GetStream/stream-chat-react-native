@@ -22,7 +22,11 @@ export const updatePollMessage = ({
   );
 
   for (const message of messagesWithPoll) {
-    const storablePoll = JSON.stringify(poll);
+    const storablePoll = JSON.stringify({
+      ...poll,
+      latest_votes: message.poll.latest_votes,
+      own_votes: message.poll.own_votes,
+    });
     const storableMessage = { ...message, poll: storablePoll };
 
     queries.push(
