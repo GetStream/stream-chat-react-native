@@ -168,12 +168,14 @@ const MessageOverlayWithContext = <
   );
 
   const {
-    colors: { blue_alice, grey_gainsboro, grey_whisper, transparent, white_smoke },
+    colors: { blue_alice, grey_gainsboro, grey_whisper, transparent },
     messageSimple: {
       content: {
         container: { borderRadiusL, borderRadiusS },
         containerInner,
+        receiverMessageBackgroundColor,
         replyContainer,
+        senderMessageBackgroundColor,
       },
     },
     overlay: { container: containerStyle, padding: overlayPadding },
@@ -360,8 +362,8 @@ const MessageOverlayWithContext = <
                             : grey_gainsboro
                           : blue_alice
                         : alignment === 'left'
-                        ? white_smoke
-                        : grey_gainsboro,
+                        ? receiverMessageBackgroundColor
+                        : senderMessageBackgroundColor,
                     borderBottomLeftRadius:
                       (groupStyle === 'left_bottom' || groupStyle === 'left_single') &&
                       (!hasThreadReplies || threadList)
