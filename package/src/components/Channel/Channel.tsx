@@ -838,7 +838,13 @@ const ChannelWithContext = <
             setThreadMessages(updatedThreadMessages);
           }
 
-          if (channel && thread?.id && event.message?.id === thread.id && !threadInstance) {
+          if (
+            channel &&
+            thread?.id &&
+            event.message?.id === thread.id &&
+            !threadInstance &&
+            !thread.poll_id
+          ) {
             const updatedThread = channel.state.formatMessage(event.message);
             setThread(updatedThread);
           }
