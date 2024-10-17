@@ -5,9 +5,9 @@ import { PollOption, PollVote as PollVoteClass } from 'stream-chat';
 
 import { PollOptionFullResults } from './PollOptionFullResults';
 
-import { usePollContext } from '../../../../contexts';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { Avatar } from '../../../Avatar/Avatar';
+import { usePollState } from '../../hooks/usePollState';
 import { ShowAllVotesButton } from '../Button';
 
 export type PollResultItemProps<
@@ -35,7 +35,7 @@ export const PollVote = (vote: PollVoteClass) => (
 );
 
 export const PollResultsItem = ({ option }: PollResultItemProps) => {
-  const { latest_votes_by_option, vote_counts_by_option } = usePollContext();
+  const { latest_votes_by_option, vote_counts_by_option } = usePollState();
   const [showAllVotes, setShowAllVotes] = useState(false);
   return (
     <View

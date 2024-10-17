@@ -5,9 +5,9 @@ import { PollOption, PollVote as PollVoteClass } from 'stream-chat';
 
 import { PollVote } from './PollResultItem';
 
-import { usePollContext } from '../../../../contexts';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { usePollOptionVotesPagination } from '../../hooks/usePollOptionVotesPagination';
+import { usePollState } from '../../hooks/usePollState';
 
 export type PollOptionFullResultsProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -20,7 +20,7 @@ const PollOptionFullResultsItem = ({ item }: { item: PollVoteClass }) => <PollVo
 
 export const PollOptionFullResults = ({ close, option }: PollOptionFullResultsProps) => {
   const { hasNextPage, loadMore, votes } = usePollOptionVotesPagination({ option });
-  const { vote_counts_by_option } = usePollContext();
+  const { vote_counts_by_option } = usePollState();
   const PollOptionFullResultsHeader = useCallback(
     () => (
       <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
