@@ -13,7 +13,7 @@ import {
 } from './components/Button';
 import { PollAnswersList } from './components/PollAnswersList';
 import { PollInputDialog } from './components/PollInputDialog';
-import { PollOption, ShowAllOptionsContent } from './components/PollOption';
+import { PollOption } from './components/PollOption';
 import { PollResults } from './components/PollResults';
 
 import { usePollState } from './hooks/usePollState';
@@ -21,7 +21,6 @@ import { usePollState } from './hooks/usePollState';
 import { PollContextProvider, useMessageContext } from '../../contexts';
 
 const PollWithContext = () => {
-  const [showAllOptions, setShowAllOptions] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [showAnswers, setShowAnswers] = useState(false);
   const [showAddOptionDialog, setShowAddOptionDialog] = useState(false);
@@ -52,18 +51,7 @@ const PollWithContext = () => {
           <PollOption key={`message_poll_option_${option.id}`} option={option} />
         ))}
       </View>
-      <ShowAllOptionsButton onPress={() => setShowAllOptions(true)} />
-      {showAllOptions ? (
-        <Modal
-          animationType='slide'
-          onRequestClose={() => setShowAllOptions(false)}
-          visible={showAllOptions}
-        >
-          <SafeAreaView style={{ flex: 1 }}>
-            <ShowAllOptionsContent close={() => setShowAllOptions(false)} />
-          </SafeAreaView>
-        </Modal>
-      ) : null}
+      <ShowAllOptionsButton />
       <ShowAllCommentsButton onPress={() => setShowAnswers(true)} />
       {showAnswers ? (
         <Modal

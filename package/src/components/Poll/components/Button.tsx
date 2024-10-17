@@ -1,13 +1,15 @@
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity } from 'react-native';
+
+import { ShowAllOptionsContent } from './PollOption';
 
 import { PollOption } from '../../../../../../stream-chat-js';
-import { useChatContext } from '../../../contexts';
+import { useChatContext, usePollContext } from '../../../contexts';
 import { Check } from '../../../icons';
 import { usePollState } from '../hooks/usePollState';
 
 export type PollButtonProps = {
-  onPress: () => void;
+  onPress?: () => void;
 };
 
 export const ViewResultsButton = ({ onPress }: PollButtonProps) => (
@@ -62,13 +64,35 @@ export const SuggestOptionButton = ({ onPress }: PollButtonProps) => {
   ) : null;
 };
 
-export const ShowAllOptionsButton = ({ onPress }: PollButtonProps) => {
+export const ShowAllOptionsButton = (props: PollButtonProps) => {
+  const [showAllOptions, setShowAllOptions] = useState(false);
+  const { message, poll } = usePollContext();
   const { options } = usePollState();
-  return options && options.length > 10 ? (
-    <TouchableOpacity onPress={onPress} style={[styles.container]}>
-      <Text style={[styles.text]}>See all {options.length} options</Text>
-    </TouchableOpacity>
-  ) : null;
+  const { onPress = () => setShowAllOptions(true) } = props;
+  return (
+    <>
+      {options && options.length > 10 ? (
+        <TouchableOpacity onPress={onPress} style={[styles.container]}>
+          <Text style={[styles.text]}>See all {options.length} options</Text>
+        </TouchableOpacity>
+      ) : null}
+      {showAllOptions ? (
+        <Modal
+          animationType='slide'
+          onRequestClose={() => setShowAllOptions(false)}
+          visible={showAllOptions}
+        >
+          <SafeAreaView style={{ flex: 1 }}>
+            <ShowAllOptionsContent
+              close={() => setShowAllOptions(false)}
+              message={message}
+              poll={poll}
+            />
+          </SafeAreaView>
+        </Modal>
+      ) : null}
+    </>
+  );
 };
 
 export const VoteButton = ({ onPress, option }: PollButtonProps & { option: PollOption }) => {

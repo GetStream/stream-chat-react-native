@@ -8,7 +8,13 @@ import { PollOption as PollOptionClass, PollState, PollVote } from 'stream-chat'
 
 import { VoteButton } from './Button';
 
-import { useChatContext, useMessageContext, usePollContext } from '../../../contexts';
+import {
+  PollContextProvider,
+  PollContextValue,
+  useChatContext,
+  useMessageContext,
+  usePollContext,
+} from '../../../contexts';
 
 import * as dbApi from '../../../store/apis';
 import { DefaultStreamChatGenerics } from '../../../types/types';
@@ -31,7 +37,7 @@ export type ShowAllOptionsContentProps = {
   close: () => void;
 };
 
-export const ShowAllOptionsContent = ({ close }: ShowAllOptionsContentProps) => {
+const ShowAllOptionsContentWithContext = ({ close }: ShowAllOptionsContentProps) => {
   const { name, options } = usePollState();
 
   return (
@@ -72,6 +78,16 @@ export const ShowAllOptionsContent = ({ close }: ShowAllOptionsContentProps) => 
     </>
   );
 };
+
+export const ShowAllOptionsContent = ({
+  close,
+  message,
+  poll,
+}: PollContextValue & ShowAllOptionsContentProps) => (
+  <PollContextProvider value={{ message, poll }}>
+    <ShowAllOptionsContentWithContext close={close} />
+  </PollContextProvider>
+);
 
 export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) => {
   const { enableOfflineSupport } = useChatContext();
