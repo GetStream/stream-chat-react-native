@@ -22,7 +22,6 @@ import { PollContextProvider, useMessageContext } from '../../contexts';
 const PollWithContext = () => {
   const [showAnswers, setShowAnswers] = useState(false);
   const [showAddOptionDialog, setShowAddOptionDialog] = useState(false);
-  const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
   const {
     addComment,
     addOption,
@@ -71,15 +70,7 @@ const PollWithContext = () => {
           visible={showAddOptionDialog}
         />
       ) : null}
-      <AddCommentButton onPress={() => setShowAddCommentDialog(true)} />
-      {showAddCommentDialog ? (
-        <PollInputDialog
-          closeDialog={() => setShowAddCommentDialog(false)}
-          onSubmit={(value) => addComment(value)}
-          title='Add a comment'
-          visible={showAddCommentDialog}
-        />
-      ) : null}
+      <AddCommentButton />
       <ViewResultsButton />
       <EndVoteButton onPress={endVote} />
     </View>

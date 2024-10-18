@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
+import { PollInputDialog } from './PollInputDialog';
 import { ShowAllOptionsContent } from './PollOption';
 
 import { PollOptionFullResults, PollResults } from './PollResults';
@@ -48,13 +49,26 @@ export const EndVoteButton = ({ onPress }: PollButtonProps) => {
   ) : null;
 };
 
-export const AddCommentButton = ({ onPress }: PollButtonProps) => {
-  const { allow_answers, is_closed } = usePollState();
-  return !is_closed && allow_answers ? (
-    <TouchableOpacity onPress={onPress} style={[styles.container]}>
-      <Text style={[styles.text]}>Add a comment</Text>
-    </TouchableOpacity>
-  ) : null;
+export const AddCommentButton = (props: PollButtonProps) => {
+  const { addComment, allow_answers, is_closed } = usePollState();
+  const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
+  const { onPress = () => setShowAddCommentDialog(true) } = props;
+  return (
+    <>
+      {!is_closed && allow_answers ? (
+        <TouchableOpacity onPress={onPress} style={[styles.container]}>
+          <Text style={[styles.text]}>Add a comment</Text>
+        </TouchableOpacity>
+      ) : null}
+
+      <PollInputDialog
+        closeDialog={() => setShowAddCommentDialog(false)}
+        onSubmit={addComment}
+        title='Add a comment'
+        visible={showAddCommentDialog}
+      />
+    </>
+  );
 };
 
 export const ShowAllCommentsButton = ({ onPress }: PollButtonProps) => {
