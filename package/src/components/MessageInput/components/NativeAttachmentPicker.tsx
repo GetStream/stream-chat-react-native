@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, LayoutRectangle, Pressable, StyleSheet } from 'react-native';
 
+import { useChannelContext } from '../../../contexts';
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
@@ -44,6 +45,7 @@ export const NativeAttachmentPicker = ({
     pickFile,
     takeAndUploadImage,
   } = useMessageInputContext();
+  const { threadList } = useChannelContext();
 
   const popupHeight =
     // the top padding
@@ -109,9 +111,10 @@ export const NativeAttachmentPicker = ({
     }).start(onRequestedClose);
   };
 
-  const buttons = [
-    { icon: <CreatePollIcon />, id: 'Poll', onPressHandler: openPollCreationDialog },
-  ];
+  // do not allow poll creation in threads
+  const buttons = threadList
+    ? []
+    : [{ icon: <CreatePollIcon />, id: 'Poll', onPressHandler: openPollCreationDialog }];
 
   if (hasImagePicker) {
     buttons.push({
