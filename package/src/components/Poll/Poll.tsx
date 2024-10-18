@@ -12,7 +12,6 @@ import {
   ViewResultsButton,
 } from './components/Button';
 import { PollAnswersList } from './components/PollAnswersList';
-import { PollInputDialog } from './components/PollInputDialog';
 import { PollOption } from './components/PollOption';
 
 import { usePollState } from './hooks/usePollState';
@@ -21,17 +20,8 @@ import { PollContextProvider, useMessageContext } from '../../contexts';
 
 const PollWithContext = () => {
   const [showAnswers, setShowAnswers] = useState(false);
-  const [showAddOptionDialog, setShowAddOptionDialog] = useState(false);
-  const {
-    addComment,
-    addOption,
-    endVote,
-    enforce_unique_vote,
-    is_closed,
-    max_votes_allowed,
-    name,
-    options,
-  } = usePollState();
+  const { addComment, endVote, enforce_unique_vote, is_closed, max_votes_allowed, name, options } =
+    usePollState();
   const subtitle = useMemo(() => {
     if (is_closed) return 'Vote ended';
     if (enforce_unique_vote) return 'Select one';
@@ -61,15 +51,7 @@ const PollWithContext = () => {
           </SafeAreaView>
         </Modal>
       ) : null}
-      <SuggestOptionButton onPress={() => setShowAddOptionDialog(true)} />
-      {showAddOptionDialog ? (
-        <PollInputDialog
-          closeDialog={() => setShowAddOptionDialog(false)}
-          onSubmit={(value) => addOption(value)}
-          title='Suggest an option'
-          visible={showAddOptionDialog}
-        />
-      ) : null}
+      <SuggestOptionButton />
       <AddCommentButton />
       <ViewResultsButton />
       <EndVoteButton onPress={endVote} />

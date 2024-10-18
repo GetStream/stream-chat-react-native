@@ -89,13 +89,25 @@ export const AnswerListAddCommentButton = ({ onPress }: PollButtonProps) => {
   );
 };
 
-export const SuggestOptionButton = ({ onPress }: PollButtonProps) => {
-  const { allow_user_suggested_options, is_closed } = usePollState();
-  return !is_closed && allow_user_suggested_options ? (
-    <TouchableOpacity onPress={onPress} style={[styles.container]}>
-      <Text style={[styles.text]}>Suggest an option</Text>
-    </TouchableOpacity>
-  ) : null;
+export const SuggestOptionButton = (props: PollButtonProps) => {
+  const { addOption, allow_user_suggested_options, is_closed } = usePollState();
+  const [showAddOptionDialog, setShowAddOptionDialog] = useState(false);
+  const { onPress = () => setShowAddOptionDialog(true) } = props;
+  return (
+    <>
+      {!is_closed && allow_user_suggested_options ? (
+        <TouchableOpacity onPress={onPress} style={[styles.container]}>
+          <Text style={[styles.text]}>Suggest an option</Text>
+        </TouchableOpacity>
+      ) : null}
+      <PollInputDialog
+        closeDialog={() => setShowAddOptionDialog(false)}
+        onSubmit={addOption}
+        title='Suggest an option'
+        visible={showAddOptionDialog}
+      />
+    </>
+  );
 };
 
 export const ShowAllOptionsButton = (props: PollButtonProps) => {
