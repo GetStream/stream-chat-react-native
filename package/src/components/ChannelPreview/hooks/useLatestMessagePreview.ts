@@ -123,6 +123,12 @@ const getLatestMessageDisplayText = <
       { bold: false, text: t('🏙 Attachment...') },
     ];
   }
+  if (message.poll) {
+    return [
+      { bold: boldOwner, text: messageSenderText },
+      { bold: false, text: `📊 ${message.poll.name}` },
+    ];
+  }
   return [
     { bold: boldOwner, text: messageSenderText },
     { bold: false, text: t('Empty message...') },
