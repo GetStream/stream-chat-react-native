@@ -14,14 +14,12 @@ import {
 import { PollAnswersList } from './components/PollAnswersList';
 import { PollInputDialog } from './components/PollInputDialog';
 import { PollOption } from './components/PollOption';
-import { PollResults } from './components/PollResults';
 
 import { usePollState } from './hooks/usePollState';
 
 import { PollContextProvider, useMessageContext } from '../../contexts';
 
 const PollWithContext = () => {
-  const [showResults, setShowResults] = useState(false);
   const [showAnswers, setShowAnswers] = useState(false);
   const [showAddOptionDialog, setShowAddOptionDialog] = useState(false);
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
@@ -82,18 +80,7 @@ const PollWithContext = () => {
           visible={showAddCommentDialog}
         />
       ) : null}
-      <ViewResultsButton onPress={() => setShowResults(true)} />
-      {showResults ? (
-        <Modal
-          animationType='slide'
-          onRequestClose={() => setShowResults(false)}
-          visible={showResults}
-        >
-          <SafeAreaView style={{ flex: 1, marginHorizontal: 16 }}>
-            <PollResults close={() => setShowResults(false)} />
-          </SafeAreaView>
-        </Modal>
-      ) : null}
+      <ViewResultsButton />
       <EndVoteButton onPress={endVote} />
     </View>
   );

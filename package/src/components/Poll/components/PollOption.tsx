@@ -34,7 +34,7 @@ export type PollOptionProps = {
 };
 
 export type ShowAllOptionsContentProps = {
-  close: () => void;
+  close?: () => void;
 };
 
 const ShowAllOptionsContentWithContext = ({ close }: ShowAllOptionsContentProps) => {

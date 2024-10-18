@@ -5,13 +5,15 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 import { PollResultsItem } from './PollResultItem';
 
+import { PollContextProvider, PollContextValue } from '../../../../contexts';
 import { usePollState } from '../../hooks/usePollState';
+import { ShowAllOptionsContentProps } from '../PollOption';
 
 export type PollResultsProps = {
-  close: () => void;
+  close?: () => void;
 };
 
-export const PollResults = ({ close }: PollResultsProps) => {
+const PollResultsWithContext = ({ close }: PollResultsProps) => {
   const { name, options, vote_counts_by_option } = usePollState();
 
   const sortedOptions = useMemo(
@@ -49,3 +51,13 @@ export const PollResults = ({ close }: PollResultsProps) => {
     </ScrollView>
   );
 };
+
+export const PollResults = ({
+  close,
+  message,
+  poll,
+}: PollContextValue & ShowAllOptionsContentProps) => (
+  <PollContextProvider value={{ message, poll }}>
+    <PollResultsWithContext close={close} />
+  </PollContextProvider>
+);

@@ -3,6 +3,8 @@ import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity } from 'react-n
 
 import { ShowAllOptionsContent } from './PollOption';
 
+import { PollResults } from './PollResults';
+
 import { PollOption } from '../../../../../../stream-chat-js';
 import { useChatContext, usePollContext } from '../../../contexts';
 import { Check } from '../../../icons';
@@ -12,11 +14,29 @@ export type PollButtonProps = {
   onPress?: () => void;
 };
 
-export const ViewResultsButton = ({ onPress }: PollButtonProps) => (
-  <TouchableOpacity onPress={onPress} style={[styles.container]}>
-    <Text style={[styles.text]}>View Results</Text>
-  </TouchableOpacity>
-);
+export const ViewResultsButton = (props: PollButtonProps) => {
+  const { message, poll } = usePollContext();
+  const [showResults, setShowResults] = useState(false);
+  const { onPress = () => setShowResults(true) } = props;
+  return (
+    <>
+      <TouchableOpacity onPress={onPress} style={[styles.container]}>
+        <Text style={[styles.text]}>View Results</Text>
+      </TouchableOpacity>
+      {showResults ? (
+        <Modal
+          animationType='slide'
+          onRequestClose={() => setShowResults(false)}
+          visible={showResults}
+        >
+          <SafeAreaView style={{ flex: 1, marginHorizontal: 16 }}>
+            <PollResults close={() => setShowResults(false)} message={message} poll={poll} />
+          </SafeAreaView>
+        </Modal>
+      ) : null}
+    </>
+  );
+};
 
 export const EndVoteButton = ({ onPress }: PollButtonProps) => {
   const { created_by, is_closed } = usePollState();
