@@ -99,12 +99,22 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
   );
 };
 
-export const AnswerListAddCommentButton = ({ onPress }: PollButtonProps) => {
-  const { ownAnswer } = usePollState();
+export const AnswerListAddCommentButton = (props: PollButtonProps) => {
+  const { addComment, ownAnswer } = usePollState();
+  const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
+  const { onPress = () => setShowAddCommentDialog(true) } = props;
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.answerListAddCommentContainer]}>
-      <Text style={[styles.text]}>{ownAnswer ? 'Update your comment' : 'Add a comment'}</Text>
-    </TouchableOpacity>
+    <>
+      <TouchableOpacity onPress={onPress} style={[styles.answerListAddCommentContainer]}>
+        <Text style={[styles.text]}>{ownAnswer ? 'Update your comment' : 'Add a comment'}</Text>
+      </TouchableOpacity>
+      <PollInputDialog
+        closeDialog={() => setShowAddCommentDialog(false)}
+        onSubmit={addComment}
+        title='Add a comment'
+        visible={showAddCommentDialog}
+      />
+    </>
   );
 };
 

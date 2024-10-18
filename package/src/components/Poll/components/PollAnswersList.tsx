@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 
 import { PollAnswer } from 'stream-chat';
 
 import { AnswerListAddCommentButton } from './Button';
-import { PollInputDialog } from './PollInputDialog';
 
 import { PollContextProvider, PollContextValue } from '../../../contexts';
 import { Avatar } from '../../Avatar/Avatar';
 import { usePollAnswersPagination } from '../hooks/usePollAnswersPagination';
-import { usePollState } from '../hooks/usePollState';
 
 export type PollAnswersListProps = {
   close?: () => void;
@@ -39,8 +37,6 @@ export const PollAnswerListItem = ({ item }: { item: PollAnswer }) => (
 
 export const PollAnswersListWithContext = ({ close }: PollAnswersListProps) => {
   const { hasNextPage, loadMore, pollAnswers } = usePollAnswersPagination();
-  const { addComment } = usePollState();
-  const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
 
   return (
     <View style={{ flex: 1 }}>
@@ -57,15 +53,7 @@ export const PollAnswersListWithContext = ({ close }: PollAnswersListProps) => {
           onEndReached={() => hasNextPage && loadMore()}
           renderItem={PollAnswerListItem}
         />
-        <AnswerListAddCommentButton onPress={() => setShowAddCommentDialog(true)} />
-        {showAddCommentDialog ? (
-          <PollInputDialog
-            closeDialog={() => setShowAddCommentDialog(false)}
-            onSubmit={addComment}
-            title='Add a comment'
-            visible={showAddCommentDialog}
-          />
-        ) : null}
+        <AnswerListAddCommentButton />
       </View>
     </View>
   );
