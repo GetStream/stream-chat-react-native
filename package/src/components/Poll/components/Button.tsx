@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
+import { PollAnswersList } from './PollAnswersList';
 import { PollInputDialog } from './PollInputDialog';
 import { ShowAllOptionsContent } from './PollOption';
 
@@ -71,13 +72,31 @@ export const AddCommentButton = (props: PollButtonProps) => {
   );
 };
 
-export const ShowAllCommentsButton = ({ onPress }: PollButtonProps) => {
+export const ShowAllCommentsButton = (props: PollButtonProps) => {
+  const { message, poll } = usePollContext();
   const { answers_count } = usePollState();
-  return answers_count && answers_count > 0 ? (
-    <TouchableOpacity onPress={onPress} style={[styles.container]}>
-      <Text style={[styles.text]}>View {answers_count} comments</Text>
-    </TouchableOpacity>
-  ) : null;
+  const [showAnswers, setShowAnswers] = useState(false);
+  const { onPress = () => setShowAnswers(true) } = props;
+  return (
+    <>
+      {answers_count && answers_count > 0 ? (
+        <TouchableOpacity onPress={onPress} style={[styles.container]}>
+          <Text style={[styles.text]}>View {answers_count} comments</Text>
+        </TouchableOpacity>
+      ) : null}
+      {showAnswers ? (
+        <Modal
+          animationType='slide'
+          onRequestClose={() => setShowAnswers(false)}
+          visible={showAnswers}
+        >
+          <SafeAreaView style={{ flex: 1 }}>
+            <PollAnswersList close={() => setShowAnswers(false)} message={message} poll={poll} />
+          </SafeAreaView>
+        </Modal>
+      ) : null}
+    </>
+  );
 };
 
 export const AnswerListAddCommentButton = ({ onPress }: PollButtonProps) => {
@@ -161,6 +180,7 @@ export const VoteButton = ({ onPress, option }: PollButtonProps & { option: Poll
 };
 
 export const ShowAllVotesButton = (props: PollButtonProps & { option: PollOption }) => {
+  const { message, poll } = usePollContext();
   const [showAllVotes, setShowAllVotes] = useState(false);
   const { onPress = () => setShowAllVotes(true), option } = props;
   const { vote_counts_by_option } = usePollState();
@@ -178,7 +198,12 @@ export const ShowAllVotesButton = (props: PollButtonProps & { option: PollOption
           visible={showAllVotes}
         >
           <SafeAreaView style={{ flex: 1 }}>
-            <PollOptionFullResults close={() => setShowAllVotes(false)} option={option} />
+            <PollOptionFullResults
+              close={() => setShowAllVotes(false)}
+              message={message}
+              option={option}
+              poll={poll}
+            />
           </SafeAreaView>
         </Modal>
       ) : null}

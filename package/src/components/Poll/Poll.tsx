@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { Modal, SafeAreaView, Text, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { Text, View } from 'react-native';
 
 import { Poll as PollClass, PollOption as PollOptionClass } from 'stream-chat';
 
@@ -11,7 +11,6 @@ import {
   SuggestOptionButton,
   ViewResultsButton,
 } from './components/Button';
-import { PollAnswersList } from './components/PollAnswersList';
 import { PollOption } from './components/PollOption';
 
 import { usePollState } from './hooks/usePollState';
@@ -19,8 +18,7 @@ import { usePollState } from './hooks/usePollState';
 import { PollContextProvider, useMessageContext } from '../../contexts';
 
 const PollWithContext = () => {
-  const [showAnswers, setShowAnswers] = useState(false);
-  const { addComment, endVote, enforce_unique_vote, is_closed, max_votes_allowed, name, options } =
+  const { endVote, enforce_unique_vote, is_closed, max_votes_allowed, name, options } =
     usePollState();
   const subtitle = useMemo(() => {
     if (is_closed) return 'Vote ended';
@@ -39,18 +37,7 @@ const PollWithContext = () => {
         ))}
       </View>
       <ShowAllOptionsButton />
-      <ShowAllCommentsButton onPress={() => setShowAnswers(true)} />
-      {showAnswers ? (
-        <Modal
-          animationType='slide'
-          onRequestClose={() => setShowAnswers(false)}
-          visible={showAnswers}
-        >
-          <SafeAreaView style={{ flex: 1 }}>
-            <PollAnswersList addComment={addComment} close={() => setShowAnswers(false)} />
-          </SafeAreaView>
-        </Modal>
-      ) : null}
+      <ShowAllCommentsButton />
       <SuggestOptionButton />
       <AddCommentButton />
       <ViewResultsButton />

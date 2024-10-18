@@ -7,7 +7,6 @@ import { PollResultsItem } from './PollResultItem';
 
 import { PollContextProvider, PollContextValue } from '../../../../contexts';
 import { usePollState } from '../../hooks/usePollState';
-import { ShowAllOptionsContentProps } from '../PollOption';
 
 export type PollResultsProps = {
   close?: () => void;
@@ -52,11 +51,7 @@ const PollResultsWithContext = ({ close }: PollResultsProps) => {
   );
 };
 
-export const PollResults = ({
-  close,
-  message,
-  poll,
-}: PollContextValue & ShowAllOptionsContentProps) => (
+export const PollResults = ({ close, message, poll }: PollContextValue & PollResultsProps) => (
   <PollContextProvider value={{ message, poll }}>
     <PollResultsWithContext close={close} />
   </PollContextProvider>

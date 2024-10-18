@@ -6,12 +6,13 @@ import { PollAnswer } from 'stream-chat';
 import { AnswerListAddCommentButton } from './Button';
 import { PollInputDialog } from './PollInputDialog';
 
+import { PollContextProvider, PollContextValue } from '../../../contexts';
 import { Avatar } from '../../Avatar/Avatar';
 import { usePollAnswersPagination } from '../hooks/usePollAnswersPagination';
+import { usePollState } from '../hooks/usePollState';
 
 export type PollAnswersListProps = {
-  addComment: (text: string) => void;
-  close: () => void;
+  close?: () => void;
 };
 
 export const PollAnswerListItem = ({ item }: { item: PollAnswer }) => (
@@ -36,8 +37,9 @@ export const PollAnswerListItem = ({ item }: { item: PollAnswer }) => (
   </View>
 );
 
-export const PollAnswersList = ({ addComment, close }: PollAnswersListProps) => {
+export const PollAnswersListWithContext = ({ close }: PollAnswersListProps) => {
   const { hasNextPage, loadMore, pollAnswers } = usePollAnswersPagination();
+  const { addComment } = usePollState();
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
 
   return (
@@ -59,7 +61,7 @@ export const PollAnswersList = ({ addComment, close }: PollAnswersListProps) => 
         {showAddCommentDialog ? (
           <PollInputDialog
             closeDialog={() => setShowAddCommentDialog(false)}
-            onSubmit={(value) => addComment(value)}
+            onSubmit={addComment}
             title='Add a comment'
             visible={showAddCommentDialog}
           />
@@ -68,3 +70,13 @@ export const PollAnswersList = ({ addComment, close }: PollAnswersListProps) => 
     </View>
   );
 };
+
+export const PollAnswersList = ({
+  close,
+  message,
+  poll,
+}: PollContextValue & PollAnswersListProps) => (
+  <PollContextProvider value={{ message, poll }}>
+    <PollAnswersListWithContext close={close} />
+  </PollContextProvider>
+);
