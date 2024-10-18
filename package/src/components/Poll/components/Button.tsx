@@ -3,7 +3,7 @@ import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity } from 'react-n
 
 import { ShowAllOptionsContent } from './PollOption';
 
-import { PollResults } from './PollResults';
+import { PollOptionFullResults, PollResults } from './PollResults';
 
 import { PollOption } from '../../../../../../stream-chat-js';
 import { useChatContext, usePollContext } from '../../../contexts';
@@ -134,16 +134,30 @@ export const VoteButton = ({ onPress, option }: PollButtonProps & { option: Poll
   ) : null;
 };
 
-export const ShowAllVotesButton = ({
-  onPress,
-  option,
-}: PollButtonProps & { option: PollOption }) => {
+export const ShowAllVotesButton = (props: PollButtonProps & { option: PollOption }) => {
+  const [showAllVotes, setShowAllVotes] = useState(false);
+  const { onPress = () => setShowAllVotes(true), option } = props;
   const { vote_counts_by_option } = usePollState();
-  return vote_counts_by_option && vote_counts_by_option?.[option.id] > 5 ? (
-    <TouchableOpacity onPress={onPress} style={[styles.container]}>
-      <Text style={[styles.text]}>Show All</Text>
-    </TouchableOpacity>
-  ) : null;
+  return (
+    <>
+      {vote_counts_by_option && vote_counts_by_option?.[option.id] > 5 ? (
+        <TouchableOpacity onPress={onPress} style={[styles.container]}>
+          <Text style={[styles.text]}>Show All</Text>
+        </TouchableOpacity>
+      ) : null}
+      {showAllVotes ? (
+        <Modal
+          animationType='fade'
+          onRequestClose={() => setShowAllVotes(false)}
+          visible={showAllVotes}
+        >
+          <SafeAreaView style={{ flex: 1 }}>
+            <PollOptionFullResults close={() => setShowAllVotes(false)} option={option} />
+          </SafeAreaView>
+        </Modal>
+      ) : null}
+    </>
+  );
 };
 
 const styles = StyleSheet.create({

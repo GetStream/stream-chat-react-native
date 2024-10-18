@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
-import { Modal, SafeAreaView, Text, View } from 'react-native';
+import React from 'react';
+import { Text, View } from 'react-native';
 
 import { PollOption, PollVote as PollVoteClass } from 'stream-chat';
-
-import { PollOptionFullResults } from './PollOptionFullResults';
 
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { Avatar } from '../../../Avatar/Avatar';
@@ -36,7 +34,6 @@ export const PollVote = (vote: PollVoteClass) => (
 
 export const PollResultsItem = ({ option }: PollResultItemProps) => {
   const { latest_votes_by_option, vote_counts_by_option } = usePollState();
-  const [showAllVotes, setShowAllVotes] = useState(false);
   return (
     <View
       style={{
@@ -58,18 +55,7 @@ export const PollResultsItem = ({ option }: PollResultItemProps) => {
           {(latest_votes_by_option?.[option.id] ?? []).slice(0, 5).map(PollVote)}
         </View>
       ) : null}
-      <ShowAllVotesButton onPress={() => setShowAllVotes(true)} option={option} />
-      {showAllVotes ? (
-        <Modal
-          animationType='fade'
-          onRequestClose={() => setShowAllVotes(false)}
-          visible={showAllVotes}
-        >
-          <SafeAreaView style={{ flex: 1 }}>
-            <PollOptionFullResults close={() => setShowAllVotes(false)} option={option} />
-          </SafeAreaView>
-        </Modal>
-      ) : null}
+      <ShowAllVotesButton option={option} />
     </View>
   );
 };
