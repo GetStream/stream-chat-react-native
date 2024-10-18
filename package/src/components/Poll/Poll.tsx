@@ -18,8 +18,7 @@ import { usePollState } from './hooks/usePollState';
 import { PollContextProvider, useMessageContext } from '../../contexts';
 
 const PollWithContext = () => {
-  const { endVote, enforce_unique_vote, is_closed, max_votes_allowed, name, options } =
-    usePollState();
+  const { enforce_unique_vote, is_closed, max_votes_allowed, name, options } = usePollState();
   const subtitle = useMemo(() => {
     if (is_closed) return 'Vote ended';
     if (enforce_unique_vote) return 'Select one';
@@ -41,7 +40,7 @@ const PollWithContext = () => {
       <SuggestOptionButton />
       <AddCommentButton />
       <ViewResultsButton />
-      <EndVoteButton onPress={endVote} />
+      <EndVoteButton />
     </View>
   );
 };

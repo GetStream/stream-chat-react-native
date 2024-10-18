@@ -40,9 +40,10 @@ export const ViewResultsButton = (props: PollButtonProps) => {
   );
 };
 
-export const EndVoteButton = ({ onPress }: PollButtonProps) => {
-  const { created_by, is_closed } = usePollState();
+export const EndVoteButton = (props: PollButtonProps) => {
+  const { created_by, endVote, is_closed } = usePollState();
   const { client } = useChatContext();
+  const { onPress = endVote } = props;
   return !is_closed && created_by?.id === client.userID ? (
     <TouchableOpacity onPress={onPress} style={[styles.container]}>
       <Text style={[styles.text]}>End Vote</Text>
