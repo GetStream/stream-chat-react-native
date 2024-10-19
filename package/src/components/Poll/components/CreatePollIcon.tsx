@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { Poll } from '../../../icons';
+import { PollThumbnail } from '../../../icons';
 
 export const CreatePollIcon = () => {
   const {
@@ -10,5 +10,5 @@ export const CreatePollIcon = () => {
     },
   } = useTheme();
 
-  return <Poll height={18} pathFill={grey} width={18} />;
+  return <PollThumbnail height={18} pathFill={grey} width={18} />;
 };

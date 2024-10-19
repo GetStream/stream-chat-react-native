@@ -229,6 +229,7 @@ export type ChannelPropsWithContext<
       | 'maxTimeBetweenGroupedMessages'
       | 'NetworkDownIndicator'
       | 'StickyHeader'
+      | 'PollButtons'
     >
   > &
   Pick<ChatContextValue<StreamChatGenerics>, 'client' | 'enableOfflineSupport'> &
@@ -570,6 +571,7 @@ const ChannelWithContext = <
     openPollCreationDialog,
     OverlayReactionList = OverlayReactionListDefault,
     overrideOwnCapabilities,
+    PollButtons,
     ReactionList = ReactionListDefault,
     read,
     Reply = ReplyDefault,
@@ -2241,6 +2243,7 @@ const ChannelWithContext = <
     maxTimeBetweenGroupedMessages,
     members,
     NetworkDownIndicator,
+    PollButtons,
     read,
     reloadChannel,
     scrollToFirstUnreadThreshold,

@@ -6,18 +6,30 @@ import { Poll as PollClass, PollOption as PollOptionClass } from 'stream-chat';
 import {
   AddCommentButton,
   EndVoteButton,
+  PollOption,
   ShowAllCommentsButton,
   ShowAllOptionsButton,
   SuggestOptionButton,
   ViewResultsButton,
-} from './components/Button';
-import { PollOption } from './components/PollOption';
+} from './components';
 
 import { usePollState } from './hooks/usePollState';
 
-import { PollContextProvider, useMessageContext } from '../../contexts';
+import { PollContextProvider, useChannelContext, useMessageContext } from '../../contexts';
+
+export const PollButtons = () => (
+  <>
+    <ShowAllOptionsButton />
+    <ShowAllCommentsButton />
+    <SuggestOptionButton />
+    <AddCommentButton />
+    <ViewResultsButton />
+    <EndVoteButton />
+  </>
+);
 
 const PollWithContext = () => {
+  const { PollButtons: PollButtonsOverride } = useChannelContext();
   const { enforce_unique_vote, is_closed, max_votes_allowed, name, options } = usePollState();
   const subtitle = useMemo(() => {
     if (is_closed) return 'Vote ended';
@@ -35,12 +47,7 @@ const PollWithContext = () => {
           <PollOption key={`message_poll_option_${option.id}`} option={option} />
         ))}
       </View>
-      <ShowAllOptionsButton />
-      <ShowAllCommentsButton />
-      <SuggestOptionButton />
-      <AddCommentButton />
-      <ViewResultsButton />
-      <EndVoteButton />
+      {PollButtonsOverride ? <PollButtonsOverride /> : <PollButtons />}
     </View>
   );
 };
