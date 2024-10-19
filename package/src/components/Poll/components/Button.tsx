@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import { PollAnswersList } from './PollAnswersList';
@@ -7,22 +7,46 @@ import { ShowAllOptionsContent } from './PollOption';
 
 import { PollOptionFullResults, PollResults } from './PollResults';
 
-import { PollOption } from '../../../../../../stream-chat-js';
+import { Poll, PollOption } from '../../../../../../stream-chat-js';
 import { useChatContext, usePollContext } from '../../../contexts';
 import { Check } from '../../../icons';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
+import { MessageType } from '../../MessageList/hooks/useMessageList';
 import { usePollState } from '../hooks/usePollState';
 
-export type PollButtonProps = {
+export type PollButtonProps<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  onPress?: ({
+    message,
+    poll,
+  }: {
+    message: MessageType<StreamChatGenerics>;
+    poll: Poll<StreamChatGenerics>;
+  }) => void;
+};
+
+export type PollVoteButtonProps = {
   onPress?: () => void;
 };
 
 export const ViewResultsButton = (props: PollButtonProps) => {
   const { message, poll } = usePollContext();
   const [showResults, setShowResults] = useState(false);
-  const { onPress = () => setShowResults(true) } = props;
+  const { onPress } = props;
+
+  const onPressHandler = useCallback(() => {
+    if (onPress) {
+      onPress({ message, poll });
+      return;
+    }
+
+    setShowResults(true);
+  }, [message, onPress, poll]);
+
   return (
     <>
-      <TouchableOpacity onPress={onPress} style={[styles.container]}>
+      <TouchableOpacity onPress={onPressHandler} style={[styles.container]}>
         <Text style={[styles.text]}>View Results</Text>
       </TouchableOpacity>
       {showResults ? (
@@ -40,35 +64,47 @@ export const ViewResultsButton = (props: PollButtonProps) => {
   );
 };
 
-export const EndVoteButton = (props: PollButtonProps) => {
+export const EndVoteButton = () => {
   const { created_by, endVote, is_closed } = usePollState();
   const { client } = useChatContext();
-  const { onPress = endVote } = props;
   return !is_closed && created_by?.id === client.userID ? (
-    <TouchableOpacity onPress={onPress} style={[styles.container]}>
+    <TouchableOpacity onPress={endVote} style={[styles.container]}>
       <Text style={[styles.text]}>End Vote</Text>
     </TouchableOpacity>
   ) : null;
 };
 
 export const AddCommentButton = (props: PollButtonProps) => {
+  const { message, poll } = usePollContext();
   const { addComment, allow_answers, is_closed } = usePollState();
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
-  const { onPress = () => setShowAddCommentDialog(true) } = props;
+  const { onPress } = props;
+
+  const onPressHandler = useCallback(() => {
+    if (onPress) {
+      onPress({ message, poll });
+      return;
+    }
+
+    setShowAddCommentDialog(true);
+  }, [message, onPress, poll]);
+
   return (
     <>
       {!is_closed && allow_answers ? (
-        <TouchableOpacity onPress={onPress} style={[styles.container]}>
+        <TouchableOpacity onPress={onPressHandler} style={[styles.container]}>
           <Text style={[styles.text]}>Add a comment</Text>
         </TouchableOpacity>
       ) : null}
 
-      <PollInputDialog
-        closeDialog={() => setShowAddCommentDialog(false)}
-        onSubmit={addComment}
-        title='Add a comment'
-        visible={showAddCommentDialog}
-      />
+      {showAddCommentDialog ? (
+        <PollInputDialog
+          closeDialog={() => setShowAddCommentDialog(false)}
+          onSubmit={addComment}
+          title='Add a comment'
+          visible={showAddCommentDialog}
+        />
+      ) : null}
     </>
   );
 };
@@ -77,11 +113,21 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
   const { message, poll } = usePollContext();
   const { answers_count } = usePollState();
   const [showAnswers, setShowAnswers] = useState(false);
-  const { onPress = () => setShowAnswers(true) } = props;
+  const { onPress } = props;
+
+  const onPressHandler = useCallback(() => {
+    if (onPress) {
+      onPress({ message, poll });
+      return;
+    }
+
+    setShowAnswers(true);
+  }, [message, onPress, poll]);
+
   return (
     <>
       {answers_count && answers_count > 0 ? (
-        <TouchableOpacity onPress={onPress} style={[styles.container]}>
+        <TouchableOpacity onPress={onPressHandler} style={[styles.container]}>
           <Text style={[styles.text]}>View {answers_count} comments</Text>
         </TouchableOpacity>
       ) : null}
@@ -101,41 +147,67 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
 };
 
 export const AnswerListAddCommentButton = (props: PollButtonProps) => {
+  const { message, poll } = usePollContext();
   const { addComment, ownAnswer } = usePollState();
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
-  const { onPress = () => setShowAddCommentDialog(true) } = props;
+  const { onPress } = props;
+
+  const onPressHandler = useCallback(() => {
+    if (onPress) {
+      onPress({ message, poll });
+      return;
+    }
+
+    setShowAddCommentDialog(true);
+  }, [message, onPress, poll]);
+
   return (
     <>
-      <TouchableOpacity onPress={onPress} style={[styles.answerListAddCommentContainer]}>
+      <TouchableOpacity onPress={onPressHandler} style={[styles.answerListAddCommentContainer]}>
         <Text style={[styles.text]}>{ownAnswer ? 'Update your comment' : 'Add a comment'}</Text>
       </TouchableOpacity>
-      <PollInputDialog
-        closeDialog={() => setShowAddCommentDialog(false)}
-        onSubmit={addComment}
-        title='Add a comment'
-        visible={showAddCommentDialog}
-      />
+      {showAddCommentDialog ? (
+        <PollInputDialog
+          closeDialog={() => setShowAddCommentDialog(false)}
+          onSubmit={addComment}
+          title='Add a comment'
+          visible={showAddCommentDialog}
+        />
+      ) : null}
     </>
   );
 };
 
 export const SuggestOptionButton = (props: PollButtonProps) => {
+  const { message, poll } = usePollContext();
   const { addOption, allow_user_suggested_options, is_closed } = usePollState();
   const [showAddOptionDialog, setShowAddOptionDialog] = useState(false);
-  const { onPress = () => setShowAddOptionDialog(true) } = props;
+  const { onPress } = props;
+
+  const onPressHandler = useCallback(() => {
+    if (onPress) {
+      onPress({ message, poll });
+      return;
+    }
+
+    setShowAddOptionDialog(true);
+  }, [message, onPress, poll]);
+
   return (
     <>
       {!is_closed && allow_user_suggested_options ? (
-        <TouchableOpacity onPress={onPress} style={[styles.container]}>
+        <TouchableOpacity onPress={onPressHandler} style={[styles.container]}>
           <Text style={[styles.text]}>Suggest an option</Text>
         </TouchableOpacity>
       ) : null}
-      <PollInputDialog
-        closeDialog={() => setShowAddOptionDialog(false)}
-        onSubmit={addOption}
-        title='Suggest an option'
-        visible={showAddOptionDialog}
-      />
+      {showAddOptionDialog ? (
+        <PollInputDialog
+          closeDialog={() => setShowAddOptionDialog(false)}
+          onSubmit={addOption}
+          title='Suggest an option'
+          visible={showAddOptionDialog}
+        />
+      ) : null}
     </>
   );
 };
@@ -144,11 +216,21 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
   const [showAllOptions, setShowAllOptions] = useState(false);
   const { message, poll } = usePollContext();
   const { options } = usePollState();
-  const { onPress = () => setShowAllOptions(true) } = props;
+  const { onPress } = props;
+
+  const onPressHandler = useCallback(() => {
+    if (onPress) {
+      onPress({ message, poll });
+      return;
+    }
+
+    setShowAllOptions(true);
+  }, [message, onPress, poll]);
+
   return (
     <>
       {options && options.length > 10 ? (
-        <TouchableOpacity onPress={onPress} style={[styles.container]}>
+        <TouchableOpacity onPress={onPressHandler} style={[styles.container]}>
           <Text style={[styles.text]}>See all {options.length} options</Text>
         </TouchableOpacity>
       ) : null}
@@ -171,7 +253,7 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
   );
 };
 
-export const VoteButton = ({ onPress, option }: PollButtonProps & { option: PollOption }) => {
+export const VoteButton = ({ onPress, option }: PollVoteButtonProps & { option: PollOption }) => {
   const { is_closed, ownVotesByOptionId } = usePollState();
 
   return !is_closed ? (
@@ -192,13 +274,23 @@ export const VoteButton = ({ onPress, option }: PollButtonProps & { option: Poll
 
 export const ShowAllVotesButton = (props: PollButtonProps & { option: PollOption }) => {
   const { message, poll } = usePollContext();
-  const [showAllVotes, setShowAllVotes] = useState(false);
-  const { onPress = () => setShowAllVotes(true), option } = props;
   const { vote_counts_by_option } = usePollState();
+  const [showAllVotes, setShowAllVotes] = useState(false);
+  const { onPress, option } = props;
+
+  const onPressHandler = useCallback(() => {
+    if (onPress) {
+      onPress({ message, poll });
+      return;
+    }
+
+    setShowAllVotes(true);
+  }, [message, onPress, poll]);
+
   return (
     <>
       {vote_counts_by_option && vote_counts_by_option?.[option.id] > 5 ? (
-        <TouchableOpacity onPress={onPress} style={[styles.container]}>
+        <TouchableOpacity onPress={onPressHandler} style={[styles.container]}>
           <Text style={[styles.text]}>Show All</Text>
         </TouchableOpacity>
       ) : null}

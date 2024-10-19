@@ -16,7 +16,7 @@ export const PollInputDialog = ({
 }: PollInputDialogProps) => {
   const [dialogInput, setDialogInput] = useState('');
 
-  return visible ? (
+  return (
     <Modal animationType='fade' onRequestClose={closeDialog} transparent={true} visible={visible}>
       <View
         style={{
@@ -70,5 +70,5 @@ export const PollInputDialog = ({
         </View>
       </View>
     </Modal>
-  ) : null;
+  );
 };
