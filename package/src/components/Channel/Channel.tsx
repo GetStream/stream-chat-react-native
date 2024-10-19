@@ -208,6 +208,7 @@ const throttleOptions = {
   leading: true,
   trailing: true,
 };
+
 const debounceOptions = {
   leading: true,
   trailing: true,
@@ -229,6 +230,7 @@ export type ChannelPropsWithContext<
       | 'maxTimeBetweenGroupedMessages'
       | 'NetworkDownIndicator'
       | 'StickyHeader'
+      | 'Poll'
       | 'PollButtons'
       | 'PollHeader'
     >
@@ -572,6 +574,7 @@ const ChannelWithContext = <
     openPollCreationDialog,
     OverlayReactionList = OverlayReactionListDefault,
     overrideOwnCapabilities,
+    Poll,
     PollButtons,
     PollHeader,
     ReactionList = ReactionListDefault,
@@ -2245,6 +2248,7 @@ const ChannelWithContext = <
     maxTimeBetweenGroupedMessages,
     members,
     NetworkDownIndicator,
+    Poll,
     PollButtons,
     PollHeader,
     read,

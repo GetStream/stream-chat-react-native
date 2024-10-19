@@ -62,6 +62,7 @@ const PollWithContext = () => {
 };
 
 export const Poll = ({ poll }: { poll: PollClass }) => {
+  const { Poll: PollOverride } = useChannelContext();
   const { message } = useMessageContext();
 
   return (
@@ -71,7 +72,7 @@ export const Poll = ({ poll }: { poll: PollClass }) => {
         poll,
       }}
     >
-      <PollWithContext />
+      {PollOverride ? <PollOverride /> : <PollWithContext />}
     </PollContextProvider>
   );
 };
