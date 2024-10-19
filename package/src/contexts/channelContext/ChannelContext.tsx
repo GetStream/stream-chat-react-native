@@ -177,6 +177,7 @@ export type ChannelContextValue<
    */
   maxTimeBetweenGroupedMessages?: number;
   PollButtons?: React.ComponentType;
+  PollHeader?: React.ComponentType;
   /**
    * Custom UI component for sticky header of channel.
    *

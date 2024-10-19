@@ -28,20 +28,29 @@ export const PollButtons = () => (
   </>
 );
 
-const PollWithContext = () => {
-  const { PollButtons: PollButtonsOverride } = useChannelContext();
-  const { enforce_unique_vote, is_closed, max_votes_allowed, name, options } = usePollState();
+export const PollHeader = () => {
+  const { enforce_unique_vote, is_closed, max_votes_allowed, name } = usePollState();
   const subtitle = useMemo(() => {
     if (is_closed) return 'Vote ended';
     if (enforce_unique_vote) return 'Select one';
     if (max_votes_allowed) return `Select up to ${max_votes_allowed}`;
     return 'Select one or more';
   }, [is_closed, enforce_unique_vote, max_votes_allowed]);
+  return (
+    <>
+      <Text style={{ color: '#080707', fontSize: 16, fontWeight: '500' }}>{name}</Text>
+      <Text style={{ color: '#7E828B', fontSize: 12 }}>{subtitle}</Text>
+    </>
+  );
+};
+
+const PollWithContext = () => {
+  const { PollButtons: PollButtonsOverride, PollHeader: PollHeaderOverride } = useChannelContext();
+  const { options } = usePollState();
 
   return (
     <View style={{ padding: 15, width: 270 }}>
-      <Text style={{ color: '#080707', fontSize: 16, fontWeight: '500' }}>{name}</Text>
-      <Text style={{ color: '#7E828B', fontSize: 12 }}>{subtitle}</Text>
+      {PollHeaderOverride ? <PollHeaderOverride /> : <PollHeader />}
       <View style={{ marginTop: 12 }}>
         {options?.slice(0, 10)?.map((option: PollOptionClass) => (
           <PollOption key={`message_poll_option_${option.id}`} option={option} />
