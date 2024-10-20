@@ -27,7 +27,7 @@ const PollResultsContent = ({
   );
 
   return (
-    <ScrollView style={{ flex: 1 }} {...additionalScrollViewProps}>
+    <ScrollView style={{ flex: 1, marginHorizontal: 16 }} {...additionalScrollViewProps}>
       <View
         style={{
           backgroundColor: '#F7F7F8',

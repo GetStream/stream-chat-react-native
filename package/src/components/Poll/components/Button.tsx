@@ -1,8 +1,9 @@
 import React, { useCallback, useState } from 'react';
-import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import { PollAnswersList } from './PollAnswersList';
 import { PollInputDialog } from './PollInputDialog';
+import { PollModalHeader } from './PollModalHeader';
 import { PollAllOptions } from './PollOption';
 
 import { PollOptionFullResults, PollResults } from './PollResults';
@@ -55,13 +56,8 @@ export const ViewResultsButton = (props: PollButtonProps) => {
           onRequestClose={() => setShowResults(false)}
           visible={showResults}
         >
-          <SafeAreaView style={{ flex: 1, marginHorizontal: 16 }}>
-            <View style={{ flexDirection: 'row', paddingVertical: 18 }}>
-              <TouchableOpacity onPress={() => setShowResults(false)}>
-                <Text>BACK</Text>
-              </TouchableOpacity>
-              <Text style={{ fontSize: 16, fontWeight: '500', marginLeft: 32 }}>Poll Results</Text>
-            </View>
+          <SafeAreaView style={{ flex: 1 }}>
+            <PollModalHeader onPress={() => setShowResults(false)} title='Poll Results' />
             <PollResults message={message} poll={poll} />
           </SafeAreaView>
         </Modal>
@@ -144,12 +140,7 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
           visible={showAnswers}
         >
           <SafeAreaView style={{ flex: 1 }}>
-            <View style={{ flexDirection: 'row' }}>
-              <TouchableOpacity onPress={() => setShowAnswers(false)}>
-                <Text>BACK</Text>
-              </TouchableOpacity>
-              <Text style={{ fontSize: 16, fontWeight: '500', marginLeft: 32 }}>Poll Comments</Text>
-            </View>
+            <PollModalHeader onPress={() => setShowAnswers(false)} title='Poll Comments' />
             <PollAnswersList message={message} poll={poll} />
           </SafeAreaView>
         </Modal>
@@ -253,12 +244,7 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
           visible={showAllOptions}
         >
           <SafeAreaView style={{ flex: 1 }}>
-            <View style={{ flexDirection: 'row' }}>
-              <TouchableOpacity onPress={() => setShowAllOptions(false)}>
-                <Text>BACK</Text>
-              </TouchableOpacity>
-              <Text style={{ fontSize: 16, fontWeight: '500', marginLeft: 32 }}>Poll Options</Text>
-            </View>
+            <PollModalHeader onPress={() => setShowAllOptions(false)} title='Poll Options' />
             <PollAllOptions message={message} poll={poll} />
           </SafeAreaView>
         </Modal>
@@ -303,7 +289,7 @@ export const ShowAllVotesButton = (props: PollButtonProps & { option: PollOption
 
   return (
     <>
-      {vote_counts_by_option && vote_counts_by_option?.[option.id] > 5 ? (
+      {vote_counts_by_option && vote_counts_by_option?.[option.id] > 0 ? (
         <TouchableOpacity onPress={onPressHandler} style={[styles.container]}>
           <Text style={[styles.text]}>Show All</Text>
         </TouchableOpacity>
@@ -315,23 +301,7 @@ export const ShowAllVotesButton = (props: PollButtonProps & { option: PollOption
           visible={showAllVotes}
         >
           <SafeAreaView style={{ flex: 1 }}>
-            <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 18 }}>
-              <TouchableOpacity
-                onPress={() => setShowAllVotes(false)}
-                style={{
-                  alignItems: 'center',
-                  marginHorizontal: 16,
-                }}
-              >
-                <Text>BACK</Text>
-              </TouchableOpacity>
-              <Text
-                numberOfLines={1}
-                style={{ flex: 1, fontSize: 16, fontWeight: '500', marginHorizontal: 32 }}
-              >
-                {option.text}
-              </Text>
-            </View>
+            <PollModalHeader onPress={() => setShowAllVotes(false)} title={option.text} />
             <PollOptionFullResults message={message} option={option} poll={poll} />
           </SafeAreaView>
         </Modal>
