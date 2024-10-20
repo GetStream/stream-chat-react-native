@@ -1,13 +1,21 @@
 import React from 'react';
-import { FlatList, Text, View } from 'react-native';
+import { FlatList, type FlatListProps, Text, View } from 'react-native';
 
 import { PollAnswer } from 'stream-chat';
 
 import { AnswerListAddCommentButton } from './Button';
 
-import { PollContextProvider, PollContextValue, useChannelContext } from '../../../contexts';
+import { PollContextProvider, PollContextValue } from '../../../contexts';
+import { DefaultStreamChatGenerics } from '../../../types/types';
 import { Avatar } from '../../Avatar/Avatar';
 import { usePollAnswersPagination } from '../hooks/usePollAnswersPagination';
+
+export type PollAnswersListProps<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = PollContextValue & {
+  additionalFlatListProps?: Partial<FlatListProps<PollAnswer<StreamChatGenerics>>>;
+  PollAnswersListContent?: React.ComponentType;
+};
 
 export const PollAnswerListItem = ({ item }: { item: PollAnswer }) => (
   <View
@@ -31,7 +39,9 @@ export const PollAnswerListItem = ({ item }: { item: PollAnswer }) => (
   </View>
 );
 
-export const PollAnswersListContent = () => {
+export const PollAnswersListContent = ({
+  additionalFlatListProps,
+}: Pick<PollAnswersListProps, 'additionalFlatListProps'>) => {
   const { hasNextPage, loadMore, pollAnswers } = usePollAnswersPagination();
 
   return (
@@ -42,6 +52,7 @@ export const PollAnswersListContent = () => {
           keyExtractor={(item) => `poll_answer_${item.id}`}
           onEndReached={() => hasNextPage && loadMore()}
           renderItem={PollAnswerListItem}
+          {...additionalFlatListProps}
         />
         <AnswerListAddCommentButton />
       </View>
@@ -49,12 +60,17 @@ export const PollAnswersListContent = () => {
   );
 };
 
-export const PollAnswersList = ({ message, poll }: PollContextValue) => {
-  const { PollAnswersList: PollAnswersListOverride } = useChannelContext();
-
-  return (
-    <PollContextProvider value={{ message, poll }}>
-      {PollAnswersListOverride ? <PollAnswersListOverride /> : <PollAnswersListContent />}
-    </PollContextProvider>
-  );
-};
+export const PollAnswersList = ({
+  additionalFlatListProps,
+  message,
+  poll,
+  PollAnswersListContent: PollAnswersListOverride,
+}: PollAnswersListProps) => (
+  <PollContextProvider value={{ message, poll }}>
+    {PollAnswersListOverride ? (
+      <PollAnswersListOverride />
+    ) : (
+      <PollAnswersListContent additionalFlatListProps={additionalFlatListProps} />
+    )}
+  </PollContextProvider>
+);
