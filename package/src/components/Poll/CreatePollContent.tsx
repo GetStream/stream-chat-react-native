@@ -95,7 +95,7 @@ export const CreatePollContentWithContext = () => {
               name: pollTitle,
               options: reorderedPollOptions,
               voting_visibility: isAnonymous ? VotingVisibility.anonymous : VotingVisibility.public,
-              ...(isMaxNumberOfVotesValid(maxVotesPerPerson)
+              ...(isMaxNumberOfVotesValid(maxVotesPerPerson) && maxVotesPerPersonEnabled
                 ? { max_votes_allowed: Number(maxVotesPerPerson) }
                 : {}),
             });
