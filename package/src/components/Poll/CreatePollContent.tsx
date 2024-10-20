@@ -6,8 +6,7 @@ import { useSharedValue } from 'react-native-reanimated';
 
 import { CreatePollData, PollOptionData, VotingVisibility } from 'stream-chat';
 
-import type { CurrentOptionPositionsCache } from './components/CreatePollOptions';
-import { CreatePollOptions } from './components/CreatePollOptions';
+import { CreatePollOptions, CurrentOptionPositionsCache, PollModalHeader } from './components';
 
 import {
   CreatePollContentProvider,
@@ -37,10 +36,7 @@ export const CreatePollContentWithContext = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <TouchableOpacity onPress={closePollCreationDialog}>
-          <Text>BACK</Text>
-        </TouchableOpacity>
-        <Text>Create Poll</Text>
+        <PollModalHeader onPress={closePollCreationDialog} title='Create Poll' />
         <TouchableOpacity
           onPress={() => {
             const currentPollOptions = Object.assign({}, pollOptions);
@@ -64,6 +60,7 @@ export const CreatePollContentWithContext = () => {
                 : {}),
             });
           }}
+          style={{ paddingHorizontal: 16, paddingVertical: 18 }}
         >
           <Text>SEND</Text>
         </TouchableOpacity>

@@ -128,7 +128,7 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
 
   return (
     <>
-      {answers_count && answers_count > 0 ? (
+      {answers_count && answers_count > 5 ? (
         <TouchableOpacity onPress={onPressHandler} style={[styles.container]}>
           <Text style={[styles.text]}>View {answers_count} comments</Text>
         </TouchableOpacity>

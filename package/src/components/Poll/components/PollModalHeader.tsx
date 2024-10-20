@@ -11,7 +11,7 @@ export const PollModalHeader = ({ onPress, title }: PollModalHeaderProps) => (
     <TouchableOpacity onPress={onPress}>
       <Text>BACK</Text>
     </TouchableOpacity>
-    <Text numberOfLines={1} style={{ flex: 1, fontSize: 16, fontWeight: '500', marginLeft: 32 }}>
+    <Text numberOfLines={1} style={{ fontSize: 16, fontWeight: '500', marginLeft: 32 }}>
       {title}
     </Text>
   </View>
