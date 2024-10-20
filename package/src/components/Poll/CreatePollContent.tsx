@@ -44,9 +44,11 @@ export const CreatePollContentWithContext = () => {
             const reorderedPollOptions = [];
 
             for (let i = 0; i < pollOptions.length; i++) {
-              reorderedPollOptions.push(
-                currentPollOptions[currentOptionPositions.value.inverseIndexCache[i]],
-              );
+              const currentOption =
+                currentPollOptions[currentOptionPositions.value.inverseIndexCache[i]];
+              if (currentOption.text.length > 0) {
+                reorderedPollOptions.push(currentOption);
+              }
             }
             const parsedMaxVotesPerPerson = Number(maxVotesPerPerson);
             createAndSendPoll({
