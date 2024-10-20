@@ -177,6 +177,7 @@ export type ChannelContextValue<
    */
   maxTimeBetweenGroupedMessages?: number;
   Poll?: React.ComponentType;
+  PollAnswersList?: React.ComponentType;
   PollButtons?: React.ComponentType;
   PollHeader?: React.ComponentType;
   /**

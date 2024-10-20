@@ -1,17 +1,13 @@
 import React from 'react';
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 
 import { PollAnswer } from 'stream-chat';
 
 import { AnswerListAddCommentButton } from './Button';
 
-import { PollContextProvider, PollContextValue } from '../../../contexts';
+import { PollContextProvider, PollContextValue, useChannelContext } from '../../../contexts';
 import { Avatar } from '../../Avatar/Avatar';
 import { usePollAnswersPagination } from '../hooks/usePollAnswersPagination';
-
-export type PollAnswersListProps = {
-  close?: () => void;
-};
 
 export const PollAnswerListItem = ({ item }: { item: PollAnswer }) => (
   <View
@@ -35,17 +31,11 @@ export const PollAnswerListItem = ({ item }: { item: PollAnswer }) => (
   </View>
 );
 
-export const PollAnswersListWithContext = ({ close }: PollAnswersListProps) => {
+export const PollAnswersListContent = () => {
   const { hasNextPage, loadMore, pollAnswers } = usePollAnswersPagination();
 
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity onPress={close}>
-          <Text>BACK</Text>
-        </TouchableOpacity>
-        <Text style={{ fontSize: 16, fontWeight: '500', marginLeft: 32 }}>Poll Comments</Text>
-      </View>
       <View style={{ flex: 1, margin: 16 }}>
         <FlatList
           data={pollAnswers}
@@ -59,12 +49,12 @@ export const PollAnswersListWithContext = ({ close }: PollAnswersListProps) => {
   );
 };
 
-export const PollAnswersList = ({
-  close,
-  message,
-  poll,
-}: PollContextValue & PollAnswersListProps) => (
-  <PollContextProvider value={{ message, poll }}>
-    <PollAnswersListWithContext close={close} />
-  </PollContextProvider>
-);
+export const PollAnswersList = ({ message, poll }: PollContextValue) => {
+  const { PollAnswersList: PollAnswersListOverride } = useChannelContext();
+
+  return (
+    <PollContextProvider value={{ message, poll }}>
+      {PollAnswersListOverride ? <PollAnswersListOverride /> : <PollAnswersListContent />}
+    </PollContextProvider>
+  );
+};

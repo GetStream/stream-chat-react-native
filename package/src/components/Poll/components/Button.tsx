@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { PollAnswersList } from './PollAnswersList';
 import { PollInputDialog } from './PollInputDialog';
@@ -138,7 +138,13 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
           visible={showAnswers}
         >
           <SafeAreaView style={{ flex: 1 }}>
-            <PollAnswersList close={() => setShowAnswers(false)} message={message} poll={poll} />
+            <View style={{ flexDirection: 'row' }}>
+              <TouchableOpacity onPress={() => setShowAnswers(false)}>
+                <Text>BACK</Text>
+              </TouchableOpacity>
+              <Text style={{ fontSize: 16, fontWeight: '500', marginLeft: 32 }}>Poll Comments</Text>
+            </View>
+            <PollAnswersList message={message} poll={poll} />
           </SafeAreaView>
         </Modal>
       ) : null}

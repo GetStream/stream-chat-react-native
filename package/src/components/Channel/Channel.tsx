@@ -233,6 +233,7 @@ export type ChannelPropsWithContext<
       | 'Poll'
       | 'PollButtons'
       | 'PollHeader'
+      | 'PollAnswersList'
     >
   > &
   Pick<ChatContextValue<StreamChatGenerics>, 'client' | 'enableOfflineSupport'> &
@@ -575,6 +576,7 @@ const ChannelWithContext = <
     OverlayReactionList = OverlayReactionListDefault,
     overrideOwnCapabilities,
     Poll,
+    PollAnswersList,
     PollButtons,
     PollHeader,
     ReactionList = ReactionListDefault,
@@ -2249,6 +2251,7 @@ const ChannelWithContext = <
     members,
     NetworkDownIndicator,
     Poll,
+    PollAnswersList,
     PollButtons,
     PollHeader,
     read,
