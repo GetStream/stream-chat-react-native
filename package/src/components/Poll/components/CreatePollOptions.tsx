@@ -36,6 +36,7 @@ export const CreatePollOption = ({
   currentOptionPositions,
   draggedItemId,
   handleChangeText,
+  hasDuplicate,
   index,
   isDragging,
   option,
@@ -44,6 +45,7 @@ export const CreatePollOption = ({
   currentOptionPositions: SharedValue<CurrentOptionPositionsCache>;
   draggedItemId: SharedValue<number | null>;
   handleChangeText: (newText: string, index: number) => void;
+  hasDuplicate: boolean;
   index: number;
   isDragging: SharedValue<1 | 0>;
   option: PollOptionData;
@@ -188,7 +190,9 @@ export const CreatePollOption = ({
         {
           alignItems: 'center',
           backgroundColor: '#F7F7F8',
+          borderColor: hasDuplicate ? '#FF3842' : '#F7F7F8',
           borderRadius: 12,
+          borderWidth: 1,
           flexDirection: 'row',
           justifyContent: 'space-between',
           marginTop: 8,
@@ -200,6 +204,11 @@ export const CreatePollOption = ({
         animatedStyles,
       ]}
     >
+      {hasDuplicate ? (
+        <Text style={{ color: '#FF3842', fontSize: 12, left: 16, position: 'absolute', top: 4 }}>
+          This is already an option
+        </Text>
+      ) : null}
       <TextInput
         onChangeText={(newText) => handleChangeText(newText, index)}
         placeholder='Option'
@@ -223,11 +232,12 @@ const MemoizedCreatePollOption = React.memo(CreatePollOption);
 
 export const CreatePollOptions = (props: {
   currentOptionPositions: SharedValue<CurrentOptionPositionsCache>;
+  duplicates: string[];
   pollOptions: PollOptionData[];
   setPollOptions: Dispatch<SetStateAction<PollOptionData[]>>;
 }) => {
   const { createPollOptionHeight = OPTION_HEIGHT } = useAttachmentPickerContext();
-  const { currentOptionPositions, pollOptions, setPollOptions } = props;
+  const { currentOptionPositions, duplicates = [], pollOptions, setPollOptions } = props;
   const updateOption = useCallback(
     (newText: string, index: number) => {
       setPollOptions((prevOptions) =>
@@ -256,6 +266,7 @@ export const CreatePollOptions = (props: {
             currentOptionPositions={currentOptionPositions}
             draggedItemId={draggedItemId}
             handleChangeText={updateOption}
+            hasDuplicate={duplicates.includes(option.text)}
             index={index}
             isDragging={isDragging}
             key={index}

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { SafeAreaView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
@@ -24,6 +24,7 @@ export const CreatePollContentWithContext = () => {
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [optionSuggestionsAllowed, setOptionSuggestionsAllowed] = useState(false);
   const [commentsAllowed, setCommentsAllowed] = useState(false);
+  const [duplicates, setDuplicates] = useState<string[]>([]);
 
   const { closePollCreationDialog, createAndSendPoll } = useCreatePollContentContext();
 
@@ -33,6 +34,22 @@ export const CreatePollContentWithContext = () => {
     inverseIndexCache: { 0: 0 },
     positionCache: { 0: { updatedIndex: 0, updatedTop: 0 } },
   });
+
+  useEffect(() => {
+    const seenTexts = new Set<string>();
+    const duplicateTexts = new Set<string>();
+    for (const option of pollOptions) {
+      const { text } = option;
+      if (seenTexts.has(text)) {
+        duplicateTexts.add(text);
+      }
+      if (text.length > 0) {
+        seenTexts.add(text);
+      }
+    }
+
+    setDuplicates(Array.from(duplicateTexts));
+  }, [pollOptions]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -87,6 +104,7 @@ export const CreatePollContentWithContext = () => {
         </View>
         <CreatePollOptions
           currentOptionPositions={currentOptionPositions}
+          duplicates={duplicates}
           pollOptions={pollOptions}
           setPollOptions={setPollOptions}
         />
