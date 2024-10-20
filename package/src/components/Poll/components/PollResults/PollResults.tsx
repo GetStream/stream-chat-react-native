@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { ScrollViewProps, Text, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
 
@@ -8,11 +8,14 @@ import { PollResultsItem } from './PollResultItem';
 import { PollContextProvider, PollContextValue } from '../../../../contexts';
 import { usePollState } from '../../hooks/usePollState';
 
-export type PollResultsProps = {
-  close?: () => void;
+export type PollResultsProps = PollContextValue & {
+  additionalScrollViewProps?: Partial<ScrollViewProps>;
+  PollResultsContent?: React.ComponentType;
 };
 
-const PollResultsWithContext = ({ close }: PollResultsProps) => {
+const PollResultsContent = ({
+  additionalScrollViewProps,
+}: Pick<PollResultsProps, 'additionalScrollViewProps'>) => {
   const { name, options, vote_counts_by_option } = usePollState();
 
   const sortedOptions = useMemo(
@@ -24,13 +27,7 @@ const PollResultsWithContext = ({ close }: PollResultsProps) => {
   );
 
   return (
-    <ScrollView style={{ flex: 1 }}>
-      <View style={{ flexDirection: 'row', paddingVertical: 18 }}>
-        <TouchableOpacity onPress={close}>
-          <Text>BACK</Text>
-        </TouchableOpacity>
-        <Text style={{ fontSize: 16, fontWeight: '500', marginLeft: 32 }}>Poll Results</Text>
-      </View>
+    <ScrollView style={{ flex: 1 }} {...additionalScrollViewProps}>
       <View
         style={{
           backgroundColor: '#F7F7F8',
@@ -51,8 +48,17 @@ const PollResultsWithContext = ({ close }: PollResultsProps) => {
   );
 };
 
-export const PollResults = ({ close, message, poll }: PollContextValue & PollResultsProps) => (
+export const PollResults = ({
+  additionalScrollViewProps,
+  message,
+  poll,
+  PollResultsContent: PollResultsContentOverride,
+}: PollResultsProps) => (
   <PollContextProvider value={{ message, poll }}>
-    <PollResultsWithContext close={close} />
+    {PollResultsContentOverride ? (
+      <PollResultsContentOverride />
+    ) : (
+      <PollResultsContent additionalScrollViewProps={additionalScrollViewProps} />
+    )}
   </PollContextProvider>
 );

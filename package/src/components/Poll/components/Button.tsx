@@ -56,7 +56,13 @@ export const ViewResultsButton = (props: PollButtonProps) => {
           visible={showResults}
         >
           <SafeAreaView style={{ flex: 1, marginHorizontal: 16 }}>
-            <PollResults close={() => setShowResults(false)} message={message} poll={poll} />
+            <View style={{ flexDirection: 'row', paddingVertical: 18 }}>
+              <TouchableOpacity onPress={() => setShowResults(false)}>
+                <Text>BACK</Text>
+              </TouchableOpacity>
+              <Text style={{ fontSize: 16, fontWeight: '500', marginLeft: 32 }}>Poll Results</Text>
+            </View>
+            <PollResults message={message} poll={poll} />
           </SafeAreaView>
         </Modal>
       ) : null}

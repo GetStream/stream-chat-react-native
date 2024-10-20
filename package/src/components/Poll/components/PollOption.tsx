@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { Text, TouchableOpacity, View } from 'react-native';
 
@@ -11,12 +11,10 @@ import { VoteButton } from './Button';
 import {
   PollContextProvider,
   PollContextValue,
-  useChatContext,
   useMessageContext,
   usePollContext,
 } from '../../../contexts';
 
-import * as dbApi from '../../../store/apis';
 import { DefaultStreamChatGenerics } from '../../../types/types';
 import { Avatar } from '../../Avatar/Avatar';
 import { usePollState } from '../hooks/usePollState';
@@ -90,7 +88,6 @@ export const ShowAllOptionsContent = ({
 );
 
 export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) => {
-  const { enableOfflineSupport } = useChatContext();
   const { is_closed, ownVotesByOptionId, vote_counts_by_option } = usePollState();
   const { poll } = usePollContext();
   const { message } = useMessageContext();
