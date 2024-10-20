@@ -14,6 +14,7 @@ import {
   useCreatePollContentContext,
   useMessageInputContext,
 } from '../../contexts';
+import { SendPoll } from '../../icons';
 
 export const CreatePollContentWithContext = () => {
   const [pollTitle, setPollTitle] = useState('');
@@ -62,7 +63,7 @@ export const CreatePollContentWithContext = () => {
           }}
           style={{ paddingHorizontal: 16, paddingVertical: 18 }}
         >
-          <Text>SEND</Text>
+          <SendPoll height={24} pathFill={'#005DFF'} viewBox='0 0 24 24' width={24} />
         </TouchableOpacity>
       </View>
       <ScrollView style={{ flex: 1, margin: 16 }}>

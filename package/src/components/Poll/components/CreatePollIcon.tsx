@@ -10,5 +10,5 @@ export const CreatePollIcon = () => {
     },
   } = useTheme();
 
-  return <PollThumbnail height={18} pathFill={grey} width={18} />;
+  return <PollThumbnail height={18} pathFill={grey} viewBox='0 0 18 18' width={18} />;
 };

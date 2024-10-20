@@ -98,3 +98,5 @@ export * from './MessageBubbleEmpty';
 export * from './Reload';
 export * from './PollThumbnail';
 export * from './DragHandle';
+export * from './Back';
+export * from './SendPoll';
