@@ -3,7 +3,7 @@ import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'r
 
 import { PollAnswersList } from './PollAnswersList';
 import { PollInputDialog } from './PollInputDialog';
-import { ShowAllOptionsContent } from './PollOption';
+import { PollAllOptions } from './PollOption';
 
 import { PollOptionFullResults, PollResults } from './PollResults';
 
@@ -253,11 +253,13 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
           visible={showAllOptions}
         >
           <SafeAreaView style={{ flex: 1 }}>
-            <ShowAllOptionsContent
-              close={() => setShowAllOptions(false)}
-              message={message}
-              poll={poll}
-            />
+            <View style={{ flexDirection: 'row' }}>
+              <TouchableOpacity onPress={() => setShowAllOptions(false)}>
+                <Text>BACK</Text>
+              </TouchableOpacity>
+              <Text style={{ fontSize: 16, fontWeight: '500', marginLeft: 32 }}>Poll Options</Text>
+            </View>
+            <PollAllOptions message={message} poll={poll} />
           </SafeAreaView>
         </Modal>
       ) : null}

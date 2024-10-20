@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 
-import { Text, TouchableOpacity, View } from 'react-native';
+import { ScrollViewProps, Text, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
 
@@ -31,59 +31,59 @@ export type PollOptionProps = {
   showProgressBar?: boolean;
 };
 
-export type ShowAllOptionsContentProps = {
-  close?: () => void;
+export type PollAllOptionsContentProps = PollContextValue & {
+  additionalScrollViewProps?: Partial<ScrollViewProps>;
+  PollAllOptionsContent?: React.ComponentType;
 };
 
-const ShowAllOptionsContentWithContext = ({ close }: ShowAllOptionsContentProps) => {
+export const PollAllOptionsContent = ({
+  additionalScrollViewProps,
+}: Pick<PollAllOptionsContentProps, 'additionalScrollViewProps'>) => {
   const { name, options } = usePollState();
 
   return (
-    <>
-      <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity onPress={close}>
-          <Text>BACK</Text>
-        </TouchableOpacity>
-        <Text style={{ fontSize: 16, fontWeight: '500', marginLeft: 32 }}>Poll Options</Text>
+    <ScrollView style={{ flex: 1, marginBottom: 16, padding: 16 }} {...additionalScrollViewProps}>
+      <View
+        style={{
+          backgroundColor: '#F7F7F8',
+          borderRadius: 12,
+          paddingHorizontal: 16,
+          paddingVertical: 18,
+        }}
+      >
+        <Text style={{ fontSize: 16, fontWeight: '500' }}>{name}</Text>
       </View>
-      <ScrollView style={{ flex: 1, marginBottom: 16, padding: 16 }}>
-        <View
-          style={{
-            backgroundColor: '#F7F7F8',
-            borderRadius: 12,
-            paddingHorizontal: 16,
-            paddingVertical: 18,
-          }}
-        >
-          <Text style={{ fontSize: 16, fontWeight: '500' }}>{name}</Text>
-        </View>
-        <View
-          style={{
-            backgroundColor: '#F7F7F8',
-            borderRadius: 12,
-            marginTop: 32,
-            paddingBottom: 18,
-            paddingHorizontal: 16,
-          }}
-        >
-          {options?.map((option: PollOptionClass) => (
-            <View key={`full_poll_options_${option.id}`} style={{ paddingVertical: 16 }}>
-              <PollOption key={option.id} option={option} showProgressBar={false} />
-            </View>
-          ))}
-        </View>
-      </ScrollView>
-    </>
+      <View
+        style={{
+          backgroundColor: '#F7F7F8',
+          borderRadius: 12,
+          marginTop: 32,
+          paddingBottom: 18,
+          paddingHorizontal: 16,
+        }}
+      >
+        {options?.map((option: PollOptionClass) => (
+          <View key={`full_poll_options_${option.id}`} style={{ paddingVertical: 16 }}>
+            <PollOption key={option.id} option={option} showProgressBar={false} />
+          </View>
+        ))}
+      </View>
+    </ScrollView>
   );
 };
 
-export const ShowAllOptionsContent = ({
-  close,
+export const PollAllOptions = ({
+  additionalScrollViewProps,
   message,
   poll,
-}: PollContextValue & ShowAllOptionsContentProps) => (
+  PollAllOptionsContent: PollAllOptionsContentOverride,
+}: PollAllOptionsContentProps) => (
   <PollContextProvider value={{ message, poll }}>
-    <ShowAllOptionsContentWithContext close={close} />
+    {PollAllOptionsContentOverride ? (
+      <PollAllOptionsContentOverride />
+    ) : (
+      <PollAllOptionsContent additionalScrollViewProps={additionalScrollViewProps} />
+    )}
   </PollContextProvider>
 );
 
