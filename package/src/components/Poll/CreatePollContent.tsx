@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { SafeAreaView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
@@ -16,11 +16,20 @@ import {
 } from '../../contexts';
 import { SendPoll } from '../../icons';
 
+export const isMaxNumberOfVotesValid = (maxNumberOfVotes: string) => {
+  const parsedMaxNumberOfVotes = Number(maxNumberOfVotes);
+
+  return (
+    !isNaN(parsedMaxNumberOfVotes) && parsedMaxNumberOfVotes > 0 && parsedMaxNumberOfVotes <= 10
+  );
+};
+
 export const CreatePollContentWithContext = () => {
   const [pollTitle, setPollTitle] = useState('');
   const [pollOptions, setPollOptions] = useState<PollOptionData[]>([{ text: '' }]);
   const [multipleAnswersAllowed, setMultipleAnswersAllowed] = useState(false);
   const [maxVotesPerPerson, setMaxVotesPerPerson] = useState('');
+  const [maxVotesPerPersonEnabled, setMaxVotesPerPersonEnabled] = useState(false);
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [optionSuggestionsAllowed, setOptionSuggestionsAllowed] = useState(false);
   const [commentsAllowed, setCommentsAllowed] = useState(false);
@@ -51,11 +60,22 @@ export const CreatePollContentWithContext = () => {
     setDuplicates(Array.from(duplicateTexts));
   }, [pollOptions]);
 
+  const isPollValid = useMemo(
+    () =>
+      pollTitle &&
+      pollTitle?.length > 0 &&
+      duplicates.length === 0 &&
+      ((maxVotesPerPersonEnabled && isMaxNumberOfVotesValid(maxVotesPerPerson)) ||
+        !maxVotesPerPersonEnabled),
+    [duplicates, maxVotesPerPerson, maxVotesPerPersonEnabled, pollTitle],
+  );
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <PollModalHeader onPress={closePollCreationDialog} title='Create Poll' />
         <TouchableOpacity
+          disabled={!isPollValid}
           onPress={() => {
             const currentPollOptions = Object.assign({}, pollOptions);
             const reorderedPollOptions = [];
@@ -67,7 +87,7 @@ export const CreatePollContentWithContext = () => {
                 reorderedPollOptions.push(currentOption);
               }
             }
-            const parsedMaxVotesPerPerson = Number(maxVotesPerPerson);
+
             createAndSendPoll({
               allow_answers: commentsAllowed,
               allow_user_suggested_options: optionSuggestionsAllowed,
@@ -75,14 +95,19 @@ export const CreatePollContentWithContext = () => {
               name: pollTitle,
               options: reorderedPollOptions,
               voting_visibility: isAnonymous ? VotingVisibility.anonymous : VotingVisibility.public,
-              ...(!isNaN(parsedMaxVotesPerPerson) && parsedMaxVotesPerPerson > 0
-                ? { max_votes_allowed: parsedMaxVotesPerPerson }
+              ...(isMaxNumberOfVotesValid(maxVotesPerPerson)
+                ? { max_votes_allowed: Number(maxVotesPerPerson) }
                 : {}),
             });
           }}
           style={{ paddingHorizontal: 16, paddingVertical: 18 }}
         >
-          <SendPoll height={24} pathFill={'#005DFF'} viewBox='0 0 24 24' width={24} />
+          <SendPoll
+            height={24}
+            pathFill={isPollValid ? '#005DFF' : '#B4BBBA'}
+            viewBox='0 0 24 24'
+            width={24}
+          />
         </TouchableOpacity>
       </View>
       <ScrollView style={{ flex: 1, margin: 16 }}>
@@ -134,21 +159,26 @@ export const CreatePollContentWithContext = () => {
                 paddingVertical: 18,
               }}
             >
-              {maxVotesPerPerson.length > 0 &&
-              (Number(maxVotesPerPerson) < 1 || Number(maxVotesPerPerson) > 10) ? (
+              {maxVotesPerPersonEnabled && !isMaxNumberOfVotesValid(maxVotesPerPerson) ? (
                 <Text
                   style={{ color: '#FF3842', fontSize: 12, left: 16, position: 'absolute', top: 0 }}
                 >
                   Type a number from 1 to 10
                 </Text>
               ) : null}
-              <TextInput
-                inputMode='numeric'
-                onChangeText={setMaxVotesPerPerson}
-                placeholder='Maximum votes per person'
-                style={{ flex: 1, fontSize: 16 }}
-                value={maxVotesPerPerson}
-              />
+              <View style={{ flexDirection: 'row' }}>
+                <TextInput
+                  inputMode='numeric'
+                  onChangeText={setMaxVotesPerPerson}
+                  placeholder='Maximum votes per person'
+                  style={{ flex: 1, fontSize: 16 }}
+                  value={maxVotesPerPerson}
+                />
+                <Switch
+                  onValueChange={() => setMaxVotesPerPersonEnabled(!maxVotesPerPersonEnabled)}
+                  value={maxVotesPerPersonEnabled}
+                />
+              </View>
             </View>
           ) : null}
         </View>
