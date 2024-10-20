@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, type FlatListProps, Text, View } from 'react-native';
 
 import { PollOption, PollVote as PollVoteClass } from 'stream-chat';
 
@@ -12,16 +12,20 @@ import { usePollState } from '../../hooks/usePollState';
 
 export type PollOptionFullResultsProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+> = PollContextValue & {
   option: PollOption<StreamChatGenerics>;
-  close?: () => void;
+  additionalFlatListProps?: Partial<FlatListProps<PollVoteClass<StreamChatGenerics>>>;
+  PollOptionFullResultsContent?: React.ComponentType<{ option: PollOption<StreamChatGenerics> }>;
 };
 
 export const PollOptionFullResultsItem = ({ item }: { item: PollVoteClass }) => (
   <PollVote {...item} />
 );
 
-export const PollOptionFullResultsWithContext = ({ close, option }: PollOptionFullResultsProps) => {
+export const PollOptionFullResultsContent = ({
+  additionalFlatListProps,
+  option,
+}: Pick<PollOptionFullResultsProps, 'option' | 'additionalFlatListProps'>) => {
   const { hasNextPage, loadMore, votes } = usePollOptionVotesPagination({ option });
   const { vote_counts_by_option } = usePollState();
   const PollOptionFullResultsHeader = useCallback(
@@ -37,23 +41,6 @@ export const PollOptionFullResultsWithContext = ({ close, option }: PollOptionFu
 
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 18 }}>
-        <TouchableOpacity
-          onPress={close}
-          style={{
-            alignItems: 'center',
-            marginHorizontal: 16,
-          }}
-        >
-          <Text>BACK</Text>
-        </TouchableOpacity>
-        <Text
-          numberOfLines={1}
-          style={{ flex: 1, fontSize: 16, fontWeight: '500', marginHorizontal: 32 }}
-        >
-          {option.text}
-        </Text>
-      </View>
       <FlatList
         contentContainerStyle={{
           backgroundColor: '#F7F7F8',
@@ -69,18 +56,27 @@ export const PollOptionFullResultsWithContext = ({ close, option }: PollOptionFu
         ListHeaderComponent={PollOptionFullResultsHeader}
         onEndReached={() => hasNextPage && loadMore()}
         renderItem={PollOptionFullResultsItem}
+        {...additionalFlatListProps}
       />
     </View>
   );
 };
 
 export const PollOptionFullResults = ({
-  close,
+  additionalFlatListProps,
   message,
   option,
   poll,
-}: PollContextValue & PollOptionFullResultsProps) => (
+  PollOptionFullResultsContent: PollOptionFullResultsContentOverride,
+}: PollOptionFullResultsProps) => (
   <PollContextProvider value={{ message, poll }}>
-    <PollOptionFullResultsWithContext close={close} option={option} />
+    {PollOptionFullResultsContentOverride ? (
+      <PollOptionFullResultsContentOverride option={option} />
+    ) : (
+      <PollOptionFullResultsContent
+        additionalFlatListProps={additionalFlatListProps}
+        option={option}
+      />
+    )}
   </PollContextProvider>
 );

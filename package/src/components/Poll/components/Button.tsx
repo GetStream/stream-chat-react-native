@@ -315,12 +315,24 @@ export const ShowAllVotesButton = (props: PollButtonProps & { option: PollOption
           visible={showAllVotes}
         >
           <SafeAreaView style={{ flex: 1 }}>
-            <PollOptionFullResults
-              close={() => setShowAllVotes(false)}
-              message={message}
-              option={option}
-              poll={poll}
-            />
+            <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 18 }}>
+              <TouchableOpacity
+                onPress={() => setShowAllVotes(false)}
+                style={{
+                  alignItems: 'center',
+                  marginHorizontal: 16,
+                }}
+              >
+                <Text>BACK</Text>
+              </TouchableOpacity>
+              <Text
+                numberOfLines={1}
+                style={{ flex: 1, fontSize: 16, fontWeight: '500', marginHorizontal: 32 }}
+              >
+                {option.text}
+              </Text>
+            </View>
+            <PollOptionFullResults message={message} option={option} poll={poll} />
           </SafeAreaView>
         </Modal>
       ) : null}
