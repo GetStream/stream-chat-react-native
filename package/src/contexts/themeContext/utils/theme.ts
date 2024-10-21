@@ -621,6 +621,15 @@ export type Theme = {
       titleText: TextStyle;
       wrapper: ViewStyle;
     };
+    answersList: {
+      container: ViewStyle;
+      item: {
+        answerText: TextStyle;
+        container: ViewStyle;
+        infoContainer: ViewStyle;
+        userInfoContainer: ViewStyle;
+      };
+    };
     createContent: {
       addComment: {
         title: TextStyle;
@@ -682,7 +691,10 @@ export type Theme = {
       };
       optionsWrapper: ViewStyle;
     };
-    modalHeader: { container: ViewStyle; title: TextStyle };
+    modalHeader: {
+      container: ViewStyle;
+      title: TextStyle;
+    };
   };
   progressControl: {
     container: ViewStyle;
@@ -1315,6 +1327,15 @@ export const defaultTheme: Theme = {
       titleText: {},
       wrapper: {},
     },
+    answersList: {
+      container: {},
+      item: {
+        answerText: {},
+        container: {},
+        infoContainer: {},
+        userInfoContainer: {},
+      },
+    },
     createContent: {
       addComment: {
         title: {},
@@ -1376,7 +1397,10 @@ export const defaultTheme: Theme = {
       },
       optionsWrapper: {},
     },
-    modalHeader: { container: {}, title: {} },
+    modalHeader: {
+      container: {},
+      title: {},
+    },
   },
   progressControl: {
     container: {},
