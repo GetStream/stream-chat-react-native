@@ -1,6 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
+import { Poll, PollOption } from 'stream-chat';
+
 import { PollAnswersList } from './PollAnswersList';
 import { PollInputDialog } from './PollInputDialog';
 import { PollModalHeader } from './PollModalHeader';
@@ -8,7 +10,6 @@ import { PollAllOptions } from './PollOption';
 
 import { PollOptionFullResults, PollResults } from './PollResults';
 
-import { Poll, PollOption } from '../../../../../../stream-chat-js';
 import { useChatContext, usePollContext } from '../../../contexts';
 import { Check } from '../../../icons';
 import type { DefaultStreamChatGenerics } from '../../../types/types';

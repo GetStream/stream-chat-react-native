@@ -43,6 +43,7 @@ export const NativeAttachmentPicker = ({
     openPollCreationDialog,
     pickAndUploadImageFromNativePicker,
     pickFile,
+    sendMessage,
     takeAndUploadImage,
   } = useMessageInputContext();
   const { threadList } = useChannelContext();
@@ -114,7 +115,15 @@ export const NativeAttachmentPicker = ({
   // do not allow poll creation in threads
   const buttons = threadList
     ? []
-    : [{ icon: <CreatePollIcon />, id: 'Poll', onPressHandler: openPollCreationDialog }];
+    : [
+        {
+          icon: <CreatePollIcon />,
+          id: 'Poll',
+          onPressHandler: () => {
+            openPollCreationDialog?.({ sendMessage });
+          },
+        },
+      ];
 
   if (hasImagePicker) {
     buttons.push({

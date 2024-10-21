@@ -35,6 +35,7 @@ export const AttachmentPickerSelectionBar = () => {
     imageUploads,
     openPollCreationDialog,
     pickFile,
+    sendMessage,
     takeAndUploadImage,
   } = useMessageInputContext();
   const { threadList } = useChannelContext();
@@ -63,7 +64,7 @@ export const AttachmentPickerSelectionBar = () => {
   const openPollCreationModal = () => {
     setSelectedPicker(undefined);
     closePicker();
-    openPollCreationDialog?.();
+    openPollCreationDialog?.({ sendMessage });
   };
 
   return (

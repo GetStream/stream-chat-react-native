@@ -1398,13 +1398,13 @@ export const MessageInputProvider = <
     }
   };
 
-  const openPollCreationDialog = useCallback(() => {
+  const openPollCreationDialog = () => {
     if (openPollCreationDialogFromContext) {
       openPollCreationDialogFromContext({ sendMessage });
       return;
     }
     defaultOpenPollCreationDialog();
-  }, [defaultOpenPollCreationDialog, openPollCreationDialogFromContext, sendMessage]);
+  };
 
   const messageInputContext = useCreateMessageInputContext({
     appendText,
