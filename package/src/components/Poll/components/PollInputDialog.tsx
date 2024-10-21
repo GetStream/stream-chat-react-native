@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Modal, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
+import { useTheme } from '../../../contexts';
 
 export type PollInputDialogProps = {
   closeDialog: () => void;
@@ -16,46 +18,36 @@ export const PollInputDialog = ({
 }: PollInputDialogProps) => {
   const [dialogInput, setDialogInput] = useState('');
 
+  const {
+    theme: {
+      colors: { accent_dark_blue },
+      poll: {
+        inputDialog: {
+          button,
+          buttonContainer,
+          container,
+          input,
+          title: titleStyle,
+          transparentContainer,
+        },
+      },
+    },
+  } = useTheme();
+
   return (
     <Modal animationType='fade' onRequestClose={closeDialog} transparent={true} visible={visible}>
-      <View
-        style={{
-          alignItems: 'center',
-          backgroundColor: 'rgba(0, 0, 0, 0.2)',
-          flex: 1,
-          justifyContent: 'center',
-        }}
-      >
-        <View
-          style={{
-            backgroundColor: 'white',
-            borderRadius: 16,
-            paddingBottom: 20,
-            paddingHorizontal: 16,
-            paddingTop: 32,
-            width: '80%',
-          }}
-        >
-          <Text style={{ fontSize: 17, fontWeight: '500', lineHeight: 20 }}>{title}</Text>
+      <View style={[styles.transparentContainer, transparentContainer]}>
+        <View style={[styles.container, container]}>
+          <Text style={[styles.title, titleStyle]}>{title}</Text>
           <TextInput
             onChangeText={setDialogInput}
             placeholder='Ask a question'
-            style={{
-              alignItems: 'center',
-              borderColor: 'gray',
-              borderRadius: 18,
-              borderWidth: 1,
-              fontSize: 16,
-              height: 36,
-              marginTop: 16,
-              padding: 0,
-              paddingHorizontal: 16,
-            }}
+            style={[styles.input, input]}
             value={dialogInput}
           />
-          <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 52 }}>
+          <View style={[styles.buttonContainer, buttonContainer]}>
             <TouchableOpacity onPress={closeDialog}>
-              <Text style={{ color: '#005DFF', fontSize: 17, fontWeight: '500' }}>Cancel</Text>
+              <Text style={[styles.button, { color: accent_dark_blue }, button]}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
@@ -64,7 +56,7 @@ export const PollInputDialog = ({
               }}
               style={{ marginLeft: 32 }}
             >
-              <Text style={{ color: '#005DFF', fontSize: 17, fontWeight: '500' }}>SEND</Text>
+              <Text style={[styles.button, { color: accent_dark_blue }, button]}>SEND</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -72,3 +64,34 @@ export const PollInputDialog = ({
     </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  button: { fontSize: 17, fontWeight: '500' },
+  buttonContainer: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: 52 },
+  container: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    paddingBottom: 20,
+    paddingHorizontal: 16,
+    paddingTop: 32,
+    width: '80%',
+  },
+  input: {
+    alignItems: 'center',
+    borderColor: 'gray',
+    borderRadius: 18,
+    borderWidth: 1,
+    fontSize: 16,
+    height: 36,
+    marginTop: 16,
+    padding: 0,
+    paddingHorizontal: 16,
+  },
+  title: { fontSize: 17, fontWeight: '500', lineHeight: 20 },
+  transparentContainer: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    flex: 1,
+    justifyContent: 'center',
+  },
+});

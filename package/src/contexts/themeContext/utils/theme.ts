@@ -674,6 +674,14 @@ export type Theme = {
         wrapper: ViewStyle;
       };
     };
+    inputDialog: {
+      button: TextStyle;
+      buttonContainer: ViewStyle;
+      container: ViewStyle;
+      input: TextStyle;
+      title: TextStyle;
+      transparentContainer: ViewStyle;
+    };
     message: {
       container: ViewStyle;
       header: {
@@ -1379,6 +1387,14 @@ export const defaultTheme: Theme = {
         title: {},
         wrapper: {},
       },
+    },
+    inputDialog: {
+      button: {},
+      buttonContainer: {},
+      container: {},
+      input: {},
+      title: {},
+      transparentContainer: {},
     },
     message: {
       container: {},
