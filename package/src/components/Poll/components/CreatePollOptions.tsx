@@ -320,7 +320,6 @@ export const CreatePollOptions = (props: {
 
 const styles = StyleSheet.create({
   addOptionWrapper: {
-    backgroundColor: '#F7F7F8',
     borderRadius: 12,
     marginTop: 8,
     paddingHorizontal: 16,
