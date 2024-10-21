@@ -1,5 +1,13 @@
 # Change Log
 
+### [5.39.4](https://github.com/GetStream/stream-chat-react-native/compare/v5.39.3...v5.39.4) (2024-10-21)
+
+
+### Bug Fixes
+
+* add sender and receiver background color for message bubble in message overlay ([#2710](https://github.com/GetStream/stream-chat-react-native/issues/2710)) ([7e64290](https://github.com/GetStream/stream-chat-react-native/commit/7e64290c4131c15666102478ca94ce50910d0189))
+* double loading when targetting a message ([#2711](https://github.com/GetStream/stream-chat-react-native/issues/2711)) ([fdb4f17](https://github.com/GetStream/stream-chat-react-native/commit/fdb4f17991ffde7f9c59dd690f8913e9a75e8560))
+
 ### [5.39.3](https://github.com/GetStream/stream-chat-react-native/compare/v5.39.2...v5.39.3) (2024-10-15)
 
 
