@@ -5,7 +5,7 @@ import { Alert, ImageBackground, Platform, StyleSheet, Text, View } from 'react-
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { lookup } from 'mime-types';
 
-import { useTranslationContext } from '../../../contexts';
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { AttachmentPickerContextValue } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useViewport } from '../../../hooks/useViewport';
