@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useCallback, useMemo } from 'react';
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
@@ -14,7 +14,7 @@ import Animated, {
 
 import { PollOptionData } from 'stream-chat';
 
-import { useCreatePollContentContext } from '../../../contexts';
+import { useCreatePollContentContext, useTheme } from '../../../contexts';
 import { DragHandle } from '../../../icons';
 
 export type CurrentOptionPositionsCache = {
@@ -181,23 +181,27 @@ export const CreatePollOption = ({
       }
       // stop dragging
       isDragging.value = withDelay(200, withSpring(0));
-      console.log(currentOptionPositionsDerived.value);
     });
+
+  const {
+    theme: {
+      colors: { accent_error, bg_user, text_low_emphasis },
+      poll: {
+        createContent: {
+          pollOptions: { optionStyle },
+        },
+      },
+    },
+  } = useTheme();
 
   return (
     <Animated.View
       style={[
+        styles.optionWrapper,
+        optionStyle.wrapper,
         {
-          alignItems: 'center',
-          backgroundColor: '#F7F7F8',
-          borderColor: hasDuplicate ? '#FF3842' : '#F7F7F8',
-          borderRadius: 12,
-          borderWidth: 1,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginTop: 8,
-          paddingHorizontal: 16,
-          paddingVertical: 18,
+          backgroundColor: bg_user,
+          borderColor: hasDuplicate ? accent_error : bg_user,
           position: 'absolute',
           width: '100%',
         },
@@ -205,23 +209,25 @@ export const CreatePollOption = ({
       ]}
     >
       {hasDuplicate ? (
-        <Text style={{ color: '#FF3842', fontSize: 12, left: 16, position: 'absolute', top: 4 }}>
+        <Text
+          style={[
+            styles.optionValidationError,
+            { color: accent_error },
+            optionStyle.validationErrorText,
+          ]}
+        >
           This is already an option
         </Text>
       ) : null}
       <TextInput
         onChangeText={(newText) => handleChangeText(newText, index)}
         placeholder='Option'
-        style={{
-          flex: 1, // check if it causes trouble on Android
-          fontSize: 16,
-          paddingVertical: 0, // android is adding extra padding so we remove it
-        }}
+        style={[styles.optionInput, optionStyle.input]}
         value={option.text}
       />
       <GestureDetector gesture={gesture}>
         <Animated.View>
-          <DragHandle pathFill='#7E828B' />
+          <DragHandle pathFill={text_low_emphasis} />
         </Animated.View>
       </GestureDetector>
     </Animated.View>
@@ -256,9 +262,21 @@ export const CreatePollOptions = (props: {
     () => ({ maxBound: (pollOptions.length - 1) * createPollOptionHeight, minBound: 0 }),
     [createPollOptionHeight, pollOptions.length],
   );
+
+  const {
+    theme: {
+      colors: { bg_user },
+      poll: {
+        createContent: {
+          pollOptions: { addOption, container, title },
+        },
+      },
+    },
+  } = useTheme();
+
   return (
-    <View style={{ marginVertical: 16 }}>
-      <Text style={{ fontSize: 16 }}>Options</Text>
+    <View style={[styles.container, container]}>
+      <Text style={[styles.text, title]}>Options</Text>
       <View style={{ height: createPollOptionHeight * pollOptions.length }}>
         {pollOptions.map((option, index) => (
           <MemoizedCreatePollOption
@@ -292,16 +310,38 @@ export const CreatePollOptions = (props: {
           };
           setPollOptions([...pollOptions, { text: '' }]);
         }}
-        style={{
-          backgroundColor: '#F7F7F8',
-          borderRadius: 12,
-          marginTop: 8,
-          paddingHorizontal: 16,
-          paddingVertical: 18,
-        }}
+        style={[styles.addOptionWrapper, { backgroundColor: bg_user }, addOption.wrapper]}
       >
-        <Text style={{ fontSize: 16 }}>Add an option</Text>
+        <Text style={[styles.text, addOption.text]}>Add an option</Text>
       </TouchableOpacity>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  addOptionWrapper: {
+    backgroundColor: '#F7F7F8',
+    borderRadius: 12,
+    marginTop: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 18,
+  },
+  container: { marginVertical: 16 },
+  optionInput: {
+    flex: 1,
+    fontSize: 16,
+    paddingVertical: 0, // android is adding extra padding so we remove it
+  },
+  optionValidationError: { fontSize: 12, left: 16, position: 'absolute', top: 4 },
+  optionWrapper: {
+    alignItems: 'center',
+    borderRadius: 12,
+    borderWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 18,
+  },
+  text: { fontSize: 16 },
+});

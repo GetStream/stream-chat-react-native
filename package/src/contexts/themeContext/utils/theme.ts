@@ -7,6 +7,7 @@ export const DEFAULT_STATUS_ICON_SIZE = 16;
 
 export const Colors = {
   accent_blue: '#005FFF',
+  accent_error: '#FF3842',
   accent_green: '#20E070',
   accent_red: '#FF3742',
   bg_gradient_end: '#F7F7F7',
@@ -634,6 +635,19 @@ export type Theme = {
       };
       name: {
         input: TextStyle;
+        title: TextStyle;
+      };
+      pollOptions: {
+        addOption: {
+          text: TextStyle;
+          wrapper: ViewStyle;
+        };
+        container: ViewStyle;
+        optionStyle: {
+          input: TextStyle;
+          validationErrorText: TextStyle;
+          wrapper: ViewStyle;
+        };
         title: TextStyle;
       };
       scrollView: ViewStyle;
@@ -1291,6 +1305,19 @@ export const defaultTheme: Theme = {
       },
       name: {
         input: {},
+        title: {},
+      },
+      pollOptions: {
+        addOption: {
+          text: {},
+          wrapper: {},
+        },
+        container: {},
+        optionStyle: {
+          input: {},
+          validationErrorText: {},
+          wrapper: {},
+        },
         title: {},
       },
       scrollView: {},

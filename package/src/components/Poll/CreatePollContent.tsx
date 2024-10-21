@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     paddingVertical: 18,
   },
   multipleAnswersWrapper: { borderRadius: 12, marginTop: 16 },
-  scrollView: { flex: 1, margin: 16 },
+  scrollView: { flex: 1, padding: 16 },
   sendButton: { paddingHorizontal: 16, paddingVertical: 18 },
   text: { fontSize: 16 },
   textInputWrapper: {
