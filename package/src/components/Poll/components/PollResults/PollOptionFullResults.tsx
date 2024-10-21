@@ -46,7 +46,7 @@ export const PollOptionFullResultsContent = ({
         </Text>
       </View>
     ),
-    [option, vote_counts_by_option],
+    [headerContainer, headerText, option.id, vote_counts_by_option],
   );
 
   return (
