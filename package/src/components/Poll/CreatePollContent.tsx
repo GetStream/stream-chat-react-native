@@ -13,7 +13,6 @@ import {
   CreatePollContentProvider,
   useChatContext,
   useCreatePollContentContext,
-  useMessageInputContext,
 } from '../../contexts';
 import { SendPoll } from '../../icons';
 
@@ -240,9 +239,13 @@ export const CreatePollContentWithContext = () => {
 };
 
 export const CreatePollContent = ({
+  closePollCreationDialog,
   createPollOptionHeight,
-}: Pick<CreatePollContentContextValue, 'createPollOptionHeight'>) => {
-  const { closePollCreationDialog, sendMessage } = useMessageInputContext();
+  sendMessage,
+}: Pick<
+  CreatePollContentContextValue,
+  'createPollOptionHeight' | 'sendMessage' | 'closePollCreationDialog'
+>) => {
   const { client } = useChatContext();
 
   const createAndSendPoll = useCallback(
@@ -256,7 +259,7 @@ export const CreatePollContent = ({
 
   return (
     <CreatePollContentProvider
-      value={{ closePollCreationDialog, createAndSendPoll, createPollOptionHeight }}
+      value={{ closePollCreationDialog, createAndSendPoll, createPollOptionHeight, sendMessage }}
     >
       <CreatePollContentWithContext />
     </CreatePollContentProvider>

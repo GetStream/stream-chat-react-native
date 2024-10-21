@@ -157,6 +157,7 @@ type MessageInputPropsWithContext<
     | 'openPollCreationDialog'
     | 'closePollCreationDialog'
     | 'showPollCreationDialog'
+    | 'sendMessage'
   > &
   Pick<MessagesContextValue<StreamChatGenerics>, 'Reply'> &
   Pick<
@@ -219,6 +220,7 @@ const MessageInputWithContext = <
     resetInput,
     SendButton,
     sending,
+    sendMessage,
     sendMessageAsync,
     setShowMoreOptions,
     showPollCreationDialog,
@@ -898,7 +900,10 @@ const MessageInputWithContext = <
         >
           <GestureHandlerRootView style={{ flex: 1 }}>
             <SafeAreaView style={{ flex: 1 }}>
-              <CreatePollContent />
+              <CreatePollContent
+                closePollCreationDialog={closePollCreationDialog}
+                sendMessage={sendMessage}
+              />
             </SafeAreaView>
           </GestureHandlerRootView>
         </Modal>
@@ -1124,6 +1129,7 @@ export const MessageInput = <
     resetInput,
     SendButton,
     sending,
+    sendMessage,
     sendMessageAsync,
     SendMessageDisallowedIndicator,
     setGiphyActive,
@@ -1211,6 +1217,7 @@ export const MessageInput = <
         resetInput,
         SendButton,
         sending,
+        sendMessage,
         sendMessageAsync,
         SendMessageDisallowedIndicator,
         setGiphyActive,

@@ -492,7 +492,7 @@ export type InputMessageInputContextValue<
    * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
    */
   onChangeText?: (newText: string) => void;
-  openPollCreationDialog?: () => void;
+  openPollCreationDialog?: ({ sendMessage }: Pick<LocalMessageInputContext, 'sendMessage'>) => void;
   SendMessageDisallowedIndicator?: React.ComponentType;
   /**
    * ref for input setter function
@@ -575,7 +575,11 @@ export const MessageInputProvider = <
   const defaultOpenPollCreationDialog = useCallback(() => setShowPollCreationDialog(true), []);
   const closePollCreationDialog = useCallback(() => setShowPollCreationDialog(false), []);
 
-  const { editing, initialValue, openPollCreationDialog = defaultOpenPollCreationDialog } = value;
+  const {
+    editing,
+    initialValue,
+    openPollCreationDialog: openPollCreationDialogFromContext,
+  } = value;
   const {
     fileUploads,
     imageUploads,
@@ -1393,6 +1397,14 @@ export const MessageInputProvider = <
       console.log('Error uploading image', error);
     }
   };
+
+  const openPollCreationDialog = useCallback(() => {
+    if (openPollCreationDialogFromContext) {
+      openPollCreationDialogFromContext({ sendMessage });
+      return;
+    }
+    defaultOpenPollCreationDialog();
+  }, [defaultOpenPollCreationDialog, openPollCreationDialogFromContext, sendMessage]);
 
   const messageInputContext = useCreateMessageInputContext({
     appendText,
