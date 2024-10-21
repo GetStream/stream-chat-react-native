@@ -373,7 +373,8 @@ describe('MessageList', () => {
     }
     // could be any message that is not within the initially processed ones
     const latestMessageText = mockedLongMessagesList[0].text;
-    const { id: targetedMessageId, text: targetedMessageText } = mockedLongMessagesList[mockedLongMessagesList.length - 4];
+    const { id: targetedMessageId, text: targetedMessageText } =
+      mockedLongMessagesList[mockedLongMessagesList.length - 4];
 
     const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
