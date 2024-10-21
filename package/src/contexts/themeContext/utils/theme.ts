@@ -682,6 +682,7 @@ export type Theme = {
       };
       optionsWrapper: ViewStyle;
     };
+    modalHeader: { container: ViewStyle; title: TextStyle };
   };
   progressControl: {
     container: ViewStyle;
@@ -1375,6 +1376,7 @@ export const defaultTheme: Theme = {
       },
       optionsWrapper: {},
     },
+    modalHeader: { container: {}, title: {} },
   },
   progressControl: {
     container: {},
