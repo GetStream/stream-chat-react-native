@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSharedValue } from 'react-native-reanimated';
@@ -13,6 +13,7 @@ import {
   CreatePollContentProvider,
   useChatContext,
   useCreatePollContentContext,
+  useTheme,
 } from '../../contexts';
 import { SendPoll } from '../../icons';
 
@@ -44,6 +45,25 @@ export const CreatePollContentWithContext = () => {
     positionCache: { 0: { updatedIndex: 0, updatedTop: 0 } },
   });
 
+  const {
+    theme: {
+      colors: { bg_user },
+      poll: {
+        createContent: {
+          addComment,
+          anonymousPoll,
+          headerContainer,
+          maxVotes,
+          multipleAnswers,
+          name,
+          scrollView,
+          sendButton,
+          suggestOption,
+        },
+      },
+    },
+  } = useTheme();
+
   useEffect(() => {
     const seenTexts = new Set<string>();
     const duplicateTexts = new Set<string>();
@@ -72,7 +92,7 @@ export const CreatePollContentWithContext = () => {
 
   return (
     <>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+      <View style={[styles.headerContainer, headerContainer]}>
         <PollModalHeader onPress={() => closePollCreationDialog?.()} title='Create Poll' />
         <TouchableOpacity
           disabled={!isPollValid}
@@ -100,7 +120,7 @@ export const CreatePollContentWithContext = () => {
                 : {}),
             });
           }}
-          style={{ paddingHorizontal: 16, paddingVertical: 18 }}
+          style={[styles.sendButton, sendButton]}
         >
           <SendPoll
             height={24}
@@ -110,59 +130,38 @@ export const CreatePollContentWithContext = () => {
           />
         </TouchableOpacity>
       </View>
-      <ScrollView style={{ flex: 1, margin: 16 }}>
-        <View>
-          <Text style={{ fontSize: 16 }}>Questions</Text>
-          <TextInput
-            onChangeText={setPollTitle}
-            placeholder='Ask a question'
-            style={{
-              backgroundColor: '#F7F7F8',
-              borderRadius: 12,
-              fontSize: 16,
-              marginTop: 8,
-              paddingHorizontal: 16,
-              paddingVertical: 18,
-            }}
-            value={pollTitle}
-          />
-        </View>
+      <ScrollView style={[styles.scrollView, scrollView]}>
+        <Text style={[styles.text, name.title]}>Questions</Text>
+        <TextInput
+          onChangeText={setPollTitle}
+          placeholder='Ask a question'
+          style={[styles.textInputWrapper, styles.text, { backgroundColor: bg_user }, name.input]}
+          value={pollTitle}
+        />
         <CreatePollOptions
           currentOptionPositions={currentOptionPositions}
           duplicates={duplicates}
           pollOptions={pollOptions}
           setPollOptions={setPollOptions}
         />
-        <View style={{ backgroundColor: '#F7F7F8', borderRadius: 12, marginTop: 16 }}>
-          <View
-            style={{
-              alignItems: 'center',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              paddingHorizontal: 16,
-              paddingVertical: 18,
-            }}
-          >
-            <Text style={{ fontSize: 16 }}>Multiple answers</Text>
+        <View
+          style={[
+            styles.multipleAnswersWrapper,
+            { backgroundColor: bg_user },
+            multipleAnswers.wrapper,
+          ]}
+        >
+          <View style={[styles.multipleAnswersRow, multipleAnswers.row]}>
+            <Text style={[styles.text, multipleAnswers.title]}>Multiple answers</Text>
             <Switch
               onValueChange={() => setMultipleAnswersAllowed(!multipleAnswersAllowed)}
               value={multipleAnswersAllowed}
             />
           </View>
           {multipleAnswersAllowed ? (
-            <View
-              style={{
-                alignItems: 'flex-start',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                paddingHorizontal: 16,
-                paddingVertical: 18,
-              }}
-            >
+            <View style={[styles.maxVotesWrapper, maxVotes.wrapper]}>
               {maxVotesPerPersonEnabled && !isMaxNumberOfVotesValid(maxVotesPerPerson) ? (
-                <Text
-                  style={{ color: '#FF3842', fontSize: 12, left: 16, position: 'absolute', top: 0 }}
-                >
+                <Text style={[styles.maxVotesValidationText, maxVotes.validationText]}>
                   Type a number from 1 to 10
                 </Text>
               ) : null}
@@ -171,7 +170,7 @@ export const CreatePollContentWithContext = () => {
                   inputMode='numeric'
                   onChangeText={setMaxVotesPerPerson}
                   placeholder='Maximum votes per person'
-                  style={{ flex: 1, fontSize: 16 }}
+                  style={[styles.maxVotesInput, maxVotes.input]}
                   value={maxVotesPerPerson}
                 />
                 <Switch
@@ -183,51 +182,22 @@ export const CreatePollContentWithContext = () => {
           ) : null}
         </View>
         <View
-          style={{
-            alignItems: 'center',
-            backgroundColor: '#F7F7F8',
-            borderRadius: 12,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginTop: 16,
-            paddingHorizontal: 16,
-            paddingVertical: 18,
-          }}
+          style={[styles.textInputWrapper, { backgroundColor: bg_user }, anonymousPoll.wrapper]}
         >
-          <Text style={{ fontSize: 16 }}>Anonymous poll</Text>
+          <Text style={[styles.text, anonymousPoll.title]}>Anonymous poll</Text>
           <Switch onValueChange={() => setIsAnonymous(!isAnonymous)} value={isAnonymous} />
         </View>
         <View
-          style={{
-            alignItems: 'center',
-            backgroundColor: '#F7F7F8',
-            borderRadius: 12,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginTop: 16,
-            paddingHorizontal: 16,
-            paddingVertical: 18,
-          }}
+          style={[styles.textInputWrapper, { backgroundColor: bg_user }, suggestOption.wrapper]}
         >
-          <Text style={{ fontSize: 16 }}>Suggest an option</Text>
+          <Text style={[styles.text, suggestOption.title]}>Suggest an option</Text>
           <Switch
             onValueChange={() => setOptionSuggestionsAllowed(!optionSuggestionsAllowed)}
             value={optionSuggestionsAllowed}
           />
         </View>
-        <View
-          style={{
-            alignItems: 'center',
-            backgroundColor: '#F7F7F8',
-            borderRadius: 12,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginTop: 16,
-            paddingHorizontal: 16,
-            paddingVertical: 18,
-          }}
-        >
-          <Text style={{ fontSize: 16 }}>Add a comment</Text>
+        <View style={[styles.textInputWrapper, { backgroundColor: bg_user }, addComment.wrapper]}>
+          <Text style={[styles.text, addComment.title]}>Add a comment</Text>
           <Switch
             onValueChange={() => setCommentsAllowed(!commentsAllowed)}
             value={commentsAllowed}
@@ -265,3 +235,42 @@ export const CreatePollContent = ({
     </CreatePollContentProvider>
   );
 };
+
+const styles = StyleSheet.create({
+  headerContainer: { flexDirection: 'row', justifyContent: 'space-between' },
+  maxVotesInput: { flex: 1, fontSize: 16 },
+  maxVotesValidationText: {
+    color: '#FF3842',
+    fontSize: 12,
+    left: 16,
+    position: 'absolute',
+    top: 0,
+  },
+  maxVotesWrapper: {
+    alignItems: 'flex-start',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 18,
+  },
+  multipleAnswersRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 18,
+  },
+  multipleAnswersWrapper: { borderRadius: 12, marginTop: 16 },
+  scrollView: { flex: 1, margin: 16 },
+  sendButton: { paddingHorizontal: 16, paddingVertical: 18 },
+  text: { fontSize: 16 },
+  textInputWrapper: {
+    alignItems: 'center',
+    borderRadius: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 18,
+  },
+});

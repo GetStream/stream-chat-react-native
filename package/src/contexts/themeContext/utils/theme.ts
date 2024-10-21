@@ -11,6 +11,7 @@ export const Colors = {
   accent_red: '#FF3742',
   bg_gradient_end: '#F7F7F7',
   bg_gradient_start: '#FCFCFC',
+  bg_user: '#F7F7F8',
   black: '#000000',
   blue_alice: '#E9F2FF',
   border: '#00000014', // 14 = 8% opacity; top: x=0, y=-1; bottom: x=0, y=1
@@ -608,6 +609,39 @@ export type Theme = {
       reactionList: ViewStyle;
       reactionListBorderRadius: number;
       reactionSize: number;
+    };
+  };
+  poll: {
+    createContent: {
+      addComment: {
+        title: TextStyle;
+        wrapper: ViewStyle;
+      };
+      anonymousPoll: {
+        title: TextStyle;
+        wrapper: ViewStyle;
+      };
+      headerContainer: ViewStyle;
+      maxVotes: {
+        input: TextStyle;
+        validationText: TextStyle;
+        wrapper: ViewStyle;
+      };
+      multipleAnswers: {
+        row: ViewStyle;
+        title: TextStyle;
+        wrapper: ViewStyle;
+      };
+      name: {
+        input: TextStyle;
+        title: TextStyle;
+      };
+      scrollView: ViewStyle;
+      sendButton: ViewStyle;
+      suggestOption: {
+        title: TextStyle;
+        wrapper: ViewStyle;
+      };
     };
   };
   progressControl: {
@@ -1232,6 +1266,39 @@ export const defaultTheme: Theme = {
       reactionList: {},
       reactionListBorderRadius: 24,
       reactionSize: 24,
+    },
+  },
+  poll: {
+    createContent: {
+      addComment: {
+        title: {},
+        wrapper: {},
+      },
+      anonymousPoll: {
+        title: {},
+        wrapper: {},
+      },
+      headerContainer: {},
+      maxVotes: {
+        input: {},
+        validationText: {},
+        wrapper: {},
+      },
+      multipleAnswers: {
+        row: {},
+        title: {},
+        wrapper: {},
+      },
+      name: {
+        input: {},
+        title: {},
+      },
+      scrollView: {},
+      sendButton: {},
+      suggestOption: {
+        title: {},
+        wrapper: {},
+      },
     },
   },
   progressControl: {
