@@ -212,6 +212,7 @@ export const ChannelPreviewMessenger = <
   props: ChannelPreviewMessengerProps<StreamChatGenerics>,
 ) => {
   const {
+    forceUpdate,
     maxUnreadCount,
     onSelect,
     PreviewAvatar,
@@ -224,6 +225,7 @@ export const ChannelPreviewMessenger = <
   return (
     <MemoizedChannelPreviewMessengerWithContext
       {...{
+        forceUpdate,
         maxUnreadCount,
         onSelect,
         PreviewAvatar,
