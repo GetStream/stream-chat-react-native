@@ -674,6 +674,12 @@ export type Theme = {
         wrapper: ViewStyle;
       };
     };
+    fullResults: {
+      container: ViewStyle;
+      contentContainer: ViewStyle;
+      headerContainer: ViewStyle;
+      headerText: TextStyle;
+    };
     inputDialog: {
       button: TextStyle;
       buttonContainer: ViewStyle;
@@ -713,6 +719,7 @@ export type Theme = {
       };
       scrollView: ViewStyle;
       title: TextStyle;
+      vote: { container: ViewStyle; dateText: TextStyle; userName: TextStyle };
     };
   };
   progressControl: {
@@ -1399,6 +1406,12 @@ export const defaultTheme: Theme = {
         wrapper: {},
       },
     },
+    fullResults: {
+      container: {},
+      contentContainer: {},
+      headerContainer: {},
+      headerText: {},
+    },
     inputDialog: {
       button: {},
       buttonContainer: {},
@@ -1438,6 +1451,7 @@ export const defaultTheme: Theme = {
       },
       scrollView: {},
       title: {},
+      vote: { container: {}, dateText: {}, userName: {} },
     },
   },
   progressControl: {
