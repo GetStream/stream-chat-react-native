@@ -14,7 +14,7 @@ import Animated, {
 
 import { PollOptionData } from 'stream-chat';
 
-import { useAttachmentPickerContext, useCreatePollContentContext } from '../../../contexts';
+import { useCreatePollContentContext } from '../../../contexts';
 import { DragHandle } from '../../../icons';
 
 export type CurrentOptionPositionsCache = {

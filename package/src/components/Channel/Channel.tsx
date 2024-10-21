@@ -420,9 +420,7 @@ export type ChannelPropsWithContext<
      * Tells if channel is rendering a thread list
      */
     threadList?: boolean;
-  } & Partial<
-    Pick<InputMessageInputContextValue, 'openPollCreationDialog' | 'closePollCreationDialog'>
-  >;
+  } & Partial<Pick<InputMessageInputContextValue, 'openPollCreationDialog'>>;
 
 const ChannelWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -461,7 +459,6 @@ const ChannelWithContext = <
     channel,
     children,
     client,
-    closePollCreationDialog,
     CommandsButton = CommandsButtonDefault,
     compressImageQuality,
     CooldownTimer = CooldownTimerDefault,
@@ -2294,7 +2291,6 @@ const ChannelWithContext = <
     channelId,
     clearEditingState,
     clearQuotedMessageState,
-    closePollCreationDialog,
     CommandsButton,
     compressImageQuality,
     CooldownTimer,

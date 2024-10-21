@@ -311,7 +311,6 @@ export type InputMessageInputContextValue<
 
   clearEditingState: () => void;
   clearQuotedMessageState: () => void;
-  closePollCreationDialog: () => void;
   /**
    * Custom UI component for commands button.
    *
@@ -327,7 +326,6 @@ export type InputMessageInputContextValue<
    */
   CooldownTimer: React.ComponentType<CooldownTimerProps>;
   editMessage: StreamChat<StreamChatGenerics>['updateMessage'];
-
   /**
    * Custom UI component for FileUploadPreview.
    * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/FileUploadPreview.tsx
@@ -336,6 +334,7 @@ export type InputMessageInputContextValue<
 
   /** When false, CameraSelectorIcon will be hidden */
   hasCameraPicker: boolean;
+
   /** When false, CommandsButton will be hidden */
   hasCommands: boolean;
   /** When false, FileSelectorIcon will be hidden */
@@ -352,16 +351,15 @@ export type InputMessageInputContextValue<
   InputReplyStateHeader: React.ComponentType<InputReplyStateHeaderProps<StreamChatGenerics>>;
   /** Limit on allowed number of files to attach at a time. */
   maxNumberOfFiles: number;
-
   /**
    * Custom UI component for more options button.
    *
    * Defaults to and accepts same props as: [MoreOptionsButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/more-options-button/)
    */
   MoreOptionsButton: React.ComponentType<MoreOptionsButtonProps>;
+
   /** Limit on the number of lines in the text input before scrolling */
   numberOfLines: number;
-  openPollCreationDialog: () => void;
   quotedMessage: boolean | MessageType<StreamChatGenerics>;
   /**
    * Custom UI component for send button.
@@ -372,7 +370,6 @@ export type InputMessageInputContextValue<
   sendImageAsync: boolean;
   sendMessage: (message: Partial<StreamMessage<StreamChatGenerics>>) => Promise<void>;
   setQuotedMessageState: (message: MessageType<StreamChatGenerics>) => void;
-  showPollCreationDialog: boolean;
   /**
    * Custom UI component to render checkbox with text ("Also send to channel") in Thread's input box.
    * When ticked, message will also be sent in parent channel.
@@ -407,6 +404,7 @@ export type InputMessageInputContextValue<
   autoCompleteTriggerSettings?: (
     settings: ACITriggerSettingsParams<StreamChatGenerics>,
   ) => TriggerSettings<StreamChatGenerics>;
+  closePollCreationDialog?: () => void;
   /**
    * Compress image with quality (from 0 to 1, where 1 is best quality).
    * On iOS, values larger than 0.8 don't produce a noticeable quality increase in most images,
@@ -494,6 +492,7 @@ export type InputMessageInputContextValue<
    * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
    */
   onChangeText?: (newText: string) => void;
+  openPollCreationDialog?: () => void;
   SendMessageDisallowedIndicator?: React.ComponentType;
   /**
    * ref for input setter function
@@ -503,6 +502,7 @@ export type InputMessageInputContextValue<
    * @overrideType Function
    */
   setInputRef?: (ref: TextInput | null) => void;
+  showPollCreationDialog?: boolean;
 };
 
 export type MessageInputContextValue<
@@ -573,14 +573,9 @@ export const MessageInputProvider = <
   const [showPollCreationDialog, setShowPollCreationDialog] = useState(false);
 
   const defaultOpenPollCreationDialog = useCallback(() => setShowPollCreationDialog(true), []);
-  const defaultClosePollCreationDialog = useCallback(() => setShowPollCreationDialog(false), []);
+  const closePollCreationDialog = useCallback(() => setShowPollCreationDialog(false), []);
 
-  const {
-    closePollCreationDialog = defaultClosePollCreationDialog,
-    editing,
-    initialValue,
-    openPollCreationDialog = defaultOpenPollCreationDialog,
-  } = value;
+  const { editing, initialValue, openPollCreationDialog = defaultOpenPollCreationDialog } = value;
   const {
     fileUploads,
     imageUploads,

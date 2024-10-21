@@ -24,7 +24,6 @@ export const useCreateInputMessageInputContext = <
   channelId,
   clearEditingState,
   clearQuotedMessageState,
-  closePollCreationDialog,
   CommandsButton,
   compressImageQuality,
   CooldownTimer,
@@ -125,6 +124,7 @@ export const useCreateInputMessageInputContext = <
       MoreOptionsButton,
       numberOfLines,
       onChangeText,
+      openPollCreationDialog,
       quotedMessage,
       SendButton,
       sendImageAsync,
@@ -132,12 +132,10 @@ export const useCreateInputMessageInputContext = <
       SendMessageDisallowedIndicator,
       setInputRef,
       setQuotedMessageState,
+      showPollCreationDialog,
       ShowThreadMessageInChannelButton,
       StartAudioRecordingButton,
       UploadProgressIndicator,
-      openPollCreationDialog,
-      closePollCreationDialog,
-      showPollCreationDialog,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
@@ -148,7 +146,6 @@ export const useCreateInputMessageInputContext = <
       maxMessageLength,
       quotedMessageId,
       openPollCreationDialog,
-      closePollCreationDialog,
       showPollCreationDialog,
     ],
   );

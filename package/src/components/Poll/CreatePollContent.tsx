@@ -74,7 +74,7 @@ export const CreatePollContentWithContext = () => {
   return (
     <>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <PollModalHeader onPress={closePollCreationDialog} title='Create Poll' />
+        <PollModalHeader onPress={() => closePollCreationDialog?.()} title='Create Poll' />
         <TouchableOpacity
           disabled={!isPollValid}
           onPress={() => {
@@ -249,7 +249,7 @@ export const CreatePollContent = ({
     async (pollData: CreatePollData) => {
       const poll = await client.polls.createPoll(pollData);
       await sendMessage({ customMessageData: { poll_id: poll.id as string } });
-      closePollCreationDialog();
+      closePollCreationDialog?.();
     },
     [client, sendMessage, closePollCreationDialog],
   );
