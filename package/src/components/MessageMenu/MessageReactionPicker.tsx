@@ -117,6 +117,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     flexGrow: 1,
     justifyContent: 'space-around',
-    marginVertical: 16,
+    marginVertical: 8,
   },
 });
