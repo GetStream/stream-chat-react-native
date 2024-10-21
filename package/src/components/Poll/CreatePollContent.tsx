@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { SafeAreaView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSharedValue } from 'react-native-reanimated';
@@ -9,6 +9,7 @@ import { CreatePollData, PollOptionData, VotingVisibility } from 'stream-chat';
 import { CreatePollOptions, CurrentOptionPositionsCache, PollModalHeader } from './components';
 
 import {
+  CreatePollContentContextValue,
   CreatePollContentProvider,
   useChatContext,
   useCreatePollContentContext,
@@ -71,7 +72,7 @@ export const CreatePollContentWithContext = () => {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <PollModalHeader onPress={closePollCreationDialog} title='Create Poll' />
         <TouchableOpacity
@@ -234,28 +235,29 @@ export const CreatePollContentWithContext = () => {
           />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </>
   );
 };
 
-export const CreatePollContent = () => {
+export const CreatePollContent = ({
+  createPollOptionHeight,
+}: Pick<CreatePollContentContextValue, 'createPollOptionHeight'>) => {
   const { closePollCreationDialog, sendMessage } = useMessageInputContext();
   const { client } = useChatContext();
 
   const createAndSendPoll = useCallback(
     async (pollData: CreatePollData) => {
-      // TODO: replace with stateful name
       const poll = await client.polls.createPoll(pollData);
-      console.log('CREATED POLL: ', poll.id);
       await sendMessage({ customMessageData: { poll_id: poll.id as string } });
-      console.log('ISE: SENDING: ', pollData.options);
       closePollCreationDialog();
     },
     [client, sendMessage, closePollCreationDialog],
   );
 
   return (
-    <CreatePollContentProvider value={{ closePollCreationDialog, createAndSendPoll }}>
+    <CreatePollContentProvider
+      value={{ closePollCreationDialog, createAndSendPoll, createPollOptionHeight }}
+    >
       <CreatePollContentWithContext />
     </CreatePollContentProvider>
   );

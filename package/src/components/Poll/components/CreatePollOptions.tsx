@@ -14,7 +14,7 @@ import Animated, {
 
 import { PollOptionData } from 'stream-chat';
 
-import { useAttachmentPickerContext } from '../../../contexts';
+import { useAttachmentPickerContext, useCreatePollContentContext } from '../../../contexts';
 import { DragHandle } from '../../../icons';
 
 export type CurrentOptionPositionsCache = {
@@ -29,7 +29,7 @@ export type CurrentOptionPositionsCache = {
   };
 };
 
-const OPTION_HEIGHT = 69;
+const OPTION_HEIGHT = 71;
 
 export const CreatePollOption = ({
   boundaries,
@@ -50,7 +50,7 @@ export const CreatePollOption = ({
   isDragging: SharedValue<1 | 0>;
   option: PollOptionData;
 }) => {
-  const { createPollOptionHeight = OPTION_HEIGHT } = useAttachmentPickerContext();
+  const { createPollOptionHeight = OPTION_HEIGHT } = useCreatePollContentContext();
   const top = useSharedValue(index * createPollOptionHeight);
   const isDraggingDerived = useDerivedValue(() => isDragging.value);
 
@@ -236,7 +236,7 @@ export const CreatePollOptions = (props: {
   pollOptions: PollOptionData[];
   setPollOptions: Dispatch<SetStateAction<PollOptionData[]>>;
 }) => {
-  const { createPollOptionHeight = OPTION_HEIGHT } = useAttachmentPickerContext();
+  const { createPollOptionHeight = OPTION_HEIGHT } = useCreatePollContentContext();
   const { currentOptionPositions, duplicates = [], pollOptions, setPollOptions } = props;
   const updateOption = useCallback(
     (newText: string, index: number) => {

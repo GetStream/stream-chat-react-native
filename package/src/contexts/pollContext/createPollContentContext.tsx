@@ -9,6 +9,12 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 export type CreatePollContentContextValue = {
   closePollCreationDialog: () => void;
   createAndSendPoll: (pollData: CreatePollData) => Promise<void>;
+  /**
+   * A property that defines the constant height of the options within the poll creation screen.
+   *
+   * **Default: ** 71
+   */
+  createPollOptionHeight?: number;
 };
 
 export const CreatePollContentContext = React.createContext(

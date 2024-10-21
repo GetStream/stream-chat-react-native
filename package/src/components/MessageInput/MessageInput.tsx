@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   Modal,
   NativeSyntheticEvent,
+  SafeAreaView,
   StyleSheet,
   TextInputFocusEventData,
   View,
@@ -889,15 +890,19 @@ const MessageInputWithContext = <
           <AttachmentPickerSelectionBar />
         </View>
       )}
-      <Modal
-        animationType='slide'
-        onRequestClose={closePollCreationDialog}
-        visible={showPollCreationDialog}
-      >
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <CreatePollContent />
-        </GestureHandlerRootView>
-      </Modal>
+      {showPollCreationDialog ? (
+        <Modal
+          animationType='slide'
+          onRequestClose={closePollCreationDialog}
+          visible={showPollCreationDialog}
+        >
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <SafeAreaView style={{ flex: 1 }}>
+              <CreatePollContent />
+            </SafeAreaView>
+          </GestureHandlerRootView>
+        </Modal>
+      ) : null}
     </>
   );
 };
