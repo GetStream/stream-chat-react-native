@@ -703,6 +703,17 @@ export type Theme = {
       container: ViewStyle;
       title: TextStyle;
     };
+    results: {
+      container: ViewStyle;
+      item: {
+        container: ViewStyle;
+        headerContainer: ViewStyle;
+        title: TextStyle;
+        voteCount: TextStyle;
+      };
+      scrollView: ViewStyle;
+      title: TextStyle;
+    };
   };
   progressControl: {
     container: ViewStyle;
@@ -1415,6 +1426,17 @@ export const defaultTheme: Theme = {
     },
     modalHeader: {
       container: {},
+      title: {},
+    },
+    results: {
+      container: {},
+      item: {
+        container: {},
+        headerContainer: {},
+        title: {},
+        voteCount: {},
+      },
+      scrollView: {},
       title: {},
     },
   },

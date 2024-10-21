@@ -1,8 +1,9 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { PollOption, PollVote as PollVoteClass } from 'stream-chat';
 
+import { useTheme } from '../../../../contexts';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { Avatar } from '../../../Avatar/Avatar';
 import { usePollState } from '../../hooks/usePollState';
@@ -34,19 +35,23 @@ export const PollVote = (vote: PollVoteClass) => (
 
 export const PollResultsItem = ({ option }: PollResultItemProps) => {
   const { latest_votes_by_option, vote_counts_by_option } = usePollState();
+
+  const {
+    theme: {
+      colors: { bg_user },
+      poll: {
+        results: {
+          item: { container, headerContainer, title, voteCount },
+        },
+      },
+    },
+  } = useTheme();
+
   return (
-    <View
-      style={{
-        backgroundColor: '#F7F7F8',
-        borderRadius: 12,
-        marginBottom: 8,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-      }}
-    >
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Text style={{ flex: 1, fontSize: 16, fontWeight: '500' }}>{option.text}</Text>
-        <Text style={{ fontSize: 16, marginLeft: 16 }}>
+    <View style={[styles.container, { backgroundColor: bg_user }, container]}>
+      <View style={[styles.headerContainer, headerContainer]}>
+        <Text style={[styles.title, title]}>{option.text}</Text>
+        <Text style={[styles.voteCount, voteCount]}>
           {vote_counts_by_option[option.id] ?? 0} votes
         </Text>
       </View>
@@ -59,3 +64,15 @@ export const PollResultsItem = ({ option }: PollResultItemProps) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    borderRadius: 12,
+    marginBottom: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  headerContainer: { flexDirection: 'row', justifyContent: 'space-between' },
+  title: { flex: 1, fontSize: 16, fontWeight: '500' },
+  voteCount: { fontSize: 16, marginLeft: 16 },
+});

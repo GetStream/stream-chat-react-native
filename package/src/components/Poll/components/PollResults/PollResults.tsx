@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
-import { ScrollViewProps, Text, View } from 'react-native';
+import { ScrollViewProps, StyleSheet, Text, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
 
 import { PollResultsItem } from './PollResultItem';
 
-import { PollContextProvider, PollContextValue } from '../../../../contexts';
+import { PollContextProvider, PollContextValue, useTheme } from '../../../../contexts';
 import { usePollState } from '../../hooks/usePollState';
 
 export type PollResultsProps = PollContextValue & {
@@ -26,18 +26,19 @@ const PollResultsContent = ({
     [vote_counts_by_option, options],
   );
 
+  const {
+    theme: {
+      colors: { bg_user },
+      poll: {
+        results: { container, scrollView, title },
+      },
+    },
+  } = useTheme();
+
   return (
-    <ScrollView style={{ flex: 1, marginHorizontal: 16 }} {...additionalScrollViewProps}>
-      <View
-        style={{
-          backgroundColor: '#F7F7F8',
-          borderRadius: 12,
-          marginTop: 16,
-          paddingHorizontal: 16,
-          paddingVertical: 18,
-        }}
-      >
-        <Text style={{ fontSize: 16, fontWeight: '500' }}>{name}</Text>
+    <ScrollView style={[styles.scrollView, scrollView]} {...additionalScrollViewProps}>
+      <View style={[styles.container, { backgroundColor: bg_user }, container]}>
+        <Text style={[styles.title, title]}>{name}</Text>
       </View>
       <View style={{ marginTop: 16 }}>
         {sortedOptions.map((option) => (
@@ -62,3 +63,14 @@ export const PollResults = ({
     )}
   </PollContextProvider>
 );
+
+const styles = StyleSheet.create({
+  container: {
+    borderRadius: 12,
+    marginTop: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 18,
+  },
+  scrollView: { flex: 1, marginHorizontal: 16 },
+  title: { fontSize: 16, fontWeight: '500' },
+});
