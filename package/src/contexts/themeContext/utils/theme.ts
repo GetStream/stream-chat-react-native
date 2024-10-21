@@ -615,6 +615,12 @@ export type Theme = {
     };
   };
   poll: {
+    allOptions: {
+      listContainer: ViewStyle;
+      titleContainer: ViewStyle;
+      titleText: TextStyle;
+      wrapper: ViewStyle;
+    };
     createContent: {
       addComment: {
         title: TextStyle;
@@ -1302,6 +1308,12 @@ export const defaultTheme: Theme = {
     },
   },
   poll: {
+    allOptions: {
+      listContainer: {},
+      titleContainer: {},
+      titleText: {},
+      wrapper: {},
+    },
     createContent: {
       addComment: {
         title: {},

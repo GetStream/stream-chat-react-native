@@ -42,27 +42,21 @@ export const PollAllOptionsContent = ({
 }: Pick<PollAllOptionsContentProps, 'additionalScrollViewProps'>) => {
   const { name, options } = usePollState();
 
+  const {
+    theme: {
+      colors: { bg_user },
+      poll: {
+        allOptions: { listContainer, titleContainer, titleText, wrapper },
+      },
+    },
+  } = useTheme();
+
   return (
-    <ScrollView style={{ flex: 1, marginBottom: 16, padding: 16 }} {...additionalScrollViewProps}>
-      <View
-        style={{
-          backgroundColor: '#F7F7F8',
-          borderRadius: 12,
-          paddingHorizontal: 16,
-          paddingVertical: 18,
-        }}
-      >
-        <Text style={{ fontSize: 16, fontWeight: '500' }}>{name}</Text>
+    <ScrollView style={[styles.allOptionsWrapper, wrapper]} {...additionalScrollViewProps}>
+      <View style={[styles.allOptionsTitleContainer, { backgroundColor: bg_user }, titleContainer]}>
+        <Text style={[styles.allOptionsTitleText, titleText]}>{name}</Text>
       </View>
-      <View
-        style={{
-          backgroundColor: '#F7F7F8',
-          borderRadius: 12,
-          marginTop: 32,
-          paddingBottom: 18,
-          paddingHorizontal: 16,
-        }}
-      >
+      <View style={[styles.allOptionsListContainer, { backgroundColor: bg_user }, listContainer]}>
         {options?.map((option: PollOptionClass) => (
           <View key={`full_poll_options_${option.id}`} style={{ paddingVertical: 16 }}>
             <PollOption key={option.id} option={option} showProgressBar={false} />
@@ -190,6 +184,19 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
 };
 
 const styles = StyleSheet.create({
+  allOptionsListContainer: {
+    borderRadius: 12,
+    marginTop: 32,
+    paddingBottom: 18,
+    paddingHorizontal: 16,
+  },
+  allOptionsTitleContainer: {
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 18,
+  },
+  allOptionsTitleText: { fontSize: 16, fontWeight: '500' },
+  allOptionsWrapper: { flex: 1, marginBottom: 16, padding: 16 },
   container: { flexDirection: 'row' },
   progressBar: { borderRadius: 4, flex: 1, flexDirection: 'row', height: 4, marginTop: 2 },
   text: { flex: 1, fontSize: 16, marginLeft: 4 },
