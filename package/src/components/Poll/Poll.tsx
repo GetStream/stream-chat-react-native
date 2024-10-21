@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { Poll as PollClass, PollOption as PollOptionClass } from 'stream-chat';
 
@@ -15,7 +15,12 @@ import {
 
 import { usePollState } from './hooks/usePollState';
 
-import { PollContextProvider, useChannelContext, useMessageContext } from '../../contexts';
+import {
+  PollContextProvider,
+  useChannelContext,
+  useMessageContext,
+  useTheme,
+} from '../../contexts';
 
 export const PollButtons = () => (
   <>
@@ -36,10 +41,22 @@ export const PollHeader = () => {
     if (max_votes_allowed) return `Select up to ${max_votes_allowed}`;
     return 'Select one or more';
   }, [is_closed, enforce_unique_vote, max_votes_allowed]);
+
+  const {
+    theme: {
+      colors: { text_high_emphasis, text_low_emphasis },
+      poll: {
+        message: { header },
+      },
+    },
+  } = useTheme();
+
   return (
     <>
-      <Text style={{ color: '#080707', fontSize: 16, fontWeight: '500' }}>{name}</Text>
-      <Text style={{ color: '#7E828B', fontSize: 12 }}>{subtitle}</Text>
+      <Text style={[styles.headerTitle, { color: text_high_emphasis }, header.title]}>{name}</Text>
+      <Text style={[styles.headerSubtitle, { color: text_low_emphasis }, header.subtitle]}>
+        {subtitle}
+      </Text>
     </>
   );
 };
@@ -48,10 +65,18 @@ const PollWithContext = () => {
   const { PollButtons: PollButtonsOverride, PollHeader: PollHeaderOverride } = useChannelContext();
   const { options } = usePollState();
 
+  const {
+    theme: {
+      poll: {
+        message: { container, optionsWrapper },
+      },
+    },
+  } = useTheme();
+
   return (
-    <View style={{ padding: 15, width: 270 }}>
+    <View style={[styles.container, container]}>
       {PollHeaderOverride ? <PollHeaderOverride /> : <PollHeader />}
-      <View style={{ marginTop: 12 }}>
+      <View style={[styles.optionsWrapper, optionsWrapper]}>
         {options?.slice(0, 10)?.map((option: PollOptionClass) => (
           <PollOption key={`message_poll_option_${option.id}`} option={option} />
         ))}
@@ -76,3 +101,10 @@ export const Poll = ({ poll }: { poll: PollClass }) => {
     </PollContextProvider>
   );
 };
+
+const styles = StyleSheet.create({
+  container: { padding: 15, width: 270 },
+  headerSubtitle: { fontSize: 12 },
+  headerTitle: { fontSize: 16, fontWeight: '500' },
+  optionsWrapper: { marginTop: 12 },
+});

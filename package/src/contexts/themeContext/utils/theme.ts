@@ -7,8 +7,10 @@ export const DEFAULT_STATUS_ICON_SIZE = 16;
 
 export const Colors = {
   accent_blue: '#005FFF',
+  accent_dark_blue: '#005DFF',
   accent_error: '#FF3842',
   accent_green: '#20E070',
+  accent_info: '#1FE06F',
   accent_red: '#FF3742',
   bg_gradient_end: '#F7F7F7',
   bg_gradient_start: '#FCFCFC',
@@ -656,6 +658,23 @@ export type Theme = {
         title: TextStyle;
         wrapper: ViewStyle;
       };
+    };
+    message: {
+      container: ViewStyle;
+      header: {
+        subtitle: TextStyle;
+        title: TextStyle;
+      };
+      option: {
+        container: ViewStyle;
+        progressBar: ViewStyle;
+        progressBarEmptyFill: string;
+        progressBarVotedFill: string;
+        progressBarWinnerFill: string;
+        text: TextStyle;
+        wrapper: ViewStyle;
+      };
+      optionsWrapper: ViewStyle;
     };
   };
   progressControl: {
@@ -1326,6 +1345,23 @@ export const defaultTheme: Theme = {
         title: {},
         wrapper: {},
       },
+    },
+    message: {
+      container: {},
+      header: {
+        subtitle: {},
+        title: {},
+      },
+      option: {
+        container: {},
+        progressBar: {},
+        progressBarEmptyFill: '',
+        progressBarVotedFill: '',
+        progressBarWinnerFill: '',
+        text: {},
+        wrapper: {},
+      },
+      optionsWrapper: {},
     },
   },
   progressControl: {

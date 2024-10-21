@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 
-import { ScrollViewProps, Text, View } from 'react-native';
+import { ScrollViewProps, StyleSheet, Text, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
 
@@ -13,6 +13,7 @@ import {
   PollContextValue,
   useMessageContext,
   usePollContext,
+  useTheme,
 } from '../../../contexts';
 
 import { DefaultStreamChatGenerics } from '../../../types/types';
@@ -134,11 +135,30 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
   //   }
   // }, [enableOfflineSupport, message, poll, vote_counts_by_option]);
 
+  const {
+    theme: {
+      colors: { accent_dark_blue, accent_info, grey },
+      poll: {
+        message: {
+          option: {
+            container,
+            progressBar,
+            progressBarEmptyFill,
+            progressBarVotedFill,
+            progressBarWinnerFill,
+            text,
+            wrapper,
+          },
+        },
+      },
+    },
+  } = useTheme();
+
   return (
-    <View style={{ marginTop: 8, paddingVertical: 8 }}>
-      <View style={{ flexDirection: 'row' }}>
+    <View style={[styles.wrapper, wrapper]}>
+      <View style={[styles.container, container]}>
         <VoteButton onPress={toggleVote} option={option} />
-        <Text style={{ flex: 1, fontSize: 16, marginLeft: 4 }}>{option.text}</Text>
+        <Text style={[styles.text, text]}>{option.text}</Text>
         <View style={{ flexDirection: 'row' }}>
           {relevantVotes.map((vote: PollVote) => (
             <Avatar image={vote.user?.image as string} key={vote.id} size={20} />
@@ -147,19 +167,19 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
         </View>
       </View>
       {showProgressBar ? (
-        <View style={{ borderRadius: 4, flex: 1, flexDirection: 'row', height: 4, marginTop: 2 }}>
+        <View style={[styles.progressBar, progressBar]}>
           <View
             style={{
               backgroundColor:
                 is_closed && maxVotedOptionIds.length === 1 && maxVotedOptionIds[0] === option.id
-                  ? '#1FE06F'
-                  : '#005DFF',
+                  ? progressBarWinnerFill || accent_info
+                  : progressBarVotedFill || accent_dark_blue,
               flex: maxVotes > 0 ? votes / maxVotes : 0,
             }}
           />
           <View
             style={{
-              backgroundColor: 'grey',
+              backgroundColor: progressBarEmptyFill || grey,
               flex: maxVotes > 0 ? (maxVotes - votes) / maxVotes : 1,
             }}
           />
@@ -168,3 +188,10 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: { flexDirection: 'row' },
+  progressBar: { borderRadius: 4, flex: 1, flexDirection: 'row', height: 4, marginTop: 2 },
+  text: { flex: 1, fontSize: 16, marginLeft: 4 },
+  wrapper: { marginTop: 8, paddingVertical: 8 },
+});
