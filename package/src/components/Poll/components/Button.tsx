@@ -10,7 +10,7 @@ import { PollAllOptions } from './PollOption';
 
 import { PollOptionFullResults, PollResults } from './PollResults';
 
-import { useChatContext, usePollContext } from '../../../contexts';
+import { useChatContext, usePollContext, useTheme } from '../../../contexts';
 import { Check } from '../../../icons';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { MessageType } from '../../MessageList/hooks/useMessageList';
@@ -46,10 +46,19 @@ export const ViewResultsButton = (props: PollButtonProps) => {
     setShowResults(true);
   }, [message, onPress, poll]);
 
+  const {
+    theme: {
+      colors: { accent_dark_blue },
+      poll: {
+        button: { container, text },
+      },
+    },
+  } = useTheme();
+
   return (
     <>
-      <TouchableOpacity onPress={onPressHandler} style={[styles.container]}>
-        <Text style={[styles.text]}>View Results</Text>
+      <TouchableOpacity onPress={onPressHandler} style={[styles.container, container]}>
+        <Text style={[styles.text, { color: accent_dark_blue }, text]}>View Results</Text>
       </TouchableOpacity>
       {showResults ? (
         <Modal
@@ -70,9 +79,19 @@ export const ViewResultsButton = (props: PollButtonProps) => {
 export const EndVoteButton = () => {
   const { created_by, endVote, is_closed } = usePollState();
   const { client } = useChatContext();
+
+  const {
+    theme: {
+      colors: { accent_dark_blue },
+      poll: {
+        button: { container, text },
+      },
+    },
+  } = useTheme();
+
   return !is_closed && created_by?.id === client.userID ? (
-    <TouchableOpacity onPress={endVote} style={[styles.container]}>
-      <Text style={[styles.text]}>End Vote</Text>
+    <TouchableOpacity onPress={endVote} style={[styles.container, container]}>
+      <Text style={[styles.text, { color: accent_dark_blue }, text]}>End Vote</Text>
     </TouchableOpacity>
   ) : null;
 };
@@ -92,11 +111,20 @@ export const AddCommentButton = (props: PollButtonProps) => {
     setShowAddCommentDialog(true);
   }, [message, onPress, poll]);
 
+  const {
+    theme: {
+      colors: { accent_dark_blue },
+      poll: {
+        button: { container, text },
+      },
+    },
+  } = useTheme();
+
   return (
     <>
       {!is_closed && allow_answers ? (
-        <TouchableOpacity onPress={onPressHandler} style={[styles.container]}>
-          <Text style={[styles.text]}>Add a comment</Text>
+        <TouchableOpacity onPress={onPressHandler} style={[styles.container, container]}>
+          <Text style={[styles.text, { color: accent_dark_blue }, text]}>Add a comment</Text>
         </TouchableOpacity>
       ) : null}
 
@@ -127,11 +155,22 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
     setShowAnswers(true);
   }, [message, onPress, poll]);
 
+  const {
+    theme: {
+      colors: { accent_dark_blue },
+      poll: {
+        button: { container, text },
+      },
+    },
+  } = useTheme();
+
   return (
     <>
       {answers_count && answers_count > 0 ? (
-        <TouchableOpacity onPress={onPressHandler} style={[styles.container]}>
-          <Text style={[styles.text]}>View {answers_count} comments</Text>
+        <TouchableOpacity onPress={onPressHandler} style={[styles.container, container]}>
+          <Text style={[styles.text, { color: accent_dark_blue }, text]}>
+            View {answers_count} comments
+          </Text>
         </TouchableOpacity>
       ) : null}
       {showAnswers ? (
@@ -165,10 +204,25 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
     setShowAddCommentDialog(true);
   }, [message, onPress, poll]);
 
+  const {
+    theme: {
+      colors: { accent_dark_blue },
+      poll: {
+        answersList: { buttonContainer },
+        button: { text },
+      },
+    },
+  } = useTheme();
+
   return (
     <>
-      <TouchableOpacity onPress={onPressHandler} style={[styles.answerListAddCommentContainer]}>
-        <Text style={[styles.text]}>{ownAnswer ? 'Update your comment' : 'Add a comment'}</Text>
+      <TouchableOpacity
+        onPress={onPressHandler}
+        style={[styles.answerListAddCommentContainer, buttonContainer]}
+      >
+        <Text style={[styles.text, { color: accent_dark_blue }, text]}>
+          {ownAnswer ? 'Update your comment' : 'Add a comment'}
+        </Text>
       </TouchableOpacity>
       {showAddCommentDialog ? (
         <PollInputDialog
@@ -197,11 +251,20 @@ export const SuggestOptionButton = (props: PollButtonProps) => {
     setShowAddOptionDialog(true);
   }, [message, onPress, poll]);
 
+  const {
+    theme: {
+      colors: { accent_dark_blue },
+      poll: {
+        button: { container, text },
+      },
+    },
+  } = useTheme();
+
   return (
     <>
       {!is_closed && allow_user_suggested_options ? (
-        <TouchableOpacity onPress={onPressHandler} style={[styles.container]}>
-          <Text style={[styles.text]}>Suggest an option</Text>
+        <TouchableOpacity onPress={onPressHandler} style={[styles.container, container]}>
+          <Text style={[styles.text, { color: accent_dark_blue }, text]}>Suggest an option</Text>
         </TouchableOpacity>
       ) : null}
       {showAddOptionDialog ? (
@@ -231,11 +294,22 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
     setShowAllOptions(true);
   }, [message, onPress, poll]);
 
+  const {
+    theme: {
+      colors: { accent_dark_blue },
+      poll: {
+        button: { container, text },
+      },
+    },
+  } = useTheme();
+
   return (
     <>
       {options && options.length > 10 ? (
-        <TouchableOpacity onPress={onPressHandler} style={[styles.container]}>
-          <Text style={[styles.text]}>See all {options.length} options</Text>
+        <TouchableOpacity onPress={onPressHandler} style={[styles.container, container]}>
+          <Text style={[styles.text, { color: accent_dark_blue }, text]}>
+            See all {options.length} options
+          </Text>
         </TouchableOpacity>
       ) : null}
       {showAllOptions ? (
@@ -257,15 +331,31 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
 export const VoteButton = ({ onPress, option }: PollVoteButtonProps & { option: PollOption }) => {
   const { is_closed, ownVotesByOptionId } = usePollState();
 
+  const {
+    theme: {
+      colors: { accent_dark_blue, disabled },
+      poll: {
+        message: {
+          option: { voteButtonActive, voteButtonContainer, voteButtonInactive },
+        },
+      },
+    },
+  } = useTheme();
+
   return !is_closed ? (
     <TouchableOpacity
       onPress={onPress}
       style={[
         styles.voteContainer,
         {
-          backgroundColor: ownVotesByOptionId[option.id] ? '#005DFF' : 'transparent',
-          borderColor: ownVotesByOptionId[option.id] ? '#005DFF' : '#B4BBBA',
+          backgroundColor: ownVotesByOptionId[option.id]
+            ? voteButtonActive || accent_dark_blue
+            : 'transparent',
+          borderColor: ownVotesByOptionId[option.id]
+            ? voteButtonActive || accent_dark_blue
+            : voteButtonInactive || disabled,
         },
+        voteButtonContainer,
       ]}
     >
       {ownVotesByOptionId[option.id] ? <Check height={15} pathFill='white' width={20} /> : null}
@@ -324,7 +414,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     paddingVertical: 11,
   },
-  text: { color: '#005DFF', fontSize: 16 },
+  text: { fontSize: 16 },
   voteContainer: {
     alignItems: 'center',
     borderRadius: 18,

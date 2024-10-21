@@ -18,6 +18,7 @@ export const Colors = {
   black: '#000000',
   blue_alice: '#E9F2FF',
   border: '#00000014', // 14 = 8% opacity; top: x=0, y=-1; bottom: x=0, y=1
+  disabled: '#B4BBBA',
   grey: '#7A7A7A',
   grey_dark: '#72767E',
   grey_gainsboro: '#DBDBDB',
@@ -622,6 +623,7 @@ export type Theme = {
       wrapper: ViewStyle;
     };
     answersList: {
+      buttonContainer: ViewStyle;
       container: ViewStyle;
       item: {
         answerText: TextStyle;
@@ -630,6 +632,7 @@ export type Theme = {
         userInfoContainer: ViewStyle;
       };
     };
+    button: { container: ViewStyle; text: TextStyle };
     createContent: {
       addComment: {
         title: TextStyle;
@@ -701,6 +704,9 @@ export type Theme = {
         progressBarVotedFill: string;
         progressBarWinnerFill: string;
         text: TextStyle;
+        voteButtonActive: string;
+        voteButtonContainer: ViewStyle;
+        voteButtonInactive: string;
         wrapper: ViewStyle;
       };
       optionsWrapper: ViewStyle;
@@ -1354,6 +1360,7 @@ export const defaultTheme: Theme = {
       wrapper: {},
     },
     answersList: {
+      buttonContainer: {},
       container: {},
       item: {
         answerText: {},
@@ -1362,6 +1369,7 @@ export const defaultTheme: Theme = {
         userInfoContainer: {},
       },
     },
+    button: { container: {}, text: {} },
     createContent: {
       addComment: {
         title: {},
@@ -1433,6 +1441,9 @@ export const defaultTheme: Theme = {
         progressBarVotedFill: '',
         progressBarWinnerFill: '',
         text: {},
+        voteButtonActive: '',
+        voteButtonContainer: {},
+        voteButtonInactive: '',
         wrapper: {},
       },
       optionsWrapper: {},
