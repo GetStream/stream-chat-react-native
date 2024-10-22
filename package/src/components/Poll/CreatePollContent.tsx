@@ -49,7 +49,7 @@ export const CreatePollContentWithContext = () => {
 
   const {
     theme: {
-      colors: { bg_user, black, white },
+      colors: { accent_error, bg_user, black, white },
       poll: {
         createContent: {
           addComment,
@@ -174,7 +174,11 @@ export const CreatePollContentWithContext = () => {
             <View style={[styles.maxVotesWrapper, maxVotes.wrapper]}>
               {maxVotesPerPersonEnabled && !isMaxNumberOfVotesValid(maxVotesPerPerson) ? (
                 <Text
-                  style={[styles.maxVotesValidationText, { color: black }, maxVotes.validationText]}
+                  style={[
+                    styles.maxVotesValidationText,
+                    { color: accent_error },
+                    maxVotes.validationText,
+                  ]}
                 >
                   {t<string>('Type a number from 2 to 10')}
                 </Text>
@@ -260,7 +264,6 @@ const styles = StyleSheet.create({
   headerContainer: { flexDirection: 'row', justifyContent: 'space-between' },
   maxVotesInput: { flex: 1, fontSize: 16 },
   maxVotesValidationText: {
-    color: '#FF3842',
     fontSize: 12,
     left: 16,
     position: 'absolute',

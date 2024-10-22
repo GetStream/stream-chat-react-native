@@ -186,7 +186,7 @@ export const CreatePollOption = ({
 
   const {
     theme: {
-      colors: { accent_error, bg_user, text_low_emphasis },
+      colors: { accent_error, bg_user, black, text_low_emphasis },
       poll: {
         createContent: {
           pollOptions: { optionStyle },
@@ -223,7 +223,7 @@ export const CreatePollOption = ({
       <TextInput
         onChangeText={(newText) => handleChangeText(newText, index)}
         placeholder={t<string>('Option')}
-        style={[styles.optionInput, optionStyle.input]}
+        style={[styles.optionInput, { color: black }, optionStyle.input]}
         value={option.text}
       />
       <GestureDetector gesture={gesture}>
