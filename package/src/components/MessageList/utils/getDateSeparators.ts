@@ -36,8 +36,13 @@ export const getDateSeparators = <
     const isDeletedMessageVisibleToSender =
       deletedMessagesVisibilityType === 'sender' || deletedMessagesVisibilityType === 'always';
 
+    const isDeletedMessageVisibleToReceiver =
+      deletedMessagesVisibilityType === 'receiver' || deletedMessagesVisibilityType === 'always';
+
     return (
-      !isMessageTypeDeleted || (userId === message.user?.id && isDeletedMessageVisibleToSender)
+      !isMessageTypeDeleted ||
+      (userId === message.user?.id && isDeletedMessageVisibleToSender) ||
+      (userId !== message.user?.id && isDeletedMessageVisibleToReceiver)
     );
   });
 
