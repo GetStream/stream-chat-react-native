@@ -682,6 +682,14 @@ const ChannelWithContext = <
       ) {
         loadChannelAtFirstUnreadMessage();
       }
+      // If the messageId is undefined and the last message and the current message id do not match we load the channel at the very bottom.
+      else if (
+        channel.state.messages?.[channel.state.messages.length - 1]?.id !==
+          channel.state.latestMessages?.[channel.state.latestMessages.length - 1]?.id &&
+        !messageId
+      ) {
+        await loadChannel();
+      }
     };
 
     initChannel();

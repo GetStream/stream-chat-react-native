@@ -667,12 +667,12 @@ const MessageListWithContext = <
     );
     return wrapMessageInTheme ? (
       <>
-        {shouldApplyAndroidWorkaround && renderDateSeperator}
         <ThemeProvider mergedStyle={modifiedTheme}>
           <View
             style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}
             testID={`message-list-item-${index}`}
           >
+            {shouldApplyAndroidWorkaround && renderDateSeperator}
             {renderMessage}
           </View>
         </ThemeProvider>
@@ -983,7 +983,9 @@ const MessageListWithContext = <
         });
       }
       // the message we want to scroll to has not been loaded in the state yet
-      loadChannelAroundMessage({ messageId: messageIdToScroll });
+      if (indexOfParentInMessageList === -1) {
+        loadChannelAroundMessage({ messageId: messageIdToScroll });
+      }
     }, 50);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetedMessage, initialScrollToFirstUnreadMessage]);

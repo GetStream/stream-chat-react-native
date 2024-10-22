@@ -1,5 +1,37 @@
 # Change Log
 
+### [5.39.4](https://github.com/GetStream/stream-chat-react-native/compare/v5.39.3...v5.39.4) (2024-10-21)
+
+
+### Bug Fixes
+
+* add sender and receiver background color for message bubble in message overlay ([#2710](https://github.com/GetStream/stream-chat-react-native/issues/2710)) ([7e64290](https://github.com/GetStream/stream-chat-react-native/commit/7e64290c4131c15666102478ca94ce50910d0189))
+* double loading when targetting a message ([#2711](https://github.com/GetStream/stream-chat-react-native/issues/2711)) ([fdb4f17](https://github.com/GetStream/stream-chat-react-native/commit/fdb4f17991ffde7f9c59dd690f8913e9a75e8560))
+
+### [5.39.3](https://github.com/GetStream/stream-chat-react-native/compare/v5.39.2...v5.39.3) (2024-10-15)
+
+
+### Bug Fixes
+
+* ChannelAvatar crash when used outside of ChannelList ([#2708](https://github.com/GetStream/stream-chat-react-native/issues/2708)) ([85f4ab2](https://github.com/GetStream/stream-chat-react-native/commit/85f4ab21adf4b0da636475f0285e3360d9b1309b))
+
+### [5.39.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.39.1...v5.39.2) (2024-10-14)
+
+
+### Bug Fixes
+
+* load channel at the very end when messageId is undefined ([#2706](https://github.com/GetStream/stream-chat-react-native/issues/2706)) ([dbfc01e](https://github.com/GetStream/stream-chat-react-native/commit/dbfc01e4aa8875c12aa5f3b5c807164d1e7fe29c))
+* native picker max images ([#2699](https://github.com/GetStream/stream-chat-react-native/issues/2699)) ([8d3ef4d](https://github.com/GetStream/stream-chat-react-native/commit/8d3ef4dd84a0bd8b885f67a115832dd9beb2a6a6))
+* user online real time change ([#2705](https://github.com/GetStream/stream-chat-react-native/issues/2705)) ([78d83fd](https://github.com/GetStream/stream-chat-react-native/commit/78d83fdbd2238c914c733c83e2e74ca162efcef0))
+
+### [5.39.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.39.0...v5.39.1) (2024-10-02)
+
+
+### Bug Fixes
+
+* expo refresh control and audio bugs ([#2695](https://github.com/GetStream/stream-chat-react-native/issues/2695)) ([b548a71](https://github.com/GetStream/stream-chat-react-native/commit/b548a717610d2b8863210828ea2ccd4cbf100ea0))
+* own message custom theme bug ([#2696](https://github.com/GetStream/stream-chat-react-native/issues/2696)) ([4e2596b](https://github.com/GetStream/stream-chat-react-native/commit/4e2596b631d9a4ea510573cf0f055d2824d35a2d))
+
 ## [5.39.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.38.1...v5.39.0) (2024-09-25)
 
 
