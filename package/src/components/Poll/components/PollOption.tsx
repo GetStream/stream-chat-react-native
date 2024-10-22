@@ -44,7 +44,7 @@ export const PollAllOptionsContent = ({
 
   const {
     theme: {
-      colors: { bg_user },
+      colors: { bg_user, black, white },
       poll: {
         allOptions: { listContainer, titleContainer, titleText, wrapper },
       },
@@ -52,9 +52,13 @@ export const PollAllOptionsContent = ({
   } = useTheme();
 
   return (
-    <ScrollView style={[styles.allOptionsWrapper, wrapper]} {...additionalScrollViewProps}>
+    <ScrollView
+      contentContainerStyle={{ paddingBottom: 70 }}
+      style={[styles.allOptionsWrapper, { backgroundColor: white }, wrapper]}
+      {...additionalScrollViewProps}
+    >
       <View style={[styles.allOptionsTitleContainer, { backgroundColor: bg_user }, titleContainer]}>
-        <Text style={[styles.allOptionsTitleText, titleText]}>{name}</Text>
+        <Text style={[styles.allOptionsTitleText, { color: black }, titleText]}>{name}</Text>
       </View>
       <View style={[styles.allOptionsListContainer, { backgroundColor: bg_user }, listContainer]}>
         {options?.map((option: PollOptionClass) => (
