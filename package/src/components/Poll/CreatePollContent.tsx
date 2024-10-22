@@ -132,7 +132,10 @@ export const CreatePollContentWithContext = () => {
           />
         </TouchableOpacity>
       </View>
-      <ScrollView style={[styles.scrollView, { backgroundColor: white }, scrollView]}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 70 }}
+        style={[styles.scrollView, { backgroundColor: white }, scrollView]}
+      >
         <Text style={[styles.text, { color: black }, name.title]}>{t<string>('Questions')}</Text>
         <TextInput
           onChangeText={setPollTitle}
@@ -278,7 +281,7 @@ const styles = StyleSheet.create({
     paddingVertical: 18,
   },
   multipleAnswersWrapper: { borderRadius: 12, marginTop: 16 },
-  scrollView: { flex: 1, marginBottom: 20, padding: 16 },
+  scrollView: { flex: 1, padding: 16 },
   sendButton: { paddingHorizontal: 16, paddingVertical: 18 },
   text: { fontSize: 16 },
   textInputWrapper: {
