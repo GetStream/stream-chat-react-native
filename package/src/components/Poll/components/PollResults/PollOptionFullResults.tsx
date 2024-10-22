@@ -37,7 +37,7 @@ export const PollOptionFullResultsContent = ({
 
   const {
     theme: {
-      colors: { bg_user },
+      colors: { bg_user, black, white },
       poll: {
         fullResults: { container, contentContainer, headerContainer, headerText },
       },
@@ -47,7 +47,7 @@ export const PollOptionFullResultsContent = ({
   const PollOptionFullResultsHeader = useCallback(
     () => (
       <View style={[styles.headerContainer, headerContainer]}>
-        <Text style={[styles.headerText, headerText]}>
+        <Text style={[styles.headerText, { color: black }, headerText]}>
           {t<string>('{{count}} votes', { count: vote_counts_by_option[option.id] ?? 0 })}
         </Text>
       </View>
@@ -56,7 +56,7 @@ export const PollOptionFullResultsContent = ({
   );
 
   return (
-    <View style={[styles.container, container]}>
+    <View style={[styles.container, { backgroundColor: white }, container]}>
       <FlatList
         contentContainerStyle={[
           styles.contentContainer,

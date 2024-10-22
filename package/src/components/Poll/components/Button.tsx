@@ -64,6 +64,12 @@ export const ViewResultsButton = (props: PollButtonProps) => {
     setShowResults(true);
   }, [message, onPress, poll]);
 
+  const {
+    theme: {
+      colors: { white },
+    },
+  } = useTheme();
+
   return (
     <>
       <GenericPollButton onPress={onPressHandler} title={t<string>('View Results')} />
@@ -73,7 +79,7 @@ export const ViewResultsButton = (props: PollButtonProps) => {
           onRequestClose={() => setShowResults(false)}
           visible={showResults}
         >
-          <SafeAreaView style={{ flex: 1 }}>
+          <SafeAreaView style={{ backgroundColor: white, flex: 1 }}>
             <PollModalHeader
               onPress={() => setShowResults(false)}
               title={t<string>('Poll Results')}
@@ -145,6 +151,12 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
     setShowAnswers(true);
   }, [message, onPress, poll]);
 
+  const {
+    theme: {
+      colors: { white },
+    },
+  } = useTheme();
+
   return (
     <>
       {answers_count && answers_count > 0 ? (
@@ -159,7 +171,7 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
           onRequestClose={() => setShowAnswers(false)}
           visible={showAnswers}
         >
-          <SafeAreaView style={{ flex: 1 }}>
+          <SafeAreaView style={{ backgroundColor: white, flex: 1 }}>
             <PollModalHeader
               onPress={() => setShowAnswers(false)}
               title={t<string>('Poll Comments')}
@@ -190,7 +202,7 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
 
   const {
     theme: {
-      colors: { accent_dark_blue },
+      colors: { accent_dark_blue, bg_user },
       poll: {
         answersList: { buttonContainer },
         button: { text },
@@ -202,7 +214,11 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
     <>
       <TouchableOpacity
         onPress={onPressHandler}
-        style={[styles.answerListAddCommentContainer, buttonContainer]}
+        style={[
+          styles.answerListAddCommentContainer,
+          { backgroundColor: bg_user },
+          buttonContainer,
+        ]}
       >
         <Text style={[styles.text, { color: accent_dark_blue }, text]}>
           {ownAnswer ? t<string>('Update your comment') : t<string>('Add a comment')}
@@ -269,6 +285,12 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
     setShowAllOptions(true);
   }, [message, onPress, poll]);
 
+  const {
+    theme: {
+      colors: { white },
+    },
+  } = useTheme();
+
   return (
     <>
       {options && options.length > 10 ? (
@@ -283,7 +305,7 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
           onRequestClose={() => setShowAllOptions(false)}
           visible={showAllOptions}
         >
-          <SafeAreaView style={{ flex: 1 }}>
+          <SafeAreaView style={{ backgroundColor: white, flex: 1 }}>
             <PollModalHeader
               onPress={() => setShowAllOptions(false)}
               title={t<string>('Poll Options')}
@@ -347,6 +369,12 @@ export const ShowAllVotesButton = (props: PollButtonProps & { option: PollOption
     setShowAllVotes(true);
   }, [message, onPress, poll]);
 
+  const {
+    theme: {
+      colors: { white },
+    },
+  } = useTheme();
+
   return (
     <>
       {vote_counts_by_option && vote_counts_by_option?.[option.id] > 5 ? (
@@ -358,7 +386,7 @@ export const ShowAllVotesButton = (props: PollButtonProps & { option: PollOption
           onRequestClose={() => setShowAllVotes(false)}
           visible={showAllVotes}
         >
-          <SafeAreaView style={{ flex: 1 }}>
+          <SafeAreaView style={{ backgroundColor: white, flex: 1 }}>
             <PollModalHeader onPress={() => setShowAllVotes(false)} title={option.text} />
             <PollOptionFullResults message={message} option={option} poll={poll} />
           </SafeAreaView>
@@ -371,7 +399,6 @@ export const ShowAllVotesButton = (props: PollButtonProps & { option: PollOption
 const styles = StyleSheet.create({
   answerListAddCommentContainer: {
     alignItems: 'center',
-    backgroundColor: '#F7F7F8',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 18,

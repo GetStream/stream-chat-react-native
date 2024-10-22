@@ -28,7 +28,7 @@ const PollResultsContent = ({
 
   const {
     theme: {
-      colors: { bg_user },
+      colors: { bg_user, black, white },
       poll: {
         results: { container, scrollView, title },
       },
@@ -36,9 +36,12 @@ const PollResultsContent = ({
   } = useTheme();
 
   return (
-    <ScrollView style={[styles.scrollView, scrollView]} {...additionalScrollViewProps}>
+    <ScrollView
+      style={[styles.scrollView, { backgroundColor: white }, scrollView]}
+      {...additionalScrollViewProps}
+    >
       <View style={[styles.container, { backgroundColor: bg_user }, container]}>
-        <Text style={[styles.title, title]}>{name}</Text>
+        <Text style={[styles.title, { color: black }, title]}>{name}</Text>
       </View>
       <View style={{ marginTop: 16 }}>
         {sortedOptions.map((option) => (

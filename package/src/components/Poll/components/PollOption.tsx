@@ -131,7 +131,7 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
 
   const {
     theme: {
-      colors: { accent_dark_blue, accent_info, grey },
+      colors: { accent_dark_blue, accent_info, black, grey },
       poll: {
         message: {
           option: {
@@ -152,12 +152,14 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
     <View style={[styles.wrapper, wrapper]}>
       <View style={[styles.container, container]}>
         <VoteButton onPress={toggleVote} option={option} />
-        <Text style={[styles.text, text]}>{option.text}</Text>
+        <Text style={[styles.text, { color: black }, text]}>{option.text}</Text>
         <View style={{ flexDirection: 'row' }}>
           {relevantVotes.map((vote: PollVote) => (
             <Avatar image={vote.user?.image as string} key={vote.id} size={20} />
           ))}
-          <Text style={{ marginLeft: 2 }}>{vote_counts_by_option[option.id] || 0}</Text>
+          <Text style={{ color: black, marginLeft: 2 }}>
+            {vote_counts_by_option[option.id] || 0}
+          </Text>
         </View>
       </View>
       {showProgressBar ? (

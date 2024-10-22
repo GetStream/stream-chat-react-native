@@ -12,7 +12,7 @@ export type PollModalHeaderProps = {
 export const PollModalHeader = ({ onPress, title }: PollModalHeaderProps) => {
   const {
     theme: {
-      colors: { text_high_emphasis },
+      colors: { black, text_high_emphasis, white },
       poll: {
         modalHeader: { container, title: titleStyle },
       },
@@ -20,11 +20,11 @@ export const PollModalHeader = ({ onPress, title }: PollModalHeaderProps) => {
   } = useTheme();
 
   return (
-    <View style={[styles.container, container]}>
+    <View style={[styles.container, { backgroundColor: white }, container]}>
       <TouchableOpacity onPress={onPress}>
         <Back height={24} pathFill={text_high_emphasis} viewBox='0 0 24 24' width={24} />
       </TouchableOpacity>
-      <Text numberOfLines={1} style={[styles.title, titleStyle]}>
+      <Text numberOfLines={1} style={[styles.title, { color: black }, titleStyle]}>
         {title}
       </Text>
     </View>

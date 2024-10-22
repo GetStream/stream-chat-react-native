@@ -21,7 +21,7 @@ export const PollInputDialog = ({
 
   const {
     theme: {
-      colors: { accent_dark_blue },
+      colors: { accent_dark_blue, black, white },
       poll: {
         inputDialog: {
           button,
@@ -38,12 +38,12 @@ export const PollInputDialog = ({
   return (
     <Modal animationType='fade' onRequestClose={closeDialog} transparent={true} visible={visible}>
       <View style={[styles.transparentContainer, transparentContainer]}>
-        <View style={[styles.container, container]}>
-          <Text style={[styles.title, titleStyle]}>{title}</Text>
+        <View style={[styles.container, { backgroundColor: white }, container]}>
+          <Text style={[styles.title, { color: black }, titleStyle]}>{title}</Text>
           <TextInput
             onChangeText={setDialogInput}
             placeholder={t<string>('Ask a question')}
-            style={[styles.input, input]}
+            style={[styles.input, { color: black }, input]}
             value={dialogInput}
           />
           <View style={[styles.buttonContainer, buttonContainer]}>
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 17, fontWeight: '500', lineHeight: 20 },
   transparentContainer: {
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     flex: 1,
     justifyContent: 'center',
   },

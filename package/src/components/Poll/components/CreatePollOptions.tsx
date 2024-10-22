@@ -267,7 +267,7 @@ export const CreatePollOptions = (props: {
 
   const {
     theme: {
-      colors: { bg_user },
+      colors: { bg_user, black },
       poll: {
         createContent: {
           pollOptions: { addOption, container, title },
@@ -278,7 +278,7 @@ export const CreatePollOptions = (props: {
 
   return (
     <View style={[styles.container, container]}>
-      <Text style={[styles.text, title]}>{t<string>('Options')}</Text>
+      <Text style={[styles.text, { color: black }, title]}>{t<string>('Options')}</Text>
       <View style={{ height: createPollOptionHeight * pollOptions.length }}>
         {pollOptions.map((option, index) => (
           <MemoizedCreatePollOption
@@ -314,7 +314,9 @@ export const CreatePollOptions = (props: {
         }}
         style={[styles.addOptionWrapper, { backgroundColor: bg_user }, addOption.wrapper]}
       >
-        <Text style={[styles.text, addOption.text]}>{t<string>('Add an option')}</Text>
+        <Text style={[styles.text, { color: black }, addOption.text]}>
+          {t<string>('Add an option')}
+        </Text>
       </TouchableOpacity>
     </View>
   );

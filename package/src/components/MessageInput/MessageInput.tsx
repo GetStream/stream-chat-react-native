@@ -726,6 +726,12 @@ const MessageInputWithContext = <
     })),
   };
 
+  // const {
+  //   theme: {
+  //     colors: { white },
+  //   }
+  // } = useTheme();
+
   return (
     <>
       <View
@@ -899,7 +905,7 @@ const MessageInputWithContext = <
           visible={showPollCreationDialog}
         >
           <GestureHandlerRootView style={{ flex: 1 }}>
-            <SafeAreaView style={{ flex: 1 }}>
+            <SafeAreaView style={{ backgroundColor: white, flex: 1 }}>
               <CreatePollContent
                 closePollCreationDialog={closePollCreationDialog}
                 sendMessage={sendMessage}

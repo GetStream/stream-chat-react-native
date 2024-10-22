@@ -20,7 +20,7 @@ export const PollVote = (vote: PollVoteClass) => {
   const { t, tDateTimeParser } = useTranslationContext();
   const {
     theme: {
-      colors: { text_low_emphasis },
+      colors: { black, text_low_emphasis },
       poll: {
         results: {
           vote: { container, dateText, userName },
@@ -44,7 +44,7 @@ export const PollVote = (vote: PollVoteClass) => {
     <View key={`results_vote_${vote.id}`} style={[styles.voteContainer, container]}>
       <View style={{ flexDirection: 'row' }}>
         <Avatar image={vote.user?.image as string} key={vote.id} size={20} />
-        <Text style={[styles.voteUserName, userName]}>{vote.user?.name}</Text>
+        <Text style={[styles.voteUserName, { color: black }, userName]}>{vote.user?.name}</Text>
       </View>
       <Text style={[styles.voteDate, { color: text_low_emphasis }, dateText]}>{dateString}</Text>
     </View>
@@ -57,7 +57,7 @@ export const PollResultsItem = ({ option }: PollResultItemProps) => {
 
   const {
     theme: {
-      colors: { bg_user },
+      colors: { bg_user, black },
       poll: {
         results: {
           item: { container, headerContainer, title, voteCount },
@@ -69,8 +69,8 @@ export const PollResultsItem = ({ option }: PollResultItemProps) => {
   return (
     <View style={[styles.container, { backgroundColor: bg_user }, container]}>
       <View style={[styles.headerContainer, headerContainer]}>
-        <Text style={[styles.title, title]}>{option.text}</Text>
-        <Text style={[styles.voteCount, voteCount]}>
+        <Text style={[styles.title, { color: black }, title]}>{option.text}</Text>
+        <Text style={[styles.voteCount, { color: black }, voteCount]}>
           {t<string>('{{count}} votes', { count: vote_counts_by_option[option.id] ?? 0 })}
         </Text>
       </View>

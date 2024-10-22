@@ -27,7 +27,7 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
   const { t, tDateTimeParser } = useTranslationContext();
   const {
     theme: {
-      colors: { bg_user },
+      colors: { bg_user, black },
       poll: {
         answersList: { item: itemStyle },
       },
@@ -47,13 +47,15 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
 
   return (
     <View style={[styles.listItemContainer, { backgroundColor: bg_user }, itemStyle.container]}>
-      <Text style={[styles.listItemAnswerText, itemStyle.answerText]}>{answer.answer_text}</Text>
+      <Text style={[styles.listItemAnswerText, { color: black }, itemStyle.answerText]}>
+        {answer.answer_text}
+      </Text>
       <View style={[styles.listItemInfoContainer, itemStyle.infoContainer]}>
         <View style={[styles.listItemUserInfoContainer, itemStyle.userInfoContainer]}>
           <Avatar image={answer.user?.image as string} size={20} />
-          <Text style={{ fontSize: 14, marginLeft: 2 }}>{answer.user?.name}</Text>
+          <Text style={{ color: black, fontSize: 14, marginLeft: 2 }}>{answer.user?.name}</Text>
         </View>
-        <Text>{dateString}</Text>
+        <Text style={{ color: black }}>{dateString}</Text>
       </View>
     </View>
   );
@@ -69,6 +71,7 @@ export const PollAnswersListContent = ({
   const { hasNextPage, loadMore, pollAnswers } = usePollAnswersPagination();
   const {
     theme: {
+      colors: { white },
       poll: {
         answersList: { container },
       },
@@ -76,7 +79,7 @@ export const PollAnswersListContent = ({
   } = useTheme();
 
   return (
-    <View style={[styles.container, container]}>
+    <View style={[styles.container, { backgroundColor: white }, container]}>
       <FlatList
         data={pollAnswers}
         keyExtractor={(item) => `poll_answer_${item.id}`}
