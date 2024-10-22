@@ -1,12 +1,18 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { FlatList, type FlatListProps, StyleSheet, Text, View } from 'react-native';
 
 import { PollAnswer } from 'stream-chat';
 
 import { AnswerListAddCommentButton } from './Button';
 
-import { PollContextProvider, PollContextValue, useTheme } from '../../../contexts';
+import {
+  PollContextProvider,
+  PollContextValue,
+  useTheme,
+  useTranslationContext,
+} from '../../../contexts';
 import { DefaultStreamChatGenerics } from '../../../types/types';
+import { getDateString } from '../../../utils/i18n/getDateString';
 import { Avatar } from '../../Avatar/Avatar';
 import { usePollAnswersPagination } from '../hooks/usePollAnswersPagination';
 
@@ -18,6 +24,7 @@ export type PollAnswersListProps<
 };
 
 export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
+  const { t, tDateTimeParser } = useTranslationContext();
   const {
     theme: {
       colors: { bg_user },
@@ -27,6 +34,17 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
     },
   } = useTheme();
 
+  const dateString = useMemo(
+    () =>
+      getDateString({
+        date: answer.created_at,
+        t,
+        tDateTimeParser,
+        timestampTranslationKey: 'timestamp/PollVote',
+      }),
+    [answer.created_at, t, tDateTimeParser],
+  );
+
   return (
     <View style={[styles.listItemContainer, { backgroundColor: bg_user }, itemStyle.container]}>
       <Text style={[styles.listItemAnswerText, itemStyle.answerText]}>{answer.answer_text}</Text>
@@ -35,7 +53,7 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
           <Avatar image={answer.user?.image as string} size={20} />
           <Text style={{ fontSize: 14, marginLeft: 2 }}>{answer.user?.name}</Text>
         </View>
-        <Text>{answer.created_at}</Text>
+        <Text>{dateString}</Text>
       </View>
     </View>
   );

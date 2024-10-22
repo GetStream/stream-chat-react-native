@@ -14,6 +14,7 @@ import {
   useChatContext,
   useCreatePollContentContext,
   useTheme,
+  useTranslationContext,
 } from '../../contexts';
 import { SendPoll } from '../../icons';
 
@@ -21,11 +22,12 @@ export const isMaxNumberOfVotesValid = (maxNumberOfVotes: string) => {
   const parsedMaxNumberOfVotes = Number(maxNumberOfVotes);
 
   return (
-    !isNaN(parsedMaxNumberOfVotes) && parsedMaxNumberOfVotes > 0 && parsedMaxNumberOfVotes <= 10
+    !isNaN(parsedMaxNumberOfVotes) && parsedMaxNumberOfVotes > 1 && parsedMaxNumberOfVotes <= 10
   );
 };
 
 export const CreatePollContentWithContext = () => {
+  const { t } = useTranslationContext();
   const [pollTitle, setPollTitle] = useState('');
   const [pollOptions, setPollOptions] = useState<PollOptionData[]>([{ text: '' }]);
   const [multipleAnswersAllowed, setMultipleAnswersAllowed] = useState(false);
@@ -93,7 +95,7 @@ export const CreatePollContentWithContext = () => {
   return (
     <>
       <View style={[styles.headerContainer, headerContainer]}>
-        <PollModalHeader onPress={() => closePollCreationDialog?.()} title='Create Poll' />
+        <PollModalHeader onPress={() => closePollCreationDialog?.()} title={t('Create Poll')} />
         <TouchableOpacity
           disabled={!isPollValid}
           onPress={() => {
@@ -131,10 +133,10 @@ export const CreatePollContentWithContext = () => {
         </TouchableOpacity>
       </View>
       <ScrollView style={[styles.scrollView, scrollView]}>
-        <Text style={[styles.text, name.title]}>Questions</Text>
+        <Text style={[styles.text, name.title]}>{t<string>('Questions')}</Text>
         <TextInput
           onChangeText={setPollTitle}
-          placeholder='Ask a question'
+          placeholder={t('Ask a question')}
           style={[styles.textInputWrapper, styles.text, { backgroundColor: bg_user }, name.input]}
           value={pollTitle}
         />
@@ -152,7 +154,9 @@ export const CreatePollContentWithContext = () => {
           ]}
         >
           <View style={[styles.multipleAnswersRow, multipleAnswers.row]}>
-            <Text style={[styles.text, multipleAnswers.title]}>Multiple answers</Text>
+            <Text style={[styles.text, multipleAnswers.title]}>
+              {t<string>('Multiple answers')}
+            </Text>
             <Switch
               onValueChange={() => setMultipleAnswersAllowed(!multipleAnswersAllowed)}
               value={multipleAnswersAllowed}
@@ -162,14 +166,14 @@ export const CreatePollContentWithContext = () => {
             <View style={[styles.maxVotesWrapper, maxVotes.wrapper]}>
               {maxVotesPerPersonEnabled && !isMaxNumberOfVotesValid(maxVotesPerPerson) ? (
                 <Text style={[styles.maxVotesValidationText, maxVotes.validationText]}>
-                  Type a number from 1 to 10
+                  {t<string>('Type a number from 2 to 10')}
                 </Text>
               ) : null}
               <View style={{ flexDirection: 'row' }}>
                 <TextInput
                   inputMode='numeric'
                   onChangeText={setMaxVotesPerPerson}
-                  placeholder='Maximum votes per person'
+                  placeholder={t('Maximum votes per person')}
                   style={[styles.maxVotesInput, maxVotes.input]}
                   value={maxVotesPerPerson}
                 />
@@ -184,20 +188,20 @@ export const CreatePollContentWithContext = () => {
         <View
           style={[styles.textInputWrapper, { backgroundColor: bg_user }, anonymousPoll.wrapper]}
         >
-          <Text style={[styles.text, anonymousPoll.title]}>Anonymous poll</Text>
+          <Text style={[styles.text, anonymousPoll.title]}>{t<string>('Anonymous poll')}</Text>
           <Switch onValueChange={() => setIsAnonymous(!isAnonymous)} value={isAnonymous} />
         </View>
         <View
           style={[styles.textInputWrapper, { backgroundColor: bg_user }, suggestOption.wrapper]}
         >
-          <Text style={[styles.text, suggestOption.title]}>Suggest an option</Text>
+          <Text style={[styles.text, suggestOption.title]}>{t<string>('Suggest an option')}</Text>
           <Switch
             onValueChange={() => setOptionSuggestionsAllowed(!optionSuggestionsAllowed)}
             value={optionSuggestionsAllowed}
           />
         </View>
         <View style={[styles.textInputWrapper, { backgroundColor: bg_user }, addComment.wrapper]}>
-          <Text style={[styles.text, addComment.title]}>Add a comment</Text>
+          <Text style={[styles.text, addComment.title]}>{t<string>('Add a comment')}</Text>
           <Switch
             onValueChange={() => setCommentsAllowed(!commentsAllowed)}
             value={commentsAllowed}
@@ -261,7 +265,7 @@ const styles = StyleSheet.create({
     paddingVertical: 18,
   },
   multipleAnswersWrapper: { borderRadius: 12, marginTop: 16 },
-  scrollView: { flex: 1, padding: 16 },
+  scrollView: { flex: 1, marginBottom: 20, padding: 16 },
   sendButton: { paddingHorizontal: 16, paddingVertical: 18 },
   text: { fontSize: 16 },
   textInputWrapper: {

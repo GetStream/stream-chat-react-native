@@ -14,7 +14,7 @@ import Animated, {
 
 import { PollOptionData } from 'stream-chat';
 
-import { useCreatePollContentContext, useTheme } from '../../../contexts';
+import { useCreatePollContentContext, useTheme, useTranslationContext } from '../../../contexts';
 import { DragHandle } from '../../../icons';
 
 export type CurrentOptionPositionsCache = {
@@ -50,6 +50,7 @@ export const CreatePollOption = ({
   isDragging: SharedValue<1 | 0>;
   option: PollOptionData;
 }) => {
+  const { t } = useTranslationContext();
   const { createPollOptionHeight = OPTION_HEIGHT } = useCreatePollContentContext();
   const top = useSharedValue(index * createPollOptionHeight);
   const isDraggingDerived = useDerivedValue(() => isDragging.value);
@@ -216,12 +217,12 @@ export const CreatePollOption = ({
             optionStyle.validationErrorText,
           ]}
         >
-          This is already an option
+          {t<string>('This is already an option')}
         </Text>
       ) : null}
       <TextInput
         onChangeText={(newText) => handleChangeText(newText, index)}
-        placeholder='Option'
+        placeholder={t<string>('Option')}
         style={[styles.optionInput, optionStyle.input]}
         value={option.text}
       />
@@ -242,6 +243,7 @@ export const CreatePollOptions = (props: {
   pollOptions: PollOptionData[];
   setPollOptions: Dispatch<SetStateAction<PollOptionData[]>>;
 }) => {
+  const { t } = useTranslationContext();
   const { createPollOptionHeight = OPTION_HEIGHT } = useCreatePollContentContext();
   const { currentOptionPositions, duplicates = [], pollOptions, setPollOptions } = props;
   const updateOption = useCallback(
@@ -276,7 +278,7 @@ export const CreatePollOptions = (props: {
 
   return (
     <View style={[styles.container, container]}>
-      <Text style={[styles.text, title]}>Options</Text>
+      <Text style={[styles.text, title]}>{t<string>('Options')}</Text>
       <View style={{ height: createPollOptionHeight * pollOptions.length }}>
         {pollOptions.map((option, index) => (
           <MemoizedCreatePollOption
@@ -312,7 +314,7 @@ export const CreatePollOptions = (props: {
         }}
         style={[styles.addOptionWrapper, { backgroundColor: bg_user }, addOption.wrapper]}
       >
-        <Text style={[styles.text, addOption.text]}>Add an option</Text>
+        <Text style={[styles.text, addOption.text]}>{t<string>('Add an option')}</Text>
       </TouchableOpacity>
     </View>
   );

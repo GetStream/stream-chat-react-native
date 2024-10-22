@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { PollOption, PollVote as PollVoteClass } from 'stream-chat';
 
-import { useTheme } from '../../../../contexts';
+import { useTheme, useTranslationContext } from '../../../../contexts';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
+import { getDateString } from '../../../../utils/i18n/getDateString';
 import { Avatar } from '../../../Avatar/Avatar';
 import { usePollState } from '../../hooks/usePollState';
 import { ShowAllVotesButton } from '../Button';
@@ -16,6 +17,7 @@ export type PollResultItemProps<
 };
 
 export const PollVote = (vote: PollVoteClass) => {
+  const { t, tDateTimeParser } = useTranslationContext();
   const {
     theme: {
       colors: { text_low_emphasis },
@@ -27,20 +29,30 @@ export const PollVote = (vote: PollVoteClass) => {
     },
   } = useTheme();
 
+  const dateString = useMemo(
+    () =>
+      getDateString({
+        date: vote.created_at,
+        t,
+        tDateTimeParser,
+        timestampTranslationKey: 'timestamp/PollVote',
+      }),
+    [vote.created_at, t, tDateTimeParser],
+  );
+
   return (
     <View key={`results_vote_${vote.id}`} style={[styles.voteContainer, container]}>
       <View style={{ flexDirection: 'row' }}>
         <Avatar image={vote.user?.image as string} key={vote.id} size={20} />
         <Text style={[styles.voteUserName, userName]}>{vote.user?.name}</Text>
       </View>
-      <Text style={[styles.voteDate, { color: text_low_emphasis }, dateText]}>
-        {vote.created_at}
-      </Text>
+      <Text style={[styles.voteDate, { color: text_low_emphasis }, dateText]}>{dateString}</Text>
     </View>
   );
 };
 
 export const PollResultsItem = ({ option }: PollResultItemProps) => {
+  const { t } = useTranslationContext();
   const { latest_votes_by_option, vote_counts_by_option } = usePollState();
 
   const {
@@ -59,7 +71,7 @@ export const PollResultsItem = ({ option }: PollResultItemProps) => {
       <View style={[styles.headerContainer, headerContainer]}>
         <Text style={[styles.title, title]}>{option.text}</Text>
         <Text style={[styles.voteCount, voteCount]}>
-          {vote_counts_by_option[option.id] ?? 0} votes
+          {t<string>('{{count}} votes', { count: vote_counts_by_option[option.id] ?? 0 })}
         </Text>
       </View>
       {latest_votes_by_option?.[option.id]?.length > 0 ? (

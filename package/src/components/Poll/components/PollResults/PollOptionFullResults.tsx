@@ -5,7 +5,12 @@ import { PollOption, PollVote as PollVoteClass } from 'stream-chat';
 
 import { PollVote } from './PollResultItem';
 
-import { PollContextProvider, PollContextValue, useTheme } from '../../../../contexts';
+import {
+  PollContextProvider,
+  PollContextValue,
+  useTheme,
+  useTranslationContext,
+} from '../../../../contexts';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { usePollOptionVotesPagination } from '../../hooks/usePollOptionVotesPagination';
 import { usePollState } from '../../hooks/usePollState';
@@ -26,6 +31,7 @@ export const PollOptionFullResultsContent = ({
   additionalFlatListProps,
   option,
 }: Pick<PollOptionFullResultsProps, 'option' | 'additionalFlatListProps'>) => {
+  const { t } = useTranslationContext();
   const { hasNextPage, loadMore, votes } = usePollOptionVotesPagination({ option });
   const { vote_counts_by_option } = usePollState();
 
@@ -42,11 +48,11 @@ export const PollOptionFullResultsContent = ({
     () => (
       <View style={[styles.headerContainer, headerContainer]}>
         <Text style={[styles.headerText, headerText]}>
-          {vote_counts_by_option[option.id] ?? 0} votes
+          {t<string>('{{count}} votes', { count: vote_counts_by_option[option.id] ?? 0 })}
         </Text>
       </View>
     ),
-    [headerContainer, headerText, option.id, vote_counts_by_option],
+    [headerContainer, headerText, option, t, vote_counts_by_option],
   );
 
   return (

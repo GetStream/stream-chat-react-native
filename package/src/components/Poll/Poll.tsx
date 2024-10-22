@@ -20,6 +20,7 @@ import {
   useChannelContext,
   useMessageContext,
   useTheme,
+  useTranslationContext,
 } from '../../contexts';
 
 export const PollButtons = () => (
@@ -34,13 +35,14 @@ export const PollButtons = () => (
 );
 
 export const PollHeader = () => {
+  const { t } = useTranslationContext();
   const { enforce_unique_vote, is_closed, max_votes_allowed, name } = usePollState();
   const subtitle = useMemo(() => {
-    if (is_closed) return 'Vote ended';
-    if (enforce_unique_vote) return 'Select one';
-    if (max_votes_allowed) return `Select up to ${max_votes_allowed}`;
-    return 'Select one or more';
-  }, [is_closed, enforce_unique_vote, max_votes_allowed]);
+    if (is_closed) return t('Vote ended');
+    if (enforce_unique_vote) return t('Select one');
+    if (max_votes_allowed) return t('Select up to {{count}}', { count: max_votes_allowed });
+    return t('Select one or more');
+  }, [is_closed, t, enforce_unique_vote, max_votes_allowed]);
 
   const {
     theme: {
@@ -104,7 +106,7 @@ export const Poll = ({ poll }: { poll: PollClass }) => {
 
 const styles = StyleSheet.create({
   container: { padding: 15, width: 270 },
-  headerSubtitle: { fontSize: 12 },
+  headerSubtitle: { fontSize: 12, marginTop: 4 },
   headerTitle: { fontSize: 16, fontWeight: '500' },
   optionsWrapper: { marginTop: 12 },
 });

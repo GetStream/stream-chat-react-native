@@ -10,7 +10,7 @@ import { PollAllOptions } from './PollOption';
 
 import { PollOptionFullResults, PollResults } from './PollResults';
 
-import { useChatContext, usePollContext, useTheme } from '../../../contexts';
+import { useChatContext, usePollContext, useTheme, useTranslationContext } from '../../../contexts';
 import { Check } from '../../../icons';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { MessageType } from '../../MessageList/hooks/useMessageList';
@@ -50,6 +50,7 @@ export const GenericPollButton = ({ onPress, title }: { onPress?: () => void; ti
 };
 
 export const ViewResultsButton = (props: PollButtonProps) => {
+  const { t } = useTranslationContext();
   const { message, poll } = usePollContext();
   const [showResults, setShowResults] = useState(false);
   const { onPress } = props;
@@ -65,7 +66,7 @@ export const ViewResultsButton = (props: PollButtonProps) => {
 
   return (
     <>
-      <GenericPollButton onPress={onPressHandler} title='View Results' />
+      <GenericPollButton onPress={onPressHandler} title={t<string>('View Results')} />
       {showResults ? (
         <Modal
           animationType='slide'
@@ -73,7 +74,10 @@ export const ViewResultsButton = (props: PollButtonProps) => {
           visible={showResults}
         >
           <SafeAreaView style={{ flex: 1 }}>
-            <PollModalHeader onPress={() => setShowResults(false)} title='Poll Results' />
+            <PollModalHeader
+              onPress={() => setShowResults(false)}
+              title={t<string>('Poll Results')}
+            />
             <PollResults message={message} poll={poll} />
           </SafeAreaView>
         </Modal>
@@ -83,15 +87,17 @@ export const ViewResultsButton = (props: PollButtonProps) => {
 };
 
 export const EndVoteButton = () => {
+  const { t } = useTranslationContext();
   const { created_by, endVote, is_closed } = usePollState();
   const { client } = useChatContext();
 
   return !is_closed && created_by?.id === client.userID ? (
-    <GenericPollButton onPress={endVote} title='End Vote' />
+    <GenericPollButton onPress={endVote} title={t<string>('End Vote')} />
   ) : null;
 };
 
 export const AddCommentButton = (props: PollButtonProps) => {
+  const { t } = useTranslationContext();
   const { message, poll } = usePollContext();
   const { addComment, allow_answers, is_closed } = usePollState();
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
@@ -109,13 +115,13 @@ export const AddCommentButton = (props: PollButtonProps) => {
   return (
     <>
       {!is_closed && allow_answers ? (
-        <GenericPollButton onPress={onPressHandler} title='Add a comment' />
+        <GenericPollButton onPress={onPressHandler} title={t<string>('Add a comment')} />
       ) : null}
       {showAddCommentDialog ? (
         <PollInputDialog
           closeDialog={() => setShowAddCommentDialog(false)}
           onSubmit={addComment}
-          title='Add a comment'
+          title={t<string>('Add a comment')}
           visible={showAddCommentDialog}
         />
       ) : null}
@@ -124,6 +130,7 @@ export const AddCommentButton = (props: PollButtonProps) => {
 };
 
 export const ShowAllCommentsButton = (props: PollButtonProps) => {
+  const { t } = useTranslationContext();
   const { message, poll } = usePollContext();
   const { answers_count } = usePollState();
   const [showAnswers, setShowAnswers] = useState(false);
@@ -141,7 +148,10 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
   return (
     <>
       {answers_count && answers_count > 0 ? (
-        <GenericPollButton onPress={onPressHandler} title={`View ${answers_count} comments`} />
+        <GenericPollButton
+          onPress={onPressHandler}
+          title={t<string>('View {{count}} comments', { count: answers_count })}
+        />
       ) : null}
       {showAnswers ? (
         <Modal
@@ -150,7 +160,10 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
           visible={showAnswers}
         >
           <SafeAreaView style={{ flex: 1 }}>
-            <PollModalHeader onPress={() => setShowAnswers(false)} title='Poll Comments' />
+            <PollModalHeader
+              onPress={() => setShowAnswers(false)}
+              title={t<string>('Poll Comments')}
+            />
             <PollAnswersList message={message} poll={poll} />
           </SafeAreaView>
         </Modal>
@@ -160,6 +173,7 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
 };
 
 export const AnswerListAddCommentButton = (props: PollButtonProps) => {
+  const { t } = useTranslationContext();
   const { message, poll } = usePollContext();
   const { addComment, ownAnswer } = usePollState();
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
@@ -191,14 +205,14 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
         style={[styles.answerListAddCommentContainer, buttonContainer]}
       >
         <Text style={[styles.text, { color: accent_dark_blue }, text]}>
-          {ownAnswer ? 'Update your comment' : 'Add a comment'}
+          {ownAnswer ? t<string>('Update your comment') : t<string>('Add a comment')}
         </Text>
       </TouchableOpacity>
       {showAddCommentDialog ? (
         <PollInputDialog
           closeDialog={() => setShowAddCommentDialog(false)}
           onSubmit={addComment}
-          title='Add a comment'
+          title={t<string>('Add a comment')}
           visible={showAddCommentDialog}
         />
       ) : null}
@@ -207,6 +221,7 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
 };
 
 export const SuggestOptionButton = (props: PollButtonProps) => {
+  const { t } = useTranslationContext();
   const { message, poll } = usePollContext();
   const { addOption, allow_user_suggested_options, is_closed } = usePollState();
   const [showAddOptionDialog, setShowAddOptionDialog] = useState(false);
@@ -224,13 +239,13 @@ export const SuggestOptionButton = (props: PollButtonProps) => {
   return (
     <>
       {!is_closed && allow_user_suggested_options ? (
-        <GenericPollButton onPress={onPressHandler} title='Suggest an option' />
+        <GenericPollButton onPress={onPressHandler} title={t<string>('Suggest an option')} />
       ) : null}
       {showAddOptionDialog ? (
         <PollInputDialog
           closeDialog={() => setShowAddOptionDialog(false)}
           onSubmit={addOption}
-          title='Suggest an option'
+          title={t<string>('Suggest an option')}
           visible={showAddOptionDialog}
         />
       ) : null}
@@ -239,6 +254,7 @@ export const SuggestOptionButton = (props: PollButtonProps) => {
 };
 
 export const ShowAllOptionsButton = (props: PollButtonProps) => {
+  const { t } = useTranslationContext();
   const [showAllOptions, setShowAllOptions] = useState(false);
   const { message, poll } = usePollContext();
   const { options } = usePollState();
@@ -256,7 +272,10 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
   return (
     <>
       {options && options.length > 10 ? (
-        <GenericPollButton onPress={onPressHandler} title={`See all ${options.length} options`} />
+        <GenericPollButton
+          onPress={onPressHandler}
+          title={t<string>('See all {{count}} options', { count: options.length })}
+        />
       ) : null}
       {showAllOptions ? (
         <Modal
@@ -265,7 +284,10 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
           visible={showAllOptions}
         >
           <SafeAreaView style={{ flex: 1 }}>
-            <PollModalHeader onPress={() => setShowAllOptions(false)} title='Poll Options' />
+            <PollModalHeader
+              onPress={() => setShowAllOptions(false)}
+              title={t<string>('Poll Options')}
+            />
             <PollAllOptions message={message} poll={poll} />
           </SafeAreaView>
         </Modal>
@@ -310,6 +332,7 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps & { option: 
 };
 
 export const ShowAllVotesButton = (props: PollButtonProps & { option: PollOption }) => {
+  const { t } = useTranslationContext();
   const { message, poll } = usePollContext();
   const { vote_counts_by_option } = usePollState();
   const [showAllVotes, setShowAllVotes] = useState(false);
@@ -327,7 +350,7 @@ export const ShowAllVotesButton = (props: PollButtonProps & { option: PollOption
   return (
     <>
       {vote_counts_by_option && vote_counts_by_option?.[option.id] > 5 ? (
-        <GenericPollButton onPress={onPressHandler} title='Show All' />
+        <GenericPollButton onPress={onPressHandler} title={t<string>('Show All')} />
       ) : null}
       {showAllVotes ? (
         <Modal

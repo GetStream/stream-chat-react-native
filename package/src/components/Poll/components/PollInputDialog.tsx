@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-import { useTheme } from '../../../contexts';
+import { useTheme, useTranslationContext } from '../../../contexts';
 
 export type PollInputDialogProps = {
   closeDialog: () => void;
@@ -16,6 +16,7 @@ export const PollInputDialog = ({
   title,
   visible,
 }: PollInputDialogProps) => {
+  const { t } = useTranslationContext();
   const [dialogInput, setDialogInput] = useState('');
 
   const {
@@ -41,13 +42,15 @@ export const PollInputDialog = ({
           <Text style={[styles.title, titleStyle]}>{title}</Text>
           <TextInput
             onChangeText={setDialogInput}
-            placeholder='Ask a question'
+            placeholder={t<string>('Ask a question')}
             style={[styles.input, input]}
             value={dialogInput}
           />
           <View style={[styles.buttonContainer, buttonContainer]}>
             <TouchableOpacity onPress={closeDialog}>
-              <Text style={[styles.button, { color: accent_dark_blue }, button]}>Cancel</Text>
+              <Text style={[styles.button, { color: accent_dark_blue }, button]}>
+                {t<string>('Cancel')}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
@@ -56,7 +59,9 @@ export const PollInputDialog = ({
               }}
               style={{ marginLeft: 32 }}
             >
-              <Text style={[styles.button, { color: accent_dark_blue }, button]}>SEND</Text>
+              <Text style={[styles.button, { color: accent_dark_blue }, button]}>
+                {t<string>('SEND')}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
