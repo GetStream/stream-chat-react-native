@@ -583,7 +583,7 @@ export type Theme = {
       label: TextStyle;
     };
     reactionListBottom: {
-      container: ViewStyle;
+      contentContainer: ViewStyle;
       item: {
         container: ViewStyle;
         countText: TextStyle;
@@ -1218,7 +1218,7 @@ export const defaultTheme: Theme = {
       label: {},
     },
     reactionListBottom: {
-      container: {},
+      contentContainer: {},
       item: {
         container: {},
         countText: {},
