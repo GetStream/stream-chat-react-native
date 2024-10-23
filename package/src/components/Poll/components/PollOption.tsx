@@ -93,7 +93,7 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
 
   const toggleVote = useCallback(async () => {
     if (ownVotesByOptionId[option.id]) {
-      await poll.removeVote(ownVotesByOptionId[option.id], message.id);
+      await poll.removeVote(ownVotesByOptionId[option.id]?.id, message.id);
     } else {
       await poll.castVote(option.id, message.id);
     }

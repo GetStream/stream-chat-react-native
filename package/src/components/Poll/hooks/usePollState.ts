@@ -10,7 +10,7 @@ import { DefaultStreamChatGenerics } from '../../../types/types';
 
 export type UsePollStateSelectorReturnType = [
   Record<string, number>,
-  Record<string, string>,
+  Record<string, PollVote>,
   Record<string, PollVote[]>,
   number,
   PollAnswer | undefined,
