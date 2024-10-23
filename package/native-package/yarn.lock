@@ -1038,7 +1038,7 @@
     "@babel/helper-validator-identifier" "^7.24.7"
     to-fast-properties "^2.0.0"
 
-"@bam.tech/react-native-image-resizer@>=3.0.10":
+"@bam.tech/react-native-image-resizer@^3.0.10":
   version "3.0.10"
   resolved "https://registry.yarnpkg.com/@bam.tech/react-native-image-resizer/-/react-native-image-resizer-3.0.10.tgz#03395a29cb61cd819ce1e7730fb137ab6e75618a"
   integrity sha512-IVIBRkgy8eq4g51RjAzh7zk8KpGhiQH6GqLC7SgAUJ0plh2bdqG2l8+D+Q/A0uFe85YutUmHyFioyDEsRGXaCQ==
