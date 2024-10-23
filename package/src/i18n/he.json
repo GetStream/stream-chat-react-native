@@ -81,13 +81,11 @@
   "Search GIFs": "חפש/י GIFs",
   "See all {{count}} options_one": "הצג את כל {{count}} האפשרויות",
   "See all {{count}} options_other": "הצג את כל {{count}} האפשרויות",
-  "See all {{count}} options_two": "",
   "Select More Photos": "בחר עוד תמונות",
   "Select one": "בחר אחת",
   "Select one or more": "בחר אחת או יותר",
   "Select up to {{count}}_one": "בחר עד {{count}}",
   "Select up to {{count}}_other": "בחר עד {{count}}",
-  "Select up to {{count}}_two": "",
   "Send Anyway": "שלח בכל זאת",
   "Send a message": "שלח/י הודעה",
   "Sending links is not allowed in this conversation": "שליחת קישורים אינה מותרת בשיחה זו",
@@ -111,7 +109,6 @@
   "View Results": "הצג תוצאות",
   "View {{count}} comments_one": "הצג {{count}} תגובה",
   "View {{count}} comments_other": "הצג {{count}} תגובות",
-  "View {{count}} comments_two": "",
   "Voice message": "הודעת קול",
   "Vote ended": "ההצבעה הסתיימה",
   "You": "את/ה",
@@ -133,6 +130,5 @@
   "{{ user }} is typing": "{{ user }} מקליד/ה",
   "{{count}} votes_one": "{{count}} הצבעה",
   "{{count}} votes_other": "{{count}} הצבעות",
-  "{{count}} votes_two": "",
   "🏙 Attachment...": "🏙 קובץ מצורף..."
 }
