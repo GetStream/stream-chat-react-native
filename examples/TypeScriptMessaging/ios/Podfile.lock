@@ -960,7 +960,7 @@ PODS:
     - React-Core
   - react-native-netinfo (11.3.2):
     - React-Core
-  - react-native-safe-area-context (4.8.0-rc.0):
+  - react-native-safe-area-context (4.11.1):
     - React-Core
   - react-native-video (6.4.2):
     - glog
@@ -1449,7 +1449,7 @@ SPEC CHECKSUMS:
   react-native-image-picker: d3db110a3ded6e48c93aef7e8e51afdde8b16ed0
   react-native-image-resizer: fd0c333eca55147bd55c5e054cac95dcd0da6814
   react-native-netinfo: 076df4f9b07f6670acf4ce9a75aac8d34c2e2ccc
-  react-native-safe-area-context: 4355d84e1d5e44f7eb80c85d6670e0f9c88ac62c
+  react-native-safe-area-context: 5141f11858b033636f1788b14f32eaba92cee810
   react-native-video: da6a37174e0cf74ba3decdbe671a0bf8e309538c
   React-nativeconfig: c1729ab95240ec80d47a2bb8354d8f31138e35a7
   React-NativeModulesApple: 115c934a87f3b45fecb0fada08fa70bab3dff65c
@@ -1484,4 +1484,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 90406e1e85c82b37484f5d746afa45c0637bb4b3
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.14.3

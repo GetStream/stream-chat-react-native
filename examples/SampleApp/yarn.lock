@@ -6337,10 +6337,10 @@ react-native-reanimated@^3.7.0:
     convert-source-map "^2.0.0"
     invariant "^2.2.4"
 
-react-native-safe-area-context@4.8.0-rc.0:
-  version "4.8.0-rc.0"
-  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-4.8.0-rc.0.tgz#9b3ba33cf1613905a51079d5ba887a2124b92d0c"
-  integrity sha512-dv6bl1xS4bX5aWzATnsZRsiG4Ijub72yud2Vbv1qoIytxviH02TRdmAg72StJi5HC/NkK13uKrvzBcHUEX16xA==
+react-native-safe-area-context@^4.11.1:
+  version "4.11.1"
+  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-4.11.1.tgz#dae959f4512ca125f087a44c16b2c23de10b0e29"
+  integrity sha512-urF1m4nFiZFaWjsv2zj8J/hKvo4b2tJW+6CYU1mY4lKv1RwhG2eV8J/EHKuNlLhATZx3+6j7szrpHrQW2ZcAaQ==
 
 react-native-screens@^3.32.0:
   version "3.32.0"
@@ -6936,10 +6936,10 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-stream-chat-react-native-core@5.39.2:
-  version "5.39.2"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.39.2.tgz#fd4a09ac47684056214ddfa90d11c5df07131ca2"
-  integrity sha512-aqAURELT3rY686VVLOBOXZvJ9YO5CM9rcXzpUtkwySuprWO1cNBevnDYJkWPpQkAjD9fXUa6ydC6UJkZiibGmA==
+stream-chat-react-native-core@5.39.4:
+  version "5.39.4"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.39.4.tgz#39db32070ccf95aa32ceb2fec96f777c27f0a8d2"
+  integrity sha512-XKrPnIKVVOz9mi4/oVkMX8zD8JnqDIxjiqhYZelT4Hb2qMrhvpmCmxq60Fz++JZf7lFgtnoAx+oec1ns4g0VWg==
   dependencies:
     "@gorhom/bottom-sheet" "^4.6.4"
     dayjs "1.10.5"
