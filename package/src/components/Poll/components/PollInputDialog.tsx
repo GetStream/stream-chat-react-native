@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import { useTheme, useTranslationContext } from '../../../contexts';
 
@@ -39,7 +48,10 @@ export const PollInputDialog = ({
 
   return (
     <Modal animationType='fade' onRequestClose={closeDialog} transparent={true} visible={visible}>
-      <View style={[styles.transparentContainer, transparentContainer]}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={[styles.transparentContainer, transparentContainer]}
+      >
         <View style={[styles.container, { backgroundColor: white }, container]}>
           <Text style={[styles.title, { color: black }, titleStyle]}>{title}</Text>
           <TextInput
@@ -68,7 +80,7 @@ export const PollInputDialog = ({
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };
