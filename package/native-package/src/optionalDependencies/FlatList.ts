@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { FlatList as DefaultFlatList, Platform } from 'react-native';
 let FlatList;
 
 const upgradeLog =
@@ -14,4 +14,8 @@ if (Platform.constants.reactNativeVersion.minor < 72) {
     );
     FlatList = require('react-native').FlatList;
   }
+} else {
+  FlatList = DefaultFlatList;
 }
+
+export { FlatList };
