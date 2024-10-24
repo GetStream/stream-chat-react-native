@@ -13,7 +13,7 @@
     "stream-chat-react-native-core": "5.39.4"
   },
   "peerDependencies": {
-    "expo": ">=51.0.0",
+    "expo": "^51.0.0",
     "expo-av": "*",
     "expo-clipboard": "*",
     "expo-document-picker": "*",

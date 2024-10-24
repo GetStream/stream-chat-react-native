@@ -17,8 +17,7 @@
     "@bam.tech/react-native-image-resizer": ">=3.0.10",
     "@react-native-camera-roll/camera-roll": ">=7.8.0",
     "@react-native-clipboard/clipboard": ">=1.14.1",
-    "@stream-io/flat-list-mvcp": ">=0.10.3",
-    "react-native": ">=0.67.0",
+    "react-native": ">=0.73.6",
     "react-native-audio-recorder-player": ">=3.6.4",
     "react-native-blob-util": ">=0.19.9",
     "react-native-document-picker": ">=9.3.0",
@@ -32,9 +31,6 @@
       "optional": true
     },
     "@react-native-clipboard/clipboard": {
-      "optional": true
-    },
-    "@stream-io/flat-list-mvcp": {
       "optional": true
     },
     "react-native-share": {
@@ -65,6 +61,6 @@
   },
   "devDependencies": {
     "@bam.tech/react-native-image-resizer": ">=3.0.10",
-    "react-native": ">=0.67.0"
+    "react-native": ">=0.73.6"
   }
 }

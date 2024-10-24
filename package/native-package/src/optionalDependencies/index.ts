@@ -1,6 +1,5 @@
 export * from './Audio';
 export * from './deleteFile';
-export * from './FlatList';
 export * from './getLocalAssetUri';
 export * from './getPhotos';
 export * from './iOS14RefreshGallerySelection';
