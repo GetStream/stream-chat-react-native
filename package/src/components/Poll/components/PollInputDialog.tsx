@@ -41,6 +41,7 @@ export const PollInputDialog = ({
         <View style={[styles.container, { backgroundColor: white }, container]}>
           <Text style={[styles.title, { color: black }, titleStyle]}>{title}</Text>
           <TextInput
+            autoFocus={true}
             onChangeText={setDialogInput}
             placeholder={t<string>('Ask a question')}
             style={[styles.input, { color: black }, input]}
