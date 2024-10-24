@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
@@ -82,15 +82,12 @@ export const CreatePollContentWithContext = () => {
     setDuplicates(Array.from(duplicateTexts));
   }, [pollOptions]);
 
-  const isPollValid = useMemo(
-    () =>
-      pollTitle &&
-      pollTitle?.length > 0 &&
-      duplicates.length === 0 &&
-      ((maxVotesPerPersonEnabled && isMaxNumberOfVotesValid(maxVotesPerPerson)) ||
-        !maxVotesPerPersonEnabled),
-    [duplicates, maxVotesPerPerson, maxVotesPerPersonEnabled, pollTitle],
-  );
+  const isPollValid =
+    pollTitle &&
+    pollTitle?.length > 0 &&
+    duplicates.length === 0 &&
+    ((maxVotesPerPersonEnabled && isMaxNumberOfVotesValid(maxVotesPerPerson)) ||
+      !maxVotesPerPersonEnabled);
 
   return (
     <>
@@ -245,7 +242,7 @@ export const CreatePollContent = ({
   const createAndSendPoll = useCallback(
     async (pollData: CreatePollData) => {
       const poll = await client.polls.createPoll(pollData);
-      await sendMessage({ customMessageData: { poll_id: poll.id as string } });
+      await sendMessage({ customMessageData: { poll_id: poll.id } });
       closePollCreationDialog?.();
     },
     [client, sendMessage, closePollCreationDialog],
