@@ -578,6 +578,7 @@ export type Theme = {
       container: ViewStyle;
       roundedView: ViewStyle;
     };
+    unreadUnderlayColor?: ColorValue;
   };
   overlay: {
     container: ViewStyle;
@@ -608,6 +609,8 @@ export type Theme = {
       reactionList: ViewStyle;
       reactionListBorderRadius: number;
       reactionSize: number;
+      selectedIcon: IconProps;
+      unSelectedIcon: IconProps;
     };
   };
   progressControl: {
@@ -1200,6 +1203,7 @@ export const defaultTheme: Theme = {
     },
     targetedMessageContainer: {},
     targetedMessageUnderlay: {},
+    unreadUnderlayColor: Colors.bg_gradient_start,
     videoThumbnail: {
       container: {},
       roundedView: {},
@@ -1234,6 +1238,8 @@ export const defaultTheme: Theme = {
       reactionList: {},
       reactionListBorderRadius: 24,
       reactionSize: 24,
+      selectedIcon: {},
+      unSelectedIcon: {},
     },
   },
   progressControl: {

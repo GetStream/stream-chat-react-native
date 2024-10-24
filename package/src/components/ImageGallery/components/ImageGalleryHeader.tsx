@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   },
   innerContainer: {
     flexDirection: 'row',
-    height: 56,
+    minHeight: 56,
   },
   leftContainer: {
     flex: 1,
