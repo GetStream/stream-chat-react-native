@@ -1142,7 +1142,7 @@ PODS:
     - React-Core
   - RNCClipboard (1.13.2):
     - React-Core
-  - RNGestureHandler (2.15.0):
+  - RNGestureHandler (2.20.1):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -1160,7 +1160,7 @@ PODS:
     - React-RCTImage
   - RNShare (10.2.1):
     - React-Core
-  - RNSVG (15.6.0):
+  - RNSVG (15.8.0):
     - React-Core
   - SocketRocket (0.6.1)
   - Yoga (1.14.0)
@@ -1473,15 +1473,15 @@ SPEC CHECKSUMS:
   ReactCommon: 3dc453f427d2f3d7f2c71499d191b456f83c59bd
   RNAudioRecorderPlayer: f790fc1afb118552ae6285d60adde52ee6b5d9ef
   RNCClipboard: 60fed4b71560d7bfe40e9d35dea9762b024da86d
-  RNGestureHandler: 67fb54b3e6ca338a8044e85cd6f340265aa41091
+  RNGestureHandler: 7ff7793b53454ed4a2faf52fb3fcd7804d0b494c
   RNReactNativeHapticFeedback: ec56a5f81c3941206fd85625fa669ffc7b4545f9
   RNReanimated: 15a855719335a6b655a214531e86d806edfd49da
   RNScreens: e842cdccb23c0a084bd6307f6fa83fd1c1738029
   RNShare: 0fad69ae2d71de9d1f7b9a43acf876886a6cb99c
-  RNSVG: 5da7a24f31968ec74f0b091e3440080f347e279b
+  RNSVG: 8b1a777d54096b8c2a0fd38fc9d5a454332bbb4d
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: 57d2ffe418d024d56f8b0047f335c677e4c4d9ac
 
 PODFILE CHECKSUM: 90406e1e85c82b37484f5d746afa45c0637bb4b3
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.15.2

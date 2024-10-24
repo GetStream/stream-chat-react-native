@@ -1,11 +1,5 @@
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  FlatList as FlatListDefault,
-  KeyboardAvoidingViewProps,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
 
 import debounce from 'lodash/debounce';
 import omit from 'lodash/omit';
@@ -87,6 +81,7 @@ import {
   WutReaction,
 } from '../../icons';
 import {
+  FlatList as FlatListDefault,
   isAudioRecorderAvailable,
   isDocumentPickerAvailable,
   isImagePickerAvailable,

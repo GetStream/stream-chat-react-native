@@ -7,6 +7,7 @@ import { compressImage } from './handlers';
 import {
   Audio,
   deleteFile,
+  FlatList,
   getLocalAssetUri,
   getPhotos,
   iOS14RefreshGallerySelection,
@@ -26,6 +27,7 @@ registerNativeHandlers({
   Audio,
   compressImage,
   deleteFile,
+  FlatList,
   getLocalAssetUri,
   getPhotos,
   iOS14RefreshGallerySelection,
