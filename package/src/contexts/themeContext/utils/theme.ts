@@ -574,11 +574,11 @@ export type Theme = {
     };
     targetedMessageContainer: ViewStyle;
     targetedMessageUnderlay: ViewStyle;
-    unreadUnderlayColor?: ColorValue;
     videoThumbnail: {
       container: ViewStyle;
       roundedView: ViewStyle;
     };
+    unreadUnderlayColor?: ColorValue;
   };
   overlay: {
     container: ViewStyle;
