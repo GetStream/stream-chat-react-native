@@ -208,6 +208,7 @@ const throttleOptions = {
   leading: true,
   trailing: true,
 };
+
 const debounceOptions = {
   leading: true,
   trailing: true,
@@ -229,6 +230,10 @@ export type ChannelPropsWithContext<
       | 'maxTimeBetweenGroupedMessages'
       | 'NetworkDownIndicator'
       | 'StickyHeader'
+      | 'Poll'
+      | 'PollButtons'
+      | 'PollHeader'
+      | 'hasCreatePoll'
     >
   > &
   Pick<ChatContextValue<StreamChatGenerics>, 'client' | 'enableOfflineSupport'> &
@@ -417,7 +422,7 @@ export type ChannelPropsWithContext<
      * Tells if channel is rendering a thread list
      */
     threadList?: boolean;
-  };
+  } & Partial<Pick<InputMessageInputContextValue, 'openPollCreationDialog'>>;
 
 const ChannelWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -500,8 +505,9 @@ const ChannelWithContext = <
     handleRetry,
     handleThreadReply,
     hasCameraPicker = isImagePickerAvailable(),
-    hasCommands = true,
     // If pickDocument isn't available, default to hiding the file picker
+    hasCommands = true,
+    hasCreatePoll,
     hasFilePicker = pickDocument !== null,
     hasImagePicker = true,
     hideDateSeparators = false,
@@ -539,7 +545,7 @@ const ChannelWithContext = <
     MessageAvatar = MessageAvatarDefault,
     MessageBounce = MessageBounceDefault,
     MessageContent = MessageContentDefault,
-    messageContentOrder = ['quoted_reply', 'gallery', 'files', 'text', 'attachments'],
+    messageContentOrder = ['quoted_reply', 'gallery', 'files', 'poll', 'text', 'attachments'],
     MessageDeleted = MessageDeletedDefault,
     MessageEditedTimestamp = MessageEditedTimestampDefault,
     MessageError = MessageErrorDefault,
@@ -565,8 +571,12 @@ const ChannelWithContext = <
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
+    openPollCreationDialog,
     OverlayReactionList = OverlayReactionListDefault,
     overrideOwnCapabilities,
+    Poll,
+    PollButtons,
+    PollHeader,
     ReactionList = ReactionListDefault,
     read,
     Reply = ReplyDefault,
@@ -844,7 +854,13 @@ const ChannelWithContext = <
             setThreadMessages(updatedThreadMessages);
           }
 
-          if (channel && thread?.id && event.message?.id === thread.id && !threadInstance) {
+          if (
+            channel &&
+            thread?.id &&
+            event.message?.id === thread.id &&
+            !threadInstance &&
+            !thread.poll_id
+          ) {
             const updatedThread = channel.state.formatMessage(event.message);
             setThread(updatedThread);
           }
@@ -1548,6 +1564,8 @@ const ChannelWithContext = <
     attachments,
     mentioned_users,
     parent_id,
+    poll,
+    poll_id,
     text,
     ...extraFields
   }: Partial<StreamMessage<StreamChatGenerics>>) => {
@@ -1569,6 +1587,8 @@ const ChannelWithContext = <
           id: userId,
         })) || [],
       parent_id,
+      poll,
+      poll_id,
       reactions: [],
       status: MessageStatusTypes.SENDING,
       text,
@@ -2222,6 +2242,7 @@ const ChannelWithContext = <
     giphyEnabled:
       giphyEnabled ??
       !!(clientChannelConfig?.commands || [])?.some((command) => command.name === 'giphy'),
+    hasCreatePoll: hasCreatePoll === undefined ? true : hasCreatePoll,
     hideDateSeparators,
     hideStickyDateHeader,
     isAdmin,
@@ -2237,6 +2258,9 @@ const ChannelWithContext = <
     maxTimeBetweenGroupedMessages,
     members,
     NetworkDownIndicator,
+    Poll,
+    PollButtons,
+    PollHeader,
     read,
     reloadChannel,
     scrollToFirstUnreadThreshold,
@@ -2308,6 +2332,7 @@ const ChannelWithContext = <
     MoreOptionsButton,
     numberOfLines,
     onChangeText,
+    openPollCreationDialog,
     quotedMessage,
     SendButton,
     sendImageAsync,

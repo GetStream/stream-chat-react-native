@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
+import { useChannelContext, useOwnCapabilitiesContext } from '../../../contexts';
 import { useAttachmentPickerContext } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
@@ -21,14 +22,24 @@ export const AttachmentPickerSelectionBar = () => {
     attachmentSelectionBarHeight,
     CameraSelectorIcon,
     closePicker,
+    CreatePollIcon,
     FileSelectorIcon,
     ImageSelectorIcon,
     selectedPicker,
     setSelectedPicker,
   } = useAttachmentPickerContext();
 
-  const { hasCameraPicker, hasFilePicker, imageUploads, pickFile, takeAndUploadImage } =
-    useMessageInputContext();
+  const {
+    hasCameraPicker,
+    hasFilePicker,
+    imageUploads,
+    openPollCreationDialog,
+    pickFile,
+    sendMessage,
+    takeAndUploadImage,
+  } = useMessageInputContext();
+  const { hasCreatePoll, threadList } = useChannelContext();
+  const ownCapabilities = useOwnCapabilitiesContext();
 
   const {
     theme: {
@@ -49,6 +60,12 @@ export const AttachmentPickerSelectionBar = () => {
     setSelectedPicker(undefined);
     closePicker();
     pickFile();
+  };
+
+  const openPollCreationModal = () => {
+    setSelectedPicker(undefined);
+    closePicker();
+    openPollCreationDialog?.({ sendMessage });
   };
 
   return (
@@ -90,6 +107,17 @@ export const AttachmentPickerSelectionBar = () => {
               numberOfImageUploads={imageUploads.length}
               selectedPicker={selectedPicker}
             />
+          </View>
+        </TouchableOpacity>
+      ) : null}
+      {!threadList && hasCreatePoll && ownCapabilities.sendPoll ? ( // do not allow poll creation in threads
+        <TouchableOpacity
+          hitSlop={{ bottom: 15, top: 15 }}
+          onPress={openPollCreationModal}
+          testID='create-poll-touchable'
+        >
+          <View style={[styles.icon, icon]}>
+            <CreatePollIcon />
           </View>
         </TouchableOpacity>
       ) : null}

@@ -60,7 +60,13 @@ import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-export type MessageContentType = 'attachments' | 'files' | 'gallery' | 'quoted_reply' | 'text';
+export type MessageContentType =
+  | 'attachments'
+  | 'files'
+  | 'gallery'
+  | 'quoted_reply'
+  | 'poll'
+  | 'text';
 export type DeletedMessagesVisibilityType = 'always' | 'never' | 'receiver' | 'sender';
 
 export type MessagesContextValue<

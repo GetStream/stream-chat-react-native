@@ -24,3 +24,4 @@ export * from './threadsContext/ThreadListItemContext';
 export * from './translationContext/TranslationContext';
 export * from './typingContext/TypingContext';
 export * from './utils/getDisplayName';
+export * from './pollContext';

@@ -96,3 +96,7 @@ export * from './ZIP';
 export * from './MessageBubble';
 export * from './MessageBubbleEmpty';
 export * from './Reload';
+export * from './PollThumbnail';
+export * from './DragHandle';
+export * from './Back';
+export * from './SendPoll';

@@ -6,14 +6,17 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export const allOwnCapabilities = {
   banChannelMembers: 'ban-channel-members',
+  castPollVote: 'cast-poll-vote',
   deleteAnyMessage: 'delete-any-message',
   deleteOwnMessage: 'delete-own-message',
   flagMessage: 'flag-message',
   pinMessage: 'pin-message',
+  queryPollVotes: 'query-poll-votes',
   quoteMessage: 'quote-message',
   readEvents: 'read-events',
   sendLinks: 'send-links',
   sendMessage: 'send-message',
+  sendPoll: 'send-poll',
   sendReaction: 'send-reaction',
   sendReply: 'send-reply',
   sendTypingEvents: 'send-typing-events',

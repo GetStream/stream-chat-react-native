@@ -27,6 +27,7 @@ import { ImageSelectorIcon as DefaultImageSelectorIcon } from '../../components/
 import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
 import { MessageOverlay } from '../../components/MessageOverlay/MessageOverlay';
 import { OverlayBackdrop } from '../../components/MessageOverlay/OverlayBackdrop';
+import { CreatePollIcon as DefaultCreatePollIcon } from '../../components/Poll/components/CreatePollIcon';
 import { useStreami18n } from '../../hooks/useStreami18n';
 
 import { useViewport } from '../../hooks/useViewport';
@@ -99,6 +100,7 @@ export const OverlayProvider = <
         }, 600);
       }
     },
+    CreatePollIcon = DefaultCreatePollIcon,
     FileSelectorIcon = DefaultFileSelectorIcon,
     giphyVersion,
     i18nInstance,
@@ -200,6 +202,7 @@ export const OverlayProvider = <
     bottomInset,
     CameraSelectorIcon,
     closePicker: () => closePicker(bottomSheetRef),
+    CreatePollIcon,
     FileSelectorIcon,
     ImageSelectorIcon,
     openPicker: () => openPicker(bottomSheetRef),

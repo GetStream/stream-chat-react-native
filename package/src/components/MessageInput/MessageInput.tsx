@@ -1,9 +1,17 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { NativeSyntheticEvent, StyleSheet, TextInputFocusEventData, View } from 'react-native';
+import {
+  Modal,
+  NativeSyntheticEvent,
+  SafeAreaView,
+  StyleSheet,
+  TextInputFocusEventData,
+  View,
+} from 'react-native';
 
 import {
   Gesture,
   GestureDetector,
+  GestureHandlerRootView,
   PanGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
 import Animated, {
@@ -51,6 +59,7 @@ import {
 import { isImageMediaLibraryAvailable, triggerHaptic } from '../../native';
 import type { Asset, DefaultStreamChatGenerics } from '../../types/types';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
+import { CreatePollContent } from '../Poll/CreatePollContent';
 
 const styles = StyleSheet.create({
   attachmentSeparator: {
@@ -145,6 +154,10 @@ type MessageInputPropsWithContext<
     | 'text'
     | 'uploadNewFile'
     | 'uploadNewImage'
+    | 'openPollCreationDialog'
+    | 'closePollCreationDialog'
+    | 'showPollCreationDialog'
+    | 'sendMessage'
   > &
   Pick<MessagesContextValue<StreamChatGenerics>, 'Reply'> &
   Pick<
@@ -179,6 +192,7 @@ const MessageInputWithContext = <
     AudioRecordingPreview,
     AutoCompleteSuggestionList,
     closeAttachmentPicker,
+    closePollCreationDialog,
     cooldownEndsAt,
     CooldownTimer,
     editing,
@@ -206,8 +220,10 @@ const MessageInputWithContext = <
     resetInput,
     SendButton,
     sending,
+    sendMessage,
     sendMessageAsync,
     setShowMoreOptions,
+    showPollCreationDialog,
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
     suggestions,
@@ -710,6 +726,12 @@ const MessageInputWithContext = <
     })),
   };
 
+  // const {
+  //   theme: {
+  //     colors: { white },
+  //   }
+  // } = useTheme();
+
   return (
     <>
       <View
@@ -876,6 +898,22 @@ const MessageInputWithContext = <
           <AttachmentPickerSelectionBar />
         </View>
       )}
+      {showPollCreationDialog ? (
+        <Modal
+          animationType='slide'
+          onRequestClose={closePollCreationDialog}
+          visible={showPollCreationDialog}
+        >
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <SafeAreaView style={{ backgroundColor: white, flex: 1 }}>
+              <CreatePollContent
+                closePollCreationDialog={closePollCreationDialog}
+                sendMessage={sendMessage}
+              />
+            </SafeAreaView>
+          </GestureHandlerRootView>
+        </Modal>
+      ) : null}
     </>
   );
 };
@@ -891,6 +929,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     asyncMessagesSlideToCancelDistance: prevAsyncMessagesSlideToCancelDistance,
     asyncUploads: prevAsyncUploads,
     audioRecordingEnabled: prevAsyncMessagesEnabled,
+    closePollCreationDialog: prevClosePollCreationDialog,
     editing: prevEditing,
     fileUploads: prevFileUploads,
     giphyActive: prevGiphyActive,
@@ -898,9 +937,11 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     isOnline: prevIsOnline,
     isValidMessage: prevIsValidMessage,
     mentionedUsers: prevMentionedUsers,
+    openPollCreationDialog: prevOpenPollCreationDialog,
     quotedMessage: prevQuotedMessage,
     sending: prevSending,
     showMoreOptions: prevShowMoreOptions,
+    showPollCreationDialog: prevShowPollCreationDialog,
     suggestions: prevSuggestions,
     t: prevT,
     thread: prevThread,
@@ -913,6 +954,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     asyncMessagesSlideToCancelDistance: nextAsyncMessagesSlideToCancelDistance,
     asyncUploads: nextAsyncUploads,
     audioRecordingEnabled: nextAsyncMessagesEnabled,
+    closePollCreationDialog: nextClosePollCreationDialog,
     editing: nextEditing,
     fileUploads: nextFileUploads,
     giphyActive: nextGiphyActive,
@@ -920,9 +962,11 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     isOnline: nextIsOnline,
     isValidMessage: nextIsValidMessage,
     mentionedUsers: nextMentionedUsers,
+    openPollCreationDialog: nextOpenPollCreationDialog,
     quotedMessage: nextQuotedMessage,
     sending: nextSending,
     showMoreOptions: nextShowMoreOptions,
+    showPollCreationDialog: nextShowPollCreationDialog,
     suggestions: nextSuggestions,
     t: nextT,
     thread: nextThread,
@@ -931,6 +975,12 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const tEqual = prevT === nextT;
   if (!tEqual) return false;
+
+  const pollCreationInputPropsEqual =
+    prevOpenPollCreationDialog === nextOpenPollCreationDialog &&
+    prevClosePollCreationDialog === nextClosePollCreationDialog &&
+    prevShowPollCreationDialog === nextShowPollCreationDialog;
+  if (!pollCreationInputPropsEqual) return false;
 
   const additionalTextInputPropsEven =
     prevAdditionalTextInputProps === nextAdditionalTextInputProps;
@@ -1059,6 +1109,7 @@ export const MessageInput = <
     clearEditingState,
     clearQuotedMessageState,
     closeAttachmentPicker,
+    closePollCreationDialog,
     cooldownEndsAt,
     CooldownTimer,
     editing,
@@ -1077,17 +1128,20 @@ export const MessageInput = <
     maxNumberOfFiles,
     mentionedUsers,
     numberOfUploads,
+    openPollCreationDialog,
     quotedMessage,
     removeFile,
     removeImage,
     resetInput,
     SendButton,
     sending,
+    sendMessage,
     sendMessageAsync,
     SendMessageDisallowedIndicator,
     setGiphyActive,
     setShowMoreOptions,
     showMoreOptions,
+    showPollCreationDialog,
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
     text,
@@ -1140,6 +1194,7 @@ export const MessageInput = <
         clearEditingState,
         clearQuotedMessageState,
         closeAttachmentPicker,
+        closePollCreationDialog,
         cooldownEndsAt,
         CooldownTimer,
         editing,
@@ -1160,6 +1215,7 @@ export const MessageInput = <
         members,
         mentionedUsers,
         numberOfUploads,
+        openPollCreationDialog,
         quotedMessage,
         removeFile,
         removeImage,
@@ -1167,11 +1223,13 @@ export const MessageInput = <
         resetInput,
         SendButton,
         sending,
+        sendMessage,
         sendMessageAsync,
         SendMessageDisallowedIndicator,
         setGiphyActive,
         setShowMoreOptions,
         showMoreOptions,
+        showPollCreationDialog,
         ShowThreadMessageInChannelButton,
         StartAudioRecordingButton,
         suggestions,

@@ -52,6 +52,7 @@ export const useCreateInputMessageInputContext = <
   MoreOptionsButton,
   numberOfLines,
   onChangeText,
+  openPollCreationDialog,
   quotedMessage,
   SendButton,
   sendImageAsync,
@@ -59,6 +60,7 @@ export const useCreateInputMessageInputContext = <
   SendMessageDisallowedIndicator,
   setInputRef,
   setQuotedMessageState,
+  showPollCreationDialog,
   ShowThreadMessageInChannelButton,
   StartAudioRecordingButton,
   UploadProgressIndicator,
@@ -122,6 +124,7 @@ export const useCreateInputMessageInputContext = <
       MoreOptionsButton,
       numberOfLines,
       onChangeText,
+      openPollCreationDialog,
       quotedMessage,
       SendButton,
       sendImageAsync,
@@ -129,12 +132,22 @@ export const useCreateInputMessageInputContext = <
       SendMessageDisallowedIndicator,
       setInputRef,
       setQuotedMessageState,
+      showPollCreationDialog,
       ShowThreadMessageInChannelButton,
       StartAudioRecordingButton,
       UploadProgressIndicator,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [compressImageQuality, channelId, editingDep, initialValue, maxMessageLength, quotedMessageId],
+    [
+      compressImageQuality,
+      channelId,
+      editingDep,
+      initialValue,
+      maxMessageLength,
+      quotedMessageId,
+      openPollCreationDialog,
+      showPollCreationDialog,
+    ],
   );
 
   return inputMessageInputContext;

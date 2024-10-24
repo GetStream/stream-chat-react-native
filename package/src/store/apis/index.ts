@@ -21,3 +21,4 @@ export * from './upsertUserSyncStatus';
 export * from './upsertMembers';
 export * from './upsertMessages';
 export * from './upsertReads';
+export * from './updatePollMessage';

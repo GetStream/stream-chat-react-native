@@ -326,7 +326,6 @@ export type InputMessageInputContextValue<
    */
   CooldownTimer: React.ComponentType<CooldownTimerProps>;
   editMessage: StreamChat<StreamChatGenerics>['updateMessage'];
-
   /**
    * Custom UI component for FileUploadPreview.
    * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/FileUploadPreview.tsx
@@ -335,6 +334,7 @@ export type InputMessageInputContextValue<
 
   /** When false, CameraSelectorIcon will be hidden */
   hasCameraPicker: boolean;
+
   /** When false, CommandsButton will be hidden */
   hasCommands: boolean;
   /** When false, FileSelectorIcon will be hidden */
@@ -351,13 +351,13 @@ export type InputMessageInputContextValue<
   InputReplyStateHeader: React.ComponentType<InputReplyStateHeaderProps<StreamChatGenerics>>;
   /** Limit on allowed number of files to attach at a time. */
   maxNumberOfFiles: number;
-
   /**
    * Custom UI component for more options button.
    *
    * Defaults to and accepts same props as: [MoreOptionsButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/more-options-button/)
    */
   MoreOptionsButton: React.ComponentType<MoreOptionsButtonProps>;
+
   /** Limit on the number of lines in the text input before scrolling */
   numberOfLines: number;
   quotedMessage: boolean | MessageType<StreamChatGenerics>;
@@ -377,6 +377,7 @@ export type InputMessageInputContextValue<
   ShowThreadMessageInChannelButton: React.ComponentType<{
     threadList?: boolean;
   }>;
+
   /**
    * Custom UI component for audio recording mic button.
    *
@@ -389,7 +390,6 @@ export type InputMessageInputContextValue<
    * **Default** [UploadProgressIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/UploadProgressIndicator.tsx)
    */
   UploadProgressIndicator: React.ComponentType<UploadProgressIndicatorProps>;
-
   /**
    * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
    *
@@ -404,6 +404,7 @@ export type InputMessageInputContextValue<
   autoCompleteTriggerSettings?: (
     settings: ACITriggerSettingsParams<StreamChatGenerics>,
   ) => TriggerSettings<StreamChatGenerics>;
+  closePollCreationDialog?: () => void;
   /**
    * Compress image with quality (from 0 to 1, where 1 is best quality).
    * On iOS, values larger than 0.8 don't produce a noticeable quality increase in most images,
@@ -411,6 +412,7 @@ export type InputMessageInputContextValue<
    * Image picker defaults to 0.8 for iOS and 1 for Android
    */
   compressImageQuality?: number;
+
   /**
    * Override file upload request
    *
@@ -423,6 +425,7 @@ export type InputMessageInputContextValue<
     file: File,
     channel: ChannelContextValue<StreamChatGenerics>['channel'],
   ) => Promise<SendFileAPIResponse>;
+
   /**
    * Override image upload request
    *
@@ -449,12 +452,10 @@ export type InputMessageInputContextValue<
    * Prop to override the default emoji search index in auto complete suggestion list.
    */
   emojiSearchIndex?: EmojiSearchIndex;
-
   /**
    * Handler for when the attach button is pressed.
    */
   handleAttachButtonPress?: () => void;
-
   /** Initial value to set on input */
   initialValue?: string;
   /**
@@ -491,6 +492,7 @@ export type InputMessageInputContextValue<
    * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
    */
   onChangeText?: (newText: string) => void;
+  openPollCreationDialog?: ({ sendMessage }: Pick<LocalMessageInputContext, 'sendMessage'>) => void;
   SendMessageDisallowedIndicator?: React.ComponentType;
   /**
    * ref for input setter function
@@ -500,6 +502,7 @@ export type InputMessageInputContextValue<
    * @overrideType Function
    */
   setInputRef?: (ref: TextInput | null) => void;
+  showPollCreationDialog?: boolean;
 };
 
 export type MessageInputContextValue<
@@ -567,7 +570,16 @@ export const MessageInputProvider = <
   }>({});
   const [giphyActive, setGiphyActive] = useState(false);
   const [sendThreadMessageInChannel, setSendThreadMessageInChannel] = useState(false);
-  const { editing, initialValue } = value;
+  const [showPollCreationDialog, setShowPollCreationDialog] = useState(false);
+
+  const defaultOpenPollCreationDialog = useCallback(() => setShowPollCreationDialog(true), []);
+  const closePollCreationDialog = useCallback(() => setShowPollCreationDialog(false), []);
+
+  const {
+    editing,
+    initialValue,
+    openPollCreationDialog: openPollCreationDialogFromContext,
+  } = value;
   const {
     fileUploads,
     imageUploads,
@@ -978,7 +990,7 @@ export const MessageInputProvider = <
     }
 
     // Disallow sending message if its empty.
-    if (!prevText && attachments.length === 0) {
+    if (!prevText && attachments.length === 0 && !customMessageData?.poll_id) {
       sending.current = false;
       return;
     }
@@ -1399,6 +1411,14 @@ export const MessageInputProvider = <
     }
   };
 
+  const openPollCreationDialog = () => {
+    if (openPollCreationDialogFromContext) {
+      openPollCreationDialogFromContext({ sendMessage });
+      return;
+    }
+    defaultOpenPollCreationDialog();
+  };
+
   const messageInputContext = useCreateMessageInputContext({
     appendText,
     asyncIds,
@@ -1450,9 +1470,11 @@ export const MessageInputProvider = <
     uploadNewFile,
     uploadNewImage,
     ...value,
+    closePollCreationDialog,
+    openPollCreationDialog,
     sendMessage, // overriding the originally passed in sendMessage
+    showPollCreationDialog,
   });
-
   return (
     <MessageInputContext.Provider
       value={messageInputContext as unknown as MessageInputContextValue}

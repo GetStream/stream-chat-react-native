@@ -161,6 +161,7 @@ export * from './MessageOverlay/OverlayReactionsAvatar';
 export * from './MessageOverlay/OverlayReactionList';
 
 export * from './ProgressControl/ProgressControl';
+export * from './Poll';
 
 export * from './Reply/Reply';
 

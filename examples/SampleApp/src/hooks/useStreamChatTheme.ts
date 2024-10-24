@@ -11,6 +11,7 @@ const getChatStyle = (colorScheme: ColorSchemeName): DeepPartial<Theme> => ({
           accent_red: '#FF3742',
           bg_gradient_end: '#101214',
           bg_gradient_start: '#070A0D',
+          bg_user: '#17191C',
           black: '#FFFFFF',
           blue_alice: '#00193D',
           border: '#141924',
@@ -57,6 +58,16 @@ const getChatStyle = (colorScheme: ColorSchemeName): DeepPartial<Theme> => ({
           white_smoke: '#F2F2F2',
           white_snow: '#FCFCFC',
         },
+  ...(colorScheme === 'dark'
+    ? {
+        messageSimple: {
+          content: {
+            receiverMessageBackgroundColor: '#2D2F2F',
+            senderMessageBackgroundColor: '#101418',
+          },
+        },
+      }
+    : {}),
 });
 
 export const useStreamChatTheme = () => {

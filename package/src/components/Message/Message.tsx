@@ -451,6 +451,8 @@ const MessageWithContext = <
         return !!attachments.files.length;
       case 'gallery':
         return !!attachments.images.length || !!attachments.videos.length;
+      case 'poll':
+        return !!message.poll_id;
       case 'text':
       default:
         return !!message.text;

@@ -39,9 +39,8 @@ const Wrapper = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultS
   </MessageInputProvider>
 );
 
-afterEach(jest.clearAllMocks);
-
 describe("MessageInputContext's pickFile", () => {
+  afterEach(jest.clearAllMocks);
   jest.spyOn(Alert, 'alert');
   jest.spyOn(NativeUtils, 'pickDocument').mockImplementation(
     jest.fn().mockResolvedValue({
@@ -62,7 +61,7 @@ describe("MessageInputContext's pickFile", () => {
     maxNumberOfFiles: 2,
   };
 
-  it.each([[3, 2]])(
+  it.each([[3, 1]])(
     'run pickFile when numberOfUploads is %d and alert is triggered %d number of times',
     async (numberOfUploads, numberOfTimesCalled) => {
       const { rerender, result } = renderHook(() => useMessageInputContext(), {
@@ -88,6 +87,7 @@ describe("MessageInputContext's pickFile", () => {
       });
 
       expect(Alert.alert).toHaveBeenCalledTimes(numberOfTimesCalled);
+      expect(Alert.alert).toHaveBeenCalledWith('Maximum number of files reached');
     },
   );
 
@@ -109,5 +109,8 @@ describe("MessageInputContext's pickFile", () => {
     });
 
     expect(Alert.alert).toHaveBeenCalledTimes(2);
+    expect(Alert.alert).toHaveBeenCalledWith(
+      'File is too large: {{ size }}, maximum upload size is {{ limit }}',
+    );
   });
 });
