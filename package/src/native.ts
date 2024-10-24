@@ -25,7 +25,7 @@ export let compressImage: CompressImage = fail;
 type DeleteFile = ({ uri }: { uri: string }) => Promise<boolean> | never;
 export let deleteFile: DeleteFile = fail;
 
-export let FlatList = DefaultFlatList;
+export let FlatList: typeof DefaultFlatList | undefined = undefined;
 
 type GetLocalAssetUri = (uriOrAssetId: string) => Promise<string | undefined> | never;
 export let getLocalAssetUri: GetLocalAssetUri = fail;
@@ -309,7 +309,7 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     deleteFile = handlers.deleteFile;
   }
 
-  if (handlers.FlatList) {
+  if (handlers.FlatList !== undefined) {
     FlatList = handlers.FlatList;
   }
 
