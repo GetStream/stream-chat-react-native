@@ -629,6 +629,7 @@ export type Theme = {
       container: ViewStyle;
       roundedView: ViewStyle;
     };
+    unreadUnderlayColor?: ColorValue;
   };
   progressControl: {
     container: ViewStyle;
@@ -1268,6 +1269,7 @@ export const defaultTheme: Theme = {
       },
     },
     targetedMessageContainer: {},
+    unreadUnderlayColor: Colors.bg_gradient_start,
     videoThumbnail: {
       container: {},
       roundedView: {},

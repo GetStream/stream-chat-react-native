@@ -40,6 +40,10 @@ export const App = () => <OverlayProvider>
   </OverlayProvider>;
 ```
 
+:::note
+When receiving channel information from channel events, the filters are not respected; the reason for this is that channel filters can get very complex, and implementing that filtering logic that supports all of the custom filter would be very hard to do. Implementing this on the backend side isn't an option as it is inefficient and has to cater to different filters. So, to help you with it, you will have to override the `notification.message_new` event using the [`onNewMessageNotification`](./channel-list.mdx#onnewmessagenotification) and `message.new` event handlers using the [`onNewMessage`](./channel-list.mdx#onnewmessage) prop of the `ChannelList` component.
+:::
+
 ## Context Providers
 
 `ChannelList` contains the provider for the `ChannelsContext`. This can be accessed using the corresponding hook.
