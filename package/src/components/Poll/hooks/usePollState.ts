@@ -61,8 +61,11 @@ export const usePollState = () => {
   ] = usePollStateStore(selector);
 
   const addOption = useCallback(
-    (optionText: string) => poll.createOption({ text: optionText }),
-    [poll],
+    async (optionText: string) => {
+      const { poll_option } = await poll.createOption({ text: optionText });
+      await poll.castVote(poll_option.id, message.id);
+    },
+    [message, poll],
   );
   const addComment = useCallback(
     (answerText: string) => poll.addAnswer(answerText, message.id),
