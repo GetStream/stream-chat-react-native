@@ -8,16 +8,18 @@ export type PollInputDialogProps = {
   onSubmit: (text: string) => void;
   title: string;
   visible: boolean;
+  initialValue?: string;
 };
 
 export const PollInputDialog = ({
   closeDialog,
+  initialValue = '',
   onSubmit,
   title,
   visible,
 }: PollInputDialogProps) => {
   const { t } = useTranslationContext();
-  const [dialogInput, setDialogInput] = useState('');
+  const [dialogInput, setDialogInput] = useState(initialValue);
 
   const {
     theme: {

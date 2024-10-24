@@ -105,7 +105,7 @@ export const EndVoteButton = () => {
 export const AddCommentButton = (props: PollButtonProps) => {
   const { t } = useTranslationContext();
   const { message, poll } = usePollContext();
-  const { addComment, allow_answers, is_closed } = usePollState();
+  const { addComment, allow_answers, is_closed, ownAnswer } = usePollState();
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
   const { onPress } = props;
 
@@ -126,6 +126,7 @@ export const AddCommentButton = (props: PollButtonProps) => {
       {showAddCommentDialog ? (
         <PollInputDialog
           closeDialog={() => setShowAddCommentDialog(false)}
+          initialValue={ownAnswer?.answer_text ?? ''}
           onSubmit={addComment}
           title={t<string>('Add a comment')}
           visible={showAddCommentDialog}
@@ -227,6 +228,7 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
       {showAddCommentDialog ? (
         <PollInputDialog
           closeDialog={() => setShowAddCommentDialog(false)}
+          initialValue={ownAnswer?.answer_text ?? ''}
           onSubmit={addComment}
           title={t<string>('Add a comment')}
           visible={showAddCommentDialog}
