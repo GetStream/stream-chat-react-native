@@ -574,6 +574,7 @@ export type Theme = {
     };
     targetedMessageContainer: ViewStyle;
     targetedMessageUnderlay: ViewStyle;
+    unreadUnderlayColor?: ColorValue;
     videoThumbnail: {
       container: ViewStyle;
       roundedView: ViewStyle;
@@ -1202,6 +1203,7 @@ export const defaultTheme: Theme = {
     },
     targetedMessageContainer: {},
     targetedMessageUnderlay: {},
+    unreadUnderlayColor: Colors.bg_gradient_start,
     videoThumbnail: {
       container: {},
       roundedView: {},

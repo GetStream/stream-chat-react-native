@@ -305,8 +305,8 @@ const MessageWithContext = <
   const { client } = chatContext;
   const {
     theme: {
-      colors: { bg_gradient_start, targetedMessageBackground },
-      messageSimple: { targetedMessageContainer, targetedMessageUnderlay },
+      colors: { targetedMessageBackground },
+      messageSimple: { targetedMessageContainer, targetedMessageUnderlay, unreadUnderlayColor },
     },
   } = useTheme();
 
@@ -762,7 +762,7 @@ const MessageWithContext = <
         style={[
           style,
           {
-            backgroundColor: showUnreadUnderlay ? bg_gradient_start : undefined,
+            backgroundColor: showUnreadUnderlay ? unreadUnderlayColor : undefined,
           },
         ]}
       >
