@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import { useChannelContext } from '../../../contexts';
+import { useChannelContext, useOwnCapabilitiesContext } from '../../../contexts';
 import { useAttachmentPickerContext } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
@@ -38,7 +38,8 @@ export const AttachmentPickerSelectionBar = () => {
     sendMessage,
     takeAndUploadImage,
   } = useMessageInputContext();
-  const { threadList } = useChannelContext();
+  const { hasCreatePoll, threadList } = useChannelContext();
+  const ownCapabilities = useOwnCapabilitiesContext();
 
   const {
     theme: {
@@ -109,7 +110,7 @@ export const AttachmentPickerSelectionBar = () => {
           </View>
         </TouchableOpacity>
       ) : null}
-      {!threadList ? ( // do not allow poll creation in threads
+      {!threadList && hasCreatePoll && ownCapabilities.sendPoll ? ( // do not allow poll creation in threads
         <TouchableOpacity
           hitSlop={{ bottom: 15, top: 15 }}
           onPress={openPollCreationModal}

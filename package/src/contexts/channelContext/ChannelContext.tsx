@@ -55,6 +55,7 @@ export type ChannelContextValue<
    * When set to false, it will disable giphy command on MessageInput component.
    */
   giphyEnabled: boolean;
+  hasCreatePoll: boolean;
   /**
    * Hide inline date separators on channel
    */

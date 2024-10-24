@@ -13,6 +13,7 @@ export const useCreateChannelContext = <
   enforceUniqueReaction,
   error,
   giphyEnabled,
+  hasCreatePoll,
   hideDateSeparators,
   hideStickyDateHeader,
   isAdmin,
@@ -60,6 +61,7 @@ export const useCreateChannelContext = <
       enforceUniqueReaction,
       error,
       giphyEnabled,
+      hasCreatePoll,
       hideDateSeparators,
       hideStickyDateHeader,
       isAdmin,
@@ -104,6 +106,7 @@ export const useCreateChannelContext = <
       targetedMessage,
       threadList,
       watcherCount,
+      hasCreatePoll,
     ],
   );
 

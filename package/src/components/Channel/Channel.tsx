@@ -233,6 +233,7 @@ export type ChannelPropsWithContext<
       | 'Poll'
       | 'PollButtons'
       | 'PollHeader'
+      | 'hasCreatePoll'
     >
   > &
   Pick<ChatContextValue<StreamChatGenerics>, 'client' | 'enableOfflineSupport'> &
@@ -505,6 +506,7 @@ const ChannelWithContext = <
     hasCameraPicker = isImagePickerAvailable(),
     // If pickDocument isn't available, default to hiding the file picker
     hasCommands = true,
+    hasCreatePoll,
     hasFilePicker = pickDocument !== null,
     hasImagePicker = true,
     hideDateSeparators = false,
@@ -2238,6 +2240,7 @@ const ChannelWithContext = <
     giphyEnabled:
       giphyEnabled ??
       !!(clientChannelConfig?.commands || [])?.some((command) => command.name === 'giphy'),
+    hasCreatePoll: hasCreatePoll === undefined ? true : hasCreatePoll,
     hideDateSeparators,
     hideStickyDateHeader,
     isAdmin,
