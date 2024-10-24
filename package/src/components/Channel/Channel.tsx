@@ -80,8 +80,8 @@ import {
   ThumbsUpReaction,
   WutReaction,
 } from '../../icons';
-import { FlatList as FlatListDefault } from '../../native';
 import {
+  FlatList as FlatListDefault,
   isAudioRecorderAvailable,
   isDocumentPickerAvailable,
   isImagePickerAvailable,
