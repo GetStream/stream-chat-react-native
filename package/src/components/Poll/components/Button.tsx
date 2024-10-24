@@ -10,7 +10,13 @@ import { PollAllOptions } from './PollOption';
 
 import { PollOptionFullResults, PollResults } from './PollResults';
 
-import { useChatContext, usePollContext, useTheme, useTranslationContext } from '../../../contexts';
+import {
+  useChatContext,
+  useOwnCapabilitiesContext,
+  usePollContext,
+  useTheme,
+  useTranslationContext,
+} from '../../../contexts';
 import { Check } from '../../../icons';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { MessageType } from '../../MessageList/hooks/useMessageList';
@@ -322,6 +328,7 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
 
 export const VoteButton = ({ onPress, option }: PollVoteButtonProps & { option: PollOption }) => {
   const { is_closed, ownVotesByOptionId } = usePollState();
+  const ownCapabilities = useOwnCapabilitiesContext();
 
   const {
     theme: {
@@ -334,7 +341,7 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps & { option: 
     },
   } = useTheme();
 
-  return !is_closed ? (
+  return ownCapabilities.castPollVote && !is_closed ? (
     <TouchableOpacity
       onPress={onPress}
       style={[
@@ -359,6 +366,7 @@ export const ShowAllVotesButton = (props: PollButtonProps & { option: PollOption
   const { t } = useTranslationContext();
   const { message, poll } = usePollContext();
   const { vote_counts_by_option } = usePollState();
+  const ownCapabilities = useOwnCapabilitiesContext();
   const [showAllVotes, setShowAllVotes] = useState(false);
   const { onPress, option } = props;
 
@@ -379,7 +387,9 @@ export const ShowAllVotesButton = (props: PollButtonProps & { option: PollOption
 
   return (
     <>
-      {vote_counts_by_option && vote_counts_by_option?.[option.id] > 5 ? (
+      {ownCapabilities.queryPollVotes &&
+      vote_counts_by_option &&
+      vote_counts_by_option?.[option.id] > 5 ? (
         <GenericPollButton onPress={onPressHandler} title={t<string>('Show All')} />
       ) : null}
       {showAllVotes ? (
