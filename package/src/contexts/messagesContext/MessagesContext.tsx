@@ -504,11 +504,6 @@ export type MessagesContextValue<
   onPressMessage?: (payload: MessageTouchableHandlerPayload<StreamChatGenerics>) => void;
 
   /**
-   * Boolean to enable/disable the message underlay background when there are unread messages in the Message List.
-   */
-  shouldShowUnreadUnderlay?: boolean;
-
-  /**
    * Full override of the reaction function on Message and Message Overlay
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
@@ -516,6 +511,11 @@ export type MessagesContextValue<
   selectReaction?: (
     message: MessageType<StreamChatGenerics>,
   ) => (reactionType: string) => Promise<void>;
+
+  /**
+   * Boolean to enable/disable the message underlay background when there are unread messages in the Message List.
+   */
+  shouldShowUnreadUnderlay?: boolean;
 
   targetedMessage?: string;
 };
