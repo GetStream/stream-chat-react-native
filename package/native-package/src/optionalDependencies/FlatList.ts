@@ -1,7 +1,17 @@
+import { Platform } from 'react-native';
 let FlatList;
 
-try {
-  FlatList = require('@stream-io/flat-list-mvcp').FlatList;
-} catch (e) {
-  console.log("@stream-io/flat-list-mvcp not found, using react-native's FlatList");
+const upgradeLog =
+  "'@stream-io/flat-list-mvcp' is deprecated, please upgrade your react-native version to >0.71 to get same the benefits on the default FlatList and uninstall the package.";
+
+if (Platform.constants.reactNativeVersion.minor < 72) {
+  try {
+    FlatList = require('@stream-io/flat-list-mvcp').FlatList;
+    console.log(upgradeLog);
+  } catch (error) {
+    console.log(
+      `@stream-io/flat-list-mvcp not found, using react-native's FlatList. ${upgradeLog}`,
+    );
+    FlatList = require('react-native').FlatList;
+  }
 }
