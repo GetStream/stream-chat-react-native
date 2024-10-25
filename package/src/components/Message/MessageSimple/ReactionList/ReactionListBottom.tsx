@@ -252,12 +252,12 @@ export const ReactionListBottom = <
   }
 
   const reactionListBottomItemData: ReactionListBottomItemProps[] = reactions.map((reaction) => ({
-    reaction,
     handleReaction,
     onLongPress,
     onPress,
     onPressIn,
     preventPress,
+    reaction,
     showMessageOverlay,
     supportedReactions,
   }));

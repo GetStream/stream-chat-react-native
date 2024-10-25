@@ -25,7 +25,7 @@ export let compressImage: CompressImage = fail;
 type DeleteFile = ({ uri }: { uri: string }) => Promise<boolean> | never;
 export let deleteFile: DeleteFile = fail;
 
-export let FlatList: typeof DefaultFlatList | undefined = undefined;
+export let FlatList: typeof DefaultFlatList | undefined;
 
 type GetLocalAssetUri = (uriOrAssetId: string) => Promise<string | undefined> | never;
 export let getLocalAssetUri: GetLocalAssetUri = fail;

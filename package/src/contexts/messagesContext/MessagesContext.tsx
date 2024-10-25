@@ -57,6 +57,7 @@ import { MessageUserReactionsProps } from '../../components/MessageMenu/MessageU
 import { MessageUserReactionsAvatarProps } from '../../components/MessageMenu/MessageUserReactionsAvatar';
 import { MessageUserReactionsItemProps } from '../../components/MessageMenu/MessageUserReactionsItem';
 import type { ReplyProps } from '../../components/Reply/Reply';
+import { FlatList } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
 import type { Alignment } from '../messageContext/MessageContext';
@@ -64,7 +65,6 @@ import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
-import { FlatList } from '../../native';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
