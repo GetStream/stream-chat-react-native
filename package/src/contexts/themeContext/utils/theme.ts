@@ -583,7 +583,7 @@ export type Theme = {
       label: TextStyle;
     };
     reactionListBottom: {
-      container: ViewStyle;
+      contentContainer: ViewStyle;
       item: {
         container: ViewStyle;
         countText: TextStyle;
@@ -629,6 +629,7 @@ export type Theme = {
       container: ViewStyle;
       roundedView: ViewStyle;
     };
+    unreadUnderlayColor?: ColorValue;
   };
   progressControl: {
     container: ViewStyle;
@@ -1218,7 +1219,7 @@ export const defaultTheme: Theme = {
       label: {},
     },
     reactionListBottom: {
-      container: {},
+      contentContainer: {},
       item: {
         container: {},
         countText: {},
@@ -1268,6 +1269,7 @@ export const defaultTheme: Theme = {
       },
     },
     targetedMessageContainer: {},
+    unreadUnderlayColor: Colors.bg_gradient_start,
     videoThumbnail: {
       container: {},
       roundedView: {},

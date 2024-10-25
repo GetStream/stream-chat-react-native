@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { FlatList, PressableProps } from 'react-native';
+import { PressableProps } from 'react-native';
 
 import type { Attachment, ChannelState, MessageResponse } from 'stream-chat';
 
@@ -64,6 +64,7 @@ import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+import { FlatList } from '../../native';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
@@ -118,7 +119,7 @@ export type MessagesContextValue<
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/FileIcon.tsx
    */
   FileAttachmentIcon: React.ComponentType<FileIconProps>;
-  FlatList: typeof FlatList;
+  FlatList: typeof FlatList | undefined;
   /**
    * UI component to display image attachments
    * Defaults to: [Gallery](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Gallery.tsx)
@@ -560,6 +561,13 @@ export type MessagesContextValue<
     message: MessageType<StreamChatGenerics>,
   ) => (reactionType: string) => Promise<void>;
 
+  /**
+   * Boolean to enable/disable the message underlay background when there are unread messages in the Message List.
+   */
+  shouldShowUnreadUnderlay?: boolean;
+  /**
+   * The supported reactions that the user can use to react to messages.
+   */
   supportedReactions?: ReactionData[];
 
   targetedMessage?: string;

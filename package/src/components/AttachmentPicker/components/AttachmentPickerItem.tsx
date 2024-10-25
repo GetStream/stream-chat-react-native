@@ -5,9 +5,9 @@ import { Alert, ImageBackground, Platform, StyleSheet, Text, View } from 'react-
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { lookup } from 'mime-types';
 
-import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { AttachmentPickerContextValue } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useViewport } from '../../../hooks/useViewport';
 import { Recorder } from '../../../icons';
 import { getLocalAssetUri } from '../../../native';

@@ -1,11 +1,5 @@
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  FlatList as FlatListDefault,
-  KeyboardAvoidingViewProps,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
 
 import debounce from 'lodash/debounce';
 import omit from 'lodash/omit';
@@ -87,6 +81,7 @@ import {
   WutReaction,
 } from '../../icons';
 import {
+  FlatList as FlatListDefault,
   isAudioRecorderAvailable,
   isDocumentPickerAvailable,
   isImagePickerAvailable,
@@ -347,6 +342,7 @@ export type ChannelPropsWithContext<
       | 'reactionListPosition'
       | 'ReactionListTop'
       | 'Reply'
+      | 'shouldShowUnreadUnderlay'
       | 'ScrollToBottomButton'
       | 'selectReaction'
       | 'supportedReactions'
@@ -615,6 +611,7 @@ const ChannelWithContext = <
     setTyping,
     setWatcherCount,
     setWatchers,
+    shouldShowUnreadUnderlay = true,
     shouldSyncChannel,
     ShowThreadMessageInChannelButton = ShowThreadMessageInChannelButtonDefault,
     StartAudioRecordingButton = AudioRecordingButtonDefault,
@@ -2341,6 +2338,7 @@ const ChannelWithContext = <
     sendReaction,
     setEditingState,
     setQuotedMessageState,
+    shouldShowUnreadUnderlay,
     supportedReactions,
     targetedMessage,
     TypingIndicator,

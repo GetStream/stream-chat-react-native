@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, FlatList, Pressable, StyleSheet, Text } from 'react-native';
 
 import {
   MessageContextValue,
@@ -160,6 +160,20 @@ export const ReactionListBottomItem = <
   );
 };
 
+const renderItem = ({ index, item }: { index: number; item: ReactionListBottomItemProps }) => (
+  <ReactionListBottomItem
+    handleReaction={item.handleReaction}
+    key={index}
+    onLongPress={item.onLongPress}
+    onPress={item.onPress}
+    onPressIn={item.onPressIn}
+    preventPress={item.preventPress}
+    reaction={item.reaction}
+    showMessageOverlay={item.showMessageOverlay}
+    supportedReactions={item.supportedReactions}
+  />
+);
+
 export type ReactionListBottomProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<
@@ -220,7 +234,7 @@ export const ReactionListBottom = <
   const {
     theme: {
       messageSimple: {
-        reactionListBottom: { container },
+        reactionListBottom: { contentContainer },
       },
     },
   } = useTheme();
@@ -237,29 +251,34 @@ export const ReactionListBottom = <
     return null;
   }
 
+  const reactionListBottomItemData: ReactionListBottomItemProps[] = reactions.map((reaction) => ({
+    reaction,
+    handleReaction,
+    onLongPress,
+    onPress,
+    onPressIn,
+    preventPress,
+    showMessageOverlay,
+    supportedReactions,
+  }));
+
   return (
-    <View accessibilityLabel='Reaction List Bottom' style={[styles.container, container]}>
-      {reactions.map((reaction, index) => (
-        <ReactionListBottomItem
-          handleReaction={handleReaction}
-          key={index}
-          onLongPress={onLongPress}
-          onPress={onPress}
-          onPressIn={onPressIn}
-          preventPress={preventPress}
-          reaction={reaction}
-          showMessageOverlay={showMessageOverlay}
-          supportedReactions={supportedReactions}
-        />
-      ))}
-    </View>
+    <FlatList
+      accessibilityLabel='Reaction List Bottom'
+      contentContainerStyle={[styles.contentContainer, contentContainer]}
+      data={reactionListBottomItemData}
+      keyExtractor={(item) => item.reaction.type}
+      numColumns={6}
+      renderItem={renderItem}
+      showsHorizontalScrollIndicator={false}
+      showsVerticalScrollIndicator={false}
+    />
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  contentContainer: {
+    alignSelf: 'flex-end',
   },
   itemContainer: {
     alignItems: 'center',
