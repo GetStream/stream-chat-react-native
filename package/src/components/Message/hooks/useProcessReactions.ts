@@ -128,7 +128,6 @@ export const useProcessReactions = <
         };
       },
     );
-
     return {
       existingReactions: unsortedReactions.sort(sortReactions),
       hasReactions: unsortedReactions.length > 0,
