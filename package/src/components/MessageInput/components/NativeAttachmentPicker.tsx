@@ -1,7 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, LayoutRectangle, Pressable, StyleSheet } from 'react-native';
 
-import { useChannelContext, useOwnCapabilitiesContext } from '../../../contexts';
+import {
+  useChannelContext,
+  useMessagesContext,
+  useOwnCapabilitiesContext,
+} from '../../../contexts';
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
@@ -46,7 +50,8 @@ export const NativeAttachmentPicker = ({
     sendMessage,
     takeAndUploadImage,
   } = useMessageInputContext();
-  const { hasCreatePoll, threadList } = useChannelContext();
+  const { threadList } = useChannelContext();
+  const { hasCreatePoll } = useMessagesContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
   const popupHeight =

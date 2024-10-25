@@ -1,7 +1,11 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import { useChannelContext, useOwnCapabilitiesContext } from '../../../contexts';
+import {
+  useChannelContext,
+  useMessagesContext,
+  useOwnCapabilitiesContext,
+} from '../../../contexts';
 import { useAttachmentPickerContext } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
@@ -38,7 +42,8 @@ export const AttachmentPickerSelectionBar = () => {
     sendMessage,
     takeAndUploadImage,
   } = useMessageInputContext();
-  const { hasCreatePoll, threadList } = useChannelContext();
+  const { threadList } = useChannelContext();
+  const { hasCreatePoll } = useMessagesContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
   const {

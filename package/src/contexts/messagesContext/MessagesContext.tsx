@@ -356,6 +356,7 @@ export type MessagesContextValue<
   handleRetry?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
   /** Handler to access when a thread reply action is invoked */
   handleThreadReply?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
+  hasCreatePoll?: boolean;
   /** Handler to deal with custom memoization logic of Attachment */
   isAttachmentEqual?: (
     prevAttachment: Attachment<StreamChatGenerics>,
@@ -508,7 +509,9 @@ export type MessagesContextValue<
    * ```
    */
   onPressMessage?: (payload: MessageTouchableHandlerPayload<StreamChatGenerics>) => void;
-
+  Poll?: React.ComponentType;
+  PollButtons?: React.ComponentType;
+  PollHeader?: React.ComponentType;
   /**
    * Full override of the reaction function on Message and Message Overlay
    *
@@ -517,7 +520,6 @@ export type MessagesContextValue<
   selectReaction?: (
     message: MessageType<StreamChatGenerics>,
   ) => (reactionType: string) => Promise<void>;
-
   targetedMessage?: string;
 };
 

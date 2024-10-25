@@ -55,7 +55,6 @@ export type ChannelContextValue<
    * When set to false, it will disable giphy command on MessageInput component.
    */
   giphyEnabled: boolean;
-  hasCreatePoll: boolean;
   /**
    * Hide inline date separators on channel
    */
@@ -177,9 +176,6 @@ export type ChannelContextValue<
    * to still consider them grouped together
    */
   maxTimeBetweenGroupedMessages?: number;
-  Poll?: React.ComponentType;
-  PollButtons?: React.ComponentType;
-  PollHeader?: React.ComponentType;
   /**
    * Custom UI component for sticky header of channel.
    *

@@ -230,10 +230,6 @@ export type ChannelPropsWithContext<
       | 'maxTimeBetweenGroupedMessages'
       | 'NetworkDownIndicator'
       | 'StickyHeader'
-      | 'Poll'
-      | 'PollButtons'
-      | 'PollHeader'
-      | 'hasCreatePoll'
     >
   > &
   Pick<ChatContextValue<StreamChatGenerics>, 'client' | 'enableOfflineSupport'> &
@@ -334,6 +330,10 @@ export type ChannelPropsWithContext<
       | 'TypingIndicatorContainer'
       | 'UrlPreview'
       | 'VideoThumbnail'
+      | 'Poll'
+      | 'PollButtons'
+      | 'PollHeader'
+      | 'hasCreatePoll'
     >
   > &
   Partial<Pick<ThreadContextValue<StreamChatGenerics>, 'allowThreadMessagesInChannel'>> & {
@@ -2240,7 +2240,6 @@ const ChannelWithContext = <
     giphyEnabled:
       giphyEnabled ??
       !!(clientChannelConfig?.commands || [])?.some((command) => command.name === 'giphy'),
-    hasCreatePoll: hasCreatePoll === undefined ? true : hasCreatePoll,
     hideDateSeparators,
     hideStickyDateHeader,
     isAdmin,
@@ -2256,9 +2255,6 @@ const ChannelWithContext = <
     maxTimeBetweenGroupedMessages,
     members,
     NetworkDownIndicator,
-    Poll,
-    PollButtons,
-    PollHeader,
     read,
     reloadChannel,
     scrollToFirstUnreadThreshold,
@@ -2395,6 +2391,7 @@ const ChannelWithContext = <
     handleReaction,
     handleRetry,
     handleThreadReply,
+    hasCreatePoll: hasCreatePoll === undefined ? true : hasCreatePoll,
     ImageLoadingFailedIndicator,
     ImageLoadingIndicator,
     initialScrollToFirstUnreadMessage: !messageId && initialScrollToFirstUnreadMessage, // when messageId is set, we scroll to the messageId instead of first unread
@@ -2428,6 +2425,9 @@ const ChannelWithContext = <
     onPressInMessage,
     onPressMessage,
     OverlayReactionList,
+    Poll,
+    PollButtons,
+    PollHeader,
     ReactionList,
     removeMessage,
     Reply,

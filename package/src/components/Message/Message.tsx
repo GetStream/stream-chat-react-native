@@ -176,6 +176,9 @@ export type MessagePropsWithContext<
     | 'setQuotedMessageState'
     | 'supportedReactions'
     | 'updateMessage'
+    | 'Poll'
+    | 'PollButtons'
+    | 'PollHeader'
   > &
   Pick<MessageOverlayContextValue<StreamChatGenerics>, 'setData'> &
   Pick<OverlayContextValue, 'setOverlay'> &
@@ -285,6 +288,9 @@ const MessageWithContext = <
     onThreadSelect,
     openThread,
     OverlayReactionList,
+    Poll,
+    PollButtons,
+    PollHeader,
     preventPress,
     removeMessage,
     retrySendMessage,
@@ -563,7 +569,6 @@ const MessageWithContext = <
   });
 
   const { userLanguage } = useTranslationContext();
-  const { Poll, PollButtons, PollHeader } = useChannelContext();
 
   // TODO: Can be removed in V6 and from here completely once it becomes baseline.
   const PollWrapper = useCallback(() => {

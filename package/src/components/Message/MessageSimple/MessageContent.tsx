@@ -9,7 +9,7 @@ import {
 
 import { MessageTextContainer } from './MessageTextContainer';
 
-import { useChannelContext, useChatContext } from '../../../contexts';
+import { useChatContext } from '../../../contexts';
 import {
   MessageContextValue,
   useMessageContext,
@@ -145,7 +145,7 @@ const MessageContentWithContext = <
     threadList,
   } = props;
   const { client } = useChatContext();
-  const { Poll: PollOverride, PollButtons, PollHeader } = useChannelContext();
+  const { Poll: PollOverride, PollButtons, PollHeader } = useMessagesContext();
 
   const {
     theme: {
