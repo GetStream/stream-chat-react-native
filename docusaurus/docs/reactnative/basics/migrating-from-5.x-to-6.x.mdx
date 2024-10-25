@@ -3,15 +3,11 @@ id: upgrading-from-v5
 title: Migration from 5.x to 6.x
 ---
 
-:::note
-If you are using new architecture or the new FlatList with [`maintainVisibleContentPosition`](https://reactnative.dev/docs/scrollview#maintainvisiblecontentposition) feat, v6.0 would require you to be in React native version **0.72** and above.
-:::
-
 ## Dependency changes
 
 The following are the crucial changes of the Stream Chat React Native SDK from version 5.x to 6.x:
 
-#### Change `react-native-fs` to `react-native-blob-util`
+### Change `react-native-fs` to `react-native-blob-util`
 
 The `react-native-fs` package has been replaced to `react-native-blob-util` in favour of the former not being actively maintained. You can replace it by running the following commands:
 
@@ -20,7 +16,7 @@ yarn remove react-native-fs
 yarn add react-native-blob-util
 ```
 
-#### Change `react-native-image-resizer` to `@bam.tech/react-native-image-resizer`
+### Change `react-native-image-resizer` to `@bam.tech/react-native-image-resizer`
 
 The `react-native-image-resizer` package has been replaced with `@bam.tech/react-native-image-resizer`.
 
@@ -33,7 +29,7 @@ yarn remove react-native-image-resizer
 yarn add @bam.tech/react-native-image-resizer
 ```
 
-#### Change `react-native-image-crop-picker` to `react-native-image-picker`
+### Change `react-native-image-crop-picker` to `react-native-image-picker`
 
 The `react-native-image-crop-picker` package has been replaced with `react-native-image-picker`. This is a better alternative, and can help us with our new architecture endeavors.
 
@@ -46,7 +42,7 @@ yarn add react-native-image-picker
 
 Also, the dependency is made optional now, so if you don't want to use the image picker, you can remove it from your project and the camera selector icon on the Attachment picker will be simply hidden for you.
 
-#### Change `react-native-quick-sqlite` to `op-sqlite`
+### Change `react-native-quick-sqlite` to `op-sqlite`
 
 The `react-native-quick-sqlite` package has been replaced with `op-sqlite`. This is a faster alternative, and can help us with our new architecture endeavors.
 
@@ -57,7 +53,7 @@ yarn remove react-native-quick-sqlite
 yarn add op-sqlite
 ```
 
-#### Made `@stream-io/flat-list-mvcp` optional
+### Made `@stream-io/flat-list-mvcp` optional
 
 The dependency on `@stream-io/flat-list-mvcp` package has been made optional in favour of React Native's [`FlatList`](https://reactnative.dev/docs/flatlist) component supporting [`maintainVisibleContentPosition`](https://reactnative.dev/docs/scrollview#maintainvisiblecontentposition) from React Native version `>=0.72`. If the package is installed it takes up the package or the default React Native [`FlatList`](https://reactnative.dev/docs/flatlist).
 
@@ -72,7 +68,7 @@ yarn remove @stream-io/flat-list-mvcp
 
 ## SDK changes
 
-#### Introduce new Message Menu design
+### Introduce new Message Menu design
 
 The Message Menu design has been revamped to provide a better user experience. The new design is more intuitive and provides a better user experience.
 
@@ -82,7 +78,7 @@ The Message Menu design has been revamped to provide a better user experience. T
 The previous overlay design has been replaced with a bottom sheet modal design.
 :::
 
-#### Introduce new ReactionList design
+### Introduce new ReactionList design
 
 We have introduced a new ReactionList design that is more intuitive and provides a better user experience.
 
@@ -120,11 +116,11 @@ const App = () => {
 If nothing is provided, the `resizableCDNHosts` will default to `['.stream-io-cdn.com']`.
 :::
 
-#### Removed `MessageOverlayContext` and `MessageOverlayProvider`
+### Removed `MessageOverlayContext` and `MessageOverlayProvider`
 
 The `MessageOverlayContext` and `MessageOverlayProvider` have been removed.
 
-#### Removed props from `OverlayProvider`
+### Removed props from `OverlayProvider`
 
 The following props have been removed from the `OverlayProvider`:
 
@@ -136,7 +132,7 @@ The following props have been removed from the `OverlayProvider`:
 - `messageTextNumberOfLines`
 - `error`, `isMyMessage`, `isThreadMessage`, `message` and `messageReactions`
 
-#### New `Channel` props
+### New `Channel` props
 
 The props from the `OverlayProvider` have been moved to the `Channel` component. The following props have been added to the `Channel` component:
 
@@ -147,7 +143,7 @@ The props from the `OverlayProvider` have been moved to the `Channel` component.
 - `OverlayReactionsItem` is changed to `MessageUserReactionsItem`
 - `messageTextNumberOfLines`
 
-#### Removed `MessageOverlay` in favour of `MessageMenu`.
+### Removed `MessageOverlay` in favour of `MessageMenu`.
 
 The `MessageOverlay` component has been removed in favour of `MessageMenu`. The `MessageMenu` component is a more versatile and feature-rich component that can be used to show more than just reactions and actions.
 
@@ -165,7 +161,7 @@ The following props have been removed from the `Message` component:
 
 The later 3 props are removed in favour of similar props on MessagesContext and is therefore not needed. The `setData` prop is removed in favour of the removal of `MessageOverlayContext` and the `setOverlay` is not needed as we don't set the message overlay in `OverlayProvider`.
 
-#### Removed props from `MessageContent` component
+### Removed props from `MessageContent` component
 
 The following props have been removed from the `MessageContent` component:
 
@@ -175,18 +171,18 @@ The following props have been removed from the `MessageContent` component:
 
 The props were redundant as per the new fixes in the Reaction Design and message simple component's improvements.
 
-#### Add props to `MessageSimple` component
+### Add props to `MessageSimple` component
 
 The components from the `MessageContent` components are rendered now in `MessageSimple` component so few of the props that were removed from `MessageContent` are added to `MessageSimple` component(as mentioned above).
 
 - `isMyMessage`, `lastGroupMessage`, `members`, `onlyEmojis`, `otherAttachments`, `showMessageStatus` imported from the Message Context.
 - `MessageDeleted`, `MessageFooter`, `MessageHeader`, `MessagePinnedHeader`, `MessageReplies`, `MessageStatus`, `ReactionListBottom`, `reactionListPosition` and `ReactionListTop` imported from the Messages Context.
 
-#### Added `BottomSheetModal` component
+### Added `BottomSheetModal` component
 
 The version introduces a very basic `BottomSheetModal` component that can be used to show a modal at the bottom of the screen. This can be used to show the message actions and reactions.
 
-#### Remove `NetInfo` from the native handlers
+### Remove `NetInfo` from the native handlers
 
 The `NetInfo` package has been removed from the native handlers. This also involves not passing the `NetInfo` utility as a handler to [`registerNativeHandlers`](../customization/native-handlers.mdx#overriding-handlers) anymore.
 
@@ -199,15 +195,15 @@ registerNativeHandlers({
 });
 ```
 
-#### Change the type of `quotedMessage` in `MessageInputContext`
+### Change the type of `quotedMessage` in `MessageInputContext`
 
 The type of `quotedMessage` is changed from `MessageType |  boolean` to `MessageType | undefined` for better in the `MessageInputContext`.
 
-#### Refactor of theme object
+### Refactor of theme object
 
 The default theme object has been refactored to provide a better customization experience. The theme object is now more organized and provides better control over the customization. You can check the object [here](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/contexts/themeContext/utils/theme.ts).
 
-#### Remove the deprecated code
+### Remove the deprecated code
 
 - We have removed `loadChannelAtMessage` from channel context because it was no more used.
 - We have removed the `handleDeleteMessage`, `handleEditMessage`, `handleQuotedReplyMessage`, `handleResendMessage`, `handleToggleBanUser` and `handleToggleMuteUser` from the message context because it was no more used. To customize the message actions follow the [customization documentation](../guides/custom-message-actions.mdx).
