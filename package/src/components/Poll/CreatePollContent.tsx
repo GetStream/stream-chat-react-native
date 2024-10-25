@@ -26,7 +26,7 @@ export const isMaxNumberOfVotesValid = (maxNumberOfVotes: string) => {
   );
 };
 
-export const CreatePollContentWithContext = () => {
+export const CreatePollContent = () => {
   const { t } = useTranslationContext();
   const [pollTitle, setPollTitle] = useState('');
   const [pollOptions, setPollOptions] = useState<PollOptionData[]>([{ text: '' }]);
@@ -229,13 +229,14 @@ export const CreatePollContentWithContext = () => {
   );
 };
 
-export const CreatePollContent = ({
+export const CreatePoll = ({
   closePollCreationDialog,
+  CreatePollContent: CreatePollContentOverride,
   createPollOptionHeight,
   sendMessage,
 }: Pick<
   CreatePollContentContextValue,
-  'createPollOptionHeight' | 'sendMessage' | 'closePollCreationDialog'
+  'createPollOptionHeight' | 'sendMessage' | 'closePollCreationDialog' | 'CreatePollContent'
 >) => {
   const { client } = useChatContext();
 
@@ -252,7 +253,7 @@ export const CreatePollContent = ({
     <CreatePollContentProvider
       value={{ closePollCreationDialog, createAndSendPoll, createPollOptionHeight, sendMessage }}
     >
-      <CreatePollContentWithContext />
+      {CreatePollContentOverride ? <CreatePollContentOverride /> : <CreatePollContent />}
     </CreatePollContentProvider>
   );
 };

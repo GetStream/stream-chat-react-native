@@ -421,7 +421,7 @@ export type ChannelPropsWithContext<
      * Tells if channel is rendering a thread list
      */
     threadList?: boolean;
-  } & Partial<Pick<InputMessageInputContextValue, 'openPollCreationDialog'>>;
+  } & Partial<Pick<InputMessageInputContextValue, 'openPollCreationDialog' | 'CreatePollContent'>>;
 
 const ChannelWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -463,6 +463,7 @@ const ChannelWithContext = <
     CommandsButton = CommandsButtonDefault,
     compressImageQuality,
     CooldownTimer = CooldownTimerDefault,
+    CreatePollContent,
     DateHeader = DateHeaderDefault,
     deletedMessagesVisibilityType = 'always',
     disableIfFrozenChannel = true,
@@ -503,8 +504,8 @@ const ChannelWithContext = <
     handleReaction,
     handleRetry,
     handleThreadReply,
-    hasCameraPicker = isImagePickerAvailable(),
     // If pickDocument isn't available, default to hiding the file picker
+    hasCameraPicker = isImagePickerAvailable(),
     hasCommands = true,
     hasCreatePoll,
     hasFilePicker = pickDocument !== null,
@@ -2301,6 +2302,7 @@ const ChannelWithContext = <
     CommandsButton,
     compressImageQuality,
     CooldownTimer,
+    CreatePollContent,
     doDocUploadRequest,
     doImageUploadRequest,
     editing,

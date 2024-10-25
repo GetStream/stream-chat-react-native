@@ -16,7 +16,7 @@ import {
 import { usePollState } from './hooks/usePollState';
 
 import {
-  ChannelContextValue,
+  MessagesContextValue,
   PollContextProvider,
   PollContextValue,
   usePollContext,
@@ -28,7 +28,7 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 export type PollProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<PollContextValue<StreamChatGenerics>, 'poll' | 'message' | 'PollHeader' | 'PollButtons'> &
-  Pick<ChannelContextValue<StreamChatGenerics>, 'Poll'>;
+  Pick<MessagesContextValue<StreamChatGenerics>, 'Poll'>;
 
 export const PollButtons = () => (
   <>

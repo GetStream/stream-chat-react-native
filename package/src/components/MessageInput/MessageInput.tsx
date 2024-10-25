@@ -59,7 +59,7 @@ import {
 import { isImageMediaLibraryAvailable, triggerHaptic } from '../../native';
 import type { Asset, DefaultStreamChatGenerics } from '../../types/types';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
-import { CreatePollContent } from '../Poll/CreatePollContent';
+import { CreatePoll } from '../Poll/CreatePollContent';
 
 const styles = StyleSheet.create({
   attachmentSeparator: {
@@ -158,6 +158,7 @@ type MessageInputPropsWithContext<
     | 'closePollCreationDialog'
     | 'showPollCreationDialog'
     | 'sendMessage'
+    | 'CreatePollContent'
   > &
   Pick<MessagesContextValue<StreamChatGenerics>, 'Reply'> &
   Pick<
@@ -195,6 +196,7 @@ const MessageInputWithContext = <
     closePollCreationDialog,
     cooldownEndsAt,
     CooldownTimer,
+    CreatePollContent,
     editing,
     FileUploadPreview,
     fileUploads,
@@ -906,8 +908,9 @@ const MessageInputWithContext = <
         >
           <GestureHandlerRootView style={{ flex: 1 }}>
             <SafeAreaView style={{ backgroundColor: white, flex: 1 }}>
-              <CreatePollContent
+              <CreatePoll
                 closePollCreationDialog={closePollCreationDialog}
+                CreatePollContent={CreatePollContent}
                 sendMessage={sendMessage}
               />
             </SafeAreaView>
@@ -1112,6 +1115,7 @@ export const MessageInput = <
     closePollCreationDialog,
     cooldownEndsAt,
     CooldownTimer,
+    CreatePollContent,
     editing,
     FileUploadPreview,
     fileUploads,
@@ -1197,6 +1201,7 @@ export const MessageInput = <
         closePollCreationDialog,
         cooldownEndsAt,
         CooldownTimer,
+        CreatePollContent,
         editing,
         FileUploadPreview,
         fileUploads,

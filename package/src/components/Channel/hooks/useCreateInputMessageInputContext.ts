@@ -27,6 +27,7 @@ export const useCreateInputMessageInputContext = <
   CommandsButton,
   compressImageQuality,
   CooldownTimer,
+  CreatePollContent,
   doDocUploadRequest,
   doImageUploadRequest,
   editing,
@@ -99,6 +100,7 @@ export const useCreateInputMessageInputContext = <
       CommandsButton,
       compressImageQuality,
       CooldownTimer,
+      CreatePollContent,
       doDocUploadRequest,
       doImageUploadRequest,
       editing,
@@ -146,6 +148,7 @@ export const useCreateInputMessageInputContext = <
       maxMessageLength,
       quotedMessageId,
       openPollCreationDialog,
+      CreatePollContent,
       showPollCreationDialog,
     ],
   );

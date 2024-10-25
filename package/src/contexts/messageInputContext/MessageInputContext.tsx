@@ -413,6 +413,8 @@ export type InputMessageInputContextValue<
    */
   compressImageQuality?: number;
 
+  CreatePollContent?: React.ComponentType;
+
   /**
    * Override file upload request
    *
@@ -447,7 +449,6 @@ export type InputMessageInputContextValue<
    * It is defined with message type if the editing state is true, else its undefined.
    */
   editing?: MessageType<StreamChatGenerics>;
-
   /**
    * Prop to override the default emoji search index in auto complete suggestion list.
    */
@@ -485,8 +486,8 @@ export type InputMessageInputContextValue<
    */
   InputButtons?: React.ComponentType<InputButtonsProps<StreamChatGenerics>>;
   maxMessageLength?: number;
-  mentionAllAppUsersEnabled?: boolean;
   /** Object containing filters/sort/options overrides for an @mention user query */
+  mentionAllAppUsersEnabled?: boolean;
   mentionAllAppUsersQuery?: MentionAllAppUsersQuery<StreamChatGenerics>;
   /**
    * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
