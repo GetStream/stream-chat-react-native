@@ -5,6 +5,7 @@ import {
   KeyboardEvent,
   Modal,
   StyleSheet,
+  TouchableWithoutFeedback,
   useWindowDimensions,
   View,
 } from 'react-native';
@@ -119,23 +120,25 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
   return (
     <Modal animationType='fade' onRequestClose={handleDismiss} transparent visible={visible}>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <View style={[styles.overlay, { backgroundColor: overlay }]}>
-          <GestureDetector gesture={gesture}>
-            <Animated.View
-              style={[
-                styles.container,
-                {
-                  backgroundColor: white_snow,
-                  height,
-                  transform: [{ translateY }],
-                },
-              ]}
-            >
-              <View style={[styles.handle, { backgroundColor: grey, width: windowWidth / 4 }]} />
-              <View style={styles.contentContainer}>{children}</View>
-            </Animated.View>
-          </GestureDetector>
-        </View>
+        <TouchableWithoutFeedback onPress={handleDismiss}>
+          <View style={[styles.overlay, { backgroundColor: overlay }]}>
+            <GestureDetector gesture={gesture}>
+              <Animated.View
+                style={[
+                  styles.container,
+                  {
+                    backgroundColor: white_snow,
+                    height,
+                    transform: [{ translateY }],
+                  },
+                ]}
+              >
+                <View style={[styles.handle, { backgroundColor: grey, width: windowWidth / 4 }]} />
+                <View style={styles.contentContainer}>{children}</View>
+              </Animated.View>
+            </GestureDetector>
+          </View>
+        </TouchableWithoutFeedback>
       </GestureHandlerRootView>
     </Modal>
   );
