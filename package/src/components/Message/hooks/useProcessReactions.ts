@@ -54,7 +54,15 @@ const isOwnReaction = <
 >(
   reactionType: string,
   ownReactions?: MessageReactionsData<StreamChatGenerics>['own_reactions'],
-) => (ownReactions ? ownReactions.some((reaction) => reaction.type === reactionType) : false);
+  latestReactions?: ReactionResponse<StreamChatGenerics>[] | null,
+  userID?: string,
+) =>
+  (ownReactions ? ownReactions.some((reaction) => reaction.type === reactionType) : false) ||
+  (latestReactions
+    ? latestReactions.some(
+        (reaction) => reaction?.user?.id === userID && reaction.type === reactionType,
+      )
+    : false);
 
 const isSupportedReaction = (reactionType: string, supportedReactions?: ReactionData[]) =>
   supportedReactions
@@ -109,7 +117,12 @@ export const useProcessReactions = <
           Icon: getEmojiByReactionType(reactionType, supportedReactions),
           lastReactionAt: last_reaction_at ? new Date(last_reaction_at) : null,
           latestReactedUserNames,
-          own: isOwnReaction<StreamChatGenerics>(reactionType, own_reactions),
+          own: isOwnReaction<StreamChatGenerics>(
+            reactionType,
+            own_reactions,
+            latest_reactions,
+            client.userID,
+          ),
           type: reactionType,
           unlistedReactedUserCount: count - latestReactedUserNames.length,
         };
