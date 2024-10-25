@@ -9,7 +9,7 @@ import {
 
 import { MessageTextContainer } from './MessageTextContainer';
 
-import { useChatContext } from '../../../contexts';
+import { useChannelContext, useChatContext } from '../../../contexts';
 import {
   MessageContextValue,
   useMessageContext,
@@ -145,6 +145,7 @@ const MessageContentWithContext = <
     threadList,
   } = props;
   const { client } = useChatContext();
+  const { Poll: PollOverride, PollButtons, PollHeader } = useChannelContext();
 
   const {
     theme: {
@@ -383,7 +384,16 @@ const MessageContentWithContext = <
               case 'poll': {
                 const pollId = message.poll_id;
                 const poll = pollId && client.polls.fromState(pollId);
-                return pollId && poll ? <Poll key={`poll_${message.poll_id}`} poll={poll} /> : null;
+                return pollId && poll ? (
+                  <Poll
+                    key={`poll_${message.poll_id}`}
+                    message={message}
+                    poll={poll}
+                    Poll={PollOverride}
+                    PollButtons={PollButtons}
+                    PollHeader={PollHeader}
+                  />
+                ) : null;
               }
               case 'text':
               default:

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Poll as PollClass, PollOption as PollOptionClass } from 'stream-chat';
+import { PollOption as PollOptionClass } from 'stream-chat';
 
 import {
   AddCommentButton,
@@ -16,12 +16,19 @@ import {
 import { usePollState } from './hooks/usePollState';
 
 import {
+  ChannelContextValue,
   PollContextProvider,
-  useChannelContext,
-  useMessageContext,
+  PollContextValue,
+  usePollContext,
   useTheme,
   useTranslationContext,
 } from '../../contexts';
+import type { DefaultStreamChatGenerics } from '../../types/types';
+
+export type PollProps<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<PollContextValue<StreamChatGenerics>, 'poll' | 'message' | 'PollHeader' | 'PollButtons'> &
+  Pick<ChannelContextValue<StreamChatGenerics>, 'Poll'>;
 
 export const PollButtons = () => (
   <>
@@ -64,7 +71,7 @@ export const PollHeader = () => {
 };
 
 const PollWithContext = () => {
-  const { PollButtons: PollButtonsOverride, PollHeader: PollHeaderOverride } = useChannelContext();
+  const { PollButtons: PollButtonsOverride, PollHeader: PollHeaderOverride } = usePollContext();
   const { options } = usePollState();
 
   const {
@@ -88,21 +95,26 @@ const PollWithContext = () => {
   );
 };
 
-export const Poll = ({ poll }: { poll: PollClass }) => {
-  const { Poll: PollOverride } = useChannelContext();
-  const { message } = useMessageContext();
-
-  return (
-    <PollContextProvider
-      value={{
-        message,
-        poll,
-      }}
-    >
-      {PollOverride ? <PollOverride /> : <PollWithContext />}
-    </PollContextProvider>
-  );
-};
+export const Poll = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>({
+  message,
+  poll,
+  Poll: PollOverride,
+  PollButtons,
+  PollHeader,
+}: PollProps<StreamChatGenerics>) => (
+  <PollContextProvider
+    value={{
+      message,
+      poll,
+      PollButtons,
+      PollHeader,
+    }}
+  >
+    {PollOverride ? <PollOverride /> : <PollWithContext />}
+  </PollContextProvider>
+);
 
 const styles = StyleSheet.create({
   container: { padding: 15, width: 270 },

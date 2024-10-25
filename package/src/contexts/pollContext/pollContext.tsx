@@ -4,6 +4,7 @@ import { Poll } from 'stream-chat';
 
 import { MessageType } from '../../components';
 import type { DefaultStreamChatGenerics } from '../../types/types';
+import { ChannelContextValue } from '../channelContext/ChannelContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -13,15 +14,17 @@ export type PollContextValue<
 > = {
   message: MessageType<StreamChatGenerics>;
   poll: Poll<StreamChatGenerics>;
-};
+} & Pick<ChannelContextValue, 'PollButtons' | 'PollHeader'>;
 
 export const PollContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as PollContextValue);
 
-export const PollContextProvider = ({
+export const PollContextProvider = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>({
   children,
   value,
 }: PropsWithChildren<{
-  value: PollContextValue;
+  value: PollContextValue<StreamChatGenerics>;
 }>) => (
   <PollContext.Provider value={value as unknown as PollContextValue}>
     {children}
