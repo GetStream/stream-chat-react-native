@@ -10,7 +10,7 @@ if (Platform.constants.reactNativeVersion.minor < 72) {
     console.log(upgradeLog);
   } catch (error) {
     console.log(
-      `@stream-io/flat-list-mvcp not found, using react-native's FlatList. ${upgradeLog}`,
+      `@stream-io/flat-list-mvcp not found, using react-native's FlatList. This library is used to achieve bi-directional infinite scrolling on lower react native versions. ${upgradeLog}`,
     );
     FlatList = require('react-native').FlatList;
   }
