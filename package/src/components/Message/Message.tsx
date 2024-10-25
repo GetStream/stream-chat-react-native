@@ -565,6 +565,7 @@ const MessageWithContext = <
   const { userLanguage } = useTranslationContext();
   const { Poll, PollButtons, PollHeader } = useChannelContext();
 
+  // TODO: Can be removed in V6 and from here completely once it becomes baseline.
   const PollWrapper = useCallback(() => {
     const poll = message?.poll_id ? client.polls.fromState(message.poll_id) : undefined;
     return message?.poll_id && poll ? (
