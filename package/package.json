@@ -78,7 +78,7 @@
     "path": "0.12.7",
     "react-native-markdown-package": "1.8.2",
     "react-native-url-polyfill": "^1.3.0",
-    "stream-chat": "https://github.com/GetStream/stream-chat-js.git#acb82cdf157c1b4514bb9b17412269569e63e509"
+    "stream-chat": "https://github.com/GetStream/stream-chat-js.git#4f8faecbc8dfadd00316237b2dde92898625713b"
   },
   "peerDependencies": {
     "react-native-quick-sqlite": ">=5.1.0",
