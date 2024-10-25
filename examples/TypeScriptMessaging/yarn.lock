@@ -1926,9 +1926,9 @@
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
 "@react-native-clipboard/clipboard@^1.10.0":
-  version "1.13.2"
-  resolved "https://registry.yarnpkg.com/@react-native-clipboard/clipboard/-/clipboard-1.13.2.tgz#28adcfc43ed2addddf79a59198ec1b25087c115e"
-  integrity sha512-uVM55oEGc6a6ZmSATDeTcMm55A/C1km5X47g0xaoF0Zagv7N/8RGvLceA5L/izPwflIy78t7XQeJUcnGSib0nA==
+  version "1.14.2"
+  resolved "https://registry.yarnpkg.com/@react-native-clipboard/clipboard/-/clipboard-1.14.2.tgz#d290e9f79799e260ba4ebd9e9948079258826b25"
+  integrity sha512-Mb58f3neB6sM9oOtKYVGLvN8KVByea67OA9ekJ0c9FwdH24INu8RJoA7/fq+PRk+7oxbeamAcEoQPRv0uwbbMw==
 
 "@react-native-community/cli-clean@12.3.6":
   version "12.3.6"
@@ -2394,6 +2394,11 @@
   version "0.73.4"
   resolved "https://registry.yarnpkg.com/@react-native/gradle-plugin/-/gradle-plugin-0.73.4.tgz#aa55784a8c2b471aa89934db38c090d331baf23b"
   integrity sha512-PMDnbsZa+tD55Ug+W8CfqXiGoGneSSyrBZCMb5JfiB3AFST3Uj5e6lw8SgI/B6SKZF7lG0BhZ6YHZsRZ5MlXmg==
+
+"@react-native/gradle-plugin@0.73.5":
+  version "0.73.5"
+  resolved "https://registry.yarnpkg.com/@react-native/gradle-plugin/-/gradle-plugin-0.73.5.tgz#900126b4e5737eaac22a0fddb2fc5b4cc20da41c"
+  integrity sha512-Orrn8J/kqzEuXudl96XcZk84ZcdIpn1ojjwGSuaSQSXNcCYbOXyt0RwtW5kjCqjgSzGnOMsJNZc5FDXHVq/WzA==
 
 "@react-native/js-polyfills@0.73.1":
   version "0.73.1"
@@ -6641,9 +6646,9 @@ react-native-safe-area-context@^4.11.1:
   integrity sha512-urF1m4nFiZFaWjsv2zj8J/hKvo4b2tJW+6CYU1mY4lKv1RwhG2eV8J/EHKuNlLhATZx3+6j7szrpHrQW2ZcAaQ==
 
 react-native-screens@^3.32.0:
-  version "3.32.0"
-  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-3.32.0.tgz#47c3d2efc9cd5ed18af41b34efc8b46df05b87b4"
-  integrity sha512-wybqZAHX7v8ipOXhh90CqGLkBHw5JYqKNRBX7R/b0c2WQisTOgu0M0yGwBMM6LyXRBT+4k3NTGHdDbpJVpq0yQ==
+  version "3.35.0"
+  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-3.35.0.tgz#4acf4c7d331d47d33d0214d415779540b7664e0e"
+  integrity sha512-rmkqb/M/SQIrXwygk6pXcOhgHltYAhidf1WceO7ujAxkr6XtwmgFyd1HIztsrJa568GrAuwPdQ11I7TpVk+XsA==
   dependencies:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
@@ -6718,10 +6723,10 @@ react-native@*:
     ws "^6.2.2"
     yargs "^17.6.2"
 
-react-native@^0.73.6:
-  version "0.73.9"
-  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.73.9.tgz#a10a2ad16a6087c22d704ae47e29efbd64fcccb3"
-  integrity sha512-U9Lc6GMdANG2/9uREZe/UTQEzdVWw6NLRYxBYaFWNqiu/qZAmZ0aXSNcVF6hWw/95Ex0IGQx6EVMT4iPmuSNQw==
+react-native@^0.73.10:
+  version "0.73.10"
+  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.73.10.tgz#d1768cd70de084c3eb9dd6a6452b75b41100738e"
+  integrity sha512-ucr9GO6iAUi3A1KZ7DjxLtS91QqTw2gJdKwvz5wNK4DCVF3neJyNUPs7fgpGngYtBsio4PaefVOXyrWAklTBXA==
   dependencies:
     "@jest/create-cache-key-function" "^29.6.3"
     "@react-native-community/cli" "12.3.7"
@@ -6730,7 +6735,7 @@ react-native@^0.73.6:
     "@react-native/assets-registry" "0.73.1"
     "@react-native/codegen" "0.73.3"
     "@react-native/community-cli-plugin" "0.73.18"
-    "@react-native/gradle-plugin" "0.73.4"
+    "@react-native/gradle-plugin" "0.73.5"
     "@react-native/js-polyfills" "0.73.1"
     "@react-native/normalize-colors" "0.73.2"
     "@react-native/virtualized-lists" "0.73.4"
@@ -7218,10 +7223,10 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-stream-chat-react-native-core@5.39.4:
-  version "5.39.4"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.39.4.tgz#39db32070ccf95aa32ceb2fec96f777c27f0a8d2"
-  integrity sha512-XKrPnIKVVOz9mi4/oVkMX8zD8JnqDIxjiqhYZelT4Hb2qMrhvpmCmxq60Fz++JZf7lFgtnoAx+oec1ns4g0VWg==
+stream-chat-react-native-core@5.39.5:
+  version "5.39.5"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.39.5.tgz#8a2f587404bc84f1761e180602358a60b46f724b"
+  integrity sha512-H0wSnF7PgwepvozXRZs5K9TR9A3mOKMc6hyV+sLtLKW13rqyN11dSuSKorOYzCCkrnasYi+2sXM1dd7Orunbww==
   dependencies:
     "@gorhom/bottom-sheet" "^4.6.4"
     dayjs "1.10.5"
