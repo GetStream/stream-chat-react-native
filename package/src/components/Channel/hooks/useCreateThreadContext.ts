@@ -6,9 +6,9 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 const selector = (nextValue: ThreadState) =>
   ({
-    latestReplies: nextValue.replies,
-    isLoadingPrev: nextValue.pagination.isLoadingPrev,
     isLoadingNext: nextValue.pagination.isLoadingNext,
+    isLoadingPrev: nextValue.pagination.isLoadingPrev,
+    latestReplies: nextValue.replies,
   } as const);
 
 export const useCreateThreadContext = <
