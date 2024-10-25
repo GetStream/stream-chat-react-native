@@ -19,7 +19,7 @@
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/stack": "^6.4.0",
     "react": "18.2.0",
-    "react-native": "^0.73.6",
+    "react-native": "^0.73.10",
     "react-native-audio-recorder-player": "3.6.6",
     "react-native-blob-util": "^0.19.9",
     "react-native-document-picker": "^9.3.0",
