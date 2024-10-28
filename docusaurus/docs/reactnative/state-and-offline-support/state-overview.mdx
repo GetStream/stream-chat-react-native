@@ -270,9 +270,9 @@ Selectors are functions provided by integrators that run whenever state object c
 
 ```ts
 const selector = (nextValue: ThreadManagerState) => ({
-  unreadThreadsCount: nextValue.unreadThreadsCount, // <-- changes often
-  active: nextValue.active, // <-- changes less often
-  lastConnectionDownAt: nextvalue.lastConnectionDownAt, // <-- changes rarely
+  unreadThreadsCount: nextValue.unreadThreadsCount,
+  active: nextValue.active,
+  lastConnectionDownAt: nextvalue.lastConnectionDownAt,
 });
 ```
 
