@@ -1,6 +1,13 @@
 import { useCallback } from 'react';
 
-import type { PollAnswer, PollOption, PollState, PollVote, UserResponse } from 'stream-chat';
+import {
+  PollAnswer,
+  PollOption,
+  PollState,
+  PollVote,
+  UserResponse,
+  VotingVisibility,
+} from 'stream-chat';
 
 import { usePollStateStore } from './usePollStateStore';
 
@@ -22,6 +29,7 @@ export type UsePollStateSelectorReturnType = [
   boolean | undefined,
   boolean | undefined,
   UserResponse | null,
+  VotingVisibility | undefined,
 ];
 
 const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
@@ -40,6 +48,7 @@ const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   nextValue.allow_answers,
   nextValue.allow_user_suggested_options,
   nextValue.created_by,
+  nextValue.voting_visibility,
 ];
 
 export const usePollState = () => {
@@ -58,6 +67,7 @@ export const usePollState = () => {
     allow_answers,
     allow_user_suggested_options,
     created_by,
+    voting_visibility,
   ] = usePollStateStore(selector);
 
   const addOption = useCallback(
@@ -90,5 +100,6 @@ export const usePollState = () => {
     ownAnswer,
     ownVotesByOptionId,
     vote_counts_by_option,
+    voting_visibility,
   };
 };

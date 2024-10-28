@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { FlatList, type FlatListProps, StyleSheet, Text, View } from 'react-native';
 
-import { PollAnswer } from 'stream-chat';
+import { PollAnswer, VotingVisibility } from 'stream-chat';
 
 import { AnswerListAddCommentButton } from './Button';
 
@@ -15,6 +15,7 @@ import { DefaultStreamChatGenerics } from '../../../types/types';
 import { getDateString } from '../../../utils/i18n/getDateString';
 import { Avatar } from '../../Avatar/Avatar';
 import { usePollAnswersPagination } from '../hooks/usePollAnswersPagination';
+import { usePollState } from '../hooks/usePollState';
 
 export type PollAnswersListProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -25,6 +26,8 @@ export type PollAnswersListProps<
 
 export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
   const { t, tDateTimeParser } = useTranslationContext();
+  const { voting_visibility } = usePollState();
+
   const {
     theme: {
       colors: { bg_user, black },
@@ -37,12 +40,17 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
   const dateString = useMemo(
     () =>
       getDateString({
-        date: answer.created_at,
+        date: answer.updated_at,
         t,
         tDateTimeParser,
         timestampTranslationKey: 'timestamp/PollVote',
       }),
-    [answer.created_at, t, tDateTimeParser],
+    [answer.updated_at, t, tDateTimeParser],
+  );
+
+  const isAnonymous = useMemo(
+    () => voting_visibility === VotingVisibility.anonymous,
+    [voting_visibility],
   );
 
   return (
@@ -52,8 +60,12 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
       </Text>
       <View style={[styles.listItemInfoContainer, itemStyle.infoContainer]}>
         <View style={[styles.listItemUserInfoContainer, itemStyle.userInfoContainer]}>
-          <Avatar image={answer.user?.image as string} size={20} />
-          <Text style={{ color: black, fontSize: 14, marginLeft: 2 }}>{answer.user?.name}</Text>
+          {!isAnonymous && answer.user?.image ? (
+            <Avatar image={answer.user?.image as string} size={20} />
+          ) : null}
+          <Text style={{ color: black, fontSize: 14, marginLeft: 2 }}>
+            {isAnonymous ? t<string>('Anonymous') : answer.user?.name}
+          </Text>
         </View>
         <Text style={{ color: black }}>{dateString}</Text>
       </View>

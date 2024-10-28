@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { PollOption, PollVote as PollVoteClass } from 'stream-chat';
+import { PollOption, PollVote as PollVoteClass, VotingVisibility } from 'stream-chat';
 
 import { useTheme, useTranslationContext } from '../../../../contexts';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
@@ -18,6 +18,7 @@ export type PollResultItemProps<
 
 export const PollVote = (vote: PollVoteClass) => {
   const { t, tDateTimeParser } = useTranslationContext();
+  const { voting_visibility } = usePollState();
   const {
     theme: {
       colors: { black, text_low_emphasis },
@@ -40,11 +41,20 @@ export const PollVote = (vote: PollVoteClass) => {
     [vote.created_at, t, tDateTimeParser],
   );
 
+  const isAnonymous = useMemo(
+    () => voting_visibility === VotingVisibility.anonymous,
+    [voting_visibility],
+  );
+
   return (
     <View key={`results_vote_${vote.id}`} style={[styles.voteContainer, container]}>
       <View style={{ flexDirection: 'row' }}>
-        <Avatar image={vote.user?.image as string} key={vote.id} size={20} />
-        <Text style={[styles.voteUserName, { color: black }, userName]}>{vote.user?.name}</Text>
+        {!isAnonymous && vote.user?.image ? (
+          <Avatar image={vote.user.image as string} key={vote.id} size={20} />
+        ) : null}
+        <Text style={[styles.voteUserName, { color: black }, userName]}>
+          {isAnonymous ? t<string>('Anonymous') : vote.user?.name}
+        </Text>
       </View>
       <Text style={[styles.voteDate, { color: text_low_emphasis }, dateText]}>{dateString}</Text>
     </View>

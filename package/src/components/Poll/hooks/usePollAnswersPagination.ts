@@ -34,7 +34,7 @@ export const usePollAnswersPagination = ({
       const { next: newNext, votes: answers } = await poll.queryAnswers({
         filter: paginationParams?.filter,
         options: !next ? paginationParams?.options : { ...paginationParams?.options, next },
-        sort: { created_at: -1, ...paginationParams?.sort },
+        sort: { updated_at: -1, ...paginationParams?.sort },
       });
       cursorRef.current = newNext || null;
       setPollAnswers((prev) => uniqBy([...prev, ...answers], 'id'));
