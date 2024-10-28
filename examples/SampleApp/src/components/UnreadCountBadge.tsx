@@ -20,12 +20,11 @@ const styles = StyleSheet.create({
   },
 });
 
-const selector = (nextValue: ThreadManagerState) =>
-  ({ unreadCount: nextValue.unreadThreadCount } as const);
+const selector = (nextValue: ThreadManagerState) => [nextValue.unreadThreadCount];
 
 export const ThreadsUnreadCountBadge: React.FC = () => {
   const { chatClient } = useAppContext();
-  const { unreadCount } = useStateStore(chatClient?.threads?.state, selector) || {};
+  const [unreadCount] = useStateStore(chatClient?.threads?.state, selector);
 
   return <UnreadCountBadge unreadCount={unreadCount} />;
 };
