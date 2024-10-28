@@ -679,7 +679,9 @@ const MessageWithContext = <
           testID='message-wrapper'
         >
           <MessageSimple />
-          {isBounceDialogOpen && <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />}
+          {isBounceDialogOpen ? (
+            <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />
+          ) : null}
           {messageOverlayVisible ? (
             <MessageMenu
               dismissOverlay={dismissOverlay}
