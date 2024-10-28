@@ -1,5 +1,12 @@
 # Change Log
 
+### [5.39.6](https://github.com/GetStream/stream-chat-react-native/compare/v5.39.5...v5.39.6) (2024-10-28)
+
+
+### Bug Fixes
+
+* state store with new api ([#2726](https://github.com/GetStream/stream-chat-react-native/issues/2726)) ([19d8fda](https://github.com/GetStream/stream-chat-react-native/commit/19d8fda7ee17ad9b19c80d3aa6d2e3ca13c5d9b8))
+
 ### [5.39.5](https://github.com/GetStream/stream-chat-react-native/compare/v5.39.4...v5.39.5) (2024-10-24)
 
 
