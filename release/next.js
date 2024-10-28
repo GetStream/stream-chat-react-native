@@ -16,7 +16,7 @@ configPromise.then((config) => {
       {
         name: 'v6.0.0',
         channel: 'rc',
-        prerelease: 'rc',
+        prerelease: true,
       },
     ],
   }).then((result) => {

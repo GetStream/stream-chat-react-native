@@ -182,9 +182,7 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {},
   contentContainer: {
     flexGrow: 1,
     justifyContent: 'space-around',
