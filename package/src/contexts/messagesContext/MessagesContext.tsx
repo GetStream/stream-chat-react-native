@@ -520,6 +520,12 @@ export type MessagesContextValue<
   selectReaction?: (
     message: MessageType<StreamChatGenerics>,
   ) => (reactionType: string) => Promise<void>;
+
+  /**
+   * Boolean to enable/disable the message underlay background when there are unread messages in the Message List.
+   */
+  shouldShowUnreadUnderlay?: boolean;
+
   targetedMessage?: string;
 };
 

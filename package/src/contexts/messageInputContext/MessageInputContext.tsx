@@ -927,6 +927,7 @@ export const MessageInputProvider = <
 
     const prevText = giphyEnabled && giphyActive ? `/giphy ${text}` : text;
     setText('');
+
     if (inputBoxRef.current) {
       inputBoxRef.current.clear();
     }

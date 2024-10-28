@@ -1,5 +1,20 @@
 # Change Log
 
+### [5.39.6](https://github.com/GetStream/stream-chat-react-native/compare/v5.39.5...v5.39.6) (2024-10-28)
+
+
+### Bug Fixes
+
+* state store with new api ([#2726](https://github.com/GetStream/stream-chat-react-native/issues/2726)) ([19d8fda](https://github.com/GetStream/stream-chat-react-native/commit/19d8fda7ee17ad9b19c80d3aa6d2e3ca13c5d9b8))
+
+### [5.39.5](https://github.com/GetStream/stream-chat-react-native/compare/v5.39.4...v5.39.5) (2024-10-24)
+
+
+### Bug Fixes
+
+* add theme for overlay reaction list icon and introduce shouldShowUnreadOverlay for message bubble ([#2722](https://github.com/GetStream/stream-chat-react-native/issues/2722)) ([2a7cee3](https://github.com/GetStream/stream-chat-react-native/commit/2a7cee35be31546028dc45b6c6659b9e93220df4))
+* inline date separator not being rendered for deleted message appropriately ([#2716](https://github.com/GetStream/stream-chat-react-native/issues/2716)) ([9f2bb15](https://github.com/GetStream/stream-chat-react-native/commit/9f2bb15e8c52f3d8b4011108c84608e37ab90667))
+
 ### [5.39.4](https://github.com/GetStream/stream-chat-react-native/compare/v5.39.3...v5.39.4) (2024-10-21)
 
 

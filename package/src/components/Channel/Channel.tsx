@@ -323,6 +323,7 @@ export type ChannelPropsWithContext<
       | 'OverlayReactionList'
       | 'ReactionList'
       | 'Reply'
+      | 'shouldShowUnreadUnderlay'
       | 'ScrollToBottomButton'
       | 'selectReaction'
       | 'supportedReactions'
@@ -593,6 +594,7 @@ const ChannelWithContext = <
     setTyping,
     setWatcherCount,
     setWatchers,
+    shouldShowUnreadUnderlay = true,
     shouldSyncChannel,
     ShowThreadMessageInChannelButton = ShowThreadMessageInChannelButtonDefault,
     StartAudioRecordingButton = AudioRecordingButtonDefault,
@@ -2439,6 +2441,7 @@ const ChannelWithContext = <
     sendReaction,
     setEditingState,
     setQuotedMessageState,
+    shouldShowUnreadUnderlay,
     supportedReactions,
     targetedMessage,
     TypingIndicator,
