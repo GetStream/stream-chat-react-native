@@ -56,10 +56,7 @@ export const usePollAnswersPagination = ({
         if (event.poll?.id && event.poll.id !== poll.id) return;
         const vote = event.poll_vote;
         if (vote && isVoteAnswer(vote)) {
-          setPollAnswers([
-            vote,
-            ...pollAnswers.filter((answer) => answer.user_id !== vote.user_id),
-          ]);
+          setPollAnswers([vote, ...pollAnswers.filter((answer) => answer.id !== vote.id)]);
         }
       }),
     );
@@ -68,7 +65,7 @@ export const usePollAnswersPagination = ({
       if (event.poll?.id && event.poll.id !== poll.id) return;
       const vote = event.poll_vote;
       if (vote && isVoteAnswer(vote)) {
-        setPollAnswers(pollAnswers.filter((item) => item.user_id !== vote.user_id));
+        setPollAnswers(pollAnswers.filter((item) => item.id !== vote.id));
       }
     });
 

@@ -60,9 +60,9 @@ export const usePollOptionVotesPagination = ({
         const vote = event.poll_vote;
         if (vote && !isVoteAnswer(vote)) {
           if (vote.option_id === option.id) {
-            setVotes([vote, ...votes.filter((v) => v.user_id !== vote.user_id)]);
+            setVotes([vote, ...votes.filter((v) => v.id !== vote.id)]);
           } else if (eventName === 'poll.vote_changed') {
-            setVotes(votes.filter((v) => v.user_id !== vote.user_id));
+            setVotes(votes.filter((v) => v.id !== vote.id));
           }
         }
       }),
@@ -72,7 +72,7 @@ export const usePollOptionVotesPagination = ({
       if (event.poll?.id && event.poll.id !== poll.id) return;
       const vote = event.poll_vote;
       if (vote && !isVoteAnswer(vote) && vote.option_id === option.id) {
-        setVotes(votes.filter((v) => v.user_id !== vote.user_id));
+        setVotes(votes.filter((v) => v.id !== vote.id));
       }
     });
 
