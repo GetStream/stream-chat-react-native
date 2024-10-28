@@ -266,40 +266,40 @@ Selectors are functions provided by integrators that run whenever state object c
 
 #### Rules of Selectors
 
-1. Selectors should return array of data sorted by their "change factor"; meaning values that change often should come first for the best performance.
+1. Selectors should return a named object.
 
 ```ts
-const selector = (nextValue: ThreadManagerState) => [
-  nextValue.unreadThreadsCount, // <-- changes often
-  nextValue.active, // <-- changes less often
-  nextvalue.lastConnectionDownAt, // <-- changes rarely
-];
+const selector = (nextValue: ThreadManagerState) => ({
+  unreadThreadsCount: nextValue.unreadThreadsCount, // <-- changes often
+  active: nextValue.active, // <-- changes less often
+  lastConnectionDownAt: nextvalue.lastConnectionDownAt, // <-- changes rarely
+});
 ```
 
-2. Selectors should live outside components scope or should be memoized if it requires "outside" information (`userId` for `read` object for example). Not memoizing selectors (or not stabilizing them) will lead to bad performance as each time your component re-renders, the selector function is created anew and `useSimpleStateStore` goes through unsubscribe and resubscribe process unnecessarily.
+2. Selectors should live outside components scope or should be memoized if it requires "outside" information (`userId` for `read` object for example). Not memoizing selectors (or not stabilizing them) will lead to bad performance as each time your component re-renders, the selector function is created anew and `useStateStore` goes through unsubscribe and resubscribe process unnecessarily.
 
 ```tsx
 // ❌ not okay
 const Component1 = () => {
-  const [latestReply] = useStateStore(thread.state, (nextValue: ThreadState) => [nextValue.latestReplies.at(-1)]);
+  const { latestReply } = useStateStore(thread.state, (nextValue: ThreadState) => ({ latestReply: nextValue.latestReplies.at(-1) }));
 
   return <Text>{latestReply.text}</Text>;
 };
 
 // ✅ okay
-const selector = (nextValue: ThreadState) => [nextValue.latestReplies.at(-1)];
+const selector = (nextValue: ThreadState) => ({ latestReply: nextValue.latestReplies.at(-1) });
 
 const Component2 = () => {
-  const [latestReply] = useStateStore(thread.state, selector);
+  const { latestReply } = useStateStore(thread.state, selector);
 
   return <Text>{latestReply.text}</Text>;
 };
 
 // ✅ also okay
 const Component3 = ({ userId }: { userId: string }) => {
-  const selector = useCallback((nextValue: ThreadState) => [nextValue.read[userId].unread_messages], [userId]);
+  const selector = useCallback((nextValue: ThreadState) => ({ unreadMessagesCount: nextValue.read[userId].unread_messages }), [userId]);
 
-  const [unreadMessagesCount] = useStateStore(thread.state, selector);
+  const { unreadMessagesCount } = useStateStore(thread.state, selector);
 
   return <Text>{unreadMessagesCount}</Text>;
 };
@@ -324,9 +324,9 @@ client.threads.state.subscribe(console.log);
 let latestThreads;
 client.threads.state.subscribeWithSelector(
   // called each time theres a change in the state object
-  nextValue => [nextValue.threads],
+  nextValue => ({ threads: nextValue.threads }),
   // called only when threads change (selected value)
-  ([threads]) => {
+  ({ threads }) => {
     latestThreads = threads;
   },
 );
@@ -344,17 +344,17 @@ thread?.state.getLatestValue(/*...*/);
 
 #### useStateStore Hook
 
-For the ease of use - the React SDK comes with the appropriate state access hook which wraps `SimpleStateStore.subscribeWithSelector` API for the React-based applications.
+For the ease of use - the React SDK comes with the appropriate state access hook which wraps `StateStore.subscribeWithSelector` API for the React-based applications.
 
 ```tsx
 import { useStateStore } from 'stream-chat-react-native';
 import type { ThreadManagerState } from 'stream-chat';
 
-const selector = (nextValue: ThreadManagerState) => [nextValue.threads] as const;
+const selector = (nextValue: ThreadManagerState) => ({ threads: nextValue.threads }) as const;
 
 const CustomThreadList = () => {
   const { client } = useChatContext();
-  const [threads] = useStateStore(client.threads.state, selector);
+  const { threads } = useStateStore(client.threads.state, selector);
 
   return (
     <View>
