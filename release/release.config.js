@@ -15,6 +15,7 @@ module.exports = Promise.resolve().then(() => {
         ],
         parserOpts: {
           mergePattern: mergeRegex,
+          noteKeywords: ['BREAKING CHANGE', 'BREAKING CHANGES'],
         },
       },
     ],
