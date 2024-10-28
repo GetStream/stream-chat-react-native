@@ -37,17 +37,17 @@ export type LatestMessagePreview<
   created_at?: string | Date;
 };
 
-export type LatestMessagePreviewSelectorReturnType = [
-  Record<string, PollVote[]>,
-  UserResponse | null,
-];
+export type LatestMessagePreviewSelectorReturnType = {
+  created_by?: UserResponse | null;
+  latest_votes_by_option?: Record<string, PollVote[]>;
+};
 
 const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   nextValue: PollState<StreamChatGenerics>,
-): LatestMessagePreviewSelectorReturnType => [
-  nextValue.latest_votes_by_option,
-  nextValue.created_by,
-];
+): LatestMessagePreviewSelectorReturnType => ({
+  created_by: nextValue.created_by,
+  latest_votes_by_option: nextValue.latest_votes_by_option,
+});
 
 const getMessageSenderName = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -98,7 +98,7 @@ const getLatestMessageDisplayText = <
   client: StreamChat<StreamChatGenerics>,
   message: LatestMessage<StreamChatGenerics> | undefined,
   t: (key: string) => string,
-  pollState: LatestMessagePreviewSelectorReturnType | [],
+  pollState: LatestMessagePreviewSelectorReturnType | undefined,
 ) => {
   if (!message) return [{ bold: false, text: t('Nothing yet...') }];
   const isMessageTypeDeleted = message.type === 'deleted';
@@ -146,16 +146,16 @@ const getLatestMessageDisplayText = <
     ];
   }
   if (message.poll && pollState) {
-    const [latest_votes_by_option, created_by] = pollState;
+    const { created_by, latest_votes_by_option } = pollState;
     let latestVotes;
     if (latest_votes_by_option) {
       latestVotes = Object.values(latest_votes_by_option)
         .map((votes) => votes?.[0])
-        .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     }
     let previewAction = 'created';
     let previewUser = created_by;
-    if (latestVotes && latestVotes.length) {
+    if (latestVotes && latestVotes.length && latestVotes[0]?.user) {
       previewAction = 'voted';
       previewUser = latestVotes[0]?.user;
     }
@@ -215,7 +215,7 @@ const getLatestMessagePreview = <
 >(params: {
   channel: Channel<StreamChatGenerics>;
   client: StreamChat<StreamChatGenerics>;
-  pollState: LatestMessagePreviewSelectorReturnType | [];
+  pollState: LatestMessagePreviewSelectorReturnType | undefined;
   readEvents: boolean;
   t: TFunction;
   lastMessage?:
@@ -308,8 +308,9 @@ export const useLatestMessagePreview = <
 
   const pollId = lastMessage?.poll_id ?? '';
   const poll = client.polls.fromState(pollId);
-  const pollState = useStateStore(poll?.state, selector) ?? [];
-  const [latest_votes_by_option, created_by] = pollState;
+  const pollState: LatestMessagePreviewSelectorReturnType =
+    useStateStore(poll?.state, selector) ?? {};
+  const { created_by, latest_votes_by_option } = pollState;
 
   useEffect(
     () =>

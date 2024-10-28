@@ -21,11 +21,17 @@ import { Avatar } from '../../Avatar/Avatar';
 import { usePollState } from '../hooks/usePollState';
 import { usePollStateStore } from '../hooks/usePollStateStore';
 
-type PollOptionSelectorReturnValue = [Record<string, PollVote[]>, string[]];
+type PollOptionSelectorReturnValue = {
+  latest_votes_by_option: Record<string, PollVote[]>;
+  maxVotedOptionIds: string[];
+};
 
 const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   nextValue: PollState<StreamChatGenerics>,
-): PollOptionSelectorReturnValue => [nextValue.latest_votes_by_option, nextValue.maxVotedOptionIds];
+): PollOptionSelectorReturnValue => ({
+  latest_votes_by_option: nextValue.latest_votes_by_option,
+  maxVotedOptionIds: nextValue.maxVotedOptionIds,
+});
 
 export type PollOptionProps = {
   option: PollOptionClass;
@@ -99,7 +105,7 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
     }
   }, [message.id, option.id, ownVotesByOptionId, poll]);
 
-  const [latest_votes_by_option, maxVotedOptionIds] = usePollStateStore(selector);
+  const { latest_votes_by_option, maxVotedOptionIds } = usePollStateStore(selector);
 
   const relevantVotes = useMemo(
     () => latest_votes_by_option?.[option.id]?.slice(0, 2) || [],
