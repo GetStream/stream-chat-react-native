@@ -281,7 +281,9 @@ const selector = (nextValue: ThreadManagerState) => ({
 ```tsx
 // ❌ not okay
 const Component1 = () => {
-  const { latestReply } = useStateStore(thread.state, (nextValue: ThreadState) => ({ latestReply: nextValue.latestReplies.at(-1) }));
+  const { latestReply } = useStateStore(thread.state, (nextValue: ThreadState) => ({
+    latestReply: nextValue.latestReplies.at(-1),
+  }));
 
   return <Text>{latestReply.text}</Text>;
 };
@@ -297,7 +299,10 @@ const Component2 = () => {
 
 // ✅ also okay
 const Component3 = ({ userId }: { userId: string }) => {
-  const selector = useCallback((nextValue: ThreadState) => ({ unreadMessagesCount: nextValue.read[userId].unread_messages }), [userId]);
+  const selector = useCallback(
+    (nextValue: ThreadState) => ({ unreadMessagesCount: nextValue.read[userId].unread_messages }),
+    [userId],
+  );
 
   const { unreadMessagesCount } = useStateStore(thread.state, selector);
 
