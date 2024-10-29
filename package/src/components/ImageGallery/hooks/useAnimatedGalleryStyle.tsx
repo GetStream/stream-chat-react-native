@@ -1,6 +1,7 @@
-import { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
-import { useViewport } from '../../../hooks/useViewport';
 import type { ImageStyle } from 'react-native';
+import { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
+
+import { useViewport } from '../../../hooks/useViewport';
 
 type Props = {
   index: number;
