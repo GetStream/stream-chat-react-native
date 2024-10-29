@@ -16,7 +16,6 @@ export type CreatePollContentContextValue = {
    * **Default: ** 71
    */
   closePollCreationDialog?: () => void;
-  CreatePollContent?: React.ComponentType;
   createPollOptionHeight?: number;
 };
 

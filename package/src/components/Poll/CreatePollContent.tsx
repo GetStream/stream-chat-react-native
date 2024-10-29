@@ -11,6 +11,7 @@ import { CreatePollOptions, CurrentOptionPositionsCache, PollModalHeader } from 
 import {
   CreatePollContentContextValue,
   CreatePollContentProvider,
+  InputMessageInputContextValue,
   useChatContext,
   useCreatePollContentContext,
   useTheme,
@@ -236,8 +237,9 @@ export const CreatePoll = ({
   sendMessage,
 }: Pick<
   CreatePollContentContextValue,
-  'createPollOptionHeight' | 'sendMessage' | 'closePollCreationDialog' | 'CreatePollContent'
->) => {
+  'createPollOptionHeight' | 'closePollCreationDialog' | 'sendMessage'
+> &
+  Pick<InputMessageInputContextValue, 'CreatePollContent'>) => {
   const { client } = useChatContext();
 
   const createAndSendPoll = useCallback(
