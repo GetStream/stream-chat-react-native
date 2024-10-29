@@ -10664,7 +10664,7 @@ stream-browserify@^2.0.1:
     inherits "~2.0.1"
     readable-stream "^2.0.2"
 
-"stream-chat@https://github.com/GetStream/stream-chat-js.git#7a506f310e36517e4ee978bbce225143b2919c5d":
+"stream-chat@https://github.com/GetStream/stream-chat-js.git#7a506f3":
   version "8.41.1"
   resolved "https://github.com/GetStream/stream-chat-js.git#7a506f310e36517e4ee978bbce225143b2919c5d"
   dependencies:
