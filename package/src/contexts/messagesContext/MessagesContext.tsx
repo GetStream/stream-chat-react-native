@@ -509,9 +509,7 @@ export type MessagesContextValue<
    * ```
    */
   onPressMessage?: (payload: MessageTouchableHandlerPayload<StreamChatGenerics>) => void;
-  Poll?: React.ComponentType;
-  PollButtons?: React.ComponentType;
-  PollHeader?: React.ComponentType;
+  PollContent?: React.ComponentType;
   /**
    * Full override of the reaction function on Message and Message Overlay
    *

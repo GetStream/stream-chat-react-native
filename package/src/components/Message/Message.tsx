@@ -176,9 +176,7 @@ export type MessagePropsWithContext<
     | 'setQuotedMessageState'
     | 'supportedReactions'
     | 'updateMessage'
-    | 'Poll'
-    | 'PollButtons'
-    | 'PollHeader'
+    | 'PollContent'
   > &
   Pick<MessageOverlayContextValue<StreamChatGenerics>, 'setData'> &
   Pick<OverlayContextValue, 'setOverlay'> &
@@ -288,9 +286,7 @@ const MessageWithContext = <
     onThreadSelect,
     openThread,
     OverlayReactionList,
-    Poll,
-    PollButtons,
-    PollHeader,
+    PollContent,
     preventPress,
     removeMessage,
     retrySendMessage,
@@ -574,15 +570,9 @@ const MessageWithContext = <
   const PollWrapper = useCallback(() => {
     const poll = message?.poll_id ? client.polls.fromState(message.poll_id) : undefined;
     return message?.poll_id && poll ? (
-      <PollComponent<StreamChatGenerics>
-        message={message}
-        poll={poll}
-        Poll={Poll}
-        PollButtons={PollButtons}
-        PollHeader={PollHeader}
-      />
+      <PollComponent<StreamChatGenerics> message={message} poll={poll} PollContent={PollContent} />
     ) : null;
-  }, [PollButtons, PollHeader, Poll, client, message]);
+  }, [PollContent, client, message]);
 
   const showMessageOverlay = async (isMessageActionsVisible = true, error = errorOrFailed) => {
     await dismissKeyboard();

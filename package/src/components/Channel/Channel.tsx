@@ -331,9 +331,7 @@ export type ChannelPropsWithContext<
       | 'TypingIndicatorContainer'
       | 'UrlPreview'
       | 'VideoThumbnail'
-      | 'Poll'
-      | 'PollButtons'
-      | 'PollHeader'
+      | 'PollContent'
       | 'hasCreatePoll'
     >
   > &
@@ -575,9 +573,7 @@ const ChannelWithContext = <
     openPollCreationDialog,
     OverlayReactionList = OverlayReactionListDefault,
     overrideOwnCapabilities,
-    Poll,
-    PollButtons,
-    PollHeader,
+    PollContent,
     ReactionList = ReactionListDefault,
     read,
     Reply = ReplyDefault,
@@ -2429,9 +2425,7 @@ const ChannelWithContext = <
     onPressInMessage,
     onPressMessage,
     OverlayReactionList,
-    Poll,
-    PollButtons,
-    PollHeader,
+    PollContent,
     ReactionList,
     removeMessage,
     Reply,

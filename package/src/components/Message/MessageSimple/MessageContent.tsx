@@ -145,7 +145,7 @@ const MessageContentWithContext = <
     threadList,
   } = props;
   const { client } = useChatContext();
-  const { Poll: PollOverride, PollButtons, PollHeader } = useMessagesContext();
+  const { PollContent: PollContentOverride } = useMessagesContext();
 
   const {
     theme: {
@@ -389,9 +389,7 @@ const MessageContentWithContext = <
                     key={`poll_${message.poll_id}`}
                     message={message}
                     poll={poll}
-                    Poll={PollOverride}
-                    PollButtons={PollButtons}
-                    PollHeader={PollHeader}
+                    PollContent={PollContentOverride}
                   />
                 ) : null;
               }

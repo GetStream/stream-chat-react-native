@@ -4,7 +4,6 @@ import { Poll } from 'stream-chat';
 
 import { MessageType } from '../../components';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { MessagesContextValue } from '../messagesContext/MessagesContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -14,7 +13,7 @@ export type PollContextValue<
 > = {
   message: MessageType<StreamChatGenerics>;
   poll: Poll<StreamChatGenerics>;
-} & Partial<Pick<MessagesContextValue, 'PollButtons' | 'PollHeader'>>;
+};
 
 export const PollContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as PollContextValue);
 

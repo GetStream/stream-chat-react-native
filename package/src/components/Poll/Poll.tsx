@@ -19,7 +19,6 @@ import {
   MessagesContextValue,
   PollContextProvider,
   PollContextValue,
-  usePollContext,
   useTheme,
   useTranslationContext,
 } from '../../contexts';
@@ -27,8 +26,8 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 
 export type PollProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<PollContextValue<StreamChatGenerics>, 'poll' | 'message' | 'PollHeader' | 'PollButtons'> &
-  Pick<MessagesContextValue<StreamChatGenerics>, 'Poll'>;
+> = Pick<PollContextValue<StreamChatGenerics>, 'poll' | 'message'> &
+  Pick<MessagesContextValue<StreamChatGenerics>, 'PollContent'>;
 
 export const PollButtons = () => (
   <>
@@ -70,8 +69,13 @@ export const PollHeader = () => {
   );
 };
 
-const PollWithContext = () => {
-  const { PollButtons: PollButtonsOverride, PollHeader: PollHeaderOverride } = usePollContext();
+export const PollContent = ({
+  PollButtons: PollButtonsOverride,
+  PollHeader: PollHeaderOverride,
+}: {
+  PollButtons?: React.ComponentType;
+  PollHeader?: React.ComponentType;
+}) => {
   const { options } = usePollState();
 
   const {
@@ -100,19 +104,15 @@ export const Poll = <
 >({
   message,
   poll,
-  Poll: PollOverride,
-  PollButtons,
-  PollHeader,
+  PollContent: PollContentOverride,
 }: PollProps<StreamChatGenerics>) => (
   <PollContextProvider
     value={{
       message,
       poll,
-      PollButtons,
-      PollHeader,
     }}
   >
-    {PollOverride ? <PollOverride /> : <PollWithContext />}
+    {PollContentOverride ? <PollContentOverride /> : <PollContent />}
   </PollContextProvider>
 );
 
