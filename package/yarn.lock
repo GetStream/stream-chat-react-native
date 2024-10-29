@@ -48,6 +48,15 @@
     "@babel/highlight" "^7.24.2"
     picocolors "^1.0.0"
 
+"@babel/code-frame@^7.25.9":
+  version "7.26.0"
+  resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.26.0.tgz#9374b5cd068d128dac0b94ff482594273b1c2815"
+  integrity sha512-INCKxTtbXtcNbUZ3YXutwMpEleqttcswhAdee7dhuoVrD2cnuc3PqtERBtxkX5nziX9vnBL8WXmSGwv8CuPV6g==
+  dependencies:
+    "@babel/helper-validator-identifier" "^7.25.9"
+    js-tokens "^4.0.0"
+    picocolors "^1.0.0"
+
 "@babel/compat-data@^7.13.0", "@babel/compat-data@^7.17.7", "@babel/compat-data@^7.20.5", "@babel/compat-data@^7.22.5":
   version "7.22.5"
   resolved "https://registry.yarnpkg.com/@babel/compat-data/-/compat-data-7.22.5.tgz#b1f6c86a02d85d2dd3368a2b67c09add8cd0c255"
@@ -155,6 +164,17 @@
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.25"
     jsesc "^2.5.1"
+
+"@babel/generator@^7.25.9":
+  version "7.26.0"
+  resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.26.0.tgz#505cc7c90d92513f458a477e5ef0703e7c91b8d7"
+  integrity sha512-/AIkAmInnWwgEAJGQr9vY0c66Mj6kjkE2ZPB1PurTRaRAh3U+J45sAQMjQDJdh4WbR3l0x5xkimXBKyBXXAu2w==
+  dependencies:
+    "@babel/parser" "^7.26.0"
+    "@babel/types" "^7.26.0"
+    "@jridgewell/gen-mapping" "^0.3.5"
+    "@jridgewell/trace-mapping" "^0.3.25"
+    jsesc "^3.0.2"
 
 "@babel/helper-annotate-as-pure@^7.22.5":
   version "7.22.5"
@@ -454,6 +474,14 @@
   dependencies:
     "@babel/types" "^7.22.5"
 
+"@babel/helper-skip-transparent-expression-wrappers@^7.25.9":
+  version "7.25.9"
+  resolved "https://registry.yarnpkg.com/@babel/helper-skip-transparent-expression-wrappers/-/helper-skip-transparent-expression-wrappers-7.25.9.tgz#0b2e1b62d560d6b1954893fd2b705dc17c91f0c9"
+  integrity sha512-K4Du3BFa3gvyhzgPcntrkDgZzQaq6uozzcpGbOO1OEJaI+EJdqWIMTLgFgQf6lrfiDFo5FU+BxKepI9RmZqahA==
+  dependencies:
+    "@babel/traverse" "^7.25.9"
+    "@babel/types" "^7.25.9"
+
 "@babel/helper-split-export-declaration@^7.22.5":
   version "7.22.5"
   resolved "https://registry.yarnpkg.com/@babel/helper-split-export-declaration/-/helper-split-export-declaration-7.22.5.tgz#88cf11050edb95ed08d596f7a044462189127a08"
@@ -478,6 +506,11 @@
   resolved "https://registry.yarnpkg.com/@babel/helper-string-parser/-/helper-string-parser-7.24.1.tgz#f99c36d3593db9540705d0739a1f10b5e20c696e"
   integrity sha512-2ofRCjnnA9y+wk8b9IAREroeUP02KHp431N2mhKniy2yKIDKpbrHv9eXwm8cBeWQYcJmzv5qKCu65P47eCF7CQ==
 
+"@babel/helper-string-parser@^7.25.9":
+  version "7.25.9"
+  resolved "https://registry.yarnpkg.com/@babel/helper-string-parser/-/helper-string-parser-7.25.9.tgz#1aabb72ee72ed35789b4bbcad3ca2862ce614e8c"
+  integrity sha512-4A/SCr/2KLd5jrtOMFzaKjVtAei3+2r/NChoBNoZ3EyP/+GlhoaEGoWOZUmFmoITP7zOJyHIMm+DYRd8o3PvHA==
+
 "@babel/helper-validator-identifier@^7.22.20":
   version "7.22.20"
   resolved "https://registry.yarnpkg.com/@babel/helper-validator-identifier/-/helper-validator-identifier-7.22.20.tgz#c4ae002c61d2879e724581d96665583dbc1dc0e0"
@@ -487,6 +520,11 @@
   version "7.22.5"
   resolved "https://registry.yarnpkg.com/@babel/helper-validator-identifier/-/helper-validator-identifier-7.22.5.tgz#9544ef6a33999343c8740fa51350f30eeaaaf193"
   integrity sha512-aJXu+6lErq8ltp+JhkJUfk1MTGyuA4v7f3pA+BJ5HLfNC6nAQ0Cpi9uOquUj8Hehg0aUiHzWQbOVJGao6ztBAQ==
+
+"@babel/helper-validator-identifier@^7.25.9":
+  version "7.25.9"
+  resolved "https://registry.yarnpkg.com/@babel/helper-validator-identifier/-/helper-validator-identifier-7.25.9.tgz#24b64e2c3ec7cd3b3c547729b8d16871f22cbdc7"
+  integrity sha512-Ed61U6XJc3CVRfkERJWDz4dJwKe7iLmmJsbOGu9wSloNSFttHV0I8g6UAgb7qnK5ly5bGLPd4oXZlxCdANBOWQ==
 
 "@babel/helper-validator-option@^7.12.17", "@babel/helper-validator-option@^7.22.5":
   version "7.22.5"
@@ -577,6 +615,13 @@
   version "7.24.4"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.24.4.tgz#234487a110d89ad5a3ed4a8a566c36b9453e8c88"
   integrity sha512-zTvEBcghmeBma9QIGunWevvBAp4/Qu9Bdq+2k0Ot4fVMD6v3dsC9WOcRSKk7tRRyBM/53yKMJko9xOatGQAwSg==
+
+"@babel/parser@^7.25.9", "@babel/parser@^7.26.0":
+  version "7.26.1"
+  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.26.1.tgz#44e02499960df2cdce2c456372a3e8e0c3c5c975"
+  integrity sha512-reoQYNiAJreZNsJzyrDNzFQ+IQ5JFiIzAHJg9bn94S3l+4++J7RsIhNMoB+lgP/9tpmiAQqspv+xfdxTSzREOw==
+  dependencies:
+    "@babel/types" "^7.26.0"
 
 "@babel/plugin-bugfix-firefox-class-in-computed-class-key@^7.24.4":
   version "7.24.4"
@@ -916,6 +961,13 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.22.5"
 
+"@babel/plugin-transform-arrow-functions@^7.0.0-0":
+  version "7.25.9"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-arrow-functions/-/plugin-transform-arrow-functions-7.25.9.tgz#7821d4410bee5daaadbb4cdd9a6649704e176845"
+  integrity sha512-6jmooXYIwn9ca5/RylZADJ+EnSxVUS5sjeJ9UPk6RWRzXCmOJCy6dqItPJFpw2cuCangPK4OYr5uhGKcmrm5Qg==
+  dependencies:
+    "@babel/helper-plugin-utils" "^7.25.9"
+
 "@babel/plugin-transform-arrow-functions@^7.13.0", "@babel/plugin-transform-arrow-functions@^7.24.1":
   version "7.24.1"
   resolved "https://registry.yarnpkg.com/@babel/plugin-transform-arrow-functions/-/plugin-transform-arrow-functions-7.24.1.tgz#2bf263617060c9cc45bcdbf492b8cc805082bf27"
@@ -1201,6 +1253,13 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.24.0"
 
+"@babel/plugin-transform-nullish-coalescing-operator@^7.0.0-0":
+  version "7.25.9"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-nullish-coalescing-operator/-/plugin-transform-nullish-coalescing-operator-7.25.9.tgz#bcb1b0d9e948168102d5f7104375ca21c3266949"
+  integrity sha512-ENfftpLZw5EItALAD4WsY/KUWvhUlZndm5GC7G3evUsVeSJB6p0pBeLQUnRnBCBx7zV0RKQjR9kCuwrsIrjWog==
+  dependencies:
+    "@babel/helper-plugin-utils" "^7.25.9"
+
 "@babel/plugin-transform-nullish-coalescing-operator@^7.24.1":
   version "7.24.1"
   resolved "https://registry.yarnpkg.com/@babel/plugin-transform-nullish-coalescing-operator/-/plugin-transform-nullish-coalescing-operator-7.24.1.tgz#0cd494bb97cb07d428bd651632cb9d4140513988"
@@ -1216,13 +1275,6 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.24.0"
     "@babel/plugin-syntax-numeric-separator" "^7.10.4"
-
-"@babel/plugin-transform-object-assign@^7.16.7":
-  version "7.25.9"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-object-assign/-/plugin-transform-object-assign-7.25.9.tgz#686203d53ee688d1642bf3a8c751dfb3981021c8"
-  integrity sha512-I/Vl1aQnPsrrn837oLbo+VQtkNcjuuiATqwmuweg4fTauwHHQoxyjmjjOVKyO8OaTxgqYTKW3LuQsykXjDf5Ag==
-  dependencies:
-    "@babel/helper-plugin-utils" "^7.25.9"
 
 "@babel/plugin-transform-object-rest-spread@^7.24.1":
   version "7.24.1"
@@ -1249,6 +1301,14 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.24.0"
     "@babel/plugin-syntax-optional-catch-binding" "^7.8.3"
+
+"@babel/plugin-transform-optional-chaining@^7.0.0-0":
+  version "7.25.9"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-optional-chaining/-/plugin-transform-optional-chaining-7.25.9.tgz#e142eb899d26ef715435f201ab6e139541eee7dd"
+  integrity sha512-6AvV0FsLULbpnXeBjrY4dmWF8F7gf8QnvTEoO/wX/5xm/xE1Xo8oPuD3MPS+KS9f9XBEAWN7X1aWr4z9HdOr7A==
+  dependencies:
+    "@babel/helper-plugin-utils" "^7.25.9"
+    "@babel/helper-skip-transparent-expression-wrappers" "^7.25.9"
 
 "@babel/plugin-transform-optional-chaining@^7.24.1":
   version "7.24.1"
@@ -1405,6 +1465,13 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.22.5"
 
+"@babel/plugin-transform-shorthand-properties@^7.0.0-0":
+  version "7.25.9"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-shorthand-properties/-/plugin-transform-shorthand-properties-7.25.9.tgz#bb785e6091f99f826a95f9894fc16fde61c163f2"
+  integrity sha512-MUv6t0FhO5qHnS/W8XCbHmiRWOphNufpE1IVxhK5kuN3Td9FT1x4rx4K42s3RYdMXCXpfWkGSbCSd0Z64xA7Ng==
+  dependencies:
+    "@babel/helper-plugin-utils" "^7.25.9"
+
 "@babel/plugin-transform-shorthand-properties@^7.12.13", "@babel/plugin-transform-shorthand-properties@^7.24.1":
   version "7.24.1"
   resolved "https://registry.yarnpkg.com/@babel/plugin-transform-shorthand-properties/-/plugin-transform-shorthand-properties-7.24.1.tgz#ba9a09144cf55d35ec6b93a32253becad8ee5b55"
@@ -1441,6 +1508,13 @@
   integrity sha512-9v0f1bRXgPVcPrngOQvLXeGNNVLc8UjMVfebo9ka0WF3/7+aVUHmaJVT3sa0XCzEFioPfPHZiOcYG9qOsH63cw==
   dependencies:
     "@babel/helper-plugin-utils" "^7.24.0"
+
+"@babel/plugin-transform-template-literals@^7.0.0-0":
+  version "7.25.9"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-template-literals/-/plugin-transform-template-literals-7.25.9.tgz#6dbd4a24e8fad024df76d1fac6a03cf413f60fe1"
+  integrity sha512-o97AE4syN71M/lxrCtQByzphAdlYluKPDBzDVzMmfCobUjjhAryZV0AIpRPrxN0eAkxXO6ZLEScmt+PNhj2OTw==
+  dependencies:
+    "@babel/helper-plugin-utils" "^7.25.9"
 
 "@babel/plugin-transform-template-literals@^7.13.0", "@babel/plugin-transform-template-literals@^7.24.1":
   version "7.24.1"
@@ -1818,6 +1892,15 @@
     "@babel/parser" "^7.24.0"
     "@babel/types" "^7.24.0"
 
+"@babel/template@^7.25.9":
+  version "7.25.9"
+  resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.25.9.tgz#ecb62d81a8a6f5dc5fe8abfc3901fc52ddf15016"
+  integrity sha512-9DGttpmPvIxBb/2uwpVo3dqJ+O6RooAFOS+lB+xDqoE2PVCE8nfoHMdZLpfCQRLwvohzXISPZcgxt80xLfsuwg==
+  dependencies:
+    "@babel/code-frame" "^7.25.9"
+    "@babel/parser" "^7.25.9"
+    "@babel/types" "^7.25.9"
+
 "@babel/traverse@^7.13.0", "@babel/traverse@^7.22.5", "@babel/traverse@^7.7.0":
   version "7.22.5"
   resolved "https://registry.yarnpkg.com/@babel/traverse/-/traverse-7.22.5.tgz#44bd276690db6f4940fdb84e1cb4abd2f729ccd1"
@@ -1850,6 +1933,19 @@
     debug "^4.3.1"
     globals "^11.1.0"
 
+"@babel/traverse@^7.25.9":
+  version "7.25.9"
+  resolved "https://registry.yarnpkg.com/@babel/traverse/-/traverse-7.25.9.tgz#a50f8fe49e7f69f53de5bea7e413cd35c5e13c84"
+  integrity sha512-ZCuvfwOwlz/bawvAuvcj8rrithP2/N55Tzz342AkTvq4qaWbGfmCk/tKhNaV2cthijKrPAA8SRJV5WWe7IBMJw==
+  dependencies:
+    "@babel/code-frame" "^7.25.9"
+    "@babel/generator" "^7.25.9"
+    "@babel/parser" "^7.25.9"
+    "@babel/template" "^7.25.9"
+    "@babel/types" "^7.25.9"
+    debug "^4.3.1"
+    globals "^11.1.0"
+
 "@babel/types@^7.0.0", "@babel/types@^7.20.7", "@babel/types@^7.22.5", "@babel/types@^7.3.3", "@babel/types@^7.4.4", "@babel/types@^7.7.0":
   version "7.22.5"
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.22.5.tgz#cd93eeaab025880a3a47ec881f4b096a5b786fbe"
@@ -1867,6 +1963,14 @@
     "@babel/helper-string-parser" "^7.23.4"
     "@babel/helper-validator-identifier" "^7.22.20"
     to-fast-properties "^2.0.0"
+
+"@babel/types@^7.25.9", "@babel/types@^7.26.0":
+  version "7.26.0"
+  resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.26.0.tgz#deabd08d6b753bc8e0f198f8709fb575e31774ff"
+  integrity sha512-Z/yiTPj+lDVnF7lWeKCIJzaIkI0vYO87dMpZ4bg4TDrFe4XXLFWL1TbXU27gBP3QccxV9mZICCrnjnYlJjXHOA==
+  dependencies:
+    "@babel/helper-string-parser" "^7.25.9"
+    "@babel/helper-validator-identifier" "^7.25.9"
 
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
@@ -7083,6 +7187,11 @@ jsesc@^2.5.1:
   resolved "https://registry.yarnpkg.com/jsesc/-/jsesc-2.5.2.tgz#80564d2e483dacf6e8ef209650a67df3f0c283a4"
   integrity sha512-OYu7XEzjkCQ3C5Ps3QIZsQfNpqoJyZZA99wd9aWd05NCtC5pWOkShK2mkL6HXQR6/Cy2lbNdPlZBpuQHXE63gA==
 
+jsesc@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/jsesc/-/jsesc-3.0.2.tgz#bb8b09a6597ba426425f2e4a07245c3d00b9343e"
+  integrity sha512-xKqzzWXDttJuOcawBt4KnKHHIf5oQ/Cxax+0PWFG+DFDgHNAdi+TXECADI+RYiFUMmx8792xsMbbgXj4CwnP4g==
+
 jsesc@~0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/jsesc/-/jsesc-0.5.0.tgz#e7dee66e35d6fc16f710fe91d5cf69f70f08911d"
@@ -8427,10 +8536,10 @@ react-native-builder-bob@0.23.1:
     which "^2.0.2"
     yargs "^17.5.1"
 
-react-native-gesture-handler@~2.8.0:
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.8.0.tgz#ef9857871c10663c95a51546225b6e00cd4740cf"
-  integrity sha512-poOSfz/w0IyD6Qwq7aaIRRfEaVTl1ecQFoyiIbpOpfNTjm2B1niY2FLrdVQIOtIOe+K9nH55Qal04nr4jGkHdQ==
+react-native-gesture-handler@~2.16.1:
+  version "2.16.2"
+  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.16.2.tgz#032bd2a07334292d7f6cff1dc9d1ec928f72e26d"
+  integrity sha512-vGFlrDKlmyI+BT+FemqVxmvO7nqxU33cgXVsn6IKAFishvlG3oV2Ds67D5nPkHMea8T+s1IcuMm0bF8ntZtAyg==
   dependencies:
     "@egjs/hammerjs" "^2.0.17"
     hoist-non-react-statics "^3.3.0"
@@ -8454,12 +8563,16 @@ react-native-markdown-package@1.8.2:
     react-native-lightbox "^0.7.0"
     simple-markdown "^0.7.1"
 
-react-native-reanimated@3.7.0:
-  version "3.7.0"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.7.0.tgz#ad36b86533c0aa5e64795b05588dfd656d490039"
-  integrity sha512-KM+MKa3CJWqsF4GlOLLKBxTR2NEcrg5/HP9J2b6Dfgvll1sjZPywCOEEIh967SboEU8N9LjYZuoVm2UoXGxp2Q==
+react-native-reanimated@~3.10.0:
+  version "3.10.1"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.10.1.tgz#3c37d1100bbba0065df39c96aab0c1ff1b50c0fa"
+  integrity sha512-sfxg6vYphrDc/g4jf/7iJ7NRi+26z2+BszPmvmk0Vnrz6FL7HYljJqTf531F1x6tFmsf+FEAmuCtTUIXFLVo9w==
   dependencies:
-    "@babel/plugin-transform-object-assign" "^7.16.7"
+    "@babel/plugin-transform-arrow-functions" "^7.0.0-0"
+    "@babel/plugin-transform-nullish-coalescing-operator" "^7.0.0-0"
+    "@babel/plugin-transform-optional-chaining" "^7.0.0-0"
+    "@babel/plugin-transform-shorthand-properties" "^7.0.0-0"
+    "@babel/plugin-transform-template-literals" "^7.0.0-0"
     "@babel/preset-typescript" "^7.16.7"
     convert-source-map "^2.0.0"
     invariant "^2.2.4"

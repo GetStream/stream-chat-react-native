@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import type { StyleProp } from 'react-native';
-import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { SharedValue } from 'react-native-reanimated';
 
-import { useViewport } from '../../../hooks/useViewport';
 import {
   isVideoPlayerAvailable,
   PlaybackStatus,
@@ -14,6 +13,7 @@ import {
 } from '../../../native';
 
 import { Spinner } from '../../UIComponents/Spinner';
+import { useAnimatedGalleryStyle } from '../hooks/useAnimatedGalleryStyle';
 
 const oneEighth = 1 / 8;
 
@@ -72,11 +72,6 @@ export const AnimatedGalleryVideo = React.memo(
       translateY,
       videoRef,
     } = props;
-    const { vw } = useViewport();
-
-    const screenWidth = vw(100);
-    const halfScreenWidth = vw(50);
-
     const onLoadStart = () => {
       setOpacity(1);
     };
@@ -131,30 +126,16 @@ export const AnimatedGalleryVideo = React.memo(
       }
     };
 
-    const animatedViewStyles = useAnimatedStyle<ViewStyle>(() => {
-      const xScaleOffset = -7 * screenWidth * (0.5 + index);
-      const yScaleOffset = -screenHeight * 3.5;
-      return {
-        transform: [
-          {
-            translateX: selected
-              ? translateX.value + xScaleOffset
-              : scale.value < 1 || scale.value !== offsetScale.value
-              ? xScaleOffset
-              : previous
-              ? translateX.value - halfScreenWidth * (scale.value - 1) + xScaleOffset
-              : translateX.value + halfScreenWidth * (scale.value - 1) + xScaleOffset,
-          },
-          {
-            translateY: selected ? translateY.value + yScaleOffset : yScaleOffset,
-          },
-          {
-            scale: selected ? scale.value / 8 : oneEighth,
-          },
-          { scaleX: -1 },
-        ],
-      };
-    }, [previous, selected]);
+    const animatedStyles = useAnimatedGalleryStyle({
+      index,
+      offsetScale,
+      previous,
+      scale,
+      screenHeight,
+      selected,
+      translateX,
+      translateY,
+    });
 
     /**
      * An empty view is rendered for images not close to the currently
@@ -171,23 +152,7 @@ export const AnimatedGalleryVideo = React.memo(
     }
 
     return (
-      <Animated.View
-        accessibilityLabel='Image Gallery Video'
-        style={[
-          animatedViewStyles,
-          {
-            transform: [
-              { scaleX: -1 },
-              { translateY: -screenHeight * 3.5 },
-              {
-                translateX: -translateX.value + 7 * screenWidth * (0.5 + index),
-              },
-              { scale: oneEighth },
-            ],
-          },
-          style,
-        ]}
-      >
+      <Animated.View accessibilityLabel='Image Gallery Video' style={[...animatedStyles, style]}>
         {isVideoPlayerAvailable() ? (
           <Video
             onBuffer={onBuffer}
