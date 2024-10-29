@@ -34,6 +34,21 @@ export type PollButtonProps<
   }) => void;
 };
 
+export type ShowAllVotesButtonProps<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  option: PollOption<StreamChatGenerics>;
+  onPress?: ({
+    message,
+    option,
+    poll,
+  }: {
+    message: MessageType<StreamChatGenerics>;
+    option: PollOption<StreamChatGenerics>;
+    poll: Poll<StreamChatGenerics>;
+  }) => void;
+};
+
 export type PollVoteButtonProps = {
   option: PollOption;
 } & Pick<PollButtonProps, 'onPress'>;
@@ -380,7 +395,7 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
   ) : null;
 };
 
-export const ShowAllVotesButton = (props: PollButtonProps & { option: PollOption }) => {
+export const ShowAllVotesButton = (props: ShowAllVotesButtonProps) => {
   const { t } = useTranslationContext();
   const { message, poll } = usePollContext();
   const { vote_counts_by_option } = usePollState();
@@ -390,12 +405,12 @@ export const ShowAllVotesButton = (props: PollButtonProps & { option: PollOption
 
   const onPressHandler = useCallback(() => {
     if (onPress) {
-      onPress({ message, poll });
+      onPress({ message, option, poll });
       return;
     }
 
     setShowAllVotes(true);
-  }, [message, onPress, poll]);
+  }, [message, onPress, option, poll]);
 
   const {
     theme: {
@@ -407,7 +422,7 @@ export const ShowAllVotesButton = (props: PollButtonProps & { option: PollOption
     <>
       {ownCapabilities.queryPollVotes &&
       vote_counts_by_option &&
-      vote_counts_by_option?.[option.id] > 5 ? (
+      vote_counts_by_option?.[option.id] > 0 ? (
         <GenericPollButton onPress={onPressHandler} title={t<string>('Show All')} />
       ) : null}
       {showAllVotes ? (
