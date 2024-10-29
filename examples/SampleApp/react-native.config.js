@@ -1,11 +1,8 @@
 module.exports = {
   project: {
-    android: {
-      unstable_reactLegacyComponentNames: ['Video'],
-    },
+    android: {},
     ios: {
       automaticPodsInstallation: true,
-      unstable_reactLegacyComponentNames: ['Video'],
     },
   },
 };
