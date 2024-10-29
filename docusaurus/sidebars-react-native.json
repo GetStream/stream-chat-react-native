@@ -99,7 +99,23 @@
         "Thread List": ["ui-components/thread-list", "ui-components/thread-list-item"]
       },
       {
-        "Poll": ["ui-components/create-poll", "ui-components/poll", "ui-components/poll-all-options", "ui-components/poll-answers-list", "ui-components/poll-results", "ui-components/poll-option-full-results", "ui-components/poll-buttons"]
+        "Poll": [
+          "ui-components/create-poll",
+          "ui-components/poll",
+          "ui-components/poll-all-options",
+          "ui-components/poll-answers-list",
+          "ui-components/poll-results",
+          "ui-components/poll-option-full-results",
+          "ui-components/poll-buttons",
+          {
+            "Hooks": [
+              "hooks/poll/use-poll-context",
+              "hooks/poll/use-create-poll-context",
+              "hooks/poll/use-poll-state-store",
+              "hooks/poll/use-poll-state"
+            ]
+          }
+        ]
       },
       {
         "Contexts": [
