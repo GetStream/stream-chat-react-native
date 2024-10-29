@@ -156,6 +156,21 @@ export const AnimatedGalleryVideo = React.memo(
       };
     }, [previous, selected]);
 
+    const animatedStyles = useAnimatedStyle(() => {
+      const xScaleOffset = -7 * screenWidth * (0.5 + index);
+      const yScaleOffset = -screenHeight * 3.5;
+      return {
+        transform: [
+          { scaleX: -1 },
+          { translateY: yScaleOffset },
+          {
+            translateX: -translateX.value - xScaleOffset,
+          },
+          { scale: oneEighth },
+        ],
+      };
+    }, []);
+
     /**
      * An empty view is rendered for images not close to the currently
      * selected in order to maintain spacing while reducing the image
@@ -173,20 +188,7 @@ export const AnimatedGalleryVideo = React.memo(
     return (
       <Animated.View
         accessibilityLabel='Image Gallery Video'
-        style={[
-          animatedViewStyles,
-          {
-            transform: [
-              { scaleX: -1 },
-              { translateY: -screenHeight * 3.5 },
-              {
-                translateX: -translateX.value + 7 * screenWidth * (0.5 + index),
-              },
-              { scale: oneEighth },
-            ],
-          },
-          style,
-        ]}
+        style={[animatedViewStyles, animatedStyles, style]}
       >
         {isVideoPlayerAvailable() ? (
           <Video

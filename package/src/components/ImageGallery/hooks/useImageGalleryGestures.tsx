@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import { Gesture, GestureType } from 'react-native-gesture-handler';
 import {
@@ -61,6 +61,17 @@ export const useImageGalleryGestures = ({
   translateY: SharedValue<number>;
   translationX: SharedValue<number>;
 }) => {
+  /**
+   * if a specific image index > 0 has been passed in
+   * while creating the hook, set the value of the index
+   * reference to its value.
+   *
+   * This makes it possible to seelct an image in the list,
+   * and scroll/pan as normal. Prior to this,
+   * it was always assumed that one started at index 0 in the
+   * gallery.
+   * */
+  const [index, setIndex] = useState(selectedIndex);
   const { setMessages, setSelectedMessage } = useImageGalleryContext();
   /**
    * Gesture handler refs
@@ -87,7 +98,6 @@ export const useImageGalleryGestures = ({
   const oldFocalY = useSharedValue(0);
   const focalX = useSharedValue(0);
   const focalY = useSharedValue(0);
-  const index = useSharedValue(0);
 
   /**
    * if a specific image index > 0 has been passed in
@@ -99,9 +109,9 @@ export const useImageGalleryGestures = ({
    * it was always assumed that one started at index 0 in the
    * gallery.
    * */
-  if (index.value !== selectedIndex) {
-    index.value = selectedIndex;
-  }
+  useEffect(() => {
+    setIndex(selectedIndex);
+  }, [selectedIndex]);
 
   /**
    * Shared values for movement
@@ -277,7 +287,7 @@ export const useImageGalleryGestures = ({
          * than half the screen width, move to the next image
          */
         if (
-          index.value < photoLength - 1 &&
+          index < photoLength - 1 &&
           Math.abs(halfScreenWidth * (scale.value - 1) + offsetX.value) < 3 &&
           translateX.value < 0 &&
           finalXPosition < -halfScreenWidth &&
@@ -285,15 +295,15 @@ export const useImageGalleryGestures = ({
         ) {
           cancelAnimation(translationX);
           translationX.value = withTiming(
-            -(screenWidth + MARGIN) * (index.value + 1),
+            -(screenWidth + MARGIN) * (index + 1),
             {
               duration: 200,
               easing: Easing.out(Easing.ease),
             },
             () => {
               resetMovementValues();
-              index.value = index.value + 1;
-              runOnJS(setSelectedIndex)(index.value);
+              runOnJS(setIndex)(index + 1);
+              runOnJS(setSelectedIndex)(index + 1);
             },
           );
 
@@ -303,7 +313,7 @@ export const useImageGalleryGestures = ({
            * than half the screen width, move to the previous image
            */
         } else if (
-          index.value > 0 &&
+          index > 0 &&
           Math.abs(-halfScreenWidth * (scale.value - 1) + offsetX.value) < 3 &&
           translateX.value > 0 &&
           finalXPosition > halfScreenWidth &&
@@ -311,15 +321,15 @@ export const useImageGalleryGestures = ({
         ) {
           cancelAnimation(translationX);
           translationX.value = withTiming(
-            -(screenWidth + MARGIN) * (index.value - 1),
+            -(screenWidth + MARGIN) * (index - 1),
             {
               duration: 200,
               easing: Easing.out(Easing.ease),
             },
             () => {
               resetMovementValues();
-              index.value = index.value - 1;
-              runOnJS(setSelectedIndex)(index.value);
+              runOnJS(setIndex)(index - 1);
+              runOnJS(setSelectedIndex)(index - 1);
             },
           );
         }
