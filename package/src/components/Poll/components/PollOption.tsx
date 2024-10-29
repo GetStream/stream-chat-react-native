@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { ScrollViewProps, StyleSheet, Text, View } from 'react-native';
 
@@ -8,13 +8,7 @@ import { PollOption as PollOptionClass, PollState, PollVote } from 'stream-chat'
 
 import { VoteButton } from './Button';
 
-import {
-  PollContextProvider,
-  PollContextValue,
-  useMessageContext,
-  usePollContext,
-  useTheme,
-} from '../../../contexts';
+import { PollContextProvider, PollContextValue, useTheme } from '../../../contexts';
 
 import { DefaultStreamChatGenerics } from '../../../types/types';
 import { Avatar } from '../../Avatar/Avatar';
@@ -93,17 +87,7 @@ export const PollAllOptions = ({
 );
 
 export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) => {
-  const { is_closed, ownVotesByOptionId, vote_counts_by_option } = usePollState();
-  const { poll } = usePollContext();
-  const { message } = useMessageContext();
-
-  const toggleVote = useCallback(async () => {
-    if (ownVotesByOptionId[option.id]) {
-      await poll.removeVote(ownVotesByOptionId[option.id]?.id, message.id);
-    } else {
-      await poll.castVote(option.id, message.id);
-    }
-  }, [message.id, option.id, ownVotesByOptionId, poll]);
+  const { is_closed, vote_counts_by_option } = usePollState();
 
   const { latest_votes_by_option, maxVotedOptionIds } = usePollStateStore(selector);
 
@@ -161,7 +145,7 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
   return (
     <View style={[styles.wrapper, wrapper]}>
       <View style={[styles.container, container]}>
-        <VoteButton onPress={toggleVote} option={option} />
+        <VoteButton option={option} />
         <Text style={[styles.text, { color: black }, text]}>{option.text}</Text>
         <View style={{ flexDirection: 'row' }}>
           {relevantVotes.map((vote: PollVote) => (

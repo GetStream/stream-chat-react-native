@@ -35,8 +35,8 @@ export type PollButtonProps<
 };
 
 export type PollVoteButtonProps = {
-  onPress?: () => void;
-};
+  option: PollOption;
+} & Pick<PollButtonProps, 'onPress'>;
 
 export const GenericPollButton = ({ onPress, title }: { onPress?: () => void; title?: string }) => {
   const {
@@ -326,7 +326,8 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
   );
 };
 
-export const VoteButton = ({ onPress, option }: PollVoteButtonProps & { option: PollOption }) => {
+export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
+  const { message, poll } = usePollContext();
   const { is_closed, ownVotesByOptionId } = usePollState();
   const ownCapabilities = useOwnCapabilitiesContext();
 
@@ -341,9 +342,26 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps & { option: 
     },
   } = useTheme();
 
+  const toggleVote = useCallback(async () => {
+    if (ownVotesByOptionId[option.id]) {
+      await poll.removeVote(ownVotesByOptionId[option.id]?.id, message.id);
+    } else {
+      await poll.castVote(option.id, message.id);
+    }
+  }, [message.id, option.id, ownVotesByOptionId, poll]);
+
+  const onPressHandler = useCallback(() => {
+    if (onPress) {
+      onPress({ message, poll });
+      return;
+    }
+
+    toggleVote();
+  }, [message, onPress, poll, toggleVote]);
+
   return ownCapabilities.castPollVote && !is_closed ? (
     <TouchableOpacity
-      onPress={onPress}
+      onPress={onPressHandler}
       style={[
         styles.voteContainer,
         {
