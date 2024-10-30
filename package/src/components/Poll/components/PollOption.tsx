@@ -116,6 +116,7 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
             progressBarVotedFill,
             progressBarWinnerFill,
             text,
+            votesContainer,
             wrapper,
           },
         },
@@ -127,8 +128,10 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
     <View style={[styles.wrapper, wrapper]}>
       <View style={[styles.container, container]}>
         <VoteButton option={option} />
-        <Text style={[styles.text, { color: black }, text]}>{option.text}</Text>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{ flex: 1, alignItems: 'flex-start', justifyContent: 'flex-start' }}>
+          <Text style={[styles.text, { color: black }, text]}>{option.text}</Text>
+        </View>
+        <View style={[styles.votesContainer, votesContainer]}>
           {relevantVotes.map((vote: PollVote) => (
             <Avatar image={vote.user?.image as string} key={vote.id} size={20} />
           ))}
@@ -176,6 +179,10 @@ const styles = StyleSheet.create({
   allOptionsWrapper: { flex: 1, marginBottom: 16, padding: 16 },
   container: { flexDirection: 'row' },
   progressBar: { borderRadius: 4, flex: 1, flexDirection: 'row', height: 4, marginTop: 2 },
-  text: { flex: 1, fontSize: 16, marginLeft: 4 },
+  text: {
+    fontSize: 16,
+    marginLeft: 4,
+  },
+  votesContainer: { flexDirection: 'row', marginLeft: 4 },
   wrapper: { marginTop: 8, paddingVertical: 8 },
 });

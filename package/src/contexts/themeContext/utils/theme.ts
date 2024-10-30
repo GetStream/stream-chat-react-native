@@ -710,6 +710,7 @@ export type Theme = {
         voteButtonActive: string;
         voteButtonContainer: ViewStyle;
         voteButtonInactive: string;
+        votesContainer: ViewStyle;
         wrapper: ViewStyle;
       };
       optionsWrapper: ViewStyle;
@@ -1452,6 +1453,7 @@ export const defaultTheme: Theme = {
         voteButtonActive: '',
         voteButtonContainer: {},
         voteButtonInactive: '',
+        votesContainer: {},
         wrapper: {},
       },
       optionsWrapper: {},

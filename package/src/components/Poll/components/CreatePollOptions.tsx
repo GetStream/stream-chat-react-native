@@ -333,6 +333,7 @@ const styles = StyleSheet.create({
   optionInput: {
     flex: 1,
     fontSize: 16,
+    paddingRight: 4,
     paddingVertical: 0, // android is adding extra padding so we remove it
   },
   optionValidationError: { fontSize: 12, left: 16, position: 'absolute', top: 4 },
