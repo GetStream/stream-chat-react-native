@@ -34,7 +34,7 @@ const App = () => {
 
 <MessageProp />
 
-### `poll` *
+### `poll` \*
 
 <Poll />
 
@@ -58,8 +58,8 @@ A `Component` prop used to render the content of the `PollAllOptions` component.
 
 The component has full access to the entire `Poll` reactive state through the `usePollState` hook.
 
-| Type          | Default                                        |
-| ------------- | ---------------------------------------------- |
+| Type          | Default                                                                                                                               |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | ComponentType | [`PollAllOptionsContent`](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Poll/PollOption.tsx) |
 
 #### Usage
@@ -70,8 +70,8 @@ import { OverlayProvider, Chat, Channel, PollAllOptions, usePollState } from 'st
 
 const MyPollAllOptionsContent = () => {
   const { options } = usePollState();
-  return options.map(option => <Text>{option.id}</Text>)
-}
+  return options.map(option => <Text>{option.id}</Text>);
+};
 
 const App = () => {
   return (
@@ -85,4 +85,3 @@ const App = () => {
   );
 };
 ```
-

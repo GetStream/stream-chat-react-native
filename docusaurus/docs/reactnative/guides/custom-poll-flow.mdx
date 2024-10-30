@@ -3,15 +3,15 @@ id: custom-poll-flow
 title: Custom Poll Flow
 ---
 
-import DefaultUI1 from '../assets/guides/custom-poll-flow/default-ui-1.png'
-import DefaultUI2 from '../assets/guides/custom-poll-flow/default-ui-2.png'
-import DefaultUI3 from '../assets/guides/custom-poll-flow/default-ui-3.png'
+import DefaultUI1 from '../assets/guides/custom-poll-flow/default-ui-1.png';
+import DefaultUI2 from '../assets/guides/custom-poll-flow/default-ui-2.png';
+import DefaultUI3 from '../assets/guides/custom-poll-flow/default-ui-3.png';
 
-import CustomStep11 from '../assets/guides/custom-poll-flow/custom-step-1-1.png'
-import CustomStep12 from '../assets/guides/custom-poll-flow/custom-step-1-2.png'
+import CustomStep11 from '../assets/guides/custom-poll-flow/custom-step-1-1.png';
+import CustomStep12 from '../assets/guides/custom-poll-flow/custom-step-1-2.png';
 
-import CustomCreation1 from '../assets/guides/custom-poll-flow/custom-creation-1.png'
-import CustomCreation2 from '../assets/guides/custom-poll-flow/custom-creation-2.png'
+import CustomCreation1 from '../assets/guides/custom-poll-flow/custom-creation-1.png';
+import CustomCreation2 from '../assets/guides/custom-poll-flow/custom-creation-2.png';
 
 In this cookbook we'll go over how we can create and customize a `Channel` screen containing the [`Poll` component](../ui-components/poll.mdx), along with adding navigation to all of its underlying screens rather than relying on modals.
 
@@ -48,9 +48,9 @@ const ChannelScreen = () => {
 and the `poll` creation flow should come out of the box with its default UI:
 
 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'space-between' }}>
-  <img src={DefaultUI1} alt="Default UI 1" style={{ width: '30%' }} />
-  <img src={DefaultUI2} alt="Default UI 2" style={{ width: '30%' }} />
-  <img src={DefaultUI3} alt="Default UI 3" style={{ width: '30%' }} />
+  <img src={DefaultUI1} alt='Default UI 1' style={{ width: '30%' }} />
+  <img src={DefaultUI2} alt='Default UI 2' style={{ width: '30%' }} />
+  <img src={DefaultUI3} alt='Default UI 3' style={{ width: '30%' }} />
 </div>
 
 At this point, let's try to customize the `Poll` component within the message. To do this, we can set the `PollContent` prop on our `Channel` component.
@@ -66,7 +66,7 @@ import {
   Channel,
   MessageList,
   MessageInput,
-// highlight-next-line
+  // highlight-next-line
   PollContent,
 } from 'stream-chat-react-native';
 
@@ -76,17 +76,14 @@ const MyPollButtons = () => {
     <>
       <ShowAllOptionsButton />
       <ViewResultsButton
-        onPress={({ message, poll }) =>
-          Alert.alert(`Message ID: ${message.id} and Poll ID: ${poll.id}`)
-        }
+        onPress={({ message, poll }) => Alert.alert(`Message ID: ${message.id} and Poll ID: ${poll.id}`)}
       />
       <EndVoteButton />
     </>
-  )
-}
+  );
+};
 
-const MyPollContent = () =>
-  <PollContent PollHeader={() => null} PollButtons={MyPollButtons} />
+const MyPollContent = () => <PollContent PollHeader={() => null} PollButtons={MyPollButtons} />;
 // highlight-end
 
 const ChannelScreen = () => {
@@ -106,10 +103,9 @@ const ChannelScreen = () => {
 ```
 
 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'space-between' }}>
-  <img src={CustomStep11} alt="Step 1-1" style={{ width: '40%' }} />
-  <img src={CustomStep12} alt="Step 1-2" style={{ width: '40%' }} />
+  <img src={CustomStep11} alt='Step 1-1' style={{ width: '40%' }} />
+  <img src={CustomStep12} alt='Step 1-2' style={{ width: '40%' }} />
 </div>
-
 
 As we can see, now we only display 2 buttons at the bottom, which are the `View Results` and `End Vote` ones. Clicking on the `View Results` button displays an `Alert` with some information about the `Poll` instead of opening the modal.
 
@@ -118,14 +114,7 @@ At this point we might realize that we no longer have access to the `PollResults
 To do this, let's rely on `React Navigation`. Since we need all of the `Poll` screens to also be children of the `Channel` component, we can introduce an additional `Stack` navigator that would take care of this.
 
 ```tsx
-import {
-  OverlayProvider,
-  Chat,
-  Channel,
-  MessageList,
-  MessageInput,
-  PollContent,
-} from 'stream-chat-react-native';
+import { OverlayProvider, Chat, Channel, MessageList, MessageInput, PollContent } from 'stream-chat-react-native';
 // highlight-next-line
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -134,17 +123,14 @@ const MyPollButtons = () => {
     <>
       <ShowAllOptionsButton />
       <ViewResultsButton
-        onPress={({ message, poll }) =>
-          Alert.alert(`Message ID: ${message.id} and Poll ID: ${poll.id}`)
-        }
+        onPress={({ message, poll }) => Alert.alert(`Message ID: ${message.id} and Poll ID: ${poll.id}`)}
       />
       <EndVoteButton />
     </>
-  )
-}
+  );
+};
 
-const MyPollContent = () =>
-  <PollContent PollHeader={() => null} PollButtons={MyPollButtons} />
+const MyPollContent = () => <PollContent PollHeader={() => null} PollButtons={MyPollButtons} />;
 
 // highlight-start
 const ChannelMessageList = () => {
@@ -154,8 +140,8 @@ const ChannelMessageList = () => {
       <MessageList />
       <MessageInput />
     </>
-  )
-}
+  );
+};
 // highlight-end
 
 // highlight-next-line
@@ -173,13 +159,9 @@ const ChannelScreen = () => {
               options={{ headerShown: false }}
               component={ChannelMessageList}
             />
-            <ChannelStack.Screen
-              name={'PollResultsScreen'}
-              options={{ headerShown: false }}
-              component={() => null}
-            />
+            <ChannelStack.Screen name={'PollResultsScreen'} options={{ headerShown: false }} component={() => null} />
           </ChannelStack.Navigator>
-        // highlight-end
+          // highlight-end
         </Channel>
       </Chat>
     </OverlayProvider>
@@ -382,9 +364,7 @@ const ChannelScreen = () => {
           channel={channel}
           PollContent={MyPollContent}
           // highlight-start
-          openPollCreationDialog={({ sendMessage }) =>
-            navigation.navigate('CreatePollScreen', { sendMessage })
-          }
+          openPollCreationDialog={({ sendMessage }) => navigation.navigate('CreatePollScreen', { sendMessage })}
           // highlight-end
         >
           <ChannelStack.Navigator initialRouteName={'ChannelMessageList'}>
@@ -418,8 +398,8 @@ const ChannelScreen = () => {
 giving us the final UI:
 
 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'space-between' }}>
-  <img src={CustomCreation1} alt="Step 1-1" style={{ width: '40%' }} />
-  <img src={CustomCreation2} alt="Step 1-2" style={{ width: '40%' }} />
+  <img src={CustomCreation1} alt='Step 1-1' style={{ width: '40%' }} />
+  <img src={CustomCreation2} alt='Step 1-2' style={{ width: '40%' }} />
 </div>
 
 As one final step, let's change the background color of our `Poll`s. Since all `Poll` components are `theme` compatible, we can do this by overriding the default theme:
@@ -443,7 +423,7 @@ const myTheme: DeepPartial<Theme> = {
       },
     },
   },
-}
+};
 // highlight-end
 
 const ChannelScreen = () => {
@@ -456,9 +436,7 @@ const ChannelScreen = () => {
           <Channel
             channel={channel}
             PollContent={MyPollContent}
-            openPollCreationDialog={({ sendMessage }) =>
-              navigation.navigate('CreatePollScreen', { sendMessage })
-            }
+            openPollCreationDialog={({ sendMessage }) => navigation.navigate('CreatePollScreen', { sendMessage })}
           >
             <ChannelStack.Navigator initialRouteName={'ChannelMessageList'}>
               <ChannelStack.Screen
@@ -482,7 +460,7 @@ const ChannelScreen = () => {
           </Channel>
         </Chat>
       </OverlayProvider>
-    // highlight-next-line
+      // highlight-next-line
     </ThemeProvider>
   );
 };

@@ -36,7 +36,7 @@ const App = () => {
 
 <MessageProp />
 
-### `poll` *
+### `poll` \*
 
 <Poll />
 
@@ -60,15 +60,22 @@ A `Component` prop used to render the content of the `PollAnswersList` component
 
 The component has full access to the entire `Poll` reactive state through the `usePollState` hook.
 
-| Type          | Default                                        |
-| ------------- | ---------------------------------------------- |
+| Type          | Default                                                                                                                                     |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | ComponentType | [`PollAnswersListContent`](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Poll/PollAnswersList.tsx) |
 
 #### Usage
 
 ```tsx
 import { Text, FlatList } from 'react-native';
-import { OverlayProvider, Chat, Channel, PollAnswersList, usePollAnswersPagination, usePollState } from 'stream-chat-react-native';
+import {
+  OverlayProvider,
+  Chat,
+  Channel,
+  PollAnswersList,
+  usePollAnswersPagination,
+  usePollState,
+} from 'stream-chat-react-native';
 
 // will only display the first page of answers without loading more
 const MyPollAnswersListContent = () => {
@@ -88,11 +95,7 @@ const App = () => {
     <OverlayProvider>
       <Chat client={client}>
         <Channel channel={channel}>
-          <PollAnswersList
-            message={message}
-            poll={poll}
-            PollAnswersListContent={MyPollAnswersListContent}
-          />
+          <PollAnswersList message={message} poll={poll} PollAnswersListContent={MyPollAnswersListContent} />
         </Channel>
       </Chat>
     </OverlayProvider>

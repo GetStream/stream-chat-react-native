@@ -11,8 +11,8 @@ A hook that queries answers for a given `Poll` and returns them in a paginated f
 
 A property that depicts whether the hook should load the first page of answers when first invoked or not. Default to `true` if omitted.
 
-| Type   |
-| ------ |
+| Type      |
+| --------- |
 | `boolean` |
 
 ### `paginationParams`
@@ -21,8 +21,8 @@ An object containing the pagination parameters that we may want to pass to the h
 
 Its type can be found [here](https://github.com/GetStream/stream-chat-js/blob/master/src/types.ts) under the name `PollAnswersQueryParams`.
 
-| Type   |
-| ------ |
+| Type     |
+| -------- |
 | `object` |
 
 ## Return type
@@ -33,46 +33,46 @@ The `usePollAnswersPagination` hook returns an object containing pagination valu
 
 An object containing an error if one is thrown during querying for the answers.
 
-| Type   |
-| ------ |
+| Type     |
+| -------- |
 | `object` |
 
 ### hasNextPage
 
 A property depicting whether the list of answers has a next page to load or not.
 
-| Type   |
-| ------ |
+| Type      |
+| --------- |
 | `boolean` |
 
 ### loading
 
 A property depicting whether the next page of answers is currently loading or not.
 
-| Type   |
-| ------ |
+| Type      |
+| --------- |
 | `boolean` |
 
 ### loadMore
 
 A function that loads the next page of answers whenever invoked. It will automatically update [`pollAnswers`](#pollanswers)
 
-| Type   |
-| ------ |
+| Type         |
+| ------------ |
 | `() => void` |
 
 ### next
 
 A reference to the next cursor in the pagination.
 
-| Type   |
-| ------ |
+| Type     |
+| -------- |
 | `string` |
 
 ### pollAnswers
 
 A list of answers that has been loaded so far. It automatically updates itself whenever `loadMore()` is invoked and triggers a `state` update.
 
-| Type   |
-| ------ |
+| Type           |
+| -------------- |
 | `PollAnswer[]` |

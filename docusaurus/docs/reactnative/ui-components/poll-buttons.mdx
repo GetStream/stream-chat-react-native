@@ -19,7 +19,7 @@ A generic button component that has the default UI encapsulated within it.
 
 ### Props
 
-#### `title` *
+#### `title` \*
 
 The text that is going to be rendered as the button's content.
 
@@ -27,12 +27,12 @@ The text that is going to be rendered as the button's content.
 | ------ |
 | string |
 
-#### `onPress` *
+#### `onPress` \*
 
 A press handler that will be invoked whenever the button is pressed.
 
-| Type   |
-| ------ |
+| Type         |
+| ------------ |
 | `() => void` |
 
 ### Example usage
@@ -40,7 +40,7 @@ A press handler that will be invoked whenever the button is pressed.
 ```tsx
 import { GenericPollButton } from 'stream-chat-react-native';
 
-const button = () => <GenericPollButton title="Button title" onPress={() => console.log('I got pressed !')}/>
+const button = () => <GenericPollButton title='Button title' onPress={() => console.log('I got pressed !')} />;
 ```
 
 ## `ViewResultsButton`
@@ -53,8 +53,8 @@ A button responsible for opening the `PollResults` modal.
 
 A press handler that will be invoked whenever the button is pressed.
 
-| Type   |
-| ------ |
+| Type                          |
+| ----------------------------- |
 | `({ message, poll }) => void` |
 
 ### Example usage
@@ -63,9 +63,7 @@ A press handler that will be invoked whenever the button is pressed.
 import { ViewResultsButton } from 'stream-chat-react-native';
 
 const button = () => (
-  <ViewResultsButton
-    onPress={({ message, poll }) => console.log(`Poll ID: ${poll.id}; Message ID: ${message.id}`)}
-  />
+  <ViewResultsButton onPress={({ message, poll }) => console.log(`Poll ID: ${poll.id}; Message ID: ${message.id}`)} />
 );
 ```
 
@@ -78,9 +76,7 @@ A button responsible for closing voting on the `Poll`.
 ```tsx
 import { EndVoteButton } from 'stream-chat-react-native';
 
-const button = () => (
-  <EndVoteButton />
-);
+const button = () => <EndVoteButton />;
 ```
 
 ## `AddCommentButton`
@@ -93,8 +89,8 @@ A button responsible for opening the `Poll` input dialog used to add a new comme
 
 A press handler that will be invoked whenever the button is pressed.
 
-| Type   |
-| ------ |
+| Type                          |
+| ----------------------------- |
 | `({ message, poll }) => void` |
 
 ### Example usage
@@ -103,9 +99,7 @@ A press handler that will be invoked whenever the button is pressed.
 import { AddCommentButton } from 'stream-chat-react-native';
 
 const button = () => (
-  <AddCommentButton
-    onPress={({ message, poll }) => console.log(`Poll ID: ${poll.id}; Message ID: ${message.id}`)}
-  />
+  <AddCommentButton onPress={({ message, poll }) => console.log(`Poll ID: ${poll.id}; Message ID: ${message.id}`)} />
 );
 ```
 
@@ -119,8 +113,8 @@ A button responsible for opening the `PollAnswersList` modal.
 
 A press handler that will be invoked whenever the button is pressed.
 
-| Type   |
-| ------ |
+| Type                          |
+| ----------------------------- |
 | `({ message, poll }) => void` |
 
 ### Example usage
@@ -151,8 +145,8 @@ A button responsible for opening the `Poll` input dialog used to suggest new opt
 
 A press handler that will be invoked whenever the button is pressed.
 
-| Type   |
-| ------ |
+| Type                          |
+| ----------------------------- |
 | `({ message, poll }) => void` |
 
 ### Example usage
@@ -161,9 +155,7 @@ A press handler that will be invoked whenever the button is pressed.
 import { SuggestOptionButton } from 'stream-chat-react-native';
 
 const button = () => (
-  <SuggestOptionButton
-    onPress={({ message, poll }) => console.log(`Poll ID: ${poll.id}; Message ID: ${message.id}`)}
-  />
+  <SuggestOptionButton onPress={({ message, poll }) => console.log(`Poll ID: ${poll.id}; Message ID: ${message.id}`)} />
 );
 ```
 
@@ -177,8 +169,8 @@ A button responsible for opening the `PollAllOptions` modal.
 
 A press handler that will be invoked whenever the button is pressed.
 
-| Type   |
-| ------ |
+| Type                          |
+| ----------------------------- |
 | `({ message, poll }) => void` |
 
 ### Example usage
@@ -199,7 +191,7 @@ A button responsible for voting on a specific option within a `Poll`.
 
 ### Props
 
-#### `option` *
+#### `option` \*
 
 The `poll` option that we want to vote on.
 
@@ -211,8 +203,8 @@ The `poll` option that we want to vote on.
 
 A press handler that will be invoked whenever the button is pressed.
 
-| Type   |
-| ------ |
+| Type                          |
+| ----------------------------- |
 | `({ message, poll }) => void` |
 
 ### Example usage
@@ -234,7 +226,7 @@ A button responsible for opening the `PollOptionFullResults` modal.
 
 ### Props
 
-#### `option` *
+#### `option` \*
 
 The `poll` option that we want to vote on.
 
@@ -246,8 +238,8 @@ The `poll` option that we want to vote on.
 
 A press handler that will be invoked whenever the button is pressed.
 
-| Type   |
-| ------ |
+| Type                                  |
+| ------------------------------------- |
 | `({ message, option, poll }) => void` |
 
 ### Example usage
@@ -258,8 +250,9 @@ import { ShowAllVotesButton } from 'stream-chat-react-native';
 const button = () => (
   <ShowAllVotesButton
     option={option}
-    onPress={({ message, option, poll }) => console.log(`Poll ID: ${poll.id}; Message ID: ${message.id}; Option ID: ${option.id}`)}
+    onPress={({ message, option, poll }) =>
+      console.log(`Poll ID: ${poll.id}; Message ID: ${message.id}; Option ID: ${option.id}`)
+    }
   />
 );
 ```
-

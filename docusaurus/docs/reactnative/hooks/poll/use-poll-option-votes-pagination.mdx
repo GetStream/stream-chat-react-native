@@ -11,16 +11,16 @@ A hook that queries votes for a given option in a `Poll` and returns them in a p
 
 A property that depicts whether the hook should load the first page of answers when first invoked or not. Default to `true` if omitted.
 
-| Type   |
-| ------ |
+| Type      |
+| --------- |
 | `boolean` |
 
-### `option` *
+### `option` \*
 
 The `poll` option that we want to query the votes for.
 
-| Type   |
-| ------ |
+| Type     |
+| -------- |
 | `object` |
 
 ### `paginationParams`
@@ -31,8 +31,8 @@ Its type can be found [here](https://github.com/GetStream/stream-chat-js/blob/ma
 
 The `{ option_id: <option-id> }` filter is mandatory and will be added regardless of overrides.
 
-| Type   |
-| ------ |
+| Type     |
+| -------- |
 | `object` |
 
 ## Return type
@@ -43,47 +43,46 @@ The `usePollOptionVotesPagination` hook returns an object containing pagination 
 
 An object containing an error if one is thrown during querying for the votes.
 
-| Type   |
-| ------ |
+| Type     |
+| -------- |
 | `object` |
 
 ### hasNextPage
 
 A property depicting whether the list of votes has a next page to load or not.
 
-| Type   |
-| ------ |
+| Type      |
+| --------- |
 | `boolean` |
 
 ### loading
 
 A property depicting whether the next page of votes is currently loading or not.
 
-| Type   |
-| ------ |
+| Type      |
+| --------- |
 | `boolean` |
 
 ### loadMore
 
 A function that loads the next page of votes whenever invoked. It will automatically update [`votes`](#votes)
 
-| Type   |
-| ------ |
+| Type         |
+| ------------ |
 | `() => void` |
 
 ### next
 
 A reference to the next cursor in the pagination.
 
-| Type   |
-| ------ |
+| Type     |
+| -------- |
 | `string` |
 
 ### vote
 
 A list of votes that has been loaded so far. It automatically updates itself whenever `loadMore()` is invoked and triggers a `state` update.
 
-| Type   |
-| ------ |
+| Type         |
+| ------------ |
 | `PollVote[]` |
-

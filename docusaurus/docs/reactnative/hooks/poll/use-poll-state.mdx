@@ -19,24 +19,24 @@ The `usePollState` hook returns an object containing values from the `PollState`
 
 A property depicting whether answers (comments) are allowed to the `poll`.
 
-| Type   |
-| ------ |
+| Type      |
+| --------- | ----------- |
 | `boolean` | `undefined` |
 
 ### `allow_user_suggested_options`
 
 A property depicting whether user option suggestions are allowed to the `poll`.
 
-| Type   |
-| ------ |
+| Type      |
+| --------- | ----------- |
 | `boolean` | `undefined` |
 
 ### `answers_count`
 
 A property containing the number of answers (comments) to the `poll`.
 
-| Type   |
-| ------ |
+| Type     |
+| -------- |
 | `number` |
 
 ### `created_by`
@@ -45,24 +45,24 @@ A property containing information about the user who created the `poll`. Its typ
 
 This property will be `null` for anonymous polls.
 
-| Type   |
-| ------ |
+| Type     |
+| -------- | ------ |
 | `object` | `null` |
 
 ### `enforce_unique_vote`
 
 A property depicting whether each user should have only one and unique vote or they would be able to vote multiple times during the lifespan of a `poll`.
 
-| Type   |
-| ------ |
+| Type      |
+| --------- |
 | `boolean` |
 
 ### `is_closed`
 
 A property depicting whether the `poll` is still open for voting or not.
 
-| Type   |
-| ------ |
+| Type      |
+| --------- |
 | `boolean` |
 
 ### `latest_votes_by_option`
@@ -71,62 +71,62 @@ A property containing the latest votes for each option stored in an object by op
 
 This property is not available for anonymous polls.
 
-| Type   |
-| ------ |
+| Type                       |
+| -------------------------- |
 | `Record<string, PollVote>` |
 
 ### `max_votes_allowed`
 
 A property containing the maximum number of votes allowed per user.
 
-| Type   |
-| ------ |
+| Type     |
+| -------- |
 | `number` |
 
 ### `name`
 
 A property depicting the name of the `poll`.
 
-| Type   |
-| ------ |
+| Type     |
+| -------- |
 | `string` |
 
 ### `options`
 
 A property that is a list of all of the options a `poll` has. A `poll` cannot have more than 100 options.
 
-| Type   |
-| ------ |
+| Type           |
+| -------------- |
 | `PollOption[]` |
 
 ### `ownAnswer`
 
 A property containing the answer (comment) of a user to the current `poll`. Only one answer can be provided by a single user. This property will not be present in anonymous polls.
 
-| Type   |
-| ------ |
+| Type         |
+| ------------ | ----------- |
 | `PollAnswer` | `undefined` |
 
 ### `ownVotesByOptionId`
 
 A property containing the current user's own votes in a given `poll`, stored in an object by option ID.
 
-| Type   |
-| ------ |
+| Type                       |
+| -------------------------- |
 | `Record<string, PollVote>` |
 
 ### `vote_counts_by_option`
 
 A property containing the vote counts in a given `poll`, stored in an object by option ID.
 
-| Type   |
-| ------ |
+| Type                     |
+| ------------------------ |
 | `Record<string, number>` |
 
 ### `voting_visibility`
 
 A property depicting the visibility of votes in a given `poll`. It conforms to the `VotingVisibility` enum found [here](https://github.com/GetStream/stream-chat-js/blob/b447512922b19bc7e3668bd9df81debcb673dd81/src/types.ts).
 
-| Type   |
-| ------ |
+| Type               |
+| ------------------ | ----------- |
 | `VotingVisibility` | `undefined` |
