@@ -86,7 +86,7 @@ export const PollInputDialog = ({
 };
 
 const styles = StyleSheet.create({
-  button: { fontSize: 17, fontWeight: '500' },
+  button: { fontSize: 16, fontWeight: '500' },
   buttonContainer: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: 52 },
   container: {
     backgroundColor: 'white',

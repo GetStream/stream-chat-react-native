@@ -147,7 +147,6 @@ export const useCreateInputMessageInputContext = <
       initialValue,
       maxMessageLength,
       quotedMessageId,
-      openPollCreationDialog,
       CreatePollContent,
       showPollCreationDialog,
     ],

@@ -728,12 +728,6 @@ const MessageInputWithContext = <
     })),
   };
 
-  // const {
-  //   theme: {
-  //     colors: { white },
-  //   }
-  // } = useTheme();
-
   return (
     <>
       <View

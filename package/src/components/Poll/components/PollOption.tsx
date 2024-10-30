@@ -103,25 +103,6 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
     [maxVotedOptionIds, vote_counts_by_option],
   );
   const votes = vote_counts_by_option[option.id] || 0;
-  // with the latest llc changes this seems to be working just fine.
-  // todo: continue testing thoroughly to make sure.
-  // useEffect(() => {
-  //   if (enableOfflineSupport) {
-  //     const pollState = poll.data;
-  //     dbApi.updateMessage({
-  //       message: {
-  //         ...message,
-  //         // TODO: set the poll response properly here
-  //         poll: {
-  //           ...pollState,
-  //           id: poll.id,
-  //           own_votes: pollState.ownVotes,
-  //         },
-  //         poll_id: poll.id,
-  //       },
-  //     });
-  //   }
-  // }, [enableOfflineSupport, message, poll, vote_counts_by_option]);
 
   const {
     theme: {
