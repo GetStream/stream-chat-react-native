@@ -29,6 +29,7 @@ import { useMessageDetailsForState } from './hooks/useMessageDetailsForState';
 
 import { isUploadAllowed, MAX_FILE_SIZE_TO_UPLOAD, prettifyFileSize } from './utils/utils';
 
+import { PollContentProps } from '../../components';
 import { AudioAttachmentProps } from '../../components/Attachment/AudioAttachment';
 import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
@@ -413,7 +414,7 @@ export type InputMessageInputContextValue<
    */
   compressImageQuality?: number;
 
-  CreatePollContent?: React.ComponentType;
+  CreatePollContent?: React.ComponentType<PollContentProps>;
 
   /**
    * Override file upload request

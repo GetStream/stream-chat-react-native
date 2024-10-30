@@ -29,6 +29,11 @@ export type PollProps<
 > = Pick<PollContextValue<StreamChatGenerics>, 'poll' | 'message'> &
   Pick<MessagesContextValue<StreamChatGenerics>, 'PollContent'>;
 
+export type PollContentProps = {
+  PollButtons?: React.ComponentType;
+  PollHeader?: React.ComponentType;
+};
+
 export const PollButtons = () => (
   <>
     <ShowAllOptionsButton />
@@ -72,10 +77,7 @@ export const PollHeader = () => {
 export const PollContent = ({
   PollButtons: PollButtonsOverride,
   PollHeader: PollHeaderOverride,
-}: {
-  PollButtons?: React.ComponentType;
-  PollHeader?: React.ComponentType;
-}) => {
+}: PollContentProps) => {
   const { options } = usePollState();
 
   const {

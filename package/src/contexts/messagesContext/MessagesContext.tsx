@@ -4,6 +4,7 @@ import type { TouchableOpacityProps } from 'react-native';
 
 import type { Attachment, ChannelState, MessageResponse } from 'stream-chat';
 
+import { PollContentProps } from '../../components';
 import type { AttachmentProps } from '../../components/Attachment/Attachment';
 import type { AttachmentActionsProps } from '../../components/Attachment/AttachmentActions';
 import type { AudioAttachmentProps } from '../../components/Attachment/AudioAttachment';
@@ -509,7 +510,7 @@ export type MessagesContextValue<
    * ```
    */
   onPressMessage?: (payload: MessageTouchableHandlerPayload<StreamChatGenerics>) => void;
-  PollContent?: React.ComponentType;
+  PollContent?: React.ComponentType<PollContentProps>;
   /**
    * Full override of the reaction function on Message and Message Overlay
    *
