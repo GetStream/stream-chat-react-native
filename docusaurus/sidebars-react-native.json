@@ -112,7 +112,9 @@
               "hooks/poll/use-poll-context",
               "hooks/poll/use-create-poll-context",
               "hooks/poll/use-poll-state-store",
-              "hooks/poll/use-poll-state"
+              "hooks/poll/use-poll-state",
+              "hooks/poll/use-poll-answers-pagination",
+              "hooks/poll/use-poll-option-votes-pagination"
             ]
           }
         ]
@@ -150,7 +152,8 @@
       "guides/file-compression",
       "guides/blocking-users",
       "guides/live-location-sharing",
-      "guides/custom-thread-list"
+      "guides/custom-thread-list",
+      "guides/custom-poll-flow"
     ],
     "State and Offline Support": [
       "state-and-offline-support/state-overview",

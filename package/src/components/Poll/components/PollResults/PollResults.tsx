@@ -13,7 +13,7 @@ export type PollResultsProps = PollContextValue & {
   PollResultsContent?: React.ComponentType;
 };
 
-const PollResultsContent = ({
+export const PollResultsContent = ({
   additionalScrollViewProps,
 }: Pick<PollResultsProps, 'additionalScrollViewProps'>) => {
   const { name, options, vote_counts_by_option } = usePollState();
