@@ -54,3 +54,4 @@ overridable
 loadMore
 pollAnswers
 enum
+SendMessage
