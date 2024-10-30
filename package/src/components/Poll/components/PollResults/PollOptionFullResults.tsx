@@ -103,6 +103,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
-  headerContainer: { flexDirection: 'row', justifyContent: 'flex-end' },
+  headerContainer: { flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 8 },
   headerText: { fontSize: 16, marginLeft: 16 },
 });

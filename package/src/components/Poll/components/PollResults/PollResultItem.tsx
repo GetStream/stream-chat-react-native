@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   voteContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: 8,
     paddingVertical: 8,
   },
   voteCount: { fontSize: 16, marginLeft: 16 },
