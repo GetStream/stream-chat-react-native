@@ -1,10 +1,13 @@
 import { useCallback } from 'react';
 
 import {
+  APIResponse,
+  CastVoteAPIResponse,
   PollAnswer,
   PollOption,
   PollState,
   PollVote,
+  UpdatePollAPIResponse,
   UserResponse,
   VotingVisibility,
 } from 'stream-chat';
@@ -32,6 +35,16 @@ export type UsePollStateSelectorReturnType = {
   voting_visibility: VotingVisibility | undefined;
 };
 
+export type UsePollStateReturnType<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = UsePollStateSelectorReturnType & {
+  addComment: (
+    answerText: string,
+  ) => Promise<APIResponse & CastVoteAPIResponse<StreamChatGenerics>>;
+  addOption: (optionText: string) => Promise<void>;
+  endVote: () => Promise<APIResponse & UpdatePollAPIResponse<StreamChatGenerics>>;
+};
+
 const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   nextValue: PollState<StreamChatGenerics>,
 ): UsePollStateSelectorReturnType => ({
@@ -51,7 +64,7 @@ const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   voting_visibility: nextValue.voting_visibility,
 });
 
-export const usePollState = () => {
+export const usePollState = (): UsePollStateReturnType => {
   const { message, poll } = usePollContext();
   const {
     allow_answers,
