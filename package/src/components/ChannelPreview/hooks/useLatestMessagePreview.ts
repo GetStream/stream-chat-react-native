@@ -1,11 +1,20 @@
 import { useEffect, useState } from 'react';
 
 import { TFunction } from 'i18next';
-import type { Channel, ChannelState, MessageResponse, StreamChat, UserResponse } from 'stream-chat';
+import type {
+  Channel,
+  ChannelState,
+  MessageResponse,
+  PollState,
+  PollVote,
+  StreamChat,
+  UserResponse,
+} from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
+import { useStateStore } from '../../../hooks';
 import { useTranslatedMessage } from '../../../hooks/useTranslatedMessage';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { stringifyMessage } from '../../../utils/utils';
@@ -27,6 +36,18 @@ export type LatestMessagePreview<
   status: number;
   created_at?: string | Date;
 };
+
+export type LatestMessagePreviewSelectorReturnType = {
+  created_by?: UserResponse | null;
+  latest_votes_by_option?: Record<string, PollVote[]>;
+};
+
+const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  nextValue: PollState<StreamChatGenerics>,
+): LatestMessagePreviewSelectorReturnType => ({
+  created_by: nextValue.created_by,
+  latest_votes_by_option: nextValue.latest_votes_by_option,
+});
 
 const getMessageSenderName = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -77,6 +98,7 @@ const getLatestMessageDisplayText = <
   client: StreamChat<StreamChatGenerics>,
   message: LatestMessage<StreamChatGenerics> | undefined,
   t: (key: string) => string,
+  pollState: LatestMessagePreviewSelectorReturnType | undefined,
 ) => {
   if (!message) return [{ bold: false, text: t('Nothing yet...') }];
   const isMessageTypeDeleted = message.type === 'deleted';
@@ -121,6 +143,28 @@ const getLatestMessageDisplayText = <
     return [
       { bold: boldOwner, text: messageSenderText },
       { bold: false, text: t('🏙 Attachment...') },
+    ];
+  }
+  if (message.poll && pollState) {
+    const { created_by, latest_votes_by_option } = pollState;
+    let latestVotes;
+    if (latest_votes_by_option) {
+      latestVotes = Object.values(latest_votes_by_option)
+        .map((votes) => votes?.[0])
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    }
+    let previewAction = 'created';
+    let previewUser = created_by;
+    if (latestVotes && latestVotes.length && latestVotes[0]?.user) {
+      previewAction = 'voted';
+      previewUser = latestVotes[0]?.user;
+    }
+    const previewMessage = `${
+      client.userID === previewUser?.id ? 'You' : previewUser?.name
+    } ${previewAction}: ${message.poll.name}`;
+    return [
+      { bold: false, text: '📊 ' },
+      { bold: false, text: previewMessage },
     ];
   }
   return [
@@ -171,13 +215,14 @@ const getLatestMessagePreview = <
 >(params: {
   channel: Channel<StreamChatGenerics>;
   client: StreamChat<StreamChatGenerics>;
+  pollState: LatestMessagePreviewSelectorReturnType | undefined;
   readEvents: boolean;
   t: TFunction;
   lastMessage?:
     | ReturnType<ChannelState<StreamChatGenerics>['formatMessage']>
     | MessageResponse<StreamChatGenerics>;
 }) => {
-  const { channel, client, lastMessage, readEvents, t } = params;
+  const { channel, client, lastMessage, pollState, readEvents, t } = params;
 
   const messages = channel.state.messages;
 
@@ -202,7 +247,7 @@ const getLatestMessagePreview = <
   return {
     created_at: message?.created_at,
     messageObject: message,
-    previews: getLatestMessageDisplayText(channel, client, message, t),
+    previews: getLatestMessageDisplayText(channel, client, message, t, pollState),
     status: getLatestMessageReadStatus(channel, client, message, readEvents),
   };
 };
@@ -261,6 +306,12 @@ export const useLatestMessagePreview = <
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelConfigExists]);
 
+  const pollId = lastMessage?.poll_id ?? '';
+  const poll = client.polls.fromState(pollId);
+  const pollState: LatestMessagePreviewSelectorReturnType =
+    useStateStore(poll?.state, selector) ?? {};
+  const { created_by, latest_votes_by_option } = pollState;
+
   useEffect(
     () =>
       setLatestMessagePreview(
@@ -268,12 +319,20 @@ export const useLatestMessagePreview = <
           channel,
           client,
           lastMessage: translatedLastMessage,
+          pollState,
           readEvents,
           t,
         }),
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [channelLastMessageString, forceUpdate, readEvents, readStatus],
+    [
+      channelLastMessageString,
+      forceUpdate,
+      readEvents,
+      readStatus,
+      latest_votes_by_option,
+      created_by,
+    ],
   );
 
   return latestMessagePreview;

@@ -4,6 +4,7 @@ import type { TouchableOpacityProps } from 'react-native';
 
 import type { Attachment, ChannelState, MessageResponse } from 'stream-chat';
 
+import { PollContentProps } from '../../components';
 import type { AttachmentProps } from '../../components/Attachment/Attachment';
 import type { AttachmentActionsProps } from '../../components/Attachment/AttachmentActions';
 import type { AudioAttachmentProps } from '../../components/Attachment/AudioAttachment';
@@ -60,7 +61,13 @@ import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-export type MessageContentType = 'attachments' | 'files' | 'gallery' | 'quoted_reply' | 'text';
+export type MessageContentType =
+  | 'attachments'
+  | 'files'
+  | 'gallery'
+  | 'quoted_reply'
+  | 'poll'
+  | 'text';
 export type DeletedMessagesVisibilityType = 'always' | 'never' | 'receiver' | 'sender';
 
 export type MessagesContextValue<
@@ -350,6 +357,8 @@ export type MessagesContextValue<
   handleRetry?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
   /** Handler to access when a thread reply action is invoked */
   handleThreadReply?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
+  /** A flag specifying whether the poll creation button is available or not. */
+  hasCreatePoll?: boolean;
   /** Handler to deal with custom memoization logic of Attachment */
   isAttachmentEqual?: (
     prevAttachment: Attachment<StreamChatGenerics>,
@@ -502,7 +511,11 @@ export type MessagesContextValue<
    * ```
    */
   onPressMessage?: (payload: MessageTouchableHandlerPayload<StreamChatGenerics>) => void;
-
+  /**
+   * Override the entire content of the Poll component. The component has full access to the
+   * usePollState() and usePollContext() hooks.
+   * */
+  PollContent?: React.ComponentType<PollContentProps>;
   /**
    * Full override of the reaction function on Message and Message Overlay
    *

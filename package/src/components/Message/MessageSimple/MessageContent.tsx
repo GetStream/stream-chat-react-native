@@ -9,6 +9,7 @@ import {
 
 import { MessageTextContainer } from './MessageTextContainer';
 
+import { useChatContext } from '../../../contexts';
 import {
   MessageContextValue,
   useMessageContext,
@@ -26,6 +27,7 @@ import {
 import { useViewport } from '../../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { MessageStatusTypes } from '../../../utils/utils';
+import { Poll } from '../../Poll/Poll';
 
 const styles = StyleSheet.create({
   containerInner: {
@@ -142,6 +144,8 @@ const MessageContentWithContext = <
     showMessageStatus,
     threadList,
   } = props;
+  const { client } = useChatContext();
+  const { PollContent: PollContentOverride } = useMessagesContext();
 
   const {
     theme: {
@@ -377,6 +381,18 @@ const MessageContentWithContext = <
                 );
               case 'gallery':
                 return <Gallery key={`gallery_${messageContentOrderIndex}`} />;
+              case 'poll': {
+                const pollId = message.poll_id;
+                const poll = pollId && client.polls.fromState(pollId);
+                return pollId && poll ? (
+                  <Poll
+                    key={`poll_${message.poll_id}`}
+                    message={message}
+                    poll={poll}
+                    PollContent={PollContentOverride}
+                  />
+                ) : null;
+              }
               case 'text':
               default:
                 return otherAttachments.length && otherAttachments[0].actions ? null : (

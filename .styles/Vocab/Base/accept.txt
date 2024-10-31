@@ -48,3 +48,10 @@ Async
 subscribable
 memoizing
 Boolean
+draggable
+sendMessage
+overridable
+loadMore
+pollAnswers
+enum
+SendMessage
