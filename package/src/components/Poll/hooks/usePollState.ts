@@ -27,6 +27,7 @@ export type UsePollStateSelectorReturnType = {
   is_closed: boolean | undefined;
   latest_votes_by_option: Record<string, PollVote[]>;
   max_votes_allowed: number;
+  maxVotedOptionIds: string[];
   name: string;
   options: PollOption[];
   ownAnswer: PollAnswer | undefined;
@@ -56,6 +57,7 @@ const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   is_closed: nextValue.is_closed,
   latest_votes_by_option: nextValue.latest_votes_by_option,
   max_votes_allowed: nextValue.max_votes_allowed,
+  maxVotedOptionIds: nextValue.maxVotedOptionIds,
   name: nextValue.name,
   options: nextValue.options,
   ownAnswer: nextValue.ownAnswer,
@@ -75,6 +77,7 @@ export const usePollState = (): UsePollStateReturnType => {
     is_closed,
     latest_votes_by_option,
     max_votes_allowed,
+    maxVotedOptionIds,
     name,
     options,
     ownAnswer,
@@ -108,6 +111,7 @@ export const usePollState = (): UsePollStateReturnType => {
     is_closed,
     latest_votes_by_option,
     max_votes_allowed,
+    maxVotedOptionIds,
     name,
     options,
     ownAnswer,

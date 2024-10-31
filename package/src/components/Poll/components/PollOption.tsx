@@ -4,28 +4,14 @@ import { ScrollViewProps, StyleSheet, Text, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
 
-import { PollOption as PollOptionClass, PollState, PollVote } from 'stream-chat';
+import { PollOption as PollOptionClass, PollVote } from 'stream-chat';
 
 import { VoteButton } from './Button';
 
 import { PollContextProvider, PollContextValue, useTheme } from '../../../contexts';
 
-import { DefaultStreamChatGenerics } from '../../../types/types';
 import { Avatar } from '../../Avatar/Avatar';
 import { usePollState } from '../hooks/usePollState';
-import { usePollStateStore } from '../hooks/usePollStateStore';
-
-type PollOptionSelectorReturnValue = {
-  latest_votes_by_option: Record<string, PollVote[]>;
-  maxVotedOptionIds: string[];
-};
-
-const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  nextValue: PollState<StreamChatGenerics>,
-): PollOptionSelectorReturnValue => ({
-  latest_votes_by_option: nextValue.latest_votes_by_option,
-  maxVotedOptionIds: nextValue.maxVotedOptionIds,
-});
 
 export type PollOptionProps = {
   option: PollOptionClass;
@@ -87,9 +73,8 @@ export const PollAllOptions = ({
 );
 
 export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) => {
-  const { is_closed, vote_counts_by_option } = usePollState();
-
-  const { latest_votes_by_option, maxVotedOptionIds } = usePollStateStore(selector);
+  const { is_closed, latest_votes_by_option, maxVotedOptionIds, vote_counts_by_option } =
+    usePollState();
 
   const relevantVotes = useMemo(
     () => latest_votes_by_option?.[option.id]?.slice(0, 2) || [],
