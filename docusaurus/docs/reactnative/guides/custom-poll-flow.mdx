@@ -644,7 +644,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 // ... rest of the components
 
 // highlight-start
-const LoadingIndicator = () => { /* some LoadingIndicator logic here */ }
+const LoadingIndicator = () => {
+  /* some LoadingIndicator logic here */
+};
 
 const MyItem = ({ item }) => {
   const { answer_text, user } = item;
@@ -679,11 +681,7 @@ const PollAnswersScreen = ({
     <SafeAreaView style={{ flex: 1 }}>
       <PollModalHeader title={'All Poll Answers'} onPress={() => navigation.goBack()} />
       // highlight-start
-      <PollAnswersList
-        message={message}
-        poll={poll}
-        PollAnswersListContent={MyPollAnswersContent}
-      />
+      <PollAnswersList message={message} poll={poll} PollAnswersListContent={MyPollAnswersContent} />
       // highlight-end
     </SafeAreaView>
   );
