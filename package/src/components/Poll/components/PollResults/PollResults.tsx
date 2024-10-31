@@ -16,14 +16,14 @@ export type PollResultsProps = PollContextValue & {
 export const PollResultsContent = ({
   additionalScrollViewProps,
 }: Pick<PollResultsProps, 'additionalScrollViewProps'>) => {
-  const { name, options, vote_counts_by_option } = usePollState();
+  const { name, options, voteCountsByOption } = usePollState();
 
   const sortedOptions = useMemo(
     () =>
       [...options].sort(
-        (a, b) => (vote_counts_by_option[b.id] ?? 0) - (vote_counts_by_option[a.id] ?? 0),
+        (a, b) => (voteCountsByOption[b.id] ?? 0) - (voteCountsByOption[a.id] ?? 0),
       ),
-    [vote_counts_by_option, options],
+    [voteCountsByOption, options],
   );
 
   const {

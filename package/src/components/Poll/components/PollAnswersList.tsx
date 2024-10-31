@@ -26,7 +26,7 @@ export type PollAnswersListProps<
 
 export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
   const { t, tDateTimeParser } = useTranslationContext();
-  const { voting_visibility } = usePollState();
+  const { votingVisibility } = usePollState();
 
   const {
     theme: {
@@ -49,8 +49,8 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
   );
 
   const isAnonymous = useMemo(
-    () => voting_visibility === VotingVisibility.anonymous,
-    [voting_visibility],
+    () => votingVisibility === VotingVisibility.anonymous,
+    [votingVisibility],
   );
 
   return (

@@ -47,13 +47,13 @@ export const PollButtons = () => (
 
 export const PollHeader = () => {
   const { t } = useTranslationContext();
-  const { enforce_unique_vote, is_closed, max_votes_allowed, name } = usePollState();
+  const { enforceUniqueVote, isClosed, maxVotesAllowed, name } = usePollState();
   const subtitle = useMemo(() => {
-    if (is_closed) return t('Vote ended');
-    if (enforce_unique_vote) return t('Select one');
-    if (max_votes_allowed) return t('Select up to {{count}}', { count: max_votes_allowed });
+    if (isClosed) return t('Vote ended');
+    if (enforceUniqueVote) return t('Select one');
+    if (maxVotesAllowed) return t('Select up to {{count}}', { count: maxVotesAllowed });
     return t('Select one or more');
-  }, [is_closed, t, enforce_unique_vote, max_votes_allowed]);
+  }, [isClosed, t, enforceUniqueVote, maxVotesAllowed]);
 
   const {
     theme: {

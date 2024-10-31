@@ -22,7 +22,7 @@ export type UsePollVotesReturnType = {
 
 /**
  * A hook that queries votes for a given Poll and returns them in a paginated fashion.
- * Should be used instead of the latest_votes_by_option property within the reactive state in the
+ * Should be used instead of the latestVotesByOption property within the reactive state in the
  * event that we need more than the top 10 votes for an option. The returned property votes will
  * automatically be updated and trigger a state change when paginating further. Querying for votes
  * can only be done on an option by option basis.

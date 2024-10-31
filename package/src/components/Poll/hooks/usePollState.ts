@@ -19,21 +19,21 @@ import { usePollContext } from '../../../contexts';
 import { DefaultStreamChatGenerics } from '../../../types/types';
 
 export type UsePollStateSelectorReturnType = {
-  allow_answers: boolean | undefined;
-  allow_user_suggested_options: boolean | undefined;
-  answers_count: number;
-  created_by: UserResponse | null;
-  enforce_unique_vote: boolean;
-  is_closed: boolean | undefined;
-  latest_votes_by_option: Record<string, PollVote[]>;
-  max_votes_allowed: number;
+  allowAnswers: boolean | undefined;
+  allowUserSuggestedOptions: boolean | undefined;
+  answersCount: number;
+  createdBy: UserResponse | null;
+  enforceUniqueVote: boolean;
+  isClosed: boolean | undefined;
+  latestVotesByOption: Record<string, PollVote[]>;
   maxVotedOptionIds: string[];
+  maxVotesAllowed: number;
   name: string;
   options: PollOption[];
   ownAnswer: PollAnswer | undefined;
   ownVotesByOptionId: Record<string, PollVote>;
-  vote_counts_by_option: Record<string, number>;
-  voting_visibility: VotingVisibility | undefined;
+  voteCountsByOption: Record<string, number>;
+  votingVisibility: VotingVisibility | undefined;
 };
 
 export type UsePollStateReturnType<
@@ -49,41 +49,41 @@ export type UsePollStateReturnType<
 const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   nextValue: PollState<StreamChatGenerics>,
 ): UsePollStateSelectorReturnType => ({
-  allow_answers: nextValue.allow_answers,
-  allow_user_suggested_options: nextValue.allow_user_suggested_options,
-  answers_count: nextValue.answers_count,
-  created_by: nextValue.created_by,
-  enforce_unique_vote: nextValue.enforce_unique_vote,
-  is_closed: nextValue.is_closed,
-  latest_votes_by_option: nextValue.latest_votes_by_option,
-  max_votes_allowed: nextValue.max_votes_allowed,
+  allowAnswers: nextValue.allow_answers,
+  allowUserSuggestedOptions: nextValue.allow_user_suggested_options,
+  answersCount: nextValue.answers_count,
+  createdBy: nextValue.created_by,
+  enforceUniqueVote: nextValue.enforce_unique_vote,
+  isClosed: nextValue.is_closed,
+  latestVotesByOption: nextValue.latest_votes_by_option,
   maxVotedOptionIds: nextValue.maxVotedOptionIds,
+  maxVotesAllowed: nextValue.max_votes_allowed,
   name: nextValue.name,
   options: nextValue.options,
   ownAnswer: nextValue.ownAnswer,
   ownVotesByOptionId: nextValue.ownVotesByOptionId,
-  vote_counts_by_option: nextValue.vote_counts_by_option,
-  voting_visibility: nextValue.voting_visibility,
+  voteCountsByOption: nextValue.vote_counts_by_option,
+  votingVisibility: nextValue.voting_visibility,
 });
 
 export const usePollState = (): UsePollStateReturnType => {
   const { message, poll } = usePollContext();
   const {
-    allow_answers,
-    allow_user_suggested_options,
-    answers_count,
-    created_by,
-    enforce_unique_vote,
-    is_closed,
-    latest_votes_by_option,
-    max_votes_allowed,
+    allowAnswers,
+    allowUserSuggestedOptions,
+    answersCount,
+    createdBy,
+    enforceUniqueVote,
+    isClosed,
+    latestVotesByOption,
     maxVotedOptionIds,
+    maxVotesAllowed,
     name,
     options,
     ownAnswer,
     ownVotesByOptionId,
-    vote_counts_by_option,
-    voting_visibility,
+    voteCountsByOption,
+    votingVisibility,
   } = usePollStateStore(selector);
 
   const addOption = useCallback(
@@ -102,21 +102,21 @@ export const usePollState = (): UsePollStateReturnType => {
   return {
     addComment,
     addOption,
-    allow_answers,
-    allow_user_suggested_options,
-    answers_count,
-    created_by,
+    allowAnswers,
+    allowUserSuggestedOptions,
+    answersCount,
+    createdBy,
     endVote,
-    enforce_unique_vote,
-    is_closed,
-    latest_votes_by_option,
-    max_votes_allowed,
+    enforceUniqueVote,
+    isClosed,
+    latestVotesByOption,
     maxVotedOptionIds,
+    maxVotesAllowed,
     name,
     options,
     ownAnswer,
     ownVotesByOptionId,
-    vote_counts_by_option,
-    voting_visibility,
+    voteCountsByOption,
+    votingVisibility,
   };
 };
