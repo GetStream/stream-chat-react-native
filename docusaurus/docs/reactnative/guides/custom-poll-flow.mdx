@@ -22,6 +22,14 @@ In this cookbook we'll go over how we can create and customize a `Channel` scree
 
 This cookbook assumes that you've already set up a screen that is able to display a `Channel` with a `MessageList` inside. As `poll`s are tightly coupled with messages, we need to have this working before we add the `poll` message type.
 
+Polls are disabled by default and can be enabled through the Stream Dashboard by toggling the `Poll` button.
+
+![Enable Polls](../assets/guides/custom-poll-flow/enable-polls.png)
+
+Doing that will include the `Poll` button in your attachment picker:
+
+![Enable Polls](../assets/guides/custom-poll-flow/attachment-picker-poll-button.png)
+
 It also assumes that you have a functioning `chatClient` that is used elsewhere.
 
 For illustration purposes, we are going to be using the `React Navigation` library for navigation (however, any navigation library can be used).
