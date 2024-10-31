@@ -1,5 +1,12 @@
 # Change Log
 
+## [5.40.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.39.6...v5.40.0) (2024-10-31)
+
+
+### Features
+
+* polls implementation ([#2719](https://github.com/GetStream/stream-chat-react-native/issues/2719)) ([c770854](https://github.com/GetStream/stream-chat-react-native/commit/c7708544d49e27dab4a2fee08c235fb39afd2178))
+
 ### [5.39.6](https://github.com/GetStream/stream-chat-react-native/compare/v5.39.5...v5.39.6) (2024-10-28)
 
 
