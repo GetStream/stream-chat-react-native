@@ -659,7 +659,7 @@ const ChannelWithContext = <
   const uploadAbortControllerRef = useRef<Map<string, AbortController>>(new Map());
 
   const channelId = channel?.id || '';
-  const pollCreationEnabled = !channel.disconnected && channel.id && channel?.getConfig()?.polls;
+  const pollCreationEnabled = !channel.disconnected && !!channel?.id && channel?.getConfig()?.polls;
 
   useEffect(() => {
     const initChannel = async () => {
