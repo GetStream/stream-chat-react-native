@@ -16,7 +16,7 @@ export type PollResultItemProps<
   option: PollOption<StreamChatGenerics>;
 };
 
-export const PollVote = (vote: PollVoteClass) => {
+export const PollVote = ({ vote }: { vote: PollVoteClass }) => {
   const { t, tDateTimeParser } = useTranslationContext();
   const { votingVisibility } = usePollState();
   const {
@@ -47,7 +47,7 @@ export const PollVote = (vote: PollVoteClass) => {
   );
 
   return (
-    <View key={`results_vote_${vote.id}`} style={[styles.voteContainer, container]}>
+    <View style={[styles.voteContainer, container]}>
       <View style={{ flexDirection: 'row' }}>
         {!isAnonymous && vote.user?.image ? (
           <Avatar image={vote.user.image as string} key={vote.id} size={20} />
@@ -60,6 +60,10 @@ export const PollVote = (vote: PollVoteClass) => {
     </View>
   );
 };
+
+const PollResultsVoteItem = (vote: PollVoteClass) => (
+  <PollVote key={`results_vote_${vote.id}`} vote={vote} />
+);
 
 export const PollResultsItem = ({ option }: PollResultItemProps) => {
   const { t } = useTranslationContext();
@@ -86,7 +90,7 @@ export const PollResultsItem = ({ option }: PollResultItemProps) => {
       </View>
       {latestVotesByOption?.[option.id]?.length > 0 ? (
         <View style={{ marginTop: 16 }}>
-          {(latestVotesByOption?.[option.id] ?? []).slice(0, 5).map(PollVote)}
+          {(latestVotesByOption?.[option.id] ?? []).slice(0, 5).map(PollResultsVoteItem)}
         </View>
       ) : null}
       <ShowAllVotesButton option={option} />

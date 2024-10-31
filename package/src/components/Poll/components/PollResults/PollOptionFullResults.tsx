@@ -24,7 +24,7 @@ export type PollOptionFullResultsProps<
 };
 
 export const PollOptionFullResultsItem = ({ item }: { item: PollVoteClass }) => (
-  <PollVote {...item} />
+  <PollVote vote={item} />
 );
 
 export const PollOptionFullResultsContent = ({
