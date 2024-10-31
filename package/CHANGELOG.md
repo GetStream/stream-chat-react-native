@@ -1,5 +1,12 @@
 # Change Log
 
+## [5.41.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.40.0...v5.41.0) (2024-10-31)
+
+
+### Features
+
+* rename poll state selector props ([#2745](https://github.com/GetStream/stream-chat-react-native/issues/2745)) ([45e5959](https://github.com/GetStream/stream-chat-react-native/commit/45e5959a85a096423bb49e1c5411a4505cfdd6ca))
+
 ## [5.40.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.39.6...v5.40.0) (2024-10-31)
 
 
