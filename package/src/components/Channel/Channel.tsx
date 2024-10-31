@@ -2353,6 +2353,8 @@ const ChannelWithContext = <
     setLoadingMoreRecent,
   });
 
+  const pollCreationEnabled = channel.getConfig()?.polls;
+
   const messagesContext = useCreateMessagesContext({
     additionalTouchableProps,
     Attachment,
@@ -2391,7 +2393,8 @@ const ChannelWithContext = <
     handleReaction,
     handleRetry,
     handleThreadReply,
-    hasCreatePoll: hasCreatePoll === undefined ? true : hasCreatePoll,
+    hasCreatePoll:
+      hasCreatePoll === undefined ? pollCreationEnabled : hasCreatePoll && pollCreationEnabled,
     ImageLoadingFailedIndicator,
     ImageLoadingIndicator,
     initialScrollToFirstUnreadMessage: !messageId && initialScrollToFirstUnreadMessage, // when messageId is set, we scroll to the messageId instead of first unread
