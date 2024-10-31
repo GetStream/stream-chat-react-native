@@ -18,7 +18,7 @@ export type PollResultItemProps<
 
 export const PollVote = (vote: PollVoteClass) => {
   const { t, tDateTimeParser } = useTranslationContext();
-  const { voting_visibility } = usePollState();
+  const { votingVisibility } = usePollState();
   const {
     theme: {
       colors: { black, text_low_emphasis },
@@ -42,8 +42,8 @@ export const PollVote = (vote: PollVoteClass) => {
   );
 
   const isAnonymous = useMemo(
-    () => voting_visibility === VotingVisibility.anonymous,
-    [voting_visibility],
+    () => votingVisibility === VotingVisibility.anonymous,
+    [votingVisibility],
   );
 
   return (
@@ -63,7 +63,7 @@ export const PollVote = (vote: PollVoteClass) => {
 
 export const PollResultsItem = ({ option }: PollResultItemProps) => {
   const { t } = useTranslationContext();
-  const { latest_votes_by_option, vote_counts_by_option } = usePollState();
+  const { latestVotesByOption, voteCountsByOption } = usePollState();
 
   const {
     theme: {
@@ -81,12 +81,12 @@ export const PollResultsItem = ({ option }: PollResultItemProps) => {
       <View style={[styles.headerContainer, headerContainer]}>
         <Text style={[styles.title, { color: black }, title]}>{option.text}</Text>
         <Text style={[styles.voteCount, { color: black }, voteCount]}>
-          {t<string>('{{count}} votes', { count: vote_counts_by_option[option.id] ?? 0 })}
+          {t<string>('{{count}} votes', { count: voteCountsByOption[option.id] ?? 0 })}
         </Text>
       </View>
-      {latest_votes_by_option?.[option.id]?.length > 0 ? (
+      {latestVotesByOption?.[option.id]?.length > 0 ? (
         <View style={{ marginTop: 16 }}>
-          {(latest_votes_by_option?.[option.id] ?? []).slice(0, 5).map(PollVote)}
+          {(latestVotesByOption?.[option.id] ?? []).slice(0, 5).map(PollVote)}
         </View>
       ) : null}
       <ShowAllVotesButton option={option} />

@@ -15,7 +15,7 @@ It is highly recommended that the user familiarizes themselves with the [`Poll` 
 
 The `usePollState` hook returns an object containing values from the `PollState`.
 
-### `allow_answers`
+### `allowAnswers`
 
 A property depicting whether answers (comments) are allowed to the `poll`.
 
@@ -23,7 +23,7 @@ A property depicting whether answers (comments) are allowed to the `poll`.
 | --------- | ----------- |
 | `boolean` | `undefined` |
 
-### `allow_user_suggested_options`
+### `allowUserSuggestedOptions`
 
 A property depicting whether user option suggestions are allowed to the `poll`.
 
@@ -31,7 +31,7 @@ A property depicting whether user option suggestions are allowed to the `poll`.
 | --------- | ----------- |
 | `boolean` | `undefined` |
 
-### `answers_count`
+### `answersCount`
 
 A property containing the number of answers (comments) to the `poll`.
 
@@ -49,7 +49,7 @@ This property will be `null` for anonymous polls.
 | -------- | ------ |
 | `object` | `null` |
 
-### `enforce_unique_vote`
+### `enforceUniqueVote`
 
 A property depicting whether each user should have only one and unique vote or they would be able to vote multiple times during the lifespan of a `poll`.
 
@@ -65,7 +65,7 @@ A property depicting whether the `poll` is still open for voting or not.
 | --------- |
 | `boolean` |
 
-### `latest_votes_by_option`
+### `latestVotesByOption`
 
 A property containing the latest votes for each option stored in an object by option ID. Only the last 10 votes are maintained here. If all votes are needed for an option, the [`usePollOptionVotesPagination`](./use-poll-option-votes-pagination.mdx) hook should be used instead.
 
@@ -123,7 +123,7 @@ A property containing the current user's own votes in a given `poll`, stored in 
 | -------------------------- |
 | `Record<string, PollVote>` |
 
-### `vote_counts_by_option`
+### `voteCountsByOption`
 
 A property containing the vote counts in a given `poll`, stored in an object by option ID.
 
@@ -131,7 +131,7 @@ A property containing the vote counts in a given `poll`, stored in an object by 
 | ------------------------ |
 | `Record<string, number>` |
 
-### `voting_visibility`
+### `votingVisibility`
 
 A property depicting the visibility of votes in a given `poll`. It conforms to the `VotingVisibility` enum found [here](https://github.com/GetStream/stream-chat-js/blob/b447512922b19bc7e3668bd9df81debcb673dd81/src/types.ts).
 

@@ -115,10 +115,10 @@ export const ViewResultsButton = (props: PollButtonProps) => {
 
 export const EndVoteButton = () => {
   const { t } = useTranslationContext();
-  const { created_by, endVote, is_closed } = usePollState();
+  const { createdBy, endVote, isClosed } = usePollState();
   const { client } = useChatContext();
 
-  return !is_closed && created_by?.id === client.userID ? (
+  return !isClosed && createdBy?.id === client.userID ? (
     <GenericPollButton onPress={endVote} title={t<string>('End Vote')} />
   ) : null;
 };
@@ -126,7 +126,7 @@ export const EndVoteButton = () => {
 export const AddCommentButton = (props: PollButtonProps) => {
   const { t } = useTranslationContext();
   const { message, poll } = usePollContext();
-  const { addComment, allow_answers, is_closed, ownAnswer } = usePollState();
+  const { addComment, allowAnswers, isClosed, ownAnswer } = usePollState();
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
   const { onPress } = props;
 
@@ -141,7 +141,7 @@ export const AddCommentButton = (props: PollButtonProps) => {
 
   return (
     <>
-      {!is_closed && allow_answers ? (
+      {!isClosed && allowAnswers ? (
         <GenericPollButton onPress={onPressHandler} title={t<string>('Add a comment')} />
       ) : null}
       {showAddCommentDialog ? (
@@ -160,7 +160,7 @@ export const AddCommentButton = (props: PollButtonProps) => {
 export const ShowAllCommentsButton = (props: PollButtonProps) => {
   const { t } = useTranslationContext();
   const { message, poll } = usePollContext();
-  const { answers_count } = usePollState();
+  const { answersCount } = usePollState();
   const [showAnswers, setShowAnswers] = useState(false);
   const { onPress } = props;
 
@@ -181,10 +181,10 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
 
   return (
     <>
-      {answers_count && answers_count > 0 ? (
+      {answersCount && answersCount > 0 ? (
         <GenericPollButton
           onPress={onPressHandler}
-          title={t<string>('View {{count}} comments', { count: answers_count })}
+          title={t<string>('View {{count}} comments', { count: answersCount })}
         />
       ) : null}
       {showAnswers ? (
@@ -262,7 +262,7 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
 export const SuggestOptionButton = (props: PollButtonProps) => {
   const { t } = useTranslationContext();
   const { message, poll } = usePollContext();
-  const { addOption, allow_user_suggested_options, is_closed } = usePollState();
+  const { addOption, allowUserSuggestedOptions, isClosed } = usePollState();
   const [showAddOptionDialog, setShowAddOptionDialog] = useState(false);
   const { onPress } = props;
 
@@ -277,7 +277,7 @@ export const SuggestOptionButton = (props: PollButtonProps) => {
 
   return (
     <>
-      {!is_closed && allow_user_suggested_options ? (
+      {!isClosed && allowUserSuggestedOptions ? (
         <GenericPollButton onPress={onPressHandler} title={t<string>('Suggest an option')} />
       ) : null}
       {showAddOptionDialog ? (
@@ -343,7 +343,7 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
 
 export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
   const { message, poll } = usePollContext();
-  const { is_closed, ownVotesByOptionId } = usePollState();
+  const { isClosed, ownVotesByOptionId } = usePollState();
   const ownCapabilities = useOwnCapabilitiesContext();
 
   const {
@@ -374,7 +374,7 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
     toggleVote();
   }, [message, onPress, poll, toggleVote]);
 
-  return ownCapabilities.castPollVote && !is_closed ? (
+  return ownCapabilities.castPollVote && !isClosed ? (
     <TouchableOpacity
       onPress={onPressHandler}
       style={[
@@ -398,7 +398,7 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
 export const ShowAllVotesButton = (props: ShowAllVotesButtonProps) => {
   const { t } = useTranslationContext();
   const { message, poll } = usePollContext();
-  const { vote_counts_by_option } = usePollState();
+  const { voteCountsByOption } = usePollState();
   const ownCapabilities = useOwnCapabilitiesContext();
   const [showAllVotes, setShowAllVotes] = useState(false);
   const { onPress, option } = props;
@@ -421,8 +421,8 @@ export const ShowAllVotesButton = (props: ShowAllVotesButtonProps) => {
   return (
     <>
       {ownCapabilities.queryPollVotes &&
-      vote_counts_by_option &&
-      vote_counts_by_option?.[option.id] > 5 ? (
+      voteCountsByOption &&
+      voteCountsByOption?.[option.id] > 5 ? (
         <GenericPollButton onPress={onPressHandler} title={t<string>('Show All')} />
       ) : null}
       {showAllVotes ? (

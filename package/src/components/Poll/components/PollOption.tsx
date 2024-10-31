@@ -73,21 +73,18 @@ export const PollAllOptions = ({
 );
 
 export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) => {
-  const { is_closed, latest_votes_by_option, maxVotedOptionIds, vote_counts_by_option } =
-    usePollState();
+  const { isClosed, latestVotesByOption, maxVotedOptionIds, voteCountsByOption } = usePollState();
 
   const relevantVotes = useMemo(
-    () => latest_votes_by_option?.[option.id]?.slice(0, 2) || [],
-    [latest_votes_by_option, option.id],
+    () => latestVotesByOption?.[option.id]?.slice(0, 2) || [],
+    [latestVotesByOption, option.id],
   );
   const maxVotes = useMemo(
     () =>
-      maxVotedOptionIds?.[0] && vote_counts_by_option
-        ? vote_counts_by_option[maxVotedOptionIds[0]]
-        : 0,
-    [maxVotedOptionIds, vote_counts_by_option],
+      maxVotedOptionIds?.[0] && voteCountsByOption ? voteCountsByOption[maxVotedOptionIds[0]] : 0,
+    [maxVotedOptionIds, voteCountsByOption],
   );
-  const votes = vote_counts_by_option[option.id] || 0;
+  const votes = voteCountsByOption[option.id] || 0;
 
   const {
     theme: {
@@ -118,9 +115,7 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
           {relevantVotes.map((vote: PollVote) => (
             <Avatar image={vote.user?.image as string} key={vote.id} size={20} />
           ))}
-          <Text style={{ color: black, marginLeft: 2 }}>
-            {vote_counts_by_option[option.id] || 0}
-          </Text>
+          <Text style={{ color: black, marginLeft: 2 }}>{voteCountsByOption[option.id] || 0}</Text>
         </View>
       </View>
       {showProgressBar ? (
@@ -128,7 +123,7 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
           <View
             style={{
               backgroundColor:
-                is_closed && maxVotedOptionIds.length === 1 && maxVotedOptionIds[0] === option.id
+                isClosed && maxVotedOptionIds.length === 1 && maxVotedOptionIds[0] === option.id
                   ? progressBarWinnerFill || accent_info
                   : progressBarVotedFill || accent_dark_blue,
               flex: maxVotes > 0 ? votes / maxVotes : 0,

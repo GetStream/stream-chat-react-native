@@ -33,7 +33,7 @@ export const PollOptionFullResultsContent = ({
 }: Pick<PollOptionFullResultsProps, 'option' | 'additionalFlatListProps'>) => {
   const { t } = useTranslationContext();
   const { hasNextPage, loadMore, votes } = usePollOptionVotesPagination({ option });
-  const { vote_counts_by_option } = usePollState();
+  const { voteCountsByOption } = usePollState();
 
   const {
     theme: {
@@ -48,11 +48,11 @@ export const PollOptionFullResultsContent = ({
     () => (
       <View style={[styles.headerContainer, headerContainer]}>
         <Text style={[styles.headerText, { color: black }, headerText]}>
-          {t<string>('{{count}} votes', { count: vote_counts_by_option[option.id] ?? 0 })}
+          {t<string>('{{count}} votes', { count: voteCountsByOption[option.id] ?? 0 })}
         </Text>
       </View>
     ),
-    [black, headerContainer, headerText, option.id, t, vote_counts_by_option],
+    [black, headerContainer, headerText, option.id, t, voteCountsByOption],
   );
 
   return (
