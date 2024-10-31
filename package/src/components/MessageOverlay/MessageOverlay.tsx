@@ -25,6 +25,7 @@ import { MessageActionList as DefaultMessageActionList } from './MessageActionLi
 import { OverlayReactionList as OverlayReactionListDefault } from './OverlayReactionList';
 import { OverlayReactionsAvatar as OverlayReactionsAvatarDefault } from './OverlayReactionsAvatar';
 
+import { OwnCapabilitiesProvider } from '../../contexts';
 import { ChatProvider } from '../../contexts/chatContext/ChatContext';
 import { MessageProvider } from '../../contexts/messageContext/MessageContext';
 import {
@@ -135,6 +136,7 @@ const MessageOverlayWithContext = <
     OverlayReactions = DefaultOverlayReactions,
     OverlayReactionsAvatar = OverlayReactionsAvatarDefault,
     ownCapabilities,
+    Poll,
     setOverlay,
     threadList,
     videos,
@@ -441,6 +443,14 @@ const MessageOverlayWithContext = <
                             />
                           )
                         );
+                      case 'poll': {
+                        const pollId = message.poll_id;
+                        return Poll && pollId && ownCapabilities ? (
+                          <OwnCapabilitiesProvider key={`poll_${pollId}`} value={ownCapabilities}>
+                            <Poll />
+                          </OwnCapabilitiesProvider>
+                        ) : null;
+                      }
                       case 'text':
                       default:
                         return otherAttachments?.length && otherAttachments[0].actions ? null : (
