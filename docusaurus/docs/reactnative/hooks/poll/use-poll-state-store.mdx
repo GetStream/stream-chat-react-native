@@ -16,16 +16,16 @@ import { PollVote, PollState } from 'stream-chat';
 import { usePollStateStore } from 'stream-chat-react-native';
 
 type PollOptionSelectorReturnValue = {
-  latest_votes_by_option: Record<string, PollVote[]>;
+  latestVotesByOption: Record<string, PollVote[]>;
   maxVotedOptionIds: string[];
 };
 
 const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   nextValue: PollState<StreamChatGenerics>,
 ): PollOptionSelectorReturnValue => ({
-  latest_votes_by_option: nextValue.latest_votes_by_option,
+  latestVotesByOption: nextValue.latestVotesByOption,
   maxVotedOptionIds: nextValue.maxVotedOptionIds,
 });
 
-const { latest_votes_by_option, maxVotedOptionIds } = usePollStateStore(selector);
+const { latestVotesByOption, maxVotedOptionIds } = usePollStateStore(selector);
 ```

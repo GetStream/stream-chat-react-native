@@ -38,15 +38,15 @@ export type LatestMessagePreview<
 };
 
 export type LatestMessagePreviewSelectorReturnType = {
-  created_by?: UserResponse | null;
-  latest_votes_by_option?: Record<string, PollVote[]>;
+  createdBy?: UserResponse | null;
+  latestVotesByOption?: Record<string, PollVote[]>;
 };
 
 const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   nextValue: PollState<StreamChatGenerics>,
 ): LatestMessagePreviewSelectorReturnType => ({
-  created_by: nextValue.created_by,
-  latest_votes_by_option: nextValue.latest_votes_by_option,
+  createdBy: nextValue.created_by,
+  latestVotesByOption: nextValue.latest_votes_by_option,
 });
 
 const getMessageSenderName = <
@@ -146,15 +146,15 @@ const getLatestMessageDisplayText = <
     ];
   }
   if (message.poll && pollState) {
-    const { created_by, latest_votes_by_option } = pollState;
+    const { createdBy, latestVotesByOption } = pollState;
     let latestVotes;
-    if (latest_votes_by_option) {
-      latestVotes = Object.values(latest_votes_by_option)
+    if (latestVotesByOption) {
+      latestVotes = Object.values(latestVotesByOption)
         .map((votes) => votes?.[0])
         .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     }
     let previewAction = 'created';
-    let previewUser = created_by;
+    let previewUser = createdBy;
     if (latestVotes && latestVotes.length && latestVotes[0]?.user) {
       previewAction = 'voted';
       previewUser = latestVotes[0]?.user;
@@ -310,7 +310,7 @@ export const useLatestMessagePreview = <
   const poll = client.polls.fromState(pollId);
   const pollState: LatestMessagePreviewSelectorReturnType =
     useStateStore(poll?.state, selector) ?? {};
-  const { created_by, latest_votes_by_option } = pollState;
+  const { createdBy, latestVotesByOption } = pollState;
 
   useEffect(
     () =>
@@ -325,14 +325,7 @@ export const useLatestMessagePreview = <
         }),
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      channelLastMessageString,
-      forceUpdate,
-      readEvents,
-      readStatus,
-      latest_votes_by_option,
-      created_by,
-    ],
+    [channelLastMessageString, forceUpdate, readEvents, readStatus, latestVotesByOption, createdBy],
   );
 
   return latestMessagePreview;
