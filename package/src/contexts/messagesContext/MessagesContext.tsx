@@ -357,6 +357,7 @@ export type MessagesContextValue<
   handleRetry?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
   /** Handler to access when a thread reply action is invoked */
   handleThreadReply?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
+  /** A flag specifying whether the poll creation button is available or not. */
   hasCreatePoll?: boolean;
   /** Handler to deal with custom memoization logic of Attachment */
   isAttachmentEqual?: (
@@ -510,6 +511,10 @@ export type MessagesContextValue<
    * ```
    */
   onPressMessage?: (payload: MessageTouchableHandlerPayload<StreamChatGenerics>) => void;
+  /**
+   * Override the entire content of the Poll component. The component has full access to the
+   * usePollState() and usePollContext() hooks.
+   * */
   PollContent?: React.ComponentType<PollContentProps>;
   /**
    * Full override of the reaction function on Message and Message Overlay

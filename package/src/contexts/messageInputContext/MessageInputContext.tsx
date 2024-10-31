@@ -414,6 +414,10 @@ export type InputMessageInputContextValue<
    */
   compressImageQuality?: number;
 
+  /**
+   * Override the entire content of the CreatePoll component. The component has full access to the
+   * useCreatePollContext() hook.
+   * */
   CreatePollContent?: React.ComponentType<PollContentProps>;
 
   /**
