@@ -393,13 +393,13 @@ Please keep in mind that `message.poll` is not going to be reactive, but will ra
 
 The React Native SDK provides 2 utility hooks to help with consuming the `poll` state. They can be found listed below:
 
-- [`usePollStateStore`](./hooks/poll/use-poll-state-store.mdx)
-- [`usePollState`](./hooks/poll/use-poll-state.mdx)
+- [`usePollStateStore`](../hooks/poll/use-poll-state-store.mdx)
+- [`usePollState`](../hooks/poll/use-poll-state.mdx)
 
 Similarly to the `threads` feature, one can also directly use `useStateStore` and access `StreamChat.polls.fromState(<poll-id>).state` through custom `selector`s.
 
 :::note
-Both `usePollStateStore` and `usePollState` can only be used in children of a [`PollContext`](./contexts/poll-context.mdx). This impediment does not exist however on `useStateStore`.
+Both `usePollStateStore` and `usePollState` can only be used in children of a [`PollContext`](../contexts/poll-context.mdx). This impediment does not exist however on `useStateStore`.
 :::
 
 Due to this, all `poll` related components within the SDK are self-wrapped within a `PollContext` and require `message` and `poll` as mandatory props.
