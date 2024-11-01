@@ -2516,8 +2516,10 @@ const ChannelWithContext = <
 
 export type ChannelProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<Omit<ChannelPropsWithContext<StreamChatGenerics>, 'channel'>> &
-  Pick<ChannelPropsWithContext<StreamChatGenerics>, 'channel'>;
+> = Partial<Omit<ChannelPropsWithContext<StreamChatGenerics>, 'channel' | 'thread'>> &
+  Pick<ChannelPropsWithContext<StreamChatGenerics>, 'channel'> & {
+    thread?: MessageType<StreamChatGenerics> | ThreadType<StreamChatGenerics> | null;
+  };
 
 /**
  *
