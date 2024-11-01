@@ -12,7 +12,6 @@
     "clean-all": "yarn clean && rm -rf node_modules && rm -rf ios/Pods && rm -rf vendor && bundle install && yarn install && cd ios && bundle exec pod install && cd -"
   },
   "dependencies": {
-    "@bam.tech/react-native-image-resizer": "^3.0.10",
     "@op-engineering/op-sqlite": "^6.0.4",
     "@react-native-clipboard/clipboard": "^1.10.0",
     "@react-native-community/netinfo": "^11.3.2",

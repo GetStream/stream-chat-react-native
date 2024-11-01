@@ -2,10 +2,19 @@
   "name": "stream-chat-react-native",
   "description": "The official React Native SDK for Stream Chat, a service for building chat applications",
   "version": "5.39.5",
+  "homepage": "https://www.npmjs.com/package/stream-chat-react-native",
   "author": {
     "company": "Stream.io Inc",
     "name": "Stream.io Inc"
   },
+  "files": [
+    "src",
+    "types",
+    "android",
+    "ios",
+    "*.podspec",
+    "package.json"
+  ],
   "license": "SEE LICENSE IN LICENSE",
   "main": "src/index.js",
   "types": "types/index.d.ts",
@@ -14,7 +23,6 @@
     "stream-chat-react-native-core": "5.39.5"
   },
   "peerDependencies": {
-    "@bam.tech/react-native-image-resizer": ">=3.0.10",
     "@react-native-camera-roll/camera-roll": ">=7.8.0",
     "@react-native-clipboard/clipboard": ">=1.14.1",
     "@stream-io/flat-list-mvcp": ">=0.10.3",
@@ -64,7 +72,11 @@
     "postpack": "rm README.md"
   },
   "devDependencies": {
-    "@bam.tech/react-native-image-resizer": ">=3.0.10",
     "react-native": ">=0.67.0"
+  },
+  "codegenConfig": {
+    "name": "RNImageResizerSpec",
+    "type": "modules",
+    "jsSrcsDir": "src/ImageResizer"
   }
 }

@@ -1,5 +1,5 @@
 // @ts-ignore this module does not have a type declaration
-import ImageResizer from '@bam.tech/react-native-image-resizer';
+import ImageResizer from '../ImageResizer';
 
 type CompressImageParams = {
   compressImageQuality: number;
@@ -28,7 +28,7 @@ export const compressImage = async ({
     );
     return compressedUri;
   } catch (error) {
-    console.log(error);
+    console.log('Error resizing image:', error);
     return uri;
   }
 };
