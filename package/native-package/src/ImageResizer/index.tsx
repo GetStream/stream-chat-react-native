@@ -3,6 +3,7 @@ import { NativeModules } from 'react-native';
 import type { Options, ResizeFormat, Response } from './types';
 export type { ResizeFormat, ResizeMode, Response } from './types';
 
+// @ts-ignore
 // eslint-disable-next-line no-underscore-dangle
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
 
@@ -15,7 +16,7 @@ const defaultOptions: Options = {
   onlyScaleDown: false,
 };
 
-function createResizedImage(
+async function createResizedImage(
   uri: string,
   width: number,
   height: number,
@@ -28,7 +29,7 @@ function createResizedImage(
 ): Promise<Response> {
   const { mode, onlyScaleDown } = { ...defaultOptions, ...options };
 
-  return ImageResizer.createResizedImage(
+  return await ImageResizer.createResizedImage(
     uri,
     width,
     height,

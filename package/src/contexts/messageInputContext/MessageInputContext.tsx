@@ -1236,7 +1236,9 @@ export const MessageInputProvider = <
     const filename = escapeRegExp(file.name ?? getFileNameFromPath(uri));
 
     try {
+      console.log(file.uri);
       const compressedUri = await compressedImageURI(file, value.compressImageQuality);
+      console.log({ compressedUri });
       const contentType = lookup(filename) || 'multipart/form-data';
       if (value.doImageUploadRequest) {
         response = await value.doImageUploadRequest(file, channel);

@@ -1,4 +1,3 @@
-// @ts-ignore this module does not have a type declaration
 import ImageResizer from '../ImageResizer';
 
 type CompressImageParams = {
