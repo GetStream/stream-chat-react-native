@@ -8,8 +8,8 @@ export type { ResizeFormat, ResizeMode, Response } from './types';
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
 
 const ImageResizer = isTurboModuleEnabled
-  ? require('./NativeImageResizer').default
-  : NativeModules.ImageResizer;
+  ? require('./NativeStreamChatReactNative').default
+  : NativeModules.StreamChatReactNative;
 
 const defaultOptions: Options = {
   mode: 'contain',

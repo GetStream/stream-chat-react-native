@@ -18,11 +18,7 @@ export interface Spec extends TurboModule {
     base64: string;
     height: number;
     name: string;
-    path: string;
-    size: number;
-    uri: string;
-    width: number;
   }>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('ImageResizer');
+export default TurboModuleRegistry.getEnforcing<Spec>('StreamChatReactNative');

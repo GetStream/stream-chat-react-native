@@ -1,4 +1,4 @@
-import ImageResizer from '../ImageResizer';
+import StreamChatReactNative from '../native';
 
 type CompressImageParams = {
   compressImageQuality: number;
@@ -14,7 +14,7 @@ export const compressImage = async ({
   width,
 }: CompressImageParams) => {
   try {
-    const { uri: compressedUri } = await ImageResizer.createResizedImage(
+    const { uri: compressedUri } = await StreamChatReactNative.createResizedImage(
       uri,
       width,
       height,

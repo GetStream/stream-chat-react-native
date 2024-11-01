@@ -1,4 +1,4 @@
-#import "ImageResizer.h"
+#import "StreamChatReactNative.h"
 #import <React/RCTLog.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <MobileCoreServices/MobileCoreServices.h>
@@ -11,9 +11,9 @@
 #import "RCTImageLoader.h"
 #endif
 
-NSString *moduleName = @"ImageResizer";
+NSString *moduleName = @"StreamChatReactNative";
 
-@implementation ImageResizer
+@implementation StreamChatReactNative
 
 @synthesize bridge = _bridge;
 
@@ -28,20 +28,20 @@ RCT_REMAP_METHOD(createResizedImage, uri:(NSString *)uri width:(double)width hei
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @try {
             CGSize newSize = CGSizeMake(width, height);
-            
+
             //Set image extension
             NSString *extension = @"jpg";
             if ([format isEqualToString:@"PNG"]) {
                 extension = @"png";
             }
-            
+
             NSString* fullPath;
             @try {
                 fullPath = generateFilePath(extension, outputPath);
             } @catch (NSException *exception) {
                 [NSException raise:moduleName format:@"Invalid output path."];
             }
-            
+
             RCTImageLoader *loader = [self.bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES];
             NSURLRequest *request = [RCTConvert NSURLRequest:uri];
             [loader loadImageWithURLRequest:request
@@ -78,20 +78,20 @@ bool saveImage(NSString * fullPath, UIImage * image, NSString * format, float qu
         } else if ([format isEqualToString:@"PNG"]) {
             data = UIImagePNGRepresentation(image);
         }
-        
+
         if (data == nil) {
             return NO;
         }
-        
+
         NSFileManager* fileManager = [NSFileManager defaultManager];
         return [fileManager createFileAtPath:fullPath contents:data attributes:nil];
     }
-    
+
     // process / write metadata together with image data
     else{
-        
+
         CFStringRef imgType = kUTTypeJPEG;
-        
+
         if ([format isEqualToString:@"JPEG"]) {
             [metadata setObject:@(quality / 100.0) forKey:(__bridge NSString *)kCGImageDestinationLossyCompressionQuality];
         }
@@ -101,17 +101,17 @@ bool saveImage(NSString * fullPath, UIImage * image, NSString * format, float qu
         else{
             return NO;
         }
-        
+
         NSMutableData * destData = [NSMutableData data];
-        
+
         CGImageDestinationRef destination = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)destData, imgType, 1, NULL);
-        
+
         @try{
             CGImageDestinationAddImage(destination, image.CGImage, (__bridge CFDictionaryRef) metadata);
-            
+
             // write final image data with metadata to our destination
             if (CGImageDestinationFinalize(destination)){
-                
+
                 NSFileManager* fileManager = [NSFileManager defaultManager];
                 return [fileManager createFileAtPath:fullPath contents:destData attributes:nil];
             }
@@ -133,7 +133,7 @@ bool saveImage(NSString * fullPath, UIImage * image, NSString * format, float qu
 NSString * generateFilePath(NSString * ext, NSString * outputPath)
 {
     NSString* directory;
-    
+
     if ([outputPath length] == 0) {
         NSArray* paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
         directory = [paths firstObject];
@@ -145,7 +145,7 @@ NSString * generateFilePath(NSString * ext, NSString * outputPath)
         } else {
             directory = [documentsDirectory stringByAppendingPathComponent:outputPath];
         }
-        
+
         NSError *error;
         [[NSFileManager defaultManager] createDirectoryAtPath:directory withIntermediateDirectories:YES attributes:nil error:&error];
         if (error) {
@@ -153,29 +153,29 @@ NSString * generateFilePath(NSString * ext, NSString * outputPath)
             @throw [NSException exceptionWithName:@"InvalidPathException" reason:[NSString stringWithFormat:@"Error creating documents subdirectory: %@", error] userInfo:nil];
         }
     }
-    
+
     NSString* name = [[NSUUID UUID] UUIDString];
     NSString* fullName = [NSString stringWithFormat:@"%@.%@", name, ext];
     NSString* fullPath = [directory stringByAppendingPathComponent:fullName];
-    
+
     return fullPath;
 }
 
 UIImage * rotateImage(UIImage *inputImage, float rotationDegrees)
 {
-    
+
     // We want only fixed 0, 90, 180, 270 degree rotations.
     const int rotDiv90 = (int)round(rotationDegrees / 90);
     const int rotQuadrant = rotDiv90 % 4;
     const int rotQuadrantAbs = (rotQuadrant < 0) ? rotQuadrant + 4 : rotQuadrant;
-    
+
     // Return the input image if no rotation specified.
     if (0 == rotQuadrantAbs) {
         return inputImage;
     } else {
         // Rotate the image by 80, 180, 270.
         UIImageOrientation orientation = UIImageOrientationUp;
-        
+
         switch(rotQuadrantAbs) {
             case 1:
                 orientation = UIImageOrientationRight; // 90 deg CW
@@ -187,7 +187,7 @@ UIImage * rotateImage(UIImage *inputImage, float rotationDegrees)
                 orientation = UIImageOrientationLeft; // 90 deg CCW
                 break;
         }
-        
+
         return [[UIImage alloc] initWithCGImage: inputImage.CGImage
                                           scale: 1.0
                                     orientation: orientation];
@@ -201,19 +201,19 @@ float getScaleForProportionalResize(CGSize theSize, CGSize intoSize, bool onlySc
     float    dx = intoSize.width;
     float    dy = intoSize.height;
     float    scale    = 1;
-    
+
     if( sx != 0 && sy != 0 )
     {
         dx    = dx / sx;
         dy    = dy / sy;
-        
+
         // if maximize is true, take LARGER of the scales, else smaller
         if (maximize) {
             scale = MAX(dx, dy);
         } else {
             scale = MIN(dx, dy);
         }
-        
+
         if (onlyScaleDown) {
             scale = MIN(scale, 1);
         }
@@ -232,27 +232,27 @@ float getScaleForProportionalResize(CGSize theSize, CGSize intoSize, bool onlySc
 // so no additional scaling math needs to be done to get its pixel dimensions
 UIImage* scaleImage (UIImage* image, CGSize toSize, NSString* mode, bool onlyScaleDown)
 {
-    
+
     // Need to do scaling corrections
     // based on scale, since UIImage width/height gives us
     // a possibly scaled image (dimensions in points)
     // Idea taken from RNCamera resize code
     CGSize imageSize = CGSizeMake(image.size.width * image.scale, image.size.height * image.scale);
-    
+
     // using this instead of ImageHelpers allows us to consider
     // rotation variations
     CGSize newSize;
-    
+
     if ([mode isEqualToString:@"stretch"]) {
         // Distort aspect ratio
         int width = toSize.width;
         int height = toSize.height;
-        
+
         if (onlyScaleDown) {
             width = MIN(width, imageSize.width);
             height = MIN(height, imageSize.height);
         }
-        
+
         newSize = CGSizeMake(width, height);
     } else {
         // Either "contain" (default) or "cover": preserve aspect ratio
@@ -260,7 +260,7 @@ UIImage* scaleImage (UIImage* image, CGSize toSize, NSString* mode, bool onlySca
         float scale = getScaleForProportionalResize(imageSize, toSize, onlyScaleDown, maximize);
         newSize = CGSizeMake(roundf(imageSize.width * scale), roundf(imageSize.height * scale));
     }
-    
+
     UIGraphicsBeginImageContextWithOptions(newSize, NO, 1.0);
     [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
     UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
@@ -272,66 +272,66 @@ UIImage* scaleImage (UIImage* image, CGSize toSize, NSString* mode, bool onlySca
 NSMutableDictionary * getImageMeta(NSString * path)
 {
     if([path hasPrefix:@"assets-library"]) {
-        
+
         __block NSMutableDictionary* res = nil;
-        
+
         ALAssetsLibraryAssetForURLResultBlock resultblock = ^(ALAsset *myasset)
         {
-            
+
             NSDictionary *exif = [[myasset defaultRepresentation] metadata];
             res = [exif mutableCopy];
-            
+
         };
-        
+
         ALAssetsLibrary* assetslibrary = [[ALAssetsLibrary alloc] init];
         NSURL *url = [NSURL URLWithString:[path stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-        
+
         [assetslibrary assetForURL:url resultBlock:resultblock failureBlock:^(NSError *error) { NSLog(@"error couldn't image from assets library"); }];
-        
+
         return res;
-        
+
     } else {
-        
+
         NSData* imageData = nil;
-        
+
         if ([path hasPrefix:@"data:"] || [path hasPrefix:@"file:"]) {
             NSURL *imageUrl = [[NSURL alloc] initWithString:path];
             imageData = [NSData dataWithContentsOfURL:imageUrl];
-            
+
         } else {
             imageData = [NSData dataWithContentsOfFile:path];
         }
-        
+
         if(imageData == nil){
             NSLog(@"Could not get image file data to extract metadata.");
             return nil;
         }
-        
+
         CGImageSourceRef source = CGImageSourceCreateWithData((CFDataRef)imageData, NULL);
-        
-        
+
+
         if(source != nil){
-            
+
             CFDictionaryRef metaRef = CGImageSourceCopyPropertiesAtIndex(source, 0, NULL);
-            
+
             // release CF image
             CFRelease(source);
-            
+
             CFMutableDictionaryRef metaRefMutable = CFDictionaryCreateMutableCopy(NULL, 0, metaRef);
-            
+
             // release the source meta ref now that we've copie it
             CFRelease(metaRef);
-            
+
             // bridge CF object so it auto releases
             NSMutableDictionary* res = (NSMutableDictionary *)CFBridgingRelease(metaRefMutable);
-            
+
             return res;
-            
+
         }
         else{
             return nil;
         }
-        
+
     }
 }
 
@@ -348,7 +348,7 @@ NSDictionary * transformImage(UIImage *image,
     if (image == nil) {
         [NSException raise:moduleName format:@"Can't retrieve the file from the path."];
     }
-    
+
     // Rotate image if rotation is specified.
     if (0 != (int)rotation) {
         image = rotateImage(image, rotation);
@@ -356,7 +356,7 @@ NSDictionary * transformImage(UIImage *image,
             [NSException raise:moduleName format:@"Can't rotate the image."];
         }
     }
-    
+
     // Do the resizing
     UIImage * scaledImage = scaleImage(
                                        image,
@@ -364,32 +364,32 @@ NSDictionary * transformImage(UIImage *image,
                                        options[@"mode"],
                                        [[options objectForKey:@"onlyScaleDown"] boolValue]
                                        );
-    
+
     if (scaledImage == nil) {
         [NSException raise:moduleName format:@"Can't resize the image."];
     }
-    
-    
+
+
     NSMutableDictionary *metadata = nil;
-    
+
     // to be consistent with Android, we will only allow JPEG
     // to do this.
     if(keepMeta && [format isEqualToString:@"JPEG"]){
-        
+
         metadata = getImageMeta(originalPath);
-        
+
         // remove orientation (since we fix it)
         // width/height meta is adjusted automatically
         // NOTE: This might still leave some stale values due to resize
         metadata[(NSString*)kCGImagePropertyOrientation] = @(1);
-        
+
     }
-    
+
     // Compress and save the image
     if (!saveImage(fullPath, scaledImage, format, quality, metadata)) {
         [NSException raise:moduleName format:@"Can't save the image. Check your compression format and your output path"];
     }
-    
+
     NSURL *fileUrl = [[NSURL alloc] initFileURLWithPath:fullPath];
     NSString *fileName = fileUrl.lastPathComponent;
     NSError *attributesError = nil;
@@ -402,7 +402,7 @@ NSDictionary * transformImage(UIImage *image,
                                @"width": @(scaledImage.size.width),
                                @"height": @(scaledImage.size.height),
     };
-    
+
     return response;
 }
 
@@ -411,7 +411,7 @@ NSDictionary * transformImage(UIImage *image,
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
 (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-    return std::make_shared<facebook::react::NativeImageResizerSpecJSI>(params);
+    return std::make_shared<facebook::react::NativeStreamChatReactNativeSpecJSI>(params);
 }
 #endif
 @end
