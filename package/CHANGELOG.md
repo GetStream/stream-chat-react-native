@@ -1,5 +1,12 @@
 # Change Log
 
+### [5.41.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.41.0...v5.41.1) (2024-11-01)
+
+
+### Bug Fixes
+
+* Channel thread type ([#2748](https://github.com/GetStream/stream-chat-react-native/issues/2748)) ([d7deaf4](https://github.com/GetStream/stream-chat-react-native/commit/d7deaf47674cde28e711488488e6054e78ad072e))
+
 ## [5.41.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.40.0...v5.41.0) (2024-10-31)
 
 
