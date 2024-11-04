@@ -1285,9 +1285,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-netinfo (11.3.2):
+  - react-native-netinfo (11.4.1):
     - React-Core
-  - react-native-safe-area-context (4.11.1):
+  - react-native-safe-area-context (4.14.0):
     - React-Core
   - react-native-video (6.7.0):
     - DoubleConversion
@@ -2060,8 +2060,8 @@ SPEC CHECKSUMS:
   react-native-blob-util: 39a20f2ef11556d958dc4beb0aa07d1ef2690745
   react-native-document-picker: 7343222102ece8aec51390717f47ad7119c7921f
   react-native-image-picker: 2fbbafdae7a7c6db9d25df2f2b1db4442d2ca2ad
-  react-native-netinfo: 076df4f9b07f6670acf4ce9a75aac8d34c2e2ccc
-  react-native-safe-area-context: 5141f11858b033636f1788b14f32eaba92cee810
+  react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
+  react-native-safe-area-context: 4532f1a0c5d34a46b9324ccaaedcb5582a302b7d
   react-native-video: 9aec95eecb1c523b67e71a44032935f77f926276
   React-nativeconfig: 8c83d992b9cc7d75b5abe262069eaeea4349f794
   React-NativeModulesApple: 9f7920224a3b0c7d04d77990067ded14cee3c614
