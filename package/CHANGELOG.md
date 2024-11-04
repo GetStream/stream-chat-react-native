@@ -1,5 +1,13 @@
 # Change Log
 
+### [5.41.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.41.1...v5.41.2) (2024-11-04)
+
+
+### Bug Fixes
+
+* add polyfill for Array.prototype.at ([#2752](https://github.com/GetStream/stream-chat-react-native/issues/2752)) ([c5a3046](https://github.com/GetStream/stream-chat-react-native/commit/c5a3046c8612581b6beaa9ed88a05925fb043a11))
+* disable typing events when offline ([#2753](https://github.com/GetStream/stream-chat-react-native/issues/2753)) ([ba9bccd](https://github.com/GetStream/stream-chat-react-native/commit/ba9bccd89a6b490d15cf34ad22d030622bc5255b))
+
 ### [5.41.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.41.0...v5.41.1) (2024-11-01)
 
 
