@@ -134,6 +134,9 @@ export const ImageGalleryFooterWithContext = <
   const share = async () => {
     setShareMenuOpen(true);
     try {
+      if (!shareImage || !deleteFile) {
+        return;
+      }
       const extension = photo.mime_type?.split('/')[1] || 'jpg';
       const localFile = await saveFile({
         fileName: `${photo.user?.id || 'ChatPhoto'}-${
