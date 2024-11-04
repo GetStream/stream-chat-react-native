@@ -538,7 +538,8 @@ export const MessageInputProvider = <
     setSelectedImages,
     setSelectedPicker,
   } = useAttachmentPickerContext();
-  const { appSettings, client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
+  const { appSettings, client, enableOfflineSupport, isOnline } =
+    useChatContext<StreamChatGenerics>();
   const { removeMessage } = useMessagesContext();
 
   const getFileUploadConfig = () => {
@@ -652,7 +653,7 @@ export const MessageInputProvider = <
     }
     setText(newText);
 
-    if (newText && channel && channelCapabities.sendTypingEvents) {
+    if (newText && channel && channelCapabities.sendTypingEvents && isOnline) {
       logChatPromiseExecution(channel.keystroke(thread?.id), 'start typing event');
     }
 
