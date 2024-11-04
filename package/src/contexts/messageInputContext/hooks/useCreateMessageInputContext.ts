@@ -258,6 +258,7 @@ export const useCreateMessageInputContext = <
       text,
       threadId,
       showPollCreationDialog,
+      onChange,
     ],
   );
 
