@@ -88,13 +88,13 @@ export const useAudioController = () => {
       if (progress === 0) await startVoicePlayer();
       else {
         // For Native CLI
-        if (Audio.resumePlayer) await Audio.resumePlayer();
+        if (Audio?.resumePlayer) await Audio.resumePlayer();
         // For Expo CLI
         if (soundRef.current?.playAsync) await soundRef.current.playAsync();
       }
     } else {
       // For Native CLI
-      if (Audio.pausePlayer) await Audio.pausePlayer();
+      if (Audio?.pausePlayer) await Audio.pausePlayer();
       // For Expo CLI
       if (soundRef.current?.pauseAsync) await soundRef.current.pauseAsync();
     }
@@ -107,7 +107,7 @@ export const useAudioController = () => {
   const startVoicePlayer = async () => {
     if (!recording) return;
     // For Native CLI
-    if (Audio.startPlayer)
+    if (Audio?.startPlayer)
       await Audio.startPlayer(recording, {}, onVoicePlayerPlaybackStatusUpdate);
     // For Expo CLI
     if (recording && typeof recording !== 'string') {
@@ -133,7 +133,7 @@ export const useAudioController = () => {
    */
   const stopVoicePlayer = async () => {
     // For Native CLI
-    if (Audio.stopPlayer) {
+    if (Audio?.stopPlayer) {
       await Audio.stopPlayer();
     }
     // For Expo CLI

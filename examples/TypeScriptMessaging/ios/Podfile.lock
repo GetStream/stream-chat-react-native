@@ -7,7 +7,7 @@ PODS:
   - hermes-engine (0.75.4):
     - hermes-engine/Pre-built (= 0.75.4)
   - hermes-engine/Pre-built (0.75.4)
-  - op-sqlite (6.0.4):
+  - op-sqlite (6.2.11):
     - React
     - React-callinvoker
     - React-Core
@@ -1241,7 +1241,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-blob-util (0.19.9):
+  - react-native-blob-util (0.19.11):
     - React-Core
   - react-native-document-picker (9.3.1):
     - DoubleConversion
@@ -1285,13 +1285,11 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-image-resizer (3.0.10):
+  - react-native-netinfo (11.4.1):
     - React-Core
-  - react-native-netinfo (11.3.2):
+  - react-native-safe-area-context (4.14.0):
     - React-Core
-  - react-native-safe-area-context (4.11.1):
-    - React-Core
-  - react-native-video (6.4.2):
+  - react-native-video (6.7.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1304,7 +1302,7 @@ PODS:
     - React-featureflags
     - React-graphics
     - React-ImageManager
-    - react-native-video/Video (= 6.4.2)
+    - react-native-video/Video (= 6.7.0)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-rendererdebug
@@ -1313,7 +1311,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-video/Video (6.4.2):
+  - react-native-video/Video (6.7.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1596,7 +1594,7 @@ PODS:
     - React-utils (= 0.75.4)
   - RNAudioRecorderPlayer (3.6.12):
     - React-Core
-  - RNCClipboard (1.14.2):
+  - RNCClipboard (1.14.3):
     - React-Core
   - RNGestureHandler (2.20.2):
     - DoubleConversion
@@ -1619,8 +1617,27 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNReactNativeHapticFeedback (2.2.0):
+  - RNReactNativeHapticFeedback (2.3.3):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNReanimated (3.16.1):
     - DoubleConversion
     - glog
@@ -1730,11 +1747,32 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNShare (10.2.1):
+  - RNShare (11.0.4):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNSVG (15.8.0):
     - React-Core
   - SocketRocket (0.7.0)
+  - stream-chat-react-native (5.39.5):
+    - React-Core
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -1779,7 +1817,6 @@ DEPENDENCIES:
   - react-native-blob-util (from `../node_modules/react-native-blob-util`)
   - react-native-document-picker (from `../node_modules/react-native-document-picker`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
-  - "react-native-image-resizer (from `../node_modules/@bam.tech/react-native-image-resizer`)"
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-video (from `../node_modules/react-native-video`)
@@ -1817,6 +1854,7 @@ DEPENDENCIES:
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNShare (from `../node_modules/react-native-share`)
   - RNSVG (from `../node_modules/react-native-svg`)
+  - stream-chat-react-native (from `../node_modules/stream-chat-react-native`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -1903,8 +1941,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-document-picker"
   react-native-image-picker:
     :path: "../node_modules/react-native-image-picker"
-  react-native-image-resizer:
-    :path: "../node_modules/@bam.tech/react-native-image-resizer"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-safe-area-context:
@@ -1979,6 +2015,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-share"
   RNSVG:
     :path: "../node_modules/react-native-svg"
+  stream-chat-react-native:
+    :path: "../node_modules/stream-chat-react-native"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -1989,8 +2027,8 @@ SPEC CHECKSUMS:
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: 69ef571f3de08433d766d614c73a9838a06bf7eb
   hermes-engine: ea92f60f37dba025e293cbe4b4a548fd26b610a0
-  op-sqlite: 5688336af53053aa37f0ec3496487dc2734c91cc
-  RCT-Folly: 02617c592a293bd6d418e0a88ff4ee1f88329b47
+  op-sqlite: b4f61f3085ea3b70f264f3a64b724c81ab117e58
+  RCT-Folly: 4464f4d875961fce86008d45f4ecf6cef6de0740
   RCTDeprecation: 726d24248aeab6d7180dac71a936bbca6a994ed1
   RCTRequired: a94e7febda6db0345d207e854323c37e3a31d93b
   RCTTypeSafety: 28e24a6e44f5cbf912c66dde6ab7e07d1059a205
@@ -2019,13 +2057,12 @@ SPEC CHECKSUMS:
   React-logger: d79b704bf215af194f5213a6b7deec50ba8e6a9b
   React-Mapbuffer: b982d5bba94a8bc073bda48f0d27c9b28417fae3
   React-microtasksnativemodule: 2b73e68f0462f3175f98782db08896f8501afd20
-  react-native-blob-util: 18b510205c080a453574a7d2344d64673d0ad9af
+  react-native-blob-util: 39a20f2ef11556d958dc4beb0aa07d1ef2690745
   react-native-document-picker: 7343222102ece8aec51390717f47ad7119c7921f
   react-native-image-picker: 2fbbafdae7a7c6db9d25df2f2b1db4442d2ca2ad
-  react-native-image-resizer: fd0c333eca55147bd55c5e054cac95dcd0da6814
-  react-native-netinfo: 076df4f9b07f6670acf4ce9a75aac8d34c2e2ccc
-  react-native-safe-area-context: 5141f11858b033636f1788b14f32eaba92cee810
-  react-native-video: b0584a6d2271cb163f817c7412708263f9893ed5
+  react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
+  react-native-safe-area-context: 4532f1a0c5d34a46b9324ccaaedcb5582a302b7d
+  react-native-video: 9aec95eecb1c523b67e71a44032935f77f926276
   React-nativeconfig: 8c83d992b9cc7d75b5abe262069eaeea4349f794
   React-NativeModulesApple: 9f7920224a3b0c7d04d77990067ded14cee3c614
   React-perflogger: 59e1a3182dca2cee7b9f1f7aab204018d46d1914
@@ -2053,16 +2090,17 @@ SPEC CHECKSUMS:
   ReactCodegen: 4bcb34e6b5ebf6eef5cee34f55aa39991ea1c1f1
   ReactCommon: 6a952e50c2a4b694731d7682aaa6c79bc156e4ad
   RNAudioRecorderPlayer: 224c7de87722938aedce04000d09baa633148f5b
-  RNCClipboard: 5e503962f0719ace8f7fdfe9c60282b526305c85
+  RNCClipboard: 2821ac938ef46f736a8de0c8814845dde2dcbdfb
   RNGestureHandler: 511250b190a284388f9dd0d2e56c1df76f14cfb8
-  RNReactNativeHapticFeedback: ec56a5f81c3941206fd85625fa669ffc7b4545f9
+  RNReactNativeHapticFeedback: 0d591ea1e150f36cb96d868d4e8d77272243d78a
   RNReanimated: f42a5044d121d68e91680caacb0293f4274228eb
   RNScreens: c7ceced6a8384cb9be5e7a5e88e9e714401fd958
-  RNShare: 0fad69ae2d71de9d1f7b9a43acf876886a6cb99c
+  RNShare: eaeb5e7dc1618d19db6234da1af91fc60dd6bc0f
   RNSVG: 8b1a777d54096b8c2a0fd38fc9d5a454332bbb4d
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
+  stream-chat-react-native: 489a6a053480ab8556883de05a28df2c7387ede6
   Yoga: 055f92ad73f8c8600a93f0e25ac0b2344c3b07e6
 
 PODFILE CHECKSUM: 6b7a4b74915b42bfe4ffddaf67cbf5e7a2bfeab3
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2
