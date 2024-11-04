@@ -1,4 +1,4 @@
-package com.reactnativeimageresizer;
+package com.streamchatreactnative;
 
 import androidx.annotation.Nullable;
 
@@ -6,9 +6,9 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 
-abstract class ImageResizerSpec extends ReactContextBaseJavaModule {
+abstract class StreamChatReactNativeSpec extends ReactContextBaseJavaModule {
 
-  ImageResizerSpec(ReactApplicationContext context) {
+  StreamChatReactNativeSpec(ReactApplicationContext context) {
     super(context);
   }
 

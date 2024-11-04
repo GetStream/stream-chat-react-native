@@ -1,4 +1,4 @@
-package com.reactnativeimageresizer;
+package com.streamchatreactnative;
 
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.NativeModule;
@@ -11,13 +11,13 @@ import com.facebook.react.TurboReactPackage;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ImageResizerPackage extends TurboReactPackage {
+public class StreamChatReactNativePackage extends TurboReactPackage {
 
   @Nullable
   @Override
   public NativeModule getModule(String name, ReactApplicationContext reactContext) {
-    if (name.equals(ImageResizerModule.NAME)) {
-        return new ImageResizerModule(reactContext);
+    if (name.equals(StreamChatReactNativeModule.NAME)) {
+        return new StreamChatReactNativeModule(reactContext);
     } else {
         return null;
     }
@@ -29,10 +29,10 @@ public class ImageResizerPackage extends TurboReactPackage {
       final Map<String, ReactModuleInfo> moduleInfos = new HashMap<>();
       boolean isTurboModule = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
       moduleInfos.put(
-              ImageResizerModule.NAME,
+              StreamChatReactNativeModule.NAME,
               new ReactModuleInfo(
-                      ImageResizerModule.NAME,
-                      ImageResizerModule.NAME,
+                      StreamChatReactNativeModule.NAME,
+                      StreamChatReactNativeModule.NAME,
                       false, // canOverrideExistingModule
                       false, // needsEagerInit
                       true, // hasConstants

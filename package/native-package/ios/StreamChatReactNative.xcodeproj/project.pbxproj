@@ -21,7 +21,7 @@
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libStreamChatReactNative.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libStreamChatReactNative.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3E7B5881CC2AC0600A0062D /* StreamChatReactNative.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StreamChatReactNative.h; sourceTree = "<group>"; };
-		B3E7B5891CC2AC0600A0062D /* StreamChatReactNative.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StreamChatReactNative.mm; sourceTree = "<group>"; };
+		B3E7B5891CC2AC0600A0062D /* StreamChatReactNative.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StreamChatReactNative.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */

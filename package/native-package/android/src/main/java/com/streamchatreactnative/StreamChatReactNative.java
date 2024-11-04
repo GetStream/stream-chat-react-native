@@ -1,4 +1,4 @@
-package com.reactnativeimageresizer;
+package com.streamchatreactnative;
 
 import android.content.Context;
 import android.content.ContentResolver;
@@ -25,7 +25,7 @@ import java.util.Date;
 /**
  * Provide methods to resize and rotate an image file.
  */
-public class ImageResizer {
+public class StreamChatReactNative {
   private final static String IMAGE_JPEG = "image/jpeg";
   private final static String IMAGE_PNG = "image/png";
   private final static String SCHEME_DATA = "data";
@@ -286,7 +286,7 @@ public class ImageResizer {
       dst = new ExifInterface(dstPath);
 
     } catch (Exception ignored) {
-      Log.e("ImageResizer::copyExif", "EXIF read failed", ignored);
+      Log.e("StreamChatReactNative::copyExif", "EXIF read failed", ignored);
     }
 
     if(src == null || dst == null){
@@ -305,7 +305,7 @@ public class ImageResizer {
       dst.saveAttributes();
 
     } catch (Exception ignored) {
-      Log.e("ImageResizer::copyExif", "EXIF copy failed", ignored);
+      Log.e("StreamChatReactNative::copyExif", "EXIF copy failed", ignored);
       return false;
     }
 
@@ -550,11 +550,11 @@ public class ImageResizer {
       imageUriScheme.equalsIgnoreCase(SCHEME_FILE) ||
       imageUriScheme.equalsIgnoreCase(SCHEME_CONTENT)
     ) {
-      sourceImage = ImageResizer.loadBitmapFromFile(context, imageUri, newWidth, newHeight);
+      sourceImage = StreamChatReactNative.loadBitmapFromFile(context, imageUri, newWidth, newHeight);
     } else if (imageUriScheme.equalsIgnoreCase(SCHEME_HTTP) || imageUriScheme.equalsIgnoreCase(SCHEME_HTTPS)){
-      sourceImage = ImageResizer.loadBitmapFromURL(imageUri, newWidth, newHeight);
+      sourceImage = StreamChatReactNative.loadBitmapFromURL(imageUri, newWidth, newHeight);
     } else if (imageUriScheme.equalsIgnoreCase(SCHEME_DATA)) {
-      sourceImage = ImageResizer.loadBitmapFromBase64(imageUri);
+      sourceImage = StreamChatReactNative.loadBitmapFromBase64(imageUri);
     }
 
     if (sourceImage == null) {
@@ -567,7 +567,7 @@ public class ImageResizer {
     // NOTE: This will "fix" the image using it's exif info if it is rotated as well.
     Bitmap rotatedImage = sourceImage;
     Matrix matrix = getOrientationMatrix(context, imageUri);
-    rotatedImage = ImageResizer.rotateImage(sourceImage, matrix, rotation);
+    rotatedImage = StreamChatReactNative.rotateImage(sourceImage, matrix, rotation);
 
     if(rotatedImage == null){
       throw new IOException("Unable to rotate image. Most likely due to not enough memory.");
@@ -578,7 +578,7 @@ public class ImageResizer {
     }
 
     // Scale image
-    Bitmap scaledImage = ImageResizer.resizeImage(rotatedImage, newWidth, newHeight, mode, onlyScaleDown);
+    Bitmap scaledImage = StreamChatReactNative.resizeImage(rotatedImage, newWidth, newHeight, mode, onlyScaleDown);
 
     if(scaledImage == null){
       throw new IOException("Unable to resize image. Most likely due to not enough memory.");

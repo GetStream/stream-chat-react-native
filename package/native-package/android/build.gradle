@@ -42,7 +42,7 @@ android {
   * See: https://developer.android.com/build/releases/past-releases/agp-8-0-0-release-notes#namespace-dsl
   */
   if (agpMajorVersion >= 7 && agpMinorVersion >= 3) {
-      namespace "com.reactnativeimageresizer"
+      namespace "com.streamchatreactnative"
   }
 
   defaultConfig {
@@ -97,7 +97,7 @@ dependencies {
 if (isNewArchitectureEnabled()) {
   react {
     jsRootDir = file("../src/")
-    libraryName = "ImageResizer"
-    codegenJavaPackageName = "com.reactnativeimageresizer"
+    libraryName = "StreamChatReactNative"
+    codegenJavaPackageName = "com.streamchatreactnative"
   }
 }

@@ -78,7 +78,7 @@ type ShareOptions = {
   url?: string;
 };
 type ShareImage = (options: ShareOptions) => Promise<boolean> | never;
-export let shareImage: ShareImage = fail;
+export let shareImage: ShareImage | undefined = fail;
 
 type Photo = Omit<Asset, 'source'> & {
   source: 'camera';
@@ -228,7 +228,7 @@ export type AudioType = {
   stopPlayer?: () => Promise<void>;
 };
 
-export let Audio: AudioType;
+export let Audio: AudioType | undefined;
 
 export let Sound: SoundType;
 
@@ -297,7 +297,7 @@ type Handlers = {
 };
 
 export const registerNativeHandlers = (handlers: Handlers) => {
-  if (handlers.Audio !== undefined) {
+  if (handlers.Audio !== null) {
     Audio = handlers.Audio;
   }
 
@@ -345,7 +345,7 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     SDK = handlers.SDK;
   }
 
-  if (handlers.shareImage !== undefined) {
+  if (handlers.shareImage !== null) {
     shareImage = handlers.shareImage;
   }
 
@@ -377,7 +377,7 @@ export const isVideoPlayerAvailable = () => !!Video;
 export const isHapticFeedbackAvailable = () => !!triggerHaptic;
 export const isShareImageAvailable = () => !!shareImage;
 export const isFileSystemAvailable = () => !!saveFile || !!deleteFile;
-export const isAudioRecorderAvailable = () => !!Audio.startRecording;
+export const isAudioRecorderAvailable = () => !!Audio?.startRecording;
 export const isSoundPackageAvailable = () => !!Sound.Player || !!Sound.initializeSound;
 export const isImageMediaLibraryAvailable = () =>
   !!getPhotos &&

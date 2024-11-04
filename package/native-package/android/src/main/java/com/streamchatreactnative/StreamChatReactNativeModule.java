@@ -1,4 +1,4 @@
-package com.reactnativeimageresizer;
+package com.streamchatreactnative;
 
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
@@ -22,10 +22,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
-public class ImageResizerModule extends ImageResizerSpec {
-  public static final String NAME = "ImageResizer";
+public class StreamChatReactNativeModule extends StreamChatReactNativeSpec {
+  public static final String NAME = "StreamChatReactNative";
 
-  ImageResizerModule(ReactApplicationContext reactContext) {
+  StreamChatReactNativeModule(ReactApplicationContext reactContext) {
     super(reactContext);
   }
 
@@ -65,7 +65,7 @@ public class ImageResizerModule extends ImageResizerSpec {
     Bitmap.CompressFormat compressFormat = Bitmap.CompressFormat.valueOf(compressFormatString);
     Uri imageUri = Uri.parse(imagePath);
 
-    Bitmap scaledImage = ImageResizer.createResizedImage(this.getReactApplicationContext(), imageUri, newWidth, newHeight, quality, rotation,
+    Bitmap scaledImage = StreamChatReactNative.createResizedImage(this.getReactApplicationContext(), imageUri, newWidth, newHeight, quality, rotation,
       options.getString("mode"), options.getBoolean("onlyScaleDown"));
 
     if (scaledImage == null) {
@@ -78,7 +78,7 @@ public class ImageResizerModule extends ImageResizerSpec {
       path = new File(outputPath);
     }
 
-    File resizedImage = ImageResizer.saveImage(scaledImage, path, UUID.randomUUID().toString(), compressFormat, quality);
+    File resizedImage = StreamChatReactNative.saveImage(scaledImage, path, UUID.randomUUID().toString(), compressFormat, quality);
     WritableMap response = Arguments.createMap();
 
     // If resizedImagePath is empty and this wasn't caught earlier, throw.
@@ -93,10 +93,10 @@ public class ImageResizerModule extends ImageResizerSpec {
       // Copy file's metadata/exif info if required
       if(keepMeta){
         try{
-          ImageResizer.copyExif(this.getReactApplicationContext(), imageUri, resizedImage.getAbsolutePath());
+          StreamChatReactNative.copyExif(this.getReactApplicationContext(), imageUri, resizedImage.getAbsolutePath());
         }
         catch(Exception ignored){
-          Log.e("ImageResizer::createResizedImageWithExceptions", "EXIF copy failed", ignored);
+          Log.e("StreamChatReactNative::createResizedImageWithExceptions", "EXIF copy failed", ignored);
         }
       }
     } else {
