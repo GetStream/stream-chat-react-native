@@ -36,6 +36,7 @@ export const NativeAttachmentPicker = ({
     },
   } = useTheme();
   const {
+    hasCameraPicker,
     hasFilePicker,
     hasImagePicker,
     pickAndUploadImageFromNativePicker,
@@ -115,7 +116,13 @@ export const NativeAttachmentPicker = ({
   if (hasFilePicker) {
     buttons.push({ icon: <FileSelectorIcon />, id: 'File', onPressHandler: pickFile });
   }
-  buttons.push({ icon: <CameraSelectorIcon />, id: 'Camera', onPressHandler: takeAndUploadImage });
+  if (hasCameraPicker) {
+    buttons.push({
+      icon: <CameraSelectorIcon />,
+      id: 'Camera',
+      onPressHandler: takeAndUploadImage,
+    });
+  }
 
   return (
     <>
