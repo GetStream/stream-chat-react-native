@@ -84,6 +84,7 @@ import {
   FlatList as FlatListDefault,
   isAudioRecorderAvailable,
   isDocumentPickerAvailable,
+  isImageMediaLibraryAvailable,
   isImagePickerAvailable,
 } from '../../native';
 import * as dbApi from '../../store/apis';
@@ -522,7 +523,7 @@ const ChannelWithContext = <
     hasCommands = true,
     // If pickDocument isn't available, default to hiding the file picker
     hasFilePicker = isDocumentPickerAvailable(),
-    hasImagePicker = true,
+    hasImagePicker = isImagePickerAvailable() || isImageMediaLibraryAvailable(),
     hideDateSeparators = false,
     hideStickyDateHeader = false,
     ImageLoadingFailedIndicator = ImageLoadingFailedIndicatorDefault,
