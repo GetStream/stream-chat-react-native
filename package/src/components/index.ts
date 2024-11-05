@@ -160,6 +160,7 @@ export * from './MessageMenu/MessageUserReactionsAvatar';
 export * from './MessageMenu/MessageReactionPicker';
 
 export * from './ProgressControl/ProgressControl';
+export * from './Poll';
 
 export * from './Reply/Reply';
 

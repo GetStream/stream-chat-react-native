@@ -18,7 +18,11 @@ import { EmptyStateIndicator } from '../Indicators/EmptyStateIndicator';
 import { LoadingIndicator } from '../Indicators/LoadingIndicator';
 
 const selector = (nextValue: ThreadManagerState) =>
-  [nextValue.threads, nextValue.pagination.isLoading, nextValue.pagination.isLoadingNext] as const;
+  ({
+    isLoading: nextValue.pagination.isLoading,
+    isLoadingNext: nextValue.pagination.isLoadingNext,
+    threads: nextValue.threads,
+  } as const);
 
 export type ThreadListProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -107,7 +111,7 @@ export const ThreadList = (props: ThreadListProps) => {
     };
   }, [client]);
 
-  const [threads, isLoading, isLoadingNext] = useStateStore(client.threads.state, selector);
+  const { isLoading, isLoadingNext, threads } = useStateStore(client.threads.state, selector);
 
   return (
     <ThreadsProvider
