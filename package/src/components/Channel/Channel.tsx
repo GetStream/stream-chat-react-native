@@ -221,6 +221,7 @@ const throttleOptions = {
   leading: true,
   trailing: true,
 };
+
 const debounceOptions = {
   leading: true,
   trailing: true,
@@ -351,6 +352,8 @@ export type ChannelPropsWithContext<
       | 'TypingIndicatorContainer'
       | 'UrlPreview'
       | 'VideoThumbnail'
+      | 'PollContent'
+      | 'hasCreatePoll'
     >
   > &
   Partial<Pick<ThreadContextValue<StreamChatGenerics>, 'allowThreadMessagesInChannel'>> & {
@@ -438,7 +441,7 @@ export type ChannelPropsWithContext<
      * Tells if channel is rendering a thread list
      */
     threadList?: boolean;
-  };
+  } & Partial<Pick<InputMessageInputContextValue, 'openPollCreationDialog' | 'CreatePollContent'>>;
 
 const ChannelWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -480,6 +483,7 @@ const ChannelWithContext = <
     CommandsButton = CommandsButtonDefault,
     compressImageQuality,
     CooldownTimer = CooldownTimerDefault,
+    CreatePollContent,
     DateHeader = DateHeaderDefault,
     deletedMessagesVisibilityType = 'always',
     disableIfFrozenChannel = true,
@@ -521,6 +525,7 @@ const ChannelWithContext = <
     handleThreadReply,
     hasCameraPicker = isImagePickerAvailable(),
     hasCommands = true,
+    hasCreatePoll,
     // If pickDocument isn't available, default to hiding the file picker
     hasFilePicker = isDocumentPickerAvailable(),
     hasImagePicker = isImagePickerAvailable() || isImageMediaLibraryAvailable(),
@@ -561,7 +566,7 @@ const ChannelWithContext = <
     MessageAvatar = MessageAvatarDefault,
     MessageBounce = MessageBounceDefault,
     MessageContent = MessageContentDefault,
-    messageContentOrder = ['quoted_reply', 'gallery', 'files', 'text', 'attachments'],
+    messageContentOrder = ['quoted_reply', 'gallery', 'files', 'poll', 'text', 'attachments'],
     MessageDeleted = MessageDeletedDefault,
     MessageEditedTimestamp = MessageEditedTimestampDefault,
     MessageError = MessageErrorDefault,
@@ -593,7 +598,9 @@ const ChannelWithContext = <
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
+    openPollCreationDialog,
     overrideOwnCapabilities,
+    PollContent,
     ReactionListBottom = ReactionListBottomDefault,
     reactionListPosition = 'top',
     ReactionListTop = ReactionListTopDefault,
@@ -681,6 +688,7 @@ const ChannelWithContext = <
   const uploadAbortControllerRef = useRef<Map<string, AbortController>>(new Map());
 
   const channelId = channel?.id || '';
+  const pollCreationEnabled = !channel.disconnected && !!channel?.id && channel?.getConfig()?.polls;
 
   useEffect(() => {
     const initChannel = async () => {
@@ -873,7 +881,13 @@ const ChannelWithContext = <
             setThreadMessages(updatedThreadMessages);
           }
 
-          if (channel && thread?.id && event.message?.id === thread.id && !threadInstance) {
+          if (
+            channel &&
+            thread?.id &&
+            event.message?.id === thread.id &&
+            !threadInstance &&
+            !thread.poll_id
+          ) {
             const updatedThread = channel.state.formatMessage(event.message);
             setThread(updatedThread);
           }
@@ -1466,6 +1480,8 @@ const ChannelWithContext = <
     attachments,
     mentioned_users,
     parent_id,
+    poll,
+    poll_id,
     text,
     ...extraFields
   }: Partial<StreamMessage<StreamChatGenerics>>) => {
@@ -1487,6 +1503,8 @@ const ChannelWithContext = <
           id: userId,
         })) || [],
       parent_id,
+      poll,
+      poll_id,
       reactions: [],
       status: MessageStatusTypes.SENDING,
       text,
@@ -2200,6 +2218,7 @@ const ChannelWithContext = <
     CommandsButton,
     compressImageQuality,
     CooldownTimer,
+    CreatePollContent,
     doDocUploadRequest,
     doImageUploadRequest,
     editing,
@@ -2225,6 +2244,7 @@ const ChannelWithContext = <
     MoreOptionsButton,
     numberOfLines,
     onChangeText,
+    openPollCreationDialog,
     quotedMessage,
     SendButton,
     sendImageAsync,
@@ -2288,6 +2308,8 @@ const ChannelWithContext = <
     handleReaction,
     handleRetry,
     handleThreadReply,
+    hasCreatePoll:
+      hasCreatePoll === undefined ? pollCreationEnabled : hasCreatePoll && pollCreationEnabled,
     ImageLoadingFailedIndicator,
     ImageLoadingIndicator,
     initialScrollToFirstUnreadMessage: !messageId && initialScrollToFirstUnreadMessage, // when messageId is set, we scroll to the messageId instead of first unread
@@ -2328,6 +2350,7 @@ const ChannelWithContext = <
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
+    PollContent,
     ReactionListBottom,
     reactionListPosition,
     ReactionListTop,
@@ -2418,8 +2441,10 @@ const ChannelWithContext = <
 
 export type ChannelProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<Omit<ChannelPropsWithContext<StreamChatGenerics>, 'channel'>> &
-  Pick<ChannelPropsWithContext<StreamChatGenerics>, 'channel'>;
+> = Partial<Omit<ChannelPropsWithContext<StreamChatGenerics>, 'channel' | 'thread'>> &
+  Pick<ChannelPropsWithContext<StreamChatGenerics>, 'channel'> & {
+    thread?: MessageType<StreamChatGenerics> | ThreadType<StreamChatGenerics> | null;
+  };
 
 /**
  *

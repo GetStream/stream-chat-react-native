@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 
 import type { Attachment, UserResponse } from 'stream-chat';
@@ -45,6 +45,7 @@ import {
   isMessageWithStylesReadByAndDateSeparator,
   MessageType,
 } from '../MessageList/hooks/useMessageList';
+import { Poll as PollComponent } from '../Poll';
 
 export type TouchableEmitter =
   | 'fileAttachment'
@@ -162,6 +163,7 @@ export type MessagePropsWithContext<
     | 'setQuotedMessageState'
     | 'supportedReactions'
     | 'updateMessage'
+    | 'PollContent'
   > &
   Pick<ThreadContextValue<StreamChatGenerics>, 'openThread'> &
   Pick<TranslationContextValue, 't'> & {
@@ -237,6 +239,7 @@ const MessageWithContext = <
     onPressMessage: onPressMessageProp,
     onThreadSelect,
     openThread,
+    PollContent,
     preventPress,
     removeMessage,
     retrySendMessage,
@@ -415,6 +418,8 @@ const MessageWithContext = <
         return !!attachments.files.length;
       case 'gallery':
         return !!attachments.images.length || !!attachments.videos.length;
+      case 'poll':
+        return !!message.poll_id;
       case 'text':
       default:
         return !!message.text;
@@ -521,7 +526,13 @@ const MessageWithContext = <
     updateMessage,
   });
 
-  // const { userLanguage } = useTranslationContext();
+  // TODO: Can be removed in V6 and from here completely once it becomes baseline.
+  const PollWrapper = useCallback(() => {
+    const poll = message?.poll_id ? client.polls.fromState(message.poll_id) : undefined;
+    return message?.poll_id && poll ? (
+      <PollComponent<StreamChatGenerics> message={message} poll={poll} PollContent={PollContent} />
+    ) : null;
+  }, [PollContent, client, message]);
   const isThreadMessage = threadList || !!message.parent_id;
 
   const messageActions =

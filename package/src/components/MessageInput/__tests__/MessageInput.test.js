@@ -23,6 +23,7 @@ import { FileSelectorIcon } from '../../AttachmentPicker/components/FileSelector
 import { ImageSelectorIcon } from '../../AttachmentPicker/components/ImageSelectorIcon';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
+import { CreatePollIcon } from '../../Poll';
 import { MessageInput } from '../MessageInput';
 
 describe('MessageInput', () => {
@@ -32,6 +33,7 @@ describe('MessageInput', () => {
       AttachmentPickerSelectionBar,
       CameraSelectorIcon,
       closePicker: jest.fn(),
+      CreatePollIcon,
       FileSelectorIcon,
       ImageSelectorIcon,
       openPicker: jest.fn(),
