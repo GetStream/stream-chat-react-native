@@ -27,8 +27,8 @@ import {
 
 import { useViewport } from '../../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { useMessageData } from '../hooks/useMessageData';
 import { Poll } from '../../Poll/Poll';
+import { useMessageData } from '../hooks/useMessageData';
 
 const styles = StyleSheet.create({
   container: {
