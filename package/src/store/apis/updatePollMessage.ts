@@ -1,8 +1,8 @@
 import type { PollResponse } from 'stream-chat';
 
-import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
 import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
+import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries } from '../types';
 
 export const updatePollMessage = ({
@@ -14,7 +14,7 @@ export const updatePollMessage = ({
 }) => {
   const queries: PreparedQueries[] = [];
 
-  const messagesWithPoll = QuickSqliteClient.executeSql.apply(
+  const messagesWithPoll = SqliteClient.executeSql.apply(
     null,
     createSelectQuery('messages', ['*'], {
       poll_id: poll.id,
@@ -34,14 +34,14 @@ export const updatePollMessage = ({
         id: message.id,
       }),
     );
-    QuickSqliteClient.logger?.('info', 'updatePoll', {
+    SqliteClient.logger?.('info', 'updatePoll', {
       message: storableMessage,
       poll: storablePoll,
     });
   }
 
   if (flush) {
-    QuickSqliteClient.executeSqlBatch(queries);
+    SqliteClient.executeSqlBatch(queries);
   }
 
   return queries;
