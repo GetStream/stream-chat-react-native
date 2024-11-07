@@ -1,5 +1,15 @@
 # Change Log
 
+### [5.41.3](https://github.com/GetStream/stream-chat-react-native/compare/v5.41.2...v5.41.3) (2024-11-07)
+
+
+### Bug Fixes
+
+* check for channel validity before consuming config ([#2760](https://github.com/GetStream/stream-chat-react-native/issues/2760)) ([ff53399](https://github.com/GetStream/stream-chat-react-native/commit/ff5339982914051b6e8f941a4799fc772ce409aa))
+* message disallowed indicator display ([#2754](https://github.com/GetStream/stream-chat-react-native/issues/2754)) ([fe08bd7](https://github.com/GetStream/stream-chat-react-native/commit/fe08bd75ea1d7d3041b86b1e8519f2f04b9c19bc))
+* native image picker poll control ([#2762](https://github.com/GetStream/stream-chat-react-native/issues/2762)) ([b9c49be](https://github.com/GetStream/stream-chat-react-native/commit/b9c49be85b8d7927dc64f55d7e9ba01b11737016))
+* receiverMessageBackgroundColor hotfix ([#2763](https://github.com/GetStream/stream-chat-react-native/issues/2763)) ([5258a18](https://github.com/GetStream/stream-chat-react-native/commit/5258a18468fe9716918ec9e663ae5e0861b17df5))
+
 ### [5.41.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.41.1...v5.41.2) (2024-11-04)
 
 
