@@ -1,22 +1,25 @@
 import type { MessageResponse } from 'stream-chat';
 
+import { mapStorableToPoll } from './mapStorableToPoll';
 import { mapStorableToReaction } from './mapStorableToReaction';
 
 import { mapStorableToUser } from './mapStorableToUser';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
-import type { TableRowJoinedUser } from '../types';
+import type { TableRow, TableRowJoinedUser } from '../types';
 
 export const mapStorableToMessage = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   currentUserId,
   messageRow,
+  pollRow,
   reactionRows,
 }: {
   currentUserId: string;
   messageRow: TableRowJoinedUser<'messages'>;
+  pollRow: TableRow<'poll'>;
   reactionRows: TableRowJoinedUser<'reactions'>[];
 }): MessageResponse<StreamChatGenerics> => {
   const {
@@ -24,7 +27,6 @@ export const mapStorableToMessage = <
     deletedAt,
     extraData,
     messageTextUpdatedAt,
-    poll,
     poll_id,
     reactionGroups,
     updatedAt,
@@ -44,11 +46,11 @@ export const mapStorableToMessage = <
     latest_reactions: latestReactions,
     message_text_updated_at: messageTextUpdatedAt,
     own_reactions: ownReactions,
-    poll: JSON.parse(poll),
     poll_id,
     reaction_groups: reactionGroups ? JSON.parse(reactionGroups) : {},
     updated_at: updatedAt,
     user: mapStorableToUser(user),
+    ...(pollRow ? { poll: mapStorableToPoll(pollRow) } : {}),
     ...(extraData ? JSON.parse(extraData) : {}),
   };
 };

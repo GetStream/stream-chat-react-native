@@ -8,7 +8,8 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 import { isBlockedMessage } from '../../utils/utils';
 import { mapStorableToMessage } from '../mappers/mapStorableToMessage';
 import { QuickSqliteClient } from '../QuickSqliteClient';
-import type { TableRowJoinedUser } from '../types';
+import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
+import type { TableRow, TableRowJoinedUser } from '../types';
 
 export const getChannelMessages = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -35,6 +36,21 @@ export const getChannelMessages = <
     }
     messageIdVsReactions[reaction.messageId].push(reaction);
   });
+  const messageIdsVsPolls: Record<string, TableRow<'poll'>> = {};
+  const pollsById: Record<string, TableRow<'poll'>> = {};
+  const messagesWithPolls = messageRows.filter((message) => !!message.poll_id);
+  const polls = QuickSqliteClient.executeSql.apply(
+    null,
+    createSelectQuery('poll', ['*'], {
+      id: messagesWithPolls.map((message) => message.poll_id),
+    }),
+  );
+  polls.forEach((poll) => {
+    pollsById[poll.id] = poll;
+  });
+  messagesWithPolls.forEach((message) => {
+    messageIdsVsPolls[message.poll_id] = pollsById[message.poll_id];
+  });
 
   // Populate the messages.
   const cidVsMessages: Record<string, MessageResponse<StreamChatGenerics>[]> = {};
@@ -48,6 +64,7 @@ export const getChannelMessages = <
         mapStorableToMessage<StreamChatGenerics>({
           currentUserId,
           messageRow: m,
+          pollRow: messageIdsVsPolls[m.poll_id],
           reactionRows: messageIdVsReactions[m.id],
         }),
       );

@@ -1,5 +1,6 @@
 import type { PollResponse } from 'stream-chat';
 
+import { mapPollToStorable } from '../mappers/mapPollToStorable';
 import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
 import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
@@ -14,29 +15,28 @@ export const updatePollMessage = ({
 }) => {
   const queries: PreparedQueries[] = [];
 
-  const messagesWithPoll = QuickSqliteClient.executeSql.apply(
+  const pollsFromDB = QuickSqliteClient.executeSql.apply(
     null,
-    createSelectQuery('messages', ['*'], {
-      poll_id: poll.id,
+    createSelectQuery('poll', ['*'], {
+      id: poll.id,
     }),
   );
 
-  for (const message of messagesWithPoll) {
-    const { latest_votes, own_votes } = JSON.parse(message.poll);
-    const storablePoll = JSON.stringify({
-      ...poll,
-      latest_votes,
-      own_votes,
+  for (const pollFromDB of pollsFromDB) {
+    const { latest_votes, own_votes } = pollFromDB;
+    console.log(own_votes);
+    const storablePoll = mapPollToStorable({
+      ...pollFromDB,
+      latest_votes: latest_votes ? JSON.parse(latest_votes) : [],
+      own_votes: own_votes ? JSON.parse(own_votes) : [],
     });
-    const storableMessage = { ...message, poll: storablePoll };
 
     queries.push(
-      createUpdateQuery('messages', storableMessage, {
-        id: message.id,
+      createUpdateQuery('poll', storablePoll, {
+        id: poll.id,
       }),
     );
     QuickSqliteClient.logger?.('info', 'updatePoll', {
-      message: storableMessage,
       poll: storablePoll,
     });
   }
