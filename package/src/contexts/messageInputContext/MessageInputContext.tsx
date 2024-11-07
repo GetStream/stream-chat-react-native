@@ -918,7 +918,6 @@ export const MessageInputProvider = <
     customMessageData,
   }: {
     customMessageData?: Partial<Message<StreamChatGenerics>>;
-    // eslint-disable-next-line require-await
   } = {}) => {
     if (sending.current) {
       return;

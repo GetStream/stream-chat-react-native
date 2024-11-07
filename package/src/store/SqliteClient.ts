@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 import type { DB, OPSQLite } from '@op-engineering/op-sqlite';
 let sqlite: typeof OPSQLite;
 

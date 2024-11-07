@@ -201,7 +201,7 @@ const ChatWithContext = <
   useEffect(() => {
     if (!(userID && enableOfflineSupport)) return;
 
-    const initializeDatabase = async () => {
+    const initializeDatabase = () => {
       // This acts as a lock for some very rare occurrences of concurrency
       // issues we've encountered before with the QuickSqliteClient being
       // uninitialized before it's being invoked.
@@ -222,6 +222,7 @@ const ChatWithContext = <
         SqliteClient.closeDB();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userID, enableOfflineSupport]);
 
   useEffect(() => {
@@ -238,13 +239,7 @@ const ChatWithContext = <
 
   // In case something went wrong, make sure to also unsubscribe the listener
   // on unmount if it exists to prevent a memory leak.
-  useEffect(
-    () => () => {
-      console.log('Unsubscribing from connection changed listener');
-      DBSyncManager.connectionChangedListener?.unsubscribe();
-    },
-    [],
-  );
+  useEffect(() => () => DBSyncManager.connectionChangedListener?.unsubscribe(), []);
 
   const initialisedDatabase =
     initialisedDatabaseConfig.initialised && userID === initialisedDatabaseConfig.userID;

@@ -193,7 +193,7 @@ export const Generic = () => {
       BetterSqlite.dropAllTables();
     });
 
-    afterEach(async () => {
+    afterEach(() => {
       BetterSqlite.dropAllTables();
       BetterSqlite.closeDB();
 
@@ -339,7 +339,7 @@ export const Generic = () => {
 
       renderComponent();
 
-      await waitFor(async () => {
+      await waitFor(() => {
         act(() => dispatchConnectionChangedEvent(chatClient));
         expect(screen.getByTestId('channel-list')).toBeTruthy();
         expect(screen.getByTestId(emptyChannel.cid)).toBeTruthy();
@@ -381,7 +381,7 @@ export const Generic = () => {
       channels.push(newChannel);
       useMockedApis(chatClient, [getOrCreateChannelApi(newChannel)]);
 
-      await waitFor(async () => {
+      await waitFor(() => {
         act(() => dispatchNotificationMessageNewEvent(chatClient, newChannel.channel));
 
         const channelIdsOnUI = screen
