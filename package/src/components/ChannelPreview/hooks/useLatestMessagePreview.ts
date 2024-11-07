@@ -298,7 +298,8 @@ export const useLatestMessagePreview = <
 
   useEffect(() => {
     if (channelConfigExists) {
-      const read_events = channel.getConfig()?.read_events;
+      const read_events =
+        !channel.disconnected && !!channel?.id && channel.getConfig()?.read_events;
       if (typeof read_events === 'boolean') {
         setReadEvents(read_events);
       }
