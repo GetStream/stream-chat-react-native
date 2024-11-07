@@ -2,9 +2,9 @@ import { createSelectQuery } from '../../sqlite-utils/createSelectQuery';
 import { SqliteClient } from '../../SqliteClient';
 import type { TableRowJoinedUser } from '../../types';
 
-export const selectChannels = ({
-  channelIds,
-}: { channelIds?: string[] } = {}): TableRowJoinedUser<'channels'>[] => {
+export const selectChannels = async ({ channelIds }: { channelIds?: string[] } = {}): Promise<
+  TableRowJoinedUser<'channels'>[]
+> => {
   const query = createSelectQuery(
     'channels',
     ['*'],
@@ -19,7 +19,7 @@ export const selectChannels = ({
     channelIds,
   });
 
-  const result = SqliteClient.executeSql.apply(null, query);
+  const result = await SqliteClient.executeSql.apply(null, query);
 
   if (channelIds) {
     return result.sort(

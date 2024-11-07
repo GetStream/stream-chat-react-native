@@ -80,7 +80,7 @@
     "stream-chat": "8.40.8"
   },
   "peerDependencies": {
-    "@op-engineering/op-sqlite": ">=6.0.4",
+    "@op-engineering/op-sqlite": ">=9.3.0",
     "@react-native-community/netinfo": ">=11.3.1",
     "react-native": ">=0.67.0",
     "react-native-gesture-handler": ">=2.14.0",
@@ -103,7 +103,7 @@
     "@babel/preset-env": "7.13.12",
     "@babel/preset-typescript": "7.13.0",
     "@babel/runtime": "^7.20.0",
-    "@op-engineering/op-sqlite": "^6.0.4",
+    "@op-engineering/op-sqlite": "^9.3.0",
     "@react-native-community/eslint-config": "2.0.0",
     "@react-native-community/eslint-plugin": "1.1.0",
     "@react-native-community/netinfo": "^11.3.2",

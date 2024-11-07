@@ -3,7 +3,7 @@ import type { ChannelMemberResponse } from 'stream-chat';
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { SqliteClient } from '../SqliteClient';
 
-export const deleteMember = ({
+export const deleteMember = async ({
   cid,
   flush = true,
   member,
@@ -24,7 +24,7 @@ export const deleteMember = ({
   });
 
   if (flush) {
-    SqliteClient.executeSql.apply(null, query);
+    await SqliteClient.executeSql.apply(null, query);
   }
 
   return [query];

@@ -5,7 +5,7 @@ import { mapChannelToStorable } from '../mappers/mapChannelToStorable';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
 
-export const upsertChannelDataFromChannel = <
+export const upsertChannelDataFromChannel = async <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channel,
@@ -18,7 +18,7 @@ export const upsertChannelDataFromChannel = <
   if (!storableChannel) return;
   const query = createUpsertQuery('channels', storableChannel);
   if (flush) {
-    SqliteClient.executeSqlBatch([query]);
+    await SqliteClient.executeSqlBatch([query]);
   }
 
   return [query];

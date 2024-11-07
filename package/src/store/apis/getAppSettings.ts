@@ -3,15 +3,15 @@ import type { AppSettingsAPIResponse } from 'stream-chat';
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
 import { SqliteClient } from '../SqliteClient';
 
-export const getAppSettings = ({
+export const getAppSettings = async ({
   currentUserId,
 }: {
   currentUserId: string;
-}): AppSettingsAPIResponse => {
+}): Promise<AppSettingsAPIResponse> => {
   SqliteClient.logger?.('info', 'getAppSettings', {
     currentUserId,
   });
-  const result = SqliteClient.executeSql.apply(
+  const result = await SqliteClient.executeSql.apply(
     null,
     createSelectQuery('userSyncStatus', ['*'], {
       userId: currentUserId,

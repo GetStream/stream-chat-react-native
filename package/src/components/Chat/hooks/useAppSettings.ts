@@ -42,9 +42,10 @@ export const useAppSettings = <
      */
     const enforceAppSettingsWithOfflineSupport = async () => {
       if (!client.userID) return;
+      if (!initialisedDatabase) return;
 
       if (!isOnline) {
-        const appSettings = dbApi.getAppSettings({ currentUserId: client.userID });
+        const appSettings = await dbApi.getAppSettings({ currentUserId: client.userID });
         setAppSettings(appSettings);
         return;
       }
@@ -53,7 +54,7 @@ export const useAppSettings = <
         const appSettings = await client.getAppSettings();
         if (isMounted.current) {
           setAppSettings(appSettings);
-          dbApi.upsertAppSettings({
+          await dbApi.upsertAppSettings({
             appSettings,
             currentUserId: client.userID as string,
           });
@@ -74,7 +75,6 @@ export const useAppSettings = <
     }
 
     enforeAppSettings();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [client, isOnline, initialisedDatabase]);
 
   return appSettings;

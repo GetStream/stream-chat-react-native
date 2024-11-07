@@ -1,7 +1,7 @@
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { SqliteClient } from '../SqliteClient';
 
-export const deleteMessage = ({ flush = true, id }: { id: string; flush?: boolean }) => {
+export const deleteMessage = async ({ flush = true, id }: { id: string; flush?: boolean }) => {
   const query = createDeleteQuery('messages', {
     id,
   });
@@ -12,7 +12,7 @@ export const deleteMessage = ({ flush = true, id }: { id: string; flush?: boolea
   });
 
   if (flush) {
-    SqliteClient.executeSql.apply(null, query);
+    await SqliteClient.executeSql.apply(null, query);
   }
 
   return [query];

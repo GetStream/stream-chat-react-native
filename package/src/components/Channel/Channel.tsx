@@ -1542,7 +1542,7 @@ const ChannelWithContext = <
           attachment.image_url = uploadResponse.file;
           delete attachment.originalFile;
 
-          dbApi.updateMessage({
+          await dbApi.updateMessage({
             message: { ...updatedMessage, cid: channel.cid },
           });
         }
@@ -1571,7 +1571,7 @@ const ChannelWithContext = <
           }
 
           delete attachment.originalFile;
-          dbApi.updateMessage({
+          await dbApi.updateMessage({
             message: { ...updatedMessage, cid: channel.cid },
           });
         }
@@ -1633,7 +1633,7 @@ const ChannelWithContext = <
         messageResponse.message.status = MessageStatusTypes.RECEIVED;
 
         if (enableOfflineSupport) {
-          dbApi.updateMessage({
+          await dbApi.updateMessage({
             message: { ...messageResponse.message, cid: channel.cid },
           });
         }
@@ -1653,7 +1653,7 @@ const ChannelWithContext = <
       threadInstance?.upsertReplyLocally?.({ message: updatedMessage });
 
       if (enableOfflineSupport) {
-        dbApi.updateMessage({
+        await dbApi.updateMessage({
           message: { ...message, cid: channel.cid },
         });
       }
@@ -1685,7 +1685,7 @@ const ChannelWithContext = <
       // if app gets closed before message gets sent and next time user opens the app
       // then user can see that message in failed state and can retry.
       // If succesfull, it will be updated with received status.
-      dbApi.upsertMessages({
+      await dbApi.upsertMessages({
         messages: [{ ...messagePreview, cid: channel.cid, status: MessageStatusTypes.FAILED }],
       });
     }
@@ -1896,7 +1896,9 @@ const ChannelWithContext = <
   /**
    * Removes the message from local state
    */
-  const removeMessage: MessagesContextValue<StreamChatGenerics>['removeMessage'] = (message) => {
+  const removeMessage: MessagesContextValue<StreamChatGenerics>['removeMessage'] = async (
+    message,
+  ) => {
     if (channel) {
       channel.state.removeMessage(message);
       setMessages(channel.state.messages);
@@ -1906,7 +1908,7 @@ const ChannelWithContext = <
     }
 
     if (enableOfflineSupport) {
-      dbApi.deleteMessage({
+      await dbApi.deleteMessage({
         id: message.id,
       });
     }
@@ -1964,7 +1966,7 @@ const ChannelWithContext = <
 
     if (!enableOfflineSupport) {
       if (message.status === MessageStatusTypes.FAILED) {
-        removeMessage(message);
+        await removeMessage(message);
         return;
       }
       await client.deleteMessage(message.id);
@@ -1972,8 +1974,8 @@ const ChannelWithContext = <
     }
 
     if (message.status === MessageStatusTypes.FAILED) {
-      DBSyncManager.dropPendingTasks({ messageId: message.id });
-      removeMessage(message);
+      await DBSyncManager.dropPendingTasks({ messageId: message.id });
+      await removeMessage(message);
     } else {
       const updatedMessage = {
         ...message,

@@ -284,7 +284,7 @@ const MessageWithContext = <
       if (data?.message) {
         updateMessage(data.message);
       } else {
-        removeMessage({
+        await removeMessage({
           id: message.id,
           parent_id: message.parent_id,
         });

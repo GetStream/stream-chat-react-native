@@ -18,7 +18,7 @@ import { SqliteClient } from '../SqliteClient';
  *
  * @returns {Array} Channels with enriched state.
  */
-export const getChannels = <
+export const getChannels = async <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channelIds,
@@ -26,13 +26,13 @@ export const getChannels = <
 }: {
   channelIds: string[];
   currentUserId: string;
-}): Omit<ChannelAPIResponse<StreamChatGenerics>, 'duration'>[] => {
+}): Promise<Omit<ChannelAPIResponse<StreamChatGenerics>, 'duration'>[]> => {
   SqliteClient.logger?.('info', 'getChannels', { channelIds, currentUserId });
-  const channels = selectChannels({ channelIds });
+  const channels = await selectChannels({ channelIds });
 
-  const cidVsMembers = getMembers<StreamChatGenerics>({ channelIds });
-  const cidVsReads = getReads<StreamChatGenerics>({ channelIds });
-  const cidVsMessages = getChannelMessages<StreamChatGenerics>({
+  const cidVsMembers = await getMembers<StreamChatGenerics>({ channelIds });
+  const cidVsReads = await getReads<StreamChatGenerics>({ channelIds });
+  const cidVsMessages = await getChannelMessages<StreamChatGenerics>({
     channelIds,
     currentUserId,
   });

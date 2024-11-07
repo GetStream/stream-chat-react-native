@@ -1017,7 +1017,7 @@ export const MessageInputProvider = <
          * If the message is bounced by moderation, we firstly remove the message from message list and then send a new message.
          */
         if (message && isBouncedMessage(message as MessageType<StreamChatGenerics>)) {
-          removeMessage(message);
+          await removeMessage(message);
         }
         value.sendMessage({
           attachments,
@@ -1236,9 +1236,7 @@ export const MessageInputProvider = <
     const filename = escapeRegExp(file.name ?? getFileNameFromPath(uri));
 
     try {
-      console.log(file.uri);
       const compressedUri = await compressedImageURI(file, value.compressImageQuality);
-      console.log({ compressedUri });
       const contentType = lookup(filename) || 'multipart/form-data';
       if (value.doImageUploadRequest) {
         response = await value.doImageUploadRequest(file, channel);

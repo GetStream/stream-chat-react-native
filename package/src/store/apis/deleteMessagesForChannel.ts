@@ -1,7 +1,7 @@
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { SqliteClient } from '../SqliteClient';
 
-export const deleteMessagesForChannel = ({
+export const deleteMessagesForChannel = async ({
   cid,
   flush = true,
 }: {
@@ -18,7 +18,7 @@ export const deleteMessagesForChannel = ({
   });
 
   if (flush) {
-    SqliteClient.executeSql.apply(null, query);
+    await SqliteClient.executeSql.apply(null, query);
   }
 
   return [query];
