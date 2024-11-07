@@ -1218,7 +1218,7 @@ export const defaultTheme: Theme = {
       metaText: {
         fontSize: 12,
       },
-      receiverMessageBackgroundColor: Colors.white,
+      receiverMessageBackgroundColor: Colors.white_smoke,
       replyBorder: {},
       replyContainer: {},
       senderMessageBackgroundColor: Colors.grey_gainsboro,
