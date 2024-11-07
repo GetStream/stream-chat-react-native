@@ -1,6 +1,7 @@
 import type { PollResponse } from 'stream-chat';
 
 import { mapPollToStorable } from '../mappers/mapPollToStorable';
+import { mapStorableToPoll } from '../mappers/mapStorableToPoll';
 import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
 import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
@@ -23,13 +24,16 @@ export const updatePollMessage = ({
   );
 
   for (const pollFromDB of pollsFromDB) {
-    const { latest_votes, own_votes } = pollFromDB;
+    const serializedPoll = mapStorableToPoll(pollFromDB);
+    const { latest_votes, own_votes } = serializedPoll;
     console.log(own_votes);
     const storablePoll = mapPollToStorable({
-      ...pollFromDB,
-      latest_votes: latest_votes ? JSON.parse(latest_votes) : [],
-      own_votes: own_votes ? JSON.parse(own_votes) : [],
+      ...poll,
+      // latest_votes: latest_votes ?? [],
+      // own_votes: own_votes ?? [],
     });
+
+    console.log('STORABLE POLL: ', storablePoll);
 
     queries.push(
       createUpdateQuery('poll', storablePoll, {

@@ -30,11 +30,7 @@ export const updateMessage = ({
     return queries;
   }
 
-  const { poll, poll_id } = messages[0];
-
   const storableMessage = mapMessageToStorable({
-    ...(poll ? { poll: JSON.parse(poll) } : {}),
-    ...(poll_id ? { poll_id } : {}),
     ...message,
   });
 
