@@ -162,6 +162,7 @@ export type MessagePropsWithContext<
     | 'setQuotedMessageState'
     | 'supportedReactions'
     | 'updateMessage'
+    | 'PollContent'
   > &
   Pick<ThreadContextValue<StreamChatGenerics>, 'openThread'> &
   Pick<TranslationContextValue, 't'> & {
@@ -415,6 +416,8 @@ const MessageWithContext = <
         return !!attachments.files.length;
       case 'gallery':
         return !!attachments.images.length || !!attachments.videos.length;
+      case 'poll':
+        return !!message.poll_id;
       case 'text':
       default:
         return !!message.text;
@@ -521,7 +524,6 @@ const MessageWithContext = <
     updateMessage,
   });
 
-  // const { userLanguage } = useTranslationContext();
   const isThreadMessage = threadList || !!message.parent_id;
 
   const messageActions =

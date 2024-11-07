@@ -1,12 +1,18 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, LayoutRectangle, Pressable, StyleSheet } from 'react-native';
 
+import {
+  useChannelContext,
+  useMessagesContext,
+  useOwnCapabilitiesContext,
+} from '../../../contexts';
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import { CameraSelectorIcon } from '../../AttachmentPicker/components/CameraSelectorIcon';
 import { FileSelectorIcon } from '../../AttachmentPicker/components/FileSelectorIcon';
 import { ImageSelectorIcon } from '../../AttachmentPicker/components/ImageSelectorIcon';
+import { CreatePollIcon } from '../../Poll/components/CreatePollIcon';
 
 type NativeAttachmentPickerProps = {
   onRequestedClose: () => void;
@@ -36,12 +42,18 @@ export const NativeAttachmentPicker = ({
     },
   } = useTheme();
   const {
+    hasCameraPicker,
     hasFilePicker,
     hasImagePicker,
+    openPollCreationDialog,
     pickAndUploadImageFromNativePicker,
     pickFile,
+    sendMessage,
     takeAndUploadImage,
   } = useMessageInputContext();
+  const { threadList } = useChannelContext();
+  const { hasCreatePoll } = useMessagesContext();
+  const ownCapabilities = useOwnCapabilitiesContext();
 
   const popupHeight =
     // the top padding
@@ -91,7 +103,11 @@ export const NativeAttachmentPicker = ({
     width: size,
   };
 
-  const onClose = ({ onPressHandler }: { onPressHandler?: () => Promise<void> }) => {
+  const onClose = ({
+    onPressHandler,
+  }: {
+    onPressHandler?: (() => Promise<void>) | (() => void);
+  }) => {
     if (onPressHandler) {
       onPressHandler();
     }
@@ -103,7 +119,19 @@ export const NativeAttachmentPicker = ({
     }).start(onRequestedClose);
   };
 
-  const buttons = [];
+  // do not allow poll creation in threads
+  const buttons =
+    threadList && hasCreatePoll && ownCapabilities.sendPoll
+      ? []
+      : [
+          {
+            icon: <CreatePollIcon />,
+            id: 'Poll',
+            onPressHandler: () => {
+              openPollCreationDialog?.({ sendMessage });
+            },
+          },
+        ];
 
   if (hasImagePicker) {
     buttons.push({
@@ -115,7 +143,13 @@ export const NativeAttachmentPicker = ({
   if (hasFilePicker) {
     buttons.push({ icon: <FileSelectorIcon />, id: 'File', onPressHandler: pickFile });
   }
-  buttons.push({ icon: <CameraSelectorIcon />, id: 'Camera', onPressHandler: takeAndUploadImage });
+  if (hasCameraPicker) {
+    buttons.push({
+      icon: <CameraSelectorIcon />,
+      id: 'Camera',
+      onPressHandler: takeAndUploadImage,
+    });
+  }
 
   return (
     <>

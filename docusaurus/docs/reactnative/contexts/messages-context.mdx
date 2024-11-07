@@ -39,7 +39,6 @@ import InitialScrollToFirstUnreadMessage from '../common-content/ui-components/c
 import InlineDateSeparator from '../common-content/ui-components/channel/props/inline_date_separator.mdx';
 import InlineUnreadIndicator from '../common-content/ui-components/channel/props/inline_unread_indicator.mdx';
 import IsAttachmentEqual from '../common-content/ui-components/channel/props/is_attachment_equal.mdx';
-import LegacyImageViewerSwipeBehaviour from '../common-content/ui-components/channel/props/legacy_image_viewer_swipe_behaviour.mdx';
 import MarkdownRules from '../common-content/ui-components/channel/props/markdown_rules.mdx';
 import MessageActionList from '../common-content/ui-components/channel/props/message-action-list.mdx';
 import MessageActionListItem from '../common-content/ui-components/channel/props/message-action-list-item.mdx';
@@ -81,6 +80,9 @@ import TypingIndicator from '../common-content/ui-components/channel/props/typin
 import TypingIndicatorContainer from '../common-content/ui-components/channel/props/typing_indicator_container.mdx';
 import UrlPreview from '../common-content/ui-components/channel/props/url_preview.mdx';
 import VideoThumbnail from '../common-content/ui-components/channel/props/video_thumbnail.mdx';
+import OpenPollCreationDialog from '../common-content/ui-components/channel/props/open-poll-creation-dialog.mdx';
+import HasCreatePoll from '../common-content/ui-components/channel/props/has-create-poll.mdx';
+import PollContent from '../common-content/ui-components/poll/poll-content.mdx';
 
 ## Value
 
@@ -271,6 +273,14 @@ Upserts a given message in local channel state. Please note that this function d
 | Type                |
 | ------------------- |
 | `(message) => void` |
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#openpollcreationdialog)_ props</div> openPollCreationDialog {#openPollCreationDialog}
+
+<OpenPollCreationDialog />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#hascreatepoll)_ props</div> hasCreatePoll {#hascreatepoll}
+
+<HasCreatePoll />
 
 ### <div class="label description">_forwarded from [Channel](../../core-components/channel#attachment)_ props</div> Attachment {#attachment}
 
@@ -471,3 +481,7 @@ Upserts a given message in local channel state. Please note that this function d
 ### <div class="label description">_forwarded from [Channel](../../core-components/channel#videothumbnail)_ props</div> VideoThumbnail {#videoThumbnail}
 
 <VideoThumbnail />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#pollcontent)_ props</div> PollContent {#pollcontent}
+
+<PollContent />

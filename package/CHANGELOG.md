@@ -1,5 +1,41 @@
 # Change Log
 
+### [5.41.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.41.1...v5.41.2) (2024-11-04)
+
+
+### Bug Fixes
+
+* add polyfill for Array.prototype.at ([#2752](https://github.com/GetStream/stream-chat-react-native/issues/2752)) ([c5a3046](https://github.com/GetStream/stream-chat-react-native/commit/c5a3046c8612581b6beaa9ed88a05925fb043a11))
+* disable typing events when offline ([#2753](https://github.com/GetStream/stream-chat-react-native/issues/2753)) ([ba9bccd](https://github.com/GetStream/stream-chat-react-native/commit/ba9bccd89a6b490d15cf34ad22d030622bc5255b))
+
+### [5.41.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.41.0...v5.41.1) (2024-11-01)
+
+
+### Bug Fixes
+
+* Channel thread type ([#2748](https://github.com/GetStream/stream-chat-react-native/issues/2748)) ([d7deaf4](https://github.com/GetStream/stream-chat-react-native/commit/d7deaf47674cde28e711488488e6054e78ad072e))
+
+## [5.41.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.40.0...v5.41.0) (2024-10-31)
+
+
+### Features
+
+* rename poll state selector props ([#2745](https://github.com/GetStream/stream-chat-react-native/issues/2745)) ([45e5959](https://github.com/GetStream/stream-chat-react-native/commit/45e5959a85a096423bb49e1c5411a4505cfdd6ca))
+
+## [5.40.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.39.6...v5.40.0) (2024-10-31)
+
+
+### Features
+
+* polls implementation ([#2719](https://github.com/GetStream/stream-chat-react-native/issues/2719)) ([c770854](https://github.com/GetStream/stream-chat-react-native/commit/c7708544d49e27dab4a2fee08c235fb39afd2178))
+
+### [5.39.6](https://github.com/GetStream/stream-chat-react-native/compare/v5.39.5...v5.39.6) (2024-10-28)
+
+
+### Bug Fixes
+
+* state store with new api ([#2726](https://github.com/GetStream/stream-chat-react-native/issues/2726)) ([19d8fda](https://github.com/GetStream/stream-chat-react-native/commit/19d8fda7ee17ad9b19c80d3aa6d2e3ca13c5d9b8))
+
 ### [5.39.5](https://github.com/GetStream/stream-chat-react-native/compare/v5.39.4...v5.39.5) (2024-10-24)
 
 

@@ -265,6 +265,8 @@ const ReplyWithContext = <
               text:
                 quotedMessage.type === 'deleted'
                   ? `_${t('Message deleted')}_`
+                  : quotedMessage.poll
+                  ? `📊 ${quotedMessage.poll.name}`
                   : quotedMessage.text
                   ? quotedMessage.text.length > 170
                     ? `${quotedMessage.text.slice(0, 170)}...`
