@@ -28,7 +28,7 @@ Few of the dependencies we rely on are not fully new architecture compatible yet
 
 1. `react-native-audio-recorder-player` and `react-native-video` work on interop mode.
 2. `react-native-document-picker` doesn't support the bridgeless mode. Please use [`@react-native-documents/picker`](https://react-native-documents.github.io/docs/sponsor-only/intro) if you want the bridgeless mode. You can register your own native handler with us using our [Native Handler](../customization/native-handlers.mdx) guide.
-3. `@react-native-camera-roll/camera-roll` doesn't work alongside the Image Resizer module that we have. We recommend using the native image picker for now. You can read [the guide](./native-image-picker.mdx) here.
+3. `@react-native-camera-roll/camera-roll` doesn't work alongside the Image resizer module that we have. We recommend using the native image picker for now. You can read [the guide](./native-image-picker.mdx) here.
 
    :::note
    Although the above dependencies are not fully compatible with the new architecture, you can still use them in your project. They doesn't stop you from building the app on both iOS and Android.
