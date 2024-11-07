@@ -59,6 +59,12 @@ export type AttachmentPickerContextValue = {
   CameraSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
   closePicker: () => void;
   /**
+   * Custom UI component for the poll creation icon.
+   *
+   * **Default: ** [CreatePollIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/CreatePollIcon.tsx)
+   */
+  CreatePollIcon: React.ComponentType;
+  /**
    * Custom UI component for [file selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
    *
    * **Default: ** [FileSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/FileSelectorIcon.tsx)
@@ -97,7 +103,12 @@ export const AttachmentPickerProvider = ({
 }: PropsWithChildren<{
   value?: Pick<
     AttachmentPickerContextValue,
-    'CameraSelectorIcon' | 'closePicker' | 'FileSelectorIcon' | 'ImageSelectorIcon' | 'openPicker'
+    | 'CameraSelectorIcon'
+    | 'closePicker'
+    | 'CreatePollIcon'
+    | 'FileSelectorIcon'
+    | 'ImageSelectorIcon'
+    | 'openPicker'
   > &
     Partial<Pick<AttachmentPickerContextValue, 'bottomInset' | 'topInset'>>;
 }>) => {

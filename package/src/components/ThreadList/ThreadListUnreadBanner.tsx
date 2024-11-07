@@ -19,7 +19,8 @@ const styles = StyleSheet.create({
   },
 });
 
-const selector = (nextValue: ThreadManagerState) => [nextValue.unseenThreadIds] as const;
+const selector = (nextValue: ThreadManagerState) =>
+  ({ unseenThreadIds: nextValue.unseenThreadIds } as const);
 
 export const ThreadListUnreadBanner = () => {
   const { client } = useChatContext();
@@ -29,7 +30,7 @@ export const ThreadListUnreadBanner = () => {
       threadListUnreadBanner,
     },
   } = useTheme();
-  const [unseenThreadIds] = useStateStore(client.threads.state, selector);
+  const { unseenThreadIds } = useStateStore(client.threads.state, selector);
   if (!unseenThreadIds.length) {
     return null;
   }
