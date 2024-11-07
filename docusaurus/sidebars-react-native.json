@@ -156,6 +156,7 @@
     "Advanced Guides": [
       "guides/audio-messages-support",
       "guides/date-time-formatting",
+      "guides/new-architecture",
       "guides/native-image-picker",
       "customization/typescript",
       "basics/troubleshooting",
