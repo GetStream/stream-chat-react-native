@@ -50,14 +50,6 @@ export const updatePollMessage = <
           ? newLatestAnswers.filter((answer) => answer.id !== poll_vote?.id)
           : [poll_vote, ...newLatestAnswers.filter((answer) => answer.id !== poll_vote?.id)];
     }
-    // const newOwnVotes =
-    //   poll_vote && poll_vote.user?.id === userID
-    //     ? [poll_vote, ...own_votes.filter((vote) => vote.id !== poll_vote.id)]
-    //     : own_votes;
-    // const newLatestAnswers =
-    //   poll_vote && isVoteAnswer(poll_vote)
-    //     ? [poll_vote, ...latest_answers.filter((answer) => answer.id !== poll_vote?.id)]
-    //     : latest_answers;
 
     const storablePoll = mapPollToStorable({
       ...poll,
