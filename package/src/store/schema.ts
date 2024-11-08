@@ -161,13 +161,6 @@ export const tables: Tables = {
       vote_counts_by_option: 'TEXT',
       voting_visibility: 'TEXT',
     },
-    indexes: [
-      {
-        columns: ['id'],
-        name: 'index_poll',
-        unique: false,
-      },
-    ],
     primaryKey: ['id'],
   },
   reactions: {
