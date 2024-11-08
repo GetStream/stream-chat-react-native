@@ -205,6 +205,7 @@ const ChatWithContext = <
       // This acts as a lock for some very rare occurrences of concurrency
       // issues we've encountered before with the QuickSqliteClient being
       // uninitialized before it's being invoked.
+      setInitialisedDatabaseConfig({ initialised: false, userID });
       SqliteClient.initializeDatabase()
         .then(async () => {
           setInitialisedDatabaseConfig({ initialised: true, userID });
