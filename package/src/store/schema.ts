@@ -103,7 +103,6 @@ export const tables: Tables = {
       extraData: 'TEXT',
       id: 'TEXT',
       messageTextUpdatedAt: 'TEXT',
-      poll: 'TEXT',
       poll_id: 'TEXT',
       reactionGroups: 'TEXT',
       text: "TEXT DEFAULT ''",
@@ -138,6 +137,31 @@ export const tables: Tables = {
       payload: 'TEXT',
       type: 'TEXT',
     },
+  },
+  poll: {
+    columns: {
+      allow_answers: 'BOOLEAN DEFAULT FALSE',
+      allow_user_suggested_options: 'BOOLEAN DEFAULT FALSE',
+      answers_count: 'INTEGER DEFAULT 0',
+      created_at: 'TEXT',
+      created_by: 'TEXT',
+      created_by_id: 'TEXT',
+      description: 'TEXT',
+      enforce_unique_vote: 'BOOLEAN DEFAULT FALSE',
+      id: 'TEXT NOT NULL',
+      is_closed: 'BOOLEAN DEFAULT FALSE',
+      latest_answers: 'TEXT',
+      latest_votes_by_option: 'TEXT',
+      max_votes_allowed: 'INTEGER DEFAULT 1',
+      name: 'TEXT',
+      options: 'TEXT',
+      own_votes: 'TEXT',
+      updated_at: 'TEXT',
+      vote_count: 'INTEGER DEFAULT 0',
+      vote_counts_by_option: 'TEXT',
+      voting_visibility: 'TEXT',
+    },
+    primaryKey: ['id'],
   },
   reactions: {
     columns: {
@@ -266,7 +290,6 @@ export type Schema = {
     extraData: string;
     id: string;
     messageTextUpdatedAt: string;
-    poll: string;
     poll_id: string;
     reactionGroups: string;
     type: MessageLabel;
@@ -282,6 +305,28 @@ export type Schema = {
     messageId: string;
     payload: string;
     type: ValueOf<PendingTaskTypes>;
+  };
+  poll: {
+    answers_count: number;
+    created_at: string;
+    created_by: string;
+    created_by_id: string;
+    enforce_unique_vote: boolean;
+    id: string;
+    latest_answers: string;
+    latest_votes_by_option: string;
+    max_votes_allowed: number;
+    name: string;
+    options: string;
+    updated_at: string;
+    vote_count: number;
+    vote_counts_by_option: string;
+    allow_answers?: boolean;
+    allow_user_suggested_options?: boolean;
+    description?: string;
+    is_closed?: boolean;
+    own_votes?: string;
+    voting_visibility?: string;
   };
   reactions: {
     createdAt: string;

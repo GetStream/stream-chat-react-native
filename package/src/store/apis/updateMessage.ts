@@ -30,7 +30,9 @@ export const updateMessage = ({
     return queries;
   }
 
-  const storableMessage = mapMessageToStorable(message);
+  const storableMessage = mapMessageToStorable({
+    ...message,
+  });
 
   queries.push(
     createUpdateQuery('messages', storableMessage, {
