@@ -1,5 +1,13 @@
 # Change Log
 
+### [5.41.4](https://github.com/GetStream/stream-chat-react-native/compare/v5.41.3...v5.41.4) (2024-11-08)
+
+
+### Bug Fixes
+
+* poll edge cases ([#2768](https://github.com/GetStream/stream-chat-react-native/issues/2768)) ([b26b98c](https://github.com/GetStream/stream-chat-react-native/commit/b26b98c5cb34e5446c1600026fbaa1f442d8dbcb))
+* theme for the message bubble and replies ([#2766](https://github.com/GetStream/stream-chat-react-native/issues/2766)) ([980c383](https://github.com/GetStream/stream-chat-react-native/commit/980c3832a4a59ebab07c67f1d24a50ebe587e8fe))
+
 ### [5.41.3](https://github.com/GetStream/stream-chat-react-native/compare/v5.41.2...v5.41.3) (2024-11-07)
 
 
