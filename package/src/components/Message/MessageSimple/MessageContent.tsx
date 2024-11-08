@@ -214,7 +214,7 @@ const MessageContentWithContext = <
 
   const isMessageReceivedOrErrorType = !isMyMessage || error;
 
-  let backgroundColor = senderMessageBackgroundColor || light_gray;
+  let backgroundColor = senderMessageBackgroundColor ?? light_gray;
   if (onlyEmojis && !message.quoted_message) {
     backgroundColor = transparent;
   } else if (otherAttachments.length) {
@@ -224,7 +224,7 @@ const MessageContentWithContext = <
       backgroundColor = blue_alice;
     }
   } else if (isMessageReceivedOrErrorType) {
-    backgroundColor = receiverMessageBackgroundColor || white_snow;
+    backgroundColor = receiverMessageBackgroundColor ?? white_snow;
   }
 
   const repliesCurveColor = !isMessageReceivedOrErrorType ? backgroundColor : light_gray;
