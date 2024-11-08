@@ -233,11 +233,13 @@ export const handleEventToSyncDB = <
       'poll.vote_removed',
     ].includes(type)
   ) {
-    const poll = event.poll;
+    const { poll, poll_vote } = event;
     if (poll) {
       return updatePollMessage({
+        client,
         flush,
         poll,
+        poll_vote,
       });
     }
   }
