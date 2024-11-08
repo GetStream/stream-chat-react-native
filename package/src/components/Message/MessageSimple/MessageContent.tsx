@@ -149,7 +149,7 @@ const MessageContentWithContext = <
 
   const {
     theme: {
-      colors: { blue_alice, grey_gainsboro, grey_whisper, transparent, white },
+      colors: { blue_alice, grey_whisper, light_gray, transparent, white_snow },
       messageSimple: {
         content: {
           container: {
@@ -214,20 +214,20 @@ const MessageContentWithContext = <
 
   const isMessageReceivedOrErrorType = !isMyMessage || error;
 
-  let backgroundColor = senderMessageBackgroundColor || grey_gainsboro;
+  let backgroundColor = senderMessageBackgroundColor ?? light_gray;
   if (onlyEmojis && !message.quoted_message) {
     backgroundColor = transparent;
   } else if (otherAttachments.length) {
     if (otherAttachments[0].type === 'giphy') {
-      backgroundColor = message.quoted_message ? grey_gainsboro : transparent;
+      backgroundColor = message.quoted_message ? light_gray : transparent;
     } else {
       backgroundColor = blue_alice;
     }
   } else if (isMessageReceivedOrErrorType) {
-    backgroundColor = receiverMessageBackgroundColor || white;
+    backgroundColor = receiverMessageBackgroundColor ?? white_snow;
   }
 
-  const repliesCurveColor = !isMessageReceivedOrErrorType ? backgroundColor : grey_gainsboro;
+  const repliesCurveColor = !isMessageReceivedOrErrorType ? backgroundColor : light_gray;
 
   const getBorderRadius = () => {
     // enum('top', 'middle', 'bottom', 'single')
