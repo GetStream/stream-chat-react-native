@@ -1,5 +1,19 @@
 # Change Log
 
+### [1.31.5](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.31.4...sampleapp@v1.31.5) (2024-11-08)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.31.4](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.31.3...sampleapp@v1.31.4) (2024-11-07)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.31.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.31.2...sampleapp@v1.31.3) (2024-11-04)
 
 
