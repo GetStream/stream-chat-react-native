@@ -8,7 +8,7 @@ import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries } from '../types';
 
-export const updateReaction = ({
+export const updateReaction = async ({
   flush = true,
   message,
   reaction,
@@ -49,7 +49,7 @@ export const updateReaction = ({
   });
 
   if (flush) {
-    SqliteClient.executeSqlBatch(queries);
+    await SqliteClient.executeSqlBatch(queries);
   }
 
   return queries;

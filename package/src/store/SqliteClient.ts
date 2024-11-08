@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 import type { DB, OPSQLite } from '@op-engineering/op-sqlite';
 let sqlite: typeof OPSQLite;
 
@@ -40,7 +39,7 @@ export class SqliteClient {
   // Force a specific db version. This is mainly useful for testsuit.
   static setDbVersion = (version: number) => (SqliteClient.dbVersion = version);
 
-  static openDB = () => {
+  static openDB = async () => {
     try {
       if (sqlite === undefined) {
         throw new Error(
@@ -51,7 +50,8 @@ export class SqliteClient {
         location: SqliteClient.dbLocation,
         name: SqliteClient.dbName,
       });
-      this.db.execute(`PRAGMA foreign_keys = ON`, []);
+
+      await this.db.execute(`PRAGMA foreign_keys = ON`, []);
     } catch (e) {
       this.logger?.('error', `Error opening database ${SqliteClient.dbName}`, {
         error: e,
@@ -74,19 +74,15 @@ export class SqliteClient {
     }
   };
 
-  static executeSqlBatch = (queries: PreparedQueries[]) => {
+  static executeSqlBatch = async (queries: PreparedQueries[]) => {
     if (!queries || !queries.length) return;
 
-    SqliteClient.openDB();
     try {
       if (!this.db) {
         throw new Error('DB is not open or initialized.');
       }
-      this.db.executeBatch(queries);
-
-      SqliteClient.closeDB();
+      await this.db.executeBatch(queries);
     } catch (e) {
-      SqliteClient.closeDB();
       this.logger?.('error', `SqlBatch queries failed`, {
         error: e,
         queries,
@@ -95,18 +91,15 @@ export class SqliteClient {
     }
   };
 
-  static executeSql = (query: string, params?: string[]) => {
+  static executeSql = async (query: string, params?: string[]) => {
     try {
-      SqliteClient.openDB();
       if (!this.db) {
         throw new Error('DB is not open or initialized.');
       }
-      const { rows } = this.db.execute(query, params);
-      SqliteClient.closeDB();
+      const { rows } = await this.db.execute(query, params);
 
-      return rows ? rows._array : [];
+      return rows ? rows : [];
     } catch (e) {
-      SqliteClient.closeDB();
       this.logger?.('error', `Sql single query failed`, {
         error: e,
         query,
@@ -115,7 +108,7 @@ export class SqliteClient {
     }
   };
 
-  static dropTables = () => {
+  static dropTables = async () => {
     const queries: PreparedQueries[] = Object.keys(tables).map((table) => [
       `DROP TABLE IF EXISTS ${table}`,
       [],
@@ -123,7 +116,7 @@ export class SqliteClient {
     this.logger?.('info', `Dropping tables`, {
       tables: Object.keys(tables),
     });
-    SqliteClient.executeSqlBatch(queries);
+    await SqliteClient.executeSqlBatch(queries);
   };
 
   static deleteDatabase = () => {
@@ -148,60 +141,66 @@ export class SqliteClient {
     return true;
   };
 
-  static initializeDatabase = () => {
-    SqliteClient.openDB();
-    const version = SqliteClient.getUserPragmaVersion();
+  static initializeDatabase = async () => {
+    try {
+      await SqliteClient.openDB();
+      const version = await SqliteClient.getUserPragmaVersion();
 
-    if (version !== SqliteClient.dbVersion) {
-      SqliteClient.logger?.('info', `DB version mismatch`);
-      SqliteClient.dropTables();
-      SqliteClient.updateUserPragmaVersion(SqliteClient.dbVersion);
+      if (version !== SqliteClient.dbVersion) {
+        SqliteClient.logger?.('info', `DB version mismatch`);
+        await SqliteClient.dropTables();
+        await SqliteClient.updateUserPragmaVersion(SqliteClient.dbVersion);
+      }
+      SqliteClient.logger?.('info', `create tables if not exists`, {
+        tables: Object.keys(tables),
+      });
+      const q = (Object.keys(tables) as Table[]).reduce<PreparedQueries[]>(
+        (queriesSoFar, tableName) => {
+          queriesSoFar.push(...createCreateTableQuery(tableName));
+          return queriesSoFar;
+        },
+        [],
+      );
+
+      await SqliteClient.executeSqlBatch(q);
+    } catch (e) {
+      console.log('Error initializing DB', e);
+      this.logger?.('error', `Error initializing DB`, {
+        dbLocation: SqliteClient.dbLocation,
+        dbname: SqliteClient.dbName,
+        error: e,
+      });
     }
-    SqliteClient.logger?.('info', `create tables if not exists`, {
-      tables: Object.keys(tables),
-    });
-    const q = (Object.keys(tables) as Table[]).reduce<PreparedQueries[]>(
-      (queriesSoFar, tableName) => {
-        queriesSoFar.push(...createCreateTableQuery(tableName));
-        return queriesSoFar;
-      },
-      [],
-    );
-
-    SqliteClient.executeSqlBatch(q);
   };
 
-  static updateUserPragmaVersion = (version: number) => {
+  static updateUserPragmaVersion = async (version: number) => {
     SqliteClient.logger?.('info', `updateUserPragmaVersion to ${version}`);
-    SqliteClient.openDB();
     if (!this.db) {
       throw new Error('DB is not open or initialized.');
     }
-    this.db.execute(`PRAGMA user_version = ${version}`, []);
-    SqliteClient.closeDB();
+    await this.db.execute(`PRAGMA user_version = ${version}`, []);
   };
 
-  static getUserPragmaVersion = () => {
+  static getUserPragmaVersion = async () => {
     try {
       if (!this.db) {
         throw new Error('DB is not open or initialized.');
       }
-      const { rows } = this.db.execute(`PRAGMA user_version`, []);
-      const result = rows ? rows._array : [];
+      const { rows } = await this.db.execute(`PRAGMA user_version`, []);
+      const result = rows ? rows : [];
       this.logger?.('info', `getUserPragmaVersion`, {
         result,
       });
-      SqliteClient.closeDB();
       return result[0].user_version as number;
     } catch (e) {
-      SqliteClient.closeDB();
+      console.log('Error getting user_version', e);
       throw new Error(`Querying for user_version failed: ${e}`);
     }
   };
 
-  static resetDB = () => {
+  static resetDB = async () => {
     this.logger?.('info', `resetDB`);
     SqliteClient.dropTables();
-    SqliteClient.initializeDatabase();
+    await SqliteClient.initializeDatabase();
   };
 }

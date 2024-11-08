@@ -6,7 +6,7 @@ import { mapUserToStorable } from '../mappers/mapUserToStorable';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
 
-export const upsertMessages = ({
+export const upsertMessages = async ({
   flush = true,
   messages,
 }: {
@@ -46,7 +46,7 @@ export const upsertMessages = ({
   });
 
   if (flush) {
-    SqliteClient.executeSqlBatch(finalQueries);
+    await SqliteClient.executeSqlBatch(finalQueries);
   }
 
   return finalQueries;

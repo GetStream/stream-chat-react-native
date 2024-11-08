@@ -10,7 +10,7 @@ import { mapStorableToMessage } from '../mappers/mapStorableToMessage';
 import { SqliteClient } from '../SqliteClient';
 import type { TableRowJoinedUser } from '../types';
 
-export const getChannelMessages = <
+export const getChannelMessages = async <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channelIds,
@@ -23,11 +23,11 @@ export const getChannelMessages = <
     channelIds,
     currentUserId,
   });
-  const messageRows = selectMessagesForChannels(channelIds);
+  const messageRows = await selectMessagesForChannels(channelIds);
   const messageIds = messageRows.map(({ id }) => id);
 
   // Populate the message reactions.
-  const reactionRows = selectReactionsForMessages(messageIds);
+  const reactionRows = await selectReactionsForMessages(messageIds);
   const messageIdVsReactions: Record<string, TableRowJoinedUser<'reactions'>[]> = {};
   reactionRows.forEach((reaction) => {
     if (!messageIdVsReactions[reaction.messageId]) {

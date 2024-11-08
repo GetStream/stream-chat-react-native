@@ -6,7 +6,7 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 import { mapStorableToRead } from '../mappers/mapStorableToRead';
 import { SqliteClient } from '../SqliteClient';
 
-export const getReads = <
+export const getReads = async <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channelIds,
@@ -14,7 +14,7 @@ export const getReads = <
   channelIds: string[];
 }) => {
   SqliteClient.logger?.('info', 'getReads', { channelIds });
-  const reads = selectReadsForChannels(channelIds);
+  const reads = await selectReadsForChannels(channelIds);
   const cidVsReads: Record<string, ReadResponse<StreamChatGenerics>[]> = {};
 
   reads.forEach((read) => {

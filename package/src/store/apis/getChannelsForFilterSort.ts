@@ -17,7 +17,7 @@ import { SqliteClient } from '../SqliteClient';
  *
  * @returns Array of channels corresponding to filters & sort. Returns null if filters + sort query doesn't exist in "channelQueries" table.
  */
-export const getChannelsForFilterSort = <
+export const getChannelsForFilterSort = async <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   currentUserId,
@@ -27,7 +27,7 @@ export const getChannelsForFilterSort = <
   currentUserId: string;
   filters?: ChannelFilters<StreamChatGenerics>;
   sort?: ChannelSort<StreamChatGenerics>;
-}): Omit<ChannelAPIResponse<StreamChatGenerics>, 'duration'>[] | null => {
+}): Promise<Omit<ChannelAPIResponse<StreamChatGenerics>, 'duration'>[] | null> => {
   if (!filters && !sort) {
     console.warn('Please provide the query (filters/sort) to fetch channels from DB');
     return null;
@@ -35,7 +35,7 @@ export const getChannelsForFilterSort = <
 
   SqliteClient.logger?.('info', 'getChannelsForFilterSort', { filters, sort });
 
-  const channelIds = selectChannelIdsForFilterSort({ filters, sort });
+  const channelIds = await selectChannelIdsForFilterSort({ filters, sort });
 
   if (!channelIds) return null;
 
@@ -43,7 +43,7 @@ export const getChannelsForFilterSort = <
     return [];
   }
 
-  return getChannels({
+  return await getChannels({
     channelIds,
     currentUserId,
   });

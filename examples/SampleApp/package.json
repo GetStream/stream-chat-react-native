@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@notifee/react-native": "^7.7.1",
-    "@op-engineering/op-sqlite": "^6.2.11",
+    "@op-engineering/op-sqlite": "^9.3.0",
     "@react-native-async-storage/async-storage": "^1.21.0",
     "@react-native-camera-roll/camera-roll": "^7.8.0",
     "@react-native-community/netinfo": "^11.3.2",

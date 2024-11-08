@@ -1,7 +1,7 @@
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { SqliteClient } from '../SqliteClient';
 
-export const deletePendingTask = ({ id }: { id: number }) => {
+export const deletePendingTask = async ({ id }: { id: number }) => {
   const query = createDeleteQuery('pendingTasks', {
     id,
   });
@@ -10,7 +10,7 @@ export const deletePendingTask = ({ id }: { id: number }) => {
     id,
   });
 
-  SqliteClient.executeSql.apply(null, query);
+  await SqliteClient.executeSql.apply(null, query);
 
   return [query];
 };

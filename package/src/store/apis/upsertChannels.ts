@@ -11,7 +11,7 @@ import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries } from '../types';
 
-export const upsertChannels = ({
+export const upsertChannels = async ({
   channels,
   filters,
   flush = true,
@@ -35,7 +35,7 @@ export const upsertChannels = ({
 
   if (filters || sort) {
     queries = queries.concat(
-      upsertCidsForQuery({
+      await upsertCidsForQuery({
         cids: channelIds,
         filters,
         flush: false,
@@ -49,7 +49,7 @@ export const upsertChannels = ({
 
     const { members, messages, read } = channel;
     queries = queries.concat(
-      upsertMembers({
+      await upsertMembers({
         cid: channel.channel.cid,
         flush: false,
         members,
@@ -58,7 +58,7 @@ export const upsertChannels = ({
 
     if (read) {
       queries = queries.concat(
-        upsertReads({
+        await upsertReads({
           cid: channel.channel.cid,
           flush: false,
           reads: read,
@@ -68,7 +68,7 @@ export const upsertChannels = ({
 
     if (isLatestMessagesSet) {
       queries = queries.concat(
-        upsertMessages({
+        await upsertMessages({
           flush: false,
           messages,
         }),
@@ -77,7 +77,7 @@ export const upsertChannels = ({
   }
 
   if (flush) {
-    SqliteClient.executeSqlBatch(queries);
+    await SqliteClient.executeSqlBatch(queries);
   }
 
   return queries;
