@@ -2,8 +2,6 @@ import type { FormatMessageResponse, MessageResponse } from 'stream-chat';
 
 import { mapDateTimeToStorable } from './mapDateTimeToStorable';
 
-import { mapPollToStorable } from './mapPollToStorable';
-
 import type { TableRow } from '../types';
 
 export const mapMessageToStorable = (
@@ -20,6 +18,7 @@ export const mapMessageToStorable = (
     message_text_updated_at,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     own_reactions,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     poll,
     poll_id,
     reaction_groups,
@@ -29,8 +28,6 @@ export const mapMessageToStorable = (
     user,
     ...extraData
   } = message;
-
-  const pollInMessage = poll && mapPollToStorable(poll);
 
   return {
     attachments: JSON.stringify(attachments),
@@ -46,6 +43,5 @@ export const mapMessageToStorable = (
     type,
     updatedAt: mapDateTimeToStorable(updated_at),
     userId: user?.id,
-    ...(pollInMessage ? { poll: pollInMessage } : {}),
   };
 };

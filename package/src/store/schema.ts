@@ -103,7 +103,6 @@ export const tables: Tables = {
       extraData: 'TEXT',
       id: 'TEXT',
       messageTextUpdatedAt: 'TEXT',
-      poll: 'TEXT',
       poll_id: 'TEXT',
       reactionGroups: 'TEXT',
       text: "TEXT DEFAULT ''",
@@ -298,7 +297,6 @@ export type Schema = {
     extraData: string;
     id: string;
     messageTextUpdatedAt: string;
-    poll: string;
     poll_id: string;
     reactionGroups: string;
     type: MessageLabel;

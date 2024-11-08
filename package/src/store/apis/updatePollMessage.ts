@@ -1,4 +1,4 @@
-import { isVoteAnswer, PollAnswer, PollResponse, PollVote, StreamChat } from 'stream-chat';
+import { isVoteAnswer, PollAnswer, PollResponse, PollVote } from 'stream-chat';
 
 import { DefaultStreamChatGenerics } from '../../types/types';
 import { mapPollToStorable } from '../mappers/mapPollToStorable';
@@ -11,13 +11,15 @@ import type { PreparedQueries } from '../types';
 export const updatePollMessage = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
-  client,
+  eventType,
   flush = true,
   poll,
   poll_vote,
+  userID,
 }: {
-  client: StreamChat<StreamChatGenerics>;
+  eventType: string;
   poll: PollResponse<StreamChatGenerics>;
+  userID: string;
   flush?: boolean;
   poll_vote?: PollVote<StreamChatGenerics> | PollAnswer<StreamChatGenerics>;
 }) => {
@@ -33,21 +35,37 @@ export const updatePollMessage = <
   for (const pollFromDB of pollsFromDB) {
     const serializedPoll = mapStorableToPoll(pollFromDB);
     const { latest_answers = [], own_votes = [] } = serializedPoll;
-    const newOwnVotes =
-      poll_vote && poll_vote.user?.id === client.userID
-        ? [poll_vote, ...own_votes.filter((vote) => vote.id !== poll_vote.id)]
-        : own_votes;
-    const newLatestAnswers =
-      poll_vote && isVoteAnswer(poll_vote)
-        ? [poll_vote, ...latest_answers.filter((answer) => answer.id !== poll_vote?.id)]
-        : latest_answers;
+    console.log(eventType);
+    let newOwnVotes = own_votes;
+    if (poll_vote && poll_vote.user?.id === userID) {
+      newOwnVotes =
+        eventType === 'poll.vote_removed'
+          ? newOwnVotes.filter((vote) => vote.id !== poll_vote.id)
+          : [poll_vote, ...newOwnVotes.filter((vote) => vote.id !== poll_vote.id)];
+    }
+    let newLatestAnswers = latest_answers;
+    if (poll_vote && isVoteAnswer(poll_vote)) {
+      newLatestAnswers =
+        eventType === 'poll.vote_removed'
+          ? newLatestAnswers.filter((answer) => answer.id !== poll_vote?.id)
+          : [poll_vote, ...newLatestAnswers.filter((answer) => answer.id !== poll_vote?.id)];
+    }
+    // const newOwnVotes =
+    //   poll_vote && poll_vote.user?.id === userID
+    //     ? [poll_vote, ...own_votes.filter((vote) => vote.id !== poll_vote.id)]
+    //     : own_votes;
+    // const newLatestAnswers =
+    //   poll_vote && isVoteAnswer(poll_vote)
+    //     ? [poll_vote, ...latest_answers.filter((answer) => answer.id !== poll_vote?.id)]
+    //     : latest_answers;
+
     const storablePoll = mapPollToStorable({
       ...poll,
       latest_answers: newLatestAnswers,
       own_votes: newOwnVotes,
     });
 
-    console.log('STORABLE POLL: ', storablePoll);
+    console.log('STORABLE POLL: ', newOwnVotes);
 
     queries.push(
       createUpdateQuery('poll', storablePoll, {
