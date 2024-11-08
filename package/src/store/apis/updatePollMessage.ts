@@ -57,8 +57,6 @@ export const updatePollMessage = <
       own_votes: newOwnVotes,
     });
 
-    console.log('STORABLE POLL: ', newOwnVotes);
-
     queries.push(
       createUpdateQuery('poll', storablePoll, {
         id: poll.id,
