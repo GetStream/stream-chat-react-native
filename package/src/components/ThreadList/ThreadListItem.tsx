@@ -211,17 +211,18 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
 
   const selector = useCallback(
     (nextValue: ThreadState) =>
-      [
-        nextValue.replies.at(-1),
-        (client.userID && nextValue.read[client.userID]?.unreadMessageCount) || 0,
-        nextValue.parentMessage,
-        nextValue.channel,
-        nextValue.deletedAt,
-      ] as const,
+      ({
+        channel: nextValue.channel,
+        deletedAt: nextValue.deletedAt,
+        lastReply: nextValue.replies.at(-1),
+        ownUnreadMessageCount:
+          (client.userID && nextValue.read[client.userID]?.unreadMessageCount) || 0,
+        parentMessage: nextValue.parentMessage,
+      } as const),
     [client],
   );
 
-  const [lastReply, ownUnreadMessageCount, parentMessage, channel, deletedAt] = useStateStore(
+  const { channel, deletedAt, lastReply, ownUnreadMessageCount, parentMessage } = useStateStore(
     thread.state,
     selector,
   );
