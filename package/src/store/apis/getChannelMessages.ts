@@ -7,8 +7,8 @@ import { selectReactionsForMessages } from './queries/selectReactionsForMessages
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { isBlockedMessage } from '../../utils/utils';
 import { mapStorableToMessage } from '../mappers/mapStorableToMessage';
-import { SqliteClient } from '../SqliteClient';
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
+import { SqliteClient } from '../SqliteClient';
 import type { TableRow, TableRowJoinedUser } from '../types';
 
 export const getChannelMessages = async <
@@ -39,7 +39,7 @@ export const getChannelMessages = async <
   const messageIdsVsPolls: Record<string, TableRow<'poll'>> = {};
   const pollsById: Record<string, TableRow<'poll'>> = {};
   const messagesWithPolls = messageRows.filter((message) => !!message.poll_id);
-  const polls = QuickSqliteClient.executeSql.apply(
+  const polls = await SqliteClient.executeSql.apply(
     null,
     createSelectQuery('poll', ['*'], {
       id: messagesWithPolls.map((message) => message.poll_id),
