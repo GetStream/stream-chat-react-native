@@ -22,7 +22,7 @@ export const Colors = {
   icon_background: '#FFFFFF',
   label_bg_transparent: '#00000033', // 33 = 20% opacity
   light_blue: '#E0F0FF',
-  light_gray: '#DBDDE1',
+  light_gray: '#E9EAED',
   modal_shadow: '#00000099', // 99 = 60% opacity; x=0, y= 1, radius=4
   overlay: '#000000CC', // CC = 80% opacity
   shadow_icon: '#00000040', // 40 = 25% opacity; x=0, y=0, radius=4
@@ -1152,10 +1152,8 @@ export const defaultTheme: Theme = {
       metaText: {
         fontSize: 12,
       },
-      receiverMessageBackgroundColor: Colors.grey_gainsboro,
       replyBorder: {},
       replyContainer: {},
-      senderMessageBackgroundColor: Colors.light_blue,
       textContainer: {
         onlyEmojiMarkdown: { text: { fontSize: 50 } },
       },
