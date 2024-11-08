@@ -4,7 +4,7 @@ import { mapChannelDataToStorable } from '../mappers/mapChannelDataToStorable';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
 
-export const upsertChannelData = ({
+export const upsertChannelData = async ({
   channel,
   flush = true,
 }: {
@@ -17,8 +17,9 @@ export const upsertChannelData = ({
     channel: storableChannel,
     flush,
   });
+
   if (flush) {
-    SqliteClient.executeSqlBatch([query]);
+    await SqliteClient.executeSqlBatch([query]);
   }
 
   return [query];

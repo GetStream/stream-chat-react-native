@@ -15,30 +15,18 @@ export const sqliteMock = {
           status: 0,
         };
       },
-      execute: (queryInput: string, params: unknown[]) => {
+      execute: async (queryInput: string, params: unknown[]) => {
         const query = queryInput.trim().toLowerCase();
+
         const stmt = db.prepare(query);
         let result: unknown[] = [];
-
         if (query.indexOf('select') === 0) {
-          if (params) {
-            const modifiedParams = params.map((p) => {
-              if (typeof p == 'boolean') {
-                return Number(p);
-              } else {
-                return p;
-              }
-            });
-            result = stmt.all(modifiedParams);
-          } else {
-            result = stmt.all();
-          }
+          const modifiedParams = params?.map((p) => (typeof p === 'boolean' ? Number(p) : p)) || [];
+          result = await new Promise((resolve) => resolve(stmt.all(modifiedParams)));
 
           return {
             message: '',
-            rows: {
-              _array: result,
-            },
+            rows: result,
             status: 0,
           };
         }
@@ -53,47 +41,44 @@ export const sqliteMock = {
 
           return {
             message: '',
-            rows: {
-              _array: result,
-            },
+            rows: result,
             status: 0,
           };
         }
 
         // insert or create table query
-        if (params) {
-          stmt.run(params);
-        } else {
-          stmt.run();
-        }
-
-        return {
-          message: '',
-          rows: {
-            _array: result,
-          },
-          status: 0,
-        };
-      },
-      executeBatch: (queriesArr: PreparedQueries[]) => {
-        queriesArr.forEach((queryAndParams) => {
-          const query = queryAndParams[0];
-          const params = queryAndParams[1];
-          const stmt = db.prepare(query);
+        await new Promise((resolve) => {
           if (params) {
-            const modifiedParams = params.map((p) => {
-              if (typeof p == 'boolean') {
-                return Number(p);
-              } else {
-                return p;
-              }
-            });
-
+            const modifiedParams = params.map((p) => (typeof p === 'boolean' ? Number(p) : p));
             stmt.run(modifiedParams);
           } else {
             stmt.run();
           }
+          resolve(undefined);
         });
+
+        return {
+          message: '',
+          rows: result,
+          status: 0,
+        };
+      },
+      executeBatch: async (queriesArr: PreparedQueries[]) => {
+        for (const queryAndParams of queriesArr) {
+          const query = queryAndParams[0];
+          const params = queryAndParams[1];
+          const stmt = db.prepare(query);
+
+          await new Promise((resolve) => {
+            if (params) {
+              const modifiedParams = params.map((p) => (typeof p === 'boolean' ? Number(p) : p));
+              stmt.run(modifiedParams);
+            } else {
+              stmt.run();
+            }
+            resolve(undefined);
+          });
+        }
 
         return {
           message: '',

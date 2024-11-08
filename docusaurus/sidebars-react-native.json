@@ -157,6 +157,7 @@
       "guides/audio-messages-support",
       "guides/date-time-formatting",
       "guides/native-image-picker",
+      "guides/new-architecture",
       "customization/typescript",
       "basics/troubleshooting",
       "basics/stream_chat_with_navigation",

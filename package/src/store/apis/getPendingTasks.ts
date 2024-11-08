@@ -3,13 +3,13 @@ import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
 import { SqliteClient } from '../SqliteClient';
 import type { TableRowJoinedUser } from '../types';
 
-export const getPendingTasks = (conditions: { messageId?: string } = {}) => {
+export const getPendingTasks = async (conditions: { messageId?: string } = {}) => {
   const query = createSelectQuery('pendingTasks', ['*'], conditions, {
     createdAt: 1,
   });
 
   SqliteClient.logger?.('info', 'getPendingTasks', { conditions });
-  const result = SqliteClient.executeSql.apply(null, query);
+  const result = await SqliteClient.executeSql.apply(null, query);
 
   return result.map((r: TableRowJoinedUser<'pendingTasks'>) => mapStorableToTask(r));
 };

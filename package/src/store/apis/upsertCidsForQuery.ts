@@ -5,7 +5,7 @@ import { convertFilterSortToQuery } from './utils/convertFilterSortToQuery';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
 
-export const upsertCidsForQuery = ({
+export const upsertCidsForQuery = async ({
   cids,
   filters,
   flush = true,
@@ -31,7 +31,7 @@ export const upsertCidsForQuery = ({
   });
 
   if (flush) {
-    SqliteClient.executeSql.apply(null, query);
+    await SqliteClient.executeSql.apply(null, query);
   }
 
   return [query];

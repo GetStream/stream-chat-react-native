@@ -10,7 +10,7 @@ import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries } from '../types';
 
-export const updateMessage = ({
+export const updateMessage = async ({
   flush = true,
   message,
 }: {
@@ -19,7 +19,7 @@ export const updateMessage = ({
 }) => {
   const queries: PreparedQueries[] = [];
 
-  const messages = SqliteClient.executeSql.apply(
+  const messages = await SqliteClient.executeSql.apply(
     null,
     createSelectQuery('messages', ['*'], {
       id: message.id,
@@ -76,7 +76,7 @@ export const updateMessage = ({
   });
 
   if (flush) {
-    SqliteClient.executeSqlBatch(queries);
+    await SqliteClient.executeSqlBatch(queries);
   }
 
   return queries;

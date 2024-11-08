@@ -32,9 +32,9 @@ export const useFetchReactions = <
   const sortString = useMemo(() => JSON.stringify(sort), [sort]);
 
   const fetchReactions = useCallback(async () => {
-    const loadOfflineReactions = () => {
+    const loadOfflineReactions = async () => {
       if (!messageId) return;
-      const reactionsFromDB = getReactionsForFilterSort({
+      const reactionsFromDB = await getReactionsForFilterSort({
         currentMessageId: messageId,
         filters: reactionType ? { type: reactionType } : {},
         sort,
@@ -62,7 +62,7 @@ export const useFetchReactions = <
 
     try {
       if (enableOfflineSupport) {
-        loadOfflineReactions();
+        await loadOfflineReactions();
       } else {
         await loadOnlineReactions();
       }

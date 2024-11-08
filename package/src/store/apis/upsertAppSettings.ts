@@ -3,7 +3,7 @@ import type { AppSettingsAPIResponse } from 'stream-chat';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
 
-export const upsertAppSettings = ({
+export const upsertAppSettings = async ({
   appSettings,
   currentUserId,
   flush = true,
@@ -25,6 +25,6 @@ export const upsertAppSettings = ({
   });
 
   if (flush) {
-    SqliteClient.executeSql.apply(null, query);
+    await SqliteClient.executeSql.apply(null, query);
   }
 };

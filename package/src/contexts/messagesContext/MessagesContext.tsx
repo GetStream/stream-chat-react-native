@@ -276,7 +276,7 @@ export type MessagesContextValue<
    */
   MessageUserReactionsItem: React.ComponentType<MessageUserReactionsItemProps>;
 
-  removeMessage: (message: { id: string; parent_id?: string }) => void;
+  removeMessage: (message: { id: string; parent_id?: string }) => Promise<void>;
   /**
    * UI component for Reply
    * Defaults to: [Reply](https://getstream.io/chat/docs/sdk/reactnative/ui-components/reply/)
