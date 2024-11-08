@@ -440,7 +440,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                     "borderWidth": 1,
                                   },
                                   {
-                                    "backgroundColor": "#DBDBDB",
+                                    "backgroundColor": "#E9EAED",
                                     "borderBottomLeftRadius": 0,
                                     "borderBottomRightRadius": 16,
                                     "borderColor": "#ECEBEB",
@@ -788,7 +788,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                     "borderWidth": 1,
                                   },
                                   {
-                                    "backgroundColor": "#DBDBDB",
+                                    "backgroundColor": "#E9EAED",
                                     "borderBottomLeftRadius": 0,
                                     "borderBottomRightRadius": 16,
                                     "borderColor": "#ECEBEB",
@@ -1136,7 +1136,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                     "borderWidth": 1,
                                   },
                                   {
-                                    "backgroundColor": "#DBDBDB",
+                                    "backgroundColor": "#E9EAED",
                                     "borderBottomLeftRadius": 0,
                                     "borderBottomRightRadius": 16,
                                     "borderColor": "#ECEBEB",
@@ -1518,7 +1518,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                         "borderWidth": 1,
                                       },
                                       {
-                                        "backgroundColor": "#DBDBDB",
+                                        "backgroundColor": "#E9EAED",
                                         "borderBottomLeftRadius": 0,
                                         "borderBottomRightRadius": 16,
                                         "borderColor": "#ECEBEB",
