@@ -164,7 +164,12 @@ export const CreatePollContent = () => {
               {t<string>('Multiple answers')}
             </Text>
             <Switch
-              onValueChange={() => setMultipleAnswersAllowed(!multipleAnswersAllowed)}
+              onValueChange={() => {
+                if (multipleAnswersAllowed) {
+                  setMaxVotesPerPersonEnabled(false);
+                }
+                setMultipleAnswersAllowed(!multipleAnswersAllowed);
+              }}
               value={multipleAnswersAllowed}
             />
           </View>

@@ -35,7 +35,6 @@ export const updatePollMessage = <
   for (const pollFromDB of pollsFromDB) {
     const serializedPoll = mapStorableToPoll(pollFromDB);
     const { latest_answers = [], own_votes = [] } = serializedPoll;
-    console.log(eventType);
     let newOwnVotes = own_votes;
     if (poll_vote && poll_vote.user?.id === userID) {
       newOwnVotes =
