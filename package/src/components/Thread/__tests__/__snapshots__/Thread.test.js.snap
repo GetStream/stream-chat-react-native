@@ -416,7 +416,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   "overflow": "hidden",
                                 },
                                 {
-                                  "backgroundColor": "#F2F2F2",
+                                  "backgroundColor": "#FCFCFC",
                                   "borderBottomLeftRadius": 0,
                                   "borderBottomRightRadius": 16,
                                   "borderColor": "#ECEBEB",
@@ -742,7 +742,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   "overflow": "hidden",
                                 },
                                 {
-                                  "backgroundColor": "#F2F2F2",
+                                  "backgroundColor": "#FCFCFC",
                                   "borderBottomLeftRadius": 0,
                                   "borderBottomRightRadius": 16,
                                   "borderColor": "#ECEBEB",
@@ -1068,7 +1068,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   "overflow": "hidden",
                                 },
                                 {
-                                  "backgroundColor": "#F2F2F2",
+                                  "backgroundColor": "#FCFCFC",
                                   "borderBottomLeftRadius": 0,
                                   "borderBottomRightRadius": 16,
                                   "borderColor": "#ECEBEB",
@@ -1422,7 +1422,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "overflow": "hidden",
                                     },
                                     {
-                                      "backgroundColor": "#F2F2F2",
+                                      "backgroundColor": "#FCFCFC",
                                       "borderBottomLeftRadius": 0,
                                       "borderBottomRightRadius": 16,
                                       "borderColor": "#ECEBEB",

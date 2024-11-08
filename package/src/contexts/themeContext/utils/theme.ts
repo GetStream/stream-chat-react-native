@@ -1218,10 +1218,8 @@ export const defaultTheme: Theme = {
       metaText: {
         fontSize: 12,
       },
-      receiverMessageBackgroundColor: Colors.white_smoke,
       replyBorder: {},
       replyContainer: {},
-      senderMessageBackgroundColor: Colors.grey_gainsboro,
       textContainer: {
         onlyEmojiMarkdown: { text: { fontSize: 50 } },
       },
