@@ -2503,10 +2503,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@op-engineering/op-sqlite@^6.0.4":
-  version "6.0.4"
-  resolved "https://registry.yarnpkg.com/@op-engineering/op-sqlite/-/op-sqlite-6.0.4.tgz#482c11e5333776707b72ac0f25ba9b9f09f2091e"
-  integrity sha512-reC9TszzU+ygH+RckXA017SeBEwzhuy/7UxLtGVtXpSlWEJp24MmMUYMcWO++OnNFHZZrpI376M09RjyQkl7xQ==
+"@op-engineering/op-sqlite@^9.3.0":
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/@op-engineering/op-sqlite/-/op-sqlite-9.3.0.tgz#cf61d0782ec8117e339f0f7843ce54be63384a5e"
+  integrity sha512-PDT3H1sIO8PrseskJS+ibMVzyluDGvswsyKGMUucx0LSyKFRcFtCySpPpnCswSIJIO4z2hAlvdoBi3r+4zb4Bw==
 
 "@react-native-community/cli-clean@12.3.6":
   version "12.3.6"

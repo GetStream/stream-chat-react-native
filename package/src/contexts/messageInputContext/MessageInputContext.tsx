@@ -918,7 +918,6 @@ export const MessageInputProvider = <
     customMessageData,
   }: {
     customMessageData?: Partial<Message<StreamChatGenerics>>;
-    // eslint-disable-next-line require-await
   } = {}) => {
     if (sending.current) {
       return;
@@ -1036,7 +1035,7 @@ export const MessageInputProvider = <
          * If the message is bounced by moderation, we firstly remove the message from message list and then send a new message.
          */
         if (message && isBouncedMessage(message as MessageType<StreamChatGenerics>)) {
-          removeMessage(message);
+          await removeMessage(message);
         }
         value.sendMessage({
           attachments,

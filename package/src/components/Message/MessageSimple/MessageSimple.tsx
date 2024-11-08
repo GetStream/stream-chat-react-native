@@ -104,7 +104,7 @@ const MessageSimpleWithContext = <
 
   const {
     theme: {
-      colors: { blue_alice, grey_gainsboro, transparent },
+      colors: { blue_alice, grey_gainsboro, light_blue, light_gray, transparent },
       messageSimple: {
         container,
         content: {
@@ -160,7 +160,7 @@ const MessageSimpleWithContext = <
     }
   }
 
-  let backgroundColor = senderMessageBackgroundColor;
+  let backgroundColor = senderMessageBackgroundColor ?? light_blue;
   if (onlyEmojis && !message.quoted_message) {
     backgroundColor = transparent;
   } else if (otherAttachments.length) {
@@ -170,7 +170,7 @@ const MessageSimpleWithContext = <
       backgroundColor = blue_alice;
     }
   } else if (isMessageReceivedOrErrorType) {
-    backgroundColor = receiverMessageBackgroundColor;
+    backgroundColor = receiverMessageBackgroundColor ?? light_gray;
   }
 
   const repliesCurveColor = isMessageReceivedOrErrorType ? grey_gainsboro : backgroundColor;

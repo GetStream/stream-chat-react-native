@@ -11,7 +11,7 @@ import type { PendingTask } from '../types';
  *
  * @return {() => void} - A function that can be called to remove the task from the database
  */
-export const addPendingTask = (task: PendingTask) => {
+export const addPendingTask = async (task: PendingTask) => {
   const storable = mapTaskToStorable(task);
   const { channelId, channelType, payload, type } = storable;
   const query = createUpsertQuery('pendingTasks', storable);
@@ -22,9 +22,9 @@ export const addPendingTask = (task: PendingTask) => {
     type,
   });
 
-  SqliteClient.executeSql.apply(null, query);
+  await SqliteClient.executeSql.apply(null, query);
 
-  return () => {
+  return async () => {
     SqliteClient.logger?.('info', 'deletePendingTaskAfterAddition', {
       channelId,
       channelType,
@@ -38,6 +38,6 @@ export const addPendingTask = (task: PendingTask) => {
       type,
     });
 
-    SqliteClient.executeSql.apply(null, query);
+    await SqliteClient.executeSql.apply(null, query);
   };
 };

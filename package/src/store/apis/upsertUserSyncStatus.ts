@@ -1,7 +1,7 @@
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
 
-export const upsertUserSyncStatus = ({
+export const upsertUserSyncStatus = async ({
   currentUserId,
   lastSyncedAt,
 }: {
@@ -18,5 +18,5 @@ export const upsertUserSyncStatus = ({
     userId: currentUserId,
   });
 
-  SqliteClient.executeSql.apply(null, query);
+  await SqliteClient.executeSql.apply(null, query);
 };

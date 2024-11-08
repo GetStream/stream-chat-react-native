@@ -13,7 +13,7 @@ import { SqliteClient } from '../SqliteClient';
  * @param filters The filters to be applied while fetching reactions.
  * @param sort The sort to be applied while fetching reactions.
  */
-export const getReactionsForFilterSort = <
+export const getReactionsForFilterSort = async <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   currentMessageId,
@@ -23,7 +23,7 @@ export const getReactionsForFilterSort = <
   currentMessageId: string;
   filters?: ReactionFilters<StreamChatGenerics>;
   sort?: ReactionSort<StreamChatGenerics>;
-}): ReactionResponse<StreamChatGenerics>[] | null => {
+}): Promise<ReactionResponse<StreamChatGenerics>[] | null> => {
   if (!filters && !sort) {
     console.warn('Please provide the query (filters/sort) to fetch channels from DB');
     return null;
@@ -31,7 +31,7 @@ export const getReactionsForFilterSort = <
 
   SqliteClient.logger?.('info', 'getReactionsForFilterSort', { filters, sort });
 
-  const reactions = selectReactionsForMessages([currentMessageId]);
+  const reactions = await selectReactionsForMessages([currentMessageId]);
 
   if (!reactions) return null;
 

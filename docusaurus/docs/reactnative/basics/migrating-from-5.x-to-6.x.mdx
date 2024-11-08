@@ -43,6 +43,10 @@ Also, the dependency is made optional now, so if you don't want to use the image
 
 The `react-native-quick-sqlite` package has been replaced with `op-sqlite`. This is a faster alternative, and can help us with our new architecture endeavors.
 
+:::note
+For React Native version 0.74 and above, you need to install version `>=9.3.0` of the `op-sqlite`.
+:::
+
 You can replace it by running the following commands:
 
 ```bash
@@ -197,6 +201,12 @@ registerNativeHandlers({
 The type of `quotedMessage` is changed from `MessageType |  boolean` to `MessageType | undefined` for better in the `MessageInputContext`.
 
 ### Refactor of theme object
+
+The color of the sender and receiver messages are now changed to `light_blue` and `light_gray` keys respectively.
+
+:::note
+Please configure the `light_blue` and `light_gray` keys in the theme object to customize the sender and receiver messages for dark and light mode.
+:::
 
 The default theme object has been refactored to provide a better customization experience. The theme object is now more organized and provides better control over the customization. You can check the object [here](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/contexts/themeContext/utils/theme.ts).
 

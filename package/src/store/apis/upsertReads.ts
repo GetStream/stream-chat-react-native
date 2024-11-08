@@ -6,7 +6,7 @@ import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries } from '../types';
 
-export const upsertReads = ({
+export const upsertReads = async ({
   cid,
   flush = true,
   reads,
@@ -37,7 +37,7 @@ export const upsertReads = ({
   });
 
   if (flush) {
-    SqliteClient.executeSqlBatch(queries);
+    await SqliteClient.executeSqlBatch(queries);
   }
 
   return queries;

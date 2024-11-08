@@ -194,25 +194,25 @@ export const usePaginatedChannels = <
     const loadOfflineChannels = () => {
       if (!client?.user?.id) return;
 
-      try {
-        const channelsFromDB = getChannelsForFilterSort({
-          currentUserId: client.user.id,
-          filters,
-          sort,
+      getChannelsForFilterSort({
+        currentUserId: client.user.id,
+        filters,
+        sort,
+      })
+        .then((channelsFromDB) => {
+          if (channelsFromDB) {
+            const offlineChannels = client.hydrateActiveChannels(channelsFromDB, {
+              offlineMode: true,
+              skipInitialization: [], // passing empty array will clear out the existing messages from channel state, this removes the possibility of duplicate messages
+            });
+
+            setChannels(offlineChannels);
+            setStaticChannelsActive(true);
+          }
+        })
+        .catch((e) => {
+          console.warn('Failed to get channels from database: ', e);
         });
-
-        if (channelsFromDB) {
-          const offlineChannels = client.hydrateActiveChannels(channelsFromDB, {
-            offlineMode: true,
-            skipInitialization: [], // passing empty array will clear out the existing messages from channel state, this removes the possibility of duplicate messages
-          });
-
-          setChannels(offlineChannels);
-          setStaticChannelsActive(true);
-        }
-      } catch (e) {
-        console.warn('Failed to get channels from database: ', e);
-      }
 
       setActiveQueryType(null);
     };

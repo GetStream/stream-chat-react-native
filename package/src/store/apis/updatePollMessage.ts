@@ -5,7 +5,7 @@ import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
 import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries } from '../types';
 
-export const updatePollMessage = ({
+export const updatePollMessage = async ({
   flush = true,
   poll,
 }: {
@@ -14,7 +14,7 @@ export const updatePollMessage = ({
 }) => {
   const queries: PreparedQueries[] = [];
 
-  const messagesWithPoll = SqliteClient.executeSql.apply(
+  const messagesWithPoll = await SqliteClient.executeSql.apply(
     null,
     createSelectQuery('messages', ['*'], {
       poll_id: poll.id,
