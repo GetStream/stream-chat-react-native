@@ -765,17 +765,6 @@ const ChannelWithContext = <
   useAppStateListener(undefined, handleAppBackground);
 
   /**
-   * CHANNEL CONSTANTS
-   */
-  const isAdmin = client?.user?.role === 'admin' || channel?.state.membership.role === 'admin';
-
-  const isModerator =
-    channel?.state.membership.role === 'channel_moderator' ||
-    channel?.state.membership.role === 'moderator';
-
-  const isOwner = channel?.state.membership.role === 'owner';
-
-  /**
    * CHANNEL METHODS
    */
   const markRead: ChannelContextValue<StreamChatGenerics>['markRead'] = useRef(
@@ -2162,10 +2151,7 @@ const ChannelWithContext = <
       !!(clientChannelConfig?.commands || [])?.some((command) => command.name === 'giphy'),
     hideDateSeparators,
     hideStickyDateHeader,
-    isAdmin,
     isChannelActive: shouldSyncChannel,
-    isModerator,
-    isOwner,
     lastRead,
     loadChannelAroundMessage,
     loading,
