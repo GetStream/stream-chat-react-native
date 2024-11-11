@@ -948,8 +948,8 @@ const ChannelWithContext = <
           }
         }
         const hasLatestMessages = channel.state.latestMessages.length > 0;
-        channel.state.setIsUpToDate(hasLatestMessages);
-        setHasNoMoreRecentMessagesToLoad(hasLatestMessages);
+        channel.state.setIsUpToDate(!hasLatestMessages);
+        setHasNoMoreRecentMessagesToLoad(!hasLatestMessages);
         copyChannelState();
         if (scrollToMessageIndex !== -1) {
           // since we need to scroll after immediately do this without throttle
@@ -1888,10 +1888,12 @@ const ChannelWithContext = <
       const latestLengthBeforeMerge = latestMessageSet?.messages.length || 0;
       const didMerge = mergeOverlappingMessageSetsRef.current(true);
       if (didMerge) {
-        if (latestMessageSet && latestLengthBeforeMerge >= limit) {
+        if (latestMessageSet && latestLengthBeforeMerge > 0) {
+          const shouldSetStateUpToDate =
+            latestMessageSet.messages.length < limit && latestMessageSet.isCurrent;
           setLoadingMoreRecent(true);
-          channel.state.setIsUpToDate(true);
-          setHasNoMoreRecentMessagesToLoad(true);
+          channel.state.setIsUpToDate(shouldSetStateUpToDate);
+          setHasNoMoreRecentMessagesToLoad(shouldSetStateUpToDate);
           loadMoreRecentFinished(channel.state.messages);
           restartSetsMergeFuncRef.current();
           return;
