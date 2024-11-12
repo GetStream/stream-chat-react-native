@@ -1204,7 +1204,7 @@ const ChannelWithContext = <
       if (latestSet) latestSet.messages = [];
     }
     if (channel.state.latestMessages.length === 0) {
-      await channel.query({}, 'latest');
+      await channel.query({ messages: { limit: 30 } }, 'latest');
     }
     await channel.state.loadMessageIntoState('latest');
   });
