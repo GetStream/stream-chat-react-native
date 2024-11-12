@@ -948,8 +948,8 @@ const ChannelWithContext = <
           }
         }
         const hasLatestMessages = channel.state.latestMessages.length > 0;
-        channel.state.setIsUpToDate(!hasLatestMessages);
-        setHasNoMoreRecentMessagesToLoad(!hasLatestMessages);
+        channel.state.setIsUpToDate(hasLatestMessages);
+        setHasNoMoreRecentMessagesToLoad(hasLatestMessages);
         copyChannelState();
         if (scrollToMessageIndex !== -1) {
           // since we need to scroll after immediately do this without throttle
@@ -1204,9 +1204,10 @@ const ChannelWithContext = <
       if (latestSet) latestSet.messages = [];
     }
     if (channel.state.latestMessages.length === 0) {
-      await channel.query({ messages: { limit: 30 } }, 'latest');
+      await channel.query({}, 'latest');
     }
     await channel.state.loadMessageIntoState('latest');
+    setMessages([...channel.state.messages]);
   });
 
   const loadChannel = () =>
@@ -1403,13 +1404,17 @@ const ChannelWithContext = <
   }, [enableOfflineSupport, shouldSyncChannel]);
 
   const reloadChannel = () =>
-    channelQueryCallRef.current(async () => {
-      setLoading(true);
-      await loadLatestMessagesRef.current(true);
-      setLoading(false);
-      channel?.state.setIsUpToDate(true);
-      setHasNoMoreRecentMessagesToLoad(true);
-    });
+    channelQueryCallRef.current(
+      async () => {
+        setLoading(true);
+        await loadLatestMessagesRef.current(true);
+        setLoading(false);
+      },
+      () => {
+        channel?.state.setIsUpToDate(true);
+        setHasNoMoreRecentMessagesToLoad(true);
+      },
+    );
 
   /**
    * @deprecated
