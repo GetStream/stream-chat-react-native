@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 
 import type { Attachment, UserResponse } from 'stream-chat';
@@ -54,6 +54,7 @@ import {
   MessageType,
 } from '../MessageList/hooks/useMessageList';
 import type { MessageActionListItemProps } from '../MessageOverlay/MessageActionListItem';
+import { Poll as PollComponent } from '../Poll';
 
 export type TouchableEmitter =
   | 'fileAttachment'
@@ -175,6 +176,7 @@ export type MessagePropsWithContext<
     | 'setQuotedMessageState'
     | 'supportedReactions'
     | 'updateMessage'
+    | 'PollContent'
   > &
   Pick<MessageOverlayContextValue<StreamChatGenerics>, 'setData'> &
   Pick<OverlayContextValue, 'setOverlay'> &
@@ -284,6 +286,7 @@ const MessageWithContext = <
     onThreadSelect,
     openThread,
     OverlayReactionList,
+    PollContent,
     preventPress,
     removeMessage,
     retrySendMessage,
@@ -305,8 +308,8 @@ const MessageWithContext = <
   const { client } = chatContext;
   const {
     theme: {
-      colors: { bg_gradient_start, targetedMessageBackground },
-      messageSimple: { targetedMessageContainer, targetedMessageUnderlay },
+      colors: { targetedMessageBackground },
+      messageSimple: { targetedMessageContainer, targetedMessageUnderlay, unreadUnderlayColor },
     },
   } = useTheme();
 
@@ -451,6 +454,8 @@ const MessageWithContext = <
         return !!attachments.files.length;
       case 'gallery':
         return !!attachments.images.length || !!attachments.videos.length;
+      case 'poll':
+        return !!message.poll_id;
       case 'text':
       default:
         return !!message.text;
@@ -561,6 +566,14 @@ const MessageWithContext = <
 
   const { userLanguage } = useTranslationContext();
 
+  // TODO: Can be removed in V6 and from here completely once it becomes baseline.
+  const PollWrapper = useCallback(() => {
+    const poll = message?.poll_id ? client.polls.fromState(message.poll_id) : undefined;
+    return message?.poll_id && poll ? (
+      <PollComponent<StreamChatGenerics> message={message} poll={poll} PollContent={PollContent} />
+    ) : null;
+  }, [PollContent, client, message]);
+
   const showMessageOverlay = async (isMessageActionsVisible = true, error = errorOrFailed) => {
     await dismissKeyboard();
 
@@ -611,6 +624,7 @@ const MessageWithContext = <
       otherAttachments: attachments.other,
       OverlayReactionList,
       ownCapabilities,
+      Poll: PollWrapper,
       supportedReactions,
       threadList,
       userLanguage,
@@ -762,7 +776,7 @@ const MessageWithContext = <
         style={[
           style,
           {
-            backgroundColor: showUnreadUnderlay ? bg_gradient_start : undefined,
+            backgroundColor: showUnreadUnderlay ? unreadUnderlayColor : undefined,
           },
         ]}
       >

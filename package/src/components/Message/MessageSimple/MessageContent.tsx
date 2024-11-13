@@ -9,6 +9,7 @@ import {
 
 import { MessageTextContainer } from './MessageTextContainer';
 
+import { useChatContext } from '../../../contexts';
 import {
   MessageContextValue,
   useMessageContext,
@@ -26,6 +27,7 @@ import {
 import { useViewport } from '../../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { MessageStatusTypes } from '../../../utils/utils';
+import { Poll } from '../../Poll/Poll';
 
 const styles = StyleSheet.create({
   containerInner: {
@@ -142,10 +144,12 @@ const MessageContentWithContext = <
     showMessageStatus,
     threadList,
   } = props;
+  const { client } = useChatContext();
+  const { PollContent: PollContentOverride } = useMessagesContext();
 
   const {
     theme: {
-      colors: { blue_alice, grey_gainsboro, grey_whisper, transparent, white },
+      colors: { blue_alice, grey_whisper, light_gray, transparent, white_snow },
       messageSimple: {
         content: {
           container: {
@@ -210,20 +214,20 @@ const MessageContentWithContext = <
 
   const isMessageReceivedOrErrorType = !isMyMessage || error;
 
-  let backgroundColor = senderMessageBackgroundColor || grey_gainsboro;
+  let backgroundColor = senderMessageBackgroundColor ?? light_gray;
   if (onlyEmojis && !message.quoted_message) {
     backgroundColor = transparent;
   } else if (otherAttachments.length) {
     if (otherAttachments[0].type === 'giphy') {
-      backgroundColor = message.quoted_message ? grey_gainsboro : transparent;
+      backgroundColor = message.quoted_message ? light_gray : transparent;
     } else {
       backgroundColor = blue_alice;
     }
   } else if (isMessageReceivedOrErrorType) {
-    backgroundColor = receiverMessageBackgroundColor || white;
+    backgroundColor = receiverMessageBackgroundColor ?? white_snow;
   }
 
-  const repliesCurveColor = !isMessageReceivedOrErrorType ? backgroundColor : grey_gainsboro;
+  const repliesCurveColor = !isMessageReceivedOrErrorType ? backgroundColor : light_gray;
 
   const getBorderRadius = () => {
     // enum('top', 'middle', 'bottom', 'single')
@@ -377,6 +381,18 @@ const MessageContentWithContext = <
                 );
               case 'gallery':
                 return <Gallery key={`gallery_${messageContentOrderIndex}`} />;
+              case 'poll': {
+                const pollId = message.poll_id;
+                const poll = pollId && client.polls.fromState(pollId);
+                return pollId && poll ? (
+                  <Poll
+                    key={`poll_${message.poll_id}`}
+                    message={message}
+                    poll={poll}
+                    PollContent={PollContentOverride}
+                  />
+                ) : null;
+              }
               case 'text':
               default:
                 return otherAttachments.length && otherAttachments[0].actions ? null : (

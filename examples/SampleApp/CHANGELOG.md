@@ -1,5 +1,100 @@
 # Change Log
 
+### [1.31.5](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.31.4...sampleapp@v1.31.5) (2024-11-08)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.31.4](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.31.3...sampleapp@v1.31.4) (2024-11-07)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.31.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.31.2...sampleapp@v1.31.3) (2024-11-04)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.31.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.31.1...sampleapp@v1.31.2) (2024-11-01)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.31.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.31.0...sampleapp@v1.31.1) (2024-10-31)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+## [1.31.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.30.6...sampleapp@v1.31.0) (2024-10-31)
+
+
+### Features
+
+* polls implementation ([#2719](https://github.com/GetStream/stream-chat-react-native/issues/2719)) ([c770854](https://github.com/GetStream/stream-chat-react-native/commit/c7708544d49e27dab4a2fee08c235fb39afd2178))
+
+
+### Bug Fixes
+
+* bump sample apps and store issues ([#2735](https://github.com/GetStream/stream-chat-react-native/issues/2735)) ([424aefb](https://github.com/GetStream/stream-chat-react-native/commit/424aefba4b90b2de8c5bff59e52c0e9aaa580d09))
+* remove macos deployment destination ([#2736](https://github.com/GetStream/stream-chat-react-native/issues/2736)) ([e81c6bc](https://github.com/GetStream/stream-chat-react-native/commit/e81c6bc9a0e5734e7af02d59f8d644e7dbde36cb))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.30.6](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.30.5...sampleapp@v1.30.6) (2024-10-28)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.30.5](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.30.4...sampleapp@v1.30.5) (2024-10-24)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.30.4](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.30.3...sampleapp@v1.30.4) (2024-10-21)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.30.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.30.2...sampleapp@v1.30.3) (2024-10-15)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.30.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.30.1...sampleapp@v1.30.2) (2024-10-14)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.30.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.30.0...sampleapp@v1.30.1) (2024-10-02)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ## [1.30.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.29.2...sampleapp@v1.30.0) (2024-09-25)
 
 

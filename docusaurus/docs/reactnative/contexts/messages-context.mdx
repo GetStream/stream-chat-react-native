@@ -40,7 +40,6 @@ import InitialScrollToFirstUnreadMessage from '../common-content/ui-components/c
 import InlineDateSeparator from '../common-content/ui-components/channel/props/inline_date_separator.mdx';
 import InlineUnreadIndicator from '../common-content/ui-components/channel/props/inline_unread_indicator.mdx';
 import IsAttachmentEqual from '../common-content/ui-components/channel/props/is_attachment_equal.mdx';
-import LegacyImageViewerSwipeBehaviour from '../common-content/ui-components/channel/props/legacy_image_viewer_swipe_behaviour.mdx';
 import MarkdownRules from '../common-content/ui-components/channel/props/markdown_rules.mdx';
 import MessageAvatar from '../common-content/ui-components/channel/props/message-avatar.mdx';
 import MessageBounce from '../common-content/ui-components/channel/props/message-bounce.mdx';
@@ -66,12 +65,16 @@ import OverlayReactionList from '../common-content/ui-components/overlay-provide
 import ReactionList from '../common-content/ui-components/channel/props/reaction-list.mdx';
 import Reply from '../common-content/ui-components/channel/props/reply.mdx';
 import ScrollToBottomButton from '../common-content/ui-components/channel/props/scroll-to-bottom-button.mdx';
+import ShouldShowUnreadUnderlay from '../common-content/ui-components/channel/props/should_show_unread_underlay.mdx';
 import SelectReaction from '../common-content/ui-components/channel/props/select_reaction.mdx';
 import SupportedReactions from '../common-content/ui-components/channel/props/supported_reactions.mdx';
 import TypingIndicator from '../common-content/ui-components/channel/props/typing_indicator.mdx';
 import TypingIndicatorContainer from '../common-content/ui-components/channel/props/typing_indicator_container.mdx';
 import UrlPreview from '../common-content/ui-components/channel/props/url_preview.mdx';
 import VideoThumbnail from '../common-content/ui-components/channel/props/video_thumbnail.mdx';
+import OpenPollCreationDialog from '../common-content/ui-components/channel/props/open-poll-creation-dialog.mdx';
+import HasCreatePoll from '../common-content/ui-components/channel/props/has-create-poll.mdx';
+import PollContent from '../common-content/ui-components/poll/poll-content.mdx';
 
 ## Value
 
@@ -235,6 +238,10 @@ Enables quoted-reply state on given message.
 | ------------------- |
 | `(message) => void` |
 
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#shouldshowunreadunderlay)_ props</div> shouldShowUnreadUnderlay {#shouldshowunreadunderlay}
+
+<ShouldShowUnreadUnderlay />
+
 ### <div class="label description">_forwarded from [Channel](../../core-components/channel#supportedreactions)_ props</div> supportedReactions {#supportedreactions}
 
 <SupportedReactions />
@@ -254,6 +261,14 @@ Upserts a given message in local channel state. Please note that this function d
 | Type                |
 | ------------------- |
 | `(message) => void` |
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#openpollcreationdialog)_ props</div> openPollCreationDialog {#openPollCreationDialog}
+
+<OpenPollCreationDialog />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#hascreatepoll)_ props</div> hasCreatePoll {#hascreatepoll}
+
+<HasCreatePoll />
 
 ### <div class="label description">_forwarded from [Channel](../../core-components/channel#attachment)_ props</div> Attachment {#attachment}
 
@@ -414,3 +429,7 @@ Upserts a given message in local channel state. Please note that this function d
 ### <div class="label description">_forwarded from [Channel](../../core-components/channel#videothumbnail)_ props</div> VideoThumbnail {#videoThumbnail}
 
 <VideoThumbnail />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#pollcontent)_ props</div> PollContent {#pollcontent}
+
+<PollContent />

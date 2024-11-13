@@ -7,13 +7,18 @@ export const DEFAULT_STATUS_ICON_SIZE = 16;
 
 export const Colors = {
   accent_blue: '#005FFF',
+  accent_dark_blue: '#005DFF',
+  accent_error: '#FF3842',
   accent_green: '#20E070',
+  accent_info: '#1FE06F',
   accent_red: '#FF3742',
   bg_gradient_end: '#F7F7F7',
   bg_gradient_start: '#FCFCFC',
+  bg_user: '#F7F7F8',
   black: '#000000',
   blue_alice: '#E9F2FF',
   border: '#00000014', // 14 = 8% opacity; top: x=0, y=-1; bottom: x=0, y=1
+  disabled: '#B4BBBA',
   grey: '#7A7A7A',
   grey_dark: '#72767E',
   grey_gainsboro: '#DBDBDB',
@@ -578,6 +583,7 @@ export type Theme = {
       container: ViewStyle;
       roundedView: ViewStyle;
     };
+    unreadUnderlayColor?: ColorValue;
   };
   overlay: {
     container: ViewStyle;
@@ -608,6 +614,122 @@ export type Theme = {
       reactionList: ViewStyle;
       reactionListBorderRadius: number;
       reactionSize: number;
+      selectedIcon: IconProps;
+      unSelectedIcon: IconProps;
+    };
+  };
+  poll: {
+    allOptions: {
+      listContainer: ViewStyle;
+      titleContainer: ViewStyle;
+      titleText: TextStyle;
+      wrapper: ViewStyle;
+    };
+    answersList: {
+      buttonContainer: ViewStyle;
+      container: ViewStyle;
+      item: {
+        answerText: TextStyle;
+        container: ViewStyle;
+        infoContainer: ViewStyle;
+        userInfoContainer: ViewStyle;
+      };
+    };
+    button: { container: ViewStyle; text: TextStyle };
+    createContent: {
+      addComment: {
+        title: TextStyle;
+        wrapper: ViewStyle;
+      };
+      anonymousPoll: {
+        title: TextStyle;
+        wrapper: ViewStyle;
+      };
+      headerContainer: ViewStyle;
+      maxVotes: {
+        input: TextStyle;
+        validationText: TextStyle;
+        wrapper: ViewStyle;
+      };
+      multipleAnswers: {
+        row: ViewStyle;
+        title: TextStyle;
+        wrapper: ViewStyle;
+      };
+      name: {
+        input: TextStyle;
+        title: TextStyle;
+      };
+      pollOptions: {
+        addOption: {
+          text: TextStyle;
+          wrapper: ViewStyle;
+        };
+        container: ViewStyle;
+        optionStyle: {
+          input: TextStyle;
+          validationErrorText: TextStyle;
+          wrapper: ViewStyle;
+        };
+        title: TextStyle;
+      };
+      scrollView: ViewStyle;
+      sendButton: ViewStyle;
+      suggestOption: {
+        title: TextStyle;
+        wrapper: ViewStyle;
+      };
+    };
+    fullResults: {
+      container: ViewStyle;
+      contentContainer: ViewStyle;
+      headerContainer: ViewStyle;
+      headerText: TextStyle;
+    };
+    inputDialog: {
+      button: TextStyle;
+      buttonContainer: ViewStyle;
+      container: ViewStyle;
+      input: TextStyle;
+      title: TextStyle;
+      transparentContainer: ViewStyle;
+    };
+    message: {
+      container: ViewStyle;
+      header: {
+        subtitle: TextStyle;
+        title: TextStyle;
+      };
+      option: {
+        container: ViewStyle;
+        progressBar: ViewStyle;
+        progressBarEmptyFill: string;
+        progressBarVotedFill: string;
+        progressBarWinnerFill: string;
+        text: TextStyle;
+        voteButtonActive: string;
+        voteButtonContainer: ViewStyle;
+        voteButtonInactive: string;
+        votesContainer: ViewStyle;
+        wrapper: ViewStyle;
+      };
+      optionsWrapper: ViewStyle;
+    };
+    modalHeader: {
+      container: ViewStyle;
+      title: TextStyle;
+    };
+    results: {
+      container: ViewStyle;
+      item: {
+        container: ViewStyle;
+        headerContainer: ViewStyle;
+        title: TextStyle;
+        voteCount: TextStyle;
+      };
+      scrollView: ViewStyle;
+      title: TextStyle;
+      vote: { container: ViewStyle; dateText: TextStyle; userName: TextStyle };
     };
   };
   progressControl: {
@@ -1198,6 +1320,7 @@ export const defaultTheme: Theme = {
     },
     targetedMessageContainer: {},
     targetedMessageUnderlay: {},
+    unreadUnderlayColor: Colors.bg_gradient_start,
     videoThumbnail: {
       container: {},
       roundedView: {},
@@ -1232,6 +1355,122 @@ export const defaultTheme: Theme = {
       reactionList: {},
       reactionListBorderRadius: 24,
       reactionSize: 24,
+      selectedIcon: {},
+      unSelectedIcon: {},
+    },
+  },
+  poll: {
+    allOptions: {
+      listContainer: {},
+      titleContainer: {},
+      titleText: {},
+      wrapper: {},
+    },
+    answersList: {
+      buttonContainer: {},
+      container: {},
+      item: {
+        answerText: {},
+        container: {},
+        infoContainer: {},
+        userInfoContainer: {},
+      },
+    },
+    button: { container: {}, text: {} },
+    createContent: {
+      addComment: {
+        title: {},
+        wrapper: {},
+      },
+      anonymousPoll: {
+        title: {},
+        wrapper: {},
+      },
+      headerContainer: {},
+      maxVotes: {
+        input: {},
+        validationText: {},
+        wrapper: {},
+      },
+      multipleAnswers: {
+        row: {},
+        title: {},
+        wrapper: {},
+      },
+      name: {
+        input: {},
+        title: {},
+      },
+      pollOptions: {
+        addOption: {
+          text: {},
+          wrapper: {},
+        },
+        container: {},
+        optionStyle: {
+          input: {},
+          validationErrorText: {},
+          wrapper: {},
+        },
+        title: {},
+      },
+      scrollView: {},
+      sendButton: {},
+      suggestOption: {
+        title: {},
+        wrapper: {},
+      },
+    },
+    fullResults: {
+      container: {},
+      contentContainer: {},
+      headerContainer: {},
+      headerText: {},
+    },
+    inputDialog: {
+      button: {},
+      buttonContainer: {},
+      container: {},
+      input: {},
+      title: {},
+      transparentContainer: {},
+    },
+    message: {
+      container: {},
+      header: {
+        subtitle: {},
+        title: {},
+      },
+      option: {
+        container: {},
+        progressBar: {},
+        progressBarEmptyFill: '',
+        progressBarVotedFill: '',
+        progressBarWinnerFill: '',
+        text: {},
+        voteButtonActive: '',
+        voteButtonContainer: {},
+        voteButtonInactive: '',
+        votesContainer: {},
+        wrapper: {},
+      },
+      optionsWrapper: {},
+    },
+    modalHeader: {
+      container: {},
+      title: {},
+    },
+    results: {
+      container: {},
+      item: {
+        container: {},
+        headerContainer: {},
+        title: {},
+        voteCount: {},
+      },
+      scrollView: {},
+      title: {},
+      vote: { container: {}, dateText: {}, userName: {} },
     },
   },
   progressControl: {

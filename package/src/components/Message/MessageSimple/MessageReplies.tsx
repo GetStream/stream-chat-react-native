@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   },
   messageRepliesCurve: {
     borderTopWidth: 0,
-    borderWidth: 1,
+    borderWidth: 2,
     height: 16,
     width: 16,
   },
@@ -181,6 +181,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     message: prevMessage,
     noBorder: prevNoBorder,
     onOpenThread: prevOnOpenThread,
+    repliesCurveColor: prevRepliesCurveColor,
     t: prevT,
     threadList: prevThreadList,
   } = prevProps;
@@ -188,6 +189,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     message: nextMessage,
     noBorder: nextNoBorder,
     onOpenThread: nextOnOpenThread,
+    repliesCurveColor: nextRepliesCurveColor,
     t: nextT,
     threadList: nextThreadList,
   } = nextProps;
@@ -200,6 +202,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const noBorderEqual = prevNoBorder === nextNoBorder;
   if (!noBorderEqual) return false;
+
+  const repliesCurveColorEqual = prevRepliesCurveColor === nextRepliesCurveColor;
+  if (!repliesCurveColorEqual) return false;
 
   const tEqual = prevT === nextT;
   if (!tEqual) return false;

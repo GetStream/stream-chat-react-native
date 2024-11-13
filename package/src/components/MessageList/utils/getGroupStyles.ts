@@ -4,7 +4,7 @@ import type { PaginatedMessageListContextValue } from '../../../contexts/paginat
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { isEditedMessage } from '../../../utils/utils';
-import type { GroupType } from '../hooks/useMessageList';
+import type { GroupType, MessageType } from '../hooks/useMessageList';
 
 export type GetGroupStylesParams<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -17,6 +17,88 @@ export type GetGroupStylesParams<
   maxTimeBetweenGroupedMessages?: number;
   noGroupByUser?: boolean;
   userId?: string;
+};
+
+export type GroupStyle = '' | 'middle' | 'top' | 'bottom' | 'single';
+
+const getGroupStyle = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  dateSeparators: DateSeparators,
+  message: MessageType<StreamChatGenerics>,
+  previousMessage: MessageType<StreamChatGenerics>,
+  nextMessage: MessageType<StreamChatGenerics>,
+  hideDateSeparators?: boolean,
+  maxTimeBetweenGroupedMessages?: number,
+): GroupStyle[] => {
+  const groupStyles: GroupStyle[] = [];
+
+  const isPrevMessageTypeDeleted = previousMessage?.type === 'deleted';
+  const isNextMessageTypeDeleted = nextMessage?.type === 'deleted';
+
+  const userId = message?.user?.id || null;
+
+  const isTopMessage =
+    !previousMessage ||
+    previousMessage.type === 'system' ||
+    previousMessage.type === 'error' ||
+    userId !== previousMessage?.user?.id ||
+    !!isPrevMessageTypeDeleted ||
+    (!hideDateSeparators && dateSeparators[message.id]) ||
+    isEditedMessage(previousMessage);
+
+  const isBottomMessage =
+    !nextMessage ||
+    nextMessage.type === 'system' ||
+    nextMessage.type === 'error' ||
+    userId !== nextMessage?.user?.id ||
+    !!isNextMessageTypeDeleted ||
+    (!hideDateSeparators && dateSeparators[nextMessage.id]) ||
+    (maxTimeBetweenGroupedMessages !== undefined &&
+      (nextMessage.created_at as Date).getTime() - (message.created_at as Date).getTime() >
+        maxTimeBetweenGroupedMessages) ||
+    isEditedMessage(message);
+
+  /**
+   * Add group styles key for top message
+   */
+  if (isTopMessage) {
+    groupStyles.push('top');
+  }
+
+  /**
+   * Add group styles key for bottom message
+   */
+
+  const isMessageTypeDeleted = message.type === 'deleted';
+  if (isBottomMessage) {
+    /**
+     * If the bottom message is also the top, or deleted, or an error,
+     * add the key for single message instead of bottom
+     */
+    if (isTopMessage || isMessageTypeDeleted || message.type === 'error') {
+      groupStyles.splice(0, groupStyles.length);
+      groupStyles.push('single');
+    } else {
+      groupStyles.push('bottom');
+    }
+  }
+
+  /**
+   * Add the key for all non top or bottom messages, if the message is
+   * deleted or an error add the key for single otherwise middle
+   */
+  if (!isTopMessage && !isBottomMessage) {
+    if (isMessageTypeDeleted || message.type === 'error') {
+      groupStyles.splice(0, groupStyles.length);
+      groupStyles.push('single');
+    } else {
+      groupStyles.splice(0, groupStyles.length);
+      groupStyles.push('middle');
+    }
+  }
+
+  return groupStyles;
 };
 
 export const getGroupStyles = <
@@ -43,83 +125,19 @@ export const getGroupStyles = <
   });
 
   for (let i = 0; i < messagesFilteredForNonUser.length; i++) {
-    const previousMessage = messagesFilteredForNonUser[i - 1] as
-      | (typeof messagesFilteredForNonUser)[0]
-      | undefined;
+    const previousMessage = messagesFilteredForNonUser[i - 1];
     const message = messagesFilteredForNonUser[i];
-    const nextMessage = messagesFilteredForNonUser[i + 1] as
-      | (typeof messagesFilteredForNonUser)[0]
-      | undefined;
-    const groupStyles: GroupType[] = [];
-
-    const isPrevMessageTypeDeleted = previousMessage?.type === 'deleted';
-    const isNextMessageTypeDeleted = nextMessage?.type === 'deleted';
-
-    const userId = message?.user?.id || null;
-
-    const isTopMessage =
-      !previousMessage ||
-      previousMessage.type === 'system' ||
-      previousMessage.type === 'error' ||
-      userId !== previousMessage?.user?.id ||
-      !!isPrevMessageTypeDeleted ||
-      (!hideDateSeparators && dateSeparators[message.id]) ||
-      messageGroupStyles[previousMessage.id]?.includes('bottom') ||
-      isEditedMessage(previousMessage);
-
-    const isBottomMessage =
-      !nextMessage ||
-      nextMessage.type === 'system' ||
-      nextMessage.type === 'error' ||
-      userId !== nextMessage?.user?.id ||
-      !!isNextMessageTypeDeleted ||
-      (!hideDateSeparators && dateSeparators[nextMessage.id]) ||
-      (maxTimeBetweenGroupedMessages !== undefined &&
-        nextMessage.created_at.getTime() - message.created_at.getTime() >
-          maxTimeBetweenGroupedMessages) ||
-      isEditedMessage(message);
-
-    /**
-     * Add group styles key for top message
-     */
-    if (isTopMessage) {
-      groupStyles.push('top');
-    }
-
-    /**
-     * Add group styles key for bottom message
-     */
-
-    const isMessageTypeDeleted = message.type === 'deleted';
-    if (isBottomMessage) {
-      /**
-       * If the bottom message is also the top, or deleted, or an error,
-       * add the key for single message instead of bottom
-       */
-      if (isTopMessage || isMessageTypeDeleted || message.type === 'error') {
-        groupStyles.splice(0, groupStyles.length);
-        groupStyles.push('single');
-      } else {
-        groupStyles.push('bottom');
-      }
-    }
-
-    /**
-     * Add the key for all non top or bottom messages, if the message is
-     * deleted or an error add the key for single otherwise middle
-     */
-    if (!isTopMessage && !isBottomMessage) {
-      if (isMessageTypeDeleted || message.type === 'error') {
-        groupStyles.splice(0, groupStyles.length);
-        groupStyles.push('single');
-      } else {
-        groupStyles.splice(0, groupStyles.length);
-        groupStyles.push('middle');
-      }
-    }
+    const nextMessage = messagesFilteredForNonUser[i + 1];
 
     if (message.id) {
-      messageGroupStyles[message.id] = groupStyles;
+      messageGroupStyles[message.id] = getGroupStyle(
+        dateSeparators,
+        message,
+        previousMessage,
+        nextMessage,
+        hideDateSeparators,
+        maxTimeBetweenGroupedMessages,
+      );
     }
   }
 

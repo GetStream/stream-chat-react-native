@@ -144,6 +144,7 @@ type MessageListPropsWithContext<
     | 'ScrollToBottomButton'
     | 'MessageSystem'
     | 'myMessageTheme'
+    | 'shouldShowUnreadUnderlay'
     | 'TypingIndicator'
     | 'TypingIndicatorContainer'
   > &
@@ -270,6 +271,7 @@ const MessageListWithContext = <
     setMessages,
     setSelectedPicker,
     setTargetedMessage,
+    shouldShowUnreadUnderlay,
     StickyHeader,
     targetedMessage,
     thread,
@@ -630,7 +632,10 @@ const MessageListWithContext = <
 
     const isCurrentMessageUnread = isMessageUnread(index);
     const showUnreadUnderlay =
-      !channel.muteStatus().muted && isCurrentMessageUnread && scrollToBottomButtonVisible;
+      !!shouldShowUnreadUnderlay &&
+      !channel.muteStatus().muted &&
+      isCurrentMessageUnread &&
+      scrollToBottomButtonVisible;
     const insertInlineUnreadIndicator = showUnreadUnderlay && !isMessageUnread(index + 1); // show only if previous message is read
 
     if (message.type === 'system') {
@@ -667,12 +672,12 @@ const MessageListWithContext = <
     );
     return wrapMessageInTheme ? (
       <>
-        {shouldApplyAndroidWorkaround && renderDateSeperator}
         <ThemeProvider mergedStyle={modifiedTheme}>
           <View
             style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}
             testID={`message-list-item-${index}`}
           >
+            {shouldApplyAndroidWorkaround && renderDateSeperator}
             {renderMessage}
           </View>
         </ThemeProvider>
@@ -983,7 +988,9 @@ const MessageListWithContext = <
         });
       }
       // the message we want to scroll to has not been loaded in the state yet
-      loadChannelAroundMessage({ messageId: messageIdToScroll });
+      if (indexOfParentInMessageList === -1) {
+        loadChannelAroundMessage({ messageId: messageIdToScroll });
+      }
     }, 50);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetedMessage, initialScrollToFirstUnreadMessage]);
@@ -1258,6 +1265,7 @@ export const MessageList = <
     MessageSystem,
     myMessageTheme,
     ScrollToBottomButton,
+    shouldShowUnreadUnderlay,
     TypingIndicator,
     TypingIndicatorContainer,
   } = useMessagesContext<StreamChatGenerics>();
@@ -1307,6 +1315,7 @@ export const MessageList = <
         setMessages,
         setSelectedPicker,
         setTargetedMessage,
+        shouldShowUnreadUnderlay,
         StickyHeader,
         targetedMessage,
         thread,

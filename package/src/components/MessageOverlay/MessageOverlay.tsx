@@ -25,6 +25,7 @@ import { MessageActionList as DefaultMessageActionList } from './MessageActionLi
 import { OverlayReactionList as OverlayReactionListDefault } from './OverlayReactionList';
 import { OverlayReactionsAvatar as OverlayReactionsAvatarDefault } from './OverlayReactionsAvatar';
 
+import { OwnCapabilitiesProvider } from '../../contexts';
 import { ChatProvider } from '../../contexts/chatContext/ChatContext';
 import { MessageProvider } from '../../contexts/messageContext/MessageContext';
 import {
@@ -135,6 +136,7 @@ const MessageOverlayWithContext = <
     OverlayReactions = DefaultOverlayReactions,
     OverlayReactionsAvatar = OverlayReactionsAvatarDefault,
     ownCapabilities,
+    Poll,
     setOverlay,
     threadList,
     videos,
@@ -168,12 +170,14 @@ const MessageOverlayWithContext = <
   );
 
   const {
-    colors: { blue_alice, grey_gainsboro, grey_whisper, transparent, white_smoke },
+    colors: { blue_alice, grey_gainsboro, grey_whisper, light_gray, transparent, white_snow },
     messageSimple: {
       content: {
         container: { borderRadiusL, borderRadiusS },
         containerInner,
+        receiverMessageBackgroundColor,
         replyContainer,
+        senderMessageBackgroundColor,
       },
     },
     overlay: { container: containerStyle, padding: overlayPadding },
@@ -360,8 +364,8 @@ const MessageOverlayWithContext = <
                             : grey_gainsboro
                           : blue_alice
                         : alignment === 'left'
-                        ? white_smoke
-                        : grey_gainsboro,
+                        ? receiverMessageBackgroundColor ?? white_snow
+                        : senderMessageBackgroundColor ?? light_gray,
                     borderBottomLeftRadius:
                       (groupStyle === 'left_bottom' || groupStyle === 'left_single') &&
                       (!hasThreadReplies || threadList)
@@ -439,6 +443,14 @@ const MessageOverlayWithContext = <
                             />
                           )
                         );
+                      case 'poll': {
+                        const pollId = message.poll_id;
+                        return Poll && pollId && ownCapabilities ? (
+                          <OwnCapabilitiesProvider key={`poll_${pollId}`} value={ownCapabilities}>
+                            <Poll />
+                          </OwnCapabilitiesProvider>
+                        ) : null;
+                      }
                       case 'text':
                       default:
                         return otherAttachments?.length && otherAttachments[0].actions ? null : (

@@ -43,3 +43,15 @@ CDNs
 haptics
 async
 Podfile
+boolean
+Async
+subscribable
+memoizing
+Boolean
+draggable
+sendMessage
+overridable
+loadMore
+pollAnswers
+enum
+SendMessage

@@ -6,8 +6,9 @@ import dayjs from 'dayjs';
 
 import merge from 'lodash/merge';
 
-import type { Attachment } from 'stream-chat';
+import type { Attachment, PollState } from 'stream-chat';
 
+import { useChatContext } from '../../contexts';
 import { useMessageContext } from '../../contexts/messageContext/MessageContext';
 import {
   MessageInputContext,
@@ -22,6 +23,7 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
+import { useStateStore } from '../../hooks';
 import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
@@ -31,6 +33,7 @@ import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
 import { VideoThumbnail } from '../Attachment/VideoThumbnail';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
+import { MessageType } from '../MessageList/hooks/useMessageList';
 
 const styles = StyleSheet.create({
   container: {
@@ -70,6 +73,16 @@ const styles = StyleSheet.create({
   videoThumbnailImageStyle: {
     borderRadius: 10,
   },
+});
+
+export type ReplySelectorReturnType = {
+  name?: string;
+};
+
+const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  nextValue: PollState<StreamChatGenerics>,
+): ReplySelectorReturnType => ({
+  name: nextValue.name,
 });
 
 type ReplyPropsWithContext<
@@ -134,6 +147,7 @@ const ReplyWithContext = <
 >(
   props: ReplyPropsWithContext<StreamChatGenerics>,
 ) => {
+  const { client } = useChatContext();
   const {
     attachmentSize = 40,
     FileAttachmentIcon,
@@ -166,6 +180,9 @@ const ReplyWithContext = <
       },
     },
   } = useTheme();
+
+  const poll = client.polls.fromState((quotedMessage as MessageType)?.poll_id ?? '');
+  const { name: pollName }: ReplySelectorReturnType = useStateStore(poll?.state, selector) ?? {};
 
   const messageText = typeof quotedMessage === 'boolean' ? '' : quotedMessage.text || '';
 
@@ -262,6 +279,8 @@ const ReplyWithContext = <
               text:
                 quotedMessage.type === 'deleted'
                   ? `_${t('Message deleted')}_`
+                  : pollName
+                  ? `📊 ${pollName}`
                   : quotedMessage.text
                   ? quotedMessage.text.length > 170
                     ? `${quotedMessage.text.slice(0, 170)}...`

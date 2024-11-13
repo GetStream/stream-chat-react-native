@@ -2,7 +2,7 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import type { ImageProps } from 'react-native';
 
-import type { Attachment, TranslationLanguages } from 'stream-chat';
+import { Attachment, TranslationLanguages } from 'stream-chat';
 
 import { useResettableState } from './hooks/useResettableState';
 
@@ -46,6 +46,7 @@ export type MessageOverlayData<
   otherAttachments?: Attachment<StreamChatGenerics>[];
   OverlayReactionList?: React.ComponentType<OverlayReactionListProps<StreamChatGenerics>>;
   ownCapabilities?: OwnCapabilitiesContextValue;
+  Poll?: React.ComponentType;
   supportedReactions?: ReactionData[];
   threadList?: boolean;
   userLanguage?: TranslationLanguages;

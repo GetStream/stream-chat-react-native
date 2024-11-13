@@ -48,8 +48,7 @@ export const useChannelPreviewDisplayPresence = <
 
   useEffect(() => {
     setDisplayPresence(getChannelPreviewDisplayPresence(channel, client));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channelMemberOnline]);
+  }, [channel, channelMemberOnline, client]);
 
   return displayPresence;
 };

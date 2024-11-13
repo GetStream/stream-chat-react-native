@@ -134,6 +134,7 @@ import ScrollToBottomButton from '../common-content/ui-components/channel/props/
 import SelectReaction from '../common-content/ui-components/channel/props/select_reaction.mdx';
 import SendButton from '../common-content/ui-components/channel/props/send_button.mdx';
 import SendMessageDisallowedIndicator from '../common-content/ui-components/channel/props/send_message_disallowed_indicator.mdx';
+import ShouldShowUnreadUnderlay from '../common-content/ui-components/channel/props/should_show_unread_underlay.mdx';
 import ShowThreadMessageInChannelButton from '../common-content/ui-components/channel/props/show_thread_message_in_channel_button.mdx';
 import StartAudioRecordingButton from '../common-content/ui-components/channel/props/start_audio_recording_button.mdx';
 import StateUpdateThrottleInterval from '../common-content/ui-components/channel/props/state_update_throttle_interval.mdx';
@@ -143,6 +144,10 @@ import ThreadList from '../common-content/ui-components/channel/props/thread_lis
 import TypingIndicator from '../common-content/ui-components/channel/props/typing_indicator.mdx';
 import TypingIndicatorContainer from '../common-content/ui-components/channel/props/typing_indicator_container.mdx';
 import UrlPreview from '../common-content/ui-components/channel/props/url_preview.mdx';
+import CreatePollContent from '../common-content/contexts/create-poll-context/create-poll-content.mdx';
+import OpenPollCreationDialog from '../common-content/ui-components/channel/props/open-poll-creation-dialog.mdx';
+import HasCreatePoll from '../common-content/ui-components/channel/props/has-create-poll.mdx';
+import PollContent from '../common-content/ui-components/poll/poll-content.mdx';
 
 The `Channel` component is the main entry point for many Stream Chat customizations and contains the majority of the content providers and a significant amount of the logic utilized by Stream Chat for React Native.
 Components, custom and out of the box, channel information, and UI integrated chat functions are disseminated by the contexts contained in `Channel`.
@@ -702,6 +707,10 @@ Callback function to set the [ref](https://reactjs.org/docs/refs-and-the-dom.htm
 | --------- | -------------------- |
 | ref       | ref of the TextInput |
 
+### `shouldShowUnreadUnderlay`
+
+<ShouldShowUnreadUnderlay />
+
 ### stateUpdateThrottleInterval
 
 <StateUpdateThrottleInterval />
@@ -721,6 +730,14 @@ Callback function to set the [ref](https://reactjs.org/docs/refs-and-the-dom.htm
 ### `threadList`
 
 <ThreadList />
+
+### `openPollCreationDialog`
+
+<OpenPollCreationDialog />
+
+### `hasCreatePoll`
+
+<HasCreatePoll />
 
 <!-- ### updateSuggestions -->
 
@@ -1023,3 +1040,11 @@ Component to render upload progress indicator as an overlay above [ImageUploadPr
 ### UrlPreview
 
 <UrlPreview />
+
+### CreatePollContent
+
+<CreatePollContent />
+
+### PollContent
+
+<PollContent />
