@@ -139,7 +139,7 @@ const MessageContentWithContext = <
 
   const {
     theme: {
-      colors: { grey_gainsboro, grey_whisper },
+      colors: { grey_whisper, light_gray },
       messageSimple: {
         content: {
           container: {
@@ -171,7 +171,7 @@ const MessageContentWithContext = <
 
   const { hasThreadReplies, isMessageErrorType, isMessageReceivedOrErrorType } = useMessageData({});
 
-  const repliesCurveColor = !isMessageReceivedOrErrorType ? backgroundColor : grey_gainsboro;
+  const repliesCurveColor = !isMessageReceivedOrErrorType ? backgroundColor : light_gray;
 
   const getBorderRadius = () => {
     // enum('top', 'middle', 'bottom', 'single')
