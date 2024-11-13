@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -17,7 +17,6 @@ import {
   ChannelsContextValue,
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
-import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useViewport } from '../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../types/types';
@@ -95,6 +94,8 @@ export type ChannelPreviewMessengerPropsWithContext<
      * default formatted date. This default logic is part of ChannelPreview component.
      */
     formatLatestMessageDate?: (date: Date) => string;
+    /** If the channel is muted. */
+    muted?: boolean;
     /** Number of unread messages on the channel */
     unread?: number;
   };
@@ -116,6 +117,7 @@ const ChannelPreviewMessengerWithContext = <
     PreviewStatus = ChannelPreviewStatus,
     PreviewTitle = ChannelPreviewTitle,
     PreviewUnreadCount = ChannelPreviewUnreadCount,
+    muted,
     unread,
   } = props;
   const { vw } = useViewport();
@@ -129,22 +131,10 @@ const ChannelPreviewMessengerWithContext = <
     },
   } = useTheme();
 
-  const { client } = useChatContext<StreamChatGenerics>();
-
   const displayName = useChannelPreviewDisplayName(
     channel,
     Math.floor(maxWidth / ((title.fontSize || styles.title.fontSize) / 2)),
   );
-
-  const [isChannelMuted, setIsChannelMuted] = useState(() => channel.muteStatus().muted);
-
-  useEffect(() => {
-    const handleEvent = () => setIsChannelMuted(channel.muteStatus().muted);
-
-    client.on('notification.channel_mutes_updated', handleEvent);
-    return () => client.off('notification.channel_mutes_updated', handleEvent);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client]);
 
   return (
     <TouchableOpacity
@@ -168,7 +158,7 @@ const ChannelPreviewMessengerWithContext = <
         <View style={[styles.row, row]}>
           <PreviewTitle channel={channel} displayName={displayName} />
           <View style={[styles.statusContainer, row]}>
-            {isChannelMuted && <PreviewMutedStatus />}
+            {muted && <PreviewMutedStatus />}
             <PreviewUnreadCount channel={channel} maxUnreadCount={maxUnreadCount} unread={unread} />
           </View>
         </View>

@@ -73,6 +73,7 @@ const getChannelDefaults = (
     type,
     updated_at: '2020-04-28T11:20:48.578147Z',
   },
+  cid: `${type}:${id}`,
   id,
   state: defaultState,
   type,
