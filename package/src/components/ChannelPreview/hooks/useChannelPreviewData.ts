@@ -3,6 +3,7 @@ import type { Channel, ChannelState, Event, MessageResponse, StreamChat } from '
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { useEffect, useMemo, useState } from 'react';
 import throttle from 'lodash/throttle';
+import { useIsChannelMuted } from './useIsChannelMuted';
 
 export const useChannelPreviewData = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -10,13 +11,13 @@ export const useChannelPreviewData = <
   channel: Channel<StreamChatGenerics>,
   client: StreamChat<StreamChatGenerics>,
   forceUpdate?: number,
-  muted?: boolean,
 ) => {
   const [lastMessage, setLastMessage] = useState<
     | ReturnType<ChannelState<StreamChatGenerics>['formatMessage']>
     | MessageResponse<StreamChatGenerics>
   >(channel.state.messages[channel.state.messages.length - 1]);
   const [unread, setUnread] = useState(channel.countUnread());
+  const { muted } = useIsChannelMuted(channel);
 
   /**
    * This effect listens for the `notification.mark_read` event and sets the unread count to 0
@@ -78,5 +79,5 @@ export const useChannelPreviewData = <
     return () => listeners.forEach((l) => l.unsubscribe());
   }, [channel, refreshUnreadCount, forceUpdate]);
 
-  return { lastMessage, unread };
+  return { lastMessage, muted, unread };
 };
