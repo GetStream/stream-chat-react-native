@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 
-import { useChatContext } from '../../../contexts/chatContext/ChatContext';
-
 import type { Channel } from 'stream-chat';
+
+import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 

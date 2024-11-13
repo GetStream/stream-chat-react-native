@@ -2,6 +2,7 @@ import React from 'react';
 
 import type { Channel } from 'stream-chat';
 
+import { useChannelPreviewData } from './hooks/useChannelPreviewData';
 import { useLatestMessagePreview } from './hooks/useLatestMessagePreview';
 
 import {
@@ -11,7 +12,6 @@ import {
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { useChannelPreviewData } from './hooks/useChannelPreviewData';
 
 export type ChannelPreviewProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

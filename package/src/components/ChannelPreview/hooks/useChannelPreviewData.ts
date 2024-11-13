@@ -1,9 +1,11 @@
+import { useEffect, useMemo, useState } from 'react';
+
+import throttle from 'lodash/throttle';
 import type { Channel, ChannelState, Event, MessageResponse, StreamChat } from 'stream-chat';
 
-import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { useEffect, useMemo, useState } from 'react';
-import throttle from 'lodash/throttle';
 import { useIsChannelMuted } from './useIsChannelMuted';
+
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useChannelPreviewData = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

@@ -11,7 +11,6 @@ import {
 } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
-import dispatchMessageReadEvent from '../../../mock-builders/event/messageRead';
 import dispatchNotificationMarkRead from '../../../mock-builders/event/notificationMarkRead';
 import dispatchNotificationMarkUnread from '../../../mock-builders/event/notificationMarkUnread';
 import { generateChannel, generateChannelResponse } from '../../../mock-builders/generator/channel';
@@ -256,7 +255,7 @@ describe('ChannelPreview', () => {
       await useInitializeChannel(c);
       const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
 
-      const _channel = {
+      const testChannel = {
         ...channel,
         countUnread: jest.fn().mockReturnValue(0),
         muteStatus: jest.fn().mockReturnValue({ muted: false }),
@@ -274,7 +273,7 @@ describe('ChannelPreview', () => {
       act(() => {
         dispatchNotificationMarkUnread(
           chatClient,
-          { cid: _channel?.cid },
+          { cid: testChannel?.cid },
           {
             unread_channels: 2,
             unread_messages: 5,
