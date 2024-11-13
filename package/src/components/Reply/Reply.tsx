@@ -8,8 +8,8 @@ import merge from 'lodash/merge';
 
 import type { Attachment, PollState } from 'stream-chat';
 
-import { useChatConfigContext } from '../../contexts/chatConfigContext/ChatConfigContext';
 import { useChatContext } from '../../contexts';
+import { useChatConfigContext } from '../../contexts/chatConfigContext/ChatConfigContext';
 import { useMessageContext } from '../../contexts/messageContext/MessageContext';
 import {
   MessageInputContext,

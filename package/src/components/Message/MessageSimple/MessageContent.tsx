@@ -139,7 +139,7 @@ const MessageContentWithContext = <
 
   const {
     theme: {
-      colors: { light_gray, grey_whisper },
+      colors: { grey_whisper, light_gray },
       messageSimple: {
         content: {
           container: {
