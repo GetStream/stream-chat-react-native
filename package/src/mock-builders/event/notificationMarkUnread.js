@@ -3,7 +3,7 @@ export default (client, channel = {}, payload = {}, user = {}) => {
     channel,
     cid: channel.cid,
     type: 'notification.mark_unread',
-    user: user,
+    user,
     ...payload,
   });
 };

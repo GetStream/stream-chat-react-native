@@ -57,6 +57,7 @@ const defaultState = {
 const getChannelDefaults = (
   { id, type }: { [key: string]: any } = { id: uuidv4(), type: 'messaging' },
 ) => ({
+  cid: `${type}:${id}`,
   _client: {},
   data: {
     cid: `${type}:${id}`,
@@ -73,7 +74,6 @@ const getChannelDefaults = (
     type,
     updated_at: '2020-04-28T11:20:48.578147Z',
   },
-  cid: `${type}:${id}`,
   id,
   state: defaultState,
   type,
