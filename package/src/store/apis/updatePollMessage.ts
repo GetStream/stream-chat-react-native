@@ -1,41 +1,67 @@
-import type { PollResponse } from 'stream-chat';
+import { isVoteAnswer, PollAnswer, PollResponse, PollVote } from 'stream-chat';
 
+import { DefaultStreamChatGenerics } from '../../types/types';
+import { mapPollToStorable } from '../mappers/mapPollToStorable';
+import { mapStorableToPoll } from '../mappers/mapStorableToPoll';
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
 import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
 import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries } from '../types';
 
-export const updatePollMessage = async ({
+export const updatePollMessage = async <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>({
+  eventType,
   flush = true,
   poll,
+  poll_vote,
+  userID,
 }: {
-  poll: PollResponse;
+  eventType: string;
+  poll: PollResponse<StreamChatGenerics>;
+  userID: string;
   flush?: boolean;
+  poll_vote?: PollVote<StreamChatGenerics> | PollAnswer<StreamChatGenerics>;
 }) => {
   const queries: PreparedQueries[] = [];
 
-  const messagesWithPoll = await SqliteClient.executeSql.apply(
+  const pollsFromDB = await SqliteClient.executeSql.apply(
     null,
-    createSelectQuery('messages', ['*'], {
-      poll_id: poll.id,
+    createSelectQuery('poll', ['*'], {
+      id: poll.id,
     }),
   );
 
-  for (const message of messagesWithPoll) {
-    const storablePoll = JSON.stringify({
+  for (const pollFromDB of pollsFromDB) {
+    const serializedPoll = mapStorableToPoll(pollFromDB);
+    const { latest_answers = [], own_votes = [] } = serializedPoll;
+    let newOwnVotes = own_votes;
+    if (poll_vote && poll_vote.user?.id === userID) {
+      newOwnVotes =
+        eventType === 'poll.vote_removed'
+          ? newOwnVotes.filter((vote) => vote.id !== poll_vote.id)
+          : [poll_vote, ...newOwnVotes.filter((vote) => vote.id !== poll_vote.id)];
+    }
+    let newLatestAnswers = latest_answers;
+    if (poll_vote && isVoteAnswer(poll_vote)) {
+      newLatestAnswers =
+        eventType === 'poll.vote_removed'
+          ? newLatestAnswers.filter((answer) => answer.id !== poll_vote?.id)
+          : [poll_vote, ...newLatestAnswers.filter((answer) => answer.id !== poll_vote?.id)];
+    }
+
+    const storablePoll = mapPollToStorable({
       ...poll,
-      latest_votes: message.poll.latest_votes,
-      own_votes: message.poll.own_votes,
+      latest_answers: newLatestAnswers,
+      own_votes: newOwnVotes,
     });
-    const storableMessage = { ...message, poll: storablePoll };
 
     queries.push(
-      createUpdateQuery('messages', storableMessage, {
-        id: message.id,
+      createUpdateQuery('poll', storablePoll, {
+        id: poll.id,
       }),
     );
     SqliteClient.logger?.('info', 'updatePoll', {
-      message: storableMessage,
       poll: storablePoll,
     });
   }

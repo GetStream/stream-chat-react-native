@@ -40,6 +40,7 @@ export type LatestMessagePreview<
 export type LatestMessagePreviewSelectorReturnType = {
   createdBy?: UserResponse | null;
   latestVotesByOption?: Record<string, PollVote[]>;
+  name?: string;
 };
 
 const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
@@ -47,6 +48,7 @@ const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 ): LatestMessagePreviewSelectorReturnType => ({
   createdBy: nextValue.created_by,
   latestVotesByOption: nextValue.latest_votes_by_option,
+  name: nextValue.name,
 });
 
 const getMessageSenderName = <
@@ -145,8 +147,8 @@ const getLatestMessageDisplayText = <
       { bold: false, text: t('🏙 Attachment...') },
     ];
   }
-  if (message.poll && pollState) {
-    const { createdBy, latestVotesByOption } = pollState;
+  if (message.poll_id && pollState) {
+    const { createdBy, latestVotesByOption, name } = pollState;
     let latestVotes;
     if (latestVotesByOption) {
       latestVotes = Object.values(latestVotesByOption)
@@ -161,7 +163,7 @@ const getLatestMessageDisplayText = <
     }
     const previewMessage = `${
       client.userID === previewUser?.id ? 'You' : previewUser?.name
-    } ${previewAction}: ${message.poll.name}`;
+    } ${previewAction}: ${name}`;
     return [
       { bold: false, text: '📊 ' },
       { bold: false, text: previewMessage },
@@ -298,7 +300,8 @@ export const useLatestMessagePreview = <
 
   useEffect(() => {
     if (channelConfigExists) {
-      const read_events = channel.getConfig()?.read_events;
+      const read_events =
+        !channel.disconnected && !!channel?.id && channel.getConfig()?.read_events;
       if (typeof read_events === 'boolean') {
         setReadEvents(read_events);
       }
@@ -310,7 +313,7 @@ export const useLatestMessagePreview = <
   const poll = client.polls.fromState(pollId);
   const pollState: LatestMessagePreviewSelectorReturnType =
     useStateStore(poll?.state, selector) ?? {};
-  const { createdBy, latestVotesByOption } = pollState;
+  const { createdBy, latestVotesByOption, name } = pollState;
 
   useEffect(
     () =>
@@ -325,7 +328,15 @@ export const useLatestMessagePreview = <
         }),
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [channelLastMessageString, forceUpdate, readEvents, readStatus, latestVotesByOption, createdBy],
+    [
+      channelLastMessageString,
+      forceUpdate,
+      readEvents,
+      readStatus,
+      latestVotesByOption,
+      createdBy,
+      name,
+    ],
   );
 
   return latestMessagePreview;
