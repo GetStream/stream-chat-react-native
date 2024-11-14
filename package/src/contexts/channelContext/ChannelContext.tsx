@@ -60,18 +60,6 @@ export type ChannelContextValue<
   hideDateSeparators: boolean;
   hideStickyDateHeader: boolean;
   /**
-   * Returns true if the current user has admin privileges
-   */
-  isAdmin: boolean;
-  /**
-   * Returns true if the current user is a moderator
-   */
-  isModerator: boolean;
-  /**
-   * Returns true if the current user is a owner
-   */
-  isOwner: boolean;
-  /**
    * Loads channel around a specific message
    *
    * @param messageId If undefined, channel will be loaded at most recent message.
