@@ -1,5 +1,17 @@
 # Change Log
 
+## [5.42.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.41.4...v5.42.0) (2024-11-14)
+
+
+### Features
+
+* listen to notification.mark_read and notification.mark_unread event and introduce improvements ([#2776](https://github.com/GetStream/stream-chat-react-native/issues/2776)) ([834d124](https://github.com/GetStream/stream-chat-react-native/commit/834d124c9bb8c9ffc24537a5fe870009fd00e3fa))
+
+
+### Bug Fixes
+
+* scroll to recent issues ([#2775](https://github.com/GetStream/stream-chat-react-native/issues/2775)) ([feea8ee](https://github.com/GetStream/stream-chat-react-native/commit/feea8ee4588d4a048e52d5c719aaf6f6c4011454))
+
 ### [5.41.4](https://github.com/GetStream/stream-chat-react-native/compare/v5.41.3...v5.41.4) (2024-11-08)
 
 
