@@ -201,8 +201,8 @@ export class SqliteClient {
 
   static resetDB = async () => {
     this.logger?.('info', `resetDB`);
-    await SqliteClient.dropTables();
     if (this.db) {
+      await SqliteClient.dropTables();
       SqliteClient.closeDB();
     }
     await SqliteClient.initializeDatabase();
