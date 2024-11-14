@@ -58,6 +58,7 @@ const getChannelDefaults = (
   { id, type }: { [key: string]: any } = { id: uuidv4(), type: 'messaging' },
 ) => ({
   _client: {},
+  cid: `${type}:${id}`,
   data: {
     cid: `${type}:${id}`,
     config: {
