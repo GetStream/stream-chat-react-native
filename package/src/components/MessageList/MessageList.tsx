@@ -862,9 +862,7 @@ const MessageListWithContext = <
 
   const goToNewMessages = async () => {
     const isNotLatestSet = channel.state.messages !== channel.state.latestMessages;
-    if (isNotLatestSet && hasNoMoreRecentMessagesToLoad) {
-      loadChannelAroundMessage({});
-    } else if (!hasNoMoreRecentMessagesToLoad) {
+    if (isNotLatestSet) {
       resetPaginationTrackersRef.current();
       await reloadChannel();
     } else if (flatListRef.current) {

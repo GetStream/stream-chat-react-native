@@ -1207,6 +1207,7 @@ const ChannelWithContext = <
       await channel.query({}, 'latest');
     }
     await channel.state.loadMessageIntoState('latest');
+    setMessages([...channel.state.messages]);
   });
 
   const loadChannel = () =>
@@ -1403,13 +1404,17 @@ const ChannelWithContext = <
   }, [enableOfflineSupport, shouldSyncChannel]);
 
   const reloadChannel = () =>
-    channelQueryCallRef.current(async () => {
-      setLoading(true);
-      await loadLatestMessagesRef.current(true);
-      setLoading(false);
-      channel?.state.setIsUpToDate(true);
-      setHasNoMoreRecentMessagesToLoad(true);
-    });
+    channelQueryCallRef.current(
+      async () => {
+        setLoading(true);
+        await loadLatestMessagesRef.current(true);
+        setLoading(false);
+      },
+      () => {
+        channel?.state.setIsUpToDate(true);
+        setHasNoMoreRecentMessagesToLoad(true);
+      },
+    );
 
   /**
    * @deprecated
@@ -1888,10 +1893,12 @@ const ChannelWithContext = <
       const latestLengthBeforeMerge = latestMessageSet?.messages.length || 0;
       const didMerge = mergeOverlappingMessageSetsRef.current(true);
       if (didMerge) {
-        if (latestMessageSet && latestLengthBeforeMerge >= limit) {
+        if (latestMessageSet && latestLengthBeforeMerge > 0) {
+          const shouldSetStateUpToDate =
+            latestMessageSet.messages.length < limit && latestMessageSet.isCurrent;
           setLoadingMoreRecent(true);
-          channel.state.setIsUpToDate(true);
-          setHasNoMoreRecentMessagesToLoad(true);
+          channel.state.setIsUpToDate(shouldSetStateUpToDate);
+          setHasNoMoreRecentMessagesToLoad(shouldSetStateUpToDate);
           loadMoreRecentFinished(channel.state.messages);
           restartSetsMergeFuncRef.current();
           return;

@@ -20,16 +20,11 @@ export const ChannelPreviewMutedStatus = () => {
       channelPreview: {
         mutedStatus: { height, iconStyle, width },
       },
-      colors: { grey_dark },
+      colors: { grey },
     },
   } = useTheme();
 
   return (
-    <Mute
-      height={height}
-      pathFill={grey_dark}
-      style={[styles.iconStyle, iconStyle]}
-      width={width}
-    />
+    <Mute height={height} pathFill={grey} style={[styles.iconStyle, iconStyle]} width={width} />
   );
 };
