@@ -3,7 +3,6 @@ import { Text } from 'react-native';
 
 import { render, screen, waitFor } from '@testing-library/react-native';
 
-import type { DefaultStreamChatGenerics } from 'src/types/types';
 import type { Channel, ChannelMemberResponse, DefaultGenerics, StreamChat } from 'stream-chat';
 
 import {
@@ -13,6 +12,7 @@ import {
 } from '../../../../mock-builders/api/queryMembers';
 import { generateUser } from '../../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
+import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import {
   getChannelPreviewDisplayName,
   useChannelPreviewDisplayName,
