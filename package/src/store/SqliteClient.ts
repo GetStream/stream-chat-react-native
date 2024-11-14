@@ -66,6 +66,7 @@ export class SqliteClient {
         throw new Error('DB is not open or initialized.');
       }
       this.db.close();
+      this.db = undefined;
     } catch (e) {
       this.logger?.('error', `Error closing database ${SqliteClient.dbName}`, {
         error: e,
@@ -200,7 +201,10 @@ export class SqliteClient {
 
   static resetDB = async () => {
     this.logger?.('info', `resetDB`);
-    SqliteClient.dropTables();
+    await SqliteClient.dropTables();
+    if (this.db) {
+      SqliteClient.closeDB();
+    }
     await SqliteClient.initializeDatabase();
   };
 }

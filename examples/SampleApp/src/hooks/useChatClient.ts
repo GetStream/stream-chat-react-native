@@ -181,7 +181,7 @@ export const useChatClient = () => {
   };
 
   const logout = async () => {
-    SqliteClient.resetDB();
+    await SqliteClient.resetDB();
     setChatClient(null);
     chatClient?.disconnectUser();
     await AsyncStore.removeItem('@stream-rn-sampleapp-login-config');
