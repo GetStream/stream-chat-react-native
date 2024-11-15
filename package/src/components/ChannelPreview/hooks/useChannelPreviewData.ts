@@ -19,7 +19,7 @@ export const useChannelPreviewData = <
     | MessageResponse<StreamChatGenerics>
   >(channel.state.messages[channel.state.messages.length - 1]);
   const [unread, setUnread] = useState(channel.countUnread());
-  const { muted } = useIsChannelMuted(channel);
+  const muted = useIsChannelMuted(channel);
 
   /**
    * This effect listens for the `notification.mark_read` event and sets the unread count to 0
