@@ -2929,10 +2929,10 @@ stream-buffers@2.2.x:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha512-uyQK/mx5QjHun80FLJTfaWE7JtwfRMKBLkMne6udYOmvH0CawotVa7TfgYHzAnpphn4+TweIx1QKMnRIbipmUg==
 
-stream-chat-react-native-core@5.41.4:
-  version "5.41.4"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.41.4.tgz#55104e1eb10f464b27d82b9566a18005723ea26d"
-  integrity sha512-Fe2AnbfZ98nRfP5BwMOwR2iae/hT8N5oEiYOb2FwbgtJqot4UFABZDCxMVcoYcFouOK1gc5BkTjdnXYYm/L8EQ==
+stream-chat-react-native-core@5.42.0:
+  version "5.42.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.42.0.tgz#874751a43f7983ce8fac752951f0353f40afcc97"
+  integrity sha512-3HI8cBF/5gyWq850YbgsgTxvYSDNFNC0uZTJETMnW5qURyvJAKktyUlVhjilCuD5LI4CBgXdCD+o6qv52JM0Ww==
   dependencies:
     "@gorhom/bottom-sheet" "^4.6.4"
     dayjs "1.10.5"
@@ -2945,12 +2945,12 @@ stream-chat-react-native-core@5.41.4:
     path "0.12.7"
     react-native-markdown-package "1.8.2"
     react-native-url-polyfill "^1.3.0"
-    stream-chat "8.42.0"
+    stream-chat "8.44.0"
 
-stream-chat@8.42.0:
-  version "8.42.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.42.0.tgz#124ea2c10c6e8f7990304e1101c66751daf63e6c"
-  integrity sha512-8xZz+fmdHSOa3L1rHUOC4Wah+ipvLvdiOmeOfGK6uXnLOKlSHMOblwmQErrOoFM4SKfX9Bea3V8viaKUu6bPng==
+stream-chat@8.44.0:
+  version "8.44.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.44.0.tgz#e48446cf91db786e80a2e7358ac4f1601e5e97f0"
+  integrity sha512-7HNtimD8sT/51rsFibGcD6uBgKj+vlKyYCZMDzjYQEaEsrLqyAg48dOyNM4L2FTF5aXgo9SlxZr21SPleeA2BA==
   dependencies:
     "@babel/runtime" "^7.16.3"
     "@types/jsonwebtoken" "~9.0.0"

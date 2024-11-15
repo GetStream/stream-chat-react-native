@@ -1,5 +1,13 @@
 # Change Log
 
+### [5.42.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.42.0...v5.42.1) (2024-11-15)
+
+
+### Bug Fixes
+
+* android modal size ([#2784](https://github.com/GetStream/stream-chat-react-native/issues/2784)) ([fe64697](https://github.com/GetStream/stream-chat-react-native/commit/fe646976782353836ee5ca58058125e7b9c53132))
+* backport crash fix ([#2787](https://github.com/GetStream/stream-chat-react-native/issues/2787)) ([9b5b243](https://github.com/GetStream/stream-chat-react-native/commit/9b5b243cf91bc80a1fbe50913dbbdc954c973bca))
+
 ## [5.42.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.41.4...v5.42.0) (2024-11-14)
 
 
