@@ -29,12 +29,17 @@ describe('useChannelPreviewMuted', () => {
   });
 
   const mockChannel = {
-    muteStatus: jest.fn().mockReturnValue(false),
+    initialized: true,
+    muteStatus: jest.fn().mockReturnValue({
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 5000,
+      muted: false,
+    }),
   } as unknown as Channel<DefaultStreamChatGenerics>;
 
   it('should return the correct mute status', () => {
     const { result } = renderHook(() => useIsChannelMuted(mockChannel));
-    expect(result.current).toBe(false);
+    expect(result.current.muted).toBe(false);
   });
 
   it("should update the mute status when the notification.channel_mutes_updated event is emitted'", () => {
