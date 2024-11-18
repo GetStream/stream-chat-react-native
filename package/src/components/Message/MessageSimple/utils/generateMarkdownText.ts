@@ -35,5 +35,11 @@ export const generateMarkdownText = (text?: string) => {
 
   resultText = resultText.replace(/[<"'>]/g, '\\$&');
 
+  // Remove whitespaces that come directly after newlines except in code blocks where we deem this allowed.
+  resultText = resultText.replace(/(```[\s\S]*?```|`.*?`)|\n[ ]{2,}/g, (_, code) => {
+    if (code) return code;
+    return '\n';
+  });
+
   return resultText;
 };
