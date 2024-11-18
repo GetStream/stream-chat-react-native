@@ -7,11 +7,11 @@ import React, {
   useReducer,
   useRef,
 } from 'react';
+import { ChannelState as StreamChannelState } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { ActiveChannelsProvider } from '../activeChannelsRefContext/ActiveChannelsRefContext';
 
-import type { ChannelContextValue } from '../channelContext/ChannelContext';
 import type { PaginatedMessageListContextValue } from '../paginatedMessageListContext/PaginatedMessageListContext';
 import type { ThreadContextValue } from '../threadContext/ThreadContext';
 import type { TypingContextValue } from '../typingContext/TypingContext';
@@ -22,14 +22,13 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 export type ChannelState<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
-  members: ChannelContextValue<StreamChatGenerics>['members'];
+  members: StreamChannelState<StreamChatGenerics>['members'];
   messages: PaginatedMessageListContextValue<StreamChatGenerics>['messages'];
-  read: ChannelContextValue<StreamChatGenerics>['read'];
-  subscriberCount: number;
+  read: StreamChannelState<StreamChatGenerics>['read'];
   threadMessages: ThreadContextValue<StreamChatGenerics>['threadMessages'];
   typing: TypingContextValue<StreamChatGenerics>['typing'];
-  watcherCount: ChannelContextValue<StreamChatGenerics>['watcherCount'];
-  watchers: ChannelContextValue<StreamChatGenerics>['watchers'];
+  watcherCount: number;
+  watchers: StreamChannelState<StreamChatGenerics>['watchers'];
 };
 
 type ChannelsState<
@@ -56,25 +55,12 @@ type SetStateAction<
   type: 'SET_STATE';
 };
 
-type IncreaseSubscriberCountAction = {
-  payload: { cid: string };
-  type: 'INCREASE_SUBSCRIBER_COUNT';
-};
-type DecreaseSubscriberCountAction = {
-  payload: { cid: string };
-  type: 'DECREASE_SUBSCRIBER_COUNT';
-};
-
 type Action<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  | SetStateAction<StreamChatGenerics>
-  | IncreaseSubscriberCountAction
-  | DecreaseSubscriberCountAction;
+  SetStateAction<StreamChatGenerics>;
 
 export type ChannelsStateContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
-  decreaseSubscriberCount: (value: { cid: string }) => void;
-  increaseSubscriberCount: (value: { cid: string }) => void;
   setState: (value: Payload<Keys, StreamChatGenerics>) => void;
   state: ChannelsState<StreamChatGenerics>;
 };
@@ -95,39 +81,6 @@ function reducer(state: ChannelsState, action: Action) {
         },
       };
 
-    case 'INCREASE_SUBSCRIBER_COUNT': {
-      const currentCount = state[action.payload.cid]?.subscriberCount ?? 0;
-      return {
-        ...state,
-        [action.payload.cid]: {
-          ...(state[action.payload.cid] || {}),
-          subscriberCount: currentCount + 1,
-        },
-      };
-    }
-
-    case 'DECREASE_SUBSCRIBER_COUNT': {
-      const currentCount = state[action.payload.cid]?.subscriberCount ?? 0;
-
-      // If there last subscribed Channel component unsubscribes, we clear the channel state.
-      if (currentCount <= 1) {
-        const stateShallowCopy = {
-          ...state,
-        };
-
-        delete stateShallowCopy[action.payload.cid];
-
-        return stateShallowCopy;
-      }
-
-      return {
-        ...state,
-        [action.payload.cid]: {
-          ...(state[action.payload.cid] || {}),
-          subscriberCount: currentCount - 1,
-        },
-      };
-    }
     default:
       throw new Error();
   }
@@ -150,18 +103,8 @@ export const ChannelsStateProvider = <
     dispatch({ payload, type: 'SET_STATE' });
   }, []);
 
-  const increaseSubscriberCount = useCallback((payload: { cid: string }) => {
-    dispatch({ payload, type: 'INCREASE_SUBSCRIBER_COUNT' });
-  }, []);
-
-  const decreaseSubscriberCount = useCallback((payload: { cid: string }) => {
-    dispatch({ payload, type: 'DECREASE_SUBSCRIBER_COUNT' });
-  }, []);
-
   const value = useMemo(
     () => ({
-      decreaseSubscriberCount,
-      increaseSubscriberCount,
       setState,
       state,
     }),
