@@ -7,14 +7,11 @@ import React, {
   useReducer,
   useRef,
 } from 'react';
-import { ChannelState as StreamChannelState } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { ActiveChannelsProvider } from '../activeChannelsRefContext/ActiveChannelsRefContext';
 
-import type { PaginatedMessageListContextValue } from '../paginatedMessageListContext/PaginatedMessageListContext';
 import type { ThreadContextValue } from '../threadContext/ThreadContext';
-import type { TypingContextValue } from '../typingContext/TypingContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -22,13 +19,7 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 export type ChannelState<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
-  members: StreamChannelState<StreamChatGenerics>['members'];
-  messages: PaginatedMessageListContextValue<StreamChatGenerics>['messages'];
-  read: StreamChannelState<StreamChatGenerics>['read'];
   threadMessages: ThreadContextValue<StreamChatGenerics>['threadMessages'];
-  typing: TypingContextValue<StreamChatGenerics>['typing'];
-  watcherCount: number;
-  watchers: StreamChannelState<StreamChatGenerics>['watchers'];
 };
 
 type ChannelsState<

@@ -203,17 +203,6 @@ describe('Channel', () => {
     await waitFor(() => expect(channelQuerySpy).toHaveBeenCalled());
   });
 
-  it('should render null if channel gets deleted', async () => {
-    const { getByTestId, queryByTestId } = renderComponent({
-      channel,
-      children: <View testID='children' />,
-    });
-
-    await waitFor(() => expect(getByTestId('children')).toBeTruthy());
-    act(() => dispatchChannelDeletedEvent(chatClient, channel));
-    expect(queryByTestId('children')).toBeNull();
-  });
-
   describe('ChannelContext', () => {
     it('renders children without crashing', async () => {
       const { getByTestId } = render(

@@ -160,6 +160,7 @@ exports[`Thread should match thread snapshot 1`] = `
         }
         maxToRenderPerBatch={30}
         onContentSizeChange={[Function]}
+        onEndReached={[Function]}
         onLayout={[Function]}
         onMomentumScrollBegin={[Function]}
         onMomentumScrollEnd={[Function]}
@@ -167,6 +168,7 @@ exports[`Thread should match thread snapshot 1`] = `
         onScrollBeginDrag={[Function]}
         onScrollEndDrag={[Function]}
         onScrollToIndexFailed={[Function]}
+        onStartReached={[Function]}
         onTouchEnd={[Function]}
         onViewableItemsChanged={[Function]}
         removeClippedSubviews={false}
@@ -575,6 +577,13 @@ exports[`Thread should match thread snapshot 1`] = `
                 ]
               }
             />
+            <View
+              style={
+                [
+                  undefined,
+                ]
+              }
+            />
           </View>
           <View
             onFocusCapture={[Function]}
@@ -916,6 +925,13 @@ exports[`Thread should match thread snapshot 1`] = `
                 </View>
               </View>
             </View>
+            <View
+              style={
+                [
+                  undefined,
+                ]
+              }
+            />
             <View
               style={
                 [
@@ -1302,6 +1318,13 @@ exports[`Thread should match thread snapshot 1`] = `
                 05/05/2020
               </Text>
             </View>
+            <View
+              style={
+                [
+                  undefined,
+                ]
+              }
+            />
           </View>
           <View
             onLayout={[Function]}
