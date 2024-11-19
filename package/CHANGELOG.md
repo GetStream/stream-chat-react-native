@@ -1,5 +1,16 @@
 # Change Log
 
+### [5.42.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.42.1...v5.42.2) (2024-11-19)
+
+
+### Bug Fixes
+
+* backporting variety fixes ([008cf01](https://github.com/GetStream/stream-chat-react-native/commit/008cf01ddaa31e105ac2bab7052e1340b7583507))
+* channel hook regressions ([e8e3dd0](https://github.com/GetStream/stream-chat-react-native/commit/e8e3dd0af396671949f3c12086816329a962dd08))
+* expo media library permissions race conditions ([fc9b908](https://github.com/GetStream/stream-chat-react-native/commit/fc9b908799a3d517a64b6388bdfd268c2dc16981))
+* listen to correct channel read events ([5a58a65](https://github.com/GetStream/stream-chat-react-native/commit/5a58a65106d963cd95d3d2df31afe2459b2b902e))
+* recursion depth on regex parse issue ([#2790](https://github.com/GetStream/stream-chat-react-native/issues/2790)) ([e6908e9](https://github.com/GetStream/stream-chat-react-native/commit/e6908e9ddfa1722d1f610cb0d4d5be2c05f910e1))
+
 ### [5.42.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.42.0...v5.42.1) (2024-11-15)
 
 
