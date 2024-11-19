@@ -31,6 +31,13 @@ export const useChannelPreviewData = <
   const channelLastMessageString = `${channelLastMessage?.id}${channelLastMessage?.updated_at}`;
 
   useEffect(() => {
+    const { unsubscribe } = client.on('notification.mark_read', () => {
+      setUnread(channel.countUnread());
+    });
+    return unsubscribe;
+  }, [channel, client]);
+
+  useEffect(() => {
     if (
       channelLastMessage &&
       (channelLastMessage.id !== lastMessage?.id ||
@@ -56,7 +63,7 @@ export const useChannelPreviewData = <
         setForceUpdate((prev) => prev + 1);
       }
     };
-    const { unsubscribe } = client.on('notification.mark_read', handleReadEvent);
+    const { unsubscribe } = client.on('message.read', handleReadEvent);
     return unsubscribe;
   }, [client, channel]);
 
