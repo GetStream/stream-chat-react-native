@@ -53,8 +53,10 @@ export const pickImage = ImagePicker
             return { cancelled: true };
           }
         }
+        return { cancelled: true };
       } catch (error) {
         console.log('Error while picking image', error);
+        return { cancelled: true };
       }
     }
   : null;
