@@ -17,12 +17,14 @@ export type LocalUserType = {
 };
 type LocalPollOptionType = Record<string, unknown>;
 type LocalPollType = Record<string, unknown>;
+type LocalMemberType = Record<string, unknown>;
 
 export type StreamChatGenerics = {
   attachmentType: LocalAttachmentType;
   channelType: LocalChannelType;
   commandType: LocalCommandType;
   eventType: LocalEventType;
+  memberType: LocalMemberType;
   messageType: LocalMessageType;
   pollOptionType: LocalPollOptionType;
   pollType: LocalPollType;
