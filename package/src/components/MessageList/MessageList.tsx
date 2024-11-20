@@ -352,6 +352,11 @@ const MessageListWithContext = <
   const initialScrollSettingTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   /**
+   * The timeout id used to temporarily load the initial scroll set flag
+   */
+  const onScrollEventTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+
+  /**
    * Last messageID that was scrolled to after loading a new message list,
    * this flag keeps track of it so that we dont scroll to it again on target message set
    */
@@ -774,6 +779,29 @@ const MessageListWithContext = <
       .catch(onError);
   };
 
+  const onUserScrollEvent: NonNullable<ScrollViewProps['onScroll']> = (event) => {
+    const nativeEvent = event.nativeEvent;
+    clearTimeout(onScrollEventTimeoutRef.current);
+    const offset = nativeEvent.contentOffset.y;
+    const visibleLength = nativeEvent.layoutMeasurement.height;
+    const contentLength = nativeEvent.contentSize.height;
+    if (!channel || !channelResyncScrollSet.current) {
+      return;
+    }
+
+    // Check if scroll has reached either start of end of list.
+    const isScrollAtStart = offset < 100;
+    const isScrollAtEnd = contentLength - visibleLength - offset < 100;
+
+    if (isScrollAtStart) {
+      maybeCallOnStartReached();
+    }
+
+    if (isScrollAtEnd) {
+      maybeCallOnEndReached();
+    }
+  };
+
   const handleScroll: ScrollViewProps['onScroll'] = (event) => {
     const offset = event.nativeEvent.contentOffset.y;
     const messageListHasMessages = processedMessageList.length > 0;
@@ -810,8 +838,8 @@ const MessageListWithContext = <
     const isNotLatestSet = channel.state.messages !== channel.state.latestMessages;
 
     if (isNotLatestSet) {
-      await reloadChannel();
       resetPaginationTrackersRef.current();
+      await reloadChannel();
     } else if (flatListRef.current) {
       flatListRef.current.scrollToOffset({
         offset: 0,
@@ -1001,12 +1029,14 @@ const MessageListWithContext = <
     }
   };
 
-  const onScrollBeginDrag: ScrollViewProps['onScrollBeginDrag'] = () => {
+  const onScrollBeginDrag: ScrollViewProps['onScrollBeginDrag'] = (event) => {
     !hasMoved && selectedPicker && setHasMoved(true);
+    onUserScrollEvent(event);
   };
 
-  const onScrollEndDrag: ScrollViewProps['onScrollEndDrag'] = () => {
+  const onScrollEndDrag: ScrollViewProps['onScrollEndDrag'] = (event) => {
     hasMoved && selectedPicker && setHasMoved(false);
+    onUserScrollEvent(event);
   };
 
   const refCallback = (ref: FlatListType<MessageType<StreamChatGenerics>>) => {
@@ -1119,12 +1149,11 @@ const MessageListWithContext = <
             minIndexForVisible: 1,
           }}
           maxToRenderPerBatch={30}
-          onEndReached={maybeCallOnEndReached}
+          onMomentumScrollEnd={onUserScrollEvent}
           onScroll={handleScroll}
           onScrollBeginDrag={onScrollBeginDrag}
           onScrollEndDrag={onScrollEndDrag}
           onScrollToIndexFailed={onScrollToIndexFailedRef.current}
-          onStartReached={maybeCallOnStartReached}
           onTouchEnd={dismissImagePicker}
           onViewableItemsChanged={onViewableItemsChanged.current}
           ref={refCallback}
