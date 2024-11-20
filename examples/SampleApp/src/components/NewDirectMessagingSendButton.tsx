@@ -51,9 +51,7 @@ const SendButtonWithContext = <
   );
 };
 
-const areEqual = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: NewDirectMessagingSendButtonPropsWithContext<StreamChatGenerics>,
   nextProps: NewDirectMessagingSendButtonPropsWithContext<StreamChatGenerics>,
 ) => {
