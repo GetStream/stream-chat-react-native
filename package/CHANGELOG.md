@@ -1,5 +1,13 @@
 # Change Log
 
+## [5.43.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.42.2...v5.43.0) (2024-11-20)
+
+
+### Features
+
+* add support for membership customization ([#2802](https://github.com/GetStream/stream-chat-react-native/issues/2802)) ([376ac7d](https://github.com/GetStream/stream-chat-react-native/commit/376ac7d5bd5a5c34080b2272601300633b3412f1))
+* moderation v2 support ([#2801](https://github.com/GetStream/stream-chat-react-native/issues/2801)) ([9c55bd5](https://github.com/GetStream/stream-chat-react-native/commit/9c55bd543215a6c615b3e088238154bba34a958f))
+
 ### [5.42.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.42.1...v5.42.2) (2024-11-19)
 
 
