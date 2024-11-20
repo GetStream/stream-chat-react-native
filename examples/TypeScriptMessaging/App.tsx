@@ -38,12 +38,14 @@ type LocalReactionType = Record<string, unknown>;
 type LocalUserType = Record<string, unknown>;
 type LocalPollOptionType = Record<string, unknown>;
 type LocalPollType = Record<string, unknown>;
+type LocalMemberType = Record<string, unknown>;
 
 type StreamChatGenerics = {
   attachmentType: LocalAttachmentType;
   channelType: LocalChannelType;
   commandType: LocalCommandType;
   eventType: LocalEventType;
+  memberType: LocalMemberType;
   messageType: LocalMessageType;
   pollOptionType: LocalPollOptionType;
   pollType: LocalPollType;
