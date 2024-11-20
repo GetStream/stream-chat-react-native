@@ -89,6 +89,7 @@ export interface DefaultStreamChatGenerics extends ExtendableGenerics {
   channelType: DefaultChannelType;
   commandType: LiteralStringForUnion;
   eventType: UnknownType;
+  memberType: UnknownType;
   messageType: UnknownType;
   reactionType: UnknownType;
   userType: DefaultUserType;

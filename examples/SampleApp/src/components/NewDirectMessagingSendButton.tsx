@@ -4,18 +4,11 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/core';
 
 import {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
+  DefaultStreamChatGenerics,
   MessageInputContextValue,
   Search,
   SendRight,
   SendUp,
-  UnknownType,
   useChannelContext,
   useMessageInputContext,
   useTheme,
@@ -23,30 +16,18 @@ import {
 
 import { NewDirectMessagingScreenNavigationProp } from '../screens/NewDirectMessagingScreen';
 
-import { StreamChatGenerics } from '../types';
+import { StreamChatGenerics as LocalStreamChatGenerics } from '../types';
 
 type NewDirectMessagingSendButtonPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'giphyActive' | 'sendMessage'> & {
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<MessageInputContextValue<StreamChatGenerics>, 'giphyActive' | 'sendMessage'> & {
   /** Disables the button */ disabled: boolean;
 };
 
 const SendButtonWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: NewDirectMessagingSendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: NewDirectMessagingSendButtonPropsWithContext<StreamChatGenerics>,
 ) => {
   const { disabled = false, giphyActive, sendMessage } = props;
   const {
@@ -71,16 +52,10 @@ const SendButtonWithContext = <
 };
 
 const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  prevProps: NewDirectMessagingSendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: NewDirectMessagingSendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  prevProps: NewDirectMessagingSendButtonPropsWithContext<StreamChatGenerics>,
+  nextProps: NewDirectMessagingSendButtonPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     disabled: prevDisabled,
@@ -117,23 +92,17 @@ const MemoizedNewDirectMessagingSendButton = React.memo(
 ) as typeof SendButtonWithContext;
 
 export type SendButtonProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<NewDirectMessagingSendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<NewDirectMessagingSendButtonPropsWithContext<StreamChatGenerics>>;
 
 /**
  * UI Component for send button in MessageInput component.
  */
-export const NewDirectMessagingSendButton = (props: SendButtonProps<StreamChatGenerics>) => {
+export const NewDirectMessagingSendButton = (props: SendButtonProps<LocalStreamChatGenerics>) => {
   const navigation = useNavigation<NewDirectMessagingScreenNavigationProp>();
-  const { channel } = useChannelContext<StreamChatGenerics>();
+  const { channel } = useChannelContext<LocalStreamChatGenerics>();
 
-  const { giphyActive, text } = useMessageInputContext<StreamChatGenerics>();
+  const { giphyActive, text } = useMessageInputContext<LocalStreamChatGenerics>();
 
   const sendMessage = async () => {
     if (!channel) {
@@ -152,7 +121,7 @@ export const NewDirectMessagingSendButton = (props: SendButtonProps<StreamChatGe
   };
 
   return (
-    <MemoizedNewDirectMessagingSendButton<StreamChatGenerics>
+    <MemoizedNewDirectMessagingSendButton<LocalStreamChatGenerics>
       {...{ giphyActive, sendMessage }}
       {...props}
       {...{ disabled: props.disabled || false }}
