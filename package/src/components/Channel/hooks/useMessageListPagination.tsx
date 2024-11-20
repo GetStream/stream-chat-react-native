@@ -38,7 +38,7 @@ export const useMessageListPagination = <
     setLoadingMore,
     setLoadingMoreRecent,
     state,
-  } = useChannelMessageDataState<StreamChatGenerics>();
+  } = useChannelMessageDataState<StreamChatGenerics>(channel);
 
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
   const loadMoreFinished = useRef(

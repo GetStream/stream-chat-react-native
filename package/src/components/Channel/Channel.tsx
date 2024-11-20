@@ -669,7 +669,7 @@ const ChannelWithContext = <
     initStateFromChannel,
     setTyping,
     state: channelState,
-  } = useChannelDataState<StreamChatGenerics>();
+  } = useChannelDataState<StreamChatGenerics>(channel);
 
   const {
     copyMessagesStateFromChannel,
