@@ -547,7 +547,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.getstream.reactnative.SampleApp;
 				PRODUCT_NAME = SampleApp;
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "match AdHoc io.getstream.reactnative.SampleApp";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
