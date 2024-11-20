@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { View } from 'react-native';
 
-import { act, cleanup, render, waitFor } from '@testing-library/react-native';
+import { cleanup, render, waitFor } from '@testing-library/react-native';
 import { StreamChat } from 'stream-chat';
 
 import { ChannelContext, ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
@@ -15,7 +15,6 @@ import { ThreadContext, ThreadProvider } from '../../../contexts/threadContext/T
 
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
-import dispatchChannelDeletedEvent from '../../../mock-builders/event/channelDeleted';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
