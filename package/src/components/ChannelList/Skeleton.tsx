@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, {
   Easing,
+  useAnimatedProps,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -114,6 +115,13 @@ export const Skeleton = () => {
     } a${boneRadius} ${boneRadius} 0 1 0 0 -${boneHeight}z`;
   }, []);
 
+  const svgAnimatedProps = useAnimatedProps(
+    () => ({
+      d: d.value,
+    }),
+    [d],
+  );
+
   return (
     <View
       style={[styles.container, { borderBottomColor: border }, container]}
@@ -140,7 +148,7 @@ export const Skeleton = () => {
         </Svg>
       </Animated.View>
       <Svg height={height} width={width}>
-        <Path d={d.value} fill={maskFillColor || white_snow} />
+        <Path {...svgAnimatedProps} fill={maskFillColor || white_snow} />
       </Svg>
     </View>
   );
