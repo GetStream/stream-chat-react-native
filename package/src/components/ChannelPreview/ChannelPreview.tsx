@@ -3,7 +3,6 @@ import React from 'react';
 import type { Channel } from 'stream-chat';
 
 import { useChannelPreviewData } from './hooks/useChannelPreviewData';
-import { useLatestMessagePreview } from './hooks/useLatestMessagePreview';
 
 import {
   ChannelsContextValue,
@@ -31,15 +30,16 @@ export const ChannelPreview = <
   const { channel, client: propClient, forceUpdate: propForceUpdate, Preview: propPreview } = props;
 
   const { client: contextClient } = useChatContext<StreamChatGenerics>();
-  const { forceUpdate: contextForceUpdate, Preview: contextPreview } =
-    useChannelsContext<StreamChatGenerics>();
+  const { Preview: contextPreview } = useChannelsContext<StreamChatGenerics>();
 
   const client = propClient || contextClient;
-  const forceUpdate = propForceUpdate || contextForceUpdate;
   const Preview = propPreview || contextPreview;
 
-  const { lastMessage, muted, unread } = useChannelPreviewData(channel, client, forceUpdate);
-  const latestMessagePreview = useLatestMessagePreview(channel, forceUpdate, lastMessage);
+  const { latestMessagePreview, muted, unread } = useChannelPreviewData(
+    channel,
+    client,
+    propForceUpdate,
+  );
 
   return (
     <Preview

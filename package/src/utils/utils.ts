@@ -94,7 +94,10 @@ export const isBouncedMessage = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   message: MessageType<StreamChatGenerics>,
-) => message.type === 'error' && message.moderation_details !== undefined;
+) =>
+  (message.type === 'error' &&
+    message?.moderation_details?.action === 'MESSAGE_RESPONSE_ACTION_BOUNCE') ||
+  message?.moderation?.action === 'bounce';
 
 /**
  * Utility to check if the message is a edited message.

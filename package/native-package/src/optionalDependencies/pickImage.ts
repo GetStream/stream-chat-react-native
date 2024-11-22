@@ -35,6 +35,7 @@ export const pickImage = ImagePicker
         }
       } catch (error) {
         console.log('Error picking image: ', error);
+        return { cancelled: true };
       }
     }
   : null;

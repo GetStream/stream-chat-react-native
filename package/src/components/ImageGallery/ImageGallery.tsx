@@ -610,6 +610,7 @@ export const ImageGallery = <
               {...imageGalleryCustomComponents?.gridHandle}
             />
           )}
+          // @ts-ignore
           handleHeight={imageGalleryGridHandleHeight}
           index={0}
           onChange={(index: number) => setCurrentBottomSheetIndex(index)}

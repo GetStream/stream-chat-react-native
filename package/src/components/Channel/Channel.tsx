@@ -585,7 +585,7 @@ const ChannelWithContext = <
     MessageStatus = MessageStatusDefault,
     MessageSystem = MessageSystemDefault,
     MessageText,
-    messageTextNumberOfLines = 5,
+    messageTextNumberOfLines,
     MessageTimestamp = MessageTimestampDefault,
     MessageUserReactions = MessageUserReactionsDefault,
     MessageUserReactionsAvatar = MessageUserReactionsAvatarDefault,

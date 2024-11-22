@@ -269,6 +269,7 @@ export const AttachmentPicker = React.forwardRef(
              */
             photoError ? null : AttachmentPickerBottomSheetHandle
           }
+          // @ts-ignore
           handleHeight={handleHeight}
           index={-1}
           onChange={setCurrentIndex}
