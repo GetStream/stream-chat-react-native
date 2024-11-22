@@ -30,11 +30,6 @@ export const useIsOnline = <
   const onBackground = useCallback(() => {
     if (!closeConnectionOnBackground || !clientExists) return;
 
-    for (const cid in client.activeChannels) {
-      const channel = client.activeChannels[cid];
-      channel?.state.setIsUpToDate(false);
-    }
-
     client.closeConnection();
     setIsOnline(false);
   }, [closeConnectionOnBackground, client, clientExists]);
