@@ -884,7 +884,6 @@ const ChannelWithContext = <
         const failedMessages = channelMessagesState.messages
           ?.filter((message) => message.status === MessageStatusTypes.FAILED)
           .map(parseMessage);
-
         if (failedMessages?.length) {
           channel.state.addMessagesSorted(failedMessages);
         }

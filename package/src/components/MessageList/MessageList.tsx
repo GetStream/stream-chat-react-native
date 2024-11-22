@@ -1171,26 +1171,21 @@ const MessageListWithContext = <
           {...additionalFlatListPropsExcludingStyle}
         />
       )}
-
-      {!loading && (
-        <>
-          <View style={styles.stickyHeader}>
-            {messageListLengthAfterUpdate && StickyHeader ? (
-              <StickyHeader date={stickyHeaderDate} DateHeader={DateHeader} />
-            ) : null}
-          </View>
-          {!disableTypingIndicator && TypingIndicator && (
-            <TypingIndicatorContainer>
-              <TypingIndicator />
-            </TypingIndicatorContainer>
-          )}
-          <ScrollToBottomButton
-            onPress={goToNewMessages}
-            showNotification={scrollToBottomButtonVisible}
-            unreadCount={threadList ? 0 : channel?.countUnread()}
-          />
-        </>
+      <View style={styles.stickyHeader}>
+        {messageListLengthAfterUpdate && StickyHeader ? (
+          <StickyHeader date={stickyHeaderDate} DateHeader={DateHeader} />
+        ) : null}
+      </View>
+      {!disableTypingIndicator && TypingIndicator && (
+        <TypingIndicatorContainer>
+          <TypingIndicator />
+        </TypingIndicatorContainer>
       )}
+      <ScrollToBottomButton
+        onPress={goToNewMessages}
+        showNotification={scrollToBottomButtonVisible}
+        unreadCount={threadList ? 0 : channel?.countUnread()}
+      />
       <NetworkDownIndicator />
     </View>
   );

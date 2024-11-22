@@ -148,6 +148,7 @@ export const useMessageListPagination = <
         await channel.state.loadMessageIntoState(messageIdToLoadAround, undefined, limit);
         loadMoreFinished(channel.state.messagePagination.hasPrev, channel.state.messages);
         jumpToMessageFinished(channel.state.messagePagination.hasNext, messageIdToLoadAround);
+
         if (setTargetedMessage) {
           setTargetedMessage(messageIdToLoadAround);
         }
@@ -170,13 +171,13 @@ export const useMessageListPagination = <
     limit?: number;
     setTargetedMessage?: (messageId: string) => void;
   }) => {
-    if (!channel) return;
     let unreadMessageIdToScrollTo: string | undefined;
     const unreadCount = channel.countUnread();
     if (unreadCount === 0) return;
     const isLatestMessageSetShown = !!channel.state.messageSets.find(
       (set) => set.isCurrent && set.isLatest,
     );
+
     if (isLatestMessageSetShown && unreadCount <= channel.state.messages.length) {
       unreadMessageIdToScrollTo =
         channel.state.messages[channel.state.messages.length - unreadCount].id;

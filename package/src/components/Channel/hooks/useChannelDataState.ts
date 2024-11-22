@@ -5,6 +5,22 @@ import { Channel, ChannelState as StreamChannelState } from 'stream-chat';
 import { DefaultStreamChatGenerics } from '../../../types/types';
 import { MessageType } from '../../MessageList/hooks/useMessageList';
 
+export const channelInitialState = {
+  hasMore: true,
+  hasMoreNewer: false,
+  loading: false,
+  loadingMore: false,
+  loadingMoreRecent: false,
+  members: {},
+  messages: [],
+  pinnedMessages: [],
+  read: {},
+  targetedMessageId: undefined,
+  typing: {},
+  watcherCount: 0,
+  watchers: {},
+};
+
 /**
  * The ChannelMessagesState object
  */
@@ -60,8 +76,8 @@ export const useChannelMessageDataState = <
     loading: false,
     loadingMore: false,
     loadingMoreRecent: false,
-    messages: channel?.state.messages || [],
-    pinnedMessages: channel?.state.pinnedMessages || [],
+    messages: channel?.state?.messages || [],
+    pinnedMessages: channel?.state?.pinnedMessages || [],
     targetedMessageId: undefined,
   });
 

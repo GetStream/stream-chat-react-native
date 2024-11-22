@@ -37,7 +37,7 @@ exports[`ScrollToBottomButton should render the message notification and match s
       "right": 20,
     }
   }
-  testID="message-notification"
+  testID="scroll-to-bottom-button"
 >
   <View
     style={
