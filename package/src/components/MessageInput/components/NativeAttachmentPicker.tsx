@@ -19,16 +19,16 @@ type NativeAttachmentPickerProps = {
   attachButtonLayoutRectangle?: LayoutRectangle;
 };
 
-const TOP_PADDING = 4;
-const ATTACH_MARGIN_BOTTOM = 4;
+const TOP_PADDING = 8;
+const ATTACH_MARGIN_BOTTOM = 8;
 
 export const NativeAttachmentPicker = ({
   attachButtonLayoutRectangle,
   onRequestedClose,
 }: NativeAttachmentPickerProps) => {
   const size = attachButtonLayoutRectangle?.width ?? 0;
-  const attachButtonItemSize = 40;
-  const NUMBER_OF_BUTTONS = 3;
+  const attachButtonItemSize = 48;
+  const NUMBER_OF_BUTTONS = 4;
   const {
     theme: {
       colors: { grey_whisper },
@@ -200,7 +200,6 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'flex-end',
-    paddingTop: TOP_PADDING,
     position: 'absolute',
   },
 });
