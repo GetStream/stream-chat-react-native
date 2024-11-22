@@ -1,5 +1,12 @@
 # Change Log
 
+### [5.43.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.43.0...v5.43.1) (2024-11-22)
+
+
+### Bug Fixes
+
+* channel.state break on going to background ([#2809](https://github.com/GetStream/stream-chat-react-native/issues/2809)) ([54ff925](https://github.com/GetStream/stream-chat-react-native/commit/54ff925405ad3cc3c269f92b054955fff3086e0a))
+
 ## [5.43.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.42.2...v5.43.0) (2024-11-20)
 
 
