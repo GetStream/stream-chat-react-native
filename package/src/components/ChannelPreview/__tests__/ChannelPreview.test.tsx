@@ -69,6 +69,15 @@ describe('ChannelPreview', () => {
     );
   };
 
+  const generateChannelWrapper = (overrides: Record<string, unknown>) =>
+    generateChannel({
+      countUnread: jest.fn().mockReturnValue(0),
+      initialized: true,
+      lastMessage: jest.fn().mockReturnValue(generateMessage()),
+      muteStatus: jest.fn().mockReturnValue({ muted: false }),
+      ...overrides,
+    });
+
   const useInitializeChannel = async (c: GetOrCreateChannelApiParams) => {
     useMockedApis(chatClient, [getOrCreateChannelApi(c)]);
 
@@ -89,9 +98,8 @@ describe('ChannelPreview', () => {
     it("should not update the unread count if the event's cid does not match the channel's cid", async () => {
       const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
 
-      const c = generateChannel({
+      const c = generateChannelWrapper({
         countUnread: jest.fn().mockReturnValue(10),
-        muteStatus: jest.fn().mockReturnValue({ muted: false }),
         on: channelOnMock,
       });
 
@@ -117,9 +125,8 @@ describe('ChannelPreview', () => {
     it('should update the unread count to 0', async () => {
       const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
 
-      const c = generateChannel({
+      const c = generateChannelWrapper({
         countUnread: jest.fn().mockReturnValue(10),
-        muteStatus: jest.fn().mockReturnValue({ muted: false }),
         on: channelOnMock,
       });
 
@@ -147,9 +154,7 @@ describe('ChannelPreview', () => {
     it("should not update the unread count if the event's cid is undefined", async () => {
       const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
 
-      const c = generateChannel({
-        countUnread: jest.fn().mockReturnValue(0),
-        muteStatus: jest.fn().mockReturnValue({ muted: false }),
+      const c = generateChannelWrapper({
         on: channelOnMock,
       });
 
@@ -182,9 +187,7 @@ describe('ChannelPreview', () => {
     it("should not update the unread count if the event's cid does not match the channel's cid", async () => {
       const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
 
-      const c = generateChannel({
-        countUnread: jest.fn().mockReturnValue(0),
-        muteStatus: jest.fn().mockReturnValue({ muted: false }),
+      const c = generateChannelWrapper({
         on: channelOnMock,
       });
 
@@ -217,9 +220,7 @@ describe('ChannelPreview', () => {
     it("should not update the unread count if the event's user id does not match the client's user id", async () => {
       const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
 
-      const c = generateChannel({
-        countUnread: jest.fn().mockReturnValue(0),
-        muteStatus: jest.fn().mockReturnValue({ muted: false }),
+      const c = generateChannelWrapper({
         on: channelOnMock,
       });
 
@@ -255,12 +256,10 @@ describe('ChannelPreview', () => {
       await useInitializeChannel(c);
       const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
 
-      const testChannel = {
+      const testChannel = generateChannelWrapper({
         ...channel,
-        countUnread: jest.fn().mockReturnValue(0),
-        muteStatus: jest.fn().mockReturnValue({ muted: false }),
         on: channelOnMock,
-      };
+      });
 
       const { getByTestId } = render(<TestComponent />);
 
@@ -291,9 +290,9 @@ describe('ChannelPreview', () => {
   it('should update the unread count to 0 if the channel is muted', async () => {
     const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
 
-    const c = generateChannel({
+    const c = generateChannelWrapper({
       countUnread: jest.fn().mockReturnValue(10),
-      muteStatus: jest.fn().mockReturnValue({ muted: false }),
+      muteStatus: jest.fn().mockReturnValue({ muted: true }),
       on: channelOnMock,
     });
 
@@ -304,7 +303,7 @@ describe('ChannelPreview', () => {
     await waitFor(() => getByTestId('channel-id'));
 
     await waitFor(() => {
-      expect(getByTestId('unread-count')).toHaveTextContent('10');
+      expect(getByTestId('unread-count')).toHaveTextContent('0');
     });
 
     act(() => {

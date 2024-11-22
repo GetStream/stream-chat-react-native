@@ -5,6 +5,9 @@ import type { Channel, ChannelState, Event, MessageResponse, StreamChat } from '
 
 import { useIsChannelMuted } from './useIsChannelMuted';
 
+import { useLatestMessagePreview } from './useLatestMessagePreview';
+
+import { useChannelsContext } from '../../../contexts';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useChannelPreviewData = <
@@ -12,14 +15,40 @@ export const useChannelPreviewData = <
 >(
   channel: Channel<StreamChatGenerics>,
   client: StreamChat<StreamChatGenerics>,
-  forceUpdate?: number,
+  forceUpdateOverride?: number,
 ) => {
+  const [forceUpdate, setForceUpdate] = useState(0);
   const [lastMessage, setLastMessage] = useState<
     | ReturnType<ChannelState<StreamChatGenerics>['formatMessage']>
     | MessageResponse<StreamChatGenerics>
   >(channel.state.messages[channel.state.messages.length - 1]);
   const [unread, setUnread] = useState(channel.countUnread());
   const { muted } = useIsChannelMuted(channel);
+  const { forceUpdate: contextForceUpdate } = useChannelsContext<StreamChatGenerics>();
+  const channelListForceUpdate = forceUpdateOverride ?? contextForceUpdate;
+
+  const channelLastMessage = channel.lastMessage();
+  const channelLastMessageString = `${channelLastMessage?.id}${channelLastMessage?.updated_at}`;
+
+  useEffect(() => {
+    const { unsubscribe } = client.on('notification.mark_read', () => {
+      setUnread(channel.countUnread());
+    });
+    return unsubscribe;
+  }, [channel, client]);
+
+  useEffect(() => {
+    if (
+      channelLastMessage &&
+      (channelLastMessage.id !== lastMessage?.id ||
+        channelLastMessage.updated_at !== lastMessage?.updated_at)
+    ) {
+      setLastMessage(channelLastMessage);
+    }
+    const newUnreadCount = channel.countUnread();
+    setUnread(newUnreadCount);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [channel, channelLastMessageString, channelListForceUpdate]);
 
   /**
    * This effect listens for the `notification.mark_read` event and sets the unread count to 0
@@ -27,9 +56,14 @@ export const useChannelPreviewData = <
   useEffect(() => {
     const handleReadEvent = (event: Event) => {
       if (!event.cid) return;
-      if (channel.cid === event.cid) setUnread(0);
+      if (channel.cid !== event.cid) return;
+      if (event?.user?.id === client.userID) {
+        setUnread(0);
+      } else if (event?.user?.id) {
+        setForceUpdate((prev) => prev + 1);
+      }
     };
-    const { unsubscribe } = client.on('notification.mark_read', handleReadEvent);
+    const { unsubscribe } = client.on('message.read', handleReadEvent);
     return unsubscribe;
   }, [client, channel]);
 
@@ -70,16 +104,35 @@ export const useChannelPreviewData = <
       refreshUnreadCount();
     };
 
+    const handleNewMessageEvent = (event: Event<StreamChatGenerics>) => {
+      const message = event.message;
+      if (message && (!message.parent_id || message.show_in_channel)) {
+        setLastMessage(message);
+        setUnread(channel.countUnread());
+      }
+    };
+
+    const handleUpdatedOrDeletedMessage = (event: Event<StreamChatGenerics>) => {
+      setLastMessage((prevLastMessage) => {
+        if (prevLastMessage?.id === event.message?.id) {
+          return event.message;
+        }
+        return prevLastMessage;
+      });
+    };
+
     const listeners = [
-      channel.on('message.new', handleEvent),
-      channel.on('message.updated', handleEvent),
-      channel.on('message.deleted', handleEvent),
+      channel.on('message.new', handleNewMessageEvent),
+      channel.on('message.updated', handleUpdatedOrDeletedMessage),
+      channel.on('message.deleted', handleUpdatedOrDeletedMessage),
       channel.on('message.undeleted', handleEvent),
       channel.on('channel.truncated', handleEvent),
     ];
 
     return () => listeners.forEach((l) => l.unsubscribe());
-  }, [channel, refreshUnreadCount, forceUpdate]);
+  }, [channel, refreshUnreadCount, forceUpdate, channelListForceUpdate]);
 
-  return { lastMessage, muted, unread };
+  const latestMessagePreview = useLatestMessagePreview(channel, forceUpdate, lastMessage);
+
+  return { latestMessagePreview, muted, unread };
 };
