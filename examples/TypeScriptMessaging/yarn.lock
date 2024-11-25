@@ -1134,6 +1134,14 @@
     "@gorhom/portal" "1.0.14"
     invariant "^2.2.4"
 
+"@gorhom/bottom-sheet@^5.0.6":
+  version "5.0.6"
+  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-5.0.6.tgz#f20736502399c7bcf8c73ea09e6b571dc07fe0eb"
+  integrity sha512-SI/AhPvgRfnCWN6/+wbE6TXwRE4X8F2fLyE4L/0bRwgE34Zenq585qLT139uEcfCIyovC2swC3ICqQpkmWEcFA==
+  dependencies:
+    "@gorhom/portal" "1.0.14"
+    invariant "^2.2.4"
+
 "@gorhom/portal@1.0.14":
   version "1.0.14"
   resolved "https://registry.yarnpkg.com/@gorhom/portal/-/portal-1.0.14.tgz#1953edb76aaba80fb24021dc774550194a18e111"
@@ -6832,6 +6840,21 @@ stream-chat-react-native-core@5.43.1:
 "stream-chat-react-native@link:../../package/native-package":
   version "0.0.0"
   uid ""
+
+stream-chat@8.45.1:
+  version "8.45.1"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.45.1.tgz#001f452520602ebffe45f1634b5f5dd1ff036ec5"
+  integrity sha512-7OMpL2RHUd+PXSWzhTUAIjjXlI9Oqc4HhUBRfc5i6dK+Ug9S5ertb7RvyzGL5N4ITpq/6ZUAwXtTqRaN9+UUkw==
+  dependencies:
+    "@babel/runtime" "^7.16.3"
+    "@types/jsonwebtoken" "~9.0.0"
+    "@types/ws" "^7.4.0"
+    axios "^1.6.0"
+    base64-js "^1.5.1"
+    form-data "^4.0.0"
+    isomorphic-ws "^4.0.1"
+    jsonwebtoken "~9.0.0"
+    ws "^7.5.10"
 
 stream-chat@8.45.1:
   version "8.45.1"

@@ -475,9 +475,12 @@ exports[`Thread should match thread snapshot 1`] = `
                                   }
                                 >
                                   <Text
-                                    numberOfLines={5}
                                     style={
                                       {
+                                        "alignItems": "flex-start",
+                                        "flexDirection": "row",
+                                        "flexWrap": "wrap",
+                                        "justifyContent": "flex-start",
                                         "marginBottom": 8,
                                         "marginTop": 8,
                                       }
@@ -823,9 +826,12 @@ exports[`Thread should match thread snapshot 1`] = `
                                   }
                                 >
                                   <Text
-                                    numberOfLines={5}
                                     style={
                                       {
+                                        "alignItems": "flex-start",
+                                        "flexDirection": "row",
+                                        "flexWrap": "wrap",
+                                        "justifyContent": "flex-start",
                                         "marginBottom": 8,
                                         "marginTop": 8,
                                       }
@@ -1171,9 +1177,12 @@ exports[`Thread should match thread snapshot 1`] = `
                                   }
                                 >
                                   <Text
-                                    numberOfLines={5}
                                     style={
                                       {
+                                        "alignItems": "flex-start",
+                                        "flexDirection": "row",
+                                        "flexWrap": "wrap",
+                                        "justifyContent": "flex-start",
                                         "marginBottom": 8,
                                         "marginTop": 8,
                                       }
@@ -1553,9 +1562,12 @@ exports[`Thread should match thread snapshot 1`] = `
                                       }
                                     >
                                       <Text
-                                        numberOfLines={5}
                                         style={
                                           {
+                                            "alignItems": "flex-start",
+                                            "flexDirection": "row",
+                                            "flexWrap": "wrap",
+                                            "justifyContent": "flex-start",
                                             "marginBottom": 8,
                                             "marginTop": 8,
                                           }
