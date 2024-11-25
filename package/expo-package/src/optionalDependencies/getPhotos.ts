@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 let MediaLibrary;
 
 try {
@@ -12,6 +14,8 @@ if (!MediaLibrary) {
   );
 }
 import type { Asset } from 'stream-chat-react-native-core';
+
+import { getLocalAssetUri } from './getLocalAssetUri';
 
 type ReturnType = {
   assets: Array<Omit<Asset, 'source'> & { source: 'picker' }>;
@@ -40,9 +44,10 @@ export const getPhotos = MediaLibrary
           mediaType: [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video],
           sortBy: [MediaLibrary.SortBy.modificationTime],
         });
+        console.log(results.assets.length);
         const assets = await Promise.all(
           results.assets.map(async (asset) => {
-            const assetInfo = await MediaLibrary.getAssetInfoAsync(asset.id);
+            const localUri = await getLocalAssetUri(asset.id);
             return {
               duration: asset.duration * 1000,
               height: asset.height,
@@ -51,11 +56,12 @@ export const getPhotos = MediaLibrary
               originalUri: asset.uri,
               source: 'picker' as const,
               type: asset.mediaType,
-              uri: assetInfo.localUri,
+              uri: localUri || asset.uri,
               width: asset.width,
             };
           }),
         );
+        console.log('ISE: ', assets);
 
         const hasNextPage = results.hasNextPage;
         const endCursor = results.endCursor;

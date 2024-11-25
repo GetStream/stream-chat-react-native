@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Alert, ImageBackground, Platform, StyleSheet, Text, View } from 'react-native';
+import { Alert, ImageBackground, StyleSheet, Text, View } from 'react-native';
 
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { lookup } from 'mime-types';
@@ -10,7 +10,6 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useViewport } from '../../../hooks/useViewport';
 import { Recorder } from '../../../icons';
-import { getLocalAssetUri } from '../../../native';
 import type { Asset, File } from '../../../types/types';
 import { getDurationLabelFromDuration } from '../../../utils/utils';
 
@@ -56,15 +55,7 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 
   /* Patches video files with uri and mimetype */
-  const patchVideoFile = async (files: File[]) => {
-    // For the case of Expo CLI where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
-    const identifier = asset.id || asset.uri;
-    const localAssetURI =
-      Platform.OS === 'ios' &&
-      identifier &&
-      getLocalAssetUri &&
-      (await getLocalAssetUri(identifier));
-    const uri = localAssetURI || asset.uri || '';
+  const patchVideoFile = (files: File[]) => {
     // We need a mime-type to upload a video file.
     const mimeType = lookup(asset.name) || 'multipart/form-data';
     return [
@@ -74,19 +65,19 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
         id: asset.id,
         mimeType,
         name: asset.name,
-        originalUri: asset.uri,
+        originalUri: asset.originalUri,
         size: asset.size,
-        uri,
+        uri: asset.uri,
       },
     ];
   };
 
-  const updateSelectedFiles = async () => {
+  const updateSelectedFiles = () => {
     if (numberOfUploads >= maxNumberOfFiles) {
       Alert.alert(t('Maximum number of files reached'));
       return;
     }
-    const files = await patchVideoFile(selectedFiles);
+    const files = patchVideoFile(selectedFiles);
     setSelectedFiles(files);
   };
 
