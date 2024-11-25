@@ -158,33 +158,12 @@ const AttachmentImage = (props: AttachmentImageProps) => {
 
   const { uri } = asset;
 
-  /* Patches image files with uri */
-  const patchImageFile = async (images: Asset[]) => {
-    // For the case of Expo CLI where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
-    const identifier = asset.id || asset.uri;
-    const localAssetURI =
-      Platform.OS === 'ios' &&
-      identifier &&
-      getLocalAssetUri &&
-      (await getLocalAssetUri(identifier));
-    const uri = localAssetURI || asset.uri || '';
-    return [
-      ...images,
-      {
-        ...asset,
-        originalUri: asset.uri,
-        uri,
-      },
-    ];
-  };
-
-  const updateSelectedImages = async () => {
+  const updateSelectedImages = () => {
     if (numberOfUploads >= maxNumberOfFiles) {
       Alert.alert(t('Maximum number of files reached'));
       return;
     }
-    const images = await patchImageFile(selectedImages);
-    setSelectedImages(images);
+    setSelectedImages([...selectedImages, asset]);
   };
 
   const onPressImage = () => {

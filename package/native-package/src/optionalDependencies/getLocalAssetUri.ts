@@ -14,12 +14,11 @@ try {
 export const getLocalAssetUri = CameraRollDependency
   ? async (remoteUri: string) => {
       try {
-        let localUri = remoteUri;
         if (Platform.OS === 'ios') {
           const imageData = await CameraRollDependency.CameraRoll.iosGetImageDataById(remoteUri);
-          localUri = imageData?.node?.image?.filepath;
+          return imageData?.node?.image?.filepath;
         }
-        return localUri;
+        return remoteUri;
       } catch {
         throw new Error('getLocalAssetUri Error');
       }
