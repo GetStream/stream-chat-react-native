@@ -40,16 +40,21 @@ export const getPhotos = MediaLibrary
           mediaType: [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video],
           sortBy: [MediaLibrary.SortBy.modificationTime],
         });
-        const assets = results.assets.map((asset) => ({
-          duration: asset.duration * 1000,
-          height: asset.height,
-          id: asset.id,
-          name: asset.filename,
-          source: 'picker' as const,
-          type: asset.mediaType,
-          uri: asset.uri,
-          width: asset.width,
-        }));
+        const assets = await Promise.all(
+          results.assets.map(async (asset) => {
+            const assetInfo = await MediaLibrary.getAssetInfoAsync(asset);
+            return {
+              duration: asset.duration * 1000,
+              height: asset.height,
+              id: asset.id,
+              name: asset.filename,
+              source: 'picker' as const,
+              type: asset.mediaType,
+              uri: assetInfo.localUri,
+              width: asset.width,
+            };
+          }),
+        );
 
         const hasNextPage = results.hasNextPage;
         const endCursor = results.endCursor;

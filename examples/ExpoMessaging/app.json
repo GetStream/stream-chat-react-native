@@ -45,6 +45,17 @@
         {
           "microphonePermission": "$(PRODUCT_NAME) would like to use your microphone for voice recording."
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "newArchEnabled": true
+          },
+          "ios": {
+            "newArchEnabled": true
+          }
+        }
       ]
     ]
   }
