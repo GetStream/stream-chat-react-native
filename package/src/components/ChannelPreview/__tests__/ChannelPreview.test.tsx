@@ -11,8 +11,9 @@ import {
 } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
-import dispatchMessageReadEvent from '../../../mock-builders/event/messageRead';
-import { generateChannelResponse } from '../../../mock-builders/generator/channel';
+import dispatchNotificationMarkRead from '../../../mock-builders/event/notificationMarkRead';
+import dispatchNotificationMarkUnread from '../../../mock-builders/event/notificationMarkUnread';
+import { generateChannel, generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
@@ -68,6 +69,15 @@ describe('ChannelPreview', () => {
     );
   };
 
+  const generateChannelWrapper = (overrides: Record<string, unknown>) =>
+    generateChannel({
+      countUnread: jest.fn().mockReturnValue(0),
+      initialized: true,
+      lastMessage: jest.fn().mockReturnValue(generateMessage()),
+      muteStatus: jest.fn().mockReturnValue({ muted: false }),
+      ...overrides,
+    });
+
   const useInitializeChannel = async (c: GetOrCreateChannelApiParams) => {
     useMockedApis(chatClient, [getOrCreateChannelApi(c)]);
 
@@ -84,22 +94,228 @@ describe('ChannelPreview', () => {
     channel = null;
   });
 
-  it('should mark channel as read, when message.read event is received for current user', async () => {
-    const c = generateChannelResponse();
-    await useInitializeChannel(c);
+  describe('notification.mark_read event', () => {
+    it("should not update the unread count if the event's cid does not match the channel's cid", async () => {
+      const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
 
-    if (channel !== null) {
-      channel.countUnread = () => 20;
-    }
+      const c = generateChannelWrapper({
+        countUnread: jest.fn().mockReturnValue(10),
+        on: channelOnMock,
+      });
+
+      channel = c as unknown as Channel;
+
+      const { getByTestId } = render(<TestComponent />);
+
+      await waitFor(() => getByTestId('channel-id'));
+
+      await waitFor(() => {
+        expect(getByTestId('unread-count')).toHaveTextContent('10');
+      });
+
+      act(() => {
+        dispatchNotificationMarkRead(chatClient, { cid: 'channel-id' });
+      });
+
+      await waitFor(() => {
+        expect(getByTestId('unread-count')).toHaveTextContent('10');
+      });
+    });
+
+    it('should update the unread count to 0', async () => {
+      const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
+
+      const c = generateChannelWrapper({
+        countUnread: jest.fn().mockReturnValue(10),
+        on: channelOnMock,
+      });
+
+      channel = c as unknown as Channel;
+
+      const { getByTestId } = render(<TestComponent />);
+
+      await waitFor(() => getByTestId('channel-id'));
+
+      await waitFor(() => {
+        expect(getByTestId('unread-count')).toHaveTextContent('10');
+      });
+
+      act(() => {
+        dispatchNotificationMarkRead(chatClient, channel || {});
+      });
+
+      await waitFor(() => {
+        expect(getByTestId('unread-count')).toHaveTextContent('0');
+      });
+    });
+  });
+
+  describe('notification.mark_unread event', () => {
+    it("should not update the unread count if the event's cid is undefined", async () => {
+      const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
+
+      const c = generateChannelWrapper({
+        on: channelOnMock,
+      });
+
+      channel = c as unknown as Channel;
+
+      const { getByTestId } = render(<TestComponent />);
+
+      await waitFor(() => getByTestId('channel-id'));
+
+      await waitFor(() => {
+        expect(getByTestId('unread-count')).toHaveTextContent('0');
+      });
+
+      act(() => {
+        dispatchNotificationMarkUnread(
+          chatClient,
+          {},
+          {
+            unread_channels: 2,
+            unread_messages: 5,
+          },
+        );
+      });
+
+      await waitFor(() => {
+        expect(getByTestId('unread-count')).toHaveTextContent('0');
+      });
+    });
+
+    it("should not update the unread count if the event's cid does not match the channel's cid", async () => {
+      const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
+
+      const c = generateChannelWrapper({
+        on: channelOnMock,
+      });
+
+      channel = c as unknown as Channel;
+
+      const { getByTestId } = render(<TestComponent />);
+
+      await waitFor(() => getByTestId('channel-id'));
+
+      await waitFor(() => {
+        expect(getByTestId('unread-count')).toHaveTextContent('0');
+      });
+
+      act(() => {
+        dispatchNotificationMarkUnread(
+          chatClient,
+          { cid: 'channel-id' },
+          {
+            unread_channels: 2,
+            unread_messages: 5,
+          },
+        );
+      });
+
+      await waitFor(() => {
+        expect(getByTestId('unread-count')).toHaveTextContent('0');
+      });
+    });
+
+    it("should not update the unread count if the event's user id does not match the client's user id", async () => {
+      const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
+
+      const c = generateChannelWrapper({
+        on: channelOnMock,
+      });
+
+      channel = c as unknown as Channel;
+
+      const { getByTestId } = render(<TestComponent />);
+
+      await waitFor(() => getByTestId('channel-id'));
+
+      await waitFor(() => {
+        expect(getByTestId('unread-count')).toHaveTextContent('0');
+      });
+
+      act(() => {
+        dispatchNotificationMarkUnread(
+          chatClient,
+          { cid: channel?.cid },
+          {
+            unread_channels: 2,
+            unread_messages: 5,
+            user: { id: 'random-id' },
+          },
+        );
+      });
+
+      await waitFor(() => {
+        expect(getByTestId('unread-count')).toHaveTextContent('0');
+      });
+    });
+
+    it("should update the unread count if the event's user id matches the client's user id", async () => {
+      const c = generateChannelResponse();
+      await useInitializeChannel(c);
+      const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
+
+      const testChannel = generateChannelWrapper({
+        ...channel,
+        on: channelOnMock,
+      });
+
+      const { getByTestId } = render(<TestComponent />);
+
+      await waitFor(() => getByTestId('channel-id'));
+
+      await waitFor(() => {
+        expect(getByTestId('unread-count')).toHaveTextContent('0');
+      });
+
+      act(() => {
+        dispatchNotificationMarkUnread(
+          chatClient,
+          { cid: testChannel?.cid },
+          {
+            unread_channels: 2,
+            unread_messages: 5,
+            user: { id: clientUser.id },
+          },
+        );
+      });
+
+      await waitFor(() => {
+        expect(getByTestId('unread-count')).toHaveTextContent('5');
+      });
+    });
+  });
+
+  it('should update the unread count to 0 if the channel is muted', async () => {
+    const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
+
+    const c = generateChannelWrapper({
+      countUnread: jest.fn().mockReturnValue(10),
+      muteStatus: jest.fn().mockReturnValue({ muted: true }),
+      on: channelOnMock,
+    });
+
+    channel = c as unknown as Channel;
 
     const { getByTestId } = render(<TestComponent />);
 
     await waitFor(() => getByTestId('channel-id'));
 
-    expect(getByTestId('unread-count')).toHaveTextContent('20');
+    await waitFor(() => {
+      expect(getByTestId('unread-count')).toHaveTextContent('0');
+    });
 
     act(() => {
-      dispatchMessageReadEvent(chatClient, clientUser, channel || {});
+      dispatchNotificationMarkUnread(
+        chatClient,
+        { cid: channel?.cid },
+        {
+          unread_channels: 2,
+          unread_messages: 5,
+          user: { id: clientUser.id },
+        },
+      );
     });
 
     await waitFor(() => {
