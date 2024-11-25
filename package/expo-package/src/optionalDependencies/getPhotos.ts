@@ -42,12 +42,13 @@ export const getPhotos = MediaLibrary
         });
         const assets = await Promise.all(
           results.assets.map(async (asset) => {
-            const assetInfo = await MediaLibrary.getAssetInfoAsync(asset);
+            const assetInfo = await MediaLibrary.getAssetInfoAsync(asset.id);
             return {
               duration: asset.duration * 1000,
               height: asset.height,
               id: asset.id,
               name: asset.filename,
+              originalUri: asset.uri,
               source: 'picker' as const,
               type: asset.mediaType,
               uri: assetInfo.localUri,
