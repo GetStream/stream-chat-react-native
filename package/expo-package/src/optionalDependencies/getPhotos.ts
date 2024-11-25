@@ -44,7 +44,6 @@ export const getPhotos = MediaLibrary
           mediaType: [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video],
           sortBy: [MediaLibrary.SortBy.modificationTime],
         });
-        console.log(results.assets.length);
         const assets = await Promise.all(
           results.assets.map(async (asset) => {
             const localUri = await getLocalAssetUri(asset.id);
