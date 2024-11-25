@@ -58,8 +58,12 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
   /* Patches video files with uri and mimetype */
   const patchVideoFile = async (files: File[]) => {
     // For the case of Expo CLI where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
+    const identifier = asset.id || asset.uri;
     const localAssetURI =
-      Platform.OS === 'ios' && asset.id && getLocalAssetUri && (await getLocalAssetUri(asset.id));
+      Platform.OS === 'ios' &&
+      identifier &&
+      getLocalAssetUri &&
+      (await getLocalAssetUri(identifier));
     const uri = localAssetURI || asset.uri || '';
     // We need a mime-type to upload a video file.
     const mimeType = lookup(asset.name) || 'multipart/form-data';
@@ -70,6 +74,7 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
         id: asset.id,
         mimeType,
         name: asset.name,
+        originalUri: asset.uri,
         size: asset.size,
         uri,
       },
@@ -89,7 +94,9 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
     if (selected) {
       setSelectedFiles((files) =>
         // `id` is available for Expo MediaLibrary while Cameraroll doesn't share id therefore we use `uri`
-        files.filter((file) => (file.id ? file.id !== asset.id : file.uri !== asset.uri)),
+        files.filter((file) =>
+          file.id ? file.id !== asset.id : file.uri !== asset.uri && file.originalUri !== asset.uri,
+        ),
       );
     } else {
       updateSelectedFiles();
@@ -154,13 +161,18 @@ const AttachmentImage = (props: AttachmentImageProps) => {
   /* Patches image files with uri */
   const patchImageFile = async (images: Asset[]) => {
     // For the case of Expo CLI where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
+    const identifier = asset.id || asset.uri;
     const localAssetURI =
-      Platform.OS === 'ios' && asset.id && getLocalAssetUri && (await getLocalAssetUri(asset.id));
+      Platform.OS === 'ios' &&
+      identifier &&
+      getLocalAssetUri &&
+      (await getLocalAssetUri(identifier));
     const uri = localAssetURI || asset.uri || '';
     return [
       ...images,
       {
         ...asset,
+        originalUri: asset.uri,
         uri,
       },
     ];
@@ -179,7 +191,11 @@ const AttachmentImage = (props: AttachmentImageProps) => {
     if (selected) {
       // `id` is available for Expo MediaLibrary while Cameraroll doesn't share id therefore we use `uri`
       setSelectedImages((images) =>
-        images.filter((image) => (image.id ? image.id !== asset.id : image.uri !== asset.uri)),
+        images.filter((image) =>
+          image.id
+            ? image.id !== asset.id
+            : image.uri !== asset.uri && image.originalUri !== asset.uri,
+        ),
       );
     } else {
       updateSelectedImages();

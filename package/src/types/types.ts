@@ -21,6 +21,7 @@ export type Asset = {
   uri: string;
   width: number;
   id?: string;
+  originalUri?: string;
   size?: number;
 };
 
@@ -29,6 +30,7 @@ export type File = {
   duration?: number;
   id?: string;
   mimeType?: string;
+  originalUri?: string;
   size?: number;
   type?: FileTypes;
   // The uri should be of type `string`. But is `string|undefined` because the same type is used for the response from Stream's Attachment. This shall be fixed.
