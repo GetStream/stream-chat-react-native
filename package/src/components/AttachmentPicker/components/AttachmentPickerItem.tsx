@@ -48,7 +48,7 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
     },
   } = useTheme();
 
-  const { duration: videoDuration, uri } = asset;
+  const { duration: videoDuration, id: assetId, originalUri, uri } = asset;
 
   const durationLabel = getDurationLabelFromDuration(videoDuration);
 
@@ -58,6 +58,7 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
   const patchVideoFile = (files: File[]) => {
     // We need a mime-type to upload a video file.
     const mimeType = lookup(asset.name) || 'multipart/form-data';
+    console.log('SENDING: ', uri, originalUri);
     return [
       ...files,
       {
@@ -65,9 +66,9 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
         id: asset.id,
         mimeType,
         name: asset.name,
-        originalUri: asset.originalUri,
+        originalUri,
         size: asset.size,
-        uri: asset.uri,
+        uri,
       },
     ];
   };
@@ -86,7 +87,7 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
       setSelectedFiles((files) =>
         // `id` is available for Expo MediaLibrary while Cameraroll doesn't share id therefore we use `uri`
         files.filter((file) =>
-          file.id ? file.id !== asset.id : file.uri !== asset.uri && file.originalUri !== asset.uri,
+          file.id ? file.id !== assetId : file.uri !== uri && file.originalUri !== uri,
         ),
       );
     } else {
@@ -97,7 +98,7 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
   return (
     <TouchableOpacity onPress={onPressVideo}>
       <ImageBackground
-        source={{ uri }}
+        source={{ uri: originalUri }}
         style={[
           {
             height: size,
@@ -147,7 +148,7 @@ const AttachmentImage = (props: AttachmentImageProps) => {
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 
-  const { uri } = asset;
+  const { id: assetId, originalUri, uri } = asset;
 
   const updateSelectedImages = () => {
     if (numberOfUploads >= maxNumberOfFiles) {
@@ -162,9 +163,7 @@ const AttachmentImage = (props: AttachmentImageProps) => {
       // `id` is available for Expo MediaLibrary while Cameraroll doesn't share id therefore we use `uri`
       setSelectedImages((images) =>
         images.filter((image) =>
-          image.id
-            ? image.id !== asset.id
-            : image.uri !== asset.uri && image.originalUri !== asset.uri,
+          assetId ? image.id !== assetId : image.uri !== uri && originalUri !== uri,
         ),
       );
     } else {
@@ -175,7 +174,7 @@ const AttachmentImage = (props: AttachmentImageProps) => {
   return (
     <TouchableOpacity onPress={onPressImage}>
       <ImageBackground
-        source={{ uri }}
+        source={{ uri: originalUri }}
         style={[
           {
             height: size,
