@@ -58,7 +58,6 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
   const patchVideoFile = (files: File[]) => {
     // We need a mime-type to upload a video file.
     const mimeType = lookup(asset.name) || 'multipart/form-data';
-    console.log('SENDING: ', uri, originalUri);
     return [
       ...files,
       {
@@ -171,10 +170,12 @@ const AttachmentImage = (props: AttachmentImageProps) => {
     }
   };
 
+  console.log('URIS: IMG:  ', uri, originalUri);
+
   return (
     <TouchableOpacity onPress={onPressImage}>
       <ImageBackground
-        source={{ uri: originalUri }}
+        source={{ uri }}
         style={[
           {
             height: size,
