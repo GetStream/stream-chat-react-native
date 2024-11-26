@@ -22,6 +22,7 @@ import {
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
+import { MessageType } from '../MessageList/hooks/useMessageList';
 
 const styles = StyleSheet.create({
   avatarContainer: {
@@ -89,6 +90,7 @@ export type OverlayReactionsProps<
   showScreen: Animated.SharedValue<number>;
   title: string;
   alignment?: Alignment;
+  message?: MessageType<StreamChatGenerics>;
   messageId?: string;
   reactions?: Reaction[];
   supportedReactions?: ReactionData[];
@@ -105,7 +107,7 @@ export const OverlayReactions = (props: OverlayReactionsProps) => {
   const [itemHeight, setItemHeight] = React.useState(0);
   const {
     alignment: overlayAlignment,
-    messageId,
+    message,
     OverlayReactionsAvatar,
     reactions: propReactions,
     showScreen,
@@ -119,7 +121,7 @@ export const OverlayReactions = (props: OverlayReactionsProps) => {
     loadNextPage,
     reactions: fetchedReactions,
   } = useFetchReactions({
-    messageId,
+    message,
     sort,
   });
 
