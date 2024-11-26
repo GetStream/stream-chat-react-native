@@ -63,6 +63,7 @@ export const useFetchReactions = <
     };
 
     try {
+      // TODO: Threads are not supported for the offline use case as we don't store the thread messages currently, and this will change in the future.
       if (enableOfflineSupport && !message?.parent_id) {
         await loadOfflineReactions();
       } else {
