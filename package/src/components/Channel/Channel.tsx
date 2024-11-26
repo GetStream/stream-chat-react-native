@@ -437,6 +437,10 @@ export type ChannelPropsWithContext<
      * Load the channel at a specified message instead of the most recent message.
      */
     messageId?: string;
+    /**
+     * @deprecated
+     * The time interval for throttling while updating the message state
+     */
     newMessageStateUpdateThrottleInterval?: number;
     overrideOwnCapabilities?: Partial<OwnCapabilitiesContextValue>;
     stateUpdateThrottleInterval?: number;
@@ -594,7 +598,7 @@ const ChannelWithContext = <
     myMessageTheme,
     NetworkDownIndicator = NetworkDownIndicatorDefault,
     // TODO: Think about this one
-    // newMessageStateUpdateThrottleInterval = defaultThrottleInterval,
+    newMessageStateUpdateThrottleInterval = defaultThrottleInterval,
     numberOfLines = 5,
     onChangeText,
     onLongPressMessage,
@@ -684,6 +688,15 @@ const ChannelWithContext = <
     channel,
   });
 
+  /**
+   * Since we copy the current channel state all together, we need to find the greatest time among the below two and apply it as the throttling time for copying the channel state.
+   * This is done until we remove the newMessageStateUpdateThrottleInterval prop.
+   */
+  const copyChannelStateThrottlingTime =
+    newMessageStateUpdateThrottleInterval > stateUpdateThrottleInterval
+      ? newMessageStateUpdateThrottleInterval
+      : stateUpdateThrottleInterval;
+
   const copyChannelState = useRef(
     throttle(
       () => {
@@ -692,7 +705,7 @@ const ChannelWithContext = <
           copyMessagesStateFromChannel(channel);
         }
       },
-      stateUpdateThrottleInterval,
+      copyChannelStateThrottlingTime,
       throttleOptions,
     ),
   ).current;
@@ -728,6 +741,7 @@ const ChannelWithContext = <
   };
 
   useEffect(() => {
+    let listener: ReturnType<typeof channel.on>;
     const initChannel = async () => {
       if (!channel || !shouldSyncChannel || channel.offlineMode) return;
       let errored = false;
@@ -755,7 +769,7 @@ const ChannelWithContext = <
       ) {
         await loadChannelAtFirstUnreadMessage({ setTargetedMessage });
       }
-      channel.on(handleEvent);
+      listener = channel.on(handleEvent);
     };
 
     initChannel();
@@ -763,7 +777,7 @@ const ChannelWithContext = <
     return () => {
       copyChannelState.cancel();
       loadMoreThreadFinished.cancel();
-      channel.off(handleEvent);
+      listener.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channel.cid, messageId, shouldSyncChannel]);
