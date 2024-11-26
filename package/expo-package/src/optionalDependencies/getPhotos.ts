@@ -60,7 +60,6 @@ export const getPhotos = MediaLibrary
             };
           }),
         );
-        console.log('ISE: ', assets);
 
         const hasNextPage = results.hasNextPage;
         const endCursor = results.endCursor;
