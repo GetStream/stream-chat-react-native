@@ -32,4 +32,4 @@ export const StreamingMessageView = <
   return <MessageTextContainer message={{ ...message, text: streamedMessageText }} {...props} />;
 };
 
-StreamingMessageView.displayName = 'MessageTextContainer{messageSimple{content}}';
+StreamingMessageView.displayName = 'StreamingMessageView{messageSimple{content}}';

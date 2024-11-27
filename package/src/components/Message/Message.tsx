@@ -418,6 +418,8 @@ const MessageWithContext = <
         return !!attachments.images.length || !!attachments.videos.length;
       case 'poll':
         return !!message.poll_id;
+      case 'ai_text':
+        return !!message.ai_generated;
       case 'text':
       default:
         return !!message.text;

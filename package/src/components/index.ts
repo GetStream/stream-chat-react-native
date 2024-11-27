@@ -173,3 +173,6 @@ export * from './UIComponents/Spinner';
 export * from './Thread/Thread';
 export * from './Thread/components/ThreadFooterComponent';
 export * from './ThreadList/ThreadList';
+
+export * from './Message/MessageSimple/StreamingMessageView';
+export * from './AITypingIndicatorView';
