@@ -765,7 +765,8 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     prevMessage.text === nextMessage.text &&
     prevMessage.pinned === nextMessage.pinned &&
     `${prevMessage?.updated_at}` === `${nextMessage?.updated_at}` &&
-    prevMessage.i18n === nextMessage.i18n;
+    prevMessage.i18n === nextMessage.i18n &&
+    prevMessage.ai_generated === nextMessage.ai_generated;
 
   if (!messageEqual) return false;
 

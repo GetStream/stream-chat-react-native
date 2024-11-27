@@ -33,6 +33,7 @@ export const generateMarkdownText = (text?: string) => {
     resultText = resultText.replace(mentionsRegex, `@${displayLink}`);
   }
 
+  // FIXME: Should not happen within codeblocks.
   resultText = resultText.replace(/[<"'>]/g, '\\$&');
 
   // Remove whitespaces that come directly after newlines except in code blocks where we deem this allowed.

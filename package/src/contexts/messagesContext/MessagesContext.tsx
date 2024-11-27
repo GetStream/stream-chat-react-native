@@ -75,6 +75,7 @@ export type MessageContentType =
   | 'gallery'
   | 'quoted_reply'
   | 'poll'
+  | 'ai_text'
   | 'text';
 export type DeletedMessagesVisibilityType = 'always' | 'never' | 'receiver' | 'sender';
 

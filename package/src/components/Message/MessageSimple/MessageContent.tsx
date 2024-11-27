@@ -10,6 +10,8 @@ import {
 
 import { MessageTextContainer } from './MessageTextContainer';
 
+import { StreamingMessageView } from './StreamingMessageView';
+
 import { useChatContext } from '../../../contexts';
 import {
   MessageContextValue,
@@ -215,6 +217,8 @@ const MessageContentWithContext = <
     return bordersFromTheme;
   };
 
+  console.log('ISE: NEW: ', message.ai_generated, message.id);
+
   return (
     <Pressable
       disabled={preventPress}
@@ -312,9 +316,16 @@ const MessageContentWithContext = <
                   />
                 ) : null;
               }
+              case 'ai_text':
+                return message.ai_generated ? (
+                  <StreamingMessageView
+                    key={`ai_message_text_container_${messageContentOrderIndex}`}
+                  />
+                ) : null;
               case 'text':
               default:
-                return otherAttachments.length && otherAttachments[0].actions ? null : (
+                return (otherAttachments.length && otherAttachments[0].actions) ||
+                  message.ai_generated ? null : (
                   <MessageTextContainer<StreamChatGenerics>
                     key={`message_text_container_${messageContentOrderIndex}`}
                   />
@@ -381,7 +392,8 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
     prevMessage.pinned === nextMessage.pinned &&
-    prevMessage.i18n === nextMessage.i18n;
+    prevMessage.i18n === nextMessage.i18n &&
+    prevMessage.ai_generated === nextMessage.ai_generated;
   if (!messageEqual) return false;
 
   const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';
