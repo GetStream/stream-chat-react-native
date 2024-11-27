@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { ReactionResponse, ReactionSort } from 'stream-chat';
 
+import { MessageType } from '../../../components/MessageList/hooks/useMessageList';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { getReactionsForFilterSort } from '../../../store/apis/getReactionsforFilterSort';
 import { DefaultStreamChatGenerics } from '../../../types/types';
@@ -10,7 +11,7 @@ export type UseFetchReactionParams<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   limit?: number;
-  messageId?: string;
+  message?: MessageType<StreamChatGenerics>;
   reactionType?: string;
   sort?: ReactionSort<StreamChatGenerics>;
 };
@@ -19,13 +20,14 @@ export const useFetchReactions = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   limit = 25,
-  messageId,
+  message,
   reactionType,
   sort,
 }: UseFetchReactionParams) => {
   const [reactions, setReactions] = useState<ReactionResponse<StreamChatGenerics>[]>([]);
   const [loading, setLoading] = useState(true);
   const [next, setNext] = useState<string | undefined>(undefined);
+  const messageId = message?.id;
 
   const { client, enableOfflineSupport } = useChatContext();
 
@@ -61,8 +63,9 @@ export const useFetchReactions = <
     };
 
     try {
-      if (enableOfflineSupport) {
-        loadOfflineReactions();
+      // TODO: Threads are not supported for the offline use case as we don't store the thread messages currently, and this will change in the future.
+      if (enableOfflineSupport && !message?.parent_id) {
+        await loadOfflineReactions();
       } else {
         await loadOnlineReactions();
       }
