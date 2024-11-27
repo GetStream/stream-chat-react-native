@@ -19,10 +19,13 @@ export const AITypingIndicatorView = <
   const { channel: channelFromContext } = useChannelContext();
   const channel = channelFromProps || channelFromContext;
   const { aiState } = useAIState(channel);
+  // TODO: Translations
   const allowedStates = {
     [AIStates.Thinking]: 'Thinking...',
     [AIStates.Generating]: 'Generating...',
   };
+
+  // TODO: Make it not ugly.
   return aiState in allowedStates ? (
     <View style={{ paddingHorizontal: 16, paddingVertical: 18 }}>
       <Text>{allowedStates[aiState]}</Text>
