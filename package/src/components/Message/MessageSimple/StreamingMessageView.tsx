@@ -12,22 +12,26 @@ export const StreamingMessageView = <
 ) => {
   const { message } = useMessageContext<StreamChatGenerics>();
   const { text = '' } = message;
-  const textLength = text.length;
   const [streamedMessageText, setStreamedMessageText] = useState<string>(text);
-  const textCursor = useRef<number>(textLength);
+  const textCursor = useRef<number>(text.length);
 
   useEffect(() => {
-    if (!text || textCursor.current >= textLength) {
-      return;
-    }
-    // TODO: make this configurable maybe
-    const newCursorValue = textCursor.current + 1;
-    const newBatch = text?.substring(textCursor.current, newCursorValue);
-    textCursor.current += newBatch.length;
-    setTimeout(() => {
-      setStreamedMessageText((prevStreamedMessageText) => prevStreamedMessageText.concat(newBatch));
+    const textLength = text.length;
+    const interval = setInterval(() => {
+      if (!text || textCursor.current >= textLength) {
+        clearInterval(interval);
+      }
+      // TODO: make this configurable maybe
+      const newCursorValue = textCursor.current + 1;
+      const newText = text.substring(0, newCursorValue);
+      textCursor.current += newText.length - textCursor.current;
+      setStreamedMessageText(newText);
     }, 0);
-  }, [streamedMessageText, text, textLength]);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [text]);
 
   return <MessageTextContainer message={{ ...message, text: streamedMessageText }} {...props} />;
 };

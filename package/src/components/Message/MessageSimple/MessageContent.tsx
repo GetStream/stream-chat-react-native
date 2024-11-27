@@ -217,8 +217,6 @@ const MessageContentWithContext = <
     return bordersFromTheme;
   };
 
-  console.log('ISE: NEW: ', message.ai_generated, message.id);
-
   return (
     <Pressable
       disabled={preventPress}

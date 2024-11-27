@@ -83,7 +83,7 @@ const MessageTextContainerWithContext = <
     message,
   ) as MessageType<StreamChatGenerics>;
 
-  if (!message.text && !message.ai_generated) return null;
+  if (!message.text) return null;
 
   const markdownStyles = { ...markdown, ...markdownStylesProp };
 
