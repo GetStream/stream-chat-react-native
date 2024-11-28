@@ -41,23 +41,24 @@ const ReactiveScrollView = ({ children }: { children: ReactNode }) => {
   const [scrollViewXOffset, setScrollViewXOffset] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const scrollTo = useCallback((translation: number) => {
-    if (scrollViewRef.current) {
-      scrollViewRef.current.scrollTo({
-        animated: false,
-        x: translation,
-      });
-    }
-  }, []);
+  const scrollTo = useCallback(
+    (translation: number) => {
+      if (scrollViewRef.current) {
+        scrollViewRef.current.scrollTo({
+          animated: false,
+          x: translation,
+        });
+      }
+    },
+    [scrollViewRef],
+  );
 
   const panGesture = Gesture.Pan()
     .activeOffsetX([-10, 10])
     .onUpdate((event) => {
       const { translationX } = event;
 
-      if (scrollViewRef.current) {
-        runOnJS(scrollTo)(scrollViewXOffset - translationX);
-      }
+      runOnJS(scrollTo)(scrollViewXOffset - translationX);
     })
     .onEnd((event) => {
       const { translationX } = event;
@@ -117,6 +118,33 @@ const defaultMarkdownStyles: MarkdownStyle = {
   paragraphWithImage: {
     marginBottom: 8,
     marginTop: 8,
+  },
+  table: {
+    borderColor: '#222222',
+    borderRadius: 3,
+    borderWidth: 1,
+  },
+  tableHeader: {
+    backgroundColor: '#222222',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  tableHeaderCell: {
+    color: '#ffffff',
+    fontWeight: 'bold',
+    padding: 5,
+  },
+  tableRow: {
+    //borderBottomWidth: 1,
+    borderColor: '#222222',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  tableRowCell: {
+    padding: 5,
+  },
+  tableRowLast: {
+    borderColor: 'transparent',
   },
 };
 
@@ -187,6 +215,34 @@ export const renderText = <
       ...defaultMarkdownStyles.mentions,
       color: colors.accent_blue,
       ...markdownStyles?.mentions,
+    },
+    table: {
+      borderColor: '#222222',
+      borderRadius: 3,
+      borderWidth: 1,
+      flex: 1,
+    },
+    tableHeader: {
+      backgroundColor: '#222222',
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+    },
+    tableHeaderCell: {
+      color: '#ffffff',
+      fontWeight: 'bold',
+      padding: 5,
+    },
+    tableRow: {
+      borderColor: '#222222',
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+    },
+    tableRowCell: {
+      flex: 1,
+      padding: 5,
+    },
+    tableRowLast: {
+      borderColor: 'transparent',
     },
     text: {
       ...defaultMarkdownStyles.text,
@@ -327,12 +383,48 @@ export const renderText = <
   );
 
   const CodeBlockReact: ReactNodeOutput = (node, _, state) => (
-    <ReactiveScrollView>
-      <Text key={state.key} style={styles.codeBlock}>
-        {node.content}
-      </Text>
+    <ReactiveScrollView key={state.key}>
+      <Text style={styles.codeBlock}>{node.content}</Text>
     </ReactiveScrollView>
   );
+
+  const tableReact: ReactNodeOutput = (node, output, state) => {
+    const headers = node?.header?.map((content: SingleASTNode, idx: number) => (
+      <Text key={idx} style={styles.tableHeaderCell}>
+        {output(content, state)}
+      </Text>
+    ));
+
+    const header = (
+      <View key={-1} style={styles.tableHeader}>
+        {headers}
+      </View>
+    );
+
+    const rows = node?.cells?.map((row: SingleASTNode, r: number) => {
+      const cells = row.map((content: SingleASTNode, c: number) => (
+        <View key={c} style={styles.tableRowCell}>
+          {output(content, state)}
+        </View>
+      ));
+      const rowStyles = [styles.tableRow];
+      if (node.cells.length - 1 === r) {
+        rowStyles.push(styles.tableRowLast);
+      }
+
+      return (
+        <View key={r} style={rowStyles}>
+          {cells}
+        </View>
+      );
+    });
+
+    return (
+      <ReactiveScrollView key={state.key}>
+        <View style={styles.table}>{[header, rows]}</View>
+      </ReactiveScrollView>
+    );
+  };
 
   const customRules = {
     // do not render images, we will scrape them out of the message and show on attachment card component
@@ -355,6 +447,7 @@ export const renderText = <
         }
       : {}),
     codeBlock: { react: CodeBlockReact },
+    table: { react: tableReact },
   };
 
   return (
