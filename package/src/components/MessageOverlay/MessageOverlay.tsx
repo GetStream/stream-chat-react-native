@@ -478,6 +478,7 @@ const MessageOverlayWithContext = <
             {!!messageReactionTitle && (
               <OverlayReactions
                 alignment={alignment}
+                message={message}
                 messageId={message.id}
                 OverlayReactionsAvatar={OverlayReactionsAvatar}
                 showScreen={showScreen}
