@@ -1,12 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 
 import { MessageTextContainer, MessageTextContainerProps } from './MessageTextContainer';
 
 import { useMessageContext } from '../../../contexts';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-
-const DEFAULT_LETTER_INTERVAL = 0;
-const DEFAULT_RENDERING_LETTER_COUNT = 2;
+import { useStreamingMessage } from '../hooks/useStreamingMessage';
 
 export type StreamingMessageViewProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -20,33 +18,16 @@ export const StreamingMessageView = <
 >(
   props: StreamingMessageViewProps<StreamChatGenerics>,
 ) => {
-  const {
-    letterInterval = DEFAULT_LETTER_INTERVAL,
-    renderingLetterCount = DEFAULT_RENDERING_LETTER_COUNT,
-    ...restProps
-  } = props;
-  const { message } = useMessageContext<StreamChatGenerics>();
+  const { letterInterval, renderingLetterCount, ...restProps } = props;
+  const { message: messageFromProps } = restProps;
+  const { message: messageFromContext } = useMessageContext<StreamChatGenerics>();
+  const message = messageFromProps || messageFromContext;
   const { text = '' } = message;
-  const [streamedMessageText, setStreamedMessageText] = useState<string>(text);
-  const textCursor = useRef<number>(text.length);
-
-  useEffect(() => {
-    const textLength = text.length;
-    const interval = setInterval(() => {
-      if (!text || textCursor.current >= textLength) {
-        clearInterval(interval);
-      }
-      // TODO: make this configurable maybe
-      const newCursorValue = textCursor.current + renderingLetterCount;
-      const newText = text.substring(0, newCursorValue);
-      textCursor.current += newText.length - textCursor.current;
-      setStreamedMessageText(newText);
-    }, letterInterval);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [letterInterval, renderingLetterCount, text]);
+  const { streamedMessageText } = useStreamingMessage({
+    letterInterval,
+    renderingLetterCount,
+    text,
+  });
 
   return (
     <MessageTextContainer message={{ ...message, text: streamedMessageText }} {...restProps} />
