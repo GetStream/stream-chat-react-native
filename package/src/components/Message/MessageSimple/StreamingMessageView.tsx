@@ -5,11 +5,26 @@ import { MessageTextContainer, MessageTextContainerProps } from './MessageTextCo
 import { useMessageContext } from '../../../contexts';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
+const DEFAULT_LETTER_INTERVAL = 0;
+const DEFAULT_RENDERING_LETTER_COUNT = 2;
+
+export type StreamingMessageViewProps<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = MessageTextContainerProps<StreamChatGenerics> & {
+  letterInterval?: number;
+  renderingLetterCount?: number;
+};
+
 export const StreamingMessageView = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageTextContainerProps<StreamChatGenerics>,
+  props: StreamingMessageViewProps<StreamChatGenerics>,
 ) => {
+  const {
+    letterInterval = DEFAULT_LETTER_INTERVAL,
+    renderingLetterCount = DEFAULT_RENDERING_LETTER_COUNT,
+    ...restProps
+  } = props;
   const { message } = useMessageContext<StreamChatGenerics>();
   const { text = '' } = message;
   const [streamedMessageText, setStreamedMessageText] = useState<string>(text);
@@ -22,18 +37,20 @@ export const StreamingMessageView = <
         clearInterval(interval);
       }
       // TODO: make this configurable maybe
-      const newCursorValue = textCursor.current + 2;
+      const newCursorValue = textCursor.current + renderingLetterCount;
       const newText = text.substring(0, newCursorValue);
       textCursor.current += newText.length - textCursor.current;
       setStreamedMessageText(newText);
-    }, 0);
+    }, letterInterval);
 
     return () => {
       clearInterval(interval);
     };
   }, [text]);
 
-  return <MessageTextContainer message={{ ...message, text: streamedMessageText }} {...props} />;
+  return (
+    <MessageTextContainer message={{ ...message, text: streamedMessageText }} {...restProps} />
+  );
 };
 
 StreamingMessageView.displayName = 'StreamingMessageView{messageSimple{content}}';

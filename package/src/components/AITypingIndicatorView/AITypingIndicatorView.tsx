@@ -9,14 +9,18 @@ import { AIStates, useAIState } from './hooks/useAIState';
 import { useChannelContext, useTheme } from '../../contexts';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
+export type AITypingIndicatorViewProps<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  channel?: Channel<StreamChatGenerics>;
+};
+
 export const AITypingIndicatorView = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channel: channelFromProps,
-}: {
-  channel: Channel<StreamChatGenerics>;
-}) => {
-  const { channel: channelFromContext } = useChannelContext();
+}: AITypingIndicatorViewProps<StreamChatGenerics>) => {
+  const { channel: channelFromContext } = useChannelContext<StreamChatGenerics>();
   const channel = channelFromProps || channelFromContext;
   const { aiState } = useAIState(channel);
   // TODO: Translations
