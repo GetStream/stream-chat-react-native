@@ -1,8 +1,19 @@
-import React, { PropsWithChildren } from 'react';
-import { GestureResponderEvent, Linking, Text, TextProps, View, ViewProps } from 'react-native';
+import React, { PropsWithChildren, ReactNode, useCallback, useRef, useState } from 'react';
+import {
+  GestureResponderEvent,
+  Linking,
+  Platform,
+  ScrollView,
+  Text,
+  TextProps,
+  View,
+  ViewProps,
+} from 'react-native';
 
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 // @ts-expect-error
 import Markdown from 'react-native-markdown-package';
+import { runOnJS } from 'react-native-reanimated';
 
 import {
   DefaultRules,
@@ -26,7 +37,54 @@ import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { escapeRegExp } from '../../../../utils/utils';
 import type { MessageType } from '../../../MessageList/hooks/useMessageList';
 
+const ReactiveScrollView = ({ children }: { children: ReactNode }) => {
+  const [scrollViewXOffset, setScrollViewXOffset] = useState(0);
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  const scrollTo = useCallback((translation: number) => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({
+        animated: false,
+        x: translation,
+      });
+    }
+  }, []);
+
+  const panGesture = Gesture.Pan()
+    .activeOffsetX([-10, 10])
+    .onUpdate((event) => {
+      const { translationX } = event;
+
+      if (scrollViewRef.current) {
+        runOnJS(scrollTo)(scrollViewXOffset - translationX);
+      }
+    })
+    .onEnd((event) => {
+      const { translationX } = event;
+
+      runOnJS(setScrollViewXOffset)(scrollViewXOffset - translationX);
+    });
+
+  return (
+    <GestureDetector gesture={panGesture}>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        horizontal
+        nestedScrollEnabled={true}
+        ref={scrollViewRef}
+      >
+        {children}
+      </ScrollView>
+    </GestureDetector>
+  );
+};
+
 const defaultMarkdownStyles: MarkdownStyle = {
+  codeBlock: {
+    backgroundColor: '#DDDDDD',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'Monospace',
+    fontWeight: '500',
+  },
   inlineCode: {
     fontSize: 13,
     padding: 3,
@@ -112,6 +170,11 @@ export const renderText = <
       ...defaultMarkdownStyles.autolink,
       color: colors.accent_blue,
       ...markdownStyles?.autolink,
+    },
+    codeBlock: {
+      ...defaultMarkdownStyles.codeBlock,
+      padding: 8,
+      ...markdownStyles?.codeBlock,
     },
     inlineCode: {
       ...defaultMarkdownStyles.inlineCode,
@@ -263,6 +326,14 @@ export const renderText = <
     />
   );
 
+  const CodeBlockReact: ReactNodeOutput = (node, _, state) => (
+    <ReactiveScrollView>
+      <Text key={state.key} style={styles.codeBlock}>
+        {node.content}
+      </Text>
+    </ReactiveScrollView>
+  );
+
   const customRules = {
     // do not render images, we will scrape them out of the message and show on attachment card component
     image: { match: () => null },
@@ -283,6 +354,7 @@ export const renderText = <
           },
         }
       : {}),
+    codeBlock: { react: CodeBlockReact },
   };
 
   return (
