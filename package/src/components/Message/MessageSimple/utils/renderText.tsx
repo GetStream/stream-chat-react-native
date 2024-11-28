@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, ReactNode, useCallback, useRef, useState } from 'react';
+import React, { PropsWithChildren, ReactNode, useCallback, useMemo, useRef, useState } from 'react';
 import {
   GestureResponderEvent,
   Linking,
@@ -41,17 +41,14 @@ const ReactiveScrollView = ({ children }: { children: ReactNode }) => {
   const [scrollViewXOffset, setScrollViewXOffset] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const scrollTo = useCallback(
-    (translation: number) => {
-      if (scrollViewRef.current) {
-        scrollViewRef.current.scrollTo({
-          animated: false,
-          x: translation,
-        });
-      }
-    },
-    [scrollViewRef],
-  );
+  const scrollTo = useCallback((translation: number) => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({
+        animated: false,
+        x: translation,
+      });
+    }
+  }, []);
 
   const panGesture = Gesture.Pan()
     .activeOffsetX([-10, 10])
@@ -73,6 +70,7 @@ const ReactiveScrollView = ({ children }: { children: ReactNode }) => {
         horizontal
         nestedScrollEnabled={true}
         ref={scrollViewRef}
+        scrollEnabled={false}
       >
         {children}
       </ScrollView>
@@ -126,7 +124,7 @@ const defaultMarkdownStyles: MarkdownStyle = {
   },
   tableHeader: {
     backgroundColor: '#222222',
-    flexDirection: 'row',
+    flex: 1,
     justifyContent: 'space-around',
   },
   tableHeaderCell: {
@@ -221,6 +219,7 @@ export const renderText = <
       borderRadius: 3,
       borderWidth: 1,
       flex: 1,
+      flexDirection: 'row',
     },
     tableHeader: {
       backgroundColor: '#222222',
@@ -233,8 +232,8 @@ export const renderText = <
       padding: 5,
     },
     tableRow: {
+      alignItems: 'center',
       borderColor: '#222222',
-      flexDirection: 'row',
       justifyContent: 'space-around',
     },
     tableRowCell: {
@@ -382,49 +381,17 @@ export const renderText = <
     />
   );
 
-  const CodeBlockReact: ReactNodeOutput = (node, _, state) => (
+  const codeBlockReact: ReactNodeOutput = (node, _, state) => (
     <ReactiveScrollView key={state.key}>
       <Text style={styles.codeBlock}>{node.content}</Text>
     </ReactiveScrollView>
   );
 
-  const tableReact: ReactNodeOutput = (node, output, state) => {
-    const headers = node?.header?.map((content: SingleASTNode, idx: number) => (
-      <Text key={idx} style={styles.tableHeaderCell}>
-        {output(content, state)}
-      </Text>
-    ));
-
-    const header = (
-      <View key={-1} style={styles.tableHeader}>
-        {headers}
-      </View>
-    );
-
-    const rows = node?.cells?.map((row: SingleASTNode, r: number) => {
-      const cells = row.map((content: SingleASTNode, c: number) => (
-        <View key={c} style={styles.tableRowCell}>
-          {output(content, state)}
-        </View>
-      ));
-      const rowStyles = [styles.tableRow];
-      if (node.cells.length - 1 === r) {
-        rowStyles.push(styles.tableRowLast);
-      }
-
-      return (
-        <View key={r} style={rowStyles}>
-          {cells}
-        </View>
-      );
-    });
-
-    return (
-      <ReactiveScrollView key={state.key}>
-        <View style={styles.table}>{[header, rows]}</View>
-      </ReactiveScrollView>
-    );
-  };
+  const tableReact: ReactNodeOutput = (node, output, state) => (
+    <ReactiveScrollView key={state.key}>
+      <MarkdownTable node={node} output={output} state={state} styles={styles} />
+    </ReactiveScrollView>
+  );
 
   const customRules = {
     // do not render images, we will scrape them out of the message and show on attachment card component
@@ -446,7 +413,7 @@ export const renderText = <
           },
         }
       : {}),
-    codeBlock: { react: CodeBlockReact },
+    codeBlock: { react: codeBlockReact },
     table: { react: tableReact },
   };
 
@@ -538,3 +505,71 @@ const ListRow = ({ children, style }: PropsWithChildren<ViewProps>) => (
 const ListItem = ({ children, style }: PropsWithChildren<TextProps>) => (
   <Text style={style}>{children}</Text>
 );
+
+export type MarkdownTableProps = {
+  node: SingleASTNode;
+  output: ReactOutput;
+  state: State;
+  styles: Partial<MarkdownStyle>;
+};
+
+const transpose = (matrix: SingleASTNode[][]) =>
+  matrix[0].map((_, colIndex) => matrix.map((row) => row[colIndex]));
+
+const MarkdownTable = ({ node, output, state, styles }: MarkdownTableProps) => {
+  const content = useMemo(() => {
+    const nodeContent = [node?.header, ...node?.cells];
+    return transpose(nodeContent);
+  }, [node?.cells, node?.header]);
+  const columns = content?.map((column, idx) => (
+    <MarkdownTableColumn
+      items={column}
+      key={`column-${idx}`}
+      output={output}
+      state={state}
+      styles={styles}
+    />
+  ));
+
+  return (
+    <View key={state.key} style={styles.table}>
+      {columns}
+    </View>
+  );
+};
+
+export type MarkdownTableRowProps = {
+  items: SingleASTNode[];
+  output: ReactOutput;
+  state: State;
+  styles: Partial<MarkdownStyle>;
+};
+
+const MarkdownTableColumn = ({ items, output, state, styles }: MarkdownTableRowProps) => {
+  const [headerCellContent, ...columnCellContents] = items;
+
+  const ColumnCell = useCallback(
+    ({ content }: { content: SingleASTNode }) =>
+      // console.log('CONTENT: ', content);
+      content ? (
+        <View style={styles.tableRow}>
+          <View style={styles.tableRowCell}>{output(content, state)}</View>
+        </View>
+      ) : null,
+    [output, state, styles],
+  );
+
+  return (
+    <View style={{ flexDirection: 'column', flex: 1 }}>
+      {headerCellContent ? (
+        <View key={-1} style={styles.tableHeader}>
+          <Text style={styles.tableHeaderCell}>{output(headerCellContent, state)}</Text>
+        </View>
+      ) : null}
+      {columnCellContents &&
+        columnCellContents.map((content, idx) => (
+          <ColumnCell content={content} key={`cell-${idx}`} />
+        ))}
+    </View>
+  );
+};
