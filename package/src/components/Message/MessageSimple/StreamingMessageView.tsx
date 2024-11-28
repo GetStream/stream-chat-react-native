@@ -22,7 +22,7 @@ export const StreamingMessageView = <
         clearInterval(interval);
       }
       // TODO: make this configurable maybe
-      const newCursorValue = textCursor.current + 1;
+      const newCursorValue = textCursor.current + 2;
       const newText = text.substring(0, newCursorValue);
       textCursor.current += newText.length - textCursor.current;
       setStreamedMessageText(newText);

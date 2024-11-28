@@ -6,7 +6,7 @@ import { Channel } from 'stream-chat';
 
 import { AIStates, useAIState } from './hooks/useAIState';
 
-import { useChannelContext } from '../../contexts';
+import { useChannelContext, useTheme } from '../../contexts';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
 export const AITypingIndicatorView = <
@@ -25,10 +25,15 @@ export const AITypingIndicatorView = <
     [AIStates.Generating]: 'Generating...',
   };
 
-  // TODO: Make it not ugly.
+  const {
+    theme: {
+      colors: { black, grey_gainsboro },
+    },
+  } = useTheme();
+
   return aiState in allowedStates ? (
-    <View style={{ paddingHorizontal: 16, paddingVertical: 18 }}>
-      <Text>{allowedStates[aiState]}</Text>
+    <View style={{ backgroundColor: grey_gainsboro, paddingHorizontal: 16, paddingVertical: 18 }}>
+      <Text style={{ color: black }}>{allowedStates[aiState]}</Text>
     </View>
   ) : null;
 };
