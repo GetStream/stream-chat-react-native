@@ -1,4 +1,4 @@
-import type { ExtendableGenerics, LiteralStringForUnion } from 'stream-chat';
+import type { EventTypes, ExtendableGenerics, LiteralStringForUnion } from 'stream-chat';
 
 import type { FileStateValue } from '../utils/utils';
 
@@ -84,11 +84,17 @@ interface DefaultChannelType extends UnknownType {
   image?: string;
 }
 
+interface DefaultEventType extends UnknownType {
+  [key: string]: unknown;
+
+  type: EventTypes | 'ai_indicator_changed' | 'ai_indicator_clear';
+}
+
 export interface DefaultStreamChatGenerics extends ExtendableGenerics {
   attachmentType: DefaultAttachmentType;
   channelType: DefaultChannelType;
   commandType: LiteralStringForUnion;
-  eventType: UnknownType;
+  eventType: DefaultEventType;
   memberType: UnknownType;
   messageType: UnknownType;
   reactionType: UnknownType;

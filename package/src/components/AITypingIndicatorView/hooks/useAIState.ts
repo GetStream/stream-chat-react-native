@@ -28,13 +28,16 @@ export const useAIState = <
   const [aiState, setAiState] = useState<AIStatesEnum>(AIStatesEnum.Idle);
 
   useEffect(() => {
-    const indicatorChangedListener = channel.on('ai_indicator_changed', (event) => {
-      const { cid } = event;
-      const state = event.state as AIStatesEnum;
-      if (channel.cid === cid) {
-        setAiState(state);
-      }
-    });
+    const indicatorChangedListener = channel.on(
+      'ai_indicator_changed',
+      (event: Event<StreamChatGenerics>) => {
+        const { cid } = event;
+        const state = event.state as AIStatesEnum;
+        if (channel.cid === cid) {
+          setAiState(state);
+        }
+      },
+    );
 
     const indicatorClearedListener = channel.on('ai_indicator_clear', (event) => {
       const { cid } = event;
