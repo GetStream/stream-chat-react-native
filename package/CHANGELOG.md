@@ -1,5 +1,13 @@
 # Change Log
 
+### [5.43.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.43.1...v5.43.2) (2024-11-28)
+
+
+### Bug Fixes
+
+* add safeguard for querying app settings ([#2765](https://github.com/GetStream/stream-chat-react-native/issues/2765)) ([f26e974](https://github.com/GetStream/stream-chat-react-native/commit/f26e9742ddf0243b973544d60c9569998ebf11ca))
+* show user reactions in threads ([#2814](https://github.com/GetStream/stream-chat-react-native/issues/2814)) ([837c2d2](https://github.com/GetStream/stream-chat-react-native/commit/837c2d234a56c813359486acdbeffa371be67d8e))
+
 ### [5.43.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.43.0...v5.43.1) (2024-11-22)
 
 
