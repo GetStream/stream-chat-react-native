@@ -46,7 +46,7 @@ export const StreamingMessageView = <
     return () => {
       clearInterval(interval);
     };
-  }, [text]);
+  }, [letterInterval, renderingLetterCount, text]);
 
   return (
     <MessageTextContainer message={{ ...message, text: streamedMessageText }} {...restProps} />
