@@ -32,7 +32,9 @@ export const useStreamingMessage = <
       const newCursorValue = textCursor.current + renderingLetterCount;
       const newText = text.substring(0, newCursorValue);
       textCursor.current += newText.length - textCursor.current;
-      setStreamedMessageText(newText);
+      const codeBlockCounts = (newText.match(/```/g) || []).length;
+      const shouldOptimisticallyCloseCodeBlock = codeBlockCounts > 0 && codeBlockCounts % 2 > 0;
+      setStreamedMessageText(shouldOptimisticallyCloseCodeBlock ? newText + '```' : newText);
     }, letterInterval);
 
     return () => {

@@ -91,6 +91,7 @@ const defaultMarkdownStyles: MarkdownStyle = {
     backgroundColor: '#DDDDDD',
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'Monospace',
     fontWeight: '500',
+    marginVertical: 8,
   },
   inlineCode: {
     fontSize: 13,
@@ -129,28 +130,25 @@ const defaultMarkdownStyles: MarkdownStyle = {
     borderColor: '#222222',
     borderRadius: 3,
     borderWidth: 1,
+    flex: 1,
+    flexDirection: 'row',
   },
   tableHeader: {
     backgroundColor: '#222222',
-    flex: 1,
+    flexDirection: 'row',
     justifyContent: 'space-around',
   },
   tableHeaderCell: {
     color: '#ffffff',
-    fontWeight: 'bold',
-    padding: 5,
+    fontWeight: '500',
   },
   tableRow: {
-    //borderBottomWidth: 1,
+    alignItems: 'center',
     borderColor: '#222222',
-    flexDirection: 'row',
     justifyContent: 'space-around',
   },
   tableRowCell: {
-    padding: 5,
-  },
-  tableRowLast: {
-    borderColor: 'transparent',
+    flex: 1,
   },
 };
 
@@ -223,33 +221,30 @@ export const renderText = <
       ...markdownStyles?.mentions,
     },
     table: {
-      borderColor: '#222222',
-      borderRadius: 3,
-      borderWidth: 1,
-      flex: 1,
-      flexDirection: 'row',
+      ...defaultMarkdownStyles.table,
+      marginVertical: 8,
+      ...markdownStyles?.table,
     },
     tableHeader: {
-      backgroundColor: '#222222',
-      flexDirection: 'row',
-      justifyContent: 'space-around',
+      ...defaultMarkdownStyles.tableHeader,
+      ...markdownStyles?.tableHeader,
     },
     tableHeaderCell: {
-      color: '#ffffff',
-      fontWeight: 'bold',
+      ...defaultMarkdownStyles.tableHeaderCell,
       padding: 5,
+      ...markdownStyles?.tableHeaderCell,
     },
     tableRow: {
-      alignItems: 'center',
-      borderColor: '#222222',
-      justifyContent: 'space-around',
+      ...defaultMarkdownStyles.tableRow,
+      ...markdownStyles?.tableRow,
     },
     tableRowCell: {
-      flex: 1,
+      ...defaultMarkdownStyles.tableRowCell,
       padding: 5,
+      ...markdownStyles?.tableRowCell,
     },
     tableRowLast: {
-      borderColor: 'transparent',
+      ...markdownStyles?.tableRowLast,
     },
     text: {
       ...defaultMarkdownStyles.text,
@@ -391,7 +386,7 @@ export const renderText = <
 
   const codeBlockReact: ReactNodeOutput = (node, _, state) => (
     <ReactiveScrollView key={state.key}>
-      <Text style={styles.codeBlock}>{node.content}</Text>
+      <Text style={styles.codeBlock}>{node?.content?.trim()}</Text>
     </ReactiveScrollView>
   );
 
@@ -558,7 +553,6 @@ const MarkdownTableColumn = ({ items, output, state, styles }: MarkdownTableRowP
 
   const ColumnCell = useCallback(
     ({ content }: { content: SingleASTNode }) =>
-      // console.log('CONTENT: ', content);
       content ? (
         <View style={styles.tableRow}>
           <View style={styles.tableRowCell}>{output(content, state)}</View>
