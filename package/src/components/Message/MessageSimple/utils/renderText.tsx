@@ -36,7 +36,7 @@ import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { escapeRegExp } from '../../../../utils/utils';
 import type { MessageType } from '../../../MessageList/hooks/useMessageList';
 
-const ReactiveScrollView = ({ children }: { children: ReactNode }) => {
+export const MarkdownReactiveScrollView = ({ children }: { children: ReactNode }) => {
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const contentWidth = useSharedValue(0);
   const visibleContentWidth = useSharedValue(0);
@@ -385,15 +385,15 @@ export const renderText = <
   );
 
   const codeBlockReact: ReactNodeOutput = (node, _, state) => (
-    <ReactiveScrollView key={state.key}>
+    <MarkdownReactiveScrollView key={state.key}>
       <Text style={styles.codeBlock}>{node?.content?.trim()}</Text>
-    </ReactiveScrollView>
+    </MarkdownReactiveScrollView>
   );
 
   const tableReact: ReactNodeOutput = (node, output, state) => (
-    <ReactiveScrollView key={state.key}>
+    <MarkdownReactiveScrollView key={state.key}>
       <MarkdownTable node={node} output={output} state={state} styles={styles} />
-    </ReactiveScrollView>
+    </MarkdownReactiveScrollView>
   );
 
   const customRules = {
