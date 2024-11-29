@@ -24,7 +24,6 @@ export const AITypingIndicatorView = <
   const { channel: channelFromContext } = useChannelContext<StreamChatGenerics>();
   const channel = channelFromProps || channelFromContext;
   const { aiState } = useAIState(channel);
-  // TODO: Translations
   const allowedStates = {
     [AIStates.Thinking]: t('Thinking...'),
     [AIStates.Generating]: t('Generating...'),
