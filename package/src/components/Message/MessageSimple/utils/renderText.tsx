@@ -134,12 +134,11 @@ const defaultMarkdownStyles: MarkdownStyle = {
     flexDirection: 'row',
   },
   tableHeader: {
-    backgroundColor: '#222222',
+    backgroundColor: '#7A7A7A',
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
   tableHeaderCell: {
-    color: '#ffffff',
     fontWeight: '500',
   },
   tableRow: {

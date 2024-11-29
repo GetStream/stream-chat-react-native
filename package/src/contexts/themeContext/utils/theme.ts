@@ -81,7 +81,7 @@ export type MarkdownStyle = Partial<{
   tableHeader: ViewStyle;
   tableHeaderCell: TextStyle;
   tableRow: ViewStyle;
-  tableRowCell: ViewStyle;
+  tableRowCell: TextStyle;
   tableRowLast: ViewStyle;
   text: TextStyle;
   u: TextStyle;
