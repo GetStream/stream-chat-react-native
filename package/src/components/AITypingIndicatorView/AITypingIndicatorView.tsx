@@ -6,7 +6,7 @@ import { Channel } from 'stream-chat';
 
 import { AIStates, useAIState } from './hooks/useAIState';
 
-import { useChannelContext, useTheme } from '../../contexts';
+import { useChannelContext, useTheme, useTranslationContext } from '../../contexts';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
 export type AITypingIndicatorViewProps<
@@ -20,13 +20,14 @@ export const AITypingIndicatorView = <
 >({
   channel: channelFromProps,
 }: AITypingIndicatorViewProps<StreamChatGenerics>) => {
+  const { t } = useTranslationContext();
   const { channel: channelFromContext } = useChannelContext<StreamChatGenerics>();
   const channel = channelFromProps || channelFromContext;
   const { aiState } = useAIState(channel);
   // TODO: Translations
   const allowedStates = {
-    [AIStates.Thinking]: 'Thinking...',
-    [AIStates.Generating]: 'Generating...',
+    [AIStates.Thinking]: t('Thinking...'),
+    [AIStates.Generating]: t('Generating...'),
   };
 
   const {
