@@ -353,6 +353,8 @@ export type Theme = {
       innerContainer: ViewStyle;
       text: TextStyle;
     };
+    stopMessageStreamingButton: ViewStyle;
+    stopMessageStreamingIcon: IconProps;
     suggestions: {
       command: {
         args: TextStyle;
@@ -1079,6 +1081,8 @@ export const defaultTheme: Theme = {
       innerContainer: {},
       text: {},
     },
+    stopMessageStreamingButton: {},
+    stopMessageStreamingIcon: {},
     suggestions: {
       command: {
         args: {},

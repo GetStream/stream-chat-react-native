@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { Channel } from 'stream-chat';
+import { Channel, Event } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 
 import { Pressable } from 'react-native';
 
@@ -12,16 +12,11 @@ import { SendRight } from '../../icons/SendRight';
 import { SendUp } from '../../icons/SendUp';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { useChannelContext } from '../../contexts';
-import { AIStates, AIStatesEnum, useAIState } from '../AITypingIndicatorView';
-import { EventAPIResponse } from 'stream-chat';
 
 type SendButtonPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<MessageInputContextValue<StreamChatGenerics>, 'giphyActive' | 'sendMessage'> & {
   /** Disables the button */ disabled: boolean;
-  aiState: AIStatesEnum;
-  stopGenerating: () => Promise<EventAPIResponse<StreamChatGenerics>>;
 };
 
 const SendButtonWithContext = <
@@ -29,7 +24,7 @@ const SendButtonWithContext = <
 >(
   props: SendButtonPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { disabled = false, giphyActive, sendMessage, aiState, stopGenerating } = props;
+  const { disabled = false, giphyActive, sendMessage } = props;
   const {
     theme: {
       colors: { accent_blue, grey_gainsboro },
@@ -37,16 +32,14 @@ const SendButtonWithContext = <
     },
   } = useTheme();
 
-  const shouldDisplayStopAIGeneration = [AIStates.Thinking, AIStates.Generating].includes(aiState);
-
   return (
     <Pressable
       disabled={disabled}
-      onPress={disabled ? () => null : shouldDisplayStopAIGeneration ? () => stopGenerating() : () => sendMessage()}
+      onPress={disabled ? () => null : () => sendMessage()}
       style={[sendButton]}
       testID='send-button'
     >
-      {giphyActive || shouldDisplayStopAIGeneration ? ( // TODO: Fix the icon please.
+      {giphyActive ? (
         <Search pathFill={disabled ? grey_gainsboro : accent_blue} {...searchIcon} />
       ) : disabled ? (
         <SendRight fill={grey_gainsboro} size={32} {...sendRightIcon} />
@@ -65,13 +58,11 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     disabled: prevDisabled,
     giphyActive: prevGiphyActive,
     sendMessage: prevSendMessage,
-    aiState: prevAiState,
   } = prevProps;
   const {
     disabled: nextDisabled,
     giphyActive: nextGiphyActive,
     sendMessage: nextSendMessage,
-    aiState: nextAiState,
   } = nextProps;
 
   const disabledEqual = prevDisabled === nextDisabled;
@@ -82,9 +73,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const sendMessageEqual = prevSendMessage === nextSendMessage;
   if (!sendMessageEqual) return false;
-
-  const aiStateEqual = prevAiState === nextAiState;
-  if (!aiStateEqual) return false;
 
   return true;
 };
@@ -107,18 +95,12 @@ export const SendButton = <
   props: SendButtonProps<StreamChatGenerics>,
 ) => {
   const { giphyActive, sendMessage } = useMessageInputContext<StreamChatGenerics>();
-  const { channel } = useChannelContext<StreamChatGenerics>();
-  const { aiState } = useAIState(channel);
-
-  const stopGenerating = useCallback(() => channel.sendEvent({ type: 'stop_generating', cid: channel.cid }), [channel])
 
   return (
     <MemoizedSendButton
       {...{ giphyActive, sendMessage }}
       {...props}
       {...{ disabled: props.disabled || false }}
-      aiState={aiState}
-      stopGenerating={stopGenerating}
     />
   );
 };
