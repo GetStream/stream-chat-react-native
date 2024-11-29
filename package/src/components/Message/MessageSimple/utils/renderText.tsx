@@ -88,7 +88,6 @@ const ReactiveScrollView = ({ children }: { children: ReactNode }) => {
 
 const defaultMarkdownStyles: MarkdownStyle = {
   codeBlock: {
-    backgroundColor: '#DDDDDD',
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'Monospace',
     fontWeight: '500',
     marginVertical: 8,
@@ -127,14 +126,12 @@ const defaultMarkdownStyles: MarkdownStyle = {
     marginTop: 8,
   },
   table: {
-    borderColor: '#222222',
     borderRadius: 3,
     borderWidth: 1,
     flex: 1,
     flexDirection: 'row',
   },
   tableHeader: {
-    backgroundColor: '#7A7A7A',
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
@@ -143,7 +140,6 @@ const defaultMarkdownStyles: MarkdownStyle = {
   },
   tableRow: {
     alignItems: 'center',
-    borderColor: '#222222',
     justifyContent: 'space-around',
   },
   tableRowCell: {
@@ -204,6 +200,8 @@ export const renderText = <
     },
     codeBlock: {
       ...defaultMarkdownStyles.codeBlock,
+      backgroundColor: colors.code_block,
+      color: colors.black,
       padding: 8,
       ...markdownStyles?.codeBlock,
     },
@@ -221,11 +219,13 @@ export const renderText = <
     },
     table: {
       ...defaultMarkdownStyles.table,
+      borderColor: colors.grey_dark,
       marginVertical: 8,
       ...markdownStyles?.table,
     },
     tableHeader: {
       ...defaultMarkdownStyles.tableHeader,
+      backgroundColor: colors.grey,
       ...markdownStyles?.tableHeader,
     },
     tableHeaderCell: {
@@ -239,6 +239,7 @@ export const renderText = <
     },
     tableRowCell: {
       ...defaultMarkdownStyles.tableRowCell,
+      borderColor: colors.grey_dark,
       padding: 5,
       ...markdownStyles?.tableRowCell,
     },
