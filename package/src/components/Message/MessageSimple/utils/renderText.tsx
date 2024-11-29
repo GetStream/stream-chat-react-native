@@ -1,9 +1,8 @@
-import React, { PropsWithChildren, ReactNode, useCallback, useMemo, useRef, useState } from 'react';
+import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
 import {
   GestureResponderEvent,
   Linking,
   Platform,
-  ScrollView,
   Text,
   TextProps,
   View,
@@ -13,7 +12,7 @@ import {
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 // @ts-expect-error
 import Markdown from 'react-native-markdown-package';
-import { runOnJS } from 'react-native-reanimated';
+import Animated, { clamp, scrollTo, useAnimatedRef, useSharedValue } from 'react-native-reanimated';
 
 import {
   DefaultRules,
@@ -38,42 +37,51 @@ import { escapeRegExp } from '../../../../utils/utils';
 import type { MessageType } from '../../../MessageList/hooks/useMessageList';
 
 const ReactiveScrollView = ({ children }: { children: ReactNode }) => {
-  const [scrollViewXOffset, setScrollViewXOffset] = useState(0);
-  const scrollViewRef = useRef<ScrollView>(null);
-
-  const scrollTo = useCallback((translation: number) => {
-    if (scrollViewRef.current) {
-      scrollViewRef.current.scrollTo({
-        animated: false,
-        x: translation,
-      });
-    }
-  }, []);
+  const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
+  const contentWidth = useSharedValue(0);
+  const visibleContentWidth = useSharedValue(0);
+  const offsetBeforeScroll = useSharedValue(0);
 
   const panGesture = Gesture.Pan()
-    .activeOffsetX([-10, 10])
+    .activeOffsetX([-5, 5])
     .onUpdate((event) => {
       const { translationX } = event;
 
-      runOnJS(scrollTo)(scrollViewXOffset - translationX);
+      scrollTo(scrollViewRef, offsetBeforeScroll.value - translationX, 0, false);
     })
     .onEnd((event) => {
       const { translationX } = event;
 
-      runOnJS(setScrollViewXOffset)(scrollViewXOffset - translationX);
+      const velocityEffect = event.velocityX * 0.3;
+
+      const finalPosition = clamp(
+        offsetBeforeScroll.value - translationX - velocityEffect,
+        0,
+        contentWidth.value - visibleContentWidth.value,
+      );
+
+      offsetBeforeScroll.value = finalPosition;
+
+      scrollTo(scrollViewRef, finalPosition, 0, true);
     });
 
   return (
     <GestureDetector gesture={panGesture}>
-      <ScrollView
+      <Animated.ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         horizontal
         nestedScrollEnabled={true}
+        onContentSizeChange={(width) => {
+          contentWidth.value = width;
+        }}
+        onLayout={(e) => {
+          visibleContentWidth.value = e.nativeEvent.layout.width;
+        }}
         ref={scrollViewRef}
         scrollEnabled={false}
       >
         {children}
-      </ScrollView>
+      </Animated.ScrollView>
     </GestureDetector>
   );
 };
@@ -560,7 +568,7 @@ const MarkdownTableColumn = ({ items, output, state, styles }: MarkdownTableRowP
   );
 
   return (
-    <View style={{ flexDirection: 'column', flex: 1 }}>
+    <View style={{ flex: 1, flexDirection: 'column' }}>
       {headerCellContent ? (
         <View key={-1} style={styles.tableHeader}>
           <Text style={styles.tableHeaderCell}>{output(headerCellContent, state)}</Text>
