@@ -644,6 +644,7 @@ const ChannelWithContext = <
       colors: { black },
     },
   } = useTheme();
+  const [deleted, setDeleted] = useState<boolean>(false);
   const [editing, setEditing] = useState<MessageType<StreamChatGenerics> | undefined>(undefined);
   const [error, setError] = useState<Error | boolean>(false);
   const [lastRead, setLastRead] = useState<ChannelContextValue<StreamChatGenerics>['lastRead']>();
@@ -777,10 +778,22 @@ const ChannelWithContext = <
     return () => {
       copyChannelState.cancel();
       loadMoreThreadFinished.cancel();
-      listener.unsubscribe();
+      listener?.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channel.cid, messageId, shouldSyncChannel]);
+
+  // subscribe to channel.deleted event
+  useEffect(() => {
+    const { unsubscribe } = client.on('channel.deleted', (event) => {
+      if (event.cid === channel?.cid) {
+        setDeleted(true);
+      }
+    });
+
+    return unsubscribe;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [channelId]);
 
   /**
    * Subscription to the Notification mark_read event.
@@ -1814,6 +1827,9 @@ const ChannelWithContext = <
   const typingContext = useCreateTypingContext({
     typing: channelState.typing ?? {},
   });
+
+  // TODO: replace the null view with appropriate message. Currently this is waiting a design decision.
+  if (deleted) return null;
 
   if (!channel || (error && channelMessagesState.messages?.length === 0)) {
     return <LoadingErrorIndicator error={error} listType='message' retry={reloadChannel} />;
