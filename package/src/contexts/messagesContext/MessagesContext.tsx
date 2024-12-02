@@ -57,6 +57,7 @@ import type { MessageReactionPickerProps } from '../../components/MessageMenu/Me
 import { MessageUserReactionsProps } from '../../components/MessageMenu/MessageUserReactions';
 import { MessageUserReactionsAvatarProps } from '../../components/MessageMenu/MessageUserReactionsAvatar';
 import { MessageUserReactionsItemProps } from '../../components/MessageMenu/MessageUserReactionsItem';
+import { UnreadMessagesNotificationProps } from '../../components/MessageList/UnreadMessagesNotification';
 import type { ReplyProps } from '../../components/Reply/Reply';
 import { FlatList } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
@@ -372,6 +373,8 @@ export type MessagesContextValue<
   handleEdit?: (message: MessageType<StreamChatGenerics>) => void;
   /** Handler to access when a flag message action is invoked */
   handleFlag?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
+  /** Handler to access when a mark unread action is invoked */
+  handleMarkUnread?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
   /** Handler to access when a mute user action is invoked */
   handleMute?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
   /** Handler to access when a pin/unpin user action is invoked*/
@@ -435,6 +438,7 @@ export type MessagesContextValue<
    *     deleteMessage,
    *     editMessage,
    *     flagMessage,
+   *     markUnread,
    *     muteUser,
    *     quotedReply,
    *     retry,
@@ -584,6 +588,8 @@ export type MessagesContextValue<
   supportedReactions?: ReactionData[];
 
   targetedMessage?: string;
+
+  UnreadMessagesNotification: React.ComponentType<UnreadMessagesNotificationProps>;
 };
 
 export const MessagesContext = React.createContext(

@@ -7,6 +7,7 @@ export const useCreateChannelContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channel,
+  channelUnreadState,
   disabled,
   EmptyStateIndicator,
   enableMessageGroupingByUser,
@@ -16,8 +17,8 @@ export const useCreateChannelContext = <
   hideDateSeparators,
   hideStickyDateHeader,
   isChannelActive,
-  lastRead,
   loadChannelAroundMessage,
+  loadChannelAtFirstUnreadMessage,
   loading,
   LoadingIndicator,
   markRead,
@@ -27,7 +28,7 @@ export const useCreateChannelContext = <
   read,
   reloadChannel,
   scrollToFirstUnreadThreshold,
-  setLastRead,
+  setChannelUnreadState,
   setTargetedMessage,
   StickyHeader,
   targetedMessage,
@@ -37,16 +38,17 @@ export const useCreateChannelContext = <
   watchers,
 }: ChannelContextValue<StreamChatGenerics>) => {
   const channelId = channel?.id;
-  const lastReadTime = lastRead?.getTime();
   const membersLength = Object.keys(members).length;
 
   const readUsers = Object.values(read);
   const readUsersLength = readUsers.length;
   const readUsersLastReads = readUsers.map(({ last_read }) => last_read.toISOString()).join();
+  const stringifiedChannelUnreadState = JSON.stringify(channelUnreadState);
 
   const channelContext: ChannelContextValue<StreamChatGenerics> = useMemo(
     () => ({
       channel,
+      channelUnreadState,
       disabled,
       EmptyStateIndicator,
       enableMessageGroupingByUser,
@@ -56,8 +58,8 @@ export const useCreateChannelContext = <
       hideDateSeparators,
       hideStickyDateHeader,
       isChannelActive,
-      lastRead,
       loadChannelAroundMessage,
+      loadChannelAtFirstUnreadMessage,
       loading,
       LoadingIndicator,
       markRead,
@@ -67,7 +69,7 @@ export const useCreateChannelContext = <
       read,
       reloadChannel,
       scrollToFirstUnreadThreshold,
-      setLastRead,
+      setChannelUnreadState,
       setTargetedMessage,
       StickyHeader,
       targetedMessage,
@@ -82,11 +84,11 @@ export const useCreateChannelContext = <
       disabled,
       error,
       isChannelActive,
-      lastReadTime,
       loading,
       membersLength,
       readUsersLength,
       readUsersLastReads,
+      stringifiedChannelUnreadState,
       targetedMessage,
       threadList,
       watcherCount,

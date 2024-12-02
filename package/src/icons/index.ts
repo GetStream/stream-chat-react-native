@@ -100,3 +100,4 @@ export * from './PollThumbnail';
 export * from './DragHandle';
 export * from './Back';
 export * from './SendPoll';
+export * from './UnreadIndicator';

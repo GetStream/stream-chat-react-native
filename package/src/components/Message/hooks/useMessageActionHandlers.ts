@@ -48,27 +48,27 @@ export const useMessageActionHandlers = <
   );
 
   const handleCopyMessage = () => {
-    setClipboardString(message.text || '');
+    if (!message.text) return;
+    setClipboardString(message.text);
   };
 
   const handleDeleteMessage = () => {
-    if (message.id) {
-      Alert.alert(
-        t('Delete Message'),
-        t('Are you sure you want to permanently delete this message?'),
-        [
-          { style: 'cancel', text: t('Cancel') },
-          {
-            onPress: async () => {
-              await deleteMessage(message as MessageResponse<StreamChatGenerics>);
-            },
-            style: 'destructive',
-            text: t('Delete'),
+    if (!message.id) return;
+    Alert.alert(
+      t('Delete Message'),
+      t('Are you sure you want to permanently delete this message?'),
+      [
+        { style: 'cancel', text: t('Cancel') },
+        {
+          onPress: async () => {
+            await deleteMessage(message as MessageResponse<StreamChatGenerics>);
           },
-        ],
-        { cancelable: false },
-      );
-    }
+          style: 'destructive',
+          text: t('Delete'),
+        },
+      ],
+      { cancelable: false },
+    );
   };
 
   const handleToggleMuteUser = async () => {
@@ -110,31 +110,44 @@ export const useMessageActionHandlers = <
   };
 
   const handleFlagMessage = () => {
+    if (!message.id) return;
+    Alert.alert(
+      t('Flag Message'),
+      t('Do you want to send a copy of this message to a moderator for further investigation?'),
+      [
+        { style: 'cancel', text: t('Cancel') },
+        {
+          onPress: async () => {
+            try {
+              await client.flagMessage(message.id);
+              Alert.alert(t('Message flagged'), t('The message has been reported to a moderator.'));
+            } catch (error) {
+              console.log('Error flagging message:', error);
+              Alert.alert(
+                t('Cannot Flag Message'),
+                t(
+                  'Flag action failed either due to a network issue or the message is already flagged',
+                ),
+              );
+            }
+          },
+          text: t('Flag'),
+        },
+      ],
+      { cancelable: false },
+    );
+  };
+
+  const handleMarkUnreadMessage = async () => {
+    if (!message.id) return;
     try {
-      if (message.id) {
-        Alert.alert(
-          t('Flag Message'),
-          t('Do you want to send a copy of this message to a moderator for further investigation?'),
-          [
-            { style: 'cancel', text: t('Cancel') },
-            {
-              onPress: async () => {
-                await client.flagMessage(message.id);
-                Alert.alert(
-                  t('Message flagged'),
-                  t('The message has been reported to a moderator.'),
-                );
-              },
-              text: t('Flag'),
-            },
-          ],
-          { cancelable: false },
-        );
-      }
-    } catch (_) {
+      await channel.markUnread({ message_id: message.id });
+    } catch (error) {
+      console.log('Error marking message as unread:', error);
       Alert.alert(
-        t('Cannot Flag Message'),
-        t('Flag action failed either due to a network issue or the message is already flagged'),
+        t(
+          'Error marking message unread. Cannot mark unread messages older than the newest 100 channel messages.',
+        ),
       );
     }
   };
@@ -173,6 +186,7 @@ export const useMessageActionHandlers = <
     handleDeleteMessage,
     handleEditMessage,
     handleFlagMessage,
+    handleMarkUnreadMessage,
     handleQuotedReplyMessage,
     handleResendMessage,
     handleToggleBanUser,

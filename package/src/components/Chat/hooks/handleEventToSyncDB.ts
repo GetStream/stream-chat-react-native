@@ -97,6 +97,48 @@ export const handleEventToSyncDB = async <
     }
   }
 
+  if (type === 'notification.mark_read') {
+    const cid = event.cid;
+    const user = event.user;
+    if (user?.id && cid) {
+      return await queriesWithChannelGuard((flushOverride) =>
+        upsertReads({
+          cid,
+          flush: flushOverride,
+          reads: [
+            {
+              last_read_message_id: event.last_read_message_id,
+              last_read: event.received_at as string,
+              unread_messages: 0,
+              user,
+            },
+          ],
+        }),
+      );
+    }
+  }
+
+  if (type === 'notification.mark_unread') {
+    const cid = event.cid;
+    const user = event.user;
+    if (user?.id && cid) {
+      return await queriesWithChannelGuard((flushOverride) =>
+        upsertReads({
+          cid,
+          flush: flushOverride,
+          reads: [
+            {
+              last_read_message_id: event.last_read_message_id,
+              last_read: event.received_at as string,
+              unread_messages: event.unread_messages,
+              user,
+            },
+          ],
+        }),
+      );
+    }
+  }
+
   if (type === 'message.new') {
     const message = event.message;
 

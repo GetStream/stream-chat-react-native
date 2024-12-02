@@ -1,4 +1,4 @@
-import type { ExtendableGenerics, LiteralStringForUnion } from 'stream-chat';
+import type { ChannelState, ExtendableGenerics, LiteralStringForUnion } from 'stream-chat';
 
 import type { FileStateValue } from '../utils/utils';
 
@@ -98,3 +98,7 @@ export interface DefaultStreamChatGenerics extends ExtendableGenerics {
 export type UnknownType = Record<string, unknown>;
 
 export type ValueOf<T> = T[keyof T];
+
+export type ChannelUnreadState<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Omit<ValueOf<ChannelState<StreamChatGenerics>['read']>, 'user'>;

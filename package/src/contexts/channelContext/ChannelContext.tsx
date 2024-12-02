@@ -2,10 +2,11 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import type { Channel, ChannelState } from 'stream-chat';
 
+import { MarkReadFunctionOptions } from '../../components/Channel/Channel';
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
 import { StickyHeaderProps } from '../../components/MessageList/StickyHeader';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import type { ChannelUnreadState, DefaultStreamChatGenerics } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -61,8 +62,6 @@ export type ChannelContextValue<
   hideStickyDateHeader: boolean;
   /**
    * Loads channel around a specific message
-   *
-   * @param messageId If undefined, channel will be loaded at most recent message.
    */
   loadChannelAroundMessage: ({
     limit,
@@ -75,10 +74,26 @@ export type ChannelContextValue<
   }) => Promise<void>;
 
   /**
+   * Loads channel at first unread message.
+   */
+  loadChannelAtFirstUnreadMessage: ({
+    channelUnreadState,
+    limit,
+    setTargetedMessage,
+  }: {
+    channelUnreadState?: ChannelUnreadState<StreamChatGenerics>;
+    limit?: number;
+    setChannelUnreadState?: React.Dispatch<
+      React.SetStateAction<ChannelUnreadState<StreamChatGenerics> | undefined>
+    >;
+    setTargetedMessage?: (messageId: string) => void;
+  }) => Promise<void>;
+
+  /**
    * Custom loading indicator to override the Stream default
    */
   LoadingIndicator: React.ComponentType<LoadingProps>;
-  markRead: () => void;
+  markRead: (options?: MarkReadFunctionOptions) => void;
   /**
    *
    * ```json
@@ -109,21 +124,20 @@ export type ChannelContextValue<
   NetworkDownIndicator: React.ComponentType;
   read: ChannelState<StreamChatGenerics>['read'];
   reloadChannel: () => Promise<void>;
-  /**
-   * When true, messagelist will be scrolled to first unread message, when opened.
-   */
   scrollToFirstUnreadThreshold: number;
-  setLastRead: React.Dispatch<React.SetStateAction<Date | undefined>>;
+  setChannelUnreadState: React.Dispatch<
+    React.SetStateAction<ChannelUnreadState<StreamChatGenerics> | undefined>
+  >;
   setTargetedMessage: (messageId: string) => void;
   /**
    * Abort controller for cancelling async requests made for uploading images/files
    * Its a map of filename and AbortController
    */
   uploadAbortControllerRef: React.MutableRefObject<Map<string, AbortController>>;
+  channelUnreadState?: ChannelUnreadState<StreamChatGenerics>;
   disabled?: boolean;
   enableMessageGroupingByUser?: boolean;
   isChannelActive?: boolean;
-  lastRead?: Date;
 
   loading?: boolean;
   /**

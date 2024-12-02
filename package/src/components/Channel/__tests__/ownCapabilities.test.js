@@ -236,6 +236,32 @@ describe('Own capabilities', () => {
     });
   });
 
+  describe(`${allOwnCapabilities.readEvents} capability`, () => {
+    it(`should render "Mark as Unread" action for messages when "${allOwnCapabilities.readEvents}" capability is enabled`, async () => {
+      await generateChannelWithCapabilities([allOwnCapabilities.readEvents]);
+      const { queryByLabelText } = await renderChannelAndOpenMessageActionsList(receivedMessage);
+      expect(!!queryByLabelText('markUnread action list item')).toBeTruthy();
+    });
+
+    it(`should not render "Mark Read" action for received message when "${allOwnCapabilities.readEvents}" capability is disabled`, async () => {
+      await generateChannelWithCapabilities();
+
+      const { queryByLabelText } = await renderChannelAndOpenMessageActionsList(receivedMessage);
+      expect(!!queryByLabelText('markUnread action list item')).toBeFalsy();
+    });
+
+    it('should override capability from "overrideOwnCapability.readEvents" prop', async () => {
+      await generateChannelWithCapabilities([allOwnCapabilities.readEvents]);
+
+      const { queryByLabelText } = await renderChannelAndOpenMessageActionsList(receivedMessage, {
+        overrideOwnCapabilities: {
+          readEvents: false,
+        },
+      });
+      expect(!!queryByLabelText('markUnread action list item')).toBeFalsy();
+    });
+  });
+
   describe(`${allOwnCapabilities.pinMessage} capability`, () => {
     it(`should render "Pin Message" action for sent message when "${allOwnCapabilities.pinMessage}" capability is enabled`, async () => {
       await generateChannelWithCapabilities([allOwnCapabilities.pinMessage]);

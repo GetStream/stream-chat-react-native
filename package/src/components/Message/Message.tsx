@@ -110,6 +110,7 @@ export type MessageActionHandlers<
   deleteMessage: () => void;
   editMessage: () => void;
   flagMessage: () => void;
+  markUnread: () => Promise<void>;
   pinMessage: () => Promise<void>;
   quotedReply: () => void;
   resendMessage: () => Promise<void>;
@@ -139,6 +140,7 @@ export type MessagePropsWithContext<
     | 'handleDelete'
     | 'handleEdit'
     | 'handleFlag'
+    | 'handleMarkUnread'
     | 'handleMute'
     | 'handlePinMessage'
     | 'handleQuotedReply'
@@ -217,6 +219,7 @@ const MessageWithContext = <
     handleDelete,
     handleEdit,
     handleFlag,
+    handleMarkUnread,
     handleMute,
     handlePinMessage,
     handleQuotedReply,
@@ -459,6 +462,7 @@ const MessageWithContext = <
     handleDeleteMessage,
     handleEditMessage,
     handleFlagMessage,
+    handleMarkUnreadMessage,
     handleQuotedReplyMessage,
     handleResendMessage,
     handleToggleBanUser,
@@ -486,6 +490,7 @@ const MessageWithContext = <
     editMessage,
     flagMessage,
     handleReaction,
+    markUnread,
     muteUser,
     pinMessage,
     quotedReply,
@@ -504,6 +509,7 @@ const MessageWithContext = <
     handleDelete,
     handleEdit,
     handleFlag,
+    handleMarkUnread,
     handleMute,
     handlePinMessage,
     handleQuotedReply,
@@ -539,6 +545,7 @@ const MessageWithContext = <
           flagMessage,
           isMyMessage,
           isThreadMessage,
+          markUnread,
           message,
           muteUser,
           ownCapabilities,
@@ -555,6 +562,7 @@ const MessageWithContext = <
     deleteMessage: handleDeleteMessage,
     editMessage: handleEditMessage,
     flagMessage: handleFlagMessage,
+    markUnread: handleMarkUnreadMessage,
     pinMessage: handleTogglePinMessage,
     quotedReply: handleQuotedReplyMessage,
     resendMessage: handleResendMessage,

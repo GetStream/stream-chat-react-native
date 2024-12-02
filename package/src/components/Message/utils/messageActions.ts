@@ -15,6 +15,7 @@ export type MessageActionsParams<
   error: boolean | Error;
   flagMessage: MessageActionType;
   isThreadMessage: boolean;
+  markUnread: MessageActionType;
   muteUser: MessageActionType;
   ownCapabilities: OwnCapabilitiesContextValue;
   pinMessage: MessageActionType;
@@ -43,6 +44,7 @@ export const messageActions = <
   flagMessage,
   isMyMessage,
   isThreadMessage,
+  markUnread,
   message,
   ownCapabilities,
   pinMessage,
@@ -75,6 +77,10 @@ export const messageActions = <
     (!isMyMessage && ownCapabilities.updateAnyMessage)
   ) {
     actions.push(editMessage);
+  }
+
+  if (ownCapabilities.readEvents && !error && !isThreadMessage) {
+    actions.push(markUnread);
   }
 
   if (isClipboardAvailable() && message.text && !error) {
