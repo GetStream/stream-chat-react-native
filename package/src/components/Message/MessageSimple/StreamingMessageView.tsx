@@ -8,7 +8,7 @@ import { useStreamingMessage } from '../hooks/useStreamingMessage';
 
 export type StreamingMessageViewProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = MessageTextContainerProps<StreamChatGenerics> & {
+> = Pick<MessageTextContainerProps<StreamChatGenerics>, 'message'> & {
   letterInterval?: number;
   renderingLetterCount?: number;
 };
@@ -18,8 +18,7 @@ export const StreamingMessageView = <
 >(
   props: StreamingMessageViewProps<StreamChatGenerics>,
 ) => {
-  const { letterInterval, renderingLetterCount, ...restProps } = props;
-  const { message: messageFromProps } = restProps;
+  const { letterInterval, message: messageFromProps, renderingLetterCount } = props;
   const { message: messageFromContext } = useMessageContext<StreamChatGenerics>();
   const message = messageFromProps || messageFromContext;
   const { text = '' } = message;
@@ -29,9 +28,7 @@ export const StreamingMessageView = <
     text,
   });
 
-  return (
-    <MessageTextContainer message={{ ...message, text: streamedMessageText }} {...restProps} />
-  );
+  return <MessageTextContainer message={{ ...message, text: streamedMessageText }} />;
 };
 
 StreamingMessageView.displayName = 'StreamingMessageView{messageSimple{content}}';
