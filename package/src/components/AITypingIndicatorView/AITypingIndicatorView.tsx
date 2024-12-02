@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { Channel } from 'stream-chat';
 
@@ -31,15 +31,20 @@ export const AITypingIndicatorView = <
 
   const {
     theme: {
+      aiTypingIndicatorView: { container, text },
       colors: { black, grey_gainsboro },
     },
   } = useTheme();
 
   return aiState in allowedStates ? (
-    <View style={{ backgroundColor: grey_gainsboro, paddingHorizontal: 16, paddingVertical: 18 }}>
-      <Text style={{ color: black }}>{allowedStates[aiState]}</Text>
+    <View style={[styles.container, { backgroundColor: grey_gainsboro }, container]}>
+      <Text style={[{ color: black }, text]}>{allowedStates[aiState]}</Text>
     </View>
   ) : null;
 };
 
 AITypingIndicatorView.displayName = 'AITypingIndicatorView{messageSimple{content}}';
+
+const styles = StyleSheet.create({
+  container: { paddingHorizontal: 16, paddingVertical: 18 },
+});

@@ -90,6 +90,10 @@ export type MarkdownStyle = Partial<{
 }>;
 
 export type Theme = {
+  aiTypingIndicatorView: {
+    container: ViewStyle;
+    text: TextStyle;
+  };
   attachmentPicker: {
     bottomSheetContentContainer: ViewStyle;
     durationText: TextStyle;
@@ -813,6 +817,10 @@ export type Theme = {
 };
 
 export const defaultTheme: Theme = {
+  aiTypingIndicatorView: {
+    container: {},
+    text: {},
+  },
   attachmentPicker: {
     bottomSheetContentContainer: {},
     durationText: {},
