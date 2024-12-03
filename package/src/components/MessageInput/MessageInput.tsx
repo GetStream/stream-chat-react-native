@@ -733,10 +733,7 @@ const MessageInputWithContext = <
   const { channel } = useChannelContext<StreamChatGenerics>();
   const { aiState } = useAIState(channel);
 
-  const stopGenerating = useCallback(
-    () => channel.sendEvent({ type: 'ai_indicator.stop' }),
-    [channel],
-  );
+  const stopGenerating = useCallback(() => channel?.stopAIResponse(), [channel]);
   const shouldDisplayStopAIGeneration = [AIStates.Thinking, AIStates.Generating].includes(aiState);
 
   return (
