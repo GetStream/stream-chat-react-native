@@ -66,23 +66,25 @@ export const MarkdownReactiveScrollView = ({ children }: { children: ReactNode }
     });
 
   return (
-    <GestureDetector gesture={panGesture}>
-      <Animated.ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        horizontal
-        nestedScrollEnabled={true}
-        onContentSizeChange={(width) => {
-          contentWidth.value = width;
-        }}
-        onLayout={(e) => {
-          visibleContentWidth.value = e.nativeEvent.layout.width;
-        }}
-        ref={scrollViewRef}
-        scrollEnabled={false}
-      >
-        {children}
-      </Animated.ScrollView>
-    </GestureDetector>
+    <View style={{ width: '100%' }}>
+      <GestureDetector gesture={panGesture}>
+        <Animated.ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          horizontal
+          nestedScrollEnabled={true}
+          onContentSizeChange={(width) => {
+            contentWidth.value = width;
+          }}
+          onLayout={(e) => {
+            visibleContentWidth.value = e.nativeEvent.layout.width;
+          }}
+          ref={scrollViewRef}
+          scrollEnabled={false}
+        >
+          {children}
+        </Animated.ScrollView>
+      </GestureDetector>
+    </View>
   );
 };
 
