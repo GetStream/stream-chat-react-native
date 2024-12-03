@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 
 import { Channel, Event } from 'stream-chat';
 
+import { useChatContext } from '../../../contexts';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
+import { useIsOnline } from '../../Chat/hooks/useIsOnline';
 
 export type AIStateType =
   | 'AI_STATE_ERROR'
@@ -25,7 +27,15 @@ export const useAIState = <
 >(
   channel?: Channel<StreamChatGenerics>,
 ) => {
+  const { client } = useChatContext();
   const [aiState, setAiState] = useState<AIStateType>(AIStates.Idle);
+  const { isOnline } = useIsOnline(client);
+
+  useEffect(() => {
+    if (!isOnline) {
+      setAiState(AIStates.Idle);
+    }
+  }, [isOnline]);
 
   useEffect(() => {
     if (!channel) {
