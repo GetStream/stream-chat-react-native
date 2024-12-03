@@ -33,13 +33,21 @@ export const generateMarkdownText = (text?: string) => {
     resultText = resultText.replace(mentionsRegex, `@${displayLink}`);
   }
 
-  resultText = resultText.replace(/[<"'>]/g, '\\$&');
+  // Escape the " and ' characters, except in code blocks where we deem this allowed.
+  resultText = resultText.replace(/(```[\s\S]*?```|`.*?`)|[<"'>]/g, (match, code) => {
+    if (code) return code;
+    return `\\${match}`;
+  });
 
   // Remove whitespaces that come directly after newlines except in code blocks where we deem this allowed.
   resultText = resultText.replace(/(```[\s\S]*?```|`.*?`)|\n[ ]{2,}/g, (_, code) => {
     if (code) return code;
     return '\n';
   });
+
+  // Always replace \n``` with \n\n``` to force the markdown state machine to treat it as a separate block. Otherwise, code blocks inside of list
+  // items for example were broken. We clean up the code block closing state within the rendering itself.
+  resultText = resultText.replace(/\n```/g, '\n\n```');
 
   return resultText;
 };

@@ -29,7 +29,7 @@ import { useMessageDetailsForState } from './hooks/useMessageDetailsForState';
 
 import { isUploadAllowed, MAX_FILE_SIZE_TO_UPLOAD, prettifyFileSize } from './utils/utils';
 
-import { PollContentProps } from '../../components';
+import { PollContentProps, StopMessageStreamingButtonProps } from '../../components';
 import { AudioAttachmentProps } from '../../components/Attachment/AudioAttachment';
 import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
@@ -388,6 +388,7 @@ export type InputMessageInputContextValue<
    * Defaults to and accepts same props as: [AudioRecordingButton](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingButton.tsx)
    */
   StartAudioRecordingButton: React.ComponentType<AudioRecordingButtonProps<StreamChatGenerics>>;
+  StopMessageStreamingButton: React.ComponentType<StopMessageStreamingButtonProps>;
   /**
    * Custom UI component to render upload progress indicator on attachment preview.
    *
@@ -590,7 +591,9 @@ export const MessageInputProvider = <
     editing,
     initialValue,
     openPollCreationDialog: openPollCreationDialogFromContext,
+    StopMessageStreamingButton,
   } = value;
+
   const {
     fileUploads,
     imageUploads,
@@ -1482,6 +1485,7 @@ export const MessageInputProvider = <
     openPollCreationDialog,
     sendMessage, // overriding the originally passed in sendMessage
     showPollCreationDialog,
+    StopMessageStreamingButton,
   });
   return (
     <MessageInputContext.Provider

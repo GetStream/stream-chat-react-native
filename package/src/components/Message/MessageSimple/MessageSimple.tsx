@@ -306,7 +306,8 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
     prevMessage.i18n === nextMessage.i18n &&
-    prevMessage.pinned === nextMessage.pinned;
+    prevMessage.pinned === nextMessage.pinned &&
+    prevMessage.ai_generated === nextMessage.ai_generated;
   if (!messageEqual) return false;
 
   const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';

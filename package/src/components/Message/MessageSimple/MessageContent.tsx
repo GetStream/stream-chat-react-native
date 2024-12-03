@@ -91,6 +91,7 @@ export type MessageContentPropsWithContext<
     | 'MessageError'
     | 'myMessageTheme'
     | 'Reply'
+    | 'StreamingMessageView'
   > &
   Pick<TranslationContextValue, 't'> & {
     setMessageContentWidth: React.Dispatch<React.SetStateAction<number>>;
@@ -132,6 +133,7 @@ const MessageContentWithContext = <
     preventPress,
     Reply,
     setMessageContentWidth,
+    StreamingMessageView,
     threadList,
   } = props;
   const { client } = useChatContext();
@@ -312,9 +314,16 @@ const MessageContentWithContext = <
                   />
                 ) : null;
               }
+              case 'ai_text':
+                return message.ai_generated ? (
+                  <StreamingMessageView
+                    key={`ai_message_text_container_${messageContentOrderIndex}`}
+                  />
+                ) : null;
               case 'text':
               default:
-                return otherAttachments.length && otherAttachments[0].actions ? null : (
+                return (otherAttachments.length && otherAttachments[0].actions) ||
+                  message.ai_generated ? null : (
                   <MessageTextContainer<StreamChatGenerics>
                     key={`message_text_container_${messageContentOrderIndex}`}
                   />
@@ -381,7 +390,8 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
     prevMessage.pinned === nextMessage.pinned &&
-    prevMessage.i18n === nextMessage.i18n;
+    prevMessage.i18n === nextMessage.i18n &&
+    prevMessage.ai_generated === nextMessage.ai_generated;
   if (!messageEqual) return false;
 
   const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';
@@ -483,6 +493,7 @@ export const MessageContent = <
     MessageError,
     myMessageTheme,
     Reply,
+    StreamingMessageView,
   } = useMessagesContext<StreamChatGenerics>();
   const { t } = useTranslationContext();
 
@@ -510,6 +521,7 @@ export const MessageContent = <
         otherAttachments,
         preventPress,
         Reply,
+        StreamingMessageView,
         t,
         threadList,
       }}
