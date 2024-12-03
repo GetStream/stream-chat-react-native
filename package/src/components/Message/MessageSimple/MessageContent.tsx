@@ -10,8 +10,6 @@ import {
 
 import { MessageTextContainer } from './MessageTextContainer';
 
-import { StreamingMessageView } from './StreamingMessageView';
-
 import { useChatContext } from '../../../contexts';
 import {
   MessageContextValue,
@@ -93,6 +91,7 @@ export type MessageContentPropsWithContext<
     | 'MessageError'
     | 'myMessageTheme'
     | 'Reply'
+    | 'StreamingMessageView'
   > &
   Pick<TranslationContextValue, 't'> & {
     setMessageContentWidth: React.Dispatch<React.SetStateAction<number>>;
@@ -134,6 +133,7 @@ const MessageContentWithContext = <
     preventPress,
     Reply,
     setMessageContentWidth,
+    StreamingMessageView,
     threadList,
   } = props;
   const { client } = useChatContext();
@@ -493,6 +493,7 @@ export const MessageContent = <
     MessageError,
     myMessageTheme,
     Reply,
+    StreamingMessageView,
   } = useMessagesContext<StreamChatGenerics>();
   const { t } = useTranslationContext();
 
@@ -520,6 +521,7 @@ export const MessageContent = <
         otherAttachments,
         preventPress,
         Reply,
+        StreamingMessageView,
         t,
         threadList,
       }}

@@ -97,6 +97,7 @@ export * from './KeyboardCompatibleView/KeyboardCompatibleView';
 export * from './Message/hooks/useCreateMessageContext';
 export * from './Message/hooks/useMessageActions';
 export * from './Message/hooks/useMessageActionHandlers';
+export * from './Message/hooks/useStreamingMessage';
 export * from './Message/Message';
 export * from './Message/MessageSimple/MessageAvatar';
 export * from './Message/MessageSimple/MessageBounce';

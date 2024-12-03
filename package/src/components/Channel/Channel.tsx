@@ -142,6 +142,7 @@ import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/
 import { MessageTimestamp as MessageTimestampDefault } from '../Message/MessageSimple/MessageTimestamp';
 import { ReactionListBottom as ReactionListBottomDefault } from '../Message/MessageSimple/ReactionList/ReactionListBottom';
 import { ReactionListTop as ReactionListTopDefault } from '../Message/MessageSimple/ReactionList/ReactionListTop';
+import { StreamingMessageView as DefaultStreamingMessageView } from '../Message/MessageSimple/StreamingMessageView';
 import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButton';
 import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
 import { AudioRecorder as AudioRecorderDefault } from '../MessageInput/components/AudioRecorder/AudioRecorder';
@@ -354,6 +355,7 @@ export type ChannelPropsWithContext<
       | 'VideoThumbnail'
       | 'PollContent'
       | 'hasCreatePoll'
+      | 'StreamingMessageView'
     >
   > &
   Partial<Pick<ThreadContextValue<StreamChatGenerics>, 'allowThreadMessagesInChannel'>> & {
@@ -633,6 +635,7 @@ const ChannelWithContext = <
     StartAudioRecordingButton = AudioRecordingButtonDefault,
     stateUpdateThrottleInterval = defaultThrottleInterval,
     StickyHeader = StickyHeaderDefault,
+    StreamingMessageView = DefaultStreamingMessageView,
     supportedReactions = reactionData,
     t,
     thread: threadFromProps,
@@ -2360,6 +2363,7 @@ const ChannelWithContext = <
     setEditingState,
     setQuotedMessageState,
     shouldShowUnreadUnderlay,
+    StreamingMessageView,
     supportedReactions,
     targetedMessage,
     TypingIndicator,
