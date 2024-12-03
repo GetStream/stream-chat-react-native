@@ -3,7 +3,6 @@ import { Image, Platform } from 'react-native';
 
 import type { Channel, StreamChat } from 'stream-chat';
 
-import { LoadingIndicator as LoadingIndicatorDefault } from './components/LoadingIndicator';
 import { useAppSettings } from './hooks/useAppSettings';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
@@ -138,6 +137,11 @@ export type ChatProps<
     style?: DeepPartial<Theme>;
   };
 
+const initialisedDatabaseConfig: {
+  initialised: boolean;
+  userID?: string;
+} = { initialised: false, userID: '' };
+
 const ChatWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
@@ -150,7 +154,6 @@ const ChatWithContext = <
     enableOfflineSupport = false,
     i18nInstance,
     ImageComponent = Image,
-    LoadingIndicator = LoadingIndicatorDefault,
     resizableCDNHosts = ['.stream-io-cdn.com'],
     style,
   } = props;
@@ -159,6 +162,7 @@ const ChatWithContext = <
 
   // Setup translators
   const translators = useStreami18n(i18nInstance);
+  const userID = client.userID;
 
   /**
    * Setup connection event listeners
@@ -168,13 +172,6 @@ const ChatWithContext = <
     closeConnectionOnBackground,
   );
 
-  const [initialisedDatabaseConfig, setInitialisedDatabaseConfig] = useState<{
-    initialised: boolean;
-    userID?: string;
-  }>({
-    initialised: false,
-  });
-
   /**
    * Setup muted user listener
    * TODO: reimplement
@@ -183,8 +180,6 @@ const ChatWithContext = <
 
   const debugRef = useDebugContext();
   const isDebugModeEnabled = __DEV__ && debugRef && debugRef.current;
-
-  const userID = client.userID;
 
   // Set the `resizableCDNHosts` as per the prop.
   StreamChatRN.setConfig({ resizableCDNHosts });
@@ -212,12 +207,6 @@ const ChatWithContext = <
 
   useEffect(() => {
     if (userID && enableOfflineSupport) {
-      // This acts as a lock for some very rare occurrences of concurrency
-      // issues we've encountered before with the QuickSqliteClient being
-      // uninitialized before it's being invoked.
-      setInitialisedDatabaseConfig({ initialised: false, userID });
-      QuickSqliteClient.initializeDatabase();
-      setInitialisedDatabaseConfig({ initialised: true, userID });
       DBSyncManager.init(client as unknown as StreamChat);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -239,10 +228,18 @@ const ChatWithContext = <
   // on unmount if it exists to prevent a memory leak.
   useEffect(() => () => DBSyncManager.connectionChangedListener?.unsubscribe(), []);
 
-  const initialisedDatabase =
-    initialisedDatabaseConfig.initialised && userID === initialisedDatabaseConfig.userID;
+  if (enableOfflineSupport && !initialisedDatabaseConfig.initialised) {
+    QuickSqliteClient.initializeDatabase();
+    initialisedDatabaseConfig.userID = userID;
+    initialisedDatabaseConfig.initialised = true;
+  }
 
-  const appSettings = useAppSettings(client, isOnline, enableOfflineSupport, initialisedDatabase);
+  const appSettings = useAppSettings(client, isOnline, enableOfflineSupport);
+
+  useSyncDatabase({
+    client,
+    enableOfflineSupport,
+  });
 
   const chatContext = useCreateChatContext({
     appSettings,
@@ -256,17 +253,6 @@ const ChatWithContext = <
     resizableCDNHosts,
     setActiveChannel,
   });
-
-  useSyncDatabase({
-    client,
-    enableOfflineSupport,
-    initialisedDatabase,
-  });
-
-  if (userID && enableOfflineSupport && !initialisedDatabase) {
-    // if user id has been set and offline support is enabled, we need to wait for database to be initialised
-    return LoadingIndicator ? <LoadingIndicator /> : null;
-  }
 
   return (
     <ChatProvider<StreamChatGenerics> value={chatContext}>
@@ -292,15 +278,6 @@ const ChatWithContext = <
  * - connectionRecovering - whether or not websocket is reconnecting
  * - isOnline - whether or not set user is active
  * - setActiveChannel - function to set the currently active channel
- *
- * The Chat Component takes the following generics in order:
- * - At (AttachmentType) - custom Attachment object extension
- * - Ct (ChannelType) - custom Channel object extension
- * - Co (CommandType) - custom Command string union extension
- * - Ev (EventType) - custom Event object extension
- * - Me (MessageType) - custom Message object extension
- * - Re (ReactionType) - custom Reaction object extension
- * - Us (UserType) - custom User object extension
  */
 export const Chat = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
