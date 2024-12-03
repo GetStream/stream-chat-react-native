@@ -134,6 +134,7 @@ export * from './MessageInput/InputButtons';
 export * from './MessageInput/MessageInput';
 export * from './MessageInput/MoreOptionsButton';
 export * from './MessageInput/SendButton';
+export * from './MessageInput/StopMessageStreamingButton';
 export * from './MessageInput/ShowThreadMessageInChannelButton';
 export * from './MessageInput/UploadProgressIndicator';
 

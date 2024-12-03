@@ -28,8 +28,6 @@ import type { UserResponse } from 'stream-chat';
 import { useAudioController } from './hooks/useAudioController';
 import { useCountdown } from './hooks/useCountdown';
 
-import { StopMessageStreamingButton } from './StopMessageStreamingButton';
-
 import { ChatContextValue, useChatContext, useOwnCapabilitiesContext } from '../../contexts';
 import {
   AttachmentPickerContextValue,
@@ -162,6 +160,7 @@ type MessageInputPropsWithContext<
     | 'showPollCreationDialog'
     | 'sendMessage'
     | 'CreatePollContent'
+    | 'StopMessageStreamingButton'
   > &
   Pick<MessagesContextValue<StreamChatGenerics>, 'Reply'> &
   Pick<
@@ -231,6 +230,7 @@ const MessageInputWithContext = <
     showPollCreationDialog,
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
+    StopMessageStreamingButton,
     suggestions,
     text,
     thread,
@@ -734,7 +734,8 @@ const MessageInputWithContext = <
   const { aiState } = useAIState(channel);
 
   const stopGenerating = useCallback(() => channel?.stopAIResponse(), [channel]);
-  const shouldDisplayStopAIGeneration = [AIStates.Thinking, AIStates.Generating].includes(aiState);
+  const shouldDisplayStopAIGeneration =
+    [AIStates.Thinking, AIStates.Generating].includes(aiState) && !!StopMessageStreamingButton;
 
   return (
     <>
@@ -1156,6 +1157,7 @@ export const MessageInput = <
     showPollCreationDialog,
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
+    StopMessageStreamingButton,
     text,
     uploadNewFile,
     uploadNewImage,
@@ -1245,6 +1247,7 @@ export const MessageInput = <
         showPollCreationDialog,
         ShowThreadMessageInChannelButton,
         StartAudioRecordingButton,
+        StopMessageStreamingButton,
         suggestions,
         t,
         text,
