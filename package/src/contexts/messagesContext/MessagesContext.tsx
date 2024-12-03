@@ -258,11 +258,11 @@ export type MessagesContextValue<
   sendReaction: (type: string, messageId: string) => Promise<void>;
   setEditingState: (message?: MessageType<StreamChatGenerics>) => void;
   setQuotedMessageState: (message: MessageType<StreamChatGenerics> | boolean) => void;
-  supportedReactions: ReactionData[];
   /**
    * UI component for StreamingMessageView. Displays the text of a message with a typewriter animation.
    */
   StreamingMessageView: React.ComponentType<StreamingMessageViewProps<StreamChatGenerics>>;
+  supportedReactions: ReactionData[];
   /**
    * UI component for TypingIndicator
    * Defaults to: [TypingIndicator](https://getstream.io/chat/docs/sdk/reactnative/ui-components/typing-indicator/)
