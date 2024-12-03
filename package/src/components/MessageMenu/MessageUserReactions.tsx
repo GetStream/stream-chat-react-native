@@ -98,7 +98,7 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     loadNextPage,
     reactions: fetchedReactions,
   } = useFetchReactions({
-    messageId: message?.id,
+    message,
     reactionType: selectedReaction,
     sort,
   });

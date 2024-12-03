@@ -100,6 +100,12 @@ export type ChatProps<
      */
     i18nInstance?: Streami18n;
     /**
+     * Custom loading indicator component to be used to represent the loading state of the chat.
+     *
+     * This can be used during the phase when db is not initialised.
+     */
+    LoadingIndicator?: React.ComponentType | null;
+    /**
      * You can pass the theme object to customize the styles of Chat components. You can check the default theme in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/themeContext/utils/theme.ts)
      *
      * Please check section about [themes in cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#theme) for details.
@@ -142,6 +148,7 @@ const ChatWithContext = <
     enableOfflineSupport = false,
     i18nInstance,
     ImageComponent = Image,
+    LoadingIndicator = null,
     style,
   } = props;
 
@@ -267,7 +274,7 @@ const ChatWithContext = <
 
   if (userID && enableOfflineSupport && !initialisedDatabase) {
     // if user id has been set and offline support is enabled, we need to wait for database to be initialised
-    return null;
+    return LoadingIndicator ? <LoadingIndicator /> : null;
   }
 
   return (
