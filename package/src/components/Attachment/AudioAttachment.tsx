@@ -35,6 +35,8 @@ export type AudioAttachmentProps = {
  * UI Component to preview the audio files
  */
 export const AudioAttachment = (props: AudioAttachmentProps) => {
+  const [width, setWidth] = useState(0);
+  const [progressControlTextWidth, setProgressControlTextWidth] = useState(0);
   const [currentSpeed, setCurrentSpeed] = useState<number>(1.0);
   const soundRef = React.useRef<SoundReturnType | null>(null);
   const {
@@ -252,7 +254,12 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
           <Pause fill={static_black} height={32} width={32} />
         )}
       </Pressable>
-      <View style={[styles.leftContainer, leftContainer]}>
+      <View
+        onLayout={({ nativeEvent }) => {
+          setWidth(nativeEvent.layout.width);
+        }}
+        style={[styles.leftContainer, leftContainer]}
+      >
         <Text
           accessibilityLabel='File Name'
           numberOfLines={1}
@@ -281,7 +288,12 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
               uri={item.file.uri}
             />
           )}
-          <Text style={[styles.progressDurationText, { color: grey_dark }, progressDurationText]}>
+          <Text
+            onLayout={({ nativeEvent }) => {
+              setProgressControlTextWidth(nativeEvent.layout.width);
+            }}
+            style={[styles.progressDurationText, { color: grey_dark }, progressDurationText]}
+          >
             {progressDuration}
           </Text>
           {!hideProgressBar && (
@@ -307,7 +319,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
                   onProgressDrag={handleProgressDrag}
                   progress={item.progress as number}
                   testID='progress-control'
-                  width={150}
+                  width={width - progressControlTextWidth}
                 />
               )}
             </View>
