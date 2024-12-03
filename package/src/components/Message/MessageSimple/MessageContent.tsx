@@ -100,6 +100,7 @@ export type MessageContentPropsWithContext<
     | 'myMessageTheme'
     | 'onPressInMessage'
     | 'Reply'
+    | 'StreamingMessageView'
   > &
   Pick<TranslationContextValue, 't'> & {
     setMessageContentWidth: React.Dispatch<React.SetStateAction<number>>;
@@ -142,6 +143,7 @@ const MessageContentWithContext = <
     Reply,
     setMessageContentWidth,
     showMessageStatus,
+    StreamingMessageView,
     threadList,
   } = props;
   const { client } = useChatContext();
@@ -393,9 +395,16 @@ const MessageContentWithContext = <
                   />
                 ) : null;
               }
+              case 'ai_text':
+                return message.ai_generated ? (
+                  <StreamingMessageView
+                    key={`ai_message_text_container_${messageContentOrderIndex}`}
+                  />
+                ) : null;
               case 'text':
               default:
-                return otherAttachments.length && otherAttachments[0].actions ? null : (
+                return (otherAttachments.length && otherAttachments[0].actions) ||
+                  message.ai_generated ? null : (
                   <MessageTextContainer<StreamChatGenerics>
                     key={`message_text_container_${messageContentOrderIndex}`}
                   />
@@ -484,7 +493,8 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
     prevMessage.pinned === nextMessage.pinned &&
-    prevMessage.i18n === nextMessage.i18n;
+    prevMessage.i18n === nextMessage.i18n &&
+    prevMessage.ai_generated === nextMessage.ai_generated;
   if (!messageEqual) return false;
 
   const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';
@@ -597,6 +607,7 @@ export const MessageContent = <
     MessageStatus,
     myMessageTheme,
     Reply,
+    StreamingMessageView,
   } = useMessagesContext<StreamChatGenerics>();
   const { t } = useTranslationContext();
 
@@ -635,6 +646,7 @@ export const MessageContent = <
         preventPress,
         Reply,
         showMessageStatus,
+        StreamingMessageView,
         t,
         threadList,
       }}
