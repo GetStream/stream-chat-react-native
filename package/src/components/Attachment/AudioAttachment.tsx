@@ -35,7 +35,6 @@ export type AudioAttachmentProps = {
  * UI Component to preview the audio files
  */
 export const AudioAttachment = (props: AudioAttachmentProps) => {
-  const [width, setWidth] = useState(0);
   const [currentSpeed, setCurrentSpeed] = useState<number>(1.0);
   const soundRef = React.useRef<SoundReturnType | null>(null);
   const {
@@ -228,9 +227,6 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   return (
     <View
       accessibilityLabel='audio-attachment-preview'
-      onLayout={({ nativeEvent }) => {
-        setWidth(nativeEvent.layout.width);
-      }}
       style={[
         styles.container,
         {
@@ -264,11 +260,6 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             styles.filenameText,
             {
               color: black,
-              width:
-                16 - // 16 = horizontal padding
-                40 - // 40 = file icon size
-                24 - // 24 = close icon size
-                24, // 24 = internal padding
             },
             I18nManager.isRTL ? { writingDirection: 'rtl' } : { writingDirection: 'ltr' },
             filenameText,
@@ -316,7 +307,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
                   onProgressDrag={handleProgressDrag}
                   progress={item.progress as number}
                   testID='progress-control'
-                  width={width / 2}
+                  width={150}
                 />
               )}
             </View>
@@ -365,35 +356,33 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     paddingBottom: 12,
-    paddingLeft: 8,
   },
   leftContainer: {
     justifyContent: 'space-around',
+    marginHorizontal: 16,
+    width: '60%',
   },
   playPauseButton: {
     alignItems: 'center',
     alignSelf: 'center',
     borderRadius: 50,
-    display: 'flex',
     elevation: 4,
     justifyContent: 'center',
-    paddingVertical: 2,
+    padding: 2,
     shadowOffset: {
       height: 2,
       width: 0,
     },
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
-    width: 36,
   },
   progressControlContainer: {},
   progressDurationText: {
     fontSize: 12,
-    paddingLeft: 10,
-    paddingRight: 8,
+    marginRight: 4,
   },
   rightContainer: {
-    marginLeft: 10,
+    marginLeft: 'auto',
   },
   speedChangeButton: {
     alignItems: 'center',
@@ -401,6 +390,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     elevation: 4,
     justifyContent: 'center',
+    paddingHorizontal: 10,
     paddingVertical: 5,
     shadowOffset: {
       height: 2,
@@ -408,7 +398,6 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
-    width: 36,
   },
   speedChangeButtonText: {
     fontSize: 12,
