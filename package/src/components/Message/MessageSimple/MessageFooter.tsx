@@ -129,6 +129,8 @@ const MessageFooterWithContext = <
     return null;
   }
 
+  const isEdited = isEditedMessage(message);
+
   return (
     <>
       <View style={[styles.container, metaContainer]} testID='message-status-time'>
@@ -141,7 +143,7 @@ const MessageFooterWithContext = <
         {showMessageStatus && <MessageStatus />}
         <MessageTimestamp formattedDate={formattedDate} timestamp={date} />
 
-        {isEditedMessage(message) && !isEditedMessageOpen && !message.ai_generated ? (
+        {isEdited && !isEditedMessageOpen ? (
           <>
             <Text
               style={[
@@ -161,7 +163,7 @@ const MessageFooterWithContext = <
           </>
         ) : null}
       </View>
-      {isEditedMessageOpen && !message.ai_generated ? (
+      {isEdited && isEditedMessageOpen ? (
         <MessageEditedTimestamp message={message} MessageTimestamp={MessageTimestamp} />
       ) : null}
     </>
