@@ -1,18 +1,10 @@
 import { useEffect, useState } from 'react';
 
-import { Channel, Event } from 'stream-chat';
+import { AIState, Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { useIsOnline } from '../../Chat/hooks/useIsOnline';
-
-export type AIStateType =
-  | 'AI_STATE_ERROR'
-  | 'AI_STATE_EXTERNAL_SOURCES'
-  | 'AI_STATE_GENERATING'
-  | 'AI_STATE_IDLE'
-  | 'AI_STATE_THINKING'
-  | string;
 
 export const AIStates = {
   Error: 'AI_STATE_ERROR',
@@ -28,7 +20,7 @@ export const useAIState = <
   channel?: Channel<StreamChatGenerics>,
 ) => {
   const { client } = useChatContext();
-  const [aiState, setAiState] = useState<AIStateType>(AIStates.Idle);
+  const [aiState, setAiState] = useState<AIState>(AIStates.Idle);
   const { isOnline } = useIsOnline(client);
 
   useEffect(() => {
@@ -46,7 +38,7 @@ export const useAIState = <
       'ai_indicator.update',
       (event: Event<StreamChatGenerics>) => {
         const { cid } = event;
-        const state = event.ai_state as AIStateType;
+        const state = event.ai_state as AIState;
         if (channel.cid === cid) {
           setAiState(state);
         }
