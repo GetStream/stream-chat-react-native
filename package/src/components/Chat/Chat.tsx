@@ -3,7 +3,6 @@ import { Image, Platform } from 'react-native';
 
 import type { Channel, StreamChat } from 'stream-chat';
 
-import { LoadingIndicator as LoadingIndicatorDefault } from './components/LoadingIndicator';
 import { useAppSettings } from './hooks/useAppSettings';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
@@ -106,7 +105,7 @@ export type ChatProps<
      *
      * This can be used during the phase when db is not initialised.
      */
-    LoadingIndicator?: React.ComponentType;
+    LoadingIndicator?: React.ComponentType | null;
     /**
      * You can pass the theme object to customize the styles of Chat components. You can check the default theme in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/themeContext/utils/theme.ts)
      *
@@ -150,7 +149,7 @@ const ChatWithContext = <
     enableOfflineSupport = false,
     i18nInstance,
     ImageComponent = Image,
-    LoadingIndicator = LoadingIndicatorDefault,
+    LoadingIndicator = null,
     resizableCDNHosts = ['.stream-io-cdn.com'],
     style,
   } = props;
