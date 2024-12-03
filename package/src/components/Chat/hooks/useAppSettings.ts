@@ -12,6 +12,7 @@ export const useAppSettings = <
   client: StreamChat<StreamChatGenerics>,
   isOnline: boolean | null,
   enableOfflineSupport: boolean,
+  initialisedDatabase: boolean,
 ): AppSettingsAPIResponse | null => {
   const [appSettings, setAppSettings] = useState<AppSettingsAPIResponse | null>(null);
   const isMounted = useIsMountedRef();
@@ -74,7 +75,7 @@ export const useAppSettings = <
 
     enforeAppSettings();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client, isOnline]);
+  }, [client, isOnline, initialisedDatabase]);
 
   return appSettings;
 };
