@@ -734,7 +734,7 @@ const MessageInputWithContext = <
   const { aiState } = useAIState(channel);
 
   const stopGenerating = useCallback(
-    () => channel.sendEvent({ type: 'stop_generating' }),
+    () => channel.sendEvent({ type: 'ai_indicator.stop' }),
     [channel],
   );
   const shouldDisplayStopAIGeneration = [AIStates.Thinking, AIStates.Generating].includes(aiState);

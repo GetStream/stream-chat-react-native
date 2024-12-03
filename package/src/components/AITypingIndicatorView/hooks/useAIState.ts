@@ -33,17 +33,17 @@ export const useAIState = <
     }
 
     const indicatorChangedListener = channel.on(
-      'ai_indicator_changed',
+      'ai_indicator.update',
       (event: Event<StreamChatGenerics>) => {
         const { cid } = event;
-        const state = event.state as AIStateType;
+        const state = event.ai_state as AIStateType;
         if (channel.cid === cid) {
           setAiState(state);
         }
       },
     );
 
-    const indicatorClearedListener = channel.on('ai_indicator_clear', (event) => {
+    const indicatorClearedListener = channel.on('ai_indicator.clear', (event) => {
       const { cid } = event;
       if (channel.cid === cid) {
         setAiState(AIStates.Idle);
