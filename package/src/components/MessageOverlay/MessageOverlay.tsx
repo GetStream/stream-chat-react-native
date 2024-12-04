@@ -45,6 +45,7 @@ import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContex
 import { useViewport } from '../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
+import { StreamingMessageView } from '../Message/MessageSimple/StreamingMessageView';
 import { OverlayReactions as DefaultOverlayReactions } from '../MessageOverlay/OverlayReactions';
 import type { ReplyProps } from '../Reply/Reply';
 
@@ -451,9 +452,17 @@ const MessageOverlayWithContext = <
                           </OwnCapabilitiesProvider>
                         ) : null;
                       }
+                      case 'ai_text':
+                        return (
+                          <StreamingMessageView
+                            key={`ai_message_text_container_${messageContentOrderIndex}`}
+                            message={message}
+                          />
+                        );
                       case 'text':
                       default:
-                        return otherAttachments?.length && otherAttachments[0].actions ? null : (
+                        return (otherAttachments?.length && otherAttachments[0].actions) ||
+                          message.ai_generated ? null : (
                           <MessageTextContainer<StreamChatGenerics>
                             key={`message_text_container_${messageContentOrderIndex}`}
                             message={message}

@@ -12,6 +12,7 @@ import {
   useChatContext,
   useTheme,
   useTypingString,
+  AITypingIndicatorView,
 } from 'stream-chat-react-native';
 import { Platform, StyleSheet, View } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -168,6 +169,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
             });
           }}
         />
+        <AITypingIndicatorView channel={channel} />
         <MessageInput />
       </Channel>
     </View>
