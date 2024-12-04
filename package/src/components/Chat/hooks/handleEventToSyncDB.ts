@@ -107,8 +107,8 @@ export const handleEventToSyncDB = async <
           flush: flushOverride,
           reads: [
             {
-              last_read_message_id: event.last_read_message_id,
               last_read: event.received_at as string,
+              last_read_message_id: event.last_read_message_id,
               unread_messages: 0,
               user,
             },
@@ -128,8 +128,8 @@ export const handleEventToSyncDB = async <
           flush: flushOverride,
           reads: [
             {
-              last_read_message_id: event.last_read_message_id,
               last_read: event.received_at as string,
+              last_read_message_id: event.last_read_message_id,
               unread_messages: event.unread_messages,
               user,
             },

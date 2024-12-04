@@ -125,6 +125,7 @@ export type ChannelContextValue<
   read: ChannelState<StreamChatGenerics>['read'];
   reloadChannel: () => Promise<void>;
   scrollToFirstUnreadThreshold: number;
+  setLastRead: React.Dispatch<React.SetStateAction<Date | undefined>>;
   setChannelUnreadState: React.Dispatch<
     React.SetStateAction<ChannelUnreadState<StreamChatGenerics> | undefined>
   >;
@@ -139,6 +140,7 @@ export type ChannelContextValue<
   enableMessageGroupingByUser?: boolean;
   isChannelActive?: boolean;
 
+  lastRead?: Date;
   loading?: boolean;
   /**
    * Maximum time in milliseconds that should occur between messages

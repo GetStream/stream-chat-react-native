@@ -175,6 +175,7 @@ import { ScrollToBottomButton as ScrollToBottomButtonDefault } from '../MessageL
 import { StickyHeader as StickyHeaderDefault } from '../MessageList/StickyHeader';
 import { TypingIndicator as TypingIndicatorDefault } from '../MessageList/TypingIndicator';
 import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../MessageList/TypingIndicatorContainer';
+import { UnreadMessagesNotification as UnreadMessagesNotificationDefault } from '../MessageList/UnreadMessagesNotification';
 import { MessageActionList as MessageActionListDefault } from '../MessageMenu/MessageActionList';
 import { MessageActionListItem as MessageActionListItemDefault } from '../MessageMenu/MessageActionListItem';
 import { MessageMenu as MessageMenuDefault } from '../MessageMenu/MessageMenu';
@@ -183,7 +184,6 @@ import { MessageUserReactions as MessageUserReactionsDefault } from '../MessageM
 import { MessageUserReactionsAvatar as MessageUserReactionsAvatarDefault } from '../MessageMenu/MessageUserReactionsAvatar';
 import { MessageUserReactionsItem as MessageUserReactionsItemDefault } from '../MessageMenu/MessageUserReactionsItem';
 import { Reply as ReplyDefault } from '../Reply/Reply';
-import { UnreadMessagesNotification as UnreadMessagesNotificationDefault } from '../MessageList/UnreadMessagesNotification';
 
 export type MarkReadFunctionOptions = {
   /**
@@ -646,8 +646,8 @@ const ChannelWithContext = <
     threadMessages,
     TypingIndicator = TypingIndicatorDefault,
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
-    UploadProgressIndicator = UploadProgressIndicatorDefault,
     UnreadMessagesNotification = UnreadMessagesNotificationDefault,
+    UploadProgressIndicator = UploadProgressIndicatorDefault,
     UrlPreview = CardDefault,
     VideoThumbnail = VideoThumbnailDefault,
   } = props;
@@ -662,6 +662,7 @@ const ChannelWithContext = <
   } = useTheme();
   const [editing, setEditing] = useState<MessageType<StreamChatGenerics> | undefined>(undefined);
   const [error, setError] = useState<Error | boolean>(false);
+  const [lastRead, setLastRead] = useState<ChannelContextValue<StreamChatGenerics>['lastRead']>();
   const [quotedMessage, setQuotedMessage] = useState<MessageType<StreamChatGenerics> | undefined>(
     undefined,
   );
@@ -777,6 +778,7 @@ const ChannelWithContext = <
   useEffect(() => {
     let listener: ReturnType<typeof channel.on>;
     const initChannel = async () => {
+      setLastRead(new Date());
       if (!channel || !shouldSyncChannel || channel.offlineMode) return;
       let errored = false;
 
@@ -796,6 +798,7 @@ const ChannelWithContext = <
       }
 
       if (client.user?.id && channel.state.read[client.user.id]) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { user, ...ownReadState } = channel.state.read[client.user.id];
         setChannelUnreadState(ownReadState);
       }
@@ -807,6 +810,7 @@ const ChannelWithContext = <
         client.user &&
         channel.countUnread() > scrollToFirstUnreadThreshold
       ) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { user, ...ownReadState } = channel.state.read[client.user.id];
         await loadChannelAtFirstUnreadMessage({
           channelUnreadState: ownReadState,
@@ -890,15 +894,15 @@ const ChannelWithContext = <
       } else {
         try {
           const response = await channel.markRead();
-          if (updateChannelUnreadState && response) {
+          if (updateChannelUnreadState && response && lastRead) {
             setChannelUnreadState({
-              last_read: new Date(),
+              last_read: lastRead,
               last_read_message_id: response?.event.last_read_message_id,
               unread_messages: 0,
             });
           }
-        } catch (error) {
-          console.log('Error marking channel as read:', error);
+        } catch (err) {
+          console.log('Error marking channel as read:', err);
         }
       }
     },
@@ -1645,6 +1649,7 @@ const ChannelWithContext = <
     hideDateSeparators,
     hideStickyDateHeader,
     isChannelActive: shouldSyncChannel,
+    lastRead,
     loadChannelAroundMessage,
     loadChannelAtFirstUnreadMessage,
     loading: channelMessagesState.loading,
@@ -1655,8 +1660,9 @@ const ChannelWithContext = <
     NetworkDownIndicator,
     read: channelState.read ?? {},
     reloadChannel,
-    setChannelUnreadState,
     scrollToFirstUnreadThreshold,
+    setChannelUnreadState,
+    setLastRead,
     setTargetedMessage,
     StickyHeader,
     targetedMessage,
@@ -1849,8 +1855,8 @@ const ChannelWithContext = <
     targetedMessage,
     TypingIndicator,
     TypingIndicatorContainer,
-    updateMessage,
     UnreadMessagesNotification,
+    updateMessage,
     UrlPreview,
     VideoThumbnail,
   });

@@ -17,6 +17,7 @@ export const useCreateChannelContext = <
   hideDateSeparators,
   hideStickyDateHeader,
   isChannelActive,
+  lastRead,
   loadChannelAroundMessage,
   loadChannelAtFirstUnreadMessage,
   loading,
@@ -29,6 +30,7 @@ export const useCreateChannelContext = <
   reloadChannel,
   scrollToFirstUnreadThreshold,
   setChannelUnreadState,
+  setLastRead,
   setTargetedMessage,
   StickyHeader,
   targetedMessage,
@@ -38,6 +40,7 @@ export const useCreateChannelContext = <
   watchers,
 }: ChannelContextValue<StreamChatGenerics>) => {
   const channelId = channel?.id;
+  const lastReadTime = lastRead?.getTime();
   const membersLength = Object.keys(members).length;
 
   const readUsers = Object.values(read);
@@ -58,6 +61,7 @@ export const useCreateChannelContext = <
       hideDateSeparators,
       hideStickyDateHeader,
       isChannelActive,
+      lastRead,
       loadChannelAroundMessage,
       loadChannelAtFirstUnreadMessage,
       loading,
@@ -70,6 +74,7 @@ export const useCreateChannelContext = <
       reloadChannel,
       scrollToFirstUnreadThreshold,
       setChannelUnreadState,
+      setLastRead,
       setTargetedMessage,
       StickyHeader,
       targetedMessage,
@@ -84,6 +89,7 @@ export const useCreateChannelContext = <
       disabled,
       error,
       isChannelActive,
+      lastReadTime,
       loading,
       membersLength,
       readUsersLength,

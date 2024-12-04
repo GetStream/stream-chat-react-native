@@ -206,14 +206,9 @@ export const useMessageListPagination = <
         // If the last read message is already in the current message set, we don't need to load more messages, and we set the first unread message id as that is what we want to operate on.
         else if (lastReadMessageId) {
           const messageIdx = findInMessagesById(channel.state.messages, lastReadMessageId);
-          const messagesLength = channel.state.messages.length;
           isInCurrentMessageSet = messageIdx !== -1;
           firstUnreadMessageId =
-            messageIdx !== -1
-              ? messageIdx < messagesLength - 1
-                ? channel.state.messages[messageIdx + 1].id
-                : channel.state.messages[messageIdx].id
-              : undefined;
+            messageIdx > -1 ? channel.state.messages[messageIdx + 1]?.id : undefined;
         } else {
           // TODO
           const lastReadTimestamp = last_read.getTime();

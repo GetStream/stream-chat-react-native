@@ -12,10 +12,7 @@ export type UnreadMessagesNotificationProps = {
    * Callback to handle the close event
    */
   onCloseHandler?: () => void;
-  /**
-   * Number of unread messages
-   */
-  unread?: number;
+
   /**
    * If the notification is visible
    */

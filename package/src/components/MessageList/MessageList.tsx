@@ -269,8 +269,8 @@ const MessageListWithContext = <
     reloadChannel,
     ScrollToBottomButton,
     selectedPicker,
-    setFlatListRef,
     setChannelUnreadState,
+    setFlatListRef,
     setMessages,
     setSelectedPicker,
     setTargetedMessage,
@@ -453,6 +453,22 @@ const MessageListWithContext = <
     }
   }, [disabled]);
 
+  useEffect(() => {
+    const listener: ReturnType<typeof channel.on> = channel.on('message.new', (event) => {
+      const newMessageToCurrentChannel = event.cid === channel.cid;
+      const mainChannelUpdated = !event.message?.parent_id || event.message?.show_in_channel;
+
+      if (newMessageToCurrentChannel && mainChannelUpdated && !scrollToBottomButtonVisible) {
+        markRead();
+      }
+    });
+
+    return () => {
+      listener?.unsubscribe();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // TODO: Think if the useEffect is really needed?
   useEffect(() => {
     const lastReceivedMessage = getLastReceivedMessage(processedMessageList);
@@ -565,46 +581,18 @@ const MessageListWithContext = <
 
     const createdAtTimestamp = message.created_at && new Date(message.created_at).getTime();
     const lastReadTimestamp = channelUnreadState?.last_read.getTime();
-    const isFirstMessage = index === processedMessageList.length - 1;
     const isNewestMessage = index === 0;
     const isLastReadMessage =
       channelUnreadState?.last_read_message_id === message.id ||
       (!channelUnreadState?.unread_messages && createdAtTimestamp === lastReadTimestamp);
 
-    const isFirstUnreadMessage =
-      channelUnreadState?.first_unread_message_id === message.id ||
-      (!!channelUnreadState?.unread_messages &&
-        !!createdAtTimestamp &&
-        !!lastReadTimestamp &&
-        createdAtTimestamp > lastReadTimestamp &&
-        isFirstMessage);
-
-    const showUnreadSeparatorAbove =
-      !channelUnreadState?.last_read_message_id && isFirstUnreadMessage;
-
-    const showUnreadSeparatorBelow =
+    const showUnreadSeparator =
       isLastReadMessage &&
       !isNewestMessage &&
+      // The `channelUnreadState?.first_unread_message_id` is here for sent messages unread label
       (!!channelUnreadState?.first_unread_message_id || !!channelUnreadState?.unread_messages);
 
-    const showUnreadUnderlay =
-      !!shouldShowUnreadUnderlay && (showUnreadSeparatorAbove || showUnreadSeparatorBelow);
-
-    if (message.type === 'system') {
-      return (
-        <View
-          style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}
-          testID={`message-list-item-${index}`}
-        >
-          {showUnreadSeparatorAbove && <InlineUnreadIndicator />}
-          <MessageSystem
-            message={message}
-            style={[{ paddingHorizontal: screenPadding }, messageContainer]}
-          />
-          {showUnreadSeparatorBelow && <InlineUnreadIndicator />}
-        </View>
-      );
-    }
+    const showUnreadUnderlay = !!shouldShowUnreadUnderlay && showUnreadSeparator;
 
     const wrapMessageInTheme = client.userID === message.user?.id && !!myMessageTheme;
     const renderDateSeperator = isMessageWithStylesReadByAndDateSeparator(message) &&
@@ -626,10 +614,16 @@ const MessageListWithContext = <
     );
 
     return (
-      <View style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}>
-        {/* Adding indicator below the messages, since the list is inverted */}
-        {showUnreadSeparatorAbove && <InlineUnreadIndicator />}
-        {wrapMessageInTheme ? (
+      <View
+        style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}
+        testID={`message-list-item-${index}`}
+      >
+        {message.type === 'system' ? (
+          <MessageSystem
+            message={message}
+            style={[{ paddingHorizontal: screenPadding }, messageContainer]}
+          />
+        ) : wrapMessageInTheme ? (
           <ThemeProvider mergedStyle={modifiedTheme}>
             <View testID={`message-list-item-${index}`}>
               {renderDateSeperator}
@@ -642,7 +636,7 @@ const MessageListWithContext = <
             {renderMessage}
           </View>
         )}
-        {showUnreadSeparatorBelow && <InlineUnreadIndicator />}
+        {showUnreadSeparator && <InlineUnreadIndicator />}
       </View>
     );
   };
@@ -768,7 +762,7 @@ const MessageListWithContext = <
     }
   };
 
-  const handleScroll: ScrollViewProps['onScroll'] = async (event) => {
+  const handleScroll: ScrollViewProps['onScroll'] = (event) => {
     const messageListHasMessages = processedMessageList.length > 0;
     const offset = event.nativeEvent.contentOffset.y;
     // Show scrollToBottom button once scroll position goes beyond 150.
@@ -886,7 +880,7 @@ const MessageListWithContext = <
       if (initialScrollToFirstUnreadMessage) {
         clearTimeout(initialScrollSettingTimeoutRef.current);
       }
-      let messageIdToScroll: string | undefined = targetedMessage;
+      const messageIdToScroll: string | undefined = targetedMessage;
       if (!messageIdToScroll) return;
       const indexOfParentInMessageList = processedMessageList.findIndex(
         (message) => message?.id === messageIdToScroll,
@@ -1147,9 +1141,8 @@ const MessageListWithContext = <
       <NetworkDownIndicator />
       {isUnreadNotificationOpen && !threadList ? (
         <UnreadMessagesNotification
-          unread={channel.countUnread()}
-          onPressHandler={onUnreadNotificationPress}
           onCloseHandler={onUnreadNotificationClose}
+          onPressHandler={onUnreadNotificationPress}
         />
       ) : null}
     </View>
