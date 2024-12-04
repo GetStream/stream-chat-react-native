@@ -1,5 +1,18 @@
 # Change Log
 
+## [5.44.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.43.2...v5.44.0) (2024-12-04)
+
+
+### Features
+
+* ai chat bot poc ([#2822](https://github.com/GetStream/stream-chat-react-native/issues/2822)) ([4fbc2f4](https://github.com/GetStream/stream-chat-react-native/commit/4fbc2f468a309c9e2fdf5b7145b04a2c03b961b5)), closes [#2819](https://github.com/GetStream/stream-chat-react-native/issues/2819)
+
+
+### Bug Fixes
+
+* audio attachment title overflow issue ([#2821](https://github.com/GetStream/stream-chat-react-native/issues/2821)) ([1651c16](https://github.com/GetStream/stream-chat-react-native/commit/1651c16173ff69a4df172de77cf04d28f6c0851d))
+* show loading indicator instead of returning null from the Chat component when DB not initialized ([#2820](https://github.com/GetStream/stream-chat-react-native/issues/2820)) ([6d5a51b](https://github.com/GetStream/stream-chat-react-native/commit/6d5a51b01bbf2fee71a1ba28ebb00c568dfc67c6))
+
 ### [5.43.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.43.1...v5.43.2) (2024-11-28)
 
 
