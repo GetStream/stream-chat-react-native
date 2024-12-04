@@ -1,5 +1,22 @@
 # Change Log
 
+## [1.33.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.32.2...sampleapp@v1.33.0) (2024-12-04)
+
+
+### Features
+
+* ai chat bot poc ([#2822](https://github.com/GetStream/stream-chat-react-native/issues/2822)) ([4fbc2f4](https://github.com/GetStream/stream-chat-react-native/commit/4fbc2f468a309c9e2fdf5b7145b04a2c03b961b5)), closes [#2819](https://github.com/GetStream/stream-chat-react-native/issues/2819)
+
+
+### Bug Fixes
+
+* show loading indicator instead of returning null from the Chat component when DB not initialized ([#2820](https://github.com/GetStream/stream-chat-react-native/issues/2820)) ([6d5a51b](https://github.com/GetStream/stream-chat-react-native/commit/6d5a51b01bbf2fee71a1ba28ebb00c568dfc67c6))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.32.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.32.1...sampleapp@v1.32.2) (2024-11-28)
 
 
