@@ -1,8 +1,18 @@
-import React, { PropsWithChildren } from 'react';
-import { GestureResponderEvent, Linking, Text, TextProps, View, ViewProps } from 'react-native';
+import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
+import {
+  GestureResponderEvent,
+  Linking,
+  Platform,
+  Text,
+  TextProps,
+  View,
+  ViewProps,
+} from 'react-native';
 
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 // @ts-expect-error
 import Markdown from 'react-native-markdown-package';
+import Animated, { clamp, scrollTo, useAnimatedRef, useSharedValue } from 'react-native-reanimated';
 
 import {
   DefaultRules,
@@ -26,7 +36,64 @@ import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { escapeRegExp } from '../../../../utils/utils';
 import type { MessageType } from '../../../MessageList/hooks/useMessageList';
 
+export const MarkdownReactiveScrollView = ({ children }: { children: ReactNode }) => {
+  const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
+  const contentWidth = useSharedValue(0);
+  const visibleContentWidth = useSharedValue(0);
+  const offsetBeforeScroll = useSharedValue(0);
+
+  const panGesture = Gesture.Pan()
+    .activeOffsetX([-5, 5])
+    .onUpdate((event) => {
+      const { translationX } = event;
+
+      scrollTo(scrollViewRef, offsetBeforeScroll.value - translationX, 0, false);
+    })
+    .onEnd((event) => {
+      const { translationX } = event;
+
+      const velocityEffect = event.velocityX * 0.3;
+
+      const finalPosition = clamp(
+        offsetBeforeScroll.value - translationX - velocityEffect,
+        0,
+        contentWidth.value - visibleContentWidth.value,
+      );
+
+      offsetBeforeScroll.value = finalPosition;
+
+      scrollTo(scrollViewRef, finalPosition, 0, true);
+    });
+
+  return (
+    <View style={{ width: '100%' }}>
+      <GestureDetector gesture={panGesture}>
+        <Animated.ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          horizontal
+          nestedScrollEnabled={true}
+          onContentSizeChange={(width) => {
+            contentWidth.value = width;
+          }}
+          onLayout={(e) => {
+            visibleContentWidth.value = e.nativeEvent.layout.width;
+          }}
+          ref={scrollViewRef}
+          scrollEnabled={false}
+        >
+          {children}
+        </Animated.ScrollView>
+      </GestureDetector>
+    </View>
+  );
+};
+
 const defaultMarkdownStyles: MarkdownStyle = {
+  codeBlock: {
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'Monospace',
+    fontWeight: '500',
+    marginVertical: 8,
+  },
   inlineCode: {
     fontSize: 13,
     padding: 3,
@@ -59,6 +126,26 @@ const defaultMarkdownStyles: MarkdownStyle = {
   paragraphWithImage: {
     marginBottom: 8,
     marginTop: 8,
+  },
+  table: {
+    borderRadius: 3,
+    borderWidth: 1,
+    flex: 1,
+    flexDirection: 'row',
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  tableHeaderCell: {
+    fontWeight: '500',
+  },
+  tableRow: {
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  tableRowCell: {
+    flex: 1,
   },
 };
 
@@ -113,6 +200,13 @@ export const renderText = <
       color: colors.accent_blue,
       ...markdownStyles?.autolink,
     },
+    codeBlock: {
+      ...defaultMarkdownStyles.codeBlock,
+      backgroundColor: colors.code_block,
+      color: colors.black,
+      padding: 8,
+      ...markdownStyles?.codeBlock,
+    },
     inlineCode: {
       ...defaultMarkdownStyles.inlineCode,
       backgroundColor: colors.white_smoke,
@@ -124,6 +218,35 @@ export const renderText = <
       ...defaultMarkdownStyles.mentions,
       color: colors.accent_blue,
       ...markdownStyles?.mentions,
+    },
+    table: {
+      ...defaultMarkdownStyles.table,
+      borderColor: colors.grey_dark,
+      marginVertical: 8,
+      ...markdownStyles?.table,
+    },
+    tableHeader: {
+      ...defaultMarkdownStyles.tableHeader,
+      backgroundColor: colors.grey,
+      ...markdownStyles?.tableHeader,
+    },
+    tableHeaderCell: {
+      ...defaultMarkdownStyles.tableHeaderCell,
+      padding: 5,
+      ...markdownStyles?.tableHeaderCell,
+    },
+    tableRow: {
+      ...defaultMarkdownStyles.tableRow,
+      ...markdownStyles?.tableRow,
+    },
+    tableRowCell: {
+      ...defaultMarkdownStyles.tableRowCell,
+      borderColor: colors.grey_dark,
+      padding: 5,
+      ...markdownStyles?.tableRowCell,
+    },
+    tableRowLast: {
+      ...markdownStyles?.tableRowLast,
     },
     text: {
       ...defaultMarkdownStyles.text,
@@ -263,6 +386,18 @@ export const renderText = <
     />
   );
 
+  const codeBlockReact: ReactNodeOutput = (node, _, state) => (
+    <MarkdownReactiveScrollView key={state.key}>
+      <Text style={styles.codeBlock}>{node?.content?.trim()}</Text>
+    </MarkdownReactiveScrollView>
+  );
+
+  const tableReact: ReactNodeOutput = (node, output, state) => (
+    <MarkdownReactiveScrollView key={state.key}>
+      <MarkdownTable node={node} output={output} state={state} styles={styles} />
+    </MarkdownReactiveScrollView>
+  );
+
   const customRules = {
     // do not render images, we will scrape them out of the message and show on attachment card component
     image: { match: () => null },
@@ -283,6 +418,8 @@ export const renderText = <
           },
         }
       : {}),
+    codeBlock: { react: codeBlockReact },
+    table: { react: tableReact },
   };
 
   return (
@@ -373,3 +510,70 @@ const ListRow = ({ children, style }: PropsWithChildren<ViewProps>) => (
 const ListItem = ({ children, style }: PropsWithChildren<TextProps>) => (
   <Text style={style}>{children}</Text>
 );
+
+export type MarkdownTableProps = {
+  node: SingleASTNode;
+  output: ReactOutput;
+  state: State;
+  styles: Partial<MarkdownStyle>;
+};
+
+const transpose = (matrix: SingleASTNode[][]) =>
+  matrix[0].map((_, colIndex) => matrix.map((row) => row[colIndex]));
+
+const MarkdownTable = ({ node, output, state, styles }: MarkdownTableProps) => {
+  const content = useMemo(() => {
+    const nodeContent = [node?.header, ...node?.cells];
+    return transpose(nodeContent);
+  }, [node?.cells, node?.header]);
+  const columns = content?.map((column, idx) => (
+    <MarkdownTableColumn
+      items={column}
+      key={`column-${idx}`}
+      output={output}
+      state={state}
+      styles={styles}
+    />
+  ));
+
+  return (
+    <View key={state.key} style={styles.table}>
+      {columns}
+    </View>
+  );
+};
+
+export type MarkdownTableRowProps = {
+  items: SingleASTNode[];
+  output: ReactOutput;
+  state: State;
+  styles: Partial<MarkdownStyle>;
+};
+
+const MarkdownTableColumn = ({ items, output, state, styles }: MarkdownTableRowProps) => {
+  const [headerCellContent, ...columnCellContents] = items;
+
+  const ColumnCell = useCallback(
+    ({ content }: { content: SingleASTNode }) =>
+      content ? (
+        <View style={styles.tableRow}>
+          <View style={styles.tableRowCell}>{output(content, state)}</View>
+        </View>
+      ) : null,
+    [output, state, styles],
+  );
+
+  return (
+    <View style={{ flex: 1, flexDirection: 'column' }}>
+      {headerCellContent ? (
+        <View key={-1} style={styles.tableHeader}>
+          <Text style={styles.tableHeaderCell}>{output(headerCellContent, state)}</Text>
+        </View>
+      ) : null}
+      {columnCellContents &&
+        columnCellContents.map((content, idx) => (
+          <ColumnCell content={content} key={`cell-${idx}`} />
+        ))}
+    </View>
+  );
+};

@@ -17,6 +17,7 @@ const getChatStyle = (colorScheme: ColorSchemeName): DeepPartial<Theme> => ({
           border: '#141924',
           button_background: '#FFFFFF',
           button_text: '#005FFF',
+          code_block: '#222222',
           grey: '#7A7A7A',
           grey_gainsboro: '#2D2F2F',
           grey_whisper: '#1C1E22',

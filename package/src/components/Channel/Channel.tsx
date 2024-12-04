@@ -135,6 +135,7 @@ import { MessageSimple as MessageSimpleDefault } from '../Message/MessageSimple/
 import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/MessageStatus';
 import { MessageTimestamp as MessageTimestampDefault } from '../Message/MessageSimple/MessageTimestamp';
 import { ReactionList as ReactionListDefault } from '../Message/MessageSimple/ReactionList';
+import { StreamingMessageView as DefaultStreamingMessageView } from '../Message/MessageSimple/StreamingMessageView';
 import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButton';
 import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
 import { AudioRecorder as AudioRecorderDefault } from '../MessageInput/components/AudioRecorder/AudioRecorder';
@@ -154,6 +155,7 @@ import { MoreOptionsButton as MoreOptionsButtonDefault } from '../MessageInput/M
 import { SendButton as SendButtonDefault } from '../MessageInput/SendButton';
 import { SendMessageDisallowedIndicator as SendMessageDisallowedIndicatorDefault } from '../MessageInput/SendMessageDisallowedIndicator';
 import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDefault } from '../MessageInput/ShowThreadMessageInChannelButton';
+import { StopMessageStreamingButton as DefaultStopMessageStreamingButton } from '../MessageInput/StopMessageStreamingButton';
 import { UploadProgressIndicator as UploadProgressIndicatorDefault } from '../MessageInput/UploadProgressIndicator';
 import { DateHeader as DateHeaderDefault } from '../MessageList/DateHeader';
 import type { MessageType } from '../MessageList/hooks/useMessageList';
@@ -333,6 +335,7 @@ export type ChannelPropsWithContext<
       | 'VideoThumbnail'
       | 'PollContent'
       | 'hasCreatePoll'
+      | 'StreamingMessageView'
     >
   > &
   Partial<Pick<ThreadContextValue<StreamChatGenerics>, 'allowThreadMessagesInChannel'>> & {
@@ -420,7 +423,12 @@ export type ChannelPropsWithContext<
      * Tells if channel is rendering a thread list
      */
     threadList?: boolean;
-  } & Partial<Pick<InputMessageInputContextValue, 'openPollCreationDialog' | 'CreatePollContent'>>;
+  } & Partial<
+    Pick<
+      InputMessageInputContextValue,
+      'openPollCreationDialog' | 'CreatePollContent' | 'StopMessageStreamingButton'
+    >
+  >;
 
 const ChannelWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -544,7 +552,15 @@ const ChannelWithContext = <
     MessageAvatar = MessageAvatarDefault,
     MessageBounce = MessageBounceDefault,
     MessageContent = MessageContentDefault,
-    messageContentOrder = ['quoted_reply', 'gallery', 'files', 'poll', 'text', 'attachments'],
+    messageContentOrder = [
+      'quoted_reply',
+      'gallery',
+      'files',
+      'poll',
+      'ai_text',
+      'text',
+      'attachments',
+    ],
     MessageDeleted = MessageDeletedDefault,
     MessageEditedTimestamp = MessageEditedTimestampDefault,
     MessageError = MessageErrorDefault,
@@ -596,6 +612,8 @@ const ChannelWithContext = <
     StartAudioRecordingButton = AudioRecordingButtonDefault,
     stateUpdateThrottleInterval = defaultThrottleInterval,
     StickyHeader = StickyHeaderDefault,
+    StopMessageStreamingButton: StopMessageStreamingButtonOverride,
+    StreamingMessageView = DefaultStreamingMessageView,
     supportedReactions = reactionData,
     t,
     thread: threadFromProps,
@@ -612,6 +630,10 @@ const ChannelWithContext = <
   } = props;
 
   const { thread: threadProps, threadInstance } = threadFromProps;
+  const StopMessageStreamingButton =
+    StopMessageStreamingButtonOverride === undefined
+      ? DefaultStopMessageStreamingButton
+      : StopMessageStreamingButtonOverride;
 
   const {
     theme: {
@@ -2338,6 +2360,7 @@ const ChannelWithContext = <
     setQuotedMessageState,
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
+    StopMessageStreamingButton,
     UploadProgressIndicator,
   });
 
@@ -2439,6 +2462,7 @@ const ChannelWithContext = <
     setEditingState,
     setQuotedMessageState,
     shouldShowUnreadUnderlay,
+    StreamingMessageView,
     supportedReactions,
     targetedMessage,
     TypingIndicator,

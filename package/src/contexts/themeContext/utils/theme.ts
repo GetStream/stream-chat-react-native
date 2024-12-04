@@ -18,6 +18,7 @@ export const Colors = {
   black: '#000000',
   blue_alice: '#E9F2FF',
   border: '#00000014', // 14 = 8% opacity; top: x=0, y=-1; bottom: x=0, y=1
+  code_block: '#DDDDDD',
   disabled: '#B4BBBA',
   grey: '#7A7A7A',
   grey_dark: '#72767E',
@@ -79,7 +80,7 @@ export type MarkdownStyle = Partial<{
   tableHeader: ViewStyle;
   tableHeaderCell: TextStyle;
   tableRow: ViewStyle;
-  tableRowCell: ViewStyle;
+  tableRowCell: TextStyle;
   tableRowLast: ViewStyle;
   text: TextStyle;
   u: TextStyle;
@@ -87,6 +88,10 @@ export type MarkdownStyle = Partial<{
 }>;
 
 export type Theme = {
+  aiTypingIndicatorView: {
+    container: ViewStyle;
+    text: TextStyle;
+  };
   attachmentPicker: {
     bottomSheetContentContainer: ViewStyle;
     durationText: TextStyle;
@@ -351,6 +356,8 @@ export type Theme = {
       innerContainer: ViewStyle;
       text: TextStyle;
     };
+    stopMessageStreamingButton: ViewStyle;
+    stopMessageStreamingIcon: IconProps;
     suggestions: {
       command: {
         args: TextStyle;
@@ -792,6 +799,10 @@ export type Theme = {
 };
 
 export const defaultTheme: Theme = {
+  aiTypingIndicatorView: {
+    container: {},
+    text: {},
+  },
   attachmentPicker: {
     bottomSheetContentContainer: {},
     durationText: {},
@@ -1062,6 +1073,8 @@ export const defaultTheme: Theme = {
       innerContainer: {},
       text: {},
     },
+    stopMessageStreamingButton: {},
+    stopMessageStreamingIcon: {},
     suggestions: {
       command: {
         args: {},
