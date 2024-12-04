@@ -125,10 +125,10 @@ export type ChannelContextValue<
   read: ChannelState<StreamChatGenerics>['read'];
   reloadChannel: () => Promise<void>;
   scrollToFirstUnreadThreshold: number;
-  setLastRead: React.Dispatch<React.SetStateAction<Date | undefined>>;
   setChannelUnreadState: React.Dispatch<
     React.SetStateAction<ChannelUnreadState<StreamChatGenerics> | undefined>
   >;
+  setLastRead: React.Dispatch<React.SetStateAction<Date | undefined>>;
   setTargetedMessage: (messageId: string) => void;
   /**
    * Abort controller for cancelling async requests made for uploading images/files

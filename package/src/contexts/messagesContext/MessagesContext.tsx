@@ -46,6 +46,7 @@ import type { MessageListProps } from '../../components/MessageList/MessageList'
 import type { MessageSystemProps } from '../../components/MessageList/MessageSystem';
 import type { ScrollToBottomButtonProps } from '../../components/MessageList/ScrollToBottomButton';
 import { TypingIndicatorContainerProps } from '../../components/MessageList/TypingIndicatorContainer';
+import { UnreadMessagesNotificationProps } from '../../components/MessageList/UnreadMessagesNotification';
 import type { getGroupStyles } from '../../components/MessageList/utils/getGroupStyles';
 import { MessageActionListProps } from '../../components/MessageMenu/MessageActionList';
 import type {
@@ -57,7 +58,6 @@ import type { MessageReactionPickerProps } from '../../components/MessageMenu/Me
 import { MessageUserReactionsProps } from '../../components/MessageMenu/MessageUserReactions';
 import { MessageUserReactionsAvatarProps } from '../../components/MessageMenu/MessageUserReactionsAvatar';
 import { MessageUserReactionsItemProps } from '../../components/MessageMenu/MessageUserReactionsItem';
-import { UnreadMessagesNotificationProps } from '../../components/MessageList/UnreadMessagesNotification';
 import type { ReplyProps } from '../../components/Reply/Reply';
 import { FlatList } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
@@ -305,6 +305,7 @@ export type MessagesContextValue<
    * Defaults to: [TypingIndicatorContainer](https://getstream.io/chat/docs/sdk/reactnative/contexts/messages-context/#typingindicatorcontainer)
    */
   TypingIndicatorContainer: React.ComponentType<TypingIndicatorContainerProps>;
+  UnreadMessagesNotification: React.ComponentType<UnreadMessagesNotificationProps>;
   updateMessage: (
     updatedMessage: MessageResponse<StreamChatGenerics>,
     extraState?: {
@@ -336,6 +337,7 @@ export type MessagesContextValue<
    * Accepts the same props as Card component.
    */
   CardFooter?: React.ComponentType<CardProps<StreamChatGenerics>>;
+
   /**
    * Custom UI component to override default header of Card component.
    * Accepts the same props as Card component.
@@ -347,18 +349,17 @@ export type MessagesContextValue<
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
-
   /** Control if the deleted message is visible to both the send and reciever, either of them or none  */
   deletedMessagesVisibilityType?: DeletedMessagesVisibilityType;
 
   disableTypingIndicator?: boolean;
-
   /**
    * Whether messages should be aligned to right or left part of screen.
    * By default, messages will be received messages will be aligned to left and
    * sent messages will be aligned to right.
    */
   forceAlignMessages?: Alignment | boolean;
+
   getMessagesGroupStyles?: typeof getGroupStyles;
   /**
    * Handler to access when a ban user action is invoked.
@@ -588,8 +589,6 @@ export type MessagesContextValue<
   supportedReactions?: ReactionData[];
 
   targetedMessage?: string;
-
-  UnreadMessagesNotification: React.ComponentType<UnreadMessagesNotificationProps>;
 };
 
 export const MessagesContext = React.createContext(

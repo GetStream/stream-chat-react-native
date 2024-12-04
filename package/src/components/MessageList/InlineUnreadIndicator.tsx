@@ -4,18 +4,6 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 10,
-    marginTop: 2,
-  },
-  text: {
-    fontSize: 12,
-  },
-});
-
 export const InlineUnreadIndicator = () => {
   const {
     theme: {
@@ -33,3 +21,15 @@ export const InlineUnreadIndicator = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 2,
+    padding: 10,
+  },
+  text: {
+    fontSize: 12,
+  },
+});

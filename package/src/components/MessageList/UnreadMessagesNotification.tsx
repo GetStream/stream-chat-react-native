@@ -1,7 +1,9 @@
+import React from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
+
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Close } from '../../icons';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { Close } from '../../icons';
 
 export type UnreadMessagesNotificationProps = {
   /**
@@ -12,7 +14,6 @@ export type UnreadMessagesNotificationProps = {
    * Callback to handle the close event
    */
   onCloseHandler?: () => void;
-
   /**
    * If the notification is visible
    */
@@ -58,24 +59,23 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    flexDirection: 'row',
-    position: 'absolute',
-    top: 8,
     borderRadius: 20,
-    paddingVertical: 8,
+    elevation: 4,
+    flexDirection: 'row',
     paddingHorizontal: 16,
+    paddingVertical: 8,
+    position: 'absolute',
     shadowColor: '#000',
     shadowOffset: {
-      width: 0,
       height: 2,
+      width: 0,
     },
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
-
-    elevation: 4,
+    top: 8,
   },
   text: {
-    marginRight: 8,
     fontWeight: '500',
+    marginRight: 8,
   },
 });
