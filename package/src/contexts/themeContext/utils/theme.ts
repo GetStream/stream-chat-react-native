@@ -122,6 +122,12 @@ export type Theme = {
     presenceIndicator: CircleProps;
     presenceIndicatorContainer: ViewStyle;
   };
+  bottomSheetModal: {
+    container: ViewStyle;
+    contentContainer: ViewStyle;
+    handle: ViewStyle;
+    overlay: ViewStyle;
+  };
   channel: {
     selectChannel: TextStyle;
   };
@@ -436,7 +442,9 @@ export type Theme = {
     };
     userReactions: {
       avatarContainer: ViewStyle;
+      avatarInnerContainer: ViewStyle;
       avatarName: TextStyle;
+      avatarNameContainer: ViewStyle;
       avatarSize: number;
       container: ViewStyle;
       contentContainer: ViewStyle;
@@ -852,6 +860,12 @@ export const defaultTheme: Theme = {
     },
     presenceIndicatorContainer: {},
   },
+  bottomSheetModal: {
+    container: {},
+    contentContainer: {},
+    handle: {},
+    overlay: {},
+  },
   channel: {
     selectChannel: {},
   },
@@ -1161,7 +1175,9 @@ export const defaultTheme: Theme = {
     },
     userReactions: {
       avatarContainer: {},
+      avatarInnerContainer: {},
       avatarName: {},
+      avatarNameContainer: {},
       avatarSize: 64,
       container: {},
       contentContainer: {},
