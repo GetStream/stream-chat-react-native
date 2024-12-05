@@ -1,5 +1,12 @@
 # Change Log
 
+### [5.44.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.44.0...v5.44.1) (2024-12-05)
+
+
+### Bug Fixes
+
+* add factory fn to determine whether a msg is ai generated ([#2829](https://github.com/GetStream/stream-chat-react-native/issues/2829)) ([79542d8](https://github.com/GetStream/stream-chat-react-native/commit/79542d82e363b7fb5d8596d90e47da2ed391ff8e))
+
 ## [5.44.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.43.2...v5.44.0) (2024-12-04)
 
 
