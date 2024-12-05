@@ -158,6 +158,7 @@ const MessageOverlayWithContext = <
   const halfScreenHeight = vh(50);
 
   const myMessageTheme = messagesContext?.myMessageTheme;
+  const isMessageAIGenerated = messagesContext?.isMessageAIGenerated;
   const wrapMessageInTheme = clientId === message?.user?.id && !!myMessageTheme;
 
   const [reactionListHeight, setReactionListHeight] = useState(0);
@@ -462,7 +463,7 @@ const MessageOverlayWithContext = <
                       case 'text':
                       default:
                         return (otherAttachments?.length && otherAttachments[0].actions) ||
-                          message.ai_generated ? null : (
+                          isMessageAIGenerated?.(message) ? null : (
                           <MessageTextContainer<StreamChatGenerics>
                             key={`message_text_container_${messageContentOrderIndex}`}
                             message={message}

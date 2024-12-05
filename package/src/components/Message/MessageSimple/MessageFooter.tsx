@@ -41,6 +41,7 @@ type MessageFooterPropsWithContext<
   | 'otherAttachments'
   | 'showMessageStatus'
   | 'lastGroupMessage'
+  | 'isMessageAIGenerated'
 > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
@@ -94,6 +95,7 @@ const MessageFooterWithContext = <
     formattedDate,
     isDeleted,
     isEditedMessageOpen,
+    isMessageAIGenerated,
     lastGroupMessage,
     members,
     message,
@@ -129,7 +131,7 @@ const MessageFooterWithContext = <
     return null;
   }
 
-  const isEdited = isEditedMessage(message);
+  const isEdited = isEditedMessage(message) && !isMessageAIGenerated(message);
 
   return (
     <>
@@ -267,6 +269,7 @@ export const MessageFooter = <
   const {
     alignment,
     isEditedMessageOpen,
+    isMessageAIGenerated,
     lastGroupMessage,
     members,
     message,
@@ -283,6 +286,7 @@ export const MessageFooter = <
         alignment,
         deletedMessagesVisibilityType,
         isEditedMessageOpen,
+        isMessageAIGenerated,
         lastGroupMessage,
         members,
         message,
