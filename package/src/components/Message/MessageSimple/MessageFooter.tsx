@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { Attachment } from 'stream-chat';
@@ -41,6 +41,7 @@ type MessageFooterPropsWithContext<
   | 'otherAttachments'
   | 'showMessageStatus'
   | 'lastGroupMessage'
+  | 'isMessageAIGenerated'
 > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
@@ -94,6 +95,7 @@ const MessageFooterWithContext = <
     formattedDate,
     isDeleted,
     isEditedMessageOpen,
+    isMessageAIGenerated,
     lastGroupMessage,
     members,
     message,
@@ -114,6 +116,11 @@ const MessageFooterWithContext = <
   } = useTheme();
   const { t } = useTranslationContext();
 
+  const isAIGenerated = useMemo(
+    () => isMessageAIGenerated(message),
+    [message, isMessageAIGenerated],
+  );
+
   if (isDeleted) {
     return (
       <View style={[styles.container, metaContainer]} testID='message-deleted'>
@@ -129,7 +136,7 @@ const MessageFooterWithContext = <
     return null;
   }
 
-  const isEdited = isEditedMessage(message);
+  const isEdited = isEditedMessage(message) && !isAIGenerated;
 
   return (
     <>
@@ -267,6 +274,7 @@ export const MessageFooter = <
   const {
     alignment,
     isEditedMessageOpen,
+    isMessageAIGenerated,
     lastGroupMessage,
     members,
     message,
@@ -283,6 +291,7 @@ export const MessageFooter = <
         alignment,
         deletedMessagesVisibilityType,
         isEditedMessageOpen,
+        isMessageAIGenerated,
         lastGroupMessage,
         members,
         message,

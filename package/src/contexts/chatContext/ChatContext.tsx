@@ -4,6 +4,7 @@ import type { ImageProps } from 'react-native';
 import type { AppSettingsAPIResponse, Channel, Mute, StreamChat } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import { MessageContextValue } from '../messageContext/MessageContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { getDisplayName } from '../utils/getDisplayName';
@@ -69,7 +70,7 @@ export type ChatContextValue<
    * This option allows you to specify a list of CDNs that offer image resizing.
    */
   resizableCDNHosts?: string[];
-};
+} & Partial<Pick<MessageContextValue<StreamChatGenerics>, 'isMessageAIGenerated'>>;
 
 export const ChatContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as ChatContextValue);
 
