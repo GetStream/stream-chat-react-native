@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { Attachment } from 'stream-chat';
@@ -116,6 +116,11 @@ const MessageFooterWithContext = <
   } = useTheme();
   const { t } = useTranslationContext();
 
+  const isAIGenerated = useMemo(
+    () => isMessageAIGenerated(message),
+    [message, isMessageAIGenerated],
+  );
+
   if (isDeleted) {
     return (
       <View style={[styles.container, metaContainer]} testID='message-deleted'>
@@ -131,7 +136,7 @@ const MessageFooterWithContext = <
     return null;
   }
 
-  const isEdited = isEditedMessage(message) && !isMessageAIGenerated(message);
+  const isEdited = isEditedMessage(message) && !isAIGenerated;
 
   return (
     <>

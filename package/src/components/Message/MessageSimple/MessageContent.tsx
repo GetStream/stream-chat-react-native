@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   AnimatableNumericValue,
   LayoutChangeEvent,
@@ -187,6 +187,11 @@ const MessageContentWithContext = <
   }) => {
     setMessageContentWidth(width);
   };
+
+  const isAIGenerated = useMemo(
+    () => isMessageAIGenerated(message),
+    [message, isMessageAIGenerated],
+  );
 
   const error = message.type === 'error' || message.status === MessageStatusTypes.FAILED;
 
@@ -398,7 +403,7 @@ const MessageContentWithContext = <
                 ) : null;
               }
               case 'ai_text':
-                return isMessageAIGenerated(message) ? (
+                return isAIGenerated ? (
                   <StreamingMessageView
                     key={`ai_message_text_container_${messageContentOrderIndex}`}
                   />
@@ -406,7 +411,7 @@ const MessageContentWithContext = <
               case 'text':
               default:
                 return (otherAttachments.length && otherAttachments[0].actions) ||
-                  isMessageAIGenerated(message) ? null : (
+                  isAIGenerated ? null : (
                   <MessageTextContainer<StreamChatGenerics>
                     key={`message_text_container_${messageContentOrderIndex}`}
                   />

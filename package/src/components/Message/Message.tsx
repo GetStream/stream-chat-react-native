@@ -314,6 +314,10 @@ const MessageWithContext = <
     updateMessage,
   } = props;
   const isMessageAIGenerated = messagesContext.isMessageAIGenerated;
+  const isAIGenerated = useMemo(
+    () => isMessageAIGenerated(message),
+    [message, isMessageAIGenerated],
+  );
   const { client } = chatContext;
   const {
     theme: {
@@ -466,7 +470,7 @@ const MessageWithContext = <
       case 'poll':
         return !!message.poll_id;
       case 'ai_text':
-        return isMessageAIGenerated(message);
+        return isAIGenerated;
       case 'text':
       default:
         return !!message.text;
