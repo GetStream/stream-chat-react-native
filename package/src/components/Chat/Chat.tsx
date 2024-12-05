@@ -36,7 +36,12 @@ init();
 export type ChatProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
-  Partial<Pick<ChatContextValue<StreamChatGenerics>, 'ImageComponent' | 'resizableCDNHosts'>> & {
+  Partial<
+    Pick<
+      ChatContextValue<StreamChatGenerics>,
+      'ImageComponent' | 'resizableCDNHosts' | 'isMessageAIGenerated'
+    >
+  > & {
     /**
      * When false, ws connection won't be disconnection upon backgrounding the app.
      * To receive push notifications, its necessary that user doesn't have active
@@ -149,6 +154,7 @@ const ChatWithContext = <
     enableOfflineSupport = false,
     i18nInstance,
     ImageComponent = Image,
+    isMessageAIGenerated,
     LoadingIndicator = null,
     resizableCDNHosts = ['.stream-io-cdn.com'],
     style,
@@ -250,6 +256,7 @@ const ChatWithContext = <
     connectionRecovering,
     enableOfflineSupport,
     ImageComponent,
+    isMessageAIGenerated,
     isOnline,
     mutedUsers,
     resizableCDNHosts,

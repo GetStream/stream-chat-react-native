@@ -139,8 +139,16 @@ export type MessagePropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'enforceUniqueReaction' | 'members'> &
   Pick<KeyboardContextValue, 'dismissKeyboard'> &
-  Partial<Omit<MessageContextValue<StreamChatGenerics>, 'groupStyles' | 'message'>> &
-  Pick<MessageContextValue<StreamChatGenerics>, 'groupStyles' | 'message'> &
+  Partial<
+    Omit<
+      MessageContextValue<StreamChatGenerics>,
+      'groupStyles' | 'message' | 'isMessageAIGenerated'
+    >
+  > &
+  Pick<
+    MessageContextValue<StreamChatGenerics>,
+    'groupStyles' | 'message' | 'isMessageAIGenerated'
+  > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
     | 'sendReaction'
@@ -305,6 +313,11 @@ const MessageWithContext = <
     threadList = false,
     updateMessage,
   } = props;
+  const isMessageAIGenerated = messagesContext.isMessageAIGenerated;
+  const isAIGenerated = useMemo(
+    () => isMessageAIGenerated(message),
+    [message, isMessageAIGenerated],
+  );
   const { client } = chatContext;
   const {
     theme: {
@@ -457,7 +470,7 @@ const MessageWithContext = <
       case 'poll':
         return !!message.poll_id;
       case 'ai_text':
-        return !!message.ai_generated;
+        return isAIGenerated;
       case 'text':
       default:
         return !!message.text;
@@ -704,6 +717,7 @@ const MessageWithContext = <
     hasReactions,
     images: attachments.images,
     isEditedMessageOpen,
+    isMessageAIGenerated,
     isMyMessage,
     lastGroupMessage: groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
     lastReceivedId,
@@ -865,8 +879,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     prevMessage.text === nextMessage.text &&
     prevMessage.pinned === nextMessage.pinned &&
     `${prevMessage?.updated_at}` === `${nextMessage?.updated_at}` &&
-    prevMessage.i18n === nextMessage.i18n &&
-    prevMessage.ai_generated === nextMessage.ai_generated;
+    prevMessage.i18n === nextMessage.i18n;
 
   if (!messageEqual) return false;
 
