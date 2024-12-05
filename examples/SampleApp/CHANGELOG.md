@@ -1,5 +1,17 @@
 # Change Log
 
+### [1.33.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.33.0...sampleapp@v1.33.1) (2024-12-05)
+
+
+### Bug Fixes
+
+* add factory fn to determine whether a msg is ai generated ([#2829](https://github.com/GetStream/stream-chat-react-native/issues/2829)) ([79542d8](https://github.com/GetStream/stream-chat-react-native/commit/79542d82e363b7fb5d8596d90e47da2ed391ff8e))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ## [1.33.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.32.2...sampleapp@v1.33.0) (2024-12-04)
 
 
