@@ -47,6 +47,10 @@ export type MessageContextValue<
   images: Attachment<StreamChatGenerics>[];
   /** Boolean that determines if the edited message is pressed. */
   isEditedMessageOpen: boolean;
+  /**
+   * A factory function that determines whether a message is AI generated or not.
+   */
+  isMessageAIGenerated: (message: MessageType<StreamChatGenerics>) => boolean;
   /** Whether or not this is the active user's message */
   isMyMessage: boolean;
   /** Whether or not this is the last message in a group of messages */

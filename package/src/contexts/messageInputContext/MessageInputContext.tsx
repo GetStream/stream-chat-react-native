@@ -388,7 +388,7 @@ export type InputMessageInputContextValue<
    * Defaults to and accepts same props as: [AudioRecordingButton](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingButton.tsx)
    */
   StartAudioRecordingButton: React.ComponentType<AudioRecordingButtonProps<StreamChatGenerics>>;
-  StopMessageStreamingButton: React.ComponentType<StopMessageStreamingButtonProps>;
+  StopMessageStreamingButton: React.ComponentType<StopMessageStreamingButtonProps> | null;
   /**
    * Custom UI component to render upload progress indicator on attachment preview.
    *

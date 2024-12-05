@@ -61,7 +61,7 @@ import type { ReplyProps } from '../../components/Reply/Reply';
 import { FlatList } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
-import type { Alignment } from '../messageContext/MessageContext';
+import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
 import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
@@ -81,7 +81,7 @@ export type DeletedMessagesVisibilityType = 'always' | 'never' | 'receiver' | 's
 
 export type MessagesContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+> = Pick<MessageContextValue<StreamChatGenerics>, 'isMessageAIGenerated'> & {
   /**
    * UI component for Attachment.
    * Defaults to: [Attachment](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Attachment.tsx)

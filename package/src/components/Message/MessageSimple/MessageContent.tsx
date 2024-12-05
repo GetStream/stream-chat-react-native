@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   AnimatableNumericValue,
   ColorValue,
@@ -80,6 +80,7 @@ export type MessageContentPropsWithContext<
   | 'otherAttachments'
   | 'preventPress'
   | 'threadList'
+  | 'isMessageAIGenerated'
 > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
@@ -121,6 +122,7 @@ const MessageContentWithContext = <
     FileAttachmentGroup,
     Gallery,
     groupStyles,
+    isMessageAIGenerated,
     isMyMessage,
     message,
     messageContentOrder,
@@ -170,6 +172,11 @@ const MessageContentWithContext = <
   }) => {
     setMessageContentWidth(width);
   };
+
+  const isAIGenerated = useMemo(
+    () => isMessageAIGenerated(message),
+    [message, isMessageAIGenerated],
+  );
 
   const { hasThreadReplies, isMessageErrorType, isMessageReceivedOrErrorType } = useMessageData({});
 
@@ -315,7 +322,7 @@ const MessageContentWithContext = <
                 ) : null;
               }
               case 'ai_text':
-                return message.ai_generated ? (
+                return isAIGenerated ? (
                   <StreamingMessageView
                     key={`ai_message_text_container_${messageContentOrderIndex}`}
                   />
@@ -323,7 +330,7 @@ const MessageContentWithContext = <
               case 'text':
               default:
                 return (otherAttachments.length && otherAttachments[0].actions) ||
-                  message.ai_generated ? null : (
+                  isAIGenerated ? null : (
                   <MessageTextContainer<StreamChatGenerics>
                     key={`message_text_container_${messageContentOrderIndex}`}
                   />
@@ -390,8 +397,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
     prevMessage.pinned === nextMessage.pinned &&
-    prevMessage.i18n === nextMessage.i18n &&
-    prevMessage.ai_generated === nextMessage.ai_generated;
+    prevMessage.i18n === nextMessage.i18n;
   if (!messageEqual) return false;
 
   const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';
@@ -473,6 +479,7 @@ export const MessageContent = <
     goToMessage,
     groupStyles,
     isEditedMessageOpen,
+    isMessageAIGenerated,
     isMyMessage,
     lastReceivedId,
     message,
@@ -509,6 +516,7 @@ export const MessageContent = <
         groupStyles,
         isAttachmentEqual,
         isEditedMessageOpen,
+        isMessageAIGenerated,
         isMyMessage,
         lastReceivedId,
         message,

@@ -36,6 +36,7 @@ import { useCreateTypingContext } from './hooks/useCreateTypingContext';
 
 import { useTargetedMessage } from './hooks/useTargetedMessage';
 
+import { MessageContextValue } from '../../contexts';
 import { ChannelContextValue, ChannelProvider } from '../../contexts/channelContext/ChannelContext';
 import type { UseChannelStateValue } from '../../contexts/channelsStateContext/useChannelState';
 import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
@@ -359,6 +360,7 @@ export type ChannelPropsWithContext<
       | 'StreamingMessageView'
     >
   > &
+  Partial<Pick<MessageContextValue<StreamChatGenerics>, 'isMessageAIGenerated'>> &
   Partial<Pick<ThreadContextValue<StreamChatGenerics>, 'allowThreadMessagesInChannel'>> & {
     shouldSyncChannel: boolean;
     thread: ThreadType<StreamChatGenerics>;
@@ -552,6 +554,7 @@ const ChannelWithContext = <
     InputGiphySearch = InputGiphyCommandInputDefault,
     InputReplyStateHeader = InputReplyStateHeaderDefault,
     isAttachmentEqual,
+    isMessageAIGenerated = () => false,
     keyboardBehavior,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
     keyboardVerticalOffset,
@@ -2328,6 +2331,7 @@ const ChannelWithContext = <
     InlineDateSeparator,
     InlineUnreadIndicator,
     isAttachmentEqual,
+    isMessageAIGenerated,
     legacyImageViewerSwipeBehaviour,
     markdownRules,
     Message,
@@ -2472,7 +2476,8 @@ export const Channel = <
 >(
   props: PropsWithChildren<ChannelProps<StreamChatGenerics>>,
 ) => {
-  const { client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
+  const { client, enableOfflineSupport, isMessageAIGenerated } =
+    useChatContext<StreamChatGenerics>();
   const { t } = useTranslationContext();
 
   const threadFromProps = props?.thread;
@@ -2518,6 +2523,7 @@ export const Channel = <
       {...props}
       shouldSyncChannel={shouldSyncChannel}
       {...{
+        isMessageAIGenerated,
         members,
         messages: props.messages || messages,
         read,
