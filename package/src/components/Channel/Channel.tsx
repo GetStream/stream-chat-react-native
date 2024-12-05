@@ -2563,7 +2563,8 @@ export const Channel = <
 >(
   props: PropsWithChildren<ChannelProps<StreamChatGenerics>>,
 ) => {
-  const { client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
+  const { client, enableOfflineSupport, isMessageAIGenerated } =
+    useChatContext<StreamChatGenerics>();
   const { t } = useTranslationContext();
 
   const threadFromProps = props?.thread;
@@ -2609,6 +2610,7 @@ export const Channel = <
       {...props}
       shouldSyncChannel={shouldSyncChannel}
       {...{
+        isMessageAIGenerated,
         members,
         messages: props.messages || messages,
         read,

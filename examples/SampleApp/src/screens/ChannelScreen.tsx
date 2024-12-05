@@ -13,7 +13,6 @@ import {
   useTheme,
   useTypingString,
   AITypingIndicatorView,
-  MessageType,
 } from 'stream-chat-react-native';
 import { Platform, StyleSheet, View } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -159,7 +158,6 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         messageId={messageId}
         NetworkDownIndicator={() => null}
         thread={selectedThread}
-        isMessageAIGenerated={(message: MessageType) => message.ai_generated}
       >
         <ChannelHeader channel={channel} />
         <MessageList<StreamChatGenerics>
