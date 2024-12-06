@@ -3,15 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { PollOption as PollOptionClass } from 'stream-chat';
 
-import {
-  AddCommentButton,
-  EndVoteButton,
-  PollOption,
-  ShowAllCommentsButton,
-  ShowAllOptionsButton,
-  SuggestOptionButton,
-  ViewResultsButton,
-} from './components';
+import { PollButtons, PollOption } from './components';
 
 import { usePollState } from './hooks/usePollState';
 
@@ -33,17 +25,6 @@ export type PollContentProps = {
   PollButtons?: React.ComponentType;
   PollHeader?: React.ComponentType;
 };
-
-export const PollButtons = () => (
-  <>
-    <ShowAllOptionsButton />
-    <ShowAllCommentsButton />
-    <SuggestOptionButton />
-    <AddCommentButton />
-    <ViewResultsButton />
-    <EndVoteButton />
-  </>
-);
 
 export const PollHeader = () => {
   const { t } = useTranslationContext();

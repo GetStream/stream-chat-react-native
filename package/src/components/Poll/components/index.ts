@@ -1,4 +1,5 @@
 export * from './Button';
+export * from './PollButtons';
 export * from './CreatePollIcon';
 export * from './CreatePollOptions';
 export * from './PollAnswersList';

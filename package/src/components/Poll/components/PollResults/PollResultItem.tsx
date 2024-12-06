@@ -1,14 +1,84 @@
-import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Modal, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
-import { PollOption, PollVote as PollVoteClass, VotingVisibility } from 'stream-chat';
+import { Poll, PollOption, PollVote as PollVoteClass, VotingVisibility } from 'stream-chat';
 
-import { useTheme, useTranslationContext } from '../../../../contexts';
+import { PollOptionFullResults } from './PollOptionFullResults';
+
+import {
+  useOwnCapabilitiesContext,
+  usePollContext,
+  useTheme,
+  useTranslationContext,
+} from '../../../../contexts';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { getDateString } from '../../../../utils/i18n/getDateString';
 import { Avatar } from '../../../Avatar/Avatar';
+import { MessageType } from '../../../MessageList/hooks/useMessageList';
 import { usePollState } from '../../hooks/usePollState';
-import { ShowAllVotesButton } from '../Button';
+import { GenericPollButton } from '../Button';
+import { PollModalHeader } from '../PollModalHeader';
+
+export type ShowAllVotesButtonProps<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  option: PollOption<StreamChatGenerics>;
+  onPress?: ({
+    message,
+    option,
+    poll,
+  }: {
+    message: MessageType<StreamChatGenerics>;
+    option: PollOption<StreamChatGenerics>;
+    poll: Poll<StreamChatGenerics>;
+  }) => void;
+};
+
+export const ShowAllVotesButton = (props: ShowAllVotesButtonProps) => {
+  const { t } = useTranslationContext();
+  const { message, poll } = usePollContext();
+  const { voteCountsByOption } = usePollState();
+  const ownCapabilities = useOwnCapabilitiesContext();
+  const [showAllVotes, setShowAllVotes] = useState(false);
+  const { onPress, option } = props;
+
+  const onPressHandler = useCallback(() => {
+    if (onPress) {
+      onPress({ message, option, poll });
+      return;
+    }
+
+    setShowAllVotes(true);
+  }, [message, onPress, option, poll]);
+
+  const {
+    theme: {
+      colors: { white },
+    },
+  } = useTheme();
+
+  return (
+    <>
+      {ownCapabilities.queryPollVotes &&
+      voteCountsByOption &&
+      voteCountsByOption?.[option.id] > 5 ? (
+        <GenericPollButton onPress={onPressHandler} title={t<string>('Show All')} />
+      ) : null}
+      {showAllVotes ? (
+        <Modal
+          animationType='fade'
+          onRequestClose={() => setShowAllVotes(false)}
+          visible={showAllVotes}
+        >
+          <SafeAreaView style={{ backgroundColor: white, flex: 1 }}>
+            <PollModalHeader onPress={() => setShowAllVotes(false)} title={option.text} />
+            <PollOptionFullResults message={message} option={option} poll={poll} />
+          </SafeAreaView>
+        </Modal>
+      ) : null}
+    </>
+  );
+};
 
 export type PollResultItemProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
