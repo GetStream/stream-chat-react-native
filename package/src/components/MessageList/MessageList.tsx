@@ -413,6 +413,14 @@ const MessageListWithContext = <
       const unreadIndicatorDate = channelUnreadState?.last_read.getTime();
       const lastItemDate = lastItemCreatedAt.getTime();
 
+      if (
+        !channel.state.messagePagination.hasPrev &&
+        processedMessageList[processedMessageList.length - 1].id === lastItem.item.id
+      ) {
+        setIsUnreadNotificationOpen(false);
+        return;
+      }
+
       if (unreadIndicatorDate && lastItemDate > unreadIndicatorDate) {
         setIsUnreadNotificationOpen(true);
       } else {
@@ -466,8 +474,7 @@ const MessageListWithContext = <
     return () => {
       listener?.unsubscribe();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [channel, markRead, scrollToBottomButtonVisible]);
 
   useEffect(() => {
     const lastReceivedMessage = getLastReceivedMessage(processedMessageList);
@@ -636,7 +643,7 @@ const MessageListWithContext = <
             {renderMessage}
           </View>
         )}
-        {showUnreadSeparator && <InlineUnreadIndicator />}
+        {showUnreadUnderlay && <InlineUnreadIndicator />}
       </View>
     );
   };
