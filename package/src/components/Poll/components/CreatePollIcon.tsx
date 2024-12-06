@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useTheme } from '../../../contexts';
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { PollThumbnail } from '../../../icons';
 
 export const CreatePollIcon = () => {
