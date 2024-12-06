@@ -1,9 +1,6 @@
 import type { ChannelState, MessageResponse } from 'stream-chat';
 
-import {
-  ChannelContextValue,
-  useChannelContext,
-} from '../../../contexts/channelContext/ChannelContext';
+import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import {
   DeletedMessagesVisibilityType,
@@ -61,7 +58,7 @@ export const useMessageList = <
   const { threadMessages } = useThreadContext<StreamChatGenerics>();
 
   const messageList = threadList ? threadMessages : messages;
-  const readList: ChannelContextValue<StreamChatGenerics>['read'] | undefined = threadList
+  const readList: ChannelState<StreamChatGenerics>['read'] | undefined = threadList
     ? undefined
     : read;
 

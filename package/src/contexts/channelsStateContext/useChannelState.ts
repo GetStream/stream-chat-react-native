@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import type { Channel as ChannelType } from 'stream-chat';
 
@@ -11,15 +11,12 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 type StateManagerParams<
   Key extends Keys,
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Omit<
-  ChannelsStateContextValue<StreamChatGenerics>,
-  'increaseSubscriberCount' | 'decreaseSubscriberCount'
-> & {
+> = ChannelsStateContextValue<StreamChatGenerics> & {
   cid: string;
   key: Key;
 };
 
-/* 
+/*
   This hook takes care of creating a useState-like interface which can be used later to call
   updates to the ChannelsStateContext reducer. It receives the cid and key which it wants to update
   and perform the state updates. Also supports a initialState.
@@ -28,15 +25,7 @@ function useStateManager<
   Key extends Keys,
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  {
-    cid,
-    key,
-    setState,
-    state,
-  }: Omit<
-    StateManagerParams<Key, StreamChatGenerics>,
-    'increaseSubscriberCount' | 'decreaseSubscriberCount'
-  >,
+  { cid, key, setState, state }: StateManagerParams<Key, StreamChatGenerics>,
   initialValue?: ChannelState<StreamChatGenerics>[Key],
 ) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -79,17 +68,7 @@ export function useChannelState<
   threadId?: string,
 ): UseChannelStateValue<StreamChatGenerics> {
   const cid = channel?.id || 'id'; // in case channel is not initialized, use generic id string for indexing
-  const { decreaseSubscriberCount, increaseSubscriberCount, setState, state } =
-    useChannelsStateContext<StreamChatGenerics>();
-
-  // Keeps track of how many Channel components are subscribed to this Channel state (Channel vs Thread concurrency)
-  useEffect(() => {
-    increaseSubscriberCount({ cid });
-    return () => {
-      decreaseSubscriberCount({ cid });
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { setState, state } = useChannelsStateContext<StreamChatGenerics>();
 
   const [members, setMembers] = useStateManager(
     {
