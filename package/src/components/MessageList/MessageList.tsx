@@ -469,7 +469,6 @@ const MessageListWithContext = <
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // TODO: Think if the useEffect is really needed?
   useEffect(() => {
     const lastReceivedMessage = getLastReceivedMessage(processedMessageList);
     setLastReceivedId(lastReceivedMessage?.id);
@@ -514,6 +513,7 @@ const MessageListWithContext = <
       }
     };
 
+    // TODO: Think about if this is really needed?
     if (threadList) {
       scrollToBottomIfNeeded();
     }

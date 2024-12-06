@@ -294,6 +294,7 @@ export const useMessageListPagination = <
             last_read_message_id: lastReadMessageId,
           });
         }
+
         jumpToMessageFinished(channel.state.messagePagination.hasNext, firstUnreadMessageId);
         if (setTargetedMessage) {
           setTargetedMessage(firstUnreadMessageId);
