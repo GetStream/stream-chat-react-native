@@ -382,6 +382,13 @@ const MessageListWithContext = <
     const lastItem = viewableItems[viewableItems.length - 1];
 
     if (lastItem) {
+      if (
+        !channel.state.messagePagination.hasPrev &&
+        processedMessageList[processedMessageList.length - 1].id === lastItem.item.id
+      ) {
+        setStickyHeaderDate(undefined);
+        return;
+      }
       const isMessageTypeDeleted = lastItem.item.type === 'deleted';
 
       if (
