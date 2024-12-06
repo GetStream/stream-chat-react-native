@@ -21,7 +21,7 @@ type StateManagerParams<
   updates to the ChannelsStateContext reducer. It receives the cid and key which it wants to update
   and perform the state updates. Also supports a initialState.
 */
-function useStateManager<
+export function useStateManager<
   Key extends Keys,
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
@@ -45,20 +45,8 @@ function useStateManager<
 export type UseChannelStateValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
-  members: ChannelState<StreamChatGenerics>['members'];
-  messages: ChannelState<StreamChatGenerics>['messages'];
-  read: ChannelState<StreamChatGenerics>['read'];
-  setMembers: (value: ChannelState<StreamChatGenerics>['members']) => void;
-  setMessages: (value: ChannelState<StreamChatGenerics>['messages']) => void;
-  setRead: (value: ChannelState<StreamChatGenerics>['read']) => void;
   setThreadMessages: (value: ChannelState<StreamChatGenerics>['threadMessages']) => void;
-  setTyping: (value: ChannelState<StreamChatGenerics>['typing']) => void;
-  setWatcherCount: (value: ChannelState<StreamChatGenerics>['watcherCount']) => void;
-  setWatchers: (value: ChannelState<StreamChatGenerics>['watchers']) => void;
   threadMessages: ChannelState<StreamChatGenerics>['threadMessages'];
-  typing: ChannelState<StreamChatGenerics>['typing'];
-  watcherCount: ChannelState<StreamChatGenerics>['watcherCount'];
-  watchers: ChannelState<StreamChatGenerics>['watchers'];
 };
 
 export function useChannelState<
@@ -69,63 +57,6 @@ export function useChannelState<
 ): UseChannelStateValue<StreamChatGenerics> {
   const cid = channel?.id || 'id'; // in case channel is not initialized, use generic id string for indexing
   const { setState, state } = useChannelsStateContext<StreamChatGenerics>();
-
-  const [members, setMembers] = useStateManager(
-    {
-      cid,
-      key: 'members',
-      setState,
-      state,
-    },
-    channel?.state?.members || {},
-  );
-
-  const [messages, setMessages] = useStateManager(
-    {
-      cid,
-      key: 'messages',
-      setState,
-      state,
-    },
-    channel?.state?.messages || [],
-  );
-
-  const [read, setRead] = useStateManager(
-    {
-      cid,
-      key: 'read',
-      setState,
-      state,
-    },
-    channel?.state?.read || {},
-  );
-
-  const [typing, setTyping] = useStateManager(
-    {
-      cid,
-      key: 'typing',
-      setState,
-      state,
-    },
-    {},
-  );
-
-  const [watcherCount, setWatcherCount] = useStateManager({
-    cid,
-    key: 'watcherCount',
-    setState,
-    state,
-  });
-
-  const [watchers, setWatchers] = useStateManager(
-    {
-      cid,
-      key: 'watchers',
-      setState,
-      state,
-    },
-    {},
-  );
 
   const [threadMessages, setThreadMessages] = useStateManager(
     {
@@ -138,19 +69,7 @@ export function useChannelState<
   );
 
   return {
-    members,
-    messages,
-    read,
-    setMembers,
-    setMessages,
-    setRead,
     setThreadMessages,
-    setTyping,
-    setWatcherCount,
-    setWatchers,
     threadMessages,
-    typing,
-    watcherCount,
-    watchers,
   };
 }

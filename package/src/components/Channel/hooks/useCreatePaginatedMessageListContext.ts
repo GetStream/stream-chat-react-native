@@ -9,9 +9,9 @@ export const useCreatePaginatedMessageListContext = <
 >({
   channelId,
   hasMore,
-  hasNoMoreRecentMessagesToLoad,
   loadingMore,
   loadingMoreRecent,
+  loadLatestMessages,
   loadMore,
   loadMoreRecent,
   messages,
@@ -25,9 +25,9 @@ export const useCreatePaginatedMessageListContext = <
   const paginatedMessagesContext: PaginatedMessageListContextValue<StreamChatGenerics> = useMemo(
     () => ({
       hasMore,
-      hasNoMoreRecentMessagesToLoad,
       loadingMore,
       loadingMoreRecent,
+      loadLatestMessages,
       loadMore,
       loadMoreRecent,
       messages,
@@ -35,14 +35,7 @@ export const useCreatePaginatedMessageListContext = <
       setLoadingMoreRecent,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      channelId,
-      hasMore,
-      loadingMoreRecent,
-      loadingMore,
-      hasNoMoreRecentMessagesToLoad,
-      messagesStr,
-    ],
+    [channelId, hasMore, loadingMore, loadingMoreRecent, messagesStr],
   );
 
   return paginatedMessagesContext;

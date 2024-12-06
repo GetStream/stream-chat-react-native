@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { View } from 'react-native';
 
-import { act, cleanup, render, waitFor } from '@testing-library/react-native';
+import { act, cleanup, render, renderHook, waitFor } from '@testing-library/react-native';
 import { StreamChat } from 'stream-chat';
 
 import { ChannelContext, ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
@@ -15,7 +15,7 @@ import { ThreadContext, ThreadProvider } from '../../../contexts/threadContext/T
 
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
-import dispatchChannelDeletedEvent from '../../../mock-builders/event/channelDeleted';
+import dispatchConnectionChanged from '../../../mock-builders/event/connectionChanged';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
@@ -24,6 +24,11 @@ import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Attachment } from '../../Attachment/Attachment';
 import { Chat } from '../../Chat/Chat';
 import { Channel } from '../Channel';
+import {
+  channelInitialState,
+  useChannelDataState,
+  useChannelMessageDataState,
+} from '../hooks/useChannelDataState';
 
 // This component is used for performing effects in a component that consumes ChannelContext,
 // i.e. making use of the callbacks & values provided by the Channel component.
@@ -203,17 +208,6 @@ describe('Channel', () => {
     await waitFor(() => expect(channelQuerySpy).toHaveBeenCalled());
   });
 
-  it('should render null if channel gets deleted', async () => {
-    const { getByTestId, queryByTestId } = renderComponent({
-      channel,
-      children: <View testID='children' />,
-    });
-
-    await waitFor(() => expect(getByTestId('children')).toBeTruthy());
-    act(() => dispatchChannelDeletedEvent(chatClient, channel));
-    expect(queryByTestId('children')).toBeNull();
-  });
-
   describe('ChannelContext', () => {
     it('renders children without crashing', async () => {
       const { getByTestId } = render(
@@ -337,6 +331,243 @@ describe('Channel', () => {
         expect(context.threadHasMore).toBe(true);
         expect(context.threadLoadingMore).toBe(false);
       });
+    });
+  });
+});
+
+describe('Channel initial load useEffect', () => {
+  let chatClient;
+
+  const renderComponent = (props = {}) =>
+    render(
+      <Chat client={chatClient}>
+        <Channel {...props}>{props.children}</Channel>
+      </Chat>,
+    );
+
+  beforeEach(async () => {
+    chatClient = await getTestClientWithUser(user);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+  });
+
+  it('should not call channel.watch if channel is not initialized', async () => {
+    const messages = Array.from({ length: 10 }, (_, i) => generateMessage({ id: i }));
+    const mockedChannel = generateChannelResponse({
+      messages,
+    });
+
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+    channel.offlineMode = true;
+    channel.state = channelInitialState;
+    const watchSpy = jest.fn();
+    channel.watch = watchSpy;
+
+    renderComponent({ channel });
+
+    await waitFor(() => expect(watchSpy).not.toHaveBeenCalled());
+  });
+
+  it("should call channel.watch if channel is initialized and it's not in offline mode", async () => {
+    const messages = Array.from({ length: 10 }, (_, i) => generateMessage({ id: i }));
+    const mockedChannel = generateChannelResponse({
+      messages,
+    });
+
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+
+    channel.state = {
+      ...channelInitialState,
+      members: Object.fromEntries(
+        Array.from({ length: 10 }, (_, i) => [i, generateMember({ id: i })]),
+      ),
+      messagePagination: {
+        hasPrev: true,
+      },
+      messages: Array.from({ length: 10 }, (_, i) => generateMessage({ id: i })),
+    };
+    const watchSpy = jest.fn();
+
+    channel.offlineMode = false;
+    channel.initialied = false;
+    channel.watch = watchSpy;
+
+    renderComponent({ channel });
+
+    const { result: channelMessageState } = renderHook(() => useChannelMessageDataState(channel));
+    const { result: channelState } = renderHook(() => useChannelDataState(channel));
+
+    await waitFor(() => expect(watchSpy).toHaveBeenCalled());
+    await waitFor(() => expect(channelMessageState.current.state.messages).toHaveLength(10));
+    await waitFor(() => expect(Object.keys(channelState.current.state.members)).toHaveLength(10));
+  });
+
+  function getElementsAround(array, key, id) {
+    const index = array.findIndex((obj) => obj[key] === id);
+
+    if (index === -1) {
+      return [];
+    }
+
+    const start = Math.max(0, index - 12); // 12 before the index
+    const end = Math.min(array.length, index + 13); // 12 after the index
+    return array.slice(start, end);
+  }
+
+  it('should call the loadChannelAroundMessage when messageId is passed to a channel', async () => {
+    const messages = Array.from({ length: 105 }, (_, i) => generateMessage({ id: i }));
+    const messageToSearch = messages[50];
+    const mockedChannel = generateChannelResponse({
+      messages,
+    });
+
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+
+    const loadMessageIntoState = jest.fn(() => {
+      const newMessages = getElementsAround(messages, 'id', messageToSearch.id);
+      channel.state.messages = newMessages;
+    });
+
+    channel.state = {
+      ...channelInitialState,
+      loadMessageIntoState,
+      messagePagination: {
+        hasNext: true,
+        hasPrev: true,
+      },
+      messages,
+    };
+
+    renderComponent({ channel, messageId: messageToSearch.id });
+
+    await waitFor(() => {
+      expect(loadMessageIntoState).toHaveBeenCalledWith(messageToSearch.id, undefined, 25);
+    });
+
+    const { result: channelMessageState } = renderHook(() => useChannelMessageDataState(channel));
+    await waitFor(() => expect(channelMessageState.current.state.messages).toHaveLength(25));
+    await waitFor(() =>
+      expect(
+        channelMessageState.current.state.messages.find(
+          (message) => message.id === messageToSearch.id,
+        ),
+      ).toBeTruthy(),
+    );
+  });
+
+  it("should not call loadChannelAtFirstUnreadMessage if channel's unread count is 0", async () => {
+    const mockedChannel = generateChannelResponse({
+      messages: Array.from({ length: 10 }, (_, i) => generateMessage({ text: `message-${i}` })),
+    });
+
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+    const messages = Array.from({ length: 100 }, (_, i) => generateMessage({ id: i }));
+
+    const loadMessageIntoState = jest.fn();
+    channel.state = {
+      ...channelInitialState,
+      loadMessageIntoState,
+      messagePagination: {
+        hasNext: true,
+        hasPrev: true,
+      },
+      messages,
+    };
+    channel.countUnread = jest.fn(() => 0);
+
+    renderComponent({ channel, initialScrollToFirstUnreadMessage: true });
+
+    await waitFor(() => {
+      expect(loadMessageIntoState).not.toHaveBeenCalled();
+    });
+  });
+
+  it("should call loadChannelAtFirstUnreadMessage if channel's unread count is greater than 0", async () => {
+    const mockedChannel = generateChannelResponse({
+      messages: Array.from({ length: 10 }, (_, i) => generateMessage({ text: `message-${i}` })),
+    });
+
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+    const messages = Array.from({ length: 100 }, (_, i) => generateMessage({ id: i }));
+
+    let targetedMessageId = 0;
+    const loadMessageIntoState = jest.fn((id) => {
+      targetedMessageId = id;
+      const newMessages = getElementsAround(messages, 'id', id);
+      channel.state.messages = newMessages;
+    });
+
+    channel.state = {
+      ...channelInitialState,
+      loadMessageIntoState,
+      messagePagination: {
+        hasNext: true,
+        hasPrev: true,
+      },
+      messages,
+      messageSets: [{ isCurrent: true, isLatest: true }],
+    };
+
+    channel.countUnread = jest.fn(() => 15);
+
+    renderComponent({ channel, initialScrollToFirstUnreadMessage: true });
+
+    await waitFor(() => {
+      expect(loadMessageIntoState).toHaveBeenCalledTimes(1);
+    });
+
+    const { result: channelMessageState } = renderHook(() => useChannelMessageDataState(channel));
+    await waitFor(() =>
+      expect(
+        channelMessageState.current.state.messages.find(
+          (message) => message.id === targetedMessageId,
+        ),
+      ).toBeDefined(),
+    );
+  });
+
+  it('should call resyncChannel when connection changed event is triggered', async () => {
+    const mockedChannel = generateChannelResponse({
+      messages: Array.from({ length: 10 }, (_, i) => generateMessage({ text: `message-${i}` })),
+    });
+
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+
+    renderComponent({ channel });
+
+    await waitFor(() => {
+      act(() => dispatchConnectionChanged(chatClient, false));
+    });
+
+    await waitFor(() => {
+      channel.state.addMessagesSorted(
+        Array.from({ length: 10 }, (_, i) =>
+          generateMessage({ status: 'failed', text: `message-${i}` }),
+        ),
+      );
+    });
+
+    await waitFor(() => {
+      act(() => dispatchConnectionChanged(chatClient));
+    });
+
+    await waitFor(() => {
+      expect(channel.state.messages.length).toBe(20);
     });
   });
 });

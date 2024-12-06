@@ -8,6 +8,8 @@ export const USER_TOKENS: Record<string, string> = {
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZTJldGVzdDIifQ.2ZsHCMJ7i0vZvRJ5yoT-bm8OD_KAzBgJ-kB6bHGZ4FI',
   e2etest3:
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZTJldGVzdDMifQ.RWHY-MYkpP8FTJkfgrxUlCQhwap6eB7DTsp_HsZ1oIw',
+  khushal:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoia2h1c2hhbCJ9.NG3b6I8MgkLevwuTTqDXTpOol-Yj_1NCyvxewL_tg4U',
   neil: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoibmVpbCJ9.ty2YhwFaVEYkq1iUfY8s1G0Um3MpiVYpWK-b5kMky0w',
   qatest1:
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoicWF0ZXN0MSJ9.5Nnj6MsauhjP7_D8jW9WbRovLv5uaxn8LPZZ-HB3mh4',
@@ -41,7 +43,11 @@ export const USERS: Record<string, UserResponse<StreamChatGenerics>> = {
     image: 'https://randomuser.me/api/portraits/thumb/men/11.jpg',
     name: 'QA Test 2',
   },
-
+  khushal: {
+    id: 'khushal',
+    image: 'https://ca.slack-edge.com/T02RM6X6B-U02DTREQ2KX-41639a005d53-512',
+    name: 'Khushal Agarwal',
+  },
   thierry: {
     id: 'thierry',
     image: 'https://ca.slack-edge.com/T02RM6X6B-U02RM6X6D-g28a1278a98e-512',

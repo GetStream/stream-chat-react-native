@@ -64,9 +64,16 @@ export type ChannelContextValue<
    *
    * @param messageId If undefined, channel will be loaded at most recent message.
    */
-  loadChannelAroundMessage: ({ messageId }: { messageId?: string }) => Promise<void>;
+  loadChannelAroundMessage: ({
+    limit,
+    messageId,
+    setTargetedMessage,
+  }: {
+    limit?: number;
+    messageId?: string;
+    setTargetedMessage?: (messageId: string) => void;
+  }) => Promise<void>;
 
-  loading: boolean;
   /**
    * Custom loading indicator to override the Stream default
    */
@@ -113,6 +120,31 @@ export type ChannelContextValue<
    * Its a map of filename and AbortController
    */
   uploadAbortControllerRef: React.MutableRefObject<Map<string, AbortController>>;
+  disabled?: boolean;
+  enableMessageGroupingByUser?: boolean;
+  isChannelActive?: boolean;
+  lastRead?: Date;
+
+  loading?: boolean;
+  /**
+   * Maximum time in milliseconds that should occur between messages
+   * to still consider them grouped together
+   */
+  maxTimeBetweenGroupedMessages?: number;
+  /**
+   * Custom UI component for sticky header of channel.
+   *
+   * **Default** [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)
+   */
+  StickyHeader?: React.ComponentType<StickyHeaderProps>;
+
+  /**
+   * Id of message, around which Channel/MessageList gets loaded when opened.
+   * You will see a highlighted background for targetted message, when opened.
+   */
+  targetedMessage?: string;
+  threadList?: boolean;
+  watcherCount?: ChannelState<StreamChatGenerics>['watcher_count'];
   /**
    *
    * ```json
@@ -136,29 +168,7 @@ export type ChannelContextValue<
    * }
    * ```
    */
-  watchers: ChannelState<StreamChatGenerics>['watchers'];
-  disabled?: boolean;
-  enableMessageGroupingByUser?: boolean;
-  isChannelActive?: boolean;
-  lastRead?: Date;
-  /**
-   * Maximum time in milliseconds that should occur between messages
-   * to still consider them grouped together
-   */
-  maxTimeBetweenGroupedMessages?: number;
-  /**
-   * Custom UI component for sticky header of channel.
-   *
-   * **Default** [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)
-   */
-  StickyHeader?: React.ComponentType<StickyHeaderProps>;
-  /**
-   * Id of message, around which Channel/MessageList gets loaded when opened.
-   * You will see a highlighted background for targetted message, when opened.
-   */
-  targetedMessage?: string;
-  threadList?: boolean;
-  watcherCount?: ChannelState<StreamChatGenerics>['watcher_count'];
+  watchers?: ChannelState<StreamChatGenerics>['watchers'];
 };
 
 export const ChannelContext = React.createContext(

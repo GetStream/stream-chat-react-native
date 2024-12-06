@@ -11,21 +11,10 @@ export type PaginatedMessageListContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   /**
-   * Has more messages to load
+   * Load latest messages
+   * @returns Promise<void>
    */
-  hasMore: boolean;
-  /**
-   * Flag to indicate that are no more recent messages to be loaded
-   */
-  hasNoMoreRecentMessagesToLoad: boolean;
-  /**
-   * Is loading more messages
-   */
-  loadingMore: boolean;
-  /**
-   * Is loading more recent messages
-   */
-  loadingMoreRecent: boolean;
+  loadLatestMessages: () => Promise<void>;
   /**
    * Load more messages
    */
@@ -39,13 +28,25 @@ export type PaginatedMessageListContextValue<
    */
   messages: ChannelState<StreamChatGenerics>['messages'];
   /**
+   * Has more messages to load
+   */
+  hasMore?: boolean;
+  /**
+   * Is loading more messages
+   */
+  loadingMore?: boolean;
+  /**
+   * Is loading more recent messages
+   */
+  loadingMoreRecent?: boolean;
+  /**
    * Set loadingMore
    */
-  setLoadingMore: React.Dispatch<React.SetStateAction<boolean>>;
+  setLoadingMore?: (loadingMore: boolean) => void;
   /**
    * Set loadingMoreRecent
    */
-  setLoadingMoreRecent: React.Dispatch<React.SetStateAction<boolean>>;
+  setLoadingMoreRecent?: (loadingMoreRecent: boolean) => void;
 };
 
 export const PaginatedMessageListContext = React.createContext(
