@@ -97,6 +97,7 @@ export * from './KeyboardCompatibleView/KeyboardCompatibleView';
 export * from './Message/hooks/useCreateMessageContext';
 export * from './Message/hooks/useMessageActions';
 export * from './Message/hooks/useMessageActionHandlers';
+export * from './Message/hooks/useStreamingMessage';
 export * from './Message/Message';
 export * from './Message/MessageSimple/MessageAvatar';
 export * from './Message/MessageSimple/MessageBounce';
@@ -133,6 +134,7 @@ export * from './MessageInput/InputButtons';
 export * from './MessageInput/MessageInput';
 export * from './MessageInput/MoreOptionsButton';
 export * from './MessageInput/SendButton';
+export * from './MessageInput/StopMessageStreamingButton';
 export * from './MessageInput/ShowThreadMessageInChannelButton';
 export * from './MessageInput/UploadProgressIndicator';
 
@@ -173,3 +175,6 @@ export * from './UIComponents/Spinner';
 export * from './Thread/Thread';
 export * from './Thread/components/ThreadFooterComponent';
 export * from './ThreadList/ThreadList';
+
+export * from './Message/MessageSimple/StreamingMessageView';
+export * from './AITypingIndicatorView';

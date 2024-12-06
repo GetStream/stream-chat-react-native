@@ -498,8 +498,8 @@ describe('Channel initial load useEffect', () => {
       const read_data = {};
 
       read_data[chatClient.user.id] = {
-        user: user,
         last_read: new Date(),
+        user,
       };
 
       channel.state = {
@@ -533,9 +533,9 @@ describe('Channel initial load useEffect', () => {
       const read_data = {};
 
       read_data[chatClient.user.id] = {
-        user: user,
         last_read: new Date(),
         unread_messages: numberOfUnreadMessages,
+        user,
       };
       channel.state = {
         ...channelInitialState,
@@ -568,9 +568,9 @@ describe('Channel initial load useEffect', () => {
       const read_data = {};
 
       read_data[chatClient.user.id] = {
-        user: user,
         last_read: new Date(),
         unread_messages: numberOfUnreadMessages,
+        user,
       };
       channel.state = {
         ...channelInitialState,

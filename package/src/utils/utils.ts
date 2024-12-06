@@ -108,7 +108,7 @@ export const isEditedMessage = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   message: MessageType<StreamChatGenerics>,
-) => !!message.message_text_updated_at;
+) => !!message.message_text_updated_at && !message.ai_generated;
 
 /**
  * Default emoji search index for auto complete text input

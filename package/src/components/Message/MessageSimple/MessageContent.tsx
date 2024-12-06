@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   AnimatableNumericValue,
   ColorValue,
@@ -80,6 +80,7 @@ export type MessageContentPropsWithContext<
   | 'otherAttachments'
   | 'preventPress'
   | 'threadList'
+  | 'isMessageAIGenerated'
 > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
@@ -91,6 +92,7 @@ export type MessageContentPropsWithContext<
     | 'MessageError'
     | 'myMessageTheme'
     | 'Reply'
+    | 'StreamingMessageView'
   > &
   Pick<TranslationContextValue, 't'> & {
     setMessageContentWidth: React.Dispatch<React.SetStateAction<number>>;
@@ -120,6 +122,7 @@ const MessageContentWithContext = <
     FileAttachmentGroup,
     Gallery,
     groupStyles,
+    isMessageAIGenerated,
     isMyMessage,
     message,
     messageContentOrder,
@@ -132,6 +135,7 @@ const MessageContentWithContext = <
     preventPress,
     Reply,
     setMessageContentWidth,
+    StreamingMessageView,
     threadList,
   } = props;
   const { client } = useChatContext();
@@ -168,6 +172,11 @@ const MessageContentWithContext = <
   }) => {
     setMessageContentWidth(width);
   };
+
+  const isAIGenerated = useMemo(
+    () => isMessageAIGenerated(message),
+    [message, isMessageAIGenerated],
+  );
 
   const { hasThreadReplies, isMessageErrorType, isMessageReceivedOrErrorType } = useMessageData({});
 
@@ -312,9 +321,16 @@ const MessageContentWithContext = <
                   />
                 ) : null;
               }
+              case 'ai_text':
+                return isAIGenerated ? (
+                  <StreamingMessageView
+                    key={`ai_message_text_container_${messageContentOrderIndex}`}
+                  />
+                ) : null;
               case 'text':
               default:
-                return otherAttachments.length && otherAttachments[0].actions ? null : (
+                return (otherAttachments.length && otherAttachments[0].actions) ||
+                  isAIGenerated ? null : (
                   <MessageTextContainer<StreamChatGenerics>
                     key={`message_text_container_${messageContentOrderIndex}`}
                   />
@@ -463,6 +479,7 @@ export const MessageContent = <
     goToMessage,
     groupStyles,
     isEditedMessageOpen,
+    isMessageAIGenerated,
     isMyMessage,
     lastReceivedId,
     message,
@@ -483,6 +500,7 @@ export const MessageContent = <
     MessageError,
     myMessageTheme,
     Reply,
+    StreamingMessageView,
   } = useMessagesContext<StreamChatGenerics>();
   const { t } = useTranslationContext();
 
@@ -498,6 +516,7 @@ export const MessageContent = <
         groupStyles,
         isAttachmentEqual,
         isEditedMessageOpen,
+        isMessageAIGenerated,
         isMyMessage,
         lastReceivedId,
         message,
@@ -510,6 +529,7 @@ export const MessageContent = <
         otherAttachments,
         preventPress,
         Reply,
+        StreamingMessageView,
         t,
         threadList,
       }}

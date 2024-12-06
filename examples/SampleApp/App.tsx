@@ -6,6 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Chat,
+  MessageType,
   OverlayProvider,
   SqliteClient,
   ThemeProvider,
@@ -182,6 +183,7 @@ const DrawerNavigatorWrapper: React.FC<{
           enableOfflineSupport
           // @ts-expect-error
           ImageComponent={FastImage}
+          isMessageAIGenerated={(message: MessageType) => message.ai_generated}
         >
           <AppOverlayProvider>
             <UserSearchProvider>

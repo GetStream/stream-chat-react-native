@@ -355,8 +355,8 @@ describe('useMessageListPagination', () => {
 
       const user = generateUser();
       const channelUnreadState = {
-        user,
         unread_messages: 0,
+        user,
       };
 
       const jumpToMessageFinishedMock = jest.fn();
@@ -374,44 +374,44 @@ describe('useMessageListPagination', () => {
     });
 
     const generateMessageArray = (length = 20) =>
-      Array.from({ length }, (_, i) => generateMessage({ text: `message-${i}`, id: i }));
+      Array.from({ length }, (_, i) => generateMessage({ id: i, text: `message-${i}` }));
 
     // Test cases with different scenarios
     const testCases = [
       {
-        name: 'first_unread_message_id present in current message set',
-        initialMessages: generateMessageArray(),
         channelUnreadState: (messages) => ({
-          unread_messages: 2,
           first_unread_message_id: messages[2].id,
+          unread_messages: 2,
         }),
         expectedCalls: {
-          loadMessageIntoStateCalls: 0,
           jumpToMessageFinishedCalls: 1,
+          loadMessageIntoStateCalls: 0,
           setChannelUnreadStateCalls: 0,
           setTargetedMessageIdCalls: 1,
           targetedMessageId: (messages) => messages[2].id,
         },
+        initialMessages: generateMessageArray(),
+        name: 'first_unread_message_id present in current message set',
         setupLoadMessageIntoState: null,
       },
       {
-        name: 'first_unread_message_id not present in current message set',
-        initialMessages: generateMessageArray(),
         channelUnreadState: () => ({
-          unread_messages: 2,
           first_unread_message_id: 21,
+          unread_messages: 2,
         }),
         expectedCalls: {
-          loadMessageIntoStateCalls: 1,
           jumpToMessageFinishedCalls: 1,
+          loadMessageIntoStateCalls: 1,
           setChannelUnreadStateCalls: 0,
           setTargetedMessageIdCalls: 1,
           targetedMessageId: () => 21,
         },
+        initialMessages: generateMessageArray(),
+        name: 'first_unread_message_id not present in current message set',
         setupLoadMessageIntoState: (channel) => {
           const loadMessageIntoState = jest.fn(() => {
             const newMessages = Array.from({ length: 20 }, (_, i) =>
-              generateMessage({ text: `message-${i + 21}`, id: i + 21 }),
+              generateMessage({ id: i + 21, text: `message-${i + 21}` }),
             );
             channel.state.messages = newMessages;
             channel.state.messagePagination.hasPrev = true;
@@ -421,39 +421,39 @@ describe('useMessageListPagination', () => {
         },
       },
       {
-        name: 'last_read_message_id present in current message set',
-        initialMessages: generateMessageArray(),
         channelUnreadState: (messages) => ({
-          unread_messages: 2,
           last_read_message_id: messages[2].id,
+          unread_messages: 2,
         }),
         expectedCalls: {
-          loadMessageIntoStateCalls: 0,
           jumpToMessageFinishedCalls: 1,
+          loadMessageIntoStateCalls: 0,
           setChannelUnreadStateCalls: 1,
           setTargetedMessageIdCalls: 1,
           targetedMessageId: (messages) => messages[3].id,
         },
+        initialMessages: generateMessageArray(),
+        name: 'last_read_message_id present in current message set',
         setupLoadMessageIntoState: null,
       },
       {
-        name: 'last_read_message_id not present in current message set',
-        initialMessages: generateMessageArray(),
         channelUnreadState: () => ({
-          unread_messages: 2,
           last_read_message_id: 21,
+          unread_messages: 2,
         }),
         expectedCalls: {
-          loadMessageIntoStateCalls: 1,
           jumpToMessageFinishedCalls: 1,
+          loadMessageIntoStateCalls: 1,
           setChannelUnreadStateCalls: 1,
           setTargetedMessageIdCalls: 1,
           targetedMessageId: () => 22,
         },
+        initialMessages: generateMessageArray(),
+        name: 'last_read_message_id not present in current message set',
         setupLoadMessageIntoState: (channel) => {
           const loadMessageIntoState = jest.fn(() => {
             const newMessages = Array.from({ length: 20 }, (_, i) =>
-              generateMessage({ text: `message-${i + 21}`, id: i + 21 }),
+              generateMessage({ id: i + 21, text: `message-${i + 21}` }),
             );
             channel.state.messages = newMessages;
             channel.state.messagePagination.hasPrev = true;
@@ -464,16 +464,16 @@ describe('useMessageListPagination', () => {
       },
     ];
 
-    it.each(testCases)('$name', async (testCase) => {
+    it.each(testCases)(`%name`, async (testCase) => {
       // Setup channel state
       const messages = testCase.initialMessages;
       channel.state = {
         ...channelInitialState,
-        messages,
         messagePagination: {
           hasNext: true,
           hasPrev: true,
         },
+        messages,
       };
 
       // Setup additional mocks if needed
@@ -535,47 +535,24 @@ describe('useMessageListPagination', () => {
 
     const messages = Array.from({ length: 20 }, (_, i) =>
       generateMessage({
-        text: `message-${i}`,
-        id: i,
         created_at: new Date(`2021-09-01T00:00:00.000Z`),
+        id: i,
+        text: `message-${i}`,
       }),
     );
 
     const user = generateUser();
 
-    it.each([
-      {
-        name: 'when last_read matches a message',
-        channelUnreadState: {
-          last_read: new Date(messages[10].created_at),
-          user,
-          unread_messages: 2,
-        },
-        expectedQueryCalls: 0,
-        expectedJumpToMessageFinishedCalls: 1,
-        expectedSetChannelUnreadStateCalls: 1,
-        expectedSetTargetedMessageCalls: 1,
-        expectedTargetedMessageId: 10,
-      },
-      {
-        name: 'when last_read does not match any message',
-        channelUnreadState: {
-          last_read: new Date('2021-09-02T00:00:00.000Z'),
-          user,
-          unread_messages: 2,
-        },
-        expectedQueryCalls: 1,
-        expectedJumpToMessageFinishedCalls: 0,
-        expectedSetChannelUnreadStateCalls: 0,
-        expectedSetTargetedMessageCalls: 0,
-        expectedTargetedMessageId: undefined,
-      },
-    ])(
-      '$name',
+    it.each`
+      scenario                                       | last_read                               | expectedQueryCalls | expectedJumpToMessageFinishedCalls | expectedSetChannelUnreadStateCalls | expectedSetTargetedMessageCalls | expectedTargetedMessageId
+      ${'when last_read matches a message'}          | ${new Date(messages[10].created_at)}    | ${0}               | ${1}                               | ${1}                               | ${1}                            | ${10}
+      ${'when last_read does not match any message'} | ${new Date('2021-09-02T00:00:00.000Z')} | ${1}               | ${0}                               | ${0}                               | ${0}                            | ${undefined}
+    `(
+      '$scenario',
       async ({
-        channelUnreadState,
-        expectedQueryCalls,
+        last_read,
         expectedJumpToMessageFinishedCalls,
+        expectedQueryCalls,
         expectedSetChannelUnreadStateCalls,
         expectedSetTargetedMessageCalls,
         expectedTargetedMessageId,
@@ -583,11 +560,17 @@ describe('useMessageListPagination', () => {
         // Set up channel state
         channel.state = {
           ...channelInitialState,
-          messages,
           messagePagination: {
             hasNext: true,
             hasPrev: true,
           },
+          messages,
+        };
+
+        const channelUnreadState = {
+          last_read,
+          user,
+          unread_messages: 2,
         };
 
         // Mock query if needed

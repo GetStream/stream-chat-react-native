@@ -470,6 +470,9 @@ const MessageListWithContext = <
     }
   }, [disabled]);
 
+  /**
+   * Effect to mark the channel as read when the user scrolls to the bottom of the message list.
+   */
   useEffect(() => {
     const listener: ReturnType<typeof channel.on> = channel.on('message.new', (event) => {
       const newMessageToCurrentChannel = event.cid === channel.cid;

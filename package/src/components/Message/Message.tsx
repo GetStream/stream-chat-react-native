@@ -126,9 +126,15 @@ export type MessagePropsWithContext<
 > = Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'enforceUniqueReaction' | 'members'> &
   Pick<KeyboardContextValue, 'dismissKeyboard'> &
   Partial<
-    Omit<MessageContextValue<StreamChatGenerics>, 'groupStyles' | 'handleReaction' | 'message'>
+    Omit<
+      MessageContextValue<StreamChatGenerics>,
+      'groupStyles' | 'handleReaction' | 'message' | 'isMessageAIGenerated'
+    >
   > &
-  Pick<MessageContextValue<StreamChatGenerics>, 'groupStyles' | 'message'> &
+  Pick<
+    MessageContextValue<StreamChatGenerics>,
+    'groupStyles' | 'message' | 'isMessageAIGenerated'
+  > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
     | 'sendReaction'
@@ -257,6 +263,11 @@ const MessageWithContext = <
     threadList = false,
     updateMessage,
   } = props;
+  const isMessageAIGenerated = messagesContext.isMessageAIGenerated;
+  const isAIGenerated = useMemo(
+    () => isMessageAIGenerated(message),
+    [message, isMessageAIGenerated],
+  );
   const isMessageTypeDeleted = message.type === 'deleted';
   const { client } = chatContext;
   const {
@@ -421,6 +432,8 @@ const MessageWithContext = <
         return !!attachments.images.length || !!attachments.videos.length;
       case 'poll':
         return !!message.poll_id;
+      case 'ai_text':
+        return isAIGenerated;
       case 'text':
       default:
         return !!message.text;
@@ -598,6 +611,7 @@ const MessageWithContext = <
     hasReactions,
     images: attachments.images,
     isEditedMessageOpen,
+    isMessageAIGenerated,
     isMyMessage,
     lastGroupMessage: groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
     lastReceivedId,
