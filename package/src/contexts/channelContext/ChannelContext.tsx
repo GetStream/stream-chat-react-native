@@ -129,7 +129,7 @@ export type ChannelContextValue<
     React.SetStateAction<ChannelUnreadState<StreamChatGenerics> | undefined>
   >;
   setLastRead: React.Dispatch<React.SetStateAction<Date | undefined>>;
-  setTargetedMessage: (messageId: string) => void;
+  setTargetedMessage: (messageId?: string) => void;
   /**
    * Abort controller for cancelling async requests made for uploading images/files
    * Its a map of filename and AbortController
@@ -138,6 +138,10 @@ export type ChannelContextValue<
   channelUnreadState?: ChannelUnreadState<StreamChatGenerics>;
   disabled?: boolean;
   enableMessageGroupingByUser?: boolean;
+  /**
+   * Id of message, which is highlighted in the channel.
+   */
+  highlightedMessageId?: string;
   isChannelActive?: boolean;
 
   lastRead?: Date;

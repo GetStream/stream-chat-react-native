@@ -210,7 +210,6 @@ export const useMessageListPagination = <
           firstUnreadMessageId =
             messageIdx > -1 ? channel.state.messages[messageIdx + 1]?.id : undefined;
         } else {
-          // TODO
           const lastReadTimestamp = last_read.getTime();
           const { index: lastReadIdx, message: lastReadMessage } = findInMessagesByDate(
             channel.state.messages,

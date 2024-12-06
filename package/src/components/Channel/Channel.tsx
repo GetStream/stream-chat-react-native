@@ -675,7 +675,7 @@ const ChannelWithContext = <
 
   const syncingChannelRef = useRef(false);
 
-  const { setTargetedMessage, targetedMessage } = useTargetedMessage();
+  const { highlightedMessageId, setTargetedMessage, targetedMessage } = useTargetedMessage();
 
   /**
    * This ref will hold the abort controllers for
@@ -1648,6 +1648,7 @@ const ChannelWithContext = <
       !!(clientChannelConfig?.commands || [])?.some((command) => command.name === 'giphy'),
     hideDateSeparators,
     hideStickyDateHeader,
+    highlightedMessageId,
     isChannelActive: shouldSyncChannel,
     lastRead,
     loadChannelAroundMessage,

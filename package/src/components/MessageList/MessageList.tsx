@@ -113,6 +113,7 @@ type MessageListPropsWithContext<
     | 'disabled'
     | 'EmptyStateIndicator'
     | 'hideStickyDateHeader'
+    | 'highlightedMessageId'
     | 'loadChannelAroundMessage'
     | 'loadChannelAtFirstUnreadMessage'
     | 'loading'
@@ -243,6 +244,7 @@ const MessageListWithContext = <
     FooterComponent = InlineLoadingMoreIndicator,
     HeaderComponent = LoadingMoreRecentIndicator,
     hideStickyDateHeader,
+    highlightedMessageId,
     initialScrollToFirstUnreadMessage,
     InlineDateSeparator,
     InlineUnreadIndicator,
@@ -615,7 +617,7 @@ const MessageListWithContext = <
       <Message
         goToMessage={goToMessage}
         groupStyles={isMessageWithStylesReadByAndDateSeparator(message) ? message.groupStyles : []}
-        isTargetedMessage={targetedMessage === message.id}
+        isTargetedMessage={highlightedMessageId === message.id}
         lastReceivedId={
           lastReceivedId === message.id || message.quoted_message_id ? lastReceivedId : undefined
         }
@@ -916,6 +918,7 @@ const MessageListWithContext = <
           index: indexOfParentInMessageList,
           viewPosition: 0.5, // try to place message in the center of the screen
         });
+        setTargetedMessage(undefined);
       }
     }, 50);
 
@@ -1181,6 +1184,7 @@ export const MessageList = <
     enableMessageGroupingByUser,
     error,
     hideStickyDateHeader,
+    highlightedMessageId,
     isChannelActive,
     loadChannelAroundMessage,
     loadChannelAtFirstUnreadMessage,
@@ -1235,6 +1239,7 @@ export const MessageList = <
         error,
         FlatList,
         hideStickyDateHeader,
+        highlightedMessageId,
         initialScrollToFirstUnreadMessage,
         InlineDateSeparator,
         InlineUnreadIndicator,

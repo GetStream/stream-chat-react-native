@@ -16,7 +16,10 @@ export const InlineUnreadIndicator = () => {
   const { t } = useTranslationContext();
 
   return (
-    <View style={[styles.container, { backgroundColor: light_gray }, container]}>
+    <View
+      accessibilityLabel='Inline unread indicator'
+      style={[styles.container, { backgroundColor: light_gray }, container]}
+    >
       <Text style={[styles.text, { color: grey }, text]}>{t<string>('Unread Messages')}</Text>
     </View>
   );
