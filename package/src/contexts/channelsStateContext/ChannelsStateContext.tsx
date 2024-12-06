@@ -7,6 +7,7 @@ import React, {
   useReducer,
   useRef,
 } from 'react';
+
 import { ChannelState as StreamChannelState } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';

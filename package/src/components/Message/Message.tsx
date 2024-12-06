@@ -125,9 +125,15 @@ export type MessagePropsWithContext<
 > = Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'enforceUniqueReaction' | 'members'> &
   Pick<KeyboardContextValue, 'dismissKeyboard'> &
   Partial<
-    Omit<MessageContextValue<StreamChatGenerics>, 'groupStyles' | 'handleReaction' | 'message' | 'isMessageAIGenerated'>
+    Omit<
+      MessageContextValue<StreamChatGenerics>,
+      'groupStyles' | 'handleReaction' | 'message' | 'isMessageAIGenerated'
+    >
   > &
-  Pick<MessageContextValue<StreamChatGenerics>, 'groupStyles' | 'message' | 'isMessageAIGenerated'> &
+  Pick<
+    MessageContextValue<StreamChatGenerics>,
+    'groupStyles' | 'message' | 'isMessageAIGenerated'
+  > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
     | 'sendReaction'
