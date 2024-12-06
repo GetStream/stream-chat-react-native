@@ -792,8 +792,7 @@ const ChannelWithContext = <
     });
 
     return unsubscribe;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channelId]);
+  }, [channel?.cid, client]);
 
   /**
    * Subscription to the Notification mark_read event.
@@ -805,8 +804,7 @@ const ChannelWithContext = <
 
     const { unsubscribe } = client.on('notification.mark_read', handleEvent);
     return unsubscribe;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [channel.cid, client, copyChannelState]);
 
   const threadPropsExists = !!threadProps;
 
