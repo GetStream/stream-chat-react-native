@@ -37,7 +37,9 @@ export const MessageUserReactionsItem = <
       messageMenu: {
         userReactions: {
           avatarContainer,
+          avatarInnerContainer,
           avatarName,
+          avatarNameContainer,
           avatarSize,
           radius,
           reactionBubbleBackground,
@@ -69,7 +71,7 @@ export const MessageUserReactionsItem = <
       accessibilityLabel='Individual User Reaction on long press message'
       style={[styles.avatarContainer, avatarContainer]}
     >
-      <View style={styles.avatarInnerContainer}>
+      <View style={[styles.avatarInnerContainer, avatarInnerContainer]}>
         <MessageUserReactionsAvatar reaction={reaction} size={avatarSize} />
         <View
           style={[
@@ -91,7 +93,7 @@ export const MessageUserReactionsItem = <
           />
         </View>
       </View>
-      <View style={styles.avatarNameContainer}>
+      <View style={[styles.avatarNameContainer, avatarNameContainer]}>
         <Text numberOfLines={2} style={[styles.avatarName, { color: black }, avatarName]}>
           {name}
         </Text>

@@ -45,6 +45,7 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
   const { children, height = windowHeight / 2, onClose, visible } = props;
   const {
     theme: {
+      bottomSheetModal: { container, contentContainer, handle, overlay: overlayTheme },
       colors: { grey, overlay, white_snow },
     },
   } = useTheme();
@@ -121,7 +122,7 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     <Modal animationType='fade' onRequestClose={handleDismiss} transparent visible={visible}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <TouchableWithoutFeedback onPress={handleDismiss}>
-          <View style={[styles.overlay, { backgroundColor: overlay }]}>
+          <View style={[styles.overlay, { backgroundColor: overlay }, overlayTheme]}>
             <GestureDetector gesture={gesture}>
               <Animated.View
                 style={[
@@ -131,10 +132,13 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
                     height,
                     transform: [{ translateY }],
                   },
+                  container,
                 ]}
               >
-                <View style={[styles.handle, { backgroundColor: grey, width: windowWidth / 4 }]} />
-                <View style={styles.contentContainer}>{children}</View>
+                <View
+                  style={[styles.handle, { backgroundColor: grey, width: windowWidth / 4 }, handle]}
+                />
+                <View style={[styles.contentContainer, contentContainer]}>{children}</View>
               </Animated.View>
             </GestureDetector>
           </View>
