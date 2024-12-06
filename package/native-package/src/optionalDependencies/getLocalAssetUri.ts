@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 let CameraRollDependency;
 
 try {
@@ -12,8 +14,11 @@ try {
 export const getLocalAssetUri = CameraRollDependency
   ? async (remoteUri: string) => {
       try {
-        const localUri = await CameraRollDependency.CameraRoll.save(remoteUri);
-        return localUri;
+        if (Platform.OS === 'ios') {
+          const imageData = await CameraRollDependency.CameraRoll.iosGetImageDataById(remoteUri);
+          return imageData?.node?.image?.filepath;
+        }
+        return remoteUri;
       } catch {
         throw new Error('getLocalAssetUri Error');
       }

@@ -22,6 +22,8 @@ export const useAppSettings = <
      * Fetches app settings from the backend when offline support is disabled.
      */
     const enforceAppSettingsWithoutOfflineSupport = async () => {
+      if (!client.userID) return;
+
       try {
         const appSettings = await client.getAppSettings();
         if (isMounted.current) {

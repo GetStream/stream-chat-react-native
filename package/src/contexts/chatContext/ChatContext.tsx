@@ -4,6 +4,7 @@ import type { ImageProps } from 'react-native';
 import type { AppSettingsAPIResponse, Channel, Mute, StreamChat } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
+import { MessageContextValue } from '../messageContext/MessageContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -64,7 +65,7 @@ export type ChatContextValue<
    * @overrideType Channel
    */
   channel?: Channel<StreamChatGenerics>;
-};
+} & Partial<Pick<MessageContextValue<StreamChatGenerics>, 'isMessageAIGenerated'>>;
 
 export const ChatContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as ChatContextValue);
 
