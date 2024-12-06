@@ -4,7 +4,7 @@ import { PressableProps } from 'react-native';
 
 import type { Attachment, ChannelState, MessageResponse } from 'stream-chat';
 
-import { PollContentProps } from '../../components';
+import type { PollContentProps, StreamingMessageViewProps } from '../../components';
 import type { AttachmentProps } from '../../components/Attachment/Attachment';
 import type { AttachmentActionsProps } from '../../components/Attachment/AttachmentActions';
 import type { AudioAttachmentProps } from '../../components/Attachment/AudioAttachment';
@@ -61,7 +61,7 @@ import type { ReplyProps } from '../../components/Reply/Reply';
 import { FlatList } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
-import type { Alignment } from '../messageContext/MessageContext';
+import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
 import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
@@ -75,12 +75,13 @@ export type MessageContentType =
   | 'gallery'
   | 'quoted_reply'
   | 'poll'
+  | 'ai_text'
   | 'text';
 export type DeletedMessagesVisibilityType = 'always' | 'never' | 'receiver' | 'sender';
 
 export type MessagesContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+> = Pick<MessageContextValue<StreamChatGenerics>, 'isMessageAIGenerated'> & {
   /**
    * UI component for Attachment.
    * Defaults to: [Attachment](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Attachment.tsx)
@@ -294,6 +295,10 @@ export type MessagesContextValue<
   sendReaction: (type: string, messageId: string) => Promise<void>;
   setEditingState: (message?: MessageType<StreamChatGenerics>) => void;
   setQuotedMessageState: (message?: MessageType<StreamChatGenerics>) => void;
+  /**
+   * UI component for StreamingMessageView. Displays the text of a message with a typewriter animation.
+   */
+  StreamingMessageView: React.ComponentType<StreamingMessageViewProps<StreamChatGenerics>>;
   /**
    * UI component for TypingIndicator
    * Defaults to: [TypingIndicator](https://getstream.io/chat/docs/sdk/reactnative/ui-components/typing-indicator/)

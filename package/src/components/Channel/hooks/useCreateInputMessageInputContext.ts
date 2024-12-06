@@ -64,6 +64,7 @@ export const useCreateInputMessageInputContext = <
   showPollCreationDialog,
   ShowThreadMessageInChannelButton,
   StartAudioRecordingButton,
+  StopMessageStreamingButton,
   UploadProgressIndicator,
 }: InputMessageInputContextValue<StreamChatGenerics> & {
   /**
@@ -133,6 +134,7 @@ export const useCreateInputMessageInputContext = <
       showPollCreationDialog,
       ShowThreadMessageInChannelButton,
       StartAudioRecordingButton,
+      StopMessageStreamingButton,
       UploadProgressIndicator,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

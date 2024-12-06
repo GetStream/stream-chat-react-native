@@ -36,6 +36,7 @@ import { useCreateTypingContext } from './hooks/useCreateTypingContext';
 
 import { useTargetedMessage } from './hooks/useTargetedMessage';
 
+import { MessageContextValue } from '../../contexts';
 import { ChannelContextValue, ChannelProvider } from '../../contexts/channelContext/ChannelContext';
 import type { UseChannelStateValue } from '../../contexts/channelsStateContext/useChannelState';
 import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
@@ -142,6 +143,7 @@ import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/
 import { MessageTimestamp as MessageTimestampDefault } from '../Message/MessageSimple/MessageTimestamp';
 import { ReactionListBottom as ReactionListBottomDefault } from '../Message/MessageSimple/ReactionList/ReactionListBottom';
 import { ReactionListTop as ReactionListTopDefault } from '../Message/MessageSimple/ReactionList/ReactionListTop';
+import { StreamingMessageView as DefaultStreamingMessageView } from '../Message/MessageSimple/StreamingMessageView';
 import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButton';
 import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
 import { AudioRecorder as AudioRecorderDefault } from '../MessageInput/components/AudioRecorder/AudioRecorder';
@@ -161,6 +163,7 @@ import { MoreOptionsButton as MoreOptionsButtonDefault } from '../MessageInput/M
 import { SendButton as SendButtonDefault } from '../MessageInput/SendButton';
 import { SendMessageDisallowedIndicator as SendMessageDisallowedIndicatorDefault } from '../MessageInput/SendMessageDisallowedIndicator';
 import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDefault } from '../MessageInput/ShowThreadMessageInChannelButton';
+import { StopMessageStreamingButton as DefaultStopMessageStreamingButton } from '../MessageInput/StopMessageStreamingButton';
 import { UploadProgressIndicator as UploadProgressIndicatorDefault } from '../MessageInput/UploadProgressIndicator';
 import { DateHeader as DateHeaderDefault } from '../MessageList/DateHeader';
 import type { MessageType } from '../MessageList/hooks/useMessageList';
@@ -354,8 +357,10 @@ export type ChannelPropsWithContext<
       | 'VideoThumbnail'
       | 'PollContent'
       | 'hasCreatePoll'
+      | 'StreamingMessageView'
     >
   > &
+  Partial<Pick<MessageContextValue<StreamChatGenerics>, 'isMessageAIGenerated'>> &
   Partial<Pick<ThreadContextValue<StreamChatGenerics>, 'allowThreadMessagesInChannel'>> & {
     shouldSyncChannel: boolean;
     thread: ThreadType<StreamChatGenerics>;
@@ -441,7 +446,12 @@ export type ChannelPropsWithContext<
      * Tells if channel is rendering a thread list
      */
     threadList?: boolean;
-  } & Partial<Pick<InputMessageInputContextValue, 'openPollCreationDialog' | 'CreatePollContent'>>;
+  } & Partial<
+    Pick<
+      InputMessageInputContextValue,
+      'openPollCreationDialog' | 'CreatePollContent' | 'StopMessageStreamingButton'
+    >
+  >;
 
 const ChannelWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -544,6 +554,7 @@ const ChannelWithContext = <
     InputGiphySearch = InputGiphyCommandInputDefault,
     InputReplyStateHeader = InputReplyStateHeaderDefault,
     isAttachmentEqual,
+    isMessageAIGenerated = () => false,
     keyboardBehavior,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
     keyboardVerticalOffset,
@@ -566,7 +577,15 @@ const ChannelWithContext = <
     MessageAvatar = MessageAvatarDefault,
     MessageBounce = MessageBounceDefault,
     MessageContent = MessageContentDefault,
-    messageContentOrder = ['quoted_reply', 'gallery', 'files', 'poll', 'text', 'attachments'],
+    messageContentOrder = [
+      'quoted_reply',
+      'gallery',
+      'files',
+      'poll',
+      'ai_text',
+      'text',
+      'attachments',
+    ],
     MessageDeleted = MessageDeletedDefault,
     MessageEditedTimestamp = MessageEditedTimestampDefault,
     MessageError = MessageErrorDefault,
@@ -625,6 +644,8 @@ const ChannelWithContext = <
     StartAudioRecordingButton = AudioRecordingButtonDefault,
     stateUpdateThrottleInterval = defaultThrottleInterval,
     StickyHeader = StickyHeaderDefault,
+    StopMessageStreamingButton: StopMessageStreamingButtonOverride,
+    StreamingMessageView = DefaultStreamingMessageView,
     supportedReactions = reactionData,
     t,
     thread: threadFromProps,
@@ -641,6 +662,10 @@ const ChannelWithContext = <
   } = props;
 
   const { thread: threadProps, threadInstance } = threadFromProps;
+  const StopMessageStreamingButton =
+    StopMessageStreamingButtonOverride === undefined
+      ? DefaultStopMessageStreamingButton
+      : StopMessageStreamingButtonOverride;
 
   const {
     theme: {
@@ -2243,6 +2268,7 @@ const ChannelWithContext = <
     setQuotedMessageState,
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
+    StopMessageStreamingButton,
     UploadProgressIndicator,
   });
 
@@ -2305,6 +2331,7 @@ const ChannelWithContext = <
     InlineDateSeparator,
     InlineUnreadIndicator,
     isAttachmentEqual,
+    isMessageAIGenerated,
     legacyImageViewerSwipeBehaviour,
     markdownRules,
     Message,
@@ -2352,6 +2379,7 @@ const ChannelWithContext = <
     setEditingState,
     setQuotedMessageState,
     shouldShowUnreadUnderlay,
+    StreamingMessageView,
     supportedReactions,
     targetedMessage,
     TypingIndicator,
@@ -2448,7 +2476,8 @@ export const Channel = <
 >(
   props: PropsWithChildren<ChannelProps<StreamChatGenerics>>,
 ) => {
-  const { client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
+  const { client, enableOfflineSupport, isMessageAIGenerated } =
+    useChatContext<StreamChatGenerics>();
   const { t } = useTranslationContext();
 
   const threadFromProps = props?.thread;
@@ -2494,6 +2523,7 @@ export const Channel = <
       {...props}
       shouldSyncChannel={shouldSyncChannel}
       {...{
+        isMessageAIGenerated,
         members,
         messages: props.messages || messages,
         read,

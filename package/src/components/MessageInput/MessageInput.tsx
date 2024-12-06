@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Modal,
   NativeSyntheticEvent,
@@ -58,6 +58,7 @@ import {
 
 import { isImageMediaLibraryAvailable, triggerHaptic } from '../../native';
 import type { Asset, DefaultStreamChatGenerics } from '../../types/types';
+import { AIStates, useAIState } from '../AITypingIndicatorView';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
 
@@ -159,6 +160,7 @@ type MessageInputPropsWithContext<
     | 'showPollCreationDialog'
     | 'sendMessage'
     | 'CreatePollContent'
+    | 'StopMessageStreamingButton'
   > &
   Pick<MessagesContextValue<StreamChatGenerics>, 'Reply'> &
   Pick<
@@ -228,6 +230,7 @@ const MessageInputWithContext = <
     showPollCreationDialog,
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
+    StopMessageStreamingButton,
     suggestions,
     text,
     thread,
@@ -727,6 +730,13 @@ const MessageInputWithContext = <
     })),
   };
 
+  const { channel } = useChannelContext<StreamChatGenerics>();
+  const { aiState } = useAIState(channel);
+
+  const stopGenerating = useCallback(() => channel?.stopAIResponse(), [channel]);
+  const shouldDisplayStopAIGeneration =
+    [AIStates.Thinking, AIStates.Generating].includes(aiState) && !!StopMessageStreamingButton;
+
   return (
     <>
       <View
@@ -832,7 +842,10 @@ const MessageInputWithContext = <
                 </>
               )}
 
-              {isSendingButtonVisible() &&
+              {shouldDisplayStopAIGeneration ? (
+                <StopMessageStreamingButton onPress={stopGenerating} />
+              ) : (
+                isSendingButtonVisible() &&
                 (cooldownRemainingSeconds ? (
                   <CooldownTimer seconds={cooldownRemainingSeconds} />
                 ) : (
@@ -841,7 +854,8 @@ const MessageInputWithContext = <
                       disabled={sending.current || !isValidMessage() || (giphyActive && !isOnline)}
                     />
                   </View>
-                ))}
+                ))
+              )}
               {audioRecordingEnabled && !micLocked && (
                 <GestureDetector gesture={panGestureMic}>
                   <Animated.View
@@ -1143,6 +1157,7 @@ export const MessageInput = <
     showPollCreationDialog,
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
+    StopMessageStreamingButton,
     text,
     uploadNewFile,
     uploadNewImage,
@@ -1232,6 +1247,7 @@ export const MessageInput = <
         showPollCreationDialog,
         ShowThreadMessageInChannelButton,
         StartAudioRecordingButton,
+        StopMessageStreamingButton,
         suggestions,
         t,
         text,

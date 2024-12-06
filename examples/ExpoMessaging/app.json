@@ -11,6 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "newArchEnabled": true,
     "updates": {
       "fallbackToCacheTimeout": 0
     },
@@ -37,13 +38,25 @@
       [
         "expo-image-picker",
         {
-          "cameraPermission": "$(PRODUCT_NAME) would like to use your camera to share image in a message."
+          "photosPermission": "The app accesses your photos to let them share with others.",
+          "cameraPermission": "The app accesses your camera to let you take photos and share with others."
         }
       ],
       [
         "expo-av",
         {
           "microphonePermission": "$(PRODUCT_NAME) would like to use your microphone for voice recording."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "newArchEnabled": true
+          },
+          "ios": {
+            "newArchEnabled": true
+          }
         }
       ]
     ]
