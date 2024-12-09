@@ -399,15 +399,15 @@ describe('MessageList', () => {
     await channel.watch();
 
     const channelUnreadState = {
-      unread_messages: 5,
       last_read: new Date(),
       last_read_message_id: '5',
+      unread_messages: 5,
     };
 
     channel.state = {
       ...channelInitialState,
-      messages,
       latestMessages: [],
+      messages,
     };
 
     const { queryByLabelText } = render(
@@ -441,14 +441,14 @@ describe('MessageList', () => {
     await channel.watch();
 
     const channelUnreadState = {
-      unread_messages: 0,
       last_read: new Date(),
+      unread_messages: 0,
     };
 
     channel.state = {
       ...channelInitialState,
-      messages,
       latestMessages: [],
+      messages,
     };
 
     const { queryByLabelText } = render(
