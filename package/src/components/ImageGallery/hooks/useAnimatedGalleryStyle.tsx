@@ -72,12 +72,12 @@ export const useAnimatedGalleryStyle = ({
         { scaleX: -1 },
         { translateY: yScaleOffset },
         {
-          translateX: -translateX.value - xScaleOffset,
+          translateX: -xScaleOffset,
         },
         { scale: oneEighth },
       ],
     };
-  }, []);
+  }, [index]);
 
   return [animatedGalleryStyle, animatedStyles];
 };
