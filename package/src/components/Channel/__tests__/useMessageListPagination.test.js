@@ -464,7 +464,7 @@ describe('useMessageListPagination', () => {
       },
     ];
 
-    it.each(testCases)(`%name`, async (testCase) => {
+    it.each(testCases)('$name', async (testCase) => {
       // Setup channel state
       const messages = testCase.initialMessages;
       channel.state = {

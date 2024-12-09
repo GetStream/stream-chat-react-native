@@ -382,6 +382,89 @@ describe('MessageList', () => {
       expect(() => screen.getByText(latestMessageText)).toThrow();
     });
   });
+
+  it("should render the UnreadMessagesIndicator when there's unread messages", async () => {
+    const user1 = generateUser();
+    const user2 = generateUser();
+    const messages = Array.from({ length: 10 }, (_, i) =>
+      generateMessage({ id: `${i}`, text: `message-${i}` }),
+    );
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: user1 }), generateMember({ user: user2 })],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: user1.id });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+
+    const channelUnreadState = {
+      unread_messages: 5,
+      last_read: new Date(),
+      last_read_message_id: '5',
+    };
+
+    channel.state = {
+      ...channelInitialState,
+      messages,
+      latestMessages: [],
+    };
+
+    const { queryByLabelText } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList channelUnreadState={channelUnreadState} />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    await waitFor(() => {
+      expect(queryByLabelText('Inline unread indicator')).toBeTruthy();
+    });
+  });
+
+  it("should not render the UnreadMessagesIndicator when there's no unread messages", async () => {
+    const user1 = generateUser();
+    const user2 = generateUser();
+    const messages = Array.from({ length: 10 }, (_, i) =>
+      generateMessage({ id: `${i}`, text: `message-${i}` }),
+    );
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: user1 }), generateMember({ user: user2 })],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: user1.id });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+
+    const channelUnreadState = {
+      unread_messages: 0,
+      last_read: new Date(),
+    };
+
+    channel.state = {
+      ...channelInitialState,
+      messages,
+      latestMessages: [],
+    };
+
+    const { queryByLabelText } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList channelUnreadState={channelUnreadState} />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    await waitFor(() => {
+      expect(queryByLabelText('Inline unread indicator')).not.toBeTruthy();
+    });
+  });
 });
 
 describe('MessageList pagination', () => {
