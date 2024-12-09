@@ -1,13 +1,11 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import {
-  useChannelContext,
-  useMessagesContext,
-  useOwnCapabilitiesContext,
-} from '../../../contexts';
 import { useAttachmentPickerContext } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
+import { useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
+import { useOwnCapabilitiesContext } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 const styles = StyleSheet.create({

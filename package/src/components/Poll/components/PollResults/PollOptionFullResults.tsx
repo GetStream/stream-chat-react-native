@@ -3,7 +3,7 @@ import { FlatList, type FlatListProps, StyleSheet, Text, View } from 'react-nati
 
 import { PollOption, PollVote as PollVoteClass } from 'stream-chat';
 
-import { PollVote } from './PollResultItem';
+import { PollVote } from './PollVote';
 
 import {
   PollContextProvider,
