@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { Poll, PollOption } from 'stream-chat';
 
@@ -43,9 +43,12 @@ export const GenericPollButton = ({ onPress, title }: { onPress?: () => void; ti
   } = useTheme();
 
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.container, container]}>
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }, styles.container, container]}
+    >
       <Text style={[styles.text, { color: accent_dark_blue }, text]}>{title}</Text>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
@@ -77,9 +80,10 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
 
   return (
     <>
-      <TouchableOpacity
+      <Pressable
         onPress={onPressHandler}
-        style={[
+        style={({ pressed }) => [
+          { opacity: pressed ? 0.5 : 1 },
           styles.answerListAddCommentContainer,
           { backgroundColor: bg_user },
           buttonContainer,
@@ -88,7 +92,7 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
         <Text style={[styles.text, { color: accent_dark_blue }, text]}>
           {ownAnswer ? t<string>('Update your comment') : t<string>('Add a comment')}
         </Text>
-      </TouchableOpacity>
+      </Pressable>
       {showAddCommentDialog ? (
         <PollInputDialog
           closeDialog={() => setShowAddCommentDialog(false)}
@@ -136,9 +140,10 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
   }, [message, onPress, poll, toggleVote]);
 
   return ownCapabilities.castPollVote && !isClosed ? (
-    <TouchableOpacity
+    <Pressable
       onPress={onPressHandler}
-      style={[
+      style={({ pressed }) => [
+        { opacity: pressed ? 0.5 : 1 },
         styles.voteContainer,
         {
           backgroundColor: ownVotesByOptionId[option.id]
@@ -152,7 +157,7 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
       ]}
     >
       {ownVotesByOptionId[option.id] ? <Check height={15} pathFill='white' width={20} /> : null}
-    </TouchableOpacity>
+    </Pressable>
   ) : null;
 };
 

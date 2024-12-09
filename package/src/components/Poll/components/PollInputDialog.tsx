@@ -3,10 +3,10 @@ import {
   KeyboardAvoidingView,
   Modal,
   Platform,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
 
@@ -62,22 +62,25 @@ export const PollInputDialog = ({
             value={dialogInput}
           />
           <View style={[styles.buttonContainer, buttonContainer]}>
-            <TouchableOpacity onPress={closeDialog}>
+            <Pressable
+              onPress={closeDialog}
+              style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+            >
               <Text style={[styles.button, { color: accent_dark_blue }, button]}>
                 {t<string>('Cancel')}
               </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </Pressable>
+            <Pressable
               onPress={() => {
                 onSubmit(dialogInput);
                 closeDialog();
               }}
-              style={{ marginLeft: 32 }}
+              style={({ pressed }) => ({ marginLeft: 32, opacity: pressed ? 0.5 : 1 })}
             >
               <Text style={[styles.button, { color: accent_dark_blue }, button]}>
                 {t<string>('SEND')}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
       </KeyboardAvoidingView>

@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useCallback, useMemo } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
@@ -294,7 +294,7 @@ export const CreatePollOptions = (props: {
           />
         ))}
       </View>
-      <TouchableOpacity
+      <Pressable
         onPress={() => {
           const newIndex = pollOptions.length;
           currentOptionPositions.value = {
@@ -312,12 +312,17 @@ export const CreatePollOptions = (props: {
           };
           setPollOptions([...pollOptions, { text: '' }]);
         }}
-        style={[styles.addOptionWrapper, { backgroundColor: bg_user }, addOption.wrapper]}
+        style={({ pressed }) => [
+          { opacity: pressed ? 0.5 : 1 },
+          styles.addOptionWrapper,
+          { backgroundColor: bg_user },
+          addOption.wrapper,
+        ]}
       >
         <Text style={[styles.text, { color: black }, addOption.text]}>
           {t<string>('Add an option')}
         </Text>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../../contexts';
 import { Back } from '../../../icons';
@@ -21,9 +21,9 @@ export const PollModalHeader = ({ onPress, title }: PollModalHeaderProps) => {
 
   return (
     <View style={[styles.container, { backgroundColor: white }, container]}>
-      <TouchableOpacity onPress={onPress}>
+      <Pressable onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}>
         <Back height={24} pathFill={text_high_emphasis} viewBox='0 0 24 24' width={24} />
-      </TouchableOpacity>
+      </Pressable>
       <Text numberOfLines={1} style={[styles.title, { color: black }, titleStyle]}>
         {title}
       </Text>
