@@ -137,7 +137,6 @@ type MessageListPropsWithContext<
     | 'DateHeader'
     | 'disableTypingIndicator'
     | 'FlatList'
-    | 'initialScrollToFirstUnreadMessage'
     | 'InlineDateSeparator'
     | 'InlineUnreadIndicator'
     | 'legacyImageViewerSwipeBehaviour'
@@ -245,7 +244,6 @@ const MessageListWithContext = <
     HeaderComponent = LoadingMoreRecentIndicator,
     hideStickyDateHeader,
     highlightedMessageId,
-    initialScrollToFirstUnreadMessage,
     InlineDateSeparator,
     InlineUnreadIndicator,
     inverted = true,
@@ -349,11 +347,6 @@ const MessageListWithContext = <
    * The timeout id used to debounce our scrollToIndex calls on messageList updates
    */
   const scrollToDebounceTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
-
-  /**
-   * The timeout id used to lazier load the initial scroll set flag
-   */
-  const initialScrollSettingTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   /**
    * The timeout id used to temporarily load the initial scroll set flag
@@ -579,7 +572,7 @@ const MessageListWithContext = <
             animated: true,
             offset: 0,
           });
-        }, 150); // flatlist might take a bit to update, so a small delay is needed
+        }, WAIT_FOR_SCROLL_TO_OFFSET_TIMEOUT); // flatlist might take a bit to update, so a small delay is needed
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -896,9 +889,6 @@ const MessageListWithContext = <
    */
   useEffect(() => {
     scrollToDebounceTimeoutRef.current = setTimeout(async () => {
-      if (initialScrollToFirstUnreadMessage) {
-        clearTimeout(initialScrollSettingTimeoutRef.current);
-      }
       const messageIdToScroll: string | undefined = targetedMessage;
       if (!messageIdToScroll) return;
       const indexOfParentInMessageList = processedMessageList.findIndex(
@@ -923,10 +913,10 @@ const MessageListWithContext = <
         });
         setTargetedMessage(undefined);
       }
-    }, 50);
+    }, WAIT_FOR_SCROLL_TO_OFFSET_TIMEOUT);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetedMessage, initialScrollToFirstUnreadMessage]);
+  }, [targetedMessage]);
 
   const messagesWithImages =
     legacyImageViewerSwipeBehaviour &&
@@ -1209,7 +1199,6 @@ export const MessageList = <
     DateHeader,
     disableTypingIndicator,
     FlatList,
-    initialScrollToFirstUnreadMessage,
     InlineDateSeparator,
     InlineUnreadIndicator,
     legacyImageViewerSwipeBehaviour,
@@ -1243,7 +1232,6 @@ export const MessageList = <
         FlatList,
         hideStickyDateHeader,
         highlightedMessageId,
-        initialScrollToFirstUnreadMessage,
         InlineDateSeparator,
         InlineUnreadIndicator,
         isListActive: isChannelActive,
