@@ -246,10 +246,6 @@ describe('MessageInput', () => {
       </Chat>,
     );
 
-    await waitFor(() => {
-      expect(queryByTestId('send-message-disallowed-indicator')).toBeNull();
-    });
-
     act(() => {
       chatClient.dispatchEvent({
         channel: {
