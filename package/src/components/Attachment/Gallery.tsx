@@ -458,7 +458,7 @@ const GalleryImageThumbnail = <
               setLoadingImage(false);
               setLoadingImageError(true);
             }}
-            onLoadEnd={() => setLoadingImage(false)}
+            onLoadEnd={() => setTimeout(() => setLoadingImage(false), 0)}
             onLoadStart={() => setLoadingImage(true)}
             resizeMode={thumbnail.resizeMode}
             style={[

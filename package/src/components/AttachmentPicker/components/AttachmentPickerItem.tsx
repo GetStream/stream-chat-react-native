@@ -170,8 +170,6 @@ const AttachmentImage = (props: AttachmentImageProps) => {
     }
   };
 
-  console.log('URIS: IMG:  ', uri, originalUri);
-
   return (
     <TouchableOpacity onPress={onPressImage}>
       <ImageBackground
