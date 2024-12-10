@@ -235,7 +235,7 @@ describe('MessageInput', () => {
     });
   });
 
-  it('should render the SendMessageDisallowedIndicator only if the send-message capability is not present', async () => {
+  it('should render the SendMessageDisallowedIndicator in a frozen channel only if the send-message capability is not present', async () => {
     await initializeChannel(generateChannelResponse({ channel: { frozen: true } }));
 
     const { queryByTestId } = render(
