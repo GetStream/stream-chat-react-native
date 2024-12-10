@@ -1,5 +1,12 @@
 # Change Log
 
+### [5.44.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.44.1...v5.44.2) (2024-12-10)
+
+
+### Bug Fixes
+
+* only disable message input ui when capabilities change ([#2836](https://github.com/GetStream/stream-chat-react-native/issues/2836)) ([8cc863d](https://github.com/GetStream/stream-chat-react-native/commit/8cc863de0a9b5fd9c641d8bcde352b7c10bd94f4))
+
 ### [5.44.1](https://github.com/GetStream/stream-chat-react-native/compare/v5.44.0...v5.44.1) (2024-12-05)
 
 
