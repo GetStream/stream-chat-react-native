@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { Alert } from 'react-native';
 
 import { act, cleanup, fireEvent, render, userEvent, waitFor } from '@testing-library/react-native';
 
+import { useMessagesContext } from '../../../contexts';
 import * as AttachmentPickerUtils from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
@@ -261,6 +262,44 @@ describe('MessageInput', () => {
 
     await waitFor(() => {
       expect(queryByTestId('send-message-disallowed-indicator')).toBeTruthy();
+    });
+  });
+
+  const EditingStateMessageInput = () => {
+    const { setEditingState } = useMessagesContext();
+    useEffect(() => {
+      setEditingState({ id: 'some-message-id' });
+    }, []);
+    return <MessageInput />;
+  };
+
+  it('should not render the SendMessageDisallowedIndicator if we are editing a message, regardless of capabilities', async () => {
+    await initializeChannel(generateChannelResponse());
+
+    const { queryByTestId } = render(
+      <Chat client={chatClient}>
+        <Channel audioRecordingEnabled channel={channel}>
+          <EditingStateMessageInput />
+        </Channel>
+      </Chat>,
+    );
+
+    await waitFor(() => {
+      expect(queryByTestId('send-message-disallowed-indicator')).toBeNull();
+    });
+
+    act(() => {
+      chatClient.dispatchEvent({
+        cid: channel.data.cid,
+        own_capabilities: channel.data.own_capabilities.filter(
+          (capability) => capability !== 'send-message',
+        ),
+        type: 'capabilities.changed',
+      });
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId('send-message-disallowed-indicator')).toBeNull();
     });
   });
 });
