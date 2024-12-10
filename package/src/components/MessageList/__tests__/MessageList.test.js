@@ -18,6 +18,7 @@ import { channelInitialState } from '../../Channel/hooks/useChannelDataState';
 import * as MessageListPaginationHook from '../../Channel/hooks/useMessageListPagination';
 import { Chat } from '../../Chat/Chat';
 import { MessageList } from '../MessageList';
+import { FlatList } from 'react-native';
 
 describe('MessageList', () => {
   afterEach(cleanup);
@@ -463,6 +464,133 @@ describe('MessageList', () => {
 
     await waitFor(() => {
       expect(queryByLabelText('Inline unread indicator')).not.toBeTruthy();
+    });
+  });
+
+  it('should call markRead function when message.new event is dispatched and new messages are received', async () => {
+    const user = generateUser();
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user })],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: user.id });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+
+    const user2 = generateUser();
+    const newMessage = generateMessage({ user: user2 });
+
+    const markReadFn = jest.fn();
+
+    render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList markRead={markReadFn} />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    act(() => dispatchMessageNewEvent(chatClient, newMessage, mockedChannel.channel));
+
+    await waitFor(() => {
+      expect(markReadFn).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it("should scroll to the targeted message if it's present in the list", async () => {
+    const user = generateUser();
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user })],
+    });
+
+    const messages = Array.from({ length: 30 }, (_, i) =>
+      generateMessage({ id: `${i}`, text: `message-${i}` }),
+    );
+
+    const chatClient = await getTestClientWithUser({ id: user.id });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+
+    const targetedMessage = messages[15].id;
+
+    channel.state = {
+      ...channelInitialState,
+      latestMessages: [],
+      messages,
+    };
+
+    const flatListRefMock = jest
+      .spyOn(FlatList.prototype, 'scrollToIndex')
+      .mockImplementation(() => {});
+
+    render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList targetedMessage={targetedMessage} />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    await waitFor(() => {
+      expect(flatListRefMock).toHaveBeenCalledWith({
+        animated: false,
+        index: 14,
+        viewPosition: 0.5,
+      });
+    });
+  });
+
+  it("should load more messages around the message id if the targeted message isn't present in the list", async () => {
+    const user = generateUser();
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user })],
+    });
+
+    const messages = Array.from({ length: 20 }, (_, i) =>
+      generateMessage({ id: `${i}`, text: `message-${i}` }),
+    );
+
+    const chatClient = await getTestClientWithUser({ id: user.id });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+
+    const targetedMessage = 21;
+    const setTargetedMessage = jest.fn();
+
+    channel.state = {
+      ...channelInitialState,
+      latestMessages: [],
+      messages,
+    };
+
+    const loadChannelAroundMessage = jest.fn(() => Promise.resolve());
+
+    render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList
+              targetedMessage={targetedMessage}
+              loadChannelAroundMessage={loadChannelAroundMessage}
+              setTargetedMessage={setTargetedMessage}
+            />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    await waitFor(() => {
+      expect(loadChannelAroundMessage).toHaveBeenCalledWith({
+        messageId: targetedMessage,
+        setTargetedMessage,
+      });
     });
   });
 });

@@ -55,7 +55,7 @@ import { ThreadContextValue, useThreadContext } from '../../contexts/threadConte
 
 import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 
-const WAIT_FOR_SCROLL_TO_OFFSET_TIMEOUT = 150;
+const WAIT_FOR_SCROLL_TIMEOUT = 150;
 const MAX_RETRIES_AFTER_SCROLL_FAILURE = 10;
 const styles = StyleSheet.create({
   container: {
@@ -520,7 +520,7 @@ const MessageListWithContext = <
           flatListRef.current?.scrollToOffset({
             offset: 0,
           });
-        }, 50);
+        }, WAIT_FOR_SCROLL_TIMEOUT);
         setTimeout(() => {
           channelResyncScrollSet.current = true;
           if (channel.countUnread() > 0) {
@@ -577,7 +577,7 @@ const MessageListWithContext = <
             animated: true,
             offset: 0,
           });
-        }, WAIT_FOR_SCROLL_TO_OFFSET_TIMEOUT); // flatlist might take a bit to update, so a small delay is needed
+        }, WAIT_FOR_SCROLL_TIMEOUT); // flatlist might take a bit to update, so a small delay is needed
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -588,16 +588,15 @@ const MessageListWithContext = <
    * Note: This effect fires on every list change with a small debounce so that scrolling isnt abrupted by an immediate rerender
    */
   useEffect(() => {
+    if (!targetedMessage) return;
     scrollToDebounceTimeoutRef.current = setTimeout(async () => {
-      const messageIdToScroll: string | undefined = targetedMessage;
-      if (!messageIdToScroll) return;
       const indexOfParentInMessageList = processedMessageList.findIndex(
-        (message) => message?.id === messageIdToScroll,
+        (message) => message?.id === targetedMessage,
       );
 
       // the message we want to scroll to has not been loaded in the state yet
       if (indexOfParentInMessageList === -1) {
-        await loadChannelAroundMessage({ messageId: messageIdToScroll, setTargetedMessage });
+        await loadChannelAroundMessage({ messageId: targetedMessage, setTargetedMessage });
       } else {
         if (!flatListRef.current) return;
         // By a fresh scroll we should clear the retries for the previous failed scroll
@@ -613,7 +612,7 @@ const MessageListWithContext = <
         });
         setTargetedMessage(undefined);
       }
-    }, WAIT_FOR_SCROLL_TO_OFFSET_TIMEOUT);
+    }, WAIT_FOR_SCROLL_TIMEOUT);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetedMessage]);
@@ -895,7 +894,7 @@ const MessageListWithContext = <
         scrollToIndexFailedRetryCountRef.current += 1;
         onScrollToIndexFailedRef.current(info);
       }
-    }, WAIT_FOR_SCROLL_TO_OFFSET_TIMEOUT);
+    }, WAIT_FOR_SCROLL_TIMEOUT);
 
     // Only when index is greater than 0 and in range of items in FlatList
     // this onScrollToIndexFailed will be called again
