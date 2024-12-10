@@ -26,7 +26,9 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
   const {
     theme: {
       colors: { text_low_emphasis, white_snow },
-      typingIndicator: { container },
+      messageList: {
+        unreadMessagesNotification: { container, closeButtonContainer, closeIcon, text },
+      },
     },
   } = useTheme();
 
@@ -41,16 +43,17 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
         container,
       ]}
     >
-      <Text style={[styles.text, { color: white_snow }]}>{t<string>('Unread Messages')}</Text>
+      <Text style={[styles.text, { color: white_snow }, text]}>{t<string>('Unread Messages')}</Text>
       <Pressable
         onPress={onCloseHandler}
         style={({ pressed }) => [
           {
             opacity: pressed ? 0.8 : 1,
           },
+          closeButtonContainer,
         ]}
       >
-        <Close pathFill={white_snow} />
+        <Close pathFill={white_snow} {...closeIcon} />
       </Pressable>
     </Pressable>
   );

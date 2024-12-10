@@ -517,7 +517,7 @@ const ChannelWithContext = <
     CreatePollContent,
     DateHeader = DateHeaderDefault,
     deletedMessagesVisibilityType = 'always',
-    disableIfFrozenChannel = true,
+    disableIfFrozenChannel = false,
     disableKeyboardCompatibleView = false,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch = true,

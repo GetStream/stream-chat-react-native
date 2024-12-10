@@ -550,12 +550,12 @@ describe('useMessageListPagination', () => {
     `(
       '$scenario',
       async ({
-        last_read,
         expectedJumpToMessageFinishedCalls,
         expectedQueryCalls,
         expectedSetChannelUnreadStateCalls,
         expectedSetTargetedMessageCalls,
         expectedTargetedMessageId,
+        last_read,
       }) => {
         // Set up channel state
         channel.state = {
@@ -569,8 +569,8 @@ describe('useMessageListPagination', () => {
 
         const channelUnreadState = {
           last_read,
-          user,
           unread_messages: 2,
+          user,
         };
 
         // Mock query if needed

@@ -407,6 +407,11 @@ const MessageListWithContext = <
       return;
     }
 
+    if (selectedPicker === 'images') {
+      setIsUnreadNotificationOpen(false);
+      return;
+    }
+
     const lastItem = viewableItems[viewableItems.length - 1];
 
     if (lastItem) {
@@ -577,6 +582,41 @@ const MessageListWithContext = <
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawMessageList, threadList]);
+
+  /**
+   * Check if a messageId needs to be scrolled to after list loads, and scroll to it
+   * Note: This effect fires on every list change with a small debounce so that scrolling isnt abrupted by an immediate rerender
+   */
+  useEffect(() => {
+    scrollToDebounceTimeoutRef.current = setTimeout(async () => {
+      const messageIdToScroll: string | undefined = targetedMessage;
+      if (!messageIdToScroll) return;
+      const indexOfParentInMessageList = processedMessageList.findIndex(
+        (message) => message?.id === messageIdToScroll,
+      );
+
+      // the message we want to scroll to has not been loaded in the state yet
+      if (indexOfParentInMessageList === -1) {
+        await loadChannelAroundMessage({ messageId: messageIdToScroll, setTargetedMessage });
+      } else {
+        if (!flatListRef.current) return;
+        // By a fresh scroll we should clear the retries for the previous failed scroll
+        clearTimeout(scrollToDebounceTimeoutRef.current);
+        clearTimeout(failScrollTimeoutId.current);
+        // reset the retry count
+        scrollToIndexFailedRetryCountRef.current = 0;
+        // now scroll to it
+        flatListRef.current.scrollToIndex({
+          animated: false,
+          index: indexOfParentInMessageList,
+          viewPosition: 0.5, // try to place message in the center of the screen
+        });
+        setTargetedMessage(undefined);
+      }
+    }, WAIT_FOR_SCROLL_TO_OFFSET_TIMEOUT);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetedMessage]);
 
   // TODO: do not apply on RN 0.73 and above
   const shouldApplyAndroidWorkaround = inverted && Platform.OS === 'android';
@@ -882,41 +922,6 @@ const MessageListWithContext = <
     // the message we want was not loaded yet, so lets load it
     await loadChannelAroundMessage({ messageId });
   };
-
-  /**
-   * Check if a messageId needs to be scrolled to after list loads, and scroll to it
-   * Note: This effect fires on every list change with a small debounce so that scrolling isnt abrupted by an immediate rerender
-   */
-  useEffect(() => {
-    scrollToDebounceTimeoutRef.current = setTimeout(async () => {
-      const messageIdToScroll: string | undefined = targetedMessage;
-      if (!messageIdToScroll) return;
-      const indexOfParentInMessageList = processedMessageList.findIndex(
-        (message) => message?.id === messageIdToScroll,
-      );
-
-      // the message we want to scroll to has not been loaded in the state yet
-      if (indexOfParentInMessageList === -1) {
-        await loadChannelAroundMessage({ messageId: messageIdToScroll, setTargetedMessage });
-      } else {
-        if (!flatListRef.current) return;
-        // By a fresh scroll we should clear the retries for the previous failed scroll
-        clearTimeout(scrollToDebounceTimeoutRef.current);
-        clearTimeout(failScrollTimeoutId.current);
-        // reset the retry count
-        scrollToIndexFailedRetryCountRef.current = 0;
-        // now scroll to it
-        flatListRef.current.scrollToIndex({
-          animated: false,
-          index: indexOfParentInMessageList,
-          viewPosition: 0.5, // try to place message in the center of the screen
-        });
-        setTargetedMessage(undefined);
-      }
-    }, WAIT_FOR_SCROLL_TO_OFFSET_TIMEOUT);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetedMessage]);
 
   const messagesWithImages =
     legacyImageViewerSwipeBehaviour &&

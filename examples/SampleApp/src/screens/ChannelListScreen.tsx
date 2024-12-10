@@ -187,7 +187,7 @@ export const ChannelListScreen: React.FC = () => {
               filters={filters}
               HeaderNetworkDownIndicator={() => null}
               maxUnreadCount={99}
-              onSelect={(channel) => {
+              onSelect={async (channel) => {
                 navigation.navigate('ChannelScreen', {
                   channel,
                 });

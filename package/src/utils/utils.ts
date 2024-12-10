@@ -276,6 +276,12 @@ export function escapeRegExp(text: string) {
   return text.replace(/[-[\]{}()*+?.,/\\^$|#]/g, '\\$&');
 }
 
+/**
+ * Utility to find the index of a message in the messages array by id.
+ * @param messages
+ * @param targetId
+ * @returns number
+ */
 export const findInMessagesById = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
@@ -286,6 +292,12 @@ export const findInMessagesById = <
   return idx;
 };
 
+/**
+ * Utility to find the index of a message in the messages array by date.
+ * @param messages
+ * @param targetDate
+ * @returns an object with the index and the message object
+ */
 export const findInMessagesByDate = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
