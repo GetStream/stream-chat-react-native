@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { FlatList } from 'react-native';
+
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
@@ -17,8 +19,8 @@ import { Channel } from '../../Channel/Channel';
 import { channelInitialState } from '../../Channel/hooks/useChannelDataState';
 import * as MessageListPaginationHook from '../../Channel/hooks/useMessageListPagination';
 import { Chat } from '../../Chat/Chat';
+
 import { MessageList } from '../MessageList';
-import { FlatList } from 'react-native';
 
 describe('MessageList', () => {
   afterEach(cleanup);
@@ -577,9 +579,9 @@ describe('MessageList', () => {
         <Chat client={chatClient}>
           <Channel channel={channel}>
             <MessageList
-              targetedMessage={targetedMessage}
               loadChannelAroundMessage={loadChannelAroundMessage}
               setTargetedMessage={setTargetedMessage}
+              targetedMessage={targetedMessage}
             />
           </Channel>
         </Chat>
