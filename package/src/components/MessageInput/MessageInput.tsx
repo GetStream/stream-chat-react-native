@@ -1102,7 +1102,7 @@ export const MessageInput = <
   const { isOnline } = useChatContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
-  const { disabled, members, threadList, watchers } = useChannelContext<StreamChatGenerics>();
+  const { members, threadList, watchers } = useChannelContext<StreamChatGenerics>();
 
   const {
     additionalTextInputProps,
@@ -1181,7 +1181,7 @@ export const MessageInput = <
    * Disable the message input if the channel is frozen, or the user doesn't have the capability to send a message.
    * Enable it in frozen mode, if it the input has editing state.
    */
-  if ((disabled || !ownCapabilities.sendMessage) && !editing && SendMessageDisallowedIndicator) {
+  if (!ownCapabilities.sendMessage && !editing && SendMessageDisallowedIndicator) {
     return <SendMessageDisallowedIndicator />;
   }
 
