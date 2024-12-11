@@ -1,7 +1,5 @@
 name: sample-distribution
 
-## TODO: Make sure to revert the changes here when moving this to main. We want them right now to be able to have the SampleApp live with V6.
-
 concurrency:
   group: sample-distribution-${{ github.ref }}
   cancel-in-progress: true
@@ -15,7 +13,7 @@ on:
 
 jobs:
   build_and_deploy_ios_testflight_qa:
-    name: Build SampleApp iOS and Deploy-${{ github.ref == 'refs/heads/v6.0.0' }}
+    name: Build SampleApp iOS and Deploy-${{ github.ref == 'refs/heads/develop' }}
     runs-on: [macos-14]
     steps:
       - name: Connect Bot
@@ -40,14 +38,14 @@ jobs:
           bundle exec pod install
       - name: Build and release Testflight QA
         working-directory: examples/SampleApp
-        run: bundle exec fastlane deploy_to_testflight_qa deploy:${{ github.ref == 'refs/heads/v6.0.0' }};
+        run: bundle exec fastlane deploy_to_testflight_qa deploy:${{ github.ref == 'refs/heads/develop' }};
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
           APPSTORE_API_KEY: ${{ secrets.APPSTORE_API_KEY }}
 
   build_and_deploy_android_s3:
-    name: Build SampleApp Android and Deploy-${{ github.ref == 'refs/heads/v6.0.0' }}
+    name: Build SampleApp Android and Deploy-${{ github.ref == 'refs/heads/develop' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -68,13 +66,13 @@ jobs:
           rm -rf $HOME/.gradle/caches/ && ./gradlew assembleRelease
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
-        if: ${{ github.ref == 'refs/heads/v6.0.0' }}
+        if: ${{ github.ref == 'refs/heads/develop' }}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - name: Upload APK
-        if: ${{ github.ref == 'refs/heads/v6.0.0' }}
+        if: ${{ github.ref == 'refs/heads/develop' }}
         # https://getstream.io/downloads/rn-sample-app.apk
         run: |
           cp examples/SampleApp/android/app/build/outputs/apk/release/app-release.apk rn-sample-app.apk

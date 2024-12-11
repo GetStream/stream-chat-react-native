@@ -9,7 +9,6 @@ on:
     branches:
       - develop
       - main
-      - v6.0.0
 
 env:
   HOMEBREW_NO_INSTALL_CLEANUP: 1 # Disable cleanup for homebrew, we don't need it on CI
