@@ -27,7 +27,7 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
     theme: {
       colors: { text_low_emphasis, white_snow },
       messageList: {
-        unreadMessagesNotification: { container, closeButtonContainer, closeIcon, text },
+        unreadMessagesNotification: { closeButtonContainer, closeIcon, container, text },
       },
     },
   } = useTheme();
