@@ -517,7 +517,7 @@ const ChannelWithContext = <
     CreatePollContent,
     DateHeader = DateHeaderDefault,
     deletedMessagesVisibilityType = 'always',
-    disableIfFrozenChannel = false,
+    disableIfFrozenChannel = true,
     disableKeyboardCompatibleView = false,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch = true,
@@ -716,6 +716,7 @@ const ChannelWithContext = <
   const {
     copyStateFromChannel,
     initStateFromChannel,
+    setRead,
     setTyping,
     state: channelState,
   } = useChannelDataState<StreamChatGenerics>(channel);
@@ -878,7 +879,7 @@ const ChannelWithContext = <
    */
   useEffect(() => {
     const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
-      if (channel.cid === event.cid) copyChannelState();
+      if (channel.cid === event.cid) setRead(channel);
     };
 
     const { unsubscribe } = client.on('notification.mark_read', handleEvent);

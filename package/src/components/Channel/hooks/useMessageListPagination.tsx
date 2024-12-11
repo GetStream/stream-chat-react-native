@@ -197,27 +197,27 @@ export const useMessageListPagination = <
         let firstUnreadMessageId = first_unread_message_id;
         let lastReadMessageId = last_read_message_id;
         let isInCurrentMessageSet = false;
+        const messagesState = channel.state.messages;
 
         // If the first unread message is already in the current message set, we don't need to load more messages.
         if (firstUnreadMessageId) {
-          const messageIdx = findInMessagesById(channel.state.messages, firstUnreadMessageId);
+          const messageIdx = findInMessagesById(messagesState, firstUnreadMessageId);
           isInCurrentMessageSet = messageIdx !== -1;
         }
         // If the last read message is already in the current message set, we don't need to load more messages, and we set the first unread message id as that is what we want to operate on.
         else if (lastReadMessageId) {
-          const messageIdx = findInMessagesById(channel.state.messages, lastReadMessageId);
+          const messageIdx = findInMessagesById(messagesState, lastReadMessageId);
           isInCurrentMessageSet = messageIdx !== -1;
-          firstUnreadMessageId =
-            messageIdx > -1 ? channel.state.messages[messageIdx + 1]?.id : undefined;
+          firstUnreadMessageId = messageIdx > -1 ? messagesState[messageIdx + 1]?.id : undefined;
         } else {
           const lastReadTimestamp = last_read.getTime();
           const { index: lastReadIdx, message: lastReadMessage } = findInMessagesByDate(
-            channel.state.messages,
+            messagesState,
             last_read,
           );
           if (lastReadMessage) {
             lastReadMessageId = lastReadMessage.id;
-            firstUnreadMessageId = channel.state.messages[lastReadIdx + 1].id;
+            firstUnreadMessageId = messagesState[lastReadIdx + 1].id;
             isInCurrentMessageSet = !!firstUnreadMessageId;
           } else {
             setLoadingMore(true);
@@ -227,7 +227,7 @@ export const useMessageListPagination = <
               messages = await fetchMessagesAround(channel, last_read.toISOString(), limit);
             } catch (error) {
               setLoading(false);
-              loadMoreFinished(channel.state.messagePagination.hasPrev, channel.state.messages);
+              loadMoreFinished(channel.state.messagePagination.hasPrev, messagesState);
               console.log('Loading channel at first unread message failed with error:', error);
               return;
             }
