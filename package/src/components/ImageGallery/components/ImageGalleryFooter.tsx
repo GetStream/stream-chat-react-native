@@ -154,14 +154,14 @@ export const ImageGalleryFooterWithContext = <
   };
 
   return (
-    <View
+    <SafeAreaView
       accessibilityLabel={accessibilityLabel}
       onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
       pointerEvents={'box-none'}
       style={styles.wrapper}
     >
       <Animated.View style={footerStyle}>
-        <SafeAreaView style={[{ backgroundColor: white }, container]}>
+        <View style={[{ backgroundColor: white }, container]}>
           {photo.type === FileTypes.Video ? (
             videoControlElement ? (
               videoControlElement({ duration, onPlayPause, paused, progress, videoRef })
@@ -175,37 +175,37 @@ export const ImageGalleryFooterWithContext = <
               />
             )
           ) : null}
-          <View style={[styles.innerContainer, { backgroundColor: white }, innerContainer]}>
-            {leftElement ? (
-              leftElement({ openGridView, photo, share, shareMenuOpen })
-            ) : (
-              <ShareButton share={share} ShareIcon={ShareIcon} shareMenuOpen={shareMenuOpen} />
-            )}
-            {centerElement ? (
-              centerElement({ openGridView, photo, share, shareMenuOpen })
-            ) : (
-              <View style={[styles.centerContainer, centerContainer]}>
-                <Text style={[styles.imageCountText, { color: black }, imageCountText]}>
-                  {t<string>('{{ index }} of {{ photoLength }}', {
-                    index: photoLength - selectedIndex,
-                    photoLength,
-                  })}
-                </Text>
+        </View>
+        <View style={[styles.innerContainer, { backgroundColor: white }, innerContainer]}>
+          {leftElement ? (
+            leftElement({ openGridView, photo, share, shareMenuOpen })
+          ) : (
+            <ShareButton share={share} ShareIcon={ShareIcon} shareMenuOpen={shareMenuOpen} />
+          )}
+          {centerElement ? (
+            centerElement({ openGridView, photo, share, shareMenuOpen })
+          ) : (
+            <View style={[styles.centerContainer, centerContainer]}>
+              <Text style={[styles.imageCountText, { color: black }, imageCountText]}>
+                {t<string>('{{ index }} of {{ photoLength }}', {
+                  index: photoLength - selectedIndex,
+                  photoLength,
+                })}
+              </Text>
+            </View>
+          )}
+          {rightElement ? (
+            rightElement({ openGridView, photo, share, shareMenuOpen })
+          ) : (
+            <TouchableOpacity onPress={openGridView}>
+              <View style={[styles.rightContainer, rightContainer]}>
+                {GridIcon ? GridIcon : <GridIconDefault />}
               </View>
-            )}
-            {rightElement ? (
-              rightElement({ openGridView, photo, share, shareMenuOpen })
-            ) : (
-              <TouchableOpacity onPress={openGridView}>
-                <View style={[styles.rightContainer, rightContainer]}>
-                  {GridIcon ? GridIcon : <GridIconDefault />}
-                </View>
-              </TouchableOpacity>
-            )}
-          </View>
-        </SafeAreaView>
+            </TouchableOpacity>
+          )}
+        </View>
       </Animated.View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
   },
   innerContainer: {
     flexDirection: 'row',
-    height: 56,
+    paddingVertical: 4,
   },
   leftContainer: {
     flex: 1,
