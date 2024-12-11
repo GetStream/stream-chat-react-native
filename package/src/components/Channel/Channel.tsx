@@ -372,10 +372,6 @@ export type ChannelPropsWithContext<
      */
     additionalKeyboardAvoidingViewProps?: Partial<KeyboardAvoidingViewProps>;
     /**
-     * Disables the channel UI if the channel is frozen
-     */
-    disableIfFrozenChannel?: boolean;
-    /**
      * When true, disables the KeyboardCompatibleView wrapper
      *
      * Channel internally uses the [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
@@ -503,7 +499,6 @@ const ChannelWithContext = <
     CreatePollContent,
     DateHeader = DateHeaderDefault,
     deletedMessagesVisibilityType = 'always',
-    disableIfFrozenChannel = true,
     disableKeyboardCompatibleView = false,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch = true,
@@ -1596,11 +1591,6 @@ const ChannelWithContext = <
     }
   };
 
-  const disabledValue = useMemo(
-    () => !!channel?.data?.frozen && disableIfFrozenChannel,
-    [channel.data?.frozen, disableIfFrozenChannel],
-  );
-
   const ownCapabilitiesContext = useCreateOwnCapabilitiesContext({
     channel,
     overrideCapabilities: overrideOwnCapabilities,
@@ -1608,7 +1598,7 @@ const ChannelWithContext = <
 
   const channelContext = useCreateChannelContext({
     channel,
-    disabled: disabledValue,
+    disabled: !!channel?.data?.frozen,
     EmptyStateIndicator,
     enableMessageGroupingByUser,
     enforceUniqueReaction,
