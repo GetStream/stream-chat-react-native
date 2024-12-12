@@ -1,7 +1,7 @@
 import { mapTaskToStorable } from '../mappers/mapTaskToStorable';
-import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
+import { SqliteClient } from '../SqliteClient';
 import type { PendingTask } from '../types';
 
 /*
@@ -11,21 +11,21 @@ import type { PendingTask } from '../types';
  *
  * @return {() => void} - A function that can be called to remove the task from the database
  */
-export const addPendingTask = (task: PendingTask) => {
+export const addPendingTask = async (task: PendingTask) => {
   const storable = mapTaskToStorable(task);
   const { channelId, channelType, payload, type } = storable;
   const query = createUpsertQuery('pendingTasks', storable);
-  QuickSqliteClient.logger?.('info', 'addPendingTask', {
+  SqliteClient.logger?.('info', 'addPendingTask', {
     channelId,
     channelType,
     id: task.id,
     type,
   });
 
-  QuickSqliteClient.executeSql.apply(null, query);
+  await SqliteClient.executeSql.apply(null, query);
 
-  return () => {
-    QuickSqliteClient.logger?.('info', 'deletePendingTaskAfterAddition', {
+  return async () => {
+    SqliteClient.logger?.('info', 'deletePendingTaskAfterAddition', {
       channelId,
       channelType,
       id: task.id,
@@ -38,6 +38,6 @@ export const addPendingTask = (task: PendingTask) => {
       type,
     });
 
-    QuickSqliteClient.executeSql.apply(null, query);
+    await SqliteClient.executeSql.apply(null, query);
   };
 };

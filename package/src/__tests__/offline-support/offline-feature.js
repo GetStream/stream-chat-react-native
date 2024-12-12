@@ -35,7 +35,6 @@ import { generateReaction } from '../../mock-builders/generator/reaction';
 import { generateUser } from '../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../mock-builders/mock';
 import { convertFilterSortToQuery } from '../../store/apis/utils/convertFilterSortToQuery';
-import { QuickSqliteClient } from '../../store/QuickSqliteClient';
 import { tables } from '../../store/schema';
 import { BetterSqlite } from '../../test-utils/BetterSqlite';
 
@@ -76,17 +75,18 @@ export const Generic = () => {
   describe('Offline support is disabled', () => {
     let chatClient;
 
-    beforeEach(async () => {
+    beforeAll(async () => {
       jest.clearAllMocks();
       chatClient = await getTestClientWithUser({ id: 'dan' });
-      QuickSqliteClient.dropTables();
-      QuickSqliteClient.closeDB();
+      await BetterSqlite.openDB();
+      BetterSqlite.dropAllTables();
     });
 
-    afterEach(() => {
-      QuickSqliteClient.dropTables();
-      QuickSqliteClient.closeDB();
+    afterAll(() => {
+      BetterSqlite.dropAllTables();
+      BetterSqlite.closeDB();
       cleanup();
+      jest.clearAllMocks();
     });
 
     it('should NOT create tables on first load if offline feature is disabled', async () => {
@@ -97,11 +97,15 @@ export const Generic = () => {
       );
       await waitFor(() => expect(screen.getByTestId('test-child')).toBeTruthy());
 
-      const tablesInDb = BetterSqlite.getTables();
-      const tableNamesInDB = tablesInDb.map((table) => table.name);
-      const tablesNamesInSchema = Object.keys(tables);
+      await waitFor(async () => {
+        const tablesInDb = await BetterSqlite.getTables();
+        const tableNamesInDB = tablesInDb.map((table) => table.name);
+        const tablesNamesInSchema = Object.keys(tables);
 
-      tablesNamesInSchema.forEach((name) => expect(tableNamesInDB.includes(name)).toBe(false));
+        tablesNamesInSchema.forEach((name) => {
+          expect(tableNamesInDB.includes(name)).toBe(false);
+        });
+      });
     });
   });
 
@@ -185,11 +189,14 @@ export const Generic = () => {
         .map(() => createChannel());
 
       chatClient = await getTestClientWithUser({ id: 'dan' });
+      await BetterSqlite.openDB();
       BetterSqlite.dropAllTables();
     });
 
     afterEach(() => {
       BetterSqlite.dropAllTables();
+      BetterSqlite.closeDB();
+
       cleanup();
       jest.clearAllMocks();
     });
@@ -212,72 +219,76 @@ export const Generic = () => {
         </Chat>,
       );
 
-    const expectCIDsOnUIToBeInDB = (queryAllByLabelText) => {
+    const expectCIDsOnUIToBeInDB = async (queryAllByLabelText) => {
       const channelIdsOnUI = queryAllByLabelText('list-item').map(
         (node) => node._fiber.pendingProps.testID,
       );
 
-      const channelQueriesRows = BetterSqlite.selectFromTable('channelQueries');
-      const cidsInDB = JSON.parse(channelQueriesRows[0].cids);
-      const filterSortQueryInDB = channelQueriesRows[0].id;
-      const actualFilterSortQueryInDB = convertFilterSortToQuery({ filters, sort });
+      await waitFor(async () => {
+        const channelQueriesRows = await BetterSqlite.selectFromTable('channelQueries');
+        const cidsInDB = JSON.parse(channelQueriesRows[0].cids);
+        const filterSortQueryInDB = channelQueriesRows[0].id;
+        const actualFilterSortQueryInDB = convertFilterSortToQuery({ filters, sort });
 
-      expect(channelQueriesRows.length).toBe(1);
-      expect(filterSortQueryInDB).toBe(actualFilterSortQueryInDB);
+        expect(channelQueriesRows.length).toBe(1);
+        expect(filterSortQueryInDB).toBe(actualFilterSortQueryInDB);
 
-      expect(cidsInDB.length).toBe(channelIdsOnUI.length);
-      channelIdsOnUI.forEach((cidOnUi, index) => {
-        expect(cidsInDB.includes(cidOnUi)).toBe(true);
-        expect(index).toBe(cidsInDB.indexOf(cidOnUi));
+        expect(cidsInDB.length).toBe(channelIdsOnUI.length);
+        channelIdsOnUI.forEach((cidOnUi, index) => {
+          expect(cidsInDB.includes(cidOnUi)).toBe(true);
+          expect(index).toBe(cidsInDB.indexOf(cidOnUi));
+        });
       });
     };
 
-    const expectAllChannelsWithStateToBeInDB = (queryAllByLabelText) => {
+    const expectAllChannelsWithStateToBeInDB = async (queryAllByLabelText) => {
       const channelIdsOnUI = queryAllByLabelText('list-item').map(
         (node) => node._fiber.pendingProps.testID,
       );
 
-      const channelsRows = BetterSqlite.selectFromTable('channels');
-      const messagesRows = BetterSqlite.selectFromTable('messages');
-      const membersRows = BetterSqlite.selectFromTable('members');
-      const usersRows = BetterSqlite.selectFromTable('users');
-      const reactionsRows = BetterSqlite.selectFromTable('reactions');
-      const readsRows = BetterSqlite.selectFromTable('reads');
+      await waitFor(async () => {
+        const channelsRows = await BetterSqlite.selectFromTable('channels');
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const membersRows = await BetterSqlite.selectFromTable('members');
+        const usersRows = await BetterSqlite.selectFromTable('users');
+        const reactionsRows = await BetterSqlite.selectFromTable('reactions');
+        const readsRows = await BetterSqlite.selectFromTable('reads');
 
-      expect(channelIdsOnUI.length).toBe(channels.length);
-      expect(channelsRows.length).toBe(channels.length);
-      expect(messagesRows.length).toBe(allMessages.length);
-      expect(membersRows.length).toBe(allMembers.length);
-      expect(reactionsRows.length).toBe(allReactions.length);
+        expect(channelIdsOnUI.length).toBe(channels.length);
+        expect(channelsRows.length).toBe(channels.length);
+        expect(messagesRows.length).toBe(allMessages.length);
+        expect(membersRows.length).toBe(allMembers.length);
+        expect(reactionsRows.length).toBe(allReactions.length);
 
-      channelsRows.forEach((row) => {
-        expect(channelIdsOnUI.includes(row.cid)).toBe(true);
+        channelsRows.forEach((row) => {
+          expect(channelIdsOnUI.includes(row.cid)).toBe(true);
+        });
+
+        messagesRows.forEach((row) => {
+          expect(allMessages.filter((m) => m.id === row.id)).toHaveLength(1);
+        });
+        membersRows.forEach((row) =>
+          expect(
+            allMembers.filter((m) => m.cid === row.cid && m.user.id === row.userId),
+          ).toHaveLength(1),
+        );
+        usersRows.forEach((row) => expect(allUsers.filter((u) => u.id === row.id)).toHaveLength(1));
+        reactionsRows.forEach((row) =>
+          expect(
+            allReactions.filter((r) => r.message_id === row.messageId && row.userId === r.user_id),
+          ).toHaveLength(1),
+        );
+        readsRows.forEach((row) =>
+          expect(
+            allReads.filter(
+              (r) =>
+                r.last_read === row.lastRead &&
+                r.user.id === row.userId &&
+                r.unread_messages === row.unreadMessages,
+            ),
+          ).toHaveLength(1),
+        );
       });
-
-      messagesRows.forEach((row) => {
-        expect(allMessages.filter((m) => m.id === row.id)).toHaveLength(1);
-      });
-      membersRows.forEach((row) =>
-        expect(
-          allMembers.filter((m) => m.cid === row.cid && m.user.id === row.userId),
-        ).toHaveLength(1),
-      );
-      usersRows.forEach((row) => expect(allUsers.filter((u) => u.id === row.id)).toHaveLength(1));
-      reactionsRows.forEach((row) =>
-        expect(
-          allReactions.filter((r) => r.message_id === row.messageId && row.userId === r.user_id),
-        ).toHaveLength(1),
-      );
-      readsRows.forEach((row) =>
-        expect(
-          allReads.filter(
-            (r) =>
-              r.last_read === row.lastRead &&
-              r.user.id === row.userId &&
-              r.unread_messages === row.unreadMessages,
-          ),
-        ).toHaveLength(1),
-      );
     };
 
     it('should create tables on first load if offline feature is enabled', async () => {
@@ -286,9 +297,10 @@ export const Generic = () => {
           <View testID='test-child'></View>
         </Chat>,
       );
+
       await waitFor(() => expect(screen.getByTestId('test-child')).toBeTruthy());
 
-      const tablesInDb = BetterSqlite.getTables();
+      const tablesInDb = await BetterSqlite.getTables();
       const tableNamesInDB = tablesInDb.map((table) => table.name);
       const tablesNamesInSchema = Object.keys(tables);
 
@@ -298,22 +310,26 @@ export const Generic = () => {
     it('should store filter-sort query and cids on ChannelList in channelQueries table', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
       renderComponent();
-      act(() => dispatchConnectionChangedEvent(chatClient));
-      // await waiter();
-      act(() => dispatchConnectionChangedEvent(chatClient));
-      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
-      expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
+      await waitFor(async () => {
+        act(() => dispatchConnectionChangedEvent(chatClient));
+        // await waiter();
+        act(() => dispatchConnectionChangedEvent(chatClient));
+        expect(screen.getByTestId('channel-list')).toBeTruthy();
+        await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
+      });
     });
 
     it('should store channels and its state in tables', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
       renderComponent();
-      act(() => dispatchConnectionChangedEvent(chatClient));
-      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
-      expectAllChannelsWithStateToBeInDB(screen.queryAllByLabelText);
+      await waitFor(async () => {
+        act(() => dispatchConnectionChangedEvent(chatClient));
+        expect(screen.getByTestId('channel-list')).toBeTruthy();
+        await expectAllChannelsWithStateToBeInDB(screen.queryAllByLabelText);
+      });
     });
 
     it('should fetch channels from the db correctly even if they are empty', async () => {
@@ -322,11 +338,12 @@ export const Generic = () => {
       jest.spyOn(chatClient, 'hydrateActiveChannels');
 
       renderComponent();
-      await act(() => dispatchConnectionChangedEvent(chatClient));
+
       await waitFor(() => {
+        act(() => dispatchConnectionChangedEvent(chatClient));
         expect(screen.getByTestId('channel-list')).toBeTruthy();
         expect(screen.getByTestId(emptyChannel.cid)).toBeTruthy();
-        expect(chatClient.hydrateActiveChannels).toHaveBeenCalledTimes(2);
+        expect(chatClient.hydrateActiveChannels).toHaveBeenCalled();
         expect(chatClient.hydrateActiveChannels.mock.calls[0][0]).toStrictEqual([emptyChannel]);
       });
     });
@@ -343,32 +360,36 @@ export const Generic = () => {
       });
       act(() => dispatchMessageNewEvent(chatClient, newMessage, channels[0].channel));
 
-      const messagesRows = BetterSqlite.selectFromTable('messages');
-      const matchingRows = messagesRows.filter((m) => m.id === newMessage.id);
-
-      expect(matchingRows.length).toBe(1);
+      await waitFor(async () => {
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const matchingRows = messagesRows.filter((m) => m.id === newMessage.id);
+        expect(matchingRows.length).toBe(1);
+        expect(matchingRows[0].id).toBe(newMessage.id);
+      });
     });
 
     it('should add a new channel and a new message to database from notification event', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
       renderComponent();
-      act(() => dispatchConnectionChangedEvent(chatClient));
-      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+      await waitFor(() => {
+        act(() => dispatchConnectionChangedEvent(chatClient));
+        expect(screen.getByTestId('channel-list')).toBeTruthy();
+      });
 
       const newChannel = createChannel();
       channels.push(newChannel);
       useMockedApis(chatClient, [getOrCreateChannelApi(newChannel)]);
 
-      act(() => dispatchNotificationMessageNewEvent(chatClient, newChannel.channel));
       await waitFor(() => {
+        act(() => dispatchNotificationMessageNewEvent(chatClient, newChannel.channel));
+
         const channelIdsOnUI = screen
           .queryAllByLabelText('list-item')
           .map((node) => node._fiber.pendingProps.testID);
         expect(channelIdsOnUI.includes(newChannel.channel.cid)).toBeTruthy();
       });
-
-      expectAllChannelsWithStateToBeInDB(screen.queryAllByLabelText);
+      await expectAllChannelsWithStateToBeInDB(screen.queryAllByLabelText);
     });
 
     it('should update a message in database', async () => {
@@ -383,11 +404,13 @@ export const Generic = () => {
 
       act(() => dispatchMessageUpdatedEvent(chatClient, updatedMessage, channels[0].channel));
 
-      const messagesRows = BetterSqlite.selectFromTable('messages');
-      const matchingRows = messagesRows.filter((m) => m.id === updatedMessage.id);
+      await waitFor(async () => {
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const matchingRows = messagesRows.filter((m) => m.id === updatedMessage.id);
 
-      expect(matchingRows.length).toBe(1);
-      expect(matchingRows[0].text).toBe(updatedMessage.text);
+        expect(matchingRows.length).toBe(1);
+        expect(matchingRows[0].text).toBe(updatedMessage.text);
+      });
     });
 
     it('should remove the channel from DB when user is removed as member', async () => {
@@ -398,23 +421,22 @@ export const Generic = () => {
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
       const removedChannel = channels[getRandomInt(0, channels.length - 1)].channel;
       act(() => dispatchNotificationRemovedFromChannel(chatClient, removedChannel));
-      await waitFor(() => {
+      await waitFor(async () => {
         const channelIdsOnUI = screen
           .queryAllByLabelText('list-item')
           .map((node) => node._fiber.pendingProps.testID);
         expect(channelIdsOnUI.includes(removedChannel.cid)).toBeFalsy();
+        await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
+
+        const channelsRows = await BetterSqlite.selectFromTable('channels');
+        const matchingRows = channelsRows.filter((c) => c.id === removedChannel.id);
+
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const matchingMessagesRows = messagesRows.filter((m) => m.cid === removedChannel.cid);
+
+        expect(matchingRows.length).toBe(0);
+        expect(matchingMessagesRows.length).toBe(0);
       });
-
-      expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
-
-      const channelsRows = BetterSqlite.selectFromTable('channels');
-      const matchingRows = channelsRows.filter((c) => c.id === removedChannel.id);
-
-      const messagesRows = BetterSqlite.selectFromTable('messages');
-      const matchingMessagesRows = messagesRows.filter((m) => m.cid === removedChannel.cid);
-
-      expect(matchingRows.length).toBe(0);
-      expect(matchingMessagesRows.length).toBe(0);
     });
 
     it('should add the channel to DB when user is added as member', async () => {
@@ -429,22 +451,22 @@ export const Generic = () => {
 
       act(() => dispatchNotificationAddedToChannel(chatClient, newChannel.channel));
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const channelIdsOnUI = screen
           .queryAllByLabelText('list-item')
           .map((node) => node._fiber.pendingProps.testID);
         expect(channelIdsOnUI.includes(newChannel.channel.cid)).toBeTruthy();
+
+        await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
+        const channelsRows = await BetterSqlite.selectFromTable('channels');
+        const matchingChannelsRows = channelsRows.filter((c) => c.id === newChannel.channel.id);
+
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const matchingMessagesRows = messagesRows.filter((m) => m.cid === newChannel.channel.cid);
+
+        expect(matchingChannelsRows.length).toBe(1);
+        expect(matchingMessagesRows.length).toBe(newChannel.messages.length);
       });
-
-      expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
-      const channelsRows = BetterSqlite.selectFromTable('channels');
-      const matchingChannelsRows = channelsRows.filter((c) => c.id === newChannel.channel.id);
-
-      const messagesRows = BetterSqlite.selectFromTable('messages');
-      const matchingMessagesRows = messagesRows.filter((m) => m.cid === newChannel.channel.cid);
-
-      expect(matchingChannelsRows.length).toBe(1);
-      expect(matchingMessagesRows.length).toBe(newChannel.messages.length);
     });
 
     it('should remove the channel messages from DB when channel is truncated', async () => {
@@ -457,19 +479,18 @@ export const Generic = () => {
       const channelToTruncate = channels[getRandomInt(0, channels.length - 1)].channel;
       act(() => dispatchChannelTruncatedEvent(chatClient, channelToTruncate));
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const channelIdsOnUI = screen
           .queryAllByLabelText('list-item')
           .map((node) => node._fiber.pendingProps.testID);
         expect(channelIdsOnUI.includes(channelToTruncate.cid)).toBeTruthy();
+        expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
+
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const matchingMessagesRows = messagesRows.filter((m) => m.cid === channelToTruncate.cid);
+
+        expect(matchingMessagesRows.length).toBe(0);
       });
-
-      expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
-
-      const messagesRows = BetterSqlite.selectFromTable('messages');
-      const matchingMessagesRows = messagesRows.filter((m) => m.cid === channelToTruncate.cid);
-
-      expect(matchingMessagesRows.length).toBe(0);
     });
 
     it('should add a reaction to DB when a new reaction is added', async () => {
@@ -503,15 +524,17 @@ export const Generic = () => {
         ),
       );
 
-      const reactionsRows = BetterSqlite.selectFromTable('reactions');
-      const matchingReactionsRows = reactionsRows.filter(
-        (r) =>
-          r.type === newReaction.type &&
-          r.userId === reactionMember.user.id &&
-          r.messageId === messageWithNewReaction.id,
-      );
+      await waitFor(async () => {
+        const reactionsRows = await BetterSqlite.selectFromTable('reactions');
+        const matchingReactionsRows = reactionsRows.filter(
+          (r) =>
+            r.type === newReaction.type &&
+            r.userId === reactionMember.user.id &&
+            r.messageId === messageWithNewReaction.id,
+        );
 
-      expect(matchingReactionsRows.length).toBe(1);
+        expect(matchingReactionsRows.length).toBe(1);
+      });
     });
 
     it('should remove a reaction from DB when reaction is deleted', async () => {
@@ -528,15 +551,18 @@ export const Generic = () => {
       const reactionToBeRemoved =
         reactionsOnTargetMessage[getRandomInt(0, reactionsOnTargetMessage.length - 1)];
 
-      const reactionsRows = BetterSqlite.selectFromTable('reactions');
-      const matchingReactionsRows = reactionsRows.filter(
-        (r) =>
-          r.type === reactionToBeRemoved.type &&
-          r.userId === reactionToBeRemoved.user_id &&
-          r.messageId === targetMessage.id,
-      );
+      await waitFor(async () => {
+        const reactionsRows = await BetterSqlite.selectFromTable('reactions');
+        const matchingReactionsRows = reactionsRows.filter(
+          (r) =>
+            r.type === reactionToBeRemoved.type &&
+            r.userId === reactionToBeRemoved.user_id &&
+            r.messageId === targetMessage.id,
+        );
 
-      expect(matchingReactionsRows.length).toBe(1);
+        expect(matchingReactionsRows.length).toBe(1);
+      });
+
       const messageWithoutDeletedReaction = {
         ...targetMessage,
         latest_reactions: reactionsOnTargetMessage.filter((r) => r !== reactionToBeRemoved),
@@ -551,15 +577,17 @@ export const Generic = () => {
         ),
       );
 
-      const reactionsRowsAfterEvent = BetterSqlite.selectFromTable('reactions');
-      const matchingReactionsRowsAfterEvent = reactionsRowsAfterEvent.filter(
-        (r) =>
-          r.type === reactionToBeRemoved.type &&
-          r.userId === reactionToBeRemoved.user_id &&
-          r.messageId === messageWithoutDeletedReaction.id,
-      );
+      await waitFor(async () => {
+        const reactionsRowsAfterEvent = await BetterSqlite.selectFromTable('reactions');
+        const matchingReactionsRowsAfterEvent = reactionsRowsAfterEvent.filter(
+          (r) =>
+            r.type === reactionToBeRemoved.type &&
+            r.userId === reactionToBeRemoved.user_id &&
+            r.messageId === messageWithoutDeletedReaction.id,
+        );
 
-      expect(matchingReactionsRowsAfterEvent.length).toBe(0);
+        expect(matchingReactionsRowsAfterEvent.length).toBe(0);
+      });
     });
 
     it('should update a reaction in DB when reaction is updated', async () => {
@@ -585,15 +613,18 @@ export const Generic = () => {
           targetChannel.channel,
         ),
       );
-      const reactionsRows = BetterSqlite.selectFromTable('reactions');
-      const matchingReactionsRows = reactionsRows.filter(
-        (r) =>
-          r.type === reactionToBeUpdated.type &&
-          r.userId === reactionToBeUpdated.user_id &&
-          r.messageId === targetMessage.id,
-      );
 
-      expect(matchingReactionsRows.length).toBe(1);
+      await waitFor(async () => {
+        const reactionsRows = await BetterSqlite.selectFromTable('reactions');
+        const matchingReactionsRows = reactionsRows.filter(
+          (r) =>
+            r.type === reactionToBeUpdated.type &&
+            r.userId === reactionToBeUpdated.user_id &&
+            r.messageId === targetMessage.id,
+        );
+
+        expect(matchingReactionsRows.length).toBe(1);
+      });
     });
 
     it('should add a member to DB when a new member is added to channel', async () => {
@@ -607,12 +638,14 @@ export const Generic = () => {
       const newMember = generateMember();
       act(() => dispatchMemberAddedEvent(chatClient, newMember, targetChannel.channel));
 
-      const membersRows = BetterSqlite.selectFromTable('members');
-      const matchingMembersRows = membersRows.filter(
-        (m) => m.cid === targetChannel.channel.cid && m.userId === newMember.user_id,
-      );
+      await waitFor(async () => {
+        const membersRows = await BetterSqlite.selectFromTable('members');
+        const matchingMembersRows = membersRows.filter(
+          (m) => m.cid === targetChannel.channel.cid && m.userId === newMember.user_id,
+        );
 
-      expect(matchingMembersRows.length).toBe(1);
+        expect(matchingMembersRows.length).toBe(1);
+      });
     });
 
     it('should remove a member from DB when a member is removed from channel', async () => {
@@ -626,12 +659,14 @@ export const Generic = () => {
       const targetMember = targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
       act(() => dispatchMemberRemovedEvent(chatClient, targetMember, targetChannel.channel));
 
-      const membersRows = BetterSqlite.selectFromTable('members');
-      const matchingMembersRows = membersRows.filter(
-        (m) => m.cid === targetChannel.channel.cid && m.userId === targetMember.user_id,
-      );
+      await waitFor(async () => {
+        const membersRows = await BetterSqlite.selectFromTable('members');
+        const matchingMembersRows = membersRows.filter(
+          (m) => m.cid === targetChannel.channel.cid && m.userId === targetMember.user_id,
+        );
 
-      expect(matchingMembersRows.length).toBe(0);
+        expect(matchingMembersRows.length).toBe(0);
+      });
     });
 
     it('should update the member in DB when a member of a channel is updated', async () => {
@@ -646,16 +681,18 @@ export const Generic = () => {
       targetMember.role = 'admin';
       act(() => dispatchMemberUpdatedEvent(chatClient, targetMember, targetChannel.channel));
 
-      const membersRows = BetterSqlite.selectFromTable('members');
-      const matchingMembersRows = membersRows.filter(
-        (m) =>
-          m.cid === targetChannel.channel.cid &&
-          m.userId === targetMember.user_id &&
-          m.role === targetMember.role,
-      );
+      await waitFor(async () => {
+        const membersRows = await BetterSqlite.selectFromTable('members');
+        const matchingMembersRows = membersRows.filter(
+          (m) =>
+            m.cid === targetChannel.channel.cid &&
+            m.userId === targetMember.user_id &&
+            m.role === targetMember.role,
+        );
 
-      expect(matchingMembersRows.length).toBe(1);
-      expect(matchingMembersRows[0].role).toBe(targetMember.role);
+        expect(matchingMembersRows.length).toBe(1);
+        expect(matchingMembersRows[0].role).toBe(targetMember.role);
+      });
     });
 
     it('should update the channel data in DB when a channel is updated', async () => {
@@ -669,14 +706,18 @@ export const Generic = () => {
       targetChannel.channel.name = uuidv4();
       act(() => dispatchChannelUpdatedEvent(chatClient, targetChannel.channel));
 
-      const channelsRows = BetterSqlite.selectFromTable('channels');
-      const matchingChannelsRows = channelsRows.filter((c) => c.cid === targetChannel.channel.cid);
+      await waitFor(async () => {
+        const channelsRows = await BetterSqlite.selectFromTable('channels');
+        const matchingChannelsRows = channelsRows.filter(
+          (c) => c.cid === targetChannel.channel.cid,
+        );
 
-      expect(matchingChannelsRows.length).toBe(1);
+        expect(matchingChannelsRows.length).toBe(1);
 
-      const extraData = JSON.parse(matchingChannelsRows[0].extraData);
+        const extraData = JSON.parse(matchingChannelsRows[0].extraData);
 
-      expect(extraData.name).toBe(targetChannel.channel.name);
+        expect(extraData.name).toBe(targetChannel.channel.name);
+      });
     });
 
     it('should update reads in DB when channel is read', async () => {
@@ -691,13 +732,16 @@ export const Generic = () => {
       act(() => {
         dispatchMessageReadEvent(chatClient, targetMember.user, targetChannel.channel);
       });
-      const readsRows = BetterSqlite.selectFromTable('reads');
-      const matchingReadRows = readsRows.filter(
-        (r) => r.userId === targetMember.user_id && r.cid === targetChannel.cid,
-      );
 
-      expect(matchingReadRows.length).toBe(1);
-      expect(matchingReadRows[0].unreadMessages).toBe(0);
+      await waitFor(async () => {
+        const readsRows = await BetterSqlite.selectFromTable('reads');
+        const matchingReadRows = readsRows.filter(
+          (r) => r.userId === targetMember.user_id && r.cid === targetChannel.cid,
+        );
+
+        expect(matchingReadRows.length).toBe(1);
+        expect(matchingReadRows[0].unreadMessages).toBe(0);
+      });
     });
   });
 };

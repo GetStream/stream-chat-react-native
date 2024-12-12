@@ -113,7 +113,8 @@ export * from './Message/MessageSimple/MessageSimple';
 export * from './Message/MessageSimple/MessageStatus';
 export * from './Message/MessageSimple/MessageTextContainer';
 export * from './Message/MessageSimple/MessageTimestamp';
-export * from './Message/MessageSimple/ReactionList';
+export * from './Message/MessageSimple/ReactionList/ReactionListBottom';
+export * from './Message/MessageSimple/ReactionList/ReactionListTop';
 export * from './Message/MessageSimple/utils/renderText';
 export * from './Message/utils/messageActions';
 export * from '../utils/removeReservedFields';
@@ -155,21 +156,21 @@ export * from './MessageList/utils/getGroupStyles';
 export * from './MessageList/utils/getLastReceivedMessage';
 export * from './MessageList/utils/getReadStates';
 
-export * from './MessageOverlay/hooks/useMessageActionAnimation';
-export * from './MessageOverlay/MessageActionList';
-export * from './MessageOverlay/MessageActionListItem';
-export * from './MessageOverlay/MessageOverlay';
-export * from './MessageOverlay/OverlayBackdrop';
-export * from './MessageOverlay/OverlayReactions';
-export * from './MessageOverlay/OverlayReactionsAvatar';
-export * from './MessageOverlay/OverlayReactionList';
+export * from './MessageMenu/MessageActionList';
+export * from './MessageMenu/MessageActionListItem';
+export * from './MessageMenu/MessageMenu';
+export * from './MessageMenu/MessageUserReactions';
+export * from './MessageMenu/MessageUserReactionsAvatar';
+export * from './MessageMenu/MessageReactionPicker';
 
 export * from './ProgressControl/ProgressControl';
 export * from './Poll';
 
 export * from './Reply/Reply';
 
-export * from './Spinner/Spinner';
+export * from './UIComponents/BottomSheetModal';
+export * from './UIComponents/ImageBackground';
+export * from './UIComponents/Spinner';
 
 export * from './Thread/Thread';
 export * from './Thread/components/ThreadFooterComponent';

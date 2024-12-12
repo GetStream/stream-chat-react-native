@@ -22,7 +22,7 @@ describe('ScrollToBottomButton', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('message-notification')).toBeFalsy();
+      expect(queryByTestId('scroll-to-bottom-button')).toBeFalsy();
     });
   });
 
@@ -38,7 +38,7 @@ describe('ScrollToBottomButton', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('message-notification')).toBeTruthy();
+      expect(queryByTestId('scroll-to-bottom-button')).toBeTruthy();
     });
   });
 
@@ -53,7 +53,7 @@ describe('ScrollToBottomButton', () => {
         </TranslationProvider>
       </ThemeProvider>,
     );
-    fireEvent.press(getByTestId('message-notification'));
+    fireEvent.press(getByTestId('scroll-to-bottom-button'));
     expect(onPress).toHaveBeenCalledTimes(1);
   });
 

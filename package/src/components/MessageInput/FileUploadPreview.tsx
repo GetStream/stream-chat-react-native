@@ -16,7 +16,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { Close } from '../../icons/Close';
 import { Warning } from '../../icons/Warning';
-import { isAudioPackageAvailable } from '../../native';
+import { isSoundPackageAvailable } from '../../native';
 import type { DefaultStreamChatGenerics, FileUpload } from '../../types/types';
 import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
 import {
@@ -235,7 +235,7 @@ const FileUploadPreviewWithContext = <
           style={styles.overlay}
           type={indicatorType}
         >
-          {item.file.mimeType?.startsWith('audio/') && isAudioPackageAvailable() ? (
+          {item.file.mimeType?.startsWith('audio/') && isSoundPackageAvailable() ? (
             <AudioAttachmentUploadPreview
               hideProgressBar={true}
               item={item}

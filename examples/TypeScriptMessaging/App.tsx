@@ -9,11 +9,10 @@ import {
   Channel,
   ChannelList,
   Chat,
-  DebugContextProvider,
   MessageInput,
   MessageList,
   OverlayProvider,
-  QuickSqliteClient,
+  SqliteClient,
   Streami18n,
   Thread,
   ThreadContextValue,
@@ -24,7 +23,6 @@ import {
 
 import { useStreamChatTheme } from './useStreamChatTheme';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useFlipper } from 'stream-chat-react-native-devtools';
 import { AuthProgressLoader } from './AuthProgressLoader';
 
 LogBox.ignoreAllLogs(true);
@@ -62,8 +60,8 @@ const options = {
 
 I18nManager.forceRTL(false);
 
-QuickSqliteClient.logger = (level, message, extraData) => {
-  console.log(level, `QuickSqliteClient: ${message}`, extraData);
+SqliteClient.logger = (level, message, extraData) => {
+  console.log(level, `SqliteClient: ${message}`, extraData);
 };
 
 const apiKey = 'q95x9hkbyd6p';
@@ -283,22 +281,20 @@ export default () => {
 
   return (
     <SafeAreaProvider style={{ backgroundColor: theme.colors?.white_snow || '#FCFCFC' }}>
-      <DebugContextProvider useFlipper={useFlipper}>
-        <NavigationContainer
-          theme={{
-            colors: {
-              ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
-            },
-            dark: colorScheme === 'dark',
-          }}
-        >
-          <AppContext.Provider value={{ channel, setChannel, setThread, thread }}>
-            <GestureHandlerRootView style={{ flex: 1 }}>
-              <App />
-            </GestureHandlerRootView>
-          </AppContext.Provider>
-        </NavigationContainer>
-      </DebugContextProvider>
+      <NavigationContainer
+        theme={{
+          colors: {
+            ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
+          },
+          dark: colorScheme === 'dark',
+        }}
+      >
+        <AppContext.Provider value={{ channel, setChannel, setThread, thread }}>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <App />
+          </GestureHandlerRootView>
+        </AppContext.Provider>
+      </NavigationContainer>
     </SafeAreaProvider>
   );
 };

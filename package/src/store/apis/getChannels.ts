@@ -7,7 +7,7 @@ import { selectChannels } from './queries/selectChannels';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { mapStorableToChannel } from '../mappers/mapStorableToChannel';
-import { QuickSqliteClient } from '../QuickSqliteClient';
+import { SqliteClient } from '../SqliteClient';
 
 /**
  * Returns the list of channels with state enriched for given channel ids.
@@ -18,7 +18,7 @@ import { QuickSqliteClient } from '../QuickSqliteClient';
  *
  * @returns {Array} Channels with enriched state.
  */
-export const getChannels = <
+export const getChannels = async <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channelIds,
@@ -26,13 +26,13 @@ export const getChannels = <
 }: {
   channelIds: string[];
   currentUserId: string;
-}): Omit<ChannelAPIResponse<StreamChatGenerics>, 'duration'>[] => {
-  QuickSqliteClient.logger?.('info', 'getChannels', { channelIds, currentUserId });
-  const channels = selectChannels({ channelIds });
+}): Promise<Omit<ChannelAPIResponse<StreamChatGenerics>, 'duration'>[]> => {
+  SqliteClient.logger?.('info', 'getChannels', { channelIds, currentUserId });
+  const channels = await selectChannels({ channelIds });
 
-  const cidVsMembers = getMembers<StreamChatGenerics>({ channelIds });
-  const cidVsReads = getReads<StreamChatGenerics>({ channelIds });
-  const cidVsMessages = getChannelMessages<StreamChatGenerics>({
+  const cidVsMembers = await getMembers<StreamChatGenerics>({ channelIds });
+  const cidVsReads = await getReads<StreamChatGenerics>({ channelIds });
+  const cidVsMessages = await getChannelMessages<StreamChatGenerics>({
     channelIds,
     currentUserId,
   });

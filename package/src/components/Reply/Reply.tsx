@@ -9,6 +9,7 @@ import merge from 'lodash/merge';
 import type { Attachment, PollState } from 'stream-chat';
 
 import { useChatContext } from '../../contexts';
+import { useChatConfigContext } from '../../contexts/chatConfigContext/ChatConfigContext';
 import { useMessageContext } from '../../contexts/messageContext/MessageContext';
 import {
   MessageInputContext,
@@ -156,6 +157,7 @@ const ReplyWithContext = <
     styles: stylesProp = {},
     t,
   } = props;
+  const { resizableCDNHosts } = useChatConfigContext();
 
   const [error, setError] = useState(false);
 
@@ -184,14 +186,14 @@ const ReplyWithContext = <
   const poll = client.polls.fromState((quotedMessage as MessageType)?.poll_id ?? '');
   const { name: pollName }: ReplySelectorReturnType = useStateStore(poll?.state, selector) ?? {};
 
-  const messageText = typeof quotedMessage === 'boolean' ? '' : quotedMessage.text || '';
+  const messageText = quotedMessage ? quotedMessage.text : '';
 
   const emojiOnlyText = useMemo(() => {
     if (!messageText) return false;
     return hasOnlyEmojis(messageText);
   }, [messageText]);
 
-  if (typeof quotedMessage === 'boolean') return null;
+  if (!quotedMessage) return null;
 
   const lastAttachment = quotedMessage.attachments?.slice(-1)[0] as Attachment<StreamChatGenerics>;
   const messageType = lastAttachment && getMessageType(lastAttachment);
@@ -247,6 +249,7 @@ const ReplyWithContext = <
                     (stylesProp.imageAttachment?.height as number) ||
                     (imageAttachment?.height as number) ||
                     styles.imageAttachment.height,
+                  resizableCDNHosts,
                   url: (lastAttachment.image_url ||
                     lastAttachment.thumb_url ||
                     lastAttachment.og_scrape_url) as string,

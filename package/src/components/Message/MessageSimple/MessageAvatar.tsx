@@ -92,6 +92,7 @@ export const MessageAvatar = <
   const { alignment, lastGroupMessage, message, showAvatar } =
     useMessageContext<StreamChatGenerics>();
   const { ImageComponent } = useChatContext<StreamChatGenerics>();
+
   return (
     <MemoizedMessageAvatar
       {...{

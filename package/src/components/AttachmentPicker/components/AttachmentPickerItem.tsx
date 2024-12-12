@@ -1,16 +1,15 @@
 import React from 'react';
 
-import { Alert, ImageBackground, Platform, StyleSheet, Text, View } from 'react-native';
+import { Alert, ImageBackground, StyleSheet, Text, View } from 'react-native';
 
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { lookup } from 'mime-types';
 
-import { useTranslationContext } from '../../../contexts';
 import { AttachmentPickerContextValue } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useViewport } from '../../../hooks/useViewport';
 import { Recorder } from '../../../icons';
-import { getLocalAssetUri } from '../../../native';
 import type { Asset, File } from '../../../types/types';
 import { getDurationLabelFromDuration } from '../../../utils/utils';
 
@@ -49,18 +48,14 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
     },
   } = useTheme();
 
-  const { duration: videoDuration, uri } = asset;
+  const { duration: videoDuration, id: assetId, originalUri, uri } = asset;
 
   const durationLabel = getDurationLabelFromDuration(videoDuration);
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 
   /* Patches video files with uri and mimetype */
-  const patchVideoFile = async (files: File[]) => {
-    // For the case of Expo CLI where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
-    const localAssetURI =
-      Platform.OS === 'ios' && asset.id && getLocalAssetUri && (await getLocalAssetUri(asset.id));
-    const uri = localAssetURI || asset.uri || '';
+  const patchVideoFile = (files: File[]) => {
     // We need a mime-type to upload a video file.
     const mimeType = lookup(asset.name) || 'multipart/form-data';
     return [
@@ -70,18 +65,19 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
         id: asset.id,
         mimeType,
         name: asset.name,
+        originalUri,
         size: asset.size,
         uri,
       },
     ];
   };
 
-  const updateSelectedFiles = async () => {
+  const updateSelectedFiles = () => {
     if (numberOfUploads >= maxNumberOfFiles) {
       Alert.alert(t('Maximum number of files reached'));
       return;
     }
-    const files = await patchVideoFile(selectedFiles);
+    const files = patchVideoFile(selectedFiles);
     setSelectedFiles(files);
   };
 
@@ -89,7 +85,9 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
     if (selected) {
       setSelectedFiles((files) =>
         // `id` is available for Expo MediaLibrary while Cameraroll doesn't share id therefore we use `uri`
-        files.filter((file) => (file.id ? file.id !== asset.id : file.uri !== asset.uri)),
+        files.filter((file) =>
+          file.id ? file.id !== assetId : file.uri !== uri && file.originalUri !== uri,
+        ),
       );
     } else {
       updateSelectedFiles();
@@ -99,7 +97,7 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
   return (
     <TouchableOpacity onPress={onPressVideo}>
       <ImageBackground
-        source={{ uri }}
+        source={{ uri: originalUri }}
         style={[
           {
             height: size,
@@ -149,37 +147,23 @@ const AttachmentImage = (props: AttachmentImageProps) => {
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 
-  const { uri } = asset;
+  const { id: assetId, originalUri, uri } = asset;
 
-  /* Patches image files with uri */
-  const patchImageFile = async (images: Asset[]) => {
-    // For the case of Expo CLI where you need to fetch the file uri from file id. Here it is only done for iOS since for android the file.uri is fine.
-    const localAssetURI =
-      Platform.OS === 'ios' && asset.id && getLocalAssetUri && (await getLocalAssetUri(asset.id));
-    const uri = localAssetURI || asset.uri || '';
-    return [
-      ...images,
-      {
-        ...asset,
-        uri,
-      },
-    ];
-  };
-
-  const updateSelectedImages = async () => {
+  const updateSelectedImages = () => {
     if (numberOfUploads >= maxNumberOfFiles) {
       Alert.alert(t('Maximum number of files reached'));
       return;
     }
-    const images = await patchImageFile(selectedImages);
-    setSelectedImages(images);
+    setSelectedImages([...selectedImages, asset]);
   };
 
   const onPressImage = () => {
     if (selected) {
       // `id` is available for Expo MediaLibrary while Cameraroll doesn't share id therefore we use `uri`
       setSelectedImages((images) =>
-        images.filter((image) => (image.id ? image.id !== asset.id : image.uri !== asset.uri)),
+        images.filter((image) =>
+          assetId ? image.id !== assetId : image.uri !== uri && originalUri !== uri,
+        ),
       );
     } else {
       updateSelectedImages();

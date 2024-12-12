@@ -124,11 +124,7 @@ export const useCreateMessageInputContext = <
   const imageUploadsValue = imageUploads.map(({ state }) => state).join();
   const asyncUploadsValue = Object.keys(asyncUploads).join();
   const mentionedUsersLength = mentionedUsers.length;
-  const quotedMessageId = quotedMessage
-    ? typeof quotedMessage === 'boolean'
-      ? ''
-      : quotedMessage.id
-    : '';
+  const quotedMessageId = quotedMessage ? quotedMessage.id : '';
   const threadId = thread?.id;
   const asyncIdsLength = asyncIds.length;
 

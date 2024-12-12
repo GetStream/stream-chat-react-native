@@ -1,7 +1,7 @@
-import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
+import { SqliteClient } from '../SqliteClient';
 
-export const deleteMessagesForChannel = ({
+export const deleteMessagesForChannel = async ({
   cid,
   flush = true,
 }: {
@@ -12,13 +12,13 @@ export const deleteMessagesForChannel = ({
     cid,
   });
 
-  QuickSqliteClient.logger?.('info', 'deleteMessagesForChannel', {
+  SqliteClient.logger?.('info', 'deleteMessagesForChannel', {
     cid,
     flush,
   });
 
   if (flush) {
-    QuickSqliteClient.executeSql.apply(null, query);
+    await SqliteClient.executeSql.apply(null, query);
   }
 
   return [query];

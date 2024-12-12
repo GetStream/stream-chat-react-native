@@ -14,6 +14,7 @@
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		BA940C90F0F2BEC20C0FEAA7 /* Pods_SampleApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCD160161C625226E9655926 /* Pods_SampleApp.framework */; };
 		CC6E2CAFF5A38A490E5B9215 /* Pods_SampleApp_SampleAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A0FD320CF3282550EE21024 /* Pods_SampleApp_SampleAppTests.framework */; };
+		F5D25F8E32BEE5B47244E873 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5CA034D157E1D7F2B7696EF5 /* PrivacyInfo.xcprivacy */; };
 		FCA5E58D254B70E600B4E978 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FCA5E58C254B70E600B4E978 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
@@ -39,6 +40,7 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = SampleApp/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = SampleApp/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = SampleApp/main.m; sourceTree = "<group>"; };
+		5CA034D157E1D7F2B7696EF5 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = SampleApp/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = SampleApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9A0FD320CF3282550EE21024 /* Pods_SampleApp_SampleAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SampleApp_SampleAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCD160161C625226E9655926 /* Pods_SampleApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SampleApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -99,6 +101,7 @@
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				FCA5E58C254B70E600B4E978 /* GoogleService-Info.plist */,
+				5CA034D157E1D7F2B7696EF5 /* PrivacyInfo.xcprivacy */,
 			);
 			name = SampleApp;
 			sourceTree = "<group>";
@@ -253,6 +256,7 @@
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				FCA5E58D254B70E600B4E978 /* GoogleService-Info.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				F5D25F8E32BEE5B47244E873 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -692,6 +696,7 @@
 				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
 				USE_HERMES = true;
 			};
 			name = Debug;

@@ -418,8 +418,8 @@ const CustomAttachButton = () => {
 ```
 
 Now let's hook the relevant action handlers for buttons within ActionSheet.
-[`react-native-image-crop-picker`](https://github.com/ivpusic/react-native-image-crop-picker) provides an image picker functionality
-with good support for configurable compression, multiple images and cropping. And selected images from image picker or camera can be wired in
+[`react-native-image-picker`](https://github.com/react-native-image-picker/react-native-image-picker) provides an image picker functionality
+with good support for multiple images. And selected images from image picker or camera can be wired in
 with upload previews ([`ImageUploadPreview`](../ui-components/image-upload-preview.mdx)) within `MessageInput` component
 by using a function `uploadNewImage` provided by [`MessageInputContext`](../../contexts/message-input-context#uploadnewimage).
 
@@ -429,15 +429,15 @@ provided by the [`MessageInputContext`](../../contexts/message-input-context#pic
 ```tsx {4,10,12-21,23-30,43,46,49}
 import { AttachButton, Channel, useMessageInputContext } from 'stream-chat-react-native';
 import { ActionSheetProvider, useActionSheet } from '@expo/react-native-action-sheet';
-import ImagePicker from 'react-native-image-crop-picker';
+import ImagePicker from 'react-native-image-picker';
 
 const CustomAttachButton = () => {
   const { showActionSheetWithOptions } = useActionSheet();
   const { pickFile, uploadNewImage } = useMessageInputContext();
 
   const pickImageFromGallery = () =>
-    ImagePicker.openPicker({
-      multiple: true,
+    ImagePicker.launchImageLibrary({
+      selectionLimit: 0,
     }).then(images =>
       images.forEach(image =>
         uploadNewImage({
@@ -447,9 +447,7 @@ const CustomAttachButton = () => {
     );
 
   const pickImageFromCamera = () =>
-    ImagePicker.openCamera({
-      cropping: true,
-    }).then(image =>
+    ImagePicker.launchCamera({}).then(image =>
       uploadNewImage({
         uri: image.path,
       }),

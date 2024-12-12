@@ -5,13 +5,7 @@
       "ui-components/overview",
       "customization/theming",
       {
-        "Overlay Provider": [
-          "core-components/overlay-provider",
-          "ui-components/overlay-reaction-list",
-          "ui-components/overlay-reactions-avatar",
-          "ui-components/overlay-reactions",
-          "contexts/overlay-context"
-        ]
+        "Overlay Provider": ["core-components/overlay-provider", "contexts/overlay-context"]
       },
       {
         "Chat": ["core-components/chat", "contexts/chat-context"]
@@ -87,7 +81,8 @@
           "ui-components/message-replies",
           "ui-components/message-status",
           "ui-components/message-system",
-          "ui-components/reaction-list",
+          "ui-components/reaction-list-bottom",
+          "ui-components/reaction-list-top",
           "ui-components/video-thumbnail",
           "contexts/message-context"
         ]
@@ -125,7 +120,6 @@
           "contexts/attachment-picker-context",
           "contexts/image-gallery-context",
           "contexts/keyboard-context",
-          "contexts/message-overlay-context",
           "contexts/own-capabilities-context",
           "contexts/paginated-message-list-context",
           "contexts/suggestions-context",
@@ -163,6 +157,7 @@
       "guides/audio-messages-support",
       "guides/date-time-formatting",
       "guides/native-image-picker",
+      "guides/new-architecture",
       "customization/typescript",
       "basics/troubleshooting",
       "basics/stream_chat_with_navigation",
@@ -178,6 +173,6 @@
       "guides/performance-guide",
       "guides/deeplinking"
     ],
-    "Migration Guides": ["basics/upgrading-from-v4"]
+    "Migration Guides": ["basics/upgrading-from-v4", "basics/upgrading-from-v5"]
   }
 }

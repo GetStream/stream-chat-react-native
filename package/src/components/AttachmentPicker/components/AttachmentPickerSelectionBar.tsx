@@ -1,13 +1,11 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import {
-  useChannelContext,
-  useMessagesContext,
-  useOwnCapabilitiesContext,
-} from '../../../contexts';
 import { useAttachmentPickerContext } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
+import { useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
+import { useOwnCapabilitiesContext } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 const styles = StyleSheet.create({
@@ -36,6 +34,7 @@ export const AttachmentPickerSelectionBar = () => {
   const {
     hasCameraPicker,
     hasFilePicker,
+    hasImagePicker,
     imageUploads,
     openPollCreationDialog,
     pickFile,
@@ -75,18 +74,20 @@ export const AttachmentPickerSelectionBar = () => {
 
   return (
     <View style={[styles.container, container, { height: attachmentSelectionBarHeight }]}>
-      <TouchableOpacity
-        hitSlop={{ bottom: 15, top: 15 }}
-        onPress={setImagePicker}
-        testID='upload-photo-touchable'
-      >
-        <View style={[styles.icon, icon]}>
-          <ImageSelectorIcon
-            numberOfImageUploads={imageUploads.length}
-            selectedPicker={selectedPicker}
-          />
-        </View>
-      </TouchableOpacity>
+      {hasImagePicker ? (
+        <TouchableOpacity
+          hitSlop={{ bottom: 15, top: 15 }}
+          onPress={setImagePicker}
+          testID='upload-photo-touchable'
+        >
+          <View style={[styles.icon, icon]}>
+            <ImageSelectorIcon
+              numberOfImageUploads={imageUploads.length}
+              selectedPicker={selectedPicker}
+            />
+          </View>
+        </TouchableOpacity>
+      ) : null}
       {hasFilePicker ? (
         <TouchableOpacity
           hitSlop={{ bottom: 15, top: 15 }}

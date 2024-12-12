@@ -1,8 +1,10 @@
-import { QuickSqliteClient } from '../../QuickSqliteClient';
 import { tables } from '../../schema';
+import { SqliteClient } from '../../SqliteClient';
 import type { TableRowJoinedUser } from '../../types';
 
-export const selectReadsForChannels = (cids: string[]): TableRowJoinedUser<'reads'>[] => {
+export const selectReadsForChannels = async (
+  cids: string[],
+): Promise<TableRowJoinedUser<'reads'>[]> => {
   const questionMarks = Array(cids.length).fill('?').join(',');
   const readsColumnNames = Object.keys(tables.reads.columns)
     .map((name) => `'${name}', a.${name}`)
@@ -11,11 +13,11 @@ export const selectReadsForChannels = (cids: string[]): TableRowJoinedUser<'read
     .map((name) => `'${name}', b.${name}`)
     .join(', ');
 
-  QuickSqliteClient.logger?.('info', 'selectReadsForChannels', {
+  SqliteClient.logger?.('info', 'selectReadsForChannels', {
     cids,
   });
 
-  const result = QuickSqliteClient.executeSql(
+  const result = await SqliteClient.executeSql(
     `SELECT
       json_object(
         'user', json_object(
@@ -26,7 +28,7 @@ export const selectReadsForChannels = (cids: string[]): TableRowJoinedUser<'read
     FROM reads a
     LEFT JOIN
       users b
-    ON b.id = a.userId 
+    ON b.id = a.userId
     WHERE a.cid in (${questionMarks})`,
     cids,
   );

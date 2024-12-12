@@ -46,8 +46,8 @@ export const MessageBounceWithContext = <
     }
   };
 
-  const handleRemoveMessage = () => {
-    removeMessage(message);
+  const handleRemoveMessage = async () => {
+    await removeMessage(message);
     if (setIsBounceDialogOpen) {
       setIsBounceDialogOpen(false);
     }

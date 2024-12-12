@@ -11,7 +11,7 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
-import { isVideoPackageAvailable } from '../../native';
+import { isVideoPlayerAvailable } from '../../native';
 
 import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 
@@ -75,7 +75,7 @@ const AttachmentWithContext = <
   }
 
   if (attachment.type === FileTypes.Video && !attachment.og_scrape_url) {
-    return isVideoPackageAvailable() ? (
+    return isVideoPlayerAvailable() ? (
       <>
         <Gallery videos={[attachment]} />
         {hasAttachmentActions && (

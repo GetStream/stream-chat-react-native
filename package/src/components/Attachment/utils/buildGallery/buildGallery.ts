@@ -8,6 +8,10 @@ import { buildThumbnailGrid } from './buildThumbnailGrid';
 
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
 
+import {
+  chatConfigContextDefaultvalue,
+  ChatConfigContextValue,
+} from '../../../../contexts/chatConfigContext/ChatConfigContext';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
 /**
@@ -30,14 +34,16 @@ export function buildGallery<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   images,
+  resizableCDNHosts = chatConfigContextDefaultvalue.resizableCDNHosts,
   sizeConfig,
-}: {
+}: Pick<ChatConfigContextValue, 'resizableCDNHosts'> & {
   images: Attachment<StreamChatGenerics>[];
   sizeConfig: GallerySizeConfig;
 }): GallerySizeAndThumbnailGrid {
   if (images.length === 1) {
     return buildGalleryOfSingleImage({
       image: images[0],
+      resizableCDNHosts,
       sizeConfig,
     });
   }
@@ -45,6 +51,7 @@ export function buildGallery<
   if (images.length === 2) {
     return buildGalleryOfTwoImages({
       images,
+      resizableCDNHosts,
       sizeConfig,
     });
   }
@@ -52,6 +59,7 @@ export function buildGallery<
   if (images.length === 3) {
     return buildGalleryOfThreeImages({
       images,
+      resizableCDNHosts,
       sizeConfig,
     });
   }
@@ -72,6 +80,7 @@ export function buildGallery<
     ],
     images: images.slice(0, 4),
     invertedDirections: true,
+    resizableCDNHosts,
     sizeConfig,
   });
 }

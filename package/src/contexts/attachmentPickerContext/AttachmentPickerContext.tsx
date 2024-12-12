@@ -2,10 +2,9 @@ import React, { PropsWithChildren, useContext, useEffect, useState } from 'react
 
 import { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 
-import type { Asset, DefaultStreamChatGenerics, File } from '../../types/types';
+import type { Asset, File } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
-import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type AttachmentPickerIconProps = {
@@ -168,31 +167,4 @@ export const useAttachmentPickerContext = () => {
   }
 
   return contextValue;
-};
-
-/**
- * @deprecated
- *
- * This will be removed in the next major version.
- *
- * Typescript currently does not support partial inference so if ChatContext
- * typing is desired while using the HOC withAttachmentPickerContext the Props for the
- * wrapped component must be provided as the first generic.
- */
-export const withAttachmentPickerContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  Component: React.ComponentType<StreamChatGenerics>,
-): React.ComponentType<Omit<StreamChatGenerics, keyof AttachmentPickerContextValue>> => {
-  const WithAttachmentPickerContextComponent = (
-    props: Omit<StreamChatGenerics, keyof AttachmentPickerContextValue>,
-  ) => {
-    const attachmentPickerContext = useAttachmentPickerContext();
-
-    return <Component {...(props as StreamChatGenerics)} {...attachmentPickerContext} />;
-  };
-  WithAttachmentPickerContextComponent.displayName = `WithAttachmentPickerContext${getDisplayName(
-    Component as React.ComponentType,
-  )}`;
-  return WithAttachmentPickerContextComponent;
 };

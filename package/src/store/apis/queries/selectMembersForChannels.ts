@@ -1,9 +1,11 @@
 import type { TableRowJoinedUser } from '../../../store/types';
 
-import { QuickSqliteClient } from '../../QuickSqliteClient';
 import { tables } from '../../schema';
+import { SqliteClient } from '../../SqliteClient';
 
-export const selectMembersForChannels = (cids: string[]): TableRowJoinedUser<'members'>[] => {
+export const selectMembersForChannels = async (
+  cids: string[],
+): Promise<TableRowJoinedUser<'members'>[]> => {
   const questionMarks = Array(cids.length).fill('?').join(',');
   const membersColumnNames = Object.keys(tables.members.columns)
     .map((name) => `'${name}', a.${name}`)
@@ -12,11 +14,11 @@ export const selectMembersForChannels = (cids: string[]): TableRowJoinedUser<'me
     .map((name) => `'${name}', b.${name}`)
     .join(', ');
 
-  QuickSqliteClient.logger?.('info', 'selectMembersForChannels', {
+  SqliteClient.logger?.('info', 'selectMembersForChannels', {
     cids,
   });
 
-  const result = QuickSqliteClient.executeSql(
+  const result = await SqliteClient.executeSql(
     `SELECT
       json_object(
         'user', json_object(

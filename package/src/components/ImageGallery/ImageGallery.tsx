@@ -1,16 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, ImageStyle, Keyboard, Platform, StyleSheet, ViewStyle } from 'react-native';
+import { Image, ImageStyle, Keyboard, StyleSheet, ViewStyle } from 'react-native';
 
-import {
-  PanGestureHandler,
-  PinchGestureHandler,
-  TapGestureHandler,
-} from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import Animated, {
   Easing,
   runOnJS,
   runOnUI,
+  SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -40,20 +37,16 @@ import {
 
 import { useImageGalleryGestures } from './hooks/useImageGalleryGestures';
 
+import { useChatConfigContext } from '../../contexts/chatConfigContext/ChatConfigContext';
 import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
-import {
-  OverlayProviderProps,
-  useOverlayContext,
-} from '../../contexts/overlayContext/OverlayContext';
+import { OverlayProviderProps } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useViewport } from '../../hooks/useViewport';
-import { isVideoPackageAvailable, VideoType } from '../../native';
+import { isVideoPlayerAvailable, VideoType } from '../../native';
 import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
 import { getGiphyMimeType } from '../Attachment/utils/getGiphyMimeType';
-
-const isAndroid = Platform.OS === 'android';
 
 const MARGIN = 32;
 
@@ -112,7 +105,7 @@ export type ImageGalleryCustomComponents<
 
 type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   ImageGalleryCustomComponents<StreamChatGenerics> & {
-    overlayOpacity: Animated.SharedValue<number>;
+    overlayOpacity: SharedValue<number>;
   } & Pick<
       OverlayProviderProps<StreamChatGenerics>,
       | 'giphyVersion'
@@ -139,6 +132,7 @@ export const ImageGallery = <
   const [imageGalleryAttachments, setImageGalleryAttachments] = useState<
     Photo<StreamChatGenerics>[]
   >([]);
+  const { resizableCDNHosts } = useChatConfigContext();
   const {
     theme: {
       colors: { white_snow },
@@ -146,7 +140,6 @@ export const ImageGallery = <
     },
   } = useTheme();
   const [gridPhotos, setGridPhotos] = useState<Photo<StreamChatGenerics>[]>([]);
-  const { overlay } = useOverlayContext();
   const { messages, selectedMessage, setSelectedMessage } =
     useImageGalleryContext<StreamChatGenerics>();
 
@@ -215,14 +208,6 @@ export const ImageGallery = <
   const headerFooterVisible = useSharedValue(1);
 
   /**
-   * Gesture handler refs
-   */
-  const doubleTapRef = useRef<TapGestureHandler>(null);
-  const panRef = useRef<PanGestureHandler>(null);
-  const pinchRef = useRef<PinchGestureHandler>(null);
-  const singleTapRef = useRef<TapGestureHandler>(null);
-
-  /**
    * Shared values for movement
    */
   const translateX = useSharedValue(0);
@@ -249,7 +234,7 @@ export const ImageGallery = <
               !attachment.title_link &&
               !attachment.og_scrape_url &&
               getUrlOfImageAttachment(attachment)) ||
-            (isVideoPackageAvailable() && attachment.type === FileTypes.Video),
+            (isVideoPlayerAvailable() && attachment.type === FileTypes.Video),
         )
         .reverse() || [];
 
@@ -276,6 +261,7 @@ export const ImageGallery = <
             ? giphyURL
             : getResizedImageUrl({
                 height: fullWindowHeight,
+                resizableCDNHosts,
                 url: imageUrl,
                 width: fullWindowWidth,
               }),
@@ -358,7 +344,7 @@ export const ImageGallery = <
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uriForCurrentImage]);
 
-  const { onDoubleTap, onPan, onPinch, onSingleTap } = useImageGalleryGestures({
+  const { doubleTap, pan, pinch, singleTap } = useImageGalleryGestures({
     currentImageHeight,
     halfScreenHeight,
     halfScreenWidth,
@@ -523,104 +509,67 @@ export const ImageGallery = <
       style={[StyleSheet.absoluteFillObject, showScreenStyle]}
     >
       <Animated.View style={[StyleSheet.absoluteFillObject, containerBackground]} />
-      <TapGestureHandler
-        minPointers={1}
-        numberOfTaps={1}
-        onGestureEvent={onSingleTap}
-        ref={singleTapRef}
-        waitFor={[panRef, pinchRef, doubleTapRef]}
-      >
+      <GestureDetector gesture={Gesture.Simultaneous(singleTap, doubleTap, pinch, pan)}>
         <Animated.View style={StyleSheet.absoluteFillObject}>
-          <TapGestureHandler
-            maxDeltaX={8}
-            maxDeltaY={8}
-            maxDist={8}
-            minPointers={1}
-            numberOfTaps={2}
-            onGestureEvent={onDoubleTap}
-            ref={doubleTapRef}
-          >
-            <Animated.View style={StyleSheet.absoluteFillObject}>
-              <PinchGestureHandler
-                onGestureEvent={onPinch}
-                ref={pinchRef}
-                simultaneousHandlers={[panRef]}
-              >
-                <Animated.View style={StyleSheet.absoluteFill}>
-                  <PanGestureHandler
-                    enabled={overlay === 'gallery'}
-                    maxPointers={isAndroid ? undefined : 1}
-                    minDist={10}
-                    onGestureEvent={onPan}
-                    ref={panRef}
-                    simultaneousHandlers={[pinchRef]}
-                  >
-                    <Animated.View style={StyleSheet.absoluteFill}>
-                      <Animated.View style={[styles.animatedContainer, pagerStyle, pager]}>
-                        {imageGalleryAttachments.map((photo, i) =>
-                          photo.type === FileTypes.Video ? (
-                            <AnimatedGalleryVideo
-                              attachmentId={photo.id}
-                              handleEnd={handleEnd}
-                              handleLoad={handleLoad}
-                              handleProgress={handleProgress}
-                              index={i}
-                              key={`${photo.uri}-${i}`}
-                              offsetScale={offsetScale}
-                              paused={photo.paused || false}
-                              previous={selectedIndex > i}
-                              repeat={true}
-                              scale={scale}
-                              screenHeight={fullWindowHeight}
-                              selected={selectedIndex === i}
-                              shouldRender={Math.abs(selectedIndex - i) < 4}
-                              source={{ uri: photo.uri }}
-                              style={[
-                                {
-                                  height: fullWindowHeight * 8,
-                                  marginRight: MARGIN,
-                                  width: fullWindowWidth * 8,
-                                },
-                                slide,
-                              ]}
-                              translateX={translateX}
-                              translateY={translateY}
-                              videoRef={videoRef}
-                            />
-                          ) : (
-                            <AnimatedGalleryImage
-                              accessibilityLabel={'Image Item'}
-                              index={i}
-                              key={`${photo.uri}-${i}`}
-                              offsetScale={offsetScale}
-                              photo={photo}
-                              previous={selectedIndex > i}
-                              scale={scale}
-                              screenHeight={fullWindowHeight}
-                              selected={selectedIndex === i}
-                              shouldRender={Math.abs(selectedIndex - i) < 4}
-                              style={[
-                                {
-                                  height: fullWindowHeight * 8,
-                                  marginRight: MARGIN,
-                                  width: fullWindowWidth * 8,
-                                },
-                                slide,
-                              ]}
-                              translateX={translateX}
-                              translateY={translateY}
-                            />
-                          ),
-                        )}
-                      </Animated.View>
-                    </Animated.View>
-                  </PanGestureHandler>
-                </Animated.View>
-              </PinchGestureHandler>
-            </Animated.View>
-          </TapGestureHandler>
+          <Animated.View style={[styles.animatedContainer, pagerStyle, pager]}>
+            {imageGalleryAttachments.map((photo, i) =>
+              photo.type === FileTypes.Video ? (
+                <AnimatedGalleryVideo
+                  attachmentId={photo.id}
+                  handleEnd={handleEnd}
+                  handleLoad={handleLoad}
+                  handleProgress={handleProgress}
+                  index={i}
+                  key={`${photo.uri}-${i}`}
+                  offsetScale={offsetScale}
+                  paused={photo.paused || false}
+                  previous={selectedIndex > i}
+                  repeat={true}
+                  scale={scale}
+                  screenHeight={fullWindowHeight}
+                  selected={selectedIndex === i}
+                  shouldRender={Math.abs(selectedIndex - i) < 4}
+                  source={{ uri: photo.uri }}
+                  style={[
+                    {
+                      height: fullWindowHeight * 8,
+                      marginRight: MARGIN,
+                      width: fullWindowWidth * 8,
+                    },
+                    slide,
+                  ]}
+                  translateX={translateX}
+                  translateY={translateY}
+                  videoRef={videoRef}
+                />
+              ) : (
+                <AnimatedGalleryImage
+                  accessibilityLabel={'Image Item'}
+                  index={i}
+                  key={`${photo.uri}-${i}`}
+                  offsetScale={offsetScale}
+                  photo={photo}
+                  previous={selectedIndex > i}
+                  scale={scale}
+                  screenHeight={fullWindowHeight}
+                  selected={selectedIndex === i}
+                  shouldRender={Math.abs(selectedIndex - i) < 4}
+                  style={[
+                    {
+                      height: fullWindowHeight * 8,
+                      marginRight: MARGIN,
+                      width: fullWindowWidth * 8,
+                    },
+                    slide,
+                  ]}
+                  translateX={translateX}
+                  translateY={translateY}
+                />
+              ),
+            )}
+          </Animated.View>
         </Animated.View>
-      </TapGestureHandler>
+      </GestureDetector>
       <ImageGalleryHeader<StreamChatGenerics>
         opacity={headerFooterOpacity}
         photo={imageGalleryAttachments[selectedIndex]}
@@ -661,6 +610,7 @@ export const ImageGallery = <
               {...imageGalleryCustomComponents?.gridHandle}
             />
           )}
+          // @ts-ignore
           handleHeight={imageGalleryGridHandleHeight}
           index={0}
           onChange={(index: number) => setCurrentBottomSheetIndex(index)}

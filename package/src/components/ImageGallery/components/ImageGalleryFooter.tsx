@@ -1,52 +1,28 @@
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
-import Animated, { Extrapolate, interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+  Extrapolation,
+  interpolate,
+  SharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 
 import { ImageGalleryVideoControl } from './ImageGalleryVideoControl';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Grid as GridIconDefault, Share as ShareIconDefault } from '../../../icons';
-import { deleteFile, saveFile, shareImage, VideoType } from '../../../native';
+import {
+  deleteFile,
+  isFileSystemAvailable,
+  isShareImageAvailable,
+  saveFile,
+  shareImage,
+  VideoType,
+} from '../../../native';
 
 import { DefaultStreamChatGenerics, FileTypes } from '../../../types/types';
 import type { Photo } from '../ImageGallery';
-
-const ReanimatedSafeAreaView = Animated.createAnimatedComponent
-  ? Animated.createAnimatedComponent(SafeAreaView)
-  : SafeAreaView;
-
-const styles = StyleSheet.create({
-  centerContainer: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
-  imageCountText: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  innerContainer: {
-    flexDirection: 'row',
-    minHeight: 56,
-  },
-  leftContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    marginLeft: 8,
-  },
-  rightContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    marginRight: 8,
-  },
-  wrapper: {
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-    right: 0,
-  },
-});
 
 export type ImageGalleryFooterCustomComponent<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -94,7 +70,7 @@ type ImageGalleryFooterPropsWithContext<
   accessibilityLabel: string;
   duration: number;
   onPlayPause: () => void;
-  opacity: Animated.SharedValue<number>;
+  opacity: SharedValue<number>;
   openGridView: () => void;
   paused: boolean;
   photo: Photo<StreamChatGenerics>;
@@ -102,7 +78,7 @@ type ImageGalleryFooterPropsWithContext<
   progress: number;
   selectedIndex: number;
   videoRef: React.RefObject<VideoType>;
-  visible: Animated.SharedValue<number>;
+  visible: SharedValue<number>;
 };
 
 export const ImageGalleryFooterWithContext = <
@@ -148,7 +124,7 @@ export const ImageGalleryFooterWithContext = <
       opacity: opacity.value,
       transform: [
         {
-          translateY: interpolate(visible.value, [0, 1], [height, 0], Extrapolate.CLAMP),
+          translateY: interpolate(visible.value, [0, 1], [height, 0], Extrapolation.CLAMP),
         },
       ],
     }),
@@ -158,6 +134,9 @@ export const ImageGalleryFooterWithContext = <
   const share = async () => {
     setShareMenuOpen(true);
     try {
+      if (!shareImage || !deleteFile) {
+        return;
+      }
       const extension = photo.mime_type?.split('/')[1] || 'jpg';
       const localFile = await saveFile({
         fileName: `${photo.user?.id || 'ChatPhoto'}-${
@@ -175,26 +154,28 @@ export const ImageGalleryFooterWithContext = <
   };
 
   return (
-    <Animated.View
+    <SafeAreaView
       accessibilityLabel={accessibilityLabel}
       onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
       pointerEvents={'box-none'}
       style={styles.wrapper}
     >
-      <ReanimatedSafeAreaView style={[{ backgroundColor: white }, footerStyle, container]}>
-        {photo.type === FileTypes.Video ? (
-          videoControlElement ? (
-            videoControlElement({ duration, onPlayPause, paused, progress, videoRef })
-          ) : (
-            <ImageGalleryVideoControl
-              duration={duration}
-              onPlayPause={onPlayPause}
-              paused={paused}
-              progress={progress}
-              videoRef={videoRef}
-            />
-          )
-        ) : null}
+      <Animated.View style={footerStyle}>
+        <View style={[{ backgroundColor: white }, container]}>
+          {photo.type === FileTypes.Video ? (
+            videoControlElement ? (
+              videoControlElement({ duration, onPlayPause, paused, progress, videoRef })
+            ) : (
+              <ImageGalleryVideoControl
+                duration={duration}
+                onPlayPause={onPlayPause}
+                paused={paused}
+                progress={progress}
+                videoRef={videoRef}
+              />
+            )
+          ) : null}
+        </View>
         <View style={[styles.innerContainer, { backgroundColor: white }, innerContainer]}>
           {leftElement ? (
             leftElement({ openGridView, photo, share, shareMenuOpen })
@@ -223,8 +204,8 @@ export const ImageGalleryFooterWithContext = <
             </TouchableOpacity>
           )}
         </View>
-      </ReanimatedSafeAreaView>
-    </Animated.View>
+      </Animated.View>
+    </SafeAreaView>
   );
 };
 
@@ -244,7 +225,8 @@ const ShareButton = ({ share, ShareIcon, shareMenuOpen }: ShareButtonProps) => {
     },
   } = useTheme();
 
-  if (shareImage === null) {
+  // If the shareImage, saveFile or deleteFile is null, we don't want to render the share button
+  if (!isShareImageAvailable() || !isFileSystemAvailable()) {
     return null;
   }
 
@@ -305,3 +287,35 @@ export const ImageGalleryFooter = <
 ) => <MemoizedImageGalleryFooter {...props} />;
 
 ImageGalleryFooter.displayName = 'ImageGalleryFooter{imageGallery{footer}}';
+
+const styles = StyleSheet.create({
+  centerContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  imageCountText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  innerContainer: {
+    flexDirection: 'row',
+    paddingVertical: 4,
+  },
+  leftContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    marginLeft: 8,
+  },
+  rightContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    marginRight: 8,
+  },
+  wrapper: {
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+  },
+});

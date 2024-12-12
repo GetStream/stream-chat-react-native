@@ -2,27 +2,24 @@ import { FlatList } from 'react-native';
 
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
 
-import {
-  Audio,
-  compressImage,
-  deleteFile,
-  NetInfo,
-  saveFile,
-  Sound,
-  Video,
-} from './handlers';
+import { compressImage } from './handlers';
 
 import {
+  Audio,
+  deleteFile,
   getLocalAssetUri,
   getPhotos,
   iOS14RefreshGallerySelection,
   oniOS14GalleryLibrarySelectionChange,
   pickDocument,
   pickImage,
+  saveFile,
   setClipboardString,
   shareImage,
+  Sound,
   takePhoto,
   triggerHaptic,
+  Video,
 } from './optionalDependencies';
 
 registerNativeHandlers({
@@ -33,7 +30,6 @@ registerNativeHandlers({
   getLocalAssetUri,
   getPhotos,
   iOS14RefreshGallerySelection,
-  NetInfo,
   oniOS14GalleryLibrarySelectionChange,
   pickDocument,
   pickImage,

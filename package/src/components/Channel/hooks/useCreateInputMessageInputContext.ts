@@ -72,12 +72,8 @@ export const useCreateInputMessageInputContext = <
    */
   channelId?: string;
 }) => {
-  const editingDep = typeof editing === 'boolean' ? editing : editing?.id;
-  const quotedMessageId = quotedMessage
-    ? typeof quotedMessage === 'boolean'
-      ? ''
-      : quotedMessage.id
-    : '';
+  const editingDep = editing ? editing.id : '';
+  const quotedMessageId = quotedMessage ? quotedMessage.id : '';
 
   const inputMessageInputContext: InputMessageInputContextValue<StreamChatGenerics> = useMemo(
     () => ({

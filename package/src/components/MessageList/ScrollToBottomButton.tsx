@@ -80,7 +80,7 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
     <TouchableOpacity
       onPress={onPress}
       style={[styles.touchable, touchable]}
-      testID='message-notification'
+      testID='scroll-to-bottom-button'
     >
       <View style={[styles.wrapper, wrapper]}>
         <View style={[styles.container, { backgroundColor: white, shadowColor: black }, container]}>

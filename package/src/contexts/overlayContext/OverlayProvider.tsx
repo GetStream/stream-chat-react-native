@@ -1,13 +1,8 @@
 import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
 
-import { BackHandler, Dimensions, StyleSheet, ViewStyle } from 'react-native';
+import { BackHandler } from 'react-native';
 
-import Animated, {
-  cancelAnimation,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import { cancelAnimation, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import type BottomSheet from '@gorhom/bottom-sheet';
 
@@ -25,8 +20,6 @@ import { FileSelectorIcon as DefaultFileSelectorIcon } from '../../components/At
 import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../../components/AttachmentPicker/components/ImageOverlaySelectedComponent';
 import { ImageSelectorIcon as DefaultImageSelectorIcon } from '../../components/AttachmentPicker/components/ImageSelectorIcon';
 import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
-import { MessageOverlay } from '../../components/MessageOverlay/MessageOverlay';
-import { OverlayBackdrop } from '../../components/MessageOverlay/OverlayBackdrop';
 import { CreatePollIcon as DefaultCreatePollIcon } from '../../components/Poll/components/CreatePollIcon';
 import { useStreami18n } from '../../hooks/useStreami18n';
 
@@ -35,7 +28,6 @@ import { isImageMediaLibraryAvailable } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { AttachmentPickerProvider } from '../attachmentPickerContext/AttachmentPickerContext';
 import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
-import { MessageOverlayProvider } from '../messageOverlayContext/MessageOverlayContext';
 import { ThemeProvider } from '../themeContext/ThemeContext';
 import {
   DEFAULT_USER_LANGUAGE,
@@ -109,9 +101,6 @@ export const OverlayProvider = <
     imageGalleryGridSnapPoints,
     ImageOverlaySelectedComponent = DefaultImageOverlaySelectedComponent,
     ImageSelectorIcon = DefaultImageSelectorIcon,
-    MessageActionList,
-    MessageActionListItem,
-    messageTextNumberOfLines,
     numberOfAttachmentImagesToLoadPerCall,
     numberOfAttachmentPickerImageColumns,
     numberOfImageGalleryGridColumns,
@@ -125,9 +114,6 @@ export const OverlayProvider = <
         console.warn('bottom and top insets must be set for the image picker to work correctly');
       }
     },
-    OverlayReactionList,
-    OverlayReactions,
-    OverlayReactionsAvatar,
     topInset,
     value,
   } = props;
@@ -152,7 +138,6 @@ export const OverlayProvider = <
   const [overlay, setOverlay] = useState(value?.overlay || 'none');
 
   const overlayOpacity = useSharedValue(0);
-  const { height, width } = Dimensions.get('screen');
 
   // Setup translators
   const translators = useStreami18n(i18nInstance);
@@ -209,13 +194,6 @@ export const OverlayProvider = <
     topInset,
   };
 
-  const overlayStyle = useAnimatedStyle<ViewStyle>(
-    () => ({
-      opacity: overlayOpacity.value,
-    }),
-    [],
-  );
-
   const overlayContext = {
     overlay,
     setOverlay,
@@ -225,46 +203,27 @@ export const OverlayProvider = <
   return (
     <TranslationProvider value={{ ...translators, userLanguage: DEFAULT_USER_LANGUAGE }}>
       <OverlayContext.Provider value={overlayContext}>
-        <MessageOverlayProvider<StreamChatGenerics>>
-          <AttachmentPickerProvider value={attachmentPickerContext}>
-            <ImageGalleryProvider>
-              {children}
-              <ThemeProvider style={overlayContext.style}>
-                <Animated.View
-                  pointerEvents={overlay === 'none' ? 'none' : 'auto'}
-                  style={[StyleSheet.absoluteFill, overlayStyle]}
-                >
-                  <OverlayBackdrop style={[StyleSheet.absoluteFill, { height, width }]} />
-                </Animated.View>
-                {overlay === 'message' && (
-                  <MessageOverlay<StreamChatGenerics>
-                    MessageActionList={MessageActionList}
-                    MessageActionListItem={MessageActionListItem}
-                    messageTextNumberOfLines={messageTextNumberOfLines}
-                    overlayOpacity={overlayOpacity}
-                    OverlayReactionList={OverlayReactionList}
-                    OverlayReactions={OverlayReactions}
-                    OverlayReactionsAvatar={OverlayReactionsAvatar}
-                  />
-                )}
-                {overlay === 'gallery' && (
-                  <ImageGallery<StreamChatGenerics>
-                    autoPlayVideo={autoPlayVideo}
-                    giphyVersion={giphyVersion}
-                    imageGalleryCustomComponents={imageGalleryCustomComponents}
-                    imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
-                    imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
-                    numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
-                    overlayOpacity={overlayOpacity}
-                  />
-                )}
-                {isImageMediaLibraryAvailable() ? (
-                  <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
-                ) : null}
-              </ThemeProvider>
-            </ImageGalleryProvider>
-          </AttachmentPickerProvider>
-        </MessageOverlayProvider>
+        <AttachmentPickerProvider value={attachmentPickerContext}>
+          <ImageGalleryProvider>
+            {children}
+            <ThemeProvider style={overlayContext.style}>
+              {overlay === 'gallery' && (
+                <ImageGallery<StreamChatGenerics>
+                  autoPlayVideo={autoPlayVideo}
+                  giphyVersion={giphyVersion}
+                  imageGalleryCustomComponents={imageGalleryCustomComponents}
+                  imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
+                  imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
+                  numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
+                  overlayOpacity={overlayOpacity}
+                />
+              )}
+              {isImageMediaLibraryAvailable() ? (
+                <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
+              ) : null}
+            </ThemeProvider>
+          </ImageGalleryProvider>
+        </AttachmentPickerProvider>
       </OverlayContext.Provider>
     </TranslationProvider>
   );

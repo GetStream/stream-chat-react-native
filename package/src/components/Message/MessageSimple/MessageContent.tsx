@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react';
 import {
   AnimatableNumericValue,
+  ColorValue,
   LayoutChangeEvent,
+  Pressable,
   StyleSheet,
-  TouchableOpacity,
   View,
 } from 'react-native';
 
@@ -26,15 +27,17 @@ import {
 
 import { useViewport } from '../../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { MessageStatusTypes } from '../../../utils/utils';
 import { Poll } from '../../Poll/Poll';
+import { useMessageData } from '../hooks/useMessageData';
 
 const styles = StyleSheet.create({
+  container: {
+    flexShrink: 1,
+  },
   containerInner: {
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     borderWidth: 1,
-    overflow: 'hidden',
   },
   leftAlignContent: {
     justifyContent: 'flex-start',
@@ -65,46 +68,42 @@ export type MessageContentPropsWithContext<
 > = Pick<
   MessageContextValue<StreamChatGenerics>,
   | 'alignment'
-  | 'isEditedMessageOpen'
   | 'goToMessage'
   | 'groupStyles'
-  | 'hasReactions'
+  | 'isEditedMessageOpen'
   | 'isMyMessage'
-  | 'lastGroupMessage'
-  | 'members'
   | 'message'
   | 'messageContentOrder'
   | 'onLongPress'
-  | 'onlyEmojis'
   | 'onPress'
   | 'onPressIn'
   | 'otherAttachments'
   | 'preventPress'
-  | 'showMessageStatus'
   | 'threadList'
   | 'isMessageAIGenerated'
 > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
-    | 'additionalTouchableProps'
+    | 'additionalPressableProps'
     | 'Attachment'
     | 'FileAttachmentGroup'
     | 'Gallery'
     | 'isAttachmentEqual'
-    | 'MessageFooter'
-    | 'MessageHeader'
-    | 'MessageDeleted'
     | 'MessageError'
-    | 'MessagePinnedHeader'
-    | 'MessageReplies'
-    | 'MessageStatus'
     | 'myMessageTheme'
-    | 'onPressInMessage'
     | 'Reply'
     | 'StreamingMessageView'
   > &
   Pick<TranslationContextValue, 't'> & {
     setMessageContentWidth: React.Dispatch<React.SetStateAction<number>>;
+    /**
+     * Background color for the message content
+     */
+    backgroundColor?: ColorValue;
+    /**
+     * If the message has no border radius
+     */
+    noBorder?: boolean;
   };
 
 /**
@@ -116,35 +115,26 @@ const MessageContentWithContext = <
   props: MessageContentPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
-    additionalTouchableProps,
+    additionalPressableProps,
     alignment,
     Attachment,
+    backgroundColor,
     FileAttachmentGroup,
     Gallery,
     groupStyles,
-    hasReactions,
     isMessageAIGenerated,
     isMyMessage,
-    lastGroupMessage,
-    members,
     message,
     messageContentOrder,
-    MessageDeleted,
     MessageError,
-    MessageFooter,
-    MessageHeader,
-    MessagePinnedHeader,
-    MessageReplies,
-    MessageStatus,
+    noBorder,
     onLongPress,
-    onlyEmojis,
     onPress,
     onPressIn,
     otherAttachments,
     preventPress,
     Reply,
     setMessageContentWidth,
-    showMessageStatus,
     StreamingMessageView,
     threadList,
   } = props;
@@ -153,7 +143,7 @@ const MessageContentWithContext = <
 
   const {
     theme: {
-      colors: { blue_alice, grey_whisper, light_gray, transparent, white_snow },
+      colors: { grey_whisper, light_gray },
       messageSimple: {
         content: {
           container: {
@@ -164,17 +154,12 @@ const MessageContentWithContext = <
             borderRadiusS,
             borderTopLeftRadius,
             borderTopRightRadius,
-            ...container
           },
           containerInner,
-          errorContainer,
-          receiverMessageBackgroundColor,
           replyBorder,
           replyContainer,
-          senderMessageBackgroundColor,
           wrapper,
         },
-        reactionList: { radius, reactionSize },
       },
     },
   } = useTheme();
@@ -193,48 +178,7 @@ const MessageContentWithContext = <
     [message, isMessageAIGenerated],
   );
 
-  const error = message.type === 'error' || message.status === MessageStatusTypes.FAILED;
-
-  const groupStyle = `${alignment}_${groupStyles?.[0]?.toLowerCase?.()}`;
-
-  const hasThreadReplies = !!message?.reply_count;
-
-  let noBorder = onlyEmojis && !message.quoted_message;
-  if (otherAttachments.length) {
-    if (otherAttachments[0].type === 'giphy' && !isMyMessage) {
-      noBorder = false;
-    } else {
-      noBorder = true;
-    }
-  }
-
-  const isMessageTypeDeleted = message.type === 'deleted';
-
-  if (isMessageTypeDeleted) {
-    return (
-      <MessageDeleted
-        date={message.created_at}
-        groupStyle={groupStyle}
-        noBorder={noBorder}
-        onLayout={onLayout}
-      />
-    );
-  }
-
-  const isMessageReceivedOrErrorType = !isMyMessage || error;
-
-  let backgroundColor = senderMessageBackgroundColor ?? light_gray;
-  if (onlyEmojis && !message.quoted_message) {
-    backgroundColor = transparent;
-  } else if (otherAttachments.length) {
-    if (otherAttachments[0].type === 'giphy') {
-      backgroundColor = message.quoted_message ? light_gray : transparent;
-    } else {
-      backgroundColor = blue_alice;
-    }
-  } else if (isMessageReceivedOrErrorType) {
-    backgroundColor = receiverMessageBackgroundColor ?? white_snow;
-  }
+  const { hasThreadReplies, isMessageErrorType, isMessageReceivedOrErrorType } = useMessageData({});
 
   const repliesCurveColor = !isMessageReceivedOrErrorType ? backgroundColor : light_gray;
 
@@ -281,8 +225,7 @@ const MessageContentWithContext = <
   };
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.7}
+    <Pressable
       disabled={preventPress}
       onLongPress={(event) => {
         if (onLongPress) {
@@ -308,33 +251,9 @@ const MessageContentWithContext = <
           });
         }
       }}
-      testID='message-content'
-      {...additionalTouchableProps}
-      /**
-       * Border radii are useful for the case of error message types only.
-       * Otherwise background is transparent, so border radius is not really visible.
-       */
-      style={[
-        isMyMessage ? styles.rightAlignItems : styles.leftAlignItems,
-        { paddingTop: hasReactions ? reactionSize / 2 + radius : 2 },
-        error ? errorContainer : {},
-        container,
-      ]}
+      style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+      {...additionalPressableProps}
     >
-      {MessageHeader && (
-        <MessageHeader
-          alignment={alignment}
-          date={message.created_at}
-          isDeleted={isMessageTypeDeleted}
-          lastGroupMessage={lastGroupMessage}
-          members={members}
-          message={message}
-          MessageStatus={MessageStatus}
-          otherAttachments={otherAttachments}
-          showMessageStatus={showMessageStatus}
-        />
-      )}
-      {message.pinned && <MessagePinnedHeader />}
       <View onLayout={onLayout} style={wrapper}>
         {hasThreadReplies && !threadList && !noBorder && (
           <View
@@ -419,11 +338,9 @@ const MessageContentWithContext = <
             }
           })}
         </View>
-        {error && <MessageError />}
+        {isMessageErrorType && <MessageError />}
       </View>
-      <MessageReplies noBorder={noBorder} repliesCurveColor={repliesCurveColor} />
-      <MessageFooter date={message.created_at} isDeleted={!!isMessageTypeDeleted} />
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
@@ -434,38 +351,24 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const {
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
-    hasReactions: prevHasReactions,
     isAttachmentEqual,
     isEditedMessageOpen: prevIsEditedMessageOpen,
-    lastGroupMessage: prevLastGroupMessage,
-    members: prevMembers,
     message: prevMessage,
     messageContentOrder: prevMessageContentOrder,
     myMessageTheme: prevMyMessageTheme,
-    onlyEmojis: prevOnlyEmojis,
     otherAttachments: prevOtherAttachments,
     t: prevT,
   } = prevProps;
   const {
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
-    hasReactions: nextHasReactions,
     isEditedMessageOpen: nextIsEditedMessageOpen,
-    lastGroupMessage: nextLastGroupMessage,
-    members: nextMembers,
     message: nextMessage,
     messageContentOrder: nextMessageContentOrder,
     myMessageTheme: nextMyMessageTheme,
-    onlyEmojis: nextOnlyEmojis,
     otherAttachments: nextOtherAttachments,
     t: nextT,
   } = nextProps;
-
-  const hasReactionsEqual = prevHasReactions === nextHasReactions;
-  if (!hasReactionsEqual) return false;
-
-  const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
-  if (!lastGroupMessageEqual) return false;
 
   const goToMessageChangedAndMatters =
     nextMessage.quoted_message_id && prevGoToMessage !== nextGoToMessage;
@@ -474,16 +377,10 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const isEditedMessageOpenEqual = prevIsEditedMessageOpen === nextIsEditedMessageOpen;
   if (!isEditedMessageOpenEqual) return false;
 
-  const onlyEmojisEqual = prevOnlyEmojis === nextOnlyEmojis;
-  if (!onlyEmojisEqual) return false;
-
   const otherAttachmentsEqual =
     prevOtherAttachments.length === nextOtherAttachments.length &&
     prevOtherAttachments?.[0]?.actions?.length === nextOtherAttachments?.[0]?.actions?.length;
   if (!otherAttachmentsEqual) return false;
-
-  const membersEqual = Object.keys(prevMembers).length === Object.keys(nextMembers).length;
-  if (!membersEqual) return false;
 
   const groupStylesEqual =
     prevGroupStyles.length === nextGroupStyles.length &&
@@ -581,37 +478,26 @@ export const MessageContent = <
     alignment,
     goToMessage,
     groupStyles,
-    hasReactions,
     isEditedMessageOpen,
     isMessageAIGenerated,
     isMyMessage,
-    lastGroupMessage,
     lastReceivedId,
-    members,
     message,
     messageContentOrder,
     onLongPress,
-    onlyEmojis,
     onPress,
     onPressIn,
     otherAttachments,
     preventPress,
-    showMessageStatus,
     threadList,
   } = useMessageContext<StreamChatGenerics>();
   const {
-    additionalTouchableProps,
+    additionalPressableProps,
     Attachment,
     FileAttachmentGroup,
     Gallery,
     isAttachmentEqual,
-    MessageDeleted,
     MessageError,
-    MessageFooter,
-    MessageHeader,
-    MessagePinnedHeader,
-    MessageReplies,
-    MessageStatus,
     myMessageTheme,
     Reply,
     StreamingMessageView,
@@ -621,39 +507,28 @@ export const MessageContent = <
   return (
     <MemoizedMessageContent<StreamChatGenerics>
       {...{
-        additionalTouchableProps,
+        additionalPressableProps,
         alignment,
         Attachment,
         FileAttachmentGroup,
         Gallery,
         goToMessage,
         groupStyles,
-        hasReactions,
         isAttachmentEqual,
         isEditedMessageOpen,
         isMessageAIGenerated,
         isMyMessage,
-        lastGroupMessage,
         lastReceivedId,
-        members,
         message,
         messageContentOrder,
-        MessageDeleted,
         MessageError,
-        MessageFooter,
-        MessageHeader,
-        MessagePinnedHeader,
-        MessageReplies,
-        MessageStatus,
         myMessageTheme,
         onLongPress,
-        onlyEmojis,
         onPress,
         onPressIn,
         otherAttachments,
         preventPress,
         Reply,
-        showMessageStatus,
         StreamingMessageView,
         t,
         threadList,
@@ -662,5 +537,3 @@ export const MessageContent = <
     />
   );
 };
-
-MessageContent.displayName = 'MessageContent{messageSimple{content}}';

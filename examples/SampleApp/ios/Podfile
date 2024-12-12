@@ -8,17 +8,6 @@ require Pod::Executable.execute_command('node', ['-p',
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
-# If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
-# because `react-native-flipper` depends on (FlipperKit,...) that will be excluded
-#
-# To fix this you can also exclude `react-native-flipper` using a `react-native.config.js`
-# ```js
-# module.exports = {
-#   dependencies: {
-#     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
-# ```
-flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
-
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
   Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
@@ -28,19 +17,24 @@ end
 target 'SampleApp' do
   config = use_native_modules!
 
+  # Added for op-sqlite library - https://ospfranco.notion.site/Installation-93044890aa3d4d14b6c525ba4ba8686f#acdc7a6723234f8b8440acb1ae0e7d87
+  pre_install do |installer|
+    installer.pod_targets.each do |pod|
+      if pod.name.eql?('op-sqlite')
+        def pod.build_type
+          Pod::BuildType.static_library
+        end
+      end
+    end
+  end
+
   # Beginning with firebase-ios-sdk v9+ (react-native-firebase v15+) we must tell CocoaPods to use frameworks.
   # https://rnfirebase.io/#altering-cocoapods-to-use-frameworks
-  # Note: must disable flipper due to enabling static linkage
   use_frameworks! :linkage => :static
   $RNFirebaseAsStaticFramework = true
 
   use_react_native!(
     :path => config[:reactNativePath],
-    # Enables Flipper.
-    #
-    # Note that if you have use_frameworks! enabled, Flipper will not work and
-    # you should disable the next line.
-    # :flipper_configuration => flipper_config,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
@@ -58,7 +52,8 @@ target 'SampleApp' do
     react_native_post_install(
       installer,
       config[:reactNativePath],
-      :mac_catalyst_enabled => false
+      :mac_catalyst_enabled => false,
+      # :ccache_enabled => true
     )
   end
 end

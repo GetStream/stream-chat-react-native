@@ -1,64 +1,88 @@
-import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { Modal, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
-import { PollOption, PollVote as PollVoteClass, VotingVisibility } from 'stream-chat';
+import { Poll, PollOption, PollVote as PollVoteClass } from 'stream-chat';
 
-import { useTheme, useTranslationContext } from '../../../../contexts';
+import { PollOptionFullResults } from './PollOptionFullResults';
+import { PollVote } from './PollVote';
+
+import {
+  useOwnCapabilitiesContext,
+  usePollContext,
+  useTheme,
+  useTranslationContext,
+} from '../../../../contexts';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
-import { getDateString } from '../../../../utils/i18n/getDateString';
-import { Avatar } from '../../../Avatar/Avatar';
+import { MessageType } from '../../../MessageList/hooks/useMessageList';
 import { usePollState } from '../../hooks/usePollState';
-import { ShowAllVotesButton } from '../Button';
+import { GenericPollButton } from '../Button';
+import { PollModalHeader } from '../PollModalHeader';
+
+export type ShowAllVotesButtonProps<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  option: PollOption<StreamChatGenerics>;
+  onPress?: ({
+    message,
+    option,
+    poll,
+  }: {
+    message: MessageType<StreamChatGenerics>;
+    option: PollOption<StreamChatGenerics>;
+    poll: Poll<StreamChatGenerics>;
+  }) => void;
+};
+
+export const ShowAllVotesButton = (props: ShowAllVotesButtonProps) => {
+  const { t } = useTranslationContext();
+  const { message, poll } = usePollContext();
+  const { voteCountsByOption } = usePollState();
+  const ownCapabilities = useOwnCapabilitiesContext();
+  const [showAllVotes, setShowAllVotes] = useState(false);
+  const { onPress, option } = props;
+
+  const onPressHandler = useCallback(() => {
+    if (onPress) {
+      onPress({ message, option, poll });
+      return;
+    }
+
+    setShowAllVotes(true);
+  }, [message, onPress, option, poll]);
+
+  const {
+    theme: {
+      colors: { white },
+    },
+  } = useTheme();
+
+  return (
+    <>
+      {ownCapabilities.queryPollVotes &&
+      voteCountsByOption &&
+      voteCountsByOption?.[option.id] > 5 ? (
+        <GenericPollButton onPress={onPressHandler} title={t<string>('Show All')} />
+      ) : null}
+      {showAllVotes ? (
+        <Modal
+          animationType='fade'
+          onRequestClose={() => setShowAllVotes(false)}
+          visible={showAllVotes}
+        >
+          <SafeAreaView style={{ backgroundColor: white, flex: 1 }}>
+            <PollModalHeader onPress={() => setShowAllVotes(false)} title={option.text} />
+            <PollOptionFullResults message={message} option={option} poll={poll} />
+          </SafeAreaView>
+        </Modal>
+      ) : null}
+    </>
+  );
+};
 
 export type PollResultItemProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   option: PollOption<StreamChatGenerics>;
-};
-
-export const PollVote = ({ vote }: { vote: PollVoteClass }) => {
-  const { t, tDateTimeParser } = useTranslationContext();
-  const { votingVisibility } = usePollState();
-  const {
-    theme: {
-      colors: { black, text_low_emphasis },
-      poll: {
-        results: {
-          vote: { container, dateText, userName },
-        },
-      },
-    },
-  } = useTheme();
-
-  const dateString = useMemo(
-    () =>
-      getDateString({
-        date: vote.created_at,
-        t,
-        tDateTimeParser,
-        timestampTranslationKey: 'timestamp/PollVote',
-      }),
-    [vote.created_at, t, tDateTimeParser],
-  );
-
-  const isAnonymous = useMemo(
-    () => votingVisibility === VotingVisibility.anonymous,
-    [votingVisibility],
-  );
-
-  return (
-    <View style={[styles.voteContainer, container]}>
-      <View style={{ flexDirection: 'row' }}>
-        {!isAnonymous && vote.user?.image ? (
-          <Avatar image={vote.user.image as string} key={vote.id} size={20} />
-        ) : null}
-        <Text style={[styles.voteUserName, { color: black }, userName]}>
-          {isAnonymous ? t<string>('Anonymous') : vote.user?.name}
-        </Text>
-      </View>
-      <Text style={[styles.voteDate, { color: text_low_emphasis }, dateText]}>{dateString}</Text>
-    </View>
-  );
 };
 
 const PollResultsVoteItem = (vote: PollVoteClass) => (
@@ -107,13 +131,5 @@ const styles = StyleSheet.create({
   },
   headerContainer: { flexDirection: 'row', justifyContent: 'space-between' },
   title: { flex: 1, fontSize: 16, fontWeight: '500' },
-  voteContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-    paddingVertical: 8,
-  },
   voteCount: { fontSize: 16, marginLeft: 16 },
-  voteDate: { fontSize: 14 },
-  voteUserName: { fontSize: 14, marginLeft: 2 },
 });

@@ -16,10 +16,7 @@ import type { FileUpload } from '../../../types/types';
 import { AudioAttachment, AudioAttachmentProps } from '../../Attachment/AudioAttachment';
 
 jest.mock('../../../native.ts', () => ({
-  isAudioPackageAvailable: jest.fn(() => true),
-  NetInfo: {
-    addEventListener: jest.fn(),
-  },
+  isSoundPackageAvailable: jest.fn(() => true),
   Sound: {
     initializeSound: jest.fn(),
     Player: null,

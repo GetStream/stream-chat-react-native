@@ -4,6 +4,7 @@ import type { CircleProps, StopProps } from 'react-native-svg';
 import type { IconProps } from '../../../icons/utils/base';
 
 export const DEFAULT_STATUS_ICON_SIZE = 16;
+export const BASE_AVATAR_SIZE = 32;
 
 export const Colors = {
   accent_blue: '#005FFF',
@@ -26,7 +27,8 @@ export const Colors = {
   grey_whisper: '#ECEBEB',
   icon_background: '#FFFFFF',
   label_bg_transparent: '#00000033', // 33 = 20% opacity
-  light_gray: '#DBDDE1',
+  light_blue: '#E0F0FF',
+  light_gray: '#E9EAED',
   modal_shadow: '#00000099', // 99 = 60% opacity; x=0, y= 1, radius=4
   overlay: '#000000CC', // CC = 80% opacity
   shadow_icon: '#00000040', // 40 = 25% opacity; x=0, y=0, radius=4
@@ -125,6 +127,12 @@ export type Theme = {
     presenceIndicator: CircleProps;
     presenceIndicatorContainer: ViewStyle;
   };
+  bottomSheetModal: {
+    container: ViewStyle;
+    contentContainer: ViewStyle;
+    handle: ViewStyle;
+    overlay: ViewStyle;
+  };
   channel: {
     selectChannel: TextStyle;
   };
@@ -218,7 +226,6 @@ export type Theme = {
       centerContainer: ViewStyle;
       container: ViewStyle;
       dateText: TextStyle;
-      innerContainer: ViewStyle;
       leftContainer: ViewStyle;
       rightContainer: ViewStyle;
       usernameText: TextStyle;
@@ -250,6 +257,7 @@ export type Theme = {
     container: ViewStyle;
     loadingText: TextStyle;
   };
+
   messageInput: {
     attachButton: ViewStyle;
     attachButtonContainer: ViewStyle;
@@ -420,6 +428,44 @@ export type Theme = {
     };
     typingIndicatorContainer: ViewStyle;
   };
+  messageMenu: {
+    actionList: {
+      container: ViewStyle;
+    };
+    actionListItem: {
+      container: ViewStyle;
+      icon: ViewStyle;
+      title: TextStyle;
+    };
+    reactionButton: {
+      filledColor: ColorValue;
+      unfilledColor: ColorValue;
+    };
+    reactionPicker: {
+      buttonContainer: ViewStyle;
+      container: ViewStyle;
+      contentContainer: ViewStyle;
+      reactionIconSize: number;
+    };
+    userReactions: {
+      avatarContainer: ViewStyle;
+      avatarInnerContainer: ViewStyle;
+      avatarName: TextStyle;
+      avatarNameContainer: ViewStyle;
+      avatarSize: number;
+      container: ViewStyle;
+      contentContainer: ViewStyle;
+      flatlistColumnContainer: ViewStyle;
+      flatlistContainer: ViewStyle;
+      radius: number;
+      reactionBubble: ViewStyle;
+      reactionBubbleBackground: ViewStyle;
+      reactionBubbleBorderRadius: number;
+      reactionSelectorContainer: ViewStyle;
+      reactionsText: TextStyle;
+      title: TextStyle;
+    };
+  };
   messageSimple: {
     actions: {
       button: ViewStyle & {
@@ -495,6 +541,7 @@ export type Theme = {
       senderMessageBackgroundColor?: ColorValue;
       timestampText?: TextStyle;
     };
+    contentWrapper: ViewStyle;
     file: {
       container: ViewStyle;
       details: ViewStyle;
@@ -543,6 +590,7 @@ export type Theme = {
       shuffle: TextStyle;
       title: TextStyle;
     };
+    headerWrapper: ViewStyle;
     lastMessageContainer: ViewStyle;
     loadingIndicator: {
       container: ViewStyle;
@@ -554,16 +602,28 @@ export type Theme = {
       container: ViewStyle;
       label: TextStyle;
     };
-    reactionList: {
+    reactionListBottom: {
+      contentContainer: ViewStyle;
+      item: {
+        container: ViewStyle;
+        countText: TextStyle;
+        icon: ViewStyle;
+        iconFillColor: ColorValue;
+        iconSize: number;
+        iconUnFillColor: ColorValue;
+      };
+    };
+    reactionListTop: {
       container: ViewStyle;
-      iconFillColor: ColorValue;
-      middleIcon: ViewStyle;
-      radius: number;
-      reactionBubble: ViewStyle;
-      reactionContainer: ViewStyle;
-      reactionCount: TextStyle;
-      reactionSize: number;
-      strokeSize: number;
+      item: {
+        container: ViewStyle;
+        icon: ViewStyle;
+        iconFillColor: ColorValue;
+        iconSize: number;
+        iconUnFillColor: ColorValue;
+        reactionSize: number;
+      };
+      position: number;
     };
     replies: {
       avatar: ViewStyle;
@@ -585,45 +645,11 @@ export type Theme = {
       timeIcon: IconProps;
     };
     targetedMessageContainer: ViewStyle;
-    targetedMessageUnderlay: ViewStyle;
     videoThumbnail: {
       container: ViewStyle;
       roundedView: ViewStyle;
     };
     unreadUnderlayColor?: ColorValue;
-  };
-  overlay: {
-    container: ViewStyle;
-    messageActions: {
-      actionContainer: ViewStyle;
-      icon: ViewStyle;
-      title: TextStyle;
-    };
-    messageActionsList: {
-      container: ViewStyle;
-    };
-    padding: number;
-    reactions: {
-      avatarContainer: ViewStyle;
-      avatarName: TextStyle;
-      avatarSize: number;
-      container: ViewStyle;
-      flatListContainer: ViewStyle;
-      radius: number;
-      reactionBubble: ViewStyle;
-      reactionBubbleBackground: ViewStyle;
-      reactionBubbleBorderRadius: number;
-      title: TextStyle;
-    };
-    reactionsList: {
-      radius: number;
-      reaction: ViewStyle;
-      reactionList: ViewStyle;
-      reactionListBorderRadius: number;
-      reactionSize: number;
-      selectedIcon: IconProps;
-      unSelectedIcon: IconProps;
-    };
   };
   poll: {
     allOptions: {
@@ -830,7 +856,7 @@ export const defaultTheme: Theme = {
     speedChangeButtonText: {},
   },
   avatar: {
-    BASE_AVATAR_SIZE: 32,
+    BASE_AVATAR_SIZE,
     container: {},
     image: {
       borderRadius: 16,
@@ -844,6 +870,12 @@ export const defaultTheme: Theme = {
       strokeWidth: 2,
     },
     presenceIndicatorContainer: {},
+  },
+  bottomSheetModal: {
+    container: {},
+    contentContainer: {},
+    handle: {},
+    overlay: {},
   },
   channel: {
     selectChannel: {},
@@ -951,7 +983,6 @@ export const defaultTheme: Theme = {
       centerContainer: {},
       container: {},
       dateText: {},
-      innerContainer: {},
       leftContainer: {},
       rightContainer: {},
       usernameText: {},
@@ -1136,6 +1167,44 @@ export const defaultTheme: Theme = {
     },
     typingIndicatorContainer: {},
   },
+  messageMenu: {
+    actionList: {
+      container: {},
+    },
+    actionListItem: {
+      container: {},
+      icon: {},
+      title: {},
+    },
+    reactionButton: {
+      filledColor: Colors.accent_blue,
+      unfilledColor: Colors.grey,
+    },
+    reactionPicker: {
+      buttonContainer: {},
+      container: {},
+      contentContainer: {},
+      reactionIconSize: 24,
+    },
+    userReactions: {
+      avatarContainer: {},
+      avatarInnerContainer: {},
+      avatarName: {},
+      avatarNameContainer: {},
+      avatarSize: 64,
+      container: {},
+      contentContainer: {},
+      flatlistColumnContainer: {},
+      flatlistContainer: {},
+      radius: 2,
+      reactionBubble: {},
+      reactionBubbleBackground: {},
+      reactionBubbleBorderRadius: 24,
+      reactionSelectorContainer: {},
+      reactionsText: {},
+      title: {},
+    },
+  },
   messageSimple: {
     actions: {
       button: {},
@@ -1151,8 +1220,8 @@ export const defaultTheme: Theme = {
         marginLeft: 8,
       },
       spacer: {
-        height: 28,
-        width: 32, // same as BASE_AVATAR_SIZE
+        height: BASE_AVATAR_SIZE,
+        width: BASE_AVATAR_SIZE, // same as BASE_AVATAR_SIZE
       },
     },
     card: {
@@ -1239,6 +1308,7 @@ export const defaultTheme: Theme = {
       timestampText: {},
       wrapper: {},
     },
+    contentWrapper: {},
     file: {
       container: {},
       details: {},
@@ -1282,6 +1352,7 @@ export const defaultTheme: Theme = {
       shuffle: {},
       title: {},
     },
+    headerWrapper: {},
     lastMessageContainer: {},
     loadingIndicator: {
       container: {},
@@ -1293,16 +1364,28 @@ export const defaultTheme: Theme = {
       container: {},
       label: {},
     },
-    reactionList: {
+    reactionListBottom: {
+      contentContainer: {},
+      item: {
+        container: {},
+        countText: {},
+        icon: {},
+        iconFillColor: Colors.accent_blue,
+        iconSize: 16,
+        iconUnFillColor: Colors.grey,
+      },
+    },
+    reactionListTop: {
       container: {},
-      iconFillColor: '',
-      middleIcon: {},
-      radius: 2, // not recommended to change this
-      reactionBubble: {},
-      reactionContainer: {},
-      reactionCount: {},
-      reactionSize: 24,
-      strokeSize: 1, // not recommended to change this
+      item: {
+        container: {},
+        icon: {},
+        iconFillColor: Colors.accent_blue,
+        iconSize: 24,
+        iconUnFillColor: Colors.grey,
+        reactionSize: 24,
+      },
+      position: 16,
     },
     replies: {
       avatar: {},
@@ -1332,44 +1415,10 @@ export const defaultTheme: Theme = {
       },
     },
     targetedMessageContainer: {},
-    targetedMessageUnderlay: {},
     unreadUnderlayColor: Colors.bg_gradient_start,
     videoThumbnail: {
       container: {},
       roundedView: {},
-    },
-  },
-  overlay: {
-    container: {},
-    messageActions: {
-      actionContainer: {},
-      icon: {},
-      title: {},
-    },
-    messageActionsList: {
-      container: {},
-    },
-    padding: 8,
-    reactions: {
-      avatarContainer: {},
-      avatarName: {},
-      avatarSize: 64,
-      container: {},
-      flatListContainer: {},
-      radius: 2,
-      reactionBubble: {},
-      reactionBubbleBackground: {},
-      reactionBubbleBorderRadius: 24,
-      title: {},
-    },
-    reactionsList: {
-      radius: 2.5,
-      reaction: {},
-      reactionList: {},
-      reactionListBorderRadius: 24,
-      reactionSize: 24,
-      selectedIcon: {},
-      unSelectedIcon: {},
     },
   },
   poll: {

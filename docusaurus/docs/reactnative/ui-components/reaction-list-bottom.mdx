@@ -1,0 +1,65 @@
+---
+id: reaction-list-bottom
+title: ReactionListBottom
+---
+
+import HandleReaction from '../common-content/contexts/message-context/handle_reaction.mdx';
+import HasReactions from '../common-content/contexts/message-context/has_reactions.mdx';
+import OnLongPress from '../common-content/contexts/message-context/on_long_press.mdx';
+import OnPress from '../common-content/contexts/message-context/on_press.mdx';
+import OnPressIn from '../common-content/contexts/message-context/on_press_in.mdx';
+import PreventPress from '../common-content/contexts/message-context/prevent_press.mdx';
+import Reactions from '../common-content/contexts/message-context/reactions.mdx';
+import ShowMessageOverlay from '../common-content/contexts/message-context/show_message_overlay.mdx';
+
+import SupportedReactions from '../common-content/ui-components/channel/props/supported_reactions.mdx';
+
+`ReactionList` component is used to display the reactions added to a message right on top of it.
+
+This is the default component provided to the prop [`ReactionList`](../../core-components/channel#reactionlist) on the `Channel` component.
+
+## Basic Usage
+
+**Use case**: Override the background color on the reaction list container.
+
+```tsx
+import { Channel, ReactionList, ReactionListProps } from 'stream-chat-react-native';
+
+const ReactionListWithCustomBackground = (props: ReactionListProps) => <ReactionList {...props} fill={'#00DDD'} stroke={'#fffff'} />
+
+<Channel ReactionList={ReactionListWithCustomBackground} />
+```
+
+## Props
+
+### <div class="label description">overrides the value from [MessageContext](../../contexts/message-context#handlereaction)</div> `handleReaction` {#handlereaction}
+
+<HandleReaction />
+
+### <div class="label description">overrides the value from [MessageContext](../../contexts/message-context#hasreactions)</div> `hasReactions` {#hasreactions}
+
+<HasReactions />
+
+### <div class="label description">overrides the value from [MessageContext](../../contexts/message-context#onlongpress)</div> `onLongPress` {#onlongpress}
+
+<OnLongPress />
+
+### <div class="label description">overrides the value from [MessageContext](../../contexts/message-context#onpress)</div> `onPress` {#onpress}
+
+<OnPress />
+
+### <div class="label description">overrides the value from [MessageContext](../../contexts/message-context#onpressin)</div> `onPressIn` {#onpressin}
+
+<OnPressIn />
+
+### <div class="label description">overrides the value from [MessageContext](../../contexts/message-context#preventpress)</div> `preventPress` {#preventpress}
+
+<PreventPress />
+
+### <div class="label description">overrides the value from [MessageContext](../../contexts/message-context#reactions)</div> `reactions` {#reactions}
+
+<Reactions />
+
+### <div class="label description">overrides the value from [MessagesContext](../../contexts/messages-context#supportedreactions)</div> `supportedReactions` {#supportedreactions}
+
+<SupportedReactions />

@@ -9,11 +9,6 @@ import { registerNativeHandlers } from './src/native';
 
 console.warn = () => {};
 
-export let netInfoFetch = jest.fn();
-
-export const setNetInfoFetchMock = (fn) => {
-  netInfoFetch = fn;
-};
 registerNativeHandlers({
   Audio: {
     startPlayer: jest.fn(),
@@ -26,14 +21,6 @@ registerNativeHandlers({
   FlatList,
   getLocalAssetUri: () => null,
   getPhotos: () => null,
-  NetInfo: {
-    addEventListener: () => () => null,
-    fetch: () =>
-      new Promise((resolve) => {
-        resolve(true);
-        netInfoFetch();
-      }),
-  },
   oniOS14GalleryLibrarySelectionChange: () => ({
     unsubscribe: () => {},
   }),
@@ -65,10 +52,7 @@ jest.mock('@gorhom/bottom-sheet', () => {
     TouchableOpacity: react.View,
   };
 });
-jest.mock('react-native-quick-sqlite', () => {
+jest.mock('@op-engineering/op-sqlite', () => {
   const { sqliteMock } = require('./src/mock-builders/DB/mock');
-
-  return {
-    QuickSQLite: sqliteMock,
-  };
+  return sqliteMock;
 });

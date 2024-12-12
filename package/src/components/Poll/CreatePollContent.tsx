@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSharedValue } from 'react-native-reanimated';
@@ -94,7 +94,7 @@ export const CreatePollContent = () => {
     <>
       <View style={[styles.headerContainer, { backgroundColor: white }, headerContainer]}>
         <PollModalHeader onPress={() => closePollCreationDialog?.()} title={t('Create Poll')} />
-        <TouchableOpacity
+        <Pressable
           disabled={!isPollValid}
           onPress={() => {
             const currentPollOptions = Object.assign({}, pollOptions);
@@ -120,7 +120,7 @@ export const CreatePollContent = () => {
                 : {}),
             });
           }}
-          style={[styles.sendButton, sendButton]}
+          style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }, styles.sendButton, sendButton]}
         >
           <SendPoll
             height={24}
@@ -128,7 +128,7 @@ export const CreatePollContent = () => {
             viewBox='0 0 24 24'
             width={24}
           />
-        </TouchableOpacity>
+        </Pressable>
       </View>
       <ScrollView
         contentContainerStyle={{ paddingBottom: 70 }}

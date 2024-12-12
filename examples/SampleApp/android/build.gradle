@@ -3,14 +3,12 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 buildscript {
     ext {
-        buildToolsVersion = "34.0.0"
-        // Added 24 for react-native-audio-recorder-player(Value - 24)
+        buildToolsVersion = "35.0.0"
         minSdkVersion = 24
-        compileSdkVersion = 34
+        compileSdkVersion = 35
         targetSdkVersion = 34
-        ndkVersion = "25.1.8937393"
-        // Added for react-native-audio-recorder-player(Value - 1.6.10)
-        kotlinVersion = "1.6.10"
+        ndkVersion = "26.1.10909125"
+        kotlinVersion = "1.9.24"
         androidXCore = "1.0.2"
     }
     repositories {

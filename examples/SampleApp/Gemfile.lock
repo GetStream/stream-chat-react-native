@@ -323,6 +323,7 @@ DEPENDENCIES
   fastlane-plugin-stream_actions (= 0.3.73)
   rubocop-performance
   rubocop-require_tools
+  xcodeproj (< 1.26.0)
 
 RUBY VERSION
    ruby 3.3.4p94

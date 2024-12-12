@@ -7,7 +7,7 @@ try {
 } catch (e) {
   // do nothing
   console.log(
-    '@react-native-camera-roll/camera-roll is not installed. Please install it or you can choose to install react-native-image-crop-picker for native image picker.',
+    '@react-native-camera-roll/camera-roll is not installed. Please install it or you can choose to install react-native-image-picker for native image picker.',
   );
 }
 

@@ -37,11 +37,10 @@ export type MessageTextContainerPropsWithContext<
 > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
-    'markdownRules' | 'MessageText' | 'myMessageTheme'
+    'markdownRules' | 'MessageText' | 'myMessageTheme' | 'messageTextNumberOfLines'
   > & {
     markdownStyles?: MarkdownStyle;
     messageOverlay?: boolean;
-    messageTextNumberOfLines?: number;
     styles?: Partial<{
       textContainer: StyleProp<ViewStyle>;
     }>;
@@ -186,8 +185,8 @@ export const MessageTextContainer = <
 ) => {
   const { message, onLongPress, onlyEmojis, onPress, preventPress } =
     useMessageContext<StreamChatGenerics>();
-  const { markdownRules, MessageText, myMessageTheme } = useMessagesContext<StreamChatGenerics>();
-  const { messageTextNumberOfLines } = props;
+  const { markdownRules, MessageText, messageTextNumberOfLines, myMessageTheme } =
+    useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedMessageTextContainer

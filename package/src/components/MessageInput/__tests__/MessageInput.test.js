@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { Alert } from 'react-native';
 
-import { cleanup, fireEvent, render, userEvent, waitFor } from '@testing-library/react-native';
+import { act, cleanup, fireEvent, render, userEvent, waitFor } from '@testing-library/react-native';
 
+import { useMessagesContext } from '../../../contexts';
 import * as AttachmentPickerUtils from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
@@ -186,6 +187,119 @@ describe('MessageInput', () => {
       // This is sort of a brittle test, but there doesn't seem to be another way
       // to target alerts. The reason why it's here is because we had a bug with it.
       expect(Alert.alert).toHaveBeenCalledWith('Hold to start recording.');
+    });
+  });
+
+  it('should render the SendMessageDisallowedIndicator if the send-message capability is not present', async () => {
+    await initializeChannel(generateChannelResponse());
+
+    const { queryByTestId } = render(
+      <Chat client={chatClient}>
+        <Channel audioRecordingEnabled channel={channel}>
+          <MessageInput />
+        </Channel>
+      </Chat>,
+    );
+
+    await waitFor(() => {
+      expect(queryByTestId('send-message-disallowed-indicator')).toBeNull();
+    });
+
+    act(() => {
+      chatClient.dispatchEvent({
+        cid: channel.data.cid,
+        own_capabilities: channel.data.own_capabilities.filter(
+          (capability) => capability !== 'send-message',
+        ),
+        type: 'capabilities.changed',
+      });
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId('send-message-disallowed-indicator')).toBeTruthy();
+    });
+  });
+
+  it('should not render the SendMessageDisallowedIndicator if the channel is frozen and the send-message capability is present', async () => {
+    await initializeChannel(generateChannelResponse({ channel: { frozen: true } }));
+
+    const { queryByTestId } = render(
+      <Chat client={chatClient}>
+        <Channel audioRecordingEnabled channel={channel}>
+          <MessageInput />
+        </Channel>
+      </Chat>,
+    );
+
+    await waitFor(() => {
+      expect(queryByTestId('send-message-disallowed-indicator')).toBeNull();
+    });
+  });
+
+  it('should render the SendMessageDisallowedIndicator in a frozen channel only if the send-message capability is not present', async () => {
+    await initializeChannel(generateChannelResponse({ channel: { frozen: true } }));
+
+    const { queryByTestId } = render(
+      <Chat client={chatClient}>
+        <Channel audioRecordingEnabled channel={channel}>
+          <MessageInput />
+        </Channel>
+      </Chat>,
+    );
+
+    act(() => {
+      chatClient.dispatchEvent({
+        channel: {
+          ...channel.data,
+          own_capabilities: channel.data.own_capabilities.filter(
+            (capability) => capability !== 'send-message',
+          ),
+        },
+        cid: channel.data.cid,
+        type: 'channel.updated',
+      });
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId('send-message-disallowed-indicator')).toBeTruthy();
+    });
+  });
+
+  const EditingStateMessageInput = () => {
+    const { setEditingState } = useMessagesContext();
+    useEffect(() => {
+      setEditingState({ id: 'some-message-id' });
+    }, []);
+    return <MessageInput />;
+  };
+
+  it('should not render the SendMessageDisallowedIndicator if we are editing a message, regardless of capabilities', async () => {
+    await initializeChannel(generateChannelResponse());
+
+    const { queryByTestId } = render(
+      <Chat client={chatClient}>
+        <Channel audioRecordingEnabled channel={channel}>
+          <EditingStateMessageInput />
+        </Channel>
+      </Chat>,
+    );
+
+    await waitFor(() => {
+      expect(queryByTestId('send-message-disallowed-indicator')).toBeNull();
+    });
+
+    act(() => {
+      chatClient.dispatchEvent({
+        cid: channel.data.cid,
+        own_capabilities: channel.data.own_capabilities.filter(
+          (capability) => capability !== 'send-message',
+        ),
+        type: 'capabilities.changed',
+      });
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId('send-message-disallowed-indicator')).toBeNull();
     });
   });
 });

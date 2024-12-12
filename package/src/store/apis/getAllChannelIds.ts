@@ -1,10 +1,10 @@
 import { selectChannels } from './queries/selectChannels';
 
-import { QuickSqliteClient } from '../QuickSqliteClient';
+import { SqliteClient } from '../SqliteClient';
 
-export const getAllChannelIds = () => {
-  const channels = selectChannels();
+export const getAllChannelIds = async () => {
+  const channels = await selectChannels();
 
-  QuickSqliteClient.logger?.('info', 'getAllChannelIds');
+  SqliteClient.logger?.('info', 'getAllChannelIds');
   return channels.map((c) => c.cid);
 };

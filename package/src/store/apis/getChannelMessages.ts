@@ -7,11 +7,11 @@ import { selectReactionsForMessages } from './queries/selectReactionsForMessages
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { isBlockedMessage } from '../../utils/utils';
 import { mapStorableToMessage } from '../mappers/mapStorableToMessage';
-import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
+import { SqliteClient } from '../SqliteClient';
 import type { TableRow, TableRowJoinedUser } from '../types';
 
-export const getChannelMessages = <
+export const getChannelMessages = async <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channelIds,
@@ -20,15 +20,15 @@ export const getChannelMessages = <
   channelIds: string[];
   currentUserId: string;
 }) => {
-  QuickSqliteClient.logger?.('info', 'getChannelMessages', {
+  SqliteClient.logger?.('info', 'getChannelMessages', {
     channelIds,
     currentUserId,
   });
-  const messageRows = selectMessagesForChannels(channelIds);
+  const messageRows = await selectMessagesForChannels(channelIds);
   const messageIds = messageRows.map(({ id }) => id);
 
   // Populate the message reactions.
-  const reactionRows = selectReactionsForMessages(messageIds);
+  const reactionRows = await selectReactionsForMessages(messageIds);
   const messageIdVsReactions: Record<string, TableRowJoinedUser<'reactions'>[]> = {};
   reactionRows.forEach((reaction) => {
     if (!messageIdVsReactions[reaction.messageId]) {
@@ -39,7 +39,7 @@ export const getChannelMessages = <
   const messageIdsVsPolls: Record<string, TableRow<'poll'>> = {};
   const pollsById: Record<string, TableRow<'poll'>> = {};
   const messagesWithPolls = messageRows.filter((message) => !!message.poll_id);
-  const polls = QuickSqliteClient.executeSql.apply(
+  const polls = await SqliteClient.executeSql.apply(
     null,
     createSelectQuery('poll', ['*'], {
       id: messagesWithPolls.map((message) => message.poll_id),

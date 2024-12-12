@@ -24,7 +24,7 @@ import { generateReaction } from '../../mock-builders/generator/reaction';
 import { generateUser } from '../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../mock-builders/mock';
 import { upsertChannels } from '../../store/apis';
-import { QuickSqliteClient } from '../../store/QuickSqliteClient';
+import { SqliteClient } from '../../store/SqliteClient';
 import { BetterSqlite } from '../../test-utils/BetterSqlite';
 
 test('Workaround to allow exporting tests', () => expect(true).toBe(true));
@@ -108,17 +108,19 @@ export const OptimisticUpdates = () => {
       channel.id = channelResponse.channel.id;
 
       // Populate the DB with channel
-      QuickSqliteClient.initializeDatabase();
-      upsertChannels({
+      await SqliteClient.initializeDatabase();
+      await BetterSqlite.openDB();
+      await upsertChannels({
         channels: [channelResponse],
         isLatestMessagesSet: true,
       });
     });
 
     afterEach(() => {
-      QuickSqliteClient.dropTables();
-      QuickSqliteClient.closeDB();
+      BetterSqlite.dropAllTables();
+      BetterSqlite.closeDB();
       cleanup();
+      jest.clearAllMocks();
     });
 
     let channel;
@@ -166,8 +168,8 @@ export const OptimisticUpdates = () => {
           </Chat>,
         );
         await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
-        await waitFor(() => {
-          const pendingTasksRows = BetterSqlite.selectFromTable('pendingTasks');
+        await waitFor(async () => {
+          const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
           const pendingTaskType = pendingTasksRows?.[0]?.type;
           const pendingTaskPayload = JSON.parse(pendingTasksRows?.[0]?.payload || '{}');
           expect(pendingTaskType).toBe('delete-message');
@@ -181,9 +183,9 @@ export const OptimisticUpdates = () => {
           <Chat client={chatClient} enableOfflineSupport>
             <Channel channel={channel} initialValue={message.text}>
               <CallbackEffectWithContext
-                callback={({ deleteMessage }) => {
+                callback={async ({ deleteMessage }) => {
                   useMockedApis(chatClient, [deleteMessageApi(message)]);
-                  deleteMessage(message);
+                  await deleteMessage(message);
                 }}
                 context={MessagesContext}
               >
@@ -193,8 +195,9 @@ export const OptimisticUpdates = () => {
           </Chat>,
         );
         await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
-        await waitFor(() => {
-          const pendingTasksRows = BetterSqlite.selectFromTable('pendingTasks');
+
+        await waitFor(async () => {
+          const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
           expect(pendingTasksRows.length).toBe(0);
         });
       });
@@ -225,8 +228,8 @@ export const OptimisticUpdates = () => {
           </Chat>,
         );
         await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
-        await waitFor(() => {
-          const pendingTasksRows = BetterSqlite.selectFromTable('pendingTasks');
+        await waitFor(async () => {
+          const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
           const pendingTaskType = pendingTasksRows?.[0]?.type;
           const pendingTaskPayload = JSON.parse(pendingTasksRows?.[0]?.payload || '{}');
           expect(pendingTaskType).toBe('send-reaction');
@@ -242,9 +245,9 @@ export const OptimisticUpdates = () => {
           <Chat client={chatClient} enableOfflineSupport>
             <Channel channel={channel}>
               <CallbackEffectWithContext
-                callback={({ sendReaction }) => {
+                callback={async ({ sendReaction }) => {
                   useMockedApis(chatClient, [sendReactionApi(targetMessage, reaction)]);
-                  sendReaction(reaction.type, targetMessage.id);
+                  await sendReaction(reaction.type, targetMessage.id);
                 }}
                 context={MessagesContext}
               >
@@ -254,8 +257,8 @@ export const OptimisticUpdates = () => {
           </Chat>,
         );
         await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
-        await waitFor(() => {
-          const pendingTasksRows = BetterSqlite.selectFromTable('pendingTasks');
+        await waitFor(async () => {
+          const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
           expect(pendingTasksRows.length).toBe(0);
         });
       });
@@ -286,8 +289,8 @@ export const OptimisticUpdates = () => {
           </Chat>,
         );
         await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
-        await waitFor(() => {
-          const pendingTasksRows = BetterSqlite.selectFromTable('pendingTasks');
+        await waitFor(async () => {
+          const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
           const pendingTaskType = pendingTasksRows?.[0]?.type;
           const pendingTaskPayload = JSON.parse(pendingTasksRows?.[0]?.payload || '{}');
           expect(pendingTaskType).toBe('delete-reaction');
@@ -316,8 +319,8 @@ export const OptimisticUpdates = () => {
         );
         await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
 
-        await waitFor(() => {
-          const pendingTasksRows = BetterSqlite.selectFromTable('pendingTasks');
+        await waitFor(async () => {
+          const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
           expect(pendingTasksRows.length).toBe(0);
         });
       });
@@ -355,8 +358,9 @@ export const OptimisticUpdates = () => {
       );
       await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
 
-      await waitFor(() => {
-        const pendingTasksRows = BetterSqlite.selectFromTable('pendingTasks');
+      await waitFor(async () => {
+        const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
+
         expect(pendingTasksRows.length).toBe(2);
       });
 

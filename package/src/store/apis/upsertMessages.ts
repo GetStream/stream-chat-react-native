@@ -4,10 +4,10 @@ import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapPollToStorable } from '../mappers/mapPollToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
-import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
+import { SqliteClient } from '../SqliteClient';
 
-export const upsertMessages = ({
+export const upsertMessages = async ({
   flush = true,
   messages,
 }: {
@@ -44,7 +44,7 @@ export const upsertMessages = ({
     ...storablePolls.map((storablePoll) => createUpsertQuery('poll', storablePoll)),
   ];
 
-  QuickSqliteClient.logger?.('info', 'upsertMessages', {
+  SqliteClient.logger?.('info', 'upsertMessages', {
     flush,
     messages: storableMessages,
     polls: storablePolls,
@@ -53,7 +53,7 @@ export const upsertMessages = ({
   });
 
   if (flush) {
-    QuickSqliteClient.executeSqlBatch(finalQueries);
+    await SqliteClient.executeSqlBatch(finalQueries);
   }
 
   return finalQueries;

@@ -7,11 +7,13 @@ try {
 } catch (e) {
   // do nothing
   console.log(
-    '@react-native-camera-roll/camera-roll is not installed. Please install it or you can choose to install react-native-image-crop-picker for native image picker.',
+    '@react-native-camera-roll/camera-roll is not installed. Please install it or you can choose to install react-native-image-picker for native image picker.',
   );
 }
 
 import type { Asset } from 'stream-chat-react-native-core';
+
+import { getLocalAssetUri } from './getLocalAssetUri';
 
 type ReturnType = {
   assets: Array<Omit<Asset, 'source'> & { source: 'picker' }>;
@@ -82,15 +84,23 @@ export const getPhotos = CameraRollDependency
           first,
           include: ['fileSize', 'filename', 'imageSize', 'playableDuration'],
         });
-        const assets = results.edges.map((edge) => ({
-          ...edge.node.image,
-          duration: edge.node.image.playableDuration * 1000,
-          // since we include filename, fileSize in the query, we can safely assume it will be defined
-          name: edge.node.image.filename as string,
-          size: edge.node.image.fileSize as number,
-          source: 'picker' as const,
-          type: edge.node.type,
-        }));
+        const assets = await Promise.all(
+          results.edges.map(async (edge) => {
+            const originalUri = edge.node?.image?.uri;
+            const uri = getLocalAssetUri ? await getLocalAssetUri(originalUri) : originalUri;
+            return {
+              ...edge.node.image,
+              duration: edge.node.image.playableDuration * 1000,
+              // since we include filename, fileSize in the query, we can safely assume it will be defined
+              name: edge.node.image.filename as string,
+              originalUri,
+              size: edge.node.image.fileSize as number,
+              source: 'picker' as const,
+              type: edge.node.type,
+              uri,
+            };
+          }),
+        );
         const hasNextPage = results.page_info.has_next_page;
         const endCursor = results.page_info.end_cursor;
         return { assets, endCursor, hasNextPage, iOSLimited: !!results.limited };

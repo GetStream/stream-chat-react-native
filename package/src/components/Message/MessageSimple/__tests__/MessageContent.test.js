@@ -102,7 +102,6 @@ describe('MessageContent', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId('message-content-wrapper')).toBeTruthy();
       expect(screen.getByTestId('message-deleted')).toBeTruthy();
     });
   });
@@ -237,7 +236,7 @@ describe('MessageContent', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('message-content-wrapper')).toBeTruthy();
-      expect(screen.getByTestId('reaction-list')).toBeTruthy();
+      expect(screen.getByLabelText('Reaction List Top')).toBeTruthy();
     });
   });
 });

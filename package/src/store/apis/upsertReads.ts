@@ -2,11 +2,11 @@ import type { ReadResponse } from 'stream-chat';
 
 import { mapReadToStorable } from '../mappers/mapReadToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
-import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
+import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries } from '../types';
 
-export const upsertReads = ({
+export const upsertReads = async ({
   cid,
   flush = true,
   reads,
@@ -30,14 +30,14 @@ export const upsertReads = ({
   queries.push(...storableUsers.map((storableUser) => createUpsertQuery('users', storableUser)));
   queries.push(...storableReads.map((storableRead) => createUpsertQuery('reads', storableRead)));
 
-  QuickSqliteClient.logger?.('info', 'upsertReads', {
+  SqliteClient.logger?.('info', 'upsertReads', {
     flush,
     reads: storableReads,
     users: storableUsers,
   });
 
   if (flush) {
-    QuickSqliteClient.executeSqlBatch(queries);
+    await SqliteClient.executeSqlBatch(queries);
   }
 
   return queries;

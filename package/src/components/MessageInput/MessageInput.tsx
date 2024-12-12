@@ -714,7 +714,6 @@ const MessageInputWithContext = <
     micButton: useAnimatedStyle(() => ({
       opacity: interpolate(micPositionX.value, [0, X_AXIS_POSITION], [1, 0], Extrapolation.CLAMP),
       transform: [{ translateX: micPositionX.value }, { translateY: micPositionY.value }],
-      zIndex: 2,
     })),
     slideToCancel: useAnimatedStyle(() => ({
       opacity: interpolate(micPositionX.value, [0, X_AXIS_POSITION], [1, 0], Extrapolation.CLAMP),

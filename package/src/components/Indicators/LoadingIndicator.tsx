@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { Spinner } from '../Spinner/Spinner';
+import { Spinner } from '../UIComponents/Spinner';
 
 type LoadingIndicatorWrapperProps = { text: string };
 

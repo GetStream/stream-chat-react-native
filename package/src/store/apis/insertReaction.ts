@@ -1,12 +1,12 @@
 import type { FormatMessageResponse, MessageResponse, ReactionResponse } from 'stream-chat';
 
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
-import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
+import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries } from '../types';
 
-export const insertReaction = ({
+export const insertReaction = async ({
   flush = true,
   message,
   reaction,
@@ -33,13 +33,13 @@ export const insertReaction = ({
     ),
   );
 
-  QuickSqliteClient.logger?.('info', 'insertReaction', {
+  SqliteClient.logger?.('info', 'insertReaction', {
     flush,
     reaction: storableReaction,
   });
 
   if (flush) {
-    QuickSqliteClient.executeSqlBatch(queries);
+    await SqliteClient.executeSqlBatch(queries);
   }
 
   return queries;

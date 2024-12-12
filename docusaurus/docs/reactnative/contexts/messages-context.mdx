@@ -3,7 +3,7 @@ id: messages-context
 title: MessagesContext
 ---
 
-import AdditionalTouchableProps from '../common-content/ui-components/channel/props/additional_touchable_props.mdx';
+import AdditionalPressableProps from '../common-content/ui-components/channel/props/additional_pressable_props.mdx';
 import Attachment from '../common-content/ui-components/channel/props/attachment.mdx';
 import AttachmentActions from '../common-content/ui-components/channel/props/attachment_actions.mdx';
 import AudioAttachment from '../common-content/ui-components/channel/props/audio_attachment.mdx';
@@ -26,7 +26,6 @@ import Gallery from '../common-content/ui-components/channel/props/gallery.mdx';
 import Giphy from '../common-content/ui-components/channel/props/giphy.mdx';
 import GiphyVersion from '../common-content/ui-components/channel/props/giphy_version.mdx';
 import HandleBan from '../common-content/ui-components/channel/props/handle_ban.mdx';
-import HandleBlock from '../common-content/ui-components/channel/props/handle_block.mdx';
 import HandleCopy from '../common-content/ui-components/channel/props/handle_copy.mdx';
 import HandleDelete from '../common-content/ui-components/channel/props/handle_delete.mdx';
 import HandleEdit from '../common-content/ui-components/channel/props/handle_edit.mdx';
@@ -41,6 +40,8 @@ import InlineDateSeparator from '../common-content/ui-components/channel/props/i
 import InlineUnreadIndicator from '../common-content/ui-components/channel/props/inline_unread_indicator.mdx';
 import IsAttachmentEqual from '../common-content/ui-components/channel/props/is_attachment_equal.mdx';
 import MarkdownRules from '../common-content/ui-components/channel/props/markdown_rules.mdx';
+import MessageActionList from '../common-content/ui-components/channel/props/message-action-list.mdx';
+import MessageActionListItem from '../common-content/ui-components/channel/props/message-action-list-item.mdx';
 import MessageAvatar from '../common-content/ui-components/channel/props/message-avatar.mdx';
 import MessageBounce from '../common-content/ui-components/channel/props/message-bounce.mdx';
 import MessageContent from '../common-content/ui-components/channel/props/message-content.mdx';
@@ -51,18 +52,25 @@ import MessageEditedTimestamp from '../common-content/ui-components/channel/prop
 import MessageError from '../common-content/ui-components/channel/props/message-error.mdx';
 import MessageFooter from '../common-content/ui-components/channel/props/message-footer.mdx';
 import MessageHeader from '../common-content/ui-components/channel/props/message-header.mdx';
+import MessageMenu from '../common-content/ui-components/channel/props/message-menu.mdx';
 import MessageReplies from '../common-content/ui-components/channel/props/message-replies.mdx';
 import MessageRepliesAvatars from '../common-content/ui-components/channel/props/message-replies-avatars.mdx';
 import MessageSimple from '../common-content/ui-components/channel/props/message-simple.mdx';
 import MessageStatus from '../common-content/ui-components/channel/props/message-status.mdx';
 import MessageSystem from '../common-content/ui-components/channel/props/message-system.mdx';
 import MessageText from '../common-content/ui-components/channel/props/message-text.mdx';
+import MessageTextNumberOfLines from '../common-content/ui-components/channel/props/message-text-number-of-lines.mdx';
 import MyMessageTheme from '../common-content/ui-components/channel/props/my_message_theme.mdx';
 import OnLongPressMessage from '../common-content/ui-components/channel/props/on_long_press_message.mdx';
 import OnPressInMessage from '../common-content/ui-components/channel/props/on_press_in_message.mdx';
 import OnPressMessage from '../common-content/ui-components/channel/props/on_press_message.mdx';
-import OverlayReactionList from '../common-content/ui-components/overlay-provider/props/overlay_reaction_list.mdx';
-import ReactionList from '../common-content/ui-components/channel/props/reaction-list.mdx';
+import MessageReactionPicker from '../common-content/ui-components/channel/props/message-reaction-picker.mdx';
+import MessageUserReactionsAvatar from '../common-content/ui-components/channel/props/message-user-reactions-avatar.mdx';
+import MessageUserReactionsItem from '../common-content/ui-components/channel/props/message-user-reactions-item.mdx';
+import MessageUserReactions from '../common-content/ui-components/channel/props/message-user-reactions.mdx';
+import ReactionListBottom from '../common-content/ui-components/channel/props/reaction-list-bottom.mdx';
+import ReactionListPosition from '../common-content/ui-components/channel/props/reaction-list-position.mdx';
+import ReactionListTop from '../common-content/ui-components/channel/props/reaction-list-top.mdx';
 import Reply from '../common-content/ui-components/channel/props/reply.mdx';
 import ScrollToBottomButton from '../common-content/ui-components/channel/props/scroll-to-bottom-button.mdx';
 import ShouldShowUnreadUnderlay from '../common-content/ui-components/channel/props/should_show_unread_underlay.mdx';
@@ -78,9 +86,9 @@ import PollContent from '../common-content/ui-components/poll/poll-content.mdx';
 
 ## Value
 
-### <div class="label description">_forwarded from [Channel](../../core-components/channel#additionaltouchableprops)_ props</div> additionalTouchableProps {#additionaltouchableprops}
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#additionalpressableprops)_ props</div> additionalPressableProps {#additionalpressableprops}
 
-<AdditionalTouchableProps />
+<AdditionalPressableProps />
 
 ### `channelId`
 
@@ -117,10 +125,6 @@ Id of current channel.
 ### <div class="label description">_forwarded from [Channel](../../core-components/channel#handleban)_ props</div> `handleBan` {#handleban}
 
 <HandleBan />
-
-### <div class="label description">_forwarded from [Channel](../../core-components/channel#handleblock)_ props</div> `handleBlock` {#handleblock}
-
-<HandleBlock />
 
 ### <div class="label description">_forwarded from [Channel](../../core-components/channel#handlecopy)_ props</div> `handleCopy` {#handlecopy}
 
@@ -186,6 +190,10 @@ Id of current channel.
 
 <MyMessageTheme />
 
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messagetextnumberoflines)_ props</div> messageTextNumberOfLines {#messagetextnumberoflines}
+
+<MessageTextNumberOfLines />
+
 ### <div class="label description">_forwarded from [Channel](../../core-components/channel#onlongpressmessage)_ props</div> onLongPressMessage {#onlongpressmessage}
 
 <OnLongPressMessage />
@@ -197,6 +205,10 @@ Id of current channel.
 ### <div class="label description">_forwarded from [Channel](../../core-components/channel#onpressmessage)_ props</div> onPressMessage {#onpressmessage}
 
 <OnPressMessage />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#reactionlistposition)_ props</div> reactionListPosition {#reactionlistposition}
+
+<ReactionListPosition />
 
 ### `removeMessage`
 
@@ -342,6 +354,14 @@ Upserts a given message in local channel state. Please note that this function d
 
 <Message /> -->
 
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messageactionlist)_ props</div> MessageActionList {#messageactionlist}
+
+<MessageActionList />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messageactionlistitem)_ props</div> MessageActionListItem {#messageactionlistitem}
+
+<MessageActionListItem />
+
 ### <div class="label description">_forwarded from [Channel](../../core-components/channel#messageavatar)_ props</div> MessageAvatar {#messageavatar}
 
 <MessageAvatar />
@@ -374,6 +394,10 @@ Upserts a given message in local channel state. Please note that this function d
 
 <MessageHeader />
 
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messagemenu)_ props</div> MessageMenu {#messagemenu}
+
+<MessageMenu />
+
 <!-- ### <div class="label description">_forwarded from [Channel](../../core-components/channel#messagelist)_ props</div> MessageList {#messagelist}
 
 <MessageList /> -->
@@ -402,13 +426,41 @@ Upserts a given message in local channel state. Please note that this function d
 
 <MessageText />
 
-### <div class="label description">_forwarded from [Channel](../../core-components/channel#overlayreactionlist)_ props</div> OverlayReactionList {#overlayreactionlist}
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messagereactionpicker)_ props</div> MessageReactionPicker {#messagereactionpicker}
 
-<OverlayReactionList />
+<MessageReactionPicker />
 
-### <div class="label description">_forwarded from [Channel](../../core-components/channel#reactionlist)_ props</div> ReactionList {#reactionlist}
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messageuserreactionsavatar)_ props</div> MessageUserReactionsAvatar {#messageuserreactionsavatar}
 
-<ReactionList />
+<MessageUserReactionsAvatar />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messageuserreactionsitem)_ props</div> MessageUserReactionsItem {#messageuserreactionsitem}
+
+<MessageUserReactionsItem />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messageuserreactions)_ props</div> MessageUserReactions {#messageuserreactions}
+
+<MessageUserReactions />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messageuserreactionsavatar)_ props</div> MessageUserReactionsAvatar {#messageuserreactionsavatar}
+
+<MessageUserReactionsAvatar />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messageuserreactionsitem)_ props</div> MessageUserReactionsItem {#messageuserreactionsitem}
+
+<MessageUserReactionsItem />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#messageuserreactions)_ props</div> MessageUserReactions {#messageuserreactions}
+
+<MessageUserReactions />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#reactionlistbottom)_ props</div> ReactionListBottom {#reactionlistbottom}
+
+<ReactionListBottom />
+
+### <div class="label description">_forwarded from [Channel](../../core-components/channel#reactionlisttop)_ props</div> ReactionListTop {#reactionlisttop}
+
+<ReactionListTop />
 
 ### <div class="label description">_forwarded from [Channel](../../core-components/channel#scrolltobottombutton)_ props</div> ScrollToBottomButton {#scrolltobottombutton}
 

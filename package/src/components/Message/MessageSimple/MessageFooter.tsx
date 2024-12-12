@@ -123,7 +123,7 @@ const MessageFooterWithContext = <
 
   if (isDeleted) {
     return (
-      <View style={[styles.container, metaContainer]} testID='message-deleted'>
+      <View style={[styles.container, metaContainer]}>
         {deletedMessagesVisibilityType === 'sender' && (
           <OnlyVisibleToYouComponent alignment={alignment} />
         )}

@@ -1,8 +1,11 @@
 import { PixelRatio } from 'react-native';
 
-import { StreamChatRN } from './StreamChatRN';
+import {
+  chatConfigContextDefaultvalue,
+  ChatConfigContextValue,
+} from '../contexts/chatConfigContext/ChatConfigContext';
 
-export type GetResizedImageUrlParams = {
+export type GetResizedImageUrlParams = Pick<ChatConfigContextValue, 'resizableCDNHosts'> & {
   url: string;
   height?: string | number;
   resize?: 'clip' | 'crop' | 'fill' | 'scale';
@@ -23,6 +26,7 @@ export type GetResizedImageUrlParams = {
  */
 export function getResizedImageUrl({
   height,
+  resizableCDNHosts = chatConfigContextDefaultvalue.resizableCDNHosts,
   resize = 'clip',
   url,
   width,
@@ -38,9 +42,7 @@ export function getResizedImageUrl({
     // In case of old CDN we don't want to do any kind of resizing.
 
     const isResizableUrl =
-      StreamChatRN.config.resizableCDNHosts.some((rCDNh) => url.includes(rCDNh)) &&
-      originalHeight &&
-      originalWidth;
+      resizableCDNHosts?.some((rCDNh) => url.includes(rCDNh)) && originalHeight && originalWidth;
 
     if (!isResizableUrl || (!height && !width)) return url;
 

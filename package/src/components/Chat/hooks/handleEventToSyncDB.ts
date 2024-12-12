@@ -11,12 +11,12 @@ import { upsertChannels } from '../../../store/apis/upsertChannels';
 import { upsertMembers } from '../../../store/apis/upsertMembers';
 import { upsertMessages } from '../../../store/apis/upsertMessages';
 import { upsertReads } from '../../../store/apis/upsertReads';
-import { QuickSqliteClient } from '../../../store/QuickSqliteClient';
 import { createSelectQuery } from '../../../store/sqlite-utils/createSelectQuery';
+import { SqliteClient } from '../../../store/SqliteClient';
 import { PreparedQueries } from '../../../store/types';
 import { DefaultStreamChatGenerics } from '../../../types/types';
 
-export const handleEventToSyncDB = <
+export const handleEventToSyncDB = async <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   event: Event,
@@ -28,13 +28,13 @@ export const handleEventToSyncDB = <
   // This function is used to guard the queries that require channel to be present in the db first
   // If channel is not present in the db, we first fetch the channel data from the channel object
   // and then add the queries with a channel create query first
-  const queriesWithChannelGuard = (
-    createQueries: (flushOverride?: boolean) => PreparedQueries[],
+  const queriesWithChannelGuard = async (
+    createQueries: (flushOverride?: boolean) => Promise<PreparedQueries[]>,
   ) => {
     const cid = event.cid || event.channel?.cid;
 
-    if (!cid) return createQueries(flush);
-    const channels = QuickSqliteClient.executeSql.apply(
+    if (!cid) return await createQueries(flush);
+    const channels = await SqliteClient.executeSql.apply(
       null,
       createSelectQuery('channels', ['cid'], {
         cid,
@@ -48,14 +48,15 @@ export const handleEventToSyncDB = <
           ? client.channel(event.channel_type, event.channel_id)
           : undefined;
       if (channel && channel.initialized && !channel.disconnected) {
-        const channelQuery = upsertChannelDataFromChannel({
+        const channelQuery = await upsertChannelDataFromChannel({
           channel,
           flush,
         });
         if (channelQuery) {
-          const newQueries = [...channelQuery, ...createQueries(false)];
+          const createdQueries = await createQueries(false);
+          const newQueries = [...channelQuery, ...createdQueries];
           if (flush !== false) {
-            QuickSqliteClient.executeSqlBatch(newQueries);
+            await SqliteClient.executeSqlBatch(newQueries);
           }
           return newQueries;
         } else {
@@ -80,7 +81,7 @@ export const handleEventToSyncDB = <
     const cid = event.cid;
     const user = event.user;
     if (user?.id && cid) {
-      return queriesWithChannelGuard((flushOverride) =>
+      return await queriesWithChannelGuard((flushOverride) =>
         upsertReads({
           cid,
           flush: flushOverride,
@@ -98,8 +99,9 @@ export const handleEventToSyncDB = <
 
   if (type === 'message.new') {
     const message = event.message;
+
     if (message && (!message.parent_id || message.show_in_channel)) {
-      return queriesWithChannelGuard((flushOverride) =>
+      return await queriesWithChannelGuard((flushOverride) =>
         upsertMessages({
           flush: flushOverride,
           messages: [message],
@@ -113,7 +115,7 @@ export const handleEventToSyncDB = <
     if (message && !message.parent_id) {
       // Update only if it exists, otherwise event could be related
       // to a message which is not in database.
-      return queriesWithChannelGuard((flushOverride) =>
+      return await queriesWithChannelGuard((flushOverride) =>
         updateMessage({
           flush: flushOverride,
           message,
@@ -126,7 +128,7 @@ export const handleEventToSyncDB = <
     const message = event.message;
     if (message && event.reaction) {
       // We update the entire message to make sure we also update reaction_groups
-      return queriesWithChannelGuard((flushOverride) =>
+      return await queriesWithChannelGuard((flushOverride) =>
         updateMessage({
           flush: flushOverride,
           message,
@@ -141,7 +143,7 @@ export const handleEventToSyncDB = <
       // Here we are relying on the fact message.latest_reactions always includes
       // the new reaction. So we first delete all the existing reactions and populate
       // the reactions table with message.latest_reactions
-      return queriesWithChannelGuard((flushOverride) =>
+      return await queriesWithChannelGuard((flushOverride) =>
         updateMessage({
           flush: flushOverride,
           message,
@@ -200,7 +202,7 @@ export const handleEventToSyncDB = <
     const member = event.member;
     const cid = event.cid;
     if (member && cid) {
-      return queriesWithChannelGuard((flushOverride) =>
+      return await queriesWithChannelGuard((flushOverride) =>
         upsertMembers({
           cid,
           flush: flushOverride,
@@ -214,7 +216,7 @@ export const handleEventToSyncDB = <
     const member = event.member;
     const cid = event.cid;
     if (member && cid) {
-      return queriesWithChannelGuard((flushOverride) =>
+      return await queriesWithChannelGuard((flushOverride) =>
         deleteMember({
           cid,
           flush: flushOverride,
