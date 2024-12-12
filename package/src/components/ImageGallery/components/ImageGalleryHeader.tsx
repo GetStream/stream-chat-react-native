@@ -93,12 +93,12 @@ export const ImageGalleryHeader = <
   };
 
   return (
-    <View
+    <SafeAreaView
       onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
       pointerEvents={'box-none'}
     >
       <Animated.View style={headerStyle}>
-        <SafeAreaView style={[styles.container, { backgroundColor: white }, container]}>
+        <View style={[styles.container, { backgroundColor: white }, container]}>
           {leftElement ? (
             leftElement({ hideOverlay, photo })
           ) : (
@@ -123,9 +123,9 @@ export const ImageGalleryHeader = <
           ) : (
             <View style={[styles.rightContainer, rightContainer]} />
           )}
-        </SafeAreaView>
+        </View>
       </Animated.View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -140,12 +140,11 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 4,
+    paddingVertical: 8,
   },
   date: {
     fontSize: 12,
     fontWeight: '500',
-    marginBottom: 8,
     opacity: 0.5,
   },
   leftContainer: {
