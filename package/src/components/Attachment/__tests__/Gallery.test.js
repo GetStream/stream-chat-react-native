@@ -21,7 +21,6 @@ import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import * as NativeUtils from '../../../native';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { MessageList } from '../../MessageList/MessageList';
@@ -81,7 +80,6 @@ describe('Gallery', () => {
   });
 
   it('should render one image and one video attachment', async () => {
-    jest.spyOn(NativeUtils, 'isVideoPackageAvailable').mockImplementation(jest.fn(() => true));
     const attachment1 = generateImageAttachment({
       original_height: 600,
       original_width: 400,

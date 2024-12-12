@@ -46,11 +46,6 @@ export const takePhoto = ImagePicker
           if (canceled === false && photo && photo.height && photo.width && photo.uri) {
             let size: Size = {};
             if (Platform.OS === 'android') {
-              // Height and width returned by ImagePicker are incorrect on Android.
-              // The issue is described in following github issue:
-              // https://github.com/ivpusic/react-native-image-crop-picker/issues/901
-              // This we can't rely on them as it is, and we need to use Image.getSize
-              // to get accurate size.
               const getSize = (): Promise<Size> =>
                 new Promise((resolve) => {
                   Image.getSize(photo.uri, (width, height) => {

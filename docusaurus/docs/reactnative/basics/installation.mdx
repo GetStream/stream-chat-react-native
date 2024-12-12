@@ -8,13 +8,13 @@ import TabItem from '@theme/TabItem';
 
 Installation and usage of our Stream Chat React Native SDK is simple and involves the following steps:
 
-### Prerequisites
+## Prerequisites
 
 First things first, make sure you have set up the development environment for React Native. You can find the official guide [here](https://reactnative.dev/docs/environment-setup).
 
 For Expo, you can follow [this guide](https://docs.expo.dev/get-started/installation/).
 
-### Add Stream's Chat SDK and its peer dependencies
+## Add Stream's Chat SDK and its peer dependencies
 
 In order to install the Stream Chat React Native SDK, run the following command in your terminal of choice:
 
@@ -56,7 +56,7 @@ Stream Chat React Native SDK requires installing some peer dependencies to provi
 <TabItem value='rncli'>
 
 ```bash title="Terminal"
-yarn add @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-fs react-native-gesture-handler react-native-image-resizer react-native-reanimated react-native-svg
+yarn add @react-native-community/netinfo react-native-gesture-handler react-native-reanimated react-native-svg
 ```
 
 </TabItem>
@@ -64,7 +64,7 @@ yarn add @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-
 <TabItem value='expo'>
 
 ```bash title="Terminal"
-npx expo install @stream-io/flat-list-mvcp @react-native-community/netinfo expo-file-system expo-image-manipulator react-native-gesture-handler react-native-reanimated react-native-svg
+npx expo install @react-native-community/netinfo expo-image-manipulator react-native-gesture-handler react-native-reanimated react-native-svg
 ```
 
 </TabItem>
@@ -82,20 +82,15 @@ values={[
 >
 <TabItem value='rncli'>
 
-- [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo) for accessing device gallery.
-- [`@stream-io/flat-list-mvcp`](https://github.com/GetStream/flat-list-mvcp) for bi-directional FlatList support.
-- [`react-native-fs`](https://github.com/itinance/react-native-fs) to perform file operations like save, delete, etc.
+- [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo) for SDK to respond to network changes.
 - [`react-native-gesture-handler`](https://github.com/software-mansion/react-native-gesture-handler) to handle gestures within the SDK.
-- [`react-native-image-resizer`](https://github.com/bamlab/react-native-image-resizer) to compress image uploads.
 - [`react-native-reanimated`](https://github.com/software-mansion/react-native-reanimated) to compress image uploads.
 - [`react-native-svg`](https://github.com/react-native-svg/react-native-svg) for SVG support.
 
 </TabItem>
 <TabItem value="expo">
 
-- [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo) for accessing device gallery.
-- [`@stream-io/flat-list-mvcp`](https://github.com/GetStream/flat-list-mvcp) for bi-directional FlatList support.
-- [`expo-file-system`](https://docs.expo.dev/versions/latest/sdk/filesystem/) to perform file operations like save, delete, etc.
+- [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo) for SDK to respond to network changes.
 - [`react-native-gesture-handler`](https://github.com/software-mansion/react-native-gesture-handler) to handle gestures within the SDK.
 - [`expo-image-manipulator`](https://docs.expo.dev/versions/latest/sdk/imagemanipulator/) to compress image uploads.
 - [`react-native-reanimated`](https://github.com/software-mansion/react-native-reanimated) to compress image uploads.
@@ -104,57 +99,69 @@ values={[
 </TabItem>
 </Tabs>
 
-### Optional Dependencies
+## Opt-in features
 
-:::note
-Starting from `v5.35.0` the `react-native-image-crop-picker` and `expo-image-picker` is no longer a required dependency. You can use it if you want to capture images to attach them in the message else feel free to uninstall it.
-:::
+There are a few features that can be optionally added within the SDK, which would need additional dependencies to be installed. These features are:
 
-There are a few optional dependencies that can be added to have more features within the SDK.
+### Video playing
+
+Play video and audio attachments within messages in the chat.
 
 <Tabs
-defaultValue='rncli'
-groupId='rn-platform'
-values={[
-  { label: 'RN CLI', value: 'rncli' },
-  { label: 'Expo', value: 'expo' },
-]}
+  defaultValue='rncli'
+  groupId='rn-platform'
+  values={[
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
+  ]}
 >
 <TabItem value='rncli'>
 
-- [`@react-native-camera-roll/camera-roll`](https://github.com/react-native-cameraroll/react-native-cameraroll) for accessing device gallery.
-- [`react-native-image-crop-picker`](https://github.com/ivpusic/react-native-image-crop-picker) to capture images to attach them in the message.
-- [`react-native-video`](https://github.com/react-native-video/react-native-video) for Video and Audio playback support.
-- [`react-native-audio-recorder-player`](https://github.com/hyochan/react-native-audio-recorder-player) for Audio recording and async audio messages support.
-- [`react-native-share`](https://github.com/react-native-share/react-native-share) for Attachment sharing support.
-- [`react-native-haptic-feedback`](https://github.com/junina-de/react-native-haptic-feedback) for user haptics feedback.
-- [`@react-native-clipboard/clipboard`](https://github.com/react-native-clipboard/clipboard) for Copy message support.
-- [`react-native-document-picker`](https://github.com/rnmods/react-native-document-picker) to access device media files.
-- [`react-native-quick-sqlite`](https://github.com/margelo/react-native-quick-sqlite) to enable Offline support in the app.
-- [`react-native-image-picker`](https://github.com/react-native-image-picker/react-native-image-picker) to use native photo picker.
+```bash title="Terminal"
+yarn add react-native-video
+```
 
 </TabItem>
-<TabItem value="expo">
+<TabItem value='expo'>
 
-- [`expo-av`](https://docs.expo.dev/versions/latest/sdk/av/) for Video and Audio playback, recording and async audio messages support.
-- [`expo-media-library`](https://docs.expo.dev/versions/latest/sdk/media-library/) for accessing device gallery.
-- [`expo-image-picker`](https://docs.expo.dev/versions/latest/sdk/imagepicker/) to capture images to attach them in the message.
-- [`expo-sharing`](https://docs.expo.dev/versions/latest/sdk/sharing/) for Attachments sharing support.
-- [`expo-haptics`](https://docs.expo.dev/versions/latest/sdk/haptics/) for user haptics support.
-- [`expo-clipboard`](https://docs.expo.dev/versions/latest/sdk/clipboard/) for Copy message support.
-- [`expo-document-picker`](https://docs.expo.dev/versions/latest/sdk/document-picker/) to access device media files.
-- [`react-native-quick-sqlite`](https://github.com/margelo/react-native-quick-sqlite) to enable Offline support in the app.
+```bash title="Terminal"
+npx expo install expo-av
+```
 
 </TabItem>
+
 </Tabs>
 
-:::note
-Please follow along the linked documentation of each optional dependencies so as to support them correctly in your application.
-:::
+### Voice recording
 
-### Configuring permissions
+Record and send voice messages and play them back within the chat.
 
-Some dependencies(if you are using them on your application), require you to add additional permissions to the `Info.plist` file in iOS and `AndroidManifest.xml` file in Android. Please follow the steps mentioned in the links below for corresponding dependencies:
+<Tabs
+  defaultValue='rncli'
+  groupId='rn-platform'
+  values={[
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
+  ]}
+>
+<TabItem value='rncli'>
+
+```bash title="Terminal"
+yarn add react-native-audio-recorder-player react-native-blob-util
+```
+
+</TabItem>
+<TabItem value='expo'>
+
+```bash title="Terminal"
+npx expo install expo-av
+```
+
+</TabItem>
+
+</Tabs>
+
+#### Configuring permissions
 
 <Tabs
 defaultValue='rncli'
@@ -166,31 +173,17 @@ values={[
 >
 <TabItem value='rncli'>
 
-- [`@react-native-camera-roll/camera-roll`](https://github.com/react-native-cameraroll/react-native-cameraroll?tab=readme-ov-file#permissions) for gallery/photo library access.
-- [`react-native-image-crop-picker`](https://github.com/ivpusic/react-native-image-crop-picker?tab=readme-ov-file#step-3) for camera access.
 - [`react-native-audio-recorder-player`](https://github.com/hyochan/react-native-audio-recorder-player?tab=readme-ov-file#post-installation) for microphone access for voice recording.
 
 An example `AndroidManifest.xml` would look like this with permissions:
 
 ```xml
-  <uses-permission android:name="android.permission.CAMERA" />
-  <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-  <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
   <uses-permission android:name="android.permission.RECORD_AUDIO" />
-  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
-    android:maxSdkVersion="32" />
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 ```
 
 An example `Info.plist` would look like this with permissions:
 
 ```xml
-<key>NSPhotoLibraryUsageDescription</key>
-<string>$(PRODUCT_NAME) would like access to your photo gallery to share image in a message.</string>
-<key>NSPhotoLibraryAddUsageDescription</key>
-<string>$(PRODUCT_NAME) would like to save photos to your photo gallery after downloading from a message.</string>
-<key>NSCameraUsageDescription</key>
-<string>$(PRODUCT_NAME) would like to use your camera to share image in a message.</string>
 <key>NSMicrophoneUsageDescription</key>
 <string>$(PRODUCT_NAME) would like to use your microphone for voice recording.</string>
 ```
@@ -198,8 +191,6 @@ An example `Info.plist` would look like this with permissions:
 </TabItem>
 <TabItem value="expo">
 
-- [`expo-media-library`](https://docs.expo.dev/versions/latest/sdk/media-library/#configurable-properties) for gallery/photo library access.
-- [`expo-image-picker`](https://docs.expo.dev/versions/latest/sdk/imagepicker/#configuration-in-appjsonappconfigjs) for camera access.
 - [`expo-av`](https://docs.expo.dev/versions/latest/sdk/av/#configuration-in-appjsonappconfigjs) for microphone access for voice recording.
 
 An example `app.json` config for expo would look like this to add permissions to the `Info.plist` on iOS, using the config plugins:
@@ -208,19 +199,6 @@ An example `app.json` config for expo would look like this to add permissions to
 {
   "expo": {
     "plugins": [
-      [
-        "expo-media-library",
-        {
-          "photosPermission": "$(PRODUCT_NAME) would like access to your photo gallery to share image in a message.",
-          "savePhotosPermission": "$(PRODUCT_NAME) would like to save photos to your photo gallery after downloading from a message."
-        }
-      ],
-      [
-        "expo-image-picker",
-        {
-          "cameraPermission": "$(PRODUCT_NAME) would like to use your camera to share image in a message."
-        }
-      ],
       [
         "expo-av",
         {
@@ -237,7 +215,448 @@ For Android on Expo, most of the most permissions are added automatically by lib
 </TabItem>
 </Tabs>
 
-### Additional Steps
+### Attachment sharing
+
+Share attachments within the message to others.
+
+<Tabs
+  defaultValue='rncli'
+  groupId='rn-platform'
+  values={[
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
+  ]}
+>
+<TabItem value='rncli'>
+
+```bash title="Terminal"
+yarn add react-native-blob-util react-native-share
+```
+
+</TabItem>
+<TabItem value='expo'>
+
+```bash title="Terminal"
+npx expo install expo-sharing
+```
+
+</TabItem>
+
+</Tabs>
+
+### Haptic feedback
+
+Provide haptic feedback to the user.
+
+<Tabs
+  defaultValue='rncli'
+  groupId='rn-platform'
+  values={[
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
+  ]}
+>
+<TabItem value='rncli'>
+
+```bash title="Terminal"
+yarn add react-native-haptic-feedback
+```
+
+</TabItem>
+<TabItem value='expo'>
+
+```bash title="Terminal"
+npx expo install expo-haptics
+```
+
+</TabItem>
+
+</Tabs>
+
+### Copy message
+
+Copy the text message content to the clipboard.
+
+<Tabs
+  defaultValue='rncli'
+  groupId='rn-platform'
+  values={[
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
+  ]}
+>
+<TabItem value='rncli'>
+
+```bash title="Terminal"
+yarn add @react-native-clipboard/clipboard
+```
+
+</TabItem>
+<TabItem value='expo'>
+
+```bash title="Terminal"
+npx expo install expo-clipboard
+```
+
+</TabItem>
+
+</Tabs>
+
+### Share file attachments
+
+Share files from the device within the chat.
+
+<Tabs
+  defaultValue='rncli'
+  groupId='rn-platform'
+  values={[
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
+  ]}
+>
+<TabItem value='rncli'>
+
+```bash title="Terminal"
+yarn add react-native-document-picker
+```
+
+</TabItem>
+<TabItem value='expo'>
+
+```bash title="Terminal"
+npx expo install expo-document-picker
+```
+
+</TabItem>
+
+</Tabs>
+
+### Capture image and upload attachment
+
+Capture images from the camera and upload them as attachments in the chat.
+
+<Tabs
+  defaultValue='rncli'
+  groupId='rn-platform'
+  values={[
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
+  ]}
+>
+<TabItem value='rncli'>
+
+```bash title="Terminal"
+yarn add react-native-image-picker
+```
+
+</TabItem>
+
+<TabItem value='expo'>
+
+```bash title="Terminal"
+npx expo install expo-image-picker
+```
+
+</TabItem>
+
+</Tabs>
+
+#### Configuring permissions
+
+<Tabs
+defaultValue='rncli'
+groupId='rn-platform'
+values={[
+  { label: 'RN CLI', value: 'rncli' },
+  { label: 'Expo', value: 'expo' },
+]}
+>
+<TabItem value='rncli'>
+
+- [`react-native-image-picker`](https://github.com/react-native-image-picker/react-native-image-picker?tab=readme-ov-file#post-install-steps) for camera access.
+
+On Android, an example `AndroidManifest.xml` would look like this with permissions:
+
+```xml
+  <uses-permission android:name="android.permission.CAMERA" />
+```
+
+On iOS, An example `Info.plist` would look like this with permissions:
+
+```xml
+<key>NSCameraUsageDescription</key>
+<string>$(PRODUCT_NAME) would like to use your camera to share image in a message.</string>
+```
+
+</TabItem>
+<TabItem value="expo">
+
+- [`expo-image-picker`](https://docs.expo.dev/versions/latest/sdk/imagepicker/#configuration-in-appjsonappconfigjs) for camera access.
+
+An example `app.json` config for expo would look like this to add permissions to the `Info.plist` on iOS, using the config plugins:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "$(PRODUCT_NAME) would like to use your camera to share image in a message."
+        }
+      ]
+    ]
+  }
+}
+```
+
+</TabItem>
+</Tabs>
+
+### Pick image using Native Image Picker
+
+Pick gallery image using native image picker and upload them as attachments in the chat.
+
+<Tabs
+  defaultValue='rncli'
+  groupId='rn-platform'
+  values={[
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
+  ]}
+>
+<TabItem value='rncli'>
+
+```bash title="Terminal"
+yarn add react-native-image-picker
+```
+
+</TabItem>
+
+<TabItem value='expo'>
+
+```bash title="Terminal"
+npx expo install expo-image-picker
+```
+
+</TabItem>
+
+</Tabs>
+
+#### Configuring permissions
+
+<Tabs
+defaultValue='rncli'
+groupId='rn-platform'
+values={[
+  { label: 'RN CLI', value: 'rncli' },
+  { label: 'Expo', value: 'expo' },
+]}
+>
+<TabItem value='rncli'>
+
+- [`react-native-image-picker`](https://github.com/react-native-image-picker/react-native-image-picker?tab=readme-ov-file#post-install-steps) for camera access.
+
+On android, there are no permissions required.
+
+On iOS, An example `Info.plist` would look like this with permissions:
+
+```xml
+<key>NSPhotoLibraryUsageDescription</key>
+<string>$(PRODUCT_NAME) would like access to your photo gallery to share image in a message.</string>
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>$(PRODUCT_NAME) would like to save photos to your photo gallery after downloading from a message.</string>
+```
+
+</TabItem>
+<TabItem value="expo">
+
+- [`expo-image-picker`](https://docs.expo.dev/versions/latest/sdk/imagepicker/#configuration-in-appjsonappconfigjs) for camera access.
+
+An example `app.json` config for expo would look like this to add permissions to the `Info.plist` on iOS, using the config plugins:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "$(PRODUCT_NAME) would like to use your device gallery to attach image in a message."
+        }
+      ]
+    ]
+  }
+}
+```
+
+</TabItem>
+</Tabs>
+
+### Built-in image media library
+
+Pick image using built-in media library and upload them as attachments in the chat.
+
+<Tabs
+  defaultValue='rncli'
+  groupId='rn-platform'
+  values={[
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
+  ]}
+>
+<TabItem value='rncli'>
+
+```bash title="Terminal"
+yarn add @react-native-camera-roll/camera-roll
+```
+
+</TabItem>
+
+<TabItem value='expo'>
+
+```bash title="Terminal"
+npx expo install expo-media-library
+```
+
+</TabItem>
+
+</Tabs>
+
+#### Configuring permissions
+
+<Tabs
+defaultValue='rncli'
+groupId='rn-platform'
+values={[
+  { label: 'RN CLI', value: 'rncli' },
+  { label: 'Expo', value: 'expo' },
+]}
+>
+<TabItem value='rncli'>
+
+- [`@react-native-camera-roll/camera-roll`](https://github.com/react-native-cameraroll/react-native-cameraroll?tab=readme-ov-file#permissions) for gallery/photo library access.
+
+An example `AndroidManifest.xml` would look like this with permissions:
+
+```xml
+  <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+  <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    android:maxSdkVersion="32" />
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+```
+
+An example `Info.plist` would look like this with permissions:
+
+```xml
+<key>NSPhotoLibraryUsageDescription</key>
+<string>$(PRODUCT_NAME) would like access to your photo gallery to share image in a message.</string>
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>$(PRODUCT_NAME) would like to save photos to your photo gallery after downloading from a message.</string>
+```
+
+</TabItem>
+<TabItem value="expo">
+
+- [`expo-media-library`](https://docs.expo.dev/versions/latest/sdk/media-library/#configurable-properties) for gallery/photo library access.
+
+An example `app.json` config for expo would look like this to add permissions to the `Info.plist` on iOS, using the config plugins:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "$(PRODUCT_NAME) would like access to your photo gallery to share image in a message.",
+          "savePhotosPermission": "$(PRODUCT_NAME) would like to save photos to your photo gallery after downloading from a message."
+        }
+      ]
+    ]
+  }
+}
+```
+
+For Android on Expo, most of the most permissions are added automatically by libraries that you use in your app either with config plugins or with a package-level `AndroidManifest.xml`. Read more [here](https://docs.expo.dev/guides/permissions/#android).
+
+</TabItem>
+</Tabs>
+
+### Offline support
+
+Enable offline support in the app.
+
+<Tabs
+  defaultValue='rncli'
+  groupId='rn-platform'
+  values={[
+    { label: 'RN CLI', value: 'rncli' },
+    { label: 'Expo', value: 'expo' },
+  ]}
+>
+<TabItem value='rncli'>
+
+```bash title="Terminal"
+yarn add @op-engineering/op-sqlite
+```
+
+</TabItem>
+<TabItem value='expo'>
+
+```bash title="Terminal"
+npx expo install @op-engineering/op-sqlite
+```
+
+</TabItem>
+
+</Tabs>
+
+The overall installation of the optional dependencies would look like this:
+
+<Tabs
+defaultValue='rncli'
+groupId='rn-platform'
+values={[
+  { label: 'RN CLI', value: 'rncli' },
+  { label: 'Expo', value: 'expo' },
+]}
+>
+<TabItem value='rncli'>
+
+- [`@react-native-camera-roll/camera-roll`](https://github.com/react-native-cameraroll/react-native-cameraroll) for accessing device gallery.
+- [`react-native-video`](https://github.com/react-native-video/react-native-video) for Video and Audio playback support.
+- [`react-native-audio-recorder-player`](https://github.com/hyochan/react-native-audio-recorder-player) for Audio recording and async audio messages support.
+- [`react-native-blob-util`](https://github.com/RonRadtke/react-native-blob-util) to perform file operations like save, delete, while sharing or access the cache directory while audio recording.
+- [`react-native-share`](https://github.com/react-native-share/react-native-share) for Attachment sharing support.
+- [`react-native-haptic-feedback`](https://github.com/junina-de/react-native-haptic-feedback) for user haptics feedback.
+- [`@react-native-clipboard/clipboard`](https://github.com/react-native-clipboard/clipboard) for Copy message support.
+- [`react-native-document-picker`](https://github.com/rnmods/react-native-document-picker) to access device media files.
+- [`react-native-image-picker`](https://github.com/react-native-image-picker/react-native-image-picker) to capture images to attach them in the message.
+- [`@op-engineering/op-sqlite`](https://github.com/OP-Engineering/op-sqlite) to enable Offline support in the app.
+
+</TabItem>
+<TabItem value="expo">
+
+- [`expo-av`](https://docs.expo.dev/versions/latest/sdk/av/) for Video and Audio playback, recording and async audio messages support.
+- [`expo-file-system`](https://docs.expo.dev/versions/latest/sdk/filesystem/) to perform file operations like save, delete, while sharing or access the cache directory while audio recording.
+- [`expo-media-library`](https://docs.expo.dev/versions/latest/sdk/media-library/) for accessing device gallery.
+- [`expo-sharing`](https://docs.expo.dev/versions/latest/sdk/sharing/) for Attachments sharing support.
+- [`expo-haptics`](https://docs.expo.dev/versions/latest/sdk/haptics/) for user haptics support.
+- [`expo-clipboard`](https://docs.expo.dev/versions/latest/sdk/clipboard/) for Copy message support.
+- [`expo-document-picker`](https://docs.expo.dev/versions/latest/sdk/document-picker/) to access device media files.
+- [`expo-image-picker`](https://docs.expo.dev/versions/latest/sdk/imagepicker/) to capture images to attach them in the message or use native image picker.
+- [`@op-engineering/op-sqlite`](https://github.com/OP-Engineering/op-sqlite) to enable Offline support in the app.
+
+</TabItem>
+</Tabs>
+
+:::note
+Please follow along the linked documentation of each optional dependencies so as to support them correctly in your application.
+:::
+
+## Additional Steps
 
 Some dependencies require us to make changes to our application for all functionalities to be available.
 
@@ -279,8 +698,6 @@ The entry point of your app exists usually either in `index.js` or `App.tsx` fil
 Please also follow the steps mentioned in the links below for corresponding dependencies:
 
 - `react-native` - [additional installation steps](https://reactnative.dev/docs/image#gif-and-webp-support-on-android)
-- `react-native-image-crop-picker` - [additional installation steps](https://github.com/ivpusic/react-native-image-crop-picker#step-3)
-- `@react-native-camera-roll/camera-roll` - [additional installation steps](https://github.com/react-native-cameraroll/react-native-cameraroll#permissions)
 
 Now you should be able to run the app on simulator by running following command:
 
@@ -332,7 +749,7 @@ values={[
 <TabItem value="iOS">
 
 ```bash title="Terminal"
-yarn ios
+yarn run ios
 ```
 
 </TabItem>
@@ -340,7 +757,7 @@ yarn ios
 <TabItem value="android">
 
 ```bash title="Terminal"
-yarn android
+yarn run android
 ```
 
 </TabItem>

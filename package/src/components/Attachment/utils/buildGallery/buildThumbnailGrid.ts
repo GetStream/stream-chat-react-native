@@ -3,6 +3,8 @@ import type { Attachment } from 'stream-chat';
 import { buildThumbnail } from './buildThumbnail';
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig, ThumbnailGrid } from './types';
 
+import { ChatConfigContextValue } from '../../../../contexts/chatConfigContext/ChatConfigContext';
+
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
 /**
@@ -139,8 +141,9 @@ export function buildThumbnailGrid<
   grid,
   images,
   invertedDirections = false,
+  resizableCDNHosts,
   sizeConfig,
-}: {
+}: Pick<ChatConfigContextValue, 'resizableCDNHosts'> & {
   grid: number[][];
   images: Attachment<StreamChatGenerics>[];
   invertedDirections: boolean;
@@ -167,6 +170,7 @@ export function buildThumbnailGrid<
       const thumbnail = buildThumbnail({
         height: tHeight,
         image: currentImage,
+        resizableCDNHosts,
         resizeMode: 'cover',
         width: tWidth,
       });

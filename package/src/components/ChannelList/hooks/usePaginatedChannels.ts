@@ -191,11 +191,11 @@ export const usePaginatedChannels = <
   const sortStr = useMemo(() => JSON.stringify(sort), [sort]);
 
   useEffect(() => {
-    const loadOfflineChannels = () => {
+    const loadOfflineChannels = async () => {
       if (!client?.user?.id) return;
 
       try {
-        const channelsFromDB = getChannelsForFilterSort({
+        const channelsFromDB = await getChannelsForFilterSort({
           currentUserId: client.user.id,
           filters,
           sort,
@@ -212,9 +212,12 @@ export const usePaginatedChannels = <
         }
       } catch (e) {
         console.warn('Failed to get channels from database: ', e);
+        return false;
       }
 
       setActiveQueryType(null);
+
+      return true;
     };
 
     let listener: ReturnType<typeof DBSyncManager.onSyncStatusChange>;
@@ -223,20 +226,24 @@ export const usePaginatedChannels = <
       // and then call queryChannels to ensure any new channels are added to UI.
       listener = DBSyncManager.onSyncStatusChange(async (syncStatus) => {
         if (syncStatus) {
-          loadOfflineChannels();
-          await reloadList();
-          setForceUpdate((u) => u + 1);
+          const loadingChannelsSucceeded = await loadOfflineChannels();
+          if (loadingChannelsSucceeded) {
+            await reloadList();
+            setForceUpdate((u) => u + 1);
+          }
         }
       });
       // On start, load the channels from local db.
-      loadOfflineChannels();
-
-      // If db is already synced (sync api and pending api calls), then
-      // right away call queryChannels.
-      const dbSyncStatus = DBSyncManager.getSyncStatus();
-      if (dbSyncStatus) {
-        reloadList();
-      }
+      loadOfflineChannels().then((success) => {
+        // If db is already synced (sync api and pending api calls), then
+        // right away call queryChannels.
+        if (success) {
+          const dbSyncStatus = DBSyncManager.getSyncStatus();
+          if (dbSyncStatus) {
+            reloadList();
+          }
+        }
+      });
     } else {
       listener = client.on('connection.changed', async (event) => {
         if (event.online) {

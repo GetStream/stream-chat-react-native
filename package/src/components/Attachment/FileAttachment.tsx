@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  StyleProp,
-  StyleSheet,
-  Text,
-  TextStyle,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { Pressable, StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 
 import type { Attachment } from 'stream-chat';
 
@@ -54,7 +46,7 @@ export type FileAttachmentPropsWithContext<
 > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
-    'additionalTouchableProps' | 'AttachmentActions' | 'FileAttachmentIcon'
+    'additionalPressableProps' | 'AttachmentActions' | 'FileAttachmentIcon'
   > & {
     /** The attachment to render */
     attachment: Attachment<StreamChatGenerics>;
@@ -73,7 +65,7 @@ const FileAttachmentWithContext = <
   props: FileAttachmentPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
-    additionalTouchableProps,
+    additionalPressableProps,
     attachment,
     AttachmentActions,
     attachmentSize,
@@ -98,7 +90,7 @@ const FileAttachmentWithContext = <
   const defaultOnPress = () => openUrlSafely(attachment.asset_url);
 
   return (
-    <TouchableOpacity
+    <Pressable
       disabled={preventPress}
       onLongPress={(event) => {
         if (onLongPress) {
@@ -130,7 +122,7 @@ const FileAttachmentWithContext = <
         }
       }}
       testID='file-attachment'
-      {...additionalTouchableProps}
+      {...additionalPressableProps}
     >
       <View style={[styles.container, { backgroundColor: white }, container, stylesProp.container]}>
         <FileAttachmentIcon mimeType={attachment.mime_type} size={attachmentSize} />
@@ -153,7 +145,7 @@ const FileAttachmentWithContext = <
         </View>
       </View>
       {attachment.actions?.length ? <AttachmentActions {...attachment} /> : null}
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
@@ -169,7 +161,7 @@ export const FileAttachment = <
 ) => {
   const { onLongPress, onPress, onPressIn, preventPress } = useMessageContext<StreamChatGenerics>();
   const {
-    additionalTouchableProps,
+    additionalPressableProps,
     AttachmentActions = AttachmentActionsDefault,
     FileAttachmentIcon = FileIconDefault,
   } = useMessagesContext<StreamChatGenerics>();
@@ -177,7 +169,7 @@ export const FileAttachment = <
   return (
     <FileAttachmentWithContext
       {...{
-        additionalTouchableProps,
+        additionalPressableProps,
         AttachmentActions,
         FileAttachmentIcon,
         onLongPress,

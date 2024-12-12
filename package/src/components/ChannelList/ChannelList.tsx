@@ -157,21 +157,6 @@ export type ChannelListProps<
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
-   * @deprecated use onNewMessageNotification instead
-   *
-   * Override the default listener/handler for event `notification.message_new`
-   * This event is received on channel, which is not being watched.
-   *
-   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
-   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.message_new` event
-   *
-   * @overrideType Function
-   * */
-  onMessageNew?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
-    event: Event<StreamChatGenerics>,
-  ) => void;
-  /**
    * Override the default listener/handler for event `message.new`
    * This event is received on channel, when a new message is added on a channel.
    *
@@ -262,7 +247,6 @@ export const ChannelList = <
     onChannelTruncated,
     onChannelUpdated,
     onChannelVisible,
-    onMessageNew,
     onNewMessage,
     onNewMessageNotification,
     onRemovedFromChannel,
@@ -342,7 +326,6 @@ export const ChannelList = <
   });
 
   useNewMessageNotification({
-    onMessageNew,
     onNewMessageNotification,
     setChannels,
   });

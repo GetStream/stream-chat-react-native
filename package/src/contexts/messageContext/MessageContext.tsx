@@ -5,18 +5,16 @@ import type { Attachment } from 'stream-chat';
 import type { ActionHandler } from '../../components/Attachment/Attachment';
 import { ReactionSummary } from '../../components/Message/hooks/useProcessReactions';
 import type {
-  MessageTouchableHandlerPayload,
-  TouchableHandlerPayload,
+  MessagePressableHandlerPayload,
+  PressableHandlerPayload,
 } from '../../components/Message/Message';
 import type { GroupType, MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
 import type { MessageContentType } from '../../contexts/messagesContext/MessagesContext';
 import type { DeepPartial } from '../../contexts/themeContext/ThemeContext';
 import type { Theme } from '../../contexts/themeContext/utils/theme';
-import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
-
-import { getDisplayName } from '../utils/getDisplayName';
 
 export type Alignment = 'right' | 'left';
 
@@ -27,6 +25,10 @@ export type MessageContextValue<
   actionsEnabled: boolean;
   /** Position of the message, either 'right' or 'left' */
   alignment: Alignment;
+  /**
+   * Function to dismiss the overlay
+   */
+  dismissOverlay: () => void;
   /** The files attached to a message */
   files: Attachment<StreamChatGenerics>[];
   /**
@@ -38,46 +40,6 @@ export type MessageContextValue<
   groupStyles: GroupType[];
   /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
   handleAction: ActionHandler;
-  /**
-   * @deprecated
-   * @returns Promise<void>
-   */
-  handleCopyMessage: () => void;
-  /**
-   * @deprecated
-   * @returns Promise<void>
-   */
-  handleDeleteMessage: () => void;
-  /**
-   * @deprecated
-   * @returns Promise<void>
-   */
-  handleEditMessage: () => void;
-  /**
-   * @deprecated
-   * @returns Promise<void>
-   */
-  handleFlagMessage: () => void;
-  /**
-   * @deprecated
-   * @returns Promise<void>
-   */
-  handleQuotedReplyMessage: () => void;
-  /**
-   * @deprecated
-   * @returns Promise<void>
-   */
-  handleResendMessage: () => Promise<void>;
-  /**
-   * @deprecated
-   * @returns Promise<void>
-   */
-  handleToggleBanUser: () => Promise<void>;
-  /**
-   * @deprecated
-   * @returns Promise<void>
-   */
-  handleToggleMuteUser: () => Promise<void>;
   handleToggleReaction: (reactionType: string) => Promise<void>;
   /** Whether or not message has reactions */
   hasReactions: boolean;
@@ -107,7 +69,7 @@ export type MessageContextValue<
    *
    * @param payload   Payload object for onLongPress event
    */
-  onLongPress: (payload: TouchableHandlerPayload) => void;
+  onLongPress: (payload: PressableHandlerPayload) => void;
   /** Whether the message is only text and the text is only emojis */
   onlyEmojis: boolean;
   /** Handler to open a thread on a message */
@@ -122,20 +84,31 @@ export type MessageContextValue<
    *
    * @param payload   Payload object for onPress event
    */
-  onPress: (payload: MessageTouchableHandlerPayload) => void;
-  onPressIn: ((payload: TouchableHandlerPayload) => void) | null;
+  onPress: (payload: MessagePressableHandlerPayload) => void;
+  onPressIn: ((payload: PressableHandlerPayload) => void) | null;
   /** The images attached to a message */
   otherAttachments: Attachment<StreamChatGenerics>[];
   reactions: ReactionSummary[];
   /** React set state function to set the state of `isEditedMessageOpen` */
   setIsEditedMessageOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  showMessageOverlay: (isMessageActionsVisible?: boolean, error?: boolean) => void;
+  /**
+   * Function to show the menu with all the message actions.
+   * @param showMessageReactions
+   * @returns void
+   */
+  showMessageOverlay: (showMessageReactions?: boolean) => void;
   showMessageStatus: boolean;
   /** Whether or not the Message is part of a Thread */
   threadList: boolean;
   /** The videos attached to a message */
   videos: Attachment<StreamChatGenerics>[];
   goToMessage?: (messageId: string) => void;
+  /**
+   * Function to handle reaction on message
+   * @param reactionType
+   * @returns
+   */
+  handleReaction?: (reactionType: string) => Promise<void>;
   /** Latest message id on current channel */
   lastReceivedId?: string;
   /**
@@ -173,30 +146,4 @@ export const useMessageContext = <
   ) as unknown as MessageContextValue<StreamChatGenerics>;
 
   return contextValue;
-};
-
-/**
- * @deprecated
- *
- * This will be removed in the next major version.
- *
- * Typescript currently does not support partial inference so if ChatContext
- * typing is desired while using the HOC withMessageContext the Props for the
- * wrapped component must be provided as the first generic.
- */
-export const withMessageContext = <
-  P extends UnknownType,
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  Component: React.ComponentType<P>,
-): React.ComponentType<Omit<P, keyof MessageContextValue<StreamChatGenerics>>> => {
-  const WithMessageContextComponent = (
-    props: Omit<P, keyof MessageContextValue<StreamChatGenerics>>,
-  ) => {
-    const messageContext = useMessageContext<StreamChatGenerics>();
-
-    return <Component {...(props as P)} {...messageContext} />;
-  };
-  WithMessageContextComponent.displayName = `WithMessageContext${getDisplayName(Component)}`;
-  return WithMessageContextComponent;
 };

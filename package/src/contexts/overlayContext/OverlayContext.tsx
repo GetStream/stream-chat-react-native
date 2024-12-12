@@ -6,19 +6,16 @@ import type { Attachment } from 'stream-chat';
 import type { AttachmentPickerProps } from '../../components/AttachmentPicker/AttachmentPicker';
 import type { ImageGalleryCustomComponents } from '../../components/ImageGallery/ImageGallery';
 
-import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { Streami18n } from '../../utils/i18n/Streami18n';
 import type { AttachmentPickerContextValue } from '../attachmentPickerContext/AttachmentPickerContext';
-import type { MessageOverlayContextValue } from '../messageOverlayContext/MessageOverlayContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
-import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-export type Overlay = 'alert' | 'gallery' | 'message' | 'none';
+export type Overlay = 'alert' | 'gallery' | 'none';
 
 export type OverlayContextValue = {
   overlay: Overlay;
@@ -49,40 +46,17 @@ export type OverlayProviderProps<
       | 'topInset'
     >
   > &
-  ImageGalleryCustomComponents<StreamChatGenerics> &
-  Partial<
-    Pick<
-      MessageOverlayContextValue<StreamChatGenerics>,
-      | 'MessageActionList'
-      | 'MessageActionListItem'
-      | 'OverlayReactionList'
-      | 'OverlayReactions'
-      | 'OverlayReactionsAvatar'
-    >
-  > & {
+  ImageGalleryCustomComponents<StreamChatGenerics> & {
     autoPlayVideo?: boolean;
     /**
      * The giphy version to render - check the keys of the [Image Object](https://developers.giphy.com/docs/api/schema#image-object) for possible values. Uses 'fixed_height' by default
      * */
     closePicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
-    error?: boolean | Error;
     giphyVersion?: keyof NonNullable<Attachment['giphy']>;
     /** https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n) */
     i18nInstance?: Streami18n;
     imageGalleryGridHandleHeight?: number;
     imageGalleryGridSnapPoints?: [string | number, string | number];
-    isMyMessage?: boolean;
-    isThreadMessage?: boolean;
-    message?: MessageType<StreamChatGenerics>;
-    /**
-     * @deprecated use the following instead:
-     *  messageActions={(params) => {
-     *    const actions = messageActions({ ...params, isMessageActionsVisible: false });
-     *    return actions;
-     *  }}
-     */
-    messageReactions?: boolean;
-    messageTextNumberOfLines?: number;
     numberOfImageGalleryGridColumns?: number;
     openPicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
     value?: Partial<OverlayContextValue>;
@@ -98,31 +72,4 @@ export const useOverlayContext = () => {
   }
 
   return contextValue;
-};
-
-/**
- * @deprecated
- *
- * This will be removed in the next major version.
- *
- * Typescript currently does not support partial inference so if ChatContext
- * typing is desired while using the HOC withOverlayContext the Props for the
- * wrapped component must be provided as the first generic.
- */
-export const withOverlayContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  Component: React.ComponentType<StreamChatGenerics>,
-): React.ComponentType<Omit<StreamChatGenerics, keyof OverlayContextValue>> => {
-  const WithOverlayContextComponent = (
-    props: Omit<StreamChatGenerics, keyof OverlayContextValue>,
-  ) => {
-    const overlayContext = useOverlayContext();
-
-    return <Component {...(props as StreamChatGenerics)} {...overlayContext} />;
-  };
-  WithOverlayContextComponent.displayName = `WithOverlayContext${getDisplayName(
-    Component as React.ComponentType,
-  )}`;
-  return WithOverlayContextComponent;
 };

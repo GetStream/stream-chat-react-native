@@ -1,8 +1,8 @@
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type { OwnCapabilitiesContextValue } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
-import { setClipboardString } from '../../../native';
+import { isClipboardAvailable } from '../../../native';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
+import type { MessageActionType } from '../../MessageMenu/MessageActionListItem';
 
 export type MessageActionsParams<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -14,26 +14,18 @@ export type MessageActionsParams<
   editMessage: MessageActionType;
   error: boolean | Error;
   flagMessage: MessageActionType;
-  /**
-   * Determines if the message actions are visible.
-   */
-  isMessageActionsVisible: boolean;
   isThreadMessage: boolean;
-  /**
-   * @deprecated use `isMessageActionsVisible` instead.
-   */
-  messageReactions: boolean;
   muteUser: MessageActionType;
   ownCapabilities: OwnCapabilitiesContextValue;
   pinMessage: MessageActionType;
   quotedReply: MessageActionType;
   retry: MessageActionType;
+  /**
+   * Determines if the message actions are visible.
+   */
+  showMessageReactions: boolean;
   threadReply: MessageActionType;
   unpinMessage: MessageActionType;
-  /**
-   * @deprecated use `banUser` instead.
-   */
-  blockUser?: MessageActionType;
 } & Pick<MessageContextValue<StreamChatGenerics>, 'message' | 'isMyMessage'>;
 
 export type MessageActionsProp<
@@ -44,25 +36,23 @@ export const messageActions = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   banUser,
-  blockUser,
   copyMessage,
   deleteMessage,
   editMessage,
   error,
   flagMessage,
-  isMessageActionsVisible,
   isMyMessage,
   isThreadMessage,
   message,
-  messageReactions,
   ownCapabilities,
   pinMessage,
   quotedReply,
   retry,
+  showMessageReactions,
   threadReply,
   unpinMessage,
 }: MessageActionsParams<StreamChatGenerics>) => {
-  if (messageReactions || !isMessageActionsVisible) {
+  if (showMessageReactions) {
     return [];
   }
 
@@ -87,7 +77,7 @@ export const messageActions = <
     actions.push(editMessage);
   }
 
-  if (setClipboardString !== null && message.text && !error) {
+  if (isClipboardAvailable() && message.text && !error) {
     actions.push(copyMessage);
   }
 
@@ -104,7 +94,7 @@ export const messageActions = <
   }
 
   if (!isMyMessage && ownCapabilities.banChannelMembers) {
-    actions.push(banUser || blockUser);
+    actions.push(banUser);
   }
 
   if (

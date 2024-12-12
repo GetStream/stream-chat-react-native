@@ -1,7 +1,14 @@
 import { PermissionsAndroid, Platform } from 'react-native';
-import RNFS from 'react-native-fs';
 let AudioRecorderPackage;
 let audioRecorderPlayer;
+
+let RNBlobUtil;
+
+try {
+  RNBlobUtil = require('react-native-blob-util').default;
+} catch (e) {
+  console.log('react-native-blob-util is not installed');
+}
 
 try {
   AudioRecorderPackage = require('react-native-audio-recorder-player').default;
@@ -9,7 +16,6 @@ try {
   audioRecorderPlayer.setSubscriptionDuration(Platform.OS === 'android' ? 0.1 : 0.06);
 } catch (e) {
   console.log('react-native-audio-recorder-player is not installed.');
-  console.log(e);
 }
 
 export enum AudioSourceAndroidType {
@@ -197,7 +203,7 @@ class _Audio {
     }
     try {
       const path = Platform.select({
-        android: `${RNFS.CachesDirectoryPath}/sound.aac`,
+        android: `${RNBlobUtil.fs.dirs.CacheDir}/sound.aac`,
         ios: 'sound.aac',
       });
       const audioSet = {
@@ -249,4 +255,4 @@ class _Audio {
   };
 }
 
-export const Audio = AudioRecorderPackage ? new _Audio() : null;
+export const Audio = AudioRecorderPackage && RNBlobUtil ? new _Audio() : null;

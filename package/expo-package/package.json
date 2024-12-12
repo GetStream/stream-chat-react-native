@@ -13,8 +13,7 @@
     "stream-chat-react-native-core": "5.44.2"
   },
   "peerDependencies": {
-    "@react-native-community/netinfo": ">=6.0.0",
-    "expo": ">=44.0.0",
+    "expo": ">=51.0.0",
     "expo-av": "*",
     "expo-clipboard": "*",
     "expo-document-picker": "*",
@@ -35,6 +34,9 @@
     "expo-document-picker": {
       "optional": true
     },
+    "expo-file-system": {
+      "optional": true
+    },
     "expo-media-library": {
       "optional": true
     },
@@ -49,10 +51,8 @@
     }
   },
   "devDependencies": {
-    "@react-native-community/netinfo": "^6.0.0",
-    "expo": "^44.0.0",
-    "expo-file-system": "^11.0.2",
-    "expo-image-manipulator": "^9.1.0"
+    "expo": "^51.0.17",
+    "expo-image-manipulator": "^12.0.5"
   },
   "scripts": {
     "prepack": " cp ../../README.md .",

@@ -9,8 +9,8 @@ import { addPendingTask } from '../store/apis/addPendingTask';
 
 import { deletePendingTask } from '../store/apis/deletePendingTask';
 import { getPendingTasks } from '../store/apis/getPendingTasks';
-import { QuickSqliteClient } from '../store/QuickSqliteClient';
-import type { PendingTask, PreparedQueries } from '../store/types';
+import { SqliteClient } from '../store/SqliteClient';
+import type { PendingTask } from '../store/types';
 import type { DefaultStreamChatGenerics } from '../types/types';
 
 /**
@@ -53,35 +53,39 @@ export class DBSyncManager {
    * @param client
    */
   static init = async (client: StreamChat) => {
-    this.client = client;
-    // If the websocket connection is already active, then straightaway
-    // call the sync api and also execute pending api calls.
-    // Otherwise wait for `connection.changed` event.
-    if (client.user?.id && client.wsConnection?.isHealthy) {
-      await this.syncAndExecutePendingTasks();
-      this.syncStatus = true;
-      this.listeners.forEach((l) => l(true));
-    }
-
-    // If a listener has already been registered, unsubscribe from it so
-    // that it can be reinstated. This can happen if we reconnect with a
-    // different user or the component invoking the init() function gets
-    // unmounted and then remounted again. This part of the code makes
-    // sure the stale listener doesn't produce a memory leak.
-    if (this.connectionChangedListener) {
-      this.connectionChangedListener.unsubscribe();
-    }
-
-    this.connectionChangedListener = this.client.on('connection.changed', async (event) => {
-      if (event.online) {
+    try {
+      this.client = client;
+      // If the websocket connection is already active, then straightaway
+      // call the sync api and also execute pending api calls.
+      // Otherwise wait for `connection.changed` event.
+      if (client.user?.id && client.wsConnection?.isHealthy) {
         await this.syncAndExecutePendingTasks();
         this.syncStatus = true;
         this.listeners.forEach((l) => l(true));
-      } else {
-        this.syncStatus = false;
-        this.listeners.forEach((l) => l(false));
       }
-    });
+
+      // If a listener has already been registered, unsubscribe from it so
+      // that it can be reinstated. This can happen if we reconnect with a
+      // different user or the component invoking the init() function gets
+      // unmounted and then remounted again. This part of the code makes
+      // sure the stale listener doesn't produce a memory leak.
+      if (this.connectionChangedListener) {
+        this.connectionChangedListener.unsubscribe();
+      }
+
+      this.connectionChangedListener = this.client.on('connection.changed', async (event) => {
+        if (event.online) {
+          await this.syncAndExecutePendingTasks();
+          this.syncStatus = true;
+          this.listeners.forEach((l) => l(true));
+        } else {
+          this.syncStatus = false;
+          this.listeners.forEach((l) => l(false));
+        }
+      });
+    } catch (error) {
+      console.log('Error in DBSyncManager.init: ', error);
+    }
   };
 
   /**
@@ -106,11 +110,11 @@ export class DBSyncManager {
     client: StreamChat<StreamChatGenerics>,
   ) => {
     if (!this.client?.user) return;
-    const cids = getAllChannelIds();
+    const cids = await getAllChannelIds();
     // If there are no channels, then there is no need to sync.
     if (cids.length === 0) return;
 
-    const lastSyncedAt = getLastSyncedAt({
+    const lastSyncedAt = await getLastSyncedAt({
       currentUserId: this.client.user.id,
     });
 
@@ -122,26 +126,27 @@ export class DBSyncManager {
       if (diff > 30) {
         // stream backend will send an error if we try to sync after 30 days.
         // In that case reset the entire DB and start fresh.
-        QuickSqliteClient.resetDB();
+        await SqliteClient.resetDB();
       } else {
         try {
           const result = await this.client.sync(cids, lastSyncedAtDate.toISOString());
-          const queries = result.events.reduce<PreparedQueries[]>((queries, event) => {
-            queries = queries.concat(handleEventToSyncDB(event, client, false));
-            return queries;
-          }, []);
+          const queryPromises = result.events.map(
+            async (event) => await handleEventToSyncDB(event, client),
+          );
+          const queriesArray = await Promise.all(queryPromises);
+          const queries = queriesArray.flat();
 
           if (queries.length) {
-            QuickSqliteClient.executeSqlBatch(queries);
+            await SqliteClient.executeSqlBatch(queries);
           }
         } catch (e) {
           // Error will be raised by the sync API if there are too many events.
           // In that case reset the entire DB and start fresh.
-          QuickSqliteClient.resetDB();
+          await SqliteClient.resetDB();
         }
       }
     }
-    upsertUserSyncStatus({
+    await upsertUserSyncStatus({
       currentUserId: this.client.user.id,
       lastSyncedAt: new Date().toString(),
     });
@@ -163,7 +168,7 @@ export class DBSyncManager {
     client: StreamChat<StreamChatGenerics>;
     task: PendingTask;
   }) => {
-    const removeFromApi = addPendingTask(task);
+    const removeFromApi = await addPendingTask(task);
 
     let response;
     try {
@@ -177,7 +182,7 @@ export class DBSyncManager {
       }
     }
 
-    removeFromApi();
+    await removeFromApi();
 
     return response;
   };
@@ -213,7 +218,7 @@ export class DBSyncManager {
   >(
     client: StreamChat<StreamChatGenerics>,
   ) => {
-    const queue = getPendingTasks();
+    const queue = await getPendingTasks();
     for (const task of queue) {
       if (!task.id) continue;
 
@@ -231,20 +236,20 @@ export class DBSyncManager {
         }
       }
 
-      deletePendingTask({
+      await deletePendingTask({
         id: task.id,
       });
       await restBeforeNextTask();
     }
   };
 
-  static dropPendingTasks = (conditions: { messageId: string }) => {
-    const tasks = getPendingTasks(conditions);
+  static dropPendingTasks = async (conditions: { messageId: string }) => {
+    const tasks = await getPendingTasks(conditions);
 
     for (const task of tasks) {
       if (!task.id) continue;
 
-      deletePendingTask({
+      await deletePendingTask({
         id: task.id,
       });
     }

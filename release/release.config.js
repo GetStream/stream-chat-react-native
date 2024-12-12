@@ -9,7 +9,10 @@ module.exports = Promise.resolve().then(() => {
       '@semantic-release/commit-analyzer',
       {
         preset: 'angular',
-        releaseRules: [{ type: 'workspaces', release: 'patch' }],
+        releaseRules: [
+          { type: 'chore', scope: 'deps', release: 'patch' },
+          { type: 'refactor', release: 'patch' },
+        ],
         parserOpts: {
           mergePattern: mergeRegex,
           noteKeywords: ['BREAKING CHANGE', 'BREAKING CHANGES'],
@@ -26,11 +29,37 @@ module.exports = Promise.resolve().then(() => {
         },
         presetConfig: {
           types: [
-            { type: 'feat', section: 'Features' },
-            { type: 'fix', section: 'Bug Fixes' },
-            { type: 'workspaces', section: 'Workspaces' },
-            { type: 'perf', section: 'Performance Improvements' },
-            { type: 'revert', section: 'Reverts' },
+            {
+              type: 'fix',
+              section: 'Bug Fixes',
+              hidden: false,
+            },
+            {
+              type: 'feat',
+              section: 'Features',
+              hidden: false,
+            },
+            {
+              type: 'chore',
+              scope: 'deps',
+              section: 'Chores',
+              hidden: false,
+            },
+            {
+              type: 'refactor',
+              section: 'Refactors',
+              hidden: false,
+            },
+            {
+              type: 'perf',
+              section: 'Performance Improvements',
+              hidden: false,
+            },
+            {
+              type: 'revert',
+              section: 'Reverts',
+              hidden: false,
+            },
           ],
         },
       },

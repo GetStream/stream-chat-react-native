@@ -1,5 +1,4 @@
-// @ts-ignore this module does not have a type declaration
-import ImageResizer from 'react-native-image-resizer';
+import StreamChatReactNative from '../native';
 
 type CompressImageParams = {
   compressImageQuality: number;
@@ -15,7 +14,7 @@ export const compressImage = async ({
   width,
 }: CompressImageParams) => {
   try {
-    const { uri: compressedUri } = await ImageResizer.createResizedImage(
+    const { uri: compressedUri } = await StreamChatReactNative.createResizedImage(
       uri,
       width,
       height,
@@ -28,7 +27,7 @@ export const compressImage = async ({
     );
     return compressedUri;
   } catch (error) {
-    console.log(error);
+    console.log('Error resizing image:', error);
     return uri;
   }
 };

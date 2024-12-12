@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import type { NetInfoSubscription } from '@react-native-community/netinfo';
+import NetInfo, { NetInfoSubscription } from '@react-native-community/netinfo';
 
 import type { StreamChat, Event as StreamEvent } from 'stream-chat';
 
 import { useAppStateListener } from '../../../hooks/useAppStateListener';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
-import { NetInfo } from '../../../native';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
@@ -51,9 +50,9 @@ export const useIsOnline = <
 
     const handleRecoveredEvent = () => setConnectionRecovering(false);
 
-    const notifyChatClient = (netInfoState: boolean) => {
-      if (client?.wsConnection) {
-        if (netInfoState) {
+    const notifyChatClient = (isConnected: boolean | null) => {
+      if (client?.wsConnection && isConnected) {
+        if (isConnected) {
           client.wsConnection.onlineStatusChanged({
             type: 'online',
           } as Event);
@@ -68,23 +67,27 @@ export const useIsOnline = <
     let unsubscribeNetInfo: NetInfoSubscription;
     const setNetInfoListener = () => {
       unsubscribeNetInfo = NetInfo.addEventListener((netInfoState) => {
-        if (netInfoState === false && !client.wsConnection?.isHealthy) {
+        if (!netInfoState && !client.wsConnection?.isHealthy) {
           setConnectionRecovering(true);
           setIsOnline(false);
         }
-        notifyChatClient(netInfoState);
+        const { isConnected, isInternetReachable } = netInfoState;
+        notifyChatClient(
+          isInternetReachable !== null ? isInternetReachable && isConnected : isConnected,
+        );
       });
     };
 
     const setInitialOnlineState = async () => {
-      const status = await NetInfo.fetch();
+      const { isConnected } = await NetInfo.fetch();
       if (isMounted.current) {
-        setIsOnline(status);
-        notifyChatClient(status);
+        setIsOnline(isConnected);
+        notifyChatClient(isConnected);
       }
     };
 
     setInitialOnlineState();
+
     const chatListeners: Array<ReturnType<StreamChat['on']>> = [];
 
     if (client) {

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 
 import type { Attachment, UserResponse } from 'stream-chat';
@@ -20,17 +20,9 @@ import {
 } from '../../contexts/keyboardContext/KeyboardContext';
 import { MessageContextValue, MessageProvider } from '../../contexts/messageContext/MessageContext';
 import {
-  MessageOverlayContextValue,
-  useMessageOverlayContext,
-} from '../../contexts/messageOverlayContext/MessageOverlayContext';
-import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
-import {
-  OverlayContextValue,
-  useOverlayContext,
-} from '../../contexts/overlayContext/OverlayContext';
 import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
@@ -39,7 +31,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import { isVideoPackageAvailable, triggerHaptic } from '../../native';
+import { isVideoPlayerAvailable, triggerHaptic } from '../../native';
 import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 import {
   hasOnlyEmojis,
@@ -53,8 +45,6 @@ import {
   isMessageWithStylesReadByAndDateSeparator,
   MessageType,
 } from '../MessageList/hooks/useMessageList';
-import type { MessageActionListItemProps } from '../MessageOverlay/MessageActionListItem';
-import { Poll as PollComponent } from '../Poll';
 
 export type TouchableEmitter =
   | 'fileAttachment'
@@ -84,7 +74,7 @@ export type FileAttachmentTouchableHandlerPayload<
   additionalInfo?: { attachment?: Attachment<StreamChatGenerics> };
 };
 
-export type TouchableHandlerPayload = {
+export type PressableHandlerPayload = {
   defaultHandler?: () => void;
   event?: GestureResponderEvent;
 } & (
@@ -96,9 +86,9 @@ export type TouchableHandlerPayload = {
   | FileAttachmentTouchableHandlerPayload
 );
 
-export type MessageTouchableHandlerPayload<
+export type MessagePressableHandlerPayload<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = TouchableHandlerPayload & {
+> = PressableHandlerPayload & {
   /**
    * Set of action handler functions for various message actions. You can use these functions to perform any action when give interaction occurs.
    */
@@ -123,11 +113,6 @@ export type MessageActionHandlers<
   pinMessage: () => Promise<void>;
   quotedReply: () => void;
   resendMessage: () => Promise<void>;
-  /**
-   * @deprecated
-   * TODO: This seems useless for the action handlers here so can be removed.
-   */
-  showMessageOverlay: () => void;
   toggleBanUser: () => Promise<void>;
   toggleMuteUser: () => Promise<void>;
   toggleReaction: (reactionType: string) => Promise<void>;
@@ -142,7 +127,7 @@ export type MessagePropsWithContext<
   Partial<
     Omit<
       MessageContextValue<StreamChatGenerics>,
-      'groupStyles' | 'message' | 'isMessageAIGenerated'
+      'groupStyles' | 'handleReaction' | 'message' | 'isMessageAIGenerated'
     >
   > &
   Pick<
@@ -156,7 +141,6 @@ export type MessagePropsWithContext<
     | 'dismissKeyboardOnMessageTouch'
     | 'forceAlignMessages'
     | 'handleBan'
-    | 'handleBlock'
     | 'handleCopy'
     | 'handleDelete'
     | 'handleEdit'
@@ -168,6 +152,7 @@ export type MessagePropsWithContext<
     | 'handleRetry'
     | 'handleThreadReply'
     | 'isAttachmentEqual'
+    | 'MessageMenu'
     | 'messageActions'
     | 'messageContentOrder'
     | 'MessageBounce'
@@ -175,7 +160,6 @@ export type MessagePropsWithContext<
     | 'onLongPressMessage'
     | 'onPressInMessage'
     | 'onPressMessage'
-    | 'OverlayReactionList'
     | 'removeMessage'
     | 'deleteReaction'
     | 'retrySendMessage'
@@ -186,8 +170,6 @@ export type MessagePropsWithContext<
     | 'updateMessage'
     | 'PollContent'
   > &
-  Pick<MessageOverlayContextValue<StreamChatGenerics>, 'setData'> &
-  Pick<OverlayContextValue, 'setOverlay'> &
   Pick<ThreadContextValue<StreamChatGenerics>, 'openThread'> &
   Pick<TranslationContextValue, 't'> & {
     chatContext: ChatContextValue<StreamChatGenerics>;
@@ -198,36 +180,6 @@ export type MessagePropsWithContext<
     enableLongPress?: boolean;
     goToMessage?: (messageId: string) => void;
     isTargetedMessage?: boolean;
-    /**
-     * Array of allowed actions or null on message, this can also be a function returning the array.
-     * If all the actions need to be disabled an empty array should be provided as value of prop
-     */
-    /**
-     * You can call methods available on the Message
-     * component such as handleEdit, handleDelete, handleAction etc.
-     *
-     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/Message.tsx)
-     *
-     * By default, we show the overlay with all the message actions on long press.
-     *
-     * @param message Message object which was long pressed
-     * @param event   Event object for onLongPress event
-     **/
-    onLongPress?: (payload: Partial<MessageTouchableHandlerPayload<StreamChatGenerics>>) => void;
-
-    /**
-     * You can call methods available on the Message
-     * component such as handleEdit, handleDelete, handleAction etc.
-     *
-     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/Message.tsx)
-     *
-     * By default, we will dismiss the keyboard on press.
-     *
-     * @param message Message object which was long pressed
-     * @param event   Event object for onLongPress event
-     * */
-    onPress?: (payload: Partial<MessageTouchableHandlerPayload<StreamChatGenerics>>) => void;
-    onPressIn?: (payload: Partial<MessageTouchableHandlerPayload<StreamChatGenerics>>) => void;
     /**
      * Handler to open the thread on message. This is callback for touch event for replies button.
      *
@@ -248,9 +200,11 @@ const MessageWithContext = <
 >(
   props: MessagePropsWithContext<StreamChatGenerics>,
 ) => {
+  const [messageOverlayVisible, setMessageOverlayVisible] = useState(false);
+  const [isErrorInMessage, setIsErrorInMessage] = useState(false);
+  const [showMessageReactions, setShowMessageReactions] = useState(true);
   const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
   const [isEditedMessageOpen, setIsEditedMessageOpen] = useState(false);
-  const isMessageTypeDeleted = props.message.type === 'deleted';
 
   const {
     channel,
@@ -265,7 +219,6 @@ const MessageWithContext = <
     goToMessage,
     groupStyles = ['bottom'],
     handleBan,
-    handleBlock,
     handleCopy,
     handleDelete,
     handleEdit,
@@ -283,26 +236,20 @@ const MessageWithContext = <
     messageActions: messageActionsProp = defaultMessageActions,
     MessageBounce,
     messageContentOrder: messageContentOrderProp,
+    MessageMenu,
     messagesContext,
     MessageSimple,
-    onLongPress: onLongPressProp,
     onLongPressMessage: onLongPressMessageProp,
-    onPress: onPressProp,
-    onPressIn: onPressInProp,
     onPressInMessage: onPressInMessageProp,
     onPressMessage: onPressMessageProp,
     onThreadSelect,
     openThread,
-    OverlayReactionList,
-    PollContent,
     preventPress,
     removeMessage,
     retrySendMessage,
     selectReaction,
     sendReaction,
-    setData,
     setEditingState,
-    setOverlay,
     setQuotedMessageState,
     showAvatar,
     showMessageStatus,
@@ -318,13 +265,25 @@ const MessageWithContext = <
     () => isMessageAIGenerated(message),
     [message, isMessageAIGenerated],
   );
+  const isMessageTypeDeleted = message.type === 'deleted';
   const { client } = chatContext;
   const {
     theme: {
       colors: { targetedMessageBackground },
-      messageSimple: { targetedMessageContainer, targetedMessageUnderlay, unreadUnderlayColor },
+      messageSimple: { targetedMessageContainer, unreadUnderlayColor },
+      screenPadding,
     },
   } = useTheme();
+
+  const showMessageOverlay = async (showMessageReactions = false) => {
+    await dismissKeyboard();
+    setShowMessageReactions(showMessageReactions);
+    setMessageOverlayVisible(true);
+  };
+
+  const dismissOverlay = () => {
+    setMessageOverlayVisible(false);
+  };
 
   const actionsEnabled =
     message.type === 'regular' && message.status === MessageStatusTypes.RECEIVED;
@@ -337,7 +296,7 @@ const MessageWithContext = <
       if (data?.message) {
         updateMessage(data.message);
       } else {
-        removeMessage({
+        await removeMessage({
           id: message.id,
           parent_id: message.parent_id,
         });
@@ -362,6 +321,7 @@ const MessageWithContext = <
     }
     const quotedMessage = message.quoted_message as MessageType<StreamChatGenerics>;
     if (error) {
+      setIsErrorInMessage(true);
       /**
        * If its a Blocked message, we don't do anything as per specs.
        */
@@ -375,7 +335,7 @@ const MessageWithContext = <
         setIsBounceDialogOpen(true);
         return;
       }
-      showMessageOverlay(true, true);
+      showMessageOverlay();
     } else if (quotedMessage) {
       onPressQuotedMessage(quotedMessage);
     }
@@ -405,7 +365,7 @@ const MessageWithContext = <
             } else if (
               cur.type === FileTypes.Video &&
               !cur.og_scrape_url &&
-              isVideoPackageAvailable()
+              isVideoPlayerAvailable()
             ) {
               acc.videos.push({
                 image_url: cur.asset_url,
@@ -534,7 +494,6 @@ const MessageWithContext = <
 
   const {
     banUser,
-    blockUser,
     copyMessage,
     deleteMessage,
     editMessage,
@@ -551,9 +510,9 @@ const MessageWithContext = <
     client,
     deleteMessage: deleteMessageFromContext,
     deleteReaction,
+    dismissOverlay,
     enforceUniqueReaction,
     handleBan,
-    handleBlock,
     handleCopy,
     handleDelete,
     handleEdit,
@@ -572,82 +531,37 @@ const MessageWithContext = <
     selectReaction,
     sendReaction,
     setEditingState,
-    setOverlay,
     setQuotedMessageState,
     supportedReactions,
     t,
     updateMessage,
   });
 
-  const { userLanguage } = useTranslationContext();
+  const isThreadMessage = threadList || !!message.parent_id;
 
-  // TODO: Can be removed in V6 and from here completely once it becomes baseline.
-  const PollWrapper = useCallback(() => {
-    const poll = message?.poll_id ? client.polls.fromState(message.poll_id) : undefined;
-    return message?.poll_id && poll ? (
-      <PollComponent<StreamChatGenerics> message={message} poll={poll} PollContent={PollContent} />
-    ) : null;
-  }, [PollContent, client, message]);
-
-  const showMessageOverlay = async (isMessageActionsVisible = true, error = errorOrFailed) => {
-    await dismissKeyboard();
-
-    const isThreadMessage = threadList || !!message.parent_id;
-
-    const dismissOverlay = () => setOverlay('none');
-
-    const messageActions =
-      typeof messageActionsProp !== 'function'
-        ? messageActionsProp
-        : messageActionsProp({
-            banUser,
-            blockUser,
-            copyMessage,
-            deleteMessage,
-            dismissOverlay,
-            editMessage,
-            error,
-            flagMessage,
-            isMessageActionsVisible,
-            isMyMessage,
-            isThreadMessage,
-            message,
-            messageReactions: isMessageActionsVisible === false,
-            muteUser,
-            ownCapabilities,
-            pinMessage,
-            quotedReply,
-            retry,
-            threadReply,
-            unpinMessage,
-          });
-
-    setData({
-      alignment,
-      chatContext,
-      clientId: client.userID,
-      files: attachments.files,
-      groupStyles,
-      handleReaction: ownCapabilities.sendReaction ? handleReaction : undefined,
-      images: attachments.images,
-      message,
-      messageActions: messageActions?.filter(Boolean) as MessageActionListItemProps[] | undefined,
-      messageContext: { ...messageContext, preventPress: true },
-      messageReactionTitle: !error && !isMessageActionsVisible ? t('Message Reactions') : undefined,
-      messagesContext: { ...messagesContext, messageContentOrder },
-      onlyEmojis,
-      otherAttachments: attachments.other,
-      OverlayReactionList,
-      ownCapabilities,
-      Poll: PollWrapper,
-      supportedReactions,
-      threadList,
-      userLanguage,
-      videos: attachments.videos,
-    });
-
-    setOverlay('message');
-  };
+  const messageActions =
+    typeof messageActionsProp !== 'function'
+      ? messageActionsProp
+      : messageActionsProp({
+          banUser,
+          copyMessage,
+          deleteMessage,
+          dismissOverlay,
+          editMessage,
+          error: isErrorInMessage,
+          flagMessage,
+          isMyMessage,
+          isThreadMessage,
+          message,
+          muteUser,
+          ownCapabilities,
+          pinMessage,
+          quotedReply,
+          retry,
+          showMessageReactions,
+          threadReply,
+          unpinMessage,
+        });
 
   const actionHandlers: MessageActionHandlers<StreamChatGenerics> = {
     copyMessage: handleCopyMessage,
@@ -657,7 +571,6 @@ const MessageWithContext = <
     pinMessage: handleTogglePinMessage,
     quotedReply: handleQuotedReplyMessage,
     resendMessage: handleResendMessage,
-    showMessageOverlay,
     threadReply: handleThreadReply,
     toggleBanUser: handleToggleBanUser,
     toggleMuteUser: handleToggleMuteUser,
@@ -665,54 +578,27 @@ const MessageWithContext = <
     unpinMessage: handleTogglePinMessage,
   };
 
-  const onLongPressMessage =
-    hasAttachmentActions || isBlockedMessage(message)
-      ? () => null
-      : onLongPressMessageProp
-      ? (payload?: TouchableHandlerPayload) =>
-          onLongPressMessageProp({
-            actionHandlers,
-            defaultHandler: payload?.defaultHandler || showMessageOverlay,
-            emitter: payload?.emitter || 'message',
-            event: payload?.event,
-            message,
-          })
-      : onLongPressProp
-      ? (payload?: TouchableHandlerPayload) =>
-          onLongPressProp({
-            actionHandlers,
-            defaultHandler: payload?.defaultHandler || showMessageOverlay,
-            emitter: payload?.emitter || 'message',
-            event: payload?.event,
-          })
-      : enableLongPress
-      ? () => {
-          // If a message is bounced, on long press the message bounce options modal should open.
-          if (isBouncedMessage(message)) {
-            setIsBounceDialogOpen(true);
-            return;
-          }
-          triggerHaptic('impactMedium');
-          showMessageOverlay(true);
-        }
-      : () => null;
+  const onLongPress = () => {
+    if (hasAttachmentActions || isBlockedMessage(message) || !enableLongPress) return;
+    // If a message is bounced, on long press the message bounce options modal should open.
+    if (isBouncedMessage(message)) {
+      setIsBounceDialogOpen(true);
+      return;
+    }
+    triggerHaptic('impactMedium');
+    showMessageOverlay();
+  };
 
   const messageContext = useCreateMessageContext({
     actionsEnabled,
     alignment,
     channel,
+    dismissOverlay,
     files: attachments.files,
     goToMessage,
     groupStyles,
     handleAction,
-    handleCopyMessage,
-    handleDeleteMessage,
-    handleEditMessage,
-    handleFlagMessage,
-    handleQuotedReplyMessage,
-    handleResendMessage,
-    handleToggleBanUser,
-    handleToggleMuteUser,
+    handleReaction,
     handleToggleReaction,
     hasReactions,
     images: attachments.images,
@@ -725,7 +611,24 @@ const MessageWithContext = <
     message,
     messageContentOrder,
     myMessageTheme: messagesContext.myMessageTheme,
-    onLongPress: onLongPressMessage,
+    onLongPress: (payload) => {
+      const onLongPressArgs = {
+        actionHandlers,
+        defaultHandler: payload?.defaultHandler || onLongPress,
+        emitter: payload?.emitter || 'message',
+        event: payload?.event,
+        message,
+      };
+
+      const handleOnLongPress = () => {
+        if (onLongPressMessageProp) return onLongPressMessageProp(onLongPressArgs);
+        if (payload?.defaultHandler) return payload.defaultHandler();
+
+        return onLongPress();
+      };
+
+      handleOnLongPress();
+    },
     onlyEmojis,
     onOpenThread,
     onPress: (payload) => {
@@ -739,7 +642,6 @@ const MessageWithContext = <
       };
 
       const handleOnPress = () => {
-        if (onPressProp) return onPressProp(onPressArgs);
         if (onPressMessageProp) return onPressMessageProp(onPressArgs);
         if (payload.defaultHandler) return payload.defaultHandler();
 
@@ -748,23 +650,18 @@ const MessageWithContext = <
 
       handleOnPress();
     },
-    onPressIn:
-      onPressInProp || onPressInMessageProp
-        ? (payload) => {
-            const onPressInArgs = {
+    onPressIn: onPressInMessageProp
+      ? (payload) => {
+          if (onPressInMessageProp)
+            return onPressInMessageProp({
               actionHandlers,
               defaultHandler: payload.defaultHandler,
               emitter: payload.emitter || 'message',
               event: payload.event,
               message,
-            };
-            const handleOnpressIn = () => {
-              if (onPressInProp) return onPressInProp(onPressInArgs);
-              if (onPressInMessageProp) return onPressInMessageProp(onPressInArgs);
-            };
-            handleOnpressIn();
-          }
-        : null,
+            });
+        }
+      : null,
     otherAttachments: attachments.other,
     preventPress,
     reactions,
@@ -779,15 +676,7 @@ const MessageWithContext = <
   if (!(isMessageTypeDeleted || messageContentOrder.length)) return null;
 
   return (
-    <View
-      style={[
-        message.pinned && {
-          ...targetedMessageContainer,
-          backgroundColor: targetedMessageBackground,
-        },
-      ]}
-      testID='message-wrapper'
-    >
+    <MessageProvider value={messageContext}>
       <View
         style={[
           style,
@@ -798,18 +687,29 @@ const MessageWithContext = <
       >
         <View
           style={[
-            isTargetedMessage
-              ? { backgroundColor: targetedMessageBackground, ...targetedMessageUnderlay }
+            { marginTop: 2, paddingHorizontal: screenPadding },
+            (isTargetedMessage || message.pinned) && !isMessageTypeDeleted
+              ? { backgroundColor: targetedMessageBackground, ...targetedMessageContainer }
               : {},
           ]}
+          testID='message-wrapper'
         >
-          <MessageProvider value={messageContext}>
-            <MessageSimple />
-            {isBounceDialogOpen && <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />}
-          </MessageProvider>
+          <MessageSimple />
+          {isBounceDialogOpen ? (
+            <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />
+          ) : null}
+          {messageOverlayVisible ? (
+            <MessageMenu
+              dismissOverlay={dismissOverlay}
+              handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
+              messageActions={messageActions}
+              showMessageReactions={showMessageReactions}
+              visible={messageOverlayVisible}
+            />
+          ) : null}
         </View>
       </View>
-    </View>
+    </MessageProvider>
   );
 };
 
@@ -955,7 +855,9 @@ const MemoizedMessage = React.memo(MessageWithContext, areEqual) as typeof Messa
 
 export type MessageProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<Omit<MessagePropsWithContext<StreamChatGenerics>, 'groupStyles' | 'message'>> &
+> = Partial<
+  Omit<MessagePropsWithContext<StreamChatGenerics>, 'groupStyles' | 'handleReaction' | 'message'>
+> &
   Pick<MessagePropsWithContext<StreamChatGenerics>, 'groupStyles' | 'message'>;
 
 /**
@@ -972,9 +874,7 @@ export const Message = <
   const { channel, enforceUniqueReaction, members } = useChannelContext<StreamChatGenerics>();
   const chatContext = useChatContext<StreamChatGenerics>();
   const { dismissKeyboard } = useKeyboardContext();
-  const { setData } = useMessageOverlayContext<StreamChatGenerics>();
   const messagesContext = useMessagesContext<StreamChatGenerics>();
-  const { setOverlay } = useOverlayContext();
   const { openThread } = useThreadContext<StreamChatGenerics>();
   const { t } = useTranslationContext();
 
@@ -989,8 +889,6 @@ export const Message = <
         members,
         messagesContext,
         openThread,
-        setData,
-        setOverlay,
         t,
       }}
       {...props}

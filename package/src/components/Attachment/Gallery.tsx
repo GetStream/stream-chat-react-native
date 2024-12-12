@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Attachment } from 'stream-chat';
 
@@ -13,6 +13,7 @@ import { getGalleryImageBorderRadius } from './utils/getGalleryImageBorderRadius
 import { openUrlSafely } from './utils/openUrlSafely';
 
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
+import { useChatConfigContext } from '../../contexts/chatConfigContext/ChatConfigContext';
 import {
   ImageGalleryContextValue,
   useImageGalleryContext,
@@ -31,7 +32,7 @@ import {
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useLoadingImage } from '../../hooks/useLoadingImage';
-import { isVideoPackageAvailable } from '../../native';
+import { isVideoPlayerAvailable } from '../../native';
 import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 import { getUrlWithoutParams } from '../../utils/utils';
 
@@ -52,7 +53,7 @@ export type GalleryPropsWithContext<
   > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
-    | 'additionalTouchableProps'
+    | 'additionalPressableProps'
     | 'legacyImageViewerSwipeBehaviour'
     | 'VideoThumbnail'
     | 'ImageLoadingIndicator'
@@ -83,7 +84,7 @@ const GalleryWithContext = <
   props: GalleryPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
-    additionalTouchableProps,
+    additionalPressableProps,
     alignment,
     groupStyles,
     hasThreadReplies,
@@ -104,6 +105,7 @@ const GalleryWithContext = <
     VideoThumbnail,
   } = props;
 
+  const { resizableCDNHosts } = useChatConfigContext();
   const {
     theme: {
       messageSimple: {
@@ -139,6 +141,7 @@ const GalleryWithContext = <
     () =>
       buildGallery({
         images: imagesAndVideos,
+        resizableCDNHosts,
         sizeConfig,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -197,7 +200,7 @@ const GalleryWithContext = <
 
               return (
                 <GalleryThumbnail
-                  additionalTouchableProps={additionalTouchableProps}
+                  additionalPressableProps={additionalPressableProps}
                   borderRadius={borderRadius}
                   colIndex={colIndex}
                   ImageLoadingFailedIndicator={ImageLoadingFailedIndicator}
@@ -248,7 +251,7 @@ type GalleryThumbnailProps<
   thumbnail: Thumbnail;
 } & Pick<
   MessagesContextValue<StreamChatGenerics>,
-  | 'additionalTouchableProps'
+  | 'additionalPressableProps'
   | 'legacyImageViewerSwipeBehaviour'
   | 'VideoThumbnail'
   | 'ImageLoadingIndicator'
@@ -264,7 +267,7 @@ type GalleryThumbnailProps<
 const GalleryThumbnail = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
-  additionalTouchableProps,
+  additionalPressableProps,
   borderRadius,
   colIndex,
   ImageLoadingFailedIndicator,
@@ -312,7 +315,7 @@ const GalleryThumbnail = <
   const defaultOnPress = () => {
     // If the url is defined then only try to open the file.
     if (thumbnail.url) {
-      if (thumbnail.type === FileTypes.Video && !isVideoPackageAvailable()) {
+      if (thumbnail.type === FileTypes.Video && !isVideoPlayerAvailable()) {
         // This condition is kinda unreachable, since we render videos as file attachment if the video
         // library is not installed. But doesn't hurt to have extra safeguard, in case of some customizations.
         openUrlSafely(thumbnail.url);
@@ -323,8 +326,7 @@ const GalleryThumbnail = <
   };
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.8}
+    <Pressable
       disabled={preventPress}
       key={`gallery-item-${message.id}/${colIndex}/${rowIndex}/${imagesAndVideos.length}`}
       onLongPress={(event) => {
@@ -353,16 +355,17 @@ const GalleryThumbnail = <
           });
         }
       }}
-      style={[
+      style={({ pressed }) => [
         styles.imageContainer,
         {
           height: thumbnail.height,
+          opacity: pressed ? 0.8 : 1,
           width: thumbnail.width,
         },
         imageContainer,
       ]}
       testID={`gallery-${invertedDirections ? 'row' : 'column'}-${colIndex}-item-${rowIndex}`}
-      {...additionalTouchableProps}
+      {...additionalPressableProps}
     >
       {thumbnail.type === FileTypes.Video ? (
         <VideoThumbnail
@@ -400,7 +403,7 @@ const GalleryThumbnail = <
           </Text>
         </View>
       ) : null}
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
@@ -455,7 +458,7 @@ const GalleryImageThumbnail = <
               setLoadingImage(false);
               setLoadingImageError(true);
             }}
-            onLoadEnd={() => setLoadingImage(false)}
+            onLoadEnd={() => setTimeout(() => setLoadingImage(false), 0)}
             onLoadStart={() => setLoadingImage(true)}
             resizeMode={thumbnail.resizeMode}
             style={[
@@ -552,7 +555,7 @@ export const Gallery = <
   props: GalleryProps<StreamChatGenerics>,
 ) => {
   const {
-    additionalTouchableProps: propAdditionalTouchableProps,
+    additionalPressableProps: propAdditionalPressableProps,
     alignment: propAlignment,
     groupStyles: propGroupStyles,
     hasThreadReplies,
@@ -587,7 +590,7 @@ export const Gallery = <
     videos: contextVideos,
   } = useMessageContext<StreamChatGenerics>();
   const {
-    additionalTouchableProps: contextAdditionalTouchableProps,
+    additionalPressableProps: contextAdditionalPressableProps,
     ImageLoadingFailedIndicator: ContextImageLoadingFailedIndicator,
     ImageLoadingIndicator: ContextImageLoadingIndicator,
     legacyImageViewerSwipeBehaviour,
@@ -602,7 +605,7 @@ export const Gallery = <
 
   if (!images.length && !videos.length) return null;
 
-  const additionalTouchableProps = propAdditionalTouchableProps || contextAdditionalTouchableProps;
+  const additionalPressableProps = propAdditionalPressableProps || contextAdditionalPressableProps;
   const alignment = propAlignment || contextAlignment;
   const groupStyles = propGroupStyles || contextGroupStyles;
   const onLongPress = propOnLongPress || contextOnLongPress;
@@ -622,7 +625,7 @@ export const Gallery = <
   return (
     <MemoizedGallery
       {...{
-        additionalTouchableProps,
+        additionalPressableProps,
         alignment,
         channelId: message?.cid,
         groupStyles,

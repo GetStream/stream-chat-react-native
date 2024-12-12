@@ -54,7 +54,13 @@ import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { Emoji } from '../../emoji-data';
-import { isImageMediaLibraryAvailable, pickDocument, pickImage, takePhoto } from '../../native';
+import {
+  isDocumentPickerAvailable,
+  isImageMediaLibraryAvailable,
+  pickDocument,
+  pickImage,
+  takePhoto,
+} from '../../native';
 import {
   Asset,
   DefaultStreamChatGenerics,
@@ -62,7 +68,6 @@ import {
   FileTypes,
   FileUpload,
   ImageUpload,
-  UnknownType,
 } from '../../types/types';
 import {
   ACITriggerSettings,
@@ -87,7 +92,6 @@ import { useThreadContext } from '../threadContext/ThreadContext';
 import { useTranslationContext } from '../translationContext/TranslationContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
-import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 /**
@@ -361,7 +365,6 @@ export type InputMessageInputContextValue<
 
   /** Limit on the number of lines in the text input before scrolling */
   numberOfLines: number;
-  quotedMessage: boolean | MessageType<StreamChatGenerics>;
   /**
    * Custom UI component for send button.
    *
@@ -500,6 +503,7 @@ export type InputMessageInputContextValue<
    */
   onChangeText?: (newText: string) => void;
   openPollCreationDialog?: ({ sendMessage }: Pick<LocalMessageInputContext, 'sendMessage'>) => void;
+  quotedMessage?: MessageType<StreamChatGenerics>;
   SendMessageDisallowedIndicator?: React.ComponentType;
   /**
    * ref for input setter function
@@ -772,7 +776,7 @@ export const MessageInputProvider = <
   };
 
   const pickFile = async () => {
-    if (pickDocument === null) {
+    if (!isDocumentPickerAvailable()) {
       console.log(
         'The file picker is not installed. Check our Getting Started documentation to install it.',
       );
@@ -917,7 +921,6 @@ export const MessageInputProvider = <
     customMessageData,
   }: {
     customMessageData?: Partial<Message<StreamChatGenerics>>;
-    // eslint-disable-next-line require-await
   } = {}) => {
     if (sending.current) {
       return;
@@ -1035,15 +1038,14 @@ export const MessageInputProvider = <
          * If the message is bounced by moderation, we firstly remove the message from message list and then send a new message.
          */
         if (message && isBouncedMessage(message as MessageType<StreamChatGenerics>)) {
-          removeMessage(message);
+          await removeMessage(message);
         }
         value.sendMessage({
           attachments,
           mentioned_users: uniq(mentionedUsers),
           /** Parent message id - in case of thread */
           parent_id: thread?.id,
-          quoted_message_id:
-            typeof value.quotedMessage === 'boolean' ? undefined : value.quotedMessage.id,
+          quoted_message_id: value.quotedMessage ? value.quotedMessage.id : undefined,
           show_in_channel: sendThreadMessageInChannel || undefined,
           text: prevText,
           ...customMessageData,
@@ -1083,8 +1085,7 @@ export const MessageInputProvider = <
           attachments,
           mentioned_users: [],
           parent_id: thread?.id,
-          quoted_message_id:
-            typeof value.quotedMessage === 'boolean' ? undefined : value.quotedMessage.id,
+          quoted_message_id: value.quotedMessage ? value.quotedMessage.id : undefined,
           show_in_channel: sendThreadMessageInChannel || undefined,
           text: '',
         } as unknown as Partial<StreamMessage<StreamChatGenerics>>);
@@ -1509,32 +1510,4 @@ export const useMessageInputContext = <
   }
 
   return contextValue;
-};
-
-/**
- * @deprecated
- *
- * This will be removed in the next major version.
- *
- * Typescript currently does not support partial inference so if ChatContext
- * typing is desired while using the HOC withMessageInputContext the Props for the
- * wrapped component must be provided as the first generic.
- */
-export const withMessageInputContext = <
-  P extends UnknownType,
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  Component: React.ComponentType<P>,
-): React.ComponentType<Omit<P, keyof MessageInputContextValue<StreamChatGenerics>>> => {
-  const WithMessageInputContextComponent = (
-    props: Omit<P, keyof MessageInputContextValue<StreamChatGenerics>>,
-  ) => {
-    const messageInputContext = useMessageInputContext<StreamChatGenerics>();
-
-    return <Component {...(props as P)} {...messageInputContext} />;
-  };
-  WithMessageInputContextComponent.displayName = `WithMessageInputContext${getDisplayName(
-    Component,
-  )}`;
-  return WithMessageInputContextComponent;
 };

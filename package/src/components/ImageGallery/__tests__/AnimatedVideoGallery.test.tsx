@@ -10,17 +10,6 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { AnimatedGalleryVideo, AnimatedGalleryVideoType } from '../components/AnimatedGalleryVideo';
 
-jest.mock('../../../native.ts', () => {
-  const View = require('react-native/Libraries/Components/View/View');
-  return {
-    isVideoPackageAvailable: jest.fn(() => true),
-    NetInfo: {
-      addEventListener: jest.fn(),
-    },
-    Video: View,
-  };
-});
-
 const getComponent = (props: Partial<AnimatedGalleryVideoType>) => (
   <ThemeProvider theme={defaultTheme}>
     <AnimatedGalleryVideo {...(props as unknown as AnimatedGalleryVideoType)} />

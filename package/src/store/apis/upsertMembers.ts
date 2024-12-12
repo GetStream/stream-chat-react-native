@@ -2,11 +2,11 @@ import type { ChannelMemberResponse } from 'stream-chat';
 
 import { mapMemberToStorable } from '../mappers/mapMemberToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
-import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
+import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries } from '../types';
 
-export const upsertMembers = ({
+export const upsertMembers = async ({
   cid,
   flush = true,
   members,
@@ -32,7 +32,7 @@ export const upsertMembers = ({
     queries.push(createUpsertQuery('members', storableMember));
   });
 
-  QuickSqliteClient.logger?.('info', 'upsertMembers', {
+  SqliteClient.logger?.('info', 'upsertMembers', {
     cid,
     flush,
     storableMembers,
@@ -40,7 +40,7 @@ export const upsertMembers = ({
   });
 
   if (flush) {
-    QuickSqliteClient.executeSqlBatch(queries);
+    await SqliteClient.executeSqlBatch(queries);
   }
 
   return queries;

@@ -25,7 +25,7 @@ import AutoCompleteSuggestionItem from '../common-content/ui-components/channel/
 import AutoCompleteSuggestionList from '../common-content/ui-components/channel/props/autocomplete_suggestion_list.mdx';
 import AutoCompleteSuggestionsLimit from '../common-content/ui-components/channel/props/auto_complete_suggestions_limit.mdx';
 import AutoCompleteTriggerSettings from '../common-content/ui-components/channel/props/auto_complete_trigger_settings.mdx';
-import AdditionalTouchableProps from '../common-content/ui-components/channel/props/additional_touchable_props.mdx';
+import AdditionalPressableProps from '../common-content/ui-components/channel/props/additional_pressable_props.mdx';
 import AttachButton from '../common-content/ui-components/channel/props/attach_button.mdx';
 import Attachment from '../common-content/ui-components/channel/props/attachment.mdx';
 import AttachmentActions from '../common-content/ui-components/channel/props/attachment_actions.mdx';
@@ -65,7 +65,6 @@ import GiphyEnabled from '../common-content/ui-components/channel/props/giphy_en
 import GiphyVersion from '../common-content/ui-components/channel/props/giphy_version.mdx';
 import HandleAttachButtonPress from '../common-content/ui-components/channel/props/handle_attach_button_press.mdx';
 import HandleBan from '../common-content/ui-components/channel/props/handle_ban.mdx';
-import HandleBlock from '../common-content/ui-components/channel/props/handle_block.mdx';
 import HandleCopy from '../common-content/ui-components/channel/props/handle_copy.mdx';
 import HandleDelete from '../common-content/ui-components/channel/props/handle_delete.mdx';
 import HandleEdit from '../common-content/ui-components/channel/props/handle_edit.mdx';
@@ -101,16 +100,20 @@ import MaxMessageLength from '../common-content/ui-components/channel/props/max_
 import MaxNumberOfFiles from '../common-content/ui-components/channel/props/max_number_of_files.mdx';
 import MentionAllAppUsersEnabled from '../common-content/ui-components/channel/props/mention_all_app_users_enabled.mdx';
 import MentionAllAppUsersQuery from '../common-content/ui-components/channel/props/mention_all_app_users_query.mdx';
+import Message from '../common-content/ui-components/channel/props/message.mdx';
+import MessageActionListItem from '../common-content/ui-components/channel/props/message-action-list-item.mdx';
+import MessageActionList from '../common-content/ui-components/channel/props/message-action-list.mdx';
+import MessageActions from '../common-content/ui-components/channel/props/message_actions.mdx';
 import MessageAvatar from '../common-content/ui-components/channel/props/message-avatar.mdx';
 import MessageBounce from '../common-content/ui-components/channel/props/message-bounce.mdx';
 import MessageContent from '../common-content/ui-components/channel/props/message-content.mdx';
-import MessageActions from '../common-content/ui-components/channel/props/message_actions.mdx';
 import MessageContentOrder from '../common-content/ui-components/channel/props/message_content_order.mdx';
 import MessageDeleted from '../common-content/ui-components/channel/props/message-deleted.mdx';
 import MessageEditedTimestamp from '../common-content/ui-components/channel/props/message-edited-timestamp.mdx';
 import MessageError from '../common-content/ui-components/channel/props/message-error.mdx';
 import MessageFooter from '../common-content/ui-components/channel/props/message-footer.mdx';
 import MessageHeader from '../common-content/ui-components/channel/props/message-header.mdx';
+import MessageMenu from '../common-content/ui-components/channel/props/message-menu.mdx';
 import MessagePinnedHeader from '../common-content/ui-components/channel/props/message-pinned-header.mdx';
 import MessageReplies from '../common-content/ui-components/channel/props/message-replies.mdx';
 import MessageRepliesAvatars from '../common-content/ui-components/channel/props/message-replies-avatars.mdx';
@@ -118,6 +121,7 @@ import MessageSimple from '../common-content/ui-components/channel/props/message
 import MessageStatus from '../common-content/ui-components/channel/props/message-status.mdx';
 import MessageSystem from '../common-content/ui-components/channel/props/message-system.mdx';
 import MessageText from '../common-content/ui-components/channel/props/message-text.mdx';
+import MessageTextNumberOfLines from '../common-content/ui-components/channel/props/message-text-number-of-lines.mdx';
 import MoreOptionsButton from '../common-content/ui-components/channel/props/more-options-button.mdx';
 import MyMessageTheme from '../common-content/ui-components/channel/props/my_message_theme.mdx';
 import NewMessageStateUpdateThrottleInterval from '../common-content/ui-components/channel/props/new_message_state_update_throttle_interval.mdx';
@@ -126,9 +130,14 @@ import OnChangeText from '../common-content/ui-components/channel/props/on_chang
 import OnLongPressMessage from '../common-content/ui-components/channel/props/on_long_press_message.mdx';
 import OnPressInMessage from '../common-content/ui-components/channel/props/on_press_in_message.mdx';
 import OnPressMessage from '../common-content/ui-components/channel/props/on_press_message.mdx';
-import OverlayReactionList from '../common-content/ui-components/overlay-provider/props/overlay_reaction_list.mdx';
+import MessageReactionPicker from '../common-content/ui-components/channel/props/message-reaction-picker.mdx';
+import MessageUserReactionsAvatar from '../common-content/ui-components/channel/props/message-user-reactions-avatar.mdx';
+import MessageUserReactionsItem from '../common-content/ui-components/channel/props/message-user-reactions-item.mdx';
+import MessageUserReactions from '../common-content/ui-components/channel/props/message-user-reactions.mdx';
 import OverrideOwnCapabilities from '../common-content/ui-components/channel/props/override_own_capabilities.mdx';
-import ReactionList from '../common-content/ui-components/channel/props/reaction-list.mdx';
+import ReactionListBottom from '../common-content/ui-components/channel/props/reaction-list-bottom.mdx';
+import ReactionListPosition from '../common-content/ui-components/channel/props/reaction-list-position.mdx';
+import ReactionListTop from '../common-content/ui-components/channel/props/reaction-list-top.mdx';
 import Reply from '../common-content/ui-components/channel/props/reply.mdx';
 import ScrollToBottomButton from '../common-content/ui-components/channel/props/scroll-to-bottom-button.mdx';
 import SelectReaction from '../common-content/ui-components/channel/props/select_reaction.mdx';
@@ -281,9 +290,9 @@ This is often the header height.
 
 <AdditionalTextInputProps />
 
-### additionalTouchableProps
+### additionalPressableProps
 
-<AdditionalTouchableProps />
+<AdditionalPressableProps />
 
 ### allowThreadMessagesInChannel
 
@@ -496,10 +505,6 @@ The max allowable is 255, which when reached displays as `255+`.
 
 <HandleBan />
 
-### `handleBlock`
-
-<HandleBlock />
-
 ### `handleCopy`
 
 <HandleCopy />
@@ -644,6 +649,10 @@ Load the channel at a specified message instead of the most recent message.
 
 <MessageContentOrder />
 
+### `messageTextNumberOfLines`
+
+<MessageTextNumberOfLines />
+
 <!-- ### messages
 
 Provide a custom array of messages to render in `MessageList`. -->
@@ -679,6 +688,10 @@ Provide a custom array of messages to render in `MessageList`. -->
 ### overrideOwnCapabilities
 
 <OverrideOwnCapabilities />
+
+### reactionListPosition
+
+<ReactionListPosition />
 
 <!-- ### openSuggestions -->
 
@@ -915,7 +928,19 @@ Component to render full screen error indicator, when channel fails to load.
 
 <LoadingIndicator />
 
+<!--
 ### Message
+
+<Message />
+-->
+
+### MessageActionList
+
+<MessageActionList />
+
+### MessageActionListItem
+
+<MessageActionListItem />
 
 ### MessageAvatar
 
@@ -949,6 +974,10 @@ Component to render full screen error indicator, when channel fails to load.
 
 <MessageHeader />
 
+### MessageMenu
+
+<MessageMenu />
+
 ### MessagePinnedHeader
 
 <MessagePinnedHeader />
@@ -979,6 +1008,22 @@ Component to render full screen error indicator, when channel fails to load.
 
 <MessageText />
 
+### MessageReactionPicker
+
+<MessageReactionPicker />
+
+### MessageUserReactionsAvatar
+
+<MessageUserReactionsAvatar />
+
+### MessageUserReactionsItem
+
+<MessageUserReactionsItem />
+
+### MessageUserReactions
+
+<MessageUserReactions />
+
 ### MoreOptionsButton
 
 <MoreOptionsButton />
@@ -987,13 +1032,13 @@ Component to render full screen error indicator, when channel fails to load.
 
 <NetworkDownIndicator />
 
-### OverlayReactionList
+### ReactionListBottom
 
-<OverlayReactionList />
+<ReactionListBottom />
 
-### ReactionList
+### ReactionListTop
 
-<ReactionList />
+<ReactionListTop />
 
 ### Reply
 

@@ -1,13 +1,15 @@
-import React, { useMemo } from 'react';
-import { FlatList, type FlatListProps, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { FlatList, type FlatListProps, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { PollAnswer, VotingVisibility } from 'stream-chat';
 
-import { AnswerListAddCommentButton } from './Button';
+import { PollButtonProps } from './Button';
+import { PollInputDialog } from './PollInputDialog';
 
 import {
   PollContextProvider,
   PollContextValue,
+  usePollContext,
   useTheme,
   useTranslationContext,
 } from '../../../contexts';
@@ -16,6 +18,60 @@ import { getDateString } from '../../../utils/i18n/getDateString';
 import { Avatar } from '../../Avatar/Avatar';
 import { usePollAnswersPagination } from '../hooks/usePollAnswersPagination';
 import { usePollState } from '../hooks/usePollState';
+
+export const AnswerListAddCommentButton = (props: PollButtonProps) => {
+  const { t } = useTranslationContext();
+  const { message, poll } = usePollContext();
+  const { addComment, ownAnswer } = usePollState();
+  const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
+  const { onPress } = props;
+
+  const onPressHandler = useCallback(() => {
+    if (onPress) {
+      onPress({ message, poll });
+      return;
+    }
+
+    setShowAddCommentDialog(true);
+  }, [message, onPress, poll]);
+
+  const {
+    theme: {
+      colors: { accent_dark_blue, bg_user },
+      poll: {
+        answersList: { buttonContainer },
+        button: { text },
+      },
+    },
+  } = useTheme();
+
+  return (
+    <>
+      <Pressable
+        onPress={onPressHandler}
+        style={({ pressed }) => [
+          { opacity: pressed ? 0.5 : 1 },
+          styles.addCommentButtonContainer,
+          { backgroundColor: bg_user },
+          buttonContainer,
+        ]}
+      >
+        <Text style={[styles.addCommentButtonText, { color: accent_dark_blue }, text]}>
+          {ownAnswer ? t<string>('Update your comment') : t<string>('Add a comment')}
+        </Text>
+      </Pressable>
+      {showAddCommentDialog ? (
+        <PollInputDialog
+          closeDialog={() => setShowAddCommentDialog(false)}
+          initialValue={ownAnswer?.answer_text ?? ''}
+          onSubmit={addComment}
+          title={t<string>('Add a comment')}
+          visible={showAddCommentDialog}
+        />
+      ) : null}
+    </>
+  );
+};
 
 export type PollAnswersListProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -120,6 +176,13 @@ export const PollAnswersList = ({
 );
 
 const styles = StyleSheet.create({
+  addCommentButtonContainer: {
+    alignItems: 'center',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 18,
+  },
+  addCommentButtonText: { fontSize: 16 },
   container: { flex: 1, margin: 16 },
   listItemAnswerText: { fontSize: 16, fontWeight: '500' },
   listItemContainer: {

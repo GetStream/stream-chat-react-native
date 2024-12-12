@@ -1,12 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Platform, Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
-import { PanGestureHandler } from 'react-native-gesture-handler';
-import Animated, {
-  runOnJS,
-  useAnimatedGestureHandler,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { triggerHaptic } from '../../native';
@@ -68,6 +63,31 @@ export const WaveProgressBar = React.memo(
     } = useTheme();
     const state = useSharedValue(0);
 
+    const pan = Gesture.Pan()
+      .maxPointers(1)
+      .onStart(() => {
+        if (onPlayPause) runOnJS(onPlayPause)(true);
+        state.value = endPosition;
+      })
+      .onChange((event) => {
+        const stage = Math.floor((endPosition + event.translationX) / (WAVEFORM_WIDTH * 2));
+        runOnJS(setCurrentWaveformProgress)(stage);
+        state.value = stage * (WAVEFORM_WIDTH * 2);
+        if (state.value < 0) {
+          state.value = 0;
+        } else if (state.value > amplitudesCount * (WAVEFORM_WIDTH * 2)) {
+          state.value = (amplitudesCount - 1) * (WAVEFORM_WIDTH * 2);
+        } else {
+          runOnJS(triggerHaptic)('impactLight');
+        }
+      })
+      .onEnd(() => {
+        const stage = Math.floor(state.value / (WAVEFORM_WIDTH * 2));
+        runOnJS(setEndPosition)(state.value);
+        if (onProgressDrag) runOnJS(onProgressDrag)(stage);
+        if (onPlayPause) runOnJS(onPlayPause)(false);
+      });
+
     useEffect(() => {
       const stageProgress = Math.floor(
         progress * (showProgressDrag ? amplitudesCount - 1 : amplitudesCount),
@@ -91,34 +111,6 @@ export const WaveProgressBar = React.memo(
       transform: [{ translateX: state.value }],
     }));
 
-    const onGestureEvent = useAnimatedGestureHandler(
-      {
-        onActive: (event) => {
-          const stage = Math.floor((endPosition + event.translationX) / (WAVEFORM_WIDTH * 2));
-          runOnJS(setCurrentWaveformProgress)(stage);
-          state.value = stage * (WAVEFORM_WIDTH * 2);
-          if (state.value < 0) {
-            state.value = 0;
-          } else if (state.value > amplitudesCount * (WAVEFORM_WIDTH * 2)) {
-            state.value = (amplitudesCount - 1) * (WAVEFORM_WIDTH * 2);
-          } else {
-            runOnJS(triggerHaptic)('impactLight');
-          }
-        },
-        onFinish: () => {
-          const stage = Math.floor(state.value / (WAVEFORM_WIDTH * 2));
-          runOnJS(setEndPosition)(state.value);
-          if (onProgressDrag) runOnJS(onProgressDrag)(stage);
-          if (onPlayPause) runOnJS(onPlayPause)(false);
-        },
-        onStart: () => {
-          if (onPlayPause) runOnJS(onPlayPause)(true);
-          state.value = endPosition;
-        },
-      },
-      [amplitudesCount, endPosition],
-    );
-
     return (
       <View style={[styles.container, container]}>
         {resampledWaveformData.map((waveform, index) => (
@@ -136,11 +128,11 @@ export const WaveProgressBar = React.memo(
           />
         ))}
         {showProgressDrag && onProgressDrag && (
-          <PanGestureHandler maxPointers={1} onGestureEvent={onGestureEvent}>
+          <GestureDetector gesture={pan}>
             <Animated.View style={[thumbStyles, thumb]}>
               <ProgressControlThumb />
             </Animated.View>
-          </PanGestureHandler>
+          </GestureDetector>
         )}
       </View>
     );

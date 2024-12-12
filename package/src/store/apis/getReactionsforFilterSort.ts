@@ -5,7 +5,7 @@ import { selectReactionsForMessages } from './queries/selectReactionsForMessages
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
-import { QuickSqliteClient } from '../QuickSqliteClient';
+import { SqliteClient } from '../SqliteClient';
 
 /**
  * Fetches reactions for a message from the database based on the provided filters and sort.
@@ -13,7 +13,7 @@ import { QuickSqliteClient } from '../QuickSqliteClient';
  * @param filters The filters to be applied while fetching reactions.
  * @param sort The sort to be applied while fetching reactions.
  */
-export const getReactionsForFilterSort = <
+export const getReactionsForFilterSort = async <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   currentMessageId,
@@ -23,15 +23,15 @@ export const getReactionsForFilterSort = <
   currentMessageId: string;
   filters?: ReactionFilters<StreamChatGenerics>;
   sort?: ReactionSort<StreamChatGenerics>;
-}): ReactionResponse<StreamChatGenerics>[] | null => {
+}): Promise<ReactionResponse<StreamChatGenerics>[] | null> => {
   if (!filters && !sort) {
     console.warn('Please provide the query (filters/sort) to fetch channels from DB');
     return null;
   }
 
-  QuickSqliteClient.logger?.('info', 'getReactionsForFilterSort', { filters, sort });
+  SqliteClient.logger?.('info', 'getReactionsForFilterSort', { filters, sort });
 
-  const reactions = selectReactionsForMessages([currentMessageId]);
+  const reactions = await selectReactionsForMessages([currentMessageId]);
 
   if (!reactions) return null;
 
@@ -39,5 +39,7 @@ export const getReactionsForFilterSort = <
     return [];
   }
 
-  return getReactions({ reactions });
+  const filteredReactions = reactions.filter((reaction) => reaction.type === filters?.type);
+
+  return getReactions({ reactions: filteredReactions });
 };

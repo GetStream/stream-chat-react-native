@@ -24,11 +24,10 @@ import { useStreami18n } from '../../hooks/useStreami18n';
 import init from '../../init';
 
 import { SDK } from '../../native';
-import { QuickSqliteClient } from '../../store/QuickSqliteClient';
+import { SqliteClient } from '../../store/SqliteClient';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { DBSyncManager } from '../../utils/DBSyncManager';
 import type { Streami18n } from '../../utils/i18n/Streami18n';
-import { StreamChatRN } from '../../utils/StreamChatRN';
 import { version } from '../../version.json';
 
 init();
@@ -36,12 +35,7 @@ init();
 export type ChatProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
-  Partial<
-    Pick<
-      ChatContextValue<StreamChatGenerics>,
-      'ImageComponent' | 'resizableCDNHosts' | 'isMessageAIGenerated'
-    >
-  > & {
+  Partial<Pick<ChatContextValue<StreamChatGenerics>, 'ImageComponent' | 'isMessageAIGenerated'>> & {
     /**
      * When false, ws connection won't be disconnection upon backgrounding the app.
      * To receive push notifications, its necessary that user doesn't have active
@@ -156,7 +150,6 @@ const ChatWithContext = <
     ImageComponent = Image,
     isMessageAIGenerated,
     LoadingIndicator = null,
-    resizableCDNHosts = ['.stream-io-cdn.com'],
     style,
   } = props;
 
@@ -178,6 +171,7 @@ const ChatWithContext = <
     userID?: string;
   }>({
     initialised: false,
+    userID: client.userID,
   });
 
   /**
@@ -190,9 +184,6 @@ const ChatWithContext = <
   const isDebugModeEnabled = __DEV__ && debugRef && debugRef.current;
 
   const userID = client.userID;
-
-  // Set the `resizableCDNHosts` as per the prop.
-  StreamChatRN.setConfig({ resizableCDNHosts });
 
   useEffect(() => {
     if (client) {
@@ -216,15 +207,30 @@ const ChatWithContext = <
   const setActiveChannel = (newChannel?: Channel<StreamChatGenerics>) => setChannel(newChannel);
 
   useEffect(() => {
-    if (userID && enableOfflineSupport) {
+    if (!(userID && enableOfflineSupport)) return;
+
+    const initializeDatabase = () => {
       // This acts as a lock for some very rare occurrences of concurrency
       // issues we've encountered before with the QuickSqliteClient being
       // uninitialized before it's being invoked.
       setInitialisedDatabaseConfig({ initialised: false, userID });
-      QuickSqliteClient.initializeDatabase();
-      setInitialisedDatabaseConfig({ initialised: true, userID });
-      DBSyncManager.init(client as unknown as StreamChat);
-    }
+      SqliteClient.initializeDatabase()
+        .then(async () => {
+          setInitialisedDatabaseConfig({ initialised: true, userID });
+          await DBSyncManager.init(client as unknown as StreamChat);
+        })
+        .catch((error) => {
+          console.log('Error Initializing DB:', error);
+        });
+    };
+
+    initializeDatabase();
+
+    return () => {
+      if (userID && enableOfflineSupport) {
+        SqliteClient.closeDB();
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userID, enableOfflineSupport]);
 
@@ -259,7 +265,6 @@ const ChatWithContext = <
     isMessageAIGenerated,
     isOnline,
     mutedUsers,
-    resizableCDNHosts,
     setActiveChannel,
   });
 

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
@@ -13,8 +13,9 @@ import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import { registerNativeHandlers } from '../../../native';
 import { Channel } from '../../Channel/Channel';
+import { channelInitialState } from '../../Channel/hooks/useChannelDataState';
+import * as MessageListPaginationHook from '../../Channel/hooks/useMessageListPagination';
 import { Chat } from '../../Chat/Chat';
 import { MessageList } from '../MessageList';
 
@@ -48,7 +49,7 @@ describe('MessageList', () => {
     act(() => dispatchMessageNewEvent(chatClient, newMessage, mockedChannel.channel));
 
     await waitFor(() => {
-      expect(queryAllByTestId('message-notification')).toHaveLength(0);
+      expect(queryAllByTestId('scroll-to-bottom-button')).toHaveLength(0);
       expect(getByText(newMessage.text)).toBeTruthy();
     });
   }, 10000);
@@ -314,16 +315,6 @@ describe('MessageList', () => {
   });
 
   it('should render the is offline error', async () => {
-    registerNativeHandlers({
-      NetInfo: {
-        addEventListener: () => () => null,
-        fetch: () =>
-          new Promise((resolve) => {
-            resolve(false);
-          }),
-      },
-    });
-
     const user1 = generateUser();
     const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
@@ -350,16 +341,6 @@ describe('MessageList', () => {
       expect(queryAllByTestId('typing-indicator')).toHaveLength(0);
       expect(getByTestId('error-notification')).toBeTruthy();
       expect(getByText('Reconnecting...')).toBeTruthy();
-    });
-
-    registerNativeHandlers({
-      NetInfo: {
-        addEventListener: () => () => null,
-        fetch: () =>
-          new Promise((resolve) => {
-            resolve(true);
-          }),
-      },
     });
   });
 
@@ -399,6 +380,176 @@ describe('MessageList', () => {
     await waitFor(() => {
       expect(screen.getByText(targetedMessageText)).toBeOnTheScreen();
       expect(() => screen.getByText(latestMessageText)).toThrow();
+    });
+  });
+});
+
+describe('MessageList pagination', () => {
+  afterEach(() => {
+    cleanup();
+    jest.clearAllMocks();
+  });
+
+  const mockedHook = (values) => {
+    const messages = Array.from({ length: 100 }, (_, i) =>
+      generateMessage({ text: `message-${i}` }),
+    );
+    return jest
+      .spyOn(MessageListPaginationHook, 'useMessageListPagination')
+      .mockImplementation(() => ({
+        copyMessagesStateFromChannel: jest.fn(),
+        loadChannelAroundMessage: jest.fn(),
+        loadChannelAtFirstUnreadMessage: jest.fn(),
+        loadInitialMessagesStateFromChannel: jest.fn(),
+        loadLatestMessages: jest.fn(),
+        loadMore: jest.fn(),
+        loadMoreRecent: jest.fn(),
+        state: { ...channelInitialState, messages },
+        ...values,
+      }));
+  };
+
+  it('should load more recent messages when the user scrolls to the start of the list', async () => {
+    const user1 = generateUser();
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: user1 })],
+      messages: Array.from({ length: 100 }, (_, i) => generateMessage({ text: `message-${i}` })),
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+
+    const loadMoreRecent = jest.fn(() => Promise.resolve());
+    mockedHook({ loadMoreRecent });
+
+    const { getByTestId } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    act(() => {
+      // scroll to the top of the list
+      const flatList = getByTestId('message-flat-list');
+      fireEvent(flatList, 'momentumScrollEnd', {
+        nativeEvent: {
+          contentOffset: { y: 0 }, // Scroll position at the top
+          contentSize: { height: 2000, width: 200 }, // Total content size
+          layoutMeasurement: { height: 400, width: 200 }, // Visible area size
+        },
+      });
+    });
+
+    await waitFor(() => {
+      expect(loadMoreRecent).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('should load more messages when the user scrolls to the end of the list', async () => {
+    const user1 = generateUser();
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: user1 })],
+      messages: Array.from({ length: 100 }, (_, i) => generateMessage({ text: `message-${i}` })),
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+
+    const loadMore = jest.fn(() => Promise.resolve());
+    mockedHook({ loadMore });
+
+    const { getByTestId } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    act(() => {
+      // scroll to the top of the list
+      const flatList = getByTestId('message-flat-list');
+      fireEvent(flatList, 'momentumScrollEnd', {
+        nativeEvent: {
+          contentOffset: { y: 1900 }, // Scroll position at the top
+          contentSize: { height: 2000, width: 200 }, // Total content size
+          layoutMeasurement: { height: 400, width: 200 }, // Visible area size
+        },
+      });
+    });
+
+    await waitFor(() => {
+      expect(loadMore).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('should call load latest messages when the scroll to bottom button is pressed', async () => {
+    const user1 = generateUser();
+    const messages = Array.from({ length: 10 }, (_, i) =>
+      generateMessage({ text: `message-${i}` }),
+    );
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: user1 })],
+      messages,
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+
+    channel.state = {
+      ...channelInitialState,
+      latestMessages: [],
+      members: Object.fromEntries(
+        Array.from({ length: 10 }, (_, i) => [i, generateMember({ id: i })]),
+      ),
+      messages: Array.from({ length: 10 }, (_, i) => generateMessage({ id: i })),
+      messageSets: [{ isCurrent: true, isLatest: true }],
+    };
+
+    const loadLatestMessages = jest.fn(() => Promise.resolve());
+    mockedHook({ loadLatestMessages });
+
+    const { getByTestId } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    act(() => {
+      // scroll to the top of the list
+      const flatList = getByTestId('message-flat-list');
+      fireEvent(flatList, 'scroll', {
+        nativeEvent: {
+          contentOffset: { y: 1900 }, // Scroll position at the top
+          contentSize: { height: 2000, width: 200 }, // Total content size
+          layoutMeasurement: { height: 400, width: 200 }, // Visible area size
+        },
+      });
+    });
+
+    await waitFor(() => {
+      const scrollToBottomButton = getByTestId('scroll-to-bottom-button');
+      expect(scrollToBottomButton).toBeTruthy();
+
+      fireEvent.press(scrollToBottomButton);
+
+      expect(loadLatestMessages).toHaveBeenCalledTimes(1);
     });
   });
 });

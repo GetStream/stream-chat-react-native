@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Spinner } from '../Spinner/Spinner';
+import { Spinner } from '../UIComponents/Spinner';
 
 const styles = StyleSheet.create({
   container: {

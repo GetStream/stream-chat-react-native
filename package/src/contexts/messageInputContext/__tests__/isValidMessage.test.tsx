@@ -13,13 +13,12 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { FileState } from '../../../utils/utils';
 import {
   InputMessageInputContextValue,
-  MessageInputContextValue,
   MessageInputProvider,
   useMessageInputContext,
 } from '../MessageInputContext';
 
 const user1 = generateUser();
-const message = generateMessage({ user: user1 }, 'isValidMessage');
+const message = generateMessage({ user: user1 });
 
 type WrapperType<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   Partial<InputMessageInputContextValue<StreamChatGenerics>>;
@@ -32,7 +31,7 @@ const Wrapper = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultS
     value={
       {
         ...rest,
-      } as MessageInputContextValue<StreamChatGenerics>
+      } as InputMessageInputContextValue<StreamChatGenerics>
     }
   >
     {children}

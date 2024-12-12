@@ -8,7 +8,7 @@ import {
   Chat,
   MessageType,
   OverlayProvider,
-  QuickSqliteClient,
+  SqliteClient,
   ThemeProvider,
   useOverlayContext,
 } from 'stream-chat-react-native';
@@ -40,7 +40,7 @@ import type { StreamChat } from 'stream-chat';
 
 if (__DEV__) {
   DevSettings.addMenuItem('Reset local DB (offline storage)', () => {
-    QuickSqliteClient.resetDB();
+    SqliteClient.resetDB();
     console.info('Local DB reset');
   });
 }

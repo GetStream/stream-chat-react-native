@@ -1,15 +1,22 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
-import { ScrollViewProps, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollViewProps, StyleSheet, Text, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
 
 import { PollOption as PollOptionClass, PollVote } from 'stream-chat';
 
-import { VoteButton } from './Button';
+import { PollVoteButtonProps } from './Button';
 
-import { PollContextProvider, PollContextValue, useTheme } from '../../../contexts';
+import {
+  PollContextProvider,
+  PollContextValue,
+  useOwnCapabilitiesContext,
+  usePollContext,
+  useTheme,
+} from '../../../contexts';
 
+import { Check } from '../../../icons';
 import { Avatar } from '../../Avatar/Avatar';
 import { usePollState } from '../hooks/usePollState';
 
@@ -141,6 +148,61 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
   );
 };
 
+export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
+  const { message, poll } = usePollContext();
+  const { isClosed, ownVotesByOptionId } = usePollState();
+  const ownCapabilities = useOwnCapabilitiesContext();
+
+  const {
+    theme: {
+      colors: { accent_dark_blue, disabled },
+      poll: {
+        message: {
+          option: { voteButtonActive, voteButtonContainer, voteButtonInactive },
+        },
+      },
+    },
+  } = useTheme();
+
+  const toggleVote = useCallback(async () => {
+    if (ownVotesByOptionId[option.id]) {
+      await poll.removeVote(ownVotesByOptionId[option.id]?.id, message.id);
+    } else {
+      await poll.castVote(option.id, message.id);
+    }
+  }, [message.id, option.id, ownVotesByOptionId, poll]);
+
+  const onPressHandler = useCallback(() => {
+    if (onPress) {
+      onPress({ message, poll });
+      return;
+    }
+
+    toggleVote();
+  }, [message, onPress, poll, toggleVote]);
+
+  return ownCapabilities.castPollVote && !isClosed ? (
+    <Pressable
+      onPress={onPressHandler}
+      style={({ pressed }) => [
+        { opacity: pressed ? 0.5 : 1 },
+        styles.voteContainer,
+        {
+          backgroundColor: ownVotesByOptionId[option.id]
+            ? voteButtonActive || accent_dark_blue
+            : 'transparent',
+          borderColor: ownVotesByOptionId[option.id]
+            ? voteButtonActive || accent_dark_blue
+            : voteButtonInactive || disabled,
+        },
+        voteButtonContainer,
+      ]}
+    >
+      {ownVotesByOptionId[option.id] ? <Check height={15} pathFill='white' width={20} /> : null}
+    </Pressable>
+  ) : null;
+};
+
 const styles = StyleSheet.create({
   allOptionsListContainer: {
     borderRadius: 12,
@@ -161,6 +223,14 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     marginLeft: 4,
+  },
+  voteContainer: {
+    alignItems: 'center',
+    borderRadius: 18,
+    borderWidth: 1,
+    height: 18,
+    justifyContent: 'center',
+    width: 18,
   },
   votesContainer: { flexDirection: 'row', marginLeft: 4 },
   wrapper: { marginTop: 8, paddingVertical: 8 },

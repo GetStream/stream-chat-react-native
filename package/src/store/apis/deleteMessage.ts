@@ -1,18 +1,18 @@
-import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
+import { SqliteClient } from '../SqliteClient';
 
-export const deleteMessage = ({ flush = true, id }: { id: string; flush?: boolean }) => {
+export const deleteMessage = async ({ flush = true, id }: { id: string; flush?: boolean }) => {
   const query = createDeleteQuery('messages', {
     id,
   });
 
-  QuickSqliteClient.logger?.('info', 'deleteMessage', {
+  SqliteClient.logger?.('info', 'deleteMessage', {
     flush,
     id,
   });
 
   if (flush) {
-    QuickSqliteClient.executeSql.apply(null, query);
+    await SqliteClient.executeSql.apply(null, query);
   }
 
   return [query];

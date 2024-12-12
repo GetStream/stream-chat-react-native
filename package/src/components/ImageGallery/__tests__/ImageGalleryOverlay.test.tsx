@@ -19,14 +19,11 @@ import {
 import { generateImageAttachment } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import * as NativeUtils from '../../../native';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { MessageType } from '../../MessageList/hooks/useMessageList';
 import { ImageGalleryOverlay } from '../components/ImageGalleryOverlay';
 
 describe('ImageGalleryOverlay', () => {
-  jest.spyOn(NativeUtils, 'isVideoPackageAvailable').mockImplementation(() => true);
-
   it('should have currentBottomSheetIndex as a prop', async () => {
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     const setOverlayMock = jest.fn();

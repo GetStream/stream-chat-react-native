@@ -14,12 +14,15 @@ import {
   generateVideoAttachment,
 } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
-import * as NativeUtils from '../../../native';
 
 import { ImageLoadingFailedIndicator } from '../../Attachment/ImageLoadingFailedIndicator';
 import { ImageLoadingIndicator } from '../../Attachment/ImageLoadingIndicator';
 import { Attachment } from '../Attachment';
 import { AttachmentActions } from '../AttachmentActions';
+
+jest.mock('../../../native.ts', () => ({
+  isVideoPlayerAvailable: jest.fn(() => false),
+}));
 
 const getAttachmentComponent = (props) => {
   const message = generateMessage();
@@ -50,7 +53,6 @@ describe('Attachment', () => {
   });
 
   it('should render File component for "video" type attachment', async () => {
-    jest.spyOn(NativeUtils, 'isVideoPackageAvailable').mockImplementation(jest.fn(() => false));
     const attachment = generateVideoAttachment();
     const { getByTestId } = render(getAttachmentComponent({ attachment }));
 

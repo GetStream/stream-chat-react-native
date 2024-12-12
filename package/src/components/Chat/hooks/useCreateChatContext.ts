@@ -15,7 +15,6 @@ export const useCreateChatContext = <
   isMessageAIGenerated,
   isOnline,
   mutedUsers,
-  resizableCDNHosts,
   setActiveChannel,
 }: ChatContextValue<StreamChatGenerics>) => {
   const channelId = channel?.id;
@@ -37,7 +36,6 @@ export const useCreateChatContext = <
       isMessageAIGenerated,
       isOnline,
       mutedUsers,
-      resizableCDNHosts,
       setActiveChannel,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

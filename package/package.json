@@ -22,7 +22,6 @@
     "README.md"
   ],
   "scripts": {
-    "analyze": "yarn build -- --stats && webpack-bundle-analyzer build/bundle-stats.json",
     "build": "rm -rf lib && yarn run --silent build-translations && bob build && yarn run --silent copy-translations",
     "build-translations": "i18next",
     "copy-translations": "echo '\u001b[34mℹ\u001b[0m Copying translation files to \u001b[34mlib/typescript/i18n\u001b[0m' && cp -R -f ./src/i18n ./lib/typescript/i18n && echo '\u001b[32m✓\u001b[0m Done Copying Translations'",
@@ -67,7 +66,7 @@
     ]
   },
   "dependencies": {
-    "@gorhom/bottom-sheet": "^4.6.4",
+    "@gorhom/bottom-sheet": "^5.0.6",
     "dayjs": "1.10.5",
     "emoji-regex": "^10.3.0",
     "i18next": "^21.6.14",
@@ -81,11 +80,15 @@
     "stream-chat": "8.46.0"
   },
   "peerDependencies": {
-    "react-native-quick-sqlite": ">=5.1.0",
-    "react-native-svg": ">=15.1.0"
+    "@op-engineering/op-sqlite": ">=9.3.0",
+    "@react-native-community/netinfo": ">=11.3.1",
+    "react-native": ">=0.67.0",
+    "react-native-gesture-handler": ">=2.16.1",
+    "react-native-reanimated": ">=3.16.0",
+    "react-native-svg": ">=12.3.0"
   },
   "peerDependenciesMeta": {
-    "react-native-quick-sqlite": {
+    "@op-engineering/op-sqlite": {
       "optional": true
     }
   },
@@ -100,9 +103,10 @@
     "@babel/preset-env": "7.13.12",
     "@babel/preset-typescript": "7.13.0",
     "@babel/runtime": "^7.20.0",
+    "@op-engineering/op-sqlite": "^9.3.0",
     "@react-native-community/eslint-config": "2.0.0",
     "@react-native-community/eslint-plugin": "1.1.0",
-    "@react-native-community/netinfo": "6.0.0",
+    "@react-native-community/netinfo": "^11.3.2",
     "@react-native/babel-preset": "0.73.21",
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "12.4.5",
@@ -138,18 +142,14 @@
     "moment-timezone": "^0.5.45",
     "prettier": "2.8.8",
     "react": "18.2.0",
-    "react-docgen-typescript": "1.22.0",
-    "react-dom": "18.2.0",
     "react-native": "0.73.6",
     "react-native-builder-bob": "0.23.1",
-    "react-native-gesture-handler": "~2.8.0",
-    "react-native-quick-sqlite": "5.1.0",
-    "react-native-reanimated": "3.7.0",
+    "react-native-gesture-handler": "~2.16.1",
+    "react-native-reanimated": "~3.10.0",
     "react-native-svg": "15.1.0",
     "react-test-renderer": "18.2.0",
     "typescript": "5.0.4",
-    "uuid": "^8.3.2",
-    "webpack": "4.44.2"
+    "uuid": "^8.3.2"
   },
   "resolutions": {
     "@types/react": "18.2.6"

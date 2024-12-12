@@ -1,10 +1,10 @@
 import type { ChannelResponse } from 'stream-chat';
 
 import { mapChannelDataToStorable } from '../mappers/mapChannelDataToStorable';
-import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
+import { SqliteClient } from '../SqliteClient';
 
-export const upsertChannelData = ({
+export const upsertChannelData = async ({
   channel,
   flush = true,
 }: {
@@ -13,12 +13,13 @@ export const upsertChannelData = ({
 }) => {
   const storableChannel = mapChannelDataToStorable(channel);
   const query = createUpsertQuery('channels', storableChannel);
-  QuickSqliteClient.logger?.('info', 'upsertChannelData', {
+  SqliteClient.logger?.('info', 'upsertChannelData', {
     channel: storableChannel,
     flush,
   });
+
   if (flush) {
-    QuickSqliteClient.executeSqlBatch([query]);
+    await SqliteClient.executeSqlBatch([query]);
   }
 
   return [query];

@@ -3,12 +3,12 @@ import { isVoteAnswer, PollAnswer, PollResponse, PollVote } from 'stream-chat';
 import { DefaultStreamChatGenerics } from '../../types/types';
 import { mapPollToStorable } from '../mappers/mapPollToStorable';
 import { mapStorableToPoll } from '../mappers/mapStorableToPoll';
-import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
 import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
+import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries } from '../types';
 
-export const updatePollMessage = <
+export const updatePollMessage = async <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   eventType,
@@ -25,7 +25,7 @@ export const updatePollMessage = <
 }) => {
   const queries: PreparedQueries[] = [];
 
-  const pollsFromDB = QuickSqliteClient.executeSql.apply(
+  const pollsFromDB = await SqliteClient.executeSql.apply(
     null,
     createSelectQuery('poll', ['*'], {
       id: poll.id,
@@ -61,13 +61,13 @@ export const updatePollMessage = <
         id: poll.id,
       }),
     );
-    QuickSqliteClient.logger?.('info', 'updatePoll', {
+    SqliteClient.logger?.('info', 'updatePoll', {
       poll: storablePoll,
     });
   }
 
   if (flush) {
-    QuickSqliteClient.executeSqlBatch(queries);
+    SqliteClient.executeSqlBatch(queries);
   }
 
   return queries;

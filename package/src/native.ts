@@ -1,8 +1,6 @@
 import type React from 'react';
 import { FlatList as DefaultFlatList, StyleProp, ViewStyle } from 'react-native';
 
-import type { NetInfoSubscription } from '@react-native-community/netinfo';
-
 import type { Asset, File } from './types/types';
 
 const fail = () => {
@@ -27,6 +25,8 @@ export let compressImage: CompressImage = fail;
 type DeleteFile = ({ uri }: { uri: string }) => Promise<boolean> | never;
 export let deleteFile: DeleteFile = fail;
 
+export let FlatList: typeof DefaultFlatList | undefined;
+
 type GetLocalAssetUri = (uriOrAssetId: string) => Promise<string | undefined> | never;
 export let getLocalAssetUri: GetLocalAssetUri = fail;
 
@@ -45,18 +45,6 @@ type GetPhotos = ({ after, first }: { first: number; after?: string }) =>
     }>
   | never;
 export let getPhotos: GetPhotos = fail;
-
-type NetInfo = {
-  addEventListener: (listener: (isConnected: boolean) => void) => NetInfoSubscription | never;
-  fetch: (requestedInterface?: string | undefined) => Promise<boolean> | never;
-};
-
-export let FlatList = DefaultFlatList;
-
-export let NetInfo: NetInfo = {
-  addEventListener: fail,
-  fetch: fail,
-};
 
 type PickDocument = ({ maxNumberOfFiles }: { maxNumberOfFiles?: number }) =>
   | Promise<{
@@ -90,7 +78,7 @@ type ShareOptions = {
   url?: string;
 };
 type ShareImage = (options: ShareOptions) => Promise<boolean> | never;
-export let shareImage: ShareImage = fail;
+export let shareImage: ShareImage | undefined = fail;
 
 type Photo = Omit<Asset, 'source'> & {
   source: 'camera';
@@ -240,7 +228,7 @@ export type AudioType = {
   stopPlayer?: () => Promise<void>;
 };
 
-export let Audio: AudioType;
+export let Audio: AudioType | undefined;
 
 export let Sound: SoundType;
 
@@ -295,7 +283,6 @@ type Handlers = {
   getLocalAssetUri?: GetLocalAssetUri;
   getPhotos?: GetPhotos;
   iOS14RefreshGallerySelection?: iOS14RefreshGallerySelection;
-  NetInfo?: NetInfo;
   oniOS14GalleryLibrarySelectionChange?: OniOS14LibrarySelectionChange;
   pickDocument?: PickDocument;
   pickImage?: PickImage;
@@ -310,7 +297,7 @@ type Handlers = {
 };
 
 export const registerNativeHandlers = (handlers: Handlers) => {
-  if (handlers.Audio) {
+  if (handlers.Audio !== null) {
     Audio = handlers.Audio;
   }
 
@@ -318,15 +305,12 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     compressImage = handlers.compressImage;
   }
 
-  if (handlers.deleteFile) {
+  if (handlers.deleteFile !== undefined) {
     deleteFile = handlers.deleteFile;
   }
 
-  if (handlers.FlatList) {
+  if (handlers.FlatList !== undefined) {
     FlatList = handlers.FlatList;
-  }
-  if (handlers.NetInfo) {
-    NetInfo = handlers.NetInfo;
   }
 
   if (handlers.getLocalAssetUri !== undefined) {
@@ -353,7 +337,7 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     pickImage = handlers.pickImage;
   }
 
-  if (handlers.saveFile) {
+  if (handlers.saveFile !== undefined) {
     saveFile = handlers.saveFile;
   }
 
@@ -361,7 +345,7 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     SDK = handlers.SDK;
   }
 
-  if (handlers.shareImage !== undefined) {
+  if (handlers.shareImage !== null) {
     shareImage = handlers.shareImage;
   }
 
@@ -377,7 +361,7 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     triggerHaptic = handlers.triggerHaptic;
   }
 
-  if (handlers.Video) {
+  if (handlers.Video !== undefined) {
     Video = handlers.Video;
   }
 
@@ -387,9 +371,14 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 };
 
 export const isImagePickerAvailable = () => !!takePhoto;
-export const isVideoPackageAvailable = () => !!Video;
-export const isAudioPackageAvailable = () => !!Sound.Player || !!Sound.initializeSound;
-export const isRecordingPackageAvailable = () => !!Audio;
+export const isDocumentPickerAvailable = () => !!pickDocument;
+export const isClipboardAvailable = () => !!setClipboardString;
+export const isVideoPlayerAvailable = () => !!Video;
+export const isHapticFeedbackAvailable = () => !!triggerHaptic;
+export const isShareImageAvailable = () => !!shareImage;
+export const isFileSystemAvailable = () => !!saveFile || !!deleteFile;
+export const isAudioRecorderAvailable = () => !!Audio?.startRecording;
+export const isSoundPackageAvailable = () => !!Sound.Player || !!Sound.initializeSound;
 export const isImageMediaLibraryAvailable = () =>
   !!getPhotos &&
   !!iOS14RefreshGallerySelection &&

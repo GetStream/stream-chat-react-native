@@ -5,10 +5,9 @@ import type { Channel, ChannelState } from 'stream-chat';
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
 import { StickyHeaderProps } from '../../components/MessageList/StickyHeader';
-import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
-import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type ChannelContextValue<
@@ -61,42 +60,20 @@ export type ChannelContextValue<
   hideDateSeparators: boolean;
   hideStickyDateHeader: boolean;
   /**
-   * Returns true if the current user has admin privileges
-   */
-  isAdmin: boolean;
-  /**
-   * Returns true if the current user is a moderator
-   */
-  isModerator: boolean;
-  /**
-   * Returns true if the current user is a owner
-   */
-  isOwner: boolean;
-  /**
    * Loads channel around a specific message
    *
    * @param messageId If undefined, channel will be loaded at most recent message.
    */
-  loadChannelAroundMessage: ({ messageId }: { messageId?: string }) => Promise<void>;
-  /**
-   * @deprecated use loadChannelAroundMessage instead
-   *
-   * Loads channel at specific message
-   *
-   * @param messageId If undefined, channel will be loaded at most recent message.
-   * @param before Number of message to query before messageId
-   * @param after Number of message to query after messageId
-   */
-  loadChannelAtMessage: ({
-    after,
-    before,
+  loadChannelAroundMessage: ({
+    limit,
     messageId,
+    setTargetedMessage,
   }: {
-    after?: number;
-    before?: number;
+    limit?: number;
     messageId?: string;
+    setTargetedMessage?: (messageId: string) => void;
   }) => Promise<void>;
-  loading: boolean;
+
   /**
    * Custom loading indicator to override the Stream default
    */
@@ -143,6 +120,31 @@ export type ChannelContextValue<
    * Its a map of filename and AbortController
    */
   uploadAbortControllerRef: React.MutableRefObject<Map<string, AbortController>>;
+  disabled?: boolean;
+  enableMessageGroupingByUser?: boolean;
+  isChannelActive?: boolean;
+  lastRead?: Date;
+
+  loading?: boolean;
+  /**
+   * Maximum time in milliseconds that should occur between messages
+   * to still consider them grouped together
+   */
+  maxTimeBetweenGroupedMessages?: number;
+  /**
+   * Custom UI component for sticky header of channel.
+   *
+   * **Default** [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)
+   */
+  StickyHeader?: React.ComponentType<StickyHeaderProps>;
+
+  /**
+   * Id of message, around which Channel/MessageList gets loaded when opened.
+   * You will see a highlighted background for targetted message, when opened.
+   */
+  targetedMessage?: string;
+  threadList?: boolean;
+  watcherCount?: ChannelState<StreamChatGenerics>['watcher_count'];
   /**
    *
    * ```json
@@ -166,29 +168,7 @@ export type ChannelContextValue<
    * }
    * ```
    */
-  watchers: ChannelState<StreamChatGenerics>['watchers'];
-  disabled?: boolean;
-  enableMessageGroupingByUser?: boolean;
-  isChannelActive?: boolean;
-  lastRead?: Date;
-  /**
-   * Maximum time in milliseconds that should occur between messages
-   * to still consider them grouped together
-   */
-  maxTimeBetweenGroupedMessages?: number;
-  /**
-   * Custom UI component for sticky header of channel.
-   *
-   * **Default** [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)
-   */
-  StickyHeader?: React.ComponentType<StickyHeaderProps>;
-  /**
-   * Id of message, around which Channel/MessageList gets loaded when opened.
-   * You will see a highlighted background for targetted message, when opened.
-   */
-  targetedMessage?: string;
-  threadList?: boolean;
-  watcherCount?: ChannelState<StreamChatGenerics>['watcher_count'];
+  watchers?: ChannelState<StreamChatGenerics>['watchers'];
 };
 
 export const ChannelContext = React.createContext(
@@ -222,30 +202,4 @@ export const useChannelContext = <
   }
 
   return contextValue;
-};
-
-/**
- * @deprecated
- *
- * This will be removed in the next major version.
- *
- * Typescript currently does not support partial inference so if ChatContext
- * typing is desired while using the HOC withChannelContext the Props for the
- * wrapped component must be provided as the first generic.
- */
-export const withChannelContext = <
-  P extends UnknownType,
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  Component: React.ComponentType<P>,
-): React.ComponentType<Omit<P, keyof ChannelContextValue<StreamChatGenerics>>> => {
-  const WithChannelContextComponent = (
-    props: Omit<P, keyof ChannelContextValue<StreamChatGenerics>>,
-  ) => {
-    const channelContext = useChannelContext<StreamChatGenerics>();
-
-    return <Component {...(props as P)} {...channelContext} />;
-  };
-  WithChannelContextComponent.displayName = `WithChannelContext${getDisplayName(Component)}`;
-  return WithChannelContextComponent;
 };

@@ -1,8 +1,8 @@
 import type { ChannelFilters, ChannelSort } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { QuickSqliteClient } from '../../QuickSqliteClient';
 import { createSelectQuery } from '../../sqlite-utils/createSelectQuery';
+import { SqliteClient } from '../../SqliteClient';
 
 import { convertFilterSortToQuery } from '../utils/convertFilterSortToQuery';
 
@@ -16,7 +16,7 @@ import { convertFilterSortToQuery } from '../utils/convertFilterSortToQuery';
  * @returns Array of channel ids corresponding to filters & sort. Returns null if filters + sort query doesn't exist in "channelQueries" table.
  */
 
-export const selectChannelIdsForFilterSort = <
+export const selectChannelIdsForFilterSort = async <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   filters,
@@ -24,14 +24,14 @@ export const selectChannelIdsForFilterSort = <
 }: {
   filters?: ChannelFilters<StreamChatGenerics>;
   sort?: ChannelSort<StreamChatGenerics>;
-}): string[] | null => {
+}): Promise<string[] | null> => {
   const query = convertFilterSortToQuery({ filters, sort });
 
-  QuickSqliteClient.logger?.('info', 'selectChannelIdsForFilterSort', {
+  SqliteClient.logger?.('info', 'selectChannelIdsForFilterSort', {
     query,
   });
 
-  const results = QuickSqliteClient.executeSql.apply(
+  const results = await SqliteClient.executeSql.apply(
     null,
     createSelectQuery('channelQueries', ['*'], {
       id: query,

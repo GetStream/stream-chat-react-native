@@ -3,9 +3,11 @@ import { AppState, Image, PermissionsAndroid, Platform } from 'react-native';
 let ImagePicker;
 
 try {
-  ImagePicker = require('react-native-image-crop-picker').default;
+  ImagePicker = require('react-native-image-picker');
 } catch (e) {
-  console.log('react-native-image-crop-picker is not installed');
+  console.log(
+    'The package react-native-image-picker is not installed. Please install the same so as to take photo through camera and upload it.',
+  );
 }
 
 export const takePhoto = ImagePicker
@@ -26,20 +28,22 @@ export const takePhoto = ImagePicker
         }
       }
       try {
-        const photo = await ImagePicker.openCamera({
-          compressImageQuality: Math.min(Math.max(0, compressImageQuality), 1),
+        const result = await ImagePicker.launchCamera({
+          quality: Math.min(Math.max(0, compressImageQuality), 1),
         });
-        if (photo.height && photo.width && photo.path) {
+        if (!result.assets.length) {
+          return {
+            cancelled: true,
+          };
+        }
+        const photo = result.assets[0];
+        if (photo.height && photo.width && photo.uri) {
           let size: { height?: number; width?: number } = {};
           if (Platform.OS === 'android') {
             // Height and width returned by ImagePicker are incorrect on Android.
-            // The issue is described in following github issue:
-            // https://github.com/ivpusic/react-native-image-crop-picker/issues/901
-            // This we can't rely on them as it is, and we need to use Image.getSize
-            // to get accurate size.
             const getSize = (): Promise<{ height: number; width: number }> =>
               new Promise((resolve) => {
-                Image.getSize(photo.path, (width, height) => {
+                Image.getSize(photo.uri, (width, height) => {
                   resolve({ height, width });
                 });
               });
@@ -62,7 +66,7 @@ export const takePhoto = ImagePicker
             cancelled: false,
             size: photo.size,
             source: 'camera',
-            uri: photo.path,
+            uri: photo.uri,
             ...size,
           };
         }

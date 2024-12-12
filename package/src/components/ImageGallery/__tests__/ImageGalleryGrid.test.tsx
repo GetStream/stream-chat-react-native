@@ -22,7 +22,7 @@ const getComponent = (props: Partial<ImageGridType> = {}) => {
 
   return (
     <TranslationProvider value={{ t } as unknown as TranslationContextValue}>
-      <ThemeProvider style={defaultTheme}>
+      <ThemeProvider theme={defaultTheme}>
         <ImageGrid {...(props as unknown as ImageGridType)} />
       </ThemeProvider>
     </TranslationProvider>

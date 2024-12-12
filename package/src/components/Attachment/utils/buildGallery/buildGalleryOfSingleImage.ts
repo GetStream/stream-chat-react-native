@@ -4,6 +4,7 @@ import { buildThumbnail } from './buildThumbnail';
 
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
 
+import { ChatConfigContextValue } from '../../../../contexts/chatConfigContext/ChatConfigContext';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { getAspectRatio } from '../getAspectRatio';
 
@@ -67,8 +68,9 @@ export function buildGalleryOfSingleImage<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   image,
+  resizableCDNHosts,
   sizeConfig,
-}: {
+}: Pick<ChatConfigContextValue, 'resizableCDNHosts'> & {
   image: Attachment<StreamChatGenerics>;
   sizeConfig: GallerySizeConfig;
 }): GallerySizeAndThumbnailGrid {
@@ -79,6 +81,7 @@ export function buildGalleryOfSingleImage<
 
   const thumbnail = buildThumbnail({
     image,
+    resizableCDNHosts,
     ...container,
   });
 

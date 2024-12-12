@@ -222,21 +222,6 @@ Override for the default Event Listener behavior when a channel is updated. Th
 | setChannels | Setter function for the internal channels state                                                                  |
 | event       | [Event Object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to channel.deleted |
 
-### `onMessageNew`
-
-Override for the default Event Listener behavior when a message is received on a channel that is not being watched. The default behavior adds the channel to the list.
-
-> Warning: This function is deprecated. Use **[`onNewMessageNotification`](#onNewMessageNotification)** instead.
-
-| Type     |
-| -------- |
-| Function |
-
-| Parameter   | Description                                                                                                      |
-| ----------- | ---------------------------------------------------------------------------------------------------------------- |
-| setChannels | Setter function for the internal channels state                                                                  |
-| event       | [Event Object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to channel.deleted |
-
 ### **`onNewMessageNotification`**
 
 Override for the default Event Listener behavior when a message is received on a channel that is not being watched. The default behavior adds the channel to the list.

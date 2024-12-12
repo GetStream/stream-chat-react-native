@@ -33,7 +33,7 @@ export const pickImage = ImagePicker
         if (permissionGranted) {
           const result = await ImagePicker.launchImageLibraryAsync({
             allowsMultipleSelection: true,
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            mediaTypes: ['images', 'videos'],
           });
 
           const canceled = result.canceled;

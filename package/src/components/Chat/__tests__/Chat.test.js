@@ -1,9 +1,10 @@
 import React from 'react';
 import { View } from 'react-native';
 
+import NetInfo from '@react-native-community/netinfo';
+
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 
-import { setNetInfoFetchMock } from '../../../../jest-setup';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
@@ -43,8 +44,6 @@ describe('Chat', () => {
 
   it('listens and updates state on a connection changed event', async () => {
     let context;
-    const netInfoFetch = jest.fn();
-    setNetInfoFetchMock(netInfoFetch);
 
     render(
       <Chat client={chatClient}>
@@ -56,7 +55,7 @@ describe('Chat', () => {
       </Chat>,
     );
 
-    await waitFor(() => expect(netInfoFetch).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(NetInfo.fetch).toHaveBeenCalledTimes(1));
 
     const { connectionRecovering } = context;
     act(() => dispatchConnectionChangedEvent(chatClient, false));
@@ -83,215 +82,237 @@ describe('Chat', () => {
 
     await waitFor(() => expect(context.connectionRecovering).toStrictEqual(false));
   });
+});
 
-  describe('ChatContext', () => {
-    it('exposes the chat context', async () => {
-      let context;
+describe('ChatContext', () => {
+  afterEach(cleanup);
+  const chatClient = getTestClient();
+  it('exposes the chat context', async () => {
+    let context;
 
-      render(
-        <Chat client={chatClient}>
-          <ChatContextConsumer
-            fn={(ctx) => {
-              context = ctx;
-            }}
-          ></ChatContextConsumer>
-        </Chat>,
-      );
+    render(
+      <Chat client={chatClient}>
+        <ChatContextConsumer
+          fn={(ctx) => {
+            context = ctx;
+          }}
+        ></ChatContextConsumer>
+      </Chat>,
+    );
 
-      await waitFor(() => {
-        expect(context).toBeInstanceOf(Object);
-        expect(context.channel).toBeUndefined();
-        expect(context.client).toBe(chatClient);
-        expect(context.connectionRecovering).toBeFalsy();
-        expect(context.setActiveChannel).toBeInstanceOf(Function);
-      });
-    });
-
-    it('calls setActiveChannel to set a new channel in context', async () => {
-      let context;
-
-      render(
-        <Chat client={chatClient}>
-          <ChatContextConsumer
-            fn={(ctx) => {
-              context = ctx;
-            }}
-          ></ChatContextConsumer>
-        </Chat>,
-      );
-
-      const channel = { cid: 'cid', id: 'cid', query: jest.fn() };
-
-      await waitFor(() => expect(context.channel).toBeUndefined());
-      act(() => context.setActiveChannel(channel));
-
-      await waitFor(() => expect(context.channel).toStrictEqual(channel));
+    await waitFor(() => {
+      expect(context).toBeInstanceOf(Object);
+      expect(context.channel).toBeUndefined();
+      expect(context.client).toBe(chatClient);
+      expect(context.connectionRecovering).toBeFalsy();
+      expect(context.setActiveChannel).toBeInstanceOf(Function);
     });
   });
 
-  describe('TranslationContext', () => {
-    it('exposes the translation context', async () => {
-      let context;
+  it('calls setActiveChannel to set a new channel in context', async () => {
+    let context;
 
-      render(
-        <Chat client={chatClient}>
-          <TranslationContextConsumer
-            fn={(ctx) => {
-              context = ctx;
-            }}
-          ></TranslationContextConsumer>
-        </Chat>,
-      );
+    render(
+      <Chat client={chatClient}>
+        <ChatContextConsumer
+          fn={(ctx) => {
+            context = ctx;
+          }}
+        ></ChatContextConsumer>
+      </Chat>,
+    );
 
-      await waitFor(() => {
-        expect(context).toBeInstanceOf(Object);
-        expect(context.t).toBeInstanceOf(Function);
-        expect(context.tDateTimeParser).toBeInstanceOf(Function);
-      });
+    const channel = { cid: 'cid', id: 'cid', query: jest.fn() };
+
+    await waitFor(() => expect(context.channel).toBeUndefined());
+    act(() => context.setActiveChannel(channel));
+
+    await waitFor(() => expect(context.channel).toStrictEqual(channel));
+  });
+});
+
+describe('TranslationContext', () => {
+  beforeEach(() => {
+    jest.spyOn(DBSyncManager, 'init');
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+  });
+
+  const chatClient = getTestClient();
+  it('exposes the translation context', async () => {
+    let context;
+
+    render(
+      <Chat client={chatClient}>
+        <TranslationContextConsumer
+          fn={(ctx) => {
+            context = ctx;
+          }}
+        ></TranslationContextConsumer>
+      </Chat>,
+    );
+
+    await waitFor(() => {
+      expect(context).toBeInstanceOf(Object);
+      expect(context.t).toBeInstanceOf(Function);
+      expect(context.tDateTimeParser).toBeInstanceOf(Function);
+    });
+  });
+
+  it('uses the i18nInstance provided in props', async () => {
+    let context;
+    const i18nInstance = new Streami18n();
+    const { t, tDateTimeParser } = await i18nInstance.getTranslators();
+
+    i18nInstance.t = () => 't';
+    i18nInstance.tDateTimeParser = () => 'tDateTimeParser';
+
+    render(
+      <Chat client={chatClient} i18nInstance={i18nInstance}>
+        <TranslationContextConsumer
+          fn={(ctx) => {
+            context = ctx;
+          }}
+        ></TranslationContextConsumer>
+      </Chat>,
+    );
+
+    await waitFor(() => {
+      expect(context.t).not.toBe(t);
+      expect(context.t).toBe(i18nInstance.t);
+      expect(context.tDateTimeParser).not.toBe(tDateTimeParser);
+      expect(context.tDateTimeParser).toBe(i18nInstance.tDateTimeParser);
+    });
+  });
+
+  it('updates the context when props change', async () => {
+    let context;
+    const i18nInstance = new Streami18n();
+
+    i18nInstance.t = () => 't';
+    i18nInstance.tDateTimeParser = () => 'tDateTimeParser';
+
+    const { rerender } = render(
+      <Chat client={chatClient} i18nInstance={i18nInstance}>
+        <TranslationContextConsumer
+          fn={(ctx) => {
+            context = ctx;
+          }}
+        ></TranslationContextConsumer>
+      </Chat>,
+    );
+
+    await waitFor(() => {
+      expect(context.t).toBe(i18nInstance.t);
+      expect(context.tDateTimeParser).toBe(i18nInstance.tDateTimeParser);
     });
 
-    it('uses the i18nInstance provided in props', async () => {
-      let context;
-      const i18nInstance = new Streami18n();
-      const { t, tDateTimeParser } = await i18nInstance.getTranslators();
+    const newI18nInstance = new Streami18n();
 
-      i18nInstance.t = () => 't';
-      i18nInstance.tDateTimeParser = () => 'tDateTimeParser';
+    newI18nInstance.t = () => 'newT';
+    newI18nInstance.tDateTimeParser = () => 'newtDateTimeParser';
 
-      render(
-        <Chat client={chatClient} i18nInstance={i18nInstance}>
-          <TranslationContextConsumer
-            fn={(ctx) => {
-              context = ctx;
-            }}
-          ></TranslationContextConsumer>
-        </Chat>,
-      );
-
-      await waitFor(() => {
-        expect(context.t).not.toBe(t);
-        expect(context.t).toBe(i18nInstance.t);
-        expect(context.tDateTimeParser).not.toBe(tDateTimeParser);
-        expect(context.tDateTimeParser).toBe(i18nInstance.tDateTimeParser);
-      });
+    rerender(
+      <Chat client={chatClient} i18nInstance={newI18nInstance}>
+        <TranslationContextConsumer
+          fn={(ctx) => {
+            context = ctx;
+          }}
+        ></TranslationContextConsumer>
+      </Chat>,
+    );
+    await waitFor(() => {
+      expect(context.t).not.toBe(i18nInstance.t);
+      expect(context.t).toBe(newI18nInstance.t);
+      expect(context.tDateTimeParser).not.toBe(i18nInstance.tDateTimeParser);
+      expect(context.tDateTimeParser).toBe(newI18nInstance.tDateTimeParser);
     });
+  });
 
-    it('updates the context when props change', async () => {
-      let context;
-      const i18nInstance = new Streami18n();
+  it('makes sure DBSyncManager listeners are cleaned up after Chat remount', async () => {
+    const chatClientWithUser = await getTestClientWithUser({ id: 'testID' });
 
-      i18nInstance.t = () => 't';
-      i18nInstance.tDateTimeParser = () => 'tDateTimeParser';
+    // initial mount and render
+    const { rerender } = render(<Chat client={chatClientWithUser} enableOfflineSupport key={1} />);
 
-      const { rerender } = render(
-        <Chat client={chatClient} i18nInstance={i18nInstance}>
-          <TranslationContextConsumer
-            fn={(ctx) => {
-              context = ctx;
-            }}
-          ></TranslationContextConsumer>
-        </Chat>,
-      );
+    let unsubscribeSpy;
+    let listenersAfterInitialMount;
 
-      await waitFor(() => {
-        expect(context.t).toBe(i18nInstance.t);
-        expect(context.tDateTimeParser).toBe(i18nInstance.tDateTimeParser);
-      });
-
-      const newI18nInstance = new Streami18n();
-
-      newI18nInstance.t = () => 'newT';
-      newI18nInstance.tDateTimeParser = () => 'newtDateTimeParser';
-
-      rerender(
-        <Chat client={chatClient} i18nInstance={newI18nInstance}>
-          <TranslationContextConsumer
-            fn={(ctx) => {
-              context = ctx;
-            }}
-          ></TranslationContextConsumer>
-        </Chat>,
-      );
-      await waitFor(() => {
-        expect(context.t).not.toBe(i18nInstance.t);
-        expect(context.t).toBe(newI18nInstance.t);
-        expect(context.tDateTimeParser).not.toBe(i18nInstance.tDateTimeParser);
-        expect(context.tDateTimeParser).toBe(newI18nInstance.tDateTimeParser);
-      });
-    });
-
-    it('makes sure DBSyncManager listeners are cleaned up after Chat remount', async () => {
-      const chatClientWithUser = await getTestClientWithUser({ id: 'testID' });
-      jest.spyOn(DBSyncManager, 'init');
-
-      // initial mount and render
-      const { rerender } = render(
-        <Chat client={chatClientWithUser} enableOfflineSupport key={1} />,
-      );
-
+    await waitFor(() => {
       // the unsubscribe fn changes during init(), so we keep a reference to the spy
-      const unsubscribeSpy = jest.spyOn(DBSyncManager.connectionChangedListener, 'unsubscribe');
-      const listenersAfterInitialMount = chatClientWithUser.listeners['connection.changed'];
-
-      // remount
-      rerender(<Chat client={chatClientWithUser} enableOfflineSupport key={2} />);
-
-      await waitFor(() => {
-        expect(DBSyncManager.init).toHaveBeenCalledTimes(2);
-        expect(unsubscribeSpy).toHaveBeenCalledTimes(2);
-        expect(chatClientWithUser.listeners['connection.changed'].length).toBe(
-          listenersAfterInitialMount.length,
-        );
-      });
+      unsubscribeSpy = jest.spyOn(DBSyncManager.connectionChangedListener, 'unsubscribe');
+      listenersAfterInitialMount = chatClientWithUser.listeners['connection.changed'];
     });
 
-    it('makes sure DBSyncManager listeners are cleaned up if the user changes', async () => {
-      const chatClientWithUser = await getTestClientWithUser({ id: 'testID1' });
-      jest.spyOn(DBSyncManager, 'init');
+    // remount
+    rerender(<Chat client={chatClientWithUser} enableOfflineSupport key={2} />);
 
-      // initial render
-      const { rerender } = render(<Chat client={chatClientWithUser} enableOfflineSupport />);
+    await waitFor(() => {
+      expect(DBSyncManager.init).toHaveBeenCalledTimes(2);
+      expect(unsubscribeSpy).toHaveBeenCalledTimes(2);
+      expect(chatClientWithUser.listeners['connection.changed'].length).toBe(
+        listenersAfterInitialMount.length,
+      );
+    });
+  });
 
+  it('makes sure DBSyncManager listeners are cleaned up if the user changes', async () => {
+    const chatClientWithUser = await getTestClientWithUser({ id: 'testID1' });
+
+    // initial render
+    const { rerender } = render(<Chat client={chatClientWithUser} enableOfflineSupport />);
+
+    let unsubscribeSpy;
+    let listenersAfterInitialMount;
+
+    await waitFor(() => {
       // the unsubscribe fn changes during init(), so we keep a reference to the spy
-      const unsubscribeSpy = jest.spyOn(DBSyncManager.connectionChangedListener, 'unsubscribe');
-      await act(async () => {
-        await setUser(chatClientWithUser, { id: 'testID2' });
-      });
-      const listenersAfterInitialMount = chatClientWithUser.listeners['connection.changed'];
-
-      // rerender with different user ID
-      rerender(<Chat client={chatClientWithUser} enableOfflineSupport />);
-
-      await waitFor(() => {
-        expect(DBSyncManager.init).toHaveBeenCalledTimes(2);
-        expect(unsubscribeSpy).toHaveBeenCalledTimes(1);
-        expect(chatClientWithUser.listeners['connection.changed'].length).toBe(
-          listenersAfterInitialMount.length,
-        );
-      });
+      unsubscribeSpy = jest.spyOn(DBSyncManager.connectionChangedListener, 'unsubscribe');
+      listenersAfterInitialMount = chatClientWithUser.listeners['connection.changed'];
     });
 
-    it('makes sure DBSyncManager state stays intact during normal rerenders', async () => {
-      const chatClientWithUser = await getTestClientWithUser({ id: 'testID' });
-      jest.spyOn(DBSyncManager, 'init');
+    await act(async () => {
+      await setUser(chatClientWithUser, { id: 'testID2' });
+    });
 
-      // initial render
-      const { rerender } = render(<Chat client={chatClientWithUser} enableOfflineSupport />);
+    // rerender with different user ID
+    rerender(<Chat client={chatClientWithUser} enableOfflineSupport />);
 
+    await waitFor(() => {
+      expect(DBSyncManager.init).toHaveBeenCalledTimes(2);
+      expect(unsubscribeSpy).toHaveBeenCalledTimes(1);
+      expect(chatClientWithUser.listeners['connection.changed'].length).toBe(
+        listenersAfterInitialMount.length,
+      );
+    });
+  });
+
+  it('makes sure DBSyncManager state stays intact during normal rerenders', async () => {
+    const chatClientWithUser = await getTestClientWithUser({ id: 'testID' });
+
+    // initial render
+    const { rerender } = render(<Chat client={chatClientWithUser} enableOfflineSupport />);
+
+    let unsubscribeSpy;
+    await waitFor(() => {
       // the unsubscribe fn changes during init(), so we keep a reference to the spy
-      const unsubscribeSpy = jest.spyOn(DBSyncManager.connectionChangedListener, 'unsubscribe');
-      const listenersAfterInitialMount = chatClientWithUser.listeners['connection.changed'];
+      unsubscribeSpy = jest.spyOn(DBSyncManager.connectionChangedListener, 'unsubscribe');
+    });
 
-      // rerender
-      rerender(<Chat client={chatClientWithUser} enableOfflineSupport />);
+    const listenersAfterInitialMount = chatClientWithUser.listeners['connection.changed'];
 
-      await waitFor(() => {
-        expect(DBSyncManager.init).toHaveBeenCalledTimes(1);
-        expect(unsubscribeSpy).toHaveBeenCalledTimes(0);
-        expect(chatClientWithUser.listeners['connection.changed'].length).toBe(
-          listenersAfterInitialMount.length,
-        );
-      });
+    // rerender
+    rerender(<Chat client={chatClientWithUser} enableOfflineSupport />);
+
+    await waitFor(() => {
+      expect(DBSyncManager.init).toHaveBeenCalledTimes(1);
+      expect(unsubscribeSpy).toHaveBeenCalledTimes(1);
+      expect(chatClientWithUser.listeners['connection.changed'].length).toBe(
+        listenersAfterInitialMount.length,
+      );
     });
   });
 });

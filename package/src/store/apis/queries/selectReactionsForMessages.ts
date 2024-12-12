@@ -1,14 +1,14 @@
-import { QuickSqliteClient } from '../../QuickSqliteClient';
 import { tables } from '../../schema';
+import { SqliteClient } from '../../SqliteClient';
 import type { TableRowJoinedUser } from '../../types';
 
 /**
  * Fetches reactions for a message from the database for messageIds.
  * @param messageIds The message IDs for which reactions are to be fetched.
  */
-export const selectReactionsForMessages = (
+export const selectReactionsForMessages = async (
   messageIds: string[],
-): TableRowJoinedUser<'reactions'>[] => {
+): Promise<TableRowJoinedUser<'reactions'>[]> => {
   const questionMarks = Array(messageIds.length).fill('?').join(',');
   const reactionsColumnNames = Object.keys(tables.reactions.columns)
     .map((name) => `'${name}', a.${name}`)
@@ -17,11 +17,11 @@ export const selectReactionsForMessages = (
     .map((name) => `'${name}', b.${name}`)
     .join(', ');
 
-  QuickSqliteClient.logger?.('info', 'selectReactionsForMessages', {
+  SqliteClient.logger?.('info', 'selectReactionsForMessages', {
     messageIds,
   });
 
-  const result = QuickSqliteClient.executeSql(
+  const result = await SqliteClient.executeSql(
     `SELECT
       json_object(
         'user', json_object(

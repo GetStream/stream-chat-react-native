@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
 });
 
 type Props = {
-  animatedIndex: Animated.SharedValue<number>;
+  animatedIndex: SharedValue<number>;
 };
 
 export const AttachmentPickerBottomSheetHandle = ({ animatedIndex }: Props) => {

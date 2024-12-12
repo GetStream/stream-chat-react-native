@@ -12,7 +12,7 @@ configPromise.then((config) => {
         name: 'develop',
         channel: 'beta',
         prerelease: 'beta',
-      },
+      }
     ],
   }).then((result) => {
     // This logics avoid a overflow of next tags in github by removing the last
