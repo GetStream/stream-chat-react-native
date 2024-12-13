@@ -3,6 +3,7 @@ import { FlatList, StyleSheet, View } from 'react-native';
 
 import { ReactionButton } from './ReactionButton';
 
+import { MessageContextValue } from '../../contexts/messageContext/MessageContext';
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -16,23 +17,13 @@ import { ReactionData } from '../../utils/utils';
 
 export type MessageReactionPickerProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessagesContextValue<StreamChatGenerics>, 'supportedReactions'> & {
-  /**
-   * Function to dismiss the action bottom sheet.
-   * @returns void
-   */
-  dismissOverlay: () => void;
-  /**
-   * An array of reaction types that the current user has reacted with
-   */
-  ownReactionTypes: string[];
-  /**
-   * Function to handle reaction on press
-   * @param reactionType
-   * @returns
-   */
-  handleReaction?: (reactionType: string) => Promise<void>;
-};
+> = Pick<MessagesContextValue<StreamChatGenerics>, 'supportedReactions'> &
+  Pick<MessageContextValue<StreamChatGenerics>, 'handleReaction' | 'dismissOverlay'> & {
+    /**
+     * An array of reaction types that the current user has reacted with
+     */
+    ownReactionTypes: string[];
+  };
 
 export type ReactionPickerItemType = ReactionData & {
   onSelectReaction: (type: string) => void;
