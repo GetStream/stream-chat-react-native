@@ -447,6 +447,10 @@ export type ChannelPropsWithContext<
      * Custom loading error indicator to override the Stream default
      */
     LoadingErrorIndicator?: React.ComponentType<LoadingErrorProps>;
+    /**
+     * Boolean flag to enable/disable marking the channel as read on mount
+     */
+    markReadOnMount?: boolean;
     maxMessageLength?: number;
     /**
      * Load the channel at a specified message instead of the most recent message.
@@ -581,6 +585,7 @@ const ChannelWithContext = <
     loadingMore: loadingMoreProp,
     loadingMoreRecent: loadingMoreRecentProp,
     markdownRules,
+    markReadOnMount = true,
     maxMessageLength: maxMessageLengthProp,
     maxNumberOfFiles = 10,
     maxTimeBetweenGroupedMessages,
@@ -841,7 +846,7 @@ const ChannelWithContext = <
         });
       }
 
-      if (channel.countUnread() > 0) {
+      if (channel.countUnread() > 0 && markReadOnMount) {
         await markRead({ updateChannelUnreadState: false });
       }
 

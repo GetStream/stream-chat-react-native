@@ -115,7 +115,6 @@ type MessageListPropsWithContext<
     | 'hideStickyDateHeader'
     | 'highlightedMessageId'
     | 'loadChannelAroundMessage'
-    | 'loadChannelAtFirstUnreadMessage'
     | 'loading'
     | 'LoadingIndicator'
     | 'markRead'
@@ -123,7 +122,6 @@ type MessageListPropsWithContext<
     | 'reloadChannel'
     | 'scrollToFirstUnreadThreshold'
     | 'setTargetedMessage'
-    | 'setChannelUnreadState'
     | 'StickyHeader'
     | 'targetedMessage'
     | 'threadList'
@@ -250,7 +248,6 @@ const MessageListWithContext = <
     isListActive = false,
     legacyImageViewerSwipeBehaviour,
     loadChannelAroundMessage,
-    loadChannelAtFirstUnreadMessage,
     loading,
     LoadingIndicator,
     loadMore,
@@ -269,7 +266,6 @@ const MessageListWithContext = <
     reloadChannel,
     ScrollToBottomButton,
     selectedPicker,
-    setChannelUnreadState,
     setFlatListRef,
     setMessages,
     setSelectedPicker,
@@ -1000,14 +996,6 @@ const MessageListWithContext = <
     }
   };
 
-  const onUnreadNotificationPress = async () => {
-    await loadChannelAtFirstUnreadMessage({
-      channelUnreadState,
-      setChannelUnreadState,
-      setTargetedMessage,
-    });
-  };
-
   const onUnreadNotificationClose = async () => {
     await markRead();
     setIsUnreadNotificationOpen(false);
@@ -1154,10 +1142,7 @@ const MessageListWithContext = <
       />
       <NetworkDownIndicator />
       {isUnreadNotificationOpen && !threadList ? (
-        <UnreadMessagesNotification
-          onCloseHandler={onUnreadNotificationClose}
-          onPressHandler={onUnreadNotificationPress}
-        />
+        <UnreadMessagesNotification onCloseHandler={onUnreadNotificationClose} />
       ) : null}
     </View>
   );
@@ -1184,14 +1169,12 @@ export const MessageList = <
     highlightedMessageId,
     isChannelActive,
     loadChannelAroundMessage,
-    loadChannelAtFirstUnreadMessage,
     loading,
     LoadingIndicator,
     markRead,
     NetworkDownIndicator,
     reloadChannel,
     scrollToFirstUnreadThreshold,
-    setChannelUnreadState,
     setTargetedMessage,
     StickyHeader,
     targetedMessage,
@@ -1241,7 +1224,6 @@ export const MessageList = <
         isListActive: isChannelActive,
         legacyImageViewerSwipeBehaviour,
         loadChannelAroundMessage,
-        loadChannelAtFirstUnreadMessage,
         loading,
         LoadingIndicator,
         loadMore,
@@ -1258,7 +1240,6 @@ export const MessageList = <
         ScrollToBottomButton,
         scrollToFirstUnreadThreshold,
         selectedPicker,
-        setChannelUnreadState,
         setMessages,
         setSelectedPicker,
         setTargetedMessage,
