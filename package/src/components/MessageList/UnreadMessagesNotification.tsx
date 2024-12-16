@@ -8,13 +8,13 @@ import { Close } from '../../icons';
 
 export type UnreadMessagesNotificationProps = {
   /**
-   * Callback to handle the press event
-   */
-  onPressHandler?: () => Promise<void>;
-  /**
    * Callback to handle the close event
    */
   onCloseHandler?: () => void;
+  /**
+   * Callback to handle the press event
+   */
+  onPressHandler?: () => Promise<void>;
 };
 
 export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProps) => {
