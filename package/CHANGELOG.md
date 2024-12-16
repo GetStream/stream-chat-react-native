@@ -1,5 +1,22 @@
 # Change Log
 
+## [6.0.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.44.2...v6.0.0) (2024-12-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* trigger v6 release
+* v6 release
+
+### Features
+
+* V6.0.0 ([#2844](https://github.com/GetStream/stream-chat-react-native/issues/2844)) ([8701379](https://github.com/GetStream/stream-chat-react-native/commit/87013795f795ae0428dabae9a2ce18562e674fdc)), closes [#2538](https://github.com/GetStream/stream-chat-react-native/issues/2538) [#2537](https://github.com/GetStream/stream-chat-react-native/issues/2537) [#2539](https://github.com/GetStream/stream-chat-react-native/issues/2539) [#2537](https://github.com/GetStream/stream-chat-react-native/issues/2537) [#2527](https://github.com/GetStream/stream-chat-react-native/issues/2527) [#2534](https://github.com/GetStream/stream-chat-react-native/issues/2534) [#2563](https://github.com/GetStream/stream-chat-react-native/issues/2563) [#2561](https://github.com/GetStream/stream-chat-react-native/issues/2561) [#2541](https://github.com/GetStream/stream-chat-react-native/issues/2541) [#2578](https://github.com/GetStream/stream-chat-react-native/issues/2578) [#2621](https://github.com/GetStream/stream-chat-react-native/issues/2621) [#2627](https://github.com/GetStream/stream-chat-react-native/issues/2627) [#2633](https://github.com/GetStream/stream-chat-react-native/issues/2633) [#2682](https://github.com/GetStream/stream-chat-react-native/issues/2682) [#2646](https://github.com/GetStream/stream-chat-react-native/issues/2646) [#2648](https://github.com/GetStream/stream-chat-react-native/issues/2648) [#2651](https://github.com/GetStream/stream-chat-react-native/issues/2651) [#2649](https://github.com/GetStream/stream-chat-react-native/issues/2649) [#2654](https://github.com/GetStream/stream-chat-react-native/issues/2654) [#2656](https://github.com/GetStream/stream-chat-react-native/issues/2656) [#2657](https://github.com/GetStream/stream-chat-react-native/issues/2657) [#2653](https://github.com/GetStream/stream-chat-react-native/issues/2653) [#2659](https://github.com/GetStream/stream-chat-react-native/issues/2659)
+
+
+### Bug Fixes
+
+* dummy commit to trigger v6 release ([#2847](https://github.com/GetStream/stream-chat-react-native/issues/2847)) ([8b94767](https://github.com/GetStream/stream-chat-react-native/commit/8b94767f0295c60d59792f4f05bf9aa34c3c457c))
+
 ### [5.44.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.44.1...v5.44.2) (2024-12-10)
 
 
