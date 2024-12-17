@@ -21,6 +21,10 @@ import {
   VideoType,
 } from '../../../native';
 
+const ReanimatedSafeAreaView = Animated.createAnimatedComponent
+  ? Animated.createAnimatedComponent(SafeAreaView)
+  : SafeAreaView;
+
 import { DefaultStreamChatGenerics, FileTypes } from '../../../types/types';
 import type { Photo } from '../ImageGallery';
 
@@ -160,7 +164,7 @@ export const ImageGalleryFooterWithContext = <
       pointerEvents={'box-none'}
       style={styles.wrapper}
     >
-      <SafeAreaView style={[{ backgroundColor: white }, container, footerStyle]}>
+      <ReanimatedSafeAreaView style={[{ backgroundColor: white }, footerStyle, container]}>
         {photo.type === FileTypes.Video ? (
           videoControlElement ? (
             videoControlElement({ duration, onPlayPause, paused, progress, videoRef })
@@ -202,7 +206,7 @@ export const ImageGalleryFooterWithContext = <
             </TouchableOpacity>
           )}
         </View>
-      </SafeAreaView>
+      </ReanimatedSafeAreaView>
     </Animated.View>
   );
 };

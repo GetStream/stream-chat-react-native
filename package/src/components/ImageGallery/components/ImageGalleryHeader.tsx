@@ -1,6 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { Pressable, SafeAreaView, StyleSheet, Text, View, ViewStyle } from 'react-native';
-import { Extrapolation, interpolate, SharedValue, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+  Extrapolation,
+  interpolate,
+  SharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
@@ -10,6 +15,10 @@ import { Close } from '../../../icons';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { getDateString } from '../../../utils/i18n/getDateString';
 import type { Photo } from '../ImageGallery';
+
+const ReanimatedSafeAreaView = Animated.createAnimatedComponent
+  ? Animated.createAnimatedComponent(SafeAreaView)
+  : SafeAreaView;
 
 export type ImageGalleryHeaderCustomComponent<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -93,7 +102,7 @@ export const ImageGalleryHeader = <
       onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
       pointerEvents={'box-none'}
     >
-      <SafeAreaView style={[{ backgroundColor: white }, container, headerStyle]}>
+      <ReanimatedSafeAreaView style={[{ backgroundColor: white }, headerStyle, container]}>
         <View style={[styles.innerContainer, innerContainer]}>
           {leftElement ? (
             leftElement({ hideOverlay, photo })
@@ -120,7 +129,7 @@ export const ImageGalleryHeader = <
             <View style={[styles.rightContainer, rightContainer]} />
           )}
         </View>
-      </SafeAreaView>
+      </ReanimatedSafeAreaView>
     </View>
   );
 };
