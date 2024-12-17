@@ -877,18 +877,14 @@ const ChannelWithContext = <
   /**
    * Subscription to the Notification mark_read event.
    */
-  useEffect(
-    () => {
-      const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
-        if (channel.cid === event.cid) setRead(channel);
-      };
+  useEffect(() => {
+    const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
+      if (channel.cid === event.cid) setRead(channel);
+    };
 
-      const { unsubscribe } = client.on('notification.mark_read', handleEvent);
-      return unsubscribe;
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [channel, client, setRead],
-  );
+    const { unsubscribe } = client.on('notification.mark_read', handleEvent);
+    return unsubscribe;
+  }, [channel, client, setRead]);
 
   const threadPropsExists = !!threadProps;
 
