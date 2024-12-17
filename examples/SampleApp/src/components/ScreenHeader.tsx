@@ -165,6 +165,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
                       color: black,
                     },
                   ]}
+                  numberOfLines={1}
                 >
                   {titleText}
                 </Text>
@@ -182,6 +183,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
                     color: grey,
                   },
                 ]}
+                numberOfLines={1}
               >
                 {subtitleText}
               </Text>

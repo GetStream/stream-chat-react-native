@@ -160,7 +160,7 @@ type ListComponentProps = ChannelListMessengerProps<StreamChatGenerics>;
 const ListComponent: React.FC<ListComponentProps> = (props) => {
   const { channels, loadingChannels, refreshing } = useChannelsContext();
 
-  if (channels.length <= 1 && !loadingChannels && !refreshing) {
+  if (channels && channels.length <= 1 && !loadingChannels && !refreshing) {
     return <EmptyListComponent />;
   }
 

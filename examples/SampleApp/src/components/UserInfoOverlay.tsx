@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Keyboard, SafeAreaView, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { Alert, Keyboard, SafeAreaView, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import {
@@ -302,14 +302,24 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                               members,
                             });
 
-                            const newChannel =
-                              channels.length === 1
-                                ? channels[0]
-                                : client.channel('messaging', {
-                                    members,
-                                  });
+                            console.log('channels', channels.length);
+                            let newChannel;
+                            if (channels.length === 1) {
+                              newChannel = channels[0];
+                            } else {
+                              try {
+                                newChannel = client.channel('messaging', { members });
+                                await newChannel.watch();
+                              } catch (error) {
+                                newChannel = undefined;
+                                if (error instanceof Error) {
+                                  Alert.alert('Error creating channel', error.message);
+                                }
+                              }
+                            }
+
                             setOverlay('none');
-                            if (navigation) {
+                            if (navigation && newChannel) {
                               navigation.navigate('OneOnOneChannelDetailScreen', {
                                 channel: newChannel,
                               });
