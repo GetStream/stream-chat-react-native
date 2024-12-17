@@ -1,11 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Pressable, SafeAreaView, StyleSheet, Text, View, ViewStyle } from 'react-native';
-import Animated, {
-  Extrapolation,
-  interpolate,
-  SharedValue,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
+import { Extrapolation, interpolate, SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
@@ -58,6 +53,7 @@ export const ImageGalleryHeader = <
           centerContainer,
           container,
           dateText,
+          innerContainer,
           leftContainer,
           rightContainer,
           usernameText,
@@ -93,12 +89,12 @@ export const ImageGalleryHeader = <
   };
 
   return (
-    <SafeAreaView
+    <View
       onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
       pointerEvents={'box-none'}
     >
-      <Animated.View style={headerStyle}>
-        <View style={[styles.container, { backgroundColor: white }, container]}>
+      <SafeAreaView style={[{ backgroundColor: white }, container, headerStyle]}>
+        <View style={[styles.innerContainer, innerContainer]}>
           {leftElement ? (
             leftElement({ hideOverlay, photo })
           ) : (
@@ -124,8 +120,8 @@ export const ImageGalleryHeader = <
             <View style={[styles.rightContainer, rightContainer]} />
           )}
         </View>
-      </Animated.View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 };
 
@@ -137,15 +133,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 8,
-  },
   date: {
     fontSize: 12,
     fontWeight: '500',
     opacity: 0.5,
+  },
+  innerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
   },
   leftContainer: {
     flex: 1,

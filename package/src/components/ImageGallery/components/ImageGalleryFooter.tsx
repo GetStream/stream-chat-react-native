@@ -154,28 +154,26 @@ export const ImageGalleryFooterWithContext = <
   };
 
   return (
-    <SafeAreaView
+    <Animated.View
       accessibilityLabel={accessibilityLabel}
       onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
       pointerEvents={'box-none'}
       style={styles.wrapper}
     >
-      <Animated.View style={footerStyle}>
-        <View style={[{ backgroundColor: white }, container]}>
-          {photo.type === FileTypes.Video ? (
-            videoControlElement ? (
-              videoControlElement({ duration, onPlayPause, paused, progress, videoRef })
-            ) : (
-              <ImageGalleryVideoControl
-                duration={duration}
-                onPlayPause={onPlayPause}
-                paused={paused}
-                progress={progress}
-                videoRef={videoRef}
-              />
-            )
-          ) : null}
-        </View>
+      <SafeAreaView style={[{ backgroundColor: white }, container, footerStyle]}>
+        {photo.type === FileTypes.Video ? (
+          videoControlElement ? (
+            videoControlElement({ duration, onPlayPause, paused, progress, videoRef })
+          ) : (
+            <ImageGalleryVideoControl
+              duration={duration}
+              onPlayPause={onPlayPause}
+              paused={paused}
+              progress={progress}
+              videoRef={videoRef}
+            />
+          )
+        ) : null}
         <View style={[styles.innerContainer, { backgroundColor: white }, innerContainer]}>
           {leftElement ? (
             leftElement({ openGridView, photo, share, shareMenuOpen })
@@ -204,8 +202,8 @@ export const ImageGalleryFooterWithContext = <
             </TouchableOpacity>
           )}
         </View>
-      </Animated.View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </Animated.View>
   );
 };
 
