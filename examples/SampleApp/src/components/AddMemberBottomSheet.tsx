@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, TextInput, View } from 'react-native';
-import { TouchableOpacity } from '@gorhom/bottom-sheet';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CircleClose, Search, useTheme } from 'stream-chat-react-native';
 
@@ -37,9 +43,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 18,
     borderWidth: 1,
-    flex: 1,
     flexDirection: 'row',
-    marginRight: 16,
     paddingHorizontal: 10,
     paddingVertical: 8,
   },
@@ -47,6 +51,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     padding: 16,
+    justifyContent: 'center',
   },
   text: {
     marginLeft: 10,
@@ -135,10 +140,10 @@ export const AddMemberBottomSheet: React.FC = () => {
             ]}
             value={searchText}
           />
+          <TouchableOpacity onPress={clearText}>
+            <CircleClose pathFill={grey} />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={clearText}>
-          <CircleClose pathFill={grey} />
-        </TouchableOpacity>
       </View>
       <View style={styles.flex}>
         {addMemberQueryInProgress && (

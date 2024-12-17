@@ -27,7 +27,7 @@ import { ChannelPinnedMessagesScreen } from './src/screens/ChannelPinnedMessages
 import { ChatScreen } from './src/screens/ChatScreen';
 import { GroupChannelDetailsScreen } from './src/screens/GroupChannelDetailsScreen';
 import { LoadingScreen } from './src/screens/LoadingScreen';
-import { MenuDrawer } from './src/screens/MenuDrawer';
+import { MenuDrawer } from './src/components/MenuDrawer';
 import { NewDirectMessagingScreen } from './src/screens/NewDirectMessagingScreen';
 import { NewGroupChannelAddMemberScreen } from './src/screens/NewGroupChannelAddMemberScreen';
 import { NewGroupChannelAssignNameScreen } from './src/screens/NewGroupChannelAssignNameScreen';
