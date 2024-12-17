@@ -302,7 +302,6 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                               members,
                             });
 
-                            console.log('channels', channels.length);
                             let newChannel;
                             if (channels.length === 1) {
                               newChannel = channels[0];
