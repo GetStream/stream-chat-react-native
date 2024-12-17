@@ -62,6 +62,9 @@ export type ChannelContextValue<
   hideStickyDateHeader: boolean;
   /**
    * Loads channel around a specific message
+   * @param limit - The number of messages to load around the message
+   * @param messageId - The message around which to load messages
+   * @param setTargetedMessage - Callback to set the targeted message
    */
   loadChannelAroundMessage: ({
     limit,
@@ -75,6 +78,9 @@ export type ChannelContextValue<
 
   /**
    * Loads channel at first unread message.
+   * @param channelUnreadState - The unread state of the channel
+   * @param limit - The number of messages to load around the first unread message
+   * @param setChannelUnreadState - Callback to set the channel unread state
    */
   loadChannelAtFirstUnreadMessage: ({
     channelUnreadState,
