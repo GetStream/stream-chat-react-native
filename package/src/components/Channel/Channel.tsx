@@ -887,7 +887,7 @@ const ChannelWithContext = <
       return unsubscribe;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [channel.cid, client, setRead],
+    [channel, client, setRead],
   );
 
   const threadPropsExists = !!threadProps;
