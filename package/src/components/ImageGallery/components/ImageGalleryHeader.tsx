@@ -16,6 +16,10 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { getDateString } from '../../../utils/i18n/getDateString';
 import type { Photo } from '../ImageGallery';
 
+const ReanimatedSafeAreaView = Animated.createAnimatedComponent
+  ? Animated.createAnimatedComponent(SafeAreaView)
+  : SafeAreaView;
+
 export type ImageGalleryHeaderCustomComponent<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = ({
@@ -58,6 +62,7 @@ export const ImageGalleryHeader = <
           centerContainer,
           container,
           dateText,
+          innerContainer,
           leftContainer,
           rightContainer,
           usernameText,
@@ -93,12 +98,12 @@ export const ImageGalleryHeader = <
   };
 
   return (
-    <SafeAreaView
+    <View
       onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
       pointerEvents={'box-none'}
     >
-      <Animated.View style={headerStyle}>
-        <View style={[styles.container, { backgroundColor: white }, container]}>
+      <ReanimatedSafeAreaView style={[{ backgroundColor: white }, headerStyle, container]}>
+        <View style={[styles.innerContainer, innerContainer]}>
           {leftElement ? (
             leftElement({ hideOverlay, photo })
           ) : (
@@ -124,8 +129,8 @@ export const ImageGalleryHeader = <
             <View style={[styles.rightContainer, rightContainer]} />
           )}
         </View>
-      </Animated.View>
-    </SafeAreaView>
+      </ReanimatedSafeAreaView>
+    </View>
   );
 };
 
@@ -137,15 +142,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 8,
-  },
   date: {
     fontSize: 12,
     fontWeight: '500',
     opacity: 0.5,
+  },
+  innerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
   },
   leftContainer: {
     flex: 1,

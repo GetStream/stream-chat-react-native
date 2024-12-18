@@ -183,7 +183,7 @@ const DrawerNavigatorWrapper: React.FC<{
           enableOfflineSupport
           // @ts-expect-error
           ImageComponent={FastImage}
-          isMessageAIGenerated={(message: MessageType) => message.ai_generated}
+          isMessageAIGenerated={(message: MessageType) => !!message.ai_generated}
         >
           <AppOverlayProvider>
             <UserSearchProvider>
