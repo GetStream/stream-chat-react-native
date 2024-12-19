@@ -1,5 +1,13 @@
 # Change Log
 
+### [6.0.1](https://github.com/GetStream/stream-chat-react-native/compare/v6.0.0...v6.0.1) (2024-12-19)
+
+
+### Bug Fixes
+
+* export useFetchReaction hook from SDK and TS improvements ([#2853](https://github.com/GetStream/stream-chat-react-native/issues/2853)) ([9bda6ea](https://github.com/GetStream/stream-chat-react-native/commit/9bda6eade1317fb78c27a24ed2dd112904f11db7))
+* image gallery safe area ([#2855](https://github.com/GetStream/stream-chat-react-native/issues/2855)) ([5825685](https://github.com/GetStream/stream-chat-react-native/commit/5825685179f7803007da5eac530e06caf513ec1f))
+
 ## [6.0.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.44.2...v6.0.0) (2024-12-12)
 
 

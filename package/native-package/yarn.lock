@@ -1038,10 +1038,10 @@
     "@babel/helper-validator-identifier" "^7.24.7"
     to-fast-properties "^2.0.0"
 
-"@gorhom/bottom-sheet@^4.6.4":
-  version "4.6.4"
-  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-4.6.4.tgz#387d0f0f21e3470eb8575498cb81ce96f5108e79"
-  integrity sha512-0itLMblLBvepE065w3a60S030c2rNUsGshPC7wbWDm31VyqoaU2xjzh/ojH62YIJOcobBr5QoC30IxBBKDGovQ==
+"@gorhom/bottom-sheet@^5.0.6":
+  version "5.0.6"
+  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-5.0.6.tgz#f20736502399c7bcf8c73ea09e6b571dc07fe0eb"
+  integrity sha512-SI/AhPvgRfnCWN6/+wbE6TXwRE4X8F2fLyE4L/0bRwgE34Zenq585qLT139uEcfCIyovC2swC3ICqQpkmWEcFA==
   dependencies:
     "@gorhom/portal" "1.0.14"
     invariant "^2.2.4"
@@ -4242,12 +4242,12 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-stream-chat-react-native-core@5.44.2:
-  version "5.44.2"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.44.2.tgz#7195084d87a6ab1c4c45d7017278b06c08bf755d"
-  integrity sha512-WEYDzftNSQRIzn40J3JGXbX4iuDrb0wWegpLIFm4AVmzSDrR93PEr1wkdonoFK7RlO9XslVPXzDxKbZyWQ5gmA==
+stream-chat-react-native-core@6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-6.0.0.tgz#77798c7082877572ef70223e1f799d22f0c78fe7"
+  integrity sha512-3cFao8iL2MjP7nhVRAl1vi526FbPlqUj4BHnYQ7sUNe+xb4z/HCEL6fKFh8kIfK5MEAacOQO4juPPQktoIf7zg==
   dependencies:
-    "@gorhom/bottom-sheet" "^4.6.4"
+    "@gorhom/bottom-sheet" "^5.0.6"
     dayjs "1.10.5"
     emoji-regex "^10.3.0"
     i18next "^21.6.14"
