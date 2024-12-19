@@ -1,5 +1,14 @@
 # Change Log
 
+### [2.0.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v2.0.0...sampleapp@v2.0.1) (2024-12-19)
+
+
+### Bug Fixes
+
+* image gallery safe area ([#2855](https://github.com/GetStream/stream-chat-react-native/issues/2855)) ([5825685](https://github.com/GetStream/stream-chat-react-native/commit/5825685179f7803007da5eac530e06caf513ec1f))
+* ios push notifications on sample app ([#2856](https://github.com/GetStream/stream-chat-react-native/issues/2856)) ([d607132](https://github.com/GetStream/stream-chat-react-native/commit/d6071326903ec524914fb2a2319dda56ee9a9460))
+* sample app ui bugs ([#2854](https://github.com/GetStream/stream-chat-react-native/issues/2854)) ([851237c](https://github.com/GetStream/stream-chat-react-native/commit/851237c5ba17789722a3898265ae8ef5566025b4))
+
 ## [2.0.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.33.2...sampleapp@v2.0.0) (2024-12-12)
 
 
