@@ -1,8 +1,7 @@
 import type { Immutable } from 'seamless-immutable';
-import type { Channel, ExtendableGenerics, UserResponse, DefaultGenerics } from 'stream-chat';
+import type { Channel, UserResponse } from 'stream-chat';
 import type { ThreadContextValue } from 'stream-chat-react-native';
 import type { Theme } from '@react-navigation/native';
-import { DefaultStreamChatGenerics } from 'stream-chat-react-native';
 
 export type LocalAttachmentType = {
   file_size?: number;
