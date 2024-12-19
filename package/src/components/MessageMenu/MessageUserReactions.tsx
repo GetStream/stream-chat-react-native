@@ -6,6 +6,7 @@ import { ReactionSortBase } from 'stream-chat';
 import { useFetchReactions } from './hooks/useFetchReactions';
 import { ReactionButton } from './ReactionButton';
 
+import { MessageContextValue } from '../../contexts/messageContext/MessageContext';
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -14,7 +15,6 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { DefaultStreamChatGenerics, Reaction } from '../../types/types';
 import { ReactionData } from '../../utils/utils';
-import { MessageType } from '../MessageList/hooks/useMessageList';
 
 export type MessageUserReactionsProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -23,16 +23,13 @@ export type MessageUserReactionsProps<
     MessagesContextValue<StreamChatGenerics>,
     'MessageUserReactionsAvatar' | 'MessageUserReactionsItem' | 'supportedReactions'
   >
-> & {
-  /**
-   * The message object
-   */
-  message?: MessageType<StreamChatGenerics>;
-  /**
-   * An array of reactions
-   */
-  reactions?: Reaction[];
-};
+> &
+  Partial<Pick<MessageContextValue<StreamChatGenerics>, 'message'>> & {
+    /**
+     * An array of reactions
+     */
+    reactions?: Reaction[];
+  };
 
 const sort: ReactionSortBase = {
   created_at: -1,

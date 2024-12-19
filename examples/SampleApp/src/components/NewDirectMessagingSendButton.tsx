@@ -17,6 +17,8 @@ import {
 import { NewDirectMessagingScreenNavigationProp } from '../screens/NewDirectMessagingScreen';
 
 import { StreamChatGenerics as LocalStreamChatGenerics } from '../types';
+import { useUserSearchContext } from '../context/UserSearchContext';
+import { useAppContext } from '../context/AppContext';
 
 type NewDirectMessagingSendButtonPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -97,8 +99,10 @@ export type SendButtonProps<
  * UI Component for send button in MessageInput component.
  */
 export const NewDirectMessagingSendButton = (props: SendButtonProps<LocalStreamChatGenerics>) => {
+  const { chatClient } = useAppContext();
   const navigation = useNavigation<NewDirectMessagingScreenNavigationProp>();
   const { channel } = useChannelContext<LocalStreamChatGenerics>();
+  const { selectedUserIds, reset } = useUserSearchContext();
 
   const { giphyActive, text } = useMessageInputContext<LocalStreamChatGenerics>();
 
@@ -106,15 +110,25 @@ export const NewDirectMessagingSendButton = (props: SendButtonProps<LocalStreamC
     if (!channel) {
       return;
     }
+    if (!chatClient || !chatClient.user) {
+      return;
+    }
+    const members = [chatClient.user.id, ...selectedUserIds];
     channel.initialized = false;
-    await channel.query({});
+    const newChannel = chatClient.channel('messaging', {
+      members,
+    });
     try {
-      await channel.sendMessage({ text });
+      await newChannel.watch();
+      await newChannel.sendMessage({ text });
       navigation.replace('ChannelScreen', {
-        channelId: channel.id,
+        channelId: newChannel.id,
       });
+      reset();
     } catch (e) {
-      Alert.alert('Error sending a message');
+      if (e instanceof Error) {
+        Alert.alert('Error sending a message', e.message);
+      }
     }
   };
 

@@ -23,6 +23,7 @@ import Animated, {
 import {
   Avatar,
   CircleClose,
+  Delete,
   User,
   UserMinus,
   useTheme,
@@ -32,7 +33,6 @@ import {
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
 import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayContext';
-import { Delete } from '../icons/Delete';
 
 dayjs.extend(relativeTime);
 
@@ -77,9 +77,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderTopWidth: 1,
     flexDirection: 'row',
+    paddingVertical: 16,
   },
-  row: { alignItems: 'center', borderTopWidth: 1, flexDirection: 'row' },
-  rowInner: { paddingLeft: 16, paddingRight: 10, paddingVertical: 20 },
+  row: { alignItems: 'center', borderTopWidth: 1, flexDirection: 'row', paddingVertical: 16 },
+  rowInner: { paddingLeft: 16, paddingRight: 10 },
   rowText: {
     fontSize: 14,
     fontWeight: '700',
@@ -408,7 +409,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           ]}
                         >
                           <View style={styles.rowInner}>
-                            <Delete height={32} pathFill={accent_red} width={32} />
+                            <Delete size={24} fill={accent_red} />
                           </View>
                           <Text style={[styles.rowText, { color: accent_red }]}>
                             Delete conversation
