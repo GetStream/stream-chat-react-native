@@ -105,11 +105,11 @@ export const useChatClient = () => {
     if (isEnabled) {
       // Register FCM token with stream chat server.
       const token = await messaging().getToken();
-      await client.addDevice(token, 'firebase');
+      await client.addDevice(token, 'firebase', client.userID, 'rn-fcm');
 
       // Listen to new FCM tokens and register them with stream chat server.
       const unsubscribeTokenRefresh = messaging().onTokenRefresh(async (newToken) => {
-        await client.addDevice(newToken, 'firebase');
+        await client.addDevice(newToken, 'firebase', client.userID, 'rn-fcm');
       });
       // show notifications when on foreground
       const unsubscribeForegroundMessageReceive = messaging().onMessage(async (remoteMessage) => {

@@ -1,14 +1,15 @@
 import type { Immutable } from 'seamless-immutable';
-import type { Channel, UserResponse } from 'stream-chat';
+import type { Channel, ExtendableGenerics, UserResponse, DefaultGenerics } from 'stream-chat';
 import type { ThreadContextValue } from 'stream-chat-react-native';
 import type { Theme } from '@react-navigation/native';
+import { DefaultStreamChatGenerics } from 'stream-chat-react-native';
 
 export type LocalAttachmentType = {
   file_size?: number;
   mime_type?: string;
 };
 export type LocalChannelType = Record<string, unknown>;
-export type LocalCommandType = string;
+export type LocalCommandType = string & {};
 export type LocalEventType = Record<string, unknown>;
 export type LocalMessageType = Record<string, unknown>;
 export type LocalReactionType = Record<string, unknown>;
@@ -30,7 +31,9 @@ export type StreamChatGenerics = {
   pollType: LocalPollType;
   reactionType: LocalReactionType;
   userType: LocalUserType;
-};
+}
+
+// export type StreamChatGenerics = DefaultGenerics;
 
 export type DrawerNavigatorParamList = {
   HomeScreen: undefined;
