@@ -1,4 +1,16 @@
 import { PermissionsAndroid, Platform } from 'react-native';
+
+import {
+  AudioEncoderAndroidType,
+  RNCLIAudioRecordingConfiguration as AudioRecordingConfiguration,
+  AudioSourceAndroidType,
+  AVEncoderAudioQualityIOSType,
+  AVEncodingOption,
+  AVModeIOSOption,
+  OutputFormatAndroidType,
+  RNCLIRecordingOptions as RecordingOptions,
+} from 'stream-chat-react-native-core';
+
 let AudioRecorderPackage;
 let audioRecorderPlayer;
 
@@ -17,105 +29,6 @@ try {
 } catch (e) {
   console.log('react-native-audio-recorder-player is not installed.');
 }
-
-export enum AudioSourceAndroidType {
-  DEFAULT = 0,
-  MIC,
-  VOICE_UPLINK,
-  VOICE_DOWNLINK,
-  VOICE_CALL,
-  CAMCORDER,
-  VOICE_RECOGNITION,
-  VOICE_COMMUNICATION,
-  REMOTE_SUBMIX,
-  UNPROCESSED,
-  RADIO_TUNER = 1998,
-  HOTWORD,
-}
-
-export enum OutputFormatAndroidType {
-  DEFAULT = 0,
-  THREE_GPP,
-  MPEG_4,
-  AMR_NB,
-  AMR_WB,
-  AAC_ADIF,
-  AAC_ADTS,
-  OUTPUT_FORMAT_RTP_AVP,
-  MPEG_2_TS,
-  WEBM,
-}
-
-export enum AudioEncoderAndroidType {
-  DEFAULT = 0,
-  AMR_NB,
-  AMR_WB,
-  AAC,
-  HE_AAC,
-  AAC_ELD,
-  VORBIS,
-}
-
-export enum AVEncodingOption {
-  aac = 'aac',
-  alac = 'alac',
-  alaw = 'alaw',
-  amr = 'amr',
-  flac = 'flac',
-  ima4 = 'ima4',
-  lpcm = 'lpcm',
-  MAC3 = 'MAC3',
-  MAC6 = 'MAC6',
-  mp1 = 'mp1',
-  mp2 = 'mp2',
-  mp4 = 'mp4',
-  opus = 'opus',
-  ulaw = 'ulaw',
-  wav = 'wav',
-}
-
-export enum AVModeIOSOption {
-  gamechat = 'gamechat',
-  measurement = 'measurement',
-  movieplayback = 'movieplayback',
-  spokenaudio = 'spokenaudio',
-  videochat = 'videochat',
-  videorecording = 'videorecording',
-  voicechat = 'voicechat',
-  voiceprompt = 'voiceprompt',
-}
-
-export type AVModeIOSType =
-  | AVModeIOSOption.gamechat
-  | AVModeIOSOption.measurement
-  | AVModeIOSOption.movieplayback
-  | AVModeIOSOption.spokenaudio
-  | AVModeIOSOption.videochat
-  | AVModeIOSOption.videorecording
-  | AVModeIOSOption.voicechat
-  | AVModeIOSOption.voiceprompt;
-
-export enum AVEncoderAudioQualityIOSType {
-  min = 0,
-  low = 32,
-  medium = 64,
-  high = 96,
-  max = 127,
-}
-
-export enum AVLinearPCMBitDepthKeyIOSType {
-  'bit8' = 8,
-  'bit16' = 16,
-  'bit24' = 24,
-  'bit32' = 32,
-}
-
-export type RecordingOptions = {
-  /**
-   * A boolean that determines whether audio level information will be part of the status object under the "metering" key.
-   */
-  isMeteringEnabled?: boolean;
-};
 
 const verifyAndroidPermissions = async () => {
   const isRN71orAbove = Platform.constants.reactNativeVersion?.minor >= 71;
@@ -175,6 +88,20 @@ const verifyAndroidPermissions = async () => {
 };
 
 class _Audio {
+  audioRecordingConfiguration: AudioRecordingConfiguration = {
+    options: {
+      audioSet: {
+        AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
+        AudioSourceAndroid: AudioSourceAndroidType.MIC,
+        AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.high,
+        AVFormatIDKeyIOS: AVEncodingOption.aac,
+        AVModeIOS: AVModeIOSOption.spokenaudio,
+        AVNumberOfChannelsKeyIOS: 2,
+        OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS,
+      },
+      isMeteringEnabled: true,
+    },
+  };
   pausePlayer = async () => {
     await audioRecorderPlayer.pausePlayer();
   };
@@ -206,19 +133,11 @@ class _Audio {
         android: `${RNBlobUtil.fs.dirs.CacheDir}/sound.aac`,
         ios: 'sound.aac',
       });
-      const audioSet = {
-        AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
-        AudioSourceAndroid: AudioSourceAndroidType.MIC,
-        AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.high,
-        AVFormatIDKeyIOS: AVEncodingOption.aac,
-        AVModeIOS: AVModeIOSOption.spokenaudio,
-        AVNumberOfChannelsKeyIOS: 2,
-        OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS,
-      };
+      console.log('ISE: AUDIO: ', this.audioRecordingConfiguration);
       const recording = await audioRecorderPlayer.startRecorder(
         path,
-        audioSet,
-        options?.isMeteringEnabled,
+        this.audioRecordingConfiguration.options.audioSet,
+        this.audioRecordingConfiguration.options.isMeteringEnabled,
       );
 
       audioRecorderPlayer.addRecordBackListener((status) => {
@@ -254,5 +173,9 @@ class _Audio {
     }
   };
 }
+
+export const overrideAudioRecordingConfiguration = (
+  audioRecordingConfiguration: AudioRecordingConfiguration,
+) => audioRecordingConfiguration;
 
 export const Audio = AudioRecorderPackage && RNBlobUtil ? new _Audio() : null;
