@@ -211,7 +211,7 @@ class _Audio {
         AudioSourceAndroid: AudioSourceAndroidType.MIC,
         AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.high,
         AVFormatIDKeyIOS: AVEncodingOption.aac,
-        AVModeIOS: AVModeIOSOption.measurement,
+        AVModeIOS: AVModeIOSOption.spokenaudio,
         AVNumberOfChannelsKeyIOS: 2,
         OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS,
       };
