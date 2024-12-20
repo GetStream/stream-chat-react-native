@@ -1,6 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Button, StyleSheet, View } from 'react-native';
 
 import { ChannelAvatar } from './ChannelAvatar';
 import type { ChannelPreviewProps } from './ChannelPreview';
@@ -20,6 +19,7 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useViewport } from '../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../types/types';
+import { useChannelMembershipState } from '../ChannelList/hooks/useChannelMembershipState';
 
 const styles = StyleSheet.create({
   container: {
@@ -111,7 +111,6 @@ const ChannelPreviewMessengerWithContext = <
     latestMessagePreview,
     maxUnreadCount,
     muted,
-    onSelect,
     PreviewAvatar = ChannelAvatar,
     PreviewMessage = ChannelPreviewMessage,
     PreviewMutedStatus = ChannelPreviewMutedStatus,
@@ -136,13 +135,10 @@ const ChannelPreviewMessengerWithContext = <
     Math.floor(maxWidth / ((title.fontSize || styles.title.fontSize) / 2)),
   );
 
+  const membership = useChannelMembershipState(channel);
+
   return (
-    <TouchableOpacity
-      onPress={() => {
-        if (onSelect) {
-          onSelect(channel);
-        }
-      }}
+    <View
       style={[
         styles.container,
         { backgroundColor: white_snow, borderBottomColor: border },
@@ -169,9 +165,35 @@ const ChannelPreviewMessengerWithContext = <
             formatLatestMessageDate={formatLatestMessageDate}
             latestMessagePreview={latestMessagePreview}
           />
+          {membership && (
+            <>
+              <Button
+                title={membership.archived_at ? 'Unarchieve' : 'Archieve'}
+                onPress={async () => {
+                  console.log('membership', membership.archived_at);
+                  if (membership.archived_at) {
+                    await channel.unarchive();
+                  } else {
+                    await channel.archive();
+                  }
+                }}
+              />
+              <Button
+                title={membership.pinned_at ? 'Unpin' : 'Pin'}
+                onPress={async () => {
+                  console.log('membership', membership.pinned_at);
+                  if (membership.pinned_at) {
+                    await channel.unpin();
+                  } else {
+                    await channel.pin();
+                  }
+                }}
+              />
+            </>
+          )}
         </View>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 };
 

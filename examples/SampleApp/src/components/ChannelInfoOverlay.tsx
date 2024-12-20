@@ -1,5 +1,14 @@
 import React, { useEffect } from 'react';
-import { FlatList, Keyboard, SafeAreaView, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import {
+  FlatList,
+  Keyboard,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+} from 'react-native';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import {
@@ -33,6 +42,7 @@ import {
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
 import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayContext';
+import { Archieve } from '../icons/Archieve';
 
 dayjs.extend(relativeTime);
 
@@ -111,7 +121,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
   const halfScreenHeight = vh(50);
   const width = vw(100) - 60;
 
-  const { channel, clientId, navigation } = data || {};
+  const { channel, clientId, membership, navigation } = data || {};
 
   const {
     theme: {
@@ -361,6 +371,37 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           <Text style={[styles.rowText, { color: black }]}>View info</Text>
                         </View>
                       </TapGestureHandler>
+                      <Pressable
+                        onPress={async () => {
+                          try {
+                            if (membership?.archived_at) {
+                              await channel.unarchive();
+                            } else {
+                              await channel.archive();
+                            }
+                          } catch (error) {
+                            console.log('Error archiving/unarchiving channel', error);
+                          }
+
+                          setOverlay('none');
+                        }}
+                      >
+                        <View
+                          style={[
+                            styles.row,
+                            {
+                              borderTopColor: border,
+                            },
+                          ]}
+                        >
+                          <View style={styles.rowInner}>
+                            <Archieve height={24} width={24} />
+                          </View>
+                          <Text style={[styles.rowText, { color: black }]}>
+                            {membership?.archived_at ? 'Unarchieve' : 'Archieve'}
+                          </Text>
+                        </View>
+                      </Pressable>
                       {otherMembers.length > 1 && (
                         <TapGestureHandler
                           onHandlerStateChange={({ nativeEvent: { state } }) => {

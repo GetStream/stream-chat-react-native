@@ -33,6 +33,8 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
+import { shouldConsiderArchivedChannels } from './hooks/utils';
+import { useChannelMemberUpdated } from './hooks/listeners/useMemberUpdated';
 
 export type ChannelListProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -163,13 +165,14 @@ export type ChannelListProps<
    * @param lockChannelOrder If set to true, channels won't dynamically sort by most recent message, defaults to false
    * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
    * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `message.new` event
-   *
+   * @param considerArchivedChannels If set to true, archived channels will be considered while updating the list of channels
    * @overrideType Function
    * */
   onNewMessage?: (
     lockChannelOrder: boolean,
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
     event: Event<StreamChatGenerics>,
+    considerArchivedChannels?: boolean,
   ) => void;
   /**
    * Override the default listener/handler for event `notification.message_new`
@@ -183,6 +186,7 @@ export type ChannelListProps<
   onNewMessageNotification?: (
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
     event: Event<StreamChatGenerics>,
+    considerArchivedChannels?: boolean,
   ) => void;
   /**
    * Function that overrides default behavior when a user gets removed from a channel
@@ -286,6 +290,8 @@ export const ChannelList = <
     sort,
   });
 
+  const considerArchivedChannels = shouldConsiderArchivedChannels(filters);
+
   // Setup event listeners
   useAddedToChannelNotification({
     onAddedToChannel,
@@ -323,11 +329,13 @@ export const ChannelList = <
     lockChannelOrder,
     onNewMessage,
     setChannels,
+    considerArchivedChannels,
   });
 
   useNewMessageNotification({
     onNewMessageNotification,
     setChannels,
+    considerArchivedChannels,
   });
 
   useRemovedFromChannelNotification({
@@ -338,6 +346,10 @@ export const ChannelList = <
   useUserPresence({
     setChannels,
     setForceUpdate,
+  });
+
+  useChannelMemberUpdated({
+    setChannels,
   });
 
   const channelIdsStr = channels?.reduce((acc, channel) => `${acc}${channel.cid}`, '');

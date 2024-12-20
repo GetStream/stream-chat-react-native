@@ -6,6 +6,7 @@ import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { moveChannelUp } from '../../utils';
+import { isChannelArchived } from '../utils';
 
 type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   {
@@ -15,7 +16,9 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
       lockChannelOrder: boolean,
       setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
       event: Event<StreamChatGenerics>,
+      considerArchivedChannels?: boolean,
     ) => void;
+    considerArchivedChannels?: boolean;
   };
 
 export const useNewMessage = <
@@ -24,17 +27,29 @@ export const useNewMessage = <
   lockChannelOrder,
   onNewMessage,
   setChannels,
+  considerArchivedChannels = false,
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
 
   useEffect(() => {
     const handleEvent = (event: Event<StreamChatGenerics>) => {
       if (typeof onNewMessage === 'function') {
-        onNewMessage(lockChannelOrder, setChannels, event);
+        onNewMessage(lockChannelOrder, setChannels, event, considerArchivedChannels);
       } else {
         setChannels((channels) => {
           if (!channels) return channels;
-          const channelInList = channels.filter((channel) => channel.cid === event.cid).length > 0;
+          const targetChannelIndex = channels.findIndex((channel) => channel.cid === event.cid);
+
+          const channelInList = targetChannelIndex >= 0;
+
+          const targetChannel = channels[targetChannelIndex];
+
+          const isTargetChannelArchived = isChannelArchived(targetChannel);
+
+          // If channel is archived and we don't want to consider archived channels, return existing list
+          if (isTargetChannelArchived && considerArchivedChannels) {
+            return channels;
+          }
 
           if (!channelInList && event.channel_type && event.channel_id) {
             // If channel doesn't exist in existing list, check in activeChannels as well.

@@ -54,6 +54,7 @@ export * from './ChannelList/hooks/listeners/useRemovedFromChannelNotification';
 export * from './ChannelList/hooks/listeners/useUserPresence';
 export * from './ChannelList/hooks/useCreateChannelsContext';
 export * from './ChannelList/hooks/usePaginatedChannels';
+export * from './ChannelList/hooks/useChannelMembershipState';
 export * from './ChannelList/Skeleton';
 
 export * from './ChannelPreview/ChannelAvatar';

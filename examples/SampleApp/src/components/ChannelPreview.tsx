@@ -8,6 +8,7 @@ import {
   ChannelPreviewMessengerProps,
   Delete,
   MenuPointHorizontal,
+  useChannelMembershipState,
   useChatContext,
   useTheme,
 } from 'stream-chat-react-native';
@@ -57,6 +58,8 @@ export const ChannelPreview: React.FC<ChannelPreviewMessengerProps<StreamChatGen
 
   const navigation = useNavigation<ChannelListScreenNavigationProp>();
 
+  const membership = useChannelMembershipState(channel);
+
   const {
     theme: {
       colors: { accent_red, white_smoke },
@@ -75,7 +78,7 @@ export const ChannelPreview: React.FC<ChannelPreviewMessengerProps<StreamChatGen
         <View style={[styles.swipeableContainer, { backgroundColor: white_smoke }]}>
           <RectButton
             onPress={() => {
-              setData({ channel, clientId: client.userID, navigation });
+              setData({ channel, clientId: client.userID, membership, navigation });
               setOverlay('channelInfo');
             }}
             style={[styles.leftSwipeableButton]}

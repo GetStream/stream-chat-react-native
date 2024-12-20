@@ -60,20 +60,16 @@ const options = {
 
 I18nManager.forceRTL(false);
 
-SqliteClient.logger = (level, message, extraData) => {
-  console.log(level, `SqliteClient: ${message}`, extraData);
-};
-
-const apiKey = 'q95x9hkbyd6p';
+const apiKey = '8br4watad788';
 const userToken =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoicm9uIn0.eRVjxLvd4aqCEHY_JRa97g6k7WpHEhxL7Z4K4yTot1c';
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoibHVrZV9za3l3YWxrZXIifQ.kFSLHRB5X62t0Zlc7nwczWUfsQMwfkpylC6jCUZ6Mc0';
 
 const user = {
-  id: 'ron',
+  id: 'luke_skywalker',
 };
 const filters = {
-  example: 'example-apps',
-  members: { $in: ['ron'] },
+  archived: true,
+  members: { $in: ['luke_skywalker'] },
   type: 'messaging',
 };
 const sort: ChannelSort<StreamChatGenerics> = { last_updated: -1 };

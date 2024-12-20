@@ -8,20 +8,22 @@ import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { getChannel } from '../../utils';
+import { isChannelArchived } from '../utils';
 
 type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   {
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>;
-
     onNewMessageNotification?: (
       setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
       event: Event<StreamChatGenerics>,
     ) => void;
+    considerArchivedChannels?: boolean;
   };
 
 export const useNewMessageNotification = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
+  considerArchivedChannels = false,
   onNewMessageNotification,
   setChannels,
 }: Parameters<StreamChatGenerics>) => {
@@ -38,6 +40,12 @@ export const useNewMessageNotification = <
             id: event.channel.id,
             type: event.channel.type,
           });
+
+          // Handle archived channels
+          if (isChannelArchived(channel) && considerArchivedChannels) {
+            return;
+          }
+
           setChannels((channels) => (channels ? uniqBy([channel, ...channels], 'cid') : channels));
         }
       }

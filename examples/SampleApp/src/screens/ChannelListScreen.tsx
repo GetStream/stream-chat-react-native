@@ -51,7 +51,11 @@ const styles = StyleSheet.create({
 const baseFilters = {
   type: 'messaging',
 };
-const sort: ChannelSort<StreamChatGenerics> = { last_updated: -1 };
+const sort: ChannelSort<StreamChatGenerics> = [
+  { pinned_at: 1 },
+  { last_message_at: -1 },
+  { updated_at: -1 },
+];
 const options = {
   presence: true,
   state: true,
@@ -191,6 +195,9 @@ export const ChannelListScreen: React.FC = () => {
                 navigation.navigate('ChannelScreen', {
                   channel,
                 });
+              }}
+              onNewMessage={(arg1, arg2, arg3, arg4) => {
+                console.log(arg1, arg2, arg3, arg4);
               }}
               options={options}
               Preview={ChannelPreview}
