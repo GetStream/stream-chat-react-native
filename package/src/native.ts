@@ -212,7 +212,12 @@ export type RecordingOptions = {
   isMeteringEnabled?: boolean;
 };
 
+export type AudioRecordingConfiguration = {
+  options?: RecordingOptions;
+};
+
 export type AudioType = {
+  audioRecordingConfiguration: AudioRecordingConfiguration;
   startRecording: (
     options?: RecordingOptions,
     onRecordingStatusUpdate?: (recordingStatus: RecordingStatus) => void,
@@ -284,6 +289,9 @@ type Handlers = {
   getPhotos?: GetPhotos;
   iOS14RefreshGallerySelection?: iOS14RefreshGallerySelection;
   oniOS14GalleryLibrarySelectionChange?: OniOS14LibrarySelectionChange;
+  overrideAudioRecordingConfiguration?: (
+    audioRecordingConfiguration: AudioRecordingConfiguration,
+  ) => AudioRecordingConfiguration;
   pickDocument?: PickDocument;
   pickImage?: PickImage;
   saveFile?: SaveFile;
@@ -297,8 +305,14 @@ type Handlers = {
 };
 
 export const registerNativeHandlers = (handlers: Handlers) => {
-  if (handlers.Audio !== null) {
+  if (handlers.Audio !== undefined) {
     Audio = handlers.Audio;
+  }
+
+  if (Audio && handlers.overrideAudioRecordingConfiguration) {
+    Audio.audioRecordingConfiguration = handlers.overrideAudioRecordingConfiguration(
+      Audio.audioRecordingConfiguration,
+    );
   }
 
   if (handlers.compressImage) {
@@ -345,7 +359,7 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     SDK = handlers.SDK;
   }
 
-  if (handlers.shareImage !== null) {
+  if (handlers.shareImage !== undefined) {
     shareImage = handlers.shareImage;
   }
 

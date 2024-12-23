@@ -1881,14 +1881,6 @@
     find-up "^5.0.0"
     js-yaml "^4.1.0"
 
-"@gorhom/bottom-sheet@^4.6.4":
-  version "4.6.4"
-  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-4.6.4.tgz#387d0f0f21e3470eb8575498cb81ce96f5108e79"
-  integrity sha512-0itLMblLBvepE065w3a60S030c2rNUsGshPC7wbWDm31VyqoaU2xjzh/ojH62YIJOcobBr5QoC30IxBBKDGovQ==
-  dependencies:
-    "@gorhom/portal" "1.0.14"
-    invariant "^2.2.4"
-
 "@gorhom/bottom-sheet@^5.0.6":
   version "5.0.6"
   resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-5.0.6.tgz#f20736502399c7bcf8c73ea09e6b571dc07fe0eb"
@@ -7033,24 +7025,6 @@ stream-buffers@2.2.x, stream-buffers@~2.2.0:
 "stream-chat-expo@link:../../package/expo-package":
   version "0.0.0"
   uid ""
-
-stream-chat-react-native-core@5.44.1:
-  version "5.44.1"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-5.44.1.tgz#0c4629ba01390574dabb963e2e805eb38602d2d4"
-  integrity sha512-cJqfsogmiTwK93kpPQhwaOl+whkH05JFl4k501r0VJbm6xlzv5eVb3NZfi6bX1z2xrILYHC5BFabM0RsX/xL/Q==
-  dependencies:
-    "@gorhom/bottom-sheet" "^4.6.4"
-    dayjs "1.10.5"
-    emoji-regex "^10.3.0"
-    i18next "^21.6.14"
-    intl-pluralrules "^2.0.1"
-    linkifyjs "^4.1.1"
-    lodash-es "4.17.21"
-    mime-types "^2.1.34"
-    path "0.12.7"
-    react-native-markdown-package "1.8.2"
-    react-native-url-polyfill "^1.3.0"
-    stream-chat "8.46.0"
 
 "stream-chat-react-native-core@link:../../package":
   version "0.0.0"
