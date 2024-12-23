@@ -305,7 +305,6 @@ type Handlers = {
 };
 
 export const registerNativeHandlers = (handlers: Handlers) => {
-  console.log('NATIVE: ', !!handlers.Audio);
   if (handlers.Audio !== undefined) {
     Audio = handlers.Audio;
   }
