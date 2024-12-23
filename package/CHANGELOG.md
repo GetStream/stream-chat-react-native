@@ -1,5 +1,12 @@
 # Change Log
 
+### [6.0.2](https://github.com/GetStream/stream-chat-react-native/compare/v6.0.1...v6.0.2) (2024-12-23)
+
+
+### Bug Fixes
+
+* audio recording default output ([#2858](https://github.com/GetStream/stream-chat-react-native/issues/2858)) ([d43a7b1](https://github.com/GetStream/stream-chat-react-native/commit/d43a7b1785bc434fc99be2df0cd9c97a52f28e73))
+
 ### [6.0.1](https://github.com/GetStream/stream-chat-react-native/compare/v6.0.0...v6.0.1) (2024-12-19)
 
 
