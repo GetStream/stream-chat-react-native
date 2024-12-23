@@ -40,6 +40,7 @@ import type { Channel, UserResponse } from 'stream-chat';
 
 import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
 import { Pin } from '../icons/Pin';
+import { NewGroupIcon } from '../icons/NewGroupIcon';
 
 const styles = StyleSheet.create({
   actionContainer: {
@@ -57,18 +58,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingLeft: 8,
-    paddingRight: 16,
-    paddingVertical: 20,
+    padding: 16,
   },
   changeNameInputBox: {
     flex: 1,
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '600',
     includeFontPadding: false, // for android vertical text centering
     padding: 0, // removal of default text input padding on android
-    paddingLeft: 14,
+    paddingLeft: 16,
     paddingTop: 0, // removal of iOS top padding for weird centering
     textAlignVertical: 'center', // for android vertical text centering
   },
@@ -338,23 +336,21 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               },
             ]}
           >
-            <View style={styles.changeNameInputContainer}>
-              <Text style={{ color: grey }}>NAME</Text>
-              <TextInput
-                onBlur={() => {
-                  setTextInputFocused(false);
-                }}
-                onChangeText={setGroupName}
-                onFocus={() => {
-                  setTextInputFocused(true);
-                }}
-                placeholder='Add a group name'
-                placeholderTextColor={grey}
-                ref={textInputRef}
-                style={[{ color: black }, styles.changeNameInputBox]}
-                value={groupName}
-              />
-            </View>
+            <NewGroupIcon height={24} width={24} fill={grey} />
+            <TextInput
+              onBlur={() => {
+                setTextInputFocused(false);
+              }}
+              onChangeText={setGroupName}
+              onFocus={() => {
+                setTextInputFocused(true);
+              }}
+              placeholder='Add a group name'
+              placeholderTextColor={grey}
+              ref={textInputRef}
+              style={[{ color: black }, styles.changeNameInputBox]}
+              value={groupName}
+            />
             <View style={[styles.row, { opacity: textInputFocused ? 1 : 0 }]}>
               <TouchableOpacity
                 onPress={() => {

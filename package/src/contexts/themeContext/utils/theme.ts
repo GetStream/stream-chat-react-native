@@ -226,6 +226,7 @@ export type Theme = {
       centerContainer: ViewStyle;
       container: ViewStyle;
       dateText: TextStyle;
+      innerContainer: ViewStyle;
       leftContainer: ViewStyle;
       rightContainer: ViewStyle;
       usernameText: TextStyle;
@@ -989,6 +990,7 @@ export const defaultTheme: Theme = {
       centerContainer: {},
       container: {},
       dateText: {},
+      innerContainer: {},
       leftContainer: {},
       rightContainer: {},
       usernameText: {},

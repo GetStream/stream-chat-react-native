@@ -9,13 +9,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useTheme } from 'stream-chat-react-native';
+import { Delete, useTheme } from 'stream-chat-react-native';
 
 import { useAppContext } from '../context/AppContext';
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
 import { Contacts } from '../icons/Contacts';
-import { Delete } from '../icons/Delete';
 import { File } from '../icons/File';
 import { GoBack } from '../icons/GoBack';
 import { GoForward } from '../icons/GoForward';
@@ -482,7 +481,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           ]}
         >
           <View style={styles.actionLabelContainer}>
-            <Delete fill={accent_red} height={24} width={24} />
+            <Delete fill={accent_red} size={24} />
             <Text
               style={[
                 styles.itemText,
