@@ -55,7 +55,9 @@ import { ThreadContextValue, useThreadContext } from '../../contexts/threadConte
 
 import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 
-const WAIT_FOR_SCROLL_TIMEOUT = 150;
+// This is just to make sure that the scrolling happens in a different task queue.
+// TODO: Think if we really need this and strive to remove it if we can.
+const WAIT_FOR_SCROLL_TIMEOUT = 0;
 const MAX_RETRIES_AFTER_SCROLL_FAILURE = 10;
 const styles = StyleSheet.create({
   container: {
@@ -579,6 +581,34 @@ const MessageListWithContext = <
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawMessageList, threadList]);
 
+  const goToMessage = async (messageId: string) => {
+    const indexOfParentInMessageList = processedMessageList.findIndex(
+      (message) => message?.id === messageId,
+    );
+    try {
+      if (indexOfParentInMessageList === -1) {
+        await loadChannelAroundMessage({ messageId });
+        return;
+      } else {
+        if (!flatListRef.current) return;
+        clearTimeout(failScrollTimeoutId.current);
+        scrollToIndexFailedRetryCountRef.current = 0;
+        // keep track of this messageId, so that we dont scroll to again in useEffect for targeted message change
+        messageIdLastScrolledToRef.current = messageId;
+        setTargetedMessage(messageId);
+        // now scroll to it with animated=true
+        flatListRef.current.scrollToIndex({
+          animated: true,
+          index: indexOfParentInMessageList,
+          viewPosition: 0.5, // try to place message in the center of the screen
+        });
+        return;
+      }
+    } catch (e) {
+      console.warn('Error while scrolling to message', e);
+    }
+  };
+
   /**
    * Check if a messageId needs to be scrolled to after list loads, and scroll to it
    * Note: This effect fires on every list change with a small debounce so that scrolling isnt abrupted by an immediate rerender
@@ -602,7 +632,7 @@ const MessageListWithContext = <
         scrollToIndexFailedRetryCountRef.current = 0;
         // now scroll to it
         flatListRef.current.scrollToIndex({
-          animated: false,
+          animated: true,
           index: indexOfParentInMessageList,
           viewPosition: 0.5, // try to place message in the center of the screen
         });
@@ -841,6 +871,7 @@ const MessageListWithContext = <
       await reloadChannel();
     } else if (flatListRef.current) {
       flatListRef.current.scrollToOffset({
+        animated: true,
         offset: 0,
       });
     }
@@ -856,16 +887,12 @@ const MessageListWithContext = <
     // We got a failure as we tried to scroll to an item that was outside the render length
     if (!flatListRef.current) return;
     // we don't know the actual size of all items but we can see the average, so scroll to the closest offset
-    flatListRef.current.scrollToOffset({
-      animated: false,
-      offset: info.averageItemLength * info.index,
-    });
     // since we used only an average offset... we won't go to the center of the item yet
     // with a little delay to wait for scroll to offset to complete, we can then scroll to the index
     failScrollTimeoutId.current = setTimeout(() => {
       try {
         flatListRef.current?.scrollToIndex({
-          animated: false,
+          animated: true,
           index: info.index,
           viewPosition: 0.5, // try to place message in the center of the screen
         });
@@ -895,28 +922,6 @@ const MessageListWithContext = <
     // Only when index is greater than 0 and in range of items in FlatList
     // this onScrollToIndexFailed will be called again
   });
-
-  const goToMessage = async (messageId: string) => {
-    const indexOfParentInMessageList = processedMessageList.findIndex(
-      (message) => message?.id === messageId,
-    );
-    if (indexOfParentInMessageList !== -1 && flatListRef.current) {
-      clearTimeout(failScrollTimeoutId.current);
-      scrollToIndexFailedRetryCountRef.current = 0;
-      // keep track of this messageId, so that we dont scroll to again in useEffect for targeted message change
-      messageIdLastScrolledToRef.current = messageId;
-      setTargetedMessage(messageId);
-      // now scroll to it with animated=true (in useEffect animated=false is used)
-      flatListRef.current.scrollToIndex({
-        animated: true,
-        index: indexOfParentInMessageList,
-        viewPosition: 0.5, // try to place message in the center of the screen
-      });
-      return;
-    }
-    // the message we want was not loaded yet, so lets load it
-    await loadChannelAroundMessage({ messageId });
-  };
 
   const messagesWithImages =
     legacyImageViewerSwipeBehaviour &&

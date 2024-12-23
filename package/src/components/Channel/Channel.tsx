@@ -806,6 +806,7 @@ const ChannelWithContext = <
     let listener: ReturnType<typeof channel.on>;
     const initChannel = async () => {
       setLastRead(new Date());
+      const unreadCount = channel.countUnread();
       if (!channel || !shouldSyncChannel || channel.offlineMode) return;
       let errored = false;
 
@@ -835,18 +836,22 @@ const ChannelWithContext = <
       } else if (
         initialScrollToFirstUnreadMessage &&
         client.user &&
-        channel.countUnread() > scrollToFirstUnreadThreshold
+        unreadCount > scrollToFirstUnreadThreshold
       ) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { user, ...ownReadState } = channel.state.read[client.user.id];
-        await loadChannelAtFirstUnreadMessage({
-          channelUnreadState: ownReadState,
-          setChannelUnreadState,
-          setTargetedMessage,
-        });
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { user, ...ownReadState } = channel.state.read[client.user.id];
+          await loadChannelAtFirstUnreadMessage({
+            channelUnreadState: ownReadState,
+            setChannelUnreadState,
+            setTargetedMessage,
+          });
+        } catch (error) {
+          console.warn('Error loading channel at first unread message:', error);
+        }
       }
 
-      if (channel.countUnread() > 0 && markReadOnMount) {
+      if (unreadCount > 0 && markReadOnMount) {
         await markRead({ updateChannelUnreadState: false });
       }
 
