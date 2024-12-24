@@ -7,6 +7,7 @@ export const useCreateChannelContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channel,
+  channelUnreadState,
   disabled,
   EmptyStateIndicator,
   enableMessageGroupingByUser,
@@ -15,9 +16,11 @@ export const useCreateChannelContext = <
   giphyEnabled,
   hideDateSeparators,
   hideStickyDateHeader,
+  highlightedMessageId,
   isChannelActive,
   lastRead,
   loadChannelAroundMessage,
+  loadChannelAtFirstUnreadMessage,
   loading,
   LoadingIndicator,
   markRead,
@@ -27,6 +30,7 @@ export const useCreateChannelContext = <
   read,
   reloadChannel,
   scrollToFirstUnreadThreshold,
+  setChannelUnreadState,
   setLastRead,
   setTargetedMessage,
   StickyHeader,
@@ -43,10 +47,12 @@ export const useCreateChannelContext = <
   const readUsers = Object.values(read);
   const readUsersLength = readUsers.length;
   const readUsersLastReads = readUsers.map(({ last_read }) => last_read.toISOString()).join();
+  const stringifiedChannelUnreadState = JSON.stringify(channelUnreadState);
 
   const channelContext: ChannelContextValue<StreamChatGenerics> = useMemo(
     () => ({
       channel,
+      channelUnreadState,
       disabled,
       EmptyStateIndicator,
       enableMessageGroupingByUser,
@@ -55,9 +61,11 @@ export const useCreateChannelContext = <
       giphyEnabled,
       hideDateSeparators,
       hideStickyDateHeader,
+      highlightedMessageId,
       isChannelActive,
       lastRead,
       loadChannelAroundMessage,
+      loadChannelAtFirstUnreadMessage,
       loading,
       LoadingIndicator,
       markRead,
@@ -67,6 +75,7 @@ export const useCreateChannelContext = <
       read,
       reloadChannel,
       scrollToFirstUnreadThreshold,
+      setChannelUnreadState,
       setLastRead,
       setTargetedMessage,
       StickyHeader,
@@ -82,11 +91,13 @@ export const useCreateChannelContext = <
       disabled,
       error,
       isChannelActive,
+      highlightedMessageId,
       lastReadTime,
       loading,
       membersLength,
       readUsersLength,
       readUsersLastReads,
+      stringifiedChannelUnreadState,
       targetedMessage,
       threadList,
       watcherCount,

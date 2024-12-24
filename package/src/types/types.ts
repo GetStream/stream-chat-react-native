@@ -1,4 +1,4 @@
-import type { ExtendableGenerics, LiteralStringForUnion } from 'stream-chat';
+import type { ChannelState, ExtendableGenerics, LiteralStringForUnion } from 'stream-chat';
 
 import type { FileStateValue } from '../utils/utils';
 
@@ -101,8 +101,11 @@ export type UnknownType = Record<string, unknown>;
 
 export type ValueOf<T> = T[keyof T];
 
-// ASYNC AUDIO EXPO:
+export type ChannelUnreadState<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Omit<ValueOf<ChannelState<StreamChatGenerics>['read']>, 'user'>;
 
+// ASYNC AUDIO EXPO:
 export enum AndroidOutputFormat {
   DEFAULT = 0,
   THREE_GPP = 1,
