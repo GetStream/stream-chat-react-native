@@ -838,17 +838,13 @@ const ChannelWithContext = <
         client.user &&
         unreadCount > scrollToFirstUnreadThreshold
       ) {
-        try {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { user, ...ownReadState } = channel.state.read[client.user.id];
-          await loadChannelAtFirstUnreadMessage({
-            channelUnreadState: ownReadState,
-            setChannelUnreadState,
-            setTargetedMessage,
-          });
-        } catch (error) {
-          console.warn('Error loading channel at first unread message:', error);
-        }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { user, ...ownReadState } = channel.state.read[client.user.id];
+        await loadChannelAtFirstUnreadMessage({
+          channelUnreadState: ownReadState,
+          setChannelUnreadState,
+          setTargetedMessage,
+        });
       }
 
       if (unreadCount > 0 && markReadOnMount) {
