@@ -12,7 +12,6 @@ import {
   Channel as ChannelType,
   EventHandler,
   FormatMessageResponse,
-  logChatPromiseExecution,
   MessageResponse,
   Reaction,
   SendMessageAPIResponse,
@@ -92,7 +91,7 @@ import {
   isImagePickerAvailable,
 } from '../../native';
 import * as dbApi from '../../store/apis';
-import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
+import { ChannelUnreadState, DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
 import { compressedImageURI } from '../../utils/compressImage';
 import { DBSyncManager } from '../../utils/DBSyncManager';
@@ -179,6 +178,7 @@ import { ScrollToBottomButton as ScrollToBottomButtonDefault } from '../MessageL
 import { StickyHeader as StickyHeaderDefault } from '../MessageList/StickyHeader';
 import { TypingIndicator as TypingIndicatorDefault } from '../MessageList/TypingIndicator';
 import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../MessageList/TypingIndicatorContainer';
+import { UnreadMessagesNotification as UnreadMessagesNotificationDefault } from '../MessageList/UnreadMessagesNotification';
 import { MessageActionList as MessageActionListDefault } from '../MessageMenu/MessageActionList';
 import { MessageActionListItem as MessageActionListItemDefault } from '../MessageMenu/MessageActionListItem';
 import { MessageMenu as MessageMenuDefault } from '../MessageMenu/MessageMenu';
@@ -187,6 +187,15 @@ import { MessageUserReactions as MessageUserReactionsDefault } from '../MessageM
 import { MessageUserReactionsAvatar as MessageUserReactionsAvatarDefault } from '../MessageMenu/MessageUserReactionsAvatar';
 import { MessageUserReactionsItem as MessageUserReactionsItemDefault } from '../MessageMenu/MessageUserReactionsItem';
 import { Reply as ReplyDefault } from '../Reply/Reply';
+
+export type MarkReadFunctionOptions = {
+  /**
+   * Signal, whether the `channelUnreadUiState` should be updated.
+   * By default, the local state update is prevented when the Channel component is mounted.
+   * This is in order to keep the UI indicating the original unread state, when the user opens a channel.
+   */
+  updateChannelUnreadState?: boolean;
+};
 
 const styles = StyleSheet.create({
   selectChannel: { fontWeight: 'bold', padding: 16 },
@@ -301,6 +310,7 @@ export type ChannelPropsWithContext<
       | 'handleDelete'
       | 'handleEdit'
       | 'handleFlag'
+      | 'handleMarkUnread'
       | 'handleMute'
       | 'handlePinMessage'
       | 'handleReaction'
@@ -360,6 +370,7 @@ export type ChannelPropsWithContext<
       | 'VideoThumbnail'
       | 'PollContent'
       | 'hasCreatePoll'
+      | 'UnreadMessagesNotification'
       | 'StreamingMessageView'
     >
   > &
@@ -384,7 +395,10 @@ export type ChannelPropsWithContext<
      * Overrides the Stream default mark channel read request (Advanced usage only)
      * @param channel Channel object
      */
-    doMarkReadRequest?: (channel: ChannelType<StreamChatGenerics>) => void;
+    doMarkReadRequest?: (
+      channel: ChannelType<StreamChatGenerics>,
+      setChannelUnreadUiState?: (state: ChannelUnreadState) => void,
+    ) => void;
     /**
      * Overrides the Stream default send message request (Advanced usage only)
      * @param channelId
@@ -433,6 +447,10 @@ export type ChannelPropsWithContext<
      * Custom loading error indicator to override the Stream default
      */
     LoadingErrorIndicator?: React.ComponentType<LoadingErrorProps>;
+    /**
+     * Boolean flag to enable/disable marking the channel as read on mount
+     */
+    markReadOnMount?: boolean;
     maxMessageLength?: number;
     /**
      * Load the channel at a specified message instead of the most recent message.
@@ -529,6 +547,7 @@ const ChannelWithContext = <
     handleDelete,
     handleEdit,
     handleFlag,
+    handleMarkUnread,
     handleMute,
     handlePinMessage,
     handleQuotedReply,
@@ -566,6 +585,7 @@ const ChannelWithContext = <
     loadingMore: loadingMoreProp,
     loadingMoreRecent: loadingMoreRecentProp,
     markdownRules,
+    markReadOnMount = true,
     maxMessageLength: maxMessageLengthProp,
     maxNumberOfFiles = 10,
     maxTimeBetweenGroupedMessages,
@@ -647,6 +667,7 @@ const ChannelWithContext = <
     threadMessages,
     TypingIndicator = TypingIndicatorDefault,
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
+    UnreadMessagesNotification = UnreadMessagesNotificationDefault,
     UploadProgressIndicator = UploadProgressIndicatorDefault,
     UrlPreview = CardDefault,
     VideoThumbnail = VideoThumbnailDefault,
@@ -674,10 +695,13 @@ const ChannelWithContext = <
   const [thread, setThread] = useState<MessageType<StreamChatGenerics> | null>(threadProps || null);
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
+  const [channelUnreadState, setChannelUnreadState] = useState<ChannelUnreadState | undefined>(
+    undefined,
+  );
 
   const syncingChannelRef = useRef(false);
 
-  const { setTargetedMessage, targetedMessage } = useTargetedMessage();
+  const { highlightedMessageId, setTargetedMessage, targetedMessage } = useTargetedMessage();
 
   /**
    * This ref will hold the abort controllers for
@@ -692,6 +716,7 @@ const ChannelWithContext = <
   const {
     copyStateFromChannel,
     initStateFromChannel,
+    setRead,
     setTyping,
     state: channelState,
   } = useChannelDataState<StreamChatGenerics>(channel);
@@ -754,6 +779,22 @@ const ChannelWithContext = <
         }
       }
 
+      if (event.type === 'notification.mark_unread') {
+        setChannelUnreadState((prev) => {
+          if (!(event.last_read_at && event.user)) return prev;
+          return {
+            first_unread_message_id: event.first_unread_message_id,
+            last_read: new Date(event.last_read_at),
+            last_read_message_id: event.last_read_message_id,
+            unread_messages: event.unread_messages ?? 0,
+          };
+        });
+      }
+
+      if (event.type === 'channel.truncated' && event.cid === channel.cid) {
+        setChannelUnreadState(undefined);
+      }
+
       // only update channel state if the events are not the previously subscribed useEffect's subscription events
       if (channel && channel.initialized) {
         copyChannelState();
@@ -764,6 +805,8 @@ const ChannelWithContext = <
   useEffect(() => {
     let listener: ReturnType<typeof channel.on>;
     const initChannel = async () => {
+      setLastRead(new Date());
+      const unreadCount = channel.countUnread();
       if (!channel || !shouldSyncChannel || channel.offlineMode) return;
       let errored = false;
 
@@ -782,14 +825,32 @@ const ChannelWithContext = <
         loadInitialMessagesStateFromChannel(channel, channel.state.messagePagination.hasPrev);
       }
 
+      if (client.user?.id && channel.state.read[client.user.id]) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { user, ...ownReadState } = channel.state.read[client.user.id];
+        setChannelUnreadState(ownReadState);
+      }
+
       if (messageId) {
         await loadChannelAroundMessage({ messageId, setTargetedMessage });
       } else if (
         initialScrollToFirstUnreadMessage &&
-        channel.countUnread() > scrollToFirstUnreadThreshold
+        client.user &&
+        unreadCount > scrollToFirstUnreadThreshold
       ) {
-        await loadChannelAtFirstUnreadMessage({ setTargetedMessage });
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { user, ...ownReadState } = channel.state.read[client.user.id];
+        await loadChannelAtFirstUnreadMessage({
+          channelUnreadState: ownReadState,
+          setChannelUnreadState,
+          setTargetedMessage,
+        });
       }
+
+      if (unreadCount > 0 && markReadOnMount) {
+        await markRead({ updateChannelUnreadState: false });
+      }
+
       listener = channel.on(handleEvent);
     };
 
@@ -819,12 +880,12 @@ const ChannelWithContext = <
    */
   useEffect(() => {
     const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
-      if (channel.cid === event.cid) copyChannelState();
+      if (channel.cid === event.cid) setRead(channel);
     };
 
     const { unsubscribe } = client.on('notification.mark_read', handleEvent);
     return unsubscribe;
-  }, [channel.cid, client, copyChannelState]);
+  }, [channel, client, setRead]);
 
   const threadPropsExists = !!threadProps;
 
@@ -858,23 +919,33 @@ const ChannelWithContext = <
   /**
    * CHANNEL METHODS
    */
-  const markRead: ChannelContextValue<StreamChatGenerics>['markRead'] = useRef(
-    throttle(
-      () => {
-        if (!channel || channel?.disconnected || !clientChannelConfig?.read_events) {
-          return;
-        }
+  const markRead: ChannelContextValue<StreamChatGenerics>['markRead'] = throttle(
+    async (options?: MarkReadFunctionOptions) => {
+      const { updateChannelUnreadState = true } = options ?? {};
+      if (!channel || channel?.disconnected || !clientChannelConfig?.read_events) {
+        return;
+      }
 
-        if (doMarkReadRequest) {
-          doMarkReadRequest(channel);
-        } else {
-          logChatPromiseExecution(channel.markRead(), 'mark read');
+      if (doMarkReadRequest) {
+        doMarkReadRequest(channel, updateChannelUnreadState ? setChannelUnreadState : undefined);
+      } else {
+        try {
+          const response = await channel.markRead();
+          if (updateChannelUnreadState && response && lastRead) {
+            setChannelUnreadState({
+              last_read: lastRead,
+              last_read_message_id: response?.event.last_read_message_id,
+              unread_messages: 0,
+            });
+          }
+        } catch (err) {
+          console.log('Error marking channel as read:', err);
         }
-      },
-      defaultThrottleInterval,
-      throttleOptions,
-    ),
-  ).current;
+      }
+    },
+    defaultThrottleInterval,
+    throttleOptions,
+  );
 
   const reloadThread = async () => {
     if (!channel || !thread?.id) return;
@@ -1596,8 +1667,9 @@ const ChannelWithContext = <
     overrideCapabilities: overrideOwnCapabilities,
   });
 
-  const channelContext = useCreateChannelContext({
+  const channelContext = useCreateChannelContext<StreamChatGenerics>({
     channel,
+    channelUnreadState,
     disabled: !!channel?.data?.frozen,
     EmptyStateIndicator,
     enableMessageGroupingByUser,
@@ -1608,9 +1680,11 @@ const ChannelWithContext = <
       !!(clientChannelConfig?.commands || [])?.some((command) => command.name === 'giphy'),
     hideDateSeparators,
     hideStickyDateHeader,
+    highlightedMessageId,
     isChannelActive: shouldSyncChannel,
     lastRead,
     loadChannelAroundMessage,
+    loadChannelAtFirstUnreadMessage,
     loading: channelMessagesState.loading,
     LoadingIndicator,
     markRead,
@@ -1620,6 +1694,7 @@ const ChannelWithContext = <
     read: channelState.read ?? {},
     reloadChannel,
     scrollToFirstUnreadThreshold,
+    setChannelUnreadState,
     setLastRead,
     setTargetedMessage,
     StickyHeader,
@@ -1748,6 +1823,7 @@ const ChannelWithContext = <
     handleDelete,
     handleEdit,
     handleFlag,
+    handleMarkUnread,
     handleMute,
     handlePinMessage,
     handleQuotedReply,
@@ -1815,6 +1891,7 @@ const ChannelWithContext = <
     targetedMessage,
     TypingIndicator,
     TypingIndicatorContainer,
+    UnreadMessagesNotification,
     updateMessage,
     UrlPreview,
     VideoThumbnail,

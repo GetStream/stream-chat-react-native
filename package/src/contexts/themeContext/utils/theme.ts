@@ -428,6 +428,12 @@ export type Theme = {
       chevronColor?: ColorValue;
     };
     typingIndicatorContainer: ViewStyle;
+    unreadMessagesNotification: {
+      closeButtonContainer: ViewStyle;
+      closeIcon: IconProps;
+      container: ViewStyle;
+      text: TextStyle;
+    };
   };
   messageMenu: {
     actionList: {
@@ -1168,6 +1174,12 @@ export const defaultTheme: Theme = {
       wrapper: {},
     },
     typingIndicatorContainer: {},
+    unreadMessagesNotification: {
+      closeButtonContainer: {},
+      closeIcon: {},
+      container: {},
+      text: {},
+    },
   },
   messageMenu: {
     actionList: {
