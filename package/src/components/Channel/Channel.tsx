@@ -840,6 +840,7 @@ const ChannelWithContext = <
       ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { user, ...ownReadState } = channel.state.read[client.user.id];
+
         await loadChannelAtFirstUnreadMessage({
           channelUnreadState: ownReadState,
           setChannelUnreadState,
