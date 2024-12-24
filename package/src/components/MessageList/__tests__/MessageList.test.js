@@ -541,7 +541,7 @@ describe('MessageList', () => {
 
     await waitFor(() => {
       expect(flatListRefMock).toHaveBeenCalledWith({
-        animated: false,
+        animated: true,
         index: 14,
         viewPosition: 0.5,
       });
