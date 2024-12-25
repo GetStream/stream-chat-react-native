@@ -46,6 +46,7 @@ export * from './ChannelList/ChannelListMessenger';
 export * from './ChannelList/hooks/listeners/useAddedToChannelNotification';
 export * from './ChannelList/hooks/listeners/useChannelDeleted';
 export * from './ChannelList/hooks/listeners/useChannelHidden';
+export * from './ChannelList/hooks/listeners/useChannelMemberUpdated';
 export * from './ChannelList/hooks/listeners/useChannelTruncated';
 export * from './ChannelList/hooks/listeners/useChannelUpdated';
 export * from './ChannelList/hooks/listeners/useNewMessage';

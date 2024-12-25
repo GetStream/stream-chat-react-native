@@ -196,9 +196,6 @@ export const ChannelListScreen: React.FC = () => {
                   channel,
                 });
               }}
-              onNewMessage={(arg1, arg2, arg3, arg4) => {
-                console.log(arg1, arg2, arg3, arg4);
-              }}
               options={options}
               Preview={ChannelPreview}
               setFlatListRef={setScrollRef}

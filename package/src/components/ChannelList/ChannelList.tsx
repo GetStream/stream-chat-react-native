@@ -33,7 +33,7 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
-import { useChannelMemberUpdated } from './hooks/listeners/useMemberUpdated';
+import { useChannelMemberUpdated } from './hooks/listeners/useChannelMemberUpdated';
 
 export type ChannelListProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -324,6 +324,14 @@ export const ChannelList = <
     setChannels,
   });
 
+  useChannelMemberUpdated({
+    lockChannelOrder,
+    setChannels,
+    onChannelMemberUpdated,
+    filters,
+    sort,
+  });
+
   useChannelTruncated({
     onChannelTruncated,
     refreshList,
@@ -362,14 +370,6 @@ export const ChannelList = <
   useUserPresence({
     setChannels,
     setForceUpdate,
-  });
-
-  useChannelMemberUpdated({
-    lockChannelOrder,
-    setChannels,
-    onChannelMemberUpdated,
-    filters,
-    sort,
   });
 
   const channelIdsStr = channels?.reduce((acc, channel) => `${acc}${channel.cid}`, '');
