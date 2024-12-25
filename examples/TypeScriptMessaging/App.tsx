@@ -12,7 +12,6 @@ import {
   MessageInput,
   MessageList,
   OverlayProvider,
-  SqliteClient,
   Streami18n,
   Thread,
   ThreadContextValue,
@@ -68,11 +67,16 @@ const user = {
   id: 'luke_skywalker',
 };
 const filters = {
-  archived: true,
+  archived: false,
   members: { $in: ['luke_skywalker'] },
   type: 'messaging',
 };
-const sort: ChannelSort<StreamChatGenerics> = { last_updated: -1 };
+
+const sort: ChannelSort<StreamChatGenerics> = [
+  { pinned_at: 1 },
+  { last_message_at: -1 },
+  { updated_at: -1 },
+];
 
 /**
  * Start playing with streami18n instance here:

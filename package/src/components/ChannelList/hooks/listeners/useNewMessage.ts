@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import type { Channel, Event } from 'stream-chat';
+import type { Channel, ChannelFilters, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
@@ -16,9 +16,9 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
       lockChannelOrder: boolean,
       setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
       event: Event<StreamChatGenerics>,
-      considerArchivedChannels?: boolean,
+      filters?: ChannelFilters<StreamChatGenerics>,
     ) => void;
-    considerArchivedChannels?: boolean;
+    filters?: ChannelFilters<StreamChatGenerics>;
   };
 
 export const useNewMessage = <
@@ -27,14 +27,14 @@ export const useNewMessage = <
   lockChannelOrder,
   onNewMessage,
   setChannels,
-  considerArchivedChannels = false,
+  filters,
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
 
   useEffect(() => {
     const handleEvent = (event: Event<StreamChatGenerics>) => {
       if (typeof onNewMessage === 'function') {
-        onNewMessage(lockChannelOrder, setChannels, event, considerArchivedChannels);
+        onNewMessage(lockChannelOrder, setChannels, event, filters);
       } else {
         setChannels((channels) => {
           if (!channels) return channels;
@@ -45,6 +45,8 @@ export const useNewMessage = <
           const targetChannel = channels[targetChannelIndex];
 
           const isTargetChannelArchived = isChannelArchived(targetChannel);
+
+          const considerArchivedChannels = filters && filters.archived === false;
 
           // If channel is archived and we don't want to consider archived channels, return existing list
           if (isTargetChannelArchived && considerArchivedChannels) {

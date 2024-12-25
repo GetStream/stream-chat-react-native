@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import type { Channel, Event } from 'stream-chat';
+import type { Channel, ChannelFilters, ChannelSort, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
@@ -8,25 +8,34 @@ import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
 type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   {
+    lockChannelOrder: boolean;
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>;
     onChannelMemberUpdated?: (
+      lockChannelOrder: boolean,
       setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
       event: Event<StreamChatGenerics>,
+      filters?: ChannelFilters<StreamChatGenerics>,
+      sort?: ChannelSort<StreamChatGenerics>,
     ) => void;
+    filters?: ChannelFilters<StreamChatGenerics>;
+    sort?: ChannelSort<StreamChatGenerics>;
   };
 
 export const useChannelMemberUpdated = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
+  lockChannelOrder,
   onChannelMemberUpdated,
   setChannels,
+  filters,
+  sort,
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
 
   useEffect(() => {
     const handleEvent = async (event: Event<StreamChatGenerics>) => {
       if (typeof onChannelMemberUpdated === 'function') {
-        onChannelMemberUpdated(setChannels, event);
+        onChannelMemberUpdated(lockChannelOrder, setChannels, event, filters, sort);
       } else {
         if (!event.member?.user || event.member.user.id !== client.userID || !event.channel_type) {
           return;
@@ -43,6 +52,10 @@ export const useChannelMemberUpdated = <
           const targetChannelIndex = currentChannels.indexOf(targetChannel);
           const targetChannelExistsWithinList = targetChannelIndex >= 0;
 
+          if (lockChannelOrder) {
+            return currentChannels;
+          }
+
           const newChannels = [...currentChannels];
 
           if (targetChannelExistsWithinList) {
@@ -50,7 +63,10 @@ export const useChannelMemberUpdated = <
           }
 
           // handle archiving (remove channel)
-          if (typeof member.archived_at === 'string') {
+          if (
+            typeof member.archived_at === 'string' ||
+            (filters && filters.archived === true && member.archived_at === null)
+          ) {
             return newChannels;
           }
           return currentChannels;

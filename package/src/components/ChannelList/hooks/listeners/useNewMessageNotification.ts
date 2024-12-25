@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 import uniqBy from 'lodash/uniqBy';
 
-import type { Channel, Event } from 'stream-chat';
+import type { Channel, ChannelFilters, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
@@ -16,23 +16,24 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
     onNewMessageNotification?: (
       setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
       event: Event<StreamChatGenerics>,
+      filters?: ChannelFilters<StreamChatGenerics>,
     ) => void;
-    considerArchivedChannels?: boolean;
+    filters?: ChannelFilters<StreamChatGenerics>;
   };
 
 export const useNewMessageNotification = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
-  considerArchivedChannels = false,
   onNewMessageNotification,
   setChannels,
+  filters,
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
 
   useEffect(() => {
     const handleEvent = async (event: Event<StreamChatGenerics>) => {
       if (typeof onNewMessageNotification === 'function') {
-        onNewMessageNotification(setChannels, event);
+        onNewMessageNotification(setChannels, event, filters);
       } else {
         if (event.channel?.id && event.channel?.type) {
           const channel = await getChannel({
@@ -42,6 +43,7 @@ export const useNewMessageNotification = <
           });
 
           // Handle archived channels
+          const considerArchivedChannels = filters && filters.archived === false;
           if (isChannelArchived(channel) && considerArchivedChannels) {
             return;
           }
