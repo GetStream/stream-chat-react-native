@@ -194,6 +194,7 @@ export const tables: Tables = {
     columns: {
       cid: 'TEXT NOT NULL',
       lastRead: 'TEXT NOT NULL',
+      lastReadMessageId: 'TEXT',
       unreadMessages: 'INTEGER DEFAULT 0',
       userId: 'TEXT',
     },
@@ -340,6 +341,7 @@ export type Schema = {
   reads: {
     cid: string;
     lastRead: string;
+    lastReadMessageId?: string;
     unreadMessages?: number;
     userId?: string;
   };

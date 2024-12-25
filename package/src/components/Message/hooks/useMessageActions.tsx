@@ -20,6 +20,7 @@ import {
   Resend,
   ThreadReply,
   Unpin,
+  UnreadIndicator,
   UserDelete,
 } from '../../../icons';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
@@ -41,6 +42,7 @@ export type MessageActionsHookProps<
   | 'handleEdit'
   | 'handleFlag'
   | 'handleQuotedReply'
+  | 'handleMarkUnread'
   | 'handleMute'
   | 'handlePinMessage'
   | 'handleRetry'
@@ -77,6 +79,7 @@ export const useMessageActions = <
   handleDelete,
   handleEdit,
   handleFlag,
+  handleMarkUnread,
   handleMute,
   handlePinMessage,
   handleQuotedReply,
@@ -104,6 +107,7 @@ export const useMessageActions = <
     handleDeleteMessage,
     handleEditMessage,
     handleFlagMessage,
+    handleMarkUnreadMessage,
     handleQuotedReplyMessage,
     handleResendMessage,
     handleToggleBanUser,
@@ -195,6 +199,32 @@ export const useMessageActions = <
     title: t('Edit Message'),
   };
 
+  const flagMessage: MessageActionType = {
+    action: () => {
+      dismissOverlay();
+      if (handleFlag) {
+        handleFlag(message);
+      }
+      handleFlagMessage();
+    },
+    actionType: 'flagMessage',
+    icon: <MessageFlag pathFill={grey} />,
+    title: t('Flag Message'),
+  };
+
+  const markUnread: MessageActionType = {
+    action: () => {
+      dismissOverlay();
+      if (handleMarkUnread) {
+        handleMarkUnread(message);
+      }
+      handleMarkUnreadMessage();
+    },
+    actionType: 'markUnread',
+    icon: <UnreadIndicator fill={grey} size={24} />,
+    title: t('Mark as Unread'),
+  };
+
   const pinMessage: MessageActionType = {
     action: () => {
       dismissOverlay();
@@ -219,20 +249,6 @@ export const useMessageActions = <
     actionType: 'unpinMessage',
     icon: <Unpin pathFill={grey} />,
     title: t('Unpin from Conversation'),
-  };
-
-  const flagMessage: MessageActionType = {
-    action: () => {
-      dismissOverlay();
-      if (handleFlag) {
-        handleFlag(message);
-      }
-
-      handleFlagMessage();
-    },
-    actionType: 'flagMessage',
-    icon: <MessageFlag pathFill={grey} />,
-    title: t('Flag Message'),
   };
 
   const handleReaction = !error
@@ -311,6 +327,7 @@ export const useMessageActions = <
     editMessage,
     flagMessage,
     handleReaction,
+    markUnread,
     muteUser,
     pinMessage,
     quotedReply,

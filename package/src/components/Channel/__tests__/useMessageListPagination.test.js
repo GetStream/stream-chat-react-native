@@ -337,10 +337,11 @@ describe('useMessageListPagination', () => {
     });
 
     it('should not do anything when the unread count is 0', async () => {
+      const messages = Array.from({ length: 20 }, (_, i) =>
+        generateMessage({ text: `message-${i}` }),
+      );
       const loadMessageIntoState = jest.fn(() => {
-        channel.state.messages = Array.from({ length: 20 }, (_, i) =>
-          generateMessage({ text: `message-${i}` }),
-        );
+        channel.state.messages = messages;
         channel.state.messagePagination.hasPrev = true;
       });
       channel.state = {
@@ -352,68 +353,264 @@ describe('useMessageListPagination', () => {
         },
       };
 
-      channel.countUnread = jest.fn(() => 0);
+      const user = generateUser();
+      const channelUnreadState = {
+        unread_messages: 0,
+        user,
+      };
+
+      const jumpToMessageFinishedMock = jest.fn();
+      mockedHook(channelInitialState, { jumpToMessageFinished: jumpToMessageFinishedMock });
 
       const { result } = renderHook(() => useMessageListPagination({ channel }));
 
       await act(async () => {
-        await result.current.loadChannelAtFirstUnreadMessage({});
+        await result.current.loadChannelAtFirstUnreadMessage({ channelUnreadState });
       });
 
       await waitFor(() => {
-        expect(loadMessageIntoState).toHaveBeenCalledTimes(0);
+        expect(jumpToMessageFinishedMock).toHaveBeenCalledTimes(0);
       });
     });
 
-    function getElementsAround(array, key, id, limit) {
-      const index = array.findIndex((obj) => obj[key] === id);
+    const generateMessageArray = (length = 20) =>
+      Array.from({ length }, (_, i) => generateMessage({ id: i, text: `message-${i}` }));
 
-      if (index === -1) {
-        return [];
-      }
+    // Test cases with different scenarios
+    const testCases = [
+      {
+        channelUnreadState: (messages) => ({
+          first_unread_message_id: messages[2].id,
+          unread_messages: 2,
+        }),
+        expectedCalls: {
+          jumpToMessageFinishedCalls: 1,
+          loadMessageIntoStateCalls: 0,
+          setChannelUnreadStateCalls: 0,
+          setTargetedMessageIdCalls: 1,
+          targetedMessageId: (messages) => messages[2].id,
+        },
+        initialMessages: generateMessageArray(),
+        name: 'first_unread_message_id present in current message set',
+        setupLoadMessageIntoState: null,
+      },
+      {
+        channelUnreadState: () => ({
+          first_unread_message_id: 21,
+          unread_messages: 2,
+        }),
+        expectedCalls: {
+          jumpToMessageFinishedCalls: 1,
+          loadMessageIntoStateCalls: 1,
+          setChannelUnreadStateCalls: 0,
+          setTargetedMessageIdCalls: 1,
+          targetedMessageId: () => 21,
+        },
+        initialMessages: generateMessageArray(),
+        name: 'first_unread_message_id not present in current message set',
+        setupLoadMessageIntoState: (channel) => {
+          const loadMessageIntoState = jest.fn(() => {
+            const newMessages = Array.from({ length: 20 }, (_, i) =>
+              generateMessage({ id: i + 21, text: `message-${i + 21}` }),
+            );
+            channel.state.messages = newMessages;
+            channel.state.messagePagination.hasPrev = true;
+          });
+          channel.state.loadMessageIntoState = loadMessageIntoState;
+          return loadMessageIntoState;
+        },
+      },
+      {
+        channelUnreadState: (messages) => ({
+          last_read_message_id: messages[2].id,
+          unread_messages: 2,
+        }),
+        expectedCalls: {
+          jumpToMessageFinishedCalls: 1,
+          loadMessageIntoStateCalls: 0,
+          setChannelUnreadStateCalls: 1,
+          setTargetedMessageIdCalls: 1,
+          targetedMessageId: (messages) => messages[3].id,
+        },
+        initialMessages: generateMessageArray(),
+        name: 'last_read_message_id present in current message set',
+        setupLoadMessageIntoState: null,
+      },
+      {
+        channelUnreadState: () => ({
+          last_read_message_id: 21,
+          unread_messages: 2,
+        }),
+        expectedCalls: {
+          jumpToMessageFinishedCalls: 1,
+          loadMessageIntoStateCalls: 1,
+          setChannelUnreadStateCalls: 1,
+          setTargetedMessageIdCalls: 1,
+          targetedMessageId: () => 22,
+        },
+        initialMessages: generateMessageArray(),
+        name: 'last_read_message_id not present in current message set',
+        setupLoadMessageIntoState: (channel) => {
+          const loadMessageIntoState = jest.fn(() => {
+            const newMessages = Array.from({ length: 20 }, (_, i) =>
+              generateMessage({ id: i + 21, text: `message-${i + 21}` }),
+            );
+            channel.state.messages = newMessages;
+            channel.state.messagePagination.hasPrev = true;
+          });
+          channel.state.loadMessageIntoState = loadMessageIntoState;
+          return loadMessageIntoState;
+        },
+      },
+    ];
 
-      const start = Math.max(0, index - limit); // 12 before the index
-      const end = Math.min(array.length, index + limit); // 12 after the index
-      return array.slice(start, end);
-    }
-
-    it('should call the loadMessageIntoState function when the unread count is greater than 0 and set the state', async () => {
-      const messages = Array.from({ length: 30 }, (_, i) =>
-        generateMessage({ text: `message-${i}` }),
-      );
-      const loadMessageIntoState = jest.fn((messageId) => {
-        channel.state.messages = getElementsAround(messages, 'id', messageId, 5);
-        channel.state.messagePagination.hasPrev = true;
-      });
+    it.each(testCases)('$name', async (testCase) => {
+      // Setup channel state
+      const messages = testCase.initialMessages;
       channel.state = {
         ...channelInitialState,
-        loadMessageIntoState,
         messagePagination: {
-          hasNext: false,
+          hasNext: true,
           hasPrev: true,
         },
         messages,
-        messageSets: [{ isCurrent: true, isLatest: true }],
       };
 
-      const unreadCount = 5;
-      channel.countUnread = jest.fn(() => unreadCount);
+      // Setup additional mocks if needed
+      const loadMessageIntoStateMock = testCase.setupLoadMessageIntoState
+        ? testCase.setupLoadMessageIntoState(channel)
+        : null;
+
+      // Generate user and channel unread state
+      const user = generateUser();
+      const channelUnreadState = {
+        user,
+        ...testCase.channelUnreadState(messages),
+      };
+
+      // Setup mocks
+      const jumpToMessageFinishedMock = jest.fn();
+      mockedHook(channelInitialState, { jumpToMessageFinished: jumpToMessageFinishedMock });
 
       const { result } = renderHook(() => useMessageListPagination({ channel }));
 
+      const setChannelUnreadStateMock = jest.fn();
+      const setTargetedMessageIdMock = jest.fn((message) => message);
+
+      // Execute the method
       await act(async () => {
-        await result.current.loadChannelAtFirstUnreadMessage({});
+        await result.current.loadChannelAtFirstUnreadMessage({
+          channelUnreadState,
+          setChannelUnreadState: setChannelUnreadStateMock,
+          setTargetedMessage: setTargetedMessageIdMock,
+        });
       });
 
+      // Verify expectations
       await waitFor(() => {
-        expect(loadMessageIntoState).toHaveBeenCalledTimes(1);
-        expect(result.current.state.hasMore).toBe(true);
-        expect(result.current.state.hasMoreNewer).toBe(false);
-        expect(result.current.state.messages.length).toBe(10);
-        expect(result.current.state.targetedMessageId).toBe(
-          messages[messages.length - unreadCount].id,
+        if (loadMessageIntoStateMock) {
+          expect(loadMessageIntoStateMock).toHaveBeenCalledTimes(
+            testCase.expectedCalls.loadMessageIntoStateCalls,
+          );
+        }
+
+        expect(jumpToMessageFinishedMock).toHaveBeenCalledTimes(
+          testCase.expectedCalls.jumpToMessageFinishedCalls,
         );
+
+        expect(setChannelUnreadStateMock).toHaveBeenCalledTimes(
+          testCase.expectedCalls.setChannelUnreadStateCalls,
+        );
+
+        expect(setTargetedMessageIdMock).toHaveBeenCalledTimes(
+          testCase.expectedCalls.setTargetedMessageIdCalls,
+        );
+
+        if (testCase.expectedCalls.targetedMessageId) {
+          const expectedMessageId = testCase.expectedCalls.targetedMessageId(messages);
+          expect(setTargetedMessageIdMock).toHaveBeenCalledWith(expectedMessageId);
+        }
       });
     });
+
+    const messages = Array.from({ length: 20 }, (_, i) =>
+      generateMessage({
+        created_at: new Date(`2021-09-01T00:00:00.000Z`),
+        id: i,
+        text: `message-${i}`,
+      }),
+    );
+
+    const user = generateUser();
+
+    it.each`
+      scenario                                       | last_read                               | expectedQueryCalls | expectedJumpToMessageFinishedCalls | expectedSetChannelUnreadStateCalls | expectedSetTargetedMessageCalls | expectedTargetedMessageId
+      ${'when last_read matches a message'}          | ${new Date(messages[10].created_at)}    | ${0}               | ${1}                               | ${1}                               | ${1}                            | ${10}
+      ${'when last_read does not match any message'} | ${new Date('2021-09-02T00:00:00.000Z')} | ${1}               | ${0}                               | ${0}                               | ${0}                            | ${undefined}
+    `(
+      '$scenario',
+      async ({
+        expectedJumpToMessageFinishedCalls,
+        expectedQueryCalls,
+        expectedSetChannelUnreadStateCalls,
+        expectedSetTargetedMessageCalls,
+        expectedTargetedMessageId,
+        last_read,
+      }) => {
+        // Set up channel state
+        channel.state = {
+          ...channelInitialState,
+          messagePagination: {
+            hasNext: true,
+            hasPrev: true,
+          },
+          messages,
+        };
+
+        const channelUnreadState = {
+          last_read,
+          unread_messages: 2,
+          user,
+        };
+
+        // Mock query if needed
+        const queryMock = jest.fn();
+        channel.query = queryMock;
+
+        // Set up mocks
+        const jumpToMessageFinishedMock = jest.fn();
+        mockedHook(channelInitialState, { jumpToMessageFinished: jumpToMessageFinishedMock });
+        const setChannelUnreadStateMock = jest.fn();
+        const setTargetedMessageIdMock = jest.fn((message) => message);
+
+        // Render hook
+        const { result } = renderHook(() => useMessageListPagination({ channel }));
+
+        // Act
+        await act(async () => {
+          await result.current.loadChannelAtFirstUnreadMessage({
+            channelUnreadState,
+            setChannelUnreadState: setChannelUnreadStateMock,
+            setTargetedMessage: setTargetedMessageIdMock,
+          });
+        });
+
+        // Assert
+        await waitFor(() => {
+          expect(queryMock).toHaveBeenCalledTimes(expectedQueryCalls);
+          expect(jumpToMessageFinishedMock).toHaveBeenCalledTimes(
+            expectedJumpToMessageFinishedCalls,
+          );
+          expect(setChannelUnreadStateMock).toHaveBeenCalledTimes(
+            expectedSetChannelUnreadStateCalls,
+          );
+          expect(setTargetedMessageIdMock).toHaveBeenCalledTimes(expectedSetTargetedMessageCalls);
+
+          if (expectedTargetedMessageId !== undefined) {
+            expect(setTargetedMessageIdMock).toHaveBeenCalledWith(expectedTargetedMessageId);
+          }
+        });
+      },
+    );
   });
 });

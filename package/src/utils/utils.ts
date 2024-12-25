@@ -2,7 +2,7 @@ import type React from 'react';
 
 import dayjs from 'dayjs';
 import EmojiRegex from 'emoji-regex';
-import type { FormatMessageResponse, MessageResponse } from 'stream-chat';
+import type { ChannelState, FormatMessageResponse, MessageResponse } from 'stream-chat';
 
 import { IconProps } from '../../src/icons/utils/base';
 import { MessageType } from '../components/MessageList/hooks/useMessageList';
@@ -275,3 +275,63 @@ export const getDurationLabelFromDuration = (duration: number) => {
 export function escapeRegExp(text: string) {
   return text.replace(/[-[\]{}()*+?.,/\\^$|#]/g, '\\$&');
 }
+
+/**
+ * Utility to find the index of a message in the messages array by id.
+ * @param messages
+ * @param targetId
+ * @returns number
+ */
+export const findInMessagesById = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  messages: ChannelState<StreamChatGenerics>['messages'],
+  targetId: string,
+) => {
+  const idx = messages.findIndex((message) => message.id === targetId);
+  return idx;
+};
+
+/**
+ * Utility to find the index of a message in the messages array by date.
+ * @param messages
+ * @param targetDate
+ * @returns an object with the index and the message object
+ */
+export const findInMessagesByDate = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  messages: MessageResponse<StreamChatGenerics>[] | ChannelState<StreamChatGenerics>['messages'],
+  targetDate: Date,
+) => {
+  // Binary search
+  const targetTimestamp = targetDate.getTime();
+  let left = 0;
+  let right = messages.length - 1;
+  let middle = 0;
+  while (left <= right) {
+    middle = Math.floor(left + (right - left) / 2);
+    const middleTimestamp = new Date(messages[middle].created_at as string | Date).getTime();
+    const middleLeftTimestamp =
+      messages[middle - 1]?.created_at &&
+      new Date(messages[middle - 1].created_at as string | Date).getTime();
+    const middleRightTimestamp =
+      messages[middle + 1]?.created_at &&
+      new Date(messages[middle + 1].created_at as string | Date).getTime();
+    if (
+      middleTimestamp === targetTimestamp ||
+      (middleLeftTimestamp &&
+        middleRightTimestamp &&
+        middleLeftTimestamp < targetTimestamp &&
+        middleRightTimestamp > targetTimestamp)
+    ) {
+      return { index: middle, message: messages[middle] };
+    } else if (middleTimestamp < targetTimestamp) {
+      left = middle + 1;
+    } else {
+      right = middle - 1;
+    }
+  }
+
+  return { index: -1 };
+};

@@ -29,6 +29,7 @@ import {
   useChannelDataState,
   useChannelMessageDataState,
 } from '../hooks/useChannelDataState';
+import * as MessageListPaginationHooks from '../hooks/useMessageListPagination';
 
 // This component is used for performing effects in a component that consumes ChannelContext,
 // i.e. making use of the callbacks & values provided by the Channel component.
@@ -87,6 +88,7 @@ describe('Channel', () => {
     const nullChannel = {
       ...channel,
       cid: null,
+      countUnread: () => 0,
       off: () => {},
       on: () => ({
         unsubscribe: () => null,
@@ -464,79 +466,128 @@ describe('Channel initial load useEffect', () => {
     );
   });
 
-  it("should not call loadChannelAtFirstUnreadMessage if channel's unread count is 0", async () => {
-    const mockedChannel = generateChannelResponse({
-      messages: Array.from({ length: 10 }, (_, i) => generateMessage({ text: `message-${i}` })),
+  describe('initialScrollToFirstUnreadMessage', () => {
+    afterEach(() => {
+      // Clear all mocks after each test
+      jest.clearAllMocks();
+      // Restore all mocks to their original implementation
+      jest.restoreAllMocks();
+      cleanup();
+    });
+    const mockedHook = (values) =>
+      jest.spyOn(MessageListPaginationHooks, 'useMessageListPagination').mockImplementation(() => ({
+        copyMessagesStateFromChannel: jest.fn(),
+        loadChannelAroundMessage: jest.fn(),
+        loadChannelAtFirstUnreadMessage: jest.fn(),
+        loadInitialMessagesStateFromChannel: jest.fn(),
+        loadLatestMessages: jest.fn(),
+        loadMore: jest.fn(),
+        loadMoreRecent: jest.fn(),
+        state: { ...channelInitialState },
+        ...values,
+      }));
+    it("should not call loadChannelAtFirstUnreadMessage if channel's unread count is 0", async () => {
+      const mockedChannel = generateChannelResponse({
+        messages: Array.from({ length: 10 }, (_, i) => generateMessage({ text: `message-${i}` })),
+      });
+
+      useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+      const channel = chatClient.channel('messaging', mockedChannel.id);
+      await channel.watch();
+      const user = generateUser();
+      const read_data = {};
+
+      read_data[chatClient.user.id] = {
+        last_read: new Date(),
+        user,
+      };
+
+      channel.state = {
+        ...channelInitialState,
+        read: read_data,
+      };
+      channel.countUnread = jest.fn(() => 0);
+
+      const loadChannelAtFirstUnreadMessageFn = jest.fn();
+
+      mockedHook({ loadChannelAtFirstUnreadMessage: loadChannelAtFirstUnreadMessageFn });
+
+      renderComponent({ channel, initialScrollToFirstUnreadMessage: true });
+
+      await waitFor(() => {
+        expect(loadChannelAtFirstUnreadMessageFn).not.toHaveBeenCalled();
+      });
     });
 
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.watch();
-    const messages = Array.from({ length: 100 }, (_, i) => generateMessage({ id: i }));
+    it("should call loadChannelAtFirstUnreadMessage if channel's unread count is greater than 0", async () => {
+      const mockedChannel = generateChannelResponse({
+        messages: Array.from({ length: 10 }, (_, i) => generateMessage({ text: `message-${i}` })),
+      });
 
-    const loadMessageIntoState = jest.fn();
-    channel.state = {
-      ...channelInitialState,
-      loadMessageIntoState,
-      messagePagination: {
-        hasNext: true,
-        hasPrev: true,
-      },
-      messages,
-    };
-    channel.countUnread = jest.fn(() => 0);
+      useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+      const channel = chatClient.channel('messaging', mockedChannel.id);
+      await channel.watch();
 
-    renderComponent({ channel, initialScrollToFirstUnreadMessage: true });
+      const user = generateUser();
+      const numberOfUnreadMessages = 15;
+      const read_data = {};
 
-    await waitFor(() => {
-      expect(loadMessageIntoState).not.toHaveBeenCalled();
-    });
-  });
+      read_data[chatClient.user.id] = {
+        last_read: new Date(),
+        unread_messages: numberOfUnreadMessages,
+        user,
+      };
+      channel.state = {
+        ...channelInitialState,
+        read: read_data,
+      };
 
-  it("should call loadChannelAtFirstUnreadMessage if channel's unread count is greater than 0", async () => {
-    const mockedChannel = generateChannelResponse({
-      messages: Array.from({ length: 10 }, (_, i) => generateMessage({ text: `message-${i}` })),
-    });
+      channel.countUnread = jest.fn(() => numberOfUnreadMessages);
+      const loadChannelAtFirstUnreadMessageFn = jest.fn();
 
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.watch();
-    const messages = Array.from({ length: 100 }, (_, i) => generateMessage({ id: i }));
+      mockedHook({ loadChannelAtFirstUnreadMessage: loadChannelAtFirstUnreadMessageFn });
 
-    let targetedMessageId = 0;
-    const loadMessageIntoState = jest.fn((id) => {
-      targetedMessageId = id;
-      const newMessages = getElementsAround(messages, 'id', id);
-      channel.state.messages = newMessages;
+      renderComponent({ channel, initialScrollToFirstUnreadMessage: true });
+
+      await waitFor(() => {
+        expect(loadChannelAtFirstUnreadMessageFn).toHaveBeenCalled();
+      });
     });
 
-    channel.state = {
-      ...channelInitialState,
-      loadMessageIntoState,
-      messagePagination: {
-        hasNext: true,
-        hasPrev: true,
-      },
-      messages,
-      messageSets: [{ isCurrent: true, isLatest: true }],
-    };
+    it("should not call loadChannelAtFirstUnreadMessage if channel's unread count is greater than 0 lesser than scrollToFirstUnreadThreshold", async () => {
+      const mockedChannel = generateChannelResponse({
+        messages: Array.from({ length: 10 }, (_, i) => generateMessage({ text: `message-${i}` })),
+      });
 
-    channel.countUnread = jest.fn(() => 15);
+      useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+      const channel = chatClient.channel('messaging', mockedChannel.id);
+      await channel.watch();
 
-    renderComponent({ channel, initialScrollToFirstUnreadMessage: true });
+      const user = generateUser();
+      const numberOfUnreadMessages = 2;
+      const read_data = {};
 
-    await waitFor(() => {
-      expect(loadMessageIntoState).toHaveBeenCalledTimes(1);
+      read_data[chatClient.user.id] = {
+        last_read: new Date(),
+        unread_messages: numberOfUnreadMessages,
+        user,
+      };
+      channel.state = {
+        ...channelInitialState,
+        read: read_data,
+      };
+
+      channel.countUnread = jest.fn(() => numberOfUnreadMessages);
+      const loadChannelAtFirstUnreadMessageFn = jest.fn();
+
+      mockedHook({ loadChannelAtFirstUnreadMessage: loadChannelAtFirstUnreadMessageFn });
+
+      renderComponent({ channel, initialScrollToFirstUnreadMessage: true });
+
+      await waitFor(() => {
+        expect(loadChannelAtFirstUnreadMessageFn).not.toHaveBeenCalled();
+      });
     });
-
-    const { result: channelMessageState } = renderHook(() => useChannelMessageDataState(channel));
-    await waitFor(() =>
-      expect(
-        channelMessageState.current.state.messages.find(
-          (message) => message.id === targetedMessageId,
-        ),
-      ).toBeDefined(),
-    );
   });
 
   it('should call resyncChannel when connection changed event is triggered', async () => {

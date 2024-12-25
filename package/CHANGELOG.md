@@ -1,5 +1,33 @@
 # Change Log
 
+## [6.1.0](https://github.com/GetStream/stream-chat-react-native/compare/v6.0.2...v6.1.0) (2024-12-24)
+
+
+### Features
+
+* mark as unread and mark as read improvements ([#2833](https://github.com/GetStream/stream-chat-react-native/issues/2833)) ([672e060](https://github.com/GetStream/stream-chat-react-native/commit/672e0609d3e21ae6616fe388ce127630087927b9)), closes [#2538](https://github.com/GetStream/stream-chat-react-native/issues/2538) [#2537](https://github.com/GetStream/stream-chat-react-native/issues/2537) [#2539](https://github.com/GetStream/stream-chat-react-native/issues/2539) [#2537](https://github.com/GetStream/stream-chat-react-native/issues/2537) [#2527](https://github.com/GetStream/stream-chat-react-native/issues/2527) [#2534](https://github.com/GetStream/stream-chat-react-native/issues/2534) [#2563](https://github.com/GetStream/stream-chat-react-native/issues/2563) [#2561](https://github.com/GetStream/stream-chat-react-native/issues/2561) [#2541](https://github.com/GetStream/stream-chat-react-native/issues/2541) [#2578](https://github.com/GetStream/stream-chat-react-native/issues/2578) [#2621](https://github.com/GetStream/stream-chat-react-native/issues/2621) [#2627](https://github.com/GetStream/stream-chat-react-native/issues/2627) [#2633](https://github.com/GetStream/stream-chat-react-native/issues/2633) [#2682](https://github.com/GetStream/stream-chat-react-native/issues/2682) [#2646](https://github.com/GetStream/stream-chat-react-native/issues/2646) [#2648](https://github.com/GetStream/stream-chat-react-native/issues/2648) [#2651](https://github.com/GetStream/stream-chat-react-native/issues/2651) [#2649](https://github.com/GetStream/stream-chat-react-native/issues/2649) [#2654](https://github.com/GetStream/stream-chat-react-native/issues/2654) [#2656](https://github.com/GetStream/stream-chat-react-native/issues/2656) [#2657](https://github.com/GetStream/stream-chat-react-native/issues/2657) [#2653](https://github.com/GetStream/stream-chat-react-native/issues/2653) [#2659](https://github.com/GetStream/stream-chat-react-native/issues/2659)
+* mark as unread and mark as read improvements ([#2833](https://github.com/GetStream/stream-chat-react-native/issues/2833)) ([bba1505](https://github.com/GetStream/stream-chat-react-native/commit/bba1505c4d64d22209fa78e161e91b44685c15f4)), closes [#2538](https://github.com/GetStream/stream-chat-react-native/issues/2538) [#2537](https://github.com/GetStream/stream-chat-react-native/issues/2537) [#2539](https://github.com/GetStream/stream-chat-react-native/issues/2539) [#2537](https://github.com/GetStream/stream-chat-react-native/issues/2537) [#2527](https://github.com/GetStream/stream-chat-react-native/issues/2527) [#2534](https://github.com/GetStream/stream-chat-react-native/issues/2534) [#2563](https://github.com/GetStream/stream-chat-react-native/issues/2563) [#2561](https://github.com/GetStream/stream-chat-react-native/issues/2561) [#2541](https://github.com/GetStream/stream-chat-react-native/issues/2541) [#2578](https://github.com/GetStream/stream-chat-react-native/issues/2578) [#2621](https://github.com/GetStream/stream-chat-react-native/issues/2621) [#2627](https://github.com/GetStream/stream-chat-react-native/issues/2627) [#2633](https://github.com/GetStream/stream-chat-react-native/issues/2633) [#2682](https://github.com/GetStream/stream-chat-react-native/issues/2682) [#2646](https://github.com/GetStream/stream-chat-react-native/issues/2646) [#2648](https://github.com/GetStream/stream-chat-react-native/issues/2648) [#2651](https://github.com/GetStream/stream-chat-react-native/issues/2651) [#2649](https://github.com/GetStream/stream-chat-react-native/issues/2649) [#2654](https://github.com/GetStream/stream-chat-react-native/issues/2654) [#2656](https://github.com/GetStream/stream-chat-react-native/issues/2656) [#2657](https://github.com/GetStream/stream-chat-react-native/issues/2657) [#2653](https://github.com/GetStream/stream-chat-react-native/issues/2653) [#2659](https://github.com/GetStream/stream-chat-react-native/issues/2659)
+
+
+### Bug Fixes
+
+* dummy commit adding space between lines ([d0ada39](https://github.com/GetStream/stream-chat-react-native/commit/d0ada39abd89ce42e177d5abf82615f3bbe1fbc9))
+
+### [6.0.2](https://github.com/GetStream/stream-chat-react-native/compare/v6.0.1...v6.0.2) (2024-12-23)
+
+
+### Bug Fixes
+
+* audio recording default output ([#2858](https://github.com/GetStream/stream-chat-react-native/issues/2858)) ([d43a7b1](https://github.com/GetStream/stream-chat-react-native/commit/d43a7b1785bc434fc99be2df0cd9c97a52f28e73))
+
+### [6.0.1](https://github.com/GetStream/stream-chat-react-native/compare/v6.0.0...v6.0.1) (2024-12-19)
+
+
+### Bug Fixes
+
+* export useFetchReaction hook from SDK and TS improvements ([#2853](https://github.com/GetStream/stream-chat-react-native/issues/2853)) ([9bda6ea](https://github.com/GetStream/stream-chat-react-native/commit/9bda6eade1317fb78c27a24ed2dd112904f11db7))
+* image gallery safe area ([#2855](https://github.com/GetStream/stream-chat-react-native/issues/2855)) ([5825685](https://github.com/GetStream/stream-chat-react-native/commit/5825685179f7803007da5eac530e06caf513ec1f))
+
 ## [6.0.0](https://github.com/GetStream/stream-chat-react-native/compare/v5.44.2...v6.0.0) (2024-12-12)
 
 

@@ -10,6 +10,7 @@ export type ActionType =
   | 'deleteMessage'
   | 'editMessage'
   | 'flagMessage'
+  | 'markUnread'
   | 'muteUser'
   | 'pinMessage'
   | 'selectReaction'
@@ -26,7 +27,7 @@ export type MessageActionType = {
   action: () => void;
   /**
    * Type of the action performed.
-   * Eg: 'banUser', 'blockUser', 'copyMessage', 'deleteMessage', 'editMessage', 'flagMessage', 'muteUser', 'pinMessage', 'selectReaction', 'reply', 'retry', 'quotedReply', 'threadReply', 'unpinMessage'
+   * Eg: 'banUser', 'blockUser', 'copyMessage', 'deleteMessage', 'editMessage', 'flagMessage', 'markUnread , 'muteUser', 'pinMessage', 'selectReaction', 'reply', 'retry', 'quotedReply', 'threadReply', 'unpinMessage'
    */
   actionType: ActionType | string;
   /**

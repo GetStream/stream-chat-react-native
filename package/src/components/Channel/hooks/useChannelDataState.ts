@@ -219,6 +219,13 @@ export const useChannelDataState = <
     }));
   }, []);
 
+  const setRead = useCallback((channel: Channel<StreamChatGenerics>) => {
+    setState((prev) => ({
+      ...prev,
+      read: { ...channel.state.read }, // Synchronize the read state from the channel
+    }));
+  }, []);
+
   const setTyping = useCallback((channel: Channel<StreamChatGenerics>) => {
     setState((prev) => ({
       ...prev,
@@ -229,6 +236,7 @@ export const useChannelDataState = <
   return {
     copyStateFromChannel,
     initStateFromChannel,
+    setRead,
     setTyping,
     state,
   };
