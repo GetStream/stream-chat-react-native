@@ -170,7 +170,6 @@ const ChannelPreviewMessengerWithContext = <
               <Button
                 title={membership.archived_at ? 'Unarchieve' : 'Archieve'}
                 onPress={async () => {
-                  console.log('membership', membership.archived_at);
                   if (membership.archived_at) {
                     await channel.unarchive();
                   } else {
@@ -181,7 +180,6 @@ const ChannelPreviewMessengerWithContext = <
               <Button
                 title={membership.pinned_at ? 'Unpin' : 'Pin'}
                 onPress={async () => {
-                  console.log('membership', membership.pinned_at);
                   if (membership.pinned_at) {
                     await channel.unpin();
                   } else {
