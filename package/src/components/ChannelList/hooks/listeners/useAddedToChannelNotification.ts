@@ -2,12 +2,13 @@ import { useEffect } from 'react';
 
 import uniqBy from 'lodash/uniqBy';
 
-import type { Channel, Event } from 'stream-chat';
+import type { Channel, ChannelFilters, ChannelSort, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { getChannel } from '../../utils';
+import { findLastPinnedChannelIndex, findPinnedAtSortOrder } from '../utils';
 
 type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   {
@@ -15,7 +16,11 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
     onAddedToChannel?: (
       setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
       event: Event<StreamChatGenerics>,
+      filters?: ChannelFilters<StreamChatGenerics>,
+      sort?: ChannelSort<StreamChatGenerics>,
     ) => void;
+    filters?: ChannelFilters<StreamChatGenerics>;
+    sort?: ChannelSort<StreamChatGenerics>;
   };
 
 export const useAddedToChannelNotification = <
@@ -23,13 +28,15 @@ export const useAddedToChannelNotification = <
 >({
   onAddedToChannel,
   setChannels,
+  filters,
+  sort,
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
 
   useEffect(() => {
     const handleEvent = async (event: Event<StreamChatGenerics>) => {
       if (typeof onAddedToChannel === 'function') {
-        onAddedToChannel(setChannels, event);
+        onAddedToChannel(setChannels, event, filters, sort);
       } else {
         if (event.channel?.id && event.channel?.type) {
           const channel = await getChannel<StreamChatGenerics>({
@@ -37,7 +44,28 @@ export const useAddedToChannelNotification = <
             id: event.channel.id,
             type: event.channel.type,
           });
-          setChannels((channels) => (channels ? uniqBy([channel, ...channels], 'cid') : channels));
+
+          const pinnedAtSort = findPinnedAtSortOrder({ sort });
+
+          setChannels((channels) => {
+            if (!channels) return channels;
+
+            // handle pinning
+            let lastPinnedChannelIndex: number | null = null;
+
+            const newChannels = [...channels];
+
+            if (pinnedAtSort === 1 || pinnedAtSort === -1) {
+              lastPinnedChannelIndex = findLastPinnedChannelIndex({ channels: newChannels });
+              const newTargetChannelIndex =
+                typeof lastPinnedChannelIndex === 'number' ? lastPinnedChannelIndex + 1 : 0;
+
+              newChannels.splice(newTargetChannelIndex, 0, channel);
+              return newChannels;
+            }
+
+            return uniqBy([channel, ...channels], 'cid');
+          });
         }
       }
     };

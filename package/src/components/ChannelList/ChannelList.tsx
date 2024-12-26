@@ -90,12 +90,16 @@ export type ChannelListProps<
    *
    * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
    * @param event An [Event Object](https://getstream.io/chat/docs/event_object) corresponding to `notification.added_to_channel` event
+   * @param filters Channel filters
+   * @param sort Channel sort options
    *
    * @overrideType Function
    * */
   onAddedToChannel?: (
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
     event: Event<StreamChatGenerics>,
+    filters?: ChannelFilters<StreamChatGenerics>,
+    sort?: ChannelSort<StreamChatGenerics>,
   ) => void;
   /**
    * Function that overrides default behavior when a channel gets deleted. In absence of this prop, the channel will be removed from the list.
@@ -314,6 +318,8 @@ export const ChannelList = <
   useAddedToChannelNotification({
     onAddedToChannel,
     setChannels,
+    filters,
+    sort,
   });
 
   useChannelDeleted({
