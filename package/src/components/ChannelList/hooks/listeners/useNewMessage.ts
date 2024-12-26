@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 
-import type { Channel, ChannelFilters, Event } from 'stream-chat';
+import type { Channel, ChannelFilters, ChannelSort, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { moveChannelUp } from '../../utils';
-import { isChannelArchived } from '../utils';
+import { isChannelArchived, isChannelPinned, shouldConsiderPinnedChannels } from '../utils';
 
 type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   {
@@ -17,8 +17,10 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
       setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
       event: Event<StreamChatGenerics>,
       filters?: ChannelFilters<StreamChatGenerics>,
+      sort?: ChannelSort<StreamChatGenerics>,
     ) => void;
     filters?: ChannelFilters<StreamChatGenerics>;
+    sort?: ChannelSort<StreamChatGenerics>;
   };
 
 export const useNewMessage = <
@@ -28,13 +30,14 @@ export const useNewMessage = <
   onNewMessage,
   setChannels,
   filters,
+  sort,
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
 
   useEffect(() => {
     const handleEvent = (event: Event<StreamChatGenerics>) => {
       if (typeof onNewMessage === 'function') {
-        onNewMessage(lockChannelOrder, setChannels, event, filters);
+        onNewMessage(lockChannelOrder, setChannels, event, filters, sort);
       } else {
         setChannels((channels) => {
           if (!channels) return channels;
@@ -45,11 +48,19 @@ export const useNewMessage = <
           const targetChannel = channels[targetChannelIndex];
 
           const isTargetChannelArchived = isChannelArchived(targetChannel);
+          const isTargetChannelPinned = isChannelPinned(targetChannel);
+          const isArchivedFilterTrue = filters && filters.archived === true;
+          const isArchivedFilterFalse = filters && filters.archived === false;
 
-          const considerArchivedChannels = filters && filters.archived === false;
+          const considerPinnedChannels = shouldConsiderPinnedChannels(sort);
 
-          // If channel is archived and we don't want to consider archived channels, return existing list
-          if (isTargetChannelArchived && considerArchivedChannels) {
+          if (
+            // If the channel is archived and we are not considering archived channels
+            (isTargetChannelArchived && isArchivedFilterFalse) ||
+            // If the channel is pinned and we are not considering pinned channels
+            (isTargetChannelPinned && considerPinnedChannels) ||
+            lockChannelOrder
+          ) {
             return channels;
           }
 
@@ -58,6 +69,14 @@ export const useNewMessage = <
             // It may happen that channel was hidden using channel.hide(). In that case
             // We remove it from `channels` state, but its still being watched and exists in client.activeChannels.
             const channel = client.channel(event.channel_type, event.channel_id);
+            // While adding new channels, we need to consider whether they are archived or not.
+            if (
+              // When archived filter false, and channel is archived
+              (isChannelArchived(channel) && isArchivedFilterFalse) ||
+              // When archived filter true, and channel is not archived
+              (isArchivedFilterTrue && !isChannelArchived(channel))
+            )
+              return channels;
             return [channel, ...channels];
           }
 

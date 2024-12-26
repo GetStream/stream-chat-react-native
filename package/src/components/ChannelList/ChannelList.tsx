@@ -166,6 +166,7 @@ export type ChannelListProps<
    * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `message.new` event
    * @param considerArchivedChannels If set to true, archived channels will be considered while updating the list of channels
    * @param filters Channel filters
+   * @param sort Channel sort options
    * @overrideType Function
    * */
   onNewMessage?: (
@@ -173,6 +174,7 @@ export type ChannelListProps<
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
     event: Event<StreamChatGenerics>,
     filters?: ChannelFilters<StreamChatGenerics>,
+    sort?: ChannelSort<StreamChatGenerics>,
   ) => void;
   /**
    * Override the default listener/handler for event `notification.message_new`
@@ -354,6 +356,7 @@ export const ChannelList = <
     onNewMessage,
     setChannels,
     filters,
+    sort,
   });
 
   useNewMessageNotification({

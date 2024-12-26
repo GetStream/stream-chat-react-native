@@ -5,6 +5,11 @@ import type { Channel, ChannelFilters, ChannelSort, Event } from 'stream-chat';
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
+import {
+  findLastPinnedChannelIndex,
+  findPinnedAtSortOrder,
+  shouldConsiderPinnedChannels,
+} from '../utils';
 
 type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   {
@@ -44,6 +49,9 @@ export const useChannelMemberUpdated = <
         const channelType = event.channel_type;
         const channelId = event.channel_id;
 
+        const considerPinnedChannels = shouldConsiderPinnedChannels(sort);
+        const pinnedAtSort = findPinnedAtSortOrder({ sort });
+
         setChannels((currentChannels) => {
           if (!currentChannels) return currentChannels;
 
@@ -52,7 +60,7 @@ export const useChannelMemberUpdated = <
           const targetChannelIndex = currentChannels.indexOf(targetChannel);
           const targetChannelExistsWithinList = targetChannelIndex >= 0;
 
-          if (lockChannelOrder) {
+          if (!considerPinnedChannels || lockChannelOrder) {
             return currentChannels;
           }
 
@@ -69,7 +77,24 @@ export const useChannelMemberUpdated = <
           ) {
             return newChannels;
           }
-          return currentChannels;
+
+          // handle pinning
+          let lastPinnedChannelIndex: number | null = null;
+
+          if (pinnedAtSort === 1 || (pinnedAtSort === -1 && !member.pinned_at)) {
+            lastPinnedChannelIndex = findLastPinnedChannelIndex({ channels: newChannels });
+          }
+          const newTargetChannelIndex =
+            typeof lastPinnedChannelIndex === 'number' ? lastPinnedChannelIndex + 1 : 0;
+
+          // skip re-render if the position of the channel does not change
+          if (currentChannels[newTargetChannelIndex] === targetChannel) {
+            return currentChannels;
+          }
+
+          newChannels.splice(newTargetChannelIndex, 0, targetChannel);
+
+          return newChannels;
         });
       }
     };
