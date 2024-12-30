@@ -42,10 +42,9 @@ export const useNewMessage = <
         setChannels((channels) => {
           if (!channels) return channels;
           const targetChannelIndex = channels.findIndex((channel) => channel.cid === event.cid);
+          const targetChannel = channels[targetChannelIndex];
 
           const channelInList = targetChannelIndex >= 0;
-
-          const targetChannel = channels[targetChannelIndex];
 
           const isTargetChannelArchived = isChannelArchived(targetChannel);
           const isTargetChannelPinned = isChannelPinned(targetChannel);
@@ -64,27 +63,32 @@ export const useNewMessage = <
             return channels;
           }
 
-          if (!channelInList && event.channel_type && event.channel_id) {
-            // If channel doesn't exist in existing list, check in activeChannels as well.
-            // It may happen that channel was hidden using channel.hide(). In that case
-            // We remove it from `channels` state, but its still being watched and exists in client.activeChannels.
-            const channel = client.channel(event.channel_type, event.channel_id);
-            // While adding new channels, we need to consider whether they are archived or not.
-            if (
-              // When archived filter false, and channel is archived
-              (isChannelArchived(channel) && isArchivedFilterFalse) ||
-              // When archived filter true, and channel is not archived
-              (isArchivedFilterTrue && !isChannelArchived(channel))
-            )
-              return channels;
-            return [channel, ...channels];
+          if (!channelInList) {
+            if (event.channel_type && event.channel_id) {
+              // If channel doesn't exist in existing list, check in activeChannels as well.
+              // It may happen that channel was hidden using channel.hide(). In that case
+              // We remove it from `channels` state, but its still being watched and exists in client.activeChannels.
+              const channel = client.channel(event.channel_type, event.channel_id);
+              // While adding new channels, we need to consider whether they are archived or not.
+              if (
+                // When archived filter false, and channel is archived
+                (isChannelArchived(channel) && isArchivedFilterFalse) ||
+                // When archived filter true, and channel is not archived
+                (isArchivedFilterTrue && !isChannelArchived(channel))
+              )
+                return channels;
+              return [channel, ...channels];
+            }
+          } else {
+            if (event.cid) {
+              return moveChannelUp<StreamChatGenerics>({
+                channels,
+                channelToMove: targetChannel,
+                channelToMoveIndexWithinChannels: targetChannelIndex,
+                sort,
+              });
+            }
           }
-
-          if (!lockChannelOrder && event.cid)
-            return moveChannelUp<StreamChatGenerics>({
-              channels,
-              cid: event.cid,
-            });
 
           return [...channels];
         });

@@ -52,10 +52,11 @@ const baseFilters = {
   type: 'messaging',
 };
 const sort: ChannelSort<StreamChatGenerics> = [
-  { pinned_at: 1 },
+  { pinned_at: -1 },
   { last_message_at: -1 },
   { updated_at: -1 },
 ];
+
 const options = {
   presence: true,
   state: true,
@@ -79,7 +80,7 @@ export const ChannelListScreen: React.FC = () => {
   const { loading, loadMore, messages, refreshing, refreshList, reset } =
     usePaginatedSearchedMessages(searchQuery);
 
-  const chatClientUserId = chatClient?.user?.id;
+  const chatClientUserId = chatClient?.user?.id || '';
   const filters = useMemo(
     () => ({
       ...baseFilters,
@@ -102,7 +103,7 @@ export const ChannelListScreen: React.FC = () => {
     </View>
   );
 
-  const setScrollRef = (ref: React.RefObject<FlatList<Channel<StreamChatGenerics>> | null>) => {
+  const setScrollRef = (ref: FlatList<Channel<StreamChatGenerics>> | null) => {
     scrollRef.current = ref;
   };
 

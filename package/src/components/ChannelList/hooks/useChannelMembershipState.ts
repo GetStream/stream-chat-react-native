@@ -17,8 +17,6 @@ export const useChannelMembershipState = <
   useEffect(() => {
     if (!channel) return;
 
-    setMembership(channel.state.membership);
-
     const handleMembershipUpdate = () => {
       setMembership(channel.state.membership);
     };
