@@ -2,10 +2,12 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RectButton } from 'react-native-gesture-handler';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import {
   ChannelPreviewMessenger,
   ChannelPreviewMessengerProps,
+  ChannelPreviewStatus,
+  ChannelPreviewStatusProps,
   Delete,
   MenuPointHorizontal,
   useChannelMembershipState,
@@ -20,6 +22,7 @@ import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayConte
 import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
+import { Pin } from '../icons/Pin';
 
 const styles = StyleSheet.create({
   leftSwipeableButton: {
@@ -36,12 +39,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
   },
+  statusContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  pinIconContainer: {
+    marginLeft: 8,
+  },
 });
 
 type ChannelListScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
   'ChannelListScreen'
 >;
+
+const CustomChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
+  const membership = useChannelMembershipState(props.channel);
+
+  return (
+    <View style={styles.statusContainer}>
+      <ChannelPreviewStatus {...props} />
+      {membership.pinned_at && (
+        <View style={styles.pinIconContainer}>
+          <Pin height={20} width={20} />
+        </View>
+      )}
+    </View>
+  );
+};
 
 export const ChannelPreview: React.FC<ChannelPreviewMessengerProps<StreamChatGenerics>> = (
   props,
@@ -107,7 +132,7 @@ export const ChannelPreview: React.FC<ChannelPreviewMessengerProps<StreamChatGen
         </View>
       )}
     >
-      <ChannelPreviewMessenger {...props} />
+      <ChannelPreviewMessenger {...props} PreviewStatus={CustomChannelPreviewStatus} />
     </Swipeable>
   );
 };

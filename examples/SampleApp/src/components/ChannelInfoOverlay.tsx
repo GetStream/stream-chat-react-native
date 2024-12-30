@@ -43,6 +43,7 @@ import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
 import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayContext';
 import { Archieve } from '../icons/Archieve';
+import { Pin } from '../icons/Pin';
 
 dayjs.extend(relativeTime);
 
@@ -371,6 +372,37 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           <Text style={[styles.rowText, { color: black }]}>View info</Text>
                         </View>
                       </TapGestureHandler>
+                      <Pressable
+                        onPress={async () => {
+                          try {
+                            if (membership?.pinned_at) {
+                              await channel.unpin();
+                            } else {
+                              await channel.pin();
+                            }
+                          } catch (error) {
+                            console.log('Error pinning/unpinning channel', error);
+                          }
+
+                          setOverlay('none');
+                        }}
+                      >
+                        <View
+                          style={[
+                            styles.row,
+                            {
+                              borderTopColor: border,
+                            },
+                          ]}
+                        >
+                          <View style={styles.rowInner}>
+                            <Pin height={24} width={24} />
+                          </View>
+                          <Text style={[styles.rowText, { color: black }]}>
+                            {membership?.pinned_at ? 'Unpin' : 'Pin'}
+                          </Text>
+                        </View>
+                      </Pressable>
                       <Pressable
                         onPress={async () => {
                           try {

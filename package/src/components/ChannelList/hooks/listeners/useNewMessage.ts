@@ -44,8 +44,6 @@ export const useNewMessage = <
           const targetChannelIndex = channels.findIndex((channel) => channel.cid === event.cid);
           const targetChannel = channels[targetChannelIndex];
 
-          const channelInList = targetChannelIndex >= 0;
-
           const isTargetChannelArchived = isChannelArchived(targetChannel);
           const isTargetChannelPinned = isChannelPinned(targetChannel);
           const isArchivedFilterTrue = filters && filters.archived === true;
@@ -63,34 +61,30 @@ export const useNewMessage = <
             return channels;
           }
 
-          if (!channelInList) {
-            if (event.channel_type && event.channel_id) {
-              // If channel doesn't exist in existing list, check in activeChannels as well.
-              // It may happen that channel was hidden using channel.hide(). In that case
-              // We remove it from `channels` state, but its still being watched and exists in client.activeChannels.
-              const channel = client.channel(event.channel_type, event.channel_id);
-              // While adding new channels, we need to consider whether they are archived or not.
-              if (
-                // When archived filter false, and channel is archived
-                (isChannelArchived(channel) && isArchivedFilterFalse) ||
-                // When archived filter true, and channel is not archived
-                (isArchivedFilterTrue && !isChannelArchived(channel))
-              )
-                return channels;
-              return [channel, ...channels];
-            }
-          } else {
-            if (event.cid) {
-              return moveChannelUp<StreamChatGenerics>({
-                channels,
-                channelToMove: targetChannel,
-                channelToMoveIndexWithinChannels: targetChannelIndex,
-                sort,
-              });
-            }
-          }
+          // If channel doesn't exist in existing list, check in activeChannels as well.
+          // It may happen that channel was hidden using channel.hide(). In that case
+          // We remove it from `channels` state, but its still being watched and exists in client.activeChannels.
+          const channelToMove =
+            targetChannel ??
+            (event.channel_type &&
+              event.channel_id &&
+              client.channel(event.channel_type, event.channel_id));
 
-          return [...channels];
+          // While adding new channels, we need to consider whether they are archived or not.
+          if (
+            // When archived filter false, and channel is archived
+            (isChannelArchived(channelToMove) && isArchivedFilterFalse) ||
+            // When archived filter true, and channel is not archived
+            (isArchivedFilterTrue && !isChannelArchived(channelToMove))
+          ) {
+            return channels;
+          }
+          return moveChannelUp<StreamChatGenerics>({
+            channels,
+            channelToMove: channelToMove,
+            channelToMoveIndexWithinChannels: targetChannelIndex,
+            sort,
+          });
         });
       }
     };
