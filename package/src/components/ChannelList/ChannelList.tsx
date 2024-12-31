@@ -12,6 +12,7 @@ import { ChannelListMessenger, ChannelListMessengerProps } from './ChannelListMe
 import { useAddedToChannelNotification } from './hooks/listeners/useAddedToChannelNotification';
 import { useChannelDeleted } from './hooks/listeners/useChannelDeleted';
 import { useChannelHidden } from './hooks/listeners/useChannelHidden';
+import { useChannelMemberUpdated } from './hooks/listeners/useChannelMemberUpdated';
 import { useChannelTruncated } from './hooks/listeners/useChannelTruncated';
 import { useChannelUpdated } from './hooks/listeners/useChannelUpdated';
 import { useChannelVisible } from './hooks/listeners/useChannelVisible';
@@ -33,7 +34,6 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
-import { useChannelMemberUpdated } from './hooks/listeners/useChannelMemberUpdated';
 
 export type ChannelListProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -126,6 +126,22 @@ export type ChannelListProps<
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
+   * Function that overrides default behavior when a channel member.updated event is triggered
+   * @param lockChannelOrder If set to true, channels won't dynamically sort by most recent message, defaults to false
+   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
+   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `member.updated` event
+   * @param filters Channel filters
+   * @param sort Channel sort options
+   * @overrideType Function
+   */
+  onChannelMemberUpdated?: (
+    lockChannelOrder: boolean,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    event: Event<StreamChatGenerics>,
+    filters?: ChannelFilters<StreamChatGenerics>,
+    sort?: ChannelSort<StreamChatGenerics>,
+  ) => void;
+  /**
    * Function to customize behavior when a channel gets truncated
    *
    * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
@@ -194,6 +210,7 @@ export type ChannelListProps<
     event: Event<StreamChatGenerics>,
     filters?: ChannelFilters<StreamChatGenerics>,
   ) => void;
+
   /**
    * Function that overrides default behavior when a user gets removed from a channel
    *
@@ -205,23 +222,6 @@ export type ChannelListProps<
   onRemovedFromChannel?: (
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
     event: Event<StreamChatGenerics>,
-  ) => void;
-
-  /**
-   * Function that overrides default behavior when a channel member.updated event is triggered
-   * @param lockChannelOrder If set to true, channels won't dynamically sort by most recent message, defaults to false
-   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
-   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `member.updated` event
-   * @param filters Channel filters
-   * @param sort Channel sort options
-   * @overrideType Function
-   */
-  onChannelMemberUpdated?: (
-    lockChannelOrder: boolean,
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
-    event: Event<StreamChatGenerics>,
-    filters?: ChannelFilters<StreamChatGenerics>,
-    sort?: ChannelSort<StreamChatGenerics>,
   ) => void;
   /**
    * Object containing channel query options
@@ -316,9 +316,9 @@ export const ChannelList = <
 
   // Setup event listeners
   useAddedToChannelNotification({
+    filters,
     onAddedToChannel,
     setChannels,
-    filters,
     sort,
   });
 
@@ -333,10 +333,10 @@ export const ChannelList = <
   });
 
   useChannelMemberUpdated({
-    lockChannelOrder,
-    setChannels,
-    onChannelMemberUpdated,
     filters,
+    lockChannelOrder,
+    onChannelMemberUpdated,
+    setChannels,
     sort,
   });
 
@@ -358,17 +358,17 @@ export const ChannelList = <
   });
 
   useNewMessage({
+    filters,
     lockChannelOrder,
     onNewMessage,
     setChannels,
-    filters,
     sort,
   });
 
   useNewMessageNotification({
+    filters,
     onNewMessageNotification,
     setChannels,
-    filters,
   });
 
   useRemovedFromChannelNotification({

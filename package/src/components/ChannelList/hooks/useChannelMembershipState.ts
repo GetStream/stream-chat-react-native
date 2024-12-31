@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+
+import { Channel, ChannelState } from 'stream-chat';
+
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { DefaultStreamChatGenerics } from '../../../types/types';
-import { Channel, ChannelState } from 'stream-chat';
 
 export const useChannelMembershipState = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -26,7 +28,7 @@ export const useChannelMembershipState = <
     );
 
     return () => subscriptions.forEach((subscription) => subscription.unsubscribe());
-  }, [channel?.state.membership, client]);
+  }, [channel, client]);
 
   return membership;
 };

@@ -1,4 +1,5 @@
 import { Channel } from 'stream-chat';
+
 import { DefaultStreamChatGenerics } from '../../../../types/types';
 import { ChannelListProps } from '../../ChannelList';
 

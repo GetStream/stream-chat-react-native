@@ -12,6 +12,7 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
   {
     lockChannelOrder: boolean;
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>;
+    filters?: ChannelFilters<StreamChatGenerics>;
     onNewMessage?: (
       lockChannelOrder: boolean,
       setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
@@ -19,17 +20,16 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
       filters?: ChannelFilters<StreamChatGenerics>,
       sort?: ChannelSort<StreamChatGenerics>,
     ) => void;
-    filters?: ChannelFilters<StreamChatGenerics>;
     sort?: ChannelSort<StreamChatGenerics>;
   };
 
 export const useNewMessage = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
+  filters,
   lockChannelOrder,
   onNewMessage,
   setChannels,
-  filters,
   sort,
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
@@ -81,7 +81,7 @@ export const useNewMessage = <
           }
           return moveChannelUp<StreamChatGenerics>({
             channels,
-            channelToMove: channelToMove,
+            channelToMove,
             channelToMoveIndexWithinChannels: targetChannelIndex,
             sort,
           });

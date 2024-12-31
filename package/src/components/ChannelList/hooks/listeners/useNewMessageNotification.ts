@@ -13,20 +13,20 @@ import { isChannelArchived } from '../utils';
 type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   {
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>;
+    filters?: ChannelFilters<StreamChatGenerics>;
     onNewMessageNotification?: (
       setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
       event: Event<StreamChatGenerics>,
       filters?: ChannelFilters<StreamChatGenerics>,
     ) => void;
-    filters?: ChannelFilters<StreamChatGenerics>;
   };
 
 export const useNewMessageNotification = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
+  filters,
   onNewMessageNotification,
   setChannels,
-  filters,
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
 

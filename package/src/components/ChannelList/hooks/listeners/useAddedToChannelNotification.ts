@@ -13,22 +13,22 @@ import { findLastPinnedChannelIndex, findPinnedAtSortOrder } from '../utils';
 type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   {
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>;
+    filters?: ChannelFilters<StreamChatGenerics>;
     onAddedToChannel?: (
       setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
       event: Event<StreamChatGenerics>,
       filters?: ChannelFilters<StreamChatGenerics>,
       sort?: ChannelSort<StreamChatGenerics>,
     ) => void;
-    filters?: ChannelFilters<StreamChatGenerics>;
     sort?: ChannelSort<StreamChatGenerics>;
   };
 
 export const useAddedToChannelNotification = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
+  filters,
   onAddedToChannel,
   setChannels,
-  filters,
   sort,
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();

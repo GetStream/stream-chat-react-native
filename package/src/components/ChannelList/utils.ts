@@ -1,7 +1,8 @@
 import type { Channel, ChannelSort, StreamChat } from 'stream-chat';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
 import { findLastPinnedChannelIndex, shouldConsiderPinnedChannels } from './hooks/utils';
+
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 type MoveParameters<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

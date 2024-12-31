@@ -15,6 +15,7 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
   {
     lockChannelOrder: boolean;
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>;
+    filters?: ChannelFilters<StreamChatGenerics>;
     onChannelMemberUpdated?: (
       lockChannelOrder: boolean,
       setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
@@ -22,23 +23,22 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
       filters?: ChannelFilters<StreamChatGenerics>,
       sort?: ChannelSort<StreamChatGenerics>,
     ) => void;
-    filters?: ChannelFilters<StreamChatGenerics>;
     sort?: ChannelSort<StreamChatGenerics>;
   };
 
 export const useChannelMemberUpdated = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
+  filters,
   lockChannelOrder,
   onChannelMemberUpdated,
   setChannels,
-  filters,
   sort,
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
 
   useEffect(() => {
-    const handleEvent = async (event: Event<StreamChatGenerics>) => {
+    const handleEvent = (event: Event<StreamChatGenerics>) => {
       if (typeof onChannelMemberUpdated === 'function') {
         onChannelMemberUpdated(lockChannelOrder, setChannels, event, filters, sort);
       } else {
