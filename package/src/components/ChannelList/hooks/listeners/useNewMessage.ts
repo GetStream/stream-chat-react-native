@@ -58,7 +58,7 @@ export const useNewMessage = <
             (isTargetChannelPinned && considerPinnedChannels) ||
             lockChannelOrder
           ) {
-            return channels;
+            return [...channels];
           }
 
           // If channel doesn't exist in existing list, check in activeChannels as well.
@@ -77,7 +77,7 @@ export const useNewMessage = <
             // When archived filter true, and channel is not archived
             (isArchivedFilterTrue && !isChannelArchived(channelToMove))
           ) {
-            return channels;
+            return [...channels];
           }
           return moveChannelUp<StreamChatGenerics>({
             channels,
