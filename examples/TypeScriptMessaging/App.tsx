@@ -1,21 +1,36 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { I18nManager, LogBox, Platform, SafeAreaView, useColorScheme, View } from 'react-native';
+import {
+  I18nManager,
+  LogBox,
+  Platform,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  useColorScheme,
+  View,
+} from 'react-native';
 import { DarkTheme, DefaultTheme, NavigationContainer, RouteProp } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Channel as ChannelType, ChannelSort } from 'stream-chat';
 import {
+  Archieve,
   Channel,
   ChannelList,
+  ChannelPreviewStatus,
+  ChannelPreviewStatusProps,
   Chat,
   MessageInput,
   MessageList,
   OverlayProvider,
+  Pin,
   Streami18n,
   Thread,
   ThreadContextValue,
+  Unpin,
   useAttachmentPickerContext,
+  useChannelMembershipState,
   useCreateChatClient,
   useOverlayContext,
 } from 'stream-chat-react-native';
@@ -73,7 +88,7 @@ const filters = {
 };
 
 const sort: ChannelSort<StreamChatGenerics> = [
-  { pinned_at: 1 },
+  { pinned_at: -1 },
   { last_message_at: -1 },
   { updated_at: -1 },
 ];
@@ -90,6 +105,51 @@ type ChannelListScreenProps = {
   navigation: StackNavigationProp<NavigationParamsList, 'ChannelList'>;
 };
 
+const CustomChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
+  const { channel } = props;
+  const membership = useChannelMembershipState(channel);
+
+  return (
+    <View style={styles.statusContainer}>
+      <ChannelPreviewStatus {...props} />
+      <Pressable
+        style={styles.iconContainer}
+        onPress={async () => {
+          if (membership.pinned_at) {
+            await channel.unpin();
+          } else {
+            await channel.pin();
+          }
+        }}
+      >
+        {membership.pinned_at ? <Unpin height={24} width={24} pathFill='red' /> : <Pin size={24} />}
+      </Pressable>
+      <Pressable
+        style={styles.iconContainer}
+        onPress={async () => {
+          if (membership.archived_at) {
+            await channel.unarchive();
+          } else {
+            await channel.archive();
+          }
+        }}
+      >
+        <Archieve height={24} width={24} fill={membership.archived_at ? 'red' : 'grey'} />
+      </Pressable>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconContainer: {
+    marginLeft: 8,
+  },
+});
+
 const ChannelListScreen: React.FC<ChannelListScreenProps> = ({ navigation }) => {
   const { setChannel } = useContext(AppContext);
 
@@ -98,7 +158,9 @@ const ChannelListScreen: React.FC<ChannelListScreenProps> = ({ navigation }) => 
   return (
     <View style={{ height: '100%' }}>
       <ChannelList<StreamChatGenerics>
+        PreviewStatus={CustomChannelPreviewStatus}
         filters={memoizedFilters}
+        lockChannelOrder
         onSelect={(channel) => {
           setChannel(channel);
           navigation.navigate('Channel');
@@ -241,7 +303,7 @@ const App = () => {
       i18nInstance={streami18n}
       value={{ style: theme }}
     >
-      <Chat client={chatClient} i18nInstance={streami18n} enableOfflineSupport>
+      <Chat client={chatClient} i18nInstance={streami18n}>
         <Stack.Navigator
           initialRouteName='ChannelList'
           screenOptions={{
