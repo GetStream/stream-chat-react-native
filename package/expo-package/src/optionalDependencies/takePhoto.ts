@@ -36,13 +36,29 @@ export const takePhoto = ImagePicker
 
         if (permissionGranted) {
           const imagePickerSuccessResult = await ImagePicker.launchCameraAsync({
+            mediaTypes: Platform.OS === 'ios' ? ['images', 'videos'] : 'images',
             quality: Math.min(Math.max(0, compressImageQuality), 1),
           });
           const canceled = imagePickerSuccessResult.canceled;
           const assets = imagePickerSuccessResult.assets;
           // since we only support single photo upload for now we will only be focusing on 0'th element.
           const photo = assets && assets[0];
-
+          if (Platform.OS === 'ios') {
+            if (photo.mimeType.includes('video')) {
+              const clearFilter = new RegExp('[.:]', 'g');
+              const date = new Date().toISOString().replace(clearFilter, '_');
+              return {
+                ...photo,
+                cancelled: false,
+                duration: photo.duration,
+                source: 'camera',
+                name: 'video_recording_' + date + photo.uri.split('.').pop(),
+                size: photo.fileSize,
+                type: photo.mimeType,
+                uri: photo.uri,
+              };
+            }
+          }
           if (canceled === false && photo && photo.height && photo.width && photo.uri) {
             let size: Size = {};
             if (Platform.OS === 'android') {
@@ -70,6 +86,7 @@ export const takePhoto = ImagePicker
             return {
               cancelled: false,
               size: photo.fileSize,
+              type: photo.mimeType,
               source: 'camera',
               uri: photo.uri,
               ...size,

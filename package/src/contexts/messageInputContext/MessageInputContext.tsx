@@ -701,7 +701,11 @@ export const MessageInputProvider = <
       );
     }
     if (!photo.cancelled) {
-      await uploadNewImage(photo);
+      if (photo.type.includes('image')) {
+        await uploadNewImage(photo);
+      } else {
+        await uploadNewFile({ ...photo, mimeType: photo.type, type: FileTypes.Video });
+      }
     }
   };
 

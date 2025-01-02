@@ -29,6 +29,7 @@ export const takePhoto = ImagePicker
       }
       try {
         const result = await ImagePicker.launchCamera({
+          mediaType: Platform.OS === 'ios' ? 'mixed' : 'images',
           quality: Math.min(Math.max(0, compressImageQuality), 1),
         });
         if (!result.assets.length) {
@@ -36,14 +37,30 @@ export const takePhoto = ImagePicker
             cancelled: true,
           };
         }
-        const photo = result.assets[0];
-        if (photo.height && photo.width && photo.uri) {
+        const asset = result.assets[0];
+        if (Platform.OS === 'ios') {
+          if (asset.type.includes('video')) {
+            const clearFilter = new RegExp('[.:]', 'g');
+            const date = new Date().toISOString().replace(clearFilter, '_');
+            return {
+              ...asset,
+              cancelled: false,
+              duration: asset.duration ? asset.duration * 1000 : undefined, // in milliseconds
+              source: 'camera',
+              name: 'video_recording_' + date + asset.fileName.split('.').pop(),
+              size: asset.fileSize,
+              type: asset.type,
+              uri: asset.uri,
+            };
+          }
+        }
+        if (asset.height && asset.width && asset.uri) {
           let size: { height?: number; width?: number } = {};
           if (Platform.OS === 'android') {
             // Height and width returned by ImagePicker are incorrect on Android.
             const getSize = (): Promise<{ height: number; width: number }> =>
               new Promise((resolve) => {
-                Image.getSize(photo.uri, (width, height) => {
+                Image.getSize(asset.uri, (width, height) => {
                   resolve({ height, width });
                 });
               });
@@ -58,15 +75,16 @@ export const takePhoto = ImagePicker
             }
           } else {
             size = {
-              height: photo.height,
-              width: photo.width,
+              height: asset.height,
+              width: asset.width,
             };
           }
           return {
             cancelled: false,
-            size: photo.size,
+            type: asset.type,
+            size: asset.size,
             source: 'camera',
-            uri: photo.uri,
+            uri: asset.uri,
             ...size,
           };
         }
