@@ -426,7 +426,7 @@ const MessageListWithContext = <
         return;
       }
 
-      if (unreadIndicatorDate && lastItemDate > unreadIndicatorDate) {
+      if (channel.countUnread() && unreadIndicatorDate && lastItemDate > unreadIndicatorDate) {
         setIsUnreadNotificationOpen(true);
       } else {
         setIsUnreadNotificationOpen(false);
