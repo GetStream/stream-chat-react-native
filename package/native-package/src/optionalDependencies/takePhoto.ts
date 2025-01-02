@@ -6,7 +6,7 @@ try {
   ImagePicker = require('react-native-image-picker');
 } catch (e) {
   console.log(
-    'The package react-native-image-picker is not installed. Please install the same so as to take photo through camera and upload it.',
+    'The package react-native-image-picker is not installed. Installing this package will enable capturing photos and videos(for iOS) through the app, and thereby send it.',
   );
 }
 

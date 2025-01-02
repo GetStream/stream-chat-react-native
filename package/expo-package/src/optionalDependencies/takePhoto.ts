@@ -10,7 +10,7 @@ try {
 
 if (!ImagePicker) {
   console.log(
-    'expo-image-picker is not installed. Installing this package will enable campturing photos through the app, and thereby send it.',
+    'expo-image-picker is not installed. Installing this package will enable capturing photos and videos(for iOS) through the app, and thereby send it.',
   );
 }
 
