@@ -13,6 +13,7 @@ import { CameraSelectorIcon } from '../../AttachmentPicker/components/CameraSele
 import { FileSelectorIcon } from '../../AttachmentPicker/components/FileSelectorIcon';
 import { ImageSelectorIcon } from '../../AttachmentPicker/components/ImageSelectorIcon';
 import { CreatePollIcon } from '../../Poll/components/CreatePollIcon';
+import { Recorder } from '../../../icons';
 
 type NativeAttachmentPickerProps = {
   onRequestedClose: () => void;
@@ -28,10 +29,10 @@ export const NativeAttachmentPicker = ({
 }: NativeAttachmentPickerProps) => {
   const size = attachButtonLayoutRectangle?.width ?? 0;
   const attachButtonItemSize = 40;
-  const NUMBER_OF_BUTTONS = 3;
+  const NUMBER_OF_BUTTONS = 5;
   const {
     theme: {
-      colors: { grey_whisper },
+      colors: { grey, grey_whisper },
       messageInput: {
         nativeAttachmentPicker: {
           buttonContainer,
@@ -148,6 +149,13 @@ export const NativeAttachmentPicker = ({
       icon: <CameraSelectorIcon />,
       id: 'Camera',
       onPressHandler: takeAndUploadImage,
+    });
+    buttons.push({
+      icon: <Recorder pathFill={grey} height={20} width={20} />,
+      id: 'Video',
+      onPressHandler: () => {
+        takeAndUploadImage('video');
+      },
     });
   }
 

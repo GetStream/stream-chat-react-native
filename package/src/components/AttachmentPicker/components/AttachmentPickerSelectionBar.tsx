@@ -7,6 +7,7 @@ import { useMessageInputContext } from '../../../contexts/messageInputContext/Me
 import { useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
 import { useOwnCapabilitiesContext } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { Recorder } from '../../../icons';
 
 const styles = StyleSheet.create({
   container: {
@@ -48,6 +49,7 @@ export const AttachmentPickerSelectionBar = () => {
   const {
     theme: {
       attachmentSelectionBar: { container, icon },
+      colors: { grey },
     },
   } = useTheme();
 
@@ -105,7 +107,9 @@ export const AttachmentPickerSelectionBar = () => {
       {hasCameraPicker ? (
         <TouchableOpacity
           hitSlop={{ bottom: 15, top: 15 }}
-          onPress={takeAndUploadImage}
+          onPress={() => {
+            takeAndUploadImage();
+          }}
           testID='take-photo-touchable'
         >
           <View style={[styles.icon, icon]}>
@@ -113,6 +117,19 @@ export const AttachmentPickerSelectionBar = () => {
               numberOfImageUploads={imageUploads.length}
               selectedPicker={selectedPicker}
             />
+          </View>
+        </TouchableOpacity>
+      ) : null}
+      {hasCameraPicker ? (
+        <TouchableOpacity
+          hitSlop={{ bottom: 15, top: 15 }}
+          onPress={() => {
+            takeAndUploadImage('video');
+          }}
+          testID='take-photo-touchable'
+        >
+          <View style={[styles.icon, icon]}>
+            <Recorder pathFill={grey} height={20} width={20} />
           </View>
         </TouchableOpacity>
       ) : null}

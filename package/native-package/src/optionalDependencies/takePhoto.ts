@@ -11,7 +11,10 @@ try {
 }
 
 export const takePhoto = ImagePicker
-  ? async ({ compressImageQuality = Platform.OS === 'ios' ? 0.8 : 1 }) => {
+  ? async ({
+      compressImageQuality = Platform.OS === 'ios' ? 0.8 : 1,
+      mediaType = Platform.OS === 'ios' ? 'mixed' : 'image',
+    }) => {
       if (Platform.OS === 'android') {
         const cameraPermissions = await PermissionsAndroid.check(
           PermissionsAndroid.PERMISSIONS.CAMERA,
@@ -29,7 +32,7 @@ export const takePhoto = ImagePicker
       }
       try {
         const result = await ImagePicker.launchCamera({
-          mediaType: Platform.OS === 'ios' ? 'mixed' : 'images',
+          mediaType: mediaType,
           quality: Math.min(Math.max(0, compressImageQuality), 1),
         });
         if (!result.assets.length) {
@@ -38,55 +41,54 @@ export const takePhoto = ImagePicker
           };
         }
         const asset = result.assets[0];
-        if (Platform.OS === 'ios') {
-          if (asset.type.includes('video')) {
-            const clearFilter = new RegExp('[.:]', 'g');
-            const date = new Date().toISOString().replace(clearFilter, '_');
-            return {
-              ...asset,
-              cancelled: false,
-              duration: asset.duration ? asset.duration * 1000 : undefined, // in milliseconds
-              source: 'camera',
-              name: 'video_recording_' + date + asset.fileName.split('.').pop(),
-              size: asset.fileSize,
-              type: asset.type,
-              uri: asset.uri,
-            };
-          }
-        }
-        if (asset.height && asset.width && asset.uri) {
-          let size: { height?: number; width?: number } = {};
-          if (Platform.OS === 'android') {
-            // Height and width returned by ImagePicker are incorrect on Android.
-            const getSize = (): Promise<{ height: number; width: number }> =>
-              new Promise((resolve) => {
-                Image.getSize(asset.uri, (width, height) => {
-                  resolve({ height, width });
-                });
-              });
-
-            try {
-              const { height, width } = await getSize();
-              size.height = height;
-              size.width = width;
-            } catch (e) {
-              // do nothing
-              console.warn('Error get image size of picture caputred from camera ', e);
-            }
-          } else {
-            size = {
-              height: asset.height,
-              width: asset.width,
-            };
-          }
+        if (asset.type.includes('video')) {
+          const clearFilter = new RegExp('[.:]', 'g');
+          const date = new Date().toISOString().replace(clearFilter, '_');
           return {
+            ...asset,
             cancelled: false,
-            type: asset.type,
-            size: asset.size,
+            duration: asset.duration * 1000,
             source: 'camera',
+            name: 'video_recording_' + date + asset.fileName.split('.').pop(),
+            size: asset.fileSize,
+            type: asset.type,
             uri: asset.uri,
-            ...size,
           };
+        } else {
+          if (asset.height && asset.width && asset.uri) {
+            let size: { height?: number; width?: number } = {};
+            if (Platform.OS === 'android') {
+              // Height and width returned by ImagePicker are incorrect on Android.
+              const getSize = (): Promise<{ height: number; width: number }> =>
+                new Promise((resolve) => {
+                  Image.getSize(asset.uri, (width, height) => {
+                    resolve({ height, width });
+                  });
+                });
+
+              try {
+                const { height, width } = await getSize();
+                size.height = height;
+                size.width = width;
+              } catch (e) {
+                // do nothing
+                console.warn('Error get image size of picture caputred from camera ', e);
+              }
+            } else {
+              size = {
+                height: asset.height,
+                width: asset.width,
+              };
+            }
+            return {
+              cancelled: false,
+              type: asset.type,
+              size: asset.size,
+              source: 'camera',
+              uri: asset.uri,
+              ...size,
+            };
+          }
         }
       } catch (e: unknown) {
         if (e instanceof Error) {
