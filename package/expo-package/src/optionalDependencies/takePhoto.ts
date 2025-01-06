@@ -43,14 +43,13 @@ export const takePhoto = ImagePicker
 
         if (permissionGranted) {
           const imagePickerSuccessResult = await ImagePicker.launchCameraAsync({
-            mediaTypes: Platform.OS === 'ios' ? mediaTypeMap[mediaType] : mediaType[mediaType],
+            mediaTypes: mediaTypeMap[mediaType],
             quality: Math.min(Math.max(0, compressImageQuality), 1),
           });
           const canceled = imagePickerSuccessResult.canceled;
           const assets = imagePickerSuccessResult.assets;
           // since we only support single photo upload for now we will only be focusing on 0'th element.
           const photo = assets && assets[0];
-          console.log('photo', photo);
           if (canceled) {
             return { cancelled: true };
           }

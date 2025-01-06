@@ -35,7 +35,7 @@ export const takePhoto = ImagePicker
           mediaType: mediaType,
           quality: Math.min(Math.max(0, compressImageQuality), 1),
         });
-        if (!result.assets.length) {
+        if (!result.assets.length || result.didCancel) {
           return {
             cancelled: true,
           };

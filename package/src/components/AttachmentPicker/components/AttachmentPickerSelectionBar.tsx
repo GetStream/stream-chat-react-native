@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { useAttachmentPickerContext } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
@@ -7,7 +7,6 @@ import { useMessageInputContext } from '../../../contexts/messageInputContext/Me
 import { useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
 import { useOwnCapabilitiesContext } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { Recorder } from '../../../icons';
 
 const styles = StyleSheet.create({
   container: {
@@ -30,6 +29,7 @@ export const AttachmentPickerSelectionBar = () => {
     ImageSelectorIcon,
     selectedPicker,
     setSelectedPicker,
+    VideoRecorderSelectorIcon,
   } = useAttachmentPickerContext();
 
   const {
@@ -49,7 +49,6 @@ export const AttachmentPickerSelectionBar = () => {
   const {
     theme: {
       attachmentSelectionBar: { container, icon },
-      colors: { grey },
     },
   } = useTheme();
 
@@ -108,7 +107,7 @@ export const AttachmentPickerSelectionBar = () => {
         <TouchableOpacity
           hitSlop={{ bottom: 15, top: 15 }}
           onPress={() => {
-            takeAndUploadImage();
+            takeAndUploadImage(Platform.OS === 'android' ? 'image' : 'mixed');
           }}
           testID='take-photo-touchable'
         >
@@ -120,7 +119,7 @@ export const AttachmentPickerSelectionBar = () => {
           </View>
         </TouchableOpacity>
       ) : null}
-      {hasCameraPicker ? (
+      {hasCameraPicker && Platform.OS === 'android' ? (
         <TouchableOpacity
           hitSlop={{ bottom: 15, top: 15 }}
           onPress={() => {
@@ -128,8 +127,11 @@ export const AttachmentPickerSelectionBar = () => {
           }}
           testID='take-photo-touchable'
         >
-          <View style={[styles.icon, icon]}>
-            <Recorder pathFill={grey} height={20} width={20} />
+          <View style={[styles.icon, { marginTop: 4 }, icon]}>
+            <VideoRecorderSelectorIcon
+              numberOfImageUploads={imageUploads.length}
+              selectedPicker={selectedPicker}
+            />
           </View>
         </TouchableOpacity>
       ) : null}

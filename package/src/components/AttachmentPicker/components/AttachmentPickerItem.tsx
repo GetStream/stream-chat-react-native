@@ -113,7 +113,7 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
           </View>
         )}
         <View style={styles.videoView}>
-          <Recorder height={20} pathFill={white} width={25} />
+          <Recorder height={20} pathFill={white} width={20} />
           {videoDuration ? (
             <Text style={[{ color: white }, styles.durationText, durationText]}>
               {durationLabel}
