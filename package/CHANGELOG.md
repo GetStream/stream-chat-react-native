@@ -1,5 +1,12 @@
 # Change Log
 
+### [6.1.1](https://github.com/GetStream/stream-chat-react-native/compare/v6.1.0...v6.1.1) (2025-01-08)
+
+
+### Bug Fixes
+
+* customize channel avatar size using theme ([#2874](https://github.com/GetStream/stream-chat-react-native/issues/2874)) ([88ed5e3](https://github.com/GetStream/stream-chat-react-native/commit/88ed5e36750bca3ea4735aa1b6d376ce538eb8a9))
+
 ## [6.1.0](https://github.com/GetStream/stream-chat-react-native/compare/v6.0.2...v6.1.0) (2024-12-24)
 
 
