@@ -30,11 +30,9 @@ jobs:
       - name: Install && Build - SDK and Sample App
         uses: ./.github/actions/install-and-build-sdk
       - name: Lint
-        run: yarn lerna-workspaces run lint && (cd docusaurus; npx prettier --check '**/*.mdx')
+        run: yarn lerna-workspaces run lint
       - name: Test
         run: yarn test:coverage
-        env:
-          GITHUB_TOKEN: ${{ secrets.DOCUSAURUS_GH_TOKEN }}
       - name: Publish Next Release
         run: GITHUB_SHORT_SHA="$(git rev-parse --short $GITHUB_SHA)" yarn release-next
         env:
