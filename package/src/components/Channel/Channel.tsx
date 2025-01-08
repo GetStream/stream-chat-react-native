@@ -85,7 +85,6 @@ import {
 } from '../../icons';
 import {
   FlatList as FlatListDefault,
-  isAudioRecorderAvailable,
   isDocumentPickerAvailable,
   isImageMediaLibraryAvailable,
   isImagePickerAvailable,
@@ -494,7 +493,7 @@ const ChannelWithContext = <
     AudioAttachment = AudioAttachmentDefault,
     AudioAttachmentUploadPreview = AudioAttachmentDefault,
     AudioRecorder = AudioRecorderDefault,
-    audioRecordingEnabled = isAudioRecorderAvailable(),
+    audioRecordingEnabled = false,
     AudioRecordingInProgress = AudioRecordingInProgressDefault,
     AudioRecordingLockIndicator = AudioRecordingLockIndicatorDefault,
     AudioRecordingPreview = AudioRecordingPreviewDefault,
