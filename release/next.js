@@ -8,7 +8,10 @@ configPromise.then((config) => {
     ...config,
     branches: [
       'main',
-      'V5',
+      {
+        name:"V5",
+        range: "5.x",
+      },
       {
         name: 'develop',
         channel: 'beta',
