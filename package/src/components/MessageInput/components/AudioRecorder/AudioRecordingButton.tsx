@@ -8,11 +8,7 @@ import {
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { Mic } from '../../../../icons/Mic';
-import {
-  AudioRecordingReturnType,
-  isAudioRecorderAvailable,
-  triggerHaptic,
-} from '../../../../native';
+import { AudioRecordingReturnType, triggerHaptic } from '../../../../native';
 
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
@@ -101,8 +97,6 @@ const AudioRecordingButtonWithContext = <
       if (startVoiceRecording) startVoiceRecording();
     }
   };
-
-  if (!isAudioRecorderAvailable()) return null;
 
   return (
     <Pressable

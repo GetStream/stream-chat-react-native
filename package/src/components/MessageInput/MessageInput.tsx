@@ -56,7 +56,11 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import { isImageMediaLibraryAvailable, triggerHaptic } from '../../native';
+import {
+  isAudioRecorderAvailable,
+  isImageMediaLibraryAvailable,
+  triggerHaptic,
+} from '../../native';
 import type { Asset, DefaultStreamChatGenerics } from '../../types/types';
 import { AIStates, useAIState } from '../AITypingIndicatorView';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
@@ -624,7 +628,7 @@ const MessageInputWithContext = <
   } = useAudioController();
 
   const isSendingButtonVisible = () => {
-    if (audioRecordingEnabled) {
+    if (audioRecordingEnabled && isAudioRecorderAvailable()) {
       if (recording) {
         return false;
       }
@@ -856,7 +860,7 @@ const MessageInputWithContext = <
                   </View>
                 ))
               )}
-              {audioRecordingEnabled && !micLocked && (
+              {audioRecordingEnabled && isAudioRecorderAvailable() && !micLocked && (
                 <GestureDetector gesture={panGestureMic}>
                   <Animated.View
                     style={[
