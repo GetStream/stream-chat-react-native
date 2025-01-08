@@ -160,6 +160,9 @@ export type Theme = {
     maskFillColor?: ColorValue;
   };
   channelPreview: {
+    avatar: {
+      size: number;
+    };
     checkAllIcon: IconProps;
     checkIcon: IconProps;
     container: ViewStyle;
@@ -914,6 +917,9 @@ export const defaultTheme: Theme = {
     height: 64,
   },
   channelPreview: {
+    avatar: {
+      size: 40,
+    },
     checkAllIcon: {
       height: DEFAULT_STATUS_ICON_SIZE,
       width: DEFAULT_STATUS_ICON_SIZE,

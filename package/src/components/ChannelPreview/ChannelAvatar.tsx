@@ -5,6 +5,7 @@ import { useChannelPreviewDisplayAvatar } from './hooks/useChannelPreviewDisplay
 import { useChannelPreviewDisplayPresence } from './hooks/useChannelPreviewDisplayPresence';
 
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { Avatar } from '../Avatar/Avatar';
 import { GroupAvatar } from '../Avatar/GroupAvatar';
@@ -22,6 +23,13 @@ export const ChannelAvatarWithContext = <
   props: ChannelAvatarProps<StreamChatGenerics> & Pick<ChatContextValue, 'ImageComponent'>,
 ) => {
   const { channel, ImageComponent } = props;
+  const {
+    theme: {
+      channelPreview: {
+        avatar: { size },
+      },
+    },
+  } = useTheme();
 
   const displayAvatar = useChannelPreviewDisplayAvatar(channel);
   const displayPresence = useChannelPreviewDisplayPresence(channel);
@@ -32,7 +40,7 @@ export const ChannelAvatarWithContext = <
         ImageComponent={ImageComponent}
         images={displayAvatar.images}
         names={displayAvatar.names}
-        size={40}
+        size={size}
       />
     );
   }
@@ -43,7 +51,7 @@ export const ChannelAvatarWithContext = <
       ImageComponent={ImageComponent}
       name={displayAvatar.name}
       online={displayPresence}
-      size={40}
+      size={size}
     />
   );
 };
