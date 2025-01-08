@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+      - V5
     types: [opened, synchronize]
 
 jobs:
