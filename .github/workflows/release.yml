@@ -31,12 +31,11 @@ jobs:
       - name: Install && Build - SDK and Sample App
         uses: ./.github/actions/install-and-build-sdk
       - name: Lint
-        run: yarn lerna-workspaces run lint && cd docusaurus && npx prettier --check '**/*.mdx'
+        run: yarn lerna-workspaces run lint
       - name: Publish Release
         run: yarn release
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-          GH_TOKEN: ${{ secrets.DOCUSAURUS_GH_TOKEN }}
       - name: Merge back changes
         run: |
           git stash
