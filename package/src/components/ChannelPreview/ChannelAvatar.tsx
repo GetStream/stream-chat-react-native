@@ -16,7 +16,7 @@ export type ChannelAvatarProps<
   /**
    * The size of the avatar
    */
-  size: number;
+  size?: number;
 };
 
 /**
