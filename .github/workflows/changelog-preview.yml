@@ -3,7 +3,6 @@ name: Changelog preview
 on:
   pull_request:
     branches:
-      - main
       - v5
     types: [opened, synchronize]
 
