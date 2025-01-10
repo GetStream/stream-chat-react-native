@@ -14,20 +14,6 @@ import { MessageStatusTypes } from '../../../utils/utils';
 
 import { isMessageWithStylesReadByAndDateSeparator } from '../../MessageList/hooks/useMessageList';
 
-const styles = StyleSheet.create({
-  readByCount: {
-    fontSize: 11,
-    fontWeight: '700',
-    paddingRight: 3,
-  },
-  statusContainer: {
-    alignItems: 'flex-end',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    paddingRight: 3,
-  },
-});
-
 export type MessageStatusPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<MessageContextValue<StreamChatGenerics>, 'message' | 'threadList'>;
@@ -131,3 +117,17 @@ export const MessageStatus = <
 };
 
 MessageStatus.displayName = 'MessageStatus{messageSimple{status}}';
+
+const styles = StyleSheet.create({
+  readByCount: {
+    fontSize: 11,
+    fontWeight: '700',
+    paddingRight: 3,
+  },
+  statusContainer: {
+    alignItems: 'flex-end',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingRight: 3,
+  },
+});
