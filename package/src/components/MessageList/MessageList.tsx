@@ -638,20 +638,6 @@ const MessageListWithContext = <
       scrollToBottomButtonVisible;
     const insertInlineUnreadIndicator = showUnreadUnderlay && !isMessageUnread(index + 1); // show only if previous message is read
 
-    if (message.type === 'system') {
-      return (
-        <View style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}>
-          <View testID={`message-list-item-${index}`}>
-            <MessageSystem
-              message={message}
-              style={[{ paddingHorizontal: screenPadding }, messageContainer]}
-            />
-          </View>
-          {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
-        </View>
-      );
-    }
-
     const wrapMessageInTheme = client.userID === message.user?.id && !!myMessageTheme;
     const renderDateSeperator = isMessageWithStylesReadByAndDateSeparator(message) &&
       message.dateSeparator && <InlineDateSeparator date={message.dateSeparator} />;
@@ -670,34 +656,32 @@ const MessageListWithContext = <
         threadList={threadList}
       />
     );
-    return wrapMessageInTheme ? (
-      <>
-        <ThemeProvider mergedStyle={modifiedTheme}>
-          <View
-            style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}
-            testID={`message-list-item-${index}`}
-          >
-            {shouldApplyAndroidWorkaround && renderDateSeperator}
+
+    return (
+      <View
+        style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}
+        testID={`message-list-item-${index}`}
+      >
+        {insertInlineUnreadIndicator ? <InlineUnreadIndicator /> : null}
+        {message.type === 'system' ? (
+          <MessageSystem
+            message={message}
+            style={[{ paddingHorizontal: screenPadding }, messageContainer]}
+          />
+        ) : wrapMessageInTheme ? (
+          <ThemeProvider mergedStyle={modifiedTheme}>
+            <View testID={`message-list-item-${index}`}>
+              {renderDateSeperator}
+              {renderMessage}
+            </View>
+          </ThemeProvider>
+        ) : (
+          <View testID={`message-list-item-${index}`}>
+            {renderDateSeperator}
             {renderMessage}
           </View>
-        </ThemeProvider>
-        {!shouldApplyAndroidWorkaround && renderDateSeperator}
-        {/* Adding indicator below the messages, since the list is inverted */}
-        {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
-      </>
-    ) : (
-      <>
-        <View
-          style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}
-          testID={`message-list-item-${index}`}
-        >
-          {shouldApplyAndroidWorkaround && renderDateSeperator}
-          {renderMessage}
-        </View>
-        {!shouldApplyAndroidWorkaround && renderDateSeperator}
-        {/* Adding indicator below the messages, since the list is inverted */}
-        {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
-      </>
+        )}
+      </View>
     );
   };
 
