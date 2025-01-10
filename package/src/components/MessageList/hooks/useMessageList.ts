@@ -1,5 +1,7 @@
 import type { ChannelState, MessageResponse } from 'stream-chat';
 
+import { useLastReadData } from './useLastReadData';
+
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import {
@@ -11,7 +13,6 @@ import { useThreadContext } from '../../../contexts/threadContext/ThreadContext'
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { getDateSeparators } from '../utils/getDateSeparators';
 import { getGroupStyles } from '../utils/getGroupStyles';
-import { getReadStates } from '../utils/getReadStates';
 
 export type UseMessageListParams = {
   deletedMessagesVisibilityType?: DeletedMessagesVisibilityType;
@@ -78,7 +79,11 @@ export const useMessageList = <
     userId: client.userID,
   });
 
-  const readData = getReadStates(client.userID, messageList, readList);
+  const readData = useLastReadData({
+    messages: messageList,
+    read: readList,
+    userID: client.userID,
+  });
 
   const messagesWithStylesReadByAndDateSeparator = messageList
     .filter((msg) => {
