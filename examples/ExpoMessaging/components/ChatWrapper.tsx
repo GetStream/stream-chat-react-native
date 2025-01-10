@@ -10,6 +10,7 @@ import { AuthProgressLoader } from './AuthProgressLoader';
 import { StreamChatGenerics } from '../types';
 import { STREAM_API_KEY, user, userToken } from '../constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useStreamChatTheme } from '../useStreamChatTheme';
 
 const streami18n = new Streami18n({
   language: 'en',
@@ -26,13 +27,18 @@ export const ChatWrapper = ({ children }: PropsWithChildren<{}>) => {
     userData: user,
     tokenOrProvider: userToken,
   });
+  const theme = useStreamChatTheme();
 
   if (!chatClient) {
     return <AuthProgressLoader />;
   }
 
   return (
-    <OverlayProvider<StreamChatGenerics> bottomInset={bottom} i18nInstance={streami18n}>
+    <OverlayProvider<StreamChatGenerics>
+      bottomInset={bottom}
+      i18nInstance={streami18n}
+      value={{ style: theme }}
+    >
       <Chat client={chatClient} i18nInstance={streami18n}>
         {children}
       </Chat>
