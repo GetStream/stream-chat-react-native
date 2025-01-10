@@ -1,12 +1,11 @@
 import { useMemo } from 'react';
 
-import { getReadStates } from '../utils/getReadStates';
-
 import type { ChannelState } from 'stream-chat';
 
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
+import { getReadStates } from '../utils/getReadStates';
 
 type UseLastReadDataParams<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -33,6 +32,6 @@ export const useLastReadData = <
         read,
         returnAllReadData,
       ),
-    [messages, read, userID],
+    [messages, read, returnAllReadData, userID],
   );
 };
