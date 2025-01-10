@@ -6,11 +6,11 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
 export const getReadStates = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  clientUserId: string | undefined,
   messages:
     | PaginatedMessageListContextValue<StreamChatGenerics>['messages']
     | ThreadContextValue<StreamChatGenerics>['threadMessages'],
   read?: ChannelContextValue<StreamChatGenerics>['read'],
+  returnAllReadData?: boolean,
 ) => {
   const readData: Record<string, number> = {};
 
@@ -32,20 +32,20 @@ export const getReadStates = <
         if (msg.created_at && msg.created_at < readState.last_read) {
           userLastReadMsgId = msg.id;
 
-          // if true, save other user's read data for all messages they've read
-          if (!readData[userLastReadMsgId]) {
-            readData[userLastReadMsgId] = 0;
-          }
+          if (returnAllReadData) {
+            // if true, save other user's read data for all messages they've read
+            if (!readData[userLastReadMsgId]) {
+              readData[userLastReadMsgId] = 0;
+            }
 
-          // Only increment read count if the message is not sent by the current user
-          if (msg.user?.id !== clientUserId) {
+            // Only increment read count if the message is not sent by the current user
             readData[userLastReadMsgId] = readData[userLastReadMsgId] + 1;
           }
         }
       });
 
       // if true, only save read data for other user's last read message
-      if (userLastReadMsgId) {
+      if (userLastReadMsgId && !returnAllReadData) {
         if (!readData[userLastReadMsgId]) {
           readData[userLastReadMsgId] = 0;
         }
