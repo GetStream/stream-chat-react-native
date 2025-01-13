@@ -101,6 +101,10 @@ export type MessagesContextValue<
    */
   Card: React.ComponentType<CardProps<StreamChatGenerics>>;
   /**
+   * Handler to clear the quoted state of the message.
+   */
+  clearQuotedMessageState: () => void;
+  /**
    * UI component for DateHeader
    * Defaults to: [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)
    **/
@@ -359,6 +363,10 @@ export type MessagesContextValue<
 
   disableTypingIndicator?: boolean;
   /**
+   * Enable swipe to reply on messages.
+   */
+  enableSwipeToReply?: boolean;
+  /**
    * Whether messages should be aligned to right or left part of screen.
    * By default, messages will be received messages will be aligned to left and
    * sent messages will be aligned to right.
@@ -463,6 +471,7 @@ export type MessagesContextValue<
    * Custom message header component
    */
   MessageHeader?: React.ComponentType<MessageFooterProps<StreamChatGenerics>>;
+  MessageSwipeLeftContent?: React.ComponentType;
   /** Custom UI component for message text */
   MessageText?: React.ComponentType<MessageTextProps<StreamChatGenerics>>;
   /**

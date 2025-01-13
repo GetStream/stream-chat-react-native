@@ -141,6 +141,7 @@ import { MessageReplies as MessageRepliesDefault } from '../Message/MessageSimpl
 import { MessageRepliesAvatars as MessageRepliesAvatarsDefault } from '../Message/MessageSimple/MessageRepliesAvatars';
 import { MessageSimple as MessageSimpleDefault } from '../Message/MessageSimple/MessageSimple';
 import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/MessageStatus';
+import { MessageSwipeLeftContent as MessageSwipeLeftContentDefault } from '../Message/MessageSimple/MessageSwipeLeftContent';
 import { MessageTimestamp as MessageTimestampDefault } from '../Message/MessageSimple/MessageTimestamp';
 import { ReactionListBottom as ReactionListBottomDefault } from '../Message/MessageSimple/ReactionList/ReactionListBottom';
 import { ReactionListTop as ReactionListTopDefault } from '../Message/MessageSimple/ReactionList/ReactionListTop';
@@ -295,6 +296,7 @@ export type ChannelPropsWithContext<
       | 'deletedMessagesVisibilityType'
       | 'disableTypingIndicator'
       | 'dismissKeyboardOnMessageTouch'
+      | 'enableSwipeToReply'
       | 'FileAttachment'
       | 'FileAttachmentIcon'
       | 'FileAttachmentGroup'
@@ -348,6 +350,7 @@ export type ChannelPropsWithContext<
       | 'messageTextNumberOfLines'
       | 'MessageTimestamp'
       | 'MessageUserReactions'
+      | 'MessageSwipeLeftContent'
       | 'myMessageTheme'
       | 'onLongPressMessage'
       | 'onPressInMessage'
@@ -528,6 +531,7 @@ const ChannelWithContext = <
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     enableMessageGroupingByUser = true,
     enableOfflineSupport,
+    enableSwipeToReply = true,
     enforceUniqueReaction = false,
     FileAttachment = FileAttachmentDefault,
     FileAttachmentGroup = FileAttachmentGroupDefault,
@@ -620,6 +624,7 @@ const ChannelWithContext = <
     MessageRepliesAvatars = MessageRepliesAvatarsDefault,
     MessageSimple = MessageSimpleDefault,
     MessageStatus = MessageStatusDefault,
+    MessageSwipeLeftContent = MessageSwipeLeftContentDefault,
     MessageSystem = MessageSystemDefault,
     MessageText,
     messageTextNumberOfLines,
@@ -1802,6 +1807,7 @@ const ChannelWithContext = <
     CardFooter,
     CardHeader,
     channelId,
+    clearQuotedMessageState,
     DateHeader,
     deletedMessagesVisibilityType,
     deleteMessage,
@@ -1809,6 +1815,7 @@ const ChannelWithContext = <
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch,
     enableMessageGroupingByUser,
+    enableSwipeToReply,
     FileAttachment,
     FileAttachmentGroup,
     FileAttachmentIcon,
@@ -1862,6 +1869,7 @@ const ChannelWithContext = <
     MessageRepliesAvatars,
     MessageSimple,
     MessageStatus,
+    MessageSwipeLeftContent,
     MessageSystem,
     MessageText,
     messageTextNumberOfLines,

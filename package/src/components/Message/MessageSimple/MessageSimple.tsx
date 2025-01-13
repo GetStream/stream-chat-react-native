@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import { Swipeable } from 'react-native-gesture-handler';
 
 import {
   MessageContextValue,
@@ -22,7 +23,9 @@ const styles = StyleSheet.create({
   contentContainer: {},
   contentWrapper: {
     flexDirection: 'row',
+    overflow: 'visible',
   },
+
   lastMessageContainer: {
     marginBottom: 12,
   },
@@ -56,7 +59,9 @@ export type MessageSimplePropsWithContext<
 > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
+    | 'clearQuotedMessageState'
     | 'enableMessageGroupingByUser'
+    | 'enableSwipeToReply'
     | 'myMessageTheme'
     | 'MessageAvatar'
     | 'MessageContent'
@@ -66,9 +71,11 @@ export type MessageSimplePropsWithContext<
     | 'MessagePinnedHeader'
     | 'MessageReplies'
     | 'MessageStatus'
+    | 'MessageSwipeLeftContent'
     | 'ReactionListBottom'
     | 'reactionListPosition'
     | 'ReactionListTop'
+    | 'setQuotedMessageState'
   >;
 
 const MessageSimpleWithContext = <
@@ -77,9 +84,13 @@ const MessageSimpleWithContext = <
   props: MessageSimplePropsWithContext<StreamChatGenerics>,
 ) => {
   const [messageContentWidth, setMessageContentWidth] = useState(0);
+  const swipeableRef = useRef<Swipeable | null>(null);
+
   const {
     alignment,
+    clearQuotedMessageState,
     enableMessageGroupingByUser,
+    enableSwipeToReply,
     groupStyles,
     hasReactions,
     isMyMessage,
@@ -94,11 +105,13 @@ const MessageSimpleWithContext = <
     MessagePinnedHeader,
     MessageReplies,
     MessageStatus,
+    MessageSwipeLeftContent,
     onlyEmojis,
     otherAttachments,
     ReactionListBottom,
     reactionListPosition,
     ReactionListTop,
+    setQuotedMessageState,
     showMessageStatus,
   } = props;
 
@@ -234,7 +247,25 @@ const MessageSimpleWithContext = <
             {message.pinned ? <MessagePinnedHeader /> : null}
           </View>
 
-          <View style={[styles.contentWrapper, contentWrapper]}>
+          <Swipeable
+            containerStyle={[styles.contentWrapper, contentWrapper]}
+            friction={2}
+            leftThreshold={enableSwipeToReply ? 100 : 0}
+            onSwipeableWillOpen={() => {
+              if (!swipeableRef.current) return;
+              clearQuotedMessageState();
+              setQuotedMessageState(message);
+              swipeableRef.current.close();
+            }}
+            ref={swipeableRef}
+            renderLeftActions={() => {
+              if (alignment === 'left' && enableSwipeToReply) {
+                return MessageSwipeLeftContent ? <MessageSwipeLeftContent /> : null;
+              } else {
+                return null;
+              }
+            }}
+          >
             <MessageContent
               backgroundColor={backgroundColor}
               noBorder={noBorder}
@@ -243,7 +274,7 @@ const MessageSimpleWithContext = <
             {reactionListPosition === 'top' && ReactionListTop ? (
               <ReactionListTop messageContentWidth={messageContentWidth} />
             ) : null}
-          </View>
+          </Swipeable>
 
           {reactionListPosition === 'bottom' && ReactionListBottom ? <ReactionListBottom /> : null}
           <MessageReplies noBorder={noBorder} repliesCurveColor={repliesCurveColor} />
@@ -394,7 +425,9 @@ export const MessageSimple = <
     showMessageStatus,
   } = useMessageContext<StreamChatGenerics>();
   const {
+    clearQuotedMessageState,
     enableMessageGroupingByUser,
+    enableSwipeToReply,
     MessageAvatar,
     MessageContent,
     MessageDeleted,
@@ -403,10 +436,12 @@ export const MessageSimple = <
     MessagePinnedHeader,
     MessageReplies,
     MessageStatus,
+    MessageSwipeLeftContent,
     myMessageTheme,
     ReactionListBottom,
     reactionListPosition,
     ReactionListTop,
+    setQuotedMessageState,
   } = useMessagesContext<StreamChatGenerics>();
 
   return (
@@ -414,7 +449,9 @@ export const MessageSimple = <
       {...{
         alignment,
         channel,
+        clearQuotedMessageState,
         enableMessageGroupingByUser,
+        enableSwipeToReply,
         groupStyles,
         hasReactions,
         isMyMessage,
@@ -429,12 +466,14 @@ export const MessageSimple = <
         MessagePinnedHeader,
         MessageReplies,
         MessageStatus,
+        MessageSwipeLeftContent,
         myMessageTheme,
         onlyEmojis,
         otherAttachments,
         ReactionListBottom,
         reactionListPosition,
         ReactionListTop,
+        setQuotedMessageState,
         showMessageStatus,
       }}
       {...props}

@@ -384,120 +384,264 @@ exports[`Thread should match thread snapshot 1`] = `
                           }
                         />
                         <View
+                          collapsable={false}
+                          handlerTag={33}
+                          handlerType="PanGestureHandler"
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          onLayout={[Function]}
                           style={
-                            [
-                              {
-                                "flexDirection": "row",
-                              },
-                              {},
-                            ]
+                            {
+                              "flexDirection": "row",
+                              "overflow": "visible",
+                            }
                           }
                         >
                           <View
-                            accessibilityState={
-                              {
-                                "busy": undefined,
-                                "checked": undefined,
-                                "disabled": undefined,
-                                "expanded": undefined,
-                                "selected": undefined,
-                              }
-                            }
-                            accessibilityValue={
-                              {
-                                "max": undefined,
-                                "min": undefined,
-                                "now": undefined,
-                                "text": undefined,
-                              }
-                            }
-                            accessible={true}
                             collapsable={false}
-                            focusable={true}
-                            onBlur={[Function]}
-                            onClick={[Function]}
-                            onFocus={[Function]}
-                            onResponderGrant={[Function]}
-                            onResponderMove={[Function]}
-                            onResponderRelease={[Function]}
-                            onResponderTerminate={[Function]}
-                            onResponderTerminationRequest={[Function]}
-                            onStartShouldSetResponder={[Function]}
                             style={
                               {
-                                "opacity": 1,
+                                "bottom": 0,
+                                "flexDirection": "row",
+                                "left": 0,
+                                "position": "absolute",
+                                "right": 0,
+                                "top": 0,
+                                "transform": [
+                                  {
+                                    "translateX": -10000,
+                                  },
+                                ],
                               }
                             }
                           >
                             <View
-                              onLayout={[Function]}
-                              style={{}}
+                              style={
+                                [
+                                  {
+                                    "justifyContent": "center",
+                                    "paddingHorizontal": 16,
+                                  },
+                                  {},
+                                ]
+                              }
                             >
-                              <View
+                              <RNSVGSvgView
+                                align="xMidYMid"
+                                bbHeight={24}
+                                bbWidth={24}
+                                focusable={false}
+                                height={24}
+                                meetOrSlice={0}
+                                minX={0}
+                                minY={0}
+                                pathFill="#7A7A7A"
                                 style={
                                   [
                                     {
-                                      "borderTopLeftRadius": 16,
-                                      "borderTopRightRadius": 16,
-                                      "borderWidth": 1,
+                                      "backgroundColor": "transparent",
+                                      "borderWidth": 0,
                                     },
                                     {
-                                      "backgroundColor": "#E9EAED",
-                                      "borderBottomLeftRadius": 0,
-                                      "borderBottomRightRadius": 16,
-                                      "borderColor": "#ECEBEB",
+                                      "flex": 0,
+                                      "height": 24,
+                                      "width": 24,
                                     },
-                                    {},
-                                    {},
                                   ]
                                 }
-                                testID="message-content-wrapper"
+                                vbHeight={24}
+                                vbWidth={24}
+                                width={24}
+                              >
+                                <RNSVGGroup
+                                  fill={
+                                    {
+                                      "payload": 4278190080,
+                                      "type": 0,
+                                    }
+                                  }
+                                >
+                                  <RNSVGPath
+                                    clipRule={0}
+                                    d="M4 8a1 1 0 011-1c3.992 0 6.34.122 7.954.459 1.704.355 2.592.95 3.646 1.741a1 1 0 01.058.047c1.036.906 2.14 2 2.974 3.564C20.47 14.38 21 16.36 21 19a1 1 0 11-2 0c0-2.36-.47-4.006-1.132-5.248-.66-1.237-1.544-2.138-2.498-2.975-.929-.695-1.542-1.094-2.824-1.36C11.16 9.126 9.008 9 5 9a1 1 0 01-1-1z"
+                                    fill={
+                                      {
+                                        "payload": 4286216826,
+                                        "type": 0,
+                                      }
+                                    }
+                                    fillRule={0}
+                                    propList={
+                                      [
+                                        "fill",
+                                        "fillRule",
+                                      ]
+                                    }
+                                  />
+                                  <RNSVGPath
+                                    clipRule={0}
+                                    d="M4.293 8.707a1 1 0 010-1.414l3-3a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0z"
+                                    fill={
+                                      {
+                                        "payload": 4286216826,
+                                        "type": 0,
+                                      }
+                                    }
+                                    fillRule={0}
+                                    propList={
+                                      [
+                                        "fill",
+                                        "fillRule",
+                                      ]
+                                    }
+                                  />
+                                  <RNSVGPath
+                                    clipRule={0}
+                                    d="M4.293 7.293a1 1 0 011.414 0l3 3a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414z"
+                                    fill={
+                                      {
+                                        "payload": 4286216826,
+                                        "type": 0,
+                                      }
+                                    }
+                                    fillRule={0}
+                                    propList={
+                                      [
+                                        "fill",
+                                        "fillRule",
+                                      ]
+                                    }
+                                  />
+                                </RNSVGGroup>
+                              </RNSVGSvgView>
+                            </View>
+                            <View
+                              onLayout={[Function]}
+                            />
+                          </View>
+                          <View
+                            collapsable={false}
+                            handlerTag={34}
+                            handlerType="TapGestureHandler"
+                            onGestureHandlerEvent={[Function]}
+                            onGestureHandlerStateChange={[Function]}
+                            pointerEvents="auto"
+                            style={
+                              {
+                                "transform": [
+                                  {
+                                    "translateX": -0,
+                                  },
+                                ],
+                              }
+                            }
+                          >
+                            <View
+                              accessibilityState={
+                                {
+                                  "busy": undefined,
+                                  "checked": undefined,
+                                  "disabled": undefined,
+                                  "expanded": undefined,
+                                  "selected": undefined,
+                                }
+                              }
+                              accessibilityValue={
+                                {
+                                  "max": undefined,
+                                  "min": undefined,
+                                  "now": undefined,
+                                  "text": undefined,
+                                }
+                              }
+                              accessible={true}
+                              collapsable={false}
+                              focusable={true}
+                              onBlur={[Function]}
+                              onClick={[Function]}
+                              onFocus={[Function]}
+                              onResponderGrant={[Function]}
+                              onResponderMove={[Function]}
+                              onResponderRelease={[Function]}
+                              onResponderTerminate={[Function]}
+                              onResponderTerminationRequest={[Function]}
+                              onStartShouldSetResponder={[Function]}
+                              style={
+                                {
+                                  "opacity": 1,
+                                }
+                              }
+                            >
+                              <View
+                                onLayout={[Function]}
+                                style={{}}
                               >
                                 <View
                                   style={
                                     [
                                       {
-                                        "maxWidth": 250,
-                                        "paddingHorizontal": 16,
+                                        "borderTopLeftRadius": 16,
+                                        "borderTopRightRadius": 16,
+                                        "borderWidth": 1,
+                                      },
+                                      {
+                                        "backgroundColor": "#E9EAED",
+                                        "borderBottomLeftRadius": 0,
+                                        "borderBottomRightRadius": 16,
+                                        "borderColor": "#ECEBEB",
                                       },
                                       {},
-                                      undefined,
+                                      {},
                                     ]
                                   }
-                                  testID="message-text-container"
+                                  testID="message-content-wrapper"
                                 >
                                   <View
                                     style={
                                       [
                                         {
-                                          "alignSelf": "stretch",
+                                          "maxWidth": 250,
+                                          "paddingHorizontal": 16,
                                         },
+                                        {},
                                         undefined,
                                       ]
                                     }
+                                    testID="message-text-container"
                                   >
-                                    <Text
+                                    <View
                                       style={
-                                        {
-                                          "alignItems": "flex-start",
-                                          "flexDirection": "row",
-                                          "flexWrap": "wrap",
-                                          "justifyContent": "flex-start",
-                                          "marginBottom": 8,
-                                          "marginTop": 8,
-                                        }
+                                        [
+                                          {
+                                            "alignSelf": "stretch",
+                                          },
+                                          undefined,
+                                        ]
                                       }
                                     >
                                       <Text
                                         style={
                                           {
-                                            "color": "#000000",
+                                            "alignItems": "flex-start",
+                                            "flexDirection": "row",
+                                            "flexWrap": "wrap",
+                                            "justifyContent": "flex-start",
+                                            "marginBottom": 8,
+                                            "marginTop": 8,
                                           }
                                         }
                                       >
-                                        Message6
+                                        <Text
+                                          style={
+                                            {
+                                              "color": "#000000",
+                                            }
+                                          }
+                                        >
+                                          Message6
+                                        </Text>
                                       </Text>
-                                    </Text>
+                                    </View>
                                   </View>
                                 </View>
                               </View>
@@ -739,120 +883,264 @@ exports[`Thread should match thread snapshot 1`] = `
                           }
                         />
                         <View
+                          collapsable={false}
+                          handlerTag={35}
+                          handlerType="PanGestureHandler"
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          onLayout={[Function]}
                           style={
-                            [
-                              {
-                                "flexDirection": "row",
-                              },
-                              {},
-                            ]
+                            {
+                              "flexDirection": "row",
+                              "overflow": "visible",
+                            }
                           }
                         >
                           <View
-                            accessibilityState={
-                              {
-                                "busy": undefined,
-                                "checked": undefined,
-                                "disabled": undefined,
-                                "expanded": undefined,
-                                "selected": undefined,
-                              }
-                            }
-                            accessibilityValue={
-                              {
-                                "max": undefined,
-                                "min": undefined,
-                                "now": undefined,
-                                "text": undefined,
-                              }
-                            }
-                            accessible={true}
                             collapsable={false}
-                            focusable={true}
-                            onBlur={[Function]}
-                            onClick={[Function]}
-                            onFocus={[Function]}
-                            onResponderGrant={[Function]}
-                            onResponderMove={[Function]}
-                            onResponderRelease={[Function]}
-                            onResponderTerminate={[Function]}
-                            onResponderTerminationRequest={[Function]}
-                            onStartShouldSetResponder={[Function]}
                             style={
                               {
-                                "opacity": 1,
+                                "bottom": 0,
+                                "flexDirection": "row",
+                                "left": 0,
+                                "position": "absolute",
+                                "right": 0,
+                                "top": 0,
+                                "transform": [
+                                  {
+                                    "translateX": -10000,
+                                  },
+                                ],
                               }
                             }
                           >
                             <View
-                              onLayout={[Function]}
-                              style={{}}
+                              style={
+                                [
+                                  {
+                                    "justifyContent": "center",
+                                    "paddingHorizontal": 16,
+                                  },
+                                  {},
+                                ]
+                              }
                             >
-                              <View
+                              <RNSVGSvgView
+                                align="xMidYMid"
+                                bbHeight={24}
+                                bbWidth={24}
+                                focusable={false}
+                                height={24}
+                                meetOrSlice={0}
+                                minX={0}
+                                minY={0}
+                                pathFill="#7A7A7A"
                                 style={
                                   [
                                     {
-                                      "borderTopLeftRadius": 16,
-                                      "borderTopRightRadius": 16,
-                                      "borderWidth": 1,
+                                      "backgroundColor": "transparent",
+                                      "borderWidth": 0,
                                     },
                                     {
-                                      "backgroundColor": "#E9EAED",
-                                      "borderBottomLeftRadius": 0,
-                                      "borderBottomRightRadius": 16,
-                                      "borderColor": "#ECEBEB",
+                                      "flex": 0,
+                                      "height": 24,
+                                      "width": 24,
                                     },
-                                    {},
-                                    {},
                                   ]
                                 }
-                                testID="message-content-wrapper"
+                                vbHeight={24}
+                                vbWidth={24}
+                                width={24}
+                              >
+                                <RNSVGGroup
+                                  fill={
+                                    {
+                                      "payload": 4278190080,
+                                      "type": 0,
+                                    }
+                                  }
+                                >
+                                  <RNSVGPath
+                                    clipRule={0}
+                                    d="M4 8a1 1 0 011-1c3.992 0 6.34.122 7.954.459 1.704.355 2.592.95 3.646 1.741a1 1 0 01.058.047c1.036.906 2.14 2 2.974 3.564C20.47 14.38 21 16.36 21 19a1 1 0 11-2 0c0-2.36-.47-4.006-1.132-5.248-.66-1.237-1.544-2.138-2.498-2.975-.929-.695-1.542-1.094-2.824-1.36C11.16 9.126 9.008 9 5 9a1 1 0 01-1-1z"
+                                    fill={
+                                      {
+                                        "payload": 4286216826,
+                                        "type": 0,
+                                      }
+                                    }
+                                    fillRule={0}
+                                    propList={
+                                      [
+                                        "fill",
+                                        "fillRule",
+                                      ]
+                                    }
+                                  />
+                                  <RNSVGPath
+                                    clipRule={0}
+                                    d="M4.293 8.707a1 1 0 010-1.414l3-3a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0z"
+                                    fill={
+                                      {
+                                        "payload": 4286216826,
+                                        "type": 0,
+                                      }
+                                    }
+                                    fillRule={0}
+                                    propList={
+                                      [
+                                        "fill",
+                                        "fillRule",
+                                      ]
+                                    }
+                                  />
+                                  <RNSVGPath
+                                    clipRule={0}
+                                    d="M4.293 7.293a1 1 0 011.414 0l3 3a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414z"
+                                    fill={
+                                      {
+                                        "payload": 4286216826,
+                                        "type": 0,
+                                      }
+                                    }
+                                    fillRule={0}
+                                    propList={
+                                      [
+                                        "fill",
+                                        "fillRule",
+                                      ]
+                                    }
+                                  />
+                                </RNSVGGroup>
+                              </RNSVGSvgView>
+                            </View>
+                            <View
+                              onLayout={[Function]}
+                            />
+                          </View>
+                          <View
+                            collapsable={false}
+                            handlerTag={36}
+                            handlerType="TapGestureHandler"
+                            onGestureHandlerEvent={[Function]}
+                            onGestureHandlerStateChange={[Function]}
+                            pointerEvents="auto"
+                            style={
+                              {
+                                "transform": [
+                                  {
+                                    "translateX": -0,
+                                  },
+                                ],
+                              }
+                            }
+                          >
+                            <View
+                              accessibilityState={
+                                {
+                                  "busy": undefined,
+                                  "checked": undefined,
+                                  "disabled": undefined,
+                                  "expanded": undefined,
+                                  "selected": undefined,
+                                }
+                              }
+                              accessibilityValue={
+                                {
+                                  "max": undefined,
+                                  "min": undefined,
+                                  "now": undefined,
+                                  "text": undefined,
+                                }
+                              }
+                              accessible={true}
+                              collapsable={false}
+                              focusable={true}
+                              onBlur={[Function]}
+                              onClick={[Function]}
+                              onFocus={[Function]}
+                              onResponderGrant={[Function]}
+                              onResponderMove={[Function]}
+                              onResponderRelease={[Function]}
+                              onResponderTerminate={[Function]}
+                              onResponderTerminationRequest={[Function]}
+                              onStartShouldSetResponder={[Function]}
+                              style={
+                                {
+                                  "opacity": 1,
+                                }
+                              }
+                            >
+                              <View
+                                onLayout={[Function]}
+                                style={{}}
                               >
                                 <View
                                   style={
                                     [
                                       {
-                                        "maxWidth": 250,
-                                        "paddingHorizontal": 16,
+                                        "borderTopLeftRadius": 16,
+                                        "borderTopRightRadius": 16,
+                                        "borderWidth": 1,
+                                      },
+                                      {
+                                        "backgroundColor": "#E9EAED",
+                                        "borderBottomLeftRadius": 0,
+                                        "borderBottomRightRadius": 16,
+                                        "borderColor": "#ECEBEB",
                                       },
                                       {},
-                                      undefined,
+                                      {},
                                     ]
                                   }
-                                  testID="message-text-container"
+                                  testID="message-content-wrapper"
                                 >
                                   <View
                                     style={
                                       [
                                         {
-                                          "alignSelf": "stretch",
+                                          "maxWidth": 250,
+                                          "paddingHorizontal": 16,
                                         },
+                                        {},
                                         undefined,
                                       ]
                                     }
+                                    testID="message-text-container"
                                   >
-                                    <Text
+                                    <View
                                       style={
-                                        {
-                                          "alignItems": "flex-start",
-                                          "flexDirection": "row",
-                                          "flexWrap": "wrap",
-                                          "justifyContent": "flex-start",
-                                          "marginBottom": 8,
-                                          "marginTop": 8,
-                                        }
+                                        [
+                                          {
+                                            "alignSelf": "stretch",
+                                          },
+                                          undefined,
+                                        ]
                                       }
                                     >
                                       <Text
                                         style={
                                           {
-                                            "color": "#000000",
+                                            "alignItems": "flex-start",
+                                            "flexDirection": "row",
+                                            "flexWrap": "wrap",
+                                            "justifyContent": "flex-start",
+                                            "marginBottom": 8,
+                                            "marginTop": 8,
                                           }
                                         }
                                       >
-                                        Message5
+                                        <Text
+                                          style={
+                                            {
+                                              "color": "#000000",
+                                            }
+                                          }
+                                        >
+                                          Message5
+                                        </Text>
                                       </Text>
-                                    </Text>
+                                    </View>
                                   </View>
                                 </View>
                               </View>
@@ -1132,120 +1420,264 @@ exports[`Thread should match thread snapshot 1`] = `
                           }
                         />
                         <View
+                          collapsable={false}
+                          handlerTag={37}
+                          handlerType="PanGestureHandler"
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          onLayout={[Function]}
                           style={
-                            [
-                              {
-                                "flexDirection": "row",
-                              },
-                              {},
-                            ]
+                            {
+                              "flexDirection": "row",
+                              "overflow": "visible",
+                            }
                           }
                         >
                           <View
-                            accessibilityState={
-                              {
-                                "busy": undefined,
-                                "checked": undefined,
-                                "disabled": undefined,
-                                "expanded": undefined,
-                                "selected": undefined,
-                              }
-                            }
-                            accessibilityValue={
-                              {
-                                "max": undefined,
-                                "min": undefined,
-                                "now": undefined,
-                                "text": undefined,
-                              }
-                            }
-                            accessible={true}
                             collapsable={false}
-                            focusable={true}
-                            onBlur={[Function]}
-                            onClick={[Function]}
-                            onFocus={[Function]}
-                            onResponderGrant={[Function]}
-                            onResponderMove={[Function]}
-                            onResponderRelease={[Function]}
-                            onResponderTerminate={[Function]}
-                            onResponderTerminationRequest={[Function]}
-                            onStartShouldSetResponder={[Function]}
                             style={
                               {
-                                "opacity": 1,
+                                "bottom": 0,
+                                "flexDirection": "row",
+                                "left": 0,
+                                "position": "absolute",
+                                "right": 0,
+                                "top": 0,
+                                "transform": [
+                                  {
+                                    "translateX": -10000,
+                                  },
+                                ],
                               }
                             }
                           >
                             <View
-                              onLayout={[Function]}
-                              style={{}}
+                              style={
+                                [
+                                  {
+                                    "justifyContent": "center",
+                                    "paddingHorizontal": 16,
+                                  },
+                                  {},
+                                ]
+                              }
                             >
-                              <View
+                              <RNSVGSvgView
+                                align="xMidYMid"
+                                bbHeight={24}
+                                bbWidth={24}
+                                focusable={false}
+                                height={24}
+                                meetOrSlice={0}
+                                minX={0}
+                                minY={0}
+                                pathFill="#7A7A7A"
                                 style={
                                   [
                                     {
-                                      "borderTopLeftRadius": 16,
-                                      "borderTopRightRadius": 16,
-                                      "borderWidth": 1,
+                                      "backgroundColor": "transparent",
+                                      "borderWidth": 0,
                                     },
                                     {
-                                      "backgroundColor": "#E9EAED",
-                                      "borderBottomLeftRadius": 0,
-                                      "borderBottomRightRadius": 16,
-                                      "borderColor": "#ECEBEB",
+                                      "flex": 0,
+                                      "height": 24,
+                                      "width": 24,
                                     },
-                                    {},
-                                    {},
                                   ]
                                 }
-                                testID="message-content-wrapper"
+                                vbHeight={24}
+                                vbWidth={24}
+                                width={24}
+                              >
+                                <RNSVGGroup
+                                  fill={
+                                    {
+                                      "payload": 4278190080,
+                                      "type": 0,
+                                    }
+                                  }
+                                >
+                                  <RNSVGPath
+                                    clipRule={0}
+                                    d="M4 8a1 1 0 011-1c3.992 0 6.34.122 7.954.459 1.704.355 2.592.95 3.646 1.741a1 1 0 01.058.047c1.036.906 2.14 2 2.974 3.564C20.47 14.38 21 16.36 21 19a1 1 0 11-2 0c0-2.36-.47-4.006-1.132-5.248-.66-1.237-1.544-2.138-2.498-2.975-.929-.695-1.542-1.094-2.824-1.36C11.16 9.126 9.008 9 5 9a1 1 0 01-1-1z"
+                                    fill={
+                                      {
+                                        "payload": 4286216826,
+                                        "type": 0,
+                                      }
+                                    }
+                                    fillRule={0}
+                                    propList={
+                                      [
+                                        "fill",
+                                        "fillRule",
+                                      ]
+                                    }
+                                  />
+                                  <RNSVGPath
+                                    clipRule={0}
+                                    d="M4.293 8.707a1 1 0 010-1.414l3-3a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0z"
+                                    fill={
+                                      {
+                                        "payload": 4286216826,
+                                        "type": 0,
+                                      }
+                                    }
+                                    fillRule={0}
+                                    propList={
+                                      [
+                                        "fill",
+                                        "fillRule",
+                                      ]
+                                    }
+                                  />
+                                  <RNSVGPath
+                                    clipRule={0}
+                                    d="M4.293 7.293a1 1 0 011.414 0l3 3a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414z"
+                                    fill={
+                                      {
+                                        "payload": 4286216826,
+                                        "type": 0,
+                                      }
+                                    }
+                                    fillRule={0}
+                                    propList={
+                                      [
+                                        "fill",
+                                        "fillRule",
+                                      ]
+                                    }
+                                  />
+                                </RNSVGGroup>
+                              </RNSVGSvgView>
+                            </View>
+                            <View
+                              onLayout={[Function]}
+                            />
+                          </View>
+                          <View
+                            collapsable={false}
+                            handlerTag={38}
+                            handlerType="TapGestureHandler"
+                            onGestureHandlerEvent={[Function]}
+                            onGestureHandlerStateChange={[Function]}
+                            pointerEvents="auto"
+                            style={
+                              {
+                                "transform": [
+                                  {
+                                    "translateX": -0,
+                                  },
+                                ],
+                              }
+                            }
+                          >
+                            <View
+                              accessibilityState={
+                                {
+                                  "busy": undefined,
+                                  "checked": undefined,
+                                  "disabled": undefined,
+                                  "expanded": undefined,
+                                  "selected": undefined,
+                                }
+                              }
+                              accessibilityValue={
+                                {
+                                  "max": undefined,
+                                  "min": undefined,
+                                  "now": undefined,
+                                  "text": undefined,
+                                }
+                              }
+                              accessible={true}
+                              collapsable={false}
+                              focusable={true}
+                              onBlur={[Function]}
+                              onClick={[Function]}
+                              onFocus={[Function]}
+                              onResponderGrant={[Function]}
+                              onResponderMove={[Function]}
+                              onResponderRelease={[Function]}
+                              onResponderTerminate={[Function]}
+                              onResponderTerminationRequest={[Function]}
+                              onStartShouldSetResponder={[Function]}
+                              style={
+                                {
+                                  "opacity": 1,
+                                }
+                              }
+                            >
+                              <View
+                                onLayout={[Function]}
+                                style={{}}
                               >
                                 <View
                                   style={
                                     [
                                       {
-                                        "maxWidth": 250,
-                                        "paddingHorizontal": 16,
+                                        "borderTopLeftRadius": 16,
+                                        "borderTopRightRadius": 16,
+                                        "borderWidth": 1,
+                                      },
+                                      {
+                                        "backgroundColor": "#E9EAED",
+                                        "borderBottomLeftRadius": 0,
+                                        "borderBottomRightRadius": 16,
+                                        "borderColor": "#ECEBEB",
                                       },
                                       {},
-                                      undefined,
+                                      {},
                                     ]
                                   }
-                                  testID="message-text-container"
+                                  testID="message-content-wrapper"
                                 >
                                   <View
                                     style={
                                       [
                                         {
-                                          "alignSelf": "stretch",
+                                          "maxWidth": 250,
+                                          "paddingHorizontal": 16,
                                         },
+                                        {},
                                         undefined,
                                       ]
                                     }
+                                    testID="message-text-container"
                                   >
-                                    <Text
+                                    <View
                                       style={
-                                        {
-                                          "alignItems": "flex-start",
-                                          "flexDirection": "row",
-                                          "flexWrap": "wrap",
-                                          "justifyContent": "flex-start",
-                                          "marginBottom": 8,
-                                          "marginTop": 8,
-                                        }
+                                        [
+                                          {
+                                            "alignSelf": "stretch",
+                                          },
+                                          undefined,
+                                        ]
                                       }
                                     >
                                       <Text
                                         style={
                                           {
-                                            "color": "#000000",
+                                            "alignItems": "flex-start",
+                                            "flexDirection": "row",
+                                            "flexWrap": "wrap",
+                                            "justifyContent": "flex-start",
+                                            "marginBottom": 8,
+                                            "marginTop": 8,
                                           }
                                         }
                                       >
-                                        Message4
+                                        <Text
+                                          style={
+                                            {
+                                              "color": "#000000",
+                                            }
+                                          }
+                                        >
+                                          Message4
+                                        </Text>
                                       </Text>
-                                    </Text>
+                                    </View>
                                   </View>
                                 </View>
                               </View>
@@ -1480,120 +1912,264 @@ exports[`Thread should match thread snapshot 1`] = `
                             }
                           />
                           <View
+                            collapsable={false}
+                            handlerTag={45}
+                            handlerType="PanGestureHandler"
+                            onGestureHandlerEvent={[Function]}
+                            onGestureHandlerStateChange={[Function]}
+                            onLayout={[Function]}
                             style={
-                              [
-                                {
-                                  "flexDirection": "row",
-                                },
-                                {},
-                              ]
+                              {
+                                "flexDirection": "row",
+                                "overflow": "visible",
+                              }
                             }
                           >
                             <View
-                              accessibilityState={
-                                {
-                                  "busy": undefined,
-                                  "checked": undefined,
-                                  "disabled": true,
-                                  "expanded": undefined,
-                                  "selected": undefined,
-                                }
-                              }
-                              accessibilityValue={
-                                {
-                                  "max": undefined,
-                                  "min": undefined,
-                                  "now": undefined,
-                                  "text": undefined,
-                                }
-                              }
-                              accessible={true}
                               collapsable={false}
-                              focusable={true}
-                              onBlur={[Function]}
-                              onClick={[Function]}
-                              onFocus={[Function]}
-                              onResponderGrant={[Function]}
-                              onResponderMove={[Function]}
-                              onResponderRelease={[Function]}
-                              onResponderTerminate={[Function]}
-                              onResponderTerminationRequest={[Function]}
-                              onStartShouldSetResponder={[Function]}
                               style={
                                 {
-                                  "opacity": 1,
+                                  "bottom": 0,
+                                  "flexDirection": "row",
+                                  "left": 0,
+                                  "position": "absolute",
+                                  "right": 0,
+                                  "top": 0,
+                                  "transform": [
+                                    {
+                                      "translateX": -10000,
+                                    },
+                                  ],
                                 }
                               }
                             >
                               <View
-                                onLayout={[Function]}
-                                style={{}}
+                                style={
+                                  [
+                                    {
+                                      "justifyContent": "center",
+                                      "paddingHorizontal": 16,
+                                    },
+                                    {},
+                                  ]
+                                }
                               >
-                                <View
+                                <RNSVGSvgView
+                                  align="xMidYMid"
+                                  bbHeight={24}
+                                  bbWidth={24}
+                                  focusable={false}
+                                  height={24}
+                                  meetOrSlice={0}
+                                  minX={0}
+                                  minY={0}
+                                  pathFill="#7A7A7A"
                                   style={
                                     [
                                       {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
-                                        "borderWidth": 1,
+                                        "backgroundColor": "transparent",
+                                        "borderWidth": 0,
                                       },
                                       {
-                                        "backgroundColor": "#E9EAED",
-                                        "borderBottomLeftRadius": 0,
-                                        "borderBottomRightRadius": 16,
-                                        "borderColor": "#ECEBEB",
+                                        "flex": 0,
+                                        "height": 24,
+                                        "width": 24,
                                       },
-                                      {},
-                                      {},
                                     ]
                                   }
-                                  testID="message-content-wrapper"
+                                  vbHeight={24}
+                                  vbWidth={24}
+                                  width={24}
+                                >
+                                  <RNSVGGroup
+                                    fill={
+                                      {
+                                        "payload": 4278190080,
+                                        "type": 0,
+                                      }
+                                    }
+                                  >
+                                    <RNSVGPath
+                                      clipRule={0}
+                                      d="M4 8a1 1 0 011-1c3.992 0 6.34.122 7.954.459 1.704.355 2.592.95 3.646 1.741a1 1 0 01.058.047c1.036.906 2.14 2 2.974 3.564C20.47 14.38 21 16.36 21 19a1 1 0 11-2 0c0-2.36-.47-4.006-1.132-5.248-.66-1.237-1.544-2.138-2.498-2.975-.929-.695-1.542-1.094-2.824-1.36C11.16 9.126 9.008 9 5 9a1 1 0 01-1-1z"
+                                      fill={
+                                        {
+                                          "payload": 4286216826,
+                                          "type": 0,
+                                        }
+                                      }
+                                      fillRule={0}
+                                      propList={
+                                        [
+                                          "fill",
+                                          "fillRule",
+                                        ]
+                                      }
+                                    />
+                                    <RNSVGPath
+                                      clipRule={0}
+                                      d="M4.293 8.707a1 1 0 010-1.414l3-3a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0z"
+                                      fill={
+                                        {
+                                          "payload": 4286216826,
+                                          "type": 0,
+                                        }
+                                      }
+                                      fillRule={0}
+                                      propList={
+                                        [
+                                          "fill",
+                                          "fillRule",
+                                        ]
+                                      }
+                                    />
+                                    <RNSVGPath
+                                      clipRule={0}
+                                      d="M4.293 7.293a1 1 0 011.414 0l3 3a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414z"
+                                      fill={
+                                        {
+                                          "payload": 4286216826,
+                                          "type": 0,
+                                        }
+                                      }
+                                      fillRule={0}
+                                      propList={
+                                        [
+                                          "fill",
+                                          "fillRule",
+                                        ]
+                                      }
+                                    />
+                                  </RNSVGGroup>
+                                </RNSVGSvgView>
+                              </View>
+                              <View
+                                onLayout={[Function]}
+                              />
+                            </View>
+                            <View
+                              collapsable={false}
+                              handlerTag={46}
+                              handlerType="TapGestureHandler"
+                              onGestureHandlerEvent={[Function]}
+                              onGestureHandlerStateChange={[Function]}
+                              pointerEvents="auto"
+                              style={
+                                {
+                                  "transform": [
+                                    {
+                                      "translateX": -0,
+                                    },
+                                  ],
+                                }
+                              }
+                            >
+                              <View
+                                accessibilityState={
+                                  {
+                                    "busy": undefined,
+                                    "checked": undefined,
+                                    "disabled": true,
+                                    "expanded": undefined,
+                                    "selected": undefined,
+                                  }
+                                }
+                                accessibilityValue={
+                                  {
+                                    "max": undefined,
+                                    "min": undefined,
+                                    "now": undefined,
+                                    "text": undefined,
+                                  }
+                                }
+                                accessible={true}
+                                collapsable={false}
+                                focusable={true}
+                                onBlur={[Function]}
+                                onClick={[Function]}
+                                onFocus={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
+                                style={
+                                  {
+                                    "opacity": 1,
+                                  }
+                                }
+                              >
+                                <View
+                                  onLayout={[Function]}
+                                  style={{}}
                                 >
                                   <View
                                     style={
                                       [
                                         {
-                                          "maxWidth": 250,
-                                          "paddingHorizontal": 16,
+                                          "borderTopLeftRadius": 16,
+                                          "borderTopRightRadius": 16,
+                                          "borderWidth": 1,
+                                        },
+                                        {
+                                          "backgroundColor": "#E9EAED",
+                                          "borderBottomLeftRadius": 0,
+                                          "borderBottomRightRadius": 16,
+                                          "borderColor": "#ECEBEB",
                                         },
                                         {},
-                                        undefined,
+                                        {},
                                       ]
                                     }
-                                    testID="message-text-container"
+                                    testID="message-content-wrapper"
                                   >
                                     <View
                                       style={
                                         [
                                           {
-                                            "alignSelf": "stretch",
+                                            "maxWidth": 250,
+                                            "paddingHorizontal": 16,
                                           },
+                                          {},
                                           undefined,
                                         ]
                                       }
+                                      testID="message-text-container"
                                     >
-                                      <Text
+                                      <View
                                         style={
-                                          {
-                                            "alignItems": "flex-start",
-                                            "flexDirection": "row",
-                                            "flexWrap": "wrap",
-                                            "justifyContent": "flex-start",
-                                            "marginBottom": 8,
-                                            "marginTop": 8,
-                                          }
+                                          [
+                                            {
+                                              "alignSelf": "stretch",
+                                            },
+                                            undefined,
+                                          ]
                                         }
                                       >
                                         <Text
                                           style={
                                             {
-                                              "color": "#000000",
+                                              "alignItems": "flex-start",
+                                              "flexDirection": "row",
+                                              "flexWrap": "wrap",
+                                              "justifyContent": "flex-start",
+                                              "marginBottom": 8,
+                                              "marginTop": 8,
                                             }
                                           }
                                         >
-                                          Message3
+                                          <Text
+                                            style={
+                                              {
+                                                "color": "#000000",
+                                              }
+                                            }
+                                          >
+                                            Message3
+                                          </Text>
                                         </Text>
-                                      </Text>
+                                      </View>
                                     </View>
                                   </View>
                                 </View>
