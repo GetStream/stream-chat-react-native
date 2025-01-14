@@ -48,11 +48,11 @@ export const takePhoto = ImagePicker
           });
           const canceled = imagePickerSuccessResult.canceled;
           const assets = imagePickerSuccessResult.assets;
-          // since we only support single photo upload for now we will only be focusing on 0'th element.
-          const photo = assets && assets[0];
-          if (canceled) {
+          if (canceled || !assets.length) {
             return { cancelled: true };
           }
+          // since we only support single photo upload for now we will only be focusing on 0'th element.
+          const photo = assets[0];
           if (photo.mimeType.includes('video')) {
             const clearFilter = new RegExp('[.:]', 'g');
             const date = new Date().toISOString().replace(clearFilter, '_');
