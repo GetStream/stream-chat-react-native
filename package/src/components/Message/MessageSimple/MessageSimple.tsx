@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
-import { Swipeable } from 'react-native-gesture-handler';
+
+import Swipeable, { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 import {
   MessageContextValue,
@@ -12,6 +13,7 @@ import {
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
+import { triggerHaptic } from '../../../native';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { useMessageData } from '../hooks/useMessageData';
 
@@ -84,7 +86,7 @@ const MessageSimpleWithContext = <
   props: MessageSimplePropsWithContext<StreamChatGenerics>,
 ) => {
   const [messageContentWidth, setMessageContentWidth] = useState(0);
-  const swipeableRef = useRef<Swipeable | null>(null);
+  const swipeableRef = useRef<SwipeableMethods | null>(null);
 
   const {
     alignment,
@@ -255,6 +257,7 @@ const MessageSimpleWithContext = <
               if (!swipeableRef.current) return;
               clearQuotedMessageState();
               setQuotedMessageState(message);
+              triggerHaptic('impactLight');
               swipeableRef.current.close();
             }}
             ref={swipeableRef}

@@ -23,6 +23,6 @@ export const MessageSwipeLeftContent = () => {
 const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
-    paddingHorizontal: 16,
+    paddingRight: 16,
   },
 });

@@ -385,34 +385,34 @@ exports[`Thread should match thread snapshot 1`] = `
                         />
                         <View
                           collapsable={false}
-                          handlerTag={33}
-                          handlerType="PanGestureHandler"
-                          onGestureHandlerEvent={[Function]}
-                          onGestureHandlerStateChange={[Function]}
                           onLayout={[Function]}
                           style={
-                            {
-                              "flexDirection": "row",
-                              "overflow": "visible",
-                            }
+                            [
+                              {
+                                "overflow": "hidden",
+                              },
+                              [
+                                {
+                                  "flexDirection": "row",
+                                  "overflow": "visible",
+                                },
+                                {},
+                              ],
+                            ]
                           }
                         >
                           <View
-                            collapsable={false}
                             style={
-                              {
-                                "bottom": 0,
-                                "flexDirection": "row",
-                                "left": 0,
-                                "position": "absolute",
-                                "right": 0,
-                                "top": 0,
-                                "transform": [
-                                  {
-                                    "translateX": -10000,
-                                  },
-                                ],
-                              }
+                              [
+                                {
+                                  "bottom": 0,
+                                  "flexDirection": "row",
+                                  "left": 0,
+                                  "position": "absolute",
+                                  "right": 0,
+                                  "top": 0,
+                                },
+                              ]
                             }
                           >
                             <View
@@ -420,7 +420,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                 [
                                   {
                                     "justifyContent": "center",
-                                    "paddingHorizontal": 16,
+                                    "paddingRight": 16,
                                   },
                                   {},
                                 ]
@@ -520,20 +520,37 @@ exports[`Thread should match thread snapshot 1`] = `
                             />
                           </View>
                           <View
-                            collapsable={false}
-                            handlerTag={34}
-                            handlerType="TapGestureHandler"
-                            onGestureHandlerEvent={[Function]}
-                            onGestureHandlerStateChange={[Function]}
-                            pointerEvents="auto"
                             style={
-                              {
-                                "transform": [
-                                  {
-                                    "translateX": -0,
-                                  },
-                                ],
-                              }
+                              [
+                                {
+                                  "bottom": 0,
+                                  "flexDirection": "row-reverse",
+                                  "left": 0,
+                                  "position": "absolute",
+                                  "right": 0,
+                                  "top": 0,
+                                },
+                              ]
+                            }
+                          >
+                            <View
+                              onLayout={[Function]}
+                            />
+                          </View>
+                          <View
+                            collapsable={false}
+                            style={
+                              [
+                                {
+                                  "pointerEvents": "auto",
+                                  "transform": [
+                                    {
+                                      "translateX": 0,
+                                    },
+                                  ],
+                                },
+                                undefined,
+                              ]
                             }
                           >
                             <View
@@ -884,34 +901,34 @@ exports[`Thread should match thread snapshot 1`] = `
                         />
                         <View
                           collapsable={false}
-                          handlerTag={35}
-                          handlerType="PanGestureHandler"
-                          onGestureHandlerEvent={[Function]}
-                          onGestureHandlerStateChange={[Function]}
                           onLayout={[Function]}
                           style={
-                            {
-                              "flexDirection": "row",
-                              "overflow": "visible",
-                            }
+                            [
+                              {
+                                "overflow": "hidden",
+                              },
+                              [
+                                {
+                                  "flexDirection": "row",
+                                  "overflow": "visible",
+                                },
+                                {},
+                              ],
+                            ]
                           }
                         >
                           <View
-                            collapsable={false}
                             style={
-                              {
-                                "bottom": 0,
-                                "flexDirection": "row",
-                                "left": 0,
-                                "position": "absolute",
-                                "right": 0,
-                                "top": 0,
-                                "transform": [
-                                  {
-                                    "translateX": -10000,
-                                  },
-                                ],
-                              }
+                              [
+                                {
+                                  "bottom": 0,
+                                  "flexDirection": "row",
+                                  "left": 0,
+                                  "position": "absolute",
+                                  "right": 0,
+                                  "top": 0,
+                                },
+                              ]
                             }
                           >
                             <View
@@ -919,7 +936,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                 [
                                   {
                                     "justifyContent": "center",
-                                    "paddingHorizontal": 16,
+                                    "paddingRight": 16,
                                   },
                                   {},
                                 ]
@@ -1019,20 +1036,37 @@ exports[`Thread should match thread snapshot 1`] = `
                             />
                           </View>
                           <View
-                            collapsable={false}
-                            handlerTag={36}
-                            handlerType="TapGestureHandler"
-                            onGestureHandlerEvent={[Function]}
-                            onGestureHandlerStateChange={[Function]}
-                            pointerEvents="auto"
                             style={
-                              {
-                                "transform": [
-                                  {
-                                    "translateX": -0,
-                                  },
-                                ],
-                              }
+                              [
+                                {
+                                  "bottom": 0,
+                                  "flexDirection": "row-reverse",
+                                  "left": 0,
+                                  "position": "absolute",
+                                  "right": 0,
+                                  "top": 0,
+                                },
+                              ]
+                            }
+                          >
+                            <View
+                              onLayout={[Function]}
+                            />
+                          </View>
+                          <View
+                            collapsable={false}
+                            style={
+                              [
+                                {
+                                  "pointerEvents": "auto",
+                                  "transform": [
+                                    {
+                                      "translateX": 0,
+                                    },
+                                  ],
+                                },
+                                undefined,
+                              ]
                             }
                           >
                             <View
@@ -1421,34 +1455,34 @@ exports[`Thread should match thread snapshot 1`] = `
                         />
                         <View
                           collapsable={false}
-                          handlerTag={37}
-                          handlerType="PanGestureHandler"
-                          onGestureHandlerEvent={[Function]}
-                          onGestureHandlerStateChange={[Function]}
                           onLayout={[Function]}
                           style={
-                            {
-                              "flexDirection": "row",
-                              "overflow": "visible",
-                            }
+                            [
+                              {
+                                "overflow": "hidden",
+                              },
+                              [
+                                {
+                                  "flexDirection": "row",
+                                  "overflow": "visible",
+                                },
+                                {},
+                              ],
+                            ]
                           }
                         >
                           <View
-                            collapsable={false}
                             style={
-                              {
-                                "bottom": 0,
-                                "flexDirection": "row",
-                                "left": 0,
-                                "position": "absolute",
-                                "right": 0,
-                                "top": 0,
-                                "transform": [
-                                  {
-                                    "translateX": -10000,
-                                  },
-                                ],
-                              }
+                              [
+                                {
+                                  "bottom": 0,
+                                  "flexDirection": "row",
+                                  "left": 0,
+                                  "position": "absolute",
+                                  "right": 0,
+                                  "top": 0,
+                                },
+                              ]
                             }
                           >
                             <View
@@ -1456,7 +1490,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                 [
                                   {
                                     "justifyContent": "center",
-                                    "paddingHorizontal": 16,
+                                    "paddingRight": 16,
                                   },
                                   {},
                                 ]
@@ -1556,20 +1590,37 @@ exports[`Thread should match thread snapshot 1`] = `
                             />
                           </View>
                           <View
-                            collapsable={false}
-                            handlerTag={38}
-                            handlerType="TapGestureHandler"
-                            onGestureHandlerEvent={[Function]}
-                            onGestureHandlerStateChange={[Function]}
-                            pointerEvents="auto"
                             style={
-                              {
-                                "transform": [
-                                  {
-                                    "translateX": -0,
-                                  },
-                                ],
-                              }
+                              [
+                                {
+                                  "bottom": 0,
+                                  "flexDirection": "row-reverse",
+                                  "left": 0,
+                                  "position": "absolute",
+                                  "right": 0,
+                                  "top": 0,
+                                },
+                              ]
+                            }
+                          >
+                            <View
+                              onLayout={[Function]}
+                            />
+                          </View>
+                          <View
+                            collapsable={false}
+                            style={
+                              [
+                                {
+                                  "pointerEvents": "auto",
+                                  "transform": [
+                                    {
+                                      "translateX": 0,
+                                    },
+                                  ],
+                                },
+                                undefined,
+                              ]
                             }
                           >
                             <View
@@ -1913,34 +1964,34 @@ exports[`Thread should match thread snapshot 1`] = `
                           />
                           <View
                             collapsable={false}
-                            handlerTag={45}
-                            handlerType="PanGestureHandler"
-                            onGestureHandlerEvent={[Function]}
-                            onGestureHandlerStateChange={[Function]}
                             onLayout={[Function]}
                             style={
-                              {
-                                "flexDirection": "row",
-                                "overflow": "visible",
-                              }
+                              [
+                                {
+                                  "overflow": "hidden",
+                                },
+                                [
+                                  {
+                                    "flexDirection": "row",
+                                    "overflow": "visible",
+                                  },
+                                  {},
+                                ],
+                              ]
                             }
                           >
                             <View
-                              collapsable={false}
                               style={
-                                {
-                                  "bottom": 0,
-                                  "flexDirection": "row",
-                                  "left": 0,
-                                  "position": "absolute",
-                                  "right": 0,
-                                  "top": 0,
-                                  "transform": [
-                                    {
-                                      "translateX": -10000,
-                                    },
-                                  ],
-                                }
+                                [
+                                  {
+                                    "bottom": 0,
+                                    "flexDirection": "row",
+                                    "left": 0,
+                                    "position": "absolute",
+                                    "right": 0,
+                                    "top": 0,
+                                  },
+                                ]
                               }
                             >
                               <View
@@ -1948,7 +1999,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   [
                                     {
                                       "justifyContent": "center",
-                                      "paddingHorizontal": 16,
+                                      "paddingRight": 16,
                                     },
                                     {},
                                   ]
@@ -2048,20 +2099,37 @@ exports[`Thread should match thread snapshot 1`] = `
                               />
                             </View>
                             <View
-                              collapsable={false}
-                              handlerTag={46}
-                              handlerType="TapGestureHandler"
-                              onGestureHandlerEvent={[Function]}
-                              onGestureHandlerStateChange={[Function]}
-                              pointerEvents="auto"
                               style={
-                                {
-                                  "transform": [
-                                    {
-                                      "translateX": -0,
-                                    },
-                                  ],
-                                }
+                                [
+                                  {
+                                    "bottom": 0,
+                                    "flexDirection": "row-reverse",
+                                    "left": 0,
+                                    "position": "absolute",
+                                    "right": 0,
+                                    "top": 0,
+                                  },
+                                ]
+                              }
+                            >
+                              <View
+                                onLayout={[Function]}
+                              />
+                            </View>
+                            <View
+                              collapsable={false}
+                              style={
+                                [
+                                  {
+                                    "pointerEvents": "auto",
+                                    "transform": [
+                                      {
+                                        "translateX": 0,
+                                      },
+                                    ],
+                                  },
+                                  undefined,
+                                ]
                               }
                             >
                               <View
