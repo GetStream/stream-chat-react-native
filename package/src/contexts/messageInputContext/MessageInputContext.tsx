@@ -57,6 +57,7 @@ import type { Emoji } from '../../emoji-data';
 import {
   isDocumentPickerAvailable,
   isImageMediaLibraryAvailable,
+  MediaTypes,
   pickDocument,
   pickImage,
   takePhoto,
@@ -232,7 +233,7 @@ export type LocalMessageInputContext<
   /**
    * Function for taking a photo and uploading it
    */
-  takeAndUploadImage: () => Promise<void>;
+  takeAndUploadImage: (mediaType?: MediaTypes) => Promise<void>;
   text: string;
   toggleAttachmentPicker: () => void;
   /**
@@ -686,10 +687,10 @@ export const MessageInputProvider = <
   /**
    * Function for capturing a photo and uploading it
    */
-  const takeAndUploadImage = async () => {
+  const takeAndUploadImage = async (mediaType?: MediaTypes) => {
     setSelectedPicker(undefined);
     closePicker();
-    const photo = await takePhoto({ compressImageQuality: value.compressImageQuality });
+    const photo = await takePhoto({ compressImageQuality: value.compressImageQuality, mediaType });
     if (photo.askToOpenSettings) {
       Alert.alert(
         t('Allow camera access in device settings'),
@@ -701,7 +702,11 @@ export const MessageInputProvider = <
       );
     }
     if (!photo.cancelled) {
-      await uploadNewImage(photo);
+      if (photo.type.includes('image')) {
+        await uploadNewImage(photo);
+      } else {
+        await uploadNewFile({ ...photo, mimeType: photo.type, type: FileTypes.Video });
+      }
     }
   };
 
