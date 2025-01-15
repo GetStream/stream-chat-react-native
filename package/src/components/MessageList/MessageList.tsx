@@ -670,6 +670,7 @@ const MessageListWithContext = <
         threadList={threadList}
       />
     );
+
     return wrapMessageInTheme ? (
       <>
         <ThemeProvider mergedStyle={modifiedTheme}>
@@ -677,13 +678,15 @@ const MessageListWithContext = <
             style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}
             testID={`message-list-item-${index}`}
           >
+            {shouldApplyAndroidWorkaround && insertInlineUnreadIndicator && (
+              <InlineUnreadIndicator />
+            )}
             {shouldApplyAndroidWorkaround && renderDateSeperator}
             {renderMessage}
           </View>
         </ThemeProvider>
         {!shouldApplyAndroidWorkaround && renderDateSeperator}
-        {/* Adding indicator below the messages, since the list is inverted */}
-        {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
+        {!shouldApplyAndroidWorkaround && insertInlineUnreadIndicator && <InlineUnreadIndicator />}
       </>
     ) : (
       <>
@@ -691,12 +694,12 @@ const MessageListWithContext = <
           style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}
           testID={`message-list-item-${index}`}
         >
+          {shouldApplyAndroidWorkaround && insertInlineUnreadIndicator && <InlineUnreadIndicator />}
           {shouldApplyAndroidWorkaround && renderDateSeperator}
           {renderMessage}
         </View>
         {!shouldApplyAndroidWorkaround && renderDateSeperator}
-        {/* Adding indicator below the messages, since the list is inverted */}
-        {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
+        {!shouldApplyAndroidWorkaround && insertInlineUnreadIndicator && <InlineUnreadIndicator />}
       </>
     );
   };
