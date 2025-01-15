@@ -190,6 +190,19 @@ const MessageSimpleWithContext = <
 
   const repliesCurveColor = isMessageReceivedOrErrorType ? grey_gainsboro : backgroundColor;
 
+  const renderMessageBubble = (
+    <>
+      <MessageContent
+        backgroundColor={backgroundColor}
+        noBorder={noBorder}
+        setMessageContentWidth={setMessageContentWidth}
+      />
+      {reactionListPosition === 'top' && ReactionListTop ? (
+        <ReactionListTop messageContentWidth={messageContentWidth} />
+      ) : null}
+    </>
+  );
+
   return (
     <View
       style={[
@@ -249,35 +262,53 @@ const MessageSimpleWithContext = <
             {message.pinned ? <MessagePinnedHeader /> : null}
           </View>
 
-          <Swipeable
-            containerStyle={[styles.contentWrapper, contentWrapper]}
-            friction={2}
-            leftThreshold={enableSwipeToReply ? 100 : 0}
-            onSwipeableWillOpen={() => {
-              if (!swipeableRef.current) return;
-              clearQuotedMessageState();
-              setQuotedMessageState(message);
-              triggerHaptic('impactLight');
-              swipeableRef.current.close();
-            }}
-            ref={swipeableRef}
-            renderLeftActions={() => {
-              if (alignment === 'left' && enableSwipeToReply) {
-                return MessageSwipeLeftContent ? <MessageSwipeLeftContent /> : null;
-              } else {
-                return null;
-              }
-            }}
-          >
-            <MessageContent
-              backgroundColor={backgroundColor}
-              noBorder={noBorder}
-              setMessageContentWidth={setMessageContentWidth}
-            />
-            {reactionListPosition === 'top' && ReactionListTop ? (
-              <ReactionListTop messageContentWidth={messageContentWidth} />
-            ) : null}
-          </Swipeable>
+          {alignment === 'left' ? (
+            <Swipeable
+              containerStyle={[styles.contentWrapper, contentWrapper]}
+              friction={2}
+              leftThreshold={100}
+              onSwipeableWillOpen={() => {
+                if (!swipeableRef.current) return;
+                clearQuotedMessageState();
+                setQuotedMessageState(message);
+                triggerHaptic('impactLight');
+                swipeableRef.current.close();
+              }}
+              ref={swipeableRef}
+              renderLeftActions={() => {
+                if (enableSwipeToReply) {
+                  return MessageSwipeLeftContent ? <MessageSwipeLeftContent /> : null;
+                } else {
+                  return null;
+                }
+              }}
+            >
+              {renderMessageBubble}
+            </Swipeable>
+          ) : (
+            <Swipeable
+              containerStyle={[styles.contentWrapper, contentWrapper]}
+              friction={2}
+              rightThreshold={100}
+              onSwipeableWillOpen={() => {
+                if (!swipeableRef.current) return;
+                clearQuotedMessageState();
+                setQuotedMessageState(message);
+                triggerHaptic('impactLight');
+                swipeableRef.current.close();
+              }}
+              ref={swipeableRef}
+              renderRightActions={() => {
+                if (enableSwipeToReply) {
+                  return MessageSwipeLeftContent ? <MessageSwipeLeftContent /> : null;
+                } else {
+                  return null;
+                }
+              }}
+            >
+              {renderMessageBubble}
+            </Swipeable>
+          )}
 
           {reactionListPosition === 'bottom' && ReactionListBottom ? <ReactionListBottom /> : null}
           <MessageReplies noBorder={noBorder} repliesCurveColor={repliesCurveColor} />
