@@ -21,8 +21,8 @@ type Size = {
 
 // Media type mapping for iOS and Android
 const mediaTypeMap = {
-  mixed: ['images', 'videos'],
   image: 'images',
+  mixed: ['images', 'videos'],
   video: 'videos',
 };
 
@@ -42,17 +42,18 @@ export const takePhoto = ImagePicker
         }
 
         if (permissionGranted) {
-          const imagePickerSuccessResult = await ImagePicker.launchCameraAsync({
+          const result = await ImagePicker.launchCameraAsync({
             mediaTypes: mediaTypeMap[mediaType],
             quality: Math.min(Math.max(0, compressImageQuality), 1),
           });
-          const canceled = imagePickerSuccessResult.canceled;
-          const assets = imagePickerSuccessResult.assets;
-          if (canceled || !assets.length) {
+          if (!result || !result.assets || !result.assets.length || result.canceled) {
             return { cancelled: true };
           }
           // since we only support single photo upload for now we will only be focusing on 0'th element.
-          const photo = assets[0];
+          const photo = result.assets[0];
+          if (!photo) {
+            return { cancelled: true };
+          }
           if (photo.mimeType.includes('video')) {
             const clearFilter = new RegExp('[.:]', 'g');
             const date = new Date().toISOString().replace(clearFilter, '_');
@@ -60,9 +61,9 @@ export const takePhoto = ImagePicker
               ...photo,
               cancelled: false,
               duration: photo.duration, // in milliseconds
-              source: 'camera',
               name: 'video_recording_' + date + photo.uri.split('.').pop(),
               size: photo.fileSize,
+              source: 'camera',
               type: photo.mimeType,
               uri: photo.uri,
             };
@@ -94,8 +95,8 @@ export const takePhoto = ImagePicker
               return {
                 cancelled: false,
                 size: photo.fileSize,
-                type: photo.mimeType,
                 source: 'camera',
+                type: photo.mimeType,
                 uri: photo.uri,
                 ...size,
               };

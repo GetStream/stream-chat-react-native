@@ -32,15 +32,20 @@ export const takePhoto = ImagePicker
       }
       try {
         const result = await ImagePicker.launchCamera({
-          mediaType: mediaType,
+          mediaType,
           quality: Math.min(Math.max(0, compressImageQuality), 1),
         });
-        if (!result.assets.length || result.didCancel) {
+        if (!result || !result.assets || !result.assets.length || result.didCancel) {
           return {
             cancelled: true,
           };
         }
         const asset = result.assets[0];
+        if (!asset) {
+          return {
+            cancelled: true,
+          };
+        }
         if (asset.type.includes('video')) {
           const clearFilter = new RegExp('[.:]', 'g');
           const date = new Date().toISOString().replace(clearFilter, '_');
@@ -48,9 +53,9 @@ export const takePhoto = ImagePicker
             ...asset,
             cancelled: false,
             duration: asset.duration * 1000,
-            source: 'camera',
             name: 'video_recording_' + date + asset.fileName.split('.').pop(),
             size: asset.fileSize,
+            source: 'camera',
             type: asset.type,
             uri: asset.uri,
           };
@@ -82,9 +87,9 @@ export const takePhoto = ImagePicker
             }
             return {
               cancelled: false,
-              type: asset.type,
               size: asset.size,
               source: 'camera',
+              type: asset.type,
               uri: asset.uri,
               ...size,
             };
