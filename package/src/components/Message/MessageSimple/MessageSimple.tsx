@@ -262,52 +262,48 @@ const MessageSimpleWithContext = <
             {message.pinned ? <MessagePinnedHeader /> : null}
           </View>
 
-          {alignment === 'left' ? (
-            <Swipeable
-              containerStyle={[styles.contentWrapper, contentWrapper]}
-              friction={2}
-              leftThreshold={100}
-              onSwipeableWillOpen={() => {
-                if (!swipeableRef.current) return;
-                clearQuotedMessageState();
-                setQuotedMessageState(message);
-                triggerHaptic('impactLight');
-                swipeableRef.current.close();
-              }}
-              ref={swipeableRef}
-              renderLeftActions={() => {
-                if (enableSwipeToReply) {
+          {enableSwipeToReply ? (
+            alignment === 'left' ? (
+              <Swipeable
+                containerStyle={[styles.contentWrapper, contentWrapper]}
+                friction={2}
+                leftThreshold={100}
+                onSwipeableWillOpen={() => {
+                  if (!swipeableRef.current) return;
+                  clearQuotedMessageState();
+                  setQuotedMessageState(message);
+                  triggerHaptic('impactLight');
+                  swipeableRef.current.close();
+                }}
+                ref={swipeableRef}
+                renderLeftActions={() => {
                   return MessageSwipeContent ? <MessageSwipeContent /> : null;
-                } else {
-                  return null;
-                }
-              }}
-            >
-              {renderMessageBubble}
-            </Swipeable>
+                }}
+              >
+                {renderMessageBubble}
+              </Swipeable>
+            ) : (
+              <Swipeable
+                containerStyle={[styles.contentWrapper, contentWrapper]}
+                friction={2}
+                onSwipeableWillOpen={() => {
+                  if (!swipeableRef.current) return;
+                  clearQuotedMessageState();
+                  setQuotedMessageState(message);
+                  triggerHaptic('impactLight');
+                  swipeableRef.current.close();
+                }}
+                ref={swipeableRef}
+                renderRightActions={() => {
+                  return MessageSwipeContent ? <MessageSwipeContent /> : null;
+                }}
+                rightThreshold={100}
+              >
+                {renderMessageBubble}
+              </Swipeable>
+            )
           ) : (
-            <Swipeable
-              containerStyle={[styles.contentWrapper, contentWrapper]}
-              friction={2}
-              onSwipeableWillOpen={() => {
-                if (!swipeableRef.current) return;
-                clearQuotedMessageState();
-                setQuotedMessageState(message);
-                triggerHaptic('impactLight');
-                swipeableRef.current.close();
-              }}
-              ref={swipeableRef}
-              renderRightActions={() => {
-                if (enableSwipeToReply) {
-                  return MessageSwipeContent ? <MessageSwipeContent /> : null;
-                } else {
-                  return null;
-                }
-              }}
-              rightThreshold={100}
-            >
-              {renderMessageBubble}
-            </Swipeable>
+            renderMessageBubble
           )}
 
           {reactionListPosition === 'bottom' && ReactionListBottom ? <ReactionListBottom /> : null}
