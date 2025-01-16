@@ -276,9 +276,7 @@ const MessageSimpleWithContext = <
                   swipeableRef.current.close();
                 }}
                 ref={swipeableRef}
-                renderLeftActions={() => {
-                  return MessageSwipeContent ? <MessageSwipeContent /> : null;
-                }}
+                renderLeftActions={() => (MessageSwipeContent ? <MessageSwipeContent /> : null)}
               >
                 {renderMessageBubble}
               </Swipeable>
@@ -294,9 +292,7 @@ const MessageSimpleWithContext = <
                   swipeableRef.current.close();
                 }}
                 ref={swipeableRef}
-                renderRightActions={() => {
-                  return MessageSwipeContent ? <MessageSwipeContent /> : null;
-                }}
+                renderRightActions={() => (MessageSwipeContent ? <MessageSwipeContent /> : null)}
                 rightThreshold={100}
               >
                 {renderMessageBubble}
