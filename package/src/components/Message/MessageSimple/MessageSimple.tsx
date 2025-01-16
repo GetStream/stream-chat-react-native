@@ -203,6 +203,16 @@ const MessageSimpleWithContext = <
     </>
   );
 
+  const leftAlignmentProps = {
+    leftThreshold: 100,
+    renderLeftActions: () => (MessageSwipeContent ? <MessageSwipeContent /> : null),
+  };
+
+  const rightAlignmentProps = {
+    renderRightActions: () => (MessageSwipeContent ? <MessageSwipeContent /> : null),
+    rightThreshold: 100,
+  };
+
   return (
     <View
       style={[
@@ -263,41 +273,21 @@ const MessageSimpleWithContext = <
           </View>
 
           {enableSwipeToReply ? (
-            alignment === 'left' ? (
-              <Swipeable
-                containerStyle={[styles.contentWrapper, contentWrapper]}
-                friction={2}
-                leftThreshold={100}
-                onSwipeableWillOpen={() => {
-                  if (!swipeableRef.current) return;
-                  clearQuotedMessageState();
-                  setQuotedMessageState(message);
-                  triggerHaptic('impactLight');
-                  swipeableRef.current.close();
-                }}
-                ref={swipeableRef}
-                renderLeftActions={() => (MessageSwipeContent ? <MessageSwipeContent /> : null)}
-              >
-                {renderMessageBubble}
-              </Swipeable>
-            ) : (
-              <Swipeable
-                containerStyle={[styles.contentWrapper, contentWrapper]}
-                friction={2}
-                onSwipeableWillOpen={() => {
-                  if (!swipeableRef.current) return;
-                  clearQuotedMessageState();
-                  setQuotedMessageState(message);
-                  triggerHaptic('impactLight');
-                  swipeableRef.current.close();
-                }}
-                ref={swipeableRef}
-                renderRightActions={() => (MessageSwipeContent ? <MessageSwipeContent /> : null)}
-                rightThreshold={100}
-              >
-                {renderMessageBubble}
-              </Swipeable>
-            )
+            <Swipeable
+              containerStyle={[styles.contentWrapper, contentWrapper]}
+              friction={2}
+              onSwipeableWillOpen={() => {
+                if (!swipeableRef.current) return;
+                clearQuotedMessageState();
+                setQuotedMessageState(message);
+                triggerHaptic('impactLight');
+                swipeableRef.current.close();
+              }}
+              ref={swipeableRef}
+              {...(alignment === 'left' ? leftAlignmentProps : rightAlignmentProps)}
+            >
+              {renderMessageBubble}
+            </Swipeable>
           ) : (
             renderMessageBubble
           )}
