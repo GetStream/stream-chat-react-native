@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { CurveLineLeftUp } from '../../../icons';
 
-export const MessageSwipeLeftContent = () => {
+export const MessageSwipeContent = () => {
   const {
     theme: {
       colors: { grey },

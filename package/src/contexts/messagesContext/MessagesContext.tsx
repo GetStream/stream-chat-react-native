@@ -471,7 +471,7 @@ export type MessagesContextValue<
    * Custom message header component
    */
   MessageHeader?: React.ComponentType<MessageFooterProps<StreamChatGenerics>>;
-  MessageSwipeLeftContent?: React.ComponentType;
+  MessageSwipeContent?: React.ComponentType;
   /** Custom UI component for message text */
   MessageText?: React.ComponentType<MessageTextProps<StreamChatGenerics>>;
   /**

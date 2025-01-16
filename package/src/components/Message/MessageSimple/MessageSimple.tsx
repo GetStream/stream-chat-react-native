@@ -73,7 +73,7 @@ export type MessageSimplePropsWithContext<
     | 'MessagePinnedHeader'
     | 'MessageReplies'
     | 'MessageStatus'
-    | 'MessageSwipeLeftContent'
+    | 'MessageSwipeContent'
     | 'ReactionListBottom'
     | 'reactionListPosition'
     | 'ReactionListTop'
@@ -107,7 +107,7 @@ const MessageSimpleWithContext = <
     MessagePinnedHeader,
     MessageReplies,
     MessageStatus,
-    MessageSwipeLeftContent,
+    MessageSwipeContent,
     onlyEmojis,
     otherAttachments,
     ReactionListBottom,
@@ -277,7 +277,7 @@ const MessageSimpleWithContext = <
               ref={swipeableRef}
               renderLeftActions={() => {
                 if (enableSwipeToReply) {
-                  return MessageSwipeLeftContent ? <MessageSwipeLeftContent /> : null;
+                  return MessageSwipeContent ? <MessageSwipeContent /> : null;
                 } else {
                   return null;
                 }
@@ -289,7 +289,6 @@ const MessageSimpleWithContext = <
             <Swipeable
               containerStyle={[styles.contentWrapper, contentWrapper]}
               friction={2}
-              rightThreshold={100}
               onSwipeableWillOpen={() => {
                 if (!swipeableRef.current) return;
                 clearQuotedMessageState();
@@ -300,11 +299,12 @@ const MessageSimpleWithContext = <
               ref={swipeableRef}
               renderRightActions={() => {
                 if (enableSwipeToReply) {
-                  return MessageSwipeLeftContent ? <MessageSwipeLeftContent /> : null;
+                  return MessageSwipeContent ? <MessageSwipeContent /> : null;
                 } else {
                   return null;
                 }
               }}
+              rightThreshold={100}
             >
               {renderMessageBubble}
             </Swipeable>
@@ -470,7 +470,7 @@ export const MessageSimple = <
     MessagePinnedHeader,
     MessageReplies,
     MessageStatus,
-    MessageSwipeLeftContent,
+    MessageSwipeContent,
     myMessageTheme,
     ReactionListBottom,
     reactionListPosition,
@@ -500,7 +500,7 @@ export const MessageSimple = <
         MessagePinnedHeader,
         MessageReplies,
         MessageStatus,
-        MessageSwipeLeftContent,
+        MessageSwipeContent,
         myMessageTheme,
         onlyEmojis,
         otherAttachments,
