@@ -654,6 +654,7 @@ export type Theme = {
       statusContainer: ViewStyle;
       timeIcon: IconProps;
     };
+    swipeContentContainer: ViewStyle;
     swipeLeftContent: {
       container: ViewStyle;
     };
@@ -1437,6 +1438,7 @@ export const defaultTheme: Theme = {
         width: DEFAULT_STATUS_ICON_SIZE,
       },
     },
+    swipeContentContainer: {},
     swipeLeftContent: {
       container: {},
     },
