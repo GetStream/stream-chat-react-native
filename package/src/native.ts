@@ -85,7 +85,11 @@ type Photo = Omit<Asset, 'source'> & {
   askToOpenSettings?: boolean;
   cancelled?: boolean;
 };
-type TakePhoto = (options: { compressImageQuality?: number }) => Promise<Photo> | never;
+export type MediaTypes = 'image' | 'video' | 'mixed';
+type TakePhoto = (options: {
+  compressImageQuality?: number;
+  mediaType?: MediaTypes;
+}) => Promise<Photo> | never;
 export let takePhoto: TakePhoto = fail;
 
 type HapticFeedbackMethod =

@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, Easing, LayoutRectangle, Pressable, StyleSheet } from 'react-native';
+import { Animated, Easing, LayoutRectangle, Platform, Pressable, StyleSheet } from 'react-native';
 
 import {
+  useAttachmentPickerContext,
   useChannelContext,
   useMessagesContext,
   useOwnCapabilitiesContext,
@@ -9,9 +10,6 @@ import {
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
-import { CameraSelectorIcon } from '../../AttachmentPicker/components/CameraSelectorIcon';
-import { FileSelectorIcon } from '../../AttachmentPicker/components/FileSelectorIcon';
-import { ImageSelectorIcon } from '../../AttachmentPicker/components/ImageSelectorIcon';
 import { CreatePollIcon } from '../../Poll/components/CreatePollIcon';
 
 type NativeAttachmentPickerProps = {
@@ -28,7 +26,6 @@ export const NativeAttachmentPicker = ({
 }: NativeAttachmentPickerProps) => {
   const size = attachButtonLayoutRectangle?.width ?? 0;
   const attachButtonItemSize = 40;
-  const NUMBER_OF_BUTTONS = 3;
   const {
     theme: {
       colors: { grey_whisper },
@@ -54,14 +51,16 @@ export const NativeAttachmentPicker = ({
   const { threadList } = useChannelContext();
   const { hasCreatePoll } = useMessagesContext();
   const ownCapabilities = useOwnCapabilitiesContext();
+  const { CameraSelectorIcon, FileSelectorIcon, ImageSelectorIcon, VideoRecorderSelectorIcon } =
+    useAttachmentPickerContext();
 
   const popupHeight =
     // the top padding
     TOP_PADDING +
     // take margins into account
-    ATTACH_MARGIN_BOTTOM * NUMBER_OF_BUTTONS +
+    ATTACH_MARGIN_BOTTOM +
     // the size of the attachment icon items (same size as attach button * amount of attachment button types)
-    attachButtonItemSize * NUMBER_OF_BUTTONS;
+    attachButtonItemSize;
 
   const containerPopupStyle = {
     borderTopEndRadius: size / 2,
@@ -147,8 +146,19 @@ export const NativeAttachmentPicker = ({
     buttons.push({
       icon: <CameraSelectorIcon />,
       id: 'Camera',
-      onPressHandler: takeAndUploadImage,
+      onPressHandler: () => {
+        takeAndUploadImage(Platform.OS === 'android' ? 'image' : 'mixed');
+      },
     });
+    if (Platform.OS === 'android') {
+      buttons.push({
+        icon: <VideoRecorderSelectorIcon />,
+        id: 'Video',
+        onPressHandler: () => {
+          takeAndUploadImage('video');
+        },
+      });
+    }
   }
 
   return (

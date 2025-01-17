@@ -39,7 +39,8 @@
         "expo-image-picker",
         {
           "photosPermission": "The app accesses your photos to let them share with others.",
-          "cameraPermission": "The app accesses your camera to let you take photos and share with others."
+          "cameraPermission": "The app accesses your camera to let you take photos and share with others.",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone for video recording."
         }
       ],
       [
