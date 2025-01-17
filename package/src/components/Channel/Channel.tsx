@@ -351,6 +351,7 @@ export type ChannelPropsWithContext<
       | 'MessageTimestamp'
       | 'MessageUserReactions'
       | 'MessageSwipeContent'
+      | 'messageSwipeToReplyHitSlop'
       | 'myMessageTheme'
       | 'onLongPressMessage'
       | 'onPressInMessage'
@@ -625,6 +626,7 @@ const ChannelWithContext = <
     MessageSimple = MessageSimpleDefault,
     MessageStatus = MessageStatusDefault,
     MessageSwipeContent = MessageSwipeContentDefault,
+    messageSwipeToReplyHitSlop,
     MessageSystem = MessageSystemDefault,
     MessageText,
     messageTextNumberOfLines,
@@ -1870,6 +1872,7 @@ const ChannelWithContext = <
     MessageSimple,
     MessageStatus,
     MessageSwipeContent,
+    messageSwipeToReplyHitSlop,
     MessageSystem,
     MessageText,
     messageTextNumberOfLines,

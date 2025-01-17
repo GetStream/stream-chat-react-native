@@ -385,6 +385,12 @@ exports[`Thread should match thread snapshot 1`] = `
                         />
                         <View
                           collapsable={false}
+                          hitSlop={
+                            {
+                              "left": 750,
+                              "right": 750,
+                            }
+                          }
                           style={
                             [
                               {
@@ -885,6 +891,12 @@ exports[`Thread should match thread snapshot 1`] = `
                         />
                         <View
                           collapsable={false}
+                          hitSlop={
+                            {
+                              "left": 750,
+                              "right": 750,
+                            }
+                          }
                           style={
                             [
                               {
@@ -1423,6 +1435,12 @@ exports[`Thread should match thread snapshot 1`] = `
                         />
                         <View
                           collapsable={false}
+                          hitSlop={
+                            {
+                              "left": 750,
+                              "right": 750,
+                            }
+                          }
                           style={
                             [
                               {
@@ -1916,6 +1934,12 @@ exports[`Thread should match thread snapshot 1`] = `
                           />
                           <View
                             collapsable={false}
+                            hitSlop={
+                              {
+                                "left": 750,
+                                "right": 750,
+                              }
+                            }
                             style={
                               [
                                 {

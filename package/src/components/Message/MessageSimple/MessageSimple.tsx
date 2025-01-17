@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import { Dimensions, LayoutChangeEvent, StyleSheet, View } from 'react-native';
 
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
@@ -85,6 +85,7 @@ export type MessageSimplePropsWithContext<
     | 'MessageReplies'
     | 'MessageStatus'
     | 'MessageSwipeContent'
+    | 'messageSwipeToReplyHitSlop'
     | 'ReactionListBottom'
     | 'reactionListPosition'
     | 'ReactionListTop'
@@ -97,7 +98,7 @@ const MessageSimpleWithContext = <
   props: MessageSimplePropsWithContext<StreamChatGenerics>,
 ) => {
   const [messageContentWidth, setMessageContentWidth] = useState(0);
-
+  const { width } = Dimensions.get('screen');
   const {
     alignment,
     clearQuotedMessageState,
@@ -118,6 +119,7 @@ const MessageSimpleWithContext = <
     MessageReplies,
     MessageStatus,
     MessageSwipeContent,
+    messageSwipeToReplyHitSlop = { left: width, right: width },
     onlyEmojis,
     otherAttachments,
     ReactionListBottom,
@@ -212,6 +214,7 @@ const MessageSimpleWithContext = <
   const THRESHOLD = 25;
 
   const swipeGesture = Gesture.Pan()
+    .hitSlop(messageSwipeToReplyHitSlop)
     .manualActivation(true)
     .onBegin((event) => {
       touchStart.value = { x: event.x, y: event.y };
@@ -286,7 +289,7 @@ const MessageSimpleWithContext = <
 
   const renderAnimatedMessageBubble = (
     <GestureDetector gesture={swipeGesture}>
-      <View style={[styles.contentWrapper, contentWrapper]}>
+      <View hitSlop={messageSwipeToReplyHitSlop} style={[styles.contentWrapper, contentWrapper]}>
         <Animated.View
           style={[styles.swipeContentContainer, swipeContentAnimatedStyle, swipeContentContainer]}
         >
@@ -517,6 +520,7 @@ export const MessageSimple = <
     MessageReplies,
     MessageStatus,
     MessageSwipeContent,
+    messageSwipeToReplyHitSlop,
     myMessageTheme,
     ReactionListBottom,
     reactionListPosition,
@@ -547,6 +551,7 @@ export const MessageSimple = <
         MessageReplies,
         MessageStatus,
         MessageSwipeContent,
+        messageSwipeToReplyHitSlop,
         myMessageTheme,
         onlyEmojis,
         otherAttachments,

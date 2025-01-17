@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { PressableProps } from 'react-native';
+import { PressableProps, ViewProps } from 'react-native';
 
 import type { Attachment, ChannelState, MessageResponse } from 'stream-chat';
 
@@ -467,11 +467,16 @@ export type MessagesContextValue<
    * @overrideType Function | Array<Objects>
    */
   messageActions?: (param: MessageActionsParams<StreamChatGenerics>) => MessageActionType[];
+
   /**
    * Custom message header component
    */
   MessageHeader?: React.ComponentType<MessageFooterProps<StreamChatGenerics>>;
   MessageSwipeContent?: React.ComponentType;
+  /**
+   * HitSlop for the message swipe to reply gesture
+   */
+  messageSwipeToReplyHitSlop?: ViewProps['hitSlop'];
   /** Custom UI component for message text */
   MessageText?: React.ComponentType<MessageTextProps<StreamChatGenerics>>;
   /**
