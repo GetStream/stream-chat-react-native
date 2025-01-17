@@ -83,8 +83,8 @@
     "@op-engineering/op-sqlite": ">=9.3.0",
     "@react-native-community/netinfo": ">=11.3.1",
     "react-native": ">=0.67.0",
-    "react-native-gesture-handler": ">=2.21.2",
-    "react-native-reanimated": ">=3.16.4",
+    "react-native-gesture-handler": ">=2.16.1",
+    "react-native-reanimated": ">=3.16.0",
     "react-native-svg": ">=12.3.0"
   },
   "peerDependenciesMeta": {
@@ -144,8 +144,8 @@
     "react": "18.2.0",
     "react-native": "0.73.6",
     "react-native-builder-bob": "0.23.1",
-    "react-native-gesture-handler": "~2.21.2",
-    "react-native-reanimated": "~3.16.4",
+    "react-native-gesture-handler": "~2.16.1",
+    "react-native-reanimated": "~3.10.0",
     "react-native-svg": "15.1.0",
     "react-test-renderer": "18.2.0",
     "typescript": "5.0.4",
