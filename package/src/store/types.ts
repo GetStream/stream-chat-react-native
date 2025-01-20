@@ -13,6 +13,7 @@ export type TableColumnValue = string | boolean | number | undefined;
 export type Scalar = string | number | boolean | null | ArrayBuffer | ArrayBufferView;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type PreparedQueries = [string] | [string, Array<any>];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type PreparedBatchQueries = [string] | [string, Array<any> | Array<Array<any>>];
 
 export type PendingTaskTypes = {

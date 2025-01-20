@@ -88,7 +88,7 @@ export class SqliteClient {
       const finalQueries = queries.map((query) => {
         if (query.length === 1) {
           // @ts-ignore
-          query.push([] as any);
+          query.push([]);
         }
         return query;
       });
