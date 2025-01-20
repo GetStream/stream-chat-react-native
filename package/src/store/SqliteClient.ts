@@ -21,7 +21,7 @@ import { Logger } from 'stream-chat';
 import { DB_LOCATION, DB_NAME } from './constants';
 import { tables } from './schema';
 import { createCreateTableQuery } from './sqlite-utils/createCreateTableQuery';
-import type { PreparedQueries, Table } from './types';
+import type { PreparedBatchQueries, PreparedQueries, Scalar, Table } from './types';
 
 /**
  * SqliteClient takes care of any direct interaction with sqlite.
@@ -51,7 +51,7 @@ export class SqliteClient {
         name: SqliteClient.dbName,
       });
 
-      await this.db.execute(`PRAGMA foreign_keys = ON`, []);
+      await this.db?.execute(`PRAGMA foreign_keys = ON`, []);
     } catch (e) {
       this.logger?.('error', `Error opening database ${SqliteClient.dbName}`, {
         error: e,
@@ -75,14 +75,24 @@ export class SqliteClient {
     }
   };
 
-  static executeSqlBatch = async (queries: PreparedQueries[]) => {
+  static executeSqlBatch = async (queries: PreparedBatchQueries[]) => {
     if (!queries || !queries.length) return;
 
     try {
       if (!this.db) {
         throw new Error('DB is not open or initialized.');
       }
-      await this.db.executeBatch(queries);
+      // This is a workaround to make the executeBatch method work.
+      // It expects an empty array as the second argument in the individual queries if nothing present.
+      // Discussion - https://discord.com/channels/1301463257722126357/1324262993780932688/1330846910596251711
+      const finalQueries = queries.map((query) => {
+        if (query.length === 1) {
+          // @ts-ignore
+          query.push([] as any);
+        }
+        return query;
+      });
+      await this.db.executeBatch(finalQueries);
     } catch (e) {
       this.logger?.('error', `SqlBatch queries failed`, {
         error: e,
@@ -92,14 +102,14 @@ export class SqliteClient {
     }
   };
 
-  static executeSql = async (query: string, params?: string[]) => {
+  static executeSql = async (query: string, params?: Scalar[]) => {
     try {
       if (!this.db) {
         throw new Error('DB is not open or initialized.');
       }
       const { rows } = await this.db.execute(query, params);
 
-      return rows ? rows : [];
+      return rows ? (rows as Record<string, string>[]) : [];
     } catch (e) {
       this.logger?.('error', `Sql single query failed`, {
         error: e,

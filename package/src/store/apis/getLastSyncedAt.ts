@@ -14,5 +14,8 @@ export const getLastSyncedAt = async ({
     }),
   );
 
-  return result[0]?.lastSyncedAt;
+  if (typeof result[0]?.lastSyncedAt === 'number') {
+    return result[0]?.lastSyncedAt;
+  }
+  return undefined;
 };
