@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Dimensions, LayoutChangeEvent, StyleSheet, View } from 'react-native';
 
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -274,30 +274,38 @@ const MessageSimpleWithContext = <
     ],
   }));
 
-  const renderMessageBubble = (
-    <View style={[styles.contentWrapper, contentWrapper]}>
-      <MessageContent
-        backgroundColor={backgroundColor}
-        noBorder={noBorder}
-        setMessageContentWidth={setMessageContentWidth}
-      />
-      {reactionListPosition === 'top' && ReactionListTop ? (
-        <ReactionListTop messageContentWidth={messageContentWidth} />
-      ) : null}
-    </View>
+  const renderMessageBubble = useMemo(
+    () => (
+      <View style={[styles.contentWrapper, contentWrapper]}>
+        <MessageContent
+          backgroundColor={backgroundColor}
+          noBorder={noBorder}
+          setMessageContentWidth={setMessageContentWidth}
+        />
+        {reactionListPosition === 'top' && ReactionListTop ? (
+          <ReactionListTop messageContentWidth={messageContentWidth} />
+        ) : null}
+      </View>
+    ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [messageContentWidth, reactionListPosition],
   );
 
-  const renderAnimatedMessageBubble = (
-    <GestureDetector gesture={swipeGesture}>
-      <View hitSlop={messageSwipeToReplyHitSlop} style={[styles.contentWrapper, contentWrapper]}>
-        <Animated.View
-          style={[styles.swipeContentContainer, swipeContentAnimatedStyle, swipeContentContainer]}
-        >
-          {MessageSwipeContent ? <MessageSwipeContent /> : null}
-        </Animated.View>
-        <Animated.View style={messageBubbleAnimatedStyle}>{renderMessageBubble}</Animated.View>
-      </View>
-    </GestureDetector>
+  const renderAnimatedMessageBubble = useMemo(
+    () => (
+      <GestureDetector gesture={swipeGesture}>
+        <View hitSlop={messageSwipeToReplyHitSlop} style={[styles.contentWrapper, contentWrapper]}>
+          <Animated.View
+            style={[styles.swipeContentContainer, swipeContentAnimatedStyle, swipeContentContainer]}
+          >
+            {MessageSwipeContent ? <MessageSwipeContent /> : null}
+          </Animated.View>
+          <Animated.View style={messageBubbleAnimatedStyle}>{renderMessageBubble}</Animated.View>
+        </View>
+      </GestureDetector>
+    ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [reactionListPosition, messageContentWidth],
   );
 
   return (
