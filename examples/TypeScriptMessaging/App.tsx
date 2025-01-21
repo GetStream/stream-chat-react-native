@@ -160,7 +160,6 @@ const ChannelListScreen: React.FC<ChannelListScreenProps> = ({ navigation }) => 
       <ChannelList<StreamChatGenerics>
         PreviewStatus={CustomChannelPreviewStatus}
         filters={memoizedFilters}
-        lockChannelOrder
         onSelect={(channel) => {
           setChannel(channel);
           navigation.navigate('Channel');

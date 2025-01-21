@@ -28,7 +28,7 @@ export const useChannelMembershipState = <
     );
 
     return () => subscriptions.forEach((subscription) => subscription.unsubscribe());
-  }, [channel, client]);
+  }, [channel?.state.membership, client]);
 
   return membership;
 };
