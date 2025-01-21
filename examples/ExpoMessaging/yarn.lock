@@ -7053,13 +7053,14 @@ stream-buffers@2.2.x, stream-buffers@~2.2.0:
   integrity sha512-uyQK/mx5QjHun80FLJTfaWE7JtwfRMKBLkMne6udYOmvH0CawotVa7TfgYHzAnpphn4+TweIx1QKMnRIbipmUg==
 
 "stream-chat-expo@link:../../package/expo-package":
-  version "0.0.0"
-  uid ""
+  version "6.2.0"
+  dependencies:
+    stream-chat-react-native-core "6.2.0"
 
-stream-chat-react-native-core@6.1.0:
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-6.1.0.tgz#eaf2afb65832c77de4577fae24c2fc6bbcd5ece5"
-  integrity sha512-W4gbRb8Bq1IzzL026GudIxD8Rtlhr3WrKukt4g8zucJVL5iTR4PFxWWmQH081XF5qCS+tYnJSiZFdd4ot7LKwA==
+stream-chat-react-native-core@6.2.0:
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-6.2.0.tgz#3ad5283b88bd92f90ead10d0b2cb29dadbe418c6"
+  integrity sha512-2VUF1caOs2T5lN/44DUkasw8mAKIMPkPWym0FdEDOljp2cHaE6w5A7BR2k43W/S+l/Wk63VRs3bVW+v9zYDhFA==
   dependencies:
     "@gorhom/bottom-sheet" "^5.0.6"
     dayjs "1.10.5"
@@ -7075,8 +7076,20 @@ stream-chat-react-native-core@6.1.0:
     stream-chat "8.46.0"
 
 "stream-chat-react-native-core@link:../../package":
-  version "0.0.0"
-  uid ""
+  version "6.2.0"
+  dependencies:
+    "@gorhom/bottom-sheet" "^5.0.6"
+    dayjs "1.10.5"
+    emoji-regex "^10.3.0"
+    i18next "^21.6.14"
+    intl-pluralrules "^2.0.1"
+    linkifyjs "^4.1.1"
+    lodash-es "4.17.21"
+    mime-types "^2.1.34"
+    path "0.12.7"
+    react-native-markdown-package "1.8.2"
+    react-native-url-polyfill "^1.3.0"
+    stream-chat "8.46.0"
 
 stream-chat@8.46.0:
   version "8.46.0"
@@ -7436,9 +7449,9 @@ ua-parser-js@^0.7.30:
   integrity sha512-veRf7dawaj9xaWEu9HoTVn5Pggtc/qj+kqTOFvNiN1l0YdxwC1kvel57UCjThjGa3BHBihE8/UJAHI+uQHmd/g==
 
 undici@^6.11.1, undici@^6.18.2:
-  version "6.21.0"
-  resolved "https://registry.yarnpkg.com/undici/-/undici-6.21.0.tgz#4b3d3afaef984e07b48e7620c34ed8a285ed4cd4"
-  integrity sha512-BUgJXc752Kou3oOIuU1i+yZZypyZRqNPW0vqoMPl8VaoalSfeR0D8/t4iAS3yirs79SSMTxTag+ZC86uswv+Cw==
+  version "6.21.1"
+  resolved "https://registry.yarnpkg.com/undici/-/undici-6.21.1.tgz#336025a14162e6837e44ad7b819b35b6c6af0e05"
+  integrity sha512-q/1rj5D0/zayJB2FraXdaWxbhWiNKDvu8naDT2dl1yTlvJp4BLtOcp2a5BvgGNQpYYJzau7tf1WgKv3b+7mqpQ==
 
 unicode-canonical-property-names-ecmascript@^2.0.0:
   version "2.0.0"
