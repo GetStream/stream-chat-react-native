@@ -1,5 +1,27 @@
 # Change Log
 
+## [6.2.0](https://github.com/GetStream/stream-chat-react-native/compare/v6.1.1...v6.2.0) (2025-01-17)
+
+
+### Features
+
+* add support for video recording take and upload ([#2870](https://github.com/GetStream/stream-chat-react-native/issues/2870)) ([7e50994](https://github.com/GetStream/stream-chat-react-native/commit/7e50994c717487c9cc2abe29389b963c2932f8c6))
+
+
+### Bug Fixes
+
+* add size prop to ChannelAvatar component ([f7eeec8](https://github.com/GetStream/stream-chat-react-native/commit/f7eeec86b9e8cf305b666689fbe7e30c46da2231))
+* change default value of audioRecordingEnabled and not rely on package availability for default value ([#2884](https://github.com/GetStream/stream-chat-react-native/issues/2884)) ([b0a566f](https://github.com/GetStream/stream-chat-react-native/commit/b0a566fdc1b22acd7d3361189fa38da99c39cea8))
+* incorrect read state for messages ([#2888](https://github.com/GetStream/stream-chat-react-native/issues/2888)) ([be05c94](https://github.com/GetStream/stream-chat-react-native/commit/be05c947fb4bf5a2af6d0764e5346a1b11d950a5))
+* message list connection reconciliation ([#2896](https://github.com/GetStream/stream-chat-react-native/issues/2896)) ([020cecc](https://github.com/GetStream/stream-chat-react-native/commit/020cecc11ed043ac18479981b64dd8c0721158d3))
+
+### [6.1.1](https://github.com/GetStream/stream-chat-react-native/compare/v6.1.0...v6.1.1) (2025-01-08)
+
+
+### Bug Fixes
+
+* customize channel avatar size using theme ([#2874](https://github.com/GetStream/stream-chat-react-native/issues/2874)) ([88ed5e3](https://github.com/GetStream/stream-chat-react-native/commit/88ed5e36750bca3ea4735aa1b6d376ce538eb8a9))
+
 ## [6.1.0](https://github.com/GetStream/stream-chat-react-native/compare/v6.0.2...v6.1.0) (2024-12-24)
 
 

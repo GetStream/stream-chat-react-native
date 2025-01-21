@@ -4,7 +4,6 @@ import { AIState, Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { useIsOnline } from '../../Chat/hooks/useIsOnline';
 
 export const AIStates = {
   Error: 'AI_STATE_ERROR',
@@ -24,8 +23,7 @@ export const useAIState = <
 >(
   channel?: Channel<StreamChatGenerics>,
 ): { aiState: AIState } => {
-  const { client } = useChatContext<StreamChatGenerics>();
-  const { isOnline } = useIsOnline<StreamChatGenerics>(client);
+  const { isOnline } = useChatContext<StreamChatGenerics>();
 
   const [aiState, setAiState] = useState<AIState>(AIStates.Idle);
 

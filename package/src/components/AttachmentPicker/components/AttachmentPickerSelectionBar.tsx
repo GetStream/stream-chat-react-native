@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { useAttachmentPickerContext } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
@@ -29,6 +29,7 @@ export const AttachmentPickerSelectionBar = () => {
     ImageSelectorIcon,
     selectedPicker,
     setSelectedPicker,
+    VideoRecorderSelectorIcon,
   } = useAttachmentPickerContext();
 
   const {
@@ -105,11 +106,29 @@ export const AttachmentPickerSelectionBar = () => {
       {hasCameraPicker ? (
         <TouchableOpacity
           hitSlop={{ bottom: 15, top: 15 }}
-          onPress={takeAndUploadImage}
+          onPress={() => {
+            takeAndUploadImage(Platform.OS === 'android' ? 'image' : 'mixed');
+          }}
           testID='take-photo-touchable'
         >
           <View style={[styles.icon, icon]}>
             <CameraSelectorIcon
+              numberOfImageUploads={imageUploads.length}
+              selectedPicker={selectedPicker}
+            />
+          </View>
+        </TouchableOpacity>
+      ) : null}
+      {hasCameraPicker && Platform.OS === 'android' ? (
+        <TouchableOpacity
+          hitSlop={{ bottom: 15, top: 15 }}
+          onPress={() => {
+            takeAndUploadImage('video');
+          }}
+          testID='take-photo-touchable'
+        >
+          <View style={[styles.icon, { marginTop: 4 }, icon]}>
+            <VideoRecorderSelectorIcon
               numberOfImageUploads={imageUploads.length}
               selectedPicker={selectedPicker}
             />

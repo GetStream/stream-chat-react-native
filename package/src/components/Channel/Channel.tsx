@@ -85,7 +85,6 @@ import {
 } from '../../icons';
 import {
   FlatList as FlatListDefault,
-  isAudioRecorderAvailable,
   isDocumentPickerAvailable,
   isImageMediaLibraryAvailable,
   isImagePickerAvailable,
@@ -494,7 +493,7 @@ const ChannelWithContext = <
     AudioAttachment = AudioAttachmentDefault,
     AudioAttachmentUploadPreview = AudioAttachmentDefault,
     AudioRecorder = AudioRecorderDefault,
-    audioRecordingEnabled = isAudioRecorderAvailable(),
+    audioRecordingEnabled = false,
     AudioRecordingInProgress = AudioRecordingInProgressDefault,
     AudioRecordingLockIndicator = AudioRecordingLockIndicatorDefault,
     AudioRecordingPreview = AudioRecordingPreviewDefault,
@@ -986,6 +985,14 @@ const ChannelWithContext = <
     syncingChannelRef.current = true;
     setError(false);
 
+    if (channelMessagesState?.messages) {
+      await channel?.watch({
+        messages: {
+          limit: channelMessagesState.messages.length + 30,
+        },
+      });
+    }
+
     const parseMessage = (message: FormatMessageResponse<StreamChatGenerics>) =>
       ({
         ...message,
@@ -1004,6 +1011,7 @@ const ChannelWithContext = <
         if (failedMessages?.length) {
           channel.state.addMessagesSorted(failedMessages);
         }
+        channel.state.setIsUpToDate(true);
       } else {
         await reloadThread();
 
@@ -1043,7 +1051,7 @@ const ChannelWithContext = <
     if (enableOfflineSupport) {
       connectionChangedSubscription = DBSyncManager.onSyncStatusChange((statusChanged) => {
         if (statusChanged) {
-          copyChannelState();
+          connectionChangedHandler();
         }
       });
     } else {

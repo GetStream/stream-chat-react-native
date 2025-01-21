@@ -17,6 +17,7 @@ export * from './AttachmentPicker/components/AttachmentPickerErrorImage';
 export * from './AttachmentPicker/components/AttachmentPickerSelectionBar';
 export * from './AttachmentPicker/components/CameraSelectorIcon';
 export * from './AttachmentPicker/components/FileSelectorIcon';
+export * from './AttachmentPicker/components/VideoRecorderSelectorIcon';
 export * from './AttachmentPicker/components/ImageOverlaySelectedComponent';
 export * from './AttachmentPicker/components/ImageSelectorIcon';
 
