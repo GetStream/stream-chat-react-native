@@ -18,5 +18,5 @@ export const getAppSettings = async ({
     }),
   );
 
-  return result[0]?.appSettings ? JSON.parse(result[0]?.appSettings as string) : null;
+  return result[0]?.appSettings ? JSON.parse(result[0].appSettings) : null;
 };
