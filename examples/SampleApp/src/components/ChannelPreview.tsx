@@ -10,6 +10,7 @@ import {
   ChannelPreviewStatusProps,
   Delete,
   MenuPointHorizontal,
+  Pin,
   useChannelMembershipState,
   useChatContext,
   useTheme,
@@ -22,7 +23,7 @@ import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayConte
 import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
-import { Pin } from '../icons/Pin';
+import { ChannelState } from 'stream-chat';
 
 const styles = StyleSheet.create({
   leftSwipeableButton: {
@@ -53,15 +54,17 @@ type ChannelListScreenNavigationProp = StackNavigationProp<
   'ChannelListScreen'
 >;
 
-const CustomChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
-  const membership = useChannelMembershipState(props.channel);
+const CustomChannelPreviewStatus = (
+  props: ChannelPreviewStatusProps & { membership: ChannelState['membership'] },
+) => {
+  const { membership } = props;
 
   return (
     <View style={styles.statusContainer}>
       <ChannelPreviewStatus {...props} />
       {membership.pinned_at && (
         <View style={styles.pinIconContainer}>
-          <Pin height={20} width={20} />
+          <Pin size={24} />
         </View>
       )}
     </View>
@@ -132,7 +135,13 @@ export const ChannelPreview: React.FC<ChannelPreviewMessengerProps<StreamChatGen
         </View>
       )}
     >
-      <ChannelPreviewMessenger {...props} PreviewStatus={CustomChannelPreviewStatus} />
+      <ChannelPreviewMessenger
+        {...props}
+        // eslint-disable-next-line react/no-unstable-nested-components
+        PreviewStatus={(statusProps) => (
+          <CustomChannelPreviewStatus {...statusProps} membership={membership} />
+        )}
+      />
     </Swipeable>
   );
 };

@@ -302,7 +302,7 @@ const App = () => {
       i18nInstance={streami18n}
       value={{ style: theme }}
     >
-      <Chat client={chatClient} i18nInstance={streami18n}>
+      <Chat client={chatClient} i18nInstance={streami18n} enableOfflineSupport>
         <Stack.Navigator
           initialRouteName='ChannelList'
           screenOptions={{

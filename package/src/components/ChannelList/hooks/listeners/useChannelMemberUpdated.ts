@@ -8,6 +8,9 @@ import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import {
   findLastPinnedChannelIndex,
   findPinnedAtSortOrder,
+  isChannelArchived,
+  isChannelPinned,
+  shouldConsiderArchivedChannels,
   shouldConsiderPinnedChannels,
 } from '../utils';
 
@@ -45,11 +48,11 @@ export const useChannelMemberUpdated = <
         if (!event.member?.user || event.member.user.id !== client.userID || !event.channel_type) {
           return;
         }
-        const member = event.member;
         const channelType = event.channel_type;
         const channelId = event.channel_id;
 
         const considerPinnedChannels = shouldConsiderPinnedChannels(sort);
+        const considerArchivedChannels = shouldConsiderArchivedChannels(filters);
         const pinnedAtSort = findPinnedAtSortOrder({ sort });
 
         setChannels((currentChannels) => {
@@ -59,6 +62,9 @@ export const useChannelMemberUpdated = <
           // assumes that channel instances are not changing
           const targetChannelIndex = currentChannels.indexOf(targetChannel);
           const targetChannelExistsWithinList = targetChannelIndex >= 0;
+
+          const isTargetChannelPinned = isChannelPinned(targetChannel);
+          const isTargetChannelArchived = isChannelArchived(targetChannel);
 
           if (!considerPinnedChannels || lockChannelOrder) {
             return currentChannels;
@@ -72,8 +78,10 @@ export const useChannelMemberUpdated = <
 
           // handle archiving (remove channel)
           if (
-            typeof member.archived_at === 'string' ||
-            (filters && filters.archived === true && member.archived_at === null)
+            // When archived filter true, and channel is not archived
+            (!considerArchivedChannels && !isTargetChannelArchived) ||
+            // When archived filter false, and channel is archived
+            (considerArchivedChannels && isTargetChannelArchived)
           ) {
             return newChannels;
           }
@@ -81,7 +89,7 @@ export const useChannelMemberUpdated = <
           // handle pinning
           let lastPinnedChannelIndex: number | null = null;
 
-          if (pinnedAtSort === 1 || (pinnedAtSort === -1 && !member.pinned_at)) {
+          if (pinnedAtSort === 1 || (pinnedAtSort === -1 && !isTargetChannelPinned)) {
             lastPinnedChannelIndex = findLastPinnedChannelIndex({ channels: newChannels });
           }
           const newTargetChannelIndex =

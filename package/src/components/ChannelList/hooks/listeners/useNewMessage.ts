@@ -6,7 +6,12 @@ import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { moveChannelUp } from '../../utils';
-import { isChannelArchived, isChannelPinned, shouldConsiderPinnedChannels } from '../utils';
+import {
+  isChannelArchived,
+  isChannelPinned,
+  shouldConsiderArchivedChannels,
+  shouldConsiderPinnedChannels,
+} from '../utils';
 
 type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   {
@@ -39,6 +44,8 @@ export const useNewMessage = <
       if (typeof onNewMessage === 'function') {
         onNewMessage(lockChannelOrder, setChannels, event, filters, sort);
       } else {
+        const considerPinnedChannels = shouldConsiderPinnedChannels(sort);
+        const considerArchivedChannels = shouldConsiderArchivedChannels(filters);
         setChannels((channels) => {
           if (!channels) return channels;
           const targetChannelIndex = channels.findIndex((channel) => channel.cid === event.cid);
@@ -46,14 +53,10 @@ export const useNewMessage = <
 
           const isTargetChannelArchived = isChannelArchived(targetChannel);
           const isTargetChannelPinned = isChannelPinned(targetChannel);
-          const isArchivedFilterTrue = filters && filters.archived === true;
-          const isArchivedFilterFalse = filters && filters.archived === false;
-
-          const considerPinnedChannels = shouldConsiderPinnedChannels(sort);
 
           if (
             // If the channel is archived and we are not considering archived channels
-            (isTargetChannelArchived && isArchivedFilterFalse) ||
+            (isTargetChannelArchived && considerArchivedChannels) ||
             // If the channel is pinned and we are not considering pinned channels
             (isTargetChannelPinned && considerPinnedChannels) ||
             lockChannelOrder
@@ -73,9 +76,9 @@ export const useNewMessage = <
           // While adding new channels, we need to consider whether they are archived or not.
           if (
             // When archived filter false, and channel is archived
-            (isChannelArchived(channelToMove) && isArchivedFilterFalse) ||
+            (considerArchivedChannels && isChannelArchived(channelToMove)) ||
             // When archived filter true, and channel is not archived
-            (isArchivedFilterTrue && !isChannelArchived(channelToMove))
+            (!considerArchivedChannels && !isChannelArchived(channelToMove))
           ) {
             return [...channels];
           }

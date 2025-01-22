@@ -1,14 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-  FlatList,
-  Keyboard,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { FlatList, Keyboard, SafeAreaView, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import {
@@ -372,19 +363,21 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           <Text style={[styles.rowText, { color: black }]}>View info</Text>
                         </View>
                       </TapGestureHandler>
-                      <Pressable
-                        onPress={async () => {
-                          try {
-                            if (membership?.pinned_at) {
-                              await channel.unpin();
-                            } else {
-                              await channel.pin();
+                      <TapGestureHandler
+                        onHandlerStateChange={async ({ nativeEvent: { state } }) => {
+                          if (state === State.END) {
+                            try {
+                              if (membership?.pinned_at) {
+                                await channel.unpin();
+                              } else {
+                                await channel.pin();
+                              }
+                            } catch (error) {
+                              console.log('Error pinning/unpinning channel', error);
                             }
-                          } catch (error) {
-                            console.log('Error pinning/unpinning channel', error);
-                          }
 
-                          setOverlay('none');
+                            setOverlay('none');
+                          }
                         }}
                       >
                         <View
@@ -402,20 +395,22 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                             {membership?.pinned_at ? 'Unpin' : 'Pin'}
                           </Text>
                         </View>
-                      </Pressable>
-                      <Pressable
-                        onPress={async () => {
-                          try {
-                            if (membership?.archived_at) {
-                              await channel.unarchive();
-                            } else {
-                              await channel.archive();
+                      </TapGestureHandler>
+                      <TapGestureHandler
+                        onHandlerStateChange={async ({ nativeEvent: { state } }) => {
+                          if (state === State.END) {
+                            try {
+                              if (membership?.archived_at) {
+                                await channel.unarchive();
+                              } else {
+                                await channel.archive();
+                              }
+                            } catch (error) {
+                              console.log('Error archiving/unarchiving channel', error);
                             }
-                          } catch (error) {
-                            console.log('Error archiving/unarchiving channel', error);
-                          }
 
-                          setOverlay('none');
+                            setOverlay('none');
+                          }
                         }}
                       >
                         <View
@@ -433,7 +428,8 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                             {membership?.archived_at ? 'Unarchieve' : 'Archieve'}
                           </Text>
                         </View>
-                      </Pressable>
+                      </TapGestureHandler>
+
                       {otherMembers.length > 1 && (
                         <TapGestureHandler
                           onHandlerStateChange={({ nativeEvent: { state } }) => {

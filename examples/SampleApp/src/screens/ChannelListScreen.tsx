@@ -49,8 +49,10 @@ const styles = StyleSheet.create({
 });
 
 const baseFilters = {
+  archived: false,
   type: 'messaging',
 };
+
 const sort: ChannelSort<StreamChatGenerics> = [
   { pinned_at: -1 },
   { last_message_at: -1 },
@@ -62,6 +64,7 @@ const options = {
   state: true,
   watch: true,
 };
+
 export const ChannelListScreen: React.FC = () => {
   const { chatClient } = useAppContext();
   const navigation = useNavigation();

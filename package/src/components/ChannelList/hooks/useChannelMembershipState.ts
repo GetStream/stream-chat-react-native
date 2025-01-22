@@ -16,19 +16,25 @@ export const useChannelMembershipState = <
 
   const { client } = useChatContext<StreamChatGenerics>();
 
-  useEffect(() => {
-    if (!channel) return;
+  useEffect(
+    () => {
+      if (!channel) return;
 
-    const handleMembershipUpdate = () => {
       setMembership(channel.state.membership);
-    };
 
-    const subscriptions = ['member.updated'].map((event) =>
-      client.on(event, handleMembershipUpdate),
-    );
+      const handleMembershipUpdate = () => {
+        setMembership(channel.state.membership);
+      };
 
-    return () => subscriptions.forEach((subscription) => subscription.unsubscribe());
-  }, [channel?.state.membership, client]);
+      const subscriptions = ['member.updated'].map((event) =>
+        client.on(event, handleMembershipUpdate),
+      );
+
+      return () => subscriptions.forEach((subscription) => subscription.unsubscribe());
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [channel?.state.membership, client],
+  );
 
   return membership;
 };

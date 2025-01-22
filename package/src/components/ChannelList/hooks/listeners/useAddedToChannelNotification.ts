@@ -54,7 +54,6 @@ export const useAddedToChannelNotification = <
             let lastPinnedChannelIndex: number | null = null;
 
             const newChannels = [...channels];
-
             if (pinnedAtSort === 1 || pinnedAtSort === -1) {
               lastPinnedChannelIndex = findLastPinnedChannelIndex({ channels: newChannels });
               const newTargetChannelIndex =
