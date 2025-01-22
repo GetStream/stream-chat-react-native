@@ -8,7 +8,7 @@ import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type AttachmentPickerIconProps = {
-  numberOfImageUploads: number;
+  numberOfImageUploads?: number;
   selectedPicker?: 'images';
 };
 
@@ -90,6 +90,12 @@ export type AttachmentPickerContextValue = {
   setSelectedPicker: React.Dispatch<React.SetStateAction<'images' | undefined>>;
   setTopInset: React.Dispatch<React.SetStateAction<number>>;
   topInset: number;
+  /**
+   * Custom UI component for Android's video recorder selector icon.
+   *
+   * **Default: ** [VideoRecorderSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/VideoRecorderSelectorIcon.tsx)
+   */
+  VideoRecorderSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
   selectedPicker?: 'images';
 };
 
@@ -109,6 +115,7 @@ export const AttachmentPickerProvider = ({
     | 'FileSelectorIcon'
     | 'ImageSelectorIcon'
     | 'openPicker'
+    | 'VideoRecorderSelectorIcon'
   > &
     Partial<Pick<AttachmentPickerContextValue, 'bottomInset' | 'topInset'>>;
 }>) => {

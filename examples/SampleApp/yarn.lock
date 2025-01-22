@@ -2259,10 +2259,10 @@
   resolved "https://registry.yarnpkg.com/@notifee/react-native/-/react-native-9.1.7.tgz#831df542e4209711cf03bf17edab52b2265c0cee"
   integrity sha512-XWGEIDK2xC9Y6WUWZl5AOKdxJ3A7J7ONFOdUHEUUalv/YVZIal3g+/+vYb0fA/59k6oK5UAjgffxh4d5iw6o2A==
 
-"@op-engineering/op-sqlite@^9.3.0":
-  version "9.3.0"
-  resolved "https://registry.yarnpkg.com/@op-engineering/op-sqlite/-/op-sqlite-9.3.0.tgz#cf61d0782ec8117e339f0f7843ce54be63384a5e"
-  integrity sha512-PDT3H1sIO8PrseskJS+ibMVzyluDGvswsyKGMUucx0LSyKFRcFtCySpPpnCswSIJIO4z2hAlvdoBi3r+4zb4Bw==
+"@op-engineering/op-sqlite@^11.2.13":
+  version "11.2.13"
+  resolved "https://registry.yarnpkg.com/@op-engineering/op-sqlite/-/op-sqlite-11.2.13.tgz#0756e033c1c34902b9c7a191249daca49d993ba7"
+  integrity sha512-9oTe2L8f5cw38YiruHc3j1KTFnrZ1hTtfSuFOsDPH4s6OyZ/7VAQq2KC7Tjb6WcUWmMmHpCw331ueNd0xuPl8A==
 
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
@@ -7952,10 +7952,10 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-stream-chat-react-native-core@6.1.1:
-  version "6.1.1"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-6.1.1.tgz#6baf31cf1cf347f2a19f2e3afccd3d540bebd036"
-  integrity sha512-kzVrs4lJRJq6gxbnx3dwmF3c8dnZ/RDLZJC0LLtYOeyc2AuYypFFM9ChFzo1TwMGT5siiZByg/bLnvBCUTrNAA==
+stream-chat-react-native-core@6.2.0:
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-6.2.0.tgz#3ad5283b88bd92f90ead10d0b2cb29dadbe418c6"
+  integrity sha512-2VUF1caOs2T5lN/44DUkasw8mAKIMPkPWym0FdEDOljp2cHaE6w5A7BR2k43W/S+l/Wk63VRs3bVW+v9zYDhFA==
   dependencies:
     "@gorhom/bottom-sheet" "^5.0.6"
     dayjs "1.10.5"

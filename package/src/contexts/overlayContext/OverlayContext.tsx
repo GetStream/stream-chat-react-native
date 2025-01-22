@@ -44,6 +44,7 @@ export type OverlayProviderProps<
       | 'FileSelectorIcon'
       | 'ImageSelectorIcon'
       | 'topInset'
+      | 'VideoRecorderSelectorIcon'
     >
   > &
   ImageGalleryCustomComponents<StreamChatGenerics> & {

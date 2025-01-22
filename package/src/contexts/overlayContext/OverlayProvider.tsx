@@ -19,6 +19,7 @@ import { CameraSelectorIcon as DefaultCameraSelectorIcon } from '../../component
 import { FileSelectorIcon as DefaultFileSelectorIcon } from '../../components/AttachmentPicker/components/FileSelectorIcon';
 import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../../components/AttachmentPicker/components/ImageOverlaySelectedComponent';
 import { ImageSelectorIcon as DefaultImageSelectorIcon } from '../../components/AttachmentPicker/components/ImageSelectorIcon';
+import { VideoRecorderSelectorIcon as DefaultVideoRecorderSelectorIcon } from '../../components/AttachmentPicker/components/VideoRecorderSelectorIcon';
 import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
 import { CreatePollIcon as DefaultCreatePollIcon } from '../../components/Poll/components/CreatePollIcon';
 import { useStreami18n } from '../../hooks/useStreami18n';
@@ -116,6 +117,7 @@ export const OverlayProvider = <
     },
     topInset,
     value,
+    VideoRecorderSelectorIcon = DefaultVideoRecorderSelectorIcon,
   } = props;
 
   const attachmentPickerProps = {
@@ -192,6 +194,7 @@ export const OverlayProvider = <
     ImageSelectorIcon,
     openPicker: () => openPicker(bottomSheetRef),
     topInset,
+    VideoRecorderSelectorIcon,
   };
 
   const overlayContext = {

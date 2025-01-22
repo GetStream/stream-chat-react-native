@@ -39,12 +39,12 @@ export const getChannelMessages = async <
   const messageIdsVsPolls: Record<string, TableRow<'poll'>> = {};
   const pollsById: Record<string, TableRow<'poll'>> = {};
   const messagesWithPolls = messageRows.filter((message) => !!message.poll_id);
-  const polls = await SqliteClient.executeSql.apply(
+  const polls = (await SqliteClient.executeSql.apply(
     null,
     createSelectQuery('poll', ['*'], {
       id: messagesWithPolls.map((message) => message.poll_id),
     }),
-  );
+  )) as unknown as TableRow<'poll'>[];
   polls.forEach((poll) => {
     pollsById[poll.id] = poll;
   });
