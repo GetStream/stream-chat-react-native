@@ -12,6 +12,7 @@ import {
   MessageInput,
   MessageList,
   OverlayProvider,
+  SqliteClient,
   Streami18n,
   Thread,
   ThreadContextValue,
@@ -59,16 +60,20 @@ const options = {
 
 I18nManager.forceRTL(false);
 
-const apiKey = '8br4watad788';
+SqliteClient.logger = (level, message, extraData) => {
+  console.log(level, `SqliteClient: ${message}`, extraData);
+};
+
+const apiKey = 'q95x9hkbyd6p';
 const userToken =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoibHVrZV9za3l3YWxrZXIifQ.kFSLHRB5X62t0Zlc7nwczWUfsQMwfkpylC6jCUZ6Mc0';
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoicm9uIn0.eRVjxLvd4aqCEHY_JRa97g6k7WpHEhxL7Z4K4yTot1c';
 
 const user = {
-  id: 'luke_skywalker',
+  id: 'ron',
 };
 const filters = {
-  archived: false,
-  members: { $in: ['luke_skywalker'] },
+  example: 'example-apps',
+  members: { $in: ['ron'] },
   type: 'messaging',
 };
 
