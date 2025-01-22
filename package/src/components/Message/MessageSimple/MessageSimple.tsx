@@ -287,8 +287,15 @@ const MessageSimpleWithContext = <
         ) : null}
       </View>
     ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [messageContentWidth, reactionListPosition],
+    [
+      messageContentWidth,
+      reactionListPosition,
+      MessageContent,
+      ReactionListTop,
+      backgroundColor,
+      contentWrapper,
+      noBorder,
+    ],
   );
 
   const renderAnimatedMessageBubble = useMemo(
@@ -304,8 +311,16 @@ const MessageSimpleWithContext = <
         </View>
       </GestureDetector>
     ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [reactionListPosition, messageContentWidth],
+    [
+      MessageSwipeContent,
+      contentWrapper,
+      messageBubbleAnimatedStyle,
+      messageSwipeToReplyHitSlop,
+      renderMessageBubble,
+      swipeContentAnimatedStyle,
+      swipeContentContainer,
+      swipeGesture,
+    ],
   );
 
   return (
