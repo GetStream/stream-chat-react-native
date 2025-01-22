@@ -34,7 +34,7 @@ export const shouldConsiderArchivedChannels = <
 ) => {
   if (!filters) return false;
 
-  return !filters.archived;
+  return typeof filters.archived === 'boolean';
 };
 
 export const extractSortValue = <

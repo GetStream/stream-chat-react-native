@@ -1,40 +1,22 @@
-import { useEffect, useState } from 'react';
+import { Channel, ChannelMemberResponse, EventTypes } from 'stream-chat';
 
-import { Channel, ChannelState } from 'stream-chat';
+import { useSelectedChannelState } from './useSelectedChannelState';
 
-import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { DefaultStreamChatGenerics } from '../../../types/types';
 
-export const useChannelMembershipState = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
+const selector = <StreamChatGenerics extends DefaultStreamChatGenerics>(
+  channel: Channel<StreamChatGenerics>,
+) => channel.state.membership;
+const keys: EventTypes[] = ['member.updated'];
+
+export function useChannelMembershipState<StreamChatGenerics extends DefaultStreamChatGenerics>(
+  channel: Channel<StreamChatGenerics>,
+): ChannelMemberResponse<StreamChatGenerics>;
+export function useChannelMembershipState<StreamChatGenerics extends DefaultStreamChatGenerics>(
   channel?: Channel<StreamChatGenerics>,
-) => {
-  const [membership, setMembership] = useState<ChannelState<StreamChatGenerics>['membership']>(
-    () => channel?.state.membership || {},
-  );
-
-  const { client } = useChatContext<StreamChatGenerics>();
-
-  useEffect(
-    () => {
-      if (!channel) return;
-
-      setMembership(channel.state.membership);
-
-      const handleMembershipUpdate = () => {
-        setMembership(channel.state.membership);
-      };
-
-      const subscriptions = ['member.updated'].map((event) =>
-        client.on(event, handleMembershipUpdate),
-      );
-
-      return () => subscriptions.forEach((subscription) => subscription.unsubscribe());
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [channel?.state.membership, client],
-  );
-
-  return membership;
-};
+): ChannelMemberResponse<StreamChatGenerics> | undefined;
+export function useChannelMembershipState<StreamChatGenerics extends DefaultStreamChatGenerics>(
+  channel?: Channel<StreamChatGenerics>,
+) {
+  return useSelectedChannelState({ channel, selector, stateChangeEventKeys: keys });
+}

@@ -78,10 +78,10 @@ export const useChannelMemberUpdated = <
 
           // handle archiving (remove channel)
           if (
-            // When archived filter true, and channel is not archived
-            (!considerArchivedChannels && !isTargetChannelArchived) ||
+            // When archived filter true, and channel is unarchived
+            (considerArchivedChannels && !isTargetChannelArchived && filters?.archived) ||
             // When archived filter false, and channel is archived
-            (considerArchivedChannels && isTargetChannelArchived)
+            (considerArchivedChannels && isTargetChannelArchived && !filters?.archived)
           ) {
             return newChannels;
           }

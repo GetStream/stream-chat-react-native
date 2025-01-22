@@ -118,6 +118,7 @@
     "@types/mime-types": "2.1.0",
     "@types/react": "18.2.6",
     "@types/react-test-renderer": "18.0.7",
+    "@types/use-sync-external-store": "^0.0.6",
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
@@ -149,6 +150,7 @@
     "react-native-svg": "15.1.0",
     "react-test-renderer": "18.2.0",
     "typescript": "5.0.4",
+    "use-sync-external-store": "^1.4.0",
     "uuid": "^8.3.2"
   },
   "resolutions": {

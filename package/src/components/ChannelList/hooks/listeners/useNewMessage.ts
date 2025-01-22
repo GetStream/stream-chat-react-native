@@ -46,17 +46,25 @@ export const useNewMessage = <
       } else {
         const considerPinnedChannels = shouldConsiderPinnedChannels(sort);
         const considerArchivedChannels = shouldConsiderArchivedChannels(filters);
+
+        const channelType = event.channel_type;
+        const channelId = event.channel_id;
+
+        if (!channelType || !channelId) return;
+
         setChannels((channels) => {
           if (!channels) return channels;
-          const targetChannelIndex = channels.findIndex((channel) => channel.cid === event.cid);
-          const targetChannel = channels[targetChannelIndex];
+          const targetChannel = client.channel(channelType, channelId);
+          const targetChannelIndex = channels.indexOf(targetChannel);
 
           const isTargetChannelArchived = isChannelArchived(targetChannel);
           const isTargetChannelPinned = isChannelPinned(targetChannel);
 
           if (
-            // If the channel is archived and we are not considering archived channels
-            (isTargetChannelArchived && considerArchivedChannels) ||
+            // When archived filter false, and channel is archived
+            (considerArchivedChannels && isTargetChannelArchived && !filters?.archived) ||
+            // When archived filter true, and channel is unarchived
+            (considerArchivedChannels && !isTargetChannelArchived && filters?.archived) ||
             // If the channel is pinned and we are not considering pinned channels
             (isTargetChannelPinned && considerPinnedChannels) ||
             lockChannelOrder
@@ -64,27 +72,9 @@ export const useNewMessage = <
             return [...channels];
           }
 
-          // If channel doesn't exist in existing list, check in activeChannels as well.
-          // It may happen that channel was hidden using channel.hide(). In that case
-          // We remove it from `channels` state, but its still being watched and exists in client.activeChannels.
-          const channelToMove =
-            targetChannel ??
-            (event.channel_type &&
-              event.channel_id &&
-              client.channel(event.channel_type, event.channel_id));
-
-          // While adding new channels, we need to consider whether they are archived or not.
-          if (
-            // When archived filter false, and channel is archived
-            (considerArchivedChannels && isChannelArchived(channelToMove)) ||
-            // When archived filter true, and channel is not archived
-            (!considerArchivedChannels && !isChannelArchived(channelToMove))
-          ) {
-            return [...channels];
-          }
           return moveChannelUp<StreamChatGenerics>({
             channels,
-            channelToMove,
+            channelToMove: targetChannel,
             channelToMoveIndexWithinChannels: targetChannelIndex,
             sort,
           });
