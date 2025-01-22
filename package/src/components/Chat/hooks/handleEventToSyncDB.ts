@@ -120,15 +120,33 @@ export const handleEventToSyncDB = async <
   }
 
   if (type === 'message.new') {
-    const message = event.message;
+    const { cid, message, user } = event;
 
     if (message && (!message.parent_id || message.show_in_channel)) {
-      return await queriesWithChannelGuard((flushOverride) =>
-        upsertMessages({
+      return await queriesWithChannelGuard(async (flushOverride) => {
+        let queries = await upsertMessages({
           flush: flushOverride,
           messages: [message],
-        }),
-      );
+        });
+        if (cid && client.user && client.user.id !== user?.id) {
+          const userId = client.user.id;
+          const ownReads = client.activeChannels[cid]?.state.read[userId];
+          const upsertReadsQueries = await upsertReads({
+            cid,
+            flush: flushOverride,
+            reads: [
+              {
+                last_read: ownReads.last_read.toString() as string,
+                last_read_message_id: ownReads.last_read_message_id,
+                unread_messages: ownReads?.unread_messages,
+                user: client.user,
+              },
+            ],
+          });
+          queries = [...queries, ...upsertReadsQueries];
+        }
+        return queries;
+      });
     }
   }
 
