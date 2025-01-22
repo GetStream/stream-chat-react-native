@@ -130,7 +130,9 @@ export const handleEventToSyncDB = async <
         });
         if (cid && client.user && client.user.id !== user?.id) {
           const userId = client.user.id;
-          const ownReads = client.activeChannels[cid]?.state.read[userId];
+          const channel = client.activeChannels[cid];
+          const ownReads = channel?.state.read[userId];
+          const unreadCount = channel?.state.unreadCount;
           const upsertReadsQueries = await upsertReads({
             cid,
             flush: flushOverride,
@@ -138,7 +140,7 @@ export const handleEventToSyncDB = async <
               {
                 last_read: ownReads.last_read.toString() as string,
                 last_read_message_id: ownReads.last_read_message_id,
-                unread_messages: ownReads?.unread_messages,
+                unread_messages: unreadCount,
                 user: client.user,
               },
             ],
