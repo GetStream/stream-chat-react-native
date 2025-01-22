@@ -6,7 +6,7 @@ import { mapStorableToPoll } from '../mappers/mapStorableToPoll';
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
 import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
 import { SqliteClient } from '../SqliteClient';
-import type { PreparedQueries } from '../types';
+import type { PreparedQueries, TableRow } from '../types';
 
 export const updatePollMessage = async <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -33,7 +33,7 @@ export const updatePollMessage = async <
   );
 
   for (const pollFromDB of pollsFromDB) {
-    const serializedPoll = mapStorableToPoll(pollFromDB);
+    const serializedPoll = mapStorableToPoll(pollFromDB as unknown as TableRow<'poll'>);
     const { latest_answers = [], own_votes = [] } = serializedPoll;
     let newOwnVotes = own_votes;
     if (poll_vote && poll_vote.user?.id === userID) {

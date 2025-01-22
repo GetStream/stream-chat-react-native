@@ -7,7 +7,7 @@ export const getAppSettings = async ({
   currentUserId,
 }: {
   currentUserId: string;
-}): Promise<AppSettingsAPIResponse> => {
+}): Promise<AppSettingsAPIResponse | null> => {
   SqliteClient.logger?.('info', 'getAppSettings', {
     currentUserId,
   });
