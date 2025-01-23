@@ -114,9 +114,9 @@ export type PlaybackStatus = {
   isLooping: boolean;
   isMuted: boolean;
   isPlaying: boolean;
+  isSeeking: boolean;
   positionMillis: number;
   shouldPlay: boolean;
-  isSeeking: boolean;
 };
 
 export type AVPlaybackStatusToSet = {
@@ -142,7 +142,6 @@ export type SoundOptions = {
 };
 
 export type SoundReturnType = {
-  paused?: boolean;
   testID: string;
   getDuration?: () => number;
   isPlaying?: () => boolean;
@@ -157,6 +156,7 @@ export type SoundReturnType = {
   onSeek?: (seekResponse: VideoSeekResponse) => void;
   pause?: () => void;
   pauseAsync?: () => void;
+  paused?: boolean;
   play?: () => void;
   playAsync?: () => void;
   rate?: number;
