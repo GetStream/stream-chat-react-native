@@ -12,6 +12,7 @@ import {
   SoundReturnType,
   VideoPayloadData,
   VideoProgressData,
+  VideoSeekResponse,
 } from '../../native';
 import type { FileUpload } from '../../types/types';
 import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
@@ -50,6 +51,11 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     testID,
   } = props;
 
+  const handleLoadStart = () => {
+    // For native CLI
+    if (soundRef.current?.pause) soundRef.current.pause();
+  };
+
   /** This is for Native CLI Apps */
   const handleLoad = (payload: VideoPayloadData) => {
     onLoad(item.id, item.duration || payload.duration);
@@ -67,45 +73,69 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
 
   /** This is for Native CLI Apps */
   const handleEnd = async () => {
+    setAudioFinished(false);
     if (soundRef.current) {
       // For native CLI
-      if (soundRef.current.seek) soundRef.current.seek(0, 0);
+      if (soundRef.current.seek) soundRef.current.seek(0);
+      if (soundRef.current.pause) soundRef.current.pause();
       // For expo CLI
       if (soundRef.current.setPositionAsync) await soundRef.current.setPositionAsync(0);
     }
+  };
+
+  const onPlaybackStateChanged = (playbackState: PlaybackStatus) => {
+    if (playbackState.isPlaying === false) {
+      onPlayPause(item.id, true);
+    } else {
+      onPlayPause(item.id, false);
+    }
+  };
+
+  const onSeek = (seekResponse: VideoSeekResponse) => {
     setAudioFinished(false);
-    onPlayPause(item.id, true);
-    onProgress(item.id, item.duration, true);
+    onProgress(item.id, seekResponse.currentTime);
   };
 
   const handlePlayPause = async (isPausedStatusAvailable?: boolean) => {
     if (!soundRef.current) return;
     if (isPausedStatusAvailable === undefined) {
       if (item.paused) {
+        // For native CLI
+        if (soundRef.current.resume) soundRef.current.resume();
         // For expo CLI
         if (soundRef.current.playAsync) await soundRef.current.playAsync();
         if (soundRef.current.setProgressUpdateIntervalAsync)
           await soundRef.current.setProgressUpdateIntervalAsync(60);
-        onPlayPause(item.id, false);
       } else {
+        // For native CLI
+        if (soundRef.current.pause) soundRef.current.pause();
         // For expo CLI
         if (soundRef.current.pauseAsync) await soundRef.current.pauseAsync();
-        onPlayPause(item.id, true);
       }
     } else {
       onPlayPause(item.id, isPausedStatusAvailable);
     }
   };
 
-  const handleProgressDrag = async (currentTime: number) => {
-    setAudioFinished(false);
-    onProgress(item.id, currentTime);
+  const dragStart = async () => {
+    // For native CLI
+    if (soundRef.current?.pause) soundRef.current.pause();
+
+    // For expo CLI
+    if (soundRef.current?.pauseAsync) await soundRef.current.pauseAsync();
+  };
+
+  const dragEnd = async (currentTime: number) => {
     // For native CLI
     if (soundRef.current?.seek) soundRef.current.seek(currentTime);
     // For expo CLI
     if (soundRef.current?.setPositionAsync) {
       await soundRef.current.setPositionAsync(currentTime * 1000);
     }
+    // For native CLI
+    if (soundRef.current?.resume) soundRef.current.resume();
+    // For expo CLI
+    if (soundRef.current?.playAsync) await soundRef.current.playAsync();
   };
 
   /** For Expo CLI */
@@ -123,10 +153,12 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
       }
       // Update your UI for the loaded state
       if (playbackStatus.isPlaying) {
+        onPlayPause(item.id, false);
         // Update your UI for the playing state
         onProgress(item.id, positionMillis / 1000);
       } else {
         // Update your UI for the paused state
+        onPlayPause(item.id, true);
       }
 
       if (playbackStatus.isBuffering) {
@@ -295,8 +327,10 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             <Sound.Player
               onEnd={handleEnd}
               onLoad={handleLoad}
+              onLoadStart={handleLoadStart}
+              onPlaybackStateChanged={onPlaybackStateChanged}
               onProgress={handleProgress}
-              paused={item.paused as boolean}
+              onSeek={onSeek}
               rate={currentSpeed}
               soundRef={soundRef}
               testID='sound-player'
@@ -316,13 +350,13 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
               {item.file.waveform_data ? (
                 <WaveProgressBar
                   amplitudesCount={35}
-                  onPlayPause={handlePlayPause}
-                  onProgressDrag={(position) => {
+                  onEndDrag={(position) => {
                     if (item.file.waveform_data) {
                       const progress = (position / 30) * (item.duration as number);
-                      handleProgressDrag(progress);
+                      dragEnd(progress);
                     }
                   }}
+                  onStartDrag={dragStart}
                   progress={item.progress as number}
                   waveformData={item.file.waveform_data}
                 />
@@ -330,8 +364,8 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
                 <ProgressControl
                   duration={item.duration as number}
                   filledColor={accent_blue}
-                  onPlayPause={handlePlayPause}
-                  onProgressDrag={handleProgressDrag}
+                  onEndDrag={dragEnd}
+                  onStartDrag={dragStart}
                   progress={item.progress as number}
                   testID='progress-control'
                   width={width - progressControlTextWidth}

@@ -11,13 +11,44 @@ import Animated, {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 export type ProgressControlProps = {
+  /**
+   * The duration of the audio in seconds
+   */
   duration: number;
+  /**
+   * The color of the filled progress bar
+   */
   filledColor: string;
+  /**
+   * The progress of the progress bar in percentage
+   */
   progress: number;
+  /**
+   * The test ID of the progress control
+   */
   testID: string;
+  /**
+   * The width of the progress control
+   */
   width: number | string;
+  /**
+   * The function to be called when the user ends dragging the progress bar
+   */
+  onEndDrag?: (progress: number) => void;
+  /**
+   * The function to be called when the user plays or pauses the audio
+   * @deprecated Use onStartDrag and onEndDrag instead
+   */
   onPlayPause?: (status?: boolean) => void;
+  /**
+   * The function to be called when the user is dragging the progress bar
+   * @deprecated Use onStartDrag and onEndDrag instead
+   */
   onProgressDrag?: (progress: number) => void;
+  /**
+   * The function to be called when the user starts dragging the progress bar
+   */
+  onStartDrag?: () => void;
 };
 
 const height = 3;
@@ -43,8 +74,10 @@ export const ProgressControl = React.memo(
     const {
       duration,
       filledColor: filledColorFromProp,
+      onEndDrag,
       onPlayPause,
       onProgressDrag,
+      onStartDrag,
       progress,
       testID,
       width,
@@ -67,7 +100,8 @@ export const ProgressControl = React.memo(
     const pan = Gesture.Pan()
       .maxPointers(1)
       .onStart(() => {
-        if (onPlayPause) runOnJS(onPlayPause)(true);
+        if (onPlayPause) runOnJS(onPlayPause)();
+        if (onStartDrag) runOnJS(onStartDrag)();
         cancelAnimation(translateX);
         state.value = translateX.value;
       })
@@ -79,6 +113,7 @@ export const ProgressControl = React.memo(
       .onEnd(() => {
         translateX.value = state.value;
         const dragFinishLocationInSeconds = (state.value / widthInNumbers) * duration;
+        if (onEndDrag) runOnJS(onEndDrag)(dragFinishLocationInSeconds);
         if (onProgressDrag) runOnJS(onProgressDrag)(dragFinishLocationInSeconds);
         if (onPlayPause) runOnJS(onPlayPause)(false);
       })
@@ -110,7 +145,7 @@ export const ProgressControl = React.memo(
         <Animated.View style={[styles.filledStyle, animatedStyles, filledStyles]} />
         <GestureDetector gesture={pan}>
           <Animated.View style={[thumbStyles, thumb]}>
-            {onProgressDrag ? <ProgressControlThumb /> : null}
+            {onEndDrag || onProgressDrag ? <ProgressControlThumb /> : null}
           </Animated.View>
         </GestureDetector>
       </View>
@@ -130,6 +165,7 @@ const styles = StyleSheet.create({
     height,
   },
   filledStyle: {
+    borderRadius: 2,
     height,
   },
   progressControlThumbStyle: {
