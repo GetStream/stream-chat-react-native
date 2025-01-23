@@ -73,9 +73,9 @@ const FileAttachmentGroupWithContext = <
         progress:
           id.toString() === index
             ? hasEnd
-              ? 1
+              ? 0
               : currentTime
-              ? currentTime / (filesToDisplay.duration as number)
+              ? +(currentTime / (filesToDisplay.duration as number)).toFixed(2)
               : 0
             : filesToDisplay.progress,
       })),
@@ -122,29 +122,30 @@ const FileAttachmentGroupWithContext = <
             attachmentContainer,
           ]}
         >
-          {(file.type === FileTypes.Audio || file.type === FileTypes.VoiceRecording) &&
-          isSoundPackageAvailable() ? (
-            <AudioAttachment
-              item={{
-                duration: file.duration,
-                file: {
-                  name: file.title as string,
-                  uri: file.asset_url,
-                  waveform_data: file.waveform_data,
-                },
-                id: index.toString(),
-                paused: file.paused,
-                progress: file.progress,
-              }}
-              onLoad={onLoad}
-              onPlayPause={onPlayPause}
-              onProgress={onProgress}
-              showSpeedSettings={true}
-              testID='audio-attachment-preview'
-            />
-          ) : (
-            <Attachment attachment={file} />
-          )}
+          {file.type === FileTypes.Audio || file.type === FileTypes.VoiceRecording ? (
+            isSoundPackageAvailable() ? (
+              <AudioAttachment
+                item={{
+                  duration: file.duration,
+                  file: {
+                    name: file.title as string,
+                    uri: file.asset_url,
+                    waveform_data: file.waveform_data,
+                  },
+                  id: index.toString(),
+                  paused: file.paused,
+                  progress: file.progress,
+                }}
+                onLoad={onLoad}
+                onPlayPause={onPlayPause}
+                onProgress={onProgress}
+                showSpeedSettings={true}
+                testID='audio-attachment-preview'
+              />
+            ) : (
+              <Attachment attachment={file} />
+            )
+          ) : null}
         </View>
       ))}
     </View>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import dayjs from 'dayjs';
@@ -38,6 +38,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   const [width, setWidth] = useState(0);
   const [progressControlTextWidth, setProgressControlTextWidth] = useState(0);
   const [currentSpeed, setCurrentSpeed] = useState<number>(1.0);
+  const [audioFinished, setAudioFinished] = useState(false);
   const soundRef = React.useRef<SoundReturnType | null>(null);
   const {
     hideProgressBar = false,
@@ -56,50 +57,54 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
 
   /** This is for Native CLI Apps */
   const handleProgress = (data: VideoProgressData) => {
-    if (data.currentTime <= data.seekableDuration) {
-      onProgress(item.id, data.currentTime);
+    const { currentTime, seekableDuration } = data;
+    if (currentTime < seekableDuration && !audioFinished) {
+      onProgress(item.id, currentTime);
+    } else {
+      setAudioFinished(true);
     }
   };
 
   /** This is for Native CLI Apps */
-  const handleEnd = () => {
+  const handleEnd = async () => {
+    if (soundRef.current) {
+      // For native CLI
+      if (soundRef.current.seek) soundRef.current.seek(0, 0);
+      // For expo CLI
+      if (soundRef.current.setPositionAsync) await soundRef.current.setPositionAsync(0);
+    }
+    setAudioFinished(false);
     onPlayPause(item.id, true);
     onProgress(item.id, item.duration, true);
   };
 
   const handlePlayPause = async (isPausedStatusAvailable?: boolean) => {
-    if (soundRef.current) {
-      if (isPausedStatusAvailable === undefined) {
-        if (item.progress === 1) {
-          // For native CLI
-          if (soundRef.current.seek) soundRef.current.seek(0);
-          // For expo CLI
-          if (soundRef.current.setPositionAsync) soundRef.current.setPositionAsync(0);
-        }
-        if (item.paused) {
-          // For expo CLI
-          if (soundRef.current.playAsync) await soundRef.current.playAsync();
-          if (soundRef.current.setProgressUpdateIntervalAsync)
-            await soundRef.current.setProgressUpdateIntervalAsync(60);
-          onPlayPause(item.id, false);
-        } else {
-          // For expo CLI
-          if (soundRef.current.pauseAsync) await soundRef.current.pauseAsync();
-          onPlayPause(item.id, true);
-        }
+    if (!soundRef.current) return;
+    if (isPausedStatusAvailable === undefined) {
+      if (item.paused) {
+        // For expo CLI
+        if (soundRef.current.playAsync) await soundRef.current.playAsync();
+        if (soundRef.current.setProgressUpdateIntervalAsync)
+          await soundRef.current.setProgressUpdateIntervalAsync(60);
+        onPlayPause(item.id, false);
       } else {
-        onPlayPause(item.id, isPausedStatusAvailable);
+        // For expo CLI
+        if (soundRef.current.pauseAsync) await soundRef.current.pauseAsync();
+        onPlayPause(item.id, true);
       }
+    } else {
+      onPlayPause(item.id, isPausedStatusAvailable);
     }
   };
 
-  const handleProgressDrag = async (position: number) => {
-    onProgress(item.id, position);
+  const handleProgressDrag = async (currentTime: number) => {
+    setAudioFinished(false);
+    onProgress(item.id, currentTime);
     // For native CLI
-    if (soundRef.current?.seek) soundRef.current.seek(position);
+    if (soundRef.current?.seek) soundRef.current.seek(currentTime);
     // For expo CLI
     if (soundRef.current?.setPositionAsync) {
-      await soundRef.current.setPositionAsync(position * 1000);
+      await soundRef.current.setPositionAsync(currentTime * 1000);
     }
   };
 
@@ -181,17 +186,20 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   const onSpeedChangeHandler = async () => {
     if (currentSpeed === 2.0) {
       setCurrentSpeed(1.0);
+      // For expo CLI
       if (soundRef.current && soundRef.current.setRateAsync) {
         await soundRef.current.setRateAsync(1.0);
       }
     } else {
       if (currentSpeed === 1.0) {
         setCurrentSpeed(1.5);
+        // For expo CLI
         if (soundRef.current && soundRef.current.setRateAsync) {
           await soundRef.current.setRateAsync(1.5);
         }
       } else if (currentSpeed === 1.5) {
         setCurrentSpeed(2.0);
+        // For expo CLI
         if (soundRef.current && soundRef.current.setRateAsync) {
           await soundRef.current.setRateAsync(2.0);
         }
@@ -218,13 +226,20 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     },
   } = useTheme();
 
-  const progressValueInSeconds = (item.duration as number) * (item.progress as number);
+  const progressValueInSeconds = useMemo(
+    () => (item.duration as number) * (item.progress as number),
+    [item.duration, item.progress],
+  );
 
-  const progressDuration = progressValueInSeconds
-    ? progressValueInSeconds / 3600 >= 1
-      ? dayjs.duration(progressValueInSeconds, 'second').format('HH:mm:ss')
-      : dayjs.duration(progressValueInSeconds, 'second').format('mm:ss')
-    : dayjs.duration(item.duration ?? 0, 'second').format('mm:ss');
+  const progressDuration = useMemo(
+    () =>
+      progressValueInSeconds
+        ? progressValueInSeconds / 3600 >= 1
+          ? dayjs.duration(progressValueInSeconds, 'second').format('HH:mm:ss')
+          : dayjs.duration(progressValueInSeconds, 'second').format('mm:ss')
+        : dayjs.duration(item.duration ?? 0, 'second').format('mm:ss'),
+    [progressValueInSeconds, item.duration],
+  );
 
   return (
     <View
@@ -326,9 +341,9 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
           )}
         </View>
       </View>
-      {showSpeedSettings && (
+      {showSpeedSettings ? (
         <View style={[styles.rightContainer, rightContainer]}>
-          {item.progress === 0 || item.progress === 1 ? (
+          {item.paused ? (
             <Audio fill={'#ffffff'} />
           ) : (
             <Pressable
@@ -345,7 +360,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             </Pressable>
           )}
         </View>
-      )}
+      ) : null}
     </View>
   );
 };

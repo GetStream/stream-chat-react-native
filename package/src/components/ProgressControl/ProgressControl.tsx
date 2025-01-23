@@ -20,7 +20,7 @@ export type ProgressControlProps = {
   onProgressDrag?: (progress: number) => void;
 };
 
-const height = 2;
+const height = 3;
 
 const ProgressControlThumb = () => {
   const {
@@ -63,6 +63,7 @@ export const ProgressControl = React.memo(
         progressControl: { container, filledColor: filledColorFromTheme, filledStyles, thumb },
       },
     } = useTheme();
+
     const pan = Gesture.Pan()
       .maxPointers(1)
       .onStart(() => {
@@ -116,18 +117,16 @@ export const ProgressControl = React.memo(
     );
   },
   (prevProps, nextProps) => {
-    if (
-      prevProps.duration === nextProps.duration &&
-      prevProps.progress === nextProps.progress &&
-      prevProps.width === nextProps.width
-    )
-      return true;
-    else return false;
+    if (prevProps.duration !== nextProps.duration) return false;
+    if (prevProps.progress !== nextProps.progress) return false;
+    if (prevProps.width !== nextProps.width) return false;
+    else return true;
   },
 );
 
 const styles = StyleSheet.create({
   container: {
+    borderRadius: 2,
     height,
   },
   filledStyle: {
