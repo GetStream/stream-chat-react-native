@@ -2,7 +2,14 @@ import React, { useEffect, useState } from 'react';
 
 import type { FlatList } from 'react-native-gesture-handler';
 
-import type { Channel, ChannelFilters, ChannelOptions, ChannelSort, Event } from 'stream-chat';
+import {
+  Channel,
+  ChannelFilters,
+  ChannelManager,
+  ChannelOptions,
+  ChannelSort,
+  Event,
+} from 'stream-chat';
 
 import { ChannelListFooterLoadingIndicator } from './ChannelListFooterLoadingIndicator';
 import { ChannelListHeaderErrorIndicator } from './ChannelListHeaderErrorIndicator';
@@ -265,7 +272,21 @@ export const ChannelList = <
   } = props;
 
   const [forceUpdate, setForceUpdate] = useState(0);
-  const { enableOfflineSupport } = useChatContext<StreamChatGenerics>();
+  const [channelManager, setChannelManager] = useState<ChannelManager<StreamChatGenerics> | null>(
+    null,
+  );
+  const { client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
+
+  useEffect(() => {
+    const manager = new ChannelManager<StreamChatGenerics>({ client });
+    manager.registerSubscriptions();
+    setChannelManager(manager);
+
+    return () => {
+      manager?.unregisterSubscriptions();
+    };
+  }, [client]);
+
   const {
     channels,
     error,
@@ -276,7 +297,6 @@ export const ChannelList = <
     refreshing,
     refreshList,
     reloadList,
-    setChannels,
     staticChannelsActive,
   } = usePaginatedChannels<StreamChatGenerics>({
     enableOfflineSupport,
@@ -284,66 +304,67 @@ export const ChannelList = <
     options,
     setForceUpdate,
     sort,
+    channelManager,
   });
 
   // Setup event listeners
-  useAddedToChannelNotification({
-    onAddedToChannel,
-    setChannels,
-  });
-
-  useChannelDeleted({
-    onChannelDeleted,
-    setChannels,
-  });
-
-  useChannelHidden({
-    onChannelHidden,
-    setChannels,
-  });
-
-  useChannelTruncated({
-    onChannelTruncated,
-    refreshList,
-    setChannels,
-    setForceUpdate,
-  });
-
-  useChannelUpdated({
-    onChannelUpdated,
-    setChannels,
-  });
-
-  useChannelVisible({
-    onChannelVisible,
-    setChannels,
-  });
-
-  useNewMessage({
-    lockChannelOrder,
-    onNewMessage,
-    setChannels,
-  });
-
-  useNewMessageNotification({
-    onNewMessageNotification,
-    setChannels,
-  });
-
-  useRemovedFromChannelNotification({
-    onRemovedFromChannel,
-    setChannels,
-  });
-
-  useUserPresence({
-    setChannels,
-    setForceUpdate,
-  });
+  // useAddedToChannelNotification({
+  //   onAddedToChannel,
+  //   setChannels,
+  // });
+  //
+  // useChannelDeleted({
+  //   onChannelDeleted,
+  //   setChannels,
+  // });
+  //
+  // useChannelHidden({
+  //   onChannelHidden,
+  //   setChannels,
+  // });
+  //
+  // useChannelTruncated({
+  //   onChannelTruncated,
+  //   refreshList,
+  //   setChannels,
+  //   setForceUpdate,
+  // });
+  //
+  // useChannelUpdated({
+  //   onChannelUpdated,
+  //   setChannels,
+  // });
+  //
+  // useChannelVisible({
+  //   onChannelVisible,
+  //   setChannels,
+  // });
+  //
+  // useNewMessage({
+  //   lockChannelOrder,
+  //   onNewMessage,
+  //   setChannels,
+  // });
+  //
+  // useNewMessageNotification({
+  //   onNewMessageNotification,
+  //   setChannels,
+  // });
+  //
+  // useRemovedFromChannelNotification({
+  //   onRemovedFromChannel,
+  //   setChannels,
+  // });
+  //
+  // useUserPresence({
+  //   setChannels,
+  //   setForceUpdate,
+  // });
 
   const channelIdsStr = channels?.reduce((acc, channel) => `${acc}${channel.cid}`, '');
 
   useEffect(() => {
-    if (channels === null || staticChannelsActive || !enableOfflineSupport) {
+    if (channels == null || staticChannelsActive || !enableOfflineSupport) {
       return;
     }
 

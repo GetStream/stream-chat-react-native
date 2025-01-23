@@ -1,9 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
+import {
+  Channel,
+  ChannelFilters,
+  ChannelManager,
+  ChannelManagerState,
+  ChannelOptions,
+  ChannelSort,
+} from 'stream-chat';
 
 import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRefContext/ActiveChannelsRefContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { useStateStore } from '../../../hooks';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
 import { getChannelsForFilterSort } from '../../../store/apis/getChannelsForFilterSort';
@@ -24,6 +32,7 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
     options: ChannelOptions;
     setForceUpdate: React.Dispatch<React.SetStateAction<number>>;
     sort: ChannelSort<StreamChatGenerics>;
+    channelManager?: ChannelManager<StreamChatGenerics>;
   };
 
 const DEFAULT_OPTIONS = {
@@ -37,23 +46,32 @@ type QueryType = 'queryLocalDB' | 'reload' | 'refresh' | 'loadChannels';
 
 export type QueryChannels = (queryType?: QueryType, retryCount?: number) => Promise<void>;
 
+const selector = (nextValue: ChannelManagerState) =>
+  ({
+    channels: nextValue.channels,
+    pagination: nextValue.pagination,
+  } as const);
+
 export const usePaginatedChannels = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
+  channelManager,
   enableOfflineSupport,
   filters = {},
   options = DEFAULT_OPTIONS,
   setForceUpdate,
   sort = {},
 }: Parameters<StreamChatGenerics>) => {
-  const [channels, setChannels] = useState<Channel<StreamChatGenerics>[] | null>(null);
+  // const [channels, setChannels] = useState<Channel<StreamChatGenerics>[] | null>(null);
   const [error, setError] = useState<Error | undefined>(undefined);
   const [staticChannelsActive, setStaticChannelsActive] = useState<boolean>(false);
   const [activeQueryType, setActiveQueryType] = useState<QueryType | null>('queryLocalDB');
-  const [hasNextPage, setHasNextPage] = useState<boolean>(false);
+  // const [hasNextPage, setHasNextPage] = useState<boolean>(false);
   const activeChannels = useActiveChannelsRefContext();
   const isMountedRef = useIsMountedRef();
   const { client } = useChatContext<StreamChatGenerics>();
+  const { channels, pagination } = useStateStore(channelManager?.state, selector) ?? {};
+  const hasNextPage = pagination?.hasNext;
 
   const filtersRef = useRef<typeof filters | null>(null);
   const sortRef = useRef<typeof sort | null>(null);
@@ -95,8 +113,7 @@ export const usePaginatedChannels = <
 
     const newOptions = {
       limit: options?.limit ?? MAX_QUERY_CHANNELS_LIMIT,
-      offset:
-        queryType === 'loadChannels' && !staticChannelsActive && channels ? channels.length : 0,
+      offset: 0,
       ...options,
     };
 
@@ -106,28 +123,32 @@ export const usePaginatedChannels = <
        * when they all (may) update the channel state at the same time (when connection state recovers)
        * TODO: if we move the channel state to a single context and share it between ChannelList, Channel and Thread we can remove this
        */
-      const channelQueryResponse = await client.queryChannels(filters, sort, newOptions, {
-        skipInitialization: enableOfflineSupport ? undefined : activeChannels.current,
-      });
+      if (queryType === 'loadChannels') {
+        await channelManager?.loadNext();
+      } else {
+        await channelManager?.queryChannels(filters, sort, newOptions, {
+          skipInitialization: enableOfflineSupport ? undefined : activeChannels.current,
+        });
+      }
       if (isQueryStale() || !isMountedRef.current) {
         return;
       }
 
-      const newChannels =
-        queryType === 'loadChannels' && !staticChannelsActive && channels
-          ? [...channels, ...channelQueryResponse]
-          : channelQueryResponse.map((c) => {
-              const existingChannel = client.activeChannels[c.cid];
-              if (existingChannel) {
-                return existingChannel;
-              }
+      // const newChannels =
+      //   queryType === 'loadChannels' && !staticChannelsActive && channels
+      //     ? [...channels, ...channelQueryResponse]
+      //     : channelQueryResponse.map((c) => {
+      //         const existingChannel = client.activeChannels[c.cid];
+      //         if (existingChannel) {
+      //           return existingChannel;
+      //         }
+      //
+      //         return c;
+      //       });
 
-              return c;
-            });
-
-      setChannels(newChannels);
+      // setChannels(newChannels);
       setStaticChannelsActive(false);
-      setHasNextPage(channelQueryResponse.length >= newOptions.limit);
+      // setHasNextPage(channelQueryResponse.length >= newOptions.limit);
       isQueryingRef.current = false;
     } catch (err: unknown) {
       isQueryingRef.current = false;
@@ -207,7 +228,7 @@ export const usePaginatedChannels = <
             skipInitialization: [], // passing empty array will clear out the existing messages from channel state, this removes the possibility of duplicate messages
           });
 
-          setChannels(offlineChannels);
+          channelManager?.setChannels(offlineChannels);
           setStaticChannelsActive(true);
         }
       } catch (e) {
@@ -257,26 +278,18 @@ export const usePaginatedChannels = <
 
     return () => listener?.unsubscribe?.();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterStr, sortStr]);
+  }, [filterStr, sortStr, channelManager]);
 
   return {
     channels,
     error,
     hasNextPage,
-    loadingChannels:
-      activeQueryType === 'queryLocalDB'
-        ? true
-        : (activeQueryType === 'reload' || activeQueryType === null) && channels === null,
+    loadingChannels: activeQueryType === 'queryLocalDB' ? true : pagination.isLoading,
     loadingNextPage: activeQueryType === 'loadChannels',
-    loadNextPage: queryChannels,
+    loadNextPage: channelManager?.loadNext,
     refreshing: activeQueryType === 'refresh',
     refreshList,
     reloadList,
-    // Although channels can be null, there is no practical case where channels will be null
-    // when setChannels is used. setChannels is only recommended to be used for overriding
-    // event handler. Thus instead of adding if check for channels === null, its better to
-    // simply reassign types here.
-    setChannels,
     staticChannelsActive,
   };
 };
