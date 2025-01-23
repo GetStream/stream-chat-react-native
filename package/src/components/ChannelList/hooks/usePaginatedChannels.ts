@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import {
-  Channel,
   ChannelFilters,
   ChannelManager,
   ChannelManagerState,
@@ -65,7 +64,8 @@ export const usePaginatedChannels = <
   // const [channels, setChannels] = useState<Channel<StreamChatGenerics>[] | null>(null);
   const [error, setError] = useState<Error | undefined>(undefined);
   const [staticChannelsActive, setStaticChannelsActive] = useState<boolean>(false);
-  const [activeQueryType, setActiveQueryType] = useState<QueryType | null>('queryLocalDB');
+  // const [activeQueryType, setActiveQueryType] = useState<QueryType | null>('queryLocalDB');
+  const activeQueryType = useRef<QueryType | null>('queryLocalDB');
   // const [hasNextPage, setHasNextPage] = useState<boolean>(false);
   const activeChannels = useActiveChannelsRefContext();
   const isMountedRef = useIsMountedRef();
@@ -109,7 +109,8 @@ export const usePaginatedChannels = <
     setError(undefined);
     activeRequestId.current++;
     const currentRequestId = activeRequestId.current;
-    setActiveQueryType(queryType);
+    // setActiveQueryType(queryType);
+    activeQueryType.current = queryType;
 
     const newOptions = {
       limit: options?.limit ?? MAX_QUERY_CHANNELS_LIMIT,
@@ -161,7 +162,8 @@ export const usePaginatedChannels = <
       // querying.current check is needed in order to make sure the next query call doesnt flick an error
       // state and then succeed (reconnect case)
       if (retryCount === MAX_NUMBER_OF_RETRIES && !isQueryingRef.current) {
-        setActiveQueryType(null);
+        // setActiveQueryType(null);
+        activeQueryType.current = null;
         console.warn(err);
 
         setError(
@@ -175,7 +177,8 @@ export const usePaginatedChannels = <
       return queryChannels(queryType, retryCount + 1);
     }
 
-    setActiveQueryType(null);
+    // setActiveQueryType(null);
+    activeQueryType.current = null;
   };
 
   const refreshList = async () => {
@@ -236,7 +239,8 @@ export const usePaginatedChannels = <
         return false;
       }
 
-      setActiveQueryType(null);
+      // setActiveQueryType(null);
+      activeQueryType.current = null;
 
       return true;
     };
@@ -284,10 +288,16 @@ export const usePaginatedChannels = <
     channels,
     error,
     hasNextPage,
-    loadingChannels: activeQueryType === 'queryLocalDB' ? true : pagination.isLoading,
-    loadingNextPage: activeQueryType === 'loadChannels',
+    // loadingChannels:
+    //   activeQueryType.current === 'queryLocalDB'
+    //     ? true
+    //     : (activeQueryType.current === 'reload' || activeQueryType.current === null) &&
+    //       channels === null,
+    loadingChannels:
+      activeQueryType.current === 'queryLocalDB' || !channelManager ? true : pagination?.isLoading,
+    loadingNextPage: pagination?.isLoadingNext,
     loadNextPage: channelManager?.loadNext,
-    refreshing: activeQueryType === 'refresh',
+    refreshing: activeQueryType.current === 'refresh',
     refreshList,
     reloadList,
     staticChannelsActive,
