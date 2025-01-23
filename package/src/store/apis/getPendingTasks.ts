@@ -1,7 +1,7 @@
 import { mapStorableToTask } from '../mappers/mapStorableToTask';
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
 import { SqliteClient } from '../SqliteClient';
-import type { TableRowJoinedUser } from '../types';
+import { TableRowJoinedUser } from '../types';
 
 export const getPendingTasks = async (conditions: { messageId?: string } = {}) => {
   const query = createSelectQuery('pendingTasks', ['*'], conditions, {
@@ -11,5 +11,5 @@ export const getPendingTasks = async (conditions: { messageId?: string } = {}) =
   SqliteClient.logger?.('info', 'getPendingTasks', { conditions });
   const result = await SqliteClient.executeSql.apply(null, query);
 
-  return result.map((r: TableRowJoinedUser<'pendingTasks'>) => mapStorableToTask(r));
+  return result.map((r) => mapStorableToTask(r as unknown as TableRowJoinedUser<'pendingTasks'>));
 };

@@ -47,8 +47,7 @@ export const useChannelPreviewData = <
     }
     const newUnreadCount = channel.countUnread();
     setUnread(newUnreadCount);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel, channelLastMessageString, channelListForceUpdate]);
+  }, [channel, channelLastMessage, channelLastMessageString, channelListForceUpdate, lastMessage]);
 
   /**
    * This effect listens for the `notification.mark_read` event and sets the unread count to 0
