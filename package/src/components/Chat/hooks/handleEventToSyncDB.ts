@@ -97,14 +97,36 @@ export const handleEventToSyncDB = <
   }
 
   if (type === 'message.new') {
-    const message = event.message;
+    const { cid, message, user } = event;
+
     if (message && (!message.parent_id || message.show_in_channel)) {
-      return queriesWithChannelGuard((flushOverride) =>
-        upsertMessages({
+      return queriesWithChannelGuard((flushOverride) => {
+        let queries = upsertMessages({
           flush: flushOverride,
           messages: [message],
-        }),
-      );
+        });
+        if (cid && client.user && client.user.id !== user?.id) {
+          const userId = client.user.id;
+          const channel = client.activeChannels[cid];
+          if (channel) {
+            const ownReads = channel.state.read[userId];
+            const unreadCount = channel.countUnread();
+            const upsertReadsQueries = upsertReads({
+              cid,
+              flush: flushOverride,
+              reads: [
+                {
+                  last_read: ownReads.last_read.toString() as string,
+                  unread_messages: unreadCount,
+                  user: client.user,
+                },
+              ],
+            });
+            queries = [...queries, ...upsertReadsQueries];
+          }
+        }
+        return queries;
+      });
     }
   }
 
