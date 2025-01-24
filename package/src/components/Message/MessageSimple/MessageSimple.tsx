@@ -1,5 +1,16 @@
-import React, { useState } from 'react';
-import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { Dimensions, LayoutChangeEvent, StyleSheet, View } from 'react-native';
+
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+
+import Animated, {
+  Extrapolation,
+  interpolate,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 
 import {
   MessageContextValue,
@@ -11,6 +22,7 @@ import {
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
+import { triggerHaptic } from '../../../native';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { useMessageData } from '../hooks/useMessageData';
 
@@ -21,6 +33,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {},
   contentWrapper: {
+    alignItems: 'center',
     flexDirection: 'row',
   },
   lastMessageContainer: {
@@ -35,6 +48,9 @@ const styles = StyleSheet.create({
   messageGroupedTopContainer: {},
   rightAlignItems: {
     alignItems: 'flex-end',
+  },
+  swipeContentContainer: {
+    position: 'absolute',
   },
 });
 
@@ -56,7 +72,9 @@ export type MessageSimplePropsWithContext<
 > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
+    | 'clearQuotedMessageState'
     | 'enableMessageGroupingByUser'
+    | 'enableSwipeToReply'
     | 'myMessageTheme'
     | 'MessageAvatar'
     | 'MessageContent'
@@ -66,9 +84,12 @@ export type MessageSimplePropsWithContext<
     | 'MessagePinnedHeader'
     | 'MessageReplies'
     | 'MessageStatus'
+    | 'MessageSwipeContent'
+    | 'messageSwipeToReplyHitSlop'
     | 'ReactionListBottom'
     | 'reactionListPosition'
     | 'ReactionListTop'
+    | 'setQuotedMessageState'
   >;
 
 const MessageSimpleWithContext = <
@@ -77,9 +98,12 @@ const MessageSimpleWithContext = <
   props: MessageSimplePropsWithContext<StreamChatGenerics>,
 ) => {
   const [messageContentWidth, setMessageContentWidth] = useState(0);
+  const { width } = Dimensions.get('screen');
   const {
     alignment,
+    clearQuotedMessageState,
     enableMessageGroupingByUser,
+    enableSwipeToReply,
     groupStyles,
     hasReactions,
     isMyMessage,
@@ -94,11 +118,14 @@ const MessageSimpleWithContext = <
     MessagePinnedHeader,
     MessageReplies,
     MessageStatus,
+    MessageSwipeContent,
+    messageSwipeToReplyHitSlop = { left: width, right: width },
     onlyEmojis,
     otherAttachments,
     ReactionListBottom,
     reactionListPosition,
     ReactionListTop,
+    setQuotedMessageState,
     showMessageStatus,
   } = props;
 
@@ -119,6 +146,7 @@ const MessageSimpleWithContext = <
         messageGroupedSingleOrBottomContainer,
         messageGroupedTopContainer,
         reactionListTop: { position: reactionPosition },
+        swipeContentContainer,
       },
     },
   } = useTheme();
@@ -174,6 +202,126 @@ const MessageSimpleWithContext = <
   }
 
   const repliesCurveColor = isMessageReceivedOrErrorType ? grey_gainsboro : backgroundColor;
+
+  const translateX = useSharedValue(0);
+  const touchStart = useSharedValue<{ x: number; y: number } | null>(null);
+
+  const onSwipeToReply = () => {
+    clearQuotedMessageState();
+    setQuotedMessageState(message);
+  };
+
+  const THRESHOLD = 25;
+
+  const swipeGesture = Gesture.Pan()
+    .hitSlop(messageSwipeToReplyHitSlop)
+    .manualActivation(true)
+    .onBegin((event) => {
+      touchStart.value = { x: event.x, y: event.y };
+    })
+    .onTouchesMove((event, state) => {
+      if (!touchStart.value || !event.changedTouches.length) {
+        state.fail();
+        return;
+      }
+
+      const xDiff = Math.abs(event.changedTouches[0].x - touchStart.value.x);
+      const yDiff = Math.abs(event.changedTouches[0].y - touchStart.value.y);
+      const isHorizontalPanning = xDiff > yDiff;
+
+      if (isHorizontalPanning) {
+        state.activate();
+      } else {
+        state.fail();
+      }
+    })
+    .onStart(() => {
+      translateX.value = 0;
+    })
+    .onChange(({ translationX }) => {
+      if (translationX > 0) {
+        translateX.value = translationX;
+      }
+    })
+    .onEnd(() => {
+      if (translateX.value >= THRESHOLD) {
+        runOnJS(onSwipeToReply)();
+        runOnJS(triggerHaptic)('impactMedium');
+      }
+      translateX.value = withSpring(0, {
+        dampingRatio: 1,
+        duration: 500,
+        overshootClamping: true,
+        stiffness: 1,
+      });
+    });
+
+  const messageBubbleAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }],
+  }));
+
+  const swipeContentAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(translateX.value, [0, THRESHOLD], [0, 1]),
+    transform: [
+      {
+        translateX: interpolate(
+          translateX.value,
+          [0, THRESHOLD],
+          [-THRESHOLD, 0],
+          Extrapolation.CLAMP,
+        ),
+      },
+    ],
+  }));
+
+  const renderMessageBubble = useMemo(
+    () => (
+      <View style={[styles.contentWrapper, contentWrapper]}>
+        <MessageContent
+          backgroundColor={backgroundColor}
+          noBorder={noBorder}
+          setMessageContentWidth={setMessageContentWidth}
+        />
+        {reactionListPosition === 'top' && ReactionListTop ? (
+          <ReactionListTop messageContentWidth={messageContentWidth} />
+        ) : null}
+      </View>
+    ),
+    [
+      messageContentWidth,
+      reactionListPosition,
+      MessageContent,
+      ReactionListTop,
+      backgroundColor,
+      contentWrapper,
+      noBorder,
+    ],
+  );
+
+  const renderAnimatedMessageBubble = useMemo(
+    () => (
+      <GestureDetector gesture={swipeGesture}>
+        <View hitSlop={messageSwipeToReplyHitSlop} style={[styles.contentWrapper, contentWrapper]}>
+          <Animated.View
+            style={[styles.swipeContentContainer, swipeContentAnimatedStyle, swipeContentContainer]}
+          >
+            {MessageSwipeContent ? <MessageSwipeContent /> : null}
+          </Animated.View>
+          <Animated.View style={messageBubbleAnimatedStyle}>{renderMessageBubble}</Animated.View>
+        </View>
+      </GestureDetector>
+    ),
+    [
+      MessageSwipeContent,
+      contentWrapper,
+      messageBubbleAnimatedStyle,
+      messageSwipeToReplyHitSlop,
+      renderMessageBubble,
+      swipeContentAnimatedStyle,
+      swipeContentContainer,
+      swipeGesture,
+    ],
+  );
 
   return (
     <View
@@ -233,18 +381,7 @@ const MessageSimpleWithContext = <
             )}
             {message.pinned ? <MessagePinnedHeader /> : null}
           </View>
-
-          <View style={[styles.contentWrapper, contentWrapper]}>
-            <MessageContent
-              backgroundColor={backgroundColor}
-              noBorder={noBorder}
-              setMessageContentWidth={setMessageContentWidth}
-            />
-            {reactionListPosition === 'top' && ReactionListTop ? (
-              <ReactionListTop messageContentWidth={messageContentWidth} />
-            ) : null}
-          </View>
-
+          {enableSwipeToReply ? renderAnimatedMessageBubble : renderMessageBubble}
           {reactionListPosition === 'bottom' && ReactionListBottom ? <ReactionListBottom /> : null}
           <MessageReplies noBorder={noBorder} repliesCurveColor={repliesCurveColor} />
           <MessageFooter date={message.created_at} isDeleted={!!isMessageTypeDeleted} />
@@ -394,7 +531,9 @@ export const MessageSimple = <
     showMessageStatus,
   } = useMessageContext<StreamChatGenerics>();
   const {
+    clearQuotedMessageState,
     enableMessageGroupingByUser,
+    enableSwipeToReply,
     MessageAvatar,
     MessageContent,
     MessageDeleted,
@@ -403,10 +542,13 @@ export const MessageSimple = <
     MessagePinnedHeader,
     MessageReplies,
     MessageStatus,
+    MessageSwipeContent,
+    messageSwipeToReplyHitSlop,
     myMessageTheme,
     ReactionListBottom,
     reactionListPosition,
     ReactionListTop,
+    setQuotedMessageState,
   } = useMessagesContext<StreamChatGenerics>();
 
   return (
@@ -414,7 +556,9 @@ export const MessageSimple = <
       {...{
         alignment,
         channel,
+        clearQuotedMessageState,
         enableMessageGroupingByUser,
+        enableSwipeToReply,
         groupStyles,
         hasReactions,
         isMyMessage,
@@ -429,12 +573,15 @@ export const MessageSimple = <
         MessagePinnedHeader,
         MessageReplies,
         MessageStatus,
+        MessageSwipeContent,
+        messageSwipeToReplyHitSlop,
         myMessageTheme,
         onlyEmojis,
         otherAttachments,
         ReactionListBottom,
         reactionListPosition,
         ReactionListTop,
+        setQuotedMessageState,
         showMessageStatus,
       }}
       {...props}

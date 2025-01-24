@@ -654,6 +654,10 @@ export type Theme = {
       statusContainer: ViewStyle;
       timeIcon: IconProps;
     };
+    swipeContentContainer: ViewStyle;
+    swipeLeftContent: {
+      container: ViewStyle;
+    };
     targetedMessageContainer: ViewStyle;
     videoThumbnail: {
       container: ViewStyle;
@@ -1433,6 +1437,10 @@ export const defaultTheme: Theme = {
         height: DEFAULT_STATUS_ICON_SIZE,
         width: DEFAULT_STATUS_ICON_SIZE,
       },
+    },
+    swipeContentContainer: {},
+    swipeLeftContent: {
+      container: {},
     },
     targetedMessageContainer: {},
     unreadUnderlayColor: Colors.bg_gradient_start,
