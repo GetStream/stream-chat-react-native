@@ -152,10 +152,11 @@ export const ProgressControl = React.memo(
     );
   },
   (prevProps, nextProps) => {
-    if (prevProps.duration !== nextProps.duration) return false;
-    if (prevProps.progress !== nextProps.progress) return false;
-    if (prevProps.width !== nextProps.width) return false;
-    else return true;
+    return (
+      prevProps.duration === nextProps.duration &&
+      prevProps.progress === nextProps.progress &&
+      prevProps.width === nextProps.width
+    );
   },
 );
 
