@@ -273,18 +273,22 @@ export const ChannelList = <
 
   const [forceUpdate, setForceUpdate] = useState(0);
   const { client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
-  const [channelManager, setChannelManager] = useState<ChannelManager<StreamChatGenerics>>(
-    client.createChannelManager({ options: { lockChannelOrder } }),
+  const createChannelManager = useCallback(
+    () => client.createChannelManager({ options: { lockChannelOrder } }),
+    [client, lockChannelOrder],
   );
-  const clientRef = useRef(client);
+  const clientManagerRef = useRef(createChannelManager);
+  const [channelManager, setChannelManager] = useState<ChannelManager<StreamChatGenerics>>(
+    createChannelManager(),
+  );
 
   useEffect(() => {
-    if (clientRef.current !== client) {
-      const manager = client.createChannelManager({ options: { lockChannelOrder } });
+    if (clientManagerRef.current !== createChannelManager) {
+      const manager = createChannelManager();
       setChannelManager(manager);
-      clientRef.current = client;
+      clientManagerRef.current = createChannelManager;
     }
-  }, [client, lockChannelOrder]);
+  }, [createChannelManager]);
 
   useEffect(() => {
     channelManager.registerSubscriptions();
