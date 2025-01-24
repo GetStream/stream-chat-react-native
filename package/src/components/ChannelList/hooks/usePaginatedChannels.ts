@@ -296,10 +296,7 @@ export const usePaginatedChannels = <
     //     ? true
     //     : (activeQueryType.current === 'reload' || activeQueryType.current === null) &&
     //       channels === null,
-    loadingChannels:
-      activeQueryType.current === 'queryLocalDB' || !channelManager
-        ? true
-        : pagination?.isLoading || channels == null,
+    loadingChannels: activeQueryType.current === 'queryLocalDB' ? true : pagination?.isLoading,
     loadingNextPage: pagination?.isLoadingNext,
     loadNextPage: channelManager?.loadNext,
     refreshing: activeQueryType.current === 'refresh',
