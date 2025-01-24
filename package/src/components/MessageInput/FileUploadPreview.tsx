@@ -177,15 +177,13 @@ const FileUploadPreviewWithContext = <
   };
 
   // The handler which is triggered when the audio progresses/ the thumb is dragged in the progress control. The progressed duration is set here.
-  const onProgress = (index: string, currentTime?: number, hasEnd?: boolean) => {
+  const onProgress = (index: string, currentTime?: number) => {
     setFileUploads((prevFileUploads) =>
       prevFileUploads.map((fileUpload) => ({
         ...fileUpload,
         progress:
           fileUpload.id === index
-            ? hasEnd
-              ? 1
-              : currentTime
+            ? currentTime
               ? currentTime / (fileUpload.duration as number)
               : 0
             : fileUpload.progress,
