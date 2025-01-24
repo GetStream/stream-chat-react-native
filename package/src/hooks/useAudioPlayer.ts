@@ -1,4 +1,4 @@
-import { Sound, SoundReturnType } from '../native';
+import { SDK, SoundReturnType } from '../native';
 
 export type UseSoundPlayerProps = {
   soundRef: React.MutableRefObject<SoundReturnType | null>;
@@ -11,7 +11,7 @@ export type UseSoundPlayerProps = {
 export const useAudioPlayer = (props: UseSoundPlayerProps) => {
   const { soundRef } = props;
 
-  const isExpoCLI = !Sound.Player && Sound.initializeSound;
+  const isExpoCLI = SDK === 'stream-chat-expo';
 
   const playAudio = async () => {
     if (isExpoCLI) {

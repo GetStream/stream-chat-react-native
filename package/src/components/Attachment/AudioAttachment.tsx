@@ -9,6 +9,7 @@ import { useAudioPlayer } from '../../hooks/useAudioPlayer';
 import { Audio, Pause, Play } from '../../icons';
 import {
   PlaybackStatus,
+  SDK,
   Sound,
   SoundReturnType,
   VideoPayloadData,
@@ -52,7 +53,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     testID,
   } = props;
   const { changeAudioSpeed, pauseAudio, playAudio, seekAudio } = useAudioPlayer({ soundRef });
-  const isExpoCLI = !Sound.Player && Sound.initializeSound;
+  const isExpoCLI = SDK === 'stream-chat-expo';
 
   /** This is for Native CLI Apps */
   const handleLoad = (payload: VideoPayloadData) => {
