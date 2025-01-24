@@ -100,7 +100,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onAddedToChannel?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -112,7 +112,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelDeleted?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -124,7 +124,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelHidden?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -136,7 +136,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelTruncated?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -148,7 +148,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelUpdated?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -160,7 +160,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelVisible?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -175,7 +175,7 @@ export type ChannelListProps<
    * */
   onNewMessage?: (
     lockChannelOrder: boolean,
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -188,7 +188,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onNewMessageNotification?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -200,7 +200,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onRemovedFromChannel?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -248,15 +248,15 @@ export const ChannelList = <
     lockChannelOrder = false,
     maxUnreadCount = 255,
     numberOfSkeletons = 6,
-    // onAddedToChannel,
-    // onChannelDeleted,
-    // onChannelHidden,
-    // onChannelTruncated,
-    // onChannelUpdated,
-    // onChannelVisible,
-    // onNewMessage,
-    // onNewMessageNotification,
-    // onRemovedFromChannel,
+    onAddedToChannel,
+    onChannelDeleted,
+    onChannelHidden,
+    onChannelTruncated,
+    onChannelUpdated,
+    onChannelVisible,
+    onNewMessage,
+    onNewMessageNotification,
+    onRemovedFromChannel,
     onSelect,
     options = DEFAULT_OPTIONS,
     Preview = ChannelPreviewMessenger,
@@ -274,8 +274,36 @@ export const ChannelList = <
   const [forceUpdate, setForceUpdate] = useState(0);
   const { client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
   const createChannelManager = useCallback(
-    () => client.createChannelManager({ options: { lockChannelOrder } }),
-    [client, lockChannelOrder],
+    () =>
+      client.createChannelManager({
+        eventHandlerOverrides: {
+          channelDeletedHandler: onChannelDeleted,
+          channelHiddenHandler: onChannelHidden,
+          channelTruncatedHandler: onChannelTruncated,
+          channelUpdatedHandler: onChannelUpdated,
+          channelVisibleHandler: onChannelVisible,
+          newMessageHandler: onNewMessage
+            ? (setChannels, event) => onNewMessage(lockChannelOrder, setChannels, event)
+            : undefined,
+          notificationAddedToChannelHandler: onAddedToChannel,
+          notificationNewMessageHandler: onNewMessageNotification,
+          notificationRemovedFromChannelHandler: onRemovedFromChannel,
+        },
+        options: { lockChannelOrder },
+      }),
+    [
+      client,
+      lockChannelOrder,
+      onAddedToChannel,
+      onChannelDeleted,
+      onChannelHidden,
+      onChannelTruncated,
+      onChannelUpdated,
+      onChannelVisible,
+      onNewMessage,
+      onNewMessageNotification,
+      onRemovedFromChannel,
+    ],
   );
   const clientManagerRef = useRef(createChannelManager);
   const [channelManager, setChannelManager] = useState<ChannelManager<StreamChatGenerics>>(
