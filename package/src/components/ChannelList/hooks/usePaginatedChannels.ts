@@ -26,12 +26,12 @@ const waitSeconds = (seconds: number) =>
 
 type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   {
+    channelManager: ChannelManager<StreamChatGenerics>;
     enableOfflineSupport: boolean;
     filters: ChannelFilters<StreamChatGenerics>;
     options: ChannelOptions;
     setForceUpdate: React.Dispatch<React.SetStateAction<number>>;
     sort: ChannelSort<StreamChatGenerics>;
-    channelManager?: ChannelManager<StreamChatGenerics>;
   };
 
 const DEFAULT_OPTIONS = {
@@ -45,7 +45,9 @@ type QueryType = 'queryLocalDB' | 'reload' | 'refresh' | 'loadChannels';
 
 export type QueryChannels = (queryType?: QueryType, retryCount?: number) => Promise<void>;
 
-const selector = (nextValue: ChannelManagerState) =>
+const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  nextValue: ChannelManagerState<StreamChatGenerics>,
+) =>
   ({
     channels: nextValue.channels,
     pagination: nextValue.pagination,
@@ -215,6 +217,7 @@ export const usePaginatedChannels = <
   const sortStr = useMemo(() => JSON.stringify(sort), [sort]);
 
   useEffect(() => {
+    console.log('TRIGGERING', !channelManager);
     const loadOfflineChannels = async () => {
       if (!client?.user?.id) return;
 
@@ -294,7 +297,9 @@ export const usePaginatedChannels = <
     //     : (activeQueryType.current === 'reload' || activeQueryType.current === null) &&
     //       channels === null,
     loadingChannels:
-      activeQueryType.current === 'queryLocalDB' || !channelManager ? true : pagination?.isLoading,
+      activeQueryType.current === 'queryLocalDB' || !channelManager
+        ? true
+        : pagination?.isLoading || channels == null,
     loadingNextPage: pagination?.isLoadingNext,
     loadNextPage: channelManager?.loadNext,
     refreshing: activeQueryType.current === 'refresh',

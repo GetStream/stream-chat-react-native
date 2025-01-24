@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { FlatList } from 'react-native-gesture-handler';
 
@@ -16,16 +16,16 @@ import { ChannelListHeaderErrorIndicator } from './ChannelListHeaderErrorIndicat
 import { ChannelListHeaderNetworkDownIndicator } from './ChannelListHeaderNetworkDownIndicator';
 import { ChannelListLoadingIndicator } from './ChannelListLoadingIndicator';
 import { ChannelListMessenger, ChannelListMessengerProps } from './ChannelListMessenger';
-import { useAddedToChannelNotification } from './hooks/listeners/useAddedToChannelNotification';
-import { useChannelDeleted } from './hooks/listeners/useChannelDeleted';
-import { useChannelHidden } from './hooks/listeners/useChannelHidden';
-import { useChannelTruncated } from './hooks/listeners/useChannelTruncated';
-import { useChannelUpdated } from './hooks/listeners/useChannelUpdated';
-import { useChannelVisible } from './hooks/listeners/useChannelVisible';
-import { useNewMessage } from './hooks/listeners/useNewMessage';
-import { useNewMessageNotification } from './hooks/listeners/useNewMessageNotification';
-import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedFromChannelNotification';
-import { useUserPresence } from './hooks/listeners/useUserPresence';
+// import { useAddedToChannelNotification } from './hooks/listeners/useAddedToChannelNotification';
+// import { useChannelDeleted } from './hooks/listeners/useChannelDeleted';
+// import { useChannelHidden } from './hooks/listeners/useChannelHidden';
+// import { useChannelTruncated } from './hooks/listeners/useChannelTruncated';
+// import { useChannelUpdated } from './hooks/listeners/useChannelUpdated';
+// import { useChannelVisible } from './hooks/listeners/useChannelVisible';
+// import { useNewMessage } from './hooks/listeners/useNewMessage';
+// import { useNewMessageNotification } from './hooks/listeners/useNewMessageNotification';
+// import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedFromChannelNotification';
+// import { useUserPresence } from './hooks/listeners/useUserPresence';
 import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
 import { usePaginatedChannels } from './hooks/usePaginatedChannels';
 import { Skeleton as SkeletonDefault } from './Skeleton';
@@ -248,15 +248,15 @@ export const ChannelList = <
     lockChannelOrder = false,
     maxUnreadCount = 255,
     numberOfSkeletons = 6,
-    onAddedToChannel,
-    onChannelDeleted,
-    onChannelHidden,
-    onChannelTruncated,
-    onChannelUpdated,
-    onChannelVisible,
-    onNewMessage,
-    onNewMessageNotification,
-    onRemovedFromChannel,
+    // onAddedToChannel,
+    // onChannelDeleted,
+    // onChannelHidden,
+    // onChannelTruncated,
+    // onChannelUpdated,
+    // onChannelVisible,
+    // onNewMessage,
+    // onNewMessageNotification,
+    // onRemovedFromChannel,
     onSelect,
     options = DEFAULT_OPTIONS,
     Preview = ChannelPreviewMessenger,
@@ -272,20 +272,27 @@ export const ChannelList = <
   } = props;
 
   const [forceUpdate, setForceUpdate] = useState(0);
-  const [channelManager, setChannelManager] = useState<ChannelManager<StreamChatGenerics> | null>(
-    null,
-  );
   const { client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
+  const [channelManager, setChannelManager] = useState<ChannelManager<StreamChatGenerics>>(
+    client.createChannelManager({ options: { lockChannelOrder } }),
+  );
+  const clientRef = useRef(client);
 
   useEffect(() => {
-    const manager = new ChannelManager<StreamChatGenerics>({ client });
-    manager.registerSubscriptions();
-    setChannelManager(manager);
+    if (clientRef.current !== client) {
+      const manager = client.createChannelManager({ options: { lockChannelOrder } });
+      setChannelManager(manager);
+      clientRef.current = client;
+    }
+  }, [client, lockChannelOrder]);
+
+  useEffect(() => {
+    channelManager.registerSubscriptions();
 
     return () => {
-      manager?.unregisterSubscriptions();
+      channelManager.unregisterSubscriptions();
     };
-  }, [client]);
+  }, [channelManager]);
 
   const {
     channels,
@@ -299,12 +306,12 @@ export const ChannelList = <
     reloadList,
     staticChannelsActive,
   } = usePaginatedChannels<StreamChatGenerics>({
+    channelManager,
     enableOfflineSupport,
     filters,
     options,
     setForceUpdate,
     sort,
-    channelManager,
   });
 
   // Setup event listeners
