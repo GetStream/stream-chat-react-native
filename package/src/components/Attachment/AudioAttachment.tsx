@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
 import { useTheme } from '../../contexts';
+import { useAudioPlayer } from '../../hooks/useAudioPlayer';
 import { Audio, Pause, Play } from '../../icons';
 import {
   PlaybackStatus,
@@ -18,7 +19,6 @@ import type { FileUpload } from '../../types/types';
 import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
 import { ProgressControl } from '../ProgressControl/ProgressControl';
 import { WaveProgressBar } from '../ProgressControl/WaveProgressBar';
-import { useAudioPlayer } from '../../hooks/useAudioPlayer';
 
 dayjs.extend(duration);
 
@@ -51,7 +51,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     showSpeedSettings = false,
     testID,
   } = props;
-  const { changeAudioSpeed, playAudio, pauseAudio, seekAudio } = useAudioPlayer({ soundRef });
+  const { changeAudioSpeed, pauseAudio, playAudio, seekAudio } = useAudioPlayer({ soundRef });
   const isExpoCLI = !Sound.Player && Sound.initializeSound;
 
   /** This is for Native CLI Apps */

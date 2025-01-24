@@ -44,5 +44,5 @@ export const useAudioPlayer = (props: UseSoundPlayerProps) => {
     if (soundRef.current?.setRateAsync) await soundRef.current.setRateAsync(speed);
   };
 
-  return { playAudio, pauseAudio, seekAudio, changeAudioSpeed };
+  return { changeAudioSpeed, pauseAudio, playAudio, seekAudio };
 };
