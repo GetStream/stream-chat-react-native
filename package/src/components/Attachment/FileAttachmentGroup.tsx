@@ -140,12 +140,13 @@ const FileAttachmentGroupWithContext = <
                 onPlayPause={onPlayPause}
                 onProgress={onProgress}
                 showSpeedSettings={true}
-                testID='audio-attachment-preview'
               />
             ) : (
               <Attachment attachment={file} />
             )
-          ) : null}
+          ) : (
+            <Attachment attachment={file} />
+          )}
         </View>
       ))}
     </View>

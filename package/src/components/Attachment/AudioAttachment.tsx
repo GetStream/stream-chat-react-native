@@ -18,6 +18,7 @@ import type { FileUpload } from '../../types/types';
 import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
 import { ProgressControl } from '../ProgressControl/ProgressControl';
 import { WaveProgressBar } from '../ProgressControl/WaveProgressBar';
+import { useAudioPlayer } from '../../hooks/useAudioPlayer';
 
 dayjs.extend(duration);
 
@@ -50,14 +51,13 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     showSpeedSettings = false,
     testID,
   } = props;
-
-  const handleLoadStart = () => {
-    // For native CLI
-    if (soundRef.current?.pause) soundRef.current.pause();
-  };
+  const { changeAudioSpeed, playAudio, pauseAudio, seekAudio } = useAudioPlayer({ soundRef });
+  const isExpoCLI = !Sound.Player && Sound.initializeSound;
 
   /** This is for Native CLI Apps */
   const handleLoad = (payload: VideoPayloadData) => {
+    if (isExpoCLI) return;
+    pauseAudio();
     onLoad(item.id, item.duration || payload.duration);
   };
 
@@ -68,18 +68,6 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
       onProgress(item.id, currentTime);
     } else {
       setAudioFinished(true);
-    }
-  };
-
-  /** This is for Native CLI Apps */
-  const handleEnd = async () => {
-    setAudioFinished(false);
-    if (soundRef.current) {
-      // For native CLI
-      if (soundRef.current.seek) soundRef.current.seek(0);
-      if (soundRef.current.pause) soundRef.current.pause();
-      // For expo CLI
-      if (soundRef.current.setPositionAsync) await soundRef.current.setPositionAsync(0);
     }
   };
 
@@ -96,46 +84,28 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     onProgress(item.id, seekResponse.currentTime);
   };
 
-  const handlePlayPause = async (isPausedStatusAvailable?: boolean) => {
-    if (!soundRef.current) return;
-    if (isPausedStatusAvailable === undefined) {
-      if (item.paused) {
-        // For native CLI
-        if (soundRef.current.resume) soundRef.current.resume();
-        // For expo CLI
-        if (soundRef.current.playAsync) await soundRef.current.playAsync();
-        if (soundRef.current.setProgressUpdateIntervalAsync)
-          await soundRef.current.setProgressUpdateIntervalAsync(60);
-      } else {
-        // For native CLI
-        if (soundRef.current.pause) soundRef.current.pause();
-        // For expo CLI
-        if (soundRef.current.pauseAsync) await soundRef.current.pauseAsync();
-      }
+  const handlePlayPause = async () => {
+    if (item.paused) {
+      await playAudio();
     } else {
-      onPlayPause(item.id, isPausedStatusAvailable);
+      await pauseAudio();
     }
+  };
+
+  /** This is for Native CLI Apps */
+  const handleEnd = async () => {
+    setAudioFinished(false);
+    await seekAudio(0);
+    await pauseAudio();
   };
 
   const dragStart = async () => {
-    // For native CLI
-    if (soundRef.current?.pause) soundRef.current.pause();
-
-    // For expo CLI
-    if (soundRef.current?.pauseAsync) await soundRef.current.pauseAsync();
+    await pauseAudio();
   };
 
   const dragEnd = async (currentTime: number) => {
-    // For native CLI
-    if (soundRef.current?.seek) soundRef.current.seek(currentTime);
-    // For expo CLI
-    if (soundRef.current?.setPositionAsync) {
-      await soundRef.current.setPositionAsync(currentTime * 1000);
-    }
-    // For native CLI
-    if (soundRef.current?.resume) soundRef.current.resume();
-    // For expo CLI
-    if (soundRef.current?.playAsync) await soundRef.current.playAsync();
+    await seekAudio(currentTime);
+    await playAudio();
   };
 
   /** For Expo CLI */
@@ -154,10 +124,8 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
       // Update your UI for the loaded state
       if (playbackStatus.isPlaying) {
         onPlayPause(item.id, false);
-        // Update your UI for the playing state
         onProgress(item.id, positionMillis / 1000);
       } else {
-        // Update your UI for the paused state
         onPlayPause(item.id, true);
       }
 
@@ -173,8 +141,9 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     }
   };
 
+  // This is for Expo CLI, sound initialization is done here.
   useEffect(() => {
-    if (Sound.Player === null) {
+    if (isExpoCLI) {
       const initiateSound = async () => {
         if (item && item.file && item.file.uri) {
           soundRef.current = await Sound.initializeSound(
@@ -196,45 +165,17 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // This is needed for expo applications where the rerender doesn't occur on time thefore you need to update the state of the sound.
-  useEffect(() => {
-    const initalPlayPause = async () => {
-      if (soundRef.current) {
-        if (item.paused) {
-          if (soundRef.current.pauseAsync) await soundRef.current.pauseAsync();
-        } else {
-          if (soundRef.current.playAsync) await soundRef.current.playAsync();
-          if (soundRef.current.setProgressUpdateIntervalAsync)
-            await soundRef.current.setProgressUpdateIntervalAsync(60);
-        }
-      }
-    };
-    // For expo CLI
-    if (!Sound.Player) {
-      initalPlayPause();
-    }
-  }, [item.paused]);
-
   const onSpeedChangeHandler = async () => {
     if (currentSpeed === 2.0) {
       setCurrentSpeed(1.0);
-      // For expo CLI
-      if (soundRef.current && soundRef.current.setRateAsync) {
-        await soundRef.current.setRateAsync(1.0);
-      }
+      await changeAudioSpeed(1.0);
     } else {
       if (currentSpeed === 1.0) {
         setCurrentSpeed(1.5);
-        // For expo CLI
-        if (soundRef.current && soundRef.current.setRateAsync) {
-          await soundRef.current.setRateAsync(1.5);
-        }
+        await changeAudioSpeed(1.5);
       } else if (currentSpeed === 1.5) {
         setCurrentSpeed(2.0);
-        // For expo CLI
-        if (soundRef.current && soundRef.current.setRateAsync) {
-          await soundRef.current.setRateAsync(2.0);
-        }
+        await changeAudioSpeed(2.0);
       }
     }
   };
@@ -288,7 +229,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     >
       <Pressable
         accessibilityLabel='Play Pause Button'
-        onPress={() => handlePlayPause()}
+        onPress={handlePlayPause}
         style={[
           styles.playPauseButton,
           { backgroundColor: static_white, shadowColor: black },
@@ -327,7 +268,6 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             <Sound.Player
               onEnd={handleEnd}
               onLoad={handleLoad}
-              onLoadStart={handleLoadStart}
               onPlaybackStateChanged={onPlaybackStateChanged}
               onProgress={handleProgress}
               onSeek={onSeek}
