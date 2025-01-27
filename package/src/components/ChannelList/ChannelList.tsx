@@ -25,7 +25,7 @@ import { ChannelListMessenger, ChannelListMessengerProps } from './ChannelListMe
 // import { useNewMessage } from './hooks/listeners/useNewMessage';
 // import { useNewMessageNotification } from './hooks/listeners/useNewMessageNotification';
 // import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedFromChannelNotification';
-// import { useUserPresence } from './hooks/listeners/useUserPresence';
+import { useUserPresence } from './hooks/listeners/useUserPresence';
 import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
 import { usePaginatedChannels } from './hooks/usePaginatedChannels';
 import { Skeleton as SkeletonDefault } from './Skeleton';
@@ -395,10 +395,10 @@ export const ChannelList = <
   //   setChannels,
   // });
   //
-  // useUserPresence({
-  //   setChannels,
-  //   setForceUpdate,
-  // });
+  useUserPresence({
+    setChannels: channelManager.setChannels,
+    setForceUpdate,
+  });
 
   const channelIdsStr = channels?.reduce((acc, channel) => `${acc}${channel.cid}`, '');
 

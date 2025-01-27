@@ -127,9 +127,9 @@ export const usePaginatedChannels = <
        * TODO: if we move the channel state to a single context and share it between ChannelList, Channel and Thread we can remove this
        */
       if (queryType === 'loadChannels') {
-        await channelManager?.loadNext();
+        await channelManager.loadNext();
       } else {
-        await channelManager?.queryChannels(filters, sort, newOptions, {
+        await channelManager.queryChannels(filters, sort, newOptions, {
           skipInitialization: enableOfflineSupport ? undefined : activeChannels.current,
         });
       }
@@ -234,7 +234,7 @@ export const usePaginatedChannels = <
             skipInitialization: [], // passing empty array will clear out the existing messages from channel state, this removes the possibility of duplicate messages
           });
 
-          channelManager?.setChannels(offlineChannels);
+          channelManager.setChannels(offlineChannels);
           setStaticChannelsActive(true);
         }
       } catch (e) {
@@ -298,7 +298,7 @@ export const usePaginatedChannels = <
     //       channels === null,
     loadingChannels: activeQueryType.current === 'queryLocalDB' ? true : pagination?.isLoading,
     loadingNextPage: pagination?.isLoadingNext,
-    loadNextPage: channelManager?.loadNext,
+    loadNextPage: channelManager.loadNext,
     refreshing: activeQueryType.current === 'refresh',
     refreshList,
     reloadList,
