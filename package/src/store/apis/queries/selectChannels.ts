@@ -19,7 +19,10 @@ export const selectChannels = async ({ channelIds }: { channelIds?: string[] } =
     channelIds,
   });
 
-  const result = await SqliteClient.executeSql.apply(null, query);
+  const result = (await SqliteClient.executeSql.apply(
+    null,
+    query,
+  )) as unknown as TableRowJoinedUser<'channels'>[];
 
   if (channelIds) {
     return result.sort(

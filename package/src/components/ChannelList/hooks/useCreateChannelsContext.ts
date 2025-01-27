@@ -41,7 +41,9 @@ export const useCreateChannelsContext = <
   const channelValueString = channels
     ?.map(
       (channel) =>
-        `${channel.data?.name ?? ''}${channel.id ?? ''}${Object.values(channel.state.members)
+        `${channel.data?.name ?? ''}${channel.id ?? ''}${
+          channel?.state?.unreadCount ?? ''
+        }${Object.values(channel.state.members)
           .map((member) => member.user?.online)
           .join()}`,
     )

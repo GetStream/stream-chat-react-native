@@ -42,5 +42,5 @@ export const selectMessagesForChannels = async (
     cids,
   );
 
-  return result.map((r: { value: string }) => JSON.parse(r.value));
+  return result.map((r) => JSON.parse(r.value));
 };
