@@ -143,18 +143,19 @@ const FileUploadPreviewWithContext = <
     FileAttachmentIcon,
     fileUploads,
     removeFile,
-    setFileUploads,
     uploadFile,
   } = props;
+
+  const [filesToDisplay, setFilesToDisplay] = useState<FileUpload[]>([]);
 
   const flatListRef = useRef<FlatList<FileUpload> | null>(null);
   const [flatListWidth, setFlatListWidth] = useState(0);
 
   useEffect(() => {
-    setFileUploads(
+    setFilesToDisplay(
       fileUploads.map((file) => ({
         ...file,
-        duration: file.duration || 0,
+        duration: file.duration || filesToDisplay.find((f) => f.id === file.id)?.duration || 0,
         paused: true,
         progress: 0,
       })),
@@ -164,29 +165,20 @@ const FileUploadPreviewWithContext = <
 
   // Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here and the duration is set.
   const onLoad = (index: string, duration: number) => {
-    setFileUploads((prevFileUploads) =>
-      prevFileUploads.map((fileUpload) => ({
+    setFilesToDisplay((prevFilesUploads) =>
+      prevFilesUploads.map((fileUpload, id) => ({
         ...fileUpload,
-        duration: fileUpload.id === index ? duration : fileUpload.duration,
-        file: {
-          ...fileUpload.file,
-          duration: fileUpload.id === index ? duration : fileUpload.duration,
-        },
+        duration: id.toString() === index ? duration : fileUpload.duration,
       })),
     );
   };
 
   // The handler which is triggered when the audio progresses/ the thumb is dragged in the progress control. The progressed duration is set here.
-  const onProgress = (index: string, currentTime?: number) => {
-    setFileUploads((prevFileUploads) =>
-      prevFileUploads.map((fileUpload) => ({
+  const onProgress = (index: string, progress: number) => {
+    setFilesToDisplay((prevFilesUploads) =>
+      prevFilesUploads.map((fileUpload, id) => ({
         ...fileUpload,
-        progress:
-          fileUpload.id === index
-            ? currentTime
-              ? currentTime / (fileUpload.duration as number)
-              : 0
-            : fileUpload.progress,
+        progress: id.toString() === index ? progress : fileUpload.progress,
       })),
     );
   };
@@ -195,15 +187,15 @@ const FileUploadPreviewWithContext = <
   const onPlayPause = (index: string, pausedStatus?: boolean) => {
     if (pausedStatus === false) {
       // If the status is false we set the audio with the index as playing and the others as paused.
-      setFileUploads((prevFileUploads) =>
-        prevFileUploads.map((fileUpload) => ({
+      setFilesToDisplay((prevFileUploads) =>
+        prevFileUploads.map((fileUpload, id) => ({
           ...fileUpload,
-          paused: fileUpload.id !== index,
+          paused: id.toString() !== index,
         })),
       );
     } else {
       // If the status is true we simply set all the audio's paused state as true.
-      setFileUploads((prevFileUploads) =>
+      setFilesToDisplay((prevFileUploads) =>
         prevFileUploads.map((fileUpload) => ({
           ...fileUpload,
           paused: true,
@@ -221,8 +213,9 @@ const FileUploadPreviewWithContext = <
     },
   } = useTheme();
 
-  const renderItem = ({ item }: { item: FileUpload }) => {
+  const renderItem = ({ index, item }: { index: number; item: FileUpload }) => {
     const indicatorType = getIndicatorTypeForFileState(item.state, enableOfflineSupport);
+    const isAudio = item.file.mimeType?.startsWith('audio/');
 
     return (
       <>
@@ -233,13 +226,14 @@ const FileUploadPreviewWithContext = <
           style={styles.overlay}
           type={indicatorType}
         >
-          {item.file.mimeType?.startsWith('audio/') && isSoundPackageAvailable() ? (
+          {isAudio && isSoundPackageAvailable() ? (
             <AudioAttachmentUploadPreview
               hideProgressBar={true}
-              item={item}
+              item={{ ...item, id: index.toString() }}
               onLoad={onLoad}
               onPlayPause={onPlayPause}
               onProgress={onProgress}
+              showSpeedSettings={false}
               testID='audio-attachment-upload-preview'
             />
           ) : (
@@ -308,7 +302,7 @@ const FileUploadPreviewWithContext = <
 
   return fileUploadsLength ? (
     <FlatList
-      data={fileUploads}
+      data={filesToDisplay}
       getItemLayout={(_, index) => ({
         index,
         length: FILE_PREVIEW_HEIGHT + 8,

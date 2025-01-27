@@ -35,7 +35,7 @@ export const Sound = {
           paused={paused}
           rate={rate}
           ref={soundRef}
-          progressUpdateInterval={500}
+          progressUpdateInterval={100}
           source={{
             uri,
           }}

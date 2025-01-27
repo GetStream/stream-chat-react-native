@@ -1,12 +1,7 @@
-import React, { useEffect } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, {
-  cancelAnimation,
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
@@ -28,10 +23,6 @@ export type ProgressControlProps = {
    */
   testID: string;
   /**
-   * The width of the progress control
-   */
-  width: number | string;
-  /**
    * The function to be called when the user ends dragging the progress bar
    */
   onEndDrag?: (progress: number) => void;
@@ -42,16 +33,20 @@ export type ProgressControlProps = {
   onPlayPause?: (status?: boolean) => void;
   /**
    * The function to be called when the user is dragging the progress bar
-   * @deprecated Use onStartDrag and onEndDrag instead
    */
   onProgressDrag?: (progress: number) => void;
   /**
    * The function to be called when the user starts dragging the progress bar
    */
-  onStartDrag?: () => void;
+  onStartDrag?: (progress: number) => void;
+  /**
+   * The width of the progress control
+   */
+  width?: number | string;
 };
 
-const height = 3;
+const TRACK_HEIGHT = 3;
+const THUMB_WIDTH = 8;
 
 const ProgressControlThumb = () => {
   const {
@@ -69,105 +64,97 @@ const ProgressControlThumb = () => {
   );
 };
 
-export const ProgressControl = React.memo(
-  (props: ProgressControlProps) => {
-    const {
-      duration,
-      filledColor: filledColorFromProp,
-      onEndDrag,
-      onPlayPause,
-      onProgressDrag,
-      onStartDrag,
-      progress,
-      testID,
-      width,
-    } = props;
-    const state = useSharedValue(0);
-    const translateX = useSharedValue(0);
-    const { width: windowWidth } = Dimensions.get('screen');
-    const widthInNumbers = width
-      ? typeof width === 'string'
-        ? (windowWidth * Number(width?.substring(0, width.length - 1))) / 100
-        : width
-      : 0;
-    const {
-      theme: {
-        colors: { grey_dark },
-        progressControl: { container, filledColor: filledColorFromTheme, filledStyles, thumb },
-      },
-    } = useTheme();
+export const ProgressControl = (props: ProgressControlProps) => {
+  const [widthInNumbers, setWidthInNumbers] = useState(0);
+  const {
+    filledColor: filledColorFromProp,
+    onEndDrag,
+    onPlayPause,
+    onProgressDrag,
+    onStartDrag,
+    progress,
+    testID,
+  } = props;
 
-    const pan = Gesture.Pan()
-      .maxPointers(1)
-      .onStart(() => {
-        if (onPlayPause) runOnJS(onPlayPause)();
-        if (onStartDrag) runOnJS(onStartDrag)();
-        cancelAnimation(translateX);
-        state.value = translateX.value;
-      })
-      .onChange((event) => {
-        state.value = translateX.value + event.translationX;
-        if (state.value > widthInNumbers) state.value = widthInNumbers;
-        else if (state.value < 0) state.value = 0;
-      })
-      .onEnd(() => {
-        translateX.value = state.value;
-        const dragFinishLocationInSeconds = (state.value / widthInNumbers) * duration;
-        if (onEndDrag) runOnJS(onEndDrag)(dragFinishLocationInSeconds);
-        if (onProgressDrag) runOnJS(onProgressDrag)(dragFinishLocationInSeconds);
-        if (onPlayPause) runOnJS(onPlayPause)(false);
-      })
-      .withTestId(testID);
+  const progressValue = useSharedValue(progress);
+  const {
+    theme: {
+      colors: { grey_dark },
+      progressControl: { container, filledColor: filledColorFromTheme, filledStyles, thumb },
+    },
+  } = useTheme();
 
-    const filledColor = filledColorFromProp || filledColorFromTheme;
+  const pan = Gesture.Pan()
+    .maxPointers(1)
+    .onStart((event) => {
+      const currentProgress = (progressValue.value + event.x) / widthInNumbers;
+      progressValue.value = Math.max(0, Math.min(currentProgress, 1));
+      if (onStartDrag) runOnJS(onStartDrag)(progressValue.value);
+      if (onPlayPause) runOnJS(onPlayPause)(true);
+    })
+    .onUpdate((event) => {
+      const currentProgress = (progressValue.value + event.x) / widthInNumbers;
+      progressValue.value = Math.max(0, Math.min(currentProgress, 1));
+      if (onProgressDrag) runOnJS(onProgressDrag)(progressValue.value);
+    })
+    .onEnd((event) => {
+      const currentProgress = (progressValue.value + event.x) / widthInNumbers;
+      progressValue.value = Math.max(0, Math.min(currentProgress, 1));
+      if (onEndDrag) runOnJS(onEndDrag)(progressValue.value);
+      if (onPlayPause) runOnJS(onPlayPause)(false);
+    })
+    .withTestId(testID);
 
-    useEffect(() => {
-      if (progress <= 1) {
-        state.value = progress * widthInNumbers;
-        translateX.value = progress * widthInNumbers;
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [progress, widthInNumbers]);
+  const filledColor = filledColorFromProp || filledColorFromTheme;
 
-    const animatedStyles = useAnimatedStyle(() => ({
-      backgroundColor: filledColor,
-      width: state.value,
-    }));
+  const thumbStyles = useAnimatedStyle(
+    () => ({
+      transform: [{ translateX: progress * widthInNumbers - THUMB_WIDTH / 2 }],
+    }),
+    [progress],
+  );
 
-    const thumbStyles = useAnimatedStyle(() => ({
-      transform: [{ translateX: state.value }],
-    }));
+  const animatedFilledStyles = useAnimatedStyle(
+    () => ({
+      width: progress * widthInNumbers,
+    }),
+    [progress],
+  );
 
-    return (
+  return (
+    <GestureDetector gesture={pan}>
       <View
-        style={[styles.container, { backgroundColor: grey_dark, width: widthInNumbers }, container]}
+        onLayout={({ nativeEvent }) => {
+          setWidthInNumbers(nativeEvent.layout.width);
+        }}
+        style={[styles.container, { backgroundColor: grey_dark }, container]}
       >
-        <Animated.View style={[styles.filledStyle, animatedStyles, filledStyles]} />
-        <GestureDetector gesture={pan}>
-          <Animated.View style={[thumbStyles, thumb]}>
-            {onEndDrag || onProgressDrag ? <ProgressControlThumb /> : null}
-          </Animated.View>
-        </GestureDetector>
+        <Animated.View
+          style={[
+            styles.filledStyle,
+            animatedFilledStyles,
+            {
+              backgroundColor: filledColor,
+            },
+            filledStyles,
+          ]}
+        />
+        <Animated.View style={[thumbStyles, thumb]}>
+          {onEndDrag || onProgressDrag ? <ProgressControlThumb /> : null}
+        </Animated.View>
       </View>
-    );
-  },
-  (prevProps, nextProps) => {
-    return (
-      prevProps.duration === nextProps.duration &&
-      prevProps.progress === nextProps.progress &&
-      prevProps.width === nextProps.width
-    );
-  },
-);
+    </GestureDetector>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     borderRadius: 2,
-    height,
+    height: TRACK_HEIGHT,
   },
   filledStyle: {
     borderRadius: 2,
-    height,
+    height: TRACK_HEIGHT,
   },
   progressControlThumbStyle: {
     borderRadius: 5,
@@ -181,7 +168,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.27,
     shadowRadius: 4.65,
     top: -15,
-    width: 6,
+    width: THUMB_WIDTH,
   },
 });
 ProgressControl.displayName = 'ProgressControl';
