@@ -40,6 +40,7 @@ import {
   isEditedMessage,
   MessageStatusTypes,
 } from '../../utils/utils';
+import type { Thumbnail } from '../Attachment/utils/buildGallery/types';
 
 import {
   isMessageWithStylesReadByAndDateSeparator,
@@ -74,16 +75,25 @@ export type FileAttachmentTouchableHandlerPayload<
   additionalInfo?: { attachment?: Attachment<StreamChatGenerics> };
 };
 
+export type GalleryThumbnailTouchableHandlerPayload = {
+  emitter: 'gallery';
+  additionalInfo?: { thumbnail?: Thumbnail };
+};
+
 export type PressableHandlerPayload = {
   defaultHandler?: () => void;
   event?: GestureResponderEvent;
 } & (
   | {
-      emitter?: Exclude<TouchableEmitter, 'textMention' | 'textLink' | 'card' | 'fileAttachment'>;
+      emitter?: Exclude<
+        TouchableEmitter,
+        'textMention' | 'textLink' | 'card' | 'fileAttachment' | 'gallery'
+      >;
     }
   | TextMentionTouchableHandlerPayload
   | UrlTouchableHandlerPayload
   | FileAttachmentTouchableHandlerPayload
+  | GalleryThumbnailTouchableHandlerPayload
 );
 
 export type MessagePressableHandlerPayload<
