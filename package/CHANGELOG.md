@@ -1,5 +1,12 @@
 # Change Log
 
+### [6.3.1](https://github.com/GetStream/stream-chat-react-native/compare/v6.3.0...v6.3.1) (2025-01-28)
+
+
+### Bug Fixes
+
+* ignore silent switch on sound as well ([#2908](https://github.com/GetStream/stream-chat-react-native/issues/2908)) ([3f2716c](https://github.com/GetStream/stream-chat-react-native/commit/3f2716cd54ca17be6734bedee37bac265f0bec85))
+
 ## [6.3.0](https://github.com/GetStream/stream-chat-react-native/compare/v6.2.0...v6.3.0) (2025-01-27)
 
 
