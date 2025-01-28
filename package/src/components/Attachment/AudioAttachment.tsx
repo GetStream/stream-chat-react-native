@@ -105,12 +105,9 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
 
   const handleEnd = async () => {
     setAudioFinished(false);
-    // The order is important here. We need to seek to 0 before pausing the audio.
-    await seekAudio(0);
-    if (isExpoCLI) {
-      await pauseAudio();
-    }
+    await pauseAudio();
     onPlayPause(item.id, true);
+    await seekAudio(0);
   };
 
   const dragStart = async () => {
@@ -159,7 +156,9 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             onProgress(item.id, positionMillis / (item.duration * 1000));
           }
         } else {
-          onProgress(item.id, positionMillis / durationMillis);
+          if (positionMillis <= durationMillis) {
+            onProgress(item.id, positionMillis / durationMillis);
+          }
         }
       } else {
         // Update your UI for the paused state
@@ -185,7 +184,9 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
         if (item && item.file && item.file.uri) {
           soundRef.current = await Sound.initializeSound(
             { uri: item.file.uri },
-            {},
+            {
+              progressUpdateIntervalMillis: 100,
+            },
             onPlaybackStatusUpdate,
           );
         }
