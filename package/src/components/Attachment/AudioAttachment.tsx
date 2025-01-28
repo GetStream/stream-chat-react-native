@@ -16,7 +16,7 @@ import {
   VideoProgressData,
   VideoSeekResponse,
 } from '../../native';
-import type { FileUpload } from '../../types/types';
+import { FileTypes, type FileUpload } from '../../types/types';
 import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
 import { ProgressControl } from '../ProgressControl/ProgressControl';
 import { WaveProgressBar } from '../ProgressControl/WaveProgressBar';
@@ -52,19 +52,34 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   } = props;
   const { changeAudioSpeed, pauseAudio, playAudio, seekAudio } = useAudioPlayer({ soundRef });
   const isExpoCLI = SDK === 'stream-chat-expo';
+  const isVoiceRecording = item.type === FileTypes.VoiceRecording;
 
   /** This is for Native CLI Apps */
   const handleLoad = (payload: VideoPayloadData) => {
-    onLoad(item.id, item.duration || payload.duration);
+    // The duration given by the rn-video is not same as the one of the voice recording, so we take the actual duration for voice recording.
+    if (isVoiceRecording && item.duration) {
+      onLoad(item.id, item.duration);
+    } else {
+      onLoad(item.id, item.duration || payload.duration);
+    }
   };
 
   /** This is for Native CLI Apps */
   const handleProgress = (data: VideoProgressData) => {
     const { currentTime, seekableDuration } = data;
-    if (currentTime < seekableDuration && !audioFinished) {
-      onProgress(item.id, currentTime / seekableDuration);
+    // The duration given by the rn-video is not same as the one of the voice recording, so we take the actual duration for voice recording.
+    if (isVoiceRecording && item.duration) {
+      if (currentTime < item.duration && !audioFinished) {
+        onProgress(item.id, currentTime / item.duration);
+      } else {
+        setAudioFinished(true);
+      }
     } else {
-      setAudioFinished(true);
+      if (currentTime < seekableDuration && !audioFinished) {
+        onProgress(item.id, currentTime / seekableDuration);
+      } else {
+        setAudioFinished(true);
+      }
     }
   };
 
@@ -129,10 +144,23 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
       // This is done for Expo CLI where we don't get file duration from file picker
       if (item.duration === 0) {
         onLoad(item.id, durationMillis / 1000);
+      } else {
+        // The duration given by the expo-av is not same as the one of the voice recording, so we take the actual duration for voice recording.
+        if (isVoiceRecording && item.duration) {
+          onLoad(item.id, item.duration);
+        } else {
+          onLoad(item.id, durationMillis / 1000);
+        }
       }
       // Update your UI for the loaded state
       if (playbackStatus.isPlaying) {
-        onProgress(item.id, positionMillis / durationMillis);
+        if (isVoiceRecording && item.duration) {
+          if (positionMillis <= item.duration * 1000) {
+            onProgress(item.id, positionMillis / (item.duration * 1000));
+          }
+        } else {
+          onProgress(item.id, positionMillis / durationMillis);
+        }
       } else {
         // Update your UI for the paused state
       }
@@ -355,6 +383,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
 const styles = StyleSheet.create({
   audioInfo: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   centerContainer: {
     flexGrow: 1,

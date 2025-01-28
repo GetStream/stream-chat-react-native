@@ -160,7 +160,7 @@ export type SoundReturnType = {
   play?: () => void;
   playAsync?: () => void;
   rate?: number;
-  replayAsync?: () => void;
+  replayAsync?: (status: Partial<AVPlaybackStatusToSet>) => void;
   resizeMode?: string;
   resume?: () => void;
   seek?: (progress: number, tolerance?: number) => void;

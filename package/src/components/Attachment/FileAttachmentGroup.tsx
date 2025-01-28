@@ -128,6 +128,7 @@ const FileAttachmentGroupWithContext = <
                   id: index.toString(),
                   paused: file.paused,
                   progress: file.progress,
+                  type: file.type,
                 }}
                 onLoad={onLoad}
                 onPlayPause={onPlayPause}
