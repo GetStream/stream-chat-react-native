@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { Platform, Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
@@ -72,7 +72,7 @@ const ProgressControlThumb = ({ style }: { style?: StyleProp<ViewStyle> }) => {
 export const WaveProgressBar = React.memo(
   (props: WaveProgressBarProps) => {
     /* On Android, the seek doesn't work for AAC files, hence we disable progress drag for now */
-    const showProgressDrag = true;
+    const showProgressDrag = Platform.OS === 'ios';
     const {
       amplitudesCount = 70,
       filledColor,

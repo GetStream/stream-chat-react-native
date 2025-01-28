@@ -170,6 +170,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
       }
 
       if (playbackStatus.didJustFinish && !playbackStatus.isLooping) {
+        onProgress(item.id, 1);
         // The player has just finished playing and will stop. Maybe you want to play something else?
         // status: opposite of pause,says i am playing
         handleEnd();
@@ -217,7 +218,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     if (!Sound.Player) {
       initalPlayPause();
     }
-  }, [item.paused]);
+  }, [item.paused, isExpoCLI, pauseAudio, playAudio]);
 
   const onSpeedChangeHandler = async () => {
     if (currentSpeed === 2.0) {
@@ -382,8 +383,8 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
 
 const styles = StyleSheet.create({
   audioInfo: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
   },
   centerContainer: {
     flexGrow: 1,
