@@ -353,7 +353,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flex: 1,
     flexDirection: 'row',
-    paddingHorizontal: 8,
+    paddingLeft: 8,
+    paddingRight: 16,
     paddingVertical: 12,
   },
   filenameText: {
@@ -387,7 +388,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   rightContainer: {
-    marginLeft: 8,
+    marginLeft: 16,
   },
   speedChangeButton: {
     alignItems: 'center',
