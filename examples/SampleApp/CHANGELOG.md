@@ -1,5 +1,17 @@
 # Change Log
 
+## [2.2.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v2.1.0...sampleapp@v2.2.0) (2025-01-27)
+
+
+### Features
+
+* enable swipe to reply for message bubble ([#2892](https://github.com/GetStream/stream-chat-react-native/issues/2892)) ([9c37c25](https://github.com/GetStream/stream-chat-react-native/commit/9c37c253f602892fb6b58c90ce2d92764620e174))
+
+
+### Bug Fixes
+
+* add latest version >11.2.6 compatibility for op-sqlite ([#2899](https://github.com/GetStream/stream-chat-react-native/issues/2899)) ([d69b2f6](https://github.com/GetStream/stream-chat-react-native/commit/d69b2f674ccc05302e275794bd2599289938f1ca))
+
 ## [2.1.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v2.0.1...sampleapp@v2.1.0) (2024-12-24)
 
 
