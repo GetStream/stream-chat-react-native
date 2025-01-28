@@ -51,6 +51,7 @@ const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   ({
     channels: nextValue.channels,
     pagination: nextValue.pagination,
+    ready: nextValue.ready,
   } as const);
 
 export const usePaginatedChannels = <
@@ -72,7 +73,7 @@ export const usePaginatedChannels = <
   const activeChannels = useActiveChannelsRefContext();
   const isMountedRef = useIsMountedRef();
   const { client } = useChatContext<StreamChatGenerics>();
-  const { channels, pagination } = useStateStore(channelManager?.state, selector) ?? {};
+  const { channels, pagination, ready } = useStateStore(channelManager?.state, selector) ?? {};
   const hasNextPage = pagination?.hasNext;
 
   const filtersRef = useRef<typeof filters | null>(null);
@@ -296,7 +297,8 @@ export const usePaginatedChannels = <
     //     ? true
     //     : (activeQueryType.current === 'reload' || activeQueryType.current === null) &&
     //       channels === null,
-    loadingChannels: activeQueryType.current === 'queryLocalDB' ? true : pagination?.isLoading,
+    loadingChannels:
+      activeQueryType.current === 'queryLocalDB' ? true : pagination?.isLoading || !ready,
     loadingNextPage: pagination?.isLoadingNext,
     loadNextPage: channelManager.loadNext,
     refreshing: activeQueryType.current === 'refresh',
