@@ -9,6 +9,7 @@ export const Sound = {
     ? ({ onBuffer, onEnd, onLoad, onProgress, paused, rate, soundRef, style, uri }) => (
         <AudioVideoPlayer
           audioOnly={true}
+          ignoreSilentSwitch={'ignore'}
           onBuffer={onBuffer}
           onEnd={onEnd}
           onError={(error: Error) => {
