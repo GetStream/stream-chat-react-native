@@ -75,18 +75,16 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   };
 
   const handlePlayPause = async () => {
-    if (isExpoCLI) {
-      if (item.paused) {
+    if (item.paused) {
+      if (isExpoCLI) {
         await playAudio();
-      } else {
+      }
+      onPlayPause(item.id, false);
+    } else {
+      if (isExpoCLI) {
         await pauseAudio();
       }
-    } else {
-      if (item.paused) {
-        onPlayPause(item.id, false);
-      } else {
-        onPlayPause(item.id, true);
-      }
+      onPlayPause(item.id, true);
     }
   };
 
@@ -96,17 +94,15 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     await seekAudio(0);
     if (isExpoCLI) {
       await pauseAudio();
-    } else {
-      onPlayPause(item.id, true);
     }
+    onPlayPause(item.id, true);
   };
 
   const dragStart = async () => {
     if (isExpoCLI) {
       await pauseAudio();
-    } else {
-      onPlayPause(item.id, true);
     }
+    onPlayPause(item.id, true);
   };
 
   const dragProgress = (progress: number) => {
@@ -117,9 +113,8 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     await seekAudio(progress * (item.duration as number));
     if (isExpoCLI) {
       await playAudio();
-    } else {
-      onPlayPause(item.id, false);
     }
+    onPlayPause(item.id, false);
   };
 
   /** For Expo CLI */
@@ -137,10 +132,9 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
       }
       // Update your UI for the loaded state
       if (playbackStatus.isPlaying) {
-        onPlayPause(item.id, false);
         onProgress(item.id, positionMillis / durationMillis);
       } else {
-        onPlayPause(item.id, true);
+        // Update your UI for the paused state
       }
 
       if (playbackStatus.isBuffering) {
@@ -178,6 +172,24 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // This is needed for expo applications where the rerender doesn't occur on time thefore you need to update the state of the sound.
+  useEffect(() => {
+    const initalPlayPause = async () => {
+      if (!isExpoCLI) {
+        return;
+      }
+      if (item.paused) {
+        await pauseAudio();
+      } else {
+        await playAudio();
+      }
+    };
+    // For expo CLI
+    if (!Sound.Player) {
+      initalPlayPause();
+    }
+  }, [item.paused]);
 
   const onSpeedChangeHandler = async () => {
     if (currentSpeed === 2.0) {
