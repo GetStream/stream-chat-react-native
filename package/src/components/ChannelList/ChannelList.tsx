@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { FlatList } from 'react-native-gesture-handler';
 
@@ -273,7 +273,7 @@ export const ChannelList = <
 
   const [forceUpdate, setForceUpdate] = useState(0);
   const { client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
-  const createChannelManager = useCallback(
+  const channelManager = useMemo(
     () =>
       client.createChannelManager({
         eventHandlerOverrides: {
@@ -291,32 +291,10 @@ export const ChannelList = <
         },
         options: { lockChannelOrder },
       }),
-    [
-      client,
-      lockChannelOrder,
-      onAddedToChannel,
-      onChannelDeleted,
-      onChannelHidden,
-      onChannelTruncated,
-      onChannelUpdated,
-      onChannelVisible,
-      onNewMessage,
-      onNewMessageNotification,
-      onRemovedFromChannel,
-    ],
+    // FIXME: Move the setting of the overrides down to the LLC too
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [client, lockChannelOrder],
   );
-  const clientManagerRef = useRef(createChannelManager);
-  const [channelManager, setChannelManager] = useState<ChannelManager<StreamChatGenerics>>(
-    createChannelManager(),
-  );
-
-  useEffect(() => {
-    if (clientManagerRef.current !== createChannelManager) {
-      const manager = createChannelManager();
-      setChannelManager(manager);
-      clientManagerRef.current = createChannelManager;
-    }
-  }, [createChannelManager]);
 
   useEffect(() => {
     channelManager.registerSubscriptions();

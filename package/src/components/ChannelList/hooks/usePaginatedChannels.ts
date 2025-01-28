@@ -218,7 +218,7 @@ export const usePaginatedChannels = <
   const sortStr = useMemo(() => JSON.stringify(sort), [sort]);
 
   useEffect(() => {
-    console.log('TRIGGERING', !channelManager);
+    console.log('TRIGGERING', !channelManager, ready);
     const loadOfflineChannels = async () => {
       if (!client?.user?.id) return;
 
