@@ -12,7 +12,7 @@ import { ChannelListMessenger, ChannelListMessengerProps } from './ChannelListMe
 // import { useAddedToChannelNotification } from './hooks/listeners/useAddedToChannelNotification';
 // import { useChannelDeleted } from './hooks/listeners/useChannelDeleted';
 // import { useChannelHidden } from './hooks/listeners/useChannelHidden';
-import { useChannelMemberUpdated } from './hooks/listeners/useChannelMemberUpdated';
+// import { useChannelMemberUpdated } from './hooks/listeners/useChannelMemberUpdated';
 // import { useChannelTruncated } from './hooks/listeners/useChannelTruncated';
 // import { useChannelUpdated } from './hooks/listeners/useChannelUpdated';
 // import { useChannelVisible } from './hooks/listeners/useChannelVisible';
@@ -300,6 +300,10 @@ export const ChannelList = <
           channelTruncatedHandler: onChannelTruncated,
           channelUpdatedHandler: onChannelUpdated,
           channelVisibleHandler: onChannelVisible,
+          memberUpdatedHandler: onChannelMemberUpdated
+            ? (setChannels, event) =>
+                onChannelMemberUpdated(lockChannelOrder, setChannels, event, options)
+            : undefined,
           newMessageHandler: onNewMessage
             ? (setChannels, event) => onNewMessage(lockChannelOrder, setChannels, event)
             : undefined,
@@ -311,7 +315,7 @@ export const ChannelList = <
       }),
     // FIXME: Move the setting of the overrides down to the LLC too
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [client, lockChannelOrder],
+    [client],
   );
 
   useEffect(() => {
@@ -391,12 +395,12 @@ export const ChannelList = <
   //   setChannels,
   // });
   //
-  useChannelMemberUpdated({
-    lockChannelOrder,
-    onChannelMemberUpdated,
-    options: { filters, sort },
-    setChannels: channelManager.setChannels,
-  });
+  // useChannelMemberUpdated({
+  //   lockChannelOrder,
+  //   onChannelMemberUpdated,
+  //   options: { filters, sort },
+  //   setChannels: channelManager.setChannels,
+  // });
 
   useUserPresence({
     setChannels: channelManager.setChannels,
