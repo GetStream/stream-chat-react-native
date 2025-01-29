@@ -1,10 +1,13 @@
 import { useEffect } from 'react';
 
-import type { Channel, ChannelFilters, ChannelSort, Event } from 'stream-chat';
+import type { Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
+import type {
+  ChannelListEventListenerOptions,
+  DefaultStreamChatGenerics,
+} from '../../../../types/types';
 import {
   findLastPinnedChannelIndex,
   findPinnedAtSortOrder,
@@ -18,33 +21,32 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
   {
     lockChannelOrder: boolean;
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>;
-    filters?: ChannelFilters<StreamChatGenerics>;
     onChannelMemberUpdated?: (
       lockChannelOrder: boolean,
       setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
       event: Event<StreamChatGenerics>,
-      filters?: ChannelFilters<StreamChatGenerics>,
-      sort?: ChannelSort<StreamChatGenerics>,
+      options?: ChannelListEventListenerOptions<StreamChatGenerics>,
     ) => void;
-    sort?: ChannelSort<StreamChatGenerics>;
+    options?: ChannelListEventListenerOptions<StreamChatGenerics>;
   };
 
 export const useChannelMemberUpdated = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
-  filters,
   lockChannelOrder,
   onChannelMemberUpdated,
+  options,
   setChannels,
-  sort,
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
 
   useEffect(() => {
     const handleEvent = (event: Event<StreamChatGenerics>) => {
       if (typeof onChannelMemberUpdated === 'function') {
-        onChannelMemberUpdated(lockChannelOrder, setChannels, event, filters, sort);
+        onChannelMemberUpdated(lockChannelOrder, setChannels, event, options);
       } else {
+        if (!options) return;
+        const { filters, sort } = options;
         if (!event.member?.user || event.member.user.id !== client.userID || !event.channel_type) {
           return;
         }

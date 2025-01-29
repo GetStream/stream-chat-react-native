@@ -2,42 +2,44 @@ import { useEffect } from 'react';
 
 import uniqBy from 'lodash/uniqBy';
 
-import type { Channel, ChannelFilters, ChannelSort, Event } from 'stream-chat';
+import type { Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
+import type {
+  ChannelListEventListenerOptions,
+  DefaultStreamChatGenerics,
+} from '../../../../types/types';
 import { getChannel } from '../../utils';
 import { findLastPinnedChannelIndex, findPinnedAtSortOrder } from '../utils';
 
 type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   {
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>;
-    filters?: ChannelFilters<StreamChatGenerics>;
     onAddedToChannel?: (
       setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
       event: Event<StreamChatGenerics>,
-      filters?: ChannelFilters<StreamChatGenerics>,
-      sort?: ChannelSort<StreamChatGenerics>,
+      options?: ChannelListEventListenerOptions<StreamChatGenerics>,
     ) => void;
-    sort?: ChannelSort<StreamChatGenerics>;
+    options?: ChannelListEventListenerOptions<StreamChatGenerics>;
   };
 
 export const useAddedToChannelNotification = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
-  filters,
   onAddedToChannel,
+  options,
   setChannels,
-  sort,
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
 
   useEffect(() => {
     const handleEvent = async (event: Event<StreamChatGenerics>) => {
       if (typeof onAddedToChannel === 'function') {
-        onAddedToChannel(setChannels, event, filters, sort);
+        onAddedToChannel(setChannels, event, options);
       } else {
+        if (!options) return;
+        const { sort } = options;
         if (event.channel?.id && event.channel?.type) {
           const channel = await getChannel<StreamChatGenerics>({
             client,

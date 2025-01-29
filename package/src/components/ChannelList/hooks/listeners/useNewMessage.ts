@@ -1,10 +1,13 @@
 import { useEffect } from 'react';
 
-import type { Channel, ChannelFilters, ChannelSort, Event } from 'stream-chat';
+import type { Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
+import type {
+  ChannelListEventListenerOptions,
+  DefaultStreamChatGenerics,
+} from '../../../../types/types';
 import { moveChannelUp } from '../../utils';
 import {
   isChannelArchived,
@@ -17,33 +20,32 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
   {
     lockChannelOrder: boolean;
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>;
-    filters?: ChannelFilters<StreamChatGenerics>;
     onNewMessage?: (
       lockChannelOrder: boolean,
       setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
       event: Event<StreamChatGenerics>,
-      filters?: ChannelFilters<StreamChatGenerics>,
-      sort?: ChannelSort<StreamChatGenerics>,
+      options?: ChannelListEventListenerOptions<StreamChatGenerics>,
     ) => void;
-    sort?: ChannelSort<StreamChatGenerics>;
+    options?: ChannelListEventListenerOptions<StreamChatGenerics>;
   };
 
 export const useNewMessage = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
-  filters,
   lockChannelOrder,
   onNewMessage,
+  options,
   setChannels,
-  sort,
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
 
   useEffect(() => {
     const handleEvent = (event: Event<StreamChatGenerics>) => {
       if (typeof onNewMessage === 'function') {
-        onNewMessage(lockChannelOrder, setChannels, event, filters, sort);
+        onNewMessage(lockChannelOrder, setChannels, event, options);
       } else {
+        if (!options) return;
+        const { filters, sort } = options;
         const considerPinnedChannels = shouldConsiderPinnedChannels(sort);
         const considerArchivedChannels = shouldConsiderArchivedChannels(filters);
 

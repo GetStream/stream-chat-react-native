@@ -30,7 +30,7 @@ import {
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { upsertCidsForQuery } from '../../store/apis/upsertCidsForQuery';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import type { ChannelListEventListenerOptions, DefaultStreamChatGenerics } from '../../types/types';
 import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
@@ -98,8 +98,7 @@ export type ChannelListProps<
   onAddedToChannel?: (
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
     event: Event<StreamChatGenerics>,
-    filters?: ChannelFilters<StreamChatGenerics>,
-    sort?: ChannelSort<StreamChatGenerics>,
+    options?: ChannelListEventListenerOptions<StreamChatGenerics>,
   ) => void;
   /**
    * Function that overrides default behavior when a channel gets deleted. In absence of this prop, the channel will be removed from the list.
@@ -138,8 +137,7 @@ export type ChannelListProps<
     lockChannelOrder: boolean,
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
     event: Event<StreamChatGenerics>,
-    filters?: ChannelFilters<StreamChatGenerics>,
-    sort?: ChannelSort<StreamChatGenerics>,
+    options?: ChannelListEventListenerOptions<StreamChatGenerics>,
   ) => void;
   /**
    * Function to customize behavior when a channel gets truncated
@@ -193,8 +191,7 @@ export type ChannelListProps<
     lockChannelOrder: boolean,
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
     event: Event<StreamChatGenerics>,
-    filters?: ChannelFilters<StreamChatGenerics>,
-    sort?: ChannelSort<StreamChatGenerics>,
+    options?: ChannelListEventListenerOptions<StreamChatGenerics>,
   ) => void;
   /**
    * Override the default listener/handler for event `notification.message_new`
@@ -208,7 +205,7 @@ export type ChannelListProps<
   onNewMessageNotification?: (
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
     event: Event<StreamChatGenerics>,
-    filters?: ChannelFilters<StreamChatGenerics>,
+    options?: ChannelListEventListenerOptions<StreamChatGenerics>,
   ) => void;
 
   /**
@@ -316,10 +313,9 @@ export const ChannelList = <
 
   // Setup event listeners
   useAddedToChannelNotification({
-    filters,
     onAddedToChannel,
+    options: { filters, sort },
     setChannels,
-    sort,
   });
 
   useChannelDeleted({
@@ -333,11 +329,10 @@ export const ChannelList = <
   });
 
   useChannelMemberUpdated({
-    filters,
     lockChannelOrder,
     onChannelMemberUpdated,
+    options: { filters, sort },
     setChannels,
-    sort,
   });
 
   useChannelTruncated({
@@ -358,16 +353,15 @@ export const ChannelList = <
   });
 
   useNewMessage({
-    filters,
     lockChannelOrder,
     onNewMessage,
+    options: { filters, sort },
     setChannels,
-    sort,
   });
 
   useNewMessageNotification({
-    filters,
     onNewMessageNotification,
+    options: { filters, sort },
     setChannels,
   });
 
