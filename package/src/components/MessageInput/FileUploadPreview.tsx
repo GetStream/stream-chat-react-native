@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, I18nManager, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { UploadProgressIndicator } from './UploadProgressIndicator';
@@ -213,7 +213,7 @@ const FileUploadPreviewWithContext = <
     },
   } = useTheme();
 
-  const renderItem = ({ index, item }: { index: number; item: FileUpload }) => {
+  const renderItem = ({ item }: { item: FileUpload }) => {
     const indicatorType = getIndicatorTypeForFileState(item.state, enableOfflineSupport);
     const isAudio = item.file.mimeType?.startsWith('audio/');
 
@@ -229,7 +229,7 @@ const FileUploadPreviewWithContext = <
           {isAudio && isSoundPackageAvailable() ? (
             <AudioAttachmentUploadPreview
               hideProgressBar={true}
-              item={{ ...item, id: index.toString() }}
+              item={item}
               onLoad={onLoad}
               onPlayPause={onPlayPause}
               onProgress={onProgress}
@@ -300,9 +300,18 @@ const FileUploadPreviewWithContext = <
     }
   }, [fileUploadsLength]);
 
+  const memoizedFilesToDisplay = useMemo(
+    () =>
+      filesToDisplay.map((file, index) => ({
+        ...file,
+        id: index.toString(),
+      })),
+    [filesToDisplay],
+  );
+
   return fileUploadsLength ? (
     <FlatList
-      data={filesToDisplay}
+      data={memoizedFilesToDisplay}
       getItemLayout={(_, index) => ({
         index,
         length: FILE_PREVIEW_HEIGHT + 8,
