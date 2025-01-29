@@ -115,29 +115,26 @@ const FileAttachmentGroupWithContext = <
             attachmentContainer,
           ]}
         >
-          {file.type === FileTypes.Audio || file.type === FileTypes.VoiceRecording ? (
-            isSoundPackageAvailable() ? (
-              <AudioAttachment
-                item={{
-                  duration: file.duration,
-                  file: {
-                    name: file.title as string,
-                    uri: file.asset_url,
-                    waveform_data: file.waveform_data,
-                  },
-                  id: index.toString(),
-                  paused: file.paused,
-                  progress: file.progress,
-                  type: file.type,
-                }}
-                onLoad={onLoad}
-                onPlayPause={onPlayPause}
-                onProgress={onProgress}
-                showSpeedSettings={true}
-              />
-            ) : (
-              <Attachment attachment={file} />
-            )
+          {(file.type === FileTypes.Audio || file.type === FileTypes.VoiceRecording) &&
+          isSoundPackageAvailable() ? (
+            <AudioAttachment
+              item={{
+                duration: file.duration,
+                file: {
+                  name: file.title as string,
+                  uri: file.asset_url,
+                  waveform_data: file.waveform_data,
+                },
+                id: index.toString(),
+                paused: file.paused,
+                progress: file.progress,
+                type: file.type,
+              }}
+              onLoad={onLoad}
+              onPlayPause={onPlayPause}
+              onProgress={onProgress}
+              showSpeedSettings={true}
+            />
           ) : (
             <Attachment attachment={file} />
           )}
