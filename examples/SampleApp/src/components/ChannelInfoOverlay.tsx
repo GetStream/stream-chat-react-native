@@ -425,7 +425,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                             <Archive height={24} width={24} />
                           </View>
                           <Text style={[styles.rowText, { color: black }]}>
-                            {membership?.archived_at ? 'Unarchieve' : 'Archieve'}
+                            {membership?.archived_at ? 'Unarchive' : 'Archive'}
                           </Text>
                         </View>
                       </TapGestureHandler>
