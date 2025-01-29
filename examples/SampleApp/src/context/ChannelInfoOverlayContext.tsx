@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
 
+import { ChannelState } from 'stream-chat';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { ChannelContextValue } from 'stream-chat-react-native';
 
@@ -14,6 +15,7 @@ export type ChannelInfoOverlayData = Partial<
   Pick<ChannelContextValue<StreamChatGenerics>, 'channel'>
 > & {
   clientId?: string;
+  membership?: ChannelState<StreamChatGenerics>['membership'];
   navigation?: ChannelListScreenNavigationProp;
 };
 

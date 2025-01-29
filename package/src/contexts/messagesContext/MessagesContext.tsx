@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { PressableProps } from 'react-native';
+import { PressableProps, ViewProps } from 'react-native';
 
 import type { Attachment, ChannelState, MessageResponse } from 'stream-chat';
 
@@ -100,6 +100,10 @@ export type MessagesContextValue<
    * Defaults to: [Card](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Card.tsx)
    */
   Card: React.ComponentType<CardProps<StreamChatGenerics>>;
+  /**
+   * Handler to clear the quoted state of the message.
+   */
+  clearQuotedMessageState: () => void;
   /**
    * UI component for DateHeader
    * Defaults to: [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)
@@ -359,6 +363,10 @@ export type MessagesContextValue<
 
   disableTypingIndicator?: boolean;
   /**
+   * Enable swipe to reply on messages.
+   */
+  enableSwipeToReply?: boolean;
+  /**
    * Whether messages should be aligned to right or left part of screen.
    * By default, messages will be received messages will be aligned to left and
    * sent messages will be aligned to right.
@@ -459,10 +467,16 @@ export type MessagesContextValue<
    * @overrideType Function | Array<Objects>
    */
   messageActions?: (param: MessageActionsParams<StreamChatGenerics>) => MessageActionType[];
+
   /**
    * Custom message header component
    */
   MessageHeader?: React.ComponentType<MessageFooterProps<StreamChatGenerics>>;
+  MessageSwipeContent?: React.ComponentType;
+  /**
+   * HitSlop for the message swipe to reply gesture
+   */
+  messageSwipeToReplyHitSlop?: ViewProps['hitSlop'];
   /** Custom UI component for message text */
   MessageText?: React.ComponentType<MessageTextProps<StreamChatGenerics>>;
   /**

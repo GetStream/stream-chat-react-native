@@ -22,6 +22,7 @@ export const Sound = {
       }) => (
         <AudioVideoPlayer
           audioOnly={true}
+          ignoreSilentSwitch={'ignore'}
           onBuffer={onBuffer}
           onEnd={onEnd}
           onError={(error: Error) => {
