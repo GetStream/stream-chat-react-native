@@ -33,7 +33,7 @@ import {
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
 import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayContext';
-import { Archieve } from '../icons/Archieve';
+import { Archive } from '../icons/Archive';
 import { Pin } from '../icons/Pin';
 
 dayjs.extend(relativeTime);
@@ -422,7 +422,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           ]}
                         >
                           <View style={styles.rowInner}>
-                            <Archieve height={24} width={24} />
+                            <Archive height={24} width={24} />
                           </View>
                           <Text style={[styles.rowText, { color: black }]}>
                             {membership?.archived_at ? 'Unarchieve' : 'Archieve'}
