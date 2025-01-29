@@ -40,6 +40,7 @@ import {
   isEditedMessage,
   MessageStatusTypes,
 } from '../../utils/utils';
+import type { Thumbnail } from '../Attachment/utils/buildGallery/types';
 
 import {
   isMessageWithStylesReadByAndDateSeparator,
@@ -55,23 +56,40 @@ export type TouchableEmitter =
   | 'messageReplies'
   | 'reactionList';
 
+export type TextMentionTouchableHandlerAdditionalInfo<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = { user?: UserResponse<StreamChatGenerics> };
+
 export type TextMentionTouchableHandlerPayload<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   emitter: 'textMention';
-  additionalInfo?: { user?: UserResponse<StreamChatGenerics> };
+  additionalInfo?: TextMentionTouchableHandlerAdditionalInfo<StreamChatGenerics>;
 };
+
+export type UrlTouchableHandlerAdditionalInfo = { url?: string };
 
 export type UrlTouchableHandlerPayload = {
   emitter: 'textLink' | 'card';
-  additionalInfo?: { url?: string };
+  additionalInfo?: UrlTouchableHandlerAdditionalInfo;
 };
+
+export type FileAttachmentTouchableHandlerAdditionalInfo<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = { attachment?: Attachment<StreamChatGenerics> };
 
 export type FileAttachmentTouchableHandlerPayload<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   emitter: 'fileAttachment';
-  additionalInfo?: { attachment?: Attachment<StreamChatGenerics> };
+  additionalInfo?: FileAttachmentTouchableHandlerAdditionalInfo<StreamChatGenerics>;
+};
+
+export type GalleryThumbnailTouchableHandlerAdditionalInfo = { thumbnail?: Thumbnail };
+
+export type GalleryThumbnailTouchableHandlerPayload = {
+  emitter: 'gallery';
+  additionalInfo?: GalleryThumbnailTouchableHandlerAdditionalInfo;
 };
 
 export type PressableHandlerPayload = {
@@ -79,11 +97,15 @@ export type PressableHandlerPayload = {
   event?: GestureResponderEvent;
 } & (
   | {
-      emitter?: Exclude<TouchableEmitter, 'textMention' | 'textLink' | 'card' | 'fileAttachment'>;
+      emitter?: Exclude<
+        TouchableEmitter,
+        'textMention' | 'textLink' | 'card' | 'fileAttachment' | 'gallery'
+      >;
     }
   | TextMentionTouchableHandlerPayload
   | UrlTouchableHandlerPayload
   | FileAttachmentTouchableHandlerPayload
+  | GalleryThumbnailTouchableHandlerPayload
 );
 
 export type MessagePressableHandlerPayload<
