@@ -305,12 +305,16 @@ export const ChannelList = <
                 onChannelMemberUpdated(lockChannelOrder, setChannels, event, { filters, sort })
             : undefined,
           newMessageHandler: onNewMessage
-            ? (setChannels, event) => onNewMessage(lockChannelOrder, setChannels, event)
+            ? (setChannels, event) =>
+                onNewMessage(lockChannelOrder, setChannels, event, { filters, sort })
             : undefined,
           notificationAddedToChannelHandler: onAddedToChannel
             ? (setChannels, event) => onAddedToChannel(setChannels, event, { filters, sort })
             : undefined,
-          notificationNewMessageHandler: onNewMessageNotification,
+          notificationNewMessageHandler: onNewMessageNotification
+            ? (setChannels, event) =>
+                onNewMessageNotification(setChannels, event, { filters, sort })
+            : undefined,
           notificationRemovedFromChannelHandler: onRemovedFromChannel,
         },
         options: { lockChannelOrder },
