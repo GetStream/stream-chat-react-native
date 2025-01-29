@@ -1,5 +1,17 @@
 # Change Log
 
+## [2.3.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v2.2.0...sampleapp@v2.3.0) (2025-01-29)
+
+
+### Features
+
+* channel pinning and archiving ([#2866](https://github.com/GetStream/stream-chat-react-native/issues/2866)) ([9cf8832](https://github.com/GetStream/stream-chat-react-native/commit/9cf88327eb7274af1f0e5a11f3f06f02c9efb33c))
+
+
+### Bug Fixes
+
+* archive icon name and export, swipeable usage in sample app ([#2913](https://github.com/GetStream/stream-chat-react-native/issues/2913)) ([6657138](https://github.com/GetStream/stream-chat-react-native/commit/66571384668fb9921b51ac1b8948b1f0cad1910e))
+
 ## [2.2.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v2.1.0...sampleapp@v2.2.0) (2025-01-27)
 
 
