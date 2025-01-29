@@ -12,6 +12,14 @@ import { ProgressControl } from '../../ProgressControl/ProgressControl';
 const styles = StyleSheet.create({
   durationTextStyle: {
     fontWeight: 'bold',
+    marginLeft: 16,
+  },
+  progressContainer: {
+    flex: 1,
+  },
+  progressDurationText: {
+    fontWeight: 'bold',
+    marginRight: 16,
   },
   roundedView: {
     alignItems: 'center',
@@ -20,15 +28,15 @@ const styles = StyleSheet.create({
     elevation: 2,
     height: 36,
     justifyContent: 'center',
+    marginRight: 16,
     width: 36,
   },
   videoContainer: {
     alignItems: 'center',
     backgroundColor: 'rgba(52, 52, 52, 0.1)',
-    display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10,
+    justifyContent: 'space-evenly',
+    padding: 12,
   },
 });
 
@@ -46,7 +54,7 @@ export const ImageGalleryVideoControl = React.memo(
       theme: {
         colors: { accent_blue, black, static_black, static_white },
         imageGallery: {
-          videoControl: { durationTextStyle, roundedView, videoContainer },
+          videoControl: { durationTextStyle, progressDurationText, roundedView, videoContainer },
         },
       },
     } = useTheme();
@@ -74,18 +82,20 @@ export const ImageGalleryVideoControl = React.memo(
         </TouchableOpacity>
         <Text
           accessibilityLabel='Progress Duration'
-          style={[styles.durationTextStyle, { color: black }, durationTextStyle]}
+          style={[styles.progressDurationText, { color: black }, progressDurationText]}
         >
           {progressDuration}
         </Text>
-        <ProgressControl
-          duration={duration}
-          filledColor={accent_blue}
-          onPlayPause={onPlayPause}
-          progress={progress}
-          testID={'progress-control'}
-          width={180}
-        />
+        <View style={styles.progressContainer}>
+          <ProgressControl
+            duration={duration}
+            filledColor={accent_blue}
+            progress={progress}
+            testID={'progress-control'}
+            width={180}
+          />
+        </View>
+
         <Text
           accessibilityLabel='Video Duration'
           style={[styles.durationTextStyle, { color: black }, durationTextStyle]}

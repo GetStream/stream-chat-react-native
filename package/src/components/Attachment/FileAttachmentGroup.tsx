@@ -66,18 +66,11 @@ const FileAttachmentGroupWithContext = <
   };
 
   // The handler which is triggered when the audio progresses/ the thumb is dragged in the progress control. The progressed duration is set here.
-  const onProgress = (index: string, currentTime?: number, hasEnd?: boolean) => {
+  const onProgress = (index: string, progress: number) => {
     setFilesToDisplay((prevFilesToDisplay) =>
       prevFilesToDisplay.map((filesToDisplay, id) => ({
         ...filesToDisplay,
-        progress:
-          id.toString() === index
-            ? hasEnd
-              ? 1
-              : currentTime
-              ? currentTime / (filesToDisplay.duration as number)
-              : 0
-            : filesToDisplay.progress,
+        progress: id.toString() === index ? progress : filesToDisplay.progress,
       })),
     );
   };
@@ -86,17 +79,17 @@ const FileAttachmentGroupWithContext = <
   const onPlayPause = (index: string, pausedStatus?: boolean) => {
     if (pausedStatus === false) {
       // If the status is false we set the audio with the index as playing and the others as paused.
-      setFilesToDisplay((prevFileUploads) =>
-        prevFileUploads.map((fileUpload, id) => ({
-          ...fileUpload,
+      setFilesToDisplay((prevFilesToDisplay) =>
+        prevFilesToDisplay.map((fileToDisplay, id) => ({
+          ...fileToDisplay,
           paused: id.toString() !== index,
         })),
       );
     } else {
       // If the status is true we simply set all the audio's paused state as true.
-      setFilesToDisplay((prevFileUploads) =>
-        prevFileUploads.map((fileUpload) => ({
-          ...fileUpload,
+      setFilesToDisplay((prevFilesToDisplay) =>
+        prevFilesToDisplay.map((fileToDisplay) => ({
+          ...fileToDisplay,
           paused: true,
         })),
       );
@@ -135,12 +128,12 @@ const FileAttachmentGroupWithContext = <
                 id: index.toString(),
                 paused: file.paused,
                 progress: file.progress,
+                type: file.type,
               }}
               onLoad={onLoad}
               onPlayPause={onPlayPause}
               onProgress={onProgress}
               showSpeedSettings={true}
-              testID='audio-attachment-preview'
             />
           ) : (
             <Attachment attachment={file} />
