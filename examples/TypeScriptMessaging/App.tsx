@@ -76,7 +76,12 @@ const filters = {
   members: { $in: ['ron'] },
   type: 'messaging',
 };
-const sort: ChannelSort<StreamChatGenerics> = { last_updated: -1 };
+
+const sort: ChannelSort<StreamChatGenerics> = [
+  { pinned_at: -1 },
+  { last_message_at: -1 },
+  { updated_at: -1 },
+];
 
 /**
  * Start playing with streami18n instance here:

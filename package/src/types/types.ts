@@ -1,4 +1,10 @@
-import type { ChannelState, ExtendableGenerics, LiteralStringForUnion } from 'stream-chat';
+import type {
+  ChannelFilters,
+  ChannelSort,
+  ChannelState,
+  ExtendableGenerics,
+  LiteralStringForUnion,
+} from 'stream-chat';
 
 import type { FileStateValue } from '../utils/utils';
 
@@ -96,6 +102,13 @@ export interface DefaultStreamChatGenerics extends ExtendableGenerics {
   reactionType: UnknownType;
   userType: DefaultUserType;
 }
+
+export type ChannelListEventListenerOptions<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  filters?: ChannelFilters<StreamChatGenerics>;
+  sort?: ChannelSort<StreamChatGenerics>;
+};
 
 export type UnknownType = Record<string, unknown>;
 
