@@ -20,10 +20,10 @@ import {
 type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   {
     lockChannelOrder: boolean;
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>;
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>;
     onChannelMemberUpdated?: (
       lockChannelOrder: boolean,
-      setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+      setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
       event: Event<StreamChatGenerics>,
       options?: ChannelListEventListenerOptions<StreamChatGenerics>,
     ) => void;

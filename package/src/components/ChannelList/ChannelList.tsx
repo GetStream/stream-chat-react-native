@@ -1,15 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import type { FlatList } from 'react-native-gesture-handler';
 
-import {
-  Channel,
-  ChannelFilters,
-  ChannelManager,
-  ChannelOptions,
-  ChannelSort,
-  Event,
-} from 'stream-chat';
+import { Channel, ChannelFilters, ChannelOptions, ChannelSort, Event } from 'stream-chat';
 
 import { ChannelListFooterLoadingIndicator } from './ChannelListFooterLoadingIndicator';
 import { ChannelListHeaderErrorIndicator } from './ChannelListHeaderErrorIndicator';
