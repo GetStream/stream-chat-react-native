@@ -33,6 +33,8 @@ import {
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
 import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayContext';
+import { Archive } from '../icons/Archive';
+import { Pin } from '../icons/Pin';
 
 dayjs.extend(relativeTime);
 
@@ -111,7 +113,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
   const halfScreenHeight = vh(50);
   const width = vw(100) - 60;
 
-  const { channel, clientId, navigation } = data || {};
+  const { channel, clientId, membership, navigation } = data || {};
 
   const {
     theme: {
@@ -361,6 +363,73 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           <Text style={[styles.rowText, { color: black }]}>View info</Text>
                         </View>
                       </TapGestureHandler>
+                      <TapGestureHandler
+                        onHandlerStateChange={async ({ nativeEvent: { state } }) => {
+                          if (state === State.END) {
+                            try {
+                              if (membership?.pinned_at) {
+                                await channel.unpin();
+                              } else {
+                                await channel.pin();
+                              }
+                            } catch (error) {
+                              console.log('Error pinning/unpinning channel', error);
+                            }
+
+                            setOverlay('none');
+                          }
+                        }}
+                      >
+                        <View
+                          style={[
+                            styles.row,
+                            {
+                              borderTopColor: border,
+                            },
+                          ]}
+                        >
+                          <View style={styles.rowInner}>
+                            <Pin height={24} width={24} />
+                          </View>
+                          <Text style={[styles.rowText, { color: black }]}>
+                            {membership?.pinned_at ? 'Unpin' : 'Pin'}
+                          </Text>
+                        </View>
+                      </TapGestureHandler>
+                      <TapGestureHandler
+                        onHandlerStateChange={async ({ nativeEvent: { state } }) => {
+                          if (state === State.END) {
+                            try {
+                              if (membership?.archived_at) {
+                                await channel.unarchive();
+                              } else {
+                                await channel.archive();
+                              }
+                            } catch (error) {
+                              console.log('Error archiving/unarchiving channel', error);
+                            }
+
+                            setOverlay('none');
+                          }
+                        }}
+                      >
+                        <View
+                          style={[
+                            styles.row,
+                            {
+                              borderTopColor: border,
+                            },
+                          ]}
+                        >
+                          <View style={styles.rowInner}>
+                            <Archive height={24} width={24} />
+                          </View>
+                          <Text style={[styles.rowText, { color: black }]}>
+                            {membership?.archived_at ? 'Unarchive' : 'Archive'}
+                          </Text>
+                        </View>
+                      </TapGestureHandler>
+
                       {otherMembers.length > 1 && (
                         <TapGestureHandler
                           onHandlerStateChange={({ nativeEvent: { state } }) => {

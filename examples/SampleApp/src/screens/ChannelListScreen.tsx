@@ -49,14 +49,22 @@ const styles = StyleSheet.create({
 });
 
 const baseFilters = {
+  archived: false,
   type: 'messaging',
 };
-const sort: ChannelSort<StreamChatGenerics> = { last_updated: -1 };
+
+const sort: ChannelSort<StreamChatGenerics> = [
+  { pinned_at: -1 },
+  { last_message_at: -1 },
+  { updated_at: -1 },
+];
+
 const options = {
   presence: true,
   state: true,
   watch: true,
 };
+
 export const ChannelListScreen: React.FC = () => {
   const { chatClient } = useAppContext();
   const navigation = useNavigation();
@@ -75,7 +83,7 @@ export const ChannelListScreen: React.FC = () => {
   const { loading, loadMore, messages, refreshing, refreshList, reset } =
     usePaginatedSearchedMessages(searchQuery);
 
-  const chatClientUserId = chatClient?.user?.id;
+  const chatClientUserId = chatClient?.user?.id || '';
   const filters = useMemo(
     () => ({
       ...baseFilters,
@@ -98,7 +106,7 @@ export const ChannelListScreen: React.FC = () => {
     </View>
   );
 
-  const setScrollRef = (ref: React.RefObject<FlatList<Channel<StreamChatGenerics>> | null>) => {
+  const setScrollRef = (ref: FlatList<Channel<StreamChatGenerics>> | null) => {
     scrollRef.current = ref;
   };
 

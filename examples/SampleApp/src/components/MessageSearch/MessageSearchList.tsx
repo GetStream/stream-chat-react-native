@@ -1,15 +1,14 @@
 import React from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
 import { Avatar, Spinner, useTheme, useViewport } from 'stream-chat-react-native';
-
-import { MESSAGE_SEARCH_LIMIT } from '../../hooks/usePaginatedSearchedMessages';
+import { DEFAULT_PAGINATION_LIMIT } from '../../utils/constants';
 
 import type { MessageResponse } from 'stream-chat';
 
-import type { StreamChatGenerics } from '../../types';
+import type { StackNavigatorParamList, StreamChatGenerics } from '../../types';
 
 dayjs.extend(calendar);
 
@@ -46,6 +45,7 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
   },
   title: { fontSize: 14, fontWeight: '700' },
+  titleContainer: {},
 });
 
 export type MessageSearchListProps = {
@@ -74,7 +74,8 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
       },
     } = useTheme();
     const { vw } = useViewport();
-    const navigation = useNavigation();
+    const navigation =
+      useNavigation<NavigationProp<StackNavigatorParamList, 'ChannelListScreen'>>();
 
     if (!messages && !refreshing) {
       return null;
@@ -92,8 +93,10 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
           >
             <Text style={{ color: grey }}>
               {`${
-                messages.length >= MESSAGE_SEARCH_LIMIT ? MESSAGE_SEARCH_LIMIT : messages.length
-              }${messages.length >= MESSAGE_SEARCH_LIMIT ? '+ ' : ' '} result${
+                messages.length >= DEFAULT_PAGINATION_LIMIT
+                  ? DEFAULT_PAGINATION_LIMIT
+                  : messages.length
+              }${messages.length >= DEFAULT_PAGINATION_LIMIT ? '+ ' : ' '} result${
                 messages.length === 1 ? '' : 's'
               }`}
             </Text>
@@ -129,8 +132,6 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
               testID='channel-preview-button'
             >
               <Avatar
-                channelId={item.channel?.id}
-                id={item.user?.id}
                 image={item.user?.image}
                 name={item.user?.name}
                 online={item?.user?.online}

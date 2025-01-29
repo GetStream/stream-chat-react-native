@@ -1,5 +1,6 @@
 export * from './utils/base';
 
+export * from './Archive';
 export * from './ArrowRight';
 export * from './ArrowLeft';
 export * from './ArrowUp';
