@@ -330,6 +330,7 @@ const GalleryThumbnail = <
       onLongPress={(event) => {
         if (onLongPress) {
           onLongPress({
+            additionalInfo: { thumbnail },
             emitter: 'gallery',
             event,
           });
@@ -338,6 +339,7 @@ const GalleryThumbnail = <
       onPress={(event) => {
         if (onPress) {
           onPress({
+            additionalInfo: { thumbnail },
             defaultHandler: defaultOnPress,
             emitter: 'gallery',
             event,
@@ -347,6 +349,7 @@ const GalleryThumbnail = <
       onPressIn={(event) => {
         if (onPressIn) {
           onPressIn({
+            additionalInfo: { thumbnail },
             defaultHandler: defaultOnPress,
             emitter: 'gallery',
             event,
