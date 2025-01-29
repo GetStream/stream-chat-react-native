@@ -1,5 +1,25 @@
 # Change Log
 
+### [6.3.1](https://github.com/GetStream/stream-chat-react-native/compare/v6.3.0...v6.3.1) (2025-01-28)
+
+
+### Bug Fixes
+
+* ignore silent switch on sound as well ([#2908](https://github.com/GetStream/stream-chat-react-native/issues/2908)) ([3f2716c](https://github.com/GetStream/stream-chat-react-native/commit/3f2716cd54ca17be6734bedee37bac265f0bec85))
+
+## [6.3.0](https://github.com/GetStream/stream-chat-react-native/compare/v6.2.0...v6.3.0) (2025-01-27)
+
+
+### Features
+
+* enable swipe to reply for message bubble ([#2892](https://github.com/GetStream/stream-chat-react-native/issues/2892)) ([9c37c25](https://github.com/GetStream/stream-chat-react-native/commit/9c37c253f602892fb6b58c90ce2d92764620e174))
+
+
+### Bug Fixes
+
+* add latest version >11.2.6 compatibility for op-sqlite ([#2899](https://github.com/GetStream/stream-chat-react-native/issues/2899)) ([d69b2f6](https://github.com/GetStream/stream-chat-react-native/commit/d69b2f674ccc05302e275794bd2599289938f1ca))
+* properly sync own reads while offline mode is enabled ([#2901](https://github.com/GetStream/stream-chat-react-native/issues/2901)) ([4df41c4](https://github.com/GetStream/stream-chat-react-native/commit/4df41c471ed0e688edb21915c1a044dbdb16a22d))
+
 ## [6.2.0](https://github.com/GetStream/stream-chat-react-native/compare/v6.1.1...v6.2.0) (2025-01-17)
 
 

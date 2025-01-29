@@ -4,8 +4,17 @@ import type { Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
+import type {
+  ChannelListEventListenerOptions,
+  DefaultStreamChatGenerics,
+} from '../../../../types/types';
 import { moveChannelUp } from '../../utils';
+import {
+  isChannelArchived,
+  isChannelPinned,
+  shouldConsiderArchivedChannels,
+  shouldConsiderPinnedChannels,
+} from '../utils';
 
 type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   {
@@ -15,7 +24,9 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
       lockChannelOrder: boolean,
       setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
       event: Event<StreamChatGenerics>,
+      options?: ChannelListEventListenerOptions<StreamChatGenerics>,
     ) => void;
+    options?: ChannelListEventListenerOptions<StreamChatGenerics>;
   };
 
 export const useNewMessage = <
@@ -23,6 +34,7 @@ export const useNewMessage = <
 >({
   lockChannelOrder,
   onNewMessage,
+  options,
   setChannels,
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
@@ -30,27 +42,44 @@ export const useNewMessage = <
   useEffect(() => {
     const handleEvent = (event: Event<StreamChatGenerics>) => {
       if (typeof onNewMessage === 'function') {
-        onNewMessage(lockChannelOrder, setChannels, event);
+        onNewMessage(lockChannelOrder, setChannels, event, options);
       } else {
+        if (!options) return;
+        const { filters, sort } = options;
+        const considerPinnedChannels = shouldConsiderPinnedChannels(sort);
+        const considerArchivedChannels = shouldConsiderArchivedChannels(filters);
+
+        const channelType = event.channel_type;
+        const channelId = event.channel_id;
+
+        if (!channelType || !channelId) return;
+
         setChannels((channels) => {
           if (!channels) return channels;
-          const channelInList = channels.filter((channel) => channel.cid === event.cid).length > 0;
+          const targetChannel = client.channel(channelType, channelId);
+          const targetChannelIndex = channels.indexOf(targetChannel);
 
-          if (!channelInList && event.channel_type && event.channel_id) {
-            // If channel doesn't exist in existing list, check in activeChannels as well.
-            // It may happen that channel was hidden using channel.hide(). In that case
-            // We remove it from `channels` state, but its still being watched and exists in client.activeChannels.
-            const channel = client.channel(event.channel_type, event.channel_id);
-            return [channel, ...channels];
+          const isTargetChannelArchived = isChannelArchived(targetChannel);
+          const isTargetChannelPinned = isChannelPinned(targetChannel);
+
+          if (
+            // When archived filter false, and channel is archived
+            (considerArchivedChannels && isTargetChannelArchived && !filters?.archived) ||
+            // When archived filter true, and channel is unarchived
+            (considerArchivedChannels && !isTargetChannelArchived && filters?.archived) ||
+            // If the channel is pinned and we are not considering pinned channels
+            (isTargetChannelPinned && considerPinnedChannels) ||
+            lockChannelOrder
+          ) {
+            return [...channels];
           }
 
-          if (!lockChannelOrder && event.cid)
-            return moveChannelUp<StreamChatGenerics>({
-              channels,
-              cid: event.cid,
-            });
-
-          return [...channels];
+          return moveChannelUp<StreamChatGenerics>({
+            channels,
+            channelToMove: targetChannel,
+            channelToMoveIndexWithinChannels: targetChannelIndex,
+            sort,
+          });
         });
       }
     };

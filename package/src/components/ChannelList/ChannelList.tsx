@@ -19,6 +19,7 @@ import { ChannelListMessenger, ChannelListMessengerProps } from './ChannelListMe
 // import { useAddedToChannelNotification } from './hooks/listeners/useAddedToChannelNotification';
 // import { useChannelDeleted } from './hooks/listeners/useChannelDeleted';
 // import { useChannelHidden } from './hooks/listeners/useChannelHidden';
+import { useChannelMemberUpdated } from './hooks/listeners/useChannelMemberUpdated';
 // import { useChannelTruncated } from './hooks/listeners/useChannelTruncated';
 // import { useChannelUpdated } from './hooks/listeners/useChannelUpdated';
 // import { useChannelVisible } from './hooks/listeners/useChannelVisible';
@@ -36,7 +37,7 @@ import {
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { upsertCidsForQuery } from '../../store/apis/upsertCidsForQuery';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import type { ChannelListEventListenerOptions, DefaultStreamChatGenerics } from '../../types/types';
 import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
@@ -96,12 +97,15 @@ export type ChannelListProps<
    *
    * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
    * @param event An [Event Object](https://getstream.io/chat/docs/event_object) corresponding to `notification.added_to_channel` event
+   * @param filters Channel filters
+   * @param sort Channel sort options
    *
    * @overrideType Function
    * */
   onAddedToChannel?: (
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
+    options?: ChannelListEventListenerOptions<StreamChatGenerics>,
   ) => void;
   /**
    * Function that overrides default behavior when a channel gets deleted. In absence of this prop, the channel will be removed from the list.
@@ -126,6 +130,21 @@ export type ChannelListProps<
   onChannelHidden?: (
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
+  ) => void;
+  /**
+   * Function that overrides default behavior when a channel member.updated event is triggered
+   * @param lockChannelOrder If set to true, channels won't dynamically sort by most recent message, defaults to false
+   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
+   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `member.updated` event
+   * @param filters Channel filters
+   * @param sort Channel sort options
+   * @overrideType Function
+   */
+  onChannelMemberUpdated?: (
+    lockChannelOrder: boolean,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
+    event: Event<StreamChatGenerics>,
+    options?: ChannelListEventListenerOptions<StreamChatGenerics>,
   ) => void;
   /**
    * Function to customize behavior when a channel gets truncated
@@ -170,13 +189,16 @@ export type ChannelListProps<
    * @param lockChannelOrder If set to true, channels won't dynamically sort by most recent message, defaults to false
    * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
    * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `message.new` event
-   *
+   * @param considerArchivedChannels If set to true, archived channels will be considered while updating the list of channels
+   * @param filters Channel filters
+   * @param sort Channel sort options
    * @overrideType Function
    * */
   onNewMessage?: (
     lockChannelOrder: boolean,
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
+    options?: ChannelListEventListenerOptions<StreamChatGenerics>,
   ) => void;
   /**
    * Override the default listener/handler for event `notification.message_new`
@@ -184,13 +206,15 @@ export type ChannelListProps<
    *
    * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
    * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.message_new` event
-   *
+   * @param filters Channel filters
    * @overrideType Function
    * */
   onNewMessageNotification?: (
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
+    options?: ChannelListEventListenerOptions<StreamChatGenerics>,
   ) => void;
+
   /**
    * Function that overrides default behavior when a user gets removed from a channel
    *
@@ -251,6 +275,7 @@ export const ChannelList = <
     onAddedToChannel,
     onChannelDeleted,
     onChannelHidden,
+    onChannelMemberUpdated,
     onChannelTruncated,
     onChannelUpdated,
     onChannelVisible,
@@ -373,6 +398,13 @@ export const ChannelList = <
   //   setChannels,
   // });
   //
+  useChannelMemberUpdated({
+    lockChannelOrder,
+    onChannelMemberUpdated,
+    options: { filters, sort },
+    setChannels: channelManager.setChannels,
+  });
+
   useUserPresence({
     setChannels: channelManager.setChannels,
     setForceUpdate,

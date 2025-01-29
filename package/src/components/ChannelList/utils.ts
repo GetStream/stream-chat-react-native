@@ -1,31 +1,67 @@
-import uniqBy from 'lodash/uniqBy';
-import type { Channel, StreamChat } from 'stream-chat';
+import type { Channel, ChannelSort, StreamChat } from 'stream-chat';
+
+import { findLastPinnedChannelIndex, shouldConsiderPinnedChannels } from './hooks/utils';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
 type MoveParameters<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
-  channels: Channel<StreamChatGenerics>[];
-  cid: string;
+  channels: Array<Channel<StreamChatGenerics>>;
+  channelToMove: Channel<StreamChatGenerics>;
+  /**
+   * If the index of the channel within `channels` list which is being moved upwards
+   * (`channelToMove`) is known, you can supply it to skip extra calculation.
+   */
+  channelToMoveIndexWithinChannels?: number;
+  sort?: ChannelSort<StreamChatGenerics>;
 };
 
 export const moveChannelUp = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
-  channels = [],
-  cid,
+  channels,
+  channelToMove,
+  channelToMoveIndexWithinChannels,
+  sort,
 }: MoveParameters<StreamChatGenerics>) => {
-  // get channel from channels
-  const index = channels.findIndex((c) => c.cid === cid);
-  if (index <= 0) return channels;
-  const channel = channels[index];
+  // get index of channel to move up
+  const targetChannelIndex =
+    channelToMoveIndexWithinChannels ??
+    channels.findIndex((channel) => channel.cid === channelToMove.cid);
 
-  // remove channel from current position and add to start
-  channels.splice(index, 1);
-  channels.unshift(channel);
+  const targetChannelExistsWithinList = targetChannelIndex >= 0;
+  const targetChannelAlreadyAtTheTop = targetChannelIndex === 0;
 
-  return uniqBy([channel, ...channels], 'cid');
+  // pinned channels should not move within the list based on recent activity, channels which
+  // receive messages and are not pinned should move upwards but only under the last pinned channel
+  // in the list
+  const considerPinnedChannels = shouldConsiderPinnedChannels(sort);
+
+  if (targetChannelAlreadyAtTheTop) return channels;
+
+  const newChannels = [...channels];
+
+  // target channel index is known, remove it from the list
+  if (targetChannelExistsWithinList) {
+    newChannels.splice(targetChannelIndex, 1);
+  }
+
+  // as position of pinned channels has to stay unchanged, we need to
+  // find last pinned channel in the list to move the target channel after
+  let lastPinnedChannelIndex: number | null = null;
+  if (considerPinnedChannels) {
+    lastPinnedChannelIndex = findLastPinnedChannelIndex({ channels: newChannels });
+  }
+
+  // re-insert it at the new place (to specific index if pinned channels are considered)
+  newChannels.splice(
+    typeof lastPinnedChannelIndex === 'number' ? lastPinnedChannelIndex + 1 : 0,
+    0,
+    channelToMove,
+  );
+
+  return newChannels;
 };
 
 type GetParameters<

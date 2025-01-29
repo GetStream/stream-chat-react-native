@@ -133,7 +133,6 @@ class _Audio {
         android: `${RNBlobUtil.fs.dirs.CacheDir}/sound.aac`,
         ios: 'sound.aac',
       });
-      console.log('ISE: AUDIO: ', this.audioRecordingConfiguration);
       const recording = await audioRecorderPlayer.startRecorder(
         path,
         this.audioRecordingConfiguration.options.audioSet,

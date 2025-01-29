@@ -2,12 +2,16 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RectButton } from 'react-native-gesture-handler';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import {
   ChannelPreviewMessenger,
   ChannelPreviewMessengerProps,
+  ChannelPreviewStatus,
+  ChannelPreviewStatusProps,
   Delete,
   MenuPointHorizontal,
+  Pin,
+  useChannelMembershipState,
   useChatContext,
   useTheme,
 } from 'stream-chat-react-native';
@@ -19,6 +23,7 @@ import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayConte
 import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
+import { ChannelState } from 'stream-chat';
 
 const styles = StyleSheet.create({
   leftSwipeableButton: {
@@ -35,12 +40,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
   },
+  statusContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  pinIconContainer: {
+    marginLeft: 8,
+  },
 });
 
 type ChannelListScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
   'ChannelListScreen'
 >;
+
+const CustomChannelPreviewStatus = (
+  props: ChannelPreviewStatusProps & { membership: ChannelState['membership'] },
+) => {
+  const { membership } = props;
+
+  return (
+    <View style={styles.statusContainer}>
+      <ChannelPreviewStatus {...props} />
+      {membership.pinned_at && (
+        <View style={styles.pinIconContainer}>
+          <Pin size={24} />
+        </View>
+      )}
+    </View>
+  );
+};
 
 export const ChannelPreview: React.FC<ChannelPreviewMessengerProps<StreamChatGenerics>> = (
   props,
@@ -56,6 +85,8 @@ export const ChannelPreview: React.FC<ChannelPreviewMessengerProps<StreamChatGen
   const { client } = useChatContext<StreamChatGenerics>();
 
   const navigation = useNavigation<ChannelListScreenNavigationProp>();
+
+  const membership = useChannelMembershipState(channel);
 
   const {
     theme: {
@@ -75,7 +106,7 @@ export const ChannelPreview: React.FC<ChannelPreviewMessengerProps<StreamChatGen
         <View style={[styles.swipeableContainer, { backgroundColor: white_smoke }]}>
           <RectButton
             onPress={() => {
-              setData({ channel, clientId: client.userID, navigation });
+              setData({ channel, clientId: client.userID, membership, navigation });
               setOverlay('channelInfo');
             }}
             style={[styles.leftSwipeableButton]}
@@ -104,7 +135,13 @@ export const ChannelPreview: React.FC<ChannelPreviewMessengerProps<StreamChatGen
         </View>
       )}
     >
-      <ChannelPreviewMessenger {...props} />
+      <ChannelPreviewMessenger
+        {...props}
+        // eslint-disable-next-line react/no-unstable-nested-components
+        PreviewStatus={(statusProps) => (
+          <CustomChannelPreviewStatus {...statusProps} membership={membership} />
+        )}
+      />
     </Swipeable>
   );
 };

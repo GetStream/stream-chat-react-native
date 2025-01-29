@@ -2,6 +2,8 @@ import { UserResponse } from 'stream-chat';
 import { StreamChatGenerics } from './types';
 
 export const USER_TOKENS: Record<string, string> = {
+  luke_skywalker:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoibHVrZV9za3l3YWxrZXIifQ.kFSLHRB5X62t0Zlc7nwczWUfsQMwfkpylC6jCUZ6Mc0',
   e2etest1:
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZTJldGVzdDEifQ.XlQOw8nl7fFzHoBkEiTcYGkNo5r7EBYA40LABGOk4hc',
   e2etest2:
@@ -28,6 +30,9 @@ export const USER_TOKENS: Record<string, string> = {
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoicm9kb2xwaGUifQ.tLl-I8ADBhTKB-x5FB9jK4-am0dELLXgydM6VN9rTL8',
 };
 export const USERS: Record<string, UserResponse<StreamChatGenerics>> = {
+  luke_skywalker: {
+    id: 'luke_skywalker',
+  },
   neil: {
     id: 'neil',
     image: 'https://ca.slack-edge.com/T02RM6X6B-U01173D1D5J-0dead6eea6ea-512',

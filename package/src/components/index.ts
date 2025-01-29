@@ -47,6 +47,7 @@ export * from './ChannelList/ChannelListMessenger';
 export * from './ChannelList/hooks/listeners/useAddedToChannelNotification';
 export * from './ChannelList/hooks/listeners/useChannelDeleted';
 export * from './ChannelList/hooks/listeners/useChannelHidden';
+export * from './ChannelList/hooks/listeners/useChannelMemberUpdated';
 export * from './ChannelList/hooks/listeners/useChannelTruncated';
 export * from './ChannelList/hooks/listeners/useChannelUpdated';
 export * from './ChannelList/hooks/listeners/useNewMessage';
@@ -55,6 +56,7 @@ export * from './ChannelList/hooks/listeners/useRemovedFromChannelNotification';
 export * from './ChannelList/hooks/listeners/useUserPresence';
 export * from './ChannelList/hooks/useCreateChannelsContext';
 export * from './ChannelList/hooks/usePaginatedChannels';
+export * from './ChannelList/hooks/useChannelMembershipState';
 export * from './ChannelList/Skeleton';
 
 export * from './ChannelPreview/ChannelAvatar';
