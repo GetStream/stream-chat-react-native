@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FlatList, I18nManager, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { UploadProgressIndicator } from './UploadProgressIndicator';
@@ -166,9 +166,9 @@ const FileUploadPreviewWithContext = <
   // Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here and the duration is set.
   const onLoad = (index: string, duration: number) => {
     setFilesToDisplay((prevFilesUploads) =>
-      prevFilesUploads.map((fileUpload, id) => ({
+      prevFilesUploads.map((fileUpload) => ({
         ...fileUpload,
-        duration: id.toString() === index ? duration : fileUpload.duration,
+        duration: fileUpload.id === index ? duration : fileUpload.duration,
       })),
     );
   };
@@ -176,9 +176,9 @@ const FileUploadPreviewWithContext = <
   // The handler which is triggered when the audio progresses/ the thumb is dragged in the progress control. The progressed duration is set here.
   const onProgress = (index: string, progress: number) => {
     setFilesToDisplay((prevFilesUploads) =>
-      prevFilesUploads.map((fileUpload, id) => ({
+      prevFilesUploads.map((fileUpload) => ({
         ...fileUpload,
-        progress: id.toString() === index ? progress : fileUpload.progress,
+        progress: fileUpload.id === index ? progress : fileUpload.progress,
       })),
     );
   };
@@ -188,9 +188,9 @@ const FileUploadPreviewWithContext = <
     if (pausedStatus === false) {
       // If the status is false we set the audio with the index as playing and the others as paused.
       setFilesToDisplay((prevFileUploads) =>
-        prevFileUploads.map((fileUpload, id) => ({
+        prevFileUploads.map((fileUpload) => ({
           ...fileUpload,
-          paused: id.toString() !== index,
+          paused: fileUpload.id !== index,
         })),
       );
     } else {
@@ -300,18 +300,9 @@ const FileUploadPreviewWithContext = <
     }
   }, [fileUploadsLength]);
 
-  const memoizedFilesToDisplay = useMemo(
-    () =>
-      filesToDisplay.map((file, index) => ({
-        ...file,
-        id: index.toString(),
-      })),
-    [filesToDisplay],
-  );
-
   return fileUploadsLength ? (
     <FlatList
-      data={memoizedFilesToDisplay}
+      data={filesToDisplay}
       getItemLayout={(_, index) => ({
         index,
         length: FILE_PREVIEW_HEIGHT + 8,
