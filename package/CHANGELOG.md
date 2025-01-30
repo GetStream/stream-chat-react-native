@@ -1,5 +1,15 @@
 # Change Log
 
+### [6.4.1](https://github.com/GetStream/stream-chat-react-native/compare/v6.4.0...v6.4.1) (2025-01-30)
+
+
+### Bug Fixes
+
+* bottom sheet layout issue interrupting with animated view ([#2917](https://github.com/GetStream/stream-chat-react-native/issues/2917)) ([3627f32](https://github.com/GetStream/stream-chat-react-native/commit/3627f32a9e7e551a9847080c97c811102ffb4675))
+* bump stream-chat-js version for poll state invalidation bug ([#2918](https://github.com/GetStream/stream-chat-react-native/issues/2918)) ([555fb68](https://github.com/GetStream/stream-chat-react-native/commit/555fb68db55a787c605103bdf07a9e7eadc18394))
+* regression in file upload preview remove item ([#2919](https://github.com/GetStream/stream-chat-react-native/issues/2919)) ([569ed39](https://github.com/GetStream/stream-chat-react-native/commit/569ed39915475e3a6abda990d5018a19dafbae7b))
+* warn users about new google policy and to replace cameraroll with image-picker ([#2916](https://github.com/GetStream/stream-chat-react-native/issues/2916)) ([5c16879](https://github.com/GetStream/stream-chat-react-native/commit/5c16879f0f87b70b0d872fea2d576f6b287d3172))
+
 ## [6.4.0](https://github.com/GetStream/stream-chat-react-native/compare/v6.3.1...v6.4.0) (2025-01-29)
 
 
