@@ -165,7 +165,6 @@ const FileUploadPreviewWithContext = <
 
   // Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here and the duration is set.
   const onLoad = (index: string, duration: number) => {
-    console.log(index, duration);
     setFilesToDisplay((prevFilesUploads) =>
       prevFilesUploads.map((fileUpload) => ({
         ...fileUpload,
