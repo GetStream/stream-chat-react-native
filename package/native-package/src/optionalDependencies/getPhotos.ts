@@ -73,6 +73,9 @@ export const getPhotos = CameraRollDependency
   ? async ({ after, first }): Promise<ReturnType> => {
       try {
         if (Platform.OS === 'android') {
+          console.warn(
+            '@react-native-camera-roll/camera-roll can be removed in favour of new google policy(https://support.google.com/googleplay/android-developer/answer/14115180?hl=en) if you do not have gallery as your core feature of the app.\nYou can replace it with react-native-image-picker and uninstall it. Guide - https://getstream.io/chat/docs/sdk/react-native/guides/native-image-picker/.',
+          );
           const granted = await verifyAndroidPermissions();
           if (!granted) {
             throw new Error('getPhotos Error');
