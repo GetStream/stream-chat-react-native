@@ -122,6 +122,9 @@ export const usePaginatedChannels = <
     };
 
     try {
+      if (isQueryStale() || !isMountedRef.current) {
+        return;
+      }
       /**
        * We skipInitialization here for handling race condition between ChannelList, Channel (and Thread)
        * when they all (may) update the channel state at the same time (when connection state recovers)
@@ -133,9 +136,6 @@ export const usePaginatedChannels = <
         await channelManager.queryChannels(filters, sort, newOptions, {
           skipInitialization: enableOfflineSupport ? undefined : activeChannels.current,
         });
-      }
-      if (isQueryStale() || !isMountedRef.current) {
-        return;
       }
 
       // const newChannels =

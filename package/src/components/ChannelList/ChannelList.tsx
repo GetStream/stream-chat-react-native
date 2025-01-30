@@ -14,7 +14,7 @@ import { ChannelListMessenger, ChannelListMessengerProps } from './ChannelListMe
 // import { useChannelHidden } from './hooks/listeners/useChannelHidden';
 // import { useChannelMemberUpdated } from './hooks/listeners/useChannelMemberUpdated';
 // import { useChannelTruncated } from './hooks/listeners/useChannelTruncated';
-// import { useChannelUpdated } from './hooks/listeners/useChannelUpdated';
+import { useChannelUpdated } from './hooks/listeners/useChannelUpdated';
 // import { useChannelVisible } from './hooks/listeners/useChannelVisible';
 // import { useNewMessage } from './hooks/listeners/useNewMessage';
 // import { useNewMessageNotification } from './hooks/listeners/useNewMessageNotification';
@@ -298,7 +298,6 @@ export const ChannelList = <
           channelDeletedHandler: onChannelDeleted,
           channelHiddenHandler: onChannelHidden,
           channelTruncatedHandler: onChannelTruncated,
-          channelUpdatedHandler: onChannelUpdated,
           channelVisibleHandler: onChannelVisible,
           memberUpdatedHandler: onChannelMemberUpdated
             ? (setChannels, event) =>
@@ -376,10 +375,10 @@ export const ChannelList = <
   //   setForceUpdate,
   // });
   //
-  // useChannelUpdated({
-  //   onChannelUpdated,
-  //   setChannels,
-  // });
+  useChannelUpdated({
+    onChannelUpdated,
+    setChannels: channelManager.setChannels,
+  });
   //
   // useChannelVisible({
   //   onChannelVisible,
