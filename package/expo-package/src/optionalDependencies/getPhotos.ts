@@ -27,6 +27,11 @@ type ReturnType = {
 export const getPhotos = MediaLibrary
   ? async ({ after, first }): Promise<ReturnType> => {
       try {
+        if (Platform.OS === 'android') {
+          console.warn(
+            'expo-media-library can be removed in favour of new google policy(https://support.google.com/googleplay/android-developer/answer/14115180?hl=en) if you do not have gallery as your core feature of the app.\nYou can replace it with expo-image-picker and uninstall it. Guide - https://getstream.io/chat/docs/sdk/react-native/guides/native-image-picker/.',
+          );
+        }
         // NOTE:
         // should always check first before requesting permission
         // because always requesting permission will cause
