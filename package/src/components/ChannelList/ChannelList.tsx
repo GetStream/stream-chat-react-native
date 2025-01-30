@@ -339,6 +339,7 @@ export const ChannelList = <
     loadingChannels,
     loadingNextPage,
     loadNextPage,
+    ready,
     refreshing,
     refreshList,
     reloadList,
@@ -416,7 +417,7 @@ export const ChannelList = <
   const channelIdsStr = channels?.reduce((acc, channel) => `${acc}${channel.cid}`, '');
 
   useEffect(() => {
-    if (channels == null || staticChannelsActive || !enableOfflineSupport) {
+    if (channels == null || !ready || staticChannelsActive || !enableOfflineSupport) {
       return;
     }
 

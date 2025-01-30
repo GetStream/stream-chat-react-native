@@ -301,6 +301,7 @@ export const usePaginatedChannels = <
       activeQueryType.current === 'queryLocalDB' ? true : pagination?.isLoading || !ready,
     loadingNextPage: pagination?.isLoadingNext,
     loadNextPage: channelManager.loadNext,
+    ready,
     refreshing: activeQueryType.current === 'refresh',
     refreshList,
     reloadList,
