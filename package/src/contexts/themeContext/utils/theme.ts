@@ -236,6 +236,7 @@ export type Theme = {
     };
     videoControl: {
       durationTextStyle: TextStyle;
+      progressDurationText: TextStyle;
       roundedView: ViewStyle;
       videoContainer: ViewStyle;
     };
@@ -1007,6 +1008,7 @@ export const defaultTheme: Theme = {
     },
     videoControl: {
       durationTextStyle: {},
+      progressDurationText: {},
       roundedView: {},
       videoContainer: {},
     },

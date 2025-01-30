@@ -6,7 +6,20 @@ export const Sound = {
   initializeSound: null,
   // eslint-disable-next-line react/display-name
   Player: AudioVideoPlayer
-    ? ({ onBuffer, onEnd, onLoad, onProgress, paused, rate, soundRef, style, uri }) => (
+    ? ({
+        onBuffer,
+        onEnd,
+        onLoad,
+        onLoadStart,
+        onPlaybackStateChanged,
+        onProgress,
+        onSeek,
+        paused,
+        rate,
+        soundRef,
+        style,
+        uri,
+      }) => (
         <AudioVideoPlayer
           audioOnly={true}
           ignoreSilentSwitch={'ignore'}
@@ -16,10 +29,14 @@ export const Sound = {
             console.log(error);
           }}
           onLoad={onLoad}
+          onLoadStart={onLoadStart}
+          onPlaybackStateChanged={onPlaybackStateChanged}
           onProgress={onProgress}
+          onSeek={onSeek}
           paused={paused}
           rate={rate}
           ref={soundRef}
+          progressUpdateInterval={100}
           source={{
             uri,
           }}

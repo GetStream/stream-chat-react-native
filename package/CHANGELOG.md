@@ -1,5 +1,19 @@
 # Change Log
 
+## [6.4.0](https://github.com/GetStream/stream-chat-react-native/compare/v6.3.1...v6.4.0) (2025-01-29)
+
+
+### Features
+
+* channel pinning and archiving ([#2866](https://github.com/GetStream/stream-chat-react-native/issues/2866)) ([9cf8832](https://github.com/GetStream/stream-chat-react-native/commit/9cf88327eb7274af1f0e5a11f3f06f02c9efb33c))
+
+
+### Bug Fixes
+
+* add thumbnail info on gallery press handlers ([#2911](https://github.com/GetStream/stream-chat-react-native/issues/2911)) ([059a420](https://github.com/GetStream/stream-chat-react-native/commit/059a42039daca87ea9fedc1b00a0364480b9d21d))
+* archive icon name and export, swipeable usage in sample app ([#2913](https://github.com/GetStream/stream-chat-react-native/issues/2913)) ([6657138](https://github.com/GetStream/stream-chat-react-native/commit/66571384668fb9921b51ac1b8948b1f0cad1910e))
+* audio attachment reset to 0 issue and refinements ([#2903](https://github.com/GetStream/stream-chat-react-native/issues/2903)) ([c649714](https://github.com/GetStream/stream-chat-react-native/commit/c6497145bea4afaa508706bf75adfd6d4d68fe5d))
+
 ### [6.3.1](https://github.com/GetStream/stream-chat-react-native/compare/v6.3.0...v6.3.1) (2025-01-28)
 
 

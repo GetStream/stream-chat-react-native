@@ -114,6 +114,7 @@ export type PlaybackStatus = {
   isLooping: boolean;
   isMuted: boolean;
   isPlaying: boolean;
+  isSeeking: boolean;
   positionMillis: number;
   shouldPlay: boolean;
 };
@@ -141,7 +142,6 @@ export type SoundOptions = {
 };
 
 export type SoundReturnType = {
-  paused: boolean;
   testID: string;
   getDuration?: () => number;
   isPlaying?: () => boolean;
@@ -149,18 +149,21 @@ export type SoundReturnType = {
   onEnd?: () => void;
   onLoad?: (payload: VideoPayloadData) => void;
   onLoadStart?: () => void;
+  onPlaybackStateChanged?: (playbackState: PlaybackStatus) => void;
   onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void;
   onProgress?: (data: VideoProgressData) => void;
   onReadyForDisplay?: () => void;
+  onSeek?: (seekResponse: VideoSeekResponse) => void;
   pause?: () => void;
   pauseAsync?: () => void;
+  paused?: boolean;
   play?: () => void;
   playAsync?: () => void;
   rate?: number;
-  replayAsync?: () => void;
+  replayAsync?: (status: Partial<AVPlaybackStatusToSet>) => void;
   resizeMode?: string;
   resume?: () => void;
-  seek?: (progress: number) => void;
+  seek?: (progress: number, tolerance?: number) => void;
   setPositionAsync?: (millis: number) => void;
   setProgressUpdateIntervalAsync?: (progressUpdateIntervalMillis: number) => void;
   setRateAsync?: (rate: number) => void;
@@ -240,6 +243,11 @@ export type AudioType = {
 export let Audio: AudioType | undefined;
 
 export let Sound: SoundType;
+
+export type VideoSeekResponse = {
+  currentTime: number;
+  seekTime: number;
+};
 
 export type VideoProgressData = {
   currentTime: number;

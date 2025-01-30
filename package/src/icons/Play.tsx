@@ -7,7 +7,7 @@ import { IconProps } from './utils/base';
 type Props = IconProps;
 
 export const Play = ({ height, width, ...rest }: Props) => (
-  <Svg height={height} viewBox={`0 0 ${height} ${width}`} width={width} {...rest}>
-    <Path d='M8.66602 6.66663V25.3333L23.3327 16L8.66602 6.66663Z' {...rest} />
+  <Svg height={height} viewBox={`0 0 24 24`} width={width} {...rest}>
+    <Path d='M6.5 5V19L17.5 12L6.5 5Z' {...rest} />
   </Svg>
 );
