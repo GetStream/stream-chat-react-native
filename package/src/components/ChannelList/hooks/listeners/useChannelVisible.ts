@@ -1,13 +1,14 @@
 import { useEffect } from 'react';
 
-import uniqBy from 'lodash/uniqBy';
-
 import type { Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
-import { getChannel } from '../../utils';
+import type {
+  ChannelListEventListenerOptions,
+  DefaultStreamChatGenerics,
+} from '../../../../types/types';
+import { getChannel, moveChannelUp } from '../../utils';
 
 type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   {
@@ -15,13 +16,16 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
     onChannelVisible?: (
       setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
       event: Event<StreamChatGenerics>,
+      options?: ChannelListEventListenerOptions<StreamChatGenerics>,
     ) => void;
+    options?: ChannelListEventListenerOptions<StreamChatGenerics>;
   };
 
 export const useChannelVisible = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   onChannelVisible,
+  options,
   setChannels,
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
@@ -31,13 +35,24 @@ export const useChannelVisible = <
       if (typeof onChannelVisible === 'function') {
         onChannelVisible(setChannels, event);
       } else {
+        if (!options) return;
+        const { sort } = options;
         if (event.channel_id && event.channel_type) {
           const channel = await getChannel<StreamChatGenerics>({
             client,
             id: event.channel_id,
             type: event.channel_type,
           });
-          setChannels((channels) => (channels ? uniqBy([channel, ...channels], 'cid') : channels));
+          setChannels((channels) =>
+            channels
+              ? moveChannelUp({
+                  channels,
+                  channelToMove: channel,
+                  channelToMoveIndexWithinChannels: -1,
+                  sort,
+                })
+              : channels,
+          );
         }
       }
     };
