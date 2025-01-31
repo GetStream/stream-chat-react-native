@@ -119,8 +119,8 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     });
 
   return (
-    <Modal animationType='fade' onRequestClose={handleDismiss} transparent visible={visible}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Modal animationType='fade' onRequestClose={handleDismiss} transparent visible={visible}>
         <TouchableWithoutFeedback onPress={handleDismiss}>
           <View style={[styles.overlay, { backgroundColor: overlay }, overlayTheme]}>
             <GestureDetector gesture={gesture}>
@@ -143,8 +143,8 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
             </GestureDetector>
           </View>
         </TouchableWithoutFeedback>
-      </GestureHandlerRootView>
-    </Modal>
+      </Modal>
+    </GestureHandlerRootView>
   );
 };
 
