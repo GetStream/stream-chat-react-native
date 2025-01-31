@@ -12,7 +12,7 @@
     "clean-all": "yarn clean && rm -rf node_modules && rm -rf ios/Pods && rm -rf vendor && bundle install && yarn install && cd ios && bundle exec pod install && cd -"
   },
   "dependencies": {
-    "@op-engineering/op-sqlite": "^11.2.13",
+    "@op-engineering/op-sqlite": "^11.4.2",
     "@react-native-clipboard/clipboard": "^1.14.3",
     "@react-native-community/netinfo": "^11.3.2",
     "@react-navigation/native": "^6.1.17",

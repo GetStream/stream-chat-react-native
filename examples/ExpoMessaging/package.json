@@ -10,7 +10,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "@op-engineering/op-sqlite": "^11.2.13",
+    "@op-engineering/op-sqlite": "^11.4.2",
     "@react-native-community/netinfo": "11.4.1",
     "@react-navigation/elements": "^1.3.30",
     "expo": "~52.0.20",
