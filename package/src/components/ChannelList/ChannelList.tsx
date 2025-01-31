@@ -339,7 +339,7 @@ export const ChannelList = <
   ]);
 
   useEffect(() => {
-    channelManager.setOptions({ allowNewMessagesFromUnfilteredChannels: true, lockChannelOrder });
+    channelManager.setOptions({ lockChannelOrder });
   }, [channelManager, lockChannelOrder]);
 
   useEffect(() => {
