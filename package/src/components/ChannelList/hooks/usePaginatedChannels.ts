@@ -300,7 +300,13 @@ export const usePaginatedChannels = <
     loadingChannels:
       activeQueryType.current === 'queryLocalDB'
         ? true
-        : pagination?.isLoading || (!ready && channels.length === 0),
+        : // Although channels.length === 0 should come as a given when we have !ready,
+          // due to the way offline storage works currently we have to do this additional
+          // check to make sure channels were not populated before the reactive list becomes
+          // ready. I do not like providing a way to set the ready state, as it should be managed
+          // in the LLC entirely. Once we move offline support to the LLC, we can remove this check
+          // too as it'll be redundant.
+          pagination?.isLoading || (!ready && channels.length === 0),
     loadingNextPage: pagination?.isLoadingNext,
     loadNextPage: channelManager.loadNext,
     ready,
