@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import type { FlatList } from 'react-native-gesture-handler';
 
-import type { Channel, ChannelFilters, ChannelOptions, ChannelSort, Event } from 'stream-chat';
+import { Channel, ChannelFilters, ChannelOptions, ChannelSort, Event } from 'stream-chat';
 
 import { ChannelListFooterLoadingIndicator } from './ChannelListFooterLoadingIndicator';
 import { ChannelListHeaderErrorIndicator } from './ChannelListHeaderErrorIndicator';
 import { ChannelListHeaderNetworkDownIndicator } from './ChannelListHeaderNetworkDownIndicator';
 import { ChannelListLoadingIndicator } from './ChannelListLoadingIndicator';
 import { ChannelListMessenger, ChannelListMessengerProps } from './ChannelListMessenger';
-import { useAddedToChannelNotification } from './hooks/listeners/useAddedToChannelNotification';
-import { useChannelDeleted } from './hooks/listeners/useChannelDeleted';
-import { useChannelHidden } from './hooks/listeners/useChannelHidden';
-import { useChannelMemberUpdated } from './hooks/listeners/useChannelMemberUpdated';
-import { useChannelTruncated } from './hooks/listeners/useChannelTruncated';
+// import { useAddedToChannelNotification } from './hooks/listeners/useAddedToChannelNotification';
+// import { useChannelDeleted } from './hooks/listeners/useChannelDeleted';
+// import { useChannelHidden } from './hooks/listeners/useChannelHidden';
+// import { useChannelMemberUpdated } from './hooks/listeners/useChannelMemberUpdated';
+// import { useChannelTruncated } from './hooks/listeners/useChannelTruncated';
 import { useChannelUpdated } from './hooks/listeners/useChannelUpdated';
-import { useChannelVisible } from './hooks/listeners/useChannelVisible';
-import { useNewMessage } from './hooks/listeners/useNewMessage';
-import { useNewMessageNotification } from './hooks/listeners/useNewMessageNotification';
-import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedFromChannelNotification';
+// import { useChannelVisible } from './hooks/listeners/useChannelVisible';
+// import { useNewMessage } from './hooks/listeners/useNewMessage';
+// import { useNewMessageNotification } from './hooks/listeners/useNewMessageNotification';
+// import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedFromChannelNotification';
 import { useUserPresence } from './hooks/listeners/useUserPresence';
 import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
 import { usePaginatedChannels } from './hooks/usePaginatedChannels';
@@ -96,7 +96,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onAddedToChannel?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
     options?: ChannelListEventListenerOptions<StreamChatGenerics>,
   ) => void;
@@ -109,7 +109,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelDeleted?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -121,7 +121,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelHidden?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -135,7 +135,7 @@ export type ChannelListProps<
    */
   onChannelMemberUpdated?: (
     lockChannelOrder: boolean,
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
     options?: ChannelListEventListenerOptions<StreamChatGenerics>,
   ) => void;
@@ -148,7 +148,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelTruncated?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -160,7 +160,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelUpdated?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -172,7 +172,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelVisible?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -189,7 +189,7 @@ export type ChannelListProps<
    * */
   onNewMessage?: (
     lockChannelOrder: boolean,
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
     options?: ChannelListEventListenerOptions<StreamChatGenerics>,
   ) => void;
@@ -203,7 +203,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onNewMessageNotification?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
     options?: ChannelListEventListenerOptions<StreamChatGenerics>,
   ) => void;
@@ -217,7 +217,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onRemovedFromChannel?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
     event: Event<StreamChatGenerics>,
   ) => void;
   /**
@@ -290,7 +290,66 @@ export const ChannelList = <
   } = props;
 
   const [forceUpdate, setForceUpdate] = useState(0);
-  const { enableOfflineSupport } = useChatContext<StreamChatGenerics>();
+  const { client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
+  const channelManager = useMemo(() => client.createChannelManager({}), [client]);
+
+  /**
+   * This hook sets the event handler overrides in the channelManager internally
+   * whenever they change. We do this to avoid recreating the channelManager instance
+   * every time these change, as we want to keep it as static as possible.
+   * This protects us from something like defining the overrides as inline functions
+   * causing the manager instance to be recreated over and over again.
+   */
+  useEffect(() => {
+    channelManager.setEventHandlerOverrides({
+      channelDeletedHandler: onChannelDeleted,
+      channelHiddenHandler: onChannelHidden,
+      channelTruncatedHandler: onChannelTruncated,
+      channelVisibleHandler: onChannelVisible,
+      memberUpdatedHandler: onChannelMemberUpdated
+        ? (setChannels, event) =>
+            onChannelMemberUpdated(lockChannelOrder, setChannels, event, { filters, sort })
+        : undefined,
+      newMessageHandler: onNewMessage
+        ? (setChannels, event) =>
+            onNewMessage(lockChannelOrder, setChannels, event, { filters, sort })
+        : undefined,
+      notificationAddedToChannelHandler: onAddedToChannel
+        ? (setChannels, event) => onAddedToChannel(setChannels, event, { filters, sort })
+        : undefined,
+      notificationNewMessageHandler: onNewMessageNotification
+        ? (setChannels, event) => onNewMessageNotification(setChannels, event, { filters, sort })
+        : undefined,
+      notificationRemovedFromChannelHandler: onRemovedFromChannel,
+    });
+  }, [
+    channelManager,
+    filters,
+    lockChannelOrder,
+    onAddedToChannel,
+    onChannelDeleted,
+    onChannelHidden,
+    onChannelMemberUpdated,
+    onChannelTruncated,
+    onChannelVisible,
+    onNewMessage,
+    onNewMessageNotification,
+    onRemovedFromChannel,
+    sort,
+  ]);
+
+  useEffect(() => {
+    channelManager.setOptions({ lockChannelOrder });
+  }, [channelManager, lockChannelOrder]);
+
+  useEffect(() => {
+    channelManager.registerSubscriptions();
+
+    return () => {
+      channelManager.unregisterSubscriptions();
+    };
+  }, [channelManager]);
+
   const {
     channels,
     error,
@@ -298,12 +357,13 @@ export const ChannelList = <
     loadingChannels,
     loadingNextPage,
     loadNextPage,
+    ready,
     refreshing,
     refreshList,
     reloadList,
-    setChannels,
     staticChannelsActive,
   } = usePaginatedChannels<StreamChatGenerics>({
+    channelManager,
     enableOfflineSupport,
     filters,
     options,
@@ -312,73 +372,70 @@ export const ChannelList = <
   });
 
   // Setup event listeners
-  useAddedToChannelNotification({
-    onAddedToChannel,
-    options: { filters, sort },
-    setChannels,
-  });
-
-  useChannelDeleted({
-    onChannelDeleted,
-    setChannels,
-  });
-
-  useChannelHidden({
-    onChannelHidden,
-    setChannels,
-  });
-
-  useChannelMemberUpdated({
-    lockChannelOrder,
-    onChannelMemberUpdated,
-    options: { filters, sort },
-    setChannels,
-  });
-
-  useChannelTruncated({
-    onChannelTruncated,
-    refreshList,
-    setChannels,
-    setForceUpdate,
-  });
-
+  // useAddedToChannelNotification({
+  //   onAddedToChannel,
+  //   setChannels,
+  // });
+  //
+  // useChannelDeleted({
+  //   onChannelDeleted,
+  //   setChannels,
+  // });
+  //
+  // useChannelHidden({
+  //   onChannelHidden,
+  //   setChannels,
+  // });
+  //
+  // useChannelTruncated({
+  //   onChannelTruncated,
+  //   refreshList,
+  //   setChannels,
+  //   setForceUpdate,
+  // });
+  //
   useChannelUpdated({
     onChannelUpdated,
-    setChannels,
+    setChannels: channelManager.setChannels,
   });
-
-  useChannelVisible({
-    onChannelVisible,
-    setChannels,
-  });
-
-  useNewMessage({
-    lockChannelOrder,
-    onNewMessage,
-    options: { filters, sort },
-    setChannels,
-  });
-
-  useNewMessageNotification({
-    onNewMessageNotification,
-    options: { filters, sort },
-    setChannels,
-  });
-
-  useRemovedFromChannelNotification({
-    onRemovedFromChannel,
-    setChannels,
-  });
+  //
+  // useChannelVisible({
+  //   onChannelVisible,
+  //   setChannels,
+  // });
+  //
+  // useNewMessage({
+  //   lockChannelOrder,
+  //   onNewMessage,
+  //   setChannels,
+  // });
+  //
+  // useNewMessageNotification({
+  //   onNewMessageNotification,
+  //   setChannels,
+  // });
+  //
+  // useRemovedFromChannelNotification({
+  //   onRemovedFromChannel,
+  //   setChannels,
+  // });
+  //
+  // useChannelMemberUpdated({
+  //   lockChannelOrder,
+  //   onChannelMemberUpdated,
+  //   options: { filters, sort },
+  //   setChannels: channelManager.setChannels,
+  // });
 
   useUserPresence({
-    setChannels,
+    setChannels: channelManager.setChannels,
     setForceUpdate,
   });
 
   const channelIdsStr = channels?.reduce((acc, channel) => `${acc}${channel.cid}`, '');
 
   useEffect(() => {
-    if (channels === null || staticChannelsActive || !enableOfflineSupport) {
+    if (channels == null || !ready || staticChannelsActive || !enableOfflineSupport) {
       return;
     }
 
