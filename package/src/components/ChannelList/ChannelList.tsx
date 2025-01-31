@@ -291,37 +291,56 @@ export const ChannelList = <
 
   const [forceUpdate, setForceUpdate] = useState(0);
   const { client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
-  const channelManager = useMemo(
-    () =>
-      client.createChannelManager({
-        eventHandlerOverrides: {
-          channelDeletedHandler: onChannelDeleted,
-          channelHiddenHandler: onChannelHidden,
-          channelTruncatedHandler: onChannelTruncated,
-          channelVisibleHandler: onChannelVisible,
-          memberUpdatedHandler: onChannelMemberUpdated
-            ? (setChannels, event) =>
-                onChannelMemberUpdated(lockChannelOrder, setChannels, event, { filters, sort })
-            : undefined,
-          newMessageHandler: onNewMessage
-            ? (setChannels, event) =>
-                onNewMessage(lockChannelOrder, setChannels, event, { filters, sort })
-            : undefined,
-          notificationAddedToChannelHandler: onAddedToChannel
-            ? (setChannels, event) => onAddedToChannel(setChannels, event, { filters, sort })
-            : undefined,
-          notificationNewMessageHandler: onNewMessageNotification
-            ? (setChannels, event) =>
-                onNewMessageNotification(setChannels, event, { filters, sort })
-            : undefined,
-          notificationRemovedFromChannelHandler: onRemovedFromChannel,
-        },
-        options: { lockChannelOrder },
-      }),
-    // FIXME: Move the setting of the overrides down to the LLC too
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [client],
-  );
+  const channelManager = useMemo(() => client.createChannelManager({}), [client]);
+
+  /**
+   * This hook sets the event handler overrides in the channelManager internally
+   * whenever they change. We do this to avoid recreating the channelManager instance
+   * every time these change, as we want to keep it as static as possible.
+   * This protects us from something like defining the overrides as inline functions
+   * causing the manager instance to be recreated over and over again.
+   */
+  useEffect(() => {
+    channelManager.setEventHandlerOverrides({
+      channelDeletedHandler: onChannelDeleted,
+      channelHiddenHandler: onChannelHidden,
+      channelTruncatedHandler: onChannelTruncated,
+      channelVisibleHandler: onChannelVisible,
+      memberUpdatedHandler: onChannelMemberUpdated
+        ? (setChannels, event) =>
+            onChannelMemberUpdated(lockChannelOrder, setChannels, event, { filters, sort })
+        : undefined,
+      newMessageHandler: onNewMessage
+        ? (setChannels, event) =>
+            onNewMessage(lockChannelOrder, setChannels, event, { filters, sort })
+        : undefined,
+      notificationAddedToChannelHandler: onAddedToChannel
+        ? (setChannels, event) => onAddedToChannel(setChannels, event, { filters, sort })
+        : undefined,
+      notificationNewMessageHandler: onNewMessageNotification
+        ? (setChannels, event) => onNewMessageNotification(setChannels, event, { filters, sort })
+        : undefined,
+      notificationRemovedFromChannelHandler: onRemovedFromChannel,
+    });
+  }, [
+    channelManager,
+    filters,
+    lockChannelOrder,
+    onAddedToChannel,
+    onChannelDeleted,
+    onChannelHidden,
+    onChannelMemberUpdated,
+    onChannelTruncated,
+    onChannelVisible,
+    onNewMessage,
+    onNewMessageNotification,
+    onRemovedFromChannel,
+    sort,
+  ]);
+
+  useEffect(() => {
+    channelManager.setOptions({ lockChannelOrder });
+  }, [channelManager, lockChannelOrder]);
 
   useEffect(() => {
     channelManager.registerSubscriptions();
