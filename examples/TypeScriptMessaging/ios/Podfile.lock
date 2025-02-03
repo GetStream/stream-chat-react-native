@@ -7,7 +7,7 @@ PODS:
   - hermes-engine (0.76.1):
     - hermes-engine/Pre-built (= 0.76.1)
   - hermes-engine/Pre-built (0.76.1)
-  - op-sqlite (11.2.13):
+  - op-sqlite (11.4.3):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1991,7 +1991,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - SocketRocket (0.7.1)
-  - stream-chat-react-native (6.4.0):
+  - stream-chat-react-native (6.4.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2265,14 +2265,14 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  boost: 4cb898d0bf20404aab1850c656dcea009429d6c1
-  DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
+  boost: 1dca942403ed9342f98334bf4c3621f011aa7946
+  DoubleConversion: f16ae600a246532c4020132d54af21d0ddb2a385
   FBLazyVector: 7075bb12898bc3998fd60f4b7ca422496cc2cdf7
-  fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
-  glog: 69ef571f3de08433d766d614c73a9838a06bf7eb
+  fmt: 10c6e61f4be25dc963c36bd73fc7b1705fe975be
+  glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
   hermes-engine: 46f1ffbf0297f4298862068dd4c274d4ac17a1fd
-  op-sqlite: 8ce374788e74aca3f2fb34e00f25da28d34a8170
-  RCT-Folly: 4464f4d875961fce86008d45f4ecf6cef6de0740
+  op-sqlite: 9a3d54535a504e44c861c8f8471ee5bcaa69b41f
+  RCT-Folly: bf5c0376ffe4dd2cf438dcf86db385df9fdce648
   RCTDeprecation: fde92935b3caa6cb65cbff9fbb7d3a9867ffb259
   RCTRequired: 75c6cee42d21c1530a6f204ba32ff57335d19007
   RCTTypeSafety: 7e6fe47bfb693c50d4669db1a480ca5331795f5b
@@ -2344,9 +2344,9 @@ SPEC CHECKSUMS:
   RNShare: 4305edead1b8f614ab994046c68193e8d50aaadc
   RNSVG: 536cd3c866c878faf72beaba166c8b02fe2b762b
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  stream-chat-react-native: 15d400fd34f41781a9f18df3610c93f672667090
+  stream-chat-react-native: 088d4a28b7d406675e12af133c9ecbf072af61b2
   Yoga: db69236006b8b1c6d55ab453390c882306cbf219
 
 PODFILE CHECKSUM: 6b7a4b74915b42bfe4ffddaf67cbf5e7a2bfeab3
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.14.3
