@@ -38,8 +38,9 @@ export const ChannelsUnreadCountBadge: React.FC = () => {
    */
   useEffect(() => {
     const listener = chatClient?.on((e) => {
-      if (e.total_unread_count !== undefined) {
-        setUnreadCount(e.total_unread_count);
+      const event = e.me ?? e;
+      if (event.total_unread_count !== undefined) {
+        setUnreadCount(event.total_unread_count);
       } else {
         const countUnread = Object.values(chatClient.activeChannels).reduce(
           (count, channel) => count + channel.countUnread(),
