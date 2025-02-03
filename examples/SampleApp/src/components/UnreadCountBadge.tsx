@@ -42,11 +42,13 @@ export const ChannelsUnreadCountBadge: React.FC = () => {
       if (event.total_unread_count !== undefined) {
         setUnreadCount(event.total_unread_count);
       } else {
-        const countUnread = Object.values(chatClient.activeChannels).reduce(
-          (count, channel) => count + channel.countUnread(),
-          0,
-        );
-        setUnreadCount(countUnread);
+        if (Object.keys(chatClient?.activeChannels).length > 0) {
+          const countUnread = Object.values(chatClient.activeChannels).reduce(
+            (count, channel) => count + channel.countUnread(),
+            0,
+          );
+          setUnreadCount(countUnread);
+        }
       }
     });
 
