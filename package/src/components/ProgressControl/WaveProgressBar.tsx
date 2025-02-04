@@ -54,7 +54,7 @@ const ProgressControlThumb = ({ style }: { style?: StyleProp<ViewStyle> }) => {
   } = useTheme();
   return (
     <View
-      hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+      hitSlop={{ bottom: 20, left: 20, right: 20, top: 20 }}
       style={[
         styles.progressControlThumbStyle,
         {
