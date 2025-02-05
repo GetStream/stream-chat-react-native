@@ -8,6 +8,7 @@ export const getTrimmedAttachmentTitle = (title?: string) => {
     const lastIndexOfDot = title.lastIndexOf('.');
     return title.length < 12 ? title : title.slice(0, 12) + '...' + title.slice(lastIndexOfDot);
   } else {
-    return title;
+    // shorten title
+    return title.length < 20 ? title : title.slice(0, 20) + '...';
   }
 };
