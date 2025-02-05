@@ -15,7 +15,7 @@ describe('generateMarkdownText', () => {
       'Hi [test@gmail.com](mailto:test@gmail.com) @test@gmail.com',
     ],
     ['Hi @getstream.io getstream.io', 'Hi @getstream.io [getstream.io](http://getstream.io)'],
-    ['Hi <Stream>', 'Hi \\<Stream\\>'],
+    ['Hi <Stream>', 'Hi \\<Stream>'],
   ])('Returns the generated markdown text for %p and %p', (text, expected) => {
     const result = generateMarkdownText(text);
     expect(result).toBe(expected);
