@@ -1,5 +1,19 @@
 # Change Log
 
+## [6.5.0](https://github.com/GetStream/stream-chat-react-native/compare/v6.4.1...v6.5.0) (2025-02-05)
+
+
+### Features
+
+* add blockquote support for preview in message ([#2929](https://github.com/GetStream/stream-chat-react-native/issues/2929)) ([fd1ccd5](https://github.com/GetStream/stream-chat-react-native/commit/fd1ccd5dcae651e4a8cb37258a61fb60f00f23a1))
+
+
+### Bug Fixes
+
+* channel.visible not taking sort and pinned channels into account ([#2925](https://github.com/GetStream/stream-chat-react-native/issues/2925)) ([f99d602](https://github.com/GetStream/stream-chat-react-native/commit/f99d60253c9167c280dd86efb7a733bdbdef88a6))
+* progress bar hit slop for better touch ([#2927](https://github.com/GetStream/stream-chat-react-native/issues/2927)) ([f3ce24c](https://github.com/GetStream/stream-chat-react-native/commit/f3ce24cc704f27c555ceb5e33356610e95ea3ae5))
+* shorten the name of audio attachment files ([#2930](https://github.com/GetStream/stream-chat-react-native/issues/2930)) ([f1c40af](https://github.com/GetStream/stream-chat-react-native/commit/f1c40aff4cdd2da8cba7fdf2514cc8049dc0b367))
+
 ### [6.4.1](https://github.com/GetStream/stream-chat-react-native/compare/v6.4.0...v6.4.1) (2025-01-30)
 
 
