@@ -254,6 +254,7 @@ export const Generic = () => {
         const reactionsRows = await BetterSqlite.selectFromTable('reactions');
         const readsRows = await BetterSqlite.selectFromTable('reads');
 
+        console.log('ON UI', channelIdsOnUI);
         expect(channelIdsOnUI.length).toBe(channels.length);
         expect(channelsRows.length).toBe(channels.length);
         expect(messagesRows.length).toBe(allMessages.length);
@@ -381,9 +382,8 @@ export const Generic = () => {
       channels.push(newChannel);
       useMockedApis(chatClient, [getOrCreateChannelApi(newChannel)]);
 
+      await act(() => dispatchNotificationMessageNewEvent(chatClient, newChannel.channel));
       await waitFor(() => {
-        act(() => dispatchNotificationMessageNewEvent(chatClient, newChannel.channel));
-
         const channelIdsOnUI = screen
           .queryAllByLabelText('list-item')
           .map((node) => node._fiber.pendingProps.testID);
