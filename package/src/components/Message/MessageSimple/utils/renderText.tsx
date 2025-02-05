@@ -423,6 +423,10 @@ export const renderText = <
   );
 
   const customRules = {
+    blockQuote: {
+      react: blockQuoteReact,
+    },
+    codeBlock: { react: codeBlockReact },
     // do not render images, we will scrape them out of the message and show on attachment card component
     image: { match: () => null },
     link: { react: linkReact },
@@ -442,11 +446,7 @@ export const renderText = <
           },
         }
       : {}),
-    codeBlock: { react: codeBlockReact },
     table: { react: tableReact },
-    blockQuote: {
-      react: blockQuoteReact,
-    },
   };
 
   return (
