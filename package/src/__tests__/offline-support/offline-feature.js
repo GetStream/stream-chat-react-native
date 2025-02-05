@@ -254,7 +254,6 @@ export const Generic = () => {
         const reactionsRows = await BetterSqlite.selectFromTable('reactions');
         const readsRows = await BetterSqlite.selectFromTable('reads');
 
-        console.log('ON UI', channelIdsOnUI);
         expect(channelIdsOnUI.length).toBe(channels.length);
         expect(channelsRows.length).toBe(channels.length);
         expect(messagesRows.length).toBe(allMessages.length);
