@@ -200,10 +200,6 @@ export const renderText = <
       color: colors.accent_blue,
       ...markdownStyles?.autolink,
     },
-    blockQuoteText: {
-      ...defaultMarkdownStyles.blockQuoteText,
-      ...markdownStyles?.blockQuoteText,
-    },
     blockQuoteSection: {
       ...defaultMarkdownStyles.blockQuoteSection,
       flexDirection: 'row',
@@ -212,10 +208,14 @@ export const renderText = <
     },
     blockQuoteSectionBar: {
       ...defaultMarkdownStyles.blockQuoteSectionBar,
-      width: 2,
       backgroundColor: colors.grey_gainsboro,
       marginRight: 8,
+      width: 2,
       ...markdownStyles?.blockQuoteSectionBar,
+    },
+    blockQuoteText: {
+      ...defaultMarkdownStyles.blockQuoteText,
+      ...markdownStyles?.blockQuoteText,
     },
     codeBlock: {
       ...defaultMarkdownStyles.codeBlock,
