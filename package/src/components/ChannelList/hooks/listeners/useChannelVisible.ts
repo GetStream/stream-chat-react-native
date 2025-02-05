@@ -48,7 +48,6 @@ export const useChannelVisible = <
               ? moveChannelUp({
                   channels,
                   channelToMove: channel,
-                  channelToMoveIndexWithinChannels: -1,
                   sort,
                 })
               : channels,

@@ -56,7 +56,6 @@ export const useNewMessageNotification = <
               ? moveChannelUp({
                   channels,
                   channelToMove: channel,
-                  channelToMoveIndexWithinChannels: -1,
                   sort,
                 })
               : channels,
