@@ -56,6 +56,7 @@ const ProgressControlThumb = () => {
   } = useTheme();
   return (
     <View
+      hitSlop={{ bottom: 20, left: 20, right: 20, top: 20 }}
       style={[
         styles.progressControlThumbStyle,
         { backgroundColor: static_white, borderColor: grey_dark, shadowColor: black },

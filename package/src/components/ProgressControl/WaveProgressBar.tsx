@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Platform, Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { Platform, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
@@ -53,19 +53,18 @@ const ProgressControlThumb = ({ style }: { style?: StyleProp<ViewStyle> }) => {
     },
   } = useTheme();
   return (
-    <Pressable style={{ height: 40, justifyContent: 'center', width: 40 }}>
-      <View
-        style={[
-          styles.progressControlThumbStyle,
-          {
-            backgroundColor: static_white,
-            borderColor: grey_dark,
-            shadowColor: black,
-          },
-          style,
-        ]}
-      />
-    </Pressable>
+    <View
+      hitSlop={{ bottom: 20, left: 20, right: 20, top: 20 }}
+      style={[
+        styles.progressControlThumbStyle,
+        {
+          backgroundColor: static_white,
+          borderColor: grey_dark,
+          shadowColor: black,
+        },
+        style,
+      ]}
+    />
   );
 };
 
