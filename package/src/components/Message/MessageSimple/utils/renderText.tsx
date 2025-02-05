@@ -200,6 +200,23 @@ export const renderText = <
       color: colors.accent_blue,
       ...markdownStyles?.autolink,
     },
+    blockQuoteText: {
+      ...defaultMarkdownStyles.blockQuoteText,
+      ...markdownStyles?.blockQuoteText,
+    },
+    blockQuoteSection: {
+      ...defaultMarkdownStyles.blockQuoteSection,
+      flexDirection: 'row',
+      padding: 8,
+      ...markdownStyles?.blockQuoteSection,
+    },
+    blockQuoteSectionBar: {
+      ...defaultMarkdownStyles.blockQuoteSectionBar,
+      width: 2,
+      backgroundColor: colors.grey_gainsboro,
+      marginRight: 8,
+      ...markdownStyles?.blockQuoteSectionBar,
+    },
     codeBlock: {
       ...defaultMarkdownStyles.codeBlock,
       backgroundColor: colors.code_block,
@@ -398,6 +415,13 @@ export const renderText = <
     </MarkdownReactiveScrollView>
   );
 
+  const blockQuoteReact: ReactNodeOutput = (node, output, state) => (
+    <View key={state.key} style={styles.blockQuoteSection}>
+      <View style={styles.blockQuoteSectionBar} />
+      <View style={styles.blockQuoteText}>{output(node.content, state)}</View>
+    </View>
+  );
+
   const customRules = {
     // do not render images, we will scrape them out of the message and show on attachment card component
     image: { match: () => null },
@@ -420,6 +444,9 @@ export const renderText = <
       : {}),
     codeBlock: { react: codeBlockReact },
     table: { react: tableReact },
+    blockQuote: {
+      react: blockQuoteReact,
+    },
   };
 
   return (
