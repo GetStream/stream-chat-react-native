@@ -349,6 +349,7 @@ export const ChannelList = <
 
   useChannelVisible({
     onChannelVisible,
+    options: { sort },
     setChannels,
   });
 

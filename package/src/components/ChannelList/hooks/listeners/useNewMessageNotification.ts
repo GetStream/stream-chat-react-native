@@ -1,7 +1,5 @@
 import { useEffect } from 'react';
 
-import uniqBy from 'lodash/uniqBy';
-
 import type { Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
@@ -10,7 +8,7 @@ import type {
   ChannelListEventListenerOptions,
   DefaultStreamChatGenerics,
 } from '../../../../types/types';
-import { getChannel } from '../../utils';
+import { getChannel, moveChannelUp } from '../../utils';
 import { isChannelArchived } from '../utils';
 
 type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
@@ -39,7 +37,7 @@ export const useNewMessageNotification = <
         onNewMessageNotification(setChannels, event, options);
       } else {
         if (!options) return;
-        const { filters } = options;
+        const { filters, sort } = options;
         if (event.channel?.id && event.channel?.type) {
           const channel = await getChannel({
             client,
@@ -53,7 +51,15 @@ export const useNewMessageNotification = <
             return;
           }
 
-          setChannels((channels) => (channels ? uniqBy([channel, ...channels], 'cid') : channels));
+          setChannels((channels) =>
+            channels
+              ? moveChannelUp({
+                  channels,
+                  channelToMove: channel,
+                  sort,
+                })
+              : channels,
+          );
         }
       }
     };
