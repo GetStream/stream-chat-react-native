@@ -32,6 +32,7 @@ export const useCreateChannelsContext = <
   PreviewStatus,
   PreviewTitle,
   PreviewUnreadCount,
+  ready,
   refreshing,
   refreshList,
   reloadList,
@@ -76,6 +77,7 @@ export const useCreateChannelsContext = <
       PreviewStatus,
       PreviewTitle,
       PreviewUnreadCount,
+      ready,
       refreshing,
       refreshList,
       reloadList,
@@ -90,6 +92,7 @@ export const useCreateChannelsContext = <
       hasNextPage,
       loadingChannels,
       loadingNextPage,
+      ready,
       refreshing,
     ],
   );

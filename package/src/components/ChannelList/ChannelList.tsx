@@ -474,6 +474,7 @@ export const ChannelList = <
     PreviewStatus,
     PreviewTitle,
     PreviewUnreadCount,
+    ready,
     refreshing,
     refreshList,
     reloadList,

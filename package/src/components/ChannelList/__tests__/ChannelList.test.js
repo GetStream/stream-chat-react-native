@@ -287,12 +287,12 @@ describe('ChannelList', () => {
       it('should not alter order if `lockChannelOrder` prop is true', async () => {
         render(
           <Chat client={chatClient}>
-            <ChannelList {...props} lockChannelOrder={true} />
+            <ChannelList lockChannelOrder={true} Preview={props.Preview} />
           </Chat>,
         );
 
         await waitFor(() => {
-          expect(screen.getByTestId('channel-list')).toBeTruthy();
+          expect(screen.getByTestId('channel-list-messenger')).toBeTruthy();
         });
 
         const newMessage = sendNewMessageOnChannel3();

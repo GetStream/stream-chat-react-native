@@ -120,6 +120,7 @@ export type ChannelsContextValue<
    * Default: [ChannelPreviewMessenger](https://getstream.io/chat/docs/sdk/reactnative/ui-components/channel-preview-messenger/)
    */
   Preview: React.ComponentType<ChannelPreviewMessengerProps<StreamChatGenerics>>;
+  ready: boolean;
   /**
    * Triggered when the channel list is refreshing, displays a loading spinner at the top of the list
    */

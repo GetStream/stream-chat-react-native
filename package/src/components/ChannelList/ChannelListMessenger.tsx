@@ -99,6 +99,7 @@ const ChannelListMessengerWithContext = <
     loadingNextPage,
     loadMoreThreshold,
     loadNextPage,
+    ready,
     refreshing,
     refreshList,
     reloadList,
@@ -140,7 +141,7 @@ const ChannelListMessengerWithContext = <
       });
   }
 
-  if (error && !refreshing && !loadingChannels && channels === null) {
+  if (error && !refreshing && !loadingChannels && (channels === null || !ready)) {
     return (
       <LoadingErrorIndicator
         error={error}
@@ -224,6 +225,7 @@ export const ChannelListMessenger = <
     loadingNextPage,
     loadMoreThreshold,
     loadNextPage,
+    ready,
     refreshing,
     refreshList,
     reloadList,
@@ -247,6 +249,7 @@ export const ChannelListMessenger = <
         loadingNextPage,
         loadMoreThreshold,
         loadNextPage,
+        ready,
         refreshing,
         refreshList,
         reloadList,

@@ -80,7 +80,7 @@ describe('ChannelListMessenger', () => {
   });
 
   it('renders the `LoadingErrorIndicator` when `error` prop is true', async () => {
-    const { getByTestId } = render(<Component channels={mockChannels} error={true} />);
+    const { getByTestId } = render(<Component channels={mockChannels} error={true} loadingChannels={false} />);
     await waitFor(() => {
       expect(getByTestId('loading-error')).toBeTruthy();
     });
