@@ -339,7 +339,7 @@ export const ChannelList = <
   ]);
 
   useEffect(() => {
-    channelManager.setOptions({ lockChannelOrder });
+    channelManager.setOptions({ abortInFlightQuery: true, lockChannelOrder });
   }, [channelManager, lockChannelOrder]);
 
   useEffect(() => {
