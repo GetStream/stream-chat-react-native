@@ -51,7 +51,8 @@ const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   ({
     channels: nextValue.channels,
     pagination: nextValue.pagination,
-    ready: nextValue.ready,
+    // TODO: rename this properly everywhere
+    ready: nextValue.initialized,
   } as const);
 
 export const usePaginatedChannels = <
