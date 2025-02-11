@@ -9316,10 +9316,10 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-stream-chat@^8.54.1:
-  version "8.54.1"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.54.1.tgz#61a7330c9b7401f3e176e55445b29317bca2b108"
-  integrity sha512-BmeN1nq/zbItJXayHz/kBDc36Xvs4rW5pol/ngPXs0Vl8tw7vCuYBI4aFvpthvFU9EhCIJzBn8ISqDlnfWyDkw==
+stream-chat@^8.56.0:
+  version "8.56.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.56.0.tgz#2960282d0fdfedcf067328e36dce87190646dec5"
+  integrity sha512-wv0OIjNdoMcK25PCjVg9lMfezMCrKzPoG0L9eDeKo/ZbJNGY3hNhUXVsyzIDYLYGWU9aqXGhAKpuxbVfgwbnqg==
   dependencies:
     "@babel/runtime" "^7.16.3"
     "@types/jsonwebtoken" "~9.0.0"
