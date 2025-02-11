@@ -1,5 +1,12 @@
 # Change Log
 
+### [6.5.1](https://github.com/GetStream/stream-chat-react-native/compare/v6.5.0...v6.5.1) (2025-02-11)
+
+
+### Bug Fixes
+
+* animation start event breaking ui responsiveness ([#2941](https://github.com/GetStream/stream-chat-react-native/issues/2941)) ([621da62](https://github.com/GetStream/stream-chat-react-native/commit/621da62fa7d6785199e5904e876154b760242317))
+
 ## [6.5.0](https://github.com/GetStream/stream-chat-react-native/compare/v6.4.1...v6.5.0) (2025-02-05)
 
 
