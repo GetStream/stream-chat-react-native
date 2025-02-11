@@ -1,5 +1,12 @@
 # Change Log
 
+### [2.3.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v2.3.0...sampleapp@v2.3.1) (2025-01-30)
+
+
+### Bug Fixes
+
+* bump stream-chat-js version for poll state invalidation bug ([#2918](https://github.com/GetStream/stream-chat-react-native/issues/2918)) ([555fb68](https://github.com/GetStream/stream-chat-react-native/commit/555fb68db55a787c605103bdf07a9e7eadc18394))
+
 ## [2.3.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v2.2.0...sampleapp@v2.3.0) (2025-01-29)
 
 

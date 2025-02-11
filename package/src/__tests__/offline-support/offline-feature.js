@@ -382,9 +382,8 @@ export const Generic = () => {
       channels.push(newChannel);
       useMockedApis(chatClient, [getOrCreateChannelApi(newChannel)]);
 
+      await act(() => dispatchNotificationMessageNewEvent(chatClient, newChannel.channel));
       await waitFor(() => {
-        act(() => dispatchNotificationMessageNewEvent(chatClient, newChannel.channel));
-
         const channelIdsOnUI = screen
           .queryAllByLabelText('list-item')
           .map((node) => node._fiber.pendingProps.testID);

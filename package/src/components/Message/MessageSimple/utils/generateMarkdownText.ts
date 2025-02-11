@@ -34,7 +34,7 @@ export const generateMarkdownText = (text?: string) => {
   }
 
   // Escape the " and ' characters, except in code blocks where we deem this allowed.
-  resultText = resultText.replace(/(```[\s\S]*?```|`.*?`)|[<"'>]/g, (match, code) => {
+  resultText = resultText.replace(/(```[\s\S]*?```|`.*?`)|[<"']/g, (match, code) => {
     if (code) return code;
     return `\\${match}`;
   });

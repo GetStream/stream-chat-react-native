@@ -1,5 +1,36 @@
 # Change Log
 
+### [6.5.1](https://github.com/GetStream/stream-chat-react-native/compare/v6.5.0...v6.5.1) (2025-02-11)
+
+
+### Bug Fixes
+
+* animation start event breaking ui responsiveness ([#2941](https://github.com/GetStream/stream-chat-react-native/issues/2941)) ([621da62](https://github.com/GetStream/stream-chat-react-native/commit/621da62fa7d6785199e5904e876154b760242317))
+
+## [6.5.0](https://github.com/GetStream/stream-chat-react-native/compare/v6.4.1...v6.5.0) (2025-02-05)
+
+
+### Features
+
+* add blockquote support for preview in message ([#2929](https://github.com/GetStream/stream-chat-react-native/issues/2929)) ([fd1ccd5](https://github.com/GetStream/stream-chat-react-native/commit/fd1ccd5dcae651e4a8cb37258a61fb60f00f23a1))
+
+
+### Bug Fixes
+
+* channel.visible not taking sort and pinned channels into account ([#2925](https://github.com/GetStream/stream-chat-react-native/issues/2925)) ([f99d602](https://github.com/GetStream/stream-chat-react-native/commit/f99d60253c9167c280dd86efb7a733bdbdef88a6))
+* progress bar hit slop for better touch ([#2927](https://github.com/GetStream/stream-chat-react-native/issues/2927)) ([f3ce24c](https://github.com/GetStream/stream-chat-react-native/commit/f3ce24cc704f27c555ceb5e33356610e95ea3ae5))
+* shorten the name of audio attachment files ([#2930](https://github.com/GetStream/stream-chat-react-native/issues/2930)) ([f1c40af](https://github.com/GetStream/stream-chat-react-native/commit/f1c40aff4cdd2da8cba7fdf2514cc8049dc0b367))
+
+### [6.4.1](https://github.com/GetStream/stream-chat-react-native/compare/v6.4.0...v6.4.1) (2025-01-30)
+
+
+### Bug Fixes
+
+* bottom sheet layout issue interrupting with animated view ([#2917](https://github.com/GetStream/stream-chat-react-native/issues/2917)) ([3627f32](https://github.com/GetStream/stream-chat-react-native/commit/3627f32a9e7e551a9847080c97c811102ffb4675))
+* bump stream-chat-js version for poll state invalidation bug ([#2918](https://github.com/GetStream/stream-chat-react-native/issues/2918)) ([555fb68](https://github.com/GetStream/stream-chat-react-native/commit/555fb68db55a787c605103bdf07a9e7eadc18394))
+* regression in file upload preview remove item ([#2919](https://github.com/GetStream/stream-chat-react-native/issues/2919)) ([569ed39](https://github.com/GetStream/stream-chat-react-native/commit/569ed39915475e3a6abda990d5018a19dafbae7b))
+* warn users about new google policy and to replace cameraroll with image-picker ([#2916](https://github.com/GetStream/stream-chat-react-native/issues/2916)) ([5c16879](https://github.com/GetStream/stream-chat-react-native/commit/5c16879f0f87b70b0d872fea2d576f6b287d3172))
+
 ## [6.4.0](https://github.com/GetStream/stream-chat-react-native/compare/v6.3.1...v6.4.0) (2025-01-29)
 
 
