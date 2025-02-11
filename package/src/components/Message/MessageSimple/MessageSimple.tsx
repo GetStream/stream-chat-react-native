@@ -215,7 +215,6 @@ const MessageSimpleWithContext = <
 
   const swipeGesture = Gesture.Pan()
     .hitSlop(messageSwipeToReplyHitSlop)
-    .manualActivation(true)
     .onBegin((event) => {
       touchStart.value = { x: event.x, y: event.y };
     })
