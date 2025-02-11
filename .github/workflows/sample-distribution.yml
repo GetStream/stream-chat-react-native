@@ -25,7 +25,7 @@ jobs:
       - name: Install && Build - SDK and Sample App
         uses: ./.github/actions/install-and-build-sdk
       - name: Cache iOS pods
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: examples/SampleApp/ios/Pods
           key: ${{ runner.os }}-pods-${{ hashFiles('examples/SampleApp/ios/Podfile.lock') }}
