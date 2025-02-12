@@ -65,12 +65,9 @@ export const usePaginatedChannels = <
   setForceUpdate,
   sort = {},
 }: Parameters<StreamChatGenerics>) => {
-  // const [channels, setChannels] = useState<Channel<StreamChatGenerics>[] | null>(null);
   const [error, setError] = useState<Error | undefined>(undefined);
   const [staticChannelsActive, setStaticChannelsActive] = useState<boolean>(false);
-  // const [activeQueryType, setActiveQueryType] = useState<QueryType | null>('queryLocalDB');
   const activeQueryType = useRef<QueryType | null>('queryLocalDB');
-  // const [hasNextPage, setHasNextPage] = useState<boolean>(false);
   const activeChannels = useActiveChannelsRefContext();
   const isMountedRef = useIsMountedRef();
   const { client } = useChatContext<StreamChatGenerics>();
@@ -113,7 +110,6 @@ export const usePaginatedChannels = <
     setError(undefined);
     activeRequestId.current++;
     const currentRequestId = activeRequestId.current;
-    // setActiveQueryType(queryType);
     activeQueryType.current = queryType;
 
     const newOptions = {
@@ -139,21 +135,7 @@ export const usePaginatedChannels = <
         });
       }
 
-      // const newChannels =
-      //   queryType === 'loadChannels' && !staticChannelsActive && channels
-      //     ? [...channels, ...channelQueryResponse]
-      //     : channelQueryResponse.map((c) => {
-      //         const existingChannel = client.activeChannels[c.cid];
-      //         if (existingChannel) {
-      //           return existingChannel;
-      //         }
-      //
-      //         return c;
-      //       });
-
-      // setChannels(newChannels);
       setStaticChannelsActive(false);
-      // setHasNextPage(channelQueryResponse.length >= newOptions.limit);
       isQueryingRef.current = false;
     } catch (err: unknown) {
       isQueryingRef.current = false;
@@ -166,7 +148,6 @@ export const usePaginatedChannels = <
       // querying.current check is needed in order to make sure the next query call doesnt flick an error
       // state and then succeed (reconnect case)
       if (retryCount === MAX_NUMBER_OF_RETRIES && !isQueryingRef.current) {
-        // setActiveQueryType(null);
         activeQueryType.current = null;
         console.warn(err);
 
@@ -181,7 +162,6 @@ export const usePaginatedChannels = <
       return queryChannels(queryType, retryCount + 1);
     }
 
-    // setActiveQueryType(null);
     activeQueryType.current = null;
   };
 
@@ -219,7 +199,6 @@ export const usePaginatedChannels = <
   const sortStr = useMemo(() => JSON.stringify(sort), [sort]);
 
   useEffect(() => {
-    console.log('TRIGGERING', !channelManager, ready);
     const loadOfflineChannels = async () => {
       if (!client?.user?.id) return;
 
@@ -244,7 +223,6 @@ export const usePaginatedChannels = <
         return false;
       }
 
-      // setActiveQueryType(null);
       activeQueryType.current = null;
 
       return true;
@@ -293,11 +271,6 @@ export const usePaginatedChannels = <
     channels,
     error,
     hasNextPage,
-    // loadingChannels:
-    //   activeQueryType.current === 'queryLocalDB'
-    //     ? true
-    //     : (activeQueryType.current === 'reload' || activeQueryType.current === null) &&
-    //       channels === null,
     loadingChannels:
       activeQueryType.current === 'queryLocalDB'
         ? true
