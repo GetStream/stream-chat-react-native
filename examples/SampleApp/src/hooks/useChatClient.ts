@@ -7,6 +7,7 @@ import { USER_TOKENS, USERS } from '../ChatUsers';
 import AsyncStore from '../utils/AsyncStore';
 
 import type { LoginConfig, StreamChatGenerics } from '../types';
+import { PermissionsAndroid, Platform } from 'react-native';
 
 // Request Push Notification permission from device.
 const requestNotificationPermission = async () => {
@@ -67,6 +68,16 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
   }
 });
 
+const requestAndroidPermission = async () => {
+  if (Platform.OS === 'android' && Platform.Version >= 33) {
+    const result = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+    );
+    return result === PermissionsAndroid.RESULTS.GRANTED;
+  }
+  return true;
+};
+
 export const useChatClient = () => {
   const [chatClient, setChatClient] = useState<StreamChat<StreamChatGenerics> | null>(null);
   const [isConnecting, setIsConnecting] = useState(true);
@@ -98,9 +109,13 @@ export const useChatClient = () => {
     await AsyncStore.setItem('@stream-rn-sampleapp-login-config', config);
 
     const permissionAuthStatus = await messaging().hasPermission();
-    const isEnabled =
+    let isEnabled =
       permissionAuthStatus === messaging.AuthorizationStatus.AUTHORIZED ||
       permissionAuthStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+    if (permissionAuthStatus === messaging.AuthorizationStatus.DENIED) {
+      isEnabled = await requestAndroidPermission();
+    }
 
     if (isEnabled) {
       // Register FCM token with stream chat server.

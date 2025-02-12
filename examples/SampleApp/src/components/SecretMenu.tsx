@@ -81,14 +81,14 @@ export const SecretMenu = ({ close, visible, chatClient }: { close: () => void, 
           >
             Notification Provider
           </Text>
-          <View style={{ marginLeft: 16 }}>
+          {isAndroid ? null : <View style={{ marginLeft: 16 }}>
             {notificationConfigItems.map((item) => (
               <TouchableOpacity key={item.id} style={{ paddingTop: 8, flexDirection: 'row' }} onPress={() => storeProvider(item)}>
                 <Text style={styles.notificationItem}>{item.label}</Text>
                 {item.id === selectedProvider ? <Check height={16} pathFill={'green'} width={16} style={{ marginLeft: 12 }} /> : null}
               </TouchableOpacity>
             ))}
-          </View>
+          </View>}
         </View>
       </View>
       <TouchableOpacity onPress={removeAllDevices} style={menuDrawerStyles.menuItem}>
