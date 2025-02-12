@@ -43,6 +43,10 @@ export type ChannelsContextValue<
    */
   additionalFlatListProps: Partial<FlatListProps<Channel<StreamChatGenerics>>>;
   /**
+   * A control prop used to determine whether the first query of the channel list has succeeded.
+   */
+  channelListInitialized: boolean;
+  /**
    * Channels can be either an array of channels or a promise which resolves to an array of channels
    */
   channels: Channel<StreamChatGenerics>[] | null;
@@ -120,7 +124,6 @@ export type ChannelsContextValue<
    * Default: [ChannelPreviewMessenger](https://getstream.io/chat/docs/sdk/reactnative/ui-components/channel-preview-messenger/)
    */
   Preview: React.ComponentType<ChannelPreviewMessengerProps<StreamChatGenerics>>;
-  ready: boolean;
   /**
    * Triggered when the channel list is refreshing, displays a loading spinner at the top of the list
    */

@@ -86,6 +86,7 @@ const ChannelListMessengerWithContext = <
   const onEndReachedCalledDuringCurrentScrollRef = useRef<boolean>(false);
   const {
     additionalFlatListProps,
+    channelListInitialized,
     channels,
     EmptyStateIndicator,
     error,
@@ -99,7 +100,6 @@ const ChannelListMessengerWithContext = <
     loadingNextPage,
     loadMoreThreshold,
     loadNextPage,
-    ready,
     refreshing,
     refreshList,
     reloadList,
@@ -141,7 +141,7 @@ const ChannelListMessengerWithContext = <
       });
   }
 
-  if (error && !refreshing && !loadingChannels && (channels === null || !ready)) {
+  if (error && !refreshing && !loadingChannels && (channels === null || !channelListInitialized)) {
     return (
       <LoadingErrorIndicator
         error={error}
@@ -212,6 +212,7 @@ export const ChannelListMessenger = <
 ) => {
   const {
     additionalFlatListProps,
+    channelListInitialized,
     channels,
     EmptyStateIndicator,
     error,
@@ -225,7 +226,6 @@ export const ChannelListMessenger = <
     loadingNextPage,
     loadMoreThreshold,
     loadNextPage,
-    ready,
     refreshing,
     refreshList,
     reloadList,
@@ -236,6 +236,7 @@ export const ChannelListMessenger = <
     <ChannelListMessengerWithContext
       {...{
         additionalFlatListProps,
+        channelListInitialized,
         channels,
         EmptyStateIndicator,
         error,
@@ -249,7 +250,6 @@ export const ChannelListMessenger = <
         loadingNextPage,
         loadMoreThreshold,
         loadNextPage,
-        ready,
         refreshing,
         refreshList,
         reloadList,

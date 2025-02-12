@@ -342,13 +342,13 @@ export const ChannelList = <
   }, [channelManager]);
 
   const {
+    channelListInitialized,
     channels,
     error,
     hasNextPage,
     loadingChannels,
     loadingNextPage,
     loadNextPage,
-    ready,
     refreshing,
     refreshList,
     reloadList,
@@ -375,7 +375,12 @@ export const ChannelList = <
   const channelIdsStr = channels?.reduce((acc, channel) => `${acc}${channel.cid}`, '');
 
   useEffect(() => {
-    if (channels == null || !ready || staticChannelsActive || !enableOfflineSupport) {
+    if (
+      channels == null ||
+      !channelListInitialized ||
+      staticChannelsActive ||
+      !enableOfflineSupport
+    ) {
       return;
     }
 
@@ -389,6 +394,7 @@ export const ChannelList = <
 
   const channelsContext = useCreateChannelsContext({
     additionalFlatListProps,
+    channelListInitialized,
     channels: channelRenderFilterFn ? channelRenderFilterFn(channels ?? []) : channels,
     EmptyStateIndicator,
     error,
@@ -414,7 +420,6 @@ export const ChannelList = <
     PreviewStatus,
     PreviewTitle,
     PreviewUnreadCount,
-    ready,
     refreshing,
     refreshList,
     reloadList,

@@ -49,10 +49,9 @@ const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   nextValue: ChannelManagerState<StreamChatGenerics>,
 ) =>
   ({
+    channelListInitialized: nextValue.initialized,
     channels: nextValue.channels,
     pagination: nextValue.pagination,
-    // TODO: rename this properly everywhere
-    ready: nextValue.initialized,
   } as const);
 
 export const usePaginatedChannels = <
@@ -71,7 +70,8 @@ export const usePaginatedChannels = <
   const activeChannels = useActiveChannelsRefContext();
   const isMountedRef = useIsMountedRef();
   const { client } = useChatContext<StreamChatGenerics>();
-  const { channels, pagination, ready } = useStateStore(channelManager?.state, selector) ?? {};
+  const { channelListInitialized, channels, pagination } =
+    useStateStore(channelManager?.state, selector) ?? {};
   const hasNextPage = pagination?.hasNext;
 
   const filtersRef = useRef<typeof filters | null>(null);
@@ -268,22 +268,22 @@ export const usePaginatedChannels = <
   }, [filterStr, sortStr, channelManager]);
 
   return {
+    channelListInitialized,
     channels,
     error,
     hasNextPage,
     loadingChannels:
       activeQueryType.current === 'queryLocalDB'
         ? true
-        : // Although channels.length === 0 should come as a given when we have !ready,
+        : // Although channels.length === 0 should come as a given when we have !channelListInitialized,
           // due to the way offline storage works currently we have to do this additional
           // check to make sure channels were not populated before the reactive list becomes
           // ready. I do not like providing a way to set the ready state, as it should be managed
           // in the LLC entirely. Once we move offline support to the LLC, we can remove this check
           // too as it'll be redundant.
-          pagination?.isLoading || (!ready && channels.length === 0),
+          pagination?.isLoading || (!channelListInitialized && channels.length === 0),
     loadingNextPage: pagination?.isLoadingNext,
     loadNextPage: channelManager.loadNext,
-    ready,
     refreshing: activeQueryType.current === 'refresh',
     refreshList,
     reloadList,

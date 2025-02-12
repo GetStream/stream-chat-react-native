@@ -7,6 +7,7 @@ export const useCreateChannelsContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   additionalFlatListProps,
+  channelListInitialized,
   channels,
   EmptyStateIndicator,
   error,
@@ -32,7 +33,6 @@ export const useCreateChannelsContext = <
   PreviewStatus,
   PreviewTitle,
   PreviewUnreadCount,
-  ready,
   refreshing,
   refreshList,
   reloadList,
@@ -52,6 +52,7 @@ export const useCreateChannelsContext = <
   const channelsContext: ChannelsContextValue<StreamChatGenerics> = useMemo(
     () => ({
       additionalFlatListProps,
+      channelListInitialized,
       channels,
       EmptyStateIndicator,
       error,
@@ -77,7 +78,6 @@ export const useCreateChannelsContext = <
       PreviewStatus,
       PreviewTitle,
       PreviewUnreadCount,
-      ready,
       refreshing,
       refreshList,
       reloadList,
@@ -92,7 +92,7 @@ export const useCreateChannelsContext = <
       hasNextPage,
       loadingChannels,
       loadingNextPage,
-      ready,
+      channelListInitialized,
       refreshing,
     ],
   );
