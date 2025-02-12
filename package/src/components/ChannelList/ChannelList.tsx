@@ -9,16 +9,7 @@ import { ChannelListHeaderErrorIndicator } from './ChannelListHeaderErrorIndicat
 import { ChannelListHeaderNetworkDownIndicator } from './ChannelListHeaderNetworkDownIndicator';
 import { ChannelListLoadingIndicator } from './ChannelListLoadingIndicator';
 import { ChannelListMessenger, ChannelListMessengerProps } from './ChannelListMessenger';
-// import { useAddedToChannelNotification } from './hooks/listeners/useAddedToChannelNotification';
-// import { useChannelDeleted } from './hooks/listeners/useChannelDeleted';
-// import { useChannelHidden } from './hooks/listeners/useChannelHidden';
-// import { useChannelMemberUpdated } from './hooks/listeners/useChannelMemberUpdated';
-// import { useChannelTruncated } from './hooks/listeners/useChannelTruncated';
 import { useChannelUpdated } from './hooks/listeners/useChannelUpdated';
-// import { useChannelVisible } from './hooks/listeners/useChannelVisible';
-// import { useNewMessage } from './hooks/listeners/useNewMessage';
-// import { useNewMessageNotification } from './hooks/listeners/useNewMessageNotification';
-// import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedFromChannelNotification';
 import { useUserPresence } from './hooks/listeners/useUserPresence';
 import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
 import { usePaginatedChannels } from './hooks/usePaginatedChannels';
@@ -371,61 +362,10 @@ export const ChannelList = <
     sort,
   });
 
-  // Setup event listeners
-  // useAddedToChannelNotification({
-  //   onAddedToChannel,
-  //   setChannels,
-  // });
-  //
-  // useChannelDeleted({
-  //   onChannelDeleted,
-  //   setChannels,
-  // });
-  //
-  // useChannelHidden({
-  //   onChannelHidden,
-  //   setChannels,
-  // });
-  //
-  // useChannelTruncated({
-  //   onChannelTruncated,
-  //   refreshList,
-  //   setChannels,
-  //   setForceUpdate,
-  // });
-  //
   useChannelUpdated({
     onChannelUpdated,
     setChannels: channelManager.setChannels,
   });
-  //
-  // useChannelVisible({
-  //   onChannelVisible,
-  //   setChannels,
-  // });
-  //
-  // useNewMessage({
-  //   lockChannelOrder,
-  //   onNewMessage,
-  //   setChannels,
-  // });
-  //
-  // useNewMessageNotification({
-  //   onNewMessageNotification,
-  //   setChannels,
-  // });
-  //
-  // useRemovedFromChannelNotification({
-  //   onRemovedFromChannel,
-  //   setChannels,
-  // });
-  //
-  // useChannelMemberUpdated({
-  //   lockChannelOrder,
-  //   onChannelMemberUpdated,
-  //   options: { filters, sort },
-  //   setChannels: channelManager.setChannels,
-  // });
 
   useUserPresence({
     setChannels: channelManager.setChannels,
