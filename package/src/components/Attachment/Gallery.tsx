@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, Platform } from 'react-native';
 
 import type { Attachment } from 'stream-chat';
 
@@ -293,7 +293,14 @@ const GalleryThumbnail = <
     theme: {
       colors: { overlay },
       messageSimple: {
-        gallery: { image, imageBorderRadius, imageContainer, moreImagesContainer, moreImagesText },
+        gallery: {
+          image,
+          imageBorderRadius,
+          imageContainer,
+          imageContainerStyle,
+          moreImagesContainer,
+          moreImagesText,
+        },
       },
     },
   } = useTheme();
@@ -383,7 +390,9 @@ const GalleryThumbnail = <
           thumb_url={thumbnail.thumb_url}
         />
       ) : (
-        <View style={styles.imageContainerStyle}>
+        <View
+          style={[Platform.OS !== 'android' && styles.imageContainerStyle, imageContainerStyle]}
+        >
           <GalleryImageThumbnail
             borderRadius={imageBorderRadius ?? borderRadius}
             ImageLoadingFailedIndicator={ImageLoadingFailedIndicator}
@@ -670,7 +679,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 1,
   },
-  imageContainerStyle: { alignItems: 'center', flex: 1, justifyContent: 'center' },
+  imageContainerStyle: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
   imageLoadingErrorIndicatorStyle: {
     bottom: 4,
     left: 4,
