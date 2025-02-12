@@ -102,7 +102,7 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
         </Pressable>
         <View style={styles.menuContainer}>
           <View>
-            <SecretMenu visible={secretMenuVisible} close={closeSecretMenu} />
+            <SecretMenu visible={secretMenuVisible} close={closeSecretMenu} chatClient={chatClient} />
             <TouchableOpacity
               onPress={() => navigation.navigate('NewDirectMessagingScreen')}
               style={styles.menuItem}

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { StreamChat } from 'stream-chat';
+import { StreamChat, PushProvider } from 'stream-chat';
 import messaging from '@react-native-firebase/messaging';
 import notifee from '@notifee/react-native';
 import { SqliteClient } from 'stream-chat-react-native';
@@ -104,12 +104,19 @@ export const useChatClient = () => {
 
     if (isEnabled) {
       // Register FCM token with stream chat server.
-      const token = await messaging().getToken();
-      await client.addDevice(token, 'firebase', client.userID, 'rn-fcm');
+      const firebaseToken = await messaging().getToken();
+      const apnsToken = await messaging().getAPNSToken();
+      const provider = await AsyncStore.getItem('@stream-rn-sampleapp-push-provider', { id: 'firebase', name: 'rn-fcm' });
+      const id = provider?.id ?? 'firebase';
+      const name = provider?.name ?? 'rn-fcm';
+      const token = id === 'firebase' ? firebaseToken : apnsToken ?? firebaseToken;
+      await client.addDevice(token, id as PushProvider, client.userID, name);
 
       // Listen to new FCM tokens and register them with stream chat server.
-      const unsubscribeTokenRefresh = messaging().onTokenRefresh(async (newToken) => {
-        await client.addDevice(newToken, 'firebase', client.userID, 'rn-fcm');
+      const unsubscribeTokenRefresh = messaging().onTokenRefresh(async (newFirebaseToken) => {
+        const newApnsToken = await messaging().getAPNSToken();
+        const newToken = id === 'firebase' ? newFirebaseToken : newApnsToken ?? firebaseToken;
+        await client.addDevice(newToken, id as PushProvider, client.userID, name);
       });
       // show notifications when on foreground
       const unsubscribeForegroundMessageReceive = messaging().onMessage(async (remoteMessage) => {
@@ -153,6 +160,10 @@ export const useChatClient = () => {
   };
 
   const switchUser = async (userId?: string) => {
+    if (chatClient?.userID) {
+      return;
+    }
+
     setIsConnecting(true);
 
     try {
