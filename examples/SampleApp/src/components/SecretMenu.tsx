@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { LayoutChangeEvent, Text, TouchableOpacity, View, Platform, StyleSheet } from 'react-native';
-import { Close, Notification, Check, useTheme } from 'stream-chat-react-native';
+import { Close, Notification, Check, Delete, useTheme } from 'stream-chat-react-native';
 import { styles as menuDrawerStyles } from './MenuDrawer.tsx';
 import AsyncStore from '../utils/AsyncStore.ts';
 import { StreamChat } from 'stream-chat';
@@ -92,7 +92,7 @@ export const SecretMenu = ({ close, visible, chatClient }: { close: () => void, 
         </View>
       </View>
       <TouchableOpacity onPress={removeAllDevices} style={menuDrawerStyles.menuItem}>
-        <Close height={24} pathFill={grey} width={24} />
+        <Delete height={24} size={24} pathFill={grey} width={24} />
         <Text
           style={[
             menuDrawerStyles.menuTitle,
