@@ -10,6 +10,7 @@ import {
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { ArrowLeft, CircleStop, Delete, Mic, SendCheck } from '../../../../icons';
 
 import { AudioRecordingReturnType } from '../../../../native';
@@ -142,6 +143,7 @@ const AudioRecorderWithContext = <
     stopVoiceRecording,
     uploadVoiceRecording,
   } = props;
+  const { t } = useTranslationContext();
 
   const {
     theme: {
@@ -189,7 +191,9 @@ const AudioRecorderWithContext = <
         <Animated.View
           style={[styles.slideToCancelContainer, slideToCancelStyle, slideToCancelContainer]}
         >
-          <Text style={[styles.slideToCancel, { color: grey_dark }]}>Slide to Cancel</Text>
+          <Text style={[styles.slideToCancel, { color: grey_dark }]}>
+            {t<string>('Slide to Cancel')}
+          </Text>
           <ArrowLeft fill={grey_dark} size={24} {...arrowLeftIcon} />
         </Animated.View>
       </>
