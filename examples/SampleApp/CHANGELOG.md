@@ -1,5 +1,17 @@
 # Change Log
 
+## [2.4.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v2.3.1...sampleapp@v2.4.0) (2025-02-13)
+
+
+### Features
+
+* reactive channel list poc ([#2924](https://github.com/GetStream/stream-chat-react-native/issues/2924)) ([34530c2](https://github.com/GetStream/stream-chat-react-native/commit/34530c2652ef56f4383cbfbfefc2f568783a3e4d))
+
+
+### Bug Fixes
+
+* android push notification permission issues ([#2947](https://github.com/GetStream/stream-chat-react-native/issues/2947)) ([2cd490e](https://github.com/GetStream/stream-chat-react-native/commit/2cd490ebe205e64b28a3c6c1406523d6e15db64e))
+
 ### [2.3.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v2.3.0...sampleapp@v2.3.1) (2025-01-30)
 
 
