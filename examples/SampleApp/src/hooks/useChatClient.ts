@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { StreamChat } from 'stream-chat';
+import { StreamChat, PushProvider } from 'stream-chat';
 import messaging from '@react-native-firebase/messaging';
 import notifee from '@notifee/react-native';
 import { SqliteClient } from 'stream-chat-react-native';
@@ -7,6 +7,7 @@ import { USER_TOKENS, USERS } from '../ChatUsers';
 import AsyncStore from '../utils/AsyncStore';
 
 import type { LoginConfig, StreamChatGenerics } from '../types';
+import { PermissionsAndroid, Platform } from 'react-native';
 
 // Request Push Notification permission from device.
 const requestNotificationPermission = async () => {
@@ -67,10 +68,19 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
   }
 });
 
+const requestAndroidPermission = async () => {
+  if (Platform.OS === 'android' && Platform.Version >= 33) {
+    const result = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+    );
+    return result === PermissionsAndroid.RESULTS.GRANTED;
+  }
+  return true;
+};
+
 export const useChatClient = () => {
   const [chatClient, setChatClient] = useState<StreamChat<StreamChatGenerics> | null>(null);
   const [isConnecting, setIsConnecting] = useState(true);
-  const [unreadCount, setUnreadCount] = useState<number>();
 
   const unsubscribePushListenersRef = useRef<() => void>();
 
@@ -92,24 +102,33 @@ export const useChatClient = () => {
       image: config.userImage,
       name: config.userName,
     };
-    const connectedUser = await client.connectUser(user, config.userToken);
-    const initialUnreadCount = connectedUser?.me?.total_unread_count;
-    setUnreadCount(initialUnreadCount);
+    await client.connectUser(user, config.userToken);
     await AsyncStore.setItem('@stream-rn-sampleapp-login-config', config);
 
     const permissionAuthStatus = await messaging().hasPermission();
-    const isEnabled =
+    let isEnabled =
       permissionAuthStatus === messaging.AuthorizationStatus.AUTHORIZED ||
       permissionAuthStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
+    if (permissionAuthStatus === messaging.AuthorizationStatus.DENIED) {
+      isEnabled = await requestAndroidPermission();
+    }
+
     if (isEnabled) {
       // Register FCM token with stream chat server.
-      const token = await messaging().getToken();
-      await client.addDevice(token, 'firebase', client.userID, 'rn-fcm');
+      const firebaseToken = await messaging().getToken();
+      const apnsToken = await messaging().getAPNSToken();
+      const provider = await AsyncStore.getItem('@stream-rn-sampleapp-push-provider', { id: 'firebase', name: 'rn-fcm' });
+      const id = provider?.id ?? 'firebase';
+      const name = provider?.name ?? 'rn-fcm';
+      const token = id === 'firebase' ? firebaseToken : apnsToken ?? firebaseToken;
+      await client.addDevice(token, id as PushProvider, client.userID, name);
 
       // Listen to new FCM tokens and register them with stream chat server.
-      const unsubscribeTokenRefresh = messaging().onTokenRefresh(async (newToken) => {
-        await client.addDevice(newToken, 'firebase', client.userID, 'rn-fcm');
+      const unsubscribeTokenRefresh = messaging().onTokenRefresh(async (newFirebaseToken) => {
+        const newApnsToken = await messaging().getAPNSToken();
+        const newToken = id === 'firebase' ? newFirebaseToken : newApnsToken ?? firebaseToken;
+        await client.addDevice(newToken, id as PushProvider, client.userID, name);
       });
       // show notifications when on foreground
       const unsubscribeForegroundMessageReceive = messaging().onMessage(async (remoteMessage) => {
@@ -153,6 +172,10 @@ export const useChatClient = () => {
   };
 
   const switchUser = async (userId?: string) => {
+    if (chatClient?.userID) {
+      return;
+    }
+
     setIsConnecting(true);
 
     try {
@@ -197,35 +220,11 @@ export const useChatClient = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /**
-   * Listen to changes in unread counts and update the badge count
-   */
-  useEffect(() => {
-    const listener = chatClient?.on((e) => {
-      if (e.total_unread_count !== undefined) {
-        setUnreadCount(e.total_unread_count);
-      } else {
-        const countUnread = Object.values(chatClient.activeChannels).reduce(
-          (count, channel) => count + channel.countUnread(),
-          0,
-        );
-        setUnreadCount(countUnread);
-      }
-    });
-
-    return () => {
-      if (listener) {
-        listener.unsubscribe();
-      }
-    };
-  }, [chatClient]);
-
   return {
     chatClient,
     isConnecting,
     loginUser,
     logout,
     switchUser,
-    unreadCount,
   };
 };

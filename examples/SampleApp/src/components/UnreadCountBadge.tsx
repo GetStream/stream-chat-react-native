@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useStateStore, useTheme } from 'stream-chat-react-native';
 
@@ -31,7 +31,33 @@ export const ThreadsUnreadCountBadge: React.FC = () => {
 };
 
 export const ChannelsUnreadCountBadge: React.FC = () => {
-  const { unreadCount } = useAppContext();
+  const { chatClient } = useAppContext();
+  const [unreadCount, setUnreadCount] = useState<number>(0);
+  /**
+   * Listen to changes in unread counts and update the badge count
+   */
+  useEffect(() => {
+    const listener = chatClient?.on((e) => {
+      const event = e.me ?? e;
+      if (event.total_unread_count !== undefined) {
+        setUnreadCount(event.total_unread_count);
+      } else {
+        if (Object.keys(chatClient?.activeChannels).length > 0) {
+          const countUnread = Object.values(chatClient.activeChannels).reduce(
+            (count, channel) => count + channel.countUnread(),
+            0,
+          );
+          setUnreadCount(countUnread);
+        }
+      }
+    });
+
+    return () => {
+      if (listener) {
+        listener.unsubscribe();
+      }
+    };
+  }, [chatClient]);
 
   return <UnreadCountBadge unreadCount={unreadCount} />;
 };

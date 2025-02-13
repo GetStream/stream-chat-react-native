@@ -311,10 +311,11 @@ export const Generic = () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
       renderComponent();
 
+      await act(() => dispatchConnectionChangedEvent(chatClient, false));
+      // await waiter();
+      await act(() => dispatchConnectionChangedEvent(chatClient));
+
       await waitFor(async () => {
-        act(() => dispatchConnectionChangedEvent(chatClient));
-        // await waiter();
-        act(() => dispatchConnectionChangedEvent(chatClient));
         expect(screen.getByTestId('channel-list')).toBeTruthy();
         await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
       });

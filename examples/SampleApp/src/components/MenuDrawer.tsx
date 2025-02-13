@@ -1,12 +1,21 @@
-import React from 'react';
-import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Pressable,
+  View,
+} from 'react-native';
 import { Edit, Group, User, useTheme } from 'stream-chat-react-native';
 
 import { useAppContext } from '../context/AppContext';
+import { SecretMenu } from './SecretMenu.tsx';
 
 import type { DrawerContentComponentProps } from '@react-navigation/drawer';
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   avatar: {
     borderRadius: 20,
     height: 40,
@@ -44,11 +53,25 @@ const styles = StyleSheet.create({
 });
 
 export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
+  const [secretMenuPressCounter, setSecretMenuPressCounter] = useState(0);
+  const [secretMenuVisible, setSecretMenuVisible] = useState(false);
+
   const {
     theme: {
       colors: { black, grey, white },
     },
   } = useTheme();
+
+  useEffect(() => {
+    if (!secretMenuVisible && secretMenuPressCounter >= 7) {
+      setSecretMenuVisible(true);
+    }
+  }, [secretMenuVisible, secretMenuPressCounter]);
+
+  const closeSecretMenu = useCallback(() => {
+    setSecretMenuPressCounter(0);
+    setSecretMenuVisible(false);
+  }, []);
 
   const { chatClient, logout } = useAppContext();
 
@@ -59,7 +82,7 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
   return (
     <View style={[styles.container, { backgroundColor: white }]}>
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={[styles.userRow]}>
+        <Pressable onPress={() => setSecretMenuPressCounter(c => c + 1)} style={[styles.userRow]}>
           <Image
             source={{
               uri: chatClient.user?.image,
@@ -76,9 +99,10 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
           >
             {chatClient.user?.name}
           </Text>
-        </View>
+        </Pressable>
         <View style={styles.menuContainer}>
           <View>
+            <SecretMenu visible={secretMenuVisible} close={closeSecretMenu} chatClient={chatClient} />
             <TouchableOpacity
               onPress={() => navigation.navigate('NewDirectMessagingScreen')}
               style={styles.menuItem}
