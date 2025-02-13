@@ -43,6 +43,10 @@ export type ChannelsContextValue<
    */
   additionalFlatListProps: Partial<FlatListProps<Channel<StreamChatGenerics>>>;
   /**
+   * A control prop used to determine whether the first query of the channel list has succeeded.
+   */
+  channelListInitialized: boolean;
+  /**
    * Channels can be either an array of channels or a promise which resolves to an array of channels
    */
   channels: Channel<StreamChatGenerics>[] | null;

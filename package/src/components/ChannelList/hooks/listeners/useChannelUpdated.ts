@@ -8,9 +8,9 @@ import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
 type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   {
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>;
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>;
     onChannelUpdated?: (
-      setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
+      setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
       event: Event<StreamChatGenerics>,
     ) => void;
   };
