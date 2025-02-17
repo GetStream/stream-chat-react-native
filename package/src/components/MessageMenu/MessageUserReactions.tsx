@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 
 import { ReactionSortBase } from 'stream-chat';
 
@@ -179,7 +180,9 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
 };
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    flex: 1,
+  },
   contentContainer: {
     flexGrow: 1,
     justifyContent: 'space-around',
