@@ -1,14 +1,13 @@
 import React, { PropsWithChildren, useEffect } from 'react';
 import {
   Animated,
-  Dimensions,
-  Modal,
-  StyleSheet,
-  useWindowDimensions,
-  TouchableWithoutFeedback,
-  View,
   Keyboard,
   KeyboardEvent,
+  Modal,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  useWindowDimensions,
+  View,
 } from 'react-native';
 import {
   Gesture,
