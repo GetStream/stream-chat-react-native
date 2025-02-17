@@ -1,13 +1,14 @@
 import React, { PropsWithChildren, useEffect } from 'react';
 import {
   Animated,
-  Keyboard,
-  KeyboardEvent,
+  Dimensions,
   Modal,
   StyleSheet,
-  TouchableWithoutFeedback,
   useWindowDimensions,
+  TouchableWithoutFeedback,
   View,
+  Keyboard,
+  KeyboardEvent,
 } from 'react-native';
 import {
   Gesture,
@@ -119,32 +120,38 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     });
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <Modal animationType='fade' onRequestClose={handleDismiss} transparent visible={visible}>
-        <TouchableWithoutFeedback onPress={handleDismiss}>
-          <View style={[styles.overlay, { backgroundColor: overlay }, overlayTheme]}>
+    <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
+      <Modal onRequestClose={onClose} transparent visible={visible}>
+        <TouchableWithoutFeedback onPress={onClose} style={{ flex: 1 }}>
+          <GestureHandlerRootView style={{ flex: 1 }}>
             <GestureDetector gesture={gesture}>
-              <Animated.View
-                style={[
-                  styles.container,
-                  {
-                    backgroundColor: white_snow,
-                    height,
-                    transform: [{ translateY }],
-                  },
-                  container,
-                ]}
-              >
-                <View
-                  style={[styles.handle, { backgroundColor: grey, width: windowWidth / 4 }, handle]}
-                />
-                <View style={[styles.contentContainer, contentContainer]}>{children}</View>
-              </Animated.View>
+              <View style={[styles.overlay, { backgroundColor: overlay }, overlayTheme]}>
+                <Animated.View
+                  style={[
+                    styles.container,
+                    {
+                      backgroundColor: white_snow,
+                      height,
+                      transform: [{ translateY }],
+                    },
+                    container,
+                  ]}
+                >
+                  <View
+                    style={[
+                      styles.handle,
+                      { backgroundColor: grey, width: windowWidth / 4 },
+                      handle,
+                    ]}
+                  />
+                  <View style={[styles.contentContainer, contentContainer]}>{children}</View>
+                </Animated.View>
+              </View>
             </GestureDetector>
-          </View>
+          </GestureHandlerRootView>
         </TouchableWithoutFeedback>
       </Modal>
-    </GestureHandlerRootView>
+    </View>
   );
 };
 

@@ -1,5 +1,7 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+
+import { ScrollView } from 'react-native-gesture-handler';
 
 import { MessageActionType } from './MessageActionListItem';
 
@@ -31,14 +33,14 @@ export const MessageActionList = (props: MessageActionListProps) => {
   if (messageActions?.length === 0) return null;
 
   return (
-    <View accessibilityLabel='Message action list' style={[styles.container, container]}>
+    <ScrollView accessibilityLabel='Message action list' style={[styles.container, container]}>
       {messageActions?.map((messageAction, index) => (
         <MessageActionListItem
           key={messageAction.title}
           {...{ ...messageAction, index, length: messageActions.length }}
         />
       ))}
-    </View>
+    </ScrollView>
   );
 };
 
