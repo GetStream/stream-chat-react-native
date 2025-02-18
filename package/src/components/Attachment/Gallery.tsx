@@ -293,7 +293,14 @@ const GalleryThumbnail = <
     theme: {
       colors: { overlay },
       messageSimple: {
-        gallery: { image, imageBorderRadius, imageContainer, moreImagesContainer, moreImagesText },
+        gallery: {
+          image,
+          imageBorderRadius,
+          imageContainer,
+          imageContainerStyle,
+          moreImagesContainer,
+          moreImagesText,
+        },
       },
     },
   } = useTheme();
@@ -383,7 +390,7 @@ const GalleryThumbnail = <
           thumb_url={thumbnail.thumb_url}
         />
       ) : (
-        <View style={styles.imageContainerStyle}>
+        <View style={[styles.imageContainerStyle, imageContainerStyle]}>
           <GalleryImageThumbnail
             borderRadius={imageBorderRadius ?? borderRadius}
             ImageLoadingFailedIndicator={ImageLoadingFailedIndicator}

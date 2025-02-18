@@ -45,7 +45,7 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
   const { children, height = windowHeight / 2, onClose, visible } = props;
   const {
     theme: {
-      bottomSheetModal: { container, contentContainer, handle, overlay: overlayTheme },
+      bottomSheetModal: { container, contentContainer, handle, overlay: overlayTheme, wrapper },
       colors: { grey, overlay, white_snow },
     },
   } = useTheme();
@@ -119,11 +119,14 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     });
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <Modal animationType='fade' onRequestClose={handleDismiss} transparent visible={visible}>
-        <TouchableWithoutFeedback onPress={handleDismiss}>
-          <View style={[styles.overlay, { backgroundColor: overlay }, overlayTheme]}>
-            <GestureDetector gesture={gesture}>
+    <View style={[styles.wrapper, wrapper]}>
+      <Modal onRequestClose={onClose} transparent visible={visible}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <GestureDetector gesture={gesture}>
+            <View style={[styles.overlay, { backgroundColor: overlay }, overlayTheme]}>
+              <TouchableWithoutFeedback onPress={onClose} style={{ flex: 1 }}>
+                <View style={{ flex: 1 }} />
+              </TouchableWithoutFeedback>
               <Animated.View
                 style={[
                   styles.container,
@@ -140,11 +143,11 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
                 />
                 <View style={[styles.contentContainer, contentContainer]}>{children}</View>
               </Animated.View>
-            </GestureDetector>
-          </View>
-        </TouchableWithoutFeedback>
+            </View>
+          </GestureDetector>
+        </GestureHandlerRootView>
       </Modal>
-    </GestureHandlerRootView>
+    </View>
   );
 };
 
@@ -170,5 +173,10 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     justifyContent: 'flex-end',
+  },
+  wrapper: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
   },
 });

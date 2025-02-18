@@ -99,7 +99,7 @@ export const ReactionListBottomItem = <
           onLongPress({
             defaultHandler: () => {
               if (showMessageOverlay) {
-                showMessageOverlay(true);
+                showMessageOverlay(true, reaction.type);
               }
             },
             emitter: 'reactionList',
