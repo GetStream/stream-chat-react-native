@@ -755,7 +755,6 @@ const ChannelWithContext = <
         () => {
           if (channel) {
             copyStateFromChannel(channel);
-            console.log('COPYING ENTIRE STATE FOR BUG', channel.cid);
             copyMessagesStateFromChannel(channel);
           }
         },
