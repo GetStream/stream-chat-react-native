@@ -52,6 +52,10 @@ export type MessageMenuProps<
      * @returns
      */
     handleReaction?: (reactionType: string) => Promise<void>;
+    /**
+     * The selected reaction
+     */
+    selectedReaction?: string;
   };
 
 export const MessageMenu = <
@@ -70,6 +74,7 @@ export const MessageMenu = <
     MessageUserReactions: propMessageUserReactions,
     MessageUserReactionsAvatar: propMessageUserReactionsAvatar,
     MessageUserReactionsItem: propMessageUserReactionsItem,
+    selectedReaction,
     showMessageReactions,
     visible,
   } = props;
@@ -103,6 +108,7 @@ export const MessageMenu = <
           message={message}
           MessageUserReactionsAvatar={MessageUserReactionsAvatar}
           MessageUserReactionsItem={MessageUserReactionsItem}
+          selectedReaction={selectedReaction}
         />
       ) : (
         <>

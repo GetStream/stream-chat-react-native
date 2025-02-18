@@ -285,6 +285,7 @@ const MessageWithContext = <
     threadList = false,
     updateMessage,
   } = props;
+  const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
   const isMessageAIGenerated = messagesContext.isMessageAIGenerated;
   const isAIGenerated = useMemo(
     () => isMessageAIGenerated(message),
@@ -300,10 +301,11 @@ const MessageWithContext = <
     },
   } = useTheme();
 
-  const showMessageOverlay = async (showMessageReactions = false) => {
+  const showMessageOverlay = async (showMessageReactions = false, selectedReaction?: string) => {
     await dismissKeyboard();
     setShowMessageReactions(showMessageReactions);
     setMessageOverlayVisible(true);
+    setSelectedReaction(selectedReaction);
   };
 
   const dismissOverlay = () => {
@@ -733,6 +735,7 @@ const MessageWithContext = <
               dismissOverlay={dismissOverlay}
               handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
               messageActions={messageActions}
+              selectedReaction={selectedReaction}
               showMessageReactions={showMessageReactions}
               visible={messageOverlayVisible}
             />
