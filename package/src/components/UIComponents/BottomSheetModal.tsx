@@ -119,36 +119,33 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     });
 
   return (
-    <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
+    <View style={styles.wrapper}>
       <Modal onRequestClose={onClose} transparent visible={visible}>
-        <TouchableWithoutFeedback onPress={onClose} style={{ flex: 1 }}>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <GestureDetector gesture={gesture}>
-              <View style={[styles.overlay, { backgroundColor: overlay }, overlayTheme]}>
-                <Animated.View
-                  style={[
-                    styles.container,
-                    {
-                      backgroundColor: white_snow,
-                      height,
-                      transform: [{ translateY }],
-                    },
-                    container,
-                  ]}
-                >
-                  <View
-                    style={[
-                      styles.handle,
-                      { backgroundColor: grey, width: windowWidth / 4 },
-                      handle,
-                    ]}
-                  />
-                  <View style={[styles.contentContainer, contentContainer]}>{children}</View>
-                </Animated.View>
-              </View>
-            </GestureDetector>
-          </GestureHandlerRootView>
-        </TouchableWithoutFeedback>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <GestureDetector gesture={gesture}>
+            <View style={[styles.overlay, { backgroundColor: overlay }, overlayTheme]}>
+              <TouchableWithoutFeedback onPress={onClose} style={{ flex: 1 }}>
+                <View style={{ flex: 1 }} />
+              </TouchableWithoutFeedback>
+              <Animated.View
+                style={[
+                  styles.container,
+                  {
+                    backgroundColor: white_snow,
+                    height,
+                    transform: [{ translateY }],
+                  },
+                  container,
+                ]}
+              >
+                <View
+                  style={[styles.handle, { backgroundColor: grey, width: windowWidth / 4 }, handle]}
+                />
+                <View style={[styles.contentContainer, contentContainer]}>{children}</View>
+              </Animated.View>
+            </View>
+          </GestureDetector>
+        </GestureHandlerRootView>
       </Modal>
     </View>
   );
@@ -176,5 +173,10 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     justifyContent: 'flex-end',
+  },
+  wrapper: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
   },
 });

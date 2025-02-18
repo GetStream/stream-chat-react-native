@@ -25,7 +25,7 @@ export const MessageActionList = (props: MessageActionListProps) => {
   const {
     theme: {
       messageMenu: {
-        actionList: { container },
+        actionList: { container, contentContainer },
       },
     },
   } = useTheme();
@@ -33,7 +33,11 @@ export const MessageActionList = (props: MessageActionListProps) => {
   if (messageActions?.length === 0) return null;
 
   return (
-    <ScrollView accessibilityLabel='Message action list' style={[styles.container, container]}>
+    <ScrollView
+      accessibilityLabel='Message action list'
+      contentContainerStyle={[styles.contentContainer, contentContainer]}
+      style={[styles.container, container]}
+    >
       {messageActions?.map((messageAction, index) => (
         <MessageActionListItem
           key={messageAction.title}
@@ -45,7 +49,8 @@ export const MessageActionList = (props: MessageActionListProps) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  container: {},
+  contentContainer: {
     paddingHorizontal: 16,
   },
 });
