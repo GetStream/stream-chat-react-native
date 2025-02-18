@@ -1,5 +1,13 @@
 # Change Log
 
+### [6.6.1](https://github.com/GetStream/stream-chat-react-native/compare/v6.6.0...v6.6.1) (2025-02-18)
+
+
+### Bug Fixes
+
+* change flatlist inside the bottom sheet modal and fix gesture in bottom sheet ([#2953](https://github.com/GetStream/stream-chat-react-native/issues/2953)) ([92f0b01](https://github.com/GetStream/stream-chat-react-native/commit/92f0b0102aacf0574222f59bd186da0f14e1a3d2))
+* show selected reaction tab in the message menu when long pressed in bottom reaction list ([#2955](https://github.com/GetStream/stream-chat-react-native/issues/2955)) ([f8e37f3](https://github.com/GetStream/stream-chat-react-native/commit/f8e37f3b6de8557fa91eb7be97cfed59a94bbbeb))
+
 ## [6.6.0](https://github.com/GetStream/stream-chat-react-native/compare/v6.5.1...v6.6.0) (2025-02-13)
 
 
