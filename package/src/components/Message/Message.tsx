@@ -229,6 +229,7 @@ const MessageWithContext = <
   const [showMessageReactions, setShowMessageReactions] = useState(true);
   const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
   const [isEditedMessageOpen, setIsEditedMessageOpen] = useState(false);
+  const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
 
   const {
     channel,
@@ -285,7 +286,6 @@ const MessageWithContext = <
     threadList = false,
     updateMessage,
   } = props;
-  const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
   const isMessageAIGenerated = messagesContext.isMessageAIGenerated;
   const isAIGenerated = useMemo(
     () => isMessageAIGenerated(message),
