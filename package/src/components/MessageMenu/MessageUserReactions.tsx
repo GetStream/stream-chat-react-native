@@ -30,6 +30,10 @@ export type MessageUserReactionsProps<
      * An array of reactions
      */
     reactions?: Reaction[];
+    /**
+     * The selected reaction
+     */
+    selectedReaction?: string;
   };
 
 const sort: ReactionSortBase = {
@@ -57,11 +61,12 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     MessageUserReactionsAvatar: propMessageUserReactionsAvatar,
     MessageUserReactionsItem: propMessageUserReactionsItem,
     reactions: propReactions,
+    selectedReaction: propSelectedReaction,
     supportedReactions: propSupportedReactions,
   } = props;
   const reactionTypes = Object.keys(message?.reaction_groups ?? {});
   const [selectedReaction, setSelectedReaction] = React.useState<string | undefined>(
-    reactionTypes[0],
+    propSelectedReaction ?? reactionTypes[0],
   );
   const {
     MessageUserReactionsAvatar: contextMessageUserReactionsAvatar,
