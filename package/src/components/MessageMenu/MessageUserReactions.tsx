@@ -61,8 +61,8 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     MessageUserReactionsAvatar: propMessageUserReactionsAvatar,
     MessageUserReactionsItem: propMessageUserReactionsItem,
     reactions: propReactions,
-    supportedReactions: propSupportedReactions,
     selectedReaction: propSelectedReaction,
+    supportedReactions: propSupportedReactions,
   } = props;
   const reactionTypes = Object.keys(message?.reaction_groups ?? {});
   const [selectedReaction, setSelectedReaction] = React.useState<string | undefined>(
