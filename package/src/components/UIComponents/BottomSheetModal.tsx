@@ -45,7 +45,7 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
   const { children, height = windowHeight / 2, onClose, visible } = props;
   const {
     theme: {
-      bottomSheetModal: { container, contentContainer, handle, overlay: overlayTheme },
+      bottomSheetModal: { container, contentContainer, handle, overlay: overlayTheme, wrapper },
       colors: { grey, overlay, white_snow },
     },
   } = useTheme();
@@ -119,7 +119,7 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     });
 
   return (
-    <View style={styles.wrapper}>
+    <View style={[styles.wrapper, wrapper]}>
       <Modal onRequestClose={onClose} transparent visible={visible}>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <GestureDetector gesture={gesture}>
