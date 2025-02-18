@@ -132,6 +132,7 @@ export type Theme = {
     contentContainer: ViewStyle;
     handle: ViewStyle;
     overlay: ViewStyle;
+    wrapper: ViewStyle;
   };
   channel: {
     selectChannel: TextStyle;
@@ -572,6 +573,7 @@ export type Theme = {
       gridWidth: number;
       image: ImageStyle;
       imageContainer: ViewStyle;
+      imageContainerStyle: ViewStyle;
       maxHeight: number;
       maxWidth: number;
       minHeight: number;
@@ -892,6 +894,7 @@ export const defaultTheme: Theme = {
     contentContainer: {},
     handle: {},
     overlay: {},
+    wrapper: {},
   },
   channel: {
     selectChannel: {},
@@ -1356,6 +1359,7 @@ export const defaultTheme: Theme = {
       image: {},
       imageBorderRadius: undefined,
       imageContainer: {},
+      imageContainerStyle: {},
       maxHeight: 300,
       maxWidth: 256,
       minHeight: 100,

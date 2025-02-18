@@ -1,5 +1,17 @@
 # Change Log
 
+## [6.6.0](https://github.com/GetStream/stream-chat-react-native/compare/v6.5.1...v6.6.0) (2025-02-13)
+
+
+### Features
+
+* reactive channel list poc ([#2924](https://github.com/GetStream/stream-chat-react-native/issues/2924)) ([34530c2](https://github.com/GetStream/stream-chat-react-native/commit/34530c2652ef56f4383cbfbfefc2f568783a3e4d))
+
+
+### Bug Fixes
+
+* add translations for slide to cancel text in async audio ([#2949](https://github.com/GetStream/stream-chat-react-native/issues/2949)) ([f79bc2b](https://github.com/GetStream/stream-chat-react-native/commit/f79bc2b27bb1649de324324ebe65b0a2574dc282))
+
 ### [6.5.1](https://github.com/GetStream/stream-chat-react-native/compare/v6.5.0...v6.5.1) (2025-02-11)
 
 

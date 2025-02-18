@@ -9,7 +9,6 @@ type AppContextType = {
   loginUser: (config: LoginConfig) => void;
   logout: () => void;
   switchUser: (userId?: string) => void;
-  unreadCount: number | undefined;
 };
 
 export const AppContext = React.createContext({} as AppContextType);

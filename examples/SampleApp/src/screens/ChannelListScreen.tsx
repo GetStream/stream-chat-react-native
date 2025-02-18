@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import { ChannelList, CircleClose, Search, useTheme } from 'stream-chat-react-native';
@@ -65,6 +65,8 @@ const options = {
   watch: true,
 };
 
+const HeaderNetworkDownIndicator = () => null;
+
 export const ChannelListScreen: React.FC = () => {
   const { chatClient } = useAppContext();
   const navigation = useNavigation();
@@ -106,9 +108,24 @@ export const ChannelListScreen: React.FC = () => {
     </View>
   );
 
-  const setScrollRef = (ref: FlatList<Channel<StreamChatGenerics>> | null) => {
+  const additionalFlatListProps = useMemo(() => ({
+    getItemLayout: (_, index) => ({
+      index,
+      length: 65,
+      offset: 65 * index,
+    }),
+    keyboardDismissMode: 'on-drag',
+  }), []);
+
+  const onSelect = useCallback((channel) => {
+    navigation.navigate('ChannelScreen', {
+      channel,
+    });
+  }, [navigation]);
+
+  const setScrollRef = useCallback( () => (ref: FlatList<Channel<StreamChatGenerics>> | null) => {
     scrollRef.current = ref;
-  };
+  }, []);
 
   if (!chatClient) {
     return null;
@@ -184,22 +201,11 @@ export const ChannelListScreen: React.FC = () => {
         <View style={{ flex: searchQuery ? 0 : 1 }}>
           <View style={[styles.channelListContainer, { opacity: searchQuery ? 0 : 1 }]}>
             <ChannelList<StreamChatGenerics>
-              additionalFlatListProps={{
-                getItemLayout: (_, index) => ({
-                  index,
-                  length: 65,
-                  offset: 65 * index,
-                }),
-                keyboardDismissMode: 'on-drag',
-              }}
+              additionalFlatListProps={additionalFlatListProps}
               filters={filters}
-              HeaderNetworkDownIndicator={() => null}
+              HeaderNetworkDownIndicator={HeaderNetworkDownIndicator}
               maxUnreadCount={99}
-              onSelect={(channel) => {
-                navigation.navigate('ChannelScreen', {
-                  channel,
-                });
-              }}
+              onSelect={onSelect}
               options={options}
               Preview={ChannelPreview}
               setFlatListRef={setScrollRef}
