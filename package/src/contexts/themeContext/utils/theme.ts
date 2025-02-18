@@ -132,6 +132,7 @@ export type Theme = {
     contentContainer: ViewStyle;
     handle: ViewStyle;
     overlay: ViewStyle;
+    wrapper: ViewStyle;
   };
   channel: {
     selectChannel: TextStyle;
@@ -442,6 +443,7 @@ export type Theme = {
   messageMenu: {
     actionList: {
       container: ViewStyle;
+      contentContainer: ViewStyle;
     };
     actionListItem: {
       container: ViewStyle;
@@ -892,6 +894,7 @@ export const defaultTheme: Theme = {
     contentContainer: {},
     handle: {},
     overlay: {},
+    wrapper: {},
   },
   channel: {
     selectChannel: {},
@@ -1197,6 +1200,7 @@ export const defaultTheme: Theme = {
   messageMenu: {
     actionList: {
       container: {},
+      contentContainer: {},
     },
     actionListItem: {
       container: {},
