@@ -766,9 +766,17 @@ const ChannelWithContext = <
 
   const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
     if (shouldSyncChannel) {
-      // Ignore user.watching.start and user.watching.stop events
-      const ignorableEvents = ['user.watching.start', 'user.watching.stop'];
-      if (ignorableEvents.includes(event.type) || event.type.startsWith('poll.')) return;
+      /**
+       * Ignore user.watching.start and user.watching.stop as we should not copy the entire state when
+       * they occur. Also ignore all poll related events since they're being handled in their own
+       * reactive state and have no business having an effect on the Channel component.
+       */
+      if (
+        event.type.startsWith('poll.') ||
+        event.type === 'user.watching.start' ||
+        event.type === 'user.watching.stop'
+      )
+        return;
 
       // If the event is typing.start or typing.stop, set the typing state
       const isTypingEvent = event.type === 'typing.start' || event.type === 'typing.stop';
@@ -871,7 +879,7 @@ const ChannelWithContext = <
       listener?.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channelId, messageId, shouldSyncChannel]);
+  }, [channel.cid, messageId, shouldSyncChannel]);
 
   // subscribe to channel.deleted event
   useEffect(() => {
