@@ -767,8 +767,12 @@ const ChannelWithContext = <
   const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
     if (shouldSyncChannel) {
       // Ignore user.watching.start and user.watching.stop events
-      const ignorableEvents = ['user.watching.start', 'user.watching.stop'];
-      if (ignorableEvents.includes(event.type) || event.type.startsWith('poll.')) return;
+      if (
+        event.type.startsWith('poll.') ||
+        event.type === 'user.watching.start' ||
+        event.type === 'user.watching.stop'
+      )
+        return;
 
       // If the event is typing.start or typing.stop, set the typing state
       const isTypingEvent = event.type === 'typing.start' || event.type === 'typing.stop';
