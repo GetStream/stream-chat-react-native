@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
 
 import debounce from 'lodash/debounce';
@@ -749,18 +749,20 @@ const ChannelWithContext = <
       ? newMessageStateUpdateThrottleInterval
       : stateUpdateThrottleInterval;
 
-  const copyChannelState = useRef(
-    throttle(
-      () => {
-        if (channel) {
-          copyStateFromChannel(channel);
-          copyMessagesStateFromChannel(channel);
-        }
-      },
-      copyChannelStateThrottlingTime,
-      throttleOptions,
-    ),
-  ).current;
+  const copyChannelState = useMemo(
+    () =>
+      throttle(
+        () => {
+          if (channel) {
+            copyStateFromChannel(channel);
+            copyMessagesStateFromChannel(channel);
+          }
+        },
+        copyChannelStateThrottlingTime,
+        throttleOptions,
+      ),
+    [channel, copyChannelStateThrottlingTime, copyMessagesStateFromChannel, copyStateFromChannel],
+  );
 
   const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
     if (shouldSyncChannel) {
