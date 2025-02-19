@@ -579,7 +579,7 @@ const MessageListWithContext = <
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rawMessageList, threadList]);
+  }, [channel, rawMessageList, threadList]);
 
   const goToMessage = async (messageId: string) => {
     const indexOfParentInMessageList = processedMessageList.findIndex(
@@ -1097,12 +1097,13 @@ const MessageListWithContext = <
           keyboardShouldPersistTaps='handled'
           keyExtractor={keyExtractor}
           ListFooterComponent={ListFooterComponent}
-          /**
-            if autoscrollToTopThreshold is 10, we scroll to recent if before new list update it was already at the bottom (10 offset or below)
-            minIndexForVisible = 1 means that beyond item at index 1 will not change position on list updates
-            minIndexForVisible is not used when autoscrollToTopThreshold = 10
-          */
           ListHeaderComponent={ListHeaderComponent}
+          /**
+            If autoscrollToTopThreshold is 10, we scroll to recent only if before the update, the list was already at the
+            bottom (10 offset or below).
+            minIndexForVisible = 1 means that beyond the item at index 1 we will not change the position on list updates,
+            however it is not used when autoscrollToTopThreshold = 10.
+          */
           maintainVisibleContentPosition={{
             autoscrollToTopThreshold: autoscrollToRecent ? 10 : undefined,
             minIndexForVisible: 1,
