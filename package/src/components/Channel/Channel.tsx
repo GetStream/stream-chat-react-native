@@ -766,7 +766,7 @@ const ChannelWithContext = <
     if (shouldSyncChannel) {
       // Ignore user.watching.start and user.watching.stop events
       const ignorableEvents = ['user.watching.start', 'user.watching.stop'];
-      if (ignorableEvents.includes(event.type)) return;
+      if (ignorableEvents.includes(event.type) || event.type.startsWith('poll.')) return;
 
       // If the event is typing.start or typing.stop, set the typing state
       const isTypingEvent = event.type === 'typing.start' || event.type === 'typing.stop';
@@ -869,7 +869,7 @@ const ChannelWithContext = <
       listener?.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel.cid, messageId, shouldSyncChannel]);
+  }, [channelId, messageId, shouldSyncChannel]);
 
   // subscribe to channel.deleted event
   useEffect(() => {
