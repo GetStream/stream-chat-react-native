@@ -678,7 +678,6 @@ const ChannelWithContext = <
     UrlPreview = CardDefault,
     VideoThumbnail = VideoThumbnailDefault,
   } = props;
-  console.log('i am rerendering');
 
   const { thread: threadProps, threadInstance } = threadFromProps;
   const StopMessageStreamingButton =
