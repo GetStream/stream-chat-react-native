@@ -766,7 +766,11 @@ const ChannelWithContext = <
 
   const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
     if (shouldSyncChannel) {
-      // Ignore user.watching.start and user.watching.stop events
+      /**
+       * Ignore user.watching.start and user.watching.stop as we should not copy the entire state when
+       * they occur. Also ignore all poll related events since they're being handled in their own
+       * reactive state and have no business having an effect on the Channel component.
+       */
       if (
         event.type.startsWith('poll.') ||
         event.type === 'user.watching.start' ||
