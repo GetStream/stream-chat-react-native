@@ -678,6 +678,7 @@ const ChannelWithContext = <
     UrlPreview = CardDefault,
     VideoThumbnail = VideoThumbnailDefault,
   } = props;
+  console.log('i am rerendering');
 
   const { thread: threadProps, threadInstance } = threadFromProps;
   const StopMessageStreamingButton =
@@ -871,7 +872,7 @@ const ChannelWithContext = <
       listener?.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channelId, messageId, shouldSyncChannel]);
+  }, [channel.cid, messageId, shouldSyncChannel]);
 
   // subscribe to channel.deleted event
   useEffect(() => {
