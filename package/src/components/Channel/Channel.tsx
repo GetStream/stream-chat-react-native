@@ -679,8 +679,6 @@ const ChannelWithContext = <
     VideoThumbnail = VideoThumbnailDefault,
   } = props;
 
-  console.log('am i really rerendering');
-
   const { thread: threadProps, threadInstance } = threadFromProps;
   const StopMessageStreamingButton =
     StopMessageStreamingButtonOverride === undefined
