@@ -39,8 +39,7 @@
     "react-native-web": "~0.19.13",
     "stream-chat-expo": "link:../../package/expo-package",
     "stream-chat-react-native-core": "link:../../package",
-    "typescript": "~5.3.3",
-    "stream-chat": "https://github.com/GetStream/stream-chat-js#8bf5d9f0a926e0ba2deb46ec87a3bce133e29de1"
+    "typescript": "~5.3.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
