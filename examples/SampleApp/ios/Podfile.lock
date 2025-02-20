@@ -1871,7 +1871,7 @@ PODS:
     - React-utils (= 0.77.1)
   - RNAudioRecorderPlayer (3.6.12):
     - React-Core
-  - RNCAsyncStorage (1.24.0):
+  - RNCAsyncStorage (2.1.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2565,7 +2565,7 @@ SPEC CHECKSUMS:
   ReactCodegen: cf66081f0d093f104d18751783f167011920b786
   ReactCommon: 2b7aae141aa868224ef65cdc5144d1ec1acfed57
   RNAudioRecorderPlayer: 224c7de87722938aedce04000d09baa633148f5b
-  RNCAsyncStorage: 2118709bfe9c313eba06d0ae7c34592a07de8243
+  RNCAsyncStorage: dac011cac81189c2b3b8654f3db97d2b6362d165
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
   RNFBApp: 60366dd9d6bb01327607e1561a32508592d76db9
   RNFBMessaging: 9465c2e3adb5e02cae8d40048306a30aea7f55cf
@@ -2584,4 +2584,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 4f662370295f8f9cee909f1a4c59a614999a209d
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.14.3
