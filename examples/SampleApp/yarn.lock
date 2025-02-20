@@ -7927,9 +7927,9 @@ stream-chat@^8.56.1:
     jsonwebtoken "~9.0.0"
     ws "^7.5.10"
 
-"stream-chat@https://github.com/GetStream/stream-chat-js#8bf5d9f0a926e0ba2deb46ec87a3bce133e29de1":
+"stream-chat@https://github.com/GetStream/stream-chat-js.git#chore/update-build-system":
   version "8.56.1"
-  resolved "https://github.com/GetStream/stream-chat-js#8bf5d9f0a926e0ba2deb46ec87a3bce133e29de1"
+  resolved "https://github.com/GetStream/stream-chat-js.git#8bf5d9f0a926e0ba2deb46ec87a3bce133e29de1"
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"

@@ -49,7 +49,7 @@
     "react-native-video": "^6.7.0",
     "stream-chat-react-native": "link:../../package/native-package",
     "stream-chat-react-native-core": "link:../../package",
-    "stream-chat": "https://github.com/GetStream/stream-chat-js#8bf5d9f0a926e0ba2deb46ec87a3bce133e29de1"
+    "stream-chat": "https://github.com/GetStream/stream-chat-js.git#chore/update-build-system"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
