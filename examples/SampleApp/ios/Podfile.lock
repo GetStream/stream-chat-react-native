@@ -1384,7 +1384,7 @@ PODS:
     - React-jsiexecutor
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
-  - react-native-blob-util (0.19.11):
+  - react-native-blob-util (0.21.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1904,7 +1904,7 @@ PODS:
     - FirebaseCoreExtension
     - React-Core
     - RNFBApp
-  - RNGestureHandler (2.23.1):
+  - RNGestureHandler (2.24.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2529,7 +2529,7 @@ SPEC CHECKSUMS:
   React-logger: 1935d6e6461e9c8be4c87af56c56a4876021171e
   React-Mapbuffer: 2976cb8ef91ef01700f56023dcf0b4838a0c4f95
   React-microtasksnativemodule: 7b94bd985daaeab923407ab6d248c02eae734720
-  react-native-blob-util: 50e39d0aca569e950b9e10c244c60c1ca5392ae6
+  react-native-blob-util: 875bbeee07e4ada135e4edf9fc7b22acf8d9721d
   react-native-cameraroll: 36dc62b41c7943a79ac2f7cf4d3da10d4138513f
   react-native-document-picker: 6d3991d663e28714988c41696490e6fb1c525fbc
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
@@ -2569,7 +2569,7 @@ SPEC CHECKSUMS:
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
   RNFBApp: 60366dd9d6bb01327607e1561a32508592d76db9
   RNFBMessaging: 9465c2e3adb5e02cae8d40048306a30aea7f55cf
-  RNGestureHandler: a5c5e76f0056a7115b839686934740b6639c7cec
+  RNGestureHandler: 0a16f3f13829c01268ae55610a40b57b713c8161
   RNNotifee: 4a6ee5c7deaf00e005050052d73ee6315dff7ec9
   RNReactNativeHapticFeedback: a49e613d48d721c99cad9689a490554104c22154
   RNReanimated: 5c268cff742e86416974907d8596b173683e9ce6
