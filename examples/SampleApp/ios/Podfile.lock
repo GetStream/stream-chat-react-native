@@ -2084,7 +2084,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNShare (11.1.0):
+  - RNShare (12.0.9):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2574,7 +2574,7 @@ SPEC CHECKSUMS:
   RNReactNativeHapticFeedback: a49e613d48d721c99cad9689a490554104c22154
   RNReanimated: 5c268cff742e86416974907d8596b173683e9ce6
   RNScreens: 6ce56b0e106dc2cffa856e9abdaf0f0fe356f93a
-  RNShare: 207e0c25ef77fa20fa0a88c14affa8b799949e30
+  RNShare: 12d13ebc179faf22534c605d17b2c2fa40191850
   RNSVG: dc2927c9dc1b5aa514b92f72fa7c511d5fc12a2a
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
@@ -2584,4 +2584,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 4f662370295f8f9cee909f1a4c59a614999a209d
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.14.3
