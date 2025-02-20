@@ -10,7 +10,7 @@
   "main": "src/index.js",
   "types": "types/index.d.ts",
   "dependencies": {
-    "stream-chat-react-native-core": "link:../"
+    "stream-chat-react-native-core": "6.6.2"
   },
   "peerDependencies": {
     "expo": ">=51.0.0",

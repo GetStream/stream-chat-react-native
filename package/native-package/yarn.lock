@@ -934,6 +934,13 @@
   dependencies:
     regenerator-runtime "^0.13.11"
 
+"@babel/runtime@^7.16.3":
+  version "7.26.9"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.26.9.tgz#aa4c6facc65b9cb3f87d75125ffd47781b475433"
+  integrity sha512-aA63XwOkcl4xxQa3HjPMqOP6LiK0ZDv3mUPYEFXkpHbaFjtGggE1A61FjFzJnB+p7/oy2gA8E+rcBNl/zC1tMg==
+  dependencies:
+    regenerator-runtime "^0.14.0"
+
 "@babel/runtime@^7.17.2":
   version "7.24.7"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.24.7.tgz#f4f0d5530e8dbdf59b3451b9b3e594b6ba082e12"
@@ -1569,7 +1576,7 @@
   dependencies:
     "@types/istanbul-lib-report" "*"
 
-"@types/jsonwebtoken@^9.0.8":
+"@types/jsonwebtoken@~9.0.0":
   version "9.0.8"
   resolved "https://registry.yarnpkg.com/@types/jsonwebtoken/-/jsonwebtoken-9.0.8.tgz#313490052801edfb031bb32b6bbd77cc9f230852"
   integrity sha512-7fx54m60nLFUVYlxAB1xpe9CBWX2vSrk50Y6ogRJ1v5xxtba7qXTg5BgYDN5dq+yuQQ9HaVlHJyAAt1/mxryFg==
@@ -1618,10 +1625,10 @@
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-2.0.1.tgz#20f18294f797f2209b5f65c8e3b5c8e8261d127c"
   integrity sha512-Hl219/BT5fLAaz6NDkSuhzasy49dwQS/DSdu4MdggFB8zcXv7vflBI3xp7FEmkmdDkBUI2bPUNeMttp2knYdxw==
 
-"@types/ws@^8.5.14":
-  version "8.5.14"
-  resolved "https://registry.yarnpkg.com/@types/ws/-/ws-8.5.14.tgz#93d44b268c9127d96026cf44353725dd9b6c3c21"
-  integrity sha512-bd/YFLW+URhBzMXurx7lWByOu+xzU9+kb3RboOteXYDfW+tr+JZa99OyNmPINEGB/ahzKrEuc8rcv4gnpJmxTw==
+"@types/ws@^7.4.0":
+  version "7.4.7"
+  resolved "https://registry.yarnpkg.com/@types/ws/-/ws-7.4.7.tgz#f7c390a36f7a0679aa69de2d501319f4f8d9b702"
+  integrity sha512-JQbbmxZTZehdc2iszGKs5oC3NFnjeay7mtAWrdt7qNtAVK0g19muApzAy4bm9byz79xa2ZnO/BOBC2R8RC5Lww==
   dependencies:
     "@types/node" "*"
 
@@ -4248,16 +4255,33 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-"stream-chat-react-native-core@link:..":
-  version "0.0.0"
-  uid ""
-
-"stream-chat@https://github.com/GetStream/stream-chat-js#8bf5d9f0a926e0ba2deb46ec87a3bce133e29de1":
-  version "8.56.1"
-  resolved "https://github.com/GetStream/stream-chat-js#8bf5d9f0a926e0ba2deb46ec87a3bce133e29de1"
+stream-chat-react-native-core@6.6.2:
+  version "6.6.2"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-6.6.2.tgz#a32bcf56f1675c60ceeef4507ed43120f659d52d"
+  integrity sha512-JeDMaVGEUCKYmG+qcbCsUPB7HyxYd4pEAMFXG0O180JOMAqemyjXMquKvGCGF8Q4YZAKUPV71VC/vGLpPDnGQg==
   dependencies:
-    "@types/jsonwebtoken" "^9.0.8"
-    "@types/ws" "^8.5.14"
+    "@gorhom/bottom-sheet" "^5.0.6"
+    dayjs "1.10.5"
+    emoji-regex "^10.3.0"
+    i18next "^21.6.14"
+    intl-pluralrules "^2.0.1"
+    linkifyjs "^4.1.1"
+    lodash-es "4.17.21"
+    mime-types "^2.1.34"
+    path "0.12.7"
+    react-native-markdown-package "1.8.2"
+    react-native-url-polyfill "^1.3.0"
+    stream-chat "^8.56.1"
+    use-sync-external-store "^1.4.0"
+
+stream-chat@^8.56.1:
+  version "8.56.1"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.56.1.tgz#53779c987b9a46ea6908508f3b164cb14051bdc1"
+  integrity sha512-ZgNzD9z2JF65SE2J9Tur29fJTzpVAj2VYgu0OYqb3IEcpoP3ncLD0F3dsCvg8UDd/kYklkIncgvlAFAS4frYFw==
+  dependencies:
+    "@babel/runtime" "^7.16.3"
+    "@types/jsonwebtoken" "~9.0.0"
+    "@types/ws" "^7.4.0"
     axios "^1.6.0"
     base64-js "^1.5.1"
     form-data "^4.0.0"
