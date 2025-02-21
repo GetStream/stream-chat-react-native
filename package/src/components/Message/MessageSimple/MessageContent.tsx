@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     borderWidth: 1,
+    overflow: 'hidden',
   },
   leftAlignContent: {
     justifyContent: 'flex-start',
@@ -154,6 +155,7 @@ const MessageContentWithContext = <
             borderRadiusS,
             borderTopLeftRadius,
             borderTopRightRadius,
+            ...container
           },
           containerInner,
           replyBorder,
@@ -251,7 +253,7 @@ const MessageContentWithContext = <
           });
         }
       }}
-      style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+      style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }, container]}
       {...additionalPressableProps}
     >
       <View onLayout={onLayout} style={wrapper}>

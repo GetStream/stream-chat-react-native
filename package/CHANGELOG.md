@@ -1,5 +1,28 @@
 # Change Log
 
+### [6.6.2](https://github.com/GetStream/stream-chat-react-native/compare/v6.6.1...v6.6.2) (2025-02-19)
+
+
+### Bug Fixes
+
+* message content inner container style overflow issue ([#2961](https://github.com/GetStream/stream-chat-react-native/issues/2961)) ([10b4a9d](https://github.com/GetStream/stream-chat-react-native/commit/10b4a9d093af4f3c16f6a18801ea2171846a199d))
+* poll vote fallback to id if name not present ([#2958](https://github.com/GetStream/stream-chat-react-native/issues/2958)) ([c68bc2d](https://github.com/GetStream/stream-chat-react-native/commit/c68bc2d5853a9de3936e0c308865d9bcef7d8292))
+* state break on channel prop update ([#2957](https://github.com/GetStream/stream-chat-react-native/issues/2957)) ([51893bb](https://github.com/GetStream/stream-chat-react-native/commit/51893bb06cc50765c0f382e38c85d4a0010b06a9))
+* use channel.cid instead of id ([#2960](https://github.com/GetStream/stream-chat-react-native/issues/2960)) ([eb86009](https://github.com/GetStream/stream-chat-react-native/commit/eb86009bb586df96d42f2091c23943ffe62e5018))
+
+
+### Performance Improvements
+
+* do not rerender Channel on poll events ([#2959](https://github.com/GetStream/stream-chat-react-native/issues/2959)) ([b117342](https://github.com/GetStream/stream-chat-react-native/commit/b1173423141b620142002110d87cefc2798825fa))
+
+### [6.6.1](https://github.com/GetStream/stream-chat-react-native/compare/v6.6.0...v6.6.1) (2025-02-18)
+
+
+### Bug Fixes
+
+* change flatlist inside the bottom sheet modal and fix gesture in bottom sheet ([#2953](https://github.com/GetStream/stream-chat-react-native/issues/2953)) ([92f0b01](https://github.com/GetStream/stream-chat-react-native/commit/92f0b0102aacf0574222f59bd186da0f14e1a3d2))
+* show selected reaction tab in the message menu when long pressed in bottom reaction list ([#2955](https://github.com/GetStream/stream-chat-react-native/issues/2955)) ([f8e37f3](https://github.com/GetStream/stream-chat-react-native/commit/f8e37f3b6de8557fa91eb7be97cfed59a94bbbeb))
+
 ## [6.6.0](https://github.com/GetStream/stream-chat-react-native/compare/v6.5.1...v6.6.0) (2025-02-13)
 
 

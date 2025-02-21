@@ -573,9 +573,12 @@ exports[`Thread should match thread snapshot 1`] = `
                                 onResponderTerminationRequest={[Function]}
                                 onStartShouldSetResponder={[Function]}
                                 style={
-                                  {
-                                    "opacity": 1,
-                                  }
+                                  [
+                                    {
+                                      "opacity": 1,
+                                    },
+                                    {},
+                                  ]
                                 }
                               >
                                 <View
@@ -589,6 +592,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                           "borderTopLeftRadius": 16,
                                           "borderTopRightRadius": 16,
                                           "borderWidth": 1,
+                                          "overflow": "hidden",
                                         },
                                         {
                                           "backgroundColor": "#E9EAED",
@@ -1079,9 +1083,12 @@ exports[`Thread should match thread snapshot 1`] = `
                                 onResponderTerminationRequest={[Function]}
                                 onStartShouldSetResponder={[Function]}
                                 style={
-                                  {
-                                    "opacity": 1,
-                                  }
+                                  [
+                                    {
+                                      "opacity": 1,
+                                    },
+                                    {},
+                                  ]
                                 }
                               >
                                 <View
@@ -1095,6 +1102,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                           "borderTopLeftRadius": 16,
                                           "borderTopRightRadius": 16,
                                           "borderWidth": 1,
+                                          "overflow": "hidden",
                                         },
                                         {
                                           "backgroundColor": "#E9EAED",
@@ -1623,9 +1631,12 @@ exports[`Thread should match thread snapshot 1`] = `
                                 onResponderTerminationRequest={[Function]}
                                 onStartShouldSetResponder={[Function]}
                                 style={
-                                  {
-                                    "opacity": 1,
-                                  }
+                                  [
+                                    {
+                                      "opacity": 1,
+                                    },
+                                    {},
+                                  ]
                                 }
                               >
                                 <View
@@ -1639,6 +1650,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                           "borderTopLeftRadius": 16,
                                           "borderTopRightRadius": 16,
                                           "borderWidth": 1,
+                                          "overflow": "hidden",
                                         },
                                         {
                                           "backgroundColor": "#E9EAED",
@@ -2122,9 +2134,12 @@ exports[`Thread should match thread snapshot 1`] = `
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
                                   style={
-                                    {
-                                      "opacity": 1,
-                                    }
+                                    [
+                                      {
+                                        "opacity": 1,
+                                      },
+                                      {},
+                                    ]
                                   }
                                 >
                                   <View
@@ -2138,6 +2153,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                             "borderTopLeftRadius": 16,
                                             "borderTopRightRadius": 16,
                                             "borderWidth": 1,
+                                            "overflow": "hidden",
                                           },
                                           {
                                             "backgroundColor": "#E9EAED",
