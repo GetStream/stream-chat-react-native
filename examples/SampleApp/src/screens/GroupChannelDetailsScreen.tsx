@@ -282,8 +282,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             >
               <View style={styles.memberRow}>
                 <Avatar
-                  channelId={channel.id}
-                  id={member.user?.id}
                   image={member.user?.image}
                   name={member.user?.name}
                   online={member.user?.online}
@@ -355,7 +353,9 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               <TouchableOpacity
                 onPress={() => {
                   setGroupName(channel.data?.name);
-                  textInputRef.current && textInputRef.current.blur();
+                  if (textInputRef.current) {
+                    textInputRef.current.blur();
+                  }
                 }}
                 style={{
                   paddingRight: 8,

@@ -102,6 +102,7 @@ export const AddMemberBottomSheet: React.FC = () => {
       reset();
       setOverlay('none');
     } catch (err) {
+      console.warn('An error has occurred while adding members: ', err);
       setError(true);
     }
     setAddMemberQueryInProgress(false);

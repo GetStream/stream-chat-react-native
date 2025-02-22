@@ -139,6 +139,7 @@ const App = () => {
               ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
               background: streamChatTheme.colors?.white_snow || '#FCFCFC',
             },
+            fonts: (colorScheme === 'dark' ? DarkTheme : DefaultTheme).fonts,
             dark: colorScheme === 'dark',
           }}
         >
@@ -182,7 +183,7 @@ const DrawerNavigatorWrapper: React.FC<{
         <Chat<StreamChatGenerics>
           client={chatClient}
           enableOfflineSupport
-          // @ts-expect-error
+          // @ts-expect-error - the `ImageComponent` prop is generic, meaning we can expect an error
           ImageComponent={FastImage}
           isMessageAIGenerated={(message: MessageType) => !!message.ai_generated}
         >

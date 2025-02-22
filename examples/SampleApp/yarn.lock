@@ -2286,7 +2286,7 @@
     eslint-plugin-react-hooks "^4.6.0"
     eslint-plugin-react-native "^4.0.0"
 
-"@react-native/eslint-plugin@0.77.1":
+"@react-native/eslint-plugin@0.77.1", "@react-native/eslint-plugin@^0.77.1":
   version "0.77.1"
   resolved "https://registry.yarnpkg.com/@react-native/eslint-plugin/-/eslint-plugin-0.77.1.tgz#34e13d7bab2af1a0d68fc609547ba205df51331d"
   integrity sha512-K1nuM/aLWYpUq8y/KJ34UCazYE4gdY1mxkwXhRSadDVpogK4Z/0xbSGYZQDHfvmOyQMZkM6mplQLztGrxD/CvA==
