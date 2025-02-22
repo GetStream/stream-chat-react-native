@@ -6,7 +6,7 @@ import eslintPluginJest from 'eslint-plugin-jest';
 
 import eslintReactNativeConfig from '@react-native/eslint-config';
 
-import typescriptParser from '@typescript-eslint/parser';
+import tsEslint from 'typescript-eslint';
 
 const globals = Object.keys(eslintReactNativeConfig.globals).reduce((acc, key) => {
   if (eslintReactNativeConfig.globals[key]) {
@@ -15,7 +15,8 @@ const globals = Object.keys(eslintReactNativeConfig.globals).reduce((acc, key) =
   return acc;
 }, {});
 
-export default [
+export default tsEslint.config(
+  tsEslint.configs.recommended,
   {
     ignores: ['node_modules/', 'dist/', '**/*.config.js'],
   },
@@ -24,7 +25,12 @@ export default [
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
-      parser: typescriptParser,
+      parser: tsEslint.parser,
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
       globals: {
         ...globals,
         console: 'readonly',
@@ -43,4 +49,4 @@ export default [
       'react-native/no-inline-styles': 'off',
     },
   },
-];
+);
