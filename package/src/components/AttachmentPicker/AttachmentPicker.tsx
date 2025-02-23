@@ -145,9 +145,13 @@ export const AttachmentPicker = React.forwardRef(
     getMorePhotosRef.current = getMorePhotos;
 
     useEffect(() => {
-      if (selectedPicker !== 'images') return;
+      if (selectedPicker !== 'images') {
+        return;
+      }
 
-      if (!oniOS14GalleryLibrarySelectionChange) return;
+      if (!oniOS14GalleryLibrarySelectionChange) {
+        return;
+      }
       // ios 14 library selection change event is fired when user reselects the images that are permitted to be readable by the app
       const { unsubscribe } = oniOS14GalleryLibrarySelectionChange(() => {
         // we reset the cursor and has next page to true to facilitate fetching of the first page of photos again

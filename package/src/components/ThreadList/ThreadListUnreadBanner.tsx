@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
 });
 
 const selector = (nextValue: ThreadManagerState) =>
-  ({ unseenThreadIds: nextValue.unseenThreadIds } as const);
+  ({ unseenThreadIds: nextValue.unseenThreadIds }) as const;
 
 export const ThreadListUnreadBanner = () => {
   const { client } = useChatContext();

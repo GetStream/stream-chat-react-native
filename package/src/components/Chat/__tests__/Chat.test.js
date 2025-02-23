@@ -51,7 +51,7 @@ describe('Chat', () => {
           fn={(ctx) => {
             context = ctx;
           }}
-        ></ChatContextConsumer>
+        />
       </Chat>,
     );
 
@@ -74,7 +74,7 @@ describe('Chat', () => {
           fn={(ctx) => {
             context = ctx;
           }}
-        ></ChatContextConsumer>
+        />
       </Chat>,
     );
 
@@ -96,7 +96,7 @@ describe('ChatContext', () => {
           fn={(ctx) => {
             context = ctx;
           }}
-        ></ChatContextConsumer>
+        />
       </Chat>,
     );
 
@@ -118,7 +118,7 @@ describe('ChatContext', () => {
           fn={(ctx) => {
             context = ctx;
           }}
-        ></ChatContextConsumer>
+        />
       </Chat>,
     );
 
@@ -151,7 +151,7 @@ describe('TranslationContext', () => {
           fn={(ctx) => {
             context = ctx;
           }}
-        ></TranslationContextConsumer>
+        />
       </Chat>,
     );
 
@@ -176,7 +176,7 @@ describe('TranslationContext', () => {
           fn={(ctx) => {
             context = ctx;
           }}
-        ></TranslationContextConsumer>
+        />
       </Chat>,
     );
 
@@ -201,7 +201,7 @@ describe('TranslationContext', () => {
           fn={(ctx) => {
             context = ctx;
           }}
-        ></TranslationContextConsumer>
+        />
       </Chat>,
     );
 
@@ -221,7 +221,7 @@ describe('TranslationContext', () => {
           fn={(ctx) => {
             context = ctx;
           }}
-        ></TranslationContextConsumer>
+        />
       </Chat>,
     );
     await waitFor(() => {

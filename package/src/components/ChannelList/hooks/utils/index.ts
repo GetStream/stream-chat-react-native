@@ -8,7 +8,9 @@ export const isChannelPinned = <
 >(
   channel: Channel<StreamChatGenerics>,
 ) => {
-  if (!channel) return false;
+  if (!channel) {
+    return false;
+  }
 
   const member = channel.state.membership;
 
@@ -20,7 +22,9 @@ export const isChannelArchived = <
 >(
   channel: Channel<StreamChatGenerics>,
 ) => {
-  if (!channel) return false;
+  if (!channel) {
+    return false;
+  }
 
   const member = channel.state.membership;
 
@@ -32,7 +36,9 @@ export const shouldConsiderArchivedChannels = <
 >(
   filters: ChannelListProps<StreamChatGenerics>['filters'],
 ) => {
-  if (!filters) return false;
+  if (!filters) {
+    return false;
+  }
 
   return typeof filters.archived === 'boolean';
 };
@@ -48,7 +54,9 @@ export const extractSortValue = <
   targetKey: keyof ChannelSortBase<StreamChatGenerics>;
   sort?: ChannelListProps<StreamChatGenerics>['sort'];
 }) => {
-  if (!sort) return null;
+  if (!sort) {
+    return null;
+  }
   let option: null | ChannelSortBase<StreamChatGenerics> = null;
 
   if (Array.isArray(sort)) {
@@ -88,7 +96,9 @@ export const shouldConsiderPinnedChannels = <
     targetKey: 'pinned_at',
   });
 
-  if (typeof value !== 'number') return false;
+  if (typeof value !== 'number') {
+    return false;
+  }
 
   return Math.abs(value) === 1;
 };
@@ -96,16 +106,22 @@ export const shouldConsiderPinnedChannels = <
 export function findPinnedAtSortOrder<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({ sort }: { sort: ChannelListProps<StreamChatGenerics>['sort'] }) {
-  if (!sort) return null;
+  if (!sort) {
+    return null;
+  }
 
   if (Array.isArray(sort)) {
     const [option] = sort;
 
-    if (!option?.pinned_at) return null;
+    if (!option?.pinned_at) {
+      return null;
+    }
 
     return option.pinned_at;
   } else {
-    if (!sort.pinned_at) return null;
+    if (!sort.pinned_at) {
+      return null;
+    }
 
     return sort.pinned_at;
   }
@@ -117,7 +133,9 @@ export function findLastPinnedChannelIndex<
   let lastPinnedChannelIndex: number | null = null;
 
   for (const channel of channels) {
-    if (!isChannelPinned(channel)) break;
+    if (!isChannelPinned(channel)) {
+      break;
+    }
 
     if (typeof lastPinnedChannelIndex === 'number') {
       lastPinnedChannelIndex++;

@@ -96,7 +96,9 @@ const MessageRepliesWithContext = <
     },
   } = useTheme();
 
-  if (threadList || !message.reply_count) return null;
+  if (threadList || !message.reply_count) {
+    return null;
+  }
 
   return (
     <View style={styles.curveContainer}>
@@ -195,22 +197,34 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   } = nextProps;
 
   const threadListEqual = prevThreadList === nextThreadList;
-  if (!threadListEqual) return false;
+  if (!threadListEqual) {
+    return false;
+  }
 
   const messageReplyCountEqual = prevMessage.reply_count === nextMessage.reply_count;
-  if (!messageReplyCountEqual) return false;
+  if (!messageReplyCountEqual) {
+    return false;
+  }
 
   const noBorderEqual = prevNoBorder === nextNoBorder;
-  if (!noBorderEqual) return false;
+  if (!noBorderEqual) {
+    return false;
+  }
 
   const repliesCurveColorEqual = prevRepliesCurveColor === nextRepliesCurveColor;
-  if (!repliesCurveColorEqual) return false;
+  if (!repliesCurveColorEqual) {
+    return false;
+  }
 
   const tEqual = prevT === nextT;
-  if (!tEqual) return false;
+  if (!tEqual) {
+    return false;
+  }
 
   const onOpenThreadEqual = prevOnOpenThread === nextOnOpenThread;
-  if (!onOpenThreadEqual) return false;
+  if (!onOpenThreadEqual) {
+    return false;
+  }
 
   return true;
 };

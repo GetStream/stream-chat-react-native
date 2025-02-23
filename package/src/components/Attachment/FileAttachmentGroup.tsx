@@ -178,7 +178,9 @@ export const FileAttachmentGroup = <
 
   const files = propFiles || contextFiles;
 
-  if (!files.length) return null;
+  if (!files.length) {
+    return null;
+  }
 
   return (
     <MemoizedFileAttachmentGroup

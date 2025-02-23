@@ -87,10 +87,18 @@ Dayjs.updateLocale('hi', {
    * a rigid notion of a 'Pahar' it is not used as rigidly in modern Hindi.
    */
   meridiem(hour: number) {
-    if (hour < 4) return 'रात';
-    if (hour < 10) return 'सुबह';
-    if (hour < 17) return 'दोपहर';
-    if (hour < 20) return 'शाम';
+    if (hour < 4) {
+      return 'रात';
+    }
+    if (hour < 10) {
+      return 'सुबह';
+    }
+    if (hour < 17) {
+      return 'दोपहर';
+    }
+    if (hour < 20) {
+      return 'शाम';
+    }
     return 'रात';
   },
 
@@ -98,10 +106,18 @@ Dayjs.updateLocale('hi', {
     if (hour === 12) {
       hour = 0;
     }
-    if (meridiem === 'रात') return hour < 4 ? hour : hour + 12;
-    if (meridiem === 'सुबह') return hour;
-    if (meridiem === 'दोपहर') return hour >= 10 ? hour : hour + 12;
-    if (meridiem === 'शाम') return hour + 12;
+    if (meridiem === 'रात') {
+      return hour < 4 ? hour : hour + 12;
+    }
+    if (meridiem === 'सुबह') {
+      return hour;
+    }
+    if (meridiem === 'दोपहर') {
+      return hour >= 10 ? hour : hour + 12;
+    }
+    if (meridiem === 'शाम') {
+      return hour + 12;
+    }
     return hour;
   },
 
@@ -516,7 +532,7 @@ export class Streami18n {
       this.logger(
         `Streami18n: Streami18n(...) - Locale config for ${this.currentLanguage} does not exist in momentjs.` +
           `Please import the locale file using "import 'moment/locale/${this.currentLanguage}';" in your app or ` +
-          `register the locale config with Streami18n using registerTranslation(language, translation, customDayjsLocale)`,
+          'register the locale config with Streami18n using registerTranslation(language, translation, customDayjsLocale)',
       );
     }
 
@@ -558,7 +574,9 @@ export class Streami18n {
       this.initialized = true;
       if (this.formatters) {
         Object.entries(this.formatters).forEach(([name, formatterFactory]) => {
-          if (!formatterFactory) return;
+          if (!formatterFactory) {
+            return;
+          }
           this.i18nInstance.services.formatter?.add(name, formatterFactory(this));
         });
       }
@@ -569,7 +587,9 @@ export class Streami18n {
   }
 
   localeExists = (language: string) => {
-    if (this.isCustomDateTimeParser) return true;
+    if (this.isCustomDateTimeParser) {
+      return true;
+    }
 
     return Object.keys(Dayjs.Ls).indexOf(language) > -1;
   };
@@ -628,7 +648,7 @@ export class Streami18n {
   ) {
     if (!translation) {
       this.logger(
-        `Streami18n: registerTranslation(language, translation, customDayjsLocale) called without translation`,
+        'Streami18n: registerTranslation(language, translation, customDayjsLocale) called without translation',
       );
       return;
     }
@@ -643,10 +663,10 @@ export class Streami18n {
       this.dayjsLocales[language] = { ...customDayjsLocale };
     } else if (!this.localeExists(language)) {
       this.logger(
-        `Streami18n: registerTranslation(language, translation, customDayjsLocale) - ` +
+        'Streami18n: registerTranslation(language, translation, customDayjsLocale) - ' +
           `Locale config for ${language} does not exist in Dayjs.` +
           `Please import the locale file using "import 'dayjs/locale/${language}';" in your app or ` +
-          `register the locale config with Streami18n using registerTranslation(language, translation, customDayjsLocale)`,
+          'register the locale config with Streami18n using registerTranslation(language, translation, customDayjsLocale)',
       );
     }
 
@@ -671,7 +691,9 @@ export class Streami18n {
   async setLanguage(language: string) {
     this.currentLanguage = language;
 
-    if (!this.initialized) return;
+    if (!this.initialized) {
+      return;
+    }
 
     try {
       const t = await this.i18nInstance.changeLanguage(language);

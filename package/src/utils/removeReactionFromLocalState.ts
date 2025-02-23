@@ -18,7 +18,9 @@ export const removeReactionFromLocalState = <
   user: UserResponse<StreamChatGenerics>;
 }) => {
   const message = channel.state.messages.find(({ id }) => id === messageId);
-  if (!message || !channel?.id || !user?.id) return;
+  if (!message || !channel?.id || !user?.id) {
+    return;
+  }
 
   message.own_reactions = message.own_reactions?.filter(
     (reaction) => reaction.type !== reactionType,

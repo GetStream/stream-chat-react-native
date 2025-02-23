@@ -64,13 +64,17 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const { lastGroupMessage: nextLastGroupMessage, message: nextMessage } = nextProps;
 
   const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
-  if (!lastGroupMessageEqual) return false;
+  if (!lastGroupMessageEqual) {
+    return false;
+  }
 
   const userEqual =
     prevMessage.user?.image === nextMessage.user?.image &&
     prevMessage.user?.name === nextMessage.user?.name &&
     prevMessage.user?.id === nextMessage.user?.id;
-  if (!userEqual) return false;
+  if (!userEqual) {
+    return false;
+  }
 
   return true;
 };

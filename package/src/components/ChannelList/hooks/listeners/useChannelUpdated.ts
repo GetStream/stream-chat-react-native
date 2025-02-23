@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import type { Channel, Event } from 'stream-chat';
 
@@ -29,7 +29,9 @@ export const useChannelUpdated = <
         onChannelUpdated(setChannels, event);
       } else {
         setChannels((channels) => {
-          if (!channels) return channels;
+          if (!channels) {
+            return channels;
+          }
 
           const index = channels.findIndex(
             (channel) => channel.cid === (event.cid || event.channel?.cid),

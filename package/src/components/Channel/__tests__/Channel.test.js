@@ -238,7 +238,7 @@ describe('Channel', () => {
             fn={(ctx) => {
               context = ctx;
             }}
-          ></ContextConsumer>
+          />
         </ChannelProvider>,
       );
 
@@ -280,7 +280,7 @@ describe('Channel', () => {
             fn={(ctx) => {
               context = ctx;
             }}
-          ></ContextConsumer>
+          />
         </MessagesProvider>,
       );
 
@@ -322,7 +322,7 @@ describe('Channel', () => {
             fn={(ctx) => {
               context = ctx;
             }}
-          ></ContextConsumer>
+          />
         </ThreadProvider>,
       );
 
@@ -506,7 +506,7 @@ describe('Channel initial load useEffect', () => {
         ...channelInitialState,
         read: read_data,
       };
-      channel.countUnread = jest.fn(() => 0);
+      jest.spyOn(channel, 'countUnread').mockImplementation(() => 0);
 
       const loadChannelAtFirstUnreadMessageFn = jest.fn();
 
@@ -542,7 +542,7 @@ describe('Channel initial load useEffect', () => {
         read: read_data,
       };
 
-      channel.countUnread = jest.fn(() => numberOfUnreadMessages);
+      jest.spyOn(channel, 'countUnread').mockImplementation(() => numberOfUnreadMessages);
       const loadChannelAtFirstUnreadMessageFn = jest.fn();
 
       mockedHook({ loadChannelAtFirstUnreadMessage: loadChannelAtFirstUnreadMessageFn });
@@ -577,7 +577,7 @@ describe('Channel initial load useEffect', () => {
         read: read_data,
       };
 
-      channel.countUnread = jest.fn(() => numberOfUnreadMessages);
+      jest.spyOn(channel, 'countUnread').mockImplementation(() => numberOfUnreadMessages);
       const loadChannelAtFirstUnreadMessageFn = jest.fn();
 
       mockedHook({ loadChannelAtFirstUnreadMessage: loadChannelAtFirstUnreadMessageFn });

@@ -148,7 +148,9 @@ const GalleryWithContext = <
     [imagesAndVideosValue],
   );
 
-  if (!imagesAndVideos?.length) return null;
+  if (!imagesAndVideos?.length) {
+    return null;
+  }
   const numOfColumns = thumbnailGrid.length;
 
   return (
@@ -516,14 +518,20 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const messageEqual =
     prevMessage?.id === nextMessage?.id &&
     `${prevMessage?.updated_at}` === `${nextMessage?.updated_at}`;
-  if (!messageEqual) return false;
+  if (!messageEqual) {
+    return false;
+  }
 
   const groupStylesEqual =
     prevGroupStyles.length === nextGroupStyles.length && prevGroupStyles[0] === nextGroupStyles[0];
-  if (!groupStylesEqual) return false;
+  if (!groupStylesEqual) {
+    return false;
+  }
 
   const hasThreadRepliesEqual = prevHasThreadReplies === nextHasThreadReplies;
-  if (!hasThreadRepliesEqual) return false;
+  if (!hasThreadRepliesEqual) {
+    return false;
+  }
 
   const imagesEqual =
     prevImages.length === nextImages.length &&
@@ -532,7 +540,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
         getUrlWithoutParams(image.image_url) === getUrlWithoutParams(nextImages[index].image_url) &&
         getUrlWithoutParams(image.thumb_url) === getUrlWithoutParams(nextImages[index].thumb_url),
     );
-  if (!imagesEqual) return false;
+  if (!imagesEqual) {
+    return false;
+  }
 
   const videosEqual =
     prevVideos.length === nextVideos.length &&
@@ -541,11 +551,15 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
         getUrlWithoutParams(image.image_url) === getUrlWithoutParams(nextVideos[index].image_url) &&
         getUrlWithoutParams(image.thumb_url) === getUrlWithoutParams(nextVideos[index].thumb_url),
     );
-  if (!videosEqual) return false;
+  if (!videosEqual) {
+    return false;
+  }
 
   const messageThemeEqual =
     JSON.stringify(prevMyMessageTheme) === JSON.stringify(nextMyMessageTheme);
-  if (!messageThemeEqual) return false;
+  if (!messageThemeEqual) {
+    return false;
+  }
 
   return true;
 };
@@ -613,7 +627,9 @@ export const Gallery = <
   const videos = propVideos || contextVideos;
   const message = propMessage || contextMessage;
 
-  if (!images.length && !videos.length) return null;
+  if (!images.length && !videos.length) {
+    return null;
+  }
 
   const additionalPressableProps = propAdditionalPressableProps || contextAdditionalPressableProps;
   const alignment = propAlignment || contextAlignment;

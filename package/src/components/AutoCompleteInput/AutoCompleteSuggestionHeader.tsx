@@ -76,10 +76,14 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const { queryText: nextQueryText, triggerType: nextType } = nextProps;
 
   const typeEqual = prevType === nextType;
-  if (!typeEqual) return false;
+  if (!typeEqual) {
+    return false;
+  }
 
   const valueEqual = prevQueryText === nextQueryText;
-  if (!valueEqual) return false;
+  if (!valueEqual) {
+    return false;
+  }
   return true;
 };
 

@@ -22,7 +22,7 @@ const selector = (nextValue: ThreadManagerState) =>
     isLoading: nextValue.pagination.isLoading,
     isLoadingNext: nextValue.pagination.isLoadingNext,
     threads: nextValue.threads,
-  } as const);
+  }) as const;
 
 export type ThreadListProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -88,7 +88,9 @@ export const ThreadList = (props: ThreadListProps) => {
   const { client } = useChatContext();
 
   useEffect(() => {
-    if (!client) return;
+    if (!client) {
+      return;
+    }
     if (isFocused) {
       client.threads.activate();
     } else {
@@ -97,7 +99,9 @@ export const ThreadList = (props: ThreadListProps) => {
   }, [client, isFocused]);
 
   useEffect(() => {
-    if (!client) return;
+    if (!client) {
+      return;
+    }
 
     const listener = client.on('connection.recovered', () => {
       client.threads.reload({ force: true });

@@ -142,7 +142,9 @@ export const useMessageListPagination = <
    */
   const loadChannelAroundMessage: ChannelContextValue<StreamChatGenerics>['loadChannelAroundMessage'] =
     async ({ limit = 25, messageId: messageIdToLoadAround, setTargetedMessage }) => {
-      if (!messageIdToLoadAround) return;
+      if (!messageIdToLoadAround) {
+        return;
+      }
       setLoadingMore(true);
       setLoading(true);
       try {
@@ -192,7 +194,9 @@ export const useMessageListPagination = <
   const loadChannelAtFirstUnreadMessage: ChannelContextValue<StreamChatGenerics>['loadChannelAtFirstUnreadMessage'] =
     async ({ channelUnreadState, limit = 25, setChannelUnreadState, setTargetedMessage }) => {
       try {
-        if (!channelUnreadState?.unread_messages) return;
+        if (!channelUnreadState?.unread_messages) {
+          return;
+        }
         const { first_unread_message_id, last_read, last_read_message_id } = channelUnreadState;
         let firstUnreadMessageId = first_unread_message_id;
         let lastReadMessageId = last_read_message_id;

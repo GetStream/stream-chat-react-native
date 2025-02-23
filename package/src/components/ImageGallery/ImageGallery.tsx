@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Image, ImageStyle, Keyboard, StyleSheet, ViewStyle } from 'react-native';
 
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -371,11 +371,11 @@ export const ImageGallery = <
       currentImageHeight * scale.value < fullWindowHeight && translateY.value > 0
         ? 1 - translateY.value / quarterScreenHeight
         : currentImageHeight * scale.value > fullWindowHeight &&
-          translateY.value > (currentImageHeight / 2) * scale.value - halfScreenHeight
-        ? 1 -
-          (translateY.value - ((currentImageHeight / 2) * scale.value - halfScreenHeight)) /
-            quarterScreenHeight
-        : 1,
+            translateY.value > (currentImageHeight / 2) * scale.value - halfScreenHeight
+          ? 1 -
+            (translateY.value - ((currentImageHeight / 2) * scale.value - halfScreenHeight)) /
+              quarterScreenHeight
+          : 1,
     [currentImageHeight],
   );
 
@@ -502,6 +502,16 @@ export const ImageGallery = <
     }
   };
 
+  const MemoizedImageGridHandle = useCallback(
+    () => (
+      <ImageGridHandle
+        closeGridView={closeGridView}
+        {...imageGalleryCustomComponents?.gridHandle}
+      />
+    ),
+    [imageGalleryCustomComponents?.gridHandle],
+  );
+
   return (
     <Animated.View
       accessibilityLabel='Image Gallery'
@@ -604,12 +614,7 @@ export const ImageGallery = <
         <BottomSheetModal
           animatedIndex={animatedBottomSheetIndex}
           enablePanDownToClose={true}
-          handleComponent={() => (
-            <ImageGridHandle
-              closeGridView={closeGridView}
-              {...imageGalleryCustomComponents?.gridHandle}
-            />
-          )}
+          handleComponent={MemoizedImageGridHandle}
           // @ts-ignore
           handleHeight={imageGalleryGridHandleHeight}
           index={0}

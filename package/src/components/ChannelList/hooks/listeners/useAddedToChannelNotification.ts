@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import uniqBy from 'lodash/uniqBy';
 
@@ -38,7 +38,9 @@ export const useAddedToChannelNotification = <
       if (typeof onAddedToChannel === 'function') {
         onAddedToChannel(setChannels, event, options);
       } else {
-        if (!options) return;
+        if (!options) {
+          return;
+        }
         const { sort } = options;
         if (event.channel?.id && event.channel?.type) {
           const channel = await getChannel<StreamChatGenerics>({
@@ -50,7 +52,9 @@ export const useAddedToChannelNotification = <
           const pinnedAtSort = findPinnedAtSortOrder({ sort });
 
           setChannels((channels) => {
-            if (!channels) return channels;
+            if (!channels) {
+              return channels;
+            }
 
             // handle pinning
             let lastPinnedChannelIndex: number | null = null;

@@ -535,7 +535,7 @@ describe('useMessageListPagination', () => {
 
     const messages = Array.from({ length: 20 }, (_, i) =>
       generateMessage({
-        created_at: new Date(`2021-09-01T00:00:00.000Z`),
+        created_at: new Date('2021-09-01T00:00:00.000Z'),
         id: i,
         text: `message-${i}`,
       }),

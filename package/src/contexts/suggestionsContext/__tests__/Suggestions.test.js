@@ -34,7 +34,7 @@ describe('SuggestionsProvider', () => {
           fn={(ctx) => {
             context = ctx;
           }}
-        ></SuggestionsContextConsumer>
+        />
       </SuggestionsProvider>,
     );
 

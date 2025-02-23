@@ -22,7 +22,9 @@ export const useAppSettings = <
      * Fetches app settings from the backend when offline support is disabled.
      */
     const enforceAppSettingsWithoutOfflineSupport = async () => {
-      if (!client.userID) return;
+      if (!client.userID) {
+        return;
+      }
 
       try {
         const appSettings = await client.getAppSettings();
@@ -43,8 +45,12 @@ export const useAppSettings = <
      * TODO: Remove client.userID usage for offline support case.
      */
     const enforceAppSettingsWithOfflineSupport = async () => {
-      if (!client.userID) return;
-      if (!initialisedDatabase) return;
+      if (!client.userID) {
+        return;
+      }
+      if (!initialisedDatabase) {
+        return;
+      }
 
       if (!isOnline) {
         const appSettings = await dbApi.getAppSettings({ currentUserId: client.userID });

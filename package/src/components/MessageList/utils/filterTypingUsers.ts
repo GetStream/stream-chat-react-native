@@ -18,12 +18,16 @@ export const filterTypingUsers = <
 }: FilterTypingUsersParams<StreamChatGenerics>) => {
   const nonSelfUsers: string[] = [];
 
-  if (!client || !client.user || !typing) return nonSelfUsers;
+  if (!client || !client.user || !typing) {
+    return nonSelfUsers;
+  }
 
   const typingKeys = Object.keys(typing);
 
   typingKeys.forEach((typingKey) => {
-    if (!typing[typingKey]) return;
+    if (!typing[typingKey]) {
+      return;
+    }
 
     /** removes own typing events */
     if (client.user?.id === typing[typingKey].user?.id) {

@@ -39,7 +39,9 @@ export const useCreateChatClient = <SCG extends ExtendableGenerics = DefaultGene
     let didUserConnectInterrupt = false;
 
     const connectionPromise = client.connectUser(cachedUserData, tokenOrProvider).then(() => {
-      if (!didUserConnectInterrupt) setChatClient(client);
+      if (!didUserConnectInterrupt) {
+        setChatClient(client);
+      }
     });
 
     return () => {

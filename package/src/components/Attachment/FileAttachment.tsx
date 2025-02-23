@@ -183,7 +183,9 @@ export const FileAttachment = <
 };
 
 export const getFileSizeDisplayText = (size?: number | string) => {
-  if (!size) return;
+  if (!size) {
+    return;
+  }
   if (typeof size === 'string') {
     size = parseFloat(size);
   }

@@ -44,7 +44,9 @@ export const NetworkDownIndicator = () => {
 
   const indicatorText = getText();
 
-  if (!indicatorText) return null;
+  if (!indicatorText) {
+    return null;
+  }
 
   return (
     <View

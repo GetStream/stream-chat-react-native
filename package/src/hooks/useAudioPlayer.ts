@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { SDK, SoundReturnType } from '../native';
 
 export type UseSoundPlayerProps = {
@@ -15,17 +17,25 @@ export const useAudioPlayer = (props: UseSoundPlayerProps) => {
 
   const playAudio = async () => {
     if (isExpoCLI) {
-      if (soundRef.current?.playAsync) await soundRef.current.playAsync();
+      if (soundRef.current?.playAsync) {
+        await soundRef.current.playAsync();
+      }
     } else {
-      if (soundRef.current?.resume) soundRef.current.resume();
+      if (soundRef.current?.resume) {
+        soundRef.current.resume();
+      }
     }
   };
 
   const pauseAudio = async () => {
     if (isExpoCLI) {
-      if (soundRef.current?.pauseAsync) await soundRef.current.pauseAsync();
+      if (soundRef.current?.pauseAsync) {
+        await soundRef.current.pauseAsync();
+      }
     } else {
-      if (soundRef.current?.pause) soundRef.current.pause();
+      if (soundRef.current?.pause) {
+        soundRef.current.pause();
+      }
     }
   };
 
@@ -45,14 +55,20 @@ export const useAudioPlayer = (props: UseSoundPlayerProps) => {
         }
       }
     } else {
-      if (soundRef.current?.seek) soundRef.current.seek(currentTime);
+      if (soundRef.current?.seek) {
+        soundRef.current.seek(currentTime);
+      }
     }
   };
 
   const changeAudioSpeed = async (speed: number) => {
     // Handled through prop `rate` in `Sound.Player`
-    if (!isExpoCLI) return;
-    if (soundRef.current?.setRateAsync) await soundRef.current.setRateAsync(speed);
+    if (!isExpoCLI) {
+      return;
+    }
+    if (soundRef.current?.setRateAsync) {
+      await soundRef.current.setRateAsync(speed);
+    }
   };
 
   return { changeAudioSpeed, pauseAudio, playAudio, seekAudio };

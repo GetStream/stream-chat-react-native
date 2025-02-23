@@ -48,10 +48,10 @@ export const useAnimatedGalleryStyle = ({
           translateX: selected
             ? translateX.value + xScaleOffset
             : scale.value < 1 || scale.value !== offsetScale.value
-            ? xScaleOffset
-            : previous
-            ? translateX.value - halfScreenWidth * (scale.value - 1) + xScaleOffset
-            : translateX.value + halfScreenWidth * (scale.value - 1) + xScaleOffset,
+              ? xScaleOffset
+              : previous
+                ? translateX.value - halfScreenWidth * (scale.value - 1) + xScaleOffset
+                : translateX.value + halfScreenWidth * (scale.value - 1) + xScaleOffset,
         },
         {
           translateY: selected ? translateY.value + yScaleOffset : yScaleOffset,

@@ -18,9 +18,7 @@ import tsEslint from 'typescript-eslint';
  * the new config. All globals which were previously set to true are now readonly.
  */
 const reactNativeGlobals = Object.keys(eslintReactNativeConfig.globals).reduce((acc, key) => {
-  if (eslintReactNativeConfig.globals[key]) {
-    acc[key] = 'readonly';
-  }
+  acc[key] = 'readonly';
   return acc;
 }, {});
 
@@ -51,13 +49,11 @@ export default tsEslint.config(
     ],
   },
   {
+    name: 'default',
     files: ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx'],
     languageOptions: {
       ecmaVersion: 2020,
-      globals: {
-        ...reactNativeGlobals,
-        console: 'readonly',
-      },
+      globals: reactNativeGlobals,
       parser: tsEslint.parser,
       parserOptions: {
         ecmaFeatures: {
@@ -79,7 +75,6 @@ export default tsEslint.config(
     },
     settings: {
       'import/resolver': {
-        // 'babel-module': {},
         node: {
           extensions: ['.js', '.jsx', '.ts', '.tsx'],
           paths: ['src'],
@@ -163,7 +158,9 @@ export default tsEslint.config(
         'warn',
         { ignoreRestSiblings: false, caughtErrors: 'none' },
       ],
+      '@typescript-eslint/no-unused-expressions': 'off',
       '@typescript-eslint/no-var-requires': 0,
+      '@typescript-eslint/no-require-imports': 'off',
       'react-hooks/exhaustive-deps': 1,
       'react-native/no-inline-styles': 0,
       'babel/no-invalid-this': 0,
@@ -173,12 +170,16 @@ export default tsEslint.config(
   },
   {
     name: 'jest',
-    files: ['src/**/__tests__/**'],
+    files: ['src/**/__tests__/**', '**/*.test.*', 'src/mock-builders/**'],
     plugins: { jest: eslintPluginJest },
     languageOptions: {
-      globals: eslintPluginJest.environments.globals.globals,
+      globals: {
+        ...eslintPluginJest.environments.globals.globals,
+        jest: 'readonly',
+      },
     },
     rules: {
+      'react-hooks/rules-of-hooks': 'off',
       'jest/expect-expect': 'off',
       'jest/no-conditional-expect': 'off',
       'jest/prefer-inline-snapshots': 'off',
@@ -186,7 +187,7 @@ export default tsEslint.config(
       'jest/prefer-expect-assertions': 'off',
       'jest/no-hooks': 'off',
       'jest/no-if': 'off',
-      'jest/prefer-spy-on': 'warn',
+      'jest/prefer-spy-on': 'off',
     },
   },
 );

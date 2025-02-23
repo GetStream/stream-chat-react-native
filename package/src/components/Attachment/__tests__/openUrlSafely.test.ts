@@ -25,7 +25,7 @@ describe('openUrlSafely', () => {
     jest.spyOn(Linking, 'canOpenURL').mockImplementation(jest.fn().mockResolvedValue(false));
     jest.spyOn(Linking, 'openURL').mockImplementation(jest.fn());
 
-    Linking.openURL = jest.fn();
+    jest.spyOn(Linking, 'openURL').mockImplementation();
     const url = 'basjkdbkjasbdkjabskdjabsjkdbasjkda---asdkjasjkdabsk';
     await openUrlSafely(url);
     await waitFor(() => {
@@ -38,7 +38,7 @@ describe('openUrlSafely', () => {
     jest.spyOn(Linking, 'canOpenURL').mockImplementation(jest.fn());
     jest.spyOn(Linking, 'openURL').mockImplementation(jest.fn());
 
-    Linking.openURL = jest.fn();
+    jest.spyOn(Linking, 'openURL').mockImplementation();
     const url = 'google.com';
     await openUrlSafely(url);
     await waitFor(() => {

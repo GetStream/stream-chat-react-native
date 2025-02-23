@@ -359,7 +359,9 @@ const AutoCompleteInputWithContext = <
   };
 
   const handleSuggestions = async (text: string) => {
-    if (text === undefined) return;
+    if (text === undefined) {
+      return;
+    }
     if (
       /\s/.test(text.slice(selectionEnd.current - 1, selectionEnd.current)) &&
       isTrackingStarted.current
@@ -383,8 +385,8 @@ const AutoCompleteInputWithContext = <
   const placeholderText = giphyActive
     ? t('Search GIFs')
     : cooldownActive
-    ? t('Slow mode ON')
-    : t('Send a message');
+      ? t('Slow mode ON')
+      : t('Send a message');
 
   const handleSuggestionsThrottled = throttle(handleSuggestions, 100, {
     leading: false,
@@ -450,16 +452,24 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   } = nextProps;
 
   const giphyActiveEqual = prevGiphyActive === nextGiphyActive;
-  if (!giphyActiveEqual) return false;
+  if (!giphyActiveEqual) {
+    return false;
+  }
 
   const tEqual = prevT === nextT;
-  if (!tEqual) return false;
+  if (!tEqual) {
+    return false;
+  }
 
   const textEqual = prevText === nextText;
-  if (!textEqual) return false;
+  if (!textEqual) {
+    return false;
+  }
 
   const cooldownActiveEqual = prevCooldownActive === nextCooldownActive;
-  if (!cooldownActiveEqual) return false;
+  if (!cooldownActiveEqual) {
+    return false;
+  }
 
   return true;
 };

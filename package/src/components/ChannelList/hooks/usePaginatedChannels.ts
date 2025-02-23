@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   ChannelFilters,
@@ -52,7 +52,7 @@ const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     channelListInitialized: nextValue.initialized,
     channels: nextValue.channels,
     pagination: nextValue.pagination,
-  } as const);
+  }) as const;
 
 export const usePaginatedChannels = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -84,7 +84,9 @@ export const usePaginatedChannels = <
     queryType: QueryType = 'loadChannels',
     retryCount = 0,
   ): Promise<void> => {
-    if (!client || !isMountedRef.current) return;
+    if (!client || !isMountedRef.current) {
+      return;
+    }
 
     const hasUpdatedData =
       queryType === 'loadChannels' ||
@@ -101,7 +103,9 @@ export const usePaginatedChannels = <
      * have new data for the query to include
      * */
     if (!hasUpdatedData) {
-      if (activeQueryType === null) return;
+      if (activeQueryType === null) {
+        return;
+      }
     }
 
     filtersRef.current = filters;
@@ -200,7 +204,9 @@ export const usePaginatedChannels = <
 
   useEffect(() => {
     const loadOfflineChannels = async () => {
-      if (!client?.user?.id) return;
+      if (!client?.user?.id) {
+        return;
+      }
 
       try {
         const channelsFromDB = await getChannelsForFilterSort({

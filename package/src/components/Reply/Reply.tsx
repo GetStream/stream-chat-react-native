@@ -135,10 +135,16 @@ const getMessageType = <
   } else if (isLastAttachmentVoiceRecording) {
     messageType = FileTypes.VoiceRecording;
   } else if (isLastAttachmentImageOrGiphy) {
-    if (isLastAttachmentImage) messageType = FileTypes.Image;
-    else messageType = undefined;
-  } else if (isLastAttachmentGiphy) messageType = FileTypes.Giphy;
-  else messageType = 'other';
+    if (isLastAttachmentImage) {
+      messageType = FileTypes.Image;
+    } else {
+      messageType = undefined;
+    }
+  } else if (isLastAttachmentGiphy) {
+    messageType = FileTypes.Giphy;
+  } else {
+    messageType = 'other';
+  }
 
   return messageType;
 };
@@ -189,11 +195,15 @@ const ReplyWithContext = <
   const messageText = quotedMessage ? quotedMessage.text : '';
 
   const emojiOnlyText = useMemo(() => {
-    if (!messageText) return false;
+    if (!messageText) {
+      return false;
+    }
     return hasOnlyEmojis(messageText);
   }, [messageText]);
 
-  if (!quotedMessage) return null;
+  if (!quotedMessage) {
+    return null;
+  }
 
   const lastAttachment = quotedMessage.attachments?.slice(-1)[0] as Attachment<StreamChatGenerics>;
   const messageType = lastAttachment && getMessageType(lastAttachment);
@@ -283,20 +293,20 @@ const ReplyWithContext = <
                 quotedMessage.type === 'deleted'
                   ? `_${t('Message deleted')}_`
                   : pollName
-                  ? `📊 ${pollName}`
-                  : quotedMessage.text
-                  ? quotedMessage.text.length > 170
-                    ? `${quotedMessage.text.slice(0, 170)}...`
+                    ? `📊 ${pollName}`
                     : quotedMessage.text
-                  : messageType === FileTypes.Image
-                  ? t('Photo')
-                  : messageType === FileTypes.Video
-                  ? t('Video')
-                  : messageType === FileTypes.File ||
-                    messageType === FileTypes.Audio ||
-                    messageType === FileTypes.VoiceRecording
-                  ? trimmedLastAttachmentTitle || ''
-                  : '',
+                      ? quotedMessage.text.length > 170
+                        ? `${quotedMessage.text.slice(0, 170)}...`
+                        : quotedMessage.text
+                      : messageType === FileTypes.Image
+                        ? t('Photo')
+                        : messageType === FileTypes.Video
+                          ? t('Video')
+                          : messageType === FileTypes.File ||
+                              messageType === FileTypes.Audio ||
+                              messageType === FileTypes.VoiceRecording
+                            ? trimmedLastAttachmentTitle || ''
+                            : '',
             }}
             onlyEmojis={onlyEmojis}
             styles={{
@@ -315,15 +325,15 @@ const ReplyWithContext = <
                             styles.imageAttachment.marginLeft,
                         )
                       : messageType === FileTypes.File ||
-                        messageType === FileTypes.Audio ||
-                        messageType === FileTypes.VoiceRecording
-                      ? attachmentSize +
-                        Number(
-                          stylesProp.fileAttachmentContainer?.paddingLeft ||
-                            fileAttachmentContainer.paddingLeft ||
-                            styles.fileAttachmentContainer.paddingLeft,
-                        )
-                      : undefined,
+                          messageType === FileTypes.Audio ||
+                          messageType === FileTypes.VoiceRecording
+                        ? attachmentSize +
+                          Number(
+                            stylesProp.fileAttachmentContainer?.paddingLeft ||
+                              fileAttachmentContainer.paddingLeft ||
+                              styles.fileAttachmentContainer.paddingLeft,
+                          )
+                        : undefined,
                 },
                 styles.textContainer,
                 textContainer,
@@ -377,7 +387,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
         prevQuotedMessage.type === nextQuotedMessage.type
       : !!prevQuotedMessage === !!nextQuotedMessage;
 
-  if (!quotedMessageEqual) return false;
+  if (!quotedMessageEqual) {
+    return false;
+  }
 
   return true;
 };

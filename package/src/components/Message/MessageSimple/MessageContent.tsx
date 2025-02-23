@@ -374,20 +374,28 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const goToMessageChangedAndMatters =
     nextMessage.quoted_message_id && prevGoToMessage !== nextGoToMessage;
-  if (goToMessageChangedAndMatters) return false;
+  if (goToMessageChangedAndMatters) {
+    return false;
+  }
 
   const isEditedMessageOpenEqual = prevIsEditedMessageOpen === nextIsEditedMessageOpen;
-  if (!isEditedMessageOpenEqual) return false;
+  if (!isEditedMessageOpenEqual) {
+    return false;
+  }
 
   const otherAttachmentsEqual =
     prevOtherAttachments.length === nextOtherAttachments.length &&
     prevOtherAttachments?.[0]?.actions?.length === nextOtherAttachments?.[0]?.actions?.length;
-  if (!otherAttachmentsEqual) return false;
+  if (!otherAttachmentsEqual) {
+    return false;
+  }
 
   const groupStylesEqual =
     prevGroupStyles.length === nextGroupStyles.length &&
     prevGroupStyles?.[0] === nextGroupStyles?.[0];
-  if (!groupStylesEqual) return false;
+  if (!groupStylesEqual) {
+    return false;
+  }
 
   const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
   const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
@@ -400,7 +408,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     prevMessage.text === nextMessage.text &&
     prevMessage.pinned === nextMessage.pinned &&
     prevMessage.i18n === nextMessage.i18n;
-  if (!messageEqual) return false;
+  if (!messageEqual) {
+    return false;
+  }
 
   const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';
   const isNextQuotedMessageTypeDeleted = nextMessage.quoted_message?.type === 'deleted';
@@ -408,7 +418,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const quotedMessageEqual =
     prevMessage.quoted_message?.id === nextMessage.quoted_message?.id &&
     isPrevQuotedMessageTypeDeleted === isNextQuotedMessageTypeDeleted;
-  if (!quotedMessageEqual) return false;
+  if (!quotedMessageEqual) {
+    return false;
+  }
 
   const prevMessageAttachments = prevMessage.attachments;
   const nextMessageAttachments = nextMessage.attachments;
@@ -422,15 +434,18 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
             attachment.thumb_url === nextMessageAttachments[index].thumb_url &&
             attachment.type === nextMessageAttachments[index].type;
 
-          if (isAttachmentEqual)
+          if (isAttachmentEqual) {
             return (
               attachmentKeysEqual && !!isAttachmentEqual(attachment, nextMessageAttachments[index])
             );
+          }
 
           return attachmentKeysEqual;
         })
       : prevMessageAttachments === nextMessageAttachments;
-  if (!attachmentsEqual) return false;
+  if (!attachmentsEqual) {
+    return false;
+  }
 
   const latestReactionsEqual =
     Array.isArray(prevMessage.latest_reactions) && Array.isArray(nextMessage.latest_reactions)
@@ -439,21 +454,29 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
           ({ type }, index) => type === nextMessage.latest_reactions?.[index].type,
         )
       : prevMessage.latest_reactions === nextMessage.latest_reactions;
-  if (!latestReactionsEqual) return false;
+  if (!latestReactionsEqual) {
+    return false;
+  }
 
   const messageContentOrderEqual =
     prevMessageContentOrder.length === nextMessageContentOrder.length &&
     prevMessageContentOrder.every(
       (messageContentType, index) => messageContentType === nextMessageContentOrder[index],
     );
-  if (!messageContentOrderEqual) return false;
+  if (!messageContentOrderEqual) {
+    return false;
+  }
 
   const tEqual = prevT === nextT;
-  if (!tEqual) return false;
+  if (!tEqual) {
+    return false;
+  }
 
   const messageThemeEqual =
     JSON.stringify(prevMyMessageTheme) === JSON.stringify(nextMyMessageTheme);
-  if (!messageThemeEqual) return false;
+  if (!messageThemeEqual) {
+    return false;
+  }
 
   return true;
 };

@@ -90,19 +90,29 @@ export const ProgressControl = (props: ProgressControlProps) => {
     .onStart((event) => {
       const currentProgress = (progressValue.value + event.x) / widthInNumbers;
       progressValue.value = Math.max(0, Math.min(currentProgress, 1));
-      if (onStartDrag) runOnJS(onStartDrag)(progressValue.value);
-      if (onPlayPause) runOnJS(onPlayPause)(true);
+      if (onStartDrag) {
+        runOnJS(onStartDrag)(progressValue.value);
+      }
+      if (onPlayPause) {
+        runOnJS(onPlayPause)(true);
+      }
     })
     .onUpdate((event) => {
       const currentProgress = (progressValue.value + event.x) / widthInNumbers;
       progressValue.value = Math.max(0, Math.min(currentProgress, 1));
-      if (onProgressDrag) runOnJS(onProgressDrag)(progressValue.value);
+      if (onProgressDrag) {
+        runOnJS(onProgressDrag)(progressValue.value);
+      }
     })
     .onEnd((event) => {
       const currentProgress = (progressValue.value + event.x) / widthInNumbers;
       progressValue.value = Math.max(0, Math.min(currentProgress, 1));
-      if (onEndDrag) runOnJS(onEndDrag)(progressValue.value);
-      if (onPlayPause) runOnJS(onPlayPause)(false);
+      if (onEndDrag) {
+        runOnJS(onEndDrag)(progressValue.value);
+      }
+      if (onPlayPause) {
+        runOnJS(onPlayPause)(false);
+      }
     })
     .withTestId(testID);
 

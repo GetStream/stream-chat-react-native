@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
@@ -29,26 +29,30 @@ const ListMessenger = ({ error, loadingChannels, ...props }) => {
   );
 };
 
-const Component = ({ error = false, loadingChannels = false }) => (
-  <Chat client={chatClient}>
-    <ChatContext.Consumer>
-      {(context) => (
-        <ChatProvider value={{ ...context, isOnline: true }}>
-          <ChannelList
-            filters={{
-              members: {
-                $in: ['vishal', 'neil'],
-              },
-            }}
-            List={(...props) => (
-              <ListMessenger {...props} error={error} loadingChannels={loadingChannels} />
-            )}
-          />
-        </ChatProvider>
-      )}
-    </ChatContext.Consumer>
-  </Chat>
-);
+const Component = ({ error = false, loadingChannels = false }) => {
+  const List = useCallback(
+    (...props) => <ListMessenger {...props} error={error} loadingChannels={loadingChannels} />,
+    [error, loadingChannels],
+  );
+  return (
+    <Chat client={chatClient}>
+      <ChatContext.Consumer>
+        {(context) => (
+          <ChatProvider value={{ ...context, isOnline: true }}>
+            <ChannelList
+              filters={{
+                members: {
+                  $in: ['vishal', 'neil'],
+                },
+              }}
+              List={List}
+            />
+          </ChatProvider>
+        )}
+      </ChatContext.Consumer>
+    </Chat>
+  );
+};
 
 describe('ChannelListMessenger', () => {
   beforeAll(async () => {

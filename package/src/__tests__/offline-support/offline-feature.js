@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-/* eslint-disable jest/no-export */
+
 import React from 'react';
 import { Text, View } from 'react-native';
 
@@ -53,7 +53,9 @@ const ChannelPreviewComponent = ({ channel, setActiveChannel }) => (
 
 const ChannelListComponent = (props) => {
   const { channels, onSelect } = useChannelsContext();
-  if (!channels) return null;
+  if (!channels) {
+    return null;
+  }
 
   return (
     <View testID='channel-list'>
@@ -92,7 +94,7 @@ export const Generic = () => {
     it('should NOT create tables on first load if offline feature is disabled', async () => {
       render(
         <Chat client={chatClient}>
-          <View testID='test-child'></View>
+          <View testID='test-child' />
         </Chat>,
       );
       await waitFor(() => expect(screen.getByTestId('test-child')).toBeTruthy());
@@ -294,7 +296,7 @@ export const Generic = () => {
     it('should create tables on first load if offline feature is enabled', async () => {
       render(
         <Chat client={chatClient} enableOfflineSupport>
-          <View testID='test-child'></View>
+          <View testID='test-child' />
         </Chat>,
       );
 

@@ -8,7 +8,9 @@ export const normalizeAudioLevel = (value: number, lowerBound: number) => {
   const delta = upperBound - lowerBound;
 
   // In Native CLI Android, the value is undefined for loud audio
-  if (value === undefined) return 1;
+  if (value === undefined) {
+    return 1;
+  }
 
   if (value < lowerBound) {
     return 0;

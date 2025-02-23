@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
 export type MessageTextProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = MessageTextContainerProps<StreamChatGenerics> & {
-  renderText: (params: RenderTextParams<StreamChatGenerics>) => JSX.Element | null;
+  renderText: (params: RenderTextParams<StreamChatGenerics>) => React.ReactNode | null;
   theme: { theme: Theme };
 };
 
@@ -83,7 +83,9 @@ const MessageTextContainerWithContext = <
     message,
   ) as MessageType<StreamChatGenerics>;
 
-  if (!message.text) return null;
+  if (!message.text) {
+    return null;
+  }
 
   const markdownStyles = { ...markdown, ...markdownStylesProp };
 
@@ -133,14 +135,20 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   } = nextProps;
 
   const messageStatusEqual = prevMessage.status === nextMessage.status;
-  if (!messageStatusEqual) return false;
+  if (!messageStatusEqual) {
+    return false;
+  }
 
   const messageTextEqual =
     prevMessage.text === nextMessage.text && prevMessage.i18n === nextMessage.i18n;
-  if (!messageTextEqual) return false;
+  if (!messageTextEqual) {
+    return false;
+  }
 
   const onlyEmojisEqual = prevOnlyEmojis === nextOnlyEmojis;
-  if (!onlyEmojisEqual) return false;
+  if (!onlyEmojisEqual) {
+    return false;
+  }
 
   const mentionedUsersEqual =
     prevMessage.mentioned_users?.length === nextMessage.mentioned_users?.length &&
@@ -148,7 +156,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
       (prevMessage.mentioned_users?.length &&
         nextMessage.mentioned_users?.length &&
         prevMessage.mentioned_users[0].name === nextMessage.mentioned_users[0].name));
-  if (!mentionedUsersEqual) return false;
+  if (!mentionedUsersEqual) {
+    return false;
+  }
 
   // stringify could be an expensive operation, so lets rule out the obvious
   // possibilities first such as different object reference or empty objects etc.
@@ -160,11 +170,15 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     (Object.keys(prevMarkdownStyles || {}).length === 0 &&
       Object.keys(nextMarkdownStyles || {}).length === 0) ||
     JSON.stringify(prevMarkdownStyles) === JSON.stringify(nextMarkdownStyles);
-  if (!markdownStylesEqual) return false;
+  if (!markdownStylesEqual) {
+    return false;
+  }
 
   const messageThemeEqual =
     JSON.stringify(prevMyMessageTheme) === JSON.stringify(nextMyMessageTheme);
-  if (!messageThemeEqual) return false;
+  if (!messageThemeEqual) {
+    return false;
+  }
 
   return true;
 };
