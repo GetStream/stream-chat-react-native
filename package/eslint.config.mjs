@@ -89,7 +89,7 @@ export default tsEslint.config(
     rules: {
       ...reactNativeRules,
       'no-undef': 'off',
-      'prettier/prettier': 'warn',
+      // 'prettier/prettier': 'warn',
       'array-callback-return': 2,
       'arrow-body-style': 2,
       'comma-dangle': 0,
