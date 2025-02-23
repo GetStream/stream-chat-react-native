@@ -60,6 +60,8 @@ export default tsEslint.config(
           modules: true,
           jsx: true,
         },
+        // projectService: true,
+        // tsconfigRootDir: import.meta.dirname,
       },
       sourceType: 'module',
     },
@@ -88,6 +90,7 @@ export default tsEslint.config(
     },
     rules: {
       ...reactNativeRules,
+      'no-undef': 'off',
       'prettier/prettier': 'warn',
       'array-callback-return': 2,
       'arrow-body-style': 2,
