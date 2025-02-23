@@ -11,6 +11,7 @@ import eslintPluginReactNative from 'eslint-plugin-react-native';
 import eslintPluginSortDestructureKeys from 'eslint-plugin-sort-destructure-keys';
 
 import tsEslint from 'typescript-eslint';
+import eslintConfigPrettier from 'eslint-config-prettier';
 
 /**
  * @react-native-community/eslint-config is for some reason still using the old notation
@@ -88,10 +89,12 @@ export default tsEslint.config(
     },
     rules: {
       ...reactNativeRules,
+      ...eslintConfigPrettier.rules,
       'no-undef': 'off',
-      // 'prettier/prettier': 'warn',
+      'prettier/prettier': 'error',
+      'arrow-body-style': 'off',
+      'prefer-arrow-callback': 'off',
       'array-callback-return': 2,
-      'arrow-body-style': 2,
       'comma-dangle': 0,
       'default-case': 2,
       eqeqeq: [2, 'smart'],
