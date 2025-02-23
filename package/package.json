@@ -125,7 +125,7 @@
     "babel-jest": "29.6.3",
     "babel-loader": "8.2.2",
     "babel-plugin-module-resolver": "4.1.0",
-    "better-sqlite3": "9.0.0",
+    "better-sqlite3": "11.8.1",
     "eslint": "^9.20.1",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-import": "^2.31.0",
