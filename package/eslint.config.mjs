@@ -91,7 +91,7 @@ export default tsEslint.config(
       ...reactNativeRules,
       ...eslintConfigPrettier.rules,
       'no-undef': 'off',
-      'prettier/prettier': 'error',
+      'prettier/prettier': 'warn',
       'arrow-body-style': 'off',
       'prefer-arrow-callback': 'off',
       'array-callback-return': 2,
