@@ -16,7 +16,7 @@ import eslintConfigPrettier from 'eslint-config-prettier';
 /**
  * @react-native-community/eslint-config is for some reason still using the old notation
  * for globals. We parse them manually here to make sure they're compatible with
- * the new config. All globals which were previously set to true are now readonly.
+ * the new config. All globals are now readonly to prevent them from causing trouble.
  */
 const reactNativeGlobals = Object.keys(eslintReactNativeConfig.globals).reduce((acc, key) => {
   acc[key] = 'readonly';
