@@ -31,6 +31,7 @@
     "release-next": "yarn lerna-workspaces run release-next",
     "extract-changelog": "rm -rf NEXT_RELEASE_CHANGELOG.md && yarn lerna-workspaces run extract-changelog",
     "bootstrap": "yarn lerna-workspaces run bootstrap",
+    "eslint": "yarn lerna-workspaces run eslint",
     "lint": "yarn lerna-workspaces run lint",
     "lint-fix": "yarn lerna-workspaces run lint-fix",
     "build": "yarn lerna-workspaces run build",

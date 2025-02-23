@@ -12,6 +12,7 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint .",
+    "eslint": "eslint .",
     "lint-fix": "eslint . --fix",
     "extract-changelog": "FILTER_PATH='examples/SampleApp' TAG_FORMAT=$npm_package_name'@v${version}' node ../../release/extract-changelog.js",
     "bootstrap": "yarn install",
