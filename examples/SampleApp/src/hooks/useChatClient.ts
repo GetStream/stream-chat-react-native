@@ -7,7 +7,7 @@ import { USER_TOKENS, USERS } from '../ChatUsers';
 import AsyncStore from '../utils/AsyncStore';
 
 import type { LoginConfig, StreamChatGenerics } from '../types';
-import { PermissionsAndroid, Platform } from 'react-native';
+import { Alert, PermissionsAndroid, Platform } from 'react-native';
 
 const messaging = getMessaging();
 
@@ -21,6 +21,7 @@ const requestNotificationPermission = async () => {
 };
 
 messaging.setBackgroundMessageHandler(async (remoteMessage) => {
+  Alert.alert(`NEW REMOTE MESSAGE: ${remoteMessage.messageId}`);
   const messageId = remoteMessage.data?.id as string;
   if (!messageId) {
     return;
@@ -50,7 +51,7 @@ messaging.setBackgroundMessageHandler(async (remoteMessage) => {
     name: 'Chat Messages',
   });
 
-  if (message.message.user?.name && message.message.text) {
+  if (message.message.user?.name && message.message.text && !remoteMessage.notification) {
     const { stream, ...rest } = remoteMessage.data ?? {};
     const data = {
       ...rest,
@@ -63,9 +64,9 @@ messaging.setBackgroundMessageHandler(async (remoteMessage) => {
           id: 'default',
         },
       },
+      title: 'Background: New message from ' + message.message.user.name,
       body: message.message.text,
       data,
-      title: 'New message from ' + message.message.user.name,
     });
   }
 });
@@ -161,7 +162,7 @@ export const useChatClient = () => {
             },
             body: message.message.text,
             data,
-            title: 'New message from ' + message.message.user.name,
+            title: 'Foreground: New message from ' + message.message.user.name,
           });
         }
       });
