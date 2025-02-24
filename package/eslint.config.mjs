@@ -141,7 +141,6 @@ export default tsEslint.config(
       'react/prop-types': 0,
       'require-await': 2,
       semi: [1, 'always'],
-      'sort-destructure-keys/sort-destructure-keys': [2, { caseSensitive: false }],
       'sort-imports': [
         'error',
         {
