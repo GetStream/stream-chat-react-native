@@ -61,7 +61,7 @@ export const takePhoto = ImagePicker
               ...photo,
               cancelled: false,
               duration: photo.duration, // in milliseconds
-              name: 'video_recording_' + date + photo.uri.split('.').pop(),
+              name: 'video_recording_' + date + '.' + photo.uri.split('/').pop(),
               size: photo.fileSize,
               source: 'camera',
               type: photo.mimeType,
@@ -91,9 +91,12 @@ export const takePhoto = ImagePicker
                   width: photo.width,
                 };
               }
-
+              const clearFilter = new RegExp('[.:]', 'g');
+              const date = new Date().toISOString().replace(clearFilter, '_');
               return {
                 cancelled: false,
+                mimeType: photo.mimeType,
+                name: 'image_' + date + '.' + photo.uri.split('/').pop(),
                 size: photo.fileSize,
                 source: 'camera',
                 type: photo.mimeType,
