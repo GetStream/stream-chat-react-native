@@ -34,6 +34,7 @@ export const pickImage = ImagePicker
           const result = await ImagePicker.launchImageLibraryAsync({
             allowsMultipleSelection: true,
             mediaTypes: ['images', 'videos'],
+            preferredAssetRepresentationMode: 'current',
           });
 
           const canceled = result.canceled;
