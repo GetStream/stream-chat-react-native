@@ -57,7 +57,6 @@ export const takePhoto = ImagePicker
           if (photo.mimeType.includes('video')) {
             const clearFilter = new RegExp('[.:]', 'g');
             const date = new Date().toISOString().replace(clearFilter, '_');
-            console.log('video_recording_' + date + '.' + photo.uri.split('.').pop());
             return {
               ...photo,
               cancelled: false,
@@ -97,7 +96,7 @@ export const takePhoto = ImagePicker
               return {
                 cancelled: false,
                 mimeType: photo.mimeType,
-                name: 'image_' + date + '.' + photo.uri.split('/').pop(),
+                name: 'image_' + date + '.' + photo.uri.split('.').pop(),
                 size: photo.fileSize,
                 source: 'camera',
                 type: photo.mimeType,
