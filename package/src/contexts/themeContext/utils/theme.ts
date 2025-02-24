@@ -450,6 +450,9 @@ export type Theme = {
       icon: ViewStyle;
       title: TextStyle;
     };
+    bottomSheet: {
+      height?: number;
+    };
     reactionButton: {
       filledColor: ColorValue;
       unfilledColor: ColorValue;
@@ -1207,6 +1210,7 @@ export const defaultTheme: Theme = {
       icon: {},
       title: {},
     },
+    bottomSheet: {},
     reactionButton: {
       filledColor: Colors.accent_blue,
       unfilledColor: Colors.grey,
