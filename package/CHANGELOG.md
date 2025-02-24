@@ -1,5 +1,12 @@
 # Change Log
 
+### [6.6.4](https://github.com/GetStream/stream-chat-react-native/compare/v6.6.3...v6.6.4) (2025-02-24)
+
+
+### Bug Fixes
+
+* upload file/image and respect app settings ([#2976](https://github.com/GetStream/stream-chat-react-native/issues/2976)) ([aa2be37](https://github.com/GetStream/stream-chat-react-native/commit/aa2be37ed8ee8c2d3fb5c9167bf36b54722d5681))
+
 ### [6.6.3](https://github.com/GetStream/stream-chat-react-native/compare/v6.6.2...v6.6.3) (2025-02-21)
 
 
