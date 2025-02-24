@@ -114,7 +114,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const { alignment: nextAlignment, date: nextDate, message: nextMessage } = nextProps;
 
   const alignmentEqual = prevAlignment === nextAlignment;
-  if (!alignmentEqual) return false;
+  if (!alignmentEqual) {
+    return false;
+  }
   const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
   const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
 
@@ -125,10 +127,14 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
     prevMessage.pinned === nextMessage.pinned;
-  if (!messageEqual) return false;
+  if (!messageEqual) {
+    return false;
+  }
 
   const dateEqual = prevDate === nextDate;
-  if (!dateEqual) return false;
+  if (!dateEqual) {
+    return false;
+  }
 
   return true;
 };

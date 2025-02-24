@@ -33,7 +33,9 @@ export const handleEventToSyncDB = async <
   ) => {
     const cid = event.cid || event.channel?.cid;
 
-    if (!cid) return await createQueries(flush);
+    if (!cid) {
+      return await createQueries(flush);
+    }
     const channels = await SqliteClient.executeSql.apply(
       null,
       createSelectQuery('channels', ['cid'], {

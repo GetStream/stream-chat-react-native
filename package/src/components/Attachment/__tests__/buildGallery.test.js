@@ -109,7 +109,7 @@ describe('buildGallery', () => {
     const t1 = tg1[0][0];
     expect(t1.url.includes(`&h=${PixelRatio.getPixelSizeForLayoutSize(t1.height)}`)).toBe(true);
     expect(t1.url.includes(`&w=${PixelRatio.getPixelSizeForLayoutSize(t1.width)}`)).toBe(true);
-    expect(t1.url.includes(`&resize=clip`)).toBe(true);
+    expect(t1.url.includes('&resize=clip')).toBe(true);
 
     const smallImage = generateImageAttachment({
       image_url:
@@ -124,8 +124,8 @@ describe('buildGallery', () => {
     });
 
     const t2 = tg2[0][0];
-    expect(t2.url.includes(`&h=*`)).toBe(true);
-    expect(t2.url.includes(`&w=*`)).toBe(true);
-    expect(t2.url.includes(`&resize=*`)).toBe(true);
+    expect(t2.url.includes('&h=*')).toBe(true);
+    expect(t2.url.includes('&w=*')).toBe(true);
+    expect(t2.url.includes('&resize=*')).toBe(true);
   });
 });

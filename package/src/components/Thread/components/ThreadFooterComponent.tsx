@@ -87,7 +87,9 @@ const ThreadFooterComponentWithContext = <
     },
   } = useTheme();
 
-  if (!thread) return null;
+  if (!thread) {
+    return null;
+  }
 
   const replyCount = thread.reply_count;
 
@@ -148,13 +150,17 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const { parentMessagePreventPress: nextParentMessagePreventPress, thread: nextThread } =
     nextProps;
 
-  if (prevParentMessagePreventPress !== nextParentMessagePreventPress) return false;
+  if (prevParentMessagePreventPress !== nextParentMessagePreventPress) {
+    return false;
+  }
 
   const threadEqual =
     prevThread?.id === nextThread?.id &&
     prevThread?.text === nextThread?.text &&
     prevThread?.reply_count === nextThread?.reply_count;
-  if (!threadEqual) return false;
+  if (!threadEqual) {
+    return false;
+  }
 
   const latestReactionsEqual =
     prevThread &&
@@ -166,7 +172,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
           ({ type }, index) => type === nextThread.latest_reactions?.[index].type,
         )
       : prevThread?.latest_reactions === nextThread?.latest_reactions;
-  if (!latestReactionsEqual) return false;
+  if (!latestReactionsEqual) {
+    return false;
+  }
 
   return true;
 };

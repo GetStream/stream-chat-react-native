@@ -38,7 +38,9 @@ export const moveChannelUp = <
   // in the list
   const considerPinnedChannels = shouldConsiderPinnedChannels(sort);
 
-  if (targetChannelAlreadyAtTheTop) return channels;
+  if (targetChannelAlreadyAtTheTop) {
+    return channels;
+  }
 
   const newChannels = [...channels];
 

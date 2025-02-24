@@ -90,14 +90,17 @@ const getTitleFromMessage = ({
   const messageBelongsToCurrentUserPrefix =
     message?.user?.id === currentUserId ? `${t('You')}: ` : '';
 
-  if (message?.deleted_at && message.parent_id)
+  if (message?.deleted_at && message.parent_id) {
     return `${messageBelongsToCurrentUserPrefix}${t('This reply was deleted')}.`;
+  }
 
-  if (message?.deleted_at && !message.parent_id)
+  if (message?.deleted_at && !message.parent_id) {
     return `${messageBelongsToCurrentUserPrefix}${t('The source message was deleted')}.`;
+  }
 
-  if (attachment?.type === 'voiceRecording')
+  if (attachment?.type === 'voiceRecording') {
     return `${attachmentIcon}${messageBelongsToCurrentUserPrefix}${t('Voice message')}.`;
+  }
 
   return `${attachmentIcon}${messageBelongsToCurrentUserPrefix}${
     message?.text || attachment?.fallback || 'N/A'
@@ -218,7 +221,7 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
         ownUnreadMessageCount:
           (client.userID && nextValue.read[client.userID]?.unreadMessageCount) || 0,
         parentMessage: nextValue.parentMessage,
-      } as const),
+      }) as const,
     [client],
   );
 

@@ -62,51 +62,54 @@ export const GroupAvatar = (props: GroupAvatarProps) => {
    * ]
    */
   const imagesOrNames = images || names || [];
-  const avatarImages = imagesOrNames.slice(0, 4).reduce((returnArray, currentImage, index) => {
-    const url = currentImage.startsWith('http')
-      ? currentImage
-      : `${randomImageBaseUrl}${
-          names
-            ? `?name=${getInitials(names[index])}&size=${
-                imagesOrNames.length <= 2 ? size : size / 2
-              }`
-            : ''
-        }`;
-    if (imagesOrNames.length <= 2) {
-      returnArray[0] = [
-        ...(returnArray[0] || []),
-        {
-          height: imagesOrNames.length === 1 ? size : size / 2,
-          name: names ? names[index] : '',
-          url,
-          width: size,
-        },
-      ];
-    } else {
-      if (index < 2) {
+  const avatarImages = imagesOrNames.slice(0, 4).reduce(
+    (returnArray, currentImage, index) => {
+      const url = currentImage.startsWith('http')
+        ? currentImage
+        : `${randomImageBaseUrl}${
+            names
+              ? `?name=${getInitials(names[index])}&size=${
+                  imagesOrNames.length <= 2 ? size : size / 2
+                }`
+              : ''
+          }`;
+      if (imagesOrNames.length <= 2) {
         returnArray[0] = [
           ...(returnArray[0] || []),
           {
-            height: size / 2,
+            height: imagesOrNames.length === 1 ? size : size / 2,
             name: names ? names[index] : '',
             url,
-            width: size / 2,
+            width: size,
           },
         ];
       } else {
-        returnArray[1] = [
-          ...(returnArray[1] || []),
-          {
-            height: size / 2,
-            name: names ? names[index] : '',
-            url,
-            width: imagesOrNames.length === 3 ? size : size / 2,
-          },
-        ];
+        if (index < 2) {
+          returnArray[0] = [
+            ...(returnArray[0] || []),
+            {
+              height: size / 2,
+              name: names ? names[index] : '',
+              url,
+              width: size / 2,
+            },
+          ];
+        } else {
+          returnArray[1] = [
+            ...(returnArray[1] || []),
+            {
+              height: size / 2,
+              name: names ? names[index] : '',
+              url,
+              width: imagesOrNames.length === 3 ? size : size / 2,
+            },
+          ];
+        }
       }
-    }
-    return returnArray;
-  }, [] as { height: number; name: string; url: string; width: number }[][]);
+      return returnArray;
+    },
+    [] as { height: number; name: string; url: string; width: number }[][],
+  );
 
   return (
     <View

@@ -102,9 +102,13 @@ const getLatestMessageDisplayText = <
   t: (key: string) => string,
   pollState: LatestMessagePreviewSelectorReturnType | undefined,
 ) => {
-  if (!message) return [{ bold: false, text: t('Nothing yet...') }];
+  if (!message) {
+    return [{ bold: false, text: t('Nothing yet...') }];
+  }
   const isMessageTypeDeleted = message.type === 'deleted';
-  if (isMessageTypeDeleted) return [{ bold: false, text: t('Message deleted') }];
+  if (isMessageTypeDeleted) {
+    return [{ bold: false, text: t('Message deleted') }];
+  }
   const currentUserId = client?.userID;
   const members = Object.keys(channel.state.members);
 

@@ -103,11 +103,14 @@ export const useProcessReactions = <
   } = props;
 
   return useMemo(() => {
-    if (!reaction_groups)
+    if (!reaction_groups) {
       return { existingReactions: [], hasReactions: false, totalReactionCount: 0 };
+    }
     const unsortedReactions = Object.entries(reaction_groups).flatMap(
       ([reactionType, { count, first_reaction_at, last_reaction_at }]) => {
-        if (count === 0 || !isSupportedReaction(reactionType, supportedReactions)) return [];
+        if (count === 0 || !isSupportedReaction(reactionType, supportedReactions)) {
+          return [];
+        }
 
         const latestReactedUserNames = getLatestReactedUserNames(reactionType, latest_reactions);
 

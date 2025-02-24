@@ -111,8 +111,8 @@ export const MessageMenu = <
         bottomSheetHeight
           ? bottomSheetHeight
           : messageActions.length === 0 && !showMessageReactions
-          ? height / 5
-          : height / 2
+            ? height / 5
+            : height / 2
       }
       onClose={dismissOverlay}
       visible={visible}

@@ -34,7 +34,9 @@ export function useSelectedChannelState<StreamChatGenerics extends DefaultStream
 }): O | undefined {
   const subscribe = useCallback(
     (onStoreChange: (value: O) => void) => {
-      if (!channel) return noop;
+      if (!channel) {
+        return noop;
+      }
 
       const subscriptions = stateChangeEventKeys.map((et) =>
         channel.on(et, () => {
@@ -48,7 +50,9 @@ export function useSelectedChannelState<StreamChatGenerics extends DefaultStream
   );
 
   const getSnapshot = useCallback(() => {
-    if (!channel) return undefined;
+    if (!channel) {
+      return undefined;
+    }
 
     return selector(channel);
   }, [channel, selector]);

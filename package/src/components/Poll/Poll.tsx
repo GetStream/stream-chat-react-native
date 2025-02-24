@@ -30,9 +30,15 @@ export const PollHeader = () => {
   const { t } = useTranslationContext();
   const { enforceUniqueVote, isClosed, maxVotesAllowed, name } = usePollState();
   const subtitle = useMemo(() => {
-    if (isClosed) return t('Vote ended');
-    if (enforceUniqueVote) return t('Select one');
-    if (maxVotesAllowed) return t('Select up to {{count}}', { count: maxVotesAllowed });
+    if (isClosed) {
+      return t('Vote ended');
+    }
+    if (enforceUniqueVote) {
+      return t('Select one');
+    }
+    if (maxVotesAllowed) {
+      return t('Select up to {{count}}', { count: maxVotesAllowed });
+    }
     return t('Select one or more');
   }, [isClosed, t, enforceUniqueVote, maxVotesAllowed]);
 
@@ -73,9 +79,11 @@ export const PollContent = ({
     <View style={[styles.container, container]}>
       {PollHeaderOverride ? <PollHeaderOverride /> : <PollHeader />}
       <View style={[styles.optionsWrapper, optionsWrapper]}>
-        {options?.slice(0, 10)?.map((option: PollOptionClass) => (
-          <PollOption key={`message_poll_option_${option.id}`} option={option} />
-        ))}
+        {options
+          ?.slice(0, 10)
+          ?.map((option: PollOptionClass) => (
+            <PollOption key={`message_poll_option_${option.id}`} option={option} />
+          ))}
       </View>
       {PollButtonsOverride ? <PollButtonsOverride /> : <PollButtons />}
     </View>

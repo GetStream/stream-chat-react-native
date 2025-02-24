@@ -77,7 +77,7 @@ export const usePaginatedMessageListContext = <
 
   if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
-      `The usePaginatedMessageListContext hook was called outside of the PaginatedMessageList provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel`,
+      'The usePaginatedMessageListContext hook was called outside of the PaginatedMessageList provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel',
     );
   }
 

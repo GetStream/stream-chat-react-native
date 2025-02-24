@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import { ThreadFooterComponent } from './components/ThreadFooterComponent';
 
@@ -104,14 +104,19 @@ const ThreadWithContext = <
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!thread) return null;
+  const MemoizedThreadFooterComponent = useCallback(
+    () => <ThreadFooterComponent parentMessagePreventPress={parentMessagePreventPress} />,
+    [parentMessagePreventPress],
+  );
+
+  if (!thread) {
+    return null;
+  }
 
   return (
     <React.Fragment key={`thread-${thread.id}`}>
       <MessageList
-        FooterComponent={() => (
-          <ThreadFooterComponent parentMessagePreventPress={parentMessagePreventPress} />
-        )}
+        FooterComponent={MemoizedThreadFooterComponent}
         threadList
         {...additionalMessageListProps}
       />

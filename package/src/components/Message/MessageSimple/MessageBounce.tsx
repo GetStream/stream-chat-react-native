@@ -81,7 +81,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     prevMessage.cid === nextMessage.cid &&
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text;
-  if (!messageEqual) return false;
+  if (!messageEqual) {
+    return false;
+  }
 
   return true;
 };

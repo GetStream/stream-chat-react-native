@@ -32,7 +32,7 @@ describe('ChannelPreviewMessenger', () => {
               text: 'This is the message preview text',
             },
           ],
-          status: 0 | 1 | 2, // read states of latest message.
+          status: 1, // read states of latest message.
         }}
         onSelect={jest.fn()}
         {...props}

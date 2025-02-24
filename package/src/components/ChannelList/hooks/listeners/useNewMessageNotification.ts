@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import type { Channel, Event } from 'stream-chat';
 
@@ -36,7 +36,9 @@ export const useNewMessageNotification = <
       if (typeof onNewMessageNotification === 'function') {
         onNewMessageNotification(setChannels, event, options);
       } else {
-        if (!options) return;
+        if (!options) {
+          return;
+        }
         const { filters, sort } = options;
         if (event.channel?.id && event.channel?.type) {
           const channel = await getChannel({

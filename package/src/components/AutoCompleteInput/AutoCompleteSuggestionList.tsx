@@ -121,7 +121,9 @@ export const AutoCompleteSuggestionListWithContext = <
     }
   };
 
-  if (!active || data.length === 0) return null;
+  if (!active || data.length === 0) {
+    return null;
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: white, height: flatlistHeight }]}>
@@ -161,16 +163,24 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   } = nextProps;
 
   const activeEqual = prevActive === nextActive;
-  if (!activeEqual) return false;
+  if (!activeEqual) {
+    return false;
+  }
 
   const queryTextEqual = prevQueryText === nextQueryText;
-  if (!queryTextEqual) return false;
+  if (!queryTextEqual) {
+    return false;
+  }
 
   const dataEqual = prevData === nextData;
-  if (!dataEqual) return false;
+  if (!dataEqual) {
+    return false;
+  }
 
   const typeEqual = prevType === nextType;
-  if (!typeEqual) return false;
+  if (!typeEqual) {
+    return false;
+  }
 
   return true;
 };

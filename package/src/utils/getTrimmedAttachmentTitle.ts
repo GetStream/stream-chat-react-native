@@ -1,7 +1,9 @@
 import { lookup } from 'mime-types';
 
 export const getTrimmedAttachmentTitle = (title?: string) => {
-  if (!title) return '';
+  if (!title) {
+    return '';
+  }
 
   const mimeType = lookup(title);
   if (mimeType) {

@@ -12,10 +12,7 @@ describe('UploadProgressIndicator', () => {
 
     render(
       <ThemeProvider>
-        <UploadProgressIndicator
-          action={action}
-          type={ProgressIndicatorTypes.INACTIVE}
-        ></UploadProgressIndicator>
+        <UploadProgressIndicator action={action} type={ProgressIndicatorTypes.INACTIVE} />
       </ThemeProvider>,
     );
 
@@ -31,10 +28,7 @@ describe('UploadProgressIndicator', () => {
 
     render(
       <ThemeProvider>
-        <UploadProgressIndicator
-          action={action}
-          type={ProgressIndicatorTypes.IN_PROGRESS}
-        ></UploadProgressIndicator>
+        <UploadProgressIndicator action={action} type={ProgressIndicatorTypes.IN_PROGRESS} />
       </ThemeProvider>,
     );
 
@@ -50,10 +44,7 @@ describe('UploadProgressIndicator', () => {
 
     render(
       <ThemeProvider>
-        <UploadProgressIndicator
-          action={action}
-          type={ProgressIndicatorTypes.NOT_SUPPORTED}
-        ></UploadProgressIndicator>
+        <UploadProgressIndicator action={action} type={ProgressIndicatorTypes.NOT_SUPPORTED} />
       </ThemeProvider>,
     );
 
@@ -70,10 +61,7 @@ describe('UploadProgressIndicator', () => {
 
     render(
       <ThemeProvider>
-        <UploadProgressIndicator
-          action={action}
-          type={ProgressIndicatorTypes.IN_PROGRESS}
-        ></UploadProgressIndicator>
+        <UploadProgressIndicator action={action} type={ProgressIndicatorTypes.IN_PROGRESS} />
       </ThemeProvider>,
     );
 
@@ -91,10 +79,7 @@ describe('UploadProgressIndicator', () => {
 
     render(
       <ThemeProvider>
-        <UploadProgressIndicator
-          action={action}
-          type={ProgressIndicatorTypes.RETRY}
-        ></UploadProgressIndicator>
+        <UploadProgressIndicator action={action} type={ProgressIndicatorTypes.RETRY} />
       </ThemeProvider>,
     );
 

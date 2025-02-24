@@ -30,7 +30,9 @@ const queryUsers = async <
     mentionAllAppUsersQuery?: MentionAllAppUsersQuery<StreamChatGenerics>;
   } = {},
 ): Promise<void> => {
-  if (!query) return;
+  if (!query) {
+    return;
+  }
   try {
     const {
       limit = defaultAutoCompleteSuggestionsLimit,

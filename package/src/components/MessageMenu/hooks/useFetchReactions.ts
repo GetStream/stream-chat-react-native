@@ -35,7 +35,9 @@ export const useFetchReactions = <
 
   const fetchReactions = useCallback(async () => {
     const loadOfflineReactions = async () => {
-      if (!messageId) return;
+      if (!messageId) {
+        return;
+      }
       const reactionsFromDB = await getReactionsForFilterSort({
         currentMessageId: messageId,
         filters: reactionType ? { type: reactionType } : {},
@@ -48,7 +50,9 @@ export const useFetchReactions = <
     };
 
     const loadOnlineReactions = async () => {
-      if (!messageId) return;
+      if (!messageId) {
+        return;
+      }
       const response = await client.queryReactions(
         messageId,
         reactionType ? { type: reactionType } : {},

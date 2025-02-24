@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import type { Channel, Event } from 'stream-chat';
 
@@ -44,7 +44,9 @@ export const useNewMessage = <
       if (typeof onNewMessage === 'function') {
         onNewMessage(lockChannelOrder, setChannels, event, options);
       } else {
-        if (!options) return;
+        if (!options) {
+          return;
+        }
         const { filters, sort } = options;
         const considerPinnedChannels = shouldConsiderPinnedChannels(sort);
         const considerArchivedChannels = shouldConsiderArchivedChannels(filters);
@@ -52,10 +54,14 @@ export const useNewMessage = <
         const channelType = event.channel_type;
         const channelId = event.channel_id;
 
-        if (!channelType || !channelId) return;
+        if (!channelType || !channelId) {
+          return;
+        }
 
         setChannels((channels) => {
-          if (!channels) return channels;
+          if (!channels) {
+            return channels;
+          }
           const targetChannel = client.channel(channelType, channelId);
           const targetChannelIndex = channels.indexOf(targetChannel);
 

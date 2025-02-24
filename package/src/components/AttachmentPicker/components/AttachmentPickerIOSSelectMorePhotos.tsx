@@ -13,7 +13,9 @@ export const AttachmentPickerIOSSelectMorePhotos = () => {
     },
   } = useTheme();
 
-  if (!iOS14RefreshGallerySelection) return null;
+  if (!iOS14RefreshGallerySelection) {
+    return null;
+  }
 
   return (
     <Pressable

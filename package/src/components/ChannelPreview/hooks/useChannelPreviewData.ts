@@ -54,8 +54,12 @@ export const useChannelPreviewData = <
    */
   useEffect(() => {
     const handleReadEvent = (event: Event) => {
-      if (!event.cid) return;
-      if (channel.cid !== event.cid) return;
+      if (!event.cid) {
+        return;
+      }
+      if (channel.cid !== event.cid) {
+        return;
+      }
       if (event?.user?.id === client.userID) {
         setUnread(0);
       } else if (event?.user?.id) {
@@ -71,9 +75,15 @@ export const useChannelPreviewData = <
    */
   useEffect(() => {
     const handleUnreadEvent = (event: Event) => {
-      if (!event.cid) return;
-      if (channel.cid !== event.cid) return;
-      if (event.user?.id !== client.user?.id) return;
+      if (!event.cid) {
+        return;
+      }
+      if (channel.cid !== event.cid) {
+        return;
+      }
+      if (event.user?.id !== client.user?.id) {
+        return;
+      }
       setUnread(channel.countUnread());
     };
     const { unsubscribe } = client.on('notification.mark_unread', handleUnreadEvent);

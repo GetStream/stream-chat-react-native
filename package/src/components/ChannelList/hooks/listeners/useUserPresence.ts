@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import type { Channel, Event } from 'stream-chat';
 
@@ -23,7 +23,9 @@ export const useUserPresence = <
   useEffect(() => {
     const handleEvent = (event: Event<StreamChatGenerics>) => {
       setChannels((channels) => {
-        if (!channels) return channels;
+        if (!channels) {
+          return channels;
+        }
 
         const newChannels = channels.map((channel) => {
           if (!event.user?.id || !channel.state.members[event.user.id]) {

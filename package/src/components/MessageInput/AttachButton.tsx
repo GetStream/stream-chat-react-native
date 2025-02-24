@@ -102,10 +102,14 @@ const areEqual = (
   const { handleOnPress: nextHandleOnPress, selectedPicker: nextSelectedPicker } = nextProps;
 
   const handleOnPressEqual = prevHandleOnPress === nextHandleOnPress;
-  if (!handleOnPressEqual) return false;
+  if (!handleOnPressEqual) {
+    return false;
+  }
 
   const selectedPickerEqual = prevSelectedPicker === nextSelectedPicker;
-  if (!selectedPickerEqual) return false;
+  if (!selectedPickerEqual) {
+    return false;
+  }
 
   return true;
 };

@@ -77,7 +77,9 @@ const queryMembers = async <
     limit?: number;
   } = {},
 ): Promise<void> => {
-  if (!query) return;
+  if (!query) {
+    return;
+  }
   try {
     const { limit = defaultAutoCompleteSuggestionsLimit } = options;
 

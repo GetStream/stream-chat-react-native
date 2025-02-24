@@ -74,7 +74,9 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
     },
   } = useTheme();
 
-  if (!showNotification) return null;
+  if (!showNotification) {
+    return null;
+  }
 
   return (
     <TouchableOpacity

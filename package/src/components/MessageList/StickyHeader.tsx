@@ -26,7 +26,9 @@ export const StickyHeader = ({ date, DateHeader, dateString }: StickyHeaderProps
   const { t, tDateTimeParser } = useTranslationContext();
 
   const stickyHeaderDateString = useMemo(() => {
-    if (dateString) return dateString;
+    if (dateString) {
+      return dateString;
+    }
 
     return getDateString({
       date,
@@ -37,7 +39,9 @@ export const StickyHeader = ({ date, DateHeader, dateString }: StickyHeaderProps
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date]);
 
-  if (!date) return null;
+  if (!date) {
+    return null;
+  }
 
   return <DateHeader dateString={stickyHeaderDateString} />;
 };

@@ -123,7 +123,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     prevAttachment.image_url === nextAttachment.image_url &&
     prevAttachment.thumb_url === nextAttachment.thumb_url &&
     prevAttachment.type === nextAttachment.type;
-  if (!attachmentEqual) return false;
+  if (!attachmentEqual) {
+    return false;
+  }
 
   if (isAttachmentEqual) {
     return isAttachmentEqual(prevAttachment, nextAttachment);
@@ -131,7 +133,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const messageThemeEqual =
     JSON.stringify(prevMyMessageTheme) === JSON.stringify(nextMyMessageTheme);
-  if (!messageThemeEqual) return false;
+  if (!messageThemeEqual) {
+    return false;
+  }
 
   return true;
 };

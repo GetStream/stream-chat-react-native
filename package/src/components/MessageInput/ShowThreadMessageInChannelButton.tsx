@@ -127,18 +127,26 @@ const areEqual = (
   } = nextProps;
 
   const tEqual = prevT === nextT;
-  if (!tEqual) return false;
+  if (!tEqual) {
+    return false;
+  }
 
   const sendThreadMessageInChannelEqual =
     prevSendThreadMessageInChannel === nexSendThreadMessageInChannel;
-  if (!sendThreadMessageInChannelEqual) return false;
+  if (!sendThreadMessageInChannelEqual) {
+    return false;
+  }
 
   const threadListEqual = prevThreadList === nextThreadList;
-  if (!threadListEqual) return false;
+  if (!threadListEqual) {
+    return false;
+  }
 
   const allowThreadMessagesInChannelEqual =
     prevAllowThreadMessagesInChannel === nextAllowThreadMessagesInChannel;
-  if (!allowThreadMessagesInChannelEqual) return false;
+  if (!allowThreadMessagesInChannelEqual) {
+    return false;
+  }
 
   return true;
 };

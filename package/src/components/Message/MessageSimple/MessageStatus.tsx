@@ -42,7 +42,9 @@ const MessageStatusWithContext = <
     );
   }
 
-  if (threadList || message.status === MessageStatusTypes.FAILED) return null;
+  if (threadList || message.status === MessageStatusTypes.FAILED) {
+    return null;
+  }
 
   if (isMessageWithStylesReadByAndDateSeparator(message)) {
     return (
@@ -85,14 +87,18 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const { message: nextMessage, threadList: nextThreadList } = nextProps;
 
   const threadListEqual = prevThreadList === nextThreadList;
-  if (!threadListEqual) return false;
+  if (!threadListEqual) {
+    return false;
+  }
 
   const messageEqual =
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
     (isMessageWithStylesReadByAndDateSeparator(prevMessage) && prevMessage.readBy) ===
       (isMessageWithStylesReadByAndDateSeparator(nextMessage) && nextMessage.readBy);
-  if (!messageEqual) return false;
+  if (!messageEqual) {
+    return false;
+  }
 
   return true;
 };
