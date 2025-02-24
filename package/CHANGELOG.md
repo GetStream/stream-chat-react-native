@@ -1,5 +1,13 @@
 # Change Log
 
+### [6.6.3](https://github.com/GetStream/stream-chat-react-native/compare/v6.6.2...v6.6.3) (2025-02-21)
+
+
+### Bug Fixes
+
+* change height of bottom sheet in message menu using theme ([#2969](https://github.com/GetStream/stream-chat-react-native/issues/2969)) ([094a0e1](https://github.com/GetStream/stream-chat-react-native/commit/094a0e1472ba39ab9d18d8a4a8ccefe33be60260))
+* file upload preview state refresh when state changes ([#2970](https://github.com/GetStream/stream-chat-react-native/issues/2970)) ([776ac2c](https://github.com/GetStream/stream-chat-react-native/commit/776ac2cca47bce409e60f1a45373271b6c16e31d))
+
 ### [6.6.2](https://github.com/GetStream/stream-chat-react-native/compare/v6.6.1...v6.6.2) (2025-02-19)
 
 
