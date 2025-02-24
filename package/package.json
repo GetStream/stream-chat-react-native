@@ -133,7 +133,6 @@
     "eslint-plugin-markdown": "5.1.0",
     "eslint-plugin-prettier": "5.2.3",
     "eslint-plugin-react": "^7.37.4",
-    "eslint-plugin-sort-destructure-keys": "2.0.0",
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-native": "^5.0.0",

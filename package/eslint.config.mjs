@@ -8,7 +8,6 @@ import eslintPluginPrettier from 'eslint-plugin-prettier';
 import eslintPluginReact from 'eslint-plugin-react';
 import eslintPluginReactHooks from 'eslint-plugin-react-hooks';
 import eslintPluginReactNative from 'eslint-plugin-react-native';
-import eslintPluginSortDestructureKeys from 'eslint-plugin-sort-destructure-keys';
 
 import tsEslint from 'typescript-eslint';
 import eslintConfigPrettier from 'eslint-config-prettier';
@@ -72,7 +71,6 @@ export default tsEslint.config(
       react: eslintPluginReact,
       'react-hooks': eslintPluginReactHooks,
       'react-native': eslintPluginReactNative,
-      'sort-destructure-keys': eslintPluginSortDestructureKeys,
     },
     settings: {
       'import/resolver': {
