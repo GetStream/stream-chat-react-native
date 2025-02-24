@@ -120,7 +120,6 @@ export const useChatClient = () => {
       // Register FCM token with stream chat server.
       // await messaging.set;
       const apnsToken = await messaging.getAPNSToken();
-      console.log('APNS: ', apnsToken);
       const firebaseToken = await messaging.getToken();
       const provider = await AsyncStore.getItem('@stream-rn-sampleapp-push-provider', { id: 'firebase', name: 'rn-fcm' });
       const id = provider?.id ?? 'firebase';
