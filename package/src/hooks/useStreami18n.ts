@@ -38,7 +38,9 @@ export const useStreami18n = (i18nInstance?: Streami18n) => {
       });
 
     streami18n.getTranslators().then((translator) => {
-      if (translator && isMounted.current) setTranslators(translator);
+      if (translator && isMounted.current) {
+        setTranslators(translator);
+      }
     });
 
     return () => {

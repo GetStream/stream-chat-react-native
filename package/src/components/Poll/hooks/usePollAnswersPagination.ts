@@ -48,7 +48,9 @@ export const usePollAnswersPagination = ({
   const queryInProgress = useRef(false);
 
   const loadMore = useCallback(async () => {
-    if (cursorRef.current === null || queryInProgress.current) return;
+    if (cursorRef.current === null || queryInProgress.current) {
+      return;
+    }
     const next = cursorRef.current;
 
     setLoading(true);
@@ -69,14 +71,18 @@ export const usePollAnswersPagination = ({
   }, [paginationParams, poll]);
 
   useEffect(() => {
-    if (!loadFirstPage || pollAnswers.length) return;
+    if (!loadFirstPage || pollAnswers.length) {
+      return;
+    }
     loadMore();
   }, [loadFirstPage, loadMore, pollAnswers]);
 
   useEffect(() => {
     const castedListeners = ['poll.vote_casted', 'poll.vote_changed'].map((eventName) =>
       client.on(eventName, (event) => {
-        if (event.poll?.id && event.poll.id !== poll.id) return;
+        if (event.poll?.id && event.poll.id !== poll.id) {
+          return;
+        }
         const vote = event.poll_vote;
         if (vote && isVoteAnswer(vote)) {
           setPollAnswers([vote, ...pollAnswers.filter((answer) => answer.id !== vote.id)]);
@@ -85,7 +91,9 @@ export const usePollAnswersPagination = ({
     );
 
     const removedListener = client.on('poll.vote_removed', (event) => {
-      if (event.poll?.id && event.poll.id !== poll.id) return;
+      if (event.poll?.id && event.poll.id !== poll.id) {
+        return;
+      }
       const vote = event.poll_vote;
       if (vote && isVoteAnswer(vote)) {
         setPollAnswers(pollAnswers.filter((item) => item.id !== vote.id));

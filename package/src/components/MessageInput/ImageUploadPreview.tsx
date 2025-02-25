@@ -87,6 +87,33 @@ export type ImageUploadPreviewProps<
 
 type ImageUploadPreviewItem = { index: number; item: ImageUpload };
 
+export const UnsupportedImageTypeIndicator = ({
+  indicatorType,
+}: {
+  indicatorType: (typeof ProgressIndicatorTypes)[keyof typeof ProgressIndicatorTypes] | null;
+}) => {
+  const {
+    theme: {
+      colors: { accent_red, overlay, white },
+    },
+  } = useTheme();
+
+  const { t } = useTranslationContext();
+  return indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
+    <View style={[styles.unsupportedImage, { backgroundColor: overlay }]}>
+      <View style={[styles.iconContainer]}>
+        <Warning
+          height={WARNING_ICON_SIZE}
+          pathFill={accent_red}
+          style={styles.warningIconStyle}
+          width={WARNING_ICON_SIZE}
+        />
+        <Text style={[styles.warningText, { color: white }]}>{t<string>('Not supported')}</Text>
+      </View>
+    </View>
+  ) : null;
+};
+
 const ImageUploadPreviewWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
@@ -101,33 +128,6 @@ const ImageUploadPreviewWithContext = <
       },
     },
   } = useTheme();
-
-  const UnsupportedImageTypeIndicator = ({
-    indicatorType,
-  }: {
-    indicatorType: (typeof ProgressIndicatorTypes)[keyof typeof ProgressIndicatorTypes] | null;
-  }) => {
-    const {
-      theme: {
-        colors: { accent_red, overlay, white },
-      },
-    } = useTheme();
-
-    const { t } = useTranslationContext();
-    return indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
-      <View style={[styles.unsupportedImage, { backgroundColor: overlay }]}>
-        <View style={[styles.iconContainer]}>
-          <Warning
-            height={WARNING_ICON_SIZE}
-            pathFill={accent_red}
-            style={styles.warningIconStyle}
-            width={WARNING_ICON_SIZE}
-          />
-          <Text style={[styles.warningText, { color: white }]}>{t<string>('Not supported')}</Text>
-        </View>
-      </View>
-    ) : null;
-  };
 
   const renderItem = ({ index, item }: ImageUploadPreviewItem) => {
     const indicatorType = getIndicatorTypeForFileState(item.state, enableOfflineSupport);

@@ -39,7 +39,6 @@ const getComponent = (
   </ThemeProvider>
 );
 
-// eslint-disable-next-line jest/no-disabled-tests
 describe.skip('AudioAttachmentExpo', () => {
   it('handle play pause button when isPausedStatusAvailable unavailable and progress 1', () => {
     const setPositionAsyncMock = jest.fn();

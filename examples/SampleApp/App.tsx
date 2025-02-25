@@ -12,7 +12,7 @@ import {
   ThemeProvider,
   useOverlayContext,
 } from 'stream-chat-react-native';
-import messaging from '@react-native-firebase/messaging';
+import { getMessaging } from '@react-native-firebase/messaging';
 import notifee, { EventType } from '@notifee/react-native';
 import { AppContext } from './src/context/AppContext';
 import { AppOverlayProvider } from './src/context/AppOverlayProvider';
@@ -80,7 +80,8 @@ const App = () => {
   const streamChatTheme = useStreamChatTheme();
 
   useEffect(() => {
-    const unsubscribeOnNotificationOpen = messaging().onNotificationOpenedApp((remoteMessage) => {
+    const messaging = getMessaging();
+    const unsubscribeOnNotificationOpen = messaging.onNotificationOpenedApp((remoteMessage) => {
       // Notification caused app to open from background state on iOS
       const channelId = remoteMessage.data?.channel_id as string;
       if (channelId) {
@@ -106,7 +107,7 @@ const App = () => {
         }
       }
     });
-    messaging()
+    messaging
       .getInitialNotification()
       .then((remoteMessage) => {
         if (remoteMessage) {
@@ -138,6 +139,7 @@ const App = () => {
               ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
               background: streamChatTheme.colors?.white_snow || '#FCFCFC',
             },
+            fonts: (colorScheme === 'dark' ? DarkTheme : DefaultTheme).fonts,
             dark: colorScheme === 'dark',
           }}
         >
@@ -181,7 +183,7 @@ const DrawerNavigatorWrapper: React.FC<{
         <Chat<StreamChatGenerics>
           client={chatClient}
           enableOfflineSupport
-          // @ts-expect-error
+          // @ts-expect-error - the `ImageComponent` prop is generic, meaning we can expect an error
           ImageComponent={FastImage}
           isMessageAIGenerated={(message: MessageType) => !!message.ai_generated}
         >

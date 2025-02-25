@@ -205,20 +205,30 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   } = nextProps;
 
   const alignmentEqual = prevAlignment === nextAlignment;
-  if (!alignmentEqual) return false;
+  if (!alignmentEqual) {
+    return false;
+  }
 
   const isEditedMessageOpenEqual = prevIsEditedMessageOpen === nextIsEditedMessageOpen;
-  if (!isEditedMessageOpenEqual) return false;
+  if (!isEditedMessageOpenEqual) {
+    return false;
+  }
 
   const membersEqual = Object.keys(prevMembers).length === Object.keys(nextMembers).length;
-  if (!membersEqual) return false;
+  if (!membersEqual) {
+    return false;
+  }
 
   const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
-  if (!lastGroupMessageEqual) return false;
+  if (!lastGroupMessageEqual) {
+    return false;
+  }
 
   const deletedMessagesVisibilityTypeEqual =
     prevProps.deletedMessagesVisibilityType === nextProps.deletedMessagesVisibilityType;
-  if (!deletedMessagesVisibilityTypeEqual) return false;
+  if (!deletedMessagesVisibilityTypeEqual) {
+    return false;
+  }
 
   const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
   const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
@@ -230,21 +240,31 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
     prevMessage.pinned === nextMessage.pinned;
-  if (!messageEqual) return false;
+  if (!messageEqual) {
+    return false;
+  }
 
   const otherAttachmentsEqual =
     prevOtherAttachments.length === nextOtherAttachments.length &&
     prevOtherAttachments?.[0]?.actions?.length === nextOtherAttachments?.[0]?.actions?.length;
-  if (!otherAttachmentsEqual) return false;
+  if (!otherAttachmentsEqual) {
+    return false;
+  }
 
   const showMessageStatusEqual = prevShowMessageStatus === nextShowMessageStatus;
-  if (!showMessageStatusEqual) return false;
+  if (!showMessageStatusEqual) {
+    return false;
+  }
 
   const dateEqual = prevDate === nextDate;
-  if (!dateEqual) return false;
+  if (!dateEqual) {
+    return false;
+  }
 
   const formattedDateEqual = prevFormattedDate === nextFormattedDate;
-  if (!formattedDateEqual) return false;
+  if (!formattedDateEqual) {
+    return false;
+  }
 
   return true;
 };

@@ -48,12 +48,16 @@ export const useMessageActionHandlers = <
   );
 
   const handleCopyMessage = () => {
-    if (!message.text) return;
+    if (!message.text) {
+      return;
+    }
     setClipboardString(message.text);
   };
 
   const handleDeleteMessage = () => {
-    if (!message.id) return;
+    if (!message.id) {
+      return;
+    }
     Alert.alert(
       t('Delete Message'),
       t('Are you sure you want to permanently delete this message?'),
@@ -110,7 +114,9 @@ export const useMessageActionHandlers = <
   };
 
   const handleFlagMessage = () => {
-    if (!message.id) return;
+    if (!message.id) {
+      return;
+    }
     Alert.alert(
       t('Flag Message'),
       t('Do you want to send a copy of this message to a moderator for further investigation?'),
@@ -139,7 +145,9 @@ export const useMessageActionHandlers = <
   };
 
   const handleMarkUnreadMessage = async () => {
-    if (!message.id) return;
+    if (!message.id) {
+      return;
+    }
     try {
       await channel.markUnread({ message_id: message.id });
     } catch (error) {
@@ -162,7 +170,7 @@ export const useMessageActionHandlers = <
         return true;
       } else if (reaction.user && client.userID !== reaction.user.id) {
         console.warn(
-          `message.own_reactions contained reactions from a different user, this indicates a bug`,
+          'message.own_reactions contained reactions from a different user, this indicates a bug',
         );
       }
       return false;

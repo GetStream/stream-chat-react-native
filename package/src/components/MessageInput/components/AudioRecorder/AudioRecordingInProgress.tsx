@@ -69,7 +69,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const recordingDurationEqual = prevRecordingDuration === nextRecordingDuration;
 
-  if (!recordingDurationEqual) return false;
+  if (!recordingDurationEqual) {
+    return false;
+  }
 
   return true;
 };

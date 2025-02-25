@@ -259,16 +259,24 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   } = nextProps;
 
   const isDurationEqual = prevDuration === nextDuration;
-  if (!isDurationEqual) return false;
+  if (!isDurationEqual) {
+    return false;
+  }
 
   const isPausedEqual = prevPaused === nextPaused;
-  if (!isPausedEqual) return false;
+  if (!isPausedEqual) {
+    return false;
+  }
 
   const isProgressEqual = prevProgress === nextProgress;
-  if (!isProgressEqual) return false;
+  if (!isProgressEqual) {
+    return false;
+  }
 
   const isSelectedIndexEqual = prevSelectedIndex === nextSelectedIndex;
-  if (!isSelectedIndexEqual) return false;
+  if (!isSelectedIndexEqual) {
+    return false;
+  }
 
   return true;
 };

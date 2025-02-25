@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 const fs = require('fs');
 
 const getEmojis = async () => {
@@ -55,7 +54,9 @@ getEmojis().then(({ emojiLib }) => {
 
     export const compiledEmojis: Emojis = ${stingified}`,
     (err) => {
-      if (err) throw err;
+      if (err) {
+        throw err;
+      }
     },
   );
 });

@@ -95,9 +95,12 @@ const keyExtractor = <
 >(
   item: MessageType<StreamChatGenerics>,
 ) => {
-  if (item.id) return item.id;
-  if (item.created_at)
+  if (item.id) {
+    return item.id;
+  }
+  if (item.created_at) {
     return typeof item.created_at === 'string' ? item.created_at : item.created_at.toISOString();
+  }
   return Date.now().toString();
 };
 
@@ -370,7 +373,9 @@ const MessageListWithContext = <
   channelRef.current = channel;
 
   const updateStickyHeaderDateIfNeeded = (viewableItems: ViewToken[]) => {
-    if (!viewableItems.length) return;
+    if (!viewableItems.length) {
+      return;
+    }
 
     const lastItem = viewableItems[viewableItems.length - 1];
 
@@ -539,7 +544,9 @@ const MessageListWithContext = <
   }, [threadList, messageListLengthAfterUpdate, topMessageAfterUpdate?.id]);
 
   useEffect(() => {
-    if (!rawMessageList.length) return;
+    if (!rawMessageList.length) {
+      return;
+    }
     if (threadList) {
       setAutoscrollToRecent(true);
       return;
@@ -590,7 +597,9 @@ const MessageListWithContext = <
         await loadChannelAroundMessage({ messageId });
         return;
       } else {
-        if (!flatListRef.current) return;
+        if (!flatListRef.current) {
+          return;
+        }
         clearTimeout(failScrollTimeoutId.current);
         scrollToIndexFailedRetryCountRef.current = 0;
         // keep track of this messageId, so that we dont scroll to again in useEffect for targeted message change
@@ -614,7 +623,9 @@ const MessageListWithContext = <
    * Note: This effect fires on every list change with a small debounce so that scrolling isnt abrupted by an immediate rerender
    */
   useEffect(() => {
-    if (!targetedMessage) return;
+    if (!targetedMessage) {
+      return;
+    }
     scrollToDebounceTimeoutRef.current = setTimeout(async () => {
       const indexOfParentInMessageList = processedMessageList.findIndex(
         (message) => message?.id === targetedMessage,
@@ -624,7 +635,9 @@ const MessageListWithContext = <
       if (indexOfParentInMessageList === -1) {
         await loadChannelAroundMessage({ messageId: targetedMessage, setTargetedMessage });
       } else {
-        if (!flatListRef.current) return;
+        if (!flatListRef.current) {
+          return;
+        }
         // By a fresh scroll we should clear the retries for the previous failed scroll
         clearTimeout(scrollToDebounceTimeoutRef.current);
         clearTimeout(failScrollTimeoutId.current);
@@ -653,8 +666,9 @@ const MessageListWithContext = <
     index: number;
     item: MessageType<StreamChatGenerics>;
   }) => {
-    if (!channel || channel.disconnected || (!channel.initialized && !channel.offlineMode))
+    if (!channel || channel.disconnected || (!channel.initialized && !channel.offlineMode)) {
       return null;
+    }
 
     const createdAtTimestamp = message.created_at && new Date(message.created_at).getTime();
     const lastReadTimestamp = channelUnreadState?.last_read.getTime();
@@ -885,7 +899,9 @@ const MessageListWithContext = <
     FlatListProps<MessageType<StreamChatGenerics>>['onScrollToIndexFailed']
   >((info) => {
     // We got a failure as we tried to scroll to an item that was outside the render length
-    if (!flatListRef.current) return;
+    if (!flatListRef.current) {
+      return;
+    }
     // we don't know the actual size of all items but we can see the average, so scroll to the closest offset
     // since we used only an average offset... we won't go to the center of the item yet
     // with a little delay to wait for scroll to offset to complete, we can then scroll to the index
@@ -1011,12 +1027,15 @@ const MessageListWithContext = <
   const isDebugModeEnabled = __DEV__ && debugRef && debugRef.current;
 
   if (isDebugModeEnabled) {
-    if (debugRef.current.setEventType) debugRef.current.setEventType('send');
-    if (debugRef.current.setSendEventParams)
+    if (debugRef.current.setEventType) {
+      debugRef.current.setEventType('send');
+    }
+    if (debugRef.current.setSendEventParams) {
       debugRef.current.setSendEventParams({
         action: thread ? 'ThreadList' : 'Messages',
         data: processedMessageList,
       });
+    }
   }
 
   const ListFooterComponent = useCallback(
@@ -1062,7 +1081,9 @@ const MessageListWithContext = <
     additionalFlatListPropsExcludingStyle = rest;
   }
 
-  if (!FlatList) return null;
+  if (!FlatList) {
+    return null;
+  }
 
   if (loading) {
     return (

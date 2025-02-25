@@ -46,7 +46,9 @@ const StatusIndicator = <
   const { error, HeaderErrorIndicator, HeaderNetworkDownIndicator, loadingChannels, refreshList } =
     useChannelsContext<StreamChatGenerics>();
 
-  if (loadingChannels) return null;
+  if (loadingChannels) {
+    return null;
+  }
 
   if (!isOnline) {
     return (
@@ -130,8 +132,10 @@ const ChannelListMessengerWithContext = <
   const isDebugModeEnabled = __DEV__ && debugRef && debugRef.current;
 
   if (isDebugModeEnabled) {
-    if (debugRef.current.setEventType) debugRef.current.setEventType('send');
-    if (debugRef.current.setSendEventParams)
+    if (debugRef.current.setEventType) {
+      debugRef.current.setEventType('send');
+    }
+    if (debugRef.current.setSendEventParams) {
       debugRef.current.setSendEventParams({
         action: 'Channels',
         data: channels?.map((channel) => ({
@@ -139,6 +143,7 @@ const ChannelListMessengerWithContext = <
           members: channel.state.members,
         })),
       });
+    }
   }
 
   if (error && !refreshing && !loadingChannels && (channels === null || !channelListInitialized)) {

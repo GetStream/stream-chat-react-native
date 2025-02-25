@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import type { Channel, Event } from 'stream-chat';
 
@@ -45,7 +45,9 @@ export const useChannelMemberUpdated = <
       if (typeof onChannelMemberUpdated === 'function') {
         onChannelMemberUpdated(lockChannelOrder, setChannels, event, options);
       } else {
-        if (!options) return;
+        if (!options) {
+          return;
+        }
         const { filters, sort } = options;
         if (!event.member?.user || event.member.user.id !== client.userID || !event.channel_type) {
           return;
@@ -58,7 +60,9 @@ export const useChannelMemberUpdated = <
         const pinnedAtSort = findPinnedAtSortOrder({ sort });
 
         setChannels((currentChannels) => {
-          if (!currentChannels) return currentChannels;
+          if (!currentChannels) {
+            return currentChannels;
+          }
 
           const targetChannel = client.channel(channelType, channelId);
           // assumes that channel instances are not changing

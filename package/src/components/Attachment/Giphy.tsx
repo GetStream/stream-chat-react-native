@@ -226,7 +226,9 @@ const GiphyWithContext = <
     giphyDimensions.width = parseFloat(giphyVersionInfo.width);
   }
 
-  if (!uri) return null;
+  if (!uri) {
+    return null;
+  }
 
   return actions ? (
     <View
@@ -405,10 +407,14 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   } = nextProps;
 
   const imageUrlEqual = prevImageUrl === nextImageUrl;
-  if (!imageUrlEqual) return false;
+  if (!imageUrlEqual) {
+    return false;
+  }
 
   const thumbUrlEqual = prevThumbUrl === nextThumbUrl;
-  if (!thumbUrlEqual) return false;
+  if (!thumbUrlEqual) {
+    return false;
+  }
 
   const actionsEqual =
     Array.isArray(prevActions) === Array.isArray(nextActions) &&
@@ -416,19 +422,27 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
       Array.isArray(nextActions) &&
       prevActions.length === nextActions.length) ||
       prevActions === nextActions);
-  if (!actionsEqual) return false;
+  if (!actionsEqual) {
+    return false;
+  }
 
   const giphyVersionEqual = prevGiphyVersion === nextGiphyVersion;
-  if (!giphyVersionEqual) return false;
+  if (!giphyVersionEqual) {
+    return false;
+  }
 
   const isMyMessageEqual = prevIsMyMessage === nextIsMyMessage;
-  if (!isMyMessageEqual) return false;
+  if (!isMyMessageEqual) {
+    return false;
+  }
 
   const messageEqual =
     prevMessage?.id === nextMessage?.id &&
     `${prevMessage?.updated_at}` === `${nextMessage?.updated_at}`;
 
-  if (!messageEqual) return false;
+  if (!messageEqual) {
+    return false;
+  }
   return true;
 };
 

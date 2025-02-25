@@ -15,12 +15,16 @@ export function useStateStore<
   O extends Readonly<Record<string, unknown> | Readonly<unknown[]>>,
 >(store: StateStore<T> | undefined, selector: (v: T) => O) {
   const [state, setState] = useState<O | undefined>(() => {
-    if (!store) return undefined;
+    if (!store) {
+      return undefined;
+    }
     return selector(store.getLatestValue());
   });
 
   useEffect(() => {
-    if (!store) return;
+    if (!store) {
+      return;
+    }
 
     const unsubscribe = store.subscribeWithSelector(selector, setState);
 

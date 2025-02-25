@@ -417,10 +417,14 @@ for (const type of videoFileTypes) {
 }
 
 function mimeTypeToIcon(mimeType?: string): React.ComponentType<IconProps> {
-  if (!mimeType) return GenericFile;
+  if (!mimeType) {
+    return GenericFile;
+  }
 
   const Icon = mimeTypeToIconMap[mimeType];
-  if (Icon) return Icon;
+  if (Icon) {
+    return Icon;
+  }
 
   return GenericFile;
 }

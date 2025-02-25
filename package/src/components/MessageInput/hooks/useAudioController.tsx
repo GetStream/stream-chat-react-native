@@ -74,29 +74,40 @@ export const useAudioController = () => {
         onVoicePlayerProgressHandler(status.durationMillis, status.durationMillis);
       } else {
         // For Native CLI
-        if (status.currentPosition && status.duration)
+        if (status.currentPosition && status.duration) {
           onVoicePlayerProgressHandler(status.currentPosition, status.duration);
+        }
         // For Expo CLI
-        else if (status.positionMillis && status.durationMillis)
+        else if (status.positionMillis && status.durationMillis) {
           onVoicePlayerProgressHandler(status.positionMillis, status.durationMillis);
+        }
       }
     }
   };
 
   const onVoicePlayerPlayPause = async () => {
     if (paused) {
-      if (progress === 0) await startVoicePlayer();
-      else {
+      if (progress === 0) {
+        await startVoicePlayer();
+      } else {
         // For Native CLI
-        if (Audio?.resumePlayer) await Audio.resumePlayer();
+        if (Audio?.resumePlayer) {
+          await Audio.resumePlayer();
+        }
         // For Expo CLI
-        if (soundRef.current?.playAsync) await soundRef.current.playAsync();
+        if (soundRef.current?.playAsync) {
+          await soundRef.current.playAsync();
+        }
       }
     } else {
       // For Native CLI
-      if (Audio?.pausePlayer) await Audio.pausePlayer();
+      if (Audio?.pausePlayer) {
+        await Audio.pausePlayer();
+      }
       // For Expo CLI
-      if (soundRef.current?.pauseAsync) await soundRef.current.pauseAsync();
+      if (soundRef.current?.pauseAsync) {
+        await soundRef.current.pauseAsync();
+      }
     }
     setPaused(!paused);
   };
@@ -105,10 +116,13 @@ export const useAudioController = () => {
    * Function to start playing voice recording to preview it after recording.
    */
   const startVoicePlayer = async () => {
-    if (!recording) return;
+    if (!recording) {
+      return;
+    }
     // For Native CLI
-    if (Audio?.startPlayer)
+    if (Audio?.startPlayer) {
       await Audio.startPlayer(recording, {}, onVoicePlayerPlaybackStatusUpdate);
+    }
     // For Expo CLI
     if (recording && typeof recording !== 'string') {
       const uri = recording.getURI();
@@ -161,7 +175,9 @@ export const useAudioController = () => {
    * Function to start voice recording.
    */
   const startVoiceRecording = async () => {
-    if (!Audio) return;
+    if (!Audio) {
+      return;
+    }
     const recordingInfo = await Audio.startRecording(
       {
         isMeteringEnabled: true,
@@ -191,7 +207,9 @@ export const useAudioController = () => {
    * hence this approach.
    */
   const stopSDKVoiceRecording = async () => {
-    if (!Audio) return;
+    if (!Audio) {
+      return;
+    }
     await Audio.stopRecording();
   };
 

@@ -7,7 +7,7 @@ import { useViewport } from '../../../hooks/useViewport';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
-const ELLIPSIS = `...`;
+const ELLIPSIS = '...';
 
 const getMemberName = (member: ChannelMemberResponse) =>
   member.user?.name || member.user?.id || 'Unknown User';
@@ -25,7 +25,9 @@ export const getChannelPreviewDisplayName = <
   currentUserId?: string;
   members?: Channel<StreamChatGenerics>['state']['members'];
 }): string => {
-  if (channelName) return channelName;
+  if (channelName) {
+    return channelName;
+  }
 
   const channelMembers = Object.values(members || {});
 

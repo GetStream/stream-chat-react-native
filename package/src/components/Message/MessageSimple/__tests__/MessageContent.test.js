@@ -220,7 +220,7 @@ describe('MessageContent', () => {
     const MessageContentWithMockedMessageContentWidth = (props) => {
       useEffect(() => {
         props.setMessageContentWidth(100);
-      }, []);
+      }, [props]);
       return <MessageContent {...props} />;
     };
 

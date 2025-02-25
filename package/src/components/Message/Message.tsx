@@ -332,7 +332,9 @@ const MessageWithContext = <
   };
 
   const onPressQuotedMessage = (quotedMessage: MessageType<StreamChatGenerics>) => {
-    if (!goToMessage) return;
+    if (!goToMessage) {
+      return;
+    }
 
     goToMessage(quotedMessage.id);
   };
@@ -372,8 +374,8 @@ const MessageWithContext = <
     forceAlignMessages && (forceAlignMessages === 'left' || forceAlignMessages === 'right')
       ? forceAlignMessages
       : isMyMessage
-      ? 'right'
-      : 'left';
+        ? 'right'
+        : 'left';
 
   /**
    * attachments contain files/images or other attachments
@@ -465,7 +467,9 @@ const MessageWithContext = <
   });
 
   const emojiOnlyText = useMemo(() => {
-    if (!message.text) return false;
+    if (!message.text) {
+      return false;
+    }
     return hasOnlyEmojis(message.text);
   }, [message.text]);
 
@@ -611,7 +615,9 @@ const MessageWithContext = <
   };
 
   const onLongPress = () => {
-    if (hasAttachmentActions || isBlockedMessage(message) || !enableLongPress) return;
+    if (hasAttachmentActions || isBlockedMessage(message) || !enableLongPress) {
+      return;
+    }
     // If a message is bounced, on long press the message bounce options modal should open.
     if (isBouncedMessage(message)) {
       setIsBounceDialogOpen(true);
@@ -653,8 +659,12 @@ const MessageWithContext = <
       };
 
       const handleOnLongPress = () => {
-        if (onLongPressMessageProp) return onLongPressMessageProp(onLongPressArgs);
-        if (payload?.defaultHandler) return payload.defaultHandler();
+        if (onLongPressMessageProp) {
+          return onLongPressMessageProp(onLongPressArgs);
+        }
+        if (payload?.defaultHandler) {
+          return payload.defaultHandler();
+        }
 
         return onLongPress();
       };
@@ -674,8 +684,12 @@ const MessageWithContext = <
       };
 
       const handleOnPress = () => {
-        if (onPressMessageProp) return onPressMessageProp(onPressArgs);
-        if (payload.defaultHandler) return payload.defaultHandler();
+        if (onPressMessageProp) {
+          return onPressMessageProp(onPressArgs);
+        }
+        if (payload.defaultHandler) {
+          return payload.defaultHandler();
+        }
 
         return onPress();
       };
@@ -684,7 +698,7 @@ const MessageWithContext = <
     },
     onPressIn: onPressInMessageProp
       ? (payload) => {
-          if (onPressInMessageProp)
+          if (onPressInMessageProp) {
             return onPressInMessageProp({
               actionHandlers,
               defaultHandler: payload.defaultHandler,
@@ -692,6 +706,7 @@ const MessageWithContext = <
               event: payload.event,
               message,
             });
+          }
         }
       : null,
     otherAttachments: attachments.other,
@@ -705,7 +720,9 @@ const MessageWithContext = <
     videos: attachments.videos,
   });
 
-  if (!(isMessageTypeDeleted || messageContentOrder.length)) return null;
+  if (!(isMessageTypeDeleted || messageContentOrder.length)) {
+    return null;
+  }
 
   return (
     <MessageProvider value={messageContext}>
@@ -777,10 +794,14 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   } = nextProps;
 
   const membersEqual = Object.keys(prevMembers).length === Object.keys(nextMembers).length;
-  if (!membersEqual) return false;
+  if (!membersEqual) {
+    return false;
+  }
 
   const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
-  if (!repliesEqual) return false;
+  if (!repliesEqual) {
+    return false;
+  }
 
   const lastReceivedIdChangedAndMatters =
     prevLastReceivedId !== nextLastReceivedId &&
@@ -789,16 +810,22 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
       nextLastReceivedId === prevMessage.id ||
       nextLastReceivedId === nextMessage.id);
 
-  if (lastReceivedIdChangedAndMatters) return false;
+  if (lastReceivedIdChangedAndMatters) {
+    return false;
+  }
 
   const goToMessageChangedAndMatters =
     nextMessage.quoted_message_id && prevGoToMessage !== nextGoToMessage;
 
-  if (goToMessageChangedAndMatters) return false;
+  if (goToMessageChangedAndMatters) {
+    return false;
+  }
 
   const groupStylesEqual =
     prevGroupStyles.length === nextGroupStyles.length && prevGroupStyles[0] === nextGroupStyles[0];
-  if (!groupStylesEqual) return false;
+  if (!groupStylesEqual) {
+    return false;
+  }
 
   const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
   const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
@@ -814,7 +841,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     `${prevMessage?.updated_at}` === `${nextMessage?.updated_at}` &&
     prevMessage.i18n === nextMessage.i18n;
 
-  if (!messageEqual) return false;
+  if (!messageEqual) {
+    return false;
+  }
 
   const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';
   const isNextQuotedMessageTypeDeleted = nextMessage.quoted_message?.type === 'deleted';
@@ -823,10 +852,14 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     prevMessage.quoted_message?.id === nextMessage.quoted_message?.id &&
     isPrevQuotedMessageTypeDeleted === isNextQuotedMessageTypeDeleted;
 
-  if (!quotedMessageEqual) return false;
+  if (!quotedMessageEqual) {
+    return false;
+  }
 
   const messageUserBannedEqual = prevMessage.user?.banned === nextMessage.user?.banned;
-  if (!messageUserBannedEqual) return false;
+  if (!messageUserBannedEqual) {
+    return false;
+  }
 
   const prevMessageAttachments = prevMessage.attachments;
   const nextMessageAttachments = nextMessage.attachments;
@@ -841,15 +874,18 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
               attachment.thumb_url === nextMessageAttachments[index].thumb_url
             : attachment.type === nextMessageAttachments[index].type;
 
-        if (isAttachmentEqual)
+        if (isAttachmentEqual) {
           return (
             attachmentKeysEqual && !!isAttachmentEqual(attachment, nextMessageAttachments[index])
           );
+        }
 
         return attachmentKeysEqual;
       })) ||
     prevMessageAttachments === nextMessageAttachments;
-  if (!attachmentsEqual) return false;
+  if (!attachmentsEqual) {
+    return false;
+  }
 
   const latestReactionsEqual =
     Array.isArray(prevMessage.latest_reactions) && Array.isArray(nextMessage.latest_reactions)
@@ -858,28 +894,40 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
           ({ type }, index) => type === nextMessage.latest_reactions?.[index].type,
         )
       : prevMessage.latest_reactions === nextMessage.latest_reactions;
-  if (!latestReactionsEqual) return false;
+  if (!latestReactionsEqual) {
+    return false;
+  }
 
   const mutedUserSame =
     prevMutedUsers.length === nextMutedUsers.length ||
     prevMutedUsers.some((mutedUser) => mutedUser.target.id === prevMessage.user?.id) ===
       nextMutedUsers.some((mutedUser) => mutedUser.target.id === nextMessage.user?.id);
-  if (!mutedUserSame) return false;
+  if (!mutedUserSame) {
+    return false;
+  }
 
   const showUnreadUnderlayEqual = prevShowUnreadUnderlay === nextShowUnreadUnderlay;
-  if (!showUnreadUnderlayEqual) return false;
+  if (!showUnreadUnderlayEqual) {
+    return false;
+  }
 
   const tEqual = prevT === nextT;
-  if (!tEqual) return false;
+  if (!tEqual) {
+    return false;
+  }
 
   const targetedMessageEqual = prevIsTargetedMessage === nextIsTargetedMessage;
-  if (!targetedMessageEqual) return false;
+  if (!targetedMessageEqual) {
+    return false;
+  }
 
   const prevMyMessageTheme = JSON.stringify(prevMessagesContext?.myMessageTheme);
   const nextMyMessageTheme = JSON.stringify(nextMessagesContext?.myMessageTheme);
 
   const messageThemeEqual = prevMyMessageTheme === nextMyMessageTheme;
-  if (!messageThemeEqual) return false;
+  if (!messageThemeEqual) {
+    return false;
+  }
 
   return true;
 };

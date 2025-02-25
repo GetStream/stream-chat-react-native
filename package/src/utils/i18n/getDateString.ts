@@ -57,7 +57,9 @@ export function getDateString({
       timestamp: new Date(date),
     });
     const translationKeyFound = timestampTranslationKey !== translatedTimestamp;
-    if (translationKeyFound) return translatedTimestamp;
+    if (translationKeyFound) {
+      return translatedTimestamp;
+    }
   }
 
   const parsedTime = tDateTimeParser(date);

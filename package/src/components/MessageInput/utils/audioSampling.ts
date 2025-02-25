@@ -2,8 +2,8 @@ export const resampleWaveformData = (waveformData: number[], amplitudesCount: nu
   waveformData.length === amplitudesCount
     ? waveformData
     : waveformData.length > amplitudesCount
-    ? downSample(waveformData, amplitudesCount)
-    : upSample(waveformData, amplitudesCount);
+      ? downSample(waveformData, amplitudesCount)
+      : upSample(waveformData, amplitudesCount);
 
 /**
  * The downSample function uses the Largest-Triangle-Three-Buckets (LTTB) algorithm.
@@ -16,7 +16,9 @@ export function downSample(data: number[], targetOutputSize: number): number[] {
     return data;
   }
 
-  if (targetOutputSize === 1) return [mean(data)];
+  if (targetOutputSize === 1) {
+    return [mean(data)];
+  }
 
   const result: number[] = [];
   // bucket size adjusted due to the fact that the first and the last item in the original data array is kept in target output
@@ -57,7 +59,9 @@ export function downSample(data: number[], targetOutputSize: number): number[] {
       }
     }
 
-    if (typeof maxAreaPoint !== 'undefined') result.push(maxAreaPoint);
+    if (typeof maxAreaPoint !== 'undefined') {
+      result.push(maxAreaPoint);
+    }
   }
 
   result.push(data[data.length - 1]); // Always add the last point
@@ -94,7 +98,9 @@ export const upSample = (values: number[], targetSize: number) => {
     return values;
   }
 
-  if (targetSize === values.length) return values;
+  if (targetSize === values.length) {
+    return values;
+  }
 
   // eslint-disable-next-line prefer-const
   let [bucketSize, remainder] = divMod(targetSize, values.length);

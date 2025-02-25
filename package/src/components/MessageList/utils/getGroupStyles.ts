@@ -115,7 +115,9 @@ export const getGroupStyles = <
     userId,
   } = params;
 
-  if (noGroupByUser) return {};
+  if (noGroupByUser) {
+    return {};
+  }
 
   const messageGroupStyles: { [key: string]: GroupType[] } = {};
 

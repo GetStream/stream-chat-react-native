@@ -55,7 +55,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const { suggestions: nextSuggestions } = nextProps;
 
   const suggestionsEqual = !!prevSuggestions === !!nextSuggestions;
-  if (!suggestionsEqual) return false;
+  if (!suggestionsEqual) {
+    return false;
+  }
 
   return true;
 };

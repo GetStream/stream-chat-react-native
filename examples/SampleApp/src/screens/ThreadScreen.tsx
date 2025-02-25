@@ -18,7 +18,7 @@ import type { RouteProp } from '@react-navigation/native';
 import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
 import { ThreadState } from 'stream-chat';
 
-const selector = (nextValue: ThreadState) => ({ parentMessage: nextValue.parentMessage } as const);
+const selector = (nextValue: ThreadState) => ({ parentMessage: nextValue.parentMessage }) as const;
 
 const styles = StyleSheet.create({
   container: {
@@ -40,7 +40,10 @@ const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
   const typing = useTypingString();
   let subtitleText = thread?.user?.name;
   const { parentMessage } =
-    useStateStore(thread?.threadInstance?.state ?? undefined, selector) || [];
+    useStateStore(
+      (thread?.threadInstance as ThreadContextValue<StreamChatGenerics>['threadInstance'])?.state,
+      selector,
+    ) || {};
 
   if (subtitleText == null) {
     subtitleText = parentMessage?.user?.name;
