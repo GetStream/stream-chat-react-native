@@ -50,7 +50,7 @@ messaging.setBackgroundMessageHandler(async (remoteMessage) => {
     name: 'Chat Messages',
   });
 
-  if (message.message.user?.name && message.message.text) {
+  if (message.message.user?.name && message.message.text && !remoteMessage.notification) {
     const { stream, ...rest } = remoteMessage.data ?? {};
     const data = {
       ...rest,
@@ -63,9 +63,9 @@ messaging.setBackgroundMessageHandler(async (remoteMessage) => {
           id: 'default',
         },
       },
+      title: 'New message from ' + message.message.user.name,
       body: message.message.text,
       data,
-      title: 'New message from ' + message.message.user.name,
     });
   }
 });
