@@ -15,8 +15,7 @@ const messaging = getMessaging();
 const requestNotificationPermission = async () => {
   const authStatus = await messaging.requestPermission();
   const isEnabled =
-    authStatus === AuthorizationStatus.AUTHORIZED ||
-    authStatus === AuthorizationStatus.PROVISIONAL;
+    authStatus === AuthorizationStatus.AUTHORIZED || authStatus === AuthorizationStatus.PROVISIONAL;
   console.log('Permission Status', { authStatus, isEnabled });
 };
 
@@ -121,16 +120,27 @@ export const useChatClient = () => {
       // await messaging.set;
       const apnsToken = await messaging.getAPNSToken();
       const firebaseToken = await messaging.getToken();
-      const provider = await AsyncStore.getItem('@stream-rn-sampleapp-push-provider', { id: 'firebase', name: 'rn-fcm' });
+      const provider = await AsyncStore.getItem('@stream-rn-sampleapp-push-provider', {
+        id: 'firebase',
+        name: 'rn-fcm',
+      });
+      const providerNameOverride = await AsyncStore.getItem<string>(
+        `@stream-rn-sampleapp-push-provider-${provider?.id}-override`,
+        null,
+      );
       const id = provider?.id ?? 'firebase';
-      const name = provider?.name ?? 'rn-fcm';
-      const token = id === 'firebase' ? firebaseToken : apnsToken ?? firebaseToken;
+      const name =
+        providerNameOverride && providerNameOverride?.length > 0
+          ? providerNameOverride
+          : (provider?.name ?? 'rn-fcm');
+      console.log(id, name);
+      const token = id === 'firebase' ? firebaseToken : (apnsToken ?? firebaseToken);
       await client.addDevice(token, id as PushProvider, client.userID, name);
 
       // Listen to new FCM tokens and register them with stream chat server.
       const unsubscribeTokenRefresh = messaging.onTokenRefresh(async (newFirebaseToken) => {
         const newApnsToken = await messaging.getAPNSToken();
-        const newToken = id === 'firebase' ? newFirebaseToken : newApnsToken ?? firebaseToken;
+        const newToken = id === 'firebase' ? newFirebaseToken : (newApnsToken ?? firebaseToken);
         await client.addDevice(newToken, id as PushProvider, client.userID, name);
       });
       // show notifications when on foreground
