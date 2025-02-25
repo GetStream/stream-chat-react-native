@@ -121,6 +121,7 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
         placeholder={label}
         placeholderTextColor={grey}
         returnKeyType='next'
+        numberOfLines={1}
         style={[
           styles.input,
           {
@@ -234,7 +235,7 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
                   });
                 } catch (e) {
                   Alert.alert(
-                    'Login resulted in error. Please make sure you have entered valid credentials',
+                    `Login resulted in error. Please make sure you have entered valid credentials. Error: ${(e as Error).message}`,
                   );
                   console.warn(e);
                 }
