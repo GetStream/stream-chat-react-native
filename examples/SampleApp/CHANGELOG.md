@@ -1,5 +1,12 @@
 # Change Log
 
+### [2.4.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v2.4.0...sampleapp@v2.4.1) (2025-02-25)
+
+
+### Bug Fixes
+
+* duplicate android pns ([#2978](https://github.com/GetStream/stream-chat-react-native/issues/2978)) ([3a09f1d](https://github.com/GetStream/stream-chat-react-native/commit/3a09f1d78838d6d54e2c02ebcd94703cd5f93a77))
+
 ## [2.4.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v2.3.1...sampleapp@v2.4.0) (2025-02-13)
 
 
