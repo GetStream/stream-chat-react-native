@@ -1,5 +1,12 @@
 # Change Log
 
+### [6.6.5](https://github.com/GetStream/stream-chat-react-native/compare/v6.6.4...v6.6.5) (2025-02-25)
+
+
+### Bug Fixes
+
+* pin preferredAssetRepresentationMode to current ([#2979](https://github.com/GetStream/stream-chat-react-native/issues/2979)) ([bc3b539](https://github.com/GetStream/stream-chat-react-native/commit/bc3b5397e2ca9a938914886211f2200ffe03c09d))
+
 ### [6.6.4](https://github.com/GetStream/stream-chat-react-native/compare/v6.6.3...v6.6.4) (2025-02-24)
 
 
