@@ -139,7 +139,7 @@ export const SecretMenu = ({
   const notificationConfigItems = useMemo(
     () => [
       { label: 'Firebase', name: 'rn-fcm', id: 'firebase' },
-      { label: 'APNs', name: 'APN', id: 'apn' },
+      ...(isAndroid ? [] : [{ label: 'APNs', name: 'APN', id: 'apn' }]),
     ],
     [],
   );
@@ -172,7 +172,7 @@ export const SecretMenu = ({
       <View
         style={[
           menuDrawerStyles.menuItem,
-          { opacity: isAndroid ? 0.3 : 1, alignItems: 'flex-start' },
+          { alignItems: 'flex-start' },
         ]}
       >
         <Notification height={24} pathFill={grey} width={24} />
@@ -188,18 +188,16 @@ export const SecretMenu = ({
           >
             Notification Provider
           </Text>
-          {isAndroid ? null : (
-            <View style={{ marginLeft: 16 }}>
-              {notificationConfigItems.map((item) => (
-                <SecretMenuNotificationConfigItem
-                  key={item.id}
-                  notificationConfigItem={item}
-                  storeProvider={storeProvider}
-                  isSelected={item.id === selectedProvider}
-                />
-              ))}
-            </View>
-          )}
+          <View style={{ marginLeft: 16 }}>
+            {notificationConfigItems.map((item) => (
+              <SecretMenuNotificationConfigItem
+                key={item.id}
+                notificationConfigItem={item}
+                storeProvider={storeProvider}
+                isSelected={item.id === selectedProvider}
+              />
+            ))}
+          </View>
         </View>
       </View>
       <TouchableOpacity onPress={removeAllDevices} style={menuDrawerStyles.menuItem}>
