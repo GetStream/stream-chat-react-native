@@ -23,7 +23,7 @@ export const USER_TOKENS: Record<string, string> = {
   vishal:
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidmlzaGFsIn0.HOlVh-ZyQnjyuL20G-67RTgKufBuAH-I-gbEELFlass',
   ivan5:
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiaXZhbjUifQ.c3nq6rlnqyNeCRcwiW0VQ413nHl99pF72Ia2V_N84yU',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3Byb250by5nZXRzdHJlYW0uaW8iLCJzdWIiOiJ1c2VyL2l2YW41IiwidXNlcl9pZCI6Iml2YW41IiwidmFsaWRpdHlfaW5fc2Vjb25kcyI6NjA0ODAwLCJpYXQiOjE3NDA1Njc4NTgsImV4cCI6MTc0MTE3MjY1OH0.91UVXG9jAghvNOrK93lwt0oCknHouBW_ft4reAnwsI0',
   rodolphe:
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoicm9kb2xwaGUifQ.tLl-I8ADBhTKB-x5FB9jK4-am0dELLXgydM6VN9rTL8',
 };

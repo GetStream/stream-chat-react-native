@@ -20,6 +20,10 @@ const requestNotificationPermission = async () => {
 };
 
 messaging.setBackgroundMessageHandler(async (remoteMessage) => {
+  if (remoteMessage.data?.type !== 'message.new') {
+    // handled through the new push system, we don't need this
+    return;
+  }
   const messageId = remoteMessage.data?.id as string;
   if (!messageId) {
     return;
@@ -145,34 +149,51 @@ export const useChatClient = () => {
       });
       // show notifications when on foreground
       const unsubscribeForegroundMessageReceive = messaging.onMessage(async (remoteMessage) => {
-        const messageId = remoteMessage.data?.id;
-        if (!messageId) {
-          return;
-        }
-        const message = await client.getMessage(messageId as string);
-        if (message.message.user?.name && message.message.text) {
-          // create the android channel to send the notification to
-          const channelId = await notifee.createChannel({
-            id: 'foreground',
-            name: 'Foreground Messages',
-          });
-          // display the notification on foreground
-          const { stream, ...rest } = remoteMessage.data ?? {};
-          const data = {
-            ...rest,
-            ...((stream as unknown as Record<string, string> | undefined) ?? {}), // extract and merge stream object if present
-          };
-          await notifee.displayNotification({
-            android: {
-              channelId,
-              pressAction: {
-                id: 'default',
+        const notificationType = remoteMessage.data?.type;
+        const { stream, ...rest } = remoteMessage.data ?? {};
+        const data = {
+          ...rest,
+          ...((stream as unknown as Record<string, string> | undefined) ?? {}), // extract and merge stream object if present
+        };
+        const channelId = await notifee.createChannel({
+          id: 'foreground',
+          name: 'Foreground Messages',
+        });
+        if (notificationType === 'message.new') {
+          const messageId = remoteMessage.data?.id;
+          if (!messageId) {
+            return;
+          }
+          const message = await client.getMessage(messageId as string);
+          if (message.message.user?.name && message.message.text) {
+            // create the android channel to send the notification to
+            // display the notification on foreground
+            await notifee.displayNotification({
+              android: {
+                channelId,
+                pressAction: {
+                  id: 'default',
+                },
               },
-            },
-            body: message.message.text,
-            data,
-            title: 'New message from ' + message.message.user.name,
-          });
+              body: message.message.text,
+              title: 'New message from ' + message.message.user.name,
+              data,
+            });
+          }
+        } else {
+          if (data.body && data.title) {
+            await notifee.displayNotification({
+              android: {
+                channelId,
+                pressAction: {
+                  id: 'default',
+                },
+              },
+              body: data.body as string,
+              title: data.title as string,
+              data,
+            });
+          }
         }
       });
 
@@ -194,7 +215,7 @@ export const useChatClient = () => {
     try {
       if (userId) {
         await loginUser({
-          apiKey: 'yjrt5yxw77ev',
+          apiKey: 'pd67s34fzpgw',
           userId: USERS[userId].id,
           userImage: USERS[userId].image,
           userName: USERS[userId].name,
