@@ -137,7 +137,6 @@ export const useChatClient = () => {
         providerNameOverride && providerNameOverride?.length > 0
           ? providerNameOverride
           : (provider?.name ?? 'rn-fcm');
-      console.log(id, name);
       const token = id === 'firebase' ? firebaseToken : (apnsToken ?? firebaseToken);
       await client.addDevice(token, id as PushProvider, client.userID, name);
 
