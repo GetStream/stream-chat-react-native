@@ -6993,10 +6993,10 @@ stream-chat@^8.56.1:
     jsonwebtoken "~9.0.0"
     ws "^7.5.10"
 
-stream-chat@^8.57.2:
-  version "8.57.2"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.57.2.tgz#28a2f91de460738d57307b8e92eb8c68cd331766"
-  integrity sha512-BibsBsxk7VnqjecYcLu4DnY8067BJAvsKa6zX5DPvkwdK8YS24ZoczxmwlpzMFELUp33sbDfmB1wI/e3wgfh6Q==
+stream-chat@^8.57.3:
+  version "8.57.3"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.57.3.tgz#1ef7eae9752175e7678e64193d420249becd57d6"
+  integrity sha512-/DNoo4PNWk6ye8ZBcp64aCpy3rNeFq0BxK8vYOn8mBpfVqMKznbLi/W06+OE2DMsKVjuzEXrxMRIqj26r1SNAg==
   dependencies:
     "@babel/runtime" "^7.16.3"
     "@types/jsonwebtoken" "~9.0.0"
