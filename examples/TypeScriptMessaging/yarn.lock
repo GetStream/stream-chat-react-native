@@ -1112,7 +1112,7 @@
     "@eslint/core" "^0.12.0"
     levn "^0.4.1"
 
-"@gorhom/bottom-sheet@^5.0.6":
+"@gorhom/bottom-sheet@^5.0.6", "@gorhom/bottom-sheet@^5.1.1":
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-5.1.1.tgz#43ecb9e7b4d4ca4b4cefdf3b6b497f7715f350bc"
   integrity sha512-Y8FiuRmeZYaP+ZGQ0axDwWrrKqVp4ByYRs1D2fTJTxHMt081MHHRQsqmZ3SK7AFp3cSID+vTqnD8w/KAASpy+w==
@@ -6951,10 +6951,10 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-stream-chat-react-native-core@6.6.4:
-  version "6.6.4"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-6.6.4.tgz#f15c518148640efa30975abf4ae5cda648d8b1ed"
-  integrity sha512-YT3SY/QHwKboEKbvpe7xermyDsvwNAxe7pbV9VZzvayu066/vTk17uYw1RCGFcLQQsnKNJj8ZFt8j0ZLql4exQ==
+stream-chat-react-native-core@6.6.5:
+  version "6.6.5"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-6.6.5.tgz#ac34a1bd2ec3b950b3bc8bc122ec826d6dd51113"
+  integrity sha512-SZyr/TlOoW+j7t4X/CXBhvQ8LN8AgFg4vR6UfcP151fYvf4uwMrzmMN1T/IBsUBr30Kjmr54ik/dH0Z+tnLX2w==
   dependencies:
     "@gorhom/bottom-sheet" "^5.0.6"
     dayjs "1.10.5"
