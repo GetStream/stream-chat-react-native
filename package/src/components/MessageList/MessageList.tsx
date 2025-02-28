@@ -443,7 +443,7 @@ const MessageListWithContext = <
    * FlatList doesn't accept changeable function for onViewableItemsChanged prop.
    * Thus useRef.
    */
-  const onViewableItemsChanged = ({
+  const unstableOnViewableItemsChanged = ({
     viewableItems,
   }: {
     viewableItems: ViewToken[] | undefined;
@@ -456,6 +456,16 @@ const MessageListWithContext = <
     }
     updateStickyUnreadIndicator(viewableItems);
   };
+
+  const onViewableItemsChanged = useRef(unstableOnViewableItemsChanged);
+  onViewableItemsChanged.current = unstableOnViewableItemsChanged;
+
+  const stableOnViwableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: ViewToken[] | undefined }) => {
+      onViewableItemsChanged.current({ viewableItems });
+    },
+    [],
+  );
 
   /**
    * Resets the pagination trackers, doing so cancels currently scheduled loading more calls
@@ -1136,7 +1146,7 @@ const MessageListWithContext = <
           onScrollEndDrag={onScrollEndDrag}
           onScrollToIndexFailed={onScrollToIndexFailedRef.current}
           onTouchEnd={dismissImagePicker}
-          onViewableItemsChanged={onViewableItemsChanged}
+          onViewableItemsChanged={stableOnViwableItemsChanged}
           ref={refCallback}
           renderItem={renderItem}
           scrollEnabled={overlay === 'none'}
