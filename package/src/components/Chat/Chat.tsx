@@ -187,8 +187,11 @@ const ChatWithContext = <
 
   useEffect(() => {
     if (client) {
+      const sdkName = (SDK ? SDK.replace('stream-chat-', '') : 'react-native') as
+        | 'react-native'
+        | 'expo';
       client.sdkIdentifier = {
-        name: SDK.replace('stream-chat-', '') as 'react-native' | 'expo',
+        name: sdkName,
         version,
       };
       client.deviceIdentifier = { os: `${Platform.OS} ${Platform.Version}` };
