@@ -187,7 +187,14 @@ const ChatWithContext = <
 
   useEffect(() => {
     if (client) {
-      client.setUserAgent(`${SDK}-${Platform.OS}-${version}`);
+      const sdkName = (SDK ? SDK.replace('stream-chat-', '') : 'react-native') as
+        | 'react-native'
+        | 'expo';
+      client.sdkIdentifier = {
+        name: sdkName,
+        version,
+      };
+      client.deviceIdentifier = { os: `${Platform.OS} ${Platform.Version}` };
       // This is to disable recovery related logic in js client, since we handle it in this SDK
       client.recoverStateOnReconnect = false;
       client.persistUserOnConnectionFailure = enableOfflineSupport;
