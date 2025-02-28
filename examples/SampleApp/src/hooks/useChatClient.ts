@@ -19,60 +19,6 @@ const requestNotificationPermission = async () => {
   console.log('Permission Status', { authStatus, isEnabled });
 };
 
-messaging.setBackgroundMessageHandler(async (remoteMessage) => {
-  if (remoteMessage.data?.type !== 'message.new') {
-    // handled through the new push system, we don't need this
-    return;
-  }
-  const messageId = remoteMessage.data?.id as string;
-  if (!messageId) {
-    return;
-  }
-  const config = await AsyncStore.getItem<LoginConfig | null>(
-    '@stream-rn-sampleapp-login-config',
-    null,
-  );
-  if (!config) {
-    return;
-  }
-
-  const client = StreamChat.getInstance(config.apiKey);
-
-  const user = {
-    id: config.userId,
-    image: config.userImage,
-    name: config.userName,
-  };
-
-  await client._setToken(user, config.userToken);
-  const message = await client.getMessage(messageId);
-
-  // create the android channel to send the notification to
-  const channelId = await notifee.createChannel({
-    id: 'chat-messages',
-    name: 'Chat Messages',
-  });
-
-  if (message.message.user?.name && message.message.text && !remoteMessage.notification) {
-    const { stream, ...rest } = remoteMessage.data ?? {};
-    const data = {
-      ...rest,
-      ...((stream as unknown as Record<string, string> | undefined) ?? {}), // extract and merge stream object if present
-    };
-    await notifee.displayNotification({
-      android: {
-        channelId,
-        pressAction: {
-          id: 'default',
-        },
-      },
-      title: 'New message from ' + message.message.user.name,
-      body: message.message.text,
-      data,
-    });
-  }
-});
-
 const requestAndroidPermission = async () => {
   if (Platform.OS === 'android' && Platform.Version >= 33) {
     const result = await PermissionsAndroid.request(
@@ -148,7 +94,6 @@ export const useChatClient = () => {
       });
       // show notifications when on foreground
       const unsubscribeForegroundMessageReceive = messaging.onMessage(async (remoteMessage) => {
-        const notificationType = remoteMessage.data?.type;
         const { stream, ...rest } = remoteMessage.data ?? {};
         const data = {
           ...rest,
@@ -158,41 +103,24 @@ export const useChatClient = () => {
           id: 'foreground',
           name: 'Foreground Messages',
         });
-        if (notificationType === 'message.new') {
-          const messageId = remoteMessage.data?.id;
-          if (!messageId) {
-            return;
-          }
-          const message = await client.getMessage(messageId as string);
-          if (message.message.user?.name && message.message.text) {
-            // create the android channel to send the notification to
-            // display the notification on foreground
-            await notifee.displayNotification({
-              android: {
-                channelId,
-                pressAction: {
-                  id: 'default',
-                },
+        // create the android channel to send the notification to
+        // display the notification on foreground
+        const notification = remoteMessage.notification ?? {};
+        const body = (data.body ?? notification.body) as string;
+        const title = (data.title ?? notification.title) as string;
+
+        if (body && title) {
+          await notifee.displayNotification({
+            android: {
+              channelId,
+              pressAction: {
+                id: 'default',
               },
-              body: message.message.text,
-              title: 'New message from ' + message.message.user.name,
-              data,
-            });
-          }
-        } else {
-          if (data.body && data.title) {
-            await notifee.displayNotification({
-              android: {
-                channelId,
-                pressAction: {
-                  id: 'default',
-                },
-              },
-              body: data.body as string,
-              title: data.title as string,
-              data,
-            });
-          }
+            },
+            body,
+            title,
+            data,
+          });
         }
       });
 
