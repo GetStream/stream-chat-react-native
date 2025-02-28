@@ -7602,6 +7602,21 @@ stream-chat@^8.56.1:
     jsonwebtoken "~9.0.0"
     ws "^7.5.10"
 
+stream-chat@^8.57.2:
+  version "8.57.2"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.57.2.tgz#28a2f91de460738d57307b8e92eb8c68cd331766"
+  integrity sha512-BibsBsxk7VnqjecYcLu4DnY8067BJAvsKa6zX5DPvkwdK8YS24ZoczxmwlpzMFELUp33sbDfmB1wI/e3wgfh6Q==
+  dependencies:
+    "@babel/runtime" "^7.16.3"
+    "@types/jsonwebtoken" "~9.0.0"
+    "@types/ws" "^7.4.0"
+    axios "^1.6.0"
+    base64-js "^1.5.1"
+    form-data "^4.0.0"
+    isomorphic-ws "^4.0.1"
+    jsonwebtoken "~9.0.0"
+    ws "^7.5.10"
+
 strict-uri-encode@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/strict-uri-encode/-/strict-uri-encode-2.0.0.tgz#b9c7330c7042862f6b142dc274bbcc5866ce3546"
