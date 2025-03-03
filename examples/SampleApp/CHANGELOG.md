@@ -1,5 +1,20 @@
 # Change Log
 
+## [2.5.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v2.4.1...sampleapp@v2.5.0) (2025-03-03)
+
+
+### Features
+
+* add the ability to override pn provider names ([#2981](https://github.com/GetStream/stream-chat-react-native/issues/2981)) ([922b693](https://github.com/GetStream/stream-chat-react-native/commit/922b6938d688b47037cacf5a55cec678087b38df))
+
+
+### Bug Fixes
+
+* bump dependencies, add new user agent functionality ([#2987](https://github.com/GetStream/stream-chat-react-native/issues/2987)) ([a6449a1](https://github.com/GetStream/stream-chat-react-native/commit/a6449a1b82788cfbe4e871980a4e68736b58561c))
+* bump stream-chat for user agent hotfix ([#2988](https://github.com/GetStream/stream-chat-react-native/issues/2988)) ([7ef7eac](https://github.com/GetStream/stream-chat-react-native/commit/7ef7eacd08b648fe706e77a0d7bfe11419a7ff29))
+* make android provide overrides for firebase ([#2982](https://github.com/GetStream/stream-chat-react-native/issues/2982)) ([e41f73a](https://github.com/GetStream/stream-chat-react-native/commit/e41f73a89edbd766c2bbe0ec49a5ff1c3ee713ce))
+* pn integration changes for new pn update ([#2984](https://github.com/GetStream/stream-chat-react-native/issues/2984)) ([a058ab7](https://github.com/GetStream/stream-chat-react-native/commit/a058ab7a8e9a5882a6ae03f395893bf68fa91339))
+
 ### [2.4.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v2.4.0...sampleapp@v2.4.1) (2025-02-25)
 
 
