@@ -4,6 +4,10 @@ import { FlatList, View } from 'react-native';
 import mockRNCNetInfo from '@react-native-community/netinfo/jest/netinfo-mock.js';
 
 import { registerNativeHandlers } from './src/native';
+import { configure } from 'reassure';
+
+// For performance tests using reassure
+configure({ testingLibrary: 'react-native' });
 
 // eslint-disable-next-line no-underscore-dangle
 
