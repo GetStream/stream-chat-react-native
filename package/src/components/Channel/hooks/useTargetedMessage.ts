@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 
 export const useTargetedMessage = (messageId?: string) => {
-  const clearTargetedMessageCall = useRef<ReturnType<typeof setTimeout>>();
+  const clearTargetedMessageCall = useRef<ReturnType<typeof setTimeout>>(undefined);
   const [targetedMessage, setTargetedMessage] = useState<string | undefined>(messageId);
   const [highlightedMessageId, setHighlightedMessageId] = useState<string | undefined>();
-  const prevTargetedMessageRef = useRef<string>();
+  const prevTargetedMessageRef = useRef<string>(undefined);
 
   useEffect(() => {
     prevTargetedMessageRef.current = targetedMessage;

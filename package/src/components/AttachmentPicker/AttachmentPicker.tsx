@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { BackHandler, Keyboard, Platform, StyleSheet } from 'react-native';
 
-import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
+import BottomSheetOriginal from '@gorhom/bottom-sheet';
+import type { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
+
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
@@ -17,6 +19,8 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useScreenDimensions } from '../../hooks/useScreenDimensions';
 import { getPhotos, oniOS14GalleryLibrarySelectionChange } from '../../native';
 import type { Asset } from '../../types/types';
+import { BottomSheet } from '../BottomSheetCompatibility/BottomSheet';
+import { BottomSheetFlatList } from '../BottomSheetCompatibility/BottomSheetFlatList';
 
 dayjs.extend(duration);
 
@@ -62,7 +66,7 @@ export type AttachmentPickerProps = Pick<
 };
 
 export const AttachmentPicker = React.forwardRef(
-  (props: AttachmentPickerProps, ref: React.ForwardedRef<BottomSheet>) => {
+  (props: AttachmentPickerProps, ref: React.ForwardedRef<BottomSheetOriginal>) => {
     const {
       AttachmentPickerBottomSheetHandle,
       attachmentPickerBottomSheetHandleHeight,
@@ -99,7 +103,7 @@ export const AttachmentPicker = React.forwardRef(
     const fullScreenHeight = screenVh(100);
 
     const [currentIndex, setCurrentIndex] = useState(-1);
-    const endCursorRef = useRef<string>();
+    const endCursorRef = useRef<string>(undefined);
     const [photoError, setPhotoError] = useState(false);
     const [iOSLimited, setIosLimited] = useState(false);
     const hasNextPageRef = useRef(true);
@@ -266,17 +270,23 @@ export const AttachmentPicker = React.forwardRef(
      */
     const snapPoints = [initialSnapPoint, finalSnapPoint];
 
+    const MemoizedAttachmentPickerBottomSheetHandle = useCallback(
+      (props: BottomSheetHandleProps) =>
+        /**
+         * using `null` here instead of `style={{ opacity: photoError ? 0 : 1 }}`
+         * as opacity is not an allowed style
+         */
+        !photoError && AttachmentPickerBottomSheetHandle ? (
+          <AttachmentPickerBottomSheetHandle {...props} />
+        ) : null,
+      [AttachmentPickerBottomSheetHandle, photoError],
+    );
+
     return (
       <>
         <BottomSheet
           enablePanDownToClose={true}
-          handleComponent={
-            /**
-             * using `null` here instead of `style={{ opacity: photoError ? 0 : 1 }}`
-             * as opacity is not an allowed style
-             */
-            photoError ? null : AttachmentPickerBottomSheetHandle
-          }
+          handleComponent={MemoizedAttachmentPickerBottomSheetHandle}
           // @ts-ignore
           handleHeight={handleHeight}
           index={-1}

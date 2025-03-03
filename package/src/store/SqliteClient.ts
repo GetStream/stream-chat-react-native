@@ -1,5 +1,5 @@
-import type { DB, OPSQLite } from '@op-engineering/op-sqlite';
-let sqlite: typeof OPSQLite;
+import type { DB, OPSQLiteProxy } from '@op-engineering/op-sqlite';
+let sqlite: OPSQLiteProxy;
 
 try {
   sqlite = require('@op-engineering/op-sqlite');
