@@ -15,7 +15,9 @@ export const upsertChannelDataFromChannel = async <
   flush?: boolean;
 }) => {
   const storableChannel = mapChannelToStorable(channel);
-  if (!storableChannel) return;
+  if (!storableChannel) {
+    return;
+  }
   const query = createUpsertQuery('channels', storableChannel);
   if (flush) {
     await SqliteClient.executeSqlBatch([query]);

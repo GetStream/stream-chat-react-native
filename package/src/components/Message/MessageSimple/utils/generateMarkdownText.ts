@@ -5,7 +5,9 @@ import { parseLinksFromText } from './parseLinks';
 import { escapeRegExp } from '../../../../utils/utils';
 
 export const generateMarkdownText = (text?: string) => {
-  if (!text) return null;
+  if (!text) {
+    return null;
+  }
 
   // Trim the extra spaces from the text.
   let resultText = text.trim();
@@ -35,13 +37,17 @@ export const generateMarkdownText = (text?: string) => {
 
   // Escape the " and ' characters, except in code blocks where we deem this allowed.
   resultText = resultText.replace(/(```[\s\S]*?```|`.*?`)|[<"']/g, (match, code) => {
-    if (code) return code;
+    if (code) {
+      return code;
+    }
     return `\\${match}`;
   });
 
   // Remove whitespaces that come directly after newlines except in code blocks where we deem this allowed.
   resultText = resultText.replace(/(```[\s\S]*?```|`.*?`)|\n[ ]{2,}/g, (_, code) => {
-    if (code) return code;
+    if (code) {
+      return code;
+    }
     return '\n';
   });
 

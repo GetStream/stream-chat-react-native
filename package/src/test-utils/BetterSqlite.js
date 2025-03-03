@@ -14,7 +14,7 @@ export class BetterSqlite {
   };
 
   static getTables = async () => {
-    const tablesInDb = await this.db.pragma(`table_list;`);
+    const tablesInDb = await this.db.pragma('table_list;');
     return tablesInDb;
   };
 

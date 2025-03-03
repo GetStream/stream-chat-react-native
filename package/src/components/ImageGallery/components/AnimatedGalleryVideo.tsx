@@ -91,8 +91,11 @@ export const AnimatedGalleryVideo = React.memo(
     };
 
     const onBuffer = ({ isBuffering }: { isBuffering: boolean }) => {
-      if (isBuffering) setOpacity(1);
-      else setOpacity(0);
+      if (isBuffering) {
+        setOpacity(1);
+      } else {
+        setOpacity(0);
+      }
     };
 
     const onPlayBackStatusUpdate = (playbackStatus: PlaybackStatus) => {

@@ -269,7 +269,7 @@ describe('MessageInput', () => {
     const { setEditingState } = useMessagesContext();
     useEffect(() => {
       setEditingState({ id: 'some-message-id' });
-    }, []);
+    }, [setEditingState]);
     return <MessageInput />;
   };
 

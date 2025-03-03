@@ -550,7 +550,7 @@ const transpose = (matrix: SingleASTNode[][]) =>
 
 const MarkdownTable = ({ node, output, state, styles }: MarkdownTableProps) => {
   const content = useMemo(() => {
-    const nodeContent = [node?.header, ...node?.cells];
+    const nodeContent = [node?.header, ...(node?.cells ?? null)];
     return transpose(nodeContent);
   }, [node?.cells, node?.header]);
   const columns = content?.map((column, idx) => (

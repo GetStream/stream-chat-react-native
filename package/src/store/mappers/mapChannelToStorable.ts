@@ -11,7 +11,9 @@ export const mapChannelToStorable = <
 >(
   channel: Channel<StreamChatGenerics>,
 ): TableRow<'channels'> | undefined => {
-  if (!channel.data) return;
+  if (!channel.data) {
+    return;
+  }
   const {
     auto_translation_enabled,
     auto_translation_language,

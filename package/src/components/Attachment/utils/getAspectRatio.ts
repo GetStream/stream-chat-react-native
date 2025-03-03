@@ -17,7 +17,9 @@ export function getAspectRatio<
     );
   }
 
-  if (!attachment.original_width || !attachment.original_height) return 1;
+  if (!attachment.original_width || !attachment.original_height) {
+    return 1;
+  }
 
   return attachment.original_width / attachment.original_height;
 }

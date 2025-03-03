@@ -17,7 +17,7 @@ describe('MessageUserReactionsAvatar', () => {
     );
 
     // Check if the mocked Avatar component is rendered with correct props
-    expect(queryByTestId(`avatar-image`)).toBeTruthy();
+    expect(queryByTestId('avatar-image')).toBeTruthy();
   });
 
   it('should render Avatar with correct image, name, and custom size', () => {
@@ -30,6 +30,6 @@ describe('MessageUserReactionsAvatar', () => {
     );
 
     // Check if the mocked Avatar component is rendered with correct custom size
-    expect(queryByTestId(`avatar-image`)).toBeTruthy();
+    expect(queryByTestId('avatar-image')).toBeTruthy();
   });
 });

@@ -6,7 +6,7 @@ type OverlayBackdropProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-export const OverlayBackdrop = (props: OverlayBackdropProps): JSX.Element => {
+export const OverlayBackdrop = (props: OverlayBackdropProps): React.ReactNode => {
   const { style = {} } = props;
   const {
     theme: {

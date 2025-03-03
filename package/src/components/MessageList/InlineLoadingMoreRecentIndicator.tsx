@@ -45,7 +45,9 @@ const areEqual = (
   const { loadingMoreRecent: nextLoadingMoreRecent } = nextProps;
 
   const loadingMoreRecentEqual = prevLoadingMoreRecent === nextLoadingMoreRecent;
-  if (!loadingMoreRecentEqual) return false;
+  if (!loadingMoreRecentEqual) {
+    return false;
+  }
 
   return true;
 };

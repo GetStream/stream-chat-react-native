@@ -359,7 +359,9 @@ const MessageInputWithContext = <
       return !uploadedImage;
     });
 
-    if (imageToUpload) uploadNewImage(imageToUpload);
+    if (imageToUpload) {
+      uploadNewImage(imageToUpload);
+    }
   };
 
   const removeImagesHandler = () => {
@@ -381,7 +383,9 @@ const MessageInputWithContext = <
       );
       return !uploadedFile;
     });
-    if (fileToUpload) await uploadNewFile(fileToUpload);
+    if (fileToUpload) {
+      await uploadNewFile(fileToUpload);
+    }
   };
 
   const removeFilesHandler = () => {
@@ -411,7 +415,9 @@ const MessageInputWithContext = <
       }
     };
     // If image picker is not available, don't do anything
-    if (!isImageMediaLibraryAvailable()) return;
+    if (!isImageMediaLibraryAvailable()) {
+      return;
+    }
     uploadOrRemoveImage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedImagesLength]);
@@ -595,14 +601,18 @@ const MessageInputWithContext = <
         if (additionalTextInputProps?.onBlur) {
           additionalTextInputProps?.onBlur(event);
         }
-        if (setFocused) setFocused(false);
+        if (setFocused) {
+          setFocused(false);
+        }
         setShowMoreOptions(true);
       },
       onFocus: (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
         if (additionalTextInputProps?.onFocus) {
           additionalTextInputProps.onFocus(event);
         }
-        if (setFocused) setFocused(true);
+        if (setFocused) {
+          setFocused(true);
+        }
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -637,7 +647,9 @@ const MessageInputWithContext = <
       }
 
       const imagesAndFiles = [...imageUploads, ...fileUploads];
-      if (imagesAndFiles.length === 0) return false;
+      if (imagesAndFiles.length === 0) {
+        return false;
+      }
     }
 
     return true;
@@ -990,41 +1002,61 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   } = nextProps;
 
   const tEqual = prevT === nextT;
-  if (!tEqual) return false;
+  if (!tEqual) {
+    return false;
+  }
 
   const pollCreationInputPropsEqual =
     prevOpenPollCreationDialog === nextOpenPollCreationDialog &&
     prevClosePollCreationDialog === nextClosePollCreationDialog &&
     prevShowPollCreationDialog === nextShowPollCreationDialog;
-  if (!pollCreationInputPropsEqual) return false;
+  if (!pollCreationInputPropsEqual) {
+    return false;
+  }
 
   const additionalTextInputPropsEven =
     prevAdditionalTextInputProps === nextAdditionalTextInputProps;
-  if (!additionalTextInputPropsEven) return false;
+  if (!additionalTextInputPropsEven) {
+    return false;
+  }
 
   const asyncMessagesEnabledEqual = prevAsyncMessagesEnabled === nextAsyncMessagesEnabled;
-  if (!asyncMessagesEnabledEqual) return false;
+  if (!asyncMessagesEnabledEqual) {
+    return false;
+  }
 
   const asyncMessagesLockDistanceEqual =
     prevAsyncMessagesLockDistance === nextAsyncMessagesLockDistance;
-  if (!asyncMessagesLockDistanceEqual) return false;
+  if (!asyncMessagesLockDistanceEqual) {
+    return false;
+  }
 
   const asyncMessagesMinimumPressDurationEqual =
     prevAsyncMessagesMinimumPressDuration === nextAsyncMessagesMinimumPressDuration;
-  if (!asyncMessagesMinimumPressDurationEqual) return false;
+  if (!asyncMessagesMinimumPressDurationEqual) {
+    return false;
+  }
 
   const asyncMessagesSlideToCancelDistanceEqual =
     prevAsyncMessagesSlideToCancelDistance === nextAsyncMessagesSlideToCancelDistance;
-  if (!asyncMessagesSlideToCancelDistanceEqual) return false;
+  if (!asyncMessagesSlideToCancelDistanceEqual) {
+    return false;
+  }
 
   const editingEqual = !!prevEditing === !!nextEditing;
-  if (!editingEqual) return false;
+  if (!editingEqual) {
+    return false;
+  }
 
   const imageUploadsEqual = prevImageUploads.length === nextImageUploads.length;
-  if (!imageUploadsEqual) return false;
+  if (!imageUploadsEqual) {
+    return false;
+  }
 
   const giphyActiveEqual = prevGiphyActive === nextGiphyActive;
-  if (!giphyActiveEqual) return false;
+  if (!giphyActiveEqual) {
+    return false;
+  }
 
   const quotedMessageEqual =
     !!prevQuotedMessage &&
@@ -1033,48 +1065,70 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     typeof nextQuotedMessage !== 'boolean'
       ? prevQuotedMessage.id === nextQuotedMessage.id
       : !!prevQuotedMessage === !!nextQuotedMessage;
-  if (!quotedMessageEqual) return false;
+  if (!quotedMessageEqual) {
+    return false;
+  }
 
   const sendingEqual = prevSending.current === nextSending.current;
-  if (!sendingEqual) return false;
+  if (!sendingEqual) {
+    return false;
+  }
 
   const showMoreOptionsEqual = prevShowMoreOptions === nextShowMoreOptions;
-  if (!showMoreOptionsEqual) return false;
+  if (!showMoreOptionsEqual) {
+    return false;
+  }
 
   const isOnlineEqual = prevIsOnline === nextIsOnline;
-  if (!isOnlineEqual) return false;
+  if (!isOnlineEqual) {
+    return false;
+  }
 
   const isValidMessageEqual = prevIsValidMessage() === nextIsValidMessage();
-  if (!isValidMessageEqual) return false;
+  if (!isValidMessageEqual) {
+    return false;
+  }
 
   const asyncUploadsEqual = Object.keys(prevAsyncUploads).every(
     (key) =>
       prevAsyncUploads[key].state === nextAsyncUploads[key].state &&
       prevAsyncUploads[key].url === nextAsyncUploads[key].url,
   );
-  if (!asyncUploadsEqual) return false;
+  if (!asyncUploadsEqual) {
+    return false;
+  }
 
   const fileUploadsEqual = prevFileUploads.length === nextFileUploads.length;
-  if (!fileUploadsEqual) return false;
+  if (!fileUploadsEqual) {
+    return false;
+  }
 
   const mentionedUsersEqual = prevMentionedUsers.length === nextMentionedUsers.length;
-  if (!mentionedUsersEqual) return false;
+  if (!mentionedUsersEqual) {
+    return false;
+  }
 
   const suggestionsEqual =
     !!prevSuggestions?.data && !!nextSuggestions?.data
       ? prevSuggestions.data.length === nextSuggestions.data.length &&
         prevSuggestions.data.every(({ name }, index) => name === nextSuggestions.data[index].name)
       : !!prevSuggestions === !!nextSuggestions;
-  if (!suggestionsEqual) return false;
+  if (!suggestionsEqual) {
+    return false;
+  }
 
   const threadEqual =
     prevThread?.id === nextThread?.id &&
     prevThread?.text === nextThread?.text &&
     prevThread?.reply_count === nextThread?.reply_count;
-  if (!threadEqual) return false;
+  if (!threadEqual) {
+    return false;
+  }
 
   const threadListEqual = prevThreadList === nextThreadList;
-  if (!threadListEqual) return false;
+  if (!threadListEqual) {
+    return false;
+  }
 
   return true;
 };

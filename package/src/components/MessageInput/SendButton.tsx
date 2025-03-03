@@ -66,13 +66,19 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   } = nextProps;
 
   const disabledEqual = prevDisabled === nextDisabled;
-  if (!disabledEqual) return false;
+  if (!disabledEqual) {
+    return false;
+  }
 
   const giphyActiveEqual = prevGiphyActive === nextGiphyActive;
-  if (!giphyActiveEqual) return false;
+  if (!giphyActiveEqual) {
+    return false;
+  }
 
   const sendMessageEqual = prevSendMessage === nextSendMessage;
-  if (!sendMessageEqual) return false;
+  if (!sendMessageEqual) {
+    return false;
+  }
 
   return true;
 };

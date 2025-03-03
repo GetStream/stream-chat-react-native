@@ -44,7 +44,9 @@ export function getResizedImageUrl({
     const isResizableUrl =
       resizableCDNHosts?.some((rCDNh) => url.includes(rCDNh)) && originalHeight && originalWidth;
 
-    if (!isResizableUrl || (!height && !width)) return url;
+    if (!isResizableUrl || (!height && !width)) {
+      return url;
+    }
 
     if (height) {
       parsedUrl.searchParams.set('h', `${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`);

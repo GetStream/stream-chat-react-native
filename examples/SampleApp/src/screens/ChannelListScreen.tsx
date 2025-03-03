@@ -1,5 +1,13 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  FlatList,
+  FlatListProps,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import { ChannelList, CircleClose, Search, useTheme } from 'stream-chat-react-native';
 import { Channel } from 'stream-chat';
@@ -108,24 +116,33 @@ export const ChannelListScreen: React.FC = () => {
     </View>
   );
 
-  const additionalFlatListProps = useMemo(() => ({
-    getItemLayout: (_, index) => ({
-      index,
-      length: 65,
-      offset: 65 * index,
+  const additionalFlatListProps = useMemo<Partial<FlatListProps<Channel<StreamChatGenerics>>>>(
+    () => ({
+      getItemLayout: (_: unknown, index: number) => ({
+        index,
+        length: 65,
+        offset: 65 * index,
+      }),
+      keyboardDismissMode: 'on-drag',
     }),
-    keyboardDismissMode: 'on-drag',
-  }), []);
+    [],
+  );
 
-  const onSelect = useCallback((channel) => {
-    navigation.navigate('ChannelScreen', {
-      channel,
-    });
-  }, [navigation]);
+  const onSelect = useCallback(
+    (channel: Channel) => {
+      navigation.navigate('ChannelScreen', {
+        channel,
+      });
+    },
+    [navigation],
+  );
 
-  const setScrollRef = useCallback( () => (ref: FlatList<Channel<StreamChatGenerics>> | null) => {
-    scrollRef.current = ref;
-  }, []);
+  const setScrollRef = useCallback(
+    () => (ref: FlatList<Channel<StreamChatGenerics>> | null) => {
+      scrollRef.current = ref;
+    },
+    [],
+  );
 
   if (!chatClient) {
     return null;

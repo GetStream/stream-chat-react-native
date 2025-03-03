@@ -1,5 +1,3 @@
-/* eslint-disable jest/no-export */
-/* eslint-disable no-underscore-dangle */
 import React, { useContext, useEffect, useState } from 'react';
 import { View } from 'react-native';
 
@@ -137,9 +135,11 @@ export const OptimisticUpdates = () => {
         };
 
         call();
-      }, []);
+      }, [callback, ctx]);
 
-      if (!ready) return null;
+      if (!ready) {
+        return null;
+      }
 
       return children;
     };
@@ -364,8 +364,8 @@ export const OptimisticUpdates = () => {
         expect(pendingTasksRows.length).toBe(2);
       });
 
-      chatClient.deleteMessage = jest.fn();
-      channel.sendReaction = jest.fn();
+      jest.spyOn(chatClient, 'deleteMessage').mockImplementation();
+      jest.spyOn(channel, 'sendReaction').mockImplementation();
 
       act(() => dispatchConnectionChangedEvent(chatClient, true));
 

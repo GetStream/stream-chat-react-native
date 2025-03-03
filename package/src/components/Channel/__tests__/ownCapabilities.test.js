@@ -120,7 +120,7 @@ describe('Own capabilities', () => {
       expect(!!queryByLabelText('banUser action list item')).toBeFalsy();
     });
 
-    it(`should override capability from "overrideOwnCapability.banChannelMembers" prop`, async () => {
+    it('should override capability from "overrideOwnCapability.banChannelMembers" prop', async () => {
       await generateChannelWithCapabilities([allOwnCapabilities.banChannelMembers]);
 
       const { queryByLabelText } = await renderChannelAndOpenMessageActionsList(receivedMessage, {

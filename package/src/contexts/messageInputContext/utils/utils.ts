@@ -44,7 +44,16 @@ export const isUploadAllowed = ({ config, file }: CheckUploadPermissionsParams) 
   }
 
   if (allowed_mime_types?.length) {
-    if (file.name) {
+    if (file.mimeType) {
+      const allowed = allowed_mime_types.some(
+        (mimeType: string) =>
+          file.mimeType && file.mimeType.toLowerCase() === mimeType.toLowerCase(),
+      );
+
+      if (!allowed) {
+        return false;
+      }
+    } else if (file.name) {
       const fileMimeType = lookup(file.name) as string;
       const allowed = allowed_mime_types.some(
         (mimeType: string) => fileMimeType.toLowerCase() === mimeType.toLowerCase(),
@@ -57,7 +66,16 @@ export const isUploadAllowed = ({ config, file }: CheckUploadPermissionsParams) 
   }
 
   if (blocked_mime_types?.length) {
-    if (file.name) {
+    if (file.mimeType) {
+      const blocked = blocked_mime_types.some(
+        (mimeType: string) =>
+          file.mimeType && file.mimeType.toLowerCase() === mimeType.toLowerCase(),
+      );
+
+      if (blocked) {
+        return false;
+      }
+    } else if (file.name) {
       const fileMimeType = lookup(file.name) as string;
       const blocked = blocked_mime_types.some(
         (mimeType: string) => fileMimeType.toLowerCase() === mimeType.toLowerCase(),

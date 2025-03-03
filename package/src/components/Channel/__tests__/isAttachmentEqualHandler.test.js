@@ -51,7 +51,9 @@ describe('isAttachmentEqualHandler', () => {
   const getMessageWithCustomFields = () => {
     const isAttachmentEqualHandler = (prevProps, nextProps) => {
       const propsEqual = prevProps.customField === nextProps.customField;
-      if (!propsEqual) return false;
+      if (!propsEqual) {
+        return false;
+      }
       return true;
     };
 

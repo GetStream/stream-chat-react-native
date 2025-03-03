@@ -775,8 +775,9 @@ const ChannelWithContext = <
         event.type.startsWith('poll.') ||
         event.type === 'user.watching.start' ||
         event.type === 'user.watching.stop'
-      )
+      ) {
         return;
+      }
 
       // If the event is typing.start or typing.stop, set the typing state
       const isTypingEvent = event.type === 'typing.start' || event.type === 'typing.stop';
@@ -797,7 +798,9 @@ const ChannelWithContext = <
 
       if (event.type === 'notification.mark_unread') {
         setChannelUnreadState((prev) => {
-          if (!(event.last_read_at && event.user)) return prev;
+          if (!(event.last_read_at && event.user)) {
+            return prev;
+          }
           return {
             first_unread_message_id: event.first_unread_message_id,
             last_read: new Date(event.last_read_at),
@@ -823,7 +826,9 @@ const ChannelWithContext = <
     const initChannel = async () => {
       setLastRead(new Date());
       const unreadCount = channel.countUnread();
-      if (!channel || !shouldSyncChannel || channel.offlineMode) return;
+      if (!channel || !shouldSyncChannel || channel.offlineMode) {
+        return;
+      }
       let errored = false;
 
       if (!channel.initialized || !channel.state.isUpToDate) {
@@ -897,7 +902,9 @@ const ChannelWithContext = <
    */
   useEffect(() => {
     const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
-      if (channel.cid === event.cid) setRead(channel);
+      if (channel.cid === event.cid) {
+        setRead(channel);
+      }
     };
 
     const { unsubscribe } = client.on('notification.mark_read', handleEvent);
@@ -965,7 +972,9 @@ const ChannelWithContext = <
   );
 
   const reloadThread = async () => {
-    if (!channel || !thread?.id) return;
+    if (!channel || !thread?.id) {
+      return;
+    }
     setThreadLoadingMore(true);
     try {
       const parentID = thread.id;
@@ -998,7 +1007,9 @@ const ChannelWithContext = <
   };
 
   const resyncChannel = async () => {
-    if (!channel || syncingChannelRef.current) return;
+    if (!channel || syncingChannelRef.current) {
+      return;
+    }
     syncingChannelRef.current = true;
     setError(false);
 
@@ -1016,7 +1027,7 @@ const ChannelWithContext = <
         created_at: message.created_at.toString(),
         pinned_at: message.pinned_at?.toString(),
         updated_at: message.updated_at?.toString(),
-      } as unknown as MessageResponse<StreamChatGenerics>);
+      }) as unknown as MessageResponse<StreamChatGenerics>;
 
     try {
       if (!thread) {
@@ -1112,7 +1123,9 @@ const ChannelWithContext = <
 
   const loadChannelAroundMessage: ChannelContextValue<StreamChatGenerics>['loadChannelAroundMessage'] =
     async ({ messageId: messageIdToLoadAround }): Promise<void> => {
-      if (!messageIdToLoadAround) return;
+      if (!messageIdToLoadAround) {
+        return;
+      }
       try {
         if (thread) {
           setThreadLoadingMore(true);
@@ -1149,7 +1162,9 @@ const ChannelWithContext = <
     updatedMessage,
     extraState = {},
   ) => {
-    if (!channel) return;
+    if (!channel) {
+      return;
+    }
 
     channel.state.addMessageSorted(updatedMessage, true);
     copyMessagesStateFromChannel(channel);
@@ -1330,7 +1345,9 @@ const ChannelWithContext = <
         'user',
       ]);
       const { attachments, id, mentioned_users, parent_id, text } = updatedMessage;
-      if (!channel.id) return;
+      if (!channel.id) {
+        return;
+      }
 
       const mentionedUserIds = mentioned_users?.map((user) => user.id) || [];
 
@@ -1952,7 +1969,9 @@ const ChannelWithContext = <
   });
 
   // TODO: replace the null view with appropriate message. Currently this is waiting a design decision.
-  if (deleted) return null;
+  if (deleted) {
+    return null;
+  }
 
   if (!channel || (error && channelMessagesState.messages?.length === 0)) {
     return <LoadingErrorIndicator error={error} listType='message' retry={reloadChannel} />;

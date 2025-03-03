@@ -109,10 +109,14 @@ export class DBSyncManager {
   >(
     client: StreamChat<StreamChatGenerics>,
   ) => {
-    if (!this.client?.user) return;
+    if (!this.client?.user) {
+      return;
+    }
     const cids = await getAllChannelIds();
     // If there are no channels, then there is no need to sync.
-    if (cids.length === 0) return;
+    if (cids.length === 0) {
+      return;
+    }
 
     const lastSyncedAt = await getLastSyncedAt({
       currentUserId: this.client.user.id,
@@ -153,7 +157,9 @@ export class DBSyncManager {
   };
 
   static syncAndExecutePendingTasks = async () => {
-    if (!this.client) return;
+    if (!this.client) {
+      return;
+    }
 
     await this.executePendingTasks(this.client);
     await this.sync(this.client);
@@ -220,7 +226,9 @@ export class DBSyncManager {
   ) => {
     const queue = await getPendingTasks();
     for (const task of queue) {
-      if (!task.id) continue;
+      if (!task.id) {
+        continue;
+      }
 
       try {
         await this.executeTask<StreamChatGenerics>({
@@ -247,7 +255,9 @@ export class DBSyncManager {
     const tasks = await getPendingTasks(conditions);
 
     for (const task of tasks) {
-      if (!task.id) continue;
+      if (!task.id) {
+        continue;
+      }
 
       await deletePendingTask({
         id: task.id,

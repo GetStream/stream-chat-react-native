@@ -1,5 +1,27 @@
 # Change Log
 
+### [6.6.5](https://github.com/GetStream/stream-chat-react-native/compare/v6.6.4...v6.6.5) (2025-02-25)
+
+
+### Bug Fixes
+
+* pin preferredAssetRepresentationMode to current ([#2979](https://github.com/GetStream/stream-chat-react-native/issues/2979)) ([bc3b539](https://github.com/GetStream/stream-chat-react-native/commit/bc3b5397e2ca9a938914886211f2200ffe03c09d))
+
+### [6.6.4](https://github.com/GetStream/stream-chat-react-native/compare/v6.6.3...v6.6.4) (2025-02-24)
+
+
+### Bug Fixes
+
+* upload file/image and respect app settings ([#2976](https://github.com/GetStream/stream-chat-react-native/issues/2976)) ([aa2be37](https://github.com/GetStream/stream-chat-react-native/commit/aa2be37ed8ee8c2d3fb5c9167bf36b54722d5681))
+
+### [6.6.3](https://github.com/GetStream/stream-chat-react-native/compare/v6.6.2...v6.6.3) (2025-02-21)
+
+
+### Bug Fixes
+
+* change height of bottom sheet in message menu using theme ([#2969](https://github.com/GetStream/stream-chat-react-native/issues/2969)) ([094a0e1](https://github.com/GetStream/stream-chat-react-native/commit/094a0e1472ba39ab9d18d8a4a8ccefe33be60260))
+* file upload preview state refresh when state changes ([#2970](https://github.com/GetStream/stream-chat-react-native/issues/2970)) ([776ac2c](https://github.com/GetStream/stream-chat-react-native/commit/776ac2cca47bce409e60f1a45373271b6c16e31d))
+
 ### [6.6.2](https://github.com/GetStream/stream-chat-react-native/compare/v6.6.1...v6.6.2) (2025-02-19)
 
 

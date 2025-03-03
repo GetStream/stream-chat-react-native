@@ -37,7 +37,9 @@ export const getChannelsForFilterSort = async <
 
   const channelIds = await selectChannelIdsForFilterSort({ filters, sort });
 
-  if (!channelIds) return null;
+  if (!channelIds) {
+    return null;
+  }
 
   if (channelIds.length === 0) {
     return [];

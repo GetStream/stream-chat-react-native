@@ -86,7 +86,7 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
           backgroundColor: white_smoke,
           borderColor,
           borderWidth: 1,
-          paddingVertical: !!value || !!error ? 16 : 8,
+          paddingVertical: !!value || error ? 16 : 8,
         },
       ]}
     >
@@ -102,7 +102,7 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
           {label}
         </Text>
       )}
-      {!!error && (
+      {error && (
         <Text
           style={[
             styles.labelText,
@@ -121,6 +121,7 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
         placeholder={label}
         placeholderTextColor={grey}
         returnKeyType='next'
+        numberOfLines={1}
         style={[
           styles.input,
           {
@@ -234,8 +235,9 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
                   });
                 } catch (e) {
                   Alert.alert(
-                    'Login resulted in error. Please make sure you have entered valid credentials',
+                    `Login resulted in error. Please make sure you have entered valid credentials. Error: ${(e as Error).message}`,
                   );
+                  console.warn(e);
                 }
               }}
               style={[

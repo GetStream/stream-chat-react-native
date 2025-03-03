@@ -16,7 +16,9 @@ export const useTranslatedMessage = <
 
   const translationKey: TranslationKey = `${userLanguage}_text`;
 
-  if (!message) return undefined;
+  if (!message) {
+    return undefined;
+  }
 
   if (message.i18n && translationKey in message.i18n && message.type !== 'deleted') {
     return {

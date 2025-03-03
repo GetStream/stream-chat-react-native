@@ -115,7 +115,9 @@ export const ACITriggerSettings = <
   '/': {
     dataProvider: (query, text, onReady, options = {}) => {
       try {
-        if (text.indexOf('/') !== 0) return [];
+        if (text.indexOf('/') !== 0) {
+          return [];
+        }
 
         const { limit = defaultAutoCompleteSuggestionsLimit } = options;
         const selectedCommands = !query
@@ -132,8 +134,12 @@ export const ACITriggerSettings = <
           if (query && nameB.indexOf(query) === 0) {
             nameB = `0${nameB}`;
           }
-          if (nameA < nameB) return -1;
-          if (nameA > nameB) return 1;
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
 
           return 0;
         });
@@ -160,7 +166,9 @@ export const ACITriggerSettings = <
   ':': {
     dataProvider: async (query, _, onReady) => {
       try {
-        if (!query) return [];
+        if (!query) {
+          return [];
+        }
 
         const emojis = (await emojiSearchIndex?.search(query)) ?? [];
 
@@ -196,7 +204,9 @@ export const ACITriggerSettings = <
       },
     ) => {
       try {
-        if (!query) return [];
+        if (!query) {
+          return [];
+        }
         if (options?.mentionAllAppUsersEnabled) {
           return (queryUsersDebounced as DebouncedFunc<QueryUsersFunction<StreamChatGenerics>>)(
             client,
@@ -222,7 +232,9 @@ export const ACITriggerSettings = <
           const users = getMembersAndWatchers(channel);
 
           const matchingUsers = users.filter((user) => {
-            if (!query) return true;
+            if (!query) {
+              return true;
+            }
             // Don't show current authenticated user in the list
             if (user.id === client.userID) {
               return false;

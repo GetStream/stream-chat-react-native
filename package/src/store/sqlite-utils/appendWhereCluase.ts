@@ -5,14 +5,18 @@ export const appendWhereClause = <T extends keyof Schema>(
   selectQuery: string,
   whereCondition?: Partial<{ [k in TableColumnNames<T>]: TableColumnValue | TableColumnValue[] }>,
 ): PreparedQueries => {
-  if (!whereCondition) return [selectQuery, []];
+  if (!whereCondition) {
+    return [selectQuery, []];
+  }
 
   const whereClause = [];
   const whereParams: TableColumnValue[] = [];
 
   for (const key in whereCondition) {
     const value = whereCondition[key];
-    if (value === undefined) continue;
+    if (value === undefined) {
+      continue;
+    }
 
     if (Array.isArray(value)) {
       const questionMarks = Array(Object.keys(value).length).fill('?').join(',');

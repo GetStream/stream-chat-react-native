@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import { Gesture, GestureType } from 'react-native-gesture-handler';
 import {
@@ -259,14 +259,14 @@ export const useImageGalleryGestures = ({
           currentImageHeight * offsetScale.value < screenHeight && translateY.value > 0
             ? offsetScale.value * (1 - (1 / 3) * (translateY.value / screenHeight))
             : currentImageHeight * offsetScale.value > screenHeight &&
-              translateY.value > (currentImageHeight / 2) * offsetScale.value - halfScreenHeight
-            ? offsetScale.value *
-              (1 -
-                (1 / 3) *
-                  ((translateY.value -
-                    ((currentImageHeight / 2) * offsetScale.value - halfScreenHeight)) /
-                    screenHeight))
-            : scale.value;
+                translateY.value > (currentImageHeight / 2) * offsetScale.value - halfScreenHeight
+              ? offsetScale.value *
+                (1 -
+                  (1 / 3) *
+                    ((translateY.value -
+                      ((currentImageHeight / 2) * offsetScale.value - halfScreenHeight)) /
+                      screenHeight))
+              : scale.value;
 
         overlayOpacity.value = localEvtScale;
       }
@@ -345,18 +345,21 @@ export const useImageGalleryGestures = ({
           scale.value < 1
             ? withTiming(0)
             : translateX.value > halfScreenWidth * (scale.value - 1)
-            ? withTiming(halfScreenWidth * (scale.value - 1), {
-                duration: 200,
-              })
-            : translateX.value < -halfScreenWidth * (scale.value - 1)
-            ? withTiming(-halfScreenWidth * (scale.value - 1), {
-                duration: 200,
-              })
-            : withDecay({
-                clamp: [-halfScreenWidth * (scale.value - 1), halfScreenWidth * (scale.value - 1)],
-                deceleration: 0.99,
-                velocity: -event.velocityX,
-              });
+              ? withTiming(halfScreenWidth * (scale.value - 1), {
+                  duration: 200,
+                })
+              : translateX.value < -halfScreenWidth * (scale.value - 1)
+                ? withTiming(-halfScreenWidth * (scale.value - 1), {
+                    duration: 200,
+                  })
+                : withDecay({
+                    clamp: [
+                      -halfScreenWidth * (scale.value - 1),
+                      halfScreenWidth * (scale.value - 1),
+                    ],
+                    deceleration: 0.99,
+                    velocity: -event.velocityX,
+                  });
 
         /**
          * When the pan is finished if the height is less than the screen
@@ -369,17 +372,17 @@ export const useImageGalleryGestures = ({
           currentImageHeight * scale.value < screenHeight
             ? withTiming(0)
             : translateY.value > (currentImageHeight / 2) * scale.value - halfScreenHeight
-            ? withTiming((currentImageHeight / 2) * scale.value - halfScreenHeight)
-            : translateY.value < (-currentImageHeight / 2) * scale.value + halfScreenHeight
-            ? withTiming((-currentImageHeight / 2) * scale.value + halfScreenHeight)
-            : withDecay({
-                clamp: [
-                  (-currentImageHeight / 2) * scale.value + halfScreenHeight,
-                  (currentImageHeight / 2) * scale.value - halfScreenHeight,
-                ],
-                deceleration: 0.99,
-                velocity: event.velocityY,
-              });
+              ? withTiming((currentImageHeight / 2) * scale.value - halfScreenHeight)
+              : translateY.value < (-currentImageHeight / 2) * scale.value + halfScreenHeight
+                ? withTiming((-currentImageHeight / 2) * scale.value + halfScreenHeight)
+                : withDecay({
+                    clamp: [
+                      (-currentImageHeight / 2) * scale.value + halfScreenHeight,
+                      (currentImageHeight / 2) * scale.value - halfScreenHeight,
+                    ],
+                    deceleration: 0.99,
+                    velocity: event.velocityY,
+                  });
 
         resetTouchValues();
 
@@ -638,10 +641,10 @@ export const useImageGalleryGestures = ({
           scale.value < 1
             ? withTiming(0)
             : translateX.value > halfScreenWidth * (scale.value - 1)
-            ? withTiming(halfScreenWidth * (scale.value - 1))
-            : translateX.value < -halfScreenWidth * (scale.value - 1)
-            ? withTiming(-halfScreenWidth * (scale.value - 1))
-            : translateX.value;
+              ? withTiming(halfScreenWidth * (scale.value - 1))
+              : translateX.value < -halfScreenWidth * (scale.value - 1)
+                ? withTiming(-halfScreenWidth * (scale.value - 1))
+                : translateX.value;
 
         /**
          * When the pinch is finished if the height is less than the screen
@@ -653,10 +656,10 @@ export const useImageGalleryGestures = ({
           currentImageHeight * scale.value < screenHeight
             ? withTiming(0)
             : translateY.value > (currentImageHeight / 2) * scale.value - screenHeight / 2
-            ? withTiming((currentImageHeight / 2) * scale.value - screenHeight / 2)
-            : translateY.value < (-currentImageHeight / 2) * scale.value + screenHeight / 2
-            ? withTiming((-currentImageHeight / 2) * scale.value + screenHeight / 2)
-            : translateY.value;
+              ? withTiming((currentImageHeight / 2) * scale.value - screenHeight / 2)
+              : translateY.value < (-currentImageHeight / 2) * scale.value + screenHeight / 2
+                ? withTiming((-currentImageHeight / 2) * scale.value + screenHeight / 2)
+                : translateY.value;
 
         /**
          * If the scale has been reduced below one, i.e. zoomed out, translate

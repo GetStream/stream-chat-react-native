@@ -27,6 +27,7 @@ export type Asset = {
   uri: string;
   width: number;
   id?: string;
+  mimeType?: string;
   originalUri?: string;
   size?: number;
 };

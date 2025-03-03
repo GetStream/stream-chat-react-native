@@ -114,19 +114,29 @@ export const WaveProgressBar = React.memo(
       .onStart((event) => {
         const currentProgress = (state.value + event.x) / fullWidth;
         state.value = Math.max(0, Math.min(currentProgress, 1));
-        if (onStartDrag) runOnJS(onStartDrag)(state.value);
-        if (onPlayPause) runOnJS(onPlayPause)(true);
+        if (onStartDrag) {
+          runOnJS(onStartDrag)(state.value);
+        }
+        if (onPlayPause) {
+          runOnJS(onPlayPause)(true);
+        }
       })
       .onUpdate((event) => {
         const currentProgress = (state.value + event.x) / fullWidth;
         state.value = Math.max(0, Math.min(currentProgress, 1));
-        if (onProgressDrag) runOnJS(onProgressDrag)(state.value);
+        if (onProgressDrag) {
+          runOnJS(onProgressDrag)(state.value);
+        }
       })
       .onEnd((event) => {
         const currentProgress = (state.value + event.x) / fullWidth;
         state.value = Math.max(0, Math.min(currentProgress, 1));
-        if (onEndDrag) runOnJS(onEndDrag)(state.value);
-        if (onPlayPause) runOnJS(onPlayPause)(false);
+        if (onEndDrag) {
+          runOnJS(onEndDrag)(state.value);
+        }
+        if (onPlayPause) {
+          runOnJS(onPlayPause)(false);
+        }
       });
 
     const stringifiedWaveformData = waveformData.toString();
@@ -175,9 +185,14 @@ export const WaveProgressBar = React.memo(
     );
   },
   (prevProps, nextProps) => {
-    if (prevProps.amplitudesCount !== nextProps.amplitudesCount) return false;
-    if (prevProps.progress !== nextProps.progress) return false;
-    else return true;
+    if (prevProps.amplitudesCount !== nextProps.amplitudesCount) {
+      return false;
+    }
+    if (prevProps.progress !== nextProps.progress) {
+      return false;
+    } else {
+      return true;
+    }
   },
 );
 

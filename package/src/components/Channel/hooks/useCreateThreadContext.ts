@@ -9,7 +9,7 @@ const selector = (nextValue: ThreadState) =>
     isLoadingNext: nextValue.pagination.isLoadingNext,
     isLoadingPrev: nextValue.pagination.isLoadingPrev,
     latestReplies: nextValue.replies,
-  } as const);
+  }) as const;
 
 export const useCreateThreadContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

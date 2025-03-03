@@ -19,7 +19,7 @@ describe('useChannelPreviewMuted', () => {
         () =>
           ({
             client: chatClient,
-          } as unknown as ChatContext.ChatContextValue),
+          }) as unknown as ChatContext.ChatContextValue,
       ),
     );
   });

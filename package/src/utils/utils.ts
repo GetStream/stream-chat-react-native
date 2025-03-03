@@ -119,7 +119,9 @@ export const defaultEmojiSearchIndex: EmojiSearchIndex = {
       const results = [];
 
       for (const emoji of compiledEmojis) {
-        if (results.length >= 10) return results;
+        if (results.length >= 10) {
+          return results;
+        }
         if (emoji.names.some((name) => name.includes(query))) {
           // Aggregate skins as different toned emojis - if skins are present
           if (emoji.skins) {
@@ -154,10 +156,14 @@ export const makeImageCompatibleUrl = (url: string) =>
   (url.indexOf('//') === 0 ? `https:${url}` : url).trim();
 
 export const getUrlWithoutParams = (url?: string) => {
-  if (!url) return url;
+  if (!url) {
+    return url;
+  }
 
   const indexOfQuestion = url.indexOf('?');
-  if (indexOfQuestion === -1) return url;
+  if (indexOfQuestion === -1) {
+    return url;
+  }
 
   return url.substring(0, url.indexOf('?'));
 };

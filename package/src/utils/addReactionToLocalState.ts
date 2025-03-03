@@ -22,7 +22,9 @@ export const addReactionToLocalState = <
 }) => {
   const message = channel.state.messages.find(({ id }) => id === messageId);
 
-  if (!message) return;
+  if (!message) {
+    return;
+  }
 
   const reaction: ReactionResponse = {
     created_at: new Date().toISOString(),

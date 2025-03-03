@@ -12,6 +12,7 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { DefaultStreamChatGenerics } from '../../types/types';
 import { BottomSheetModal } from '../UIComponents/BottomSheetModal';
 
@@ -96,10 +97,23 @@ export const MessageMenu = <
     propMessageUserReactionsAvatar ?? contextMessageUserReactionsAvatar;
   const MessageUserReactionsItem = propMessageUserReactionsItem ?? contextMessageUserReactionsItem;
   const message = propMessage ?? contextMessage;
+  const {
+    theme: {
+      messageMenu: {
+        bottomSheet: { height: bottomSheetHeight },
+      },
+    },
+  } = useTheme();
 
   return (
     <BottomSheetModal
-      height={messageActions.length === 0 && !showMessageReactions ? height / 5 : height / 2}
+      height={
+        bottomSheetHeight
+          ? bottomSheetHeight
+          : messageActions.length === 0 && !showMessageReactions
+            ? height / 5
+            : height / 2
+      }
       onClose={dismissOverlay}
       visible={visible}
     >

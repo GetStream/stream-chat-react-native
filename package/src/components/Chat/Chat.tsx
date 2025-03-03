@@ -187,19 +187,29 @@ const ChatWithContext = <
 
   useEffect(() => {
     if (client) {
-      client.setUserAgent(`${SDK}-${Platform.OS}-${version}`);
+      const sdkName = (SDK ? SDK.replace('stream-chat-', '') : 'react-native') as
+        | 'react-native'
+        | 'expo';
+      client.sdkIdentifier = {
+        name: sdkName,
+        version,
+      };
+      client.deviceIdentifier = { os: `${Platform.OS} ${Platform.Version}` };
       // This is to disable recovery related logic in js client, since we handle it in this SDK
       client.recoverStateOnReconnect = false;
       client.persistUserOnConnectionFailure = enableOfflineSupport;
     }
 
     if (isDebugModeEnabled) {
-      if (debugRef.current.setEventType) debugRef.current.setEventType('send');
-      if (debugRef.current.setSendEventParams)
+      if (debugRef.current.setEventType) {
+        debugRef.current.setEventType('send');
+      }
+      if (debugRef.current.setSendEventParams) {
         debugRef.current.setSendEventParams({
           action: 'Client',
           data: client.user,
         });
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [client, enableOfflineSupport]);
@@ -207,7 +217,9 @@ const ChatWithContext = <
   const setActiveChannel = (newChannel?: Channel<StreamChatGenerics>) => setChannel(newChannel);
 
   useEffect(() => {
-    if (!(userID && enableOfflineSupport)) return;
+    if (!(userID && enableOfflineSupport)) {
+      return;
+    }
 
     const initializeDatabase = () => {
       // This acts as a lock for some very rare occurrences of concurrency
@@ -235,7 +247,9 @@ const ChatWithContext = <
   }, [userID, enableOfflineSupport]);
 
   useEffect(() => {
-    if (!client) return;
+    if (!client) {
+      return;
+    }
 
     client.threads.registerSubscriptions();
     client.polls.registerSubscriptions();

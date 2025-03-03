@@ -222,19 +222,29 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const asyncMessagesMultiSendEnabledEqual =
     prevAsyncMessagesMultiSendEnabled === nextAsyncMessagesMultiSendEnabled;
-  if (!asyncMessagesMultiSendEnabledEqual) return false;
+  if (!asyncMessagesMultiSendEnabledEqual) {
+    return false;
+  }
 
   const micLockedEqual = prevMicLocked === nextMicLocked;
-  if (!micLockedEqual) return false;
+  if (!micLockedEqual) {
+    return false;
+  }
 
   const recordingEqual = prevRecording === nextRecording;
-  if (!recordingEqual) return false;
+  if (!recordingEqual) {
+    return false;
+  }
 
   const recordingDurationEqual = prevRecordingDuration === nextRecordingDuration;
-  if (!recordingDurationEqual) return false;
+  if (!recordingDurationEqual) {
+    return false;
+  }
 
   const recordingStoppedEqual = prevRecordingStopped === nextRecordingStopped;
-  if (!recordingStoppedEqual) return false;
+  if (!recordingStoppedEqual) {
+    return false;
+  }
 
   return true;
 };

@@ -298,7 +298,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const messageThemeEqual =
     JSON.stringify(prevMyMessageTheme) === JSON.stringify(nextMyMessageTheme);
-  if (!messageThemeEqual) return false;
+  if (!messageThemeEqual) {
+    return false;
+  }
 
   return true;
 };

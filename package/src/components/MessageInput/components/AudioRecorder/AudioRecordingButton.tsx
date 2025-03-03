@@ -94,7 +94,9 @@ const AudioRecordingButtonWithContext = <
         ]);
         return;
       }
-      if (startVoiceRecording) startVoiceRecording();
+      if (startVoiceRecording) {
+        startVoiceRecording();
+      }
     }
   };
 
@@ -134,10 +136,14 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const asyncMessagesMinimumPressDurationEqual =
     prevAsyncMessagesMinimumPressDuration === nextAsyncMessagesMinimumPressDuration;
-  if (!asyncMessagesMinimumPressDurationEqual) return false;
+  if (!asyncMessagesMinimumPressDurationEqual) {
+    return false;
+  }
 
   const recordingEqual = prevRecording === nextRecording;
-  if (!recordingEqual) return false;
+  if (!recordingEqual) {
+    return false;
+  }
 
   return true;
 };

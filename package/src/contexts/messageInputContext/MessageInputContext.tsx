@@ -627,7 +627,9 @@ export const MessageInputProvider = <
     }
 
     const imagesAndFiles = [...imageUploads, ...fileUploads];
-    if (imagesAndFiles.length === 0) return false;
+    if (imagesAndFiles.length === 0) {
+      return false;
+    }
 
     if (enableOfflineSupport) {
       // Allow only if none of the attachments have unsupported status
@@ -1510,7 +1512,7 @@ export const useMessageInputContext = <
 
   if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
-      `The useMessageInputContext hook was called outside of the MessageInputContext provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel`,
+      'The useMessageInputContext hook was called outside of the MessageInputContext provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel',
     );
   }
 

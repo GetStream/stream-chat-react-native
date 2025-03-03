@@ -61,6 +61,7 @@ export const usePaginatedAttachments = (
         hasMoreResults.current = false;
       }
     } catch (e) {
+      console.warn('An error has occurred while fetching attachments: ', e);
       // do nothing;
     }
     queryInProgress.current = false;

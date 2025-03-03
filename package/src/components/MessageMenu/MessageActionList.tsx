@@ -30,7 +30,9 @@ export const MessageActionList = (props: MessageActionListProps) => {
     },
   } = useTheme();
 
-  if (messageActions?.length === 0) return null;
+  if (messageActions?.length === 0) {
+    return null;
+  }
 
   return (
     <ScrollView

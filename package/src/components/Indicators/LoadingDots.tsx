@@ -37,8 +37,8 @@ export const LoadingDots = (props: Props) => {
             index === 0
               ? { marginRight: halfSpacing }
               : index === numberOfDots - 1
-              ? { marginLeft: halfSpacing }
-              : { marginHorizontal: halfSpacing }
+                ? { marginLeft: halfSpacing }
+                : { marginHorizontal: halfSpacing }
           }
         />
       ))}

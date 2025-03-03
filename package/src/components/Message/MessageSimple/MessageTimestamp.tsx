@@ -59,7 +59,9 @@ export const MessageTimestamp = (props: MessageTimestampProps) => {
     );
   }
 
-  if (!dateString) return null;
+  if (!dateString) {
+    return null;
+  }
 
   return <Text style={[styles.text, { color: grey }, timestampText]}>{dateString.toString()}</Text>;
 };

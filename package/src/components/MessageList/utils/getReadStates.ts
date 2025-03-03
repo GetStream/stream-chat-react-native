@@ -24,7 +24,9 @@ export const getReadStates = <
      * last read message.
      */
     Object.values(read).forEach((readState) => {
-      if (!readState.last_read) return;
+      if (!readState.last_read) {
+        return;
+      }
 
       let userLastReadMsgId: string | undefined;
 

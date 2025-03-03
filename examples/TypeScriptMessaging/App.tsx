@@ -291,6 +291,7 @@ export default () => {
           colors: {
             ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
           },
+          fonts: (colorScheme === 'dark' ? DarkTheme : DefaultTheme).fonts,
           dark: colorScheme === 'dark',
         }}
       >
