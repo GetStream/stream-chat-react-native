@@ -1,5 +1,14 @@
 # Change Log
 
+### [6.6.6](https://github.com/GetStream/stream-chat-react-native/compare/v6.6.5...v6.6.6) (2025-03-03)
+
+
+### Bug Fixes
+
+* bump dependencies, add new user agent functionality ([#2987](https://github.com/GetStream/stream-chat-react-native/issues/2987)) ([a6449a1](https://github.com/GetStream/stream-chat-react-native/commit/a6449a1b82788cfbe4e871980a4e68736b58561c))
+* bump stream-chat for user agent hotfix ([#2988](https://github.com/GetStream/stream-chat-react-native/issues/2988)) ([7ef7eac](https://github.com/GetStream/stream-chat-react-native/commit/7ef7eacd08b648fe706e77a0d7bfe11419a7ff29))
+* onViewableItemsChanged invariant violation ([#2986](https://github.com/GetStream/stream-chat-react-native/issues/2986)) ([1d25351](https://github.com/GetStream/stream-chat-react-native/commit/1d2535169b5095606e8f0db2f7d68a5de80bffd9))
+
 ### [6.6.5](https://github.com/GetStream/stream-chat-react-native/compare/v6.6.4...v6.6.5) (2025-02-25)
 
 
