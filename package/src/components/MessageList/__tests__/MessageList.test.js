@@ -76,7 +76,7 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.watch();
 
-    const { getByTestId, queryAllByTestId } = render(
+    const { getByTestId } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel}>
@@ -108,7 +108,7 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.watch();
 
-    const { getByTestId, queryAllByTestId, queryByTestId } = render(
+    const { getByTestId, queryByTestId } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel}>
@@ -141,7 +141,7 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.watch();
 
-    const { getByTestId, queryAllByTestId, queryByTestId } = render(
+    const { getByTestId, queryByTestId } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel} deletedMessagesVisibilityType='sender'>
@@ -174,7 +174,7 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.watch();
 
-    const { getByTestId, queryAllByTestId, queryByTestId } = render(
+    const { getByTestId, queryByTestId } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel} deletedMessagesVisibilityType='receiver'>
@@ -207,7 +207,7 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.watch();
 
-    const { queryAllByTestId, queryByTestId } = render(
+    const { queryByTestId } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel} deletedMessagesVisibilityType='never'>
@@ -239,7 +239,7 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.watch();
 
-    const { getByTestId, queryAllByTestId } = render(
+    const { getByTestId } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel}>
