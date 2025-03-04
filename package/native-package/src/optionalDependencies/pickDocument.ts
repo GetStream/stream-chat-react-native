@@ -18,9 +18,23 @@ let DocumentPicker:
   | undefined;
 
 try {
-  DocumentPicker = require('react-native-document-picker').default;
+  DocumentPicker = require('@react-native-documents/picker');
 } catch (err) {
-  console.log('react-native-document-picker is not installed');
+  // we do nothing as the alternative might be used
+  // console.warn('@react-native-documents/picker is not installed');
+}
+
+if (!DocumentPicker) {
+  try {
+    DocumentPicker = require('react-native-document-picker').default;
+    console.log(
+      "You're using the react-native-document-picker library, which is no longer supported and has moved to @react-native-documents/picker. Things might not work as intended. Please migrate to the new library as soon as possible !",
+    );
+  } catch (err) {
+    console.log(
+      'Neither react-native-document-picker nor @react-native-documents/picker are installed.',
+    );
+  }
 }
 
 export const pickDocument = DocumentPicker

@@ -2140,6 +2140,11 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-11.4.1.tgz#a3c247aceab35f75dd0aa4bfa85d2be5a4508688"
   integrity sha512-B0BYAkghz3Q2V09BF88RA601XursIEA111tnc2JOaN7axJWmNefmfjZqw/KdSxKZp7CZUuPpjBmz/WCR9uaHYg==
 
+"@react-native-documents/picker@^10.1.1":
+  version "10.1.1"
+  resolved "https://registry.yarnpkg.com/@react-native-documents/picker/-/picker-10.1.1.tgz#3060d9387771ce74c58d212b9e7be876f076b7bc"
+  integrity sha512-RijOCQmesOPe4ahtwOag6k6GLhLHf34sMQtAJ4KjLk7ab0kG5Chvcsvd5zixWC4d0tuBnVAtMUOzvn0bp+UtAg==
+
 "@react-native-firebase/app@21.11.0":
   version "21.11.0"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-21.11.0.tgz#a01b0cb738a8b9ca7bb7ab7dd461c5a9744cb68a"
@@ -6858,13 +6863,6 @@ react-native-blob-util@^0.21.2:
   dependencies:
     base-64 "0.1.0"
     glob "^10.3.10"
-
-react-native-document-picker@^9.3.1:
-  version "9.3.1"
-  resolved "https://registry.yarnpkg.com/react-native-document-picker/-/react-native-document-picker-9.3.1.tgz#f2c33237a906fd0893130e0605c8f18a3aef1605"
-  integrity sha512-Vcofv9wfB0j67zawFjfq9WQPMMzXxOZL9kBmvWDpjVuEcVK73ndRmlXHlkeFl5ZHVsv4Zb6oZYhqm9u5omJOPA==
-  dependencies:
-    invariant "^2.2.4"
 
 react-native-drawer-layout@^4.1.1:
   version "4.1.1"

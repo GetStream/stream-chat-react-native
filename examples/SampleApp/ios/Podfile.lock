@@ -1454,7 +1454,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-document-picker (9.3.1):
+  - react-native-document-picker (10.1.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2283,7 +2283,7 @@ DEPENDENCIES:
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
   - react-native-blob-util (from `../node_modules/react-native-blob-util`)
   - "react-native-cameraroll (from `../node_modules/@react-native-camera-roll/camera-roll`)"
-  - react-native-document-picker (from `../node_modules/react-native-document-picker`)
+  - "react-native-document-picker (from `../node_modules/@react-native-documents/picker`)"
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-video (from `../node_modules/react-native-video`)
@@ -2438,7 +2438,7 @@ EXTERNAL SOURCES:
   react-native-cameraroll:
     :path: "../node_modules/@react-native-camera-roll/camera-roll"
   react-native-document-picker:
-    :path: "../node_modules/react-native-document-picker"
+    :path: "../node_modules/@react-native-documents/picker"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-safe-area-context:
@@ -2590,7 +2590,7 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: b31e56a980634f383221bfefd5111d04c14c110b
   react-native-blob-util: 875bbeee07e4ada135e4edf9fc7b22acf8d9721d
   react-native-cameraroll: 36dc62b41c7943a79ac2f7cf4d3da10d4138513f
-  react-native-document-picker: 6d3991d663e28714988c41696490e6fb1c525fbc
+  react-native-document-picker: 19be73c0423e4bc886cef74ec282eff750698013
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-safe-area-context: 0b43456abcaaa3c8323bbfafe9c5f0f9511219d2
   react-native-video: a225b4d4d3286f3253dc7b00a62e7c8e59d04d51
@@ -2642,4 +2642,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 4f662370295f8f9cee909f1a4c59a614999a209d
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.14.3
