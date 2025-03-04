@@ -117,7 +117,7 @@
     "@types/linkify-it": "5.0.0",
     "@types/lodash": "4.17.16",
     "@types/mime-types": "2.1.4",
-    "@types/react": "19.0.10",
+    "@types/react": "^19.0.0",
     "@types/react-test-renderer": "19.0.0",
     "@types/use-sync-external-store": "^0.0.6",
     "@types/uuid": "^10.0.0",
@@ -152,6 +152,6 @@
     "uuid": "^11.1.0"
   },
   "resolutions": {
-    "@types/react": "18.2.6"
+    "@types/react": "^19.0.0"
   }
 }
