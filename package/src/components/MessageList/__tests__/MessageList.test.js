@@ -188,10 +188,6 @@ describe('MessageList', () => {
     );
 
     await waitFor(() => {
-      const all = queryAllByTestId('error-notification');
-      if (all.length > 0) {
-        console.log('FIBER2 NODE: ', all[0]._fiber.stateNode.children);
-      }
       expect(queryAllByTestId('error-notification')).toHaveLength(0);
       expect(getByTestId('message-deleted')).toBeTruthy();
       expect(queryByTestId('only-visible-to-you')).toBeNull();
