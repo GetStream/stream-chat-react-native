@@ -124,9 +124,12 @@ describe('ChannelPreview', () => {
 
     it('should update the unread count to 0', async () => {
       const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
+      const countUnreadMock = jest.fn();
+
+      countUnreadMock.mockReturnValue(10);
 
       const c = generateChannelWrapper({
-        countUnread: jest.fn().mockReturnValue(10),
+        countUnread: countUnreadMock,
         on: channelOnMock,
       });
 
@@ -139,6 +142,8 @@ describe('ChannelPreview', () => {
       await waitFor(() => {
         expect(getByTestId('unread-count')).toHaveTextContent('10');
       });
+
+      countUnreadMock.mockReturnValue(0);
 
       act(() => {
         dispatchNotificationMarkRead(chatClient, channel || {});
@@ -288,18 +293,25 @@ describe('ChannelPreview', () => {
   });
 
   it('should update the unread count to 0 if the channel is muted', async () => {
-    const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
+    const someOtherUser = generateUser({ id: 'not-me' });
 
-    const c = generateChannelWrapper({
-      countUnread: jest.fn().mockReturnValue(10),
-      muteStatus: jest.fn().mockReturnValue({ muted: true }),
-      on: channelOnMock,
-    });
+    const c = generateChannelResponse();
+    await useInitializeChannel(c);
 
-    channel = c as unknown as Channel;
+    channel.muteStatus = jest.fn().mockReturnValue({ muted: true });
 
     const { getByTestId } = render(<TestComponent />);
 
+    await waitFor(() => getByTestId('channel-id'));
+
+    for (let i = 0; i < 10; i++) {
+      const message = generateMessage({
+        user: someOtherUser,
+      });
+      act(() => {
+        dispatchMessageNewEvent(chatClient, message, channel || {});
+      });
+    }
     await waitFor(() => getByTestId('channel-id'));
 
     await waitFor(() => {
@@ -319,7 +331,7 @@ describe('ChannelPreview', () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId('unread-count')).toHaveTextContent('0');
+      expect(getByTestId('unread-count')).toHaveTextContent('5');
     });
   });
 

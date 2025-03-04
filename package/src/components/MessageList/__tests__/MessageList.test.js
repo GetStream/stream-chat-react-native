@@ -23,7 +23,10 @@ import { Chat } from '../../Chat/Chat';
 import { MessageList } from '../MessageList';
 
 describe('MessageList', () => {
-  afterEach(cleanup);
+  afterEach(() => {
+    cleanup();
+    jest.clearAllMocks();
+  });
 
   it('should add new message at bottom of the list', async () => {
     const user1 = generateUser();
@@ -185,6 +188,10 @@ describe('MessageList', () => {
     );
 
     await waitFor(() => {
+      const all = queryAllByTestId('error-notification');
+      if (all.length > 0) {
+        console.log('FIBER2 NODE: ', all[0]._fiber.stateNode.children);
+      }
       expect(queryAllByTestId('error-notification')).toHaveLength(0);
       expect(getByTestId('message-deleted')).toBeTruthy();
       expect(queryByTestId('only-visible-to-you')).toBeNull();
