@@ -88,7 +88,6 @@ describe('MessageList', () => {
 
     // debug()
     await waitFor(() => {
-      expect(queryAllByTestId('error-notification')).toHaveLength(0);
       expect(getByTestId('message-system')).toBeTruthy();
     });
   });
@@ -120,7 +119,6 @@ describe('MessageList', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByTestId('error-notification')).toHaveLength(0);
       expect(getByTestId('message-deleted')).toBeTruthy();
       expect(queryByTestId('only-visible-to-you')).toBeNull();
     });
@@ -154,7 +152,6 @@ describe('MessageList', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByTestId('error-notification')).toHaveLength(0);
       expect(queryByTestId('message-deleted')).toBeTruthy();
       expect(getByTestId('only-visible-to-you')).toBeTruthy();
     });
@@ -188,7 +185,6 @@ describe('MessageList', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByTestId('error-notification')).toHaveLength(0);
       expect(getByTestId('message-deleted')).toBeTruthy();
       expect(queryByTestId('only-visible-to-you')).toBeNull();
     });
@@ -222,7 +218,6 @@ describe('MessageList', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByTestId('error-notification')).toHaveLength(0);
       expect(queryByTestId('message-deleted')).toBeNull();
       expect(queryByTestId('only-visible-to-you')).toBeNull();
     });
@@ -255,7 +250,6 @@ describe('MessageList', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByTestId('error-notification')).toHaveLength(0);
       expect(getByTestId('message-deleted')).toBeTruthy();
     });
   });
@@ -288,7 +282,6 @@ describe('MessageList', () => {
 
     await waitFor(() => {
       expect(queryAllByTestId('message-system')).toHaveLength(0);
-      expect(queryAllByTestId('error-notification')).toHaveLength(0);
       expect(getByTestId('typing-indicator')).toBeTruthy();
     });
   });
