@@ -10,6 +10,7 @@ import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Chat } from '../../Chat/Chat';
 import { ChannelList } from '../ChannelList';
+import { Streami18n } from '../../../utils/i18n/Streami18n';
 
 describe('ChannelList', () => {
   let chatClient;
@@ -31,13 +32,35 @@ describe('ChannelList', () => {
   test('ChannelList 10 times', async () => {
     useMockedApis(chatClient, [queryChannelsApi([testChannel1, testChannel2])]);
 
-    const scenario = async () => {};
     const props = {
-      filters: {},
+      filters: {
+        members: { $in: [member.user.id] },
+        type: 'messaging',
+      },
+      options: {
+        limit: 30,
+        presence: true,
+        state: true,
+        watch: true,
+      },
+      sort: [{ pinned_at: -1 }, { last_message_at: -1 }, { updated_at: -1 }],
     };
 
-    await measureRenders(<ChannelList filters={props.filters} />, {
-      wrapper: ({ children }) => <Chat client={chatClient}>{children}</Chat>,
+    const streami18n = new Streami18n({
+      language: 'en',
     });
+
+    await measureRenders(
+      <ChannelList filters={props.filters} options={props.options} sort={props.sort} />,
+      {
+        runs: 1,
+        warmupRuns: 0,
+        wrapper: ({ children }) => (
+          <Chat client={chatClient} i18nInstance={streami18n}>
+            {children}
+          </Chat>
+        ),
+      },
+    );
   });
 });

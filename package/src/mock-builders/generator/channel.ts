@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Channel, ChannelResponse } from 'stream-chat';
 import { v4 as uuidv4 } from 'uuid';
 
 import { generateUser, getUserDefaults } from './user';
@@ -100,8 +99,8 @@ export const generateChannel1 = (options: { channel: any; config: any; members: 
   const id = idFromOptions
     ? idFromOptions
     : options.members && options.members.length
-    ? `!members-${uuidv4()}`
-    : uuidv4();
+      ? `!members-${uuidv4()}`
+      : uuidv4();
   return {
     ...optionsBesidesChannel,
     messages: [],

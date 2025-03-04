@@ -3,8 +3,9 @@ import { FlatList, View } from 'react-native';
 
 import mockRNCNetInfo from '@react-native-community/netinfo/jest/netinfo-mock.js';
 
-import { registerNativeHandlers } from './src/native';
 import { configure } from 'reassure';
+
+import { registerNativeHandlers } from './src/native';
 
 // For performance tests using reassure
 configure({ testingLibrary: 'react-native' });
