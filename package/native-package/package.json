@@ -30,6 +30,7 @@
     "react-native-audio-recorder-player": ">=3.6.4",
     "react-native-blob-util": ">=0.19.9",
     "react-native-document-picker": ">=9.3.0",
+    "@react-native-documents/picker": ">=10.1.1",
     "react-native-haptic-feedback": ">=2.2.0",
     "react-native-image-picker": ">=7.1.2",
     "react-native-share": ">=10.2.1",
@@ -49,6 +50,9 @@
       "optional": true
     },
     "react-native-document-picker": {
+      "optional": true
+    },
+    "@react-native-documents/picker": {
       "optional": true
     },
     "react-native-haptic-feedback": {
@@ -72,11 +76,14 @@
     "postpack": "rm README.md"
   },
   "devDependencies": {
-    "react-native": ">=0.67.0"
+    "react-native": "0.78.0"
   },
   "codegenConfig": {
     "name": "StreamChatReactNativeSpec",
     "type": "modules",
     "jsSrcsDir": "src/native"
+  },
+  "resolutions": {
+    "@types/react": "^19.0.0"
   }
 }

@@ -44,7 +44,7 @@ export class KeyboardCompatibleView extends React.Component<
   _keyboardEvent: KeyboardEvent | null = null;
   _subscriptions: EmitterSubscription[] = [];
   _appStateSubscription: NativeEventSubscription | null = null;
-  viewRef: React.RefObject<View>;
+  viewRef: React.RefObject<View | null>;
   _initialFrameHeight = 0;
   constructor(props: KeyboardAvoidingViewProps) {
     super(props);

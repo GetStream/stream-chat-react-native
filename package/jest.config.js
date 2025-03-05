@@ -1,11 +1,11 @@
 /* global require */
-// eslint-disable-next-line no-undef
+
 module.exports = {
   globalSetup: './jest-global-setup.js',
   moduleNameMapper: {
     'mock-builders(.*)$': '<rootDir>/src/mock-builders$1',
   },
-  preset: '@testing-library/react-native',
+  preset: 'react-native',
   setupFiles: [
     './src/mock-builders/native/react-native-mock.js',
     './node_modules/react-native-gesture-handler/jestSetup.js',

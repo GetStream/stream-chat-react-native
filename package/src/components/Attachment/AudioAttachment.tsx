@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { RefObject, useEffect, useMemo, useState } from 'react';
 import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import dayjs from 'dayjs';
@@ -352,7 +352,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             onSeek={onSeek}
             paused={item.paused}
             rate={currentSpeed}
-            soundRef={soundRef}
+            soundRef={soundRef as RefObject<SoundReturnType>}
             testID='sound-player'
             uri={item.file.uri}
           />

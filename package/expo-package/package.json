@@ -51,11 +51,14 @@
     }
   },
   "devDependencies": {
-    "expo": "^51.0.17",
+    "expo": "^52.0.36",
     "expo-image-manipulator": "^12.0.5"
   },
   "scripts": {
     "prepack": " cp ../../README.md .",
     "postpack": "rm README.md"
+  },
+  "resolutions": {
+    "@types/react": "^19.0.0"
   }
 }

@@ -44,7 +44,7 @@ export const usePollAnswersPagination = ({
   const [pollAnswers, setPollAnswers] = useState<PollAnswer[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error>();
-  const cursorRef = useRef<string | null>();
+  const cursorRef = useRef<string | null>(undefined);
   const queryInProgress = useRef(false);
 
   const loadMore = useCallback(async () => {

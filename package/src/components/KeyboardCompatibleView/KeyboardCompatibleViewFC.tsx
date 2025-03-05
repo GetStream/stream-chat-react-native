@@ -33,9 +33,9 @@ export const KeyboardCompatibleView = ({
   style,
   ...props
 }: KeyboardAvoidingViewProps) => {
-  const frame = useRef<LayoutRectangle>();
+  const frame = useRef<LayoutRectangle>(undefined);
   const initialFrameHeight = useRef(0);
-  const keyboardEvent = useRef<KeyboardEvent>();
+  const keyboardEvent = useRef<KeyboardEvent>(undefined);
   const subscriptions = useRef<EmitterSubscription[]>([]);
   const viewRef = useRef<View | null>(null);
 

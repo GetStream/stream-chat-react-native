@@ -2,7 +2,6 @@ import React from 'react';
 
 import { Alert, ImageBackground, StyleSheet, Text, View } from 'react-native';
 
-import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { lookup } from 'mime-types';
 
 import { AttachmentPickerContextValue } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
@@ -12,6 +11,7 @@ import { useViewport } from '../../../hooks/useViewport';
 import { Recorder } from '../../../icons';
 import type { Asset, File } from '../../../types/types';
 import { getDurationLabelFromDuration } from '../../../utils/utils';
+import { BottomSheetTouchableOpacity } from '../../BottomSheetCompatibility/BottomSheetTouchableOpacity';
 
 type AttachmentPickerItemType = Pick<
   AttachmentPickerContextValue,
@@ -95,7 +95,7 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
   };
 
   return (
-    <TouchableOpacity onPress={onPressVideo}>
+    <BottomSheetTouchableOpacity onPress={onPressVideo}>
       <ImageBackground
         source={{ uri: originalUri }}
         style={[
@@ -121,7 +121,7 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
           ) : null}
         </View>
       </ImageBackground>
-    </TouchableOpacity>
+    </BottomSheetTouchableOpacity>
   );
 };
 
@@ -171,7 +171,7 @@ const AttachmentImage = (props: AttachmentImageProps) => {
   };
 
   return (
-    <TouchableOpacity onPress={onPressImage}>
+    <BottomSheetTouchableOpacity onPress={onPressImage}>
       <ImageBackground
         source={{ uri }}
         style={[
@@ -189,7 +189,7 @@ const AttachmentImage = (props: AttachmentImageProps) => {
           </View>
         )}
       </ImageBackground>
-    </TouchableOpacity>
+    </BottomSheetTouchableOpacity>
   );
 };
 

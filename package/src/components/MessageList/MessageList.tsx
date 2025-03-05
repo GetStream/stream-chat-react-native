@@ -317,9 +317,9 @@ const MessageListWithContext = <
    * We need topMessage and channelLastRead values to set the initial scroll position.
    * So these values only get used if `initialScrollToFirstUnreadMessage` prop is true.
    */
-  const topMessageBeforeUpdate = useRef<FormatMessageResponse<StreamChatGenerics>>();
+  const topMessageBeforeUpdate = useRef<FormatMessageResponse<StreamChatGenerics>>(undefined);
   const latestNonCurrentMessageBeforeUpdateRef =
-    useRef<FormatMessageResponse<StreamChatGenerics>>();
+    useRef<FormatMessageResponse<StreamChatGenerics>>(undefined);
   const topMessageAfterUpdate: FormatMessageResponse<StreamChatGenerics> | undefined =
     rawMessageList[0];
 
@@ -347,18 +347,18 @@ const MessageListWithContext = <
   /**
    * The timeout id used to debounce our scrollToIndex calls on messageList updates
    */
-  const scrollToDebounceTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const scrollToDebounceTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   /**
    * The timeout id used to temporarily load the initial scroll set flag
    */
-  const onScrollEventTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const onScrollEventTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   /**
    * Last messageID that was scrolled to after loading a new message list,
    * this flag keeps track of it so that we dont scroll to it again on target message set
    */
-  const messageIdLastScrolledToRef = useRef<string>();
+  const messageIdLastScrolledToRef = useRef<string>(undefined);
   const [hasMoved, setHasMoved] = useState(false);
   const [lastReceivedId, setLastReceivedId] = useState(
     getLastReceivedMessage(processedMessageList)?.id,
@@ -366,7 +366,7 @@ const MessageListWithContext = <
   const [scrollToBottomButtonVisible, setScrollToBottomButtonVisible] = useState(false);
 
   const [stickyHeaderDate, setStickyHeaderDate] = useState<Date | undefined>();
-  const stickyHeaderDateRef = useRef<Date | undefined>();
+  const stickyHeaderDateRef = useRef<Date | undefined>(undefined);
 
   // ref for channel to use in useEffect without triggering it on channel change
   const channelRef = useRef(channel);
@@ -904,7 +904,7 @@ const MessageListWithContext = <
   };
 
   const scrollToIndexFailedRetryCountRef = useRef<number>(0);
-  const failScrollTimeoutId = useRef<ReturnType<typeof setTimeout>>();
+  const failScrollTimeoutId = useRef<ReturnType<typeof setTimeout>>(undefined);
   const onScrollToIndexFailedRef = useRef<
     FlatListProps<MessageType<StreamChatGenerics>>['onScrollToIndexFailed']
   >((info) => {

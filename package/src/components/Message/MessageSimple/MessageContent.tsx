@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import {
   AnimatableNumericValue,
   ColorValue,
+  DimensionValue,
   LayoutChangeEvent,
   Pressable,
   StyleSheet,
@@ -208,7 +209,7 @@ const MessageContentWithContext = <
   };
 
   const getBorderRadiusFromTheme = () => {
-    const bordersFromTheme: Record<string, AnimatableNumericValue | undefined> = {
+    const bordersFromTheme: Record<string, string | AnimatableNumericValue | undefined> = {
       borderBottomLeftRadius,
       borderBottomRightRadius,
       borderRadius,
@@ -263,7 +264,7 @@ const MessageContentWithContext = <
               styles.replyBorder,
               {
                 borderColor: repliesCurveColor,
-                height: borderRadiusL,
+                height: borderRadiusL as DimensionValue | undefined,
                 left: alignment === 'left' ? 0 : undefined,
                 right: alignment === 'right' ? 0 : undefined,
               },

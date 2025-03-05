@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { Image, ImageStyle, Keyboard, StyleSheet, ViewStyle } from 'react-native';
 
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -14,8 +14,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-
+import { BottomSheetModal as BottomSheetModalOriginal } from '@gorhom/bottom-sheet';
 import type { UserResponse } from 'stream-chat';
 
 import { AnimatedGalleryImage } from './components/AnimatedGalleryImage';
@@ -47,6 +46,10 @@ import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
 import { getGiphyMimeType } from '../Attachment/utils/getGiphyMimeType';
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from '../BottomSheetCompatibility/BottomSheetModal';
 
 const MARGIN = 32;
 
@@ -160,7 +163,7 @@ export const ImageGallery = <
   /**
    * BottomSheetModal ref
    */
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const bottomSheetModalRef = useRef<BottomSheetModalOriginal>(null);
 
   /**
    * BottomSheetModal state
@@ -550,7 +553,7 @@ export const ImageGallery = <
                   ]}
                   translateX={translateX}
                   translateY={translateY}
-                  videoRef={videoRef}
+                  videoRef={videoRef as RefObject<VideoType>}
                 />
               ) : (
                 <AnimatedGalleryImage
@@ -599,7 +602,7 @@ export const ImageGallery = <
           photoLength={imageGalleryAttachments.length}
           progress={imageGalleryAttachments[selectedIndex].progress || 0}
           selectedIndex={selectedIndex}
-          videoRef={videoRef}
+          videoRef={videoRef as RefObject<VideoType>}
           visible={headerFooterVisible}
           {...imageGalleryCustomComponents?.footer}
         />
