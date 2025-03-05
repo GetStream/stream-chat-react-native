@@ -7,7 +7,7 @@ module.exports = {
   },
   preset: 'react-native',
   setupFiles: [
-    // './src/mock-builders/native/react-native-mock.js',
+    './src/mock-builders/native/react-native-mock.js',
     './node_modules/react-native-gesture-handler/jestSetup.js',
   ],
   setupFilesAfterEnv: [
