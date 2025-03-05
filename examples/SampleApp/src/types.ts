@@ -2,22 +2,6 @@ import type { Channel, UserResponse } from 'stream-chat';
 import type { MessageType, ThreadType } from 'stream-chat-react-native';
 import type { Theme } from '@react-navigation/native';
 
-// export type LocalAttachmentType = {
-//   file_size?: number;
-//   mime_type?: string;
-// };
-// export type LocalChannelType = Record<string, unknown>;
-// export type LocalCommandType = string & {};
-// export type LocalEventType = Record<string, unknown>;
-// export type LocalMessageType = Record<string, unknown>;
-// export type LocalReactionType = Record<string, unknown>;
-// export type LocalUserType = {
-//   image?: string;
-// };
-// type LocalPollOptionType = Record<string, unknown>;
-// type LocalPollType = Record<string, unknown>;
-// type LocalMemberType = Record<string, unknown>;
-
 export type DrawerNavigatorParamList = {
   HomeScreen: undefined;
   UserSelectorScreen: undefined;
