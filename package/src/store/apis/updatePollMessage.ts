@@ -1,6 +1,5 @@
 import { isVoteAnswer, PollAnswer, PollResponse, PollVote } from 'stream-chat';
 
-import { DefaultStreamChatGenerics } from '../../types/types';
 import { mapPollToStorable } from '../mappers/mapPollToStorable';
 import { mapStorableToPoll } from '../mappers/mapStorableToPoll';
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
@@ -8,9 +7,7 @@ import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
 import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries, TableRow } from '../types';
 
-export const updatePollMessage = async <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const updatePollMessage = async ({
   eventType,
   flush = true,
   poll,
@@ -18,10 +15,10 @@ export const updatePollMessage = async <
   userID,
 }: {
   eventType: string;
-  poll: PollResponse<StreamChatGenerics>;
+  poll: PollResponse;
   userID: string;
   flush?: boolean;
-  poll_vote?: PollVote<StreamChatGenerics> | PollAnswer<StreamChatGenerics>;
+  poll_vote?: PollVote | PollAnswer;
 }) => {
   const queries: PreparedQueries[] = [];
 

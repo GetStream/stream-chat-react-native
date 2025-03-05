@@ -9,7 +9,6 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { Check, CheckAll } from '../../icons';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getDateString } from '../../utils/i18n/getDateString';
 
 const styles = StyleSheet.create({
@@ -23,19 +22,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export type ChannelPreviewStatusProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<
-  ChannelPreviewMessengerPropsWithContext<StreamChatGenerics>,
+export type ChannelPreviewStatusProps = Pick<
+  ChannelPreviewMessengerPropsWithContext,
   'latestMessagePreview' | 'formatLatestMessageDate'
 > &
-  Pick<ChannelPreviewProps<StreamChatGenerics>, 'channel'>;
+  Pick<ChannelPreviewProps, 'channel'>;
 
-export const ChannelPreviewStatus = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: ChannelPreviewStatusProps<StreamChatGenerics>,
-) => {
+export const ChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
   const { formatLatestMessageDate, latestMessagePreview } = props;
   const { t, tDateTimeParser } = useTranslationContext();
   const {

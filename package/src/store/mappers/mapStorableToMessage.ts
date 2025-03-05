@@ -5,13 +5,9 @@ import { mapStorableToReaction } from './mapStorableToReaction';
 
 import { mapStorableToUser } from './mapStorableToUser';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
-
 import type { TableRow, TableRowJoinedUser } from '../types';
 
-export const mapStorableToMessage = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const mapStorableToMessage = ({
   currentUserId,
   messageRow,
   pollRow,
@@ -21,7 +17,7 @@ export const mapStorableToMessage = <
   messageRow: TableRowJoinedUser<'messages'>;
   pollRow: TableRow<'poll'>;
   reactionRows: TableRowJoinedUser<'reactions'>[];
-}): MessageResponse<StreamChatGenerics> => {
+}): MessageResponse => {
   const {
     createdAt,
     deletedAt,
@@ -33,8 +29,7 @@ export const mapStorableToMessage = <
     user,
     ...rest
   } = messageRow;
-  const latestReactions =
-    reactionRows?.map((reaction) => mapStorableToReaction<StreamChatGenerics>(reaction)) || [];
+  const latestReactions = reactionRows?.map((reaction) => mapStorableToReaction(reaction)) || [];
 
   const ownReactions = latestReactions.filter((reaction) => reaction.user?.id === currentUserId);
 

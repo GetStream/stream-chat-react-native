@@ -25,17 +25,15 @@ import init from '../../init';
 
 import { SDK } from '../../native';
 import { SqliteClient } from '../../store/SqliteClient';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+
 import { DBSyncManager } from '../../utils/DBSyncManager';
 import type { Streami18n } from '../../utils/i18n/Streami18n';
 import { version } from '../../version.json';
 
 init();
 
-export type ChatProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
-  Partial<Pick<ChatContextValue<StreamChatGenerics>, 'ImageComponent' | 'isMessageAIGenerated'>> & {
+export type ChatProps = Pick<ChatContextValue, 'client'> &
+  Partial<Pick<ChatContextValue, 'ImageComponent' | 'isMessageAIGenerated'>> & {
     /**
      * When false, ws connection won't be disconnection upon backgrounding the app.
      * To receive push notifications, its necessary that user doesn't have active
@@ -136,11 +134,7 @@ export type ChatProps<
     style?: DeepPartial<Theme>;
   };
 
-const ChatWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: PropsWithChildren<ChatProps<StreamChatGenerics>>,
-) => {
+const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
   const {
     children,
     client,
@@ -153,7 +147,7 @@ const ChatWithContext = <
     style,
   } = props;
 
-  const [channel, setChannel] = useState<Channel<StreamChatGenerics>>();
+  const [channel, setChannel] = useState<Channel>();
 
   // Setup translators
   const translators = useStreami18n(i18nInstance);
@@ -161,10 +155,7 @@ const ChatWithContext = <
   /**
    * Setup connection event listeners
    */
-  const { connectionRecovering, isOnline } = useIsOnline<StreamChatGenerics>(
-    client,
-    closeConnectionOnBackground,
-  );
+  const { connectionRecovering, isOnline } = useIsOnline(client, closeConnectionOnBackground);
 
   const [initialisedDatabaseConfig, setInitialisedDatabaseConfig] = useState<{
     initialised: boolean;
@@ -178,7 +169,7 @@ const ChatWithContext = <
    * Setup muted user listener
    * TODO: reimplement
    */
-  const mutedUsers = useMutedUsers<StreamChatGenerics>(client);
+  const mutedUsers = useMutedUsers(client);
 
   const debugRef = useDebugContext();
   const isDebugModeEnabled = __DEV__ && debugRef && debugRef.current;
@@ -214,7 +205,7 @@ const ChatWithContext = <
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [client, enableOfflineSupport]);
 
-  const setActiveChannel = (newChannel?: Channel<StreamChatGenerics>) => setChannel(newChannel);
+  const setActiveChannel = (newChannel?: Channel) => setChannel(newChannel);
 
   useEffect(() => {
     if (!(userID && enableOfflineSupport)) {
@@ -294,12 +285,12 @@ const ChatWithContext = <
   }
 
   return (
-    <ChatProvider<StreamChatGenerics> value={chatContext}>
+    <ChatProvider value={chatContext}>
       <TranslationProvider
         value={{ ...translators, userLanguage: client.user?.language || DEFAULT_USER_LANGUAGE }}
       >
         <ThemeProvider style={style}>
-          <ChannelsStateProvider<StreamChatGenerics>>{children}</ChannelsStateProvider>
+          <ChannelsStateProvider>{children}</ChannelsStateProvider>
         </ThemeProvider>
       </TranslationProvider>
     </ChatProvider>
@@ -327,11 +318,7 @@ const ChatWithContext = <
  * - Re (ReactionType) - custom Reaction object extension
  * - Us (UserType) - custom User object extension
  */
-export const Chat = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: PropsWithChildren<ChatProps<StreamChatGenerics>>,
-) => {
+export const Chat = (props: PropsWithChildren<ChatProps>) => {
   const { style } = useOverlayContext();
 
   return <ChatWithContext {...{ style }} {...props} />;

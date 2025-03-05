@@ -4,7 +4,7 @@ import { BuiltinRoles, ChannelResponse, Role } from 'stream-chat';
 
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 import { ONE_SECOND_IN_MS } from '../../../utils/date';
 
 type Roles = Array<Role>;
@@ -13,14 +13,12 @@ type Roles = Array<Role>;
  * useCooldown can be used to start a cooldown defined
  * for a Channel by setting an end time for
  **/
-export const useCooldown = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => {
+export const useCooldown = () => {
   const [endsAt, setEndsAt] = useState(new Date());
 
-  const { client } = useChatContext<StreamChatGenerics>();
-  const { channel } = useChannelContext<StreamChatGenerics>();
-  const { cooldown } = (channel?.data || {}) as ChannelResponse<StreamChatGenerics>;
+  const { client } = useChatContext();
+  const { channel } = useChannelContext();
+  const { cooldown } = (channel?.data || {}) as ChannelResponse;
   const interval: number = cooldown ?? 0;
 
   /**

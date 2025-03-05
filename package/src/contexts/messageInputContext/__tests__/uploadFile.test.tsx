@@ -6,28 +6,24 @@ import { renderHook, waitFor } from '@testing-library/react-native';
 import { generateFileUploadPreview } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 import {
   InputMessageInputContextValue,
   MessageInputProvider,
   useMessageInputContext,
 } from '../MessageInputContext';
 
-type WrapperType<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  Partial<InputMessageInputContextValue<StreamChatGenerics>>;
+type WrapperType = Partial<InputMessageInputContextValue>;
 
 const user1 = generateUser();
 const message = generateMessage({ user: user1 });
 
-const Wrapper = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>({
-  children,
-  ...rest
-}: PropsWithChildren<WrapperType<StreamChatGenerics>>) => (
+const Wrapper = ({ children, ...rest }: PropsWithChildren<WrapperType>) => (
   <MessageInputProvider
     value={
       {
         ...rest,
-      } as InputMessageInputContextValue<StreamChatGenerics>
+      } as InputMessageInputContextValue
     }
   >
     {children}

@@ -14,7 +14,7 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { Unknown } from '../../../../icons/Unknown';
 
 import type { IconProps } from '../../../../icons/utils/base';
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
+
 import type { ReactionData } from '../../../../utils/utils';
 import { ReactionSummary } from '../../hooks/useProcessReactions';
 
@@ -35,19 +35,13 @@ const Icon = ({ pathFill, size, style, supportedReactions, type }: Props) => {
   );
 };
 
-export type ReactionListTopItemProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<Pick<MessageContextValue<StreamChatGenerics>, 'reactions'>> &
-  Partial<Pick<MessagesContextValue<StreamChatGenerics>, 'supportedReactions'>> & {
+export type ReactionListTopItemProps = Partial<Pick<MessageContextValue, 'reactions'>> &
+  Partial<Pick<MessagesContextValue, 'supportedReactions'>> & {
     index: number;
     reaction: ReactionSummary;
   };
 
-export const ReactionListTopItem = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: ReactionListTopItemProps<StreamChatGenerics>,
-) => {
+export const ReactionListTopItem = (props: ReactionListTopItemProps) => {
   const { index, reaction, reactions, supportedReactions } = props;
   const {
     theme: {
@@ -84,11 +78,9 @@ export const ReactionListTopItem = <
   );
 };
 
-export type ReactionListTopProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<
+export type ReactionListTopProps = Partial<
   Pick<
-    MessageContextValue<StreamChatGenerics>,
+    MessageContextValue,
     | 'alignment'
     | 'hasReactions'
     | 'onLongPress'
@@ -99,7 +91,7 @@ export type ReactionListTopProps<
     | 'showMessageOverlay'
   >
 > &
-  Pick<MessagesContextValue<StreamChatGenerics>, 'supportedReactions'> & {
+  Pick<MessagesContextValue, 'supportedReactions'> & {
     messageContentWidth: number;
     fill?: string;
     reactionSize?: number;
@@ -108,11 +100,7 @@ export type ReactionListTopProps<
 /**
  * ReactionListTop - A high level component which implements all the logic required for a message reaction list
  */
-export const ReactionListTop = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: ReactionListTopProps<StreamChatGenerics>,
-) => {
+export const ReactionListTop = (props: ReactionListTopProps) => {
   const {
     alignment: propAlignment,
     fill: propFill,
@@ -137,10 +125,9 @@ export const ReactionListTop = <
     preventPress: contextPreventPress,
     reactions: contextReactions,
     showMessageOverlay: contextShowMessageOverlay,
-  } = useMessageContext<StreamChatGenerics>();
+  } = useMessageContext();
 
-  const { supportedReactions: contextSupportedReactions } =
-    useMessagesContext<StreamChatGenerics>();
+  const { supportedReactions: contextSupportedReactions } = useMessagesContext();
 
   const alignment = propAlignment || contextAlignment;
   const hasReactions = propHasReactions || contextHasReactions;

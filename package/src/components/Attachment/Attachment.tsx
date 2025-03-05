@@ -13,14 +13,12 @@ import {
 } from '../../contexts/messagesContext/MessagesContext';
 import { isVideoPlayerAvailable } from '../../native';
 
-import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
+import { FileTypes } from '../../types/types';
 
 export type ActionHandler = (name: string, value: string) => void;
 
-export type AttachmentPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<
-  MessagesContextValue<StreamChatGenerics>,
+export type AttachmentPropsWithContext = Pick<
+  MessagesContextValue,
   | 'AttachmentActions'
   | 'Card'
   | 'FileAttachment'
@@ -34,14 +32,10 @@ export type AttachmentPropsWithContext<
   /**
    * The attachment to render
    */
-  attachment: AttachmentType<StreamChatGenerics>;
+  attachment: AttachmentType;
 };
 
-const AttachmentWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: AttachmentPropsWithContext<StreamChatGenerics>,
-) => {
+const AttachmentWithContext = (props: AttachmentPropsWithContext) => {
   const {
     attachment,
     AttachmentActions,
@@ -68,7 +62,7 @@ const AttachmentWithContext = <
       <>
         <Gallery images={[attachment]} />
         {hasAttachmentActions && (
-          <AttachmentActions key={`key-actions-${attachment.id}`} {...attachment} />
+          <AttachmentActions key={`key-actions-${attachment.image_url}`} {...attachment} />
         )}
       </>
     );
@@ -79,7 +73,7 @@ const AttachmentWithContext = <
       <>
         <Gallery videos={[attachment]} />
         {hasAttachmentActions && (
-          <AttachmentActions key={`key-actions-${attachment.id}`} {...attachment} />
+          <AttachmentActions key={`key-actions-${attachment.thumb_url}`} {...attachment} />
         )}
       </>
     ) : (
@@ -99,7 +93,8 @@ const AttachmentWithContext = <
     return (
       <>
         <Card {...attachment} />
-        <AttachmentActions key={`key-actions-${attachment.id}`} {...attachment} />
+        {/** TODO: Please rethink this, the fix is temporary. */}
+        <AttachmentActions key={`key-actions-${attachment.image_url}`} {...attachment} />
       </>
     );
   } else {
@@ -107,10 +102,7 @@ const AttachmentWithContext = <
   }
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: AttachmentPropsWithContext<StreamChatGenerics>,
-  nextProps: AttachmentPropsWithContext<StreamChatGenerics>,
-) => {
+const areEqual = (prevProps: AttachmentPropsWithContext, nextProps: AttachmentPropsWithContext) => {
   const {
     attachment: prevAttachment,
     isAttachmentEqual,
@@ -145,11 +137,9 @@ const MemoizedAttachment = React.memo(
   areEqual,
 ) as typeof AttachmentWithContext;
 
-export type AttachmentProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<
+export type AttachmentProps = Partial<
   Pick<
-    MessagesContextValue<StreamChatGenerics>,
+    MessagesContextValue,
     | 'AttachmentActions'
     | 'Card'
     | 'FileAttachment'
@@ -161,16 +151,12 @@ export type AttachmentProps<
     | 'isAttachmentEqual'
   >
 > &
-  Pick<AttachmentPropsWithContext<StreamChatGenerics>, 'attachment'>;
+  Pick<AttachmentPropsWithContext, 'attachment'>;
 
 /**
  * Attachment - The message attachment
  */
-export const Attachment = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: AttachmentProps<StreamChatGenerics>,
-) => {
+export const Attachment = (props: AttachmentProps) => {
   const {
     attachment,
     AttachmentActions: PropAttachmentActions,
@@ -193,7 +179,7 @@ export const Attachment = <
     isAttachmentEqual,
     myMessageTheme: ContextMyMessageTheme,
     UrlPreview: ContextUrlPreview,
-  } = useMessagesContext<StreamChatGenerics>();
+  } = useMessagesContext();
 
   if (!attachment) {
     return null;

@@ -11,16 +11,14 @@ import {
   useTheme,
   useTranslationContext,
 } from '../../../../contexts';
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
+
 import { usePollOptionVotesPagination } from '../../hooks/usePollOptionVotesPagination';
 import { usePollState } from '../../hooks/usePollState';
 
-export type PollOptionFullResultsProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = PollContextValue & {
-  option: PollOption<StreamChatGenerics>;
-  additionalFlatListProps?: Partial<FlatListProps<PollVoteClass<StreamChatGenerics>>>;
-  PollOptionFullResultsContent?: React.ComponentType<{ option: PollOption<StreamChatGenerics> }>;
+export type PollOptionFullResultsProps = PollContextValue & {
+  option: PollOption;
+  additionalFlatListProps?: Partial<FlatListProps<PollVoteClass>>;
+  PollOptionFullResultsContent?: React.ComponentType<{ option: PollOption }>;
 };
 
 export const PollOptionFullResultsItem = ({ item }: { item: PollVoteClass }) => (

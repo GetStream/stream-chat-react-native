@@ -5,17 +5,15 @@ import { buildThumbnailGrid } from './buildThumbnailGrid';
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
 
 import { ChatConfigContextValue } from '../../../../contexts/chatConfigContext/ChatConfigContext';
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
+
 import { getAspectRatio } from '../getAspectRatio';
 
-export function buildGalleryOfTwoImages<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export function buildGalleryOfTwoImages({
   images,
   resizableCDNHosts,
   sizeConfig,
 }: Pick<ChatConfigContextValue, 'resizableCDNHosts'> & {
-  images: Attachment<StreamChatGenerics>[];
+  images: Attachment[];
   sizeConfig: GallerySizeConfig;
 }): GallerySizeAndThumbnailGrid {
   const aspectRatio1 = getAspectRatio(images[0]);

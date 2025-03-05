@@ -27,7 +27,7 @@ import {
 } from '../../../contexts/translationContext/TranslationContext';
 
 import { useViewport } from '../../../hooks/useViewport';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 import { Poll } from '../../Poll/Poll';
 import { useMessageData } from '../hooks/useMessageData';
 
@@ -65,10 +65,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export type MessageContentPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<
-  MessageContextValue<StreamChatGenerics>,
+export type MessageContentPropsWithContext = Pick<
+  MessageContextValue,
   | 'alignment'
   | 'goToMessage'
   | 'groupStyles'
@@ -85,7 +83,7 @@ export type MessageContentPropsWithContext<
   | 'isMessageAIGenerated'
 > &
   Pick<
-    MessagesContextValue<StreamChatGenerics>,
+    MessagesContextValue,
     | 'additionalPressableProps'
     | 'Attachment'
     | 'FileAttachmentGroup'
@@ -111,11 +109,7 @@ export type MessageContentPropsWithContext<
 /**
  * Child of MessageSimple that displays a message's content
  */
-const MessageContentWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageContentPropsWithContext<StreamChatGenerics>,
-) => {
+const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
   const {
     additionalPressableProps,
     alignment,
@@ -334,7 +328,7 @@ const MessageContentWithContext = <
               default:
                 return (otherAttachments.length && otherAttachments[0].actions) ||
                   isAIGenerated ? null : (
-                  <MessageTextContainer<StreamChatGenerics>
+                  <MessageTextContainer
                     key={`message_text_container_${messageContentOrderIndex}`}
                   />
                 );
@@ -347,9 +341,9 @@ const MessageContentWithContext = <
   );
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: MessageContentPropsWithContext<StreamChatGenerics>,
-  nextProps: MessageContentPropsWithContext<StreamChatGenerics>,
+const areEqual = (
+  prevProps: MessageContentPropsWithContext,
+  nextProps: MessageContentPropsWithContext,
 ) => {
   const {
     goToMessage: prevGoToMessage,
@@ -487,19 +481,15 @@ const MemoizedMessageContent = React.memo(
   areEqual,
 ) as typeof MessageContentWithContext;
 
-export type MessageContentProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<Omit<MessageContentPropsWithContext<StreamChatGenerics>, 'setMessageContentWidth'>> &
-  Pick<MessageContentPropsWithContext<StreamChatGenerics>, 'setMessageContentWidth'>;
+export type MessageContentProps = Partial<
+  Omit<MessageContentPropsWithContext, 'setMessageContentWidth'>
+> &
+  Pick<MessageContentPropsWithContext, 'setMessageContentWidth'>;
 
 /**
  * Child of MessageSimple that displays a message's content
  */
-export const MessageContent = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageContentProps<StreamChatGenerics>,
-) => {
+export const MessageContent = (props: MessageContentProps) => {
   const {
     alignment,
     goToMessage,
@@ -516,7 +506,7 @@ export const MessageContent = <
     otherAttachments,
     preventPress,
     threadList,
-  } = useMessageContext<StreamChatGenerics>();
+  } = useMessageContext();
   const {
     additionalPressableProps,
     Attachment,
@@ -527,11 +517,11 @@ export const MessageContent = <
     myMessageTheme,
     Reply,
     StreamingMessageView,
-  } = useMessagesContext<StreamChatGenerics>();
+  } = useMessagesContext();
   const { t } = useTranslationContext();
 
   return (
-    <MemoizedMessageContent<StreamChatGenerics>
+    <MemoizedMessageContent
       {...{
         additionalPressableProps,
         alignment,

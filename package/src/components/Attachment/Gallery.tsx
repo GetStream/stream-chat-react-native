@@ -33,14 +33,15 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useLoadingImage } from '../../hooks/useLoadingImage';
 import { isVideoPlayerAvailable } from '../../native';
-import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
+import { FileTypes } from '../../types/types';
 import { getUrlWithoutParams } from '../../utils/utils';
 
-export type GalleryPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setSelectedMessage' | 'setMessages'> &
+export type GalleryPropsWithContext = Pick<
+  ImageGalleryContextValue,
+  'setSelectedMessage' | 'setMessages'
+> &
   Pick<
-    MessageContextValue<StreamChatGenerics>,
+    MessageContextValue,
     | 'alignment'
     | 'groupStyles'
     | 'images'
@@ -52,7 +53,7 @@ export type GalleryPropsWithContext<
     | 'threadList'
   > &
   Pick<
-    MessagesContextValue<StreamChatGenerics>,
+    MessagesContextValue,
     | 'additionalPressableProps'
     | 'legacyImageViewerSwipeBehaviour'
     | 'VideoThumbnail'
@@ -75,14 +76,10 @@ export type GalleryPropsWithContext<
      *
      * TODO: Fix circular dependencies of imports
      */
-    message?: MessageType<StreamChatGenerics>;
+    message?: MessageType;
   };
 
-const GalleryWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: GalleryPropsWithContext<StreamChatGenerics>,
-) => {
+const GalleryWithContext = (props: GalleryPropsWithContext) => {
   const {
     additionalPressableProps,
     alignment,
@@ -234,9 +231,7 @@ const GalleryWithContext = <
   );
 };
 
-type GalleryThumbnailProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+type GalleryThumbnailProps = {
   borderRadius: {
     borderBottomLeftRadius: number;
     borderBottomRightRadius: number;
@@ -244,31 +239,26 @@ type GalleryThumbnailProps<
     borderTopRightRadius: number;
   };
   colIndex: number;
-  imagesAndVideos: Attachment<StreamChatGenerics>[];
+  imagesAndVideos: Attachment[];
   invertedDirections: boolean;
-  message: MessageType<StreamChatGenerics>;
+  message: MessageType;
   numOfColumns: number;
   numOfRows: number;
   rowIndex: number;
   thumbnail: Thumbnail;
 } & Pick<
-  MessagesContextValue<StreamChatGenerics>,
+  MessagesContextValue,
   | 'additionalPressableProps'
   | 'legacyImageViewerSwipeBehaviour'
   | 'VideoThumbnail'
   | 'ImageLoadingIndicator'
   | 'ImageLoadingFailedIndicator'
 > &
-  Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setSelectedMessage' | 'setMessages'> &
-  Pick<
-    MessageContextValue<StreamChatGenerics>,
-    'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
-  > &
+  Pick<ImageGalleryContextValue, 'setSelectedMessage' | 'setMessages'> &
+  Pick<MessageContextValue, 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'> &
   Pick<OverlayContextValue, 'setOverlay'>;
 
-const GalleryThumbnail = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+const GalleryThumbnail = ({
   additionalPressableProps,
   borderRadius,
   colIndex,
@@ -290,7 +280,7 @@ const GalleryThumbnail = <
   setSelectedMessage,
   thumbnail,
   VideoThumbnail,
-}: GalleryThumbnailProps<StreamChatGenerics>) => {
+}: GalleryThumbnailProps) => {
   const {
     theme: {
       colors: { overlay },
@@ -419,15 +409,13 @@ const GalleryThumbnail = <
   );
 };
 
-const GalleryImageThumbnail = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+const GalleryImageThumbnail = ({
   borderRadius,
   ImageLoadingFailedIndicator,
   ImageLoadingIndicator,
   thumbnail,
 }: Pick<
-  GalleryThumbnailProps<StreamChatGenerics>,
+  GalleryThumbnailProps,
   'ImageLoadingFailedIndicator' | 'ImageLoadingIndicator' | 'thumbnail' | 'borderRadius'
 >) => {
   const {
@@ -494,10 +482,7 @@ const GalleryImageThumbnail = <
   );
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: GalleryPropsWithContext<StreamChatGenerics>,
-  nextProps: GalleryPropsWithContext<StreamChatGenerics>,
-) => {
+const areEqual = (prevProps: GalleryPropsWithContext, nextProps: GalleryPropsWithContext) => {
   const {
     groupStyles: prevGroupStyles,
     hasThreadReplies: prevHasThreadReplies,
@@ -566,18 +551,12 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
 const MemoizedGallery = React.memo(GalleryWithContext, areEqual) as typeof GalleryWithContext;
 
-export type GalleryProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<GalleryPropsWithContext<StreamChatGenerics>>;
+export type GalleryProps = Partial<GalleryPropsWithContext>;
 
 /**
  * UI component for card in attachments.
  */
-export const Gallery = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: GalleryProps<StreamChatGenerics>,
-) => {
+export const Gallery = (props: GalleryProps) => {
   const {
     additionalPressableProps: propAdditionalPressableProps,
     alignment: propAlignment,
@@ -599,8 +578,7 @@ export const Gallery = <
     VideoThumbnail: PropVideoThumbnail,
   } = props;
 
-  const { setMessages, setSelectedMessage: contextSetSelectedMessage } =
-    useImageGalleryContext<StreamChatGenerics>();
+  const { setMessages, setSelectedMessage: contextSetSelectedMessage } = useImageGalleryContext();
   const {
     alignment: contextAlignment,
     groupStyles: contextGroupStyles,
@@ -612,7 +590,7 @@ export const Gallery = <
     preventPress: contextPreventPress,
     threadList: contextThreadList,
     videos: contextVideos,
-  } = useMessageContext<StreamChatGenerics>();
+  } = useMessageContext();
   const {
     additionalPressableProps: contextAdditionalPressableProps,
     ImageLoadingFailedIndicator: ContextImageLoadingFailedIndicator,
@@ -620,7 +598,7 @@ export const Gallery = <
     legacyImageViewerSwipeBehaviour,
     myMessageTheme: contextMyMessageTheme,
     VideoThumbnail: ContextVideoThumnbnail,
-  } = useMessagesContext<StreamChatGenerics>();
+  } = useMessagesContext();
   const { setOverlay: contextSetOverlay } = useOverlayContext();
 
   const images = propImages || contextImages;

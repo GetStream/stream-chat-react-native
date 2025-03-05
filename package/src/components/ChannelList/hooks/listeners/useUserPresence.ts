@@ -4,24 +4,16 @@ import type { Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
+type Parameters = {
+  setChannels: React.Dispatch<React.SetStateAction<Channel[]>>;
+  setForceUpdate: React.Dispatch<React.SetStateAction<number>>;
+};
 
-type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  {
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>;
-    setForceUpdate: React.Dispatch<React.SetStateAction<number>>;
-  };
-
-export const useUserPresence = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
-  setChannels,
-  setForceUpdate,
-}: Parameters<StreamChatGenerics>) => {
-  const { client } = useChatContext<StreamChatGenerics>();
+export const useUserPresence = ({ setChannels, setForceUpdate }: Parameters) => {
+  const { client } = useChatContext();
 
   useEffect(() => {
-    const handleEvent = (event: Event<StreamChatGenerics>) => {
+    const handleEvent = (event: Event) => {
       setChannels((channels) => {
         if (!channels) {
           return channels;

@@ -16,19 +16,13 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 
 import { useStateStore } from '../../../hooks';
 import { useTranslatedMessage } from '../../../hooks/useTranslatedMessage';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 import { stringifyMessage } from '../../../utils/utils';
 
-type LatestMessage<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> =
-  | ReturnType<ChannelState<StreamChatGenerics>['formatMessage']>
-  | MessageResponse<StreamChatGenerics>;
+type LatestMessage = ReturnType<ChannelState['formatMessage']> | MessageResponse;
 
-export type LatestMessagePreview<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
-  messageObject: LatestMessage<StreamChatGenerics> | undefined;
+export type LatestMessagePreview = {
+  messageObject: LatestMessage | undefined;
   previews: {
     bold: boolean;
     text: string;
@@ -43,18 +37,14 @@ export type LatestMessagePreviewSelectorReturnType = {
   name?: string;
 };
 
-const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  nextValue: PollState<StreamChatGenerics>,
-): LatestMessagePreviewSelectorReturnType => ({
+const selector = (nextValue: PollState): LatestMessagePreviewSelectorReturnType => ({
   createdBy: nextValue.created_by,
   latestVotesByOption: nextValue.latest_votes_by_option,
   name: nextValue.name,
 });
 
-const getMessageSenderName = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  message: LatestMessage<StreamChatGenerics> | undefined,
+const getMessageSenderName = (
+  message: LatestMessage | undefined,
   currentUserId: string | undefined,
   t: (key: string) => string,
   membersLength: number,
@@ -70,11 +60,7 @@ const getMessageSenderName = <
   return '';
 };
 
-const getMentionUsers = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  mentionedUser: UserResponse<StreamChatGenerics>[] | undefined,
-) => {
+const getMentionUsers = (mentionedUser: UserResponse[] | undefined) => {
   if (Array.isArray(mentionedUser)) {
     const mentionUserString = mentionedUser.reduce((acc, cur) => {
       const userName = cur.name || cur.id || '';
@@ -93,12 +79,10 @@ const getMentionUsers = <
   return '';
 };
 
-const getLatestMessageDisplayText = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  channel: Channel<StreamChatGenerics>,
-  client: StreamChat<StreamChatGenerics>,
-  message: LatestMessage<StreamChatGenerics> | undefined,
+const getLatestMessageDisplayText = (
+  channel: Channel,
+  client: StreamChat,
+  message: LatestMessage | undefined,
   t: (key: string) => string,
   pollState: LatestMessagePreviewSelectorReturnType | undefined,
 ) => {
@@ -185,12 +169,10 @@ export enum MessageReadStatus {
   READ = 2,
 }
 
-const getLatestMessageReadStatus = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  channel: Channel<StreamChatGenerics>,
-  client: StreamChat<StreamChatGenerics>,
-  message: LatestMessage<StreamChatGenerics> | undefined,
+const getLatestMessageReadStatus = (
+  channel: Channel,
+  client: StreamChat,
+  message: LatestMessage | undefined,
   readEvents: boolean,
 ): MessageReadStatus => {
   const currentUserId = client.userID;
@@ -216,17 +198,13 @@ const getLatestMessageReadStatus = <
     : MessageReadStatus.UNREAD;
 };
 
-const getLatestMessagePreview = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(params: {
-  channel: Channel<StreamChatGenerics>;
-  client: StreamChat<StreamChatGenerics>;
+const getLatestMessagePreview = (params: {
+  channel: Channel;
+  client: StreamChat;
   pollState: LatestMessagePreviewSelectorReturnType | undefined;
   readEvents: boolean;
   t: TFunction;
-  lastMessage?:
-    | ReturnType<ChannelState<StreamChatGenerics>['formatMessage']>
-    | MessageResponse<StreamChatGenerics>;
+  lastMessage?: ReturnType<ChannelState['formatMessage']> | MessageResponse;
 }) => {
   const { channel, client, lastMessage, pollState, readEvents, t } = params;
 
@@ -265,30 +243,24 @@ const getLatestMessagePreview = <
  *
  * @returns {object} latest message preview e.g.. { text: 'this was last message ...', created_at: '11/12/2020', messageObject: { originalMessageObject } }
  */
-export const useLatestMessagePreview = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  channel: Channel<StreamChatGenerics>,
+export const useLatestMessagePreview = (
+  channel: Channel,
   forceUpdate: number,
-  lastMessage?:
-    | ReturnType<ChannelState<StreamChatGenerics>['formatMessage']>
-    | MessageResponse<StreamChatGenerics>,
+  lastMessage?: ReturnType<ChannelState['formatMessage']> | MessageResponse,
 ) => {
-  const { client } = useChatContext<StreamChatGenerics>();
+  const { client } = useChatContext();
   const { t } = useTranslationContext();
 
   const channelConfigExists = typeof channel?.getConfig === 'function';
 
-  const translatedLastMessage = useTranslatedMessage<StreamChatGenerics>(lastMessage);
+  const translatedLastMessage = useTranslatedMessage(lastMessage);
 
   const channelLastMessageString = translatedLastMessage
     ? stringifyMessage(translatedLastMessage)
     : '';
 
   const [readEvents, setReadEvents] = useState(true);
-  const [latestMessagePreview, setLatestMessagePreview] = useState<
-    LatestMessagePreview<StreamChatGenerics>
-  >({
+  const [latestMessagePreview, setLatestMessagePreview] = useState<LatestMessagePreview>({
     created_at: '',
     messageObject: undefined,
     previews: [

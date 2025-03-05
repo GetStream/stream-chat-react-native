@@ -17,7 +17,7 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 import { Close } from '../../icons/Close';
 import { Warning } from '../../icons/Warning';
 import { isSoundPackageAvailable } from '../../native';
-import type { DefaultStreamChatGenerics, FileUpload } from '../../types/types';
+import type { FileUpload } from '../../types/types';
 import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
 import {
   getDurationLabelFromDuration,
@@ -123,20 +123,14 @@ const UnsupportedFileTypeOrFileSizeIndicator = ({
   );
 };
 
-type FileUploadPreviewPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<
-  MessageInputContextValue<StreamChatGenerics>,
+type FileUploadPreviewPropsWithContext = Pick<
+  MessageInputContextValue,
   'fileUploads' | 'removeFile' | 'uploadFile' | 'setFileUploads' | 'AudioAttachmentUploadPreview'
 > &
-  Pick<MessagesContextValue<StreamChatGenerics>, 'FileAttachmentIcon'> &
-  Pick<ChatContextValue<StreamChatGenerics>, 'enableOfflineSupport'>;
+  Pick<MessagesContextValue, 'FileAttachmentIcon'> &
+  Pick<ChatContextValue, 'enableOfflineSupport'>;
 
-const FileUploadPreviewWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: FileUploadPreviewPropsWithContext<StreamChatGenerics>,
-) => {
+const FileUploadPreviewWithContext = (props: FileUploadPreviewPropsWithContext) => {
   const {
     AudioAttachmentUploadPreview,
     enableOfflineSupport,
@@ -323,9 +317,9 @@ const FileUploadPreviewWithContext = <
   ) : null;
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: FileUploadPreviewPropsWithContext<StreamChatGenerics>,
-  nextProps: FileUploadPreviewPropsWithContext<StreamChatGenerics>,
+const areEqual = (
+  prevProps: FileUploadPreviewPropsWithContext,
+  nextProps: FileUploadPreviewPropsWithContext,
 ) => {
   const { fileUploads: prevFileUploads } = prevProps;
   const { fileUploads: nextFileUploads } = nextProps;
@@ -347,23 +341,17 @@ const MemoizedFileUploadPreview = React.memo(
   areEqual,
 ) as typeof FileUploadPreviewWithContext;
 
-export type FileUploadPreviewProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<FileUploadPreviewPropsWithContext<StreamChatGenerics>>;
+export type FileUploadPreviewProps = Partial<FileUploadPreviewPropsWithContext>;
 
 /**
  * FileUploadPreview
  * UI Component to preview the files set for upload
  */
-export const FileUploadPreview = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: FileUploadPreviewProps<StreamChatGenerics>,
-) => {
-  const { enableOfflineSupport } = useChatContext<StreamChatGenerics>();
+export const FileUploadPreview = (props: FileUploadPreviewProps) => {
+  const { enableOfflineSupport } = useChatContext();
   const { AudioAttachmentUploadPreview, fileUploads, removeFile, setFileUploads, uploadFile } =
-    useMessageInputContext<StreamChatGenerics>();
-  const { FileAttachmentIcon } = useMessagesContext<StreamChatGenerics>();
+    useMessageInputContext();
+  const { FileAttachmentIcon } = useMessagesContext();
 
   return (
     <MemoizedFileUploadPreview

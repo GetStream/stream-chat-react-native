@@ -21,16 +21,14 @@ import {
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { upsertCidsForQuery } from '../../store/apis/upsertCidsForQuery';
-import type { ChannelListEventListenerOptions, DefaultStreamChatGenerics } from '../../types/types';
+import type { ChannelListEventListenerOptions } from '../../types/types';
 import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
 
-export type ChannelListProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<
+export type ChannelListProps = Partial<
   Pick<
-    ChannelsContextValue<StreamChatGenerics>,
+    ChannelsContextValue,
     | 'additionalFlatListProps'
     | 'EmptyStateIndicator'
     | 'FooterLoadingIndicator'
@@ -55,9 +53,7 @@ export type ChannelListProps<
   >
 > & {
   /** Optional function to filter channels prior to rendering the list. Do not use any complex logic that would delay the loading of the ChannelList. We recommend using a pure function with array methods like filter/sort/reduce. */
-  channelRenderFilterFn?: (
-    channels: Array<Channel<StreamChatGenerics>>,
-  ) => Array<Channel<StreamChatGenerics>>;
+  channelRenderFilterFn?: (channels: Array<Channel>) => Array<Channel>;
   /**
    * Object containing channel query filters
    *
@@ -65,13 +61,13 @@ export type ChannelListProps<
    *
    * @overrideType object
    * */
-  filters?: ChannelFilters<StreamChatGenerics>;
+  filters?: ChannelFilters;
   /**
    * Custom UI component to display the list of channels
    *
    * Default: [ChannelListMessenger](https://getstream.io/chat/docs/sdk/reactnative/ui-components/channel-list-messenger/)
    */
-  List?: React.ComponentType<ChannelListMessengerProps<StreamChatGenerics>>;
+  List?: React.ComponentType<ChannelListMessengerProps>;
   /**
    * If set to true, channels won't dynamically sort by most recent message, defaults to false
    */
@@ -87,9 +83,9 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onAddedToChannel?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
-    event: Event<StreamChatGenerics>,
-    options?: ChannelListEventListenerOptions<StreamChatGenerics>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel[]>>,
+    event: Event,
+    options?: ChannelListEventListenerOptions,
   ) => void;
   /**
    * Function that overrides default behavior when a channel gets deleted. In absence of this prop, the channel will be removed from the list.
@@ -100,8 +96,8 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelDeleted?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
-    event: Event<StreamChatGenerics>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel[]>>,
+    event: Event,
   ) => void;
   /**
    * Function that overrides default behavior when a channel gets hidden. In absence of this prop, the channel will be removed from the list.
@@ -112,8 +108,8 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelHidden?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
-    event: Event<StreamChatGenerics>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel[]>>,
+    event: Event,
   ) => void;
   /**
    * Function that overrides default behavior when a channel member.updated event is triggered
@@ -126,9 +122,9 @@ export type ChannelListProps<
    */
   onChannelMemberUpdated?: (
     lockChannelOrder: boolean,
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
-    event: Event<StreamChatGenerics>,
-    options?: ChannelListEventListenerOptions<StreamChatGenerics>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel[]>>,
+    event: Event,
+    options?: ChannelListEventListenerOptions,
   ) => void;
   /**
    * Function to customize behavior when a channel gets truncated
@@ -139,8 +135,8 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelTruncated?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
-    event: Event<StreamChatGenerics>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel[]>>,
+    event: Event,
   ) => void;
   /**
    * Function that overrides default behavior when a channel gets updated
@@ -151,8 +147,8 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelUpdated?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
-    event: Event<StreamChatGenerics>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel[]>>,
+    event: Event,
   ) => void;
   /**
    * Function that overrides default behavior when a channel gets visible. In absence of this prop, the channel will be added to the list.
@@ -163,8 +159,8 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelVisible?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
-    event: Event<StreamChatGenerics>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel[]>>,
+    event: Event,
   ) => void;
   /**
    * Override the default listener/handler for event `message.new`
@@ -180,9 +176,9 @@ export type ChannelListProps<
    * */
   onNewMessage?: (
     lockChannelOrder: boolean,
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
-    event: Event<StreamChatGenerics>,
-    options?: ChannelListEventListenerOptions<StreamChatGenerics>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel[]>>,
+    event: Event,
+    options?: ChannelListEventListenerOptions,
   ) => void;
   /**
    * Override the default listener/handler for event `notification.message_new`
@@ -194,9 +190,9 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onNewMessageNotification?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
-    event: Event<StreamChatGenerics>,
-    options?: ChannelListEventListenerOptions<StreamChatGenerics>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel[]>>,
+    event: Event,
+    options?: ChannelListEventListenerOptions,
   ) => void;
 
   /**
@@ -208,8 +204,8 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onRemovedFromChannel?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
-    event: Event<StreamChatGenerics>,
+    setChannels: React.Dispatch<React.SetStateAction<Channel[]>>,
+    event: Event,
   ) => void;
   /**
    * Object containing channel query options
@@ -220,7 +216,7 @@ export type ChannelListProps<
    * Object containing channel sort parameters
    * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available sorting fields
    * */
-  sort?: ChannelSort<StreamChatGenerics>;
+  sort?: ChannelSort;
 };
 
 const DEFAULT_FILTERS = {};
@@ -234,11 +230,7 @@ const DEFAULT_SORT = {};
  *
  * @example ./ChannelList.md
  */
-export const ChannelList = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: ChannelListProps<StreamChatGenerics>,
-) => {
+export const ChannelList = (props: ChannelListProps) => {
   const {
     additionalFlatListProps = {},
     channelRenderFilterFn,
@@ -281,7 +273,7 @@ export const ChannelList = <
   } = props;
 
   const [forceUpdate, setForceUpdate] = useState(0);
-  const { client, enableOfflineSupport } = useChatContext<StreamChatGenerics>();
+  const { client, enableOfflineSupport } = useChatContext();
   const channelManager = useMemo(() => client.createChannelManager({}), [client]);
 
   /**
@@ -353,7 +345,7 @@ export const ChannelList = <
     refreshList,
     reloadList,
     staticChannelsActive,
-  } = usePaginatedChannels<StreamChatGenerics>({
+  } = usePaginatedChannels({
     channelManager,
     enableOfflineSupport,
     filters,
@@ -423,7 +415,7 @@ export const ChannelList = <
     refreshing,
     refreshList,
     reloadList,
-    setFlatListRef: (ref: FlatList<Channel<StreamChatGenerics>> | null) => {
+    setFlatListRef: (ref: FlatList<Channel> | null) => {
       if (setFlatListRef) {
         setFlatListRef(ref);
       }
@@ -433,7 +425,7 @@ export const ChannelList = <
 
   return (
     <ChannelsProvider value={channelsContext}>
-      <List<StreamChatGenerics> />
+      <List />
     </ChannelsProvider>
   );
 };

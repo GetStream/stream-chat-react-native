@@ -2,14 +2,11 @@ import type { ChannelMemberResponse } from 'stream-chat';
 
 import { mapStorableToUser } from './mapStorableToUser';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { TableRowJoinedUser } from '../types';
 
-export const mapStorableToMember = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
+export const mapStorableToMember = (
   memberRow: TableRowJoinedUser<'members'>,
-): ChannelMemberResponse<StreamChatGenerics> => {
+): ChannelMemberResponse => {
   const {
     banned,
     channelRole,

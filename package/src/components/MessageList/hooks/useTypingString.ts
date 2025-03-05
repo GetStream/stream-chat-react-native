@@ -3,16 +3,13 @@ import { useThreadContext } from '../../../contexts/threadContext/ThreadContext'
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useTypingContext } from '../../../contexts/typingContext/TypingContext';
 
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { filterTypingUsers } from '../utils/filterTypingUsers';
 
-export const useTypingString = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => {
-  const { client } = useChatContext<StreamChatGenerics>();
-  const { thread } = useThreadContext<StreamChatGenerics>();
+export const useTypingString = () => {
+  const { client } = useChatContext();
+  const { thread } = useThreadContext();
   const { t } = useTranslationContext();
-  const { typing } = useTypingContext<StreamChatGenerics>();
+  const { typing } = useTypingContext();
 
   const filteredTypingUsers = filterTypingUsers({ client, thread, typing });
 

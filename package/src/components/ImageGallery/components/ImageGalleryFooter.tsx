@@ -25,12 +25,10 @@ const ReanimatedSafeAreaView = Animated.createAnimatedComponent
   ? Animated.createAnimatedComponent(SafeAreaView)
   : SafeAreaView;
 
-import { DefaultStreamChatGenerics, FileTypes } from '../../../types/types';
+import { FileTypes } from '../../../types/types';
 import type { Photo } from '../ImageGallery';
 
-export type ImageGalleryFooterCustomComponent<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = ({
+export type ImageGalleryFooterCustomComponent = ({
   openGridView,
   photo,
   share,
@@ -39,7 +37,7 @@ export type ImageGalleryFooterCustomComponent<
   openGridView: () => void;
   share: () => Promise<void>;
   shareMenuOpen: boolean;
-  photo?: Photo<StreamChatGenerics>;
+  photo?: Photo;
 }) => React.ReactElement | null;
 
 export type ImageGalleryFooterVideoControlProps = {
@@ -57,27 +55,23 @@ export type ImageGalleryFooterVideoControlComponent = ({
   progress,
 }: ImageGalleryFooterVideoControlProps) => React.ReactElement | null;
 
-export type ImageGalleryFooterCustomComponentProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
-  centerElement?: ImageGalleryFooterCustomComponent<StreamChatGenerics>;
+export type ImageGalleryFooterCustomComponentProps = {
+  centerElement?: ImageGalleryFooterCustomComponent;
   GridIcon?: React.ReactElement;
-  leftElement?: ImageGalleryFooterCustomComponent<StreamChatGenerics>;
-  rightElement?: ImageGalleryFooterCustomComponent<StreamChatGenerics>;
+  leftElement?: ImageGalleryFooterCustomComponent;
+  rightElement?: ImageGalleryFooterCustomComponent;
   ShareIcon?: React.ReactElement;
   videoControlElement?: ImageGalleryFooterVideoControlComponent;
 };
 
-type ImageGalleryFooterPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = ImageGalleryFooterCustomComponentProps<StreamChatGenerics> & {
+type ImageGalleryFooterPropsWithContext = ImageGalleryFooterCustomComponentProps & {
   accessibilityLabel: string;
   duration: number;
   onPlayPause: () => void;
   opacity: SharedValue<number>;
   openGridView: () => void;
   paused: boolean;
-  photo: Photo<StreamChatGenerics>;
+  photo: Photo;
   photoLength: number;
   progress: number;
   selectedIndex: number;
@@ -85,11 +79,7 @@ type ImageGalleryFooterPropsWithContext<
   visible: SharedValue<number>;
 };
 
-export const ImageGalleryFooterWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: ImageGalleryFooterPropsWithContext<StreamChatGenerics>,
-) => {
+export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterPropsWithContext) => {
   const {
     accessibilityLabel,
     centerElement,
@@ -241,9 +231,9 @@ const ShareButton = ({ share, ShareIcon, shareMenuOpen }: ShareButtonProps) => {
   );
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: ImageGalleryFooterPropsWithContext<StreamChatGenerics>,
-  nextProps: ImageGalleryFooterPropsWithContext<StreamChatGenerics>,
+const areEqual = (
+  prevProps: ImageGalleryFooterPropsWithContext,
+  nextProps: ImageGalleryFooterPropsWithContext,
 ) => {
   const {
     duration: prevDuration,
@@ -286,15 +276,11 @@ const MemoizedImageGalleryFooter = React.memo(
   areEqual,
 ) as typeof ImageGalleryFooterWithContext;
 
-export type ImageGalleryFooterProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = ImageGalleryFooterPropsWithContext<StreamChatGenerics>;
+export type ImageGalleryFooterProps = ImageGalleryFooterPropsWithContext;
 
-export const ImageGalleryFooter = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: ImageGalleryFooterProps<StreamChatGenerics>,
-) => <MemoizedImageGalleryFooter {...props} />;
+export const ImageGalleryFooter = (props: ImageGalleryFooterProps) => (
+  <MemoizedImageGalleryFooter {...props} />
+);
 
 ImageGalleryFooter.displayName = 'ImageGalleryFooter{imageGallery{footer}}';
 

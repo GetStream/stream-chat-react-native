@@ -6,23 +6,15 @@ import { ChannelPreviewProps } from './ChannelPreview';
 import type { ChannelsContextValue } from '../../contexts/channelsContext/ChannelsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
-
-export type ChannelPreviewUnreadCountProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChannelsContextValue<StreamChatGenerics>, 'maxUnreadCount'> &
-  Pick<ChannelPreviewProps<StreamChatGenerics>, 'channel'> & {
+export type ChannelPreviewUnreadCountProps = Pick<ChannelsContextValue, 'maxUnreadCount'> &
+  Pick<ChannelPreviewProps, 'channel'> & {
     /**
      * Number of unread messages on the channel
      */
     unread?: number;
   };
 
-export const ChannelPreviewUnreadCount = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: ChannelPreviewUnreadCountProps<StreamChatGenerics>,
-) => {
+export const ChannelPreviewUnreadCount = (props: ChannelPreviewUnreadCountProps) => {
   const { maxUnreadCount, unread } = props;
   const {
     theme: {

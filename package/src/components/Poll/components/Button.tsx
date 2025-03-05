@@ -4,19 +4,11 @@ import { Pressable, StyleSheet, Text } from 'react-native';
 import { Poll, PollOption } from 'stream-chat';
 
 import { useTheme } from '../../../contexts';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 import { MessageType } from '../../MessageList/hooks/useMessageList';
 
-export type PollButtonProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
-  onPress?: ({
-    message,
-    poll,
-  }: {
-    message: MessageType<StreamChatGenerics>;
-    poll: Poll<StreamChatGenerics>;
-  }) => void;
+export type PollButtonProps = {
+  onPress?: ({ message, poll }: { message: MessageType; poll: Poll }) => void;
 };
 
 export type PollVoteButtonProps = {

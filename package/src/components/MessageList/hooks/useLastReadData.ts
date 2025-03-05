@@ -4,25 +4,17 @@ import type { ChannelState } from 'stream-chat';
 
 import { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 import { getReadStates } from '../utils/getReadStates';
 
-type UseLastReadDataParams<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
-  messages:
-    | PaginatedMessageListContextValue<StreamChatGenerics>['messages']
-    | ThreadContextValue<StreamChatGenerics>['threadMessages'];
+type UseLastReadDataParams = {
+  messages: PaginatedMessageListContextValue['messages'] | ThreadContextValue['threadMessages'];
   userID: string | undefined;
-  read?: ChannelState<StreamChatGenerics>['read'];
+  read?: ChannelState['read'];
   returnAllReadData?: boolean;
 };
 
-export const useLastReadData = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: UseLastReadDataParams<StreamChatGenerics>,
-) => {
+export const useLastReadData = (props: UseLastReadDataParams) => {
   const { messages, read, returnAllReadData = true, userID } = props;
 
   return useMemo(

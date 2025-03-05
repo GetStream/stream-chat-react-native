@@ -3,19 +3,16 @@ import type { ImageProps } from 'react-native';
 
 import type { AppSettingsAPIResponse, Channel, Mute, StreamChat } from 'stream-chat';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
 import { MessageContextValue } from '../messageContext/MessageContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-export type ChatContextValue<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+export type ChatContextValue = {
   /**
    * Object of application settings returned from Stream.
    * */
-  appSettings: AppSettingsAPIResponse<StreamChatGenerics> | null;
+  appSettings: AppSettingsAPIResponse | null;
   /**
    * The StreamChat client object
    *
@@ -32,7 +29,7 @@ export type ChatContextValue<
    *
    * @overrideType StreamChat
    * */
-  client: StreamChat<StreamChatGenerics>;
+  client: StreamChat;
   connectionRecovering: boolean;
   enableOfflineSupport: boolean;
   /**
@@ -40,13 +37,13 @@ export type ChatContextValue<
    */
   ImageComponent: React.ComponentType<ImageProps>;
   isOnline: boolean | null;
-  mutedUsers: Mute<StreamChatGenerics>[];
+  mutedUsers: Mute[];
   /**
    * @param newChannel Channel to set as active.
    *
    * @overrideType Function
    */
-  setActiveChannel: (newChannel?: Channel<StreamChatGenerics>) => void;
+  setActiveChannel: (newChannel?: Channel) => void;
   /**
    * Instance of channel object from stream-chat package.
    *
@@ -64,28 +61,24 @@ export type ChatContextValue<
    *
    * @overrideType Channel
    */
-  channel?: Channel<StreamChatGenerics>;
-} & Partial<Pick<MessageContextValue<StreamChatGenerics>, 'isMessageAIGenerated'>>;
+  channel?: Channel;
+} & Partial<Pick<MessageContextValue, 'isMessageAIGenerated'>>;
 
 export const ChatContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as ChatContextValue);
 
-export const ChatProvider = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const ChatProvider = ({
   children,
   value,
 }: PropsWithChildren<{
-  value?: ChatContextValue<StreamChatGenerics>;
+  value?: ChatContextValue;
 }>) => (
   <ChatContext.Provider value={value as unknown as ChatContextValue}>
     {children}
   </ChatContext.Provider>
 );
 
-export const useChatContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => {
-  const contextValue = useContext(ChatContext) as unknown as ChatContextValue<StreamChatGenerics>;
+export const useChatContext = () => {
+  const contextValue = useContext(ChatContext) as unknown as ChatContextValue;
 
   if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(

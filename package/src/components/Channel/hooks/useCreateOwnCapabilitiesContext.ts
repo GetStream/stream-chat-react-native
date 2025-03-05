@@ -7,15 +7,12 @@ import {
   OwnCapabilitiesContextValue,
   OwnCapability,
 } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 
-export const useCreateOwnCapabilitiesContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const useCreateOwnCapabilitiesContext = ({
   channel,
   overrideCapabilities,
 }: {
-  channel: Channel<StreamChatGenerics>;
+  channel: Channel;
   overrideCapabilities?: Partial<OwnCapabilitiesContextValue>;
 }) => {
   const [own_capabilities, setOwnCapabilites] = useState(

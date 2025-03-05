@@ -1,10 +1,4 @@
-import type {
-  ChannelFilters,
-  ChannelSort,
-  ChannelState,
-  ExtendableGenerics,
-  LiteralStringForUnion,
-} from 'stream-chat';
+import type { ChannelFilters, ChannelSort, ChannelState } from 'stream-chat';
 
 import type { FileStateValue } from '../utils/utils';
 
@@ -83,41 +77,26 @@ export type Reaction = {
   image?: string;
 };
 
-interface DefaultUserType extends UnknownType {
+export interface DefaultUserType extends UnknownType {
   image?: string;
 }
 
-interface DefaultChannelType extends UnknownType {
+export interface DefaultChannelType extends UnknownType {
   [key: string]: unknown;
 
   image?: string;
 }
 
-export interface DefaultStreamChatGenerics extends ExtendableGenerics {
-  attachmentType: DefaultAttachmentType;
-  channelType: DefaultChannelType;
-  commandType: LiteralStringForUnion;
-  eventType: UnknownType;
-  memberType: UnknownType;
-  messageType: UnknownType;
-  reactionType: UnknownType;
-  userType: DefaultUserType;
-}
-
-export type ChannelListEventListenerOptions<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
-  filters?: ChannelFilters<StreamChatGenerics>;
-  sort?: ChannelSort<StreamChatGenerics>;
+export type ChannelListEventListenerOptions = {
+  filters?: ChannelFilters;
+  sort?: ChannelSort;
 };
 
 export type UnknownType = Record<string, unknown>;
 
 export type ValueOf<T> = T[keyof T];
 
-export type ChannelUnreadState<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Omit<ValueOf<ChannelState<StreamChatGenerics>['read']>, 'user'>;
+export type ChannelUnreadState = Omit<ValueOf<ChannelState['read']>, 'user'>;
 
 // ASYNC AUDIO EXPO:
 export enum AndroidOutputFormat {

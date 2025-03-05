@@ -24,7 +24,7 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useLoadingImage } from '../../hooks/useLoadingImage';
 import { GiphyIcon, GiphyLightning } from '../../icons';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
 const styles = StyleSheet.create({
@@ -134,11 +134,12 @@ const styles = StyleSheet.create({
   },
 });
 
-export type GiphyPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setSelectedMessage' | 'setMessages'> &
+export type GiphyPropsWithContext = Pick<
+  ImageGalleryContextValue,
+  'setSelectedMessage' | 'setMessages'
+> &
   Pick<
-    MessageContextValue<StreamChatGenerics>,
+    MessageContextValue,
     | 'handleAction'
     | 'isMyMessage'
     | 'message'
@@ -147,22 +148,18 @@ export type GiphyPropsWithContext<
     | 'onPressIn'
     | 'preventPress'
   > &
-  Pick<ChatContextValue<StreamChatGenerics>, 'ImageComponent'> &
+  Pick<ChatContextValue, 'ImageComponent'> &
   Pick<
-    MessagesContextValue<StreamChatGenerics>,
+    MessagesContextValue,
     | 'giphyVersion'
     | 'additionalPressableProps'
     | 'ImageLoadingIndicator'
     | 'ImageLoadingFailedIndicator'
   > & {
-    attachment: Attachment<StreamChatGenerics>;
+    attachment: Attachment;
   } & Pick<OverlayContextValue, 'setOverlay'>;
 
-const GiphyWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: GiphyPropsWithContext<StreamChatGenerics>,
-) => {
+const GiphyWithContext = (props: GiphyPropsWithContext) => {
   const {
     additionalPressableProps,
     attachment,
@@ -389,10 +386,7 @@ const GiphyWithContext = <
   );
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: GiphyPropsWithContext<StreamChatGenerics>,
-  nextProps: GiphyPropsWithContext<StreamChatGenerics>,
-) => {
+const areEqual = (prevProps: GiphyPropsWithContext, nextProps: GiphyPropsWithContext) => {
   const {
     attachment: { actions: prevActions, image_url: prevImageUrl, thumb_url: prevThumbUrl },
     giphyVersion: prevGiphyVersion,
@@ -448,31 +442,25 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
 const MemoizedGiphy = React.memo(GiphyWithContext, areEqual) as typeof GiphyWithContext;
 
-export type GiphyProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<GiphyPropsWithContext<StreamChatGenerics>> & {
-  attachment: Attachment<StreamChatGenerics>;
+export type GiphyProps = Partial<GiphyPropsWithContext> & {
+  attachment: Attachment;
 };
 
 /**
  * UI component for card in attachments.
  */
-export const Giphy = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: GiphyProps<StreamChatGenerics>,
-) => {
+export const Giphy = (props: GiphyProps) => {
   const { handleAction, isMyMessage, message, onLongPress, onPress, onPressIn, preventPress } =
-    useMessageContext<StreamChatGenerics>();
-  const { ImageComponent } = useChatContext<StreamChatGenerics>();
-  const { additionalPressableProps, giphyVersion } = useMessagesContext<StreamChatGenerics>();
-  const { setMessages, setSelectedMessage } = useImageGalleryContext<StreamChatGenerics>();
+    useMessageContext();
+  const { ImageComponent } = useChatContext();
+  const { additionalPressableProps, giphyVersion } = useMessagesContext();
+  const { setMessages, setSelectedMessage } = useImageGalleryContext();
   const { setOverlay } = useOverlayContext();
 
   const {
     ImageLoadingFailedIndicator: ContextImageLoadingFailedIndicator,
     ImageLoadingIndicator: ContextImageLoadingIndicator,
-  } = useMessagesContext<StreamChatGenerics>();
+  } = useMessagesContext();
   const ImageLoadingFailedIndicator =
     ContextImageLoadingFailedIndicator || props.ImageLoadingFailedIndicator;
   const ImageLoadingIndicator = ContextImageLoadingIndicator || props.ImageLoadingIndicator;

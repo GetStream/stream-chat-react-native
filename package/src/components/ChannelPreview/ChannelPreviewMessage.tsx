@@ -5,8 +5,6 @@ import type { LatestMessagePreview } from './hooks/useLatestMessagePreview';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
-
 const styles = StyleSheet.create({
   bold: { fontWeight: '600' },
   message: {
@@ -15,20 +13,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export type ChannelPreviewMessageProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+export type ChannelPreviewMessageProps = {
   /**
    * Latest message on a channel, formatted for preview.
    */
-  latestMessagePreview: LatestMessagePreview<StreamChatGenerics>;
+  latestMessagePreview: LatestMessagePreview;
 };
 
-export const ChannelPreviewMessage = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: ChannelPreviewMessageProps<StreamChatGenerics>,
-) => {
+export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   const { latestMessagePreview } = props;
 
   const {

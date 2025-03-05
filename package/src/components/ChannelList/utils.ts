@@ -2,29 +2,23 @@ import type { Channel, ChannelSort, StreamChat } from 'stream-chat';
 
 import { findLastPinnedChannelIndex, shouldConsiderPinnedChannels } from './hooks/utils';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
-
-type MoveParameters<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
-  channels: Array<Channel<StreamChatGenerics>>;
-  channelToMove: Channel<StreamChatGenerics>;
+type MoveParameters = {
+  channels: Array<Channel>;
+  channelToMove: Channel;
   /**
    * If the index of the channel within `channels` list which is being moved upwards
    * (`channelToMove`) is known, you can supply it to skip extra calculation.
    */
   channelToMoveIndexWithinChannels?: number;
-  sort?: ChannelSort<StreamChatGenerics>;
+  sort?: ChannelSort;
 };
 
-export const moveChannelUp = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const moveChannelUp = ({
   channels,
   channelToMove,
   channelToMoveIndexWithinChannels,
   sort,
-}: MoveParameters<StreamChatGenerics>) => {
+}: MoveParameters) => {
   // get index of channel to move up
   const targetChannelIndex =
     channelToMoveIndexWithinChannels ??
@@ -66,21 +60,13 @@ export const moveChannelUp = <
   return newChannels;
 };
 
-type GetParameters<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
-  client: StreamChat<StreamChatGenerics>;
+type GetParameters = {
+  client: StreamChat;
   id: string;
   type: string;
 };
 
-export const getChannel = async <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
-  client,
-  id,
-  type,
-}: GetParameters<StreamChatGenerics>) => {
+export const getChannel = async ({ client, id, type }: GetParameters) => {
   const channel = client.channel(type, id);
   await channel.watch();
   return channel;
