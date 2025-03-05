@@ -2558,6 +2558,14 @@
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.15.tgz#596a1747233694d50f6ad8a7869fcb6f56cf5841"
   integrity sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==
 
+"@types/jsonwebtoken@^9.0.8":
+  version "9.0.9"
+  resolved "https://registry.yarnpkg.com/@types/jsonwebtoken/-/jsonwebtoken-9.0.9.tgz#a4c3a446c0ebaaf467a58398382616f416345fb3"
+  integrity sha512-uoe+GxEuHbvy12OUQct2X9JenKM3qAscquYymuQN4fMWG9DBQtykrQEFcAbVACF7qaLw9BePSodUL0kquqBJpQ==
+  dependencies:
+    "@types/ms" "*"
+    "@types/node" "*"
+
 "@types/jsonwebtoken@~9.0.0":
   version "9.0.8"
   resolved "https://registry.yarnpkg.com/@types/jsonwebtoken/-/jsonwebtoken-9.0.8.tgz#313490052801edfb031bb32b6bbd77cc9f230852"
@@ -2613,6 +2621,13 @@
   version "7.4.7"
   resolved "https://registry.yarnpkg.com/@types/ws/-/ws-7.4.7.tgz#f7c390a36f7a0679aa69de2d501319f4f8d9b702"
   integrity sha512-JQbbmxZTZehdc2iszGKs5oC3NFnjeay7mtAWrdt7qNtAVK0g19muApzAy4bm9byz79xa2ZnO/BOBC2R8RC5Lww==
+  dependencies:
+    "@types/node" "*"
+
+"@types/ws@^8.5.14":
+  version "8.18.0"
+  resolved "https://registry.yarnpkg.com/@types/ws/-/ws-8.18.0.tgz#8a2ec491d6f0685ceaab9a9b7ff44146236993b5"
+  integrity sha512-8svvI3hMyvN0kKCJMvTJP/x6Y/EoQbepff882wL+Sn5QsXb3etnamgrJq4isrBxSJj5L2AuXcI0+bgkoAXGUJw==
   dependencies:
     "@types/node" "*"
 
@@ -5229,6 +5244,11 @@ isomorphic-ws@^4.0.1:
   resolved "https://registry.yarnpkg.com/isomorphic-ws/-/isomorphic-ws-4.0.1.tgz#55fd4cd6c5e6491e76dc125938dd863f5cd4f2dc"
   integrity sha512-BhBvN2MBpWTaSHdWRb/bwdZJ1WaehQ2L1KngkCkfLUGF0mAWAT1sQUQacEmQ0jXkFw/czDXPNQSL5u2/Krsz1w==
 
+isomorphic-ws@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/isomorphic-ws/-/isomorphic-ws-5.0.0.tgz#e5529148912ecb9b451b46ed44d53dae1ce04bbf"
+  integrity sha512-muId7Zzn9ywDsyXgTIafTry2sV3nySZeUDe6YedVd1Hvuuep5AsIlqK+XefWpYTyJG5e503F2xIuT2lcU6rCSw==
+
 istanbul-lib-coverage@^3.0.0, istanbul-lib-coverage@^3.2.0:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/istanbul-lib-coverage/-/istanbul-lib-coverage-3.2.2.tgz#2d166c4b0644d43a39f04bf6c2edd1e585f31756"
@@ -5768,7 +5788,7 @@ jsonfile@^4.0.0:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
-jsonwebtoken@~9.0.0:
+jsonwebtoken@^9.0.2, jsonwebtoken@~9.0.0:
   version "9.0.2"
   resolved "https://registry.yarnpkg.com/jsonwebtoken/-/jsonwebtoken-9.0.2.tgz#65ff91f4abef1784697d40952bb1998c504caaf3"
   integrity sha512-PRp66vJ865SSqOlgqS8hujT5U4AOgMfhrwYIuIhfKaoSCZcirrmASQr8CX7cUg+RMih+hgznrjp99o+W4pJLHQ==
@@ -7557,25 +7577,24 @@ stream-chat-react-native-core@6.6.6:
   version "0.0.0"
   uid ""
 
+stream-chat@9.0.0-rc.4:
+  version "9.0.0-rc.4"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.0.0-rc.4.tgz#30ffd324069cd012372014efe3a6d94bf264963a"
+  integrity sha512-kVlDls6TXEWAlAQf6WLwNv3wDwVo0y9J536+NS8PFmkJKkBNfD9RGAbb4SuZNxeEpd+kAy3861vxspB1mpFEmQ==
+  dependencies:
+    "@types/jsonwebtoken" "^9.0.8"
+    "@types/ws" "^8.5.14"
+    axios "^1.6.0"
+    base64-js "^1.5.1"
+    form-data "^4.0.0"
+    isomorphic-ws "^5.0.0"
+    jsonwebtoken "^9.0.2"
+    ws "^8.18.1"
+
 stream-chat@^8.57.5:
   version "8.57.5"
   resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.57.5.tgz#1b49b7504371e19a539465e2ae5dc86aa3269637"
   integrity sha512-ndcbH/zGzUIAhZLGn1owVV8MeNvVfWITIlhAhfmnsV7RLoo/eiGFEuP4aNoG1YRos/g9xJQ7TEmKpz8xYqo13w==
-  dependencies:
-    "@babel/runtime" "^7.16.3"
-    "@types/jsonwebtoken" "~9.0.0"
-    "@types/ws" "^7.4.0"
-    axios "^1.6.0"
-    base64-js "^1.5.1"
-    form-data "^4.0.0"
-    isomorphic-ws "^4.0.1"
-    jsonwebtoken "~9.0.0"
-    ws "^7.5.10"
-
-stream-chat@^8.57.6:
-  version "8.57.6"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.57.6.tgz#dd3a4a0a024ee44bfa6ae7ca15648e6c9f2e498f"
-  integrity sha512-+zkC5DtxvdkEBAv7dCzzO4WWosjaM15EjsH3q4xD1nX/yf2qT6BMhPJguM+CUWxwlFh32X0KR+ARtD0ChPqtnA==
   dependencies:
     "@babel/runtime" "^7.16.3"
     "@types/jsonwebtoken" "~9.0.0"
@@ -8237,6 +8256,11 @@ ws@^7, ws@^7.5.10:
   version "7.5.10"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.10.tgz#58b5c20dc281633f6c19113f39b349bd8bd558d9"
   integrity sha512-+dbF1tHwZpXcbOJdVOkzLDxZP1ailvSxM6ZweXTegylPny803bFhA+vqBYw4s31NSAk4S2Qz+AKXK9a4wkdjcQ==
+
+ws@^8.18.1:
+  version "8.18.1"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.18.1.tgz#ea131d3784e1dfdff91adb0a4a116b127515e3cb"
+  integrity sha512-RKW2aJZMXeMxVpnZ6bck+RswznaxmzdULiBr6KY7XkTnW8uvt0iT9H5DkHUChXrc+uurzwa0rVI16n/Xzjdz1w==
 
 y18n@^4.0.0:
   version "4.0.3"

@@ -1,38 +1,22 @@
-import type { Immutable } from 'seamless-immutable';
 import type { Channel, UserResponse } from 'stream-chat';
-import type { ThreadContextValue } from 'stream-chat-react-native';
+import type { MessageType, ThreadType } from 'stream-chat-react-native';
 import type { Theme } from '@react-navigation/native';
 
-export type LocalAttachmentType = {
-  file_size?: number;
-  mime_type?: string;
-};
-export type LocalChannelType = Record<string, unknown>;
-export type LocalCommandType = string & {};
-export type LocalEventType = Record<string, unknown>;
-export type LocalMessageType = Record<string, unknown>;
-export type LocalReactionType = Record<string, unknown>;
-export type LocalUserType = {
-  image?: string;
-};
-type LocalPollOptionType = Record<string, unknown>;
-type LocalPollType = Record<string, unknown>;
-type LocalMemberType = Record<string, unknown>;
-
-export type StreamChatGenerics = {
-  attachmentType: LocalAttachmentType;
-  channelType: LocalChannelType;
-  commandType: LocalCommandType;
-  eventType: LocalEventType;
-  memberType: LocalMemberType;
-  messageType: LocalMessageType;
-  pollOptionType: LocalPollOptionType;
-  pollType: LocalPollType;
-  reactionType: LocalReactionType;
-  userType: LocalUserType;
-}
-
-// export type StreamChatGenerics = DefaultGenerics;
+// export type LocalAttachmentType = {
+//   file_size?: number;
+//   mime_type?: string;
+// };
+// export type LocalChannelType = Record<string, unknown>;
+// export type LocalCommandType = string & {};
+// export type LocalEventType = Record<string, unknown>;
+// export type LocalMessageType = Record<string, unknown>;
+// export type LocalReactionType = Record<string, unknown>;
+// export type LocalUserType = {
+//   image?: string;
+// };
+// type LocalPollOptionType = Record<string, unknown>;
+// type LocalPollType = Record<string, unknown>;
+// type LocalMemberType = Record<string, unknown>;
 
 export type DrawerNavigatorParamList = {
   HomeScreen: undefined;
@@ -41,36 +25,36 @@ export type DrawerNavigatorParamList = {
 
 export type StackNavigatorParamList = {
   ChannelFilesScreen: {
-    channel: Channel<StreamChatGenerics>;
+    channel: Channel;
   };
   ChannelImagesScreen: {
-    channel: Channel<StreamChatGenerics>;
+    channel: Channel;
   };
   ChannelListScreen: undefined;
   ChannelPinnedMessagesScreen: {
-    channel: Channel<StreamChatGenerics>;
+    channel: Channel;
   };
   ChannelScreen: {
-    channel?: Channel<StreamChatGenerics>;
+    channel?: Channel;
     channelId?: string;
     messageId?: string;
   };
   GroupChannelDetailsScreen: {
-    channel: Channel<StreamChatGenerics>;
+    channel: Channel;
   };
   MessagingScreen: undefined;
   NewDirectMessagingScreen: undefined;
   NewGroupChannelAddMemberScreen: undefined;
   NewGroupChannelAssignNameScreen: undefined;
   OneOnOneChannelDetailScreen: {
-    channel: Channel<StreamChatGenerics>;
+    channel: Channel;
   };
   SharedGroupsScreen: {
-    user: Immutable<UserResponse<StreamChatGenerics>> | UserResponse<StreamChatGenerics>;
+    user: UserResponse;
   };
   ThreadScreen: {
-    channel: Channel<StreamChatGenerics>;
-    thread: ThreadContextValue<StreamChatGenerics>['thread'];
+    channel: Channel;
+    thread: MessageType | ThreadType;
   };
 };
 

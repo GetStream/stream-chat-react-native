@@ -22,7 +22,7 @@ import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayConte
 
 import type { StackNavigationProp } from '@react-navigation/stack';
 
-import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
+import type { StackNavigatorParamList } from '../types';
 import { ChannelState } from 'stream-chat';
 
 const styles = StyleSheet.create({
@@ -71,7 +71,7 @@ const CustomChannelPreviewStatus = (
   );
 };
 
-export const ChannelPreview: React.FC<ChannelPreviewMessengerProps<StreamChatGenerics>> = (
+export const ChannelPreview: React.FC<ChannelPreviewMessengerProps> = (
   props,
 ) => {
   const { channel } = props;
@@ -82,7 +82,7 @@ export const ChannelPreview: React.FC<ChannelPreviewMessengerProps<StreamChatGen
 
   const { data, setData } = useChannelInfoOverlayContext();
 
-  const { client } = useChatContext<StreamChatGenerics>();
+  const { client } = useChatContext();
 
   const navigation = useNavigation<ChannelListScreenNavigationProp>();
 

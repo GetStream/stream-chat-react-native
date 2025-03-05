@@ -8,7 +8,7 @@ import { DEFAULT_PAGINATION_LIMIT } from '../../utils/constants';
 
 import type { MessageResponse } from 'stream-chat';
 
-import type { StackNavigatorParamList, StreamChatGenerics } from '../../types';
+import type { StackNavigatorParamList } from '../../types';
 
 dayjs.extend(calendar);
 
@@ -52,13 +52,13 @@ export type MessageSearchListProps = {
   EmptySearchIndicator: React.ComponentType;
   loading: boolean;
   loadMore: () => void;
-  messages: MessageResponse<StreamChatGenerics>[] | undefined;
+  messages: MessageResponse[] | undefined;
   refreshing?: boolean;
   refreshList?: () => void;
   showResultCount?: boolean;
 };
 export const MessageSearchList: React.FC<MessageSearchListProps> = React.forwardRef(
-  (props, scrollRef: React.Ref<FlatList<MessageResponse<StreamChatGenerics>> | null>) => {
+  (props, scrollRef: React.Ref<FlatList<MessageResponse> | null>) => {
     const {
       EmptySearchIndicator,
       loading,

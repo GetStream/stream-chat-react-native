@@ -47,7 +47,6 @@ if (__DEV__) {
 
 import type {
   StackNavigatorParamList,
-  StreamChatGenerics,
   UserSelectorParamList,
 } from './src/types';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -171,21 +170,23 @@ const DrawerNavigator: React.FC = () => (
   </Drawer.Navigator>
 );
 
+const isMessageAIGenerated = (message: MessageType) => !!message.ai_generated;
+
 const DrawerNavigatorWrapper: React.FC<{
-  chatClient: StreamChat<StreamChatGenerics>;
+  chatClient: StreamChat;
 }> = ({ chatClient }) => {
   const { bottom } = useSafeAreaInsets();
   const streamChatTheme = useStreamChatTheme();
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <OverlayProvider<StreamChatGenerics> bottomInset={bottom} value={{ style: streamChatTheme }}>
-        <Chat<StreamChatGenerics>
+      <OverlayProvider bottomInset={bottom} value={{ style: streamChatTheme }}>
+        <Chat
           client={chatClient}
           enableOfflineSupport
           // @ts-expect-error - the `ImageComponent` prop is generic, meaning we can expect an error
           ImageComponent={FastImage}
-          isMessageAIGenerated={(message: MessageType) => !!message.ai_generated}
+          isMessageAIGenerated={isMessageAIGenerated}
         >
           <AppOverlayProvider>
             <UserSearchProvider>
