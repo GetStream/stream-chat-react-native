@@ -99,7 +99,7 @@ export const isBouncedMessage = (message: MessageType) =>
  * @param message
  * @returns boolean
  */
-export const isEditedMessage = (message: MessageType) => !!message.message_text_updated_at; // TODO: FIXME: && !message.ai_generated;
+export const isEditedMessage = (message: MessageType) => !!message.message_text_updated_at;
 
 /**
  * Default emoji search index for auto complete text input

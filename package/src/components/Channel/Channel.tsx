@@ -1181,8 +1181,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     attachments,
     mentioned_users,
     parent_id,
-    // TODO: CHECK ME PLEASE
-    // poll,
     poll_id,
     text,
     ...extraFields
@@ -1205,7 +1203,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           id: userId,
         })) || [],
       parent_id,
-      // poll,
       poll_id,
       reactions: [],
       status: MessageStatusTypes.SENDING,
