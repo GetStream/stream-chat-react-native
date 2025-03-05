@@ -61,21 +61,14 @@ export type ImageUpload = {
   width?: number;
 };
 
-export type DefaultAttachmentType = UnknownType & {
+export interface DefaultAttachmentType extends UnknownType {
   duration?: number;
   file_size?: number;
   mime_type?: string;
   originalFile?: File;
   originalImage?: Partial<Asset>;
   waveform_data?: number[];
-};
-
-export type Reaction = {
-  id: string;
-  name: string;
-  type: string;
-  image?: string;
-};
+}
 
 export interface DefaultUserType extends UnknownType {
   image?: string;
@@ -86,6 +79,36 @@ export interface DefaultChannelType extends UnknownType {
 
   image?: string;
 }
+
+export interface DefaultCommandType extends UnknownType {
+  flag: unknown;
+  imgur: unknown;
+}
+
+/* eslint-disable @typescript-eslint/no-empty-object-type */
+
+export interface DefaultEventType extends UnknownType {}
+
+export interface DefaultMemberType extends UnknownType {}
+
+export interface DefaultMessageType extends UnknownType {}
+
+export interface DefaultPollOptionType extends UnknownType {}
+
+export interface DefaultPollType extends UnknownType {}
+
+export interface DefaultReactionType extends UnknownType {}
+
+export interface DefaultThreadType extends UnknownType {}
+
+/* eslint-enable @typescript-eslint/no-empty-object-type */
+
+export type Reaction = {
+  id: string;
+  name: string;
+  type: string;
+  image?: string;
+};
 
 export type ChannelListEventListenerOptions = {
   filters?: ChannelFilters;
