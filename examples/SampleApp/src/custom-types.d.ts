@@ -13,6 +13,8 @@ import {
 } from 'stream-chat-react-native';
 
 declare module 'stream-chat' {
+  /* eslint-disable @typescript-eslint/no-empty-object-type */
+
   interface CustomAttachmentData extends DefaultAttachmentType {
     id?: string;
   }
@@ -38,4 +40,6 @@ declare module 'stream-chat' {
   interface CustomReactionData extends DefaultReactionType {}
 
   interface CustomThreadData extends DefaultThreadType {}
+
+  /* eslint-enable @typescript-eslint/no-empty-object-type */
 }
