@@ -37,8 +37,7 @@
     "react-native-screens": "~4.8.0",
     "react-native-svg": "15.11.1",
     "react-native-web": "~0.19.13",
-    "stream-chat-expo": "link:../../package/expo-package",
-    "stream-chat-react-native-core": "link:../../package",
+    "stream-chat-expo": "6.6.7-beta.1",
     "typescript": "~5.7.3"
   },
   "devDependencies": {
