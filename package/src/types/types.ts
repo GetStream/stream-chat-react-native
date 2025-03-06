@@ -51,17 +51,7 @@ export type FileUpload = {
   url?: string;
   waveform_data?: number[];
 };
-
-export type ImageUpload = {
-  file: Partial<Asset>;
-  id: string;
-  state: FileStateValue;
-  height?: number;
-  url?: string;
-  width?: number;
-};
-
-export interface DefaultAttachmentType extends UnknownType {
+export interface DefaultAttachmentType {
   duration?: number;
   file_size?: number;
   mime_type?: string;
@@ -70,38 +60,46 @@ export interface DefaultAttachmentType extends UnknownType {
   waveform_data?: number[];
 }
 
-export interface DefaultUserType extends UnknownType {
+export interface DefaultUserType {
   image?: string;
 }
 
-export interface DefaultChannelType extends UnknownType {
+export interface DefaultChannelType {
   [key: string]: unknown;
 
   image?: string;
 }
 
-export interface DefaultCommandType extends UnknownType {
+export interface DefaultCommandType {
   flag: unknown;
   imgur: unknown;
 }
 
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 
-export interface DefaultEventType extends UnknownType {}
+export interface DefaultEventType {}
 
-export interface DefaultMemberType extends UnknownType {}
+export interface DefaultMemberType {}
 
-export interface DefaultMessageType extends UnknownType {}
+export interface DefaultMessageType {}
 
-export interface DefaultPollOptionType extends UnknownType {}
+export interface DefaultPollOptionType {}
 
-export interface DefaultPollType extends UnknownType {}
+export interface DefaultPollType {}
 
-export interface DefaultReactionType extends UnknownType {}
+export interface DefaultReactionType {}
 
-export interface DefaultThreadType extends UnknownType {}
+export interface DefaultThreadType {}
 
 /* eslint-enable @typescript-eslint/no-empty-object-type */
+export type ImageUpload = {
+  file: Partial<Asset>;
+  id: string;
+  state: FileStateValue;
+  height?: number;
+  url?: string;
+  width?: number;
+};
 
 export type Reaction = {
   id: string;

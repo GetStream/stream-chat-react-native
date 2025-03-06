@@ -1,28 +1,42 @@
 import 'stream-chat';
-import { Asset, File } from './types';
+import {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMemberType,
+  DefaultMessageType,
+  DefaultPollOptionType,
+  DefaultPollType,
+  DefaultReactionType,
+  DefaultThreadType,
+  DefaultUserType,
+} from './types';
 
 declare module 'stream-chat' {
-  interface CustomUserData {
-    image?: string;
-  }
+  /* eslint-disable @typescript-eslint/no-empty-object-type */
 
-  interface CustomChannelData {
-    [key: string]: unknown;
+  interface CustomAttachmentData extends DefaultAttachmentType {}
 
-    image?: string;
-  }
+  interface CustomChannelData extends DefaultChannelType {}
 
-  interface CustomAttachmentData {
-    duration?: number;
-    file_size?: number;
-    mime_type?: string;
-    originalFile?: File;
-    originalImage?: Partial<Asset>;
-    waveform_data?: number[];
-  }
+  interface CustomCommandData extends DefaultCommandType {}
 
-  interface CustomCommandData {
-    flag: unknown;
-    imgur: unknown;
-  }
+  interface CustomEventData extends DefaultEventType {}
+
+  interface CustomMemberData extends DefaultMemberType {}
+
+  interface CustomUserData extends DefaultUserType {}
+
+  interface CustomMessageData extends DefaultMessageType {}
+
+  interface CustomPollOptionData extends DefaultPollOptionType {}
+
+  interface CustomPollData extends DefaultPollType {}
+
+  interface CustomReactionData extends DefaultReactionType {}
+
+  interface CustomThreadData extends DefaultThreadType {}
+
+  /* eslint-enable @typescript-eslint/no-empty-object-type */
 }

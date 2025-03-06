@@ -17,7 +17,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import type { RouteProp } from '@react-navigation/native';
 
 import type { StackNavigatorParamList } from '../types';
-import { ThreadState } from 'stream-chat';
+import { ThreadState, UserResponse } from 'stream-chat';
 
 const selector = (nextValue: ThreadState) => ({ parentMessage: nextValue.parentMessage }) as const;
 
@@ -39,12 +39,12 @@ export type ThreadHeaderProps = {
 
 const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
   const typing = useTypingString();
-  let subtitleText = (thread as MessageType)?.user?.name;
+  let subtitleText = ((thread as MessageType)?.user as UserResponse)?.name;
   const { parentMessage } =
     useStateStore((thread as ThreadType)?.threadInstance?.state, selector) || {};
 
   if (subtitleText == null) {
-    subtitleText = parentMessage?.user?.name;
+    subtitleText = (parentMessage?.user as UserResponse)?.name;
   }
 
   return (
