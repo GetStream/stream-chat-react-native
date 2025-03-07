@@ -1,5 +1,13 @@
 # Change Log
 
+### [6.6.7](https://github.com/GetStream/stream-chat-react-native/compare/v6.6.6...v6.6.7) (2025-03-07)
+
+
+### Bug Fixes
+
+* channel muted state update for offline enabled case ([#2992](https://github.com/GetStream/stream-chat-react-native/issues/2992)) ([3acc9c4](https://github.com/GetStream/stream-chat-react-native/commit/3acc9c44925d0edc10e971a9f50986204358ce49))
+* return properly sorted messages from offline DB ([#2996](https://github.com/GetStream/stream-chat-react-native/issues/2996)) ([52168ab](https://github.com/GetStream/stream-chat-react-native/commit/52168ab0e1380a717d70e22be71387fd3f055c28))
+
 ### [6.6.6](https://github.com/GetStream/stream-chat-react-native/compare/v6.6.5...v6.6.6) (2025-03-03)
 
 
