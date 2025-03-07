@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
@@ -33,16 +33,14 @@ export const NetworkDownIndicator = () => {
   } = useTheme();
   const { t } = useTranslationContext();
 
-  const getText = () => {
+  const indicatorText = useMemo(() => {
     if (!isOnline) {
       return t('Reconnecting...');
     } else if (error) {
       return t('Error loading messages for this channel...');
     }
     return '';
-  };
-
-  const indicatorText = getText();
+  }, [error, isOnline, t]);
 
   if (!indicatorText) {
     return null;

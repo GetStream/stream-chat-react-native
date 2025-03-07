@@ -30,7 +30,7 @@ export const selectMessagesForChannels = async (
         *,
         ROW_NUMBER() OVER (
           PARTITION BY cid
-          ORDER BY datetime(createdAt) DESC
+          ORDER BY cast(strftime('%s', createdAt) AS INTEGER) ASC
         ) RowNum
       FROM messages
       WHERE cid in (${questionMarks})

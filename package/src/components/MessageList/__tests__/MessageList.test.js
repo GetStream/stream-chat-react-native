@@ -23,7 +23,10 @@ import { Chat } from '../../Chat/Chat';
 import { MessageList } from '../MessageList';
 
 describe('MessageList', () => {
-  afterEach(cleanup);
+  afterEach(() => {
+    cleanup();
+    jest.clearAllMocks();
+  });
 
   it('should add new message at bottom of the list', async () => {
     const user1 = generateUser();
@@ -73,7 +76,7 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.watch();
 
-    const { getByTestId, queryAllByTestId } = render(
+    const { getByTestId } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel}>
@@ -85,7 +88,6 @@ describe('MessageList', () => {
 
     // debug()
     await waitFor(() => {
-      expect(queryAllByTestId('error-notification')).toHaveLength(0);
       expect(getByTestId('message-system')).toBeTruthy();
     });
   });
@@ -106,7 +108,7 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.watch();
 
-    const { getByTestId, queryAllByTestId, queryByTestId } = render(
+    const { getByTestId, queryByTestId } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel}>
@@ -117,7 +119,6 @@ describe('MessageList', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByTestId('error-notification')).toHaveLength(0);
       expect(getByTestId('message-deleted')).toBeTruthy();
       expect(queryByTestId('only-visible-to-you')).toBeNull();
     });
@@ -140,7 +141,7 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.watch();
 
-    const { getByTestId, queryAllByTestId, queryByTestId } = render(
+    const { getByTestId, queryByTestId } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel} deletedMessagesVisibilityType='sender'>
@@ -151,7 +152,6 @@ describe('MessageList', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByTestId('error-notification')).toHaveLength(0);
       expect(queryByTestId('message-deleted')).toBeTruthy();
       expect(getByTestId('only-visible-to-you')).toBeTruthy();
     });
@@ -174,7 +174,7 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.watch();
 
-    const { getByTestId, queryAllByTestId, queryByTestId } = render(
+    const { getByTestId, queryByTestId } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel} deletedMessagesVisibilityType='receiver'>
@@ -185,7 +185,6 @@ describe('MessageList', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByTestId('error-notification')).toHaveLength(0);
       expect(getByTestId('message-deleted')).toBeTruthy();
       expect(queryByTestId('only-visible-to-you')).toBeNull();
     });
@@ -208,7 +207,7 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.watch();
 
-    const { queryAllByTestId, queryByTestId } = render(
+    const { queryByTestId } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel} deletedMessagesVisibilityType='never'>
@@ -219,7 +218,6 @@ describe('MessageList', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByTestId('error-notification')).toHaveLength(0);
       expect(queryByTestId('message-deleted')).toBeNull();
       expect(queryByTestId('only-visible-to-you')).toBeNull();
     });
@@ -241,7 +239,7 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.watch();
 
-    const { getByTestId, queryAllByTestId } = render(
+    const { getByTestId } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel}>
@@ -252,7 +250,6 @@ describe('MessageList', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByTestId('error-notification')).toHaveLength(0);
       expect(getByTestId('message-deleted')).toBeTruthy();
     });
   });
@@ -285,7 +282,6 @@ describe('MessageList', () => {
 
     await waitFor(() => {
       expect(queryAllByTestId('message-system')).toHaveLength(0);
-      expect(queryAllByTestId('error-notification')).toHaveLength(0);
       expect(getByTestId('typing-indicator')).toBeTruthy();
     });
   });

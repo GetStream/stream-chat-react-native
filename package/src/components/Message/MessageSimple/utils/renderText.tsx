@@ -18,10 +18,10 @@ import {
   DefaultRules,
   defaultRules,
   MatchFunction,
+  NodeOutput,
+  Output,
   ParseFunction,
   parseInline,
-  ReactNodeOutput,
-  ReactOutput,
   SingleASTNode,
   State,
 } from 'simple-markdown';
@@ -35,6 +35,9 @@ import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/ut
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { escapeRegExp } from '../../../../utils/utils';
 import type { MessageType } from '../../../MessageList/hooks/useMessageList';
+
+type ReactNodeOutput = NodeOutput<React.ReactNode>;
+type ReactOutput = Output<React.ReactNode>;
 
 export const MarkdownReactiveScrollView = ({ children }: { children: ReactNode }) => {
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();

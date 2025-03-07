@@ -1,11 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { TouchableOpacity } from '@gorhom/bottom-sheet';
-
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Close } from '../../../icons';
+import { BottomSheetTouchableOpacity } from '../../BottomSheetCompatibility/BottomSheetTouchableOpacity';
 
 const styles = StyleSheet.create({
   closeButton: {
@@ -75,9 +74,9 @@ export const ImageGridHandle = (props: Props) => {
       {rightComponent ? (
         rightComponent({ closeGridView })
       ) : (
-        <TouchableOpacity onPress={closeGridView}>
+        <BottomSheetTouchableOpacity onPress={closeGridView}>
           <Close style={styles.closeButton} />
-        </TouchableOpacity>
+        </BottomSheetTouchableOpacity>
       )}
     </View>
   );

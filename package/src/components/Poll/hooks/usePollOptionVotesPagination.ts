@@ -48,7 +48,7 @@ export const usePollOptionVotesPagination = ({
   const [votes, setVotes] = useState<PollVote[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error>();
-  const cursorRef = useRef<string | null>();
+  const cursorRef = useRef<string | null>(undefined);
   const queryInProgress = useRef(false);
   const optionFilter = useMemo(() => ({ option_id: option.id }), [option.id]);
 

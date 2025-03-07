@@ -12,18 +12,17 @@ export const useIsChannelMuted = <
   channel: Channel<StreamChatGenerics>,
 ) => {
   const { client } = useChatContext<StreamChatGenerics>();
-  const initialized = channel?.initialized;
 
-  const [muted, setMuted] = useState(() => initialized && channel.muteStatus());
+  const [muted, setMuted] = useState(() => channel.muteStatus());
 
   useEffect(() => {
     const handleEvent = () => {
-      setMuted(initialized && channel.muteStatus());
+      setMuted(channel.muteStatus());
     };
 
     client.on('notification.channel_mutes_updated', handleEvent);
     return () => client.off('notification.channel_mutes_updated', handleEvent);
-  }, [channel, client, initialized, muted]);
+  }, [channel, client, muted]);
 
   return muted || { createdAt: null, expiresAt: null, muted: false };
 };

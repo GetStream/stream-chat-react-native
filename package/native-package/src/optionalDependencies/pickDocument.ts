@@ -10,17 +10,41 @@ type ResponseValue = {
   uri: string;
 };
 
-let DocumentPicker:
+type DocumentPickerType =
   | {
       pick: (opts?: { allowMultiSelection: boolean; type: string[] }) => Promise<ResponseValue[]>;
       types: { allFiles: string };
     }
   | undefined;
 
+let DocumentPicker: DocumentPickerType;
+
+let OldDocumentPicker: DocumentPickerType;
+let NewDocumentPicker: DocumentPickerType;
+
 try {
-  DocumentPicker = require('react-native-document-picker').default;
+  NewDocumentPicker = require('@react-native-documents/picker');
 } catch (err) {
-  console.log('react-native-document-picker is not installed');
+  // we log below
+}
+
+try {
+  OldDocumentPicker = require('react-native-document-picker').default;
+} catch (err) {
+  // we log below
+}
+
+if (NewDocumentPicker) {
+  DocumentPicker = NewDocumentPicker;
+} else if (OldDocumentPicker) {
+  DocumentPicker = OldDocumentPicker;
+  console.log(
+    "You're using the react-native-document-picker library, which is no longer supported and has moved to @react-native-documents/picker. Things might not work as intended. Please migrate to the new library as soon as possible !",
+  );
+} else {
+  console.log(
+    'Neither react-native-document-picker nor @react-native-documents/picker are installed.',
+  );
 }
 
 export const pickDocument = DocumentPicker
