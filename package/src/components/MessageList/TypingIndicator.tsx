@@ -5,7 +5,6 @@ import { useTypingString } from './hooks/useTypingString';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
 import { LoadingDots } from '../Indicators/LoadingDots';
 
 const styles = StyleSheet.create({
@@ -23,16 +22,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export const TypingIndicator = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => {
+export const TypingIndicator = () => {
   const {
     theme: {
       colors: { grey, white_snow },
       typingIndicator: { container, text },
     },
   } = useTheme();
-  const typingString = useTypingString<StreamChatGenerics>();
+  const typingString = useTypingString();
 
   return (
     <View

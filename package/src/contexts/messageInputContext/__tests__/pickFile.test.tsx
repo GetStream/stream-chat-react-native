@@ -9,7 +9,7 @@ import { generateFileAttachment } from '../../../mock-builders/generator/attachm
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import * as NativeUtils from '../../../native';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 import * as AttachmentPickerContext from '../../attachmentPickerContext/AttachmentPickerContext';
 
 import {
@@ -21,18 +21,14 @@ import {
 
 const user1 = generateUser();
 const message = generateMessage({ user: user1 });
-type WrapperType<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  Partial<InputMessageInputContextValue<StreamChatGenerics>>;
+type WrapperType = Partial<InputMessageInputContextValue>;
 
-const Wrapper = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>({
-  children,
-  ...rest
-}: PropsWithChildren<WrapperType<StreamChatGenerics>>) => (
+const Wrapper = ({ children, ...rest }: PropsWithChildren<WrapperType>) => (
   <MessageInputProvider
     value={
       {
         ...rest,
-      } as MessageInputContextValue<StreamChatGenerics>
+      } as MessageInputContextValue
     }
   >
     {children}

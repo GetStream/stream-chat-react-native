@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Dayjs from 'dayjs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   FileIcon,
   getFileSizeDisplayText,
-  goToURL,
   ThemeProvider,
   useTheme,
 } from 'stream-chat-react-native';
@@ -17,7 +16,7 @@ import { File } from '../icons/File';
 import type { RouteProp } from '@react-navigation/native';
 import type { Attachment } from 'stream-chat';
 
-import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
+import type { StackNavigatorParamList } from '../types';
 
 const styles = StyleSheet.create({
   container: {
@@ -90,7 +89,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
 
   const [sections, setSections] = useState<
     Array<{
-      data: Attachment<StreamChatGenerics>[];
+      data: Attachment[];
       title: string;
     }>
   >([]);
@@ -99,7 +98,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
     const newSections: Record<
       string,
       {
-        data: Attachment<StreamChatGenerics>[];
+        data: Attachment[];
         title: string;
       }
     > = {};
@@ -139,14 +138,16 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
       <ScreenHeader titleText='Files' />
       <ThemeProvider>
         {(sections.length > 0 || !loading) && (
-          <SectionList<Attachment<StreamChatGenerics>>
+          <SectionList<Attachment>
             contentContainerStyle={styles.sectionContentContainer}
             ListEmptyComponent={EmptyListComponent}
             onEndReached={loadMore}
             renderItem={({ index, item: attachment, section }) => (
               <TouchableOpacity
                 key={`${attachment.asset_url}${attachment.image_url}${attachment.og_scrape_url}${attachment.thumb_url}${attachment.type}`}
-                onPress={() => goToURL(attachment.asset_url)}
+                onPress={() => {
+                  Alert.alert('Not implemented.');
+                }}
                 style={{
                   borderBottomColor: border,
                   borderBottomWidth: index === section.data.length - 1 ? 0 : 1,

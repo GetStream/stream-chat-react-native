@@ -9,7 +9,7 @@ import {
 import { generateMessage } from '../../../mock-builders/generator/message';
 
 import { generateUser } from '../../../mock-builders/generator/user';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 import { useMessageDetailsForState } from '../hooks/useMessageDetailsForState';
 
 describe('useMessageDetailsForState', () => {

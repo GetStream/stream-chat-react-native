@@ -5,7 +5,6 @@ import { getMembers } from './getMembers';
 import { getReads } from './getReads';
 import { selectChannels } from './queries/selectChannels';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
 import { mapStorableToChannel } from '../mappers/mapStorableToChannel';
 import { SqliteClient } from '../SqliteClient';
 
@@ -18,28 +17,26 @@ import { SqliteClient } from '../SqliteClient';
  *
  * @returns {Array} Channels with enriched state.
  */
-export const getChannels = async <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const getChannels = async ({
   channelIds,
   currentUserId,
 }: {
   channelIds: string[];
   currentUserId: string;
-}): Promise<Omit<ChannelAPIResponse<StreamChatGenerics>, 'duration'>[]> => {
+}): Promise<Omit<ChannelAPIResponse, 'duration'>[]> => {
   SqliteClient.logger?.('info', 'getChannels', { channelIds, currentUserId });
   const channels = await selectChannels({ channelIds });
 
-  const cidVsMembers = await getMembers<StreamChatGenerics>({ channelIds });
-  const cidVsReads = await getReads<StreamChatGenerics>({ channelIds });
-  const cidVsMessages = await getChannelMessages<StreamChatGenerics>({
+  const cidVsMembers = await getMembers({ channelIds });
+  const cidVsReads = await getReads({ channelIds });
+  const cidVsMessages = await getChannelMessages({
     channelIds,
     currentUserId,
   });
 
   // Enrich the channels with state
   return channels.map((c) => ({
-    ...mapStorableToChannel<StreamChatGenerics>(c),
+    ...mapStorableToChannel(c),
     members: cidVsMembers[c.cid] || [],
     messages: cidVsMessages[c.cid] || [],
     pinned_messages: [],

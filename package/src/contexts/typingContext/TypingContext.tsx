@@ -2,38 +2,29 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import type { ChannelState } from 'stream-chat';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-export type TypingContextValue<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
-  typing: ChannelState<StreamChatGenerics>['typing'];
+export type TypingContextValue = {
+  typing: ChannelState['typing'];
 };
 
 export const TypingContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as TypingContextValue);
 
-export const TypingProvider = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const TypingProvider = ({
   children,
   value,
 }: PropsWithChildren<{
-  value: TypingContextValue<StreamChatGenerics>;
+  value: TypingContextValue;
 }>) => (
   <TypingContext.Provider value={value as unknown as TypingContextValue}>
     {children}
   </TypingContext.Provider>
 );
 
-export const useTypingContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => {
-  const contextValue = useContext(
-    TypingContext,
-  ) as unknown as TypingContextValue<StreamChatGenerics>;
+export const useTypingContext = () => {
+  const contextValue = useContext(TypingContext) as unknown as TypingContextValue;
 
   if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(

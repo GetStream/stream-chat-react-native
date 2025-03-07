@@ -1,12 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { StreamingMessageViewProps } from '../MessageSimple/StreamingMessageView';
 
-export type UseStreamingMessageProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<
-  StreamingMessageViewProps<StreamChatGenerics>,
+export type UseStreamingMessageProps = Pick<
+  StreamingMessageViewProps,
   'letterInterval' | 'renderingLetterCount'
 > & { text: string };
 
@@ -21,13 +18,11 @@ const DEFAULT_RENDERING_LETTER_COUNT = 2;
  * @param {string} text - The text that we want to render in a typewriter fashion.
  * @returns {{ streamedMessageText: string }} - A substring of the text property, up until we've finished rendering the typewriter animation.
  */
-export const useStreamingMessage = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const useStreamingMessage = ({
   letterInterval = DEFAULT_LETTER_INTERVAL,
   renderingLetterCount = DEFAULT_RENDERING_LETTER_COUNT,
   text,
-}: UseStreamingMessageProps<StreamChatGenerics>): { streamedMessageText: string } => {
+}: UseStreamingMessageProps): { streamedMessageText: string } => {
   const [streamedMessageText, setStreamedMessageText] = useState<string>(text);
   const textCursor = useRef<number>(text.length);
 

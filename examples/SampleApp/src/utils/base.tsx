@@ -9,6 +9,7 @@ export type IconProps = Partial<SvgProps> &
     dark?: boolean;
     height?: number;
     width?: number;
+    scale?: number;
   };
 export const RootSvg = (props: IconProps) => {
   const { backgroundFill = 'none', children, height = 24, width = 24 } = props;

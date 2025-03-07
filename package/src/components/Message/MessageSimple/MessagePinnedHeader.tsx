@@ -10,19 +10,11 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { PinHeader } from '../../../icons';
 
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+export type MessagePinnedHeaderProps = Partial<Pick<MessageContextValue, 'message'>>;
 
-export type MessagePinnedHeaderProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<Pick<MessageContextValue<StreamChatGenerics>, 'message'>>;
-
-export const MessagePinnedHeader = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessagePinnedHeaderProps<StreamChatGenerics>,
-) => {
+export const MessagePinnedHeader = (props: MessagePinnedHeaderProps) => {
   const { message: propMessage } = props;
-  const { message: contextMessage } = useMessageContext<StreamChatGenerics>();
+  const { message: contextMessage } = useMessageContext();
   const message = propMessage || contextMessage;
   const {
     theme: {

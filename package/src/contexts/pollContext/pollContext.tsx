@@ -3,27 +3,23 @@ import React, { PropsWithChildren, useContext } from 'react';
 import { Poll } from 'stream-chat';
 
 import { MessageType } from '../../components';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-export type PollContextValue<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
-  message: MessageType<StreamChatGenerics>;
-  poll: Poll<StreamChatGenerics>;
+export type PollContextValue = {
+  message: MessageType;
+  poll: Poll;
 };
 
 export const PollContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as PollContextValue);
 
-export const PollContextProvider = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const PollContextProvider = ({
   children,
   value,
 }: PropsWithChildren<{
-  value: PollContextValue<StreamChatGenerics>;
+  value: PollContextValue;
 }>) => (
   <PollContext.Provider value={value as unknown as PollContextValue}>
     {children}

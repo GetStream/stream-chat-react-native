@@ -11,23 +11,15 @@ import {
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
-import type { DefaultStreamChatGenerics } from '../../../types/types';
-
-export type MessageBouncePropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<
-  MessagesContextValue<StreamChatGenerics>,
+export type MessageBouncePropsWithContext = Pick<
+  MessagesContextValue,
   'setEditingState' | 'removeMessage' | 'retrySendMessage'
 > &
-  Pick<MessageContextValue<StreamChatGenerics>, 'message'> & {
+  Pick<MessageContextValue, 'message'> & {
     setIsBounceDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   };
 
-export const MessageBounceWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageBouncePropsWithContext<StreamChatGenerics>,
-) => {
+export const MessageBounceWithContext = (props: MessageBouncePropsWithContext) => {
   const { t } = useTranslationContext();
   const { message, removeMessage, retrySendMessage, setEditingState, setIsBounceDialogOpen } =
     props;
@@ -71,9 +63,9 @@ export const MessageBounceWithContext = <
   );
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: MessageBouncePropsWithContext<StreamChatGenerics>,
-  nextProps: MessageBouncePropsWithContext<StreamChatGenerics>,
+const areEqual = (
+  prevProps: MessageBouncePropsWithContext,
+  nextProps: MessageBouncePropsWithContext,
 ) => {
   const { message: prevMessage } = prevProps;
   const { message: nextMessage } = nextProps;
@@ -93,22 +85,15 @@ const MemoizedMessageBounce = React.memo(
   areEqual,
 ) as typeof MessageBounceWithContext;
 
-export type MessageBounceProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<MessageBouncePropsWithContext<StreamChatGenerics>> & {
+export type MessageBounceProps = Partial<MessageBouncePropsWithContext> & {
   setIsBounceDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const MessageBounce = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageBounceProps<StreamChatGenerics>,
-) => {
-  const { message } = useMessageContext<StreamChatGenerics>();
-  const { removeMessage, retrySendMessage, setEditingState } =
-    useMessagesContext<StreamChatGenerics>();
+export const MessageBounce = (props: MessageBounceProps) => {
+  const { message } = useMessageContext();
+  const { removeMessage, retrySendMessage, setEditingState } = useMessagesContext();
   return (
-    <MemoizedMessageBounce<StreamChatGenerics>
+    <MemoizedMessageBounce
       {...{
         message,
         removeMessage,

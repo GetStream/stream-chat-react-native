@@ -2,7 +2,8 @@ import React from 'react';
 import { CommonActions, NavigationContainerRef } from '@react-navigation/native';
 import { StackNavigatorParamList } from '../types';
 
-export const RootNavigationRef = React.createRef<NavigationContainerRef>();
+export const RootNavigationRef =
+  React.createRef<NavigationContainerRef<{ [key: string]: unknown }>>();
 
 export const navigateToChannel = (channelId: string | null | undefined) => {
   if (!channelId || !RootNavigationRef.current) {
@@ -27,7 +28,6 @@ export const navigateToChannel = (channelId: string | null | undefined) => {
       } else {
         // navigate to channel screen
         return CommonActions.navigate({
-          key: `${Date.now()}`,
           name: 'ChannelScreen',
           params: { channelId },
         });

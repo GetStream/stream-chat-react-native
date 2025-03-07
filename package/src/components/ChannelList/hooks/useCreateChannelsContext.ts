@@ -1,11 +1,8 @@
 import { useMemo } from 'react';
 
 import type { ChannelsContextValue } from '../../../contexts/channelsContext/ChannelsContext';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 
-export const useCreateChannelsContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const useCreateChannelsContext = ({
   additionalFlatListProps,
   channelListInitialized,
   channels,
@@ -38,7 +35,7 @@ export const useCreateChannelsContext = <
   reloadList,
   setFlatListRef,
   Skeleton,
-}: ChannelsContextValue<StreamChatGenerics>) => {
+}: ChannelsContextValue) => {
   const channelValueString = channels
     ?.map(
       (channel) =>
@@ -49,7 +46,7 @@ export const useCreateChannelsContext = <
           .join()}`,
     )
     .join();
-  const channelsContext: ChannelsContextValue<StreamChatGenerics> = useMemo(
+  const channelsContext: ChannelsContextValue = useMemo(
     () => ({
       additionalFlatListProps,
       channelListInitialized,

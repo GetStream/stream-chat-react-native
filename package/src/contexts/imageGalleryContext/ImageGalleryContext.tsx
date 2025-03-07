@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useContext, useState } from 'react';
 
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
-import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import type { UnknownType } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -11,11 +11,9 @@ type SelectedMessage = {
   url?: string;
 };
 
-export type ImageGalleryContextValue<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
-  messages: MessageType<StreamChatGenerics>[];
-  setMessages: React.Dispatch<React.SetStateAction<MessageType<StreamChatGenerics>[]>>;
+export type ImageGalleryContextValue = {
+  messages: MessageType[];
+  setMessages: React.Dispatch<React.SetStateAction<MessageType[]>>;
   setSelectedMessage: React.Dispatch<React.SetStateAction<SelectedMessage | undefined>>;
   selectedMessage?: SelectedMessage;
 };
@@ -24,12 +22,8 @@ export const ImageGalleryContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as ImageGalleryContextValue,
 );
 
-export const ImageGalleryProvider = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
-  children,
-}: PropsWithChildren<UnknownType>) => {
-  const [messages, setMessages] = useState<MessageType<StreamChatGenerics>[]>([]);
+export const ImageGalleryProvider = ({ children }: PropsWithChildren<UnknownType>) => {
+  const [messages, setMessages] = useState<MessageType[]>([]);
   const [selectedMessage, setSelectedMessage] = useState<SelectedMessage>();
 
   return (
@@ -48,12 +42,8 @@ export const ImageGalleryProvider = <
   );
 };
 
-export const useImageGalleryContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => {
-  const contextValue = useContext(
-    ImageGalleryContext,
-  ) as unknown as ImageGalleryContextValue<StreamChatGenerics>;
+export const useImageGalleryContext = () => {
+  const contextValue = useContext(ImageGalleryContext) as unknown as ImageGalleryContextValue;
 
   if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
@@ -61,5 +51,5 @@ export const useImageGalleryContext = <
     );
   }
 
-  return contextValue as ImageGalleryContextValue<StreamChatGenerics>;
+  return contextValue as ImageGalleryContextValue;
 };

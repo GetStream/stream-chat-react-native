@@ -12,7 +12,7 @@ import {
 } from '../../../../mock-builders/api/queryMembers';
 import { generateUser } from '../../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
+
 import {
   getChannelPreviewDisplayName,
   useChannelPreviewDisplayName,

@@ -11,8 +11,6 @@ import {
   ONE_MEMBER_WITH_EMPTY_USER_MOCK,
 } from '../../mock-builders/api/queryMembers';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
-
 const channelName = 'okechukwu';
 const CHANNEL = {
   data: { name: channelName },

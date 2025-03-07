@@ -1,11 +1,8 @@
 import { useMemo } from 'react';
 
 import type { InputMessageInputContextValue } from '../../../contexts/messageInputContext/MessageInputContext';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 
-export const useCreateInputMessageInputContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const useCreateInputMessageInputContext = ({
   additionalTextInputProps,
   asyncMessagesLockDistance,
   asyncMessagesMinimumPressDuration,
@@ -66,7 +63,7 @@ export const useCreateInputMessageInputContext = <
   StartAudioRecordingButton,
   StopMessageStreamingButton,
   UploadProgressIndicator,
-}: InputMessageInputContextValue<StreamChatGenerics> & {
+}: InputMessageInputContextValue & {
   /**
    * To ensure we allow re-render, when channel is changed
    */
@@ -75,7 +72,7 @@ export const useCreateInputMessageInputContext = <
   const editingDep = editing ? editing.id : '';
   const quotedMessageId = quotedMessage ? quotedMessage.id : '';
 
-  const inputMessageInputContext: InputMessageInputContextValue<StreamChatGenerics> = useMemo(
+  const inputMessageInputContext: InputMessageInputContextValue = useMemo(
     () => ({
       additionalTextInputProps,
       asyncMessagesLockDistance,
