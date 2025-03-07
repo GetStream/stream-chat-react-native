@@ -1,13 +1,8 @@
 import { Channel, ChannelSortBase } from 'stream-chat';
 
-import { DefaultStreamChatGenerics } from '../../../../types/types';
 import { ChannelListProps } from '../../ChannelList';
 
-export const isChannelPinned = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  channel: Channel<StreamChatGenerics>,
-) => {
+export const isChannelPinned = (channel: Channel) => {
   if (!channel) {
     return false;
   }
@@ -17,11 +12,7 @@ export const isChannelPinned = <
   return !!member?.pinned_at;
 };
 
-export const isChannelArchived = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  channel: Channel<StreamChatGenerics>,
-) => {
+export const isChannelArchived = (channel: Channel) => {
   if (!channel) {
     return false;
   }
@@ -31,11 +22,7 @@ export const isChannelArchived = <
   return !!member?.archived_at;
 };
 
-export const shouldConsiderArchivedChannels = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  filters: ChannelListProps<StreamChatGenerics>['filters'],
-) => {
+export const shouldConsiderArchivedChannels = (filters: ChannelListProps['filters']) => {
   if (!filters) {
     return false;
   }
@@ -43,21 +30,19 @@ export const shouldConsiderArchivedChannels = <
   return typeof filters.archived === 'boolean';
 };
 
-export const extractSortValue = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const extractSortValue = ({
   atIndex,
   sort,
   targetKey,
 }: {
   atIndex: number;
-  targetKey: keyof ChannelSortBase<StreamChatGenerics>;
-  sort?: ChannelListProps<StreamChatGenerics>['sort'];
+  targetKey: keyof ChannelSortBase;
+  sort?: ChannelListProps['sort'];
 }) => {
   if (!sort) {
     return null;
   }
-  let option: null | ChannelSortBase<StreamChatGenerics> = null;
+  let option: null | ChannelSortBase = null;
 
   if (Array.isArray(sort)) {
     option = sort[atIndex] ?? null;
@@ -85,11 +70,7 @@ export const extractSortValue = <
 /**
  * Returns true only if `{ pinned_at: -1 }` or `{ pinned_at: 1 }` option is first within the `sort` array.
  */
-export const shouldConsiderPinnedChannels = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  sort: ChannelListProps<StreamChatGenerics>['sort'],
-) => {
+export const shouldConsiderPinnedChannels = (sort: ChannelListProps['sort']) => {
   const value = extractSortValue({
     atIndex: 0,
     sort,
@@ -103,9 +84,7 @@ export const shouldConsiderPinnedChannels = <
   return Math.abs(value) === 1;
 };
 
-export function findPinnedAtSortOrder<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({ sort }: { sort: ChannelListProps<StreamChatGenerics>['sort'] }) {
+export function findPinnedAtSortOrder({ sort }: { sort: ChannelListProps['sort'] }) {
   if (!sort) {
     return null;
   }
@@ -127,9 +106,7 @@ export function findPinnedAtSortOrder<
   }
 }
 
-export function findLastPinnedChannelIndex<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({ channels }: { channels: Channel<StreamChatGenerics>[] }) {
+export function findLastPinnedChannelIndex({ channels }: { channels: Channel[] }) {
   let lastPinnedChannelIndex: number | null = null;
 
   for (const channel of channels) {

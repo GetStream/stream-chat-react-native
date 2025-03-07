@@ -14,7 +14,7 @@ import { useStateStore } from '../../../hooks';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
 import { getChannelsForFilterSort } from '../../../store/apis/getChannelsForFilterSort';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 import { ONE_SECOND_IN_MS } from '../../../utils/date';
 import { DBSyncManager } from '../../../utils/DBSyncManager';
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
@@ -24,15 +24,14 @@ const waitSeconds = (seconds: number) =>
     setTimeout(resolve, seconds * ONE_SECOND_IN_MS);
   });
 
-type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  {
-    channelManager: ChannelManager<StreamChatGenerics>;
-    enableOfflineSupport: boolean;
-    filters: ChannelFilters<StreamChatGenerics>;
-    options: ChannelOptions;
-    setForceUpdate: React.Dispatch<React.SetStateAction<number>>;
-    sort: ChannelSort<StreamChatGenerics>;
-  };
+type Parameters = {
+  channelManager: ChannelManager;
+  enableOfflineSupport: boolean;
+  filters: ChannelFilters;
+  options: ChannelOptions;
+  setForceUpdate: React.Dispatch<React.SetStateAction<number>>;
+  sort: ChannelSort;
+};
 
 const DEFAULT_OPTIONS = {
   message_limit: 10,
@@ -45,31 +44,27 @@ type QueryType = 'queryLocalDB' | 'reload' | 'refresh' | 'loadChannels';
 
 export type QueryChannels = (queryType?: QueryType, retryCount?: number) => Promise<void>;
 
-const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  nextValue: ChannelManagerState<StreamChatGenerics>,
-) =>
+const selector = (nextValue: ChannelManagerState) =>
   ({
     channelListInitialized: nextValue.initialized,
     channels: nextValue.channels,
     pagination: nextValue.pagination,
   }) as const;
 
-export const usePaginatedChannels = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const usePaginatedChannels = ({
   channelManager,
   enableOfflineSupport,
   filters = {},
   options = DEFAULT_OPTIONS,
   setForceUpdate,
   sort = {},
-}: Parameters<StreamChatGenerics>) => {
+}: Parameters) => {
   const [error, setError] = useState<Error | undefined>(undefined);
   const [staticChannelsActive, setStaticChannelsActive] = useState<boolean>(false);
   const activeQueryType = useRef<QueryType | null>('queryLocalDB');
   const activeChannels = useActiveChannelsRefContext();
   const isMountedRef = useIsMountedRef();
-  const { client } = useChatContext<StreamChatGenerics>();
+  const { client } = useChatContext();
   const { channelListInitialized, channels, pagination } =
     useStateStore(channelManager?.state, selector) ?? {};
   const hasNextPage = pagination?.hasNext;

@@ -32,7 +32,7 @@ import { generateMarkdownText } from './generateMarkdownText';
 
 import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
 import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
+
 import { escapeRegExp } from '../../../../utils/utils';
 import type { MessageType } from '../../../MessageList/hooks/useMessageList';
 
@@ -158,13 +158,11 @@ const mentionsParseFunction: ParseFunction = (capture, parse, state) => ({
 
 export type MarkdownRules = Partial<DefaultRules>;
 
-export type RenderTextParams<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<
-  Pick<MessageContextValue<StreamChatGenerics>, 'onLongPress' | 'onPress' | 'preventPress'>
+export type RenderTextParams = Partial<
+  Pick<MessageContextValue, 'onLongPress' | 'onPress' | 'preventPress'>
 > & {
   colors: typeof Colors;
-  message: MessageType<StreamChatGenerics>;
+  message: MessageType;
   markdownRules?: MarkdownRules;
   markdownStyles?: MarkdownStyle;
   messageOverlay?: boolean;
@@ -173,11 +171,7 @@ export type RenderTextParams<
   onlyEmojis?: boolean;
 };
 
-export const renderText = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  params: RenderTextParams<StreamChatGenerics>,
-) => {
+export const renderText = (params: RenderTextParams) => {
   const {
     colors,
     markdownRules,
@@ -368,9 +362,7 @@ export const renderText = <
       if (!preventPress && onPressParam) {
         onPressParam({
           additionalInfo: {
-            user: mentioned_users?.find(
-              (user: UserResponse<StreamChatGenerics>) => userName === user.name,
-            ),
+            user: mentioned_users?.find((user: UserResponse) => userName === user.name),
           },
           emitter: 'textMention',
           event,

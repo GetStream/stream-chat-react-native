@@ -11,7 +11,6 @@ import { deletePendingTask } from '../store/apis/deletePendingTask';
 import { getPendingTasks } from '../store/apis/getPendingTasks';
 import { SqliteClient } from '../store/SqliteClient';
 import type { PendingTask } from '../store/types';
-import type { DefaultStreamChatGenerics } from '../types/types';
 
 /**
  * DBSyncManager has the responsibility to sync the channel states
@@ -104,11 +103,7 @@ export class DBSyncManager {
     };
   };
 
-  static sync = async <
-    StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-  >(
-    client: StreamChat<StreamChatGenerics>,
-  ) => {
+  static sync = async (client: StreamChat) => {
     if (!this.client?.user) {
       return;
     }
@@ -165,20 +160,12 @@ export class DBSyncManager {
     await this.sync(this.client);
   };
 
-  static queueTask = async <
-    StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-  >({
-    client,
-    task,
-  }: {
-    client: StreamChat<StreamChatGenerics>;
-    task: PendingTask;
-  }) => {
+  static queueTask = async ({ client, task }: { client: StreamChat; task: PendingTask }) => {
     const removeFromApi = await addPendingTask(task);
 
     let response;
     try {
-      response = await this.executeTask<StreamChatGenerics>({ client, task });
+      response = await this.executeTask({ client, task });
     } catch (e) {
       if ((e as AxiosError<APIErrorResponse>)?.response?.data?.code === 4) {
         // Error code 16 - message already exists
@@ -193,15 +180,7 @@ export class DBSyncManager {
     return response;
   };
 
-  static executeTask = async <
-    StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-  >({
-    client,
-    task,
-  }: {
-    client: StreamChat<StreamChatGenerics>;
-    task: PendingTask;
-  }) => {
+  static executeTask = async ({ client, task }: { client: StreamChat; task: PendingTask }) => {
     const channel = client.channel(task.channelType, task.channelId);
 
     if (task.type === 'send-reaction') {
@@ -219,11 +198,7 @@ export class DBSyncManager {
     throw new Error('Invalid task type');
   };
 
-  static executePendingTasks = async <
-    StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-  >(
-    client: StreamChat<StreamChatGenerics>,
-  ) => {
+  static executePendingTasks = async (client: StreamChat) => {
     const queue = await getPendingTasks();
     for (const task of queue) {
       if (!task.id) {
@@ -231,7 +206,7 @@ export class DBSyncManager {
       }
 
       try {
-        await this.executeTask<StreamChatGenerics>({
+        await this.executeTask({
           client,
           task,
         });

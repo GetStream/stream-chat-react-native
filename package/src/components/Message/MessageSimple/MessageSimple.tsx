@@ -23,7 +23,7 @@ import {
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import { triggerHaptic } from '../../../native';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 import { useMessageData } from '../hooks/useMessageData';
 
 const styles = StyleSheet.create({
@@ -54,10 +54,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export type MessageSimplePropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<
-  MessageContextValue<StreamChatGenerics>,
+export type MessageSimplePropsWithContext = Pick<
+  MessageContextValue,
   | 'alignment'
   | 'channel'
   | 'groupStyles'
@@ -71,7 +69,7 @@ export type MessageSimplePropsWithContext<
   | 'showMessageStatus'
 > &
   Pick<
-    MessagesContextValue<StreamChatGenerics>,
+    MessagesContextValue,
     | 'clearQuotedMessageState'
     | 'enableMessageGroupingByUser'
     | 'enableSwipeToReply'
@@ -92,11 +90,7 @@ export type MessageSimplePropsWithContext<
     | 'setQuotedMessageState'
   >;
 
-const MessageSimpleWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageSimplePropsWithContext<StreamChatGenerics>,
-) => {
+const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
   const [messageContentWidth, setMessageContentWidth] = useState(0);
   const { width } = Dimensions.get('screen');
   const {
@@ -390,9 +384,9 @@ const MessageSimpleWithContext = <
   );
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: MessageSimplePropsWithContext<StreamChatGenerics>,
-  nextProps: MessageSimplePropsWithContext<StreamChatGenerics>,
+const areEqual = (
+  prevProps: MessageSimplePropsWithContext,
+  nextProps: MessageSimplePropsWithContext,
 ) => {
   const {
     channel: prevChannel,
@@ -529,19 +523,13 @@ const MemoizedMessageSimple = React.memo(
   areEqual,
 ) as typeof MessageSimpleWithContext;
 
-export type MessageSimpleProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<MessageSimplePropsWithContext<StreamChatGenerics>>;
+export type MessageSimpleProps = Partial<MessageSimplePropsWithContext>;
 
 /**
  *
  * Message UI component
  */
-export const MessageSimple = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageSimpleProps<StreamChatGenerics>,
-) => {
+export const MessageSimple = (props: MessageSimpleProps) => {
   const {
     alignment,
     channel,
@@ -554,7 +542,7 @@ export const MessageSimple = <
     onlyEmojis,
     otherAttachments,
     showMessageStatus,
-  } = useMessageContext<StreamChatGenerics>();
+  } = useMessageContext();
   const {
     clearQuotedMessageState,
     enableMessageGroupingByUser,
@@ -574,10 +562,10 @@ export const MessageSimple = <
     reactionListPosition,
     ReactionListTop,
     setQuotedMessageState,
-  } = useMessagesContext<StreamChatGenerics>();
+  } = useMessagesContext();
 
   return (
-    <MemoizedMessageSimple<StreamChatGenerics>
+    <MemoizedMessageSimple
       {...{
         alignment,
         channel,

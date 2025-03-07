@@ -7,20 +7,13 @@ import type { StreamChat, Event as StreamEvent } from 'stream-chat';
 import { useAppStateListener } from '../../../hooks/useAppStateListener';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
-import type { DefaultStreamChatGenerics } from '../../../types/types';
-
 /**
  * Disconnect the websocket connection when app goes to background,
  * and reconnect when app comes to foreground.
  * We do this to make sure the user receives push notifications when app is in the background.
  * You can't receive push notification until you have active websocket connection.
  */
-export const useIsOnline = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  client: StreamChat<StreamChatGenerics>,
-  closeConnectionOnBackground = true,
-) => {
+export const useIsOnline = (client: StreamChat, closeConnectionOnBackground = true) => {
   const [isOnline, setIsOnline] = useState<boolean | null>(null);
   const [connectionRecovering, setConnectionRecovering] = useState(false);
   const isMounted = useIsMountedRef();
@@ -47,7 +40,7 @@ export const useIsOnline = <
   useAppStateListener(onForeground, onBackground);
 
   useEffect(() => {
-    const handleChangedEvent = (event: StreamEvent<StreamChatGenerics>) => {
+    const handleChangedEvent = (event: StreamEvent) => {
       setConnectionRecovering(!event.online);
       setIsOnline(event.online || false);
     };

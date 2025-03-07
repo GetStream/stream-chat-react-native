@@ -6,7 +6,6 @@ import type { Attachment } from 'stream-chat';
 import type { AttachmentPickerProps } from '../../components/AttachmentPicker/AttachmentPicker';
 import type { ImageGalleryCustomComponents } from '../../components/ImageGallery/ImageGallery';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { Streami18n } from '../../utils/i18n/Streami18n';
 import type { AttachmentPickerContextValue } from '../attachmentPickerContext/AttachmentPickerContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
@@ -27,9 +26,7 @@ export const OverlayContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as OverlayContextValue,
 );
 
-export type OverlayProviderProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<AttachmentPickerProps> &
+export type OverlayProviderProps = Partial<AttachmentPickerProps> &
   Partial<
     Pick<
       AttachmentPickerContextValue,
@@ -47,7 +44,7 @@ export type OverlayProviderProps<
       | 'VideoRecorderSelectorIcon'
     >
   > &
-  ImageGalleryCustomComponents<StreamChatGenerics> & {
+  ImageGalleryCustomComponents & {
     autoPlayVideo?: boolean;
     /**
      * The giphy version to render - check the keys of the [Image Object](https://developers.giphy.com/docs/api/schema#image-object) for possible values. Uses 'fixed_height' by default

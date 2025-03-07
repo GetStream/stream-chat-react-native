@@ -1,10 +1,4 @@
-import type {
-  ChannelFilters,
-  ChannelSort,
-  ChannelState,
-  ExtendableGenerics,
-  LiteralStringForUnion,
-} from 'stream-chat';
+import type { ChannelFilters, ChannelSort, ChannelState } from 'stream-chat';
 
 import type { FileStateValue } from '../utils/utils';
 
@@ -57,7 +51,47 @@ export type FileUpload = {
   url?: string;
   waveform_data?: number[];
 };
+export interface DefaultAttachmentType {
+  duration?: number;
+  file_size?: number;
+  mime_type?: string;
+  originalFile?: File;
+  originalImage?: Partial<Asset>;
+  waveform_data?: number[];
+}
 
+export interface DefaultUserType {
+  image?: string;
+}
+
+export interface DefaultChannelType {
+  [key: string]: unknown;
+
+  image?: string;
+}
+
+export interface DefaultCommandType {
+  flag: unknown;
+  imgur: unknown;
+}
+
+/* eslint-disable @typescript-eslint/no-empty-object-type */
+
+export interface DefaultEventType {}
+
+export interface DefaultMemberType {}
+
+export interface DefaultMessageType {}
+
+export interface DefaultPollOptionType {}
+
+export interface DefaultPollType {}
+
+export interface DefaultReactionType {}
+
+export interface DefaultThreadType {}
+
+/* eslint-enable @typescript-eslint/no-empty-object-type */
 export type ImageUpload = {
   file: Partial<Asset>;
   id: string;
@@ -67,15 +101,6 @@ export type ImageUpload = {
   width?: number;
 };
 
-export type DefaultAttachmentType = UnknownType & {
-  duration?: number;
-  file_size?: number;
-  mime_type?: string;
-  originalFile?: File;
-  originalImage?: Partial<Asset>;
-  waveform_data?: number[];
-};
-
 export type Reaction = {
   id: string;
   name: string;
@@ -83,41 +108,16 @@ export type Reaction = {
   image?: string;
 };
 
-interface DefaultUserType extends UnknownType {
-  image?: string;
-}
-
-interface DefaultChannelType extends UnknownType {
-  [key: string]: unknown;
-
-  image?: string;
-}
-
-export interface DefaultStreamChatGenerics extends ExtendableGenerics {
-  attachmentType: DefaultAttachmentType;
-  channelType: DefaultChannelType;
-  commandType: LiteralStringForUnion;
-  eventType: UnknownType;
-  memberType: UnknownType;
-  messageType: UnknownType;
-  reactionType: UnknownType;
-  userType: DefaultUserType;
-}
-
-export type ChannelListEventListenerOptions<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
-  filters?: ChannelFilters<StreamChatGenerics>;
-  sort?: ChannelSort<StreamChatGenerics>;
+export type ChannelListEventListenerOptions = {
+  filters?: ChannelFilters;
+  sort?: ChannelSort;
 };
 
 export type UnknownType = Record<string, unknown>;
 
 export type ValueOf<T> = T[keyof T];
 
-export type ChannelUnreadState<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Omit<ValueOf<ChannelState<StreamChatGenerics>['read']>, 'user'>;
+export type ChannelUnreadState = Omit<ValueOf<ChannelState['read']>, 'user'>;
 
 // ASYNC AUDIO EXPO:
 export enum AndroidOutputFormat {

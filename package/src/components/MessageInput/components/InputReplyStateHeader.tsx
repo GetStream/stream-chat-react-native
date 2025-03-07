@@ -9,7 +9,6 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
 import { CircleClose, CurveLineLeftUp } from '../../../icons';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 const styles = StyleSheet.create({
   replyBoxHeader: {
@@ -24,18 +23,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export type InputReplyStateHeaderProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<
-  Pick<MessageInputContextValue<StreamChatGenerics>, 'clearQuotedMessageState' | 'resetInput'>
+export type InputReplyStateHeaderProps = Partial<
+  Pick<MessageInputContextValue, 'clearQuotedMessageState' | 'resetInput'>
 >;
 
-export const InputReplyStateHeader = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const InputReplyStateHeader = ({
   clearQuotedMessageState: propClearQuotedMessageState,
   resetInput: propResetInput,
-}: InputReplyStateHeaderProps<StreamChatGenerics>) => {
+}: InputReplyStateHeaderProps) => {
   const { t } = useTranslationContext();
   const { clearQuotedMessageState: contextClearQuotedMessageState, resetInput: contextResetInput } =
     useMessageInputContext();

@@ -1,12 +1,10 @@
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type { OwnCapabilitiesContextValue } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { isClipboardAvailable } from '../../../native';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 import type { MessageActionType } from '../../MessageMenu/MessageActionListItem';
 
-export type MessageActionsParams<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+export type MessageActionsParams = {
   banUser: MessageActionType;
   copyMessage: MessageActionType;
   deleteMessage: MessageActionType;
@@ -27,15 +25,11 @@ export type MessageActionsParams<
   showMessageReactions: boolean;
   threadReply: MessageActionType;
   unpinMessage: MessageActionType;
-} & Pick<MessageContextValue<StreamChatGenerics>, 'message' | 'isMyMessage'>;
+} & Pick<MessageContextValue, 'message' | 'isMyMessage'>;
 
-export type MessageActionsProp<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = (param: MessageActionsParams<StreamChatGenerics>) => MessageActionType[];
+export type MessageActionsProp = (param: MessageActionsParams) => MessageActionType[];
 
-export const messageActions = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const messageActions = ({
   banUser,
   copyMessage,
   deleteMessage,
@@ -53,7 +47,7 @@ export const messageActions = <
   showMessageReactions,
   threadReply,
   unpinMessage,
-}: MessageActionsParams<StreamChatGenerics>) => {
+}: MessageActionsParams) => {
   if (showMessageReactions) {
     return [];
   }

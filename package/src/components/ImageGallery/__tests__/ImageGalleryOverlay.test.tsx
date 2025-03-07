@@ -19,7 +19,7 @@ import {
 import { generateImageAttachment } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 import type { MessageType } from '../../MessageList/hooks/useMessageList';
 import { ImageGalleryOverlay } from '../components/ImageGalleryOverlay';
 

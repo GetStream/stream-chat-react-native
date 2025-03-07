@@ -8,23 +8,16 @@ import {
 } from '../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { Avatar, AvatarProps } from '../../Avatar/Avatar';
 
-export type MessageAvatarPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<
-  MessageContextValue<StreamChatGenerics>,
+export type MessageAvatarPropsWithContext = Pick<
+  MessageContextValue,
   'alignment' | 'lastGroupMessage' | 'message' | 'showAvatar'
 > &
-  Pick<ChatContextValue<StreamChatGenerics>, 'ImageComponent'> &
+  Pick<ChatContextValue, 'ImageComponent'> &
   Partial<Pick<AvatarProps, 'size'>>;
 
-const MessageAvatarWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageAvatarPropsWithContext<StreamChatGenerics>,
-) => {
+const MessageAvatarWithContext = (props: MessageAvatarPropsWithContext) => {
   const { alignment, ImageComponent, lastGroupMessage, message, showAvatar, size } = props;
   const {
     theme: {
@@ -56,9 +49,9 @@ const MessageAvatarWithContext = <
   );
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: MessageAvatarPropsWithContext<StreamChatGenerics>,
-  nextProps: MessageAvatarPropsWithContext<StreamChatGenerics>,
+const areEqual = (
+  prevProps: MessageAvatarPropsWithContext,
+  nextProps: MessageAvatarPropsWithContext,
 ) => {
   const { lastGroupMessage: prevLastGroupMessage, message: prevMessage } = prevProps;
   const { lastGroupMessage: nextLastGroupMessage, message: nextMessage } = nextProps;
@@ -84,18 +77,11 @@ const MemoizedMessageAvatar = React.memo(
   areEqual,
 ) as typeof MessageAvatarWithContext;
 
-export type MessageAvatarProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<MessageAvatarPropsWithContext<StreamChatGenerics>>;
+export type MessageAvatarProps = Partial<MessageAvatarPropsWithContext>;
 
-export const MessageAvatar = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageAvatarProps<StreamChatGenerics>,
-) => {
-  const { alignment, lastGroupMessage, message, showAvatar } =
-    useMessageContext<StreamChatGenerics>();
-  const { ImageComponent } = useChatContext<StreamChatGenerics>();
+export const MessageAvatar = (props: MessageAvatarProps) => {
+  const { alignment, lastGroupMessage, message, showAvatar } = useMessageContext();
+  const { ImageComponent } = useChatContext();
 
   return (
     <MemoizedMessageAvatar

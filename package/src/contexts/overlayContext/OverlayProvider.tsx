@@ -26,7 +26,7 @@ import { useStreami18n } from '../../hooks/useStreami18n';
 
 import { useViewport } from '../../hooks/useViewport';
 import { isImageMediaLibraryAvailable } from '../../native';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+
 import { AttachmentPickerProvider } from '../attachmentPickerContext/AttachmentPickerContext';
 import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
 import { ThemeProvider } from '../themeContext/ThemeContext';
@@ -55,11 +55,7 @@ import {
  *
  * @example ./OverlayProvider.md
  */
-export const OverlayProvider = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: PropsWithChildren<OverlayProviderProps<StreamChatGenerics>>,
-) => {
+export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) => {
   const { vh } = useViewport();
   const bottomSheetCloseTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const {
@@ -211,7 +207,7 @@ export const OverlayProvider = <
             {children}
             <ThemeProvider style={overlayContext.style}>
               {overlay === 'gallery' && (
-                <ImageGallery<StreamChatGenerics>
+                <ImageGallery
                   autoPlayVideo={autoPlayVideo}
                   giphyVersion={giphyVersion}
                   imageGalleryCustomComponents={imageGalleryCustomComponents}

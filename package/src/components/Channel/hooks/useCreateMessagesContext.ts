@@ -1,11 +1,8 @@
 import { useMemo } from 'react';
 
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 
-export const useCreateMessagesContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const useCreateMessagesContext = ({
   additionalPressableProps,
   Attachment,
   AttachmentActions,
@@ -111,7 +108,7 @@ export const useCreateMessagesContext = <
   updateMessage,
   UrlPreview,
   VideoThumbnail,
-}: MessagesContextValue<StreamChatGenerics> & {
+}: MessagesContextValue & {
   /**
    * To ensure we allow re-render, when channel is changed
    */
@@ -122,7 +119,7 @@ export const useCreateMessagesContext = <
   const messageContentOrderValue = messageContentOrder.join();
   const supportedReactionsLength = supportedReactions?.length;
 
-  const messagesContext: MessagesContextValue<StreamChatGenerics> = useMemo(
+  const messagesContext: MessagesContextValue = useMemo(
     () => ({
       additionalPressableProps,
       Attachment,

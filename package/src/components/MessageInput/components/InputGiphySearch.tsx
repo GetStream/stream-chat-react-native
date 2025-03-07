@@ -8,7 +8,7 @@ import {
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import { CircleClose, GiphyLightning } from '../../../icons';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 import { AutoCompleteInput } from '../../AutoCompleteInput/AutoCompleteInput';
 import { useCountdown } from '../hooks/useCountdown';
 
@@ -33,32 +33,28 @@ const styles = StyleSheet.create({
   },
 });
 
-export type InputGiphySearchProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<
+export type InputGiphySearchProps = Partial<
   Pick<
-    MessageInputContextValue<StreamChatGenerics>,
+    MessageInputContextValue,
     'additionalTextInputProps' | 'cooldownEndsAt' | 'setGiphyActive' | 'setShowMoreOptions'
   >
 > & {
   disabled: boolean;
 };
 
-export const InputGiphySearch = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const InputGiphySearch = ({
   additionalTextInputProps: propAdditionalTextInputProps,
   cooldownEndsAt: propCooldownEndsAt,
   disabled,
   setGiphyActive: propSetGiphyActive,
   setShowMoreOptions: propSetShowMoreOptions,
-}: InputGiphySearchProps<StreamChatGenerics>) => {
+}: InputGiphySearchProps) => {
   const {
     additionalTextInputProps: contextAdditionalTextInputProps,
     cooldownEndsAt: contextCooldownEndsAt,
     setGiphyActive: contextSetGiphyActive,
     setShowMoreOptions: contextSetShowMoreOptions,
-  } = useMessageInputContext<StreamChatGenerics>();
+  } = useMessageInputContext();
 
   const additionalTextInputProps = propAdditionalTextInputProps || contextAdditionalTextInputProps;
   const cooldownEndsAt = propCooldownEndsAt || contextCooldownEndsAt;
@@ -84,7 +80,7 @@ export const InputGiphySearch = <
         <Text style={[styles.giphyText, { color: white }, giphyText]}>GIPHY</Text>
       </View>
 
-      <AutoCompleteInput<StreamChatGenerics>
+      <AutoCompleteInput
         additionalTextInputProps={additionalTextInputProps}
         cooldownActive={!!cooldownRemainingSeconds}
       />

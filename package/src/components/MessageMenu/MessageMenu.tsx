@@ -13,14 +13,11 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { DefaultStreamChatGenerics } from '../../types/types';
 import { BottomSheetModal } from '../UIComponents/BottomSheetModal';
 
-export type MessageMenuProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<
+export type MessageMenuProps = Partial<
   Pick<
-    MessagesContextValue<StreamChatGenerics>,
+    MessagesContextValue,
     | 'MessageActionList'
     | 'MessageActionListItem'
     | 'MessageReactionPicker'
@@ -29,7 +26,7 @@ export type MessageMenuProps<
     | 'MessageUserReactionsItem'
   >
 > &
-  Partial<Pick<MessageContextValue<StreamChatGenerics>, 'message'>> & {
+  Partial<Pick<MessageContextValue, 'message'>> & {
     /**
      * Function to close the message actions bottom sheet
      * @returns void
@@ -59,11 +56,7 @@ export type MessageMenuProps<
     selectedReaction?: string;
   };
 
-export const MessageMenu = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageMenuProps<StreamChatGenerics>,
-) => {
+export const MessageMenu = (props: MessageMenuProps) => {
   const {
     dismissOverlay,
     handleReaction,
@@ -87,8 +80,8 @@ export const MessageMenu = <
     MessageUserReactions: contextMessageUserReactions,
     MessageUserReactionsAvatar: contextMessageUserReactionsAvatar,
     MessageUserReactionsItem: contextMessageUserReactionsItem,
-  } = useMessagesContext<StreamChatGenerics>();
-  const { message: contextMessage } = useMessageContext<StreamChatGenerics>();
+  } = useMessagesContext();
+  const { message: contextMessage } = useMessageContext();
   const MessageActionList = propMessageActionList ?? contextMessageActionList;
   const MessageActionListItem = propMessageActionListItem ?? contextMessageActionListItem;
   const MessageReactionPicker = propMessageReactionPicker ?? contextMessageReactionPicker;

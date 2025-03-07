@@ -2,7 +2,6 @@ import { useCallback, useState } from 'react';
 
 import { Channel, ChannelState as StreamChannelState } from 'stream-chat';
 
-import { DefaultStreamChatGenerics } from '../../../types/types';
 import { MessageType } from '../../MessageList/hooks/useMessageList';
 
 export const channelInitialState = {
@@ -24,53 +23,43 @@ export const channelInitialState = {
 /**
  * The ChannelMessagesState object
  */
-export type ChannelMessagesState<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+export type ChannelMessagesState = {
   hasMore?: boolean;
   hasMoreNewer?: boolean;
   loading?: boolean;
   loadingMore?: boolean;
   loadingMoreRecent?: boolean;
-  messages?: StreamChannelState<StreamChatGenerics>['messages'];
-  pinnedMessages?: StreamChannelState<StreamChatGenerics>['pinnedMessages'];
+  messages?: StreamChannelState['messages'];
+  pinnedMessages?: StreamChannelState['pinnedMessages'];
   targetedMessageId?: string;
 };
 
 /**
  * The ChannelThreadState object
  */
-export type ChannelThreadState<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
-  thread: MessageType<StreamChatGenerics> | null;
+export type ChannelThreadState = {
+  thread: MessageType | null;
   threadHasMore?: boolean;
   threadLoadingMore?: boolean;
-  threadMessages?: StreamChannelState<StreamChatGenerics>['messages'];
+  threadMessages?: StreamChannelState['messages'];
 };
 
 /**
  * The ChannelState object
  */
-export type ChannelState<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = ChannelMessagesState<StreamChatGenerics> & {
-  members?: StreamChannelState<StreamChatGenerics>['members'];
-  read?: StreamChannelState<StreamChatGenerics>['read'];
-  typing?: StreamChannelState<StreamChatGenerics>['typing'];
+export type ChannelState = ChannelMessagesState & {
+  members?: StreamChannelState['members'];
+  read?: StreamChannelState['read'];
+  typing?: StreamChannelState['typing'];
   watcherCount?: number;
-  watchers?: StreamChannelState<StreamChatGenerics>['watchers'];
+  watchers?: StreamChannelState['watchers'];
 };
 
 /**
  * The useChannelMessageDataState hook that handles the state for the channel messages.
  */
-export const useChannelMessageDataState = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  channel: Channel<StreamChatGenerics>,
-) => {
-  const [state, setState] = useState<ChannelMessagesState<StreamChatGenerics>>({
+export const useChannelMessageDataState = (channel: Channel) => {
+  const [state, setState] = useState<ChannelMessagesState>({
     hasMore: true,
     hasMoreNewer: false,
     loading: false,
@@ -81,7 +70,7 @@ export const useChannelMessageDataState = <
     targetedMessageId: undefined,
   });
 
-  const copyMessagesStateFromChannel = useCallback((channel: Channel<StreamChatGenerics>) => {
+  const copyMessagesStateFromChannel = useCallback((channel: Channel) => {
     setState((prev) => ({
       ...prev,
       messages: [...channel.state.messages],
@@ -89,18 +78,15 @@ export const useChannelMessageDataState = <
     }));
   }, []);
 
-  const loadInitialMessagesStateFromChannel = useCallback(
-    (channel: Channel<StreamChatGenerics>, hasMore: boolean) => {
-      setState((prev) => ({
-        ...prev,
-        hasMore,
-        loading: false,
-        messages: [...channel.state.messages],
-        pinnedMessages: [...channel.state.pinnedMessages],
-      }));
-    },
-    [],
-  );
+  const loadInitialMessagesStateFromChannel = useCallback((channel: Channel, hasMore: boolean) => {
+    setState((prev) => ({
+      ...prev,
+      hasMore,
+      loading: false,
+      messages: [...channel.state.messages],
+      pinnedMessages: [...channel.state.pinnedMessages],
+    }));
+  }, []);
 
   const jumpToLatestMessage = useCallback(() => {
     setState((prev) => ({
@@ -120,17 +106,14 @@ export const useChannelMessageDataState = <
     }));
   }, []);
 
-  const loadMoreFinished = useCallback(
-    (hasMore: boolean, messages: ChannelState<StreamChatGenerics>['messages']) => {
-      setState((prev) => ({
-        ...prev,
-        hasMore,
-        loadingMore: false,
-        messages,
-      }));
-    },
-    [],
-  );
+  const loadMoreFinished = useCallback((hasMore: boolean, messages: ChannelState['messages']) => {
+    setState((prev) => ({
+      ...prev,
+      hasMore,
+      loadingMore: false,
+      messages,
+    }));
+  }, []);
 
   const setLoadingMore = useCallback((loadingMore: boolean) => {
     setState((prev) => ({
@@ -154,7 +137,7 @@ export const useChannelMessageDataState = <
   }, []);
 
   const loadMoreRecentFinished = useCallback(
-    (hasMoreNewer: boolean, messages: ChannelState<StreamChatGenerics>['messages']) => {
+    (hasMoreNewer: boolean, messages: ChannelState['messages']) => {
       setState((prev) => ({
         ...prev,
         hasMoreNewer,
@@ -182,12 +165,8 @@ export const useChannelMessageDataState = <
 /**
  * The useChannelThreadState hook that handles the state for the channel member, read, typing, watchers, etc.
  */
-export const useChannelDataState = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  channel: Channel<StreamChatGenerics>,
-) => {
-  const [state, setState] = useState<ChannelState<StreamChatGenerics>>({
+export const useChannelDataState = (channel: Channel) => {
+  const [state, setState] = useState<ChannelState>({
     members: channel.state.members,
     read: channel.state.read,
     typing: {},
@@ -196,7 +175,7 @@ export const useChannelDataState = <
   });
 
   const initStateFromChannel = useCallback(
-    (channel: Channel<StreamChatGenerics>) => {
+    (channel: Channel) => {
       setState({
         ...state,
         members: { ...channel.state.members },
@@ -209,7 +188,7 @@ export const useChannelDataState = <
     [state],
   );
 
-  const copyStateFromChannel = useCallback((channel: Channel<StreamChatGenerics>) => {
+  const copyStateFromChannel = useCallback((channel: Channel) => {
     setState((prev) => ({
       ...prev,
       members: { ...channel.state.members },
@@ -219,14 +198,14 @@ export const useChannelDataState = <
     }));
   }, []);
 
-  const setRead = useCallback((channel: Channel<StreamChatGenerics>) => {
+  const setRead = useCallback((channel: Channel) => {
     setState((prev) => ({
       ...prev,
       read: { ...channel.state.read }, // Synchronize the read state from the channel
     }));
   }, []);
 
-  const setTyping = useCallback((channel: Channel<StreamChatGenerics>) => {
+  const setTyping = useCallback((channel: Channel) => {
     setState((prev) => ({
       ...prev,
       typing: { ...channel.state.typing }, // Synchronize the typing state from the channel

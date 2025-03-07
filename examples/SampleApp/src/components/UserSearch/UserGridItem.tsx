@@ -5,7 +5,6 @@ import { Avatar, Close, useTheme } from 'stream-chat-react-native';
 
 import type { UserResponse } from 'stream-chat';
 
-import type { StreamChatGenerics } from '../../types';
 
 const presenceIndicator = { cx: 7, cy: 7, r: 5 };
 
@@ -40,7 +39,7 @@ const styles = StyleSheet.create({
 
 export type UserGridItemProps = {
   onPress: () => void;
-  user: UserResponse<StreamChatGenerics>;
+  user: UserResponse;
   removeButton?: boolean;
 };
 
@@ -57,7 +56,6 @@ export const UserGridItem: React.FC<UserGridItemProps> = ({
   return (
     <TouchableOpacity key={user.id} onPress={onPress} style={styles.selectedUserItemContainer}>
       <Avatar
-        id={user.id}
         image={user.image}
         online={user.online}
         presenceIndicator={presenceIndicator}

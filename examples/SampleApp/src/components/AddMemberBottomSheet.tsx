@@ -21,8 +21,6 @@ import { usePaginatedUsers } from '../hooks/usePaginatedUsers';
 
 import type { UserResponse } from 'stream-chat';
 
-import { StreamChatGenerics } from '../types';
-
 const styles = StyleSheet.create({
   container: {
     height: 300,
@@ -94,7 +92,7 @@ export const AddMemberBottomSheet: React.FC = () => {
     return null;
   }
 
-  const addMember = async (user: UserResponse<StreamChatGenerics>) => {
+  const addMember = async (user: UserResponse) => {
     setAddMemberQueryInProgress(true);
 
     try {
