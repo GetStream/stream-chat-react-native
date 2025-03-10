@@ -61,7 +61,7 @@ export const usePaginatedChannels = ({
 }: Parameters) => {
   const [error, setError] = useState<Error | undefined>(undefined);
   const [staticChannelsActive, setStaticChannelsActive] = useState<boolean>(false);
-  const activeQueryType = useRef<QueryType | null>('queryLocalDB');
+  const [activeQueryType, setActiveQueryType] = useState<QueryType | null>('queryLocalDB');
   const activeChannels = useActiveChannelsRefContext();
   const isMountedRef = useIsMountedRef();
   const { client } = useChatContext();
@@ -109,7 +109,7 @@ export const usePaginatedChannels = ({
     setError(undefined);
     activeRequestId.current++;
     const currentRequestId = activeRequestId.current;
-    activeQueryType.current = queryType;
+    setActiveQueryType(queryType);
 
     const newOptions = {
       limit: options?.limit ?? MAX_QUERY_CHANNELS_LIMIT,
@@ -147,7 +147,7 @@ export const usePaginatedChannels = ({
       // querying.current check is needed in order to make sure the next query call doesnt flick an error
       // state and then succeed (reconnect case)
       if (retryCount === MAX_NUMBER_OF_RETRIES && !isQueryingRef.current) {
-        activeQueryType.current = null;
+        setActiveQueryType(null);
         console.warn(err);
 
         setError(
@@ -161,7 +161,7 @@ export const usePaginatedChannels = ({
       return queryChannels(queryType, retryCount + 1);
     }
 
-    activeQueryType.current = null;
+    setActiveQueryType(null);
   };
 
   const refreshList = async () => {
@@ -224,7 +224,7 @@ export const usePaginatedChannels = ({
         return false;
       }
 
-      activeQueryType.current = null;
+      setActiveQueryType(null);
 
       return true;
     };
@@ -274,7 +274,7 @@ export const usePaginatedChannels = ({
     error,
     hasNextPage,
     loadingChannels:
-      activeQueryType.current === 'queryLocalDB'
+      activeQueryType === 'queryLocalDB'
         ? true
         : // Although channels.length === 0 should come as a given when we have !channelListInitialized,
           // due to the way offline storage works currently we have to do this additional
@@ -285,7 +285,7 @@ export const usePaginatedChannels = ({
           pagination?.isLoading || (!channelListInitialized && channels.length === 0),
     loadingNextPage: pagination?.isLoadingNext,
     loadNextPage: channelManager.loadNext,
-    refreshing: activeQueryType.current === 'refresh',
+    refreshing: activeQueryType === 'refresh',
     refreshList,
     reloadList,
     staticChannelsActive,
