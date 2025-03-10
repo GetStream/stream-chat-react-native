@@ -4,14 +4,7 @@ import type { Channel, StreamChat } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
-import type { DefaultStreamChatGenerics } from '../../../types/types';
-
-const getChannelPreviewDisplayPresence = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  channel: Channel<StreamChatGenerics>,
-  client: StreamChat<StreamChatGenerics>,
-) => {
+const getChannelPreviewDisplayPresence = (channel: Channel, client: StreamChat) => {
   const currentUserId = client.userID;
 
   if (currentUserId) {
@@ -31,12 +24,8 @@ const getChannelPreviewDisplayPresence = <
  *
  * @returns {boolean} e.g., true
  */
-export const useChannelPreviewDisplayPresence = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  channel: Channel<StreamChatGenerics>,
-) => {
-  const { client } = useChatContext<StreamChatGenerics>();
+export const useChannelPreviewDisplayPresence = (channel: Channel) => {
+  const { client } = useChatContext();
 
   const currentUserId = client.userID;
   const members = Object.values(channel.state.members).filter(

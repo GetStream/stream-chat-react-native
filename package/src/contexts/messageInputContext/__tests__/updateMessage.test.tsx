@@ -10,7 +10,7 @@ import type { MessageType } from '../../../components/MessageList/hooks/useMessa
 import { ChatContextValue, ChatProvider } from '../../../contexts/chatContext/ChatContext';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 import * as AttachmentPickerContext from '../../attachmentPickerContext/AttachmentPickerContext';
 import {
   InputMessageInputContextValue,
@@ -21,27 +21,23 @@ import {
 
 const message = generateMessage({});
 
-type WrapperType<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  Partial<InputMessageInputContextValue<StreamChatGenerics>>;
+type WrapperType = Partial<InputMessageInputContextValue>;
 
-const Wrapper = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>({
-  children,
-  ...rest
-}: PropsWithChildren<WrapperType<StreamChatGenerics>>) => (
+const Wrapper = ({ children, ...rest }: PropsWithChildren<WrapperType>) => (
   <ChatProvider
     value={
       {
         client: {
           updateMessage: jest.fn().mockResolvedValue({ message }),
-        } as unknown as StreamChat<StreamChatGenerics>,
-      } as ChatContextValue<StreamChatGenerics>
+        } as unknown as StreamChat,
+      } as ChatContextValue
     }
   >
     <MessageInputProvider
       value={
         {
           ...rest,
-        } as MessageInputContextValue<StreamChatGenerics>
+        } as MessageInputContextValue
       }
     >
       {children}

@@ -22,7 +22,7 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import type { Channel as StreamChatChannel } from 'stream-chat';
 
 import { NewDirectMessagingSendButton } from '../components/NewDirectMessagingSendButton';
-import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
+import type { StackNavigatorParamList } from '../types';
 
 const styles = StyleSheet.create({
   container: {
@@ -136,7 +136,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
 
   const messageInputRef = useRef<TextInput | null>(null);
   const searchInputRef = useRef<TextInput>(null);
-  const currentChannel = useRef<StreamChatChannel<StreamChatGenerics>>();
+  const currentChannel = useRef<StreamChatChannel>(undefined);
   const isDraft = useRef(true);
 
   const [focusOnMessageInput, setFocusOnMessageInput] = useState(false);
@@ -163,7 +163,6 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
 
       // Check if the channel already exists.
       const channels = await chatClient.queryChannels({
-        distinct: true,
         members,
       });
 
@@ -312,7 +311,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         },
       ]}
     >
-      <Channel<StreamChatGenerics>
+      <Channel
         additionalTextInputProps={{
           onFocus: () => {
             setFocusOnMessageInput(true);

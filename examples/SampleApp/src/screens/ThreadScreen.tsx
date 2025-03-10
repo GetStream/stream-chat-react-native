@@ -3,8 +3,9 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Channel,
+  MessageType,
   Thread,
-  ThreadContextValue,
+  ThreadType,
   useAttachmentPickerContext,
   useTheme,
   useTypingString,
@@ -15,8 +16,8 @@ import { ScreenHeader } from '../components/ScreenHeader';
 
 import type { RouteProp } from '@react-navigation/native';
 
-import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
-import { ThreadState } from 'stream-chat';
+import type { StackNavigatorParamList } from '../types';
+import { ThreadState, UserResponse } from 'stream-chat';
 
 const selector = (nextValue: ThreadState) => ({ parentMessage: nextValue.parentMessage }) as const;
 
@@ -33,20 +34,17 @@ type ThreadScreenProps = {
 };
 
 export type ThreadHeaderProps = {
-  thread: ThreadContextValue<StreamChatGenerics>['thread'];
+  thread: MessageType | ThreadType;
 };
 
 const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
   const typing = useTypingString();
-  let subtitleText = thread?.user?.name;
+  let subtitleText = ((thread as MessageType)?.user as UserResponse)?.name;
   const { parentMessage } =
-    useStateStore(
-      (thread?.threadInstance as ThreadContextValue<StreamChatGenerics>['threadInstance'])?.state,
-      selector,
-    ) || {};
+    useStateStore((thread as ThreadType)?.threadInstance?.state, selector) || {};
 
   if (subtitleText == null) {
-    subtitleText = parentMessage?.user?.name;
+    subtitleText = (parentMessage?.user as UserResponse)?.name;
   }
 
   return (
@@ -78,7 +76,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: white }]}>
-      <Channel<StreamChatGenerics>
+      <Channel
         audioRecordingEnabled={true}
         channel={channel}
         enforceUniqueReaction
@@ -88,7 +86,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
       >
         <View style={styles.container}>
           <ThreadHeader thread={thread} />
-          <Thread<StreamChatGenerics> />
+          <Thread />
         </View>
       </Channel>
     </SafeAreaView>

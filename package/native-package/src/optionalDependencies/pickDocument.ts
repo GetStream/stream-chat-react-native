@@ -1,7 +1,7 @@
 /**
  * Types are approximated from what we need from the DocumentPicker API.
  *
- * For its full API, see https://github.com/rnmods/react-native-document-picker/blob/master/src/index.tsx
+ * For its full API, see https://github.com/react-native-documents/document-picker/blob/main/packages/document-picker/src/index.ts
  * */
 type ResponseValue = {
   name: string;
@@ -19,31 +19,12 @@ type DocumentPickerType =
 
 let DocumentPicker: DocumentPickerType;
 
-let OldDocumentPicker: DocumentPickerType;
-let NewDocumentPicker: DocumentPickerType;
-
 try {
-  NewDocumentPicker = require('@react-native-documents/picker');
+  DocumentPicker = require('@react-native-documents/picker');
 } catch (err) {
-  // we log below
-}
-
-try {
-  OldDocumentPicker = require('react-native-document-picker').default;
-} catch (err) {
-  // we log below
-}
-
-if (NewDocumentPicker) {
-  DocumentPicker = NewDocumentPicker;
-} else if (OldDocumentPicker) {
-  DocumentPicker = OldDocumentPicker;
+  // do nothing
   console.log(
-    "You're using the react-native-document-picker library, which is no longer supported and has moved to @react-native-documents/picker. Things might not work as intended. Please migrate to the new library as soon as possible !",
-  );
-} else {
-  console.log(
-    'Neither react-native-document-picker nor @react-native-documents/picker are installed.',
+    'The @react-native-documents/picker is not installed. Installing it will enable you to pick and upload files from within your app.',
   );
 }
 

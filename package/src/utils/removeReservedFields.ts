@@ -1,13 +1,10 @@
 import type { MessageResponse } from 'stream-chat';
 
 import type { MessageType } from '../components/MessageList/hooks/useMessageList';
-import type { DefaultStreamChatGenerics } from '../types/types';
 
-export const removeReservedFields = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  message: MessageType<StreamChatGenerics> | MessageResponse<StreamChatGenerics>,
-): MessageType<StreamChatGenerics> | MessageResponse<StreamChatGenerics> => {
+export const removeReservedFields = (
+  message: MessageType | MessageResponse,
+): MessageType | MessageResponse => {
   const retryMessage = { ...message };
   const reserved = [
     'cid',
@@ -26,7 +23,8 @@ export const removeReservedFields = <
     'type',
     'updated_at',
     'reply_count',
-  ];
+  ] as (keyof typeof message)[];
+
   reserved.forEach((key) => {
     delete retryMessage[key];
   });

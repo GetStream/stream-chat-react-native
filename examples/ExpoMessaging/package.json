@@ -46,5 +46,8 @@
     "@rnx-kit/metro-config": "^2.0.1",
     "@rnx-kit/metro-resolver-symlinks": "^0.2.1"
   },
+  "resolutions": {
+    "@types/react": "^19.0.0"
+  },
   "private": true
 }

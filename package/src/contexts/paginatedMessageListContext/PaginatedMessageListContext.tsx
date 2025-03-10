@@ -2,14 +2,11 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import type { ChannelState } from 'stream-chat';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-export type PaginatedMessageListContextValue<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+export type PaginatedMessageListContextValue = {
   /**
    * Load latest messages
    * @returns Promise<void>
@@ -26,7 +23,7 @@ export type PaginatedMessageListContextValue<
   /**
    * Messages from client state
    */
-  messages: ChannelState<StreamChatGenerics>['messages'];
+  messages: ChannelState['messages'];
   /**
    * Has more messages to load
    */
@@ -53,13 +50,11 @@ export const PaginatedMessageListContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as PaginatedMessageListContextValue,
 );
 
-export const PaginatedMessageListProvider = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const PaginatedMessageListProvider = ({
   children,
   value,
 }: PropsWithChildren<{
-  value?: PaginatedMessageListContextValue<StreamChatGenerics>;
+  value?: PaginatedMessageListContextValue;
 }>) => (
   <PaginatedMessageListContext.Provider
     value={value as unknown as PaginatedMessageListContextValue}
@@ -68,12 +63,10 @@ export const PaginatedMessageListProvider = <
   </PaginatedMessageListContext.Provider>
 );
 
-export const usePaginatedMessageListContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => {
+export const usePaginatedMessageListContext = () => {
   const contextValue = useContext(
     PaginatedMessageListContext,
-  ) as unknown as PaginatedMessageListContextValue<StreamChatGenerics>;
+  ) as unknown as PaginatedMessageListContextValue;
 
   if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(

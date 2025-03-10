@@ -12,13 +12,11 @@ import {
 import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { triggerHaptic } from '../../native';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+
 import { ReactionData } from '../../utils/utils';
 
-export type MessageReactionPickerProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessagesContextValue<StreamChatGenerics>, 'supportedReactions'> &
-  Pick<MessageContextValue<StreamChatGenerics>, 'handleReaction' | 'dismissOverlay'> & {
+export type MessageReactionPickerProps = Pick<MessagesContextValue, 'supportedReactions'> &
+  Pick<MessageContextValue, 'handleReaction' | 'dismissOverlay'> & {
     /**
      * An array of reaction types that the current user has reacted with
      */
@@ -43,11 +41,7 @@ const renderItem = ({ index, item }: { index: number; item: ReactionPickerItemTy
 /**
  * MessageReactionPicker - A high level component which implements all the logic required for a message overlay reaction list
  */
-export const MessageReactionPicker = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageReactionPickerProps<StreamChatGenerics>,
-) => {
+export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
   const {
     dismissOverlay,
     handleReaction,

@@ -5,9 +5,7 @@ import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 
 import type { Channel } from 'stream-chat';
 
-import type { StreamChatGenerics } from '../types';
-
-export const useChannelMembersStatus = (channel: Channel<StreamChatGenerics>) => {
+export const useChannelMembersStatus = (channel: Channel) => {
   const watchersCount = channel.state.watcher_count;
   const memberCount = channel?.data?.member_count;
 

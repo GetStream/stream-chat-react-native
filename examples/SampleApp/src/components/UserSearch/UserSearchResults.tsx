@@ -15,7 +15,6 @@ import { useUserSearchContext } from '../../context/UserSearchContext';
 
 import type { UserResponse } from 'stream-chat';
 
-import type { StreamChatGenerics } from '../../types';
 import { Search } from '../../icons/Search';
 import calendar from 'dayjs/plugin/calendar';
 
@@ -65,9 +64,9 @@ const styles = StyleSheet.create({
 type UserSearchResultsProps = {
   groupedAlphabetically?: boolean;
   removeOnPressOnly?: boolean;
-  results?: UserResponse<StreamChatGenerics>[];
+  results?: UserResponse[];
   showOnlineStatus?: boolean;
-  toggleSelectedUser?: (user: UserResponse<StreamChatGenerics>) => void;
+  toggleSelectedUser?: (user: UserResponse) => void;
 };
 
 export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
@@ -87,7 +86,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
   } = useUserSearchContext();
   const [sections, setSections] = useState<
     Array<{
-      data: UserResponse<StreamChatGenerics>[];
+      data: UserResponse[];
       title: string;
     }>
   >([]);
@@ -113,7 +112,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
   useEffect(() => {
     const newSections: {
       [key: string]: {
-        data: UserResponse<StreamChatGenerics>[];
+        data: UserResponse[];
         title: string;
       };
     } = {};
@@ -204,7 +203,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
                 },
               ]}
             >
-              <Avatar id={item?.id} image={item.image} name={item.name} size={40} />
+              <Avatar image={item.image} name={item.name} size={40} />
               <View style={styles.searchResultUserDetails}>
                 <Text
                   style={[
