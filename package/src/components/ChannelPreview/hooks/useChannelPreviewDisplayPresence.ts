@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 
 import type { Channel, StreamChat } from 'stream-chat';
 
@@ -44,11 +44,10 @@ export const useChannelPreviewDisplayPresence = <
   );
   const channelMemberOnline = members.some((member) => member.user?.online);
 
-  const [displayPresence, setDisplayPresence] = useState(false);
-
-  useEffect(() => {
-    setDisplayPresence(getChannelPreviewDisplayPresence(channel, client));
-  }, [channel, channelMemberOnline, client]);
+  const displayPresence = useMemo(() => {
+    return getChannelPreviewDisplayPresence(channel, client);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [channel, client, channelMemberOnline]);
 
   return displayPresence;
 };
