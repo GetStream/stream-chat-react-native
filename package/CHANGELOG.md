@@ -343,6 +343,7 @@
 
 ### [5.39.3](https://github.com/GetStream/stream-chat-react-native/compare/v5.39.2...v5.39.3) (2024-10-15)
 
+
 ### Bug Fixes
 
 - ChannelAvatar crash when used outside of ChannelList ([#2708](https://github.com/GetStream/stream-chat-react-native/issues/2708)) ([85f4ab2](https://github.com/GetStream/stream-chat-react-native/commit/85f4ab21adf4b0da636475f0285e3360d9b1309b))
