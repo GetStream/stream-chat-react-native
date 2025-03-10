@@ -14,7 +14,7 @@ configPromise.then((config) => {
         prerelease: 'beta',
       },
       {
-        name: 'v7',
+        name: 'V7',
         channel: 'rc',
         prerelease: 'rc',
       },
