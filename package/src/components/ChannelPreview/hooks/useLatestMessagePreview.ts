@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { TFunction } from 'i18next';
 import type {
@@ -286,19 +286,6 @@ export const useLatestMessagePreview = <
     : '';
 
   const [readEvents, setReadEvents] = useState(true);
-  const [latestMessagePreview, setLatestMessagePreview] = useState<
-    LatestMessagePreview<StreamChatGenerics>
-  >({
-    created_at: '',
-    messageObject: undefined,
-    previews: [
-      {
-        bold: false,
-        text: '',
-      },
-    ],
-    status: MessageReadStatus.NOT_SENT_BY_CURRENT_USER,
-  });
 
   const readStatus = getLatestMessageReadStatus(channel, client, translatedLastMessage, readEvents);
 
@@ -319,29 +306,25 @@ export const useLatestMessagePreview = <
     useStateStore(poll?.state, selector) ?? {};
   const { createdBy, latestVotesByOption, name } = pollState;
 
-  useEffect(
-    () =>
-      setLatestMessagePreview(
-        getLatestMessagePreview({
-          channel,
-          client,
-          lastMessage: translatedLastMessage,
-          pollState,
-          readEvents,
-          t,
-        }),
-      ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      channelLastMessageString,
-      forceUpdate,
+  const latestMessagePreview = useMemo(() => {
+    return getLatestMessagePreview({
+      channel,
+      client,
+      lastMessage: translatedLastMessage,
+      pollState,
       readEvents,
-      readStatus,
-      latestVotesByOption,
-      createdBy,
-      name,
-    ],
-  );
+      t,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    channelLastMessageString,
+    forceUpdate,
+    readEvents,
+    readStatus,
+    latestVotesByOption,
+    createdBy,
+    name,
+  ]);
 
   return latestMessagePreview;
 };

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 
 import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
@@ -26,7 +26,9 @@ export const getChannelPreviewDisplayName = <
   members?: Channel<StreamChatGenerics>['state']['members'];
 }): string => {
   if (channelName) {
-    return channelName;
+    return channelName.length > characterLimit
+      ? `${channelName.slice(0, characterLimit - ELLIPSIS.length)}${ELLIPSIS}`
+      : channelName;
   }
 
   const channelMembers = Object.values(members || {});
@@ -83,33 +85,25 @@ export const useChannelPreviewDisplayName = <
   const { client } = useChatContext<StreamChatGenerics>();
   const { vw } = useViewport();
 
-  const DEFAULT_MAX_CHARACTER_LENGTH = (vw(100) - 16) / 6;
+  const DEFAULT_MAX_CHARACTER_LENGTH = Math.floor((vw(100) - 16) / 6);
 
   const currentUserId = client?.userID;
   const members = channel?.state?.members;
-  const numOfMembers = Object.keys(members || {}).length;
   const channelName = channel?.data?.name;
   const characterLimit = characterLength || DEFAULT_MAX_CHARACTER_LENGTH;
-  const [displayName, setDisplayName] = useState(
-    getChannelPreviewDisplayName({
-      channelName,
-      characterLimit,
-      currentUserId,
-      members,
-    }),
-  );
+  const numOfMembers = Object.keys(members || {}).length;
 
-  useEffect(() => {
-    setDisplayName(
+  const displayName = useMemo(
+    () =>
       getChannelPreviewDisplayName({
         channelName,
         characterLimit,
         currentUserId,
         members,
       }),
-    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channelName, currentUserId, characterLimit, numOfMembers]);
+    [channelName, characterLimit, currentUserId, members, numOfMembers],
+  );
 
   return displayName;
 };
