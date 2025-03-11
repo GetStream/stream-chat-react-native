@@ -91,6 +91,7 @@ export const useChannelPreviewDisplayName = <
   const members = channel?.state?.members;
   const channelName = channel?.data?.name;
   const characterLimit = characterLength || DEFAULT_MAX_CHARACTER_LENGTH;
+  const numOfMembers = Object.keys(members || {}).length;
 
   const displayName = useMemo(
     () =>
@@ -100,7 +101,8 @@ export const useChannelPreviewDisplayName = <
         currentUserId,
         members,
       }),
-    [channelName, characterLimit, currentUserId, members],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [channelName, characterLimit, currentUserId, members, numOfMembers],
   );
 
   return displayName;
