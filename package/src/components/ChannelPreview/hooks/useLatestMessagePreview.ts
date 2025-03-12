@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { TFunction } from 'i18next';
 import type {
@@ -285,20 +285,18 @@ export const useLatestMessagePreview = <
     ? stringifyMessage(translatedLastMessage)
     : '';
 
-  const [readEvents, setReadEvents] = useState(true);
+  const readEvents = useMemo(() => {
+    if (!channelConfigExists) {
+      return true;
+    }
+    const read_events = !channel.disconnected && !!channel?.id && channel.getConfig()?.read_events;
+    if (typeof read_events !== 'boolean') {
+      return true;
+    }
+    return read_events;
+  }, [channelConfigExists, channel]);
 
   const readStatus = getLatestMessageReadStatus(channel, client, translatedLastMessage, readEvents);
-
-  useEffect(() => {
-    if (channelConfigExists) {
-      const read_events =
-        !channel.disconnected && !!channel?.id && channel.getConfig()?.read_events;
-      if (typeof read_events === 'boolean') {
-        setReadEvents(read_events);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channelConfigExists]);
 
   const pollId = lastMessage?.poll_id ?? '';
   const poll = client.polls.fromState(pollId);
