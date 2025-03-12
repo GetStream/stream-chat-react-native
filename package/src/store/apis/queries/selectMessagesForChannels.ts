@@ -42,7 +42,6 @@ export const selectMessagesForChannels = async (
     ORDER BY cast(strftime('%s', a.createdAt) AS INTEGER) ASC`,
     cids,
   );
-  console.log(result);
 
   return result.map((r) => JSON.parse(r.value));
 };
