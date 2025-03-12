@@ -203,7 +203,7 @@ export const reactionData: ReactionData[] = [
  * If count of unread messages is less than 4, then no need to scroll to first unread message,
  * since first unread message will be in visible frame anyways.
  */
-const scrollToFirstUnreadThreshold = 4;
+const scrollToFirstUnreadThreshold = 0;
 
 const defaultThrottleInterval = 500;
 const defaultDebounceInterval = 500;
@@ -1042,6 +1042,7 @@ const ChannelWithContext = <
       },
       () => {
         if (unreadMessageIdToScrollTo) {
+          setTargetedMessage(unreadMessageIdToScrollTo);
           restartSetsMergeFuncRef.current();
         }
       },
