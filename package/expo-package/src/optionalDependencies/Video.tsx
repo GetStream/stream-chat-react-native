@@ -51,9 +51,11 @@ export const Video = videoPackage
       // This is done so that the audio of the video is not muted when the phone is in silent mode for iOS.
       useEffect(() => {
         const initializeSound = async () => {
-          await AudioComponent.setAudioModeAsync({
-            playsInSilentModeIOS: true,
-          });
+          if (AudioComponent) {
+            await AudioComponent.setAudioModeAsync({
+              playsInSilentModeIOS: true,
+            });
+          }
         };
         initializeSound();
       }, []);
