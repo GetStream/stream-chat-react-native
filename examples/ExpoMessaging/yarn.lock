@@ -4363,6 +4363,11 @@ expo-status-bar@~2.0.1:
   resolved "https://registry.yarnpkg.com/expo-status-bar/-/expo-status-bar-2.0.1.tgz#fc07726346dc30fbb68aadb0d7890b34fba42eee"
   integrity sha512-AkIPX7jWHRPp83UBZ1iXtVvyr0g+DgBVvIXTtlmPtmUsm8Vq9Bb5IGj86PW8osuFlgoTVAg7HI/+Ok7yEYwiRg==
 
+expo-video@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/expo-video/-/expo-video-2.0.5.tgz#5c5311b0a20dcb7897d06cd4f9d7fb0ce13711d9"
+  integrity sha512-K5Q4bFKtYq0wEC38mckWUYeaTXsmhl6duidhSdbA63VBy6cwxDOk8uPsFPTQD3FXKJg6wFB0z8ZUASSPuUaY5A==
+
 expo@~52.0.36:
   version "52.0.37"
   resolved "https://registry.yarnpkg.com/expo/-/expo-52.0.37.tgz#159b5f3f9bedb2c56b36a815b8679a2602a406cc"
@@ -7397,10 +7402,10 @@ stream-buffers@2.2.x, stream-buffers@~2.2.0:
   version "0.0.0"
   uid ""
 
-stream-chat@9.0.0-rc.4:
-  version "9.0.0-rc.4"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.0.0-rc.4.tgz#30ffd324069cd012372014efe3a6d94bf264963a"
-  integrity sha512-kVlDls6TXEWAlAQf6WLwNv3wDwVo0y9J536+NS8PFmkJKkBNfD9RGAbb4SuZNxeEpd+kAy3861vxspB1mpFEmQ==
+stream-chat@9.0.0-rc.7:
+  version "9.0.0-rc.7"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.0.0-rc.7.tgz#c2c1ab17cda9c55a0068720164228b3d92852db7"
+  integrity sha512-hvwilti9vqEGBnD8v81/4s1IOgOKmzG+d/49BDGzrwUl8M2yDLvIWd93Xo4gj/+0edEgcOVaW4gncenEqXVR9A==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"

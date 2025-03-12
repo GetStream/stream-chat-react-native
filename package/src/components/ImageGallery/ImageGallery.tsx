@@ -472,6 +472,10 @@ export const ImageGallery = (props: Props) => {
           paused: imageGalleryAttachment.id === index ? false : true,
         })),
       );
+
+      if (videoRef.current?.play) {
+        videoRef.current.play();
+      }
     } else {
       // If the status is true we simply set all the audio's paused state as true.
       setImageGalleryAttachments((prevImageGalleryAttachment) =>
@@ -480,6 +484,10 @@ export const ImageGallery = (props: Props) => {
           paused: true,
         })),
       );
+
+      if (videoRef.current?.pause) {
+        videoRef.current.pause();
+      }
     }
   };
 

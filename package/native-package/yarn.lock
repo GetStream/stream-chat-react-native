@@ -3444,10 +3444,10 @@ statuses@~1.5.0:
   version "0.0.0"
   uid ""
 
-stream-chat@9.0.0-rc.4:
-  version "9.0.0-rc.4"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.0.0-rc.4.tgz#30ffd324069cd012372014efe3a6d94bf264963a"
-  integrity sha512-kVlDls6TXEWAlAQf6WLwNv3wDwVo0y9J536+NS8PFmkJKkBNfD9RGAbb4SuZNxeEpd+kAy3861vxspB1mpFEmQ==
+stream-chat@9.0.0-rc.7:
+  version "9.0.0-rc.7"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.0.0-rc.7.tgz#c2c1ab17cda9c55a0068720164228b3d92852db7"
+  integrity sha512-hvwilti9vqEGBnD8v81/4s1IOgOKmzG+d/49BDGzrwUl8M2yDLvIWd93Xo4gj/+0edEgcOVaW4gncenEqXVR9A==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"
