@@ -25,7 +25,7 @@ const selector = (nextValue: ThreadManagerState) =>
 
 export const ThreadsUnreadCountBadge: React.FC = () => {
   const { chatClient } = useAppContext();
-  const { unreadCount } = useStateStore(chatClient?.threads?.state, selector);
+  const { unreadCount } = useStateStore(chatClient?.threads?.state, selector) ?? { unreadCount: 0 };
 
   return <UnreadCountBadge unreadCount={unreadCount} />;
 };

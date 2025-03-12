@@ -26,7 +26,7 @@ import { Picture } from '../icons/Picture';
 import type { RouteProp } from '@react-navigation/native';
 import type { Attachment } from 'stream-chat';
 
-import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
+import type { StackNavigatorParamList } from '../types';
 
 const screen = Dimensions.get('screen').width;
 
@@ -70,7 +70,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
     messages: images,
     setMessages: setImages,
     setSelectedMessage: setImage,
-  } = useImageGalleryContext<StreamChatGenerics>();
+  } = useImageGalleryContext();
   const { setOverlay } = useOverlayContext();
   const { loading, loadMore, messages } = usePaginatedAttachments(channel, 'image');
   const {
@@ -110,9 +110,9 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
    * Photos array created from all currently available
    * photo attachments
    */
-  const photos = messages.reduce((acc: Photo<StreamChatGenerics>[], cur) => {
+  const photos = messages.reduce((acc: Photo[], cur) => {
     const attachmentImages =
-      (cur.attachments as Attachment<StreamChatGenerics>[])?.filter(
+      (cur.attachments as Attachment[])?.filter(
         (attachment) =>
           attachment.type === 'image' &&
           !attachment.title_link &&
@@ -151,7 +151,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
    */
   const imageString = messagesWithImages
     .map((message) =>
-      (message.attachments as Attachment<StreamChatGenerics>[])
+      (message.attachments as Attachment[])
         .map((attachment) => attachment.image_url || attachment.thumb_url || '')
         .join(),
     )

@@ -16,14 +16,12 @@ import type { ChannelPreviewUnreadCountProps } from '../../components/ChannelPre
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type { LoadingErrorProps } from '../../components/Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-export type ChannelsContextValue<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+export type ChannelsContextValue = {
   /**
    * Besides the existing default behavior of the ChannelListMessenger component, you can attach
    * additional props to the underlying React Native FlatList.
@@ -41,7 +39,7 @@ export type ChannelsContextValue<
    *
    * **Note:** Don't use `additionalFlatListProps` to access the FlatList ref, use `setFlatListRef`
    */
-  additionalFlatListProps: Partial<FlatListProps<Channel<StreamChatGenerics>>>;
+  additionalFlatListProps: Partial<FlatListProps<Channel>>;
   /**
    * A control prop used to determine whether the first query of the channel list has succeeded.
    */
@@ -49,7 +47,7 @@ export type ChannelsContextValue<
   /**
    * Channels can be either an array of channels or a promise which resolves to an array of channels
    */
-  channels: Channel<StreamChatGenerics>[] | null;
+  channels: Channel[] | null;
   /**
    * Custom indicator to use when channel list is empty
    *
@@ -123,7 +121,7 @@ export type ChannelsContextValue<
    *
    * Default: [ChannelPreviewMessenger](https://getstream.io/chat/docs/sdk/reactnative/ui-components/channel-preview-messenger/)
    */
-  Preview: React.ComponentType<ChannelPreviewMessengerProps<StreamChatGenerics>>;
+  Preview: React.ComponentType<ChannelPreviewMessengerProps>;
   /**
    * Triggered when the channel list is refreshing, displays a loading spinner at the top of the list
    */
@@ -142,7 +140,7 @@ export type ChannelsContextValue<
   //  *
   //  * @param channel A channel object
   //  */
-  // setActiveChannel?: (channel: Channel<StreamChatGenerics>) => void;
+  // setActiveChannel?: (channel: Channel) => void;
   /**
    * Function to gain access to the inner FlatList ref
    *
@@ -155,7 +153,7 @@ export type ChannelsContextValue<
    *  }}
    * ```
    */
-  setFlatListRef: (ref: FlatList<Channel<StreamChatGenerics>> | null) => void;
+  setFlatListRef: (ref: FlatList<Channel> | null) => void;
   /**
    * Custom UI component to display loading channel skeletons
    *
@@ -172,19 +170,19 @@ export type ChannelsContextValue<
    *
    * @param channel A channel object
    */
-  onSelect?: (channel: Channel<StreamChatGenerics>) => void;
+  onSelect?: (channel: Channel) => void;
   /**
    * Custom UI component to render preview avatar.
    *
    * **Default** [ChannelAvatar](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelAvatar.tsx)
    */
-  PreviewAvatar?: React.ComponentType<ChannelAvatarProps<StreamChatGenerics>>;
+  PreviewAvatar?: React.ComponentType<ChannelAvatarProps>;
   /**
    * Custom UI component to render preview of latest message on channel.
    *
    * **Default** [ChannelPreviewMessage](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelPreviewMessage.tsx)
    */
-  PreviewMessage?: React.ComponentType<ChannelPreviewMessageProps<StreamChatGenerics>>;
+  PreviewMessage?: React.ComponentType<ChannelPreviewMessageProps>;
   /**
    * Custom UI component to render muted status.
    *
@@ -196,44 +194,38 @@ export type ChannelsContextValue<
    *
    * **Default** [ChannelPreviewStatus](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelPreviewStatus.tsx)
    */
-  PreviewStatus?: React.ComponentType<ChannelPreviewStatusProps<StreamChatGenerics>>;
+  PreviewStatus?: React.ComponentType<ChannelPreviewStatusProps>;
   /**
    * Custom UI component to render preview avatar.
    *
    * **Default** [ChannelPreviewTitle](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelPreviewTitle.tsx)
    */
-  PreviewTitle?: React.ComponentType<ChannelPreviewTitleProps<StreamChatGenerics>>;
+  PreviewTitle?: React.ComponentType<ChannelPreviewTitleProps>;
   /**
    * Custom UI component to render preview avatar.
    *
    * **Default** [ChannelPreviewUnreadCount](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelPreviewUnreadCount.tsx)
    */
-  PreviewUnreadCount?: React.ComponentType<ChannelPreviewUnreadCountProps<StreamChatGenerics>>;
+  PreviewUnreadCount?: React.ComponentType<ChannelPreviewUnreadCountProps>;
 };
 
 export const ChannelsContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as ChannelsContextValue,
 );
 
-export const ChannelsProvider = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const ChannelsProvider = ({
   children,
   value,
 }: PropsWithChildren<{
-  value: ChannelsContextValue<StreamChatGenerics>;
+  value: ChannelsContextValue;
 }>) => (
   <ChannelsContext.Provider value={value as unknown as ChannelsContextValue}>
     {children}
   </ChannelsContext.Provider>
 );
 
-export const useChannelsContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => {
-  const contextValue = useContext(
-    ChannelsContext,
-  ) as unknown as ChannelsContextValue<StreamChatGenerics>;
+export const useChannelsContext = () => {
+  const contextValue = useContext(ChannelsContext) as unknown as ChannelsContextValue;
 
   if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(

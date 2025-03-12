@@ -60,7 +60,7 @@ import { MessageUserReactionsAvatarProps } from '../../components/MessageMenu/Me
 import { MessageUserReactionsItemProps } from '../../components/MessageMenu/MessageUserReactionsItem';
 import type { ReplyProps } from '../../components/Reply/Reply';
 import { FlatList } from '../../native';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+
 import type { ReactionData } from '../../utils/utils';
 import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
 import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
@@ -80,26 +80,24 @@ export type MessageContentType =
   | 'text';
 export type DeletedMessagesVisibilityType = 'always' | 'never' | 'receiver' | 'sender';
 
-export type MessagesContextValue<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessageContextValue<StreamChatGenerics>, 'isMessageAIGenerated'> & {
+export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerated'> & {
   /**
    * UI component for Attachment.
    * Defaults to: [Attachment](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Attachment.tsx)
    */
-  Attachment: React.ComponentType<AttachmentProps<StreamChatGenerics>>;
+  Attachment: React.ComponentType<AttachmentProps>;
   /**
    * UI component to display AttachmentActions. e.g., send, shuffle, cancel in case of giphy
    * Defaults to: [AttachmentActions](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/AttachmentActions.tsx)
    */
-  AttachmentActions: React.ComponentType<AttachmentActionsProps<StreamChatGenerics>>;
+  AttachmentActions: React.ComponentType<AttachmentActionsProps>;
   /** Custom UI component for AudioAttachment. */
   AudioAttachment: React.ComponentType<AudioAttachmentProps>;
   /**
    * UI component to display generic media type e.g. giphy, url preview etc
    * Defaults to: [Card](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Card.tsx)
    */
-  Card: React.ComponentType<CardProps<StreamChatGenerics>>;
+  Card: React.ComponentType<CardProps>;
   /**
    * Handler to clear the quoted state of the message.
    */
@@ -109,7 +107,7 @@ export type MessagesContextValue<
    * Defaults to: [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)
    **/
   DateHeader: React.ComponentType<DateHeaderProps>;
-  deleteMessage: (message: MessageResponse<StreamChatGenerics>) => Promise<void>;
+  deleteMessage: (message: MessageResponse) => Promise<void>;
   deleteReaction: (type: string, messageId: string) => Promise<void>;
 
   /** Should keyboard be dismissed when messaged is touched */
@@ -121,12 +119,12 @@ export type MessagesContextValue<
    * UI component to display File type attachment.
    * Defaults to: [FileAttachment](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/FileAttachment.tsx)
    */
-  FileAttachment: React.ComponentType<FileAttachmentProps<StreamChatGenerics>>;
+  FileAttachment: React.ComponentType<FileAttachmentProps>;
   /**
    * UI component to display group of File type attachments or multiple file attachments (in single message).
    * Defaults to: [FileAttachmentGroup](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/FileAttachmentGroup.tsx)
    */
-  FileAttachmentGroup: React.ComponentType<FileAttachmentGroupProps<StreamChatGenerics>>;
+  FileAttachmentGroup: React.ComponentType<FileAttachmentGroupProps>;
   /**
    * UI component for attachment icon for type 'file' attachment.
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/FileIcon.tsx
@@ -137,12 +135,12 @@ export type MessagesContextValue<
    * UI component to display image attachments
    * Defaults to: [Gallery](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Gallery.tsx)
    */
-  Gallery: React.ComponentType<GalleryProps<StreamChatGenerics>>;
+  Gallery: React.ComponentType<GalleryProps>;
   /**
    * UI component for Giphy
    * Defaults to: [Giphy](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Giphy.tsx)
    */
-  Giphy: React.ComponentType<GiphyProps<StreamChatGenerics>>;
+  Giphy: React.ComponentType<GiphyProps>;
   /**
    * The giphy version to render - check the keys of the [Image Object](https://developers.giphy.com/docs/api/schema#image-object) for possible values. Uses 'fixed_height' by default
    * */
@@ -173,7 +171,7 @@ export type MessagesContextValue<
    **/
   InlineUnreadIndicator: React.ComponentType;
 
-  Message: React.ComponentType<MessageProps<StreamChatGenerics>>;
+  Message: React.ComponentType<MessageProps>;
   /**
    * Custom UI component for rendering Message actions in message menu.
    *
@@ -190,23 +188,23 @@ export type MessagesContextValue<
    * UI component for MessageAvatar
    * Defaults to: [MessageAvatar](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageAvatar.tsx)
    **/
-  MessageAvatar: React.ComponentType<MessageAvatarProps<StreamChatGenerics>>;
+  MessageAvatar: React.ComponentType<MessageAvatarProps>;
   /**
    * UI Component for MessageBounce
    */
-  MessageBounce: React.ComponentType<MessageBounceProps<StreamChatGenerics>>;
+  MessageBounce: React.ComponentType<MessageBounceProps>;
   /**
    * UI component for MessageContent
    * Defaults to: [MessageContent](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageContent.tsx)
    */
-  MessageContent: React.ComponentType<MessageContentProps<StreamChatGenerics>>;
+  MessageContent: React.ComponentType<MessageContentProps>;
   /** Order to render the message content */
   messageContentOrder: MessageContentType[];
   /**
    * UI component for MessageDeleted
    * Defaults to: [MessageDeleted](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageSimple/MessageDeleted.tsx)
    */
-  MessageDeleted: React.ComponentType<MessageDeletedProps<StreamChatGenerics>>;
+  MessageDeleted: React.ComponentType<MessageDeletedProps>;
   /**
    * UI component for MessageEditedTimestamp
    * Defaults to: [MessageEditedTimestamp](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageSimple/MessageEditedTimestamp.tsx)
@@ -219,45 +217,45 @@ export type MessagesContextValue<
   /**
    * Custom message footer component
    */
-  MessageFooter: React.ComponentType<MessageFooterProps<StreamChatGenerics>>;
-  MessageList: React.ComponentType<MessageListProps<StreamChatGenerics>>;
+  MessageFooter: React.ComponentType<MessageFooterProps>;
+  MessageList: React.ComponentType<MessageListProps>;
   /**
    * UI component for MessageMenu
    */
-  MessageMenu: React.ComponentType<MessageMenuProps<StreamChatGenerics>>;
+  MessageMenu: React.ComponentType<MessageMenuProps>;
   /**
    * Custom message pinned component
    */
-  MessagePinnedHeader: React.ComponentType<MessagePinnedHeaderProps<StreamChatGenerics>>;
+  MessagePinnedHeader: React.ComponentType<MessagePinnedHeaderProps>;
   /**
    * UI component for MessageReactionPicker
    */
-  MessageReactionPicker: React.ComponentType<MessageReactionPickerProps<StreamChatGenerics>>;
+  MessageReactionPicker: React.ComponentType<MessageReactionPickerProps>;
   /**
    * UI component for MessageReplies
    * Defaults to: [MessageReplies](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageSimple/MessageReplies.tsx)
    */
-  MessageReplies: React.ComponentType<MessageRepliesProps<StreamChatGenerics>>;
+  MessageReplies: React.ComponentType<MessageRepliesProps>;
   /**
    * UI Component for MessageRepliesAvatars
    * Defaults to: [MessageRepliesAvatars](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageSimple/MessageRepliesAvatars.tsx)
    */
-  MessageRepliesAvatars: React.ComponentType<MessageRepliesAvatarsProps<StreamChatGenerics>>;
+  MessageRepliesAvatars: React.ComponentType<MessageRepliesAvatarsProps>;
   /**
    * UI component for MessageSimple
    * Defaults to: [MessageSimple](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageSimple.tsx)
    */
-  MessageSimple: React.ComponentType<MessageSimpleProps<StreamChatGenerics>>;
+  MessageSimple: React.ComponentType<MessageSimpleProps>;
   /**
    * UI component for MessageStatus (delivered/read)
    * Defaults to: [MessageStatus](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageStatus.tsx)
    */
-  MessageStatus: React.ComponentType<MessageStatusProps<StreamChatGenerics>>;
+  MessageStatus: React.ComponentType<MessageStatusProps>;
   /**
    * UI component for MessageSystem
    * Defaults to: [MessageSystem](https://getstream.io/chat/docs/sdk/reactnative/ui-components/message-system/)
    */
-  MessageSystem: React.ComponentType<MessageSystemProps<StreamChatGenerics>>;
+  MessageSystem: React.ComponentType<MessageSystemProps>;
   /**
    * UI component for MessageTimestamp
    * Defaults to: [MessageTimestamp](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/Message/MessageSimple/MessageTimestamp.tsx)
@@ -268,7 +266,7 @@ export type MessagesContextValue<
    *
    * **Default** [MessageUserReactions](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageMenu/MessageUserReactions.tsx)
    */
-  MessageUserReactions: React.ComponentType<MessageUserReactionsProps<StreamChatGenerics>>;
+  MessageUserReactions: React.ComponentType<MessageUserReactionsProps>;
   /**
    * Custom UI component for rendering user reactions avatar under `MessageUserReactionsItem`, in message menu.
    *
@@ -287,23 +285,23 @@ export type MessagesContextValue<
    * UI component for Reply
    * Defaults to: [Reply](https://getstream.io/chat/docs/sdk/reactnative/ui-components/reply/)
    */
-  Reply: React.ComponentType<ReplyProps<StreamChatGenerics>>;
+  Reply: React.ComponentType<ReplyProps>;
   /**
    * Override the api request for retry message functionality.
    */
-  retrySendMessage: (message: MessageType<StreamChatGenerics>) => Promise<void>;
+  retrySendMessage: (message: MessageType) => Promise<void>;
   /**
    * UI component for ScrollToBottomButton
    * Defaults to: [ScrollToBottomButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/scroll-to-bottom-button/)
    */
   ScrollToBottomButton: React.ComponentType<ScrollToBottomButtonProps>;
   sendReaction: (type: string, messageId: string) => Promise<void>;
-  setEditingState: (message?: MessageType<StreamChatGenerics>) => void;
-  setQuotedMessageState: (message?: MessageType<StreamChatGenerics>) => void;
+  setEditingState: (message?: MessageType) => void;
+  setQuotedMessageState: (message?: MessageType) => void;
   /**
    * UI component for StreamingMessageView. Displays the text of a message with a typewriter animation.
    */
-  StreamingMessageView: React.ComponentType<StreamingMessageViewProps<StreamChatGenerics>>;
+  StreamingMessageView: React.ComponentType<StreamingMessageViewProps>;
   /**
    * UI component for TypingIndicator
    * Defaults to: [TypingIndicator](https://getstream.io/chat/docs/sdk/reactnative/ui-components/typing-indicator/)
@@ -316,18 +314,18 @@ export type MessagesContextValue<
   TypingIndicatorContainer: React.ComponentType<TypingIndicatorContainerProps>;
   UnreadMessagesNotification: React.ComponentType<UnreadMessagesNotificationProps>;
   updateMessage: (
-    updatedMessage: MessageResponse<StreamChatGenerics>,
+    updatedMessage: MessageResponse,
     extraState?: {
-      commands?: SuggestionCommand<StreamChatGenerics>[];
+      commands?: SuggestionCommand[];
       messageInput?: string;
-      threadMessages?: ChannelState<StreamChatGenerics>['threads'][string];
+      threadMessages?: ChannelState['threads'][string];
     },
   ) => void;
   /**
    * Custom UI component to display enriched url preview.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Card.tsx
    */
-  UrlPreview: React.ComponentType<CardProps<StreamChatGenerics>>;
+  UrlPreview: React.ComponentType<CardProps>;
   VideoThumbnail: React.ComponentType<VideoThumbnailProps>;
   /**
    * Provide any additional props for `Pressable` which wraps inner MessageContent component here.
@@ -340,18 +338,18 @@ export type MessagesContextValue<
    * Custom UI component to override default cover (between Header and Footer) of Card component.
    * Accepts the same props as Card component.
    */
-  CardCover?: React.ComponentType<CardProps<StreamChatGenerics>>;
+  CardCover?: React.ComponentType<CardProps>;
   /**
    * Custom UI component to override default Footer of Card component.
    * Accepts the same props as Card component.
    */
-  CardFooter?: React.ComponentType<CardProps<StreamChatGenerics>>;
+  CardFooter?: React.ComponentType<CardProps>;
 
   /**
    * Custom UI component to override default header of Card component.
    * Accepts the same props as Card component.
    */
-  CardHeader?: React.ComponentType<CardProps<StreamChatGenerics>>;
+  CardHeader?: React.ComponentType<CardProps>;
 
   /**
    * Full override of the delete message button in the Message Actions
@@ -378,39 +376,33 @@ export type MessagesContextValue<
    * Handler to access when a ban user action is invoked.
    * @param message
    */
-  handleBan?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
+  handleBan?: (message: MessageType) => Promise<void>;
   /** Handler to access when a copy message action is invoked */
-  handleCopy?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
+  handleCopy?: (message: MessageType) => Promise<void>;
   /** Handler to access when a delete message action is invoked */
-  handleDelete?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
+  handleDelete?: (message: MessageType) => Promise<void>;
   /** Handler to access when an edit message action is invoked */
-  handleEdit?: (message: MessageType<StreamChatGenerics>) => void;
+  handleEdit?: (message: MessageType) => void;
   /** Handler to access when a flag message action is invoked */
-  handleFlag?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
+  handleFlag?: (message: MessageType) => Promise<void>;
   /** Handler to access when a mark unread action is invoked */
-  handleMarkUnread?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
+  handleMarkUnread?: (message: MessageType) => Promise<void>;
   /** Handler to access when a mute user action is invoked */
-  handleMute?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
+  handleMute?: (message: MessageType) => Promise<void>;
   /** Handler to access when a pin/unpin user action is invoked*/
-  handlePinMessage?: ((message: MessageType<StreamChatGenerics>) => MessageActionType) | null;
+  handlePinMessage?: ((message: MessageType) => MessageActionType) | null;
   /** Handler to access when a quoted reply action is invoked */
-  handleQuotedReply?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
+  handleQuotedReply?: (message: MessageType) => Promise<void>;
   /** Handler to process a reaction */
-  handleReaction?: (
-    message: MessageType<StreamChatGenerics>,
-    reactionType: string,
-  ) => Promise<void>;
+  handleReaction?: (message: MessageType, reactionType: string) => Promise<void>;
   /** Handler to access when a retry action is invoked */
-  handleRetry?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
+  handleRetry?: (message: MessageType) => Promise<void>;
   /** Handler to access when a thread reply action is invoked */
-  handleThreadReply?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
+  handleThreadReply?: (message: MessageType) => Promise<void>;
   /** A flag specifying whether the poll creation button is available or not. */
   hasCreatePoll?: boolean;
   /** Handler to deal with custom memoization logic of Attachment */
-  isAttachmentEqual?: (
-    prevAttachment: Attachment<StreamChatGenerics>,
-    nextAttachment: Attachment<StreamChatGenerics>,
-  ) => boolean;
+  isAttachmentEqual?: (prevAttachment: Attachment, nextAttachment: Attachment) => boolean;
   legacyImageViewerSwipeBehaviour?: boolean;
   /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
   markdownRules?: MarkdownRules;
@@ -466,19 +458,19 @@ export type MessagesContextValue<
    *
    * @overrideType Function | Array<Objects>
    */
-  messageActions?: (param: MessageActionsParams<StreamChatGenerics>) => MessageActionType[];
+  messageActions?: (param: MessageActionsParams) => MessageActionType[];
 
   /**
    * Custom message header component
    */
-  MessageHeader?: React.ComponentType<MessageFooterProps<StreamChatGenerics>>;
+  MessageHeader?: React.ComponentType<MessageFooterProps>;
   MessageSwipeContent?: React.ComponentType;
   /**
    * HitSlop for the message swipe to reply gesture
    */
   messageSwipeToReplyHitSlop?: ViewProps['hitSlop'];
   /** Custom UI component for message text */
-  MessageText?: React.ComponentType<MessageTextProps<StreamChatGenerics>>;
+  MessageText?: React.ComponentType<MessageTextProps>;
   /**
    * The number of lines of the message text to be displayed
    */
@@ -513,7 +505,7 @@ export type MessagesContextValue<
    * />
    * ```
    */
-  onLongPressMessage?: (payload: MessagePressableHandlerPayload<StreamChatGenerics>) => void;
+  onLongPressMessage?: (payload: MessagePressableHandlerPayload) => void;
   /**
    * Add onPressIn handler for attachments. You have access to payload of that handler as param:
    *
@@ -540,7 +532,7 @@ export type MessagesContextValue<
    * />
    * ```
    */
-  onPressInMessage?: (payload: MessagePressableHandlerPayload<StreamChatGenerics>) => void;
+  onPressInMessage?: (payload: MessagePressableHandlerPayload) => void;
   /**
    * Override onPress handler for message. You have access to payload of that handler as param:
    *
@@ -567,7 +559,7 @@ export type MessagesContextValue<
    * />
    * ```
    */
-  onPressMessage?: (payload: MessagePressableHandlerPayload<StreamChatGenerics>) => void;
+  onPressMessage?: (payload: MessagePressableHandlerPayload) => void;
   /**
    * Override the entire content of the Poll component. The component has full access to the
    * usePollState() and usePollContext() hooks.
@@ -577,7 +569,7 @@ export type MessagesContextValue<
    * UI component for ReactionListTop
    * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionList.tsx)
    */
-  ReactionListBottom?: React.ComponentType<ReactionListBottomProps<StreamChatGenerics>>;
+  ReactionListBottom?: React.ComponentType<ReactionListBottomProps>;
   /**
    * The position of the reaction list in the message
    */
@@ -587,16 +579,14 @@ export type MessagesContextValue<
    * UI component for ReactionListTop
    * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionList.tsx)
    */
-  ReactionListTop?: React.ComponentType<ReactionListTopProps<StreamChatGenerics>>;
+  ReactionListTop?: React.ComponentType<ReactionListTopProps>;
 
   /**
    * Full override of the reaction function on Message and Message Overlay
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    * */
-  selectReaction?: (
-    message: MessageType<StreamChatGenerics>,
-  ) => (reactionType: string) => Promise<void>;
+  selectReaction?: (message: MessageType) => (reactionType: string) => Promise<void>;
 
   /**
    * Boolean to enable/disable the message underlay background when there are unread messages in the Message List.
@@ -614,25 +604,19 @@ export const MessagesContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as MessagesContextValue,
 );
 
-export const MessagesProvider = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const MessagesProvider = ({
   children,
   value,
 }: PropsWithChildren<{
-  value?: MessagesContextValue<StreamChatGenerics>;
+  value?: MessagesContextValue;
 }>) => (
   <MessagesContext.Provider value={value as unknown as MessagesContextValue}>
     {children}
   </MessagesContext.Provider>
 );
 
-export const useMessagesContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => {
-  const contextValue = useContext(
-    MessagesContext,
-  ) as unknown as MessagesContextValue<StreamChatGenerics>;
+export const useMessagesContext = () => {
+  const contextValue = useContext(MessagesContext) as unknown as MessagesContextValue;
 
   if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(

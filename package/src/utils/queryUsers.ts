@@ -5,29 +5,24 @@ import { defaultAutoCompleteSuggestionsLimit, defaultMentionAllAppUsersQuery } f
 
 import type { MentionAllAppUsersQuery } from '../contexts/messageInputContext/MessageInputContext';
 import type { SuggestionUser } from '../contexts/suggestionsContext/SuggestionsContext';
-import type { DefaultStreamChatGenerics } from '../types/types';
 
-export type QueryUsersFunction<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = (
-  client: StreamChat<StreamChatGenerics>,
-  query: SuggestionUser<StreamChatGenerics>['name'],
-  onReady?: (users: SuggestionUser<StreamChatGenerics>[]) => void,
+export type QueryUsersFunction = (
+  client: StreamChat,
+  query: SuggestionUser['name'],
+  onReady?: (users: SuggestionUser[]) => void,
   options?: {
     limit?: number;
-    mentionAllAppUsersQuery?: MentionAllAppUsersQuery<StreamChatGenerics>;
+    mentionAllAppUsersQuery?: MentionAllAppUsersQuery;
   },
 ) => Promise<void>;
 
-const queryUsers = async <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  client: StreamChat<StreamChatGenerics>,
-  query: SuggestionUser<StreamChatGenerics>['name'],
-  onReady?: (users: SuggestionUser<StreamChatGenerics>[]) => void,
+const queryUsers = async (
+  client: StreamChat,
+  query: SuggestionUser['name'],
+  onReady?: (users: SuggestionUser[]) => void,
   options: {
     limit?: number;
-    mentionAllAppUsersQuery?: MentionAllAppUsersQuery<StreamChatGenerics>;
+    mentionAllAppUsersQuery?: MentionAllAppUsersQuery;
   } = {},
 ): Promise<void> => {
   if (!query) {

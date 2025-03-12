@@ -11,19 +11,11 @@ import { Search } from '../../icons/Search';
 import { SendRight } from '../../icons/SendRight';
 import { SendUp } from '../../icons/SendUp';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
-
-type SendButtonPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessageInputContextValue<StreamChatGenerics>, 'giphyActive' | 'sendMessage'> & {
+type SendButtonPropsWithContext = Pick<MessageInputContextValue, 'giphyActive' | 'sendMessage'> & {
   /** Disables the button */ disabled: boolean;
 };
 
-const SendButtonWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: SendButtonPropsWithContext<StreamChatGenerics>,
-) => {
+const SendButtonWithContext = (props: SendButtonPropsWithContext) => {
   const { disabled = false, giphyActive, sendMessage } = props;
   const {
     theme: {
@@ -50,10 +42,7 @@ const SendButtonWithContext = <
   );
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: SendButtonPropsWithContext<StreamChatGenerics>,
-  nextProps: SendButtonPropsWithContext<StreamChatGenerics>,
-) => {
+const areEqual = (prevProps: SendButtonPropsWithContext, nextProps: SendButtonPropsWithContext) => {
   const {
     disabled: prevDisabled,
     giphyActive: prevGiphyActive,
@@ -88,19 +77,13 @@ const MemoizedSendButton = React.memo(
   areEqual,
 ) as typeof SendButtonWithContext;
 
-export type SendButtonProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<SendButtonPropsWithContext<StreamChatGenerics>>;
+export type SendButtonProps = Partial<SendButtonPropsWithContext>;
 
 /**
  * UI Component for send button in MessageInput component.
  */
-export const SendButton = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: SendButtonProps<StreamChatGenerics>,
-) => {
-  const { giphyActive, sendMessage } = useMessageInputContext<StreamChatGenerics>();
+export const SendButton = (props: SendButtonProps) => {
+  const { giphyActive, sendMessage } = useMessageInputContext();
 
   return (
     <MemoizedSendButton

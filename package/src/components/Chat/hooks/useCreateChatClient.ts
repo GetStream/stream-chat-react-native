@@ -3,8 +3,6 @@ import { useEffect, useState } from 'react';
 import { StreamChat } from 'stream-chat';
 
 import type {
-  DefaultGenerics,
-  ExtendableGenerics,
   OwnUserResponse,
   StreamChatOptions,
   TokenOrProvider,
@@ -14,7 +12,7 @@ import type {
 /**
  * React hook to create, connect and return `StreamChat` client.
  */
-export const useCreateChatClient = <SCG extends ExtendableGenerics = DefaultGenerics>({
+export const useCreateChatClient = ({
   apiKey,
   options,
   tokenOrProvider,
@@ -22,10 +20,10 @@ export const useCreateChatClient = <SCG extends ExtendableGenerics = DefaultGene
 }: {
   apiKey: string;
   tokenOrProvider: TokenOrProvider;
-  userData: OwnUserResponse<SCG> | UserResponse<SCG>;
+  userData: OwnUserResponse | UserResponse;
   options?: StreamChatOptions;
 }) => {
-  const [chatClient, setChatClient] = useState<StreamChat<SCG> | null>(null);
+  const [chatClient, setChatClient] = useState<StreamChat | null>(null);
   const [cachedUserData, setCachedUserData] = useState(userData);
 
   if (userData.id !== cachedUserData.id) {
@@ -35,7 +33,7 @@ export const useCreateChatClient = <SCG extends ExtendableGenerics = DefaultGene
   const [cachedOptions] = useState(options);
 
   useEffect(() => {
-    const client = new StreamChat<SCG>(apiKey, undefined, cachedOptions);
+    const client = new StreamChat(apiKey, undefined, cachedOptions);
     let didUserConnectInterrupt = false;
 
     const connectionPromise = client.connectUser(cachedUserData, tokenOrProvider).then(() => {

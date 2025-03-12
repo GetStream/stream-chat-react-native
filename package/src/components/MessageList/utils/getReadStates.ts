@@ -2,15 +2,10 @@ import { ChannelState } from 'stream-chat';
 
 import type { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 
-export const getReadStates = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  messages:
-    | PaginatedMessageListContextValue<StreamChatGenerics>['messages']
-    | ThreadContextValue<StreamChatGenerics>['threadMessages'],
-  read?: ChannelState<StreamChatGenerics>['read'],
+export const getReadStates = (
+  messages: PaginatedMessageListContextValue['messages'] | ThreadContextValue['threadMessages'],
+  read?: ChannelState['read'],
   returnAllReadData?: boolean,
 ) => {
   const readData: Record<string, number> = {};

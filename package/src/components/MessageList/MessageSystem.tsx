@@ -6,14 +6,11 @@ import type { MessageType } from './hooks/useMessageList';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getDateString } from '../../utils/i18n/getDateString';
 
-export type MessageSystemProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+export type MessageSystemProps = {
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
-  message: MessageType<StreamChatGenerics>;
+  message: MessageType;
   /**
    * Additional styles for the system message container.
    */
@@ -28,11 +25,7 @@ export type MessageSystemProps<
  * they can attach a message with that update. That message will be available
  * in message list as (type) system message.
  */
-export const MessageSystem = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageSystemProps<StreamChatGenerics>,
-) => {
+export const MessageSystem = (props: MessageSystemProps) => {
   const { message, style } = props;
 
   const {

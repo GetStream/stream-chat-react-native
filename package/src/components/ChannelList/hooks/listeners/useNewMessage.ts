@@ -4,10 +4,7 @@ import type { Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
-import type {
-  ChannelListEventListenerOptions,
-  DefaultStreamChatGenerics,
-} from '../../../../types/types';
+import type { ChannelListEventListenerOptions } from '../../../../types/types';
 import { moveChannelUp } from '../../utils';
 import {
   isChannelArchived,
@@ -16,31 +13,28 @@ import {
   shouldConsiderPinnedChannels,
 } from '../utils';
 
-type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  {
-    lockChannelOrder: boolean;
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>;
-    onNewMessage?: (
-      lockChannelOrder: boolean,
-      setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
-      event: Event<StreamChatGenerics>,
-      options?: ChannelListEventListenerOptions<StreamChatGenerics>,
-    ) => void;
-    options?: ChannelListEventListenerOptions<StreamChatGenerics>;
-  };
+type Parameters = {
+  lockChannelOrder: boolean;
+  setChannels: React.Dispatch<React.SetStateAction<Channel[] | null>>;
+  onNewMessage?: (
+    lockChannelOrder: boolean,
+    setChannels: React.Dispatch<React.SetStateAction<Channel[] | null>>,
+    event: Event,
+    options?: ChannelListEventListenerOptions,
+  ) => void;
+  options?: ChannelListEventListenerOptions;
+};
 
-export const useNewMessage = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const useNewMessage = ({
   lockChannelOrder,
   onNewMessage,
   options,
   setChannels,
-}: Parameters<StreamChatGenerics>) => {
-  const { client } = useChatContext<StreamChatGenerics>();
+}: Parameters) => {
+  const { client } = useChatContext();
 
   useEffect(() => {
-    const handleEvent = (event: Event<StreamChatGenerics>) => {
+    const handleEvent = (event: Event) => {
       if (typeof onNewMessage === 'function') {
         onNewMessage(lockChannelOrder, setChannels, event, options);
       } else {
@@ -80,7 +74,7 @@ export const useNewMessage = <
             return [...channels];
           }
 
-          return moveChannelUp<StreamChatGenerics>({
+          return moveChannelUp({
             channels,
             channelToMove: targetChannel,
             channelToMoveIndexWithinChannels: targetChannelIndex,

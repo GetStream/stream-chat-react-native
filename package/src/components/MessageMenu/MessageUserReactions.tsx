@@ -14,18 +14,16 @@ import {
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { DefaultStreamChatGenerics, Reaction } from '../../types/types';
+import { Reaction } from '../../types/types';
 import { ReactionData } from '../../utils/utils';
 
-export type MessageUserReactionsProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<
+export type MessageUserReactionsProps = Partial<
   Pick<
-    MessagesContextValue<StreamChatGenerics>,
+    MessagesContextValue,
     'MessageUserReactionsAvatar' | 'MessageUserReactionsItem' | 'supportedReactions'
   >
 > &
-  Partial<Pick<MessageContextValue<StreamChatGenerics>, 'message'>> & {
+  Partial<Pick<MessageContextValue, 'message'>> & {
     /**
      * An array of reactions
      */

@@ -3,26 +3,18 @@ import {
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
 
-import { DefaultStreamChatGenerics } from '../../../types/types';
 import { MessageStatusTypes } from '../../../utils/utils';
 
-export type UseMessageDataProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<
-  Pick<
-    MessageContextValue<StreamChatGenerics>,
-    'channel' | 'groupStyles' | 'isMyMessage' | 'message'
-  >
+export type UseMessageDataProps = Partial<
+  Pick<MessageContextValue, 'channel' | 'groupStyles' | 'isMyMessage' | 'message'>
 >;
 
-export const useMessageData = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const useMessageData = ({
   channel: propChannel,
   groupStyles: propGroupStyles,
   isMyMessage: propIsMyMessage,
   message: propMessage,
-}: UseMessageDataProps<StreamChatGenerics>) => {
+}: UseMessageDataProps) => {
   const {
     channel: contextChannel,
     groupStyles: contextGroupStyles,

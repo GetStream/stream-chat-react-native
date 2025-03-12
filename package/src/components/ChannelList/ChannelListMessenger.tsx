@@ -13,7 +13,6 @@ import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useDebugContext } from '../../contexts/debugContext/DebugContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
 import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
 
 const styles = StyleSheet.create({
@@ -22,10 +21,8 @@ const styles = StyleSheet.create({
   statusIndicator: { left: 0, position: 'absolute', right: 0, top: 0 },
 });
 
-export type ChannelListMessengerPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Omit<
-  ChannelsContextValue<StreamChatGenerics>,
+export type ChannelListMessengerPropsWithContext = Omit<
+  ChannelsContextValue,
   | 'HeaderErrorIndicator'
   | 'HeaderNetworkDownIndicator'
   | 'maxUnreadCount'
@@ -39,12 +36,10 @@ export type ChannelListMessengerPropsWithContext<
   | 'Skeleton'
 >;
 
-const StatusIndicator = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => {
-  const { isOnline } = useChatContext<StreamChatGenerics>();
+const StatusIndicator = () => {
+  const { isOnline } = useChatContext();
   const { error, HeaderErrorIndicator, HeaderNetworkDownIndicator, loadingChannels, refreshList } =
-    useChannelsContext<StreamChatGenerics>();
+    useChannelsContext();
 
   if (loadingChannels) {
     return null;
@@ -66,25 +61,11 @@ const StatusIndicator = <
   return null;
 };
 
-const renderItem = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
-  item,
-}: {
-  item: Channel<StreamChatGenerics>;
-}) => <ChannelPreview<StreamChatGenerics> channel={item} />;
+const renderItem = ({ item }: { item: Channel }) => <ChannelPreview channel={item} />;
 
-const keyExtractor = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  item: Channel<StreamChatGenerics>,
-) => item.cid;
+const keyExtractor = (item: Channel) => item.cid;
 
-const ChannelListMessengerWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: ChannelListMessengerPropsWithContext<StreamChatGenerics>,
-) => {
+const ChannelListMessengerWithContext = (props: ChannelListMessengerPropsWithContext) => {
   const onEndReachedCalledDuringCurrentScrollRef = useRef<boolean>(false);
   const {
     additionalFlatListProps,
@@ -195,14 +176,12 @@ const ChannelListMessengerWithContext = <
         testID='channel-list-messenger'
         {...additionalFlatListProps}
       />
-      <StatusIndicator<StreamChatGenerics> />
+      <StatusIndicator />
     </>
   );
 };
 
-export type ChannelListMessengerProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<ChannelListMessengerPropsWithContext<StreamChatGenerics>>;
+export type ChannelListMessengerProps = Partial<ChannelListMessengerPropsWithContext>;
 
 /**
  * This UI component displays the preview list of channels and handles Channel navigation. It
@@ -210,11 +189,7 @@ export type ChannelListMessengerProps<
  *
  * @example ./ChannelListMessenger.md
  */
-export const ChannelListMessenger = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: ChannelListMessengerProps<StreamChatGenerics>,
-) => {
+export const ChannelListMessenger = (props: ChannelListMessengerProps) => {
   const {
     additionalFlatListProps,
     channelListInitialized,
@@ -235,7 +210,7 @@ export const ChannelListMessenger = <
     refreshList,
     reloadList,
     setFlatListRef,
-  } = useChannelsContext<StreamChatGenerics>();
+  } = useChannelsContext();
 
   return (
     <ChannelListMessengerWithContext

@@ -1,15 +1,14 @@
-import { PropsWithChildren, createContext, useContext, useState } from 'react';
-import { StreamChatGenerics } from '../types';
+import { PropsWithChildren, createContext, useState } from 'react';
 import { Channel as ChannelType } from 'stream-chat';
 import { ThreadContextValue } from 'stream-chat-expo';
 
 export type AppContextType = {
-  channel: ChannelType<StreamChatGenerics> | undefined;
-  setChannel: React.Dispatch<React.SetStateAction<ChannelType<StreamChatGenerics> | undefined>>;
+  channel: ChannelType | undefined;
+  setChannel: React.Dispatch<React.SetStateAction<ChannelType | undefined>>;
   setThread: React.Dispatch<
-    React.SetStateAction<ThreadContextValue<StreamChatGenerics>['thread'] | undefined>
+    React.SetStateAction<ThreadContextValue['thread'] | undefined>
   >;
-  thread: ThreadContextValue<StreamChatGenerics>['thread'] | undefined;
+  thread: ThreadContextValue['thread'] | undefined;
 };
 
 export const AppContext = createContext<AppContextType>({
@@ -20,9 +19,9 @@ export const AppContext = createContext<AppContextType>({
 });
 
 export const AppProvider = ({ children }: PropsWithChildren) => {
-  const [channel, setChannel] = useState<ChannelType<StreamChatGenerics> | undefined>(undefined);
+  const [channel, setChannel] = useState<ChannelType | undefined>(undefined);
   const [thread, setThread] = useState<
-    ThreadContextValue<StreamChatGenerics>['thread'] | undefined
+    ThreadContextValue['thread'] | undefined
   >(undefined);
 
   return (

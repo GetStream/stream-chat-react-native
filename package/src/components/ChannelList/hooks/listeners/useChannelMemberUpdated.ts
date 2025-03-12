@@ -4,10 +4,7 @@ import type { Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
-import type {
-  ChannelListEventListenerOptions,
-  DefaultStreamChatGenerics,
-} from '../../../../types/types';
+import type { ChannelListEventListenerOptions } from '../../../../types/types';
 import {
   findLastPinnedChannelIndex,
   findPinnedAtSortOrder,
@@ -17,31 +14,28 @@ import {
   shouldConsiderPinnedChannels,
 } from '../utils';
 
-type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  {
-    lockChannelOrder: boolean;
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>;
-    onChannelMemberUpdated?: (
-      lockChannelOrder: boolean,
-      setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
-      event: Event<StreamChatGenerics>,
-      options?: ChannelListEventListenerOptions<StreamChatGenerics>,
-    ) => void;
-    options?: ChannelListEventListenerOptions<StreamChatGenerics>;
-  };
+type Parameters = {
+  lockChannelOrder: boolean;
+  setChannels: React.Dispatch<React.SetStateAction<Channel[]>>;
+  onChannelMemberUpdated?: (
+    lockChannelOrder: boolean,
+    setChannels: React.Dispatch<React.SetStateAction<Channel[]>>,
+    event: Event,
+    options?: ChannelListEventListenerOptions,
+  ) => void;
+  options?: ChannelListEventListenerOptions;
+};
 
-export const useChannelMemberUpdated = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const useChannelMemberUpdated = ({
   lockChannelOrder,
   onChannelMemberUpdated,
   options,
   setChannels,
-}: Parameters<StreamChatGenerics>) => {
-  const { client } = useChatContext<StreamChatGenerics>();
+}: Parameters) => {
+  const { client } = useChatContext();
 
   useEffect(() => {
-    const handleEvent = (event: Event<StreamChatGenerics>) => {
+    const handleEvent = (event: Event) => {
       if (typeof onChannelMemberUpdated === 'function') {
         onChannelMemberUpdated(lockChannelOrder, setChannels, event, options);
       } else {

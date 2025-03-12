@@ -9,20 +9,14 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { Check } from '../../../icons/Check';
 import { CheckAll } from '../../../icons/CheckAll';
 import { Time } from '../../../icons/Time';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 import { MessageStatusTypes } from '../../../utils/utils';
 
 import { isMessageWithStylesReadByAndDateSeparator } from '../../MessageList/hooks/useMessageList';
 
-export type MessageStatusPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessageContextValue<StreamChatGenerics>, 'message' | 'threadList'>;
+export type MessageStatusPropsWithContext = Pick<MessageContextValue, 'message' | 'threadList'>;
 
-const MessageStatusWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageStatusPropsWithContext<StreamChatGenerics>,
-) => {
+const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
   const { message, threadList } = props;
 
   const {
@@ -79,9 +73,9 @@ const MessageStatusWithContext = <
   return null;
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: MessageStatusPropsWithContext<StreamChatGenerics>,
-  nextProps: MessageStatusPropsWithContext<StreamChatGenerics>,
+const areEqual = (
+  prevProps: MessageStatusPropsWithContext,
+  nextProps: MessageStatusPropsWithContext,
 ) => {
   const { message: prevMessage, threadList: prevThreadList } = prevProps;
   const { message: nextMessage, threadList: nextThreadList } = nextProps;
@@ -108,16 +102,10 @@ const MemoizedMessageStatus = React.memo(
   areEqual,
 ) as typeof MessageStatusWithContext;
 
-export type MessageStatusProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<MessageStatusPropsWithContext<StreamChatGenerics>>;
+export type MessageStatusProps = Partial<MessageStatusPropsWithContext>;
 
-export const MessageStatus = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageStatusProps<StreamChatGenerics>,
-) => {
-  const { message, threadList } = useMessageContext<StreamChatGenerics>();
+export const MessageStatus = (props: MessageStatusProps) => {
+  const { message, threadList } = useMessageContext();
 
   return <MemoizedMessageStatus {...{ message, threadList }} {...props} />;
 };

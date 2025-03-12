@@ -9,7 +9,6 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
 import { CircleClose, Edit } from '../../../icons';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 const styles = StyleSheet.create({
   editingBoxHeader: {
@@ -24,19 +23,17 @@ const styles = StyleSheet.create({
   },
 });
 
-export type InputEditingStateHeaderProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<Pick<MessageInputContextValue<StreamChatGenerics>, 'clearEditingState' | 'resetInput'>>;
+export type InputEditingStateHeaderProps = Partial<
+  Pick<MessageInputContextValue, 'clearEditingState' | 'resetInput'>
+>;
 
-export const InputEditingStateHeader = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const InputEditingStateHeader = ({
   clearEditingState: propClearEditingState,
   resetInput: propResetInput,
-}: InputEditingStateHeaderProps<StreamChatGenerics>) => {
+}: InputEditingStateHeaderProps) => {
   const { t } = useTranslationContext();
   const { clearEditingState: contextClearEditingState, resetInput: contextResetInput } =
-    useMessageInputContext<StreamChatGenerics>();
+    useMessageInputContext();
 
   const clearEditingState = propClearEditingState || contextClearEditingState;
   const resetInput = propResetInput || contextResetInput;

@@ -14,11 +14,11 @@ import { useTranslationContext } from '../../../../contexts/translationContext/T
 import { ArrowLeft, CircleStop, Delete, Mic, SendCheck } from '../../../../icons';
 
 import { AudioRecordingReturnType } from '../../../../native';
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
-type AudioRecorderPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessageInputContextValue<StreamChatGenerics>, 'asyncMessagesMultiSendEnabled'> & {
+type AudioRecorderPropsWithContext = Pick<
+  MessageInputContextValue,
+  'asyncMessagesMultiSendEnabled'
+> & {
   /**
    * Function to stop and delete the voice recording.
    */
@@ -128,11 +128,7 @@ const DeleteRecording = ({
   );
 };
 
-const AudioRecorderWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: AudioRecorderPropsWithContext<StreamChatGenerics>,
-) => {
+const AudioRecorderWithContext = (props: AudioRecorderPropsWithContext) => {
   const {
     asyncMessagesMultiSendEnabled,
     deleteVoiceRecording,
@@ -201,9 +197,9 @@ const AudioRecorderWithContext = <
   }
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: AudioRecorderPropsWithContext<StreamChatGenerics>,
-  nextProps: AudioRecorderPropsWithContext<StreamChatGenerics>,
+const areEqual = (
+  prevProps: AudioRecorderPropsWithContext,
+  nextProps: AudioRecorderPropsWithContext,
 ) => {
   const {
     asyncMessagesMultiSendEnabled: prevAsyncMessagesMultiSendEnabled,
@@ -254,11 +250,9 @@ const MemoizedAudioRecorder = React.memo(
   areEqual,
 ) as typeof AudioRecorderWithContext;
 
-export type AudioRecorderProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<AudioRecorderPropsWithContext<StreamChatGenerics>> &
+export type AudioRecorderProps = Partial<AudioRecorderPropsWithContext> &
   Pick<
-    AudioRecorderPropsWithContext<StreamChatGenerics>,
+    AudioRecorderPropsWithContext,
     | 'deleteVoiceRecording'
     | 'micLocked'
     | 'recording'
@@ -270,12 +264,8 @@ export type AudioRecorderProps<
 /**
  * Component to display the Recording UI in the Message Input.
  */
-export const AudioRecorder = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: AudioRecorderProps<StreamChatGenerics>,
-) => {
-  const { asyncMessagesMultiSendEnabled } = useMessageInputContext<StreamChatGenerics>();
+export const AudioRecorder = (props: AudioRecorderProps) => {
+  const { asyncMessagesMultiSendEnabled } = useMessageInputContext();
 
   return (
     <MemoizedAudioRecorder

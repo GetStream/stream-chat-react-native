@@ -18,7 +18,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { useAppContext } from '../context/AppContext';
 import { Contacts } from '../icons/Contacts';
 
-import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
+import type { StackNavigatorParamList } from '../types';
 
 const styles = StyleSheet.create({
   container: {
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type CustomPreviewProps = ChannelPreviewMessengerProps<StreamChatGenerics>;
+type CustomPreviewProps = ChannelPreviewMessengerProps;
 
 const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
   const { chatClient } = useAppContext();
@@ -107,16 +107,12 @@ const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
       <View style={styles.groupContainer}>
         {displayAvatar.images ? (
           <GroupAvatar
-            channelId={channel.id}
-            ids={displayAvatar.ids}
             images={displayAvatar.images}
             names={displayAvatar.names}
             size={40}
           />
         ) : (
           <Avatar
-            channelId={channel.id}
-            id={displayAvatar.id}
             image={displayAvatar.image}
             name={displayAvatar.name}
             size={40}
@@ -153,7 +149,7 @@ const EmptyListComponent = () => {
   );
 };
 
-type ListComponentProps = ChannelListMessengerProps<StreamChatGenerics>;
+type ListComponentProps = ChannelListMessengerProps;
 
 // If the length of channels is 1, which means we only got 1:1-distinct channel,
 // And we don't want to show 1:1-distinct channel in this list.

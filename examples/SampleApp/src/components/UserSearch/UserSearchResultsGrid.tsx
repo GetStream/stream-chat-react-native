@@ -8,7 +8,6 @@ import { EmptySearchState } from '../../icons/EmptySearchState';
 
 import type { UserResponse } from 'stream-chat';
 
-import type { StreamChatGenerics } from '../../types';
 
 const styles = StyleSheet.create({
   container: {
@@ -29,8 +28,8 @@ const styles = StyleSheet.create({
 });
 
 type UserSearchResultsGridProps = {
-  onPress: (user: UserResponse<StreamChatGenerics>) => void;
-  results: UserResponse<StreamChatGenerics>[];
+  onPress: (user: UserResponse) => void;
+  results: UserResponse[];
   gridSize?: number;
   loading?: boolean;
   loadMore?: () => void;

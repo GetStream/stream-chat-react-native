@@ -3,59 +3,52 @@ import React, { PropsWithChildren, useContext, useRef } from 'react';
 import type { Channel, ChannelState, StreamChat } from 'stream-chat';
 
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
-import type { DefaultStreamChatGenerics } from '../../types/types';
 
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
-export type DebugDataType<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> =
-  | StreamChat<StreamChatGenerics>['user']
+export type DebugDataType =
+  | StreamChat['user']
   | {
-      data: Channel<StreamChatGenerics>['data'];
-      members: ChannelState<StreamChatGenerics>['members'];
+      data: Channel['data'];
+      members: ChannelState['members'];
     }[]
-  | MessageType<StreamChatGenerics>[];
+  | MessageType[];
 
-export type DebugContextValue<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+export type DebugContextValue = {
   eventType?: string;
   sendEventParams?: {
     action: string;
-    data: DebugDataType<StreamChatGenerics>;
+    data: DebugDataType;
   };
   setEventType?: (data: string) => void;
-  setSendEventParams?: (data: { action: string; data: DebugDataType<StreamChatGenerics> }) => void;
+  setSendEventParams?: (data: { action: string; data: DebugDataType }) => void;
 };
 
 export const DebugContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as React.MutableRefObject<DebugContextValue>,
 );
 
-export const DebugContextProvider = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const DebugContextProvider = ({
   children,
   useFlipper,
 }: PropsWithChildren<{
   useFlipper: () => {
-    updateData: (ref: React.RefObject<DebugContextValue<StreamChatGenerics>>) => void;
+    updateData: (ref: React.RefObject<DebugContextValue>) => void;
   };
 }>) => {
-  const debugRef = useRef<DebugContextValue<StreamChatGenerics>>({
+  const debugRef = useRef<DebugContextValue>({
     eventType: undefined,
     sendEventParams: undefined,
   });
 
   const { updateData } = useFlipper();
 
-  const ref = useRef<DebugContextValue<StreamChatGenerics>>({
+  const ref = useRef<DebugContextValue>({
     setEventType: (data: string) => {
       debugRef.current.eventType = data;
       updateData(debugRef);
     },
-    setSendEventParams: (data: { action: string; data: DebugDataType<StreamChatGenerics> }) => {
+    setSendEventParams: (data: { action: string; data: DebugDataType }) => {
       debugRef.current.sendEventParams = data;
       updateData(debugRef);
     },

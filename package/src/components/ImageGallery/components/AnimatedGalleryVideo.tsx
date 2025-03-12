@@ -5,7 +5,6 @@ import Animated, { SharedValue } from 'react-native-reanimated';
 
 import {
   isVideoPlayerAvailable,
-  PlaybackStatus,
   Video,
   VideoPayloadData,
   VideoProgressData,
@@ -98,37 +97,6 @@ export const AnimatedGalleryVideo = React.memo(
       }
     };
 
-    const onPlayBackStatusUpdate = (playbackStatus: PlaybackStatus) => {
-      if (!playbackStatus.isLoaded) {
-        // Update your UI for the unloaded state
-        setOpacity(1);
-        if (playbackStatus.error) {
-          console.error(`Encountered a fatal error during playback: ${playbackStatus.error}`);
-        }
-      } else {
-        // Update your UI for the loaded state
-        setOpacity(0);
-        handleLoad(attachmentId, playbackStatus.durationMillis);
-        if (playbackStatus.isPlaying) {
-          // Update your UI for the playing state
-          handleProgress(
-            attachmentId,
-            playbackStatus.positionMillis / playbackStatus.durationMillis,
-          );
-        }
-
-        if (playbackStatus.isBuffering) {
-          // Update your UI for the buffering state
-          setOpacity(1);
-        }
-
-        if (playbackStatus.didJustFinish && !playbackStatus.isLooping) {
-          // The player has just finished playing and will stop. Maybe you want to play something else?
-          handleEnd();
-        }
-      }
-    };
-
     const animatedStyles = useAnimatedGalleryStyle({
       index,
       offsetScale,
@@ -162,7 +130,6 @@ export const AnimatedGalleryVideo = React.memo(
             onEnd={onEnd}
             onLoad={onLoad}
             onLoadStart={onLoadStart}
-            onPlaybackStatusUpdate={onPlayBackStatusUpdate}
             onProgress={onProgress}
             paused={paused}
             repeat={repeat}

@@ -8,23 +8,19 @@ import { useIsChannelMuted } from './useIsChannelMuted';
 import { useLatestMessagePreview } from './useLatestMessagePreview';
 
 import { useChannelsContext } from '../../../contexts';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 
-export const useChannelPreviewData = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  channel: Channel<StreamChatGenerics>,
-  client: StreamChat<StreamChatGenerics>,
+export const useChannelPreviewData = (
+  channel: Channel,
+  client: StreamChat,
   forceUpdateOverride?: number,
 ) => {
   const [forceUpdate, setForceUpdate] = useState(0);
   const [lastMessage, setLastMessage] = useState<
-    | ReturnType<ChannelState<StreamChatGenerics>['formatMessage']>
-    | MessageResponse<StreamChatGenerics>
+    ReturnType<ChannelState['formatMessage']> | MessageResponse
   >(channel.state.messages[channel.state.messages.length - 1]);
   const [unread, setUnread] = useState(channel.countUnread());
   const { muted } = useIsChannelMuted(channel);
-  const { forceUpdate: contextForceUpdate } = useChannelsContext<StreamChatGenerics>();
+  const { forceUpdate: contextForceUpdate } = useChannelsContext();
   const channelListForceUpdate = forceUpdateOverride ?? contextForceUpdate;
 
   const channelLastMessage = channel.lastMessage();
@@ -113,7 +109,7 @@ export const useChannelPreviewData = <
       refreshUnreadCount();
     };
 
-    const handleNewMessageEvent = (event: Event<StreamChatGenerics>) => {
+    const handleNewMessageEvent = (event: Event) => {
       const message = event.message;
       if (message && (!message.parent_id || message.show_in_channel)) {
         setLastMessage(message);
@@ -121,7 +117,7 @@ export const useChannelPreviewData = <
       }
     };
 
-    const handleUpdatedOrDeletedMessage = (event: Event<StreamChatGenerics>) => {
+    const handleUpdatedOrDeletedMessage = (event: Event) => {
       setLastMessage((prevLastMessage) => {
         if (prevLastMessage?.id === event.message?.id) {
           return event.message;

@@ -7,7 +7,6 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../../contexts/messagesContext/MessagesContext';
-import { DefaultStreamChatGenerics } from '../../../types/types';
 import { ReactionData } from '../../../utils/utils';
 
 export type ReactionSummary = {
@@ -23,21 +22,17 @@ export type ReactionSummary = {
 
 export type ReactionsComparator = (a: ReactionSummary, b: ReactionSummary) => number;
 
-export type MessageReactionsData<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+export type MessageReactionsData = {
   /** An array of the reaction objects to display in the list */
-  latest_reactions?: ReactionResponse<StreamChatGenerics>[];
+  latest_reactions?: ReactionResponse[];
   /** An array of the own reaction objects to distinguish own reactions visually */
-  own_reactions?: ReactionResponse<StreamChatGenerics>[] | null;
+  own_reactions?: ReactionResponse[] | null;
   /** An object containing summary for each reaction type on a message */
   reaction_groups?: Record<string, ReactionGroupResponse> | null;
 };
 
-type UseProcessReactionsParams<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = MessageReactionsData<StreamChatGenerics> &
-  Partial<Pick<MessagesContextValue<StreamChatGenerics>, 'supportedReactions'>> & {
+type UseProcessReactionsParams = MessageReactionsData &
+  Partial<Pick<MessagesContextValue, 'supportedReactions'>> & {
     sortReactions?: ReactionsComparator;
   };
 
@@ -49,12 +44,10 @@ export const defaultReactionsSort: ReactionsComparator = (a, b) => {
   return a.type.localeCompare(b.type, 'en');
 };
 
-const isOwnReaction = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
+const isOwnReaction = (
   reactionType: string,
-  ownReactions?: MessageReactionsData<StreamChatGenerics>['own_reactions'],
-  latestReactions?: ReactionResponse<StreamChatGenerics>[] | null,
+  ownReactions?: MessageReactionsData['own_reactions'],
+  latestReactions?: ReactionResponse[] | null,
   userID?: string,
 ) =>
   (ownReactions ? ownReactions.some((reaction) => reaction.type === reactionType) : false) ||
@@ -86,13 +79,9 @@ const getLatestReactedUserNames = (reactionType: string, latestReactions?: React
 /**
  * Custom hook to process reactions data from message and return a list of reactions with additional info.
  */
-export const useProcessReactions = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: UseProcessReactionsParams<StreamChatGenerics>,
-) => {
+export const useProcessReactions = (props: UseProcessReactionsParams) => {
   const { supportedReactions: contextSupportedReactions } = useMessagesContext();
-  const { client } = useChatContext<StreamChatGenerics>();
+  const { client } = useChatContext();
 
   const {
     latest_reactions,
@@ -120,12 +109,7 @@ export const useProcessReactions = <
           Icon: getEmojiByReactionType(reactionType, supportedReactions),
           lastReactionAt: last_reaction_at ? new Date(last_reaction_at) : null,
           latestReactedUserNames,
-          own: isOwnReaction<StreamChatGenerics>(
-            reactionType,
-            own_reactions,
-            latest_reactions,
-            client.userID,
-          ),
+          own: isOwnReaction(reactionType, own_reactions, latest_reactions, client.userID),
           type: reactionType,
           unlistedReactedUserCount: count - latestReactedUserNames.length,
         };

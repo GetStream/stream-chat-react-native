@@ -4,27 +4,22 @@ import type { Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
+type Parameters = {
+  setChannels: React.Dispatch<React.SetStateAction<Channel[] | null>>;
+  onRemovedFromChannel?: (
+    setChannels: React.Dispatch<React.SetStateAction<Channel[] | null>>,
+    event: Event,
+  ) => void;
+};
 
-type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  {
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>;
-    onRemovedFromChannel?: (
-      setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
-      event: Event<StreamChatGenerics>,
-    ) => void;
-  };
-
-export const useRemovedFromChannelNotification = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const useRemovedFromChannelNotification = ({
   onRemovedFromChannel,
   setChannels,
-}: Parameters<StreamChatGenerics>) => {
-  const { client } = useChatContext<StreamChatGenerics>();
+}: Parameters) => {
+  const { client } = useChatContext();
 
   useEffect(() => {
-    const handleEvent = (event: Event<StreamChatGenerics>) => {
+    const handleEvent = (event: Event) => {
       if (typeof onRemovedFromChannel === 'function') {
         onRemovedFromChannel(setChannels, event);
       } else {

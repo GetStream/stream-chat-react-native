@@ -2,15 +2,9 @@ import type { Channel, ChannelResponse } from 'stream-chat';
 
 import { mapDateTimeToStorable } from './mapDateTimeToStorable';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
-
 import type { TableRow } from '../types';
 
-export const mapChannelToStorable = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  channel: Channel<StreamChatGenerics>,
-): TableRow<'channels'> | undefined => {
+export const mapChannelToStorable = (channel: Channel): TableRow<'channels'> | undefined => {
   if (!channel.data) {
     return;
   }
@@ -40,7 +34,7 @@ export const mapChannelToStorable = <
     type,
     updated_at,
     ...extraData
-  } = channel.data as unknown as ChannelResponse<StreamChatGenerics>;
+  } = channel.data as unknown as ChannelResponse;
 
   return {
     autoTranslationEnabled: auto_translation_enabled,

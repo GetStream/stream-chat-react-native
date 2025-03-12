@@ -6,35 +6,29 @@ import type { Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
-import type {
-  ChannelListEventListenerOptions,
-  DefaultStreamChatGenerics,
-} from '../../../../types/types';
+import type { ChannelListEventListenerOptions } from '../../../../types/types';
 import { getChannel } from '../../utils';
 import { findLastPinnedChannelIndex, findPinnedAtSortOrder } from '../utils';
 
-type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  {
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>;
-    onAddedToChannel?: (
-      setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[] | null>>,
-      event: Event<StreamChatGenerics>,
-      options?: ChannelListEventListenerOptions<StreamChatGenerics>,
-    ) => void;
-    options?: ChannelListEventListenerOptions<StreamChatGenerics>;
-  };
+type Parameters = {
+  setChannels: React.Dispatch<React.SetStateAction<Channel[] | null>>;
+  onAddedToChannel?: (
+    setChannels: React.Dispatch<React.SetStateAction<Channel[] | null>>,
+    event: Event,
+    options?: ChannelListEventListenerOptions,
+  ) => void;
+  options?: ChannelListEventListenerOptions;
+};
 
-export const useAddedToChannelNotification = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const useAddedToChannelNotification = ({
   onAddedToChannel,
   options,
   setChannels,
-}: Parameters<StreamChatGenerics>) => {
-  const { client } = useChatContext<StreamChatGenerics>();
+}: Parameters) => {
+  const { client } = useChatContext();
 
   useEffect(() => {
-    const handleEvent = async (event: Event<StreamChatGenerics>) => {
+    const handleEvent = async (event: Event) => {
       if (typeof onAddedToChannel === 'function') {
         onAddedToChannel(setChannels, event, options);
       } else {
@@ -43,7 +37,7 @@ export const useAddedToChannelNotification = <
         }
         const { sort } = options;
         if (event.channel?.id && event.channel?.type) {
-          const channel = await getChannel<StreamChatGenerics>({
+          const channel = await getChannel({
             client,
             id: event.channel.id,
             type: event.channel.type,

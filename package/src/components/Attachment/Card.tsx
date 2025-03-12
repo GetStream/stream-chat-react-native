@@ -27,7 +27,7 @@ import {
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Play } from '../../icons/Play';
-import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
+import { FileTypes } from '../../types/types';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 import { ImageBackground } from '../UIComponents/ImageBackground';
 
@@ -82,16 +82,11 @@ const styles = StyleSheet.create({
   },
 });
 
-export type CardPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Attachment<StreamChatGenerics> &
+export type CardPropsWithContext = Attachment &
   Pick<ChatContextValue, 'ImageComponent'> &
+  Pick<MessageContextValue, 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'> &
   Pick<
-    MessageContextValue<StreamChatGenerics>,
-    'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
-  > &
-  Pick<
-    MessagesContextValue<StreamChatGenerics>,
+    MessagesContextValue,
     'additionalPressableProps' | 'CardCover' | 'CardFooter' | 'CardHeader' | 'myMessageTheme'
   > & {
     channelId: string | undefined;
@@ -110,11 +105,7 @@ export type CardPropsWithContext<
     }>;
   };
 
-const CardWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: CardPropsWithContext<StreamChatGenerics>,
-) => {
+const CardWithContext = (props: CardPropsWithContext) => {
   const {
     additionalPressableProps,
     author_name,
@@ -289,10 +280,7 @@ const CardWithContext = <
   );
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: CardPropsWithContext<StreamChatGenerics>,
-  nextProps: CardPropsWithContext<StreamChatGenerics>,
-) => {
+const areEqual = (prevProps: CardPropsWithContext, nextProps: CardPropsWithContext) => {
   const { myMessageTheme: prevMyMessageTheme } = prevProps;
   const { myMessageTheme: nextMyMessageTheme } = nextProps;
 
@@ -307,17 +295,12 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
 const MemoizedCard = React.memo(CardWithContext, areEqual) as typeof CardWithContext;
 
-export type CardProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Attachment<StreamChatGenerics> &
+export type CardProps = Attachment &
   Partial<
-    Pick<ChatContextValue<StreamChatGenerics>, 'ImageComponent'> &
+    Pick<ChatContextValue, 'ImageComponent'> &
+      Pick<MessageContextValue, 'onLongPress' | 'onPress' | 'onPressIn' | 'myMessageTheme'> &
       Pick<
-        MessageContextValue<StreamChatGenerics>,
-        'onLongPress' | 'onPress' | 'onPressIn' | 'myMessageTheme'
-      > &
-      Pick<
-        MessagesContextValue<StreamChatGenerics>,
+        MessagesContextValue,
         'additionalPressableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
       >
   >;
@@ -325,16 +308,11 @@ export type CardProps<
 /**
  * UI component for card in attachments.
  */
-export const Card = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: CardProps<StreamChatGenerics>,
-) => {
-  const { ImageComponent } = useChatContext<StreamChatGenerics>();
-  const { message, onLongPress, onPress, onPressIn, preventPress } =
-    useMessageContext<StreamChatGenerics>();
+export const Card = (props: CardProps) => {
+  const { ImageComponent } = useChatContext();
+  const { message, onLongPress, onPress, onPressIn, preventPress } = useMessageContext();
   const { additionalPressableProps, CardCover, CardFooter, CardHeader, myMessageTheme } =
-    useMessagesContext<StreamChatGenerics>();
+    useMessagesContext();
 
   return (
     <MemoizedCard
