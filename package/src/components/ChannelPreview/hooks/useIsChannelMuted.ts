@@ -4,16 +4,13 @@ import type { Channel } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
-
 const defaultMuteStatus = {
   createdAt: null,
   expiresAt: null,
   muted: false,
 };
 
-export const useIsChannelMuted =(
-  channel: Channel,
-) => {
+export const useIsChannelMuted = (channel: Channel) => {
   const { client } = useChatContext();
 
   const [muted, setMuted] = useState(() => channel.muteStatus());

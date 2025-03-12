@@ -8,9 +8,7 @@ import { useChatContext } from '../../../contexts/chatContext/ChatContext';
  *
  * @returns {boolean} e.g., true
  */
-export const useChannelPreviewDisplayPresence = (
-  channel: Channel,
-) => {
+export const useChannelPreviewDisplayPresence = (channel: Channel) => {
   const { client } = useChatContext();
   const members = channel.state.members;
   const membersCount = Object.keys(members).length;

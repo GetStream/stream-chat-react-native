@@ -4,9 +4,7 @@ import { useTranslationContext } from '../contexts/translationContext/Translatio
 
 type TranslationKey = `${TranslationLanguages}_text`;
 
-export const useTranslatedMessage = (
-  message?: MessageResponse | FormatMessageResponse,
-) => {
+export const useTranslatedMessage = (message?: MessageResponse | FormatMessageResponse) => {
   const { userLanguage } = useTranslationContext();
 
   const translationKey: TranslationKey = `${userLanguage}_text`;
