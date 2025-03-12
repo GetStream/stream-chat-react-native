@@ -10,11 +10,12 @@
   "main": "src/index.js",
   "types": "types/index.d.ts",
   "dependencies": {
-    "stream-chat-react-native-core": "6.6.7"
+    "stream-chat-react-native-core": "link:../"
   },
   "peerDependencies": {
     "expo": ">=51.0.0",
     "expo-av": "*",
+    "expo-video": "*",
     "expo-clipboard": "*",
     "expo-document-picker": "*",
     "expo-file-system": "*",
@@ -26,6 +27,9 @@
   },
   "peerDependenciesMeta": {
     "expo-av": {
+      "optional": true
+    },
+    "expo-video": {
       "optional": true
     },
     "expo-clipboard": {

@@ -48,6 +48,13 @@
         {
           "microphonePermission": "$(PRODUCT_NAME) would like to use your microphone for voice recording."
         }
+      ],
+      [
+        "expo-video",
+        {
+          "supportsBackgroundPlayback": true,
+          "supportsPictureInPicture": true
+        }
       ]
     ]
   }
