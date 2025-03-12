@@ -1,6 +1,6 @@
 import { Channel, ChannelMemberResponse, EventTypes } from 'stream-chat';
 
-import { useSelectedChannelState } from './useSelectedChannelState';
+import { useSelectedChannelState } from '../../../hooks/useSelectedChannelState';
 
 import { DefaultStreamChatGenerics } from '../../../types/types';
 
