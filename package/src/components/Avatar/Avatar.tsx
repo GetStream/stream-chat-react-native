@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   Image,
   ImageProps,
@@ -83,6 +83,34 @@ export const Avatar = (props: AvatarProps) => {
 
   const { isLoadingImageError, setLoadingImageError } = useLoadingImage();
 
+  const onError = useCallback(() => {
+    setLoadingImageError(true);
+  }, [setLoadingImageError]);
+
+  const uri = useMemo(() => {
+    let imageUrl;
+    if (
+      !imageProp ||
+      imageProp.includes(randomImageBaseUrl) ||
+      imageProp.includes(randomSvgBaseUrl)
+    ) {
+      if (imageProp?.includes(streamCDN)) {
+        imageUrl = imageProp;
+      } else {
+        imageUrl = `${randomImageBaseUrl}${name ? `?name=${getInitials(name)}&size=${size}` : ''}`;
+      }
+    } else {
+      imageUrl = getResizedImageUrl({
+        height: size,
+        resizableCDNHosts,
+        url: imageProp,
+        width: size,
+      });
+    }
+
+    return imageUrl;
+  }, [imageProp, name, size, resizableCDNHosts]);
+
   return (
     <View>
       <View
@@ -108,24 +136,10 @@ export const Avatar = (props: AvatarProps) => {
           />
         ) : (
           <ImageComponent
-            accessibilityLabel={testID || 'Avatar Image'}
-            onError={() => setLoadingImageError(true)}
+            accessibilityLabel={testID ?? 'Avatar Image'}
+            onError={onError}
             source={{
-              uri:
-                !imageProp ||
-                imageProp.includes(randomImageBaseUrl) ||
-                imageProp.includes(randomSvgBaseUrl)
-                  ? imageProp?.includes(streamCDN)
-                    ? imageProp
-                    : `${randomImageBaseUrl}${
-                        name ? `?name=${getInitials(name)}&size=${size}` : ''
-                      }`
-                  : getResizedImageUrl({
-                      height: size,
-                      resizableCDNHosts,
-                      url: imageProp,
-                      width: size,
-                    }),
+              uri,
             }}
             style={[
               image,
@@ -139,7 +153,7 @@ export const Avatar = (props: AvatarProps) => {
                 : {},
               imageStyle,
             ]}
-            testID={testID || 'avatar-image'}
+            testID={testID ?? 'avatar-image'}
           />
         )}
       </View>

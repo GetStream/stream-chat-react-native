@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 
 import type { Channel, StreamChat } from 'stream-chat';
 
@@ -50,19 +50,10 @@ export const getChannelPreviewDisplayAvatar = (channel: Channel, client: StreamC
 export const useChannelPreviewDisplayAvatar = (channel: Channel) => {
   const { client } = useChatContext();
 
-  const channelData = channel?.data;
-  const image = channelData?.image;
-  const name = channelData?.name;
-  const id = client?.user?.id;
-
-  const [displayAvatar, setDisplayAvatar] = useState(
-    getChannelPreviewDisplayAvatar(channel, client),
+  const displayAvatar = useMemo(
+    () => getChannelPreviewDisplayAvatar(channel, client),
+    [channel, client],
   );
-
-  useEffect(() => {
-    setDisplayAvatar(getChannelPreviewDisplayAvatar(channel, client));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, image, name]);
 
   return displayAvatar;
 };
