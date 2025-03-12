@@ -11,6 +11,7 @@ export const pickImage = ImagePicker
   ? async () => {
       try {
         const result = await ImagePicker.launchImageLibrary({
+          assetRepresentationMode: 'current',
           mediaType: 'mixed',
         });
         const canceled = result.didCancel;
