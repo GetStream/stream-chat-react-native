@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import type { Channel, EventTypes } from 'stream-chat';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import { DefaultStreamChatGenerics } from '../../../types/types';
+import { DefaultStreamChatGenerics } from '../types/types';
 
 const noop = () => {};
 

@@ -10,7 +10,6 @@ import { ChannelListHeaderNetworkDownIndicator } from './ChannelListHeaderNetwor
 import { ChannelListLoadingIndicator } from './ChannelListLoadingIndicator';
 import { ChannelListMessenger, ChannelListMessengerProps } from './ChannelListMessenger';
 import { useChannelUpdated } from './hooks/listeners/useChannelUpdated';
-import { useUserPresence } from './hooks/listeners/useUserPresence';
 import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
 import { usePaginatedChannels } from './hooks/usePaginatedChannels';
 import { Skeleton as SkeletonDefault } from './Skeleton';
@@ -365,11 +364,6 @@ export const ChannelList = <
   useChannelUpdated({
     onChannelUpdated,
     setChannels: channelManager.setChannels,
-  });
-
-  useUserPresence({
-    setChannels: channelManager.setChannels,
-    setForceUpdate,
   });
 
   const channelIdsStr = channels?.reduce((acc, channel) => `${acc}${channel.cid}`, '');
