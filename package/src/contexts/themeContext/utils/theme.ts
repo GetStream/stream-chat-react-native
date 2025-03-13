@@ -539,11 +539,14 @@ export type Theme = {
       errorIcon: IconProps;
       errorIconContainer: ViewStyle;
       eyeIcon: IconProps;
+      lastMessageContainer: ViewStyle;
       /**
        * Available options for styling text:
        * https://github.com/andangrd/react-native-markdown-package/blob/main/styles.js
        */
       markdown: MarkdownStyle;
+      messageGroupedSingleOrBottomContainer: ViewStyle;
+      messageGroupedTopContainer: ViewStyle;
       messageUser: TextStyle;
       metaContainer: ViewStyle;
       metaText: TextStyle;
@@ -1325,7 +1328,10 @@ export const defaultTheme: Theme = {
         height: 16,
         width: 16,
       },
+      lastMessageContainer: {},
       markdown: {},
+      messageGroupedSingleOrBottomContainer: {},
+      messageGroupedTopContainer: {},
       messageUser: {
         fontSize: 12,
         fontWeight: '700',

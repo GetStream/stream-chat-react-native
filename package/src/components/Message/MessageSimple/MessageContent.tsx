@@ -88,6 +88,7 @@ export type MessageContentPropsWithContext<
     MessagesContextValue<StreamChatGenerics>,
     | 'additionalPressableProps'
     | 'Attachment'
+    | 'enableMessageGroupingByUser'
     | 'FileAttachmentGroup'
     | 'Gallery'
     | 'isAttachmentEqual'
@@ -103,9 +104,17 @@ export type MessageContentPropsWithContext<
      */
     backgroundColor?: ColorValue;
     /**
+     * If the message is the very last message in the message list
+     */
+    isVeryLastMessage?: boolean;
+    /**
      * If the message has no border radius
      */
     noBorder?: boolean;
+    /**
+     * If the message is grouped in a single or bottom container
+     */
+    messageGroupedSingleOrBottom?: boolean;
   };
 
 /**
@@ -121,13 +130,16 @@ const MessageContentWithContext = <
     alignment,
     Attachment,
     backgroundColor,
+    enableMessageGroupingByUser,
     FileAttachmentGroup,
     Gallery,
     groupStyles,
     isMessageAIGenerated,
     isMyMessage,
+    isVeryLastMessage,
     message,
     messageContentOrder,
+    messageGroupedSingleOrBottom = false,
     MessageError,
     noBorder,
     onLongPress,
@@ -159,6 +171,9 @@ const MessageContentWithContext = <
             ...container
           },
           containerInner,
+          lastMessageContainer,
+          messageGroupedSingleOrBottomContainer,
+          messageGroupedTopContainer,
           replyBorder,
           replyContainer,
           wrapper,
@@ -283,6 +298,11 @@ const MessageContentWithContext = <
             },
             noBorder ? { borderWidth: 0 } : {},
             containerInner,
+            messageGroupedSingleOrBottom
+              ? isVeryLastMessage && enableMessageGroupingByUser
+                ? lastMessageContainer
+                : messageGroupedSingleOrBottomContainer
+              : messageGroupedTopContainer,
           ]}
           testID='message-content-wrapper'
         >
@@ -520,6 +540,7 @@ export const MessageContent = <
   const {
     additionalPressableProps,
     Attachment,
+    enableMessageGroupingByUser,
     FileAttachmentGroup,
     Gallery,
     isAttachmentEqual,
@@ -536,6 +557,7 @@ export const MessageContent = <
         additionalPressableProps,
         alignment,
         Attachment,
+        enableMessageGroupingByUser,
         FileAttachmentGroup,
         Gallery,
         goToMessage,
