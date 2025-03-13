@@ -30,8 +30,6 @@ export const mapStorableToPoll = (pollRow: TableRow<'poll'>): PollResponse => {
     allow_answers,
     allow_user_suggested_options,
     answers_count,
-    // TODO: Investigate why this is now here, this is just a quickfix for now as we do not use it.
-    cid: '',
     created_at,
     created_by: JSON.parse(created_by),
     created_by_id,

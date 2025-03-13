@@ -65,9 +65,8 @@ export interface DefaultUserType {
 }
 
 export interface DefaultChannelType {
-  [key: string]: unknown;
-
   image?: string;
+  name?: string;
 }
 
 export interface DefaultCommandType {
