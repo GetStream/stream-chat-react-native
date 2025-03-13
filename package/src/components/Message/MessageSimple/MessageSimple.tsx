@@ -278,7 +278,7 @@ const MessageSimpleWithContext = <
       <View style={[styles.contentWrapper, contentWrapper]}>
         <MessageContent
           backgroundColor={backgroundColor}
-          isVeryLastMessage={isVeryLastMessage}
+          isLastMessage={isVeryLastMessage}
           messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
           noBorder={noBorder}
           setMessageContentWidth={setMessageContentWidth}

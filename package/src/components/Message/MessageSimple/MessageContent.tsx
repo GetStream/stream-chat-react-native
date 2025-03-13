@@ -106,7 +106,7 @@ export type MessageContentPropsWithContext<
     /**
      * If the message is the very last message in the message list
      */
-    isVeryLastMessage?: boolean;
+    isLastMessage?: boolean;
     /**
      * If the message has no border radius
      */
@@ -136,7 +136,7 @@ const MessageContentWithContext = <
     groupStyles,
     isMessageAIGenerated,
     isMyMessage,
-    isVeryLastMessage,
+    isLastMessage,
     message,
     messageContentOrder,
     messageGroupedSingleOrBottom = false,
@@ -299,7 +299,7 @@ const MessageContentWithContext = <
             noBorder ? { borderWidth: 0 } : {},
             containerInner,
             messageGroupedSingleOrBottom
-              ? isVeryLastMessage && enableMessageGroupingByUser
+              ? isLastMessage && enableMessageGroupingByUser
                 ? lastMessageContainer
                 : messageGroupedSingleOrBottomContainer
               : messageGroupedTopContainer,
