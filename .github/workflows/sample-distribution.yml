@@ -14,7 +14,7 @@ on:
 jobs:
   build_and_deploy_ios_testflight_qa:
     name: Build SampleApp iOS and Deploy-${{ github.ref == 'refs/heads/V5' }}
-    runs-on: [macos-14]
+    runs-on: [macos-15]
     steps:
       - name: Connect Bot
         uses: webfactory/ssh-agent@v0.7.0
@@ -33,7 +33,9 @@ jobs:
             ${{ runner.os }}-pods-
       - name: iOS Pods setup
         working-directory: examples/SampleApp/ios
-        run: bundle exec pod install
+        run: |
+          pod update hermes-engine --no-repo-update
+          bundle exec pod install
       - name: Build and release Testflight QA
         working-directory: examples/SampleApp
         run: bundle exec fastlane deploy_to_testflight_qa deploy:${{ github.ref == 'refs/heads/V5' }};
