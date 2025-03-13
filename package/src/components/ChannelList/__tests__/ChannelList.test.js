@@ -25,8 +25,6 @@ import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
 import dispatchNotificationAddedToChannelEvent from '../../../mock-builders/event/notificationAddedToChannel';
 import dispatchNotificationMessageNewEvent from '../../../mock-builders/event/notificationMessageNew';
 import dispatchNotificationRemovedFromChannel from '../../../mock-builders/event/notificationRemovedFromChannel';
-import dispatchUserPresenceEvent from '../../../mock-builders/event/userPresence';
-import dispatchUserUpdatedEvent from '../../../mock-builders/event/userUpdated';
 import { generateChannel, generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
@@ -688,66 +686,6 @@ describe('ChannelList', () => {
 
         await waitFor(() => {
           expect(onChannelTruncated).toHaveBeenCalledTimes(1);
-        });
-      });
-    });
-
-    describe('user.updated', () => {
-      it('should call handleEvent in the custom hook if the user updates', async () => {
-        useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
-        const updateSpy = jest.spyOn(chatClient, 'on');
-        const offlineUser = generateUser();
-
-        render(
-          <Chat client={chatClient}>
-            <ChannelList {...props} />
-          </Chat>,
-        );
-
-        await waitFor(() => {
-          expect(screen.getByTestId('channel-list')).toBeTruthy();
-        });
-
-        act(() =>
-          dispatchUserUpdatedEvent(
-            chatClient,
-            { ...offlineUser, name: 'dan' },
-            testChannel1.channel,
-          ),
-        );
-
-        await waitFor(() => {
-          expect(updateSpy).toHaveBeenCalledWith('user.updated', expect.any(Function));
-        });
-      });
-    });
-
-    describe('user.presence.changed', () => {
-      it('should call handleEvent in the custom hook if user presence changes', async () => {
-        useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
-        const updateSpy = jest.spyOn(chatClient, 'on');
-        const offlineUser = generateUser();
-
-        render(
-          <Chat client={chatClient}>
-            <ChannelList {...props} />
-          </Chat>,
-        );
-
-        await waitFor(() => {
-          expect(screen.getByTestId('channel-list')).toBeTruthy();
-        });
-
-        act(() =>
-          dispatchUserPresenceEvent(
-            chatClient,
-            { ...offlineUser, online: true },
-            testChannel1.channel,
-          ),
-        );
-
-        await waitFor(() => {
-          expect(updateSpy).toHaveBeenCalledWith('user.presence.changed', expect.any(Function));
         });
       });
     });

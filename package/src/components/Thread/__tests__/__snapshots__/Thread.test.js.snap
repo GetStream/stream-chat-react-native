@@ -599,6 +599,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                         },
                                         {},
                                         {},
+                                        {},
                                       ]
                                     }
                                     testID="message-content-wrapper"
@@ -1107,6 +1108,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                           "borderBottomRightRadius": 16,
                                           "borderColor": "#ECEBEB",
                                         },
+                                        {},
                                         {},
                                         {},
                                       ]
@@ -1657,6 +1659,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                         },
                                         {},
                                         {},
+                                        {},
                                       ]
                                     }
                                     testID="message-content-wrapper"
@@ -2158,6 +2161,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                             "borderBottomRightRadius": 16,
                                             "borderColor": "#ECEBEB",
                                           },
+                                          {},
                                           {},
                                           {},
                                         ]

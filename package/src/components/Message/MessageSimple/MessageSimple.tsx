@@ -272,6 +272,8 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
       <View style={[styles.contentWrapper, contentWrapper]}>
         <MessageContent
           backgroundColor={backgroundColor}
+          isVeryLastMessage={isVeryLastMessage}
+          messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
           noBorder={noBorder}
           setMessageContentWidth={setMessageContentWidth}
         />
@@ -287,6 +289,8 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
       ReactionListTop,
       backgroundColor,
       contentWrapper,
+      isVeryLastMessage,
+      messageGroupedSingleOrBottom,
       noBorder,
     ],
   );
