@@ -1,16 +1,15 @@
 import { act, renderHook, waitFor } from '@testing-library/react-native';
-import { Channel, DefaultGenerics, StreamChat } from 'stream-chat';
+import { Channel, StreamChat } from 'stream-chat';
 
 import * as ChatContext from '../../../../contexts/chatContext/ChatContext';
 import dispatchNotificationChannelMutesUpdated from '../../../../mock-builders/event/notificationChannelMutesUpdated';
 import { generateUser } from '../../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
-import { DefaultStreamChatGenerics } from '../../../../types/types';
 import { useIsChannelMuted } from '../useIsChannelMuted';
 
 describe('useChannelPreviewMuted', () => {
   const clientUser = generateUser();
-  let chatClient: StreamChat | StreamChat;
+  let chatClient: StreamChat;
 
   beforeEach(async () => {
     chatClient = await getTestClientWithUser(clientUser);

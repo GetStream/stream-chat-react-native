@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 
 import { renderHook, waitFor } from '@testing-library/react-native';
 
-import type { DefaultGenerics, MessageResponse, StreamChat } from 'stream-chat';
+import type { MessageResponse, StreamChat } from 'stream-chat';
 
 import { ChatContext, ChatContextValue } from '../../../../contexts/chatContext/ChatContext';
 import {

@@ -3,7 +3,7 @@ import { Text } from 'react-native';
 
 import { render, screen, waitFor } from '@testing-library/react-native';
 
-import type { Channel, ChannelMemberResponse, DefaultGenerics, StreamChat } from 'stream-chat';
+import type { Channel, ChannelMemberResponse, StreamChat } from 'stream-chat';
 
 import {
   GROUP_CHANNEL_MEMBERS_MOCK,

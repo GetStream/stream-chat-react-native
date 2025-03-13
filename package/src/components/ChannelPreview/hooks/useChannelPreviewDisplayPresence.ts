@@ -12,10 +12,7 @@ import { useSyncClientEventsToChannel } from '../../../hooks/useSyncClientEvents
  *
  * NOTE: If you want to listen to the value changes where you call the hook, the selector should return primitive values instead of object.
  */
-const selector = (
-  channel: Channel,
-  client: StreamChat,
-) => {
+const selector = (channel: Channel, client: StreamChat) => {
   const members = channel.state.members;
   const membersCount = Object.keys(members).length;
   const otherMember = Object.values(members).find((member) => member.user?.id !== client.userID);

@@ -4,7 +4,6 @@ import type { Channel, StreamChat, UserResponse } from 'stream-chat';
 import type { ChatContextValue } from '../../../../contexts/chatContext/ChatContext';
 import * as ChatContext from '../../../../contexts/chatContext/ChatContext';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
-import { DefaultStreamChatGenerics } from '../../../../types/types';
 import { useChannelPreviewDisplayPresence } from '../useChannelPreviewDisplayPresence';
 
 describe('useChannelPreviewDisplayPresence', () => {

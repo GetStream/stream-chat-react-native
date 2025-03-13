@@ -13,10 +13,7 @@ type Parameters = {
  * Hook to update the channel members when the user presence changes
  * @deprecated this hook will be removed in favour of the useChannelPreviewDisplayPresence to improve performance
  */
-export const useUserPresence = ({
-  setChannels,
-  setForceUpdate,
-}: Parameters) => {
+export const useUserPresence = ({ setChannels, setForceUpdate }: Parameters) => {
   const { client } = useChatContext();
 
   useEffect(() => {
