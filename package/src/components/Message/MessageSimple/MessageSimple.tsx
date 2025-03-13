@@ -326,10 +326,6 @@ const MessageSimpleWithContext = <
     ],
   );
 
-  if (messageGroupedSingleOrBottom) {
-    console.log(message.text);
-  }
-
   return (
     <View
       style={[
