@@ -24,7 +24,7 @@ import { useLatestMessagePreview } from '../useLatestMessagePreview';
 describe('useLatestMessagePreview', () => {
   const FORCE_UPDATE = 15;
   const clientUser = generateUser();
-  let chatClient: StreamChat<DefaultGenerics> | StreamChat<DefaultStreamChatGenerics>;
+  let chatClient: StreamChat | StreamChat;
 
   beforeEach(async () => {
     chatClient = await getTestClientWithUser(clientUser);

@@ -40,7 +40,7 @@ describe("MessageInputContext's sendMessage", () => {
     setSelectedFiles: jest.fn(),
     setSelectedImages: jest.fn(),
   }));
-  const message: boolean | MessageType<DefaultStreamChatGenerics> = generateMessage({
+  const message: boolean | MessageType = generateMessage({
     created_at: 'Sat Jul 02 2022 23:55:13 GMT+0530 (India Standard Time)',
     id: '7a85f744-cc89-4f82-a1d4-5456432cc8bf',
     updated_at: 'Sat Jul 02 2022 23:55:13 GMT+0530 (India Standard Time)',
@@ -49,7 +49,7 @@ describe("MessageInputContext's sendMessage", () => {
       image: 'fc86ddcb-bac4-400c-9afd-b0c0a1c0cd33',
       name: '50cbdd0e-ca7e-4478-9e2c-be0f1ac6a995',
     }),
-  }) as unknown as MessageType<DefaultStreamChatGenerics>;
+  }) as unknown as MessageType;
 
   it('exit sendMessage when file upload status failed', async () => {
     const initialProps = {
@@ -223,7 +223,7 @@ describe("MessageInputContext's sendMessage", () => {
   it('exit sendMessage when image upload has an error and catch block is executed', () => {
     const setQuotedMessageStateMock = jest.fn();
     const clearQuotedMessageStateMock = jest.fn();
-    const generatedQuotedMessage: boolean | MessageType<DefaultStreamChatGenerics> = message;
+    const generatedQuotedMessage: boolean | MessageType = message;
     const images = [
       generateImageUploadPreview({ state: FileState.UPLOADED }),
       generateImageUploadPreview({ state: FileState.FINISHED }),
@@ -268,7 +268,7 @@ describe("MessageInputContext's sendMessage", () => {
     const clearEditingStateMock = jest.fn();
     const editMessageMock = jest.fn().mockResolvedValue({ data: {} });
     const images = generateImageUploadPreview({ state: FileState.UPLOADED });
-    const generatedMessage: boolean | MessageType<DefaultStreamChatGenerics> = message;
+    const generatedMessage: boolean | MessageType = message;
     const initialProps = {
       clearEditingState: clearEditingStateMock,
       clearQuotedMessageState: clearQuotedMessageStateMock,

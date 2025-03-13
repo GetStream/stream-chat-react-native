@@ -10,7 +10,7 @@ import { useIsChannelMuted } from '../useIsChannelMuted';
 
 describe('useChannelPreviewMuted', () => {
   const clientUser = generateUser();
-  let chatClient: StreamChat<DefaultGenerics> | StreamChat<DefaultStreamChatGenerics>;
+  let chatClient: StreamChat | StreamChat;
 
   beforeEach(async () => {
     chatClient = await getTestClientWithUser(clientUser);
@@ -35,7 +35,7 @@ describe('useChannelPreviewMuted', () => {
       expiresAt: Date.now() + 5000,
       muted: false,
     }),
-  } as unknown as Channel<DefaultStreamChatGenerics>;
+  } as unknown as Channel;
 
   it('should return the correct mute status', () => {
     const { result } = renderHook(() => useIsChannelMuted(mockChannel));

@@ -19,7 +19,7 @@ import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { useMessageList } from '../hooks/useMessageList';
 
 const clientUser = generateUser();
-let chatClient: StreamChat<DefaultGenerics> | StreamChat<DefaultStreamChatGenerics>;
+let chatClient: StreamChat | StreamChat;
 
 beforeEach(async () => {
   chatClient = await getTestClientWithUser(clientUser);

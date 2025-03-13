@@ -39,7 +39,7 @@ describe('ImageGalleryOverlay', () => {
                 generateMessage({
                   attachments: [generateImageAttachment()],
                 }),
-              ] as unknown as MessageType<DefaultStreamChatGenerics>[],
+              ] as unknown as MessageType[],
             } as unknown as ImageGalleryContextValue
           }
         >

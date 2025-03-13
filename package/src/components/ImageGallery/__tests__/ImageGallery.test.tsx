@@ -54,7 +54,7 @@ describe('ImageGallery', () => {
               generateVideoAttachment({ type: 'video' }),
             ],
           }),
-        ] as unknown as MessageType<DefaultStreamChatGenerics>[],
+        ] as unknown as MessageType[],
       }),
     );
 
@@ -71,7 +71,7 @@ describe('ImageGallery', () => {
     });
     render(
       getComponent({
-        messages: [message] as unknown as MessageType<DefaultStreamChatGenerics>[],
+        messages: [message] as unknown as MessageType[],
       }),
     );
 
@@ -100,7 +100,7 @@ describe('ImageGallery', () => {
           generateMessage({
             attachments: [generateVideoAttachment({ type: 'video' })],
           }),
-        ] as unknown as MessageType<DefaultStreamChatGenerics>[],
+        ] as unknown as MessageType[],
       }),
     );
 
@@ -126,7 +126,7 @@ describe('ImageGallery', () => {
 
     render(
       getComponent({
-        messages: [message] as unknown as MessageType<DefaultStreamChatGenerics>[],
+        messages: [message] as unknown as MessageType[],
       }),
     );
 
@@ -161,7 +161,7 @@ describe('ImageGallery', () => {
           generateMessage({
             attachments: [generateVideoAttachment({ type: 'video' })],
           }),
-        ] as unknown as MessageType<DefaultStreamChatGenerics>[],
+        ] as unknown as MessageType[],
       }),
     );
 
@@ -191,7 +191,7 @@ describe('ImageGallery', () => {
     });
     render(
       getComponent({
-        messages: [message] as unknown as MessageType<DefaultStreamChatGenerics>[],
+        messages: [message] as unknown as MessageType[],
       }),
     );
 

@@ -41,10 +41,7 @@ describe('useMessageDetailsForState', () => {
   it('fileUploads, imageUploads and mentionedUsers are not empty when attachments are present in message', () => {
     const { result } = renderHook(
       ({ initialValue, message }) =>
-        useMessageDetailsForState(
-          message as unknown as MessageType<DefaultStreamChatGenerics> | boolean,
-          initialValue,
-        ),
+        useMessageDetailsForState(message as unknown as MessageType | boolean, initialValue),
       {
         initialProps: {
           initialValue: '',

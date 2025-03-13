@@ -69,7 +69,7 @@ describe('ImageGalleryHeader', () => {
                 generateMessage({
                   attachments: [generateImageAttachment()],
                 }),
-              ] as unknown as MessageType<DefaultStreamChatGenerics>[],
+              ] as unknown as MessageType[],
             } as unknown as ImageGalleryContextValue
           }
         >
@@ -116,7 +116,7 @@ describe('ImageGalleryHeader', () => {
                 generateMessage({
                   attachments: [generateVideoAttachment({ type: 'video' })],
                 }),
-              ] as unknown as MessageType<DefaultStreamChatGenerics>[],
+              ] as unknown as MessageType[],
             } as unknown as ImageGalleryContextValue
           }
         >
@@ -156,7 +156,7 @@ describe('ImageGalleryHeader', () => {
                 generateMessage({
                   attachments: [generateImageAttachment()],
                 }),
-              ] as unknown as MessageType<DefaultStreamChatGenerics>[],
+              ] as unknown as MessageType[],
             } as unknown as ImageGalleryContextValue
           }
         >

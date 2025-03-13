@@ -11,9 +11,9 @@ describe('useChannelPreviewDisplayPresence', () => {
   // Mock user data
   const currentUserId = 'current-user';
   const otherUserId = 'other-user';
-  let chatClient: StreamChat<DefaultStreamChatGenerics>;
+  let chatClient: StreamChat;
 
-  let mockChannel: Channel<DefaultStreamChatGenerics>;
+  let mockChannel: Channel;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -27,14 +27,14 @@ describe('useChannelPreviewDisplayPresence', () => {
       state: {
         members: {
           [currentUserId]: {
-            user: { id: currentUserId, online: true } as UserResponse<DefaultStreamChatGenerics>,
+            user: { id: currentUserId, online: true } as UserResponse,
           },
           [otherUserId]: {
-            user: { id: otherUserId, online: false } as UserResponse<DefaultStreamChatGenerics>,
+            user: { id: otherUserId, online: false } as UserResponse,
           },
         },
       },
-    } as unknown as Channel<DefaultStreamChatGenerics>;
+    } as unknown as Channel;
 
     // Mock the useChatContext hook
     jest
@@ -53,17 +53,17 @@ describe('useChannelPreviewDisplayPresence', () => {
       state: {
         members: {
           [currentUserId]: {
-            user: { id: currentUserId } as UserResponse<DefaultStreamChatGenerics>,
+            user: { id: currentUserId } as UserResponse,
           },
           [otherUserId]: {
-            user: { id: otherUserId } as UserResponse<DefaultStreamChatGenerics>,
+            user: { id: otherUserId } as UserResponse,
           },
           [thirdUserId]: {
-            user: { id: thirdUserId } as UserResponse<DefaultStreamChatGenerics>,
+            user: { id: thirdUserId } as UserResponse,
           },
         },
       },
-    } as unknown as Channel<DefaultStreamChatGenerics>;
+    } as unknown as Channel;
 
     const { result } = renderHook(() => useChannelPreviewDisplayPresence(channelWithThreeMembers));
     expect(result.current).toBe(false);
@@ -79,7 +79,7 @@ describe('useChannelPreviewDisplayPresence', () => {
     const onlineUser = {
       ...mockChannel.state.members[otherUserId].user,
       online: true,
-    } as UserResponse<DefaultStreamChatGenerics>;
+    } as UserResponse;
 
     mockChannel.state.members[otherUserId].user = onlineUser;
 
@@ -93,14 +93,14 @@ describe('useChannelPreviewDisplayPresence', () => {
       state: {
         members: {
           [currentUserId]: {
-            user: { id: currentUserId } as UserResponse<DefaultStreamChatGenerics>,
+            user: { id: currentUserId } as UserResponse,
           },
           'null-user': {
             user: null,
           },
         },
       },
-    } as unknown as Channel<DefaultStreamChatGenerics>;
+    } as unknown as Channel;
 
     const { result } = renderHook(() => useChannelPreviewDisplayPresence(channelWithNullUser));
     expect(result.current).toBe(false);
