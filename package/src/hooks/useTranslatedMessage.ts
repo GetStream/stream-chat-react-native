@@ -10,9 +10,7 @@ export const useTranslatedMessage = <
 >(
   message?: MessageResponse<StreamChatGenerics> | FormatMessageResponse<StreamChatGenerics>,
 ) => {
-  const { userLanguage: translationContextUserLanguage } = useTranslationContext();
-
-  const userLanguage = translationContextUserLanguage;
+  const { userLanguage } = useTranslationContext();
 
   const translationKey: TranslationKey = `${userLanguage}_text`;
 

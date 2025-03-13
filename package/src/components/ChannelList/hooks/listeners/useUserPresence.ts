@@ -12,6 +12,10 @@ type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultSt
     setForceUpdate: React.Dispatch<React.SetStateAction<number>>;
   };
 
+/**
+ * Hook to update the channel members when the user presence changes
+ * @deprecated this hook will be removed in favour of the useChannelPreviewDisplayPresence to improve performance
+ */
 export const useUserPresence = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({

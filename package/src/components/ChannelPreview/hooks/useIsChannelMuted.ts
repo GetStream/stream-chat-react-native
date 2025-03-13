@@ -6,6 +6,12 @@ import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
+const defaultMuteStatus = {
+  createdAt: null,
+  expiresAt: null,
+  muted: false,
+};
+
 export const useIsChannelMuted = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
@@ -24,5 +30,5 @@ export const useIsChannelMuted = <
     return () => client.off('notification.channel_mutes_updated', handleEvent);
   }, [channel, client, muted]);
 
-  return muted || { createdAt: null, expiresAt: null, muted: false };
+  return muted ?? defaultMuteStatus;
 };
