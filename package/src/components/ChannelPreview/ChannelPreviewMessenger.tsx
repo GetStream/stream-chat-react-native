@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Pressable } from 'react-native-gesture-handler';
 
 import { ChannelAvatar } from './ChannelAvatar';
 import type { ChannelPreviewProps } from './ChannelPreview';
@@ -130,13 +130,14 @@ const ChannelPreviewMessengerWithContext = (props: ChannelPreviewMessengerPropsW
   );
 
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={() => {
         if (onSelect) {
           onSelect(channel);
         }
       }}
-      style={[
+      style={({ pressed }) => [
+        { opacity: pressed ? 0.5 : 1 },
         styles.container,
         { backgroundColor: white_snow, borderBottomColor: border },
         container,
@@ -164,7 +165,7 @@ const ChannelPreviewMessengerWithContext = (props: ChannelPreviewMessengerPropsW
           />
         </View>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

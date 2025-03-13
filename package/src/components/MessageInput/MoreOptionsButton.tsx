@@ -1,6 +1,6 @@
 import React from 'react';
 import type { GestureResponderEvent } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Pressable } from 'react-native-gesture-handler';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { CircleRight } from '../../icons/CircleRight';
@@ -21,14 +21,14 @@ export const MoreOptionsButton = (props: MoreOptionsButtonProps) => {
   } = useTheme();
 
   return (
-    <TouchableOpacity
+    <Pressable
       hitSlop={{ bottom: 15, left: 15, right: 15, top: 15 }}
       onPress={handleOnPress}
-      style={[moreOptionsButton]}
+      style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }, moreOptionsButton]}
       testID='more-options-button'
     >
       <CircleRight pathFill={accent_blue} />
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
