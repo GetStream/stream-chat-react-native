@@ -2,6 +2,12 @@ import React from 'react';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
+import { Channel } from '../../..';
+import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext/ChannelsStateContext';
+import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
+import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
+import { generateChannelResponse } from '../../../../mock-builders/generator/channel';
+import { generateMember } from '../../../../mock-builders/generator/member';
 import { generateMessage } from '../../../../mock-builders/generator/message';
 import { generateStaticUser, generateUser } from '../../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
@@ -10,26 +16,54 @@ import { Chat } from '../../../Chat/Chat';
 import { MessageStatus } from '../MessageStatus';
 
 let chatClient;
-let id;
 let i18nInstance;
-
+let channel;
 describe('MessageStatus', () => {
-  beforeAll(async () => {
+  const user1 = generateUser({ id: 'id1', name: 'name1' });
+  const user2 = generateUser({ id: 'id2', name: 'name2' });
+  const user3 = generateUser({ id: 'id3', name: 'name3' });
+  const messages = [generateMessage({ user: user1 })];
+  const members = [
+    generateMember({ user: user1 }),
+    generateMember({ user: user2 }),
+    generateMember({ user: user3 }),
+  ];
+  beforeAll(() => {
     id = 'testID';
-    chatClient = await getTestClientWithUser({ id });
     i18nInstance = new Streami18n();
   });
+  beforeEach(async () => {
+    jest.clearAllMocks();
+    const mockedChannel = generateChannelResponse({
+      members,
+      messages,
+    });
+
+    chatClient = await getTestClientWithUser(user1);
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    channel = chatClient.channel('messaging', mockedChannel.id);
+  });
   afterEach(cleanup);
+
+  renderMessageStatus = (options, channelProps) =>
+    render(
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel} {...channelProps}>
+            <MessageStatus {...options} />
+          </Channel>
+        </Chat>
+      </ChannelsStateProvider>,
+    );
 
   it('should render message status with delivered container', async () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    const { getByTestId } = render(
-      <Chat client={chatClient} i18nInstance={i18nInstance}>
-        <MessageStatus lastReceivedId={message.id} message={{ ...message, status: 'received' }} />
-      </Chat>,
-    );
+    const { getByTestId } = renderMessageStatus({
+      lastReceivedId: message.id,
+      message: { ...message, status: 'received' },
+    });
 
     await waitFor(() => {
       expect(getByTestId('delivered-container')).toBeTruthy();
@@ -40,30 +74,33 @@ describe('MessageStatus', () => {
     const user = generateUser();
     const message = generateMessage({ readBy: 2, user });
 
-    const { getByTestId, getByText, rerender, toJSON } = render(
-      <Chat client={chatClient} i18nInstance={i18nInstance}>
-        <MessageStatus lastReceivedId={message.id} message={message} />
-      </Chat>,
-    );
+    const { getByTestId, getByText, rerender, toJSON } = renderMessageStatus({
+      lastReceivedId: message.id,
+      message,
+    });
 
     await waitFor(() => {
       expect(getByTestId('read-by-container')).toBeTruthy();
-      expect(getByText(message.readBy.toString())).toBeTruthy();
+      expect(getByText((message.readBy - 1).toString())).toBeTruthy();
     });
 
     const staticUser = generateStaticUser(0);
     const staticMessage = generateMessage({ readBy: 2, staticUser });
 
     rerender(
-      <Chat client={chatClient} i18nInstance={i18nInstance}>
-        <MessageStatus lastReceivedId={staticMessage.id} message={staticMessage} />
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient} i18nInstance={i18nInstance}>
+          <Channel channel={channel}>
+            <MessageStatus lastReceivedId={staticMessage.id} message={staticMessage} />
+          </Channel>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     await waitFor(() => {
       expect(toJSON()).toMatchSnapshot();
       expect(getByTestId('read-by-container')).toBeTruthy();
-      expect(getByText(staticMessage.readBy.toString())).toBeTruthy();
+      expect(getByText((staticMessage.readBy - 1).toString())).toBeTruthy();
     });
   });
 
@@ -71,11 +108,9 @@ describe('MessageStatus', () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    const { getByTestId } = render(
-      <Chat client={chatClient} i18nInstance={i18nInstance}>
-        <MessageStatus message={{ ...message, status: 'sending' }} />
-      </Chat>,
-    );
+    const { getByTestId } = renderMessageStatus({
+      message: { ...message, status: 'sending' },
+    });
 
     await waitFor(() => {
       expect(getByTestId('sending-container')).toBeTruthy();
