@@ -2,21 +2,20 @@ import React from 'react';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
+import { Channel } from '../../..';
+import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext/ChannelsStateContext';
+import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
+import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
+import { generateChannelResponse } from '../../../../mock-builders/generator/channel';
+import { generateMember } from '../../../../mock-builders/generator/member';
 import { generateMessage } from '../../../../mock-builders/generator/message';
 import { generateStaticUser, generateUser } from '../../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
 import { Streami18n } from '../../../../utils/i18n/Streami18n';
 import { Chat } from '../../../Chat/Chat';
 import { MessageStatus } from '../MessageStatus';
-import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext/ChannelsStateContext';
-import { Channel } from '../../..';
-import { generateChannelResponse } from '../../../../mock-builders/generator/channel';
-import { generateMember } from '../../../../mock-builders/generator/member';
-import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
-import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
 
 let chatClient;
-let id;
 let i18nInstance;
 let channel;
 describe('MessageStatus', () => {
@@ -29,7 +28,7 @@ describe('MessageStatus', () => {
     generateMember({ user: user2 }),
     generateMember({ user: user3 }),
   ];
-  beforeAll(async () => {
+  beforeAll(() => {
     id = 'testID';
     i18nInstance = new Streami18n();
   });

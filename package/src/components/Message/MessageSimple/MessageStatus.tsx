@@ -60,12 +60,6 @@ const MessageStatusWithContext = <
       typeof message.readBy === 'number' && hasOtherMembersGreaterThanOne ? message.readBy - 1 : 0;
     const showDoubleCheck = hasReadByGreaterThanOne || message.readBy === true;
 
-    console.log({
-      shouldDisplayReadByCount,
-      hasOtherMembersGreaterThanOne,
-      hasReadByGreaterThanOne,
-    });
-
     return (
       <View style={[styles.statusContainer, statusContainer]}>
         {shouldDisplayReadByCount ? (
