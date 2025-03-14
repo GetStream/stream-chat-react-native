@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import {
   MessageContextValue,
   useMessageContext,
@@ -23,6 +24,7 @@ const MessageStatusWithContext = <
 >(
   props: MessageStatusPropsWithContext<StreamChatGenerics>,
 ) => {
+  const { channel } = useChannelContext<StreamChatGenerics>();
   const { message, threadList } = props;
 
   const {
@@ -47,18 +49,35 @@ const MessageStatusWithContext = <
   }
 
   if (isMessageWithStylesReadByAndDateSeparator(message)) {
+    const members = channel?.state.members;
+    const otherMembers = Object.values(members).filter(
+      (member) => member.user_id !== message.user?.id,
+    );
+    const hasOtherMembersGreaterThanOne = otherMembers.length > 1;
+    const hasReadByGreaterThanOne = typeof message.readBy === 'number' && message.readBy > 1;
+    const shouldDisplayReadByCount = hasOtherMembersGreaterThanOne && hasReadByGreaterThanOne;
+    const countOfReadBy =
+      typeof message.readBy === 'number' && hasOtherMembersGreaterThanOne ? message.readBy - 1 : 0;
+    const showDoubleCheck = hasReadByGreaterThanOne || message.readBy === true;
+
+    console.log({
+      shouldDisplayReadByCount,
+      hasOtherMembersGreaterThanOne,
+      hasReadByGreaterThanOne,
+    });
+
     return (
       <View style={[styles.statusContainer, statusContainer]}>
-        {typeof message.readBy === 'number' ? (
+        {shouldDisplayReadByCount ? (
           <Text
             style={[styles.readByCount, { color: accent_blue }, readByCount]}
             testID='read-by-container'
           >
-            {message.readBy}
+            {countOfReadBy}
           </Text>
         ) : null}
         {message.type !== 'error' ? (
-          typeof message.readBy === 'number' || message.readBy === true ? (
+          showDoubleCheck ? (
             <CheckAll pathFill={accent_blue} {...checkAllIcon} />
           ) : (
             <Check pathFill={grey_dark} {...checkIcon} />

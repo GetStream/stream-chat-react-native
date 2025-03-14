@@ -2,106 +2,124 @@
 
 exports[`MessageStatus should render message status with read by container 1`] = `
 <View
+  keyboardVerticalOffset={86.5}
+  onLayout={[Function]}
   style={
-    [
-      {
-        "alignItems": "flex-end",
-        "flexDirection": "row",
-        "justifyContent": "center",
-        "paddingRight": 3,
-      },
-      {},
-    ]
+    {
+      "paddingBottom": 0,
+    }
   }
 >
-  <Text
+  <View
     style={
-      [
-        {
-          "fontSize": 11,
-          "fontWeight": "700",
-          "paddingRight": 3,
-        },
-        {
-          "color": "#005FFF",
-        },
-        {},
-      ]
+      {
+        "height": "100%",
+      }
     }
-    testID="read-by-container"
   >
-    2
-  </Text>
-  <RNSVGSvgView
-    align="xMidYMid"
-    bbHeight={16}
-    bbWidth={16}
-    focusable={false}
-    height={16}
-    meetOrSlice={0}
-    minX={0}
-    minY={0}
-    pathFill="#005FFF"
-    style={
-      [
-        {
-          "backgroundColor": "transparent",
-          "borderWidth": 0,
-        },
-        {
-          "flex": 0,
-          "height": 16,
-          "width": 16,
-        },
-      ]
-    }
-    vbHeight={24}
-    vbWidth={24}
-    width={16}
-  >
-    <RNSVGGroup
-      fill={
-        {
-          "payload": 4278190080,
-          "type": 0,
-        }
+    <View
+      style={
+        [
+          {
+            "alignItems": "flex-end",
+            "flexDirection": "row",
+            "justifyContent": "center",
+            "paddingRight": 3,
+          },
+          {},
+        ]
       }
     >
-      <RNSVGPath
-        clipRule={0}
-        d="M2.293 11.293a1 1 0 011.414 0l4 4a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414zM9.293 12.293a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414z"
-        fill={
-          {
-            "payload": 4278214655,
-            "type": 0,
-          }
-        }
-        fillRule={0}
-        propList={
+      <Text
+        style={
           [
-            "fill",
-            "fillRule",
+            {
+              "fontSize": 11,
+              "fontWeight": "700",
+              "paddingRight": 3,
+            },
+            {
+              "color": "#005FFF",
+            },
+            {},
           ]
         }
-      />
-      <RNSVGPath
-        clipRule={0}
-        d="M15.707 7.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414-1.414l8-8a1 1 0 011.414 0zM21.707 7.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414-1.414l8-8a1 1 0 011.414 0z"
-        fill={
-          {
-            "payload": 4278214655,
-            "type": 0,
-          }
-        }
-        fillRule={0}
-        propList={
+        testID="read-by-container"
+      >
+        1
+      </Text>
+      <RNSVGSvgView
+        align="xMidYMid"
+        bbHeight={16}
+        bbWidth={16}
+        focusable={false}
+        height={16}
+        meetOrSlice={0}
+        minX={0}
+        minY={0}
+        pathFill="#005FFF"
+        style={
           [
-            "fill",
-            "fillRule",
+            {
+              "backgroundColor": "transparent",
+              "borderWidth": 0,
+            },
+            {
+              "flex": 0,
+              "height": 16,
+              "width": 16,
+            },
           ]
         }
-      />
-    </RNSVGGroup>
-  </RNSVGSvgView>
+        vbHeight={24}
+        vbWidth={24}
+        width={16}
+      >
+        <RNSVGGroup
+          fill={
+            {
+              "payload": 4278190080,
+              "type": 0,
+            }
+          }
+        >
+          <RNSVGPath
+            clipRule={0}
+            d="M2.293 11.293a1 1 0 011.414 0l4 4a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414zM9.293 12.293a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414z"
+            fill={
+              {
+                "payload": 4278214655,
+                "type": 0,
+              }
+            }
+            fillRule={0}
+            propList={
+              [
+                "fill",
+                "fillRule",
+              ]
+            }
+          />
+          <RNSVGPath
+            clipRule={0}
+            d="M15.707 7.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414-1.414l8-8a1 1 0 011.414 0zM21.707 7.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414-1.414l8-8a1 1 0 011.414 0z"
+            fill={
+              {
+                "payload": 4278214655,
+                "type": 0,
+              }
+            }
+            fillRule={0}
+            propList={
+              [
+                "fill",
+                "fillRule",
+              ]
+            }
+          />
+        </RNSVGGroup>
+      </RNSVGSvgView>
+    </View>
+  </View>
 </View>
 `;
