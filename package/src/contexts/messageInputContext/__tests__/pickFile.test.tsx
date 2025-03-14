@@ -8,7 +8,7 @@ import { generateFileAttachment } from '../../../mock-builders/generator/attachm
 
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
-import * as NativeUtils from '../../../native';
+import { NativeHandlers } from '../../../native';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import * as AttachmentPickerContext from '../../attachmentPickerContext/AttachmentPickerContext';
 
@@ -42,7 +42,7 @@ const Wrapper = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultS
 describe("MessageInputContext's pickFile", () => {
   afterEach(jest.clearAllMocks);
   jest.spyOn(Alert, 'alert');
-  jest.spyOn(NativeUtils, 'pickDocument').mockImplementation(
+  jest.spyOn(NativeHandlers, 'pickDocument').mockImplementation(
     jest.fn().mockResolvedValue({
       assets: [
         generateFileAttachment({ size: 500000000 }),

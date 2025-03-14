@@ -4,13 +4,11 @@ import { Alert, Platform } from 'react-native';
 
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import {
-  Audio,
   AudioRecordingReturnType,
+  NativeHandlers,
   PlaybackStatus,
   RecordingStatus,
-  Sound,
   SoundReturnType,
-  triggerHaptic,
 } from '../../../native';
 import { File, FileTypes } from '../../../types/types';
 import { resampleWaveformData } from '../utils/audioSampling';
@@ -91,8 +89,8 @@ export const useAudioController = () => {
         await startVoicePlayer();
       } else {
         // For Native CLI
-        if (Audio?.resumePlayer) {
-          await Audio.resumePlayer();
+        if (NativeHandlers.Audio?.resumePlayer) {
+          await NativeHandlers.Audio.resumePlayer();
         }
         // For Expo CLI
         if (soundRef.current?.playAsync) {
@@ -101,8 +99,8 @@ export const useAudioController = () => {
       }
     } else {
       // For Native CLI
-      if (Audio?.pausePlayer) {
-        await Audio.pausePlayer();
+      if (NativeHandlers.Audio?.pausePlayer) {
+        await NativeHandlers.Audio.pausePlayer();
       }
       // For Expo CLI
       if (soundRef.current?.pauseAsync) {
@@ -120,14 +118,14 @@ export const useAudioController = () => {
       return;
     }
     // For Native CLI
-    if (Audio?.startPlayer) {
-      await Audio.startPlayer(recording, {}, onVoicePlayerPlaybackStatusUpdate);
+    if (NativeHandlers.Audio?.startPlayer) {
+      await NativeHandlers.Audio.startPlayer(recording, {}, onVoicePlayerPlaybackStatusUpdate);
     }
     // For Expo CLI
     if (recording && typeof recording !== 'string') {
       const uri = recording.getURI();
-      if (uri) {
-        soundRef.current = await Sound.initializeSound(
+      if (uri && NativeHandlers.Sound?.initializeSound) {
+        soundRef.current = await NativeHandlers.Sound.initializeSound(
           { uri },
           {},
           onVoicePlayerPlaybackStatusUpdate,
@@ -147,8 +145,8 @@ export const useAudioController = () => {
    */
   const stopVoicePlayer = async () => {
     // For Native CLI
-    if (Audio?.stopPlayer) {
-      await Audio.stopPlayer();
+    if (NativeHandlers.Audio?.stopPlayer) {
+      await NativeHandlers.Audio.stopPlayer();
     }
     // For Expo CLI
     if (soundRef.current?.stopAsync && soundRef.current?.unloadAsync) {
@@ -175,10 +173,10 @@ export const useAudioController = () => {
    * Function to start voice recording.
    */
   const startVoiceRecording = async () => {
-    if (!Audio) {
+    if (!NativeHandlers.Audio) {
       return;
     }
-    const recordingInfo = await Audio.startRecording(
+    const recordingInfo = await NativeHandlers.Audio.startRecording(
       {
         isMeteringEnabled: true,
       },
@@ -207,10 +205,10 @@ export const useAudioController = () => {
    * hence this approach.
    */
   const stopSDKVoiceRecording = async () => {
-    if (!Audio) {
+    if (!NativeHandlers.Audio) {
       return;
     }
-    await Audio.stopRecording();
+    await NativeHandlers.Audio.stopRecording();
   };
 
   /**
@@ -245,7 +243,7 @@ export const useAudioController = () => {
       await stopVoicePlayer();
     }
     resetState();
-    triggerHaptic('impactMedium');
+    NativeHandlers.triggerHaptic('impactMedium');
   };
 
   /**

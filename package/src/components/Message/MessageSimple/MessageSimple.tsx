@@ -22,7 +22,7 @@ import {
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
-import { triggerHaptic } from '../../../native';
+import { NativeHandlers } from '../../../native';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { useMessageData } from '../hooks/useMessageData';
 
@@ -213,6 +213,8 @@ const MessageSimpleWithContext = <
 
   const THRESHOLD = 25;
 
+  const triggerHaptic = NativeHandlers.triggerHaptic;
+
   const swipeGesture = Gesture.Pan()
     .hitSlop(messageSwipeToReplyHitSlop)
     .onBegin((event) => {
@@ -245,7 +247,9 @@ const MessageSimpleWithContext = <
     .onEnd(() => {
       if (translateX.value >= THRESHOLD) {
         runOnJS(onSwipeToReply)();
-        runOnJS(triggerHaptic)('impactMedium');
+        if (triggerHaptic) {
+          runOnJS(triggerHaptic)('impactMedium');
+        }
       }
       translateX.value = withSpring(0, {
         dampingRatio: 1,

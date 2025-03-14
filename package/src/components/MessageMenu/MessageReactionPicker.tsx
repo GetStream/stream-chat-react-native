@@ -11,7 +11,7 @@ import {
 
 import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { triggerHaptic } from '../../native';
+import { NativeHandlers } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { ReactionData } from '../../utils/utils';
 
@@ -67,7 +67,7 @@ export const MessageReactionPicker = <
   const supportedReactions = propSupportedReactions || contextSupportedReactions;
 
   const onSelectReaction = (type: string) => {
-    triggerHaptic('impactLight');
+    NativeHandlers.triggerHaptic('impactLight');
     if (handleReaction) {
       handleReaction(type);
     }
