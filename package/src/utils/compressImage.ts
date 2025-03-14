@@ -1,4 +1,4 @@
-import { compressImage } from '../native';
+import { NativeHandlers } from '../native';
 import type { Asset } from '../types/types';
 
 /**
@@ -21,7 +21,7 @@ export const compressedImageURI = async (image: Partial<Asset>, compressImageQua
   typeof compressImageQuality !== 'number' ||
   compressImageQuality === 1
     ? uri
-    : compressImage({
+    : NativeHandlers.compressImage({
         compressImageQuality,
         height: image.height,
         uri,

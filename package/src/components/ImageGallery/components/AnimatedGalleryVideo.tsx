@@ -5,8 +5,8 @@ import Animated, { SharedValue } from 'react-native-reanimated';
 
 import {
   isVideoPlayerAvailable,
+  NativeHandlers,
   PlaybackStatus,
-  Video,
   VideoPayloadData,
   VideoProgressData,
   VideoType,
@@ -156,8 +156,8 @@ export const AnimatedGalleryVideo = React.memo(
 
     return (
       <Animated.View accessibilityLabel='Image Gallery Video' style={[...animatedStyles, style]}>
-        {isVideoPlayerAvailable() ? (
-          <Video
+        {isVideoPlayerAvailable() && NativeHandlers.Video ? (
+          <NativeHandlers.Video
             onBuffer={onBuffer}
             onEnd={onEnd}
             onLoad={onLoad}

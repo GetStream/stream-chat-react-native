@@ -59,7 +59,7 @@ import {
 import {
   isAudioRecorderAvailable,
   isImageMediaLibraryAvailable,
-  triggerHaptic,
+  NativeHandlers,
 } from '../../native';
 import type { Asset, DefaultStreamChatGenerics } from '../../types/types';
 import { AIStates, useAIState } from '../AITypingIndicatorView';
@@ -666,7 +666,7 @@ const MessageInputWithContext = <
 
   const micLockHandler = () => {
     setMicLocked(true);
-    triggerHaptic('impactMedium');
+    NativeHandlers.triggerHaptic('impactMedium');
   };
 
   const panGestureMic = Gesture.Pan()

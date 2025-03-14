@@ -8,7 +8,7 @@ import type { MessageContextValue } from '../../../contexts/messageContext/Messa
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { setClipboardString } from '../../../native';
+import { NativeHandlers } from '../../../native';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useMessageActionHandlers = <
@@ -51,7 +51,7 @@ export const useMessageActionHandlers = <
     if (!message.text) {
       return;
     }
-    setClipboardString(message.text);
+    NativeHandlers.setClipboardString(message.text);
   };
 
   const handleDeleteMessage = () => {

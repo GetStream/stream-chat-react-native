@@ -4,7 +4,7 @@ import './polyfills';
 
 export * from './components';
 export * from './hooks';
-export { registerNativeHandlers, iOS14RefreshGallerySelection } from './native';
+export { registerNativeHandlers } from './native';
 export * from './contexts';
 export * from './emoji-data';
 
@@ -31,5 +31,8 @@ export { default as heTranslations } from './i18n/he.json';
 export { SqliteClient } from './store/SqliteClient';
 export { version } from './version.json';
 
+import { NativeHandlers } from './native';
 import * as OfflineStoreApis from './store/apis';
 export { OfflineStoreApis };
+
+export const iOS14RefreshGallerySelection = NativeHandlers.iOS14RefreshGallerySelection;

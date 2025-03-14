@@ -17,7 +17,7 @@ import {
 } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useScreenDimensions } from '../../hooks/useScreenDimensions';
-import { getPhotos, oniOS14GalleryLibrarySelectionChange } from '../../native';
+import { NativeHandlers } from '../../native';
 import type { Asset } from '../../types/types';
 import { BottomSheet } from '../BottomSheetCompatibility/BottomSheet';
 import { BottomSheetFlatList } from '../BottomSheetCompatibility/BottomSheetFlatList';
@@ -122,11 +122,12 @@ export const AttachmentPicker = React.forwardRef(
         setLoadingPhotos(true);
         const endCursor = endCursorRef.current;
         try {
-          if (!getPhotos) {
+          if (!NativeHandlers.getPhotos) {
             setPhotos([]);
             setIosLimited(false);
+            return;
           }
-          const results = await getPhotos({
+          const results = await NativeHandlers.getPhotos({
             after: endCursor,
             first: numberOfAttachmentImagesToLoadPerCall ?? 60,
           });
@@ -153,11 +154,11 @@ export const AttachmentPicker = React.forwardRef(
         return;
       }
 
-      if (!oniOS14GalleryLibrarySelectionChange) {
+      if (!NativeHandlers.oniOS14GalleryLibrarySelectionChange) {
         return;
       }
       // ios 14 library selection change event is fired when user reselects the images that are permitted to be readable by the app
-      const { unsubscribe } = oniOS14GalleryLibrarySelectionChange(() => {
+      const { unsubscribe } = NativeHandlers.oniOS14GalleryLibrarySelectionChange(() => {
         // we reset the cursor and has next page to true to facilitate fetching of the first page of photos again
         hasNextPageRef.current = true;
         endCursorRef.current = undefined;

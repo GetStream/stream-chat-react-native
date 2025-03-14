@@ -12,11 +12,13 @@ import {
 } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
-import { triggerHaptic } from '../../../native';
+import { NativeHandlers } from '../../../native';
 import { MessageReactionPicker } from '../MessageReactionPicker';
 
 jest.mock('../../../native', () => ({
-  triggerHaptic: jest.fn(),
+  NativeHandlers: {
+    triggerHaptic: jest.fn(),
+  },
 }));
 
 const mockSupportedReactions = [
@@ -77,7 +79,7 @@ describe('MessageReactionPicker', () => {
 
     expect(defaultProps.handleReaction).toHaveBeenCalledWith('love');
     expect(defaultProps.dismissOverlay).toHaveBeenCalled();
-    expect(triggerHaptic).toHaveBeenCalledWith('impactLight');
+    expect(NativeHandlers.triggerHaptic).toHaveBeenCalledWith('impactLight');
   });
 
   it("doesn't call handleReaction when it's not provided", () => {
