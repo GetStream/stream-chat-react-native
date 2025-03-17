@@ -10,7 +10,7 @@
 [![NPM](https://img.shields.io/npm/v/stream-chat-react-native.svg)](https://www.npmjs.com/package/stream-chat-react-native)
 [![Build Status](https://github.com/GetStream/stream-chat-react-native/actions/workflows/release.yml/badge.svg)](https://github.com/GetStream/stream-chat-react-native/actions)
 [![Component Reference](https://img.shields.io/badge/docs-component%20reference-blue.svg)](https://getstream.io/chat/docs/sdk/reactnative)
-![JS Bundle Size](https://img.shields.io/badge/js_bundle_size-466%20KB-blue)
+![JS Bundle Size](https://img.shields.io/badge/js_bundle_size-467%20KB-blue)
 
 <img align="right" src="https://getstream.imgix.net/images/ios-chat-tutorial/iphone_chat_art@3x.png?auto=format,enhance" width="50%" />
 
@@ -48,9 +48,9 @@ For complete pricing details visit our [Chat Pricing Page](https://getstream.io/
 
 This repo includes 3 example apps. One made with Expo, two in TypeScript. One TypeScript app is a simple implementation for reference, the other is a more full featured app example.
 
-- [Expo example](./examples/ExpoMessaging)
-- [Typescript example](./examples/TypeScriptMessaging)
-- [Fully featured messaging application](./examples/SampleApp)
+- [Expo example](https://github.com/GetStream/stream-chat-react-native/tree/develop/examples/ExpoMessaging)
+- [Typescript example](https://github.com/GetStream/stream-chat-react-native/tree/develop/examples/TypeScriptMessaging)
+- [Fully featured messaging application](https://github.com/GetStream/stream-chat-react-native/tree/develop/examples/SampleApp)
 
 Besides, our team maintains a dedicated repository for fully-fledged sample applications and demos at [GetStream/react-native-samples](https://github.com/GetStream/react-native-samples). Please consider checking following sample applications:
 

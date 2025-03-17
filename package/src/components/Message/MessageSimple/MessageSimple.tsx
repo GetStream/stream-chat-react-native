@@ -22,7 +22,7 @@ import {
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
-import { triggerHaptic } from '../../../native';
+import { NativeHandlers } from '../../../native';
 
 import { useMessageData } from '../hooks/useMessageData';
 
@@ -207,6 +207,8 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
 
   const THRESHOLD = 25;
 
+  const triggerHaptic = NativeHandlers.triggerHaptic;
+
   const swipeGesture = Gesture.Pan()
     .hitSlop(messageSwipeToReplyHitSlop)
     .onBegin((event) => {
@@ -239,7 +241,9 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
     .onEnd(() => {
       if (translateX.value >= THRESHOLD) {
         runOnJS(onSwipeToReply)();
-        runOnJS(triggerHaptic)('impactMedium');
+        if (triggerHaptic) {
+          runOnJS(triggerHaptic)('impactMedium');
+        }
       }
       translateX.value = withSpring(0, {
         dampingRatio: 1,

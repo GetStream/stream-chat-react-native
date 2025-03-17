@@ -8,7 +8,7 @@ import type { MessageContextValue } from '../../../contexts/messageContext/Messa
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { setClipboardString } from '../../../native';
+import { NativeHandlers } from '../../../native';
 
 export const useMessageActionHandlers = ({
   channel,
@@ -48,7 +48,7 @@ export const useMessageActionHandlers = ({
     if (!message.text) {
       return;
     }
-    setClipboardString(message.text);
+    NativeHandlers.setClipboardString(message.text);
   };
 
   const handleDeleteMessage = () => {

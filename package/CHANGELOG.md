@@ -1,5 +1,20 @@
 # Change Log
 
+### [6.6.8](https://github.com/GetStream/stream-chat-react-native/compare/v6.6.7...v6.6.8) (2025-03-13)
+
+
+### Bug Fixes
+
+* add avatar component improvements to optimize performance ([#3006](https://github.com/GetStream/stream-chat-react-native/issues/3006)) ([0cb1020](https://github.com/GetStream/stream-chat-react-native/commit/0cb10204ccc74ae247dc7aa9631cf52d2425b1f1))
+* add theme for different group styles in message bubble container ([#3019](https://github.com/GetStream/stream-chat-react-native/issues/3019)) ([b911ef5](https://github.com/GetStream/stream-chat-react-native/commit/b911ef5f4ba5680e81d5c3ef7c1ddf6f108608d2))
+* db sorting past 200 messages ([#3018](https://github.com/GetStream/stream-chat-react-native/issues/3018)) ([552e5b3](https://github.com/GetStream/stream-chat-react-native/commit/552e5b35e793b3448ba72896dc25ada1ef09873f))
+* improve channel preview display hooks and long title issue ([#3002](https://github.com/GetStream/stream-chat-react-native/issues/3002)) ([7dc6f52](https://github.com/GetStream/stream-chat-react-native/commit/7dc6f52b5440b70c395502815d53f108862832b0))
+* improve the entire channel list re-render for useUserPresence hook ([#3011](https://github.com/GetStream/stream-chat-react-native/issues/3011)) ([9042015](https://github.com/GetStream/stream-chat-react-native/commit/9042015b418ba7954dee6f9ec80f59456de98248))
+* memoize the read_vevents calculation to make it save a rerender ([#3008](https://github.com/GetStream/stream-chat-react-native/issues/3008)) ([70e6c70](https://github.com/GetStream/stream-chat-react-native/commit/70e6c7022a0d95da2bd7689fc1605fc16906fbd9))
+* native-image-picker pickImage issue ([#3017](https://github.com/GetStream/stream-chat-react-native/issues/3017)) ([897cf9c](https://github.com/GetStream/stream-chat-react-native/commit/897cf9cfc92d840d2a82c8a51730011a3f6e6d54))
+* properly resolve activeQueryType state ([#3004](https://github.com/GetStream/stream-chat-react-native/issues/3004)) ([f8968c0](https://github.com/GetStream/stream-chat-react-native/commit/f8968c09113f220ed8b64e38958229a7ae77a761))
+* remove scrollToFirstUnreadThreshold ([#3012](https://github.com/GetStream/stream-chat-react-native/issues/3012)) ([c423453](https://github.com/GetStream/stream-chat-react-native/commit/c423453a385591397bf6afae97e7c9366a87f734))
+
 ### [6.6.7](https://github.com/GetStream/stream-chat-react-native/compare/v6.6.6...v6.6.7) (2025-03-07)
 
 

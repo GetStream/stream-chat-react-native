@@ -85,10 +85,10 @@ import {
   WutReaction,
 } from '../../icons';
 import {
-  FlatList as FlatListDefault,
   isDocumentPickerAvailable,
   isImageMediaLibraryAvailable,
   isImagePickerAvailable,
+  NativeHandlers,
 } from '../../native';
 import * as dbApi from '../../store/apis';
 import { ChannelUnreadState, FileTypes } from '../../types/types';
@@ -530,7 +530,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     FileAttachmentGroup = FileAttachmentGroupDefault,
     FileAttachmentIcon = FileIconDefault,
     FileUploadPreview = FileUploadPreviewDefault,
-    FlatList = FlatListDefault,
+    FlatList = NativeHandlers.FlatList,
     forceAlignMessages,
     Gallery = GalleryDefault,
     getMessagesGroupStyles,

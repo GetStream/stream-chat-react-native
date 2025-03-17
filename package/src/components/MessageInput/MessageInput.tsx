@@ -59,7 +59,7 @@ import {
 import {
   isAudioRecorderAvailable,
   isImageMediaLibraryAvailable,
-  triggerHaptic,
+  NativeHandlers,
 } from '../../native';
 import type { Asset } from '../../types/types';
 import { AIStates, useAIState } from '../AITypingIndicatorView';
@@ -663,7 +663,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 
   const micLockHandler = () => {
     setMicLocked(true);
-    triggerHaptic('impactMedium');
+    NativeHandlers.triggerHaptic('impactMedium');
   };
 
   const panGestureMic = Gesture.Pan()

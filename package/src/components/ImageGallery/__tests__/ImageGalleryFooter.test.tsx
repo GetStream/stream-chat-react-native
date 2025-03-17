@@ -19,22 +19,23 @@ import {
 } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import * as NativeUtils from '../../../native';
-
+import { NativeHandlers } from '../../../native';
 import type { MessageType } from '../../MessageList/hooks/useMessageList';
 import { ImageGallery, ImageGalleryCustomComponents } from '../ImageGallery';
 
 jest.mock('../../../native.ts', () => {
   const View = require('react-native/Libraries/Components/View/View');
   return {
-    deleteFile: jest.fn(),
     isFileSystemAvailable: jest.fn(() => true),
     isImageMediaLibraryAvailable: jest.fn(() => true),
     isShareImageAvailable: jest.fn(() => true),
     isVideoPlayerAvailable: jest.fn(() => true),
-    saveFile: jest.fn(),
-    shareImage: jest.fn(),
-    Video: View,
+    NativeHandlers: {
+      deleteFile: jest.fn(),
+      saveFile: jest.fn(),
+      shareImage: jest.fn(),
+      Video: View,
+    },
   };
 });
 
@@ -160,9 +161,9 @@ describe('ImageGalleryFooter', () => {
   it('should trigger the share button onPress Handler', async () => {
     const user = userEvent.setup();
     const chatClient = await getTestClientWithUser({ id: 'testID' });
-    const saveFileMock = jest.spyOn(NativeUtils, 'saveFile');
-    const shareImageMock = jest.spyOn(NativeUtils, 'shareImage');
-    const deleteFileMock = jest.spyOn(NativeUtils, 'deleteFile');
+    const saveFileMock = jest.spyOn(NativeHandlers, 'saveFile');
+    const shareImageMock = jest.spyOn(NativeHandlers, 'shareImage');
+    const deleteFileMock = jest.spyOn(NativeHandlers, 'deleteFile');
 
     render(
       <OverlayProvider>

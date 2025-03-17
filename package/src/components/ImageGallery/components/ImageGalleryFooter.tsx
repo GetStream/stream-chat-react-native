@@ -13,11 +13,9 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Grid as GridIconDefault, Share as ShareIconDefault } from '../../../icons';
 import {
-  deleteFile,
   isFileSystemAvailable,
   isShareImageAvailable,
-  saveFile,
-  shareImage,
+  NativeHandlers,
   VideoType,
 } from '../../../native';
 
@@ -128,19 +126,19 @@ export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterPropsWith
   const share = async () => {
     setShareMenuOpen(true);
     try {
-      if (!shareImage || !deleteFile) {
+      if (!NativeHandlers.shareImage || !NativeHandlers.deleteFile) {
         return;
       }
       const extension = photo.mime_type?.split('/')[1] || 'jpg';
-      const localFile = await saveFile({
+      const localFile = await NativeHandlers.saveFile({
         fileName: `${photo.user?.id || 'ChatPhoto'}-${
           photo.messageId
         }-${selectedIndex}.${extension}`,
         fromUrl: photo.uri,
       });
       // `image/jpeg` is added for the case where the mime_type isn't available for a file/image
-      await shareImage({ type: photo.mime_type || 'image/jpeg', url: localFile });
-      await deleteFile({ uri: localFile });
+      await NativeHandlers.shareImage({ type: photo.mime_type || 'image/jpeg', url: localFile });
+      await NativeHandlers.deleteFile({ uri: localFile });
     } catch (error) {
       console.log(error);
     }

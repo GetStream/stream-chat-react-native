@@ -1,5 +1,13 @@
 # Change Log
 
+### [2.5.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v2.5.0...sampleapp@v2.5.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* add theme for different group styles in message bubble container ([#3019](https://github.com/GetStream/stream-chat-react-native/issues/3019)) ([b911ef5](https://github.com/GetStream/stream-chat-react-native/commit/b911ef5f4ba5680e81d5c3ef7c1ddf6f108608d2))
+* remove scrollToFirstUnreadThreshold ([#3012](https://github.com/GetStream/stream-chat-react-native/issues/3012)) ([c423453](https://github.com/GetStream/stream-chat-react-native/commit/c423453a385591397bf6afae97e7c9366a87f734))
+
 ## [2.5.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v2.4.1...sampleapp@v2.5.0) (2025-03-03)
 
 
