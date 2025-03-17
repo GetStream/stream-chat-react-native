@@ -8,7 +8,7 @@ import {
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { Mic } from '../../../../icons/Mic';
-import { AudioRecordingReturnType, triggerHaptic } from '../../../../native';
+import { AudioRecordingReturnType, NativeHandlers } from '../../../../native';
 
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
@@ -71,7 +71,7 @@ const AudioRecordingButtonWithContext = <
       handlePress();
     }
     if (!recording) {
-      triggerHaptic('notificationError');
+      NativeHandlers.triggerHaptic('notificationError');
       Alert.alert(t('Hold to start recording.'));
     }
   };
@@ -82,7 +82,7 @@ const AudioRecordingButtonWithContext = <
       return;
     }
     if (!recording) {
-      triggerHaptic('impactHeavy');
+      NativeHandlers.triggerHaptic('impactHeavy');
       if (!permissionsGranted) {
         Alert.alert(t('Please allow Audio permissions in settings.'), '', [
           {

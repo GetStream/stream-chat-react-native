@@ -28,7 +28,9 @@ jest.mock('../../../native.ts', () => {
     isImageMediaLibraryAvailable: jest.fn(() => true),
     isShareImageAvailable: jest.fn(() => true),
     isVideoPlayerAvailable: jest.fn(() => true),
-    Video: View,
+    NativeHandlers: {
+      Video: View,
+    },
   };
 });
 

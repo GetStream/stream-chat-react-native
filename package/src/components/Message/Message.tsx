@@ -31,7 +31,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import { isVideoPlayerAvailable, triggerHaptic } from '../../native';
+import { isVideoPlayerAvailable, NativeHandlers } from '../../native';
 import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 import {
   hasOnlyEmojis,
@@ -623,7 +623,7 @@ const MessageWithContext = <
       setIsBounceDialogOpen(true);
       return;
     }
-    triggerHaptic('impactMedium');
+    NativeHandlers.triggerHaptic('impactMedium');
     showMessageOverlay();
   };
 

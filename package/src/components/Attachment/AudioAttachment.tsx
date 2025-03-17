@@ -8,9 +8,8 @@ import { useTheme } from '../../contexts';
 import { useAudioPlayer } from '../../hooks/useAudioPlayer';
 import { Audio, Pause, Play } from '../../icons';
 import {
+  NativeHandlers,
   PlaybackStatus,
-  SDK,
-  Sound,
   SoundReturnType,
   VideoPayloadData,
   VideoProgressData,
@@ -51,7 +50,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     testID,
   } = props;
   const { changeAudioSpeed, pauseAudio, playAudio, seekAudio } = useAudioPlayer({ soundRef });
-  const isExpoCLI = SDK === 'stream-chat-expo';
+  const isExpoCLI = NativeHandlers.SDK === 'stream-chat-expo';
   const isVoiceRecording = item.type === FileTypes.VoiceRecording;
 
   /** This is for Native CLI Apps */
@@ -181,8 +180,8 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   useEffect(() => {
     if (isExpoCLI) {
       const initiateSound = async () => {
-        if (item && item.file && item.file.uri) {
-          soundRef.current = await Sound.initializeSound(
+        if (item && item.file && item.file.uri && NativeHandlers.Sound?.initializeSound) {
+          soundRef.current = await NativeHandlers.Sound.initializeSound(
             { uri: item.file.uri },
             {
               progressUpdateIntervalMillis: 100,
@@ -216,7 +215,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
       }
     };
     // For expo CLI
-    if (!Sound.Player) {
+    if (!NativeHandlers.Sound?.Player) {
       initalPlayPause();
     }
   }, [item.paused, isExpoCLI, pauseAudio, playAudio]);
@@ -344,8 +343,8 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             </View>
           )}
         </View>
-        {Sound.Player && (
-          <Sound.Player
+        {NativeHandlers.Sound?.Player && (
+          <NativeHandlers.Sound.Player
             onEnd={handleEnd}
             onLoad={handleLoad}
             onProgress={handleProgress}

@@ -58,9 +58,7 @@ import {
   isDocumentPickerAvailable,
   isImageMediaLibraryAvailable,
   MediaTypes,
-  pickDocument,
-  pickImage,
-  takePhoto,
+  NativeHandlers,
 } from '../../native';
 import {
   Asset,
@@ -692,7 +690,10 @@ export const MessageInputProvider = <
   const takeAndUploadImage = async (mediaType?: MediaTypes) => {
     setSelectedPicker(undefined);
     closePicker();
-    const photo = await takePhoto({ compressImageQuality: value.compressImageQuality, mediaType });
+    const photo = await NativeHandlers.takePhoto({
+      compressImageQuality: value.compressImageQuality,
+      mediaType,
+    });
     if (photo.askToOpenSettings) {
       Alert.alert(
         t('Allow camera access in device settings'),
@@ -716,7 +717,7 @@ export const MessageInputProvider = <
    * Function for picking a photo from native image picker and uploading it
    */
   const pickAndUploadImageFromNativePicker = async () => {
-    const result = await pickImage();
+    const result = await NativeHandlers.pickImage();
     if (result.askToOpenSettings) {
       Alert.alert(
         t('Allow access to your Gallery'),
@@ -795,7 +796,7 @@ export const MessageInputProvider = <
       return;
     }
 
-    const result = await pickDocument({
+    const result = await NativeHandlers.pickDocument({
       maxNumberOfFiles: value.maxNumberOfFiles - numberOfUploads,
     });
 
