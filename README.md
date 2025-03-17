@@ -48,9 +48,9 @@ For complete pricing details visit our [Chat Pricing Page](https://getstream.io/
 
 This repo includes 3 example apps. One made with Expo, two in TypeScript. One TypeScript app is a simple implementation for reference, the other is a more full featured app example.
 
-- [Expo example](./examples/ExpoMessaging)
-- [Typescript example](./examples/TypeScriptMessaging)
-- [Fully featured messaging application](./examples/SampleApp)
+- [Expo example](https://github.com/GetStream/stream-chat-react-native/tree/develop/examples/ExpoMessaging)
+- [Typescript example](https://github.com/GetStream/stream-chat-react-native/tree/develop/examples/TypeScriptMessaging)
+- [Fully featured messaging application](https://github.com/GetStream/stream-chat-react-native/tree/develop/examples/SampleApp)
 
 Besides, our team maintains a dedicated repository for fully-fledged sample applications and demos at [GetStream/react-native-samples](https://github.com/GetStream/react-native-samples). Please consider checking following sample applications:
 
