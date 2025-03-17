@@ -430,7 +430,6 @@ const MessageListWithContext = <
         setIsUnreadNotificationOpen(false);
         return;
       }
-
       if (unreadIndicatorDate && lastItemDate > unreadIndicatorDate) {
         setIsUnreadNotificationOpen(true);
       } else {
@@ -485,12 +484,13 @@ const MessageListWithContext = <
    * Effect to mark the channel as read when the user scrolls to the bottom of the message list.
    */
   useEffect(() => {
-    const listener: ReturnType<typeof channel.on> = channel.on('message.new', (event) => {
+    const listener: ReturnType<typeof channel.on> = channel.on('message.new', async (event) => {
       const newMessageToCurrentChannel = event.cid === channel.cid;
       const mainChannelUpdated = !event.message?.parent_id || event.message?.show_in_channel;
 
       if (newMessageToCurrentChannel && mainChannelUpdated && !scrollToBottomButtonVisible) {
-        markRead();
+        console.log('markRead');
+        await markRead();
       }
     });
 
