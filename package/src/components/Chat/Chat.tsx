@@ -23,7 +23,7 @@ import {
 import { useStreami18n } from '../../hooks/useStreami18n';
 import init from '../../init';
 
-import { SDK } from '../../native';
+import { NativeHandlers } from '../../native';
 import { SqliteClient } from '../../store/SqliteClient';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { DBSyncManager } from '../../utils/DBSyncManager';
@@ -187,9 +187,9 @@ const ChatWithContext = <
 
   useEffect(() => {
     if (client) {
-      const sdkName = (SDK ? SDK.replace('stream-chat-', '') : 'react-native') as
-        | 'react-native'
-        | 'expo';
+      const sdkName = (
+        NativeHandlers.SDK ? NativeHandlers.SDK.replace('stream-chat-', '') : 'react-native'
+      ) as 'react-native' | 'expo';
       client.sdkIdentifier = {
         name: sdkName,
         version,

@@ -13,7 +13,7 @@ import {
 
 import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
-import { triggerHaptic } from '../../../native';
+import { NativeHandlers } from '../../../native';
 
 export enum HasPinched {
   FALSE = 0,
@@ -452,6 +452,8 @@ export const useImageGalleryGestures = ({
     })
     .simultaneousWithExternalGesture(pinchRef)
     .withRef(panRef);
+
+  const triggerHaptic = NativeHandlers.triggerHaptic;
 
   /**
    * On pinch is run when two or more fingers touch the screen, it then takes over
