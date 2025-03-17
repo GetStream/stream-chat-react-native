@@ -1,5 +1,17 @@
 # Change Log
 
+## [6.7.0](https://github.com/GetStream/stream-chat-react-native/compare/v6.6.8...v6.7.0) (2025-03-17)
+
+
+### Features
+
+* add support for react compiler on RN 0.77 ([#3024](https://github.com/GetStream/stream-chat-react-native/issues/3024)) ([6758d06](https://github.com/GetStream/stream-chat-react-native/commit/6758d06ec629e9779c536e39b22dfd933ebf5b27))
+
+
+### Bug Fixes
+
+* show correct read status on the message status component for a message ([#3023](https://github.com/GetStream/stream-chat-react-native/issues/3023)) ([6a1e9f6](https://github.com/GetStream/stream-chat-react-native/commit/6a1e9f6e499324a3f97cced0fd68b5e30cc1145b))
+
 ### [6.6.8](https://github.com/GetStream/stream-chat-react-native/compare/v6.6.7...v6.6.8) (2025-03-13)
 
 
