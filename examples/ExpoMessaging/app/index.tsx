@@ -3,7 +3,6 @@ import { ChannelList } from 'stream-chat-expo';
 import { useContext, useMemo } from 'react';
 import { Stack, useRouter } from 'expo-router';
 import { ChannelSort } from 'stream-chat';
-import { StreamChatGenerics } from '../types';
 import { AppContext } from '../context/AppContext';
 import { user } from '../constants';
 
@@ -11,7 +10,7 @@ const filters = {
   members: { $in: [user.id] },
   type: 'messaging',
 };
-const sort: ChannelSort<StreamChatGenerics> = { last_updated: -1 };
+const sort: ChannelSort = { last_updated: -1 };
 const options = {
   state: true,
   watch: true,

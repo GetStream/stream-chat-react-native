@@ -49,7 +49,6 @@ exports[`Thread should match thread snapshot 1`] = `
         data={
           [
             {
-              "__html": "<p>regular</p>",
               "attachments": [],
               "created_at": 2020-05-05T14:50:00.000Z,
               "dateSeparator": undefined,
@@ -80,7 +79,6 @@ exports[`Thread should match thread snapshot 1`] = `
               },
             },
             {
-              "__html": "<p>regular</p>",
               "attachments": [],
               "created_at": 2020-05-05T14:50:00.000Z,
               "dateSeparator": undefined,
@@ -111,7 +109,6 @@ exports[`Thread should match thread snapshot 1`] = `
               },
             },
             {
-              "__html": "<p>regular</p>",
               "attachments": [],
               "created_at": 2020-05-05T14:50:00.000Z,
               "dateSeparator": 2020-05-05T14:50:00.000Z,

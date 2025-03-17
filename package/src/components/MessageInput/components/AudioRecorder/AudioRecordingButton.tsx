@@ -10,11 +10,10 @@ import { useTranslationContext } from '../../../../contexts/translationContext/T
 import { Mic } from '../../../../icons/Mic';
 import { AudioRecordingReturnType, NativeHandlers } from '../../../../native';
 
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
-
-type AudioRecordingButtonPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessageInputContextValue<StreamChatGenerics>, 'asyncMessagesMinimumPressDuration'> & {
+type AudioRecordingButtonPropsWithContext = Pick<
+  MessageInputContextValue,
+  'asyncMessagesMinimumPressDuration'
+> & {
   /**
    * The current voice recording that is in progress.
    */
@@ -41,11 +40,7 @@ type AudioRecordingButtonPropsWithContext<
   startVoiceRecording?: () => Promise<void>;
 };
 
-const AudioRecordingButtonWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: AudioRecordingButtonPropsWithContext<StreamChatGenerics>,
-) => {
+const AudioRecordingButtonWithContext = (props: AudioRecordingButtonPropsWithContext) => {
   const {
     asyncMessagesMinimumPressDuration,
     buttonSize,
@@ -121,9 +116,9 @@ const AudioRecordingButtonWithContext = <
   );
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: AudioRecordingButtonPropsWithContext<StreamChatGenerics>,
-  nextProps: AudioRecordingButtonPropsWithContext<StreamChatGenerics>,
+const areEqual = (
+  prevProps: AudioRecordingButtonPropsWithContext,
+  nextProps: AudioRecordingButtonPropsWithContext,
 ) => {
   const {
     asyncMessagesMinimumPressDuration: prevAsyncMessagesMinimumPressDuration,
@@ -153,21 +148,15 @@ const MemoizedAudioRecordingButton = React.memo(
   areEqual,
 ) as typeof AudioRecordingButtonWithContext;
 
-export type AudioRecordingButtonProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<AudioRecordingButtonPropsWithContext<StreamChatGenerics>> & {
+export type AudioRecordingButtonProps = Partial<AudioRecordingButtonPropsWithContext> & {
   recording: AudioRecordingReturnType;
 };
 
 /**
  * Component to display the mic button on the Message Input.
  */
-export const AudioRecordingButton = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: AudioRecordingButtonProps<StreamChatGenerics>,
-) => {
-  const { asyncMessagesMinimumPressDuration } = useMessageInputContext<StreamChatGenerics>();
+export const AudioRecordingButton = (props: AudioRecordingButtonProps) => {
+  const { asyncMessagesMinimumPressDuration } = useMessageInputContext();
 
   return <MemoizedAudioRecordingButton {...{ asyncMessagesMinimumPressDuration }} {...props} />;
 };

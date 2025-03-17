@@ -15,8 +15,6 @@ import {
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
 
-import type { DefaultStreamChatGenerics } from '../../../types/types';
-
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
@@ -48,10 +46,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export type MessageRepliesPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<
-  MessageContextValue<StreamChatGenerics>,
+export type MessageRepliesPropsWithContext = Pick<
+  MessageContextValue,
   | 'alignment'
   | 'message'
   | 'onLongPress'
@@ -61,17 +57,13 @@ export type MessageRepliesPropsWithContext<
   | 'preventPress'
   | 'threadList'
 > &
-  Pick<MessagesContextValue<StreamChatGenerics>, 'MessageRepliesAvatars'> &
+  Pick<MessagesContextValue, 'MessageRepliesAvatars'> &
   Pick<TranslationContextValue, 't'> & {
     noBorder?: boolean;
     repliesCurveColor?: ColorValue;
   };
 
-const MessageRepliesWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageRepliesPropsWithContext<StreamChatGenerics>,
-) => {
+const MessageRepliesWithContext = (props: MessageRepliesPropsWithContext) => {
   const {
     alignment,
     message,
@@ -175,9 +167,9 @@ const MessageRepliesWithContext = <
   );
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: MessageRepliesPropsWithContext<StreamChatGenerics>,
-  nextProps: MessageRepliesPropsWithContext<StreamChatGenerics>,
+const areEqual = (
+  prevProps: MessageRepliesPropsWithContext,
+  nextProps: MessageRepliesPropsWithContext,
 ) => {
   const {
     message: prevMessage,
@@ -234,15 +226,9 @@ const MemoizedMessageReplies = React.memo(
   areEqual,
 ) as typeof MessageRepliesWithContext;
 
-export type MessageRepliesProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<MessageRepliesPropsWithContext<StreamChatGenerics>>;
+export type MessageRepliesProps = Partial<MessageRepliesPropsWithContext>;
 
-export const MessageReplies = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageRepliesProps<StreamChatGenerics>,
-) => {
+export const MessageReplies = (props: MessageRepliesProps) => {
   const {
     alignment,
     message,
@@ -252,8 +238,8 @@ export const MessageReplies = <
     onPressIn,
     preventPress,
     threadList,
-  } = useMessageContext<StreamChatGenerics>();
-  const { MessageRepliesAvatars } = useMessagesContext<StreamChatGenerics>();
+  } = useMessageContext();
+  const { MessageRepliesAvatars } = useMessagesContext();
   const { t } = useTranslationContext();
 
   return (

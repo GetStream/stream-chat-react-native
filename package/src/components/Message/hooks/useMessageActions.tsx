@@ -23,17 +23,15 @@ import {
   UnreadIndicator,
   UserDelete,
 } from '../../../icons';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 import { removeReservedFields } from '../../../utils/removeReservedFields';
 import { MessageStatusTypes } from '../../../utils/utils';
 
 import type { MessageType } from '../../MessageList/hooks/useMessageList';
 import type { MessageActionType } from '../../MessageMenu/MessageActionListItem';
 
-export type MessageActionsHookProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<
-  MessagesContextValue<StreamChatGenerics>,
+export type MessageActionsHookProps = Pick<
+  MessagesContextValue,
   | 'deleteMessage'
   | 'sendReaction'
   | 'handleBan'
@@ -57,17 +55,15 @@ export type MessageActionsHookProps<
   | 'supportedReactions'
   | 'updateMessage'
 > &
-  Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'enforceUniqueReaction'> &
-  Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
-  Pick<ThreadContextValue<StreamChatGenerics>, 'openThread'> &
-  Pick<MessageContextValue<StreamChatGenerics>, 'dismissOverlay' | 'message'> &
+  Pick<ChannelContextValue, 'channel' | 'enforceUniqueReaction'> &
+  Pick<ChatContextValue, 'client'> &
+  Pick<ThreadContextValue, 'openThread'> &
+  Pick<MessageContextValue, 'dismissOverlay' | 'message'> &
   Pick<TranslationContextValue, 't'> & {
-    onThreadSelect?: (message: MessageType<StreamChatGenerics>) => void;
+    onThreadSelect?: (message: MessageType) => void;
   };
 
-export const useMessageActions = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const useMessageActions = ({
   channel,
   client,
   deleteMessage: deleteMessageFromContext,
@@ -96,7 +92,7 @@ export const useMessageActions = <
   setQuotedMessageState,
   supportedReactions,
   t,
-}: MessageActionsHookProps<StreamChatGenerics>) => {
+}: MessageActionsHookProps) => {
   const {
     theme: {
       colors: { accent_red, grey },
@@ -297,7 +293,7 @@ export const useMessageActions = <
       dismissOverlay();
       const messageWithoutReservedFields = removeReservedFields(message);
       if (handleRetry) {
-        handleRetry(messageWithoutReservedFields as MessageType<StreamChatGenerics>);
+        handleRetry(messageWithoutReservedFields as MessageType);
       }
 
       await handleResendMessage();

@@ -10,27 +10,19 @@ import {
 } from '../../contexts/channelsContext/ChannelsContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
-
-export type ChannelPreviewProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<Pick<ChatContextValue<StreamChatGenerics>, 'client'>> &
-  Partial<Pick<ChannelsContextValue<StreamChatGenerics>, 'Preview' | 'forceUpdate'>> & {
+export type ChannelPreviewProps = Partial<Pick<ChatContextValue, 'client'>> &
+  Partial<Pick<ChannelsContextValue, 'Preview' | 'forceUpdate'>> & {
     /**
      * Instance of Channel from stream-chat package.
      */
-    channel: Channel<StreamChatGenerics>;
+    channel: Channel;
   };
 
-export const ChannelPreview = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: ChannelPreviewProps<StreamChatGenerics>,
-) => {
+export const ChannelPreview = (props: ChannelPreviewProps) => {
   const { channel, client: propClient, forceUpdate: propForceUpdate, Preview: propPreview } = props;
 
-  const { client: contextClient } = useChatContext<StreamChatGenerics>();
-  const { Preview: contextPreview } = useChannelsContext<StreamChatGenerics>();
+  const { client: contextClient } = useChatContext();
+  const { Preview: contextPreview } = useChannelsContext();
 
   const client = propClient || contextClient;
   const Preview = propPreview || contextPreview;

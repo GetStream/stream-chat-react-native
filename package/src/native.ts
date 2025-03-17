@@ -270,6 +270,9 @@ export type VideoType = {
   seek?: (progress: number) => void;
   setPositionAsync?: (position: number) => void;
   style?: StyleProp<ViewStyle>;
+  play?: () => void;
+  pause?: () => void;
+  replay?: () => void;
 };
 
 type Handlers = {

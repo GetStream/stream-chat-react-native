@@ -9,7 +9,7 @@ import {
 import { generateMessage } from '../../../mock-builders/generator/message';
 
 import { generateUser } from '../../../mock-builders/generator/user';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 import { useMessageDetailsForState } from '../hooks/useMessageDetailsForState';
 
 describe('useMessageDetailsForState', () => {
@@ -41,10 +41,7 @@ describe('useMessageDetailsForState', () => {
   it('fileUploads, imageUploads and mentionedUsers are not empty when attachments are present in message', () => {
     const { result } = renderHook(
       ({ initialValue, message }) =>
-        useMessageDetailsForState(
-          message as unknown as MessageType<DefaultStreamChatGenerics> | boolean,
-          initialValue,
-        ),
+        useMessageDetailsForState(message as unknown as MessageType | boolean, initialValue),
       {
         initialProps: {
           initialValue: '',

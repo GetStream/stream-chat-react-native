@@ -28,6 +28,7 @@
     "expo-sharing": "~13.0.1",
     "expo-splash-screen": "~0.29.22",
     "expo-status-bar": "~2.0.1",
+    "expo-video": "^2.0.5",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-native": "0.77.1",
@@ -45,6 +46,9 @@
     "@babel/core": "^7.25.2",
     "@rnx-kit/metro-config": "^2.0.1",
     "@rnx-kit/metro-resolver-symlinks": "^0.2.1"
+  },
+  "resolutions": {
+    "@types/react": "^19.0.0"
   },
   "private": true
 }

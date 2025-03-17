@@ -3,40 +3,29 @@ import { useCallback } from 'react';
 import type { Channel, EventTypes, StreamChat } from 'stream-chat';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import { DefaultStreamChatGenerics } from '../types/types';
-
 const noop = () => {};
 
-export function useSyncClientEventsToChannel<
-  StreamChatGenerics extends DefaultStreamChatGenerics,
-  O,
->(_: {
-  channel: Channel<StreamChatGenerics>;
-  client: StreamChat<StreamChatGenerics>;
-  selector: (channel: Channel<StreamChatGenerics>, client: StreamChat<StreamChatGenerics>) => O;
+export function useSyncClientEventsToChannel<O>(_: {
+  channel: Channel;
+  client: StreamChat;
+  selector: (channel: Channel, client: StreamChat) => O;
   stateChangeEventKeys?: EventTypes[];
 }): O;
-export function useSyncClientEventsToChannel<
-  StreamChatGenerics extends DefaultStreamChatGenerics,
-  O,
->(_: {
-  selector: (channel: Channel<StreamChatGenerics>, client: StreamChat<StreamChatGenerics>) => O;
-  channel?: Channel<StreamChatGenerics> | undefined;
-  client?: StreamChat<StreamChatGenerics> | undefined;
+export function useSyncClientEventsToChannel<O>(_: {
+  selector: (channel: Channel, client: StreamChat) => O;
+  channel?: Channel | undefined;
+  client?: StreamChat | undefined;
   stateChangeEventKeys?: EventTypes[];
 }): O | undefined;
-export function useSyncClientEventsToChannel<
-  StreamChatGenerics extends DefaultStreamChatGenerics,
-  O,
->({
+export function useSyncClientEventsToChannel<O>({
   channel,
   client,
   selector,
   stateChangeEventKeys = ['all'],
 }: {
-  selector: (channel: Channel<StreamChatGenerics>, client: StreamChat<StreamChatGenerics>) => O;
-  channel?: Channel<StreamChatGenerics> | undefined;
-  client?: StreamChat<StreamChatGenerics>;
+  selector: (channel: Channel, client: StreamChat) => O;
+  channel?: Channel | undefined;
+  client?: StreamChat;
   stateChangeEventKeys?: EventTypes[];
 }): O | undefined {
   const subscribe = useCallback(

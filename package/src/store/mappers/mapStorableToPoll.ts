@@ -1,13 +1,8 @@
 import { PollResponse, VotingVisibility } from 'stream-chat';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { TableRow } from '../types';
 
-export const mapStorableToPoll = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  pollRow: TableRow<'poll'>,
-): PollResponse<StreamChatGenerics> => {
+export const mapStorableToPoll = (pollRow: TableRow<'poll'>): PollResponse => {
   const {
     allow_answers,
     allow_user_suggested_options,

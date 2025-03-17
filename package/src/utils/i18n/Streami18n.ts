@@ -49,8 +49,6 @@ import 'dayjs/locale/tr';
  */
 import 'dayjs/locale/en';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
-
 const defaultNS = 'translation';
 const defaultLng = 'en';
 
@@ -383,7 +381,7 @@ export class Streami18n {
 
   translations: {
     [key: string]: {
-      [key: string]: Partial<typeof enTranslations> | DefaultStreamChatGenerics;
+      [key: string]: Partial<typeof enTranslations>;
     };
   } = {
     en: { [defaultNS]: enTranslations },
@@ -643,7 +641,7 @@ export class Streami18n {
    */
   registerTranslation(
     language: string,
-    translation: Partial<typeof enTranslations> | DefaultStreamChatGenerics,
+    translation: Partial<typeof enTranslations>,
     customDayjsLocale?: Partial<ILocale>,
   ) {
     if (!translation) {

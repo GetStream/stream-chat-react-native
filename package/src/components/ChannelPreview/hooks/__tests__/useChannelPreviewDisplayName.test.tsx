@@ -3,7 +3,7 @@ import { Text } from 'react-native';
 
 import { render, screen, waitFor } from '@testing-library/react-native';
 
-import type { Channel, ChannelMemberResponse, DefaultGenerics, StreamChat } from 'stream-chat';
+import type { Channel, ChannelMemberResponse, StreamChat } from 'stream-chat';
 
 import {
   GROUP_CHANNEL_MEMBERS_MOCK,
@@ -12,7 +12,7 @@ import {
 } from '../../../../mock-builders/api/queryMembers';
 import { generateUser } from '../../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
+
 import {
   getChannelPreviewDisplayName,
   useChannelPreviewDisplayName,
@@ -20,7 +20,7 @@ import {
 
 describe('useChannelPreviewDisplayName', () => {
   const clientUser = generateUser();
-  let chatClient: StreamChat<DefaultGenerics> | StreamChat<DefaultStreamChatGenerics>;
+  let chatClient: StreamChat | StreamChat;
   const CHARACTER_LENGTH = 15;
 
   beforeEach(async () => {
@@ -34,7 +34,7 @@ describe('useChannelPreviewDisplayName', () => {
       const channelDisplayName = useChannelPreviewDisplayName(
         {
           data: { name: channelName },
-        } as unknown as Channel<DefaultGenerics>,
+        } as unknown as Channel,
         CHARACTER_LENGTH,
       );
       return <Text>{channelDisplayName}</Text>;
@@ -71,10 +71,7 @@ describe('useChannelPreviewDisplayName', () => {
       const displayName = getChannelPreviewDisplayName({
         characterLimit: characterLength,
         currentUserId,
-        members: members as unknown as Record<
-          string,
-          ChannelMemberResponse<DefaultStreamChatGenerics>
-        >,
+        members: members as unknown as Record<string, ChannelMemberResponse>,
       });
 
       expect(displayName).toEqual(expected);

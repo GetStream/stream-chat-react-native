@@ -1,16 +1,15 @@
 import { act, renderHook, waitFor } from '@testing-library/react-native';
-import { Channel, DefaultGenerics, StreamChat } from 'stream-chat';
+import { Channel, StreamChat } from 'stream-chat';
 
 import * as ChatContext from '../../../../contexts/chatContext/ChatContext';
 import dispatchNotificationChannelMutesUpdated from '../../../../mock-builders/event/notificationChannelMutesUpdated';
 import { generateUser } from '../../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
-import { DefaultStreamChatGenerics } from '../../../../types/types';
 import { useIsChannelMuted } from '../useIsChannelMuted';
 
 describe('useChannelPreviewMuted', () => {
   const clientUser = generateUser();
-  let chatClient: StreamChat<DefaultGenerics> | StreamChat<DefaultStreamChatGenerics>;
+  let chatClient: StreamChat;
 
   beforeEach(async () => {
     chatClient = await getTestClientWithUser(clientUser);
@@ -35,7 +34,7 @@ describe('useChannelPreviewMuted', () => {
       expiresAt: Date.now() + 5000,
       muted: false,
     }),
-  } as unknown as Channel<DefaultStreamChatGenerics>;
+  } as unknown as Channel;
 
   it('should return the correct mute status', () => {
     const { result } = renderHook(() => useIsChannelMuted(mockChannel));

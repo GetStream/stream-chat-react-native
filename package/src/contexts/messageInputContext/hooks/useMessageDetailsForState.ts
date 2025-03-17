@@ -2,20 +2,13 @@ import { useEffect, useState } from 'react';
 
 import { Attachment } from 'stream-chat';
 
-import {
-  DefaultStreamChatGenerics,
-  FileTypes,
-  FileUpload,
-  ImageUpload,
-} from '../../../types/types';
+import { FileTypes, FileUpload, ImageUpload } from '../../../types/types';
 import { generateRandomId, stringifyMessage } from '../../../utils/utils';
 
 import type { MessageInputContextValue } from '../MessageInputContext';
 
-export const useMessageDetailsForState = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  message: MessageInputContextValue<StreamChatGenerics>['editing'],
+export const useMessageDetailsForState = (
+  message: MessageInputContextValue['editing'],
   initialValue?: string,
 ) => {
   const [fileUploads, setFileUploads] = useState<FileUpload[]>([]);
@@ -47,7 +40,7 @@ export const useMessageDetailsForState = <
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messageValue]);
 
-  const mapAttachmentToFileUpload = (attachment: Attachment<StreamChatGenerics>): FileUpload => {
+  const mapAttachmentToFileUpload = (attachment: Attachment): FileUpload => {
     const id = generateRandomId();
 
     if (attachment.type === FileTypes.Audio) {

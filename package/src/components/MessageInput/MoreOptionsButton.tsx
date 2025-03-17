@@ -1,6 +1,6 @@
 import React from 'react';
+import { TouchableOpacity } from 'react-native';
 import type { GestureResponderEvent } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { CircleRight } from '../../icons/CircleRight';

@@ -2,7 +2,6 @@ import { ThreadState } from 'stream-chat';
 
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import { useStateStore } from '../../../hooks';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 const selector = (nextValue: ThreadState) =>
   ({
@@ -11,9 +10,7 @@ const selector = (nextValue: ThreadState) =>
     latestReplies: nextValue.replies,
   }) as const;
 
-export const useCreateThreadContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const useCreateThreadContext = ({
   allowThreadMessagesInChannel,
   closeThread,
   loadMoreThread,
@@ -25,7 +22,7 @@ export const useCreateThreadContext = <
   threadInstance,
   threadLoadingMore,
   threadMessages,
-}: ThreadContextValue<StreamChatGenerics>) => {
+}: ThreadContextValue) => {
   const { isLoadingNext, isLoadingPrev, latestReplies } =
     useStateStore(threadInstance?.state, selector) ?? {};
 

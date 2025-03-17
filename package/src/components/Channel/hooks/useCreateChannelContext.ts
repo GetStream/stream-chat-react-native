@@ -1,11 +1,8 @@
 import { useMemo } from 'react';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 
-export const useCreateChannelContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const useCreateChannelContext = ({
   channel,
   channelUnreadState,
   disabled,
@@ -39,7 +36,7 @@ export const useCreateChannelContext = <
   uploadAbortControllerRef,
   watcherCount,
   watchers,
-}: ChannelContextValue<StreamChatGenerics>) => {
+}: ChannelContextValue) => {
   const channelId = channel?.id;
   const lastReadTime = lastRead?.getTime();
   const membersLength = Object.keys(members).length;
@@ -49,7 +46,7 @@ export const useCreateChannelContext = <
   const readUsersLastReads = readUsers.map(({ last_read }) => last_read.toISOString()).join();
   const stringifiedChannelUnreadState = JSON.stringify(channelUnreadState);
 
-  const channelContext: ChannelContextValue<StreamChatGenerics> = useMemo(
+  const channelContext: ChannelContextValue = useMemo(
     () => ({
       channel,
       channelUnreadState,
