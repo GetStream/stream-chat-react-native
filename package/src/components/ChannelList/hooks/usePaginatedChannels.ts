@@ -234,25 +234,25 @@ export const usePaginatedChannels = ({
       // Any time DB is synced, we need to update the UI with local DB channels first,
       // and then call queryChannels to ensure any new channels are added to UI.
       listener = DBSyncManager.onSyncStatusChange(async (syncStatus) => {
-        if (syncStatus) {
-          const loadingChannelsSucceeded = await loadOfflineChannels();
-          if (loadingChannelsSucceeded) {
-            await reloadList();
-            setForceUpdate((u) => u + 1);
-          }
-        }
+        // if (syncStatus) {
+        //   const loadingChannelsSucceeded = await loadOfflineChannels();
+        //   if (loadingChannelsSucceeded) {
+        //     await reloadList();
+        //     setForceUpdate((u) => u + 1);
+        //   }
+        // }
       });
       // On start, load the channels from local db.
-      loadOfflineChannels().then((success) => {
-        // If db is already synced (sync api and pending api calls), then
-        // right away call queryChannels.
-        if (success) {
-          const dbSyncStatus = DBSyncManager.getSyncStatus();
-          if (dbSyncStatus) {
-            reloadList();
-          }
-        }
-      });
+      // loadOfflineChannels().then((success) => {
+      //   // If db is already synced (sync api and pending api calls), then
+      //   // right away call queryChannels.
+      //   if (success) {
+      //     const dbSyncStatus = DBSyncManager.getSyncStatus();
+      //     if (dbSyncStatus) {
+      //       reloadList();
+      //     }
+      //   }
+      // });
     } else {
       listener = client.on('connection.changed', async (event) => {
         if (event.online) {
@@ -260,9 +260,8 @@ export const usePaginatedChannels = ({
           setForceUpdate((u) => u + 1);
         }
       });
-
-      reloadList();
     }
+    reloadList();
 
     return () => listener?.unsubscribe?.();
     // eslint-disable-next-line react-hooks/exhaustive-deps

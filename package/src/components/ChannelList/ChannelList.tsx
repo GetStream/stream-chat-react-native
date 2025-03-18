@@ -370,11 +370,11 @@ export const ChannelList = (props: ChannelListProps) => {
       return;
     }
 
-    upsertCidsForQuery({
-      cids: channels.map((c) => c.cid),
-      filters,
-      sort,
-    });
+    // upsertCidsForQuery({
+    //   cids: channels.map((c) => c.cid),
+    //   filters,
+    //   sort,
+    // });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelIdsStr, staticChannelsActive]);
 

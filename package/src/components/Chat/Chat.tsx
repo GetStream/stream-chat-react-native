@@ -24,6 +24,7 @@ import { useStreami18n } from '../../hooks/useStreami18n';
 import init from '../../init';
 
 import { NativeHandlers } from '../../native';
+import { OfflineDB } from '../../store/OfflineDB';
 import { SqliteClient } from '../../store/SqliteClient';
 
 import { DBSyncManager } from '../../utils/DBSyncManager';
@@ -213,6 +214,11 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     }
 
     const initializeDatabase = () => {
+      // TODO: Rethink this, it looks ugly
+      console.log('TESTING2', client);
+      const offlineDBInstance = new OfflineDB({ client });
+      console.log(offlineDBInstance);
+      client.setOfflineDBApi(offlineDBInstance);
       // This acts as a lock for some very rare occurrences of concurrency
       // issues we've encountered before with the QuickSqliteClient being
       // uninitialized before it's being invoked.

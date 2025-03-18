@@ -227,15 +227,15 @@ export const handleEventToSyncDB = async (event: Event, client: StreamChat, flus
     }
   }
 
-  if (type === 'channels.queried') {
-    if (event.queriedChannels?.channels?.length) {
-      return upsertChannels({
-        channels: event.queriedChannels?.channels,
-        flush,
-        isLatestMessagesSet: event.queriedChannels?.isLatestMessageSet,
-      });
-    }
-  }
+  // if (type === 'channels.queried') {
+  //   if (event.queriedChannels?.channels?.length) {
+  //     return upsertChannels({
+  //       channels: event.queriedChannels?.channels,
+  //       flush,
+  //       isLatestMessagesSet: event.queriedChannels?.isLatestMessageSet,
+  //     });
+  //   }
+  // }
 
   if (type === 'member.added' || type === 'member.updated') {
     const member = event.member;
