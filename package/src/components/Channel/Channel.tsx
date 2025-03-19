@@ -694,7 +694,7 @@ const ChannelWithContext = <
   const [deleted, setDeleted] = useState<boolean>(false);
   const [editing, setEditing] = useState<MessageType<StreamChatGenerics> | undefined>(undefined);
   const [error, setError] = useState<Error | boolean>(false);
-  const lastRead = useRef<Date | undefined>(new Date());
+  const [lastRead, setLastRead] = useState<Date | undefined>();
 
   const [quotedMessage, setQuotedMessage] = useState<MessageType<StreamChatGenerics> | undefined>(
     undefined,
@@ -825,6 +825,7 @@ const ChannelWithContext = <
   useEffect(() => {
     let listener: ReturnType<typeof channel.on>;
     const initChannel = async () => {
+      setLastRead(new Date());
       const unreadCount = channel.countUnread();
       if (!channel || !shouldSyncChannel || channel.offlineMode) {
         return;
@@ -950,7 +951,6 @@ const ChannelWithContext = <
         return;
       }
 
-      lastRead.current = new Date();
       if (doMarkReadRequest) {
         doMarkReadRequest(channel, updateChannelUnreadState ? setChannelUnreadState : undefined);
       } else {
@@ -958,10 +958,11 @@ const ChannelWithContext = <
           const response = await channel.markRead();
           if (updateChannelUnreadState && response && lastRead) {
             setChannelUnreadState({
-              last_read: lastRead.current,
+              last_read: lastRead,
               last_read_message_id: response?.event.last_read_message_id,
               unread_messages: 0,
             });
+            setLastRead(new Date());
           }
         } catch (err) {
           console.log('Error marking channel as read:', err);
@@ -1726,7 +1727,7 @@ const ChannelWithContext = <
     hideStickyDateHeader,
     highlightedMessageId,
     isChannelActive: shouldSyncChannel,
-    lastRead: lastRead.current,
+    lastRead,
     loadChannelAroundMessage,
     loadChannelAtFirstUnreadMessage,
     loading: channelMessagesState.loading,
@@ -1739,7 +1740,7 @@ const ChannelWithContext = <
     reloadChannel,
     scrollToFirstUnreadThreshold,
     setChannelUnreadState,
-    setLastRead: () => {},
+    setLastRead,
     setTargetedMessage,
     StickyHeader,
     targetedMessage,
