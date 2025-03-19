@@ -1433,7 +1433,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-cameraroll (7.9.0):
+  - react-native-cameraroll (7.10.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2213,7 +2213,7 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
   - SocketRocket (0.7.1)
-  - stream-chat-react-native (6.6.7):
+  - stream-chat-react-native (6.6.8):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2589,7 +2589,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 9fbb496e7d6f7c34d5e617365ee778bf96d14eae
   React-microtasksnativemodule: 36adde22631838680d1be62776e8ccb83186c06a
   react-native-blob-util: d03eaad9fd1bbe90bd0eedb5bad3333215976086
-  react-native-cameraroll: 45c76b20e80da6fbf48ba17490990305810a2a7f
+  react-native-cameraroll: 10054f480dfd6e0bd02fdf08fb6d82f80b362575
   react-native-document-picker: 78c262a7f9f77df2380378aa4b3413b8646ce91b
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
   react-native-safe-area-context: 02e0f487c16ccf1acc8a666bed2318ceeb5dc14c
@@ -2637,7 +2637,7 @@ SPEC CHECKSUMS:
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  stream-chat-react-native: 46be17d00c7de9c1c032e217257cd494b2f7f277
+  stream-chat-react-native: fe01622d1cbabaee9a0f65b5e469041b1e7868a4
   Yoga: be02ca501b03c79d7027a6bbbd0a8db985034f11
 
 PODFILE CHECKSUM: 4f662370295f8f9cee909f1a4c59a614999a209d
