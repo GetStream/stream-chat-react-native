@@ -10,7 +10,7 @@ import {
   ViewToken,
 } from 'react-native';
 
-import type { FormatMessageResponse } from 'stream-chat';
+import type { Channel, Event, FormatMessageResponse, MessageResponse } from 'stream-chat';
 
 import { MessageType, useMessageList } from './hooks/useMessageList';
 import { useShouldScrollToRecentOnNewOwnMessage } from './hooks/useShouldScrollToRecentOnNewOwnMessage';
@@ -104,6 +104,36 @@ const flatListViewabilityConfig: ViewabilityConfig = {
   viewAreaCoveragePercentThreshold: 1,
 };
 
+const hasReadLastMessage = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  channel: Channel<StreamChatGenerics>,
+  userId: string,
+) => {
+  const latestMessageIdInChannel = channel.state.latestMessages.slice(-1)[0]?.id;
+  const lastReadMessageIdServer = channel.state.read[userId]?.last_read_message_id;
+  return latestMessageIdInChannel === lastReadMessageIdServer;
+};
+
+const getPreviousLastMessage = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  messages: MessageType<StreamChatGenerics>[],
+  newMessage?: MessageResponse<StreamChatGenerics>,
+) => {
+  if (!newMessage) return;
+  let previousLastMessage;
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const msg = messages[i];
+    if (!msg?.id) break;
+    if (msg.id !== newMessage.id) {
+      previousLastMessage = msg;
+      break;
+    }
+  }
+  return previousLastMessage;
+};
+
 type MessageListPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<AttachmentPickerContextValue, 'closePicker' | 'selectedPicker' | 'setSelectedPicker'> &
@@ -122,6 +152,7 @@ type MessageListPropsWithContext<
     | 'NetworkDownIndicator'
     | 'reloadChannel'
     | 'scrollToFirstUnreadThreshold'
+    | 'setChannelUnreadState'
     | 'setTargetedMessage'
     | 'StickyHeader'
     | 'targetedMessage'
@@ -261,6 +292,7 @@ const MessageListWithContext = <
     reloadChannel,
     ScrollToBottomButton,
     selectedPicker,
+    setChannelUnreadState,
     setFlatListRef,
     setMessages,
     setSelectedPicker,
@@ -399,19 +431,32 @@ const MessageListWithContext = <
     const lastItem = viewableItems[viewableItems.length - 1];
 
     if (lastItem) {
-      const lastItemCreatedAt = lastItem.item.created_at;
+      const lastItemMessage = lastItem.item;
+      const lastItemCreatedAt = lastItemMessage.created_at;
 
       const unreadIndicatorDate = channelUnreadState?.last_read.getTime();
       const lastItemDate = lastItemCreatedAt.getTime();
 
       if (
         !channel.state.messagePagination.hasPrev &&
-        processedMessageList[processedMessageList.length - 1].id === lastItem.item.id
+        processedMessageList[processedMessageList.length - 1].id === lastItemMessage.id
       ) {
         setIsUnreadNotificationOpen(false);
         return;
       }
-
+      /**
+       * This is a special case where there is a single long message by the sender.
+       * When a message is sent, we mark it as read before it actually has a `created_at` timestamp.
+       * This is a workaround to prevent the unread indicator from showing when the message is sent.
+       */
+      if (
+        viewableItems.length === 1 &&
+        channel.countUnread() === 0 &&
+        lastItemMessage.user.id === client.userID
+      ) {
+        setIsUnreadNotificationOpen(false);
+        return;
+      }
       if (unreadIndicatorDate && lastItemDate > unreadIndicatorDate) {
         setIsUnreadNotificationOpen(true);
       } else {
@@ -466,19 +511,56 @@ const MessageListWithContext = <
    * Effect to mark the channel as read when the user scrolls to the bottom of the message list.
    */
   useEffect(() => {
-    const listener: ReturnType<typeof channel.on> = channel.on('message.new', (event) => {
-      const newMessageToCurrentChannel = event.cid === channel.cid;
-      const mainChannelUpdated = !event.message?.parent_id || event.message?.show_in_channel;
+    const shouldMarkRead = () => {
+      return (
+        !channelUnreadState?.first_unread_message_id &&
+        !scrollToBottomButtonVisible &&
+        client.user?.id &&
+        !hasReadLastMessage(channel, client.user?.id)
+      );
+    };
 
-      if (newMessageToCurrentChannel && mainChannelUpdated && !scrollToBottomButtonVisible) {
-        markRead();
+    const handleEvent = async (event: Event<StreamChatGenerics>) => {
+      const mainChannelUpdated = !event.message?.parent_id || event.message?.show_in_channel;
+      console.log(mainChannelUpdated, shouldMarkRead());
+      // When the scrollToBottomButtonVisible is true, we need to manually update the channelUnreadState.
+      if (scrollToBottomButtonVisible || channelUnreadState?.first_unread_message_id) {
+        setChannelUnreadState((prev) => {
+          const previousUnreadCount = prev?.unread_messages ?? 0;
+          const previousLastMessage = getPreviousLastMessage<StreamChatGenerics>(
+            channel.state.messages,
+            event.message,
+          );
+          return {
+            ...(prev || {}),
+            last_read:
+              prev?.last_read ??
+              (previousUnreadCount === 0 && previousLastMessage?.created_at
+                ? new Date(previousLastMessage.created_at)
+                : new Date(0)), // not having information about the last read message means the whole channel is unread,
+            unread_messages: previousUnreadCount + 1,
+          };
+        });
+      } else if (mainChannelUpdated && shouldMarkRead()) {
+        console.log('marking read');
+        await markRead();
       }
-    });
+    };
+
+    const listener: ReturnType<typeof channel.on> = channel.on('message.new', handleEvent);
 
     return () => {
       listener?.unsubscribe();
     };
-  }, [channel, markRead, scrollToBottomButtonVisible]);
+  }, [
+    channel,
+    channelUnreadState?.first_unread_message_id,
+    client.user?.id,
+    markRead,
+    scrollToBottomButtonVisible,
+    setChannelUnreadState,
+    threadList,
+  ]);
 
   useEffect(() => {
     /**
@@ -515,6 +597,7 @@ const MessageListWithContext = <
         setTimeout(() => {
           channelResyncScrollSet.current = true;
           if (channel.countUnread() > 0) {
+            console.log('marking read');
             markRead();
           }
         }, 500);
@@ -823,6 +906,13 @@ const MessageListWithContext = <
     }
 
     setScrollToBottomButtonVisible(false);
+    /**
+     *  When we are not in the bottom of the list, and we receive new messages, we need to mark the channel as read.
+     We would still need to show the unread label, where the first unread message appeared so we don't update the channelUnreadState.
+     */
+    await markRead({
+      updateChannelUnreadState: false,
+    });
   };
 
   const scrollToIndexFailedRetryCountRef = useRef<number>(0);
@@ -1134,6 +1224,7 @@ export const MessageList = <
     NetworkDownIndicator,
     reloadChannel,
     scrollToFirstUnreadThreshold,
+    setChannelUnreadState,
     setTargetedMessage,
     StickyHeader,
     targetedMessage,
@@ -1199,6 +1290,7 @@ export const MessageList = <
         ScrollToBottomButton,
         scrollToFirstUnreadThreshold,
         selectedPicker,
+        setChannelUnreadState,
         setMessages,
         setSelectedPicker,
         setTargetedMessage,

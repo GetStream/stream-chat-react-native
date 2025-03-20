@@ -84,10 +84,10 @@ import {
   WutReaction,
 } from '../../icons';
 import {
-  FlatList as FlatListDefault,
   isDocumentPickerAvailable,
   isImageMediaLibraryAvailable,
   isImagePickerAvailable,
+  NativeHandlers,
 } from '../../native';
 import * as dbApi from '../../store/apis';
 import { ChannelUnreadState, DefaultStreamChatGenerics, FileTypes } from '../../types/types';
@@ -538,7 +538,7 @@ const ChannelWithContext = <
     FileAttachmentGroup = FileAttachmentGroupDefault,
     FileAttachmentIcon = FileIconDefault,
     FileUploadPreview = FileUploadPreviewDefault,
-    FlatList = FlatListDefault,
+    FlatList = NativeHandlers.FlatList,
     forceAlignMessages,
     Gallery = GalleryDefault,
     getMessagesGroupStyles,
@@ -694,7 +694,8 @@ const ChannelWithContext = <
   const [deleted, setDeleted] = useState<boolean>(false);
   const [editing, setEditing] = useState<MessageType<StreamChatGenerics> | undefined>(undefined);
   const [error, setError] = useState<Error | boolean>(false);
-  const [lastRead, setLastRead] = useState<ChannelContextValue<StreamChatGenerics>['lastRead']>();
+  const [lastRead, setLastRead] = useState<Date | undefined>();
+
   const [quotedMessage, setQuotedMessage] = useState<MessageType<StreamChatGenerics> | undefined>(
     undefined,
   );
@@ -961,6 +962,7 @@ const ChannelWithContext = <
               last_read_message_id: response?.event.last_read_message_id,
               unread_messages: 0,
             });
+            setLastRead(new Date());
           }
         } catch (err) {
           console.log('Error marking channel as read:', err);

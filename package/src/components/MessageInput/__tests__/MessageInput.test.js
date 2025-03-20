@@ -17,7 +17,7 @@ import {
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import { Audio } from '../../../native';
+import { NativeHandlers } from '../../../native';
 import { AttachmentPickerSelectionBar } from '../../AttachmentPicker/components/AttachmentPickerSelectionBar';
 import { CameraSelectorIcon } from '../../AttachmentPicker/components/CameraSelectorIcon';
 import { FileSelectorIcon } from '../../AttachmentPicker/components/FileSelectorIcon';
@@ -149,8 +149,8 @@ describe('MessageInput', () => {
     await userBot.longPress(queryByTestId('audio-button'), { duration: 1000 });
 
     await waitFor(() => {
-      expect(Audio.startRecording).toHaveBeenCalledTimes(1);
-      expect(Audio.stopRecording).not.toHaveBeenCalled();
+      expect(NativeHandlers.Audio.startRecording).toHaveBeenCalledTimes(1);
+      expect(NativeHandlers.Audio.stopRecording).not.toHaveBeenCalled();
       expect(queryByTestId('recording-active-container')).toBeTruthy();
       expect(Alert.alert).not.toHaveBeenCalledWith('Hold to start recording.');
     });
@@ -158,9 +158,9 @@ describe('MessageInput', () => {
     unmount();
 
     await waitFor(() => {
-      expect(Audio.stopRecording).toHaveBeenCalledTimes(1);
+      expect(NativeHandlers.Audio.stopRecording).toHaveBeenCalledTimes(1);
       // once when starting the recording, once on unmount
-      expect(Audio.stopPlayer).toHaveBeenCalledTimes(2);
+      expect(NativeHandlers.Audio.stopPlayer).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -181,8 +181,8 @@ describe('MessageInput', () => {
     await userBot.press(queryByTestId('audio-button'));
 
     await waitFor(() => {
-      expect(Audio.startRecording).not.toHaveBeenCalled();
-      expect(Audio.stopRecording).not.toHaveBeenCalled();
+      expect(NativeHandlers.Audio.startRecording).not.toHaveBeenCalled();
+      expect(NativeHandlers.Audio.stopRecording).not.toHaveBeenCalled();
       expect(queryByTestId('recording-active-container')).not.toBeTruthy();
       // This is sort of a brittle test, but there doesn't seem to be another way
       // to target alerts. The reason why it's here is because we had a bug with it.

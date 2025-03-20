@@ -59,7 +59,7 @@ import { MessageUserReactionsProps } from '../../components/MessageMenu/MessageU
 import { MessageUserReactionsAvatarProps } from '../../components/MessageMenu/MessageUserReactionsAvatar';
 import { MessageUserReactionsItemProps } from '../../components/MessageMenu/MessageUserReactionsItem';
 import type { ReplyProps } from '../../components/Reply/Reply';
-import { FlatList } from '../../native';
+import { NativeHandlers } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
 import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
@@ -132,7 +132,7 @@ export type MessagesContextValue<
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/FileIcon.tsx
    */
   FileAttachmentIcon: React.ComponentType<FileIconProps>;
-  FlatList: typeof FlatList | undefined;
+  FlatList: typeof NativeHandlers.FlatList | undefined;
   /**
    * UI component to display image attachments
    * Defaults to: [Gallery](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Gallery.tsx)
