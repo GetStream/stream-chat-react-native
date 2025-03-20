@@ -533,7 +533,6 @@ const MessageListWithContext = <
     const shouldMarkRead = () => {
       return (
         !channelUnreadState?.first_unread_message_id &&
-        !threadList &&
         !scrollToBottomButtonVisible &&
         client.user?.id &&
         !hasReadLastMessage(channel, client.user?.id)
@@ -542,6 +541,7 @@ const MessageListWithContext = <
 
     const handleEvent = async (event: Event<StreamChatGenerics>) => {
       const mainChannelUpdated = !event.message?.parent_id || event.message?.show_in_channel;
+      console.log(mainChannelUpdated, shouldMarkRead());
       // When the scrollToBottomButtonVisible is true, we need to manually update the channelUnreadState.
       if (scrollToBottomButtonVisible || channelUnreadState?.first_unread_message_id) {
         setChannelUnreadState((prev) => {
@@ -561,6 +561,7 @@ const MessageListWithContext = <
           };
         });
       } else if (mainChannelUpdated && shouldMarkRead()) {
+        console.log('marking read');
         await markRead();
       }
     };
@@ -618,6 +619,7 @@ const MessageListWithContext = <
         setTimeout(() => {
           channelResyncScrollSet.current = true;
           if (channel.countUnread() > 0) {
+            console.log('marking read');
             markRead();
           }
         }, 500);
