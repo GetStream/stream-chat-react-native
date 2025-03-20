@@ -1361,7 +1361,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           updateMessage(messageResponse.message);
         }
 
-        threadInstance?.upsertReplyLocally?.({ message: messageResponse.message });
+        // threadInstance?.upsertReplyLocally?.({ message: messageResponse.message });
       }
     } catch (err) {
       console.log(err);

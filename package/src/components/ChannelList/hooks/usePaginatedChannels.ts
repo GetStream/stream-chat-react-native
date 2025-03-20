@@ -198,65 +198,20 @@ export const usePaginatedChannels = ({
   const sortStr = useMemo(() => JSON.stringify(sort), [sort]);
 
   useEffect(() => {
-    const loadOfflineChannels = async () => {
-      if (!client?.user?.id) {
-        return;
-      }
-
-      try {
-        const channelsFromDB = await getChannelsForFilterSort({
-          currentUserId: client.user.id,
-          filters,
-          sort,
-        });
-
-        if (channelsFromDB) {
-          const offlineChannels = client.hydrateActiveChannels(channelsFromDB, {
-            offlineMode: true,
-            skipInitialization: [], // passing empty array will clear out the existing messages from channel state, this removes the possibility of duplicate messages
-          });
-
-          channelManager.setChannels(offlineChannels);
-          setStaticChannelsActive(true);
-        }
-      } catch (e) {
-        console.warn('Failed to get channels from database: ', e);
-        return false;
-      }
-
-      setActiveQueryType(null);
-
-      return true;
-    };
-
     let listener: ReturnType<typeof client.offlineDb.syncManager.onSyncStatusChange>;
     if (enableOfflineSupport) {
       // Any time DB is synced, we need to update the UI with local DB channels first,
       // and then call queryChannels to ensure any new channels are added to UI.
       listener = client.offlineDb.syncManager.onSyncStatusChange(async (syncStatus) => {
         if (syncStatus) {
-          //   const loadingChannelsSucceeded = await loadOfflineChannels();
-          //   if (loadingChannelsSucceeded) {
           await reloadList();
-          //     setForceUpdate((u) => u + 1);
-          //   }
         }
       });
-      // On start, load the channels from local db.
-      // loadOfflineChannels().then((success) => {
-      //   // If db is already synced (sync api and pending api calls), then
-      //   // right away call queryChannels.
-      //   if (success) {
-      //     const dbSyncStatus = DBSyncManager.getSyncStatus();
-      //     if (dbSyncStatus) {
-      //       reloadList();
-      //     }
-      //   }
-      // });
     } else {
       listener = client.on('connection.changed', async (event) => {
         if (event.online) {
           await refreshList();
+          // FIXME: I think this cna be removed, but have to check
           setForceUpdate((u) => u + 1);
         }
       });
@@ -265,7 +220,7 @@ export const usePaginatedChannels = ({
 
     return () => listener?.unsubscribe?.();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client, filterStr, sortStr, channelManager]);
+  }, [filterStr, sortStr, channelManager]);
 
   return {
     channelListInitialized,
