@@ -12,16 +12,13 @@ import {
 
 import type { FormatMessageResponse } from 'stream-chat';
 
-import {
-  isMessageWithStylesReadByAndDateSeparator,
-  MessageType,
-  useMessageList,
-} from './hooks/useMessageList';
+import { MessageType, useMessageList } from './hooks/useMessageList';
 import { useShouldScrollToRecentOnNewOwnMessage } from './hooks/useShouldScrollToRecentOnNewOwnMessage';
 
 import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
 import { InlineLoadingMoreRecentIndicator } from './InlineLoadingMoreRecentIndicator';
 import { InlineLoadingMoreRecentThreadIndicator } from './InlineLoadingMoreRecentThreadIndicator';
+import { MessageItem } from './MessageItem';
 import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
 
 import {
@@ -50,9 +47,8 @@ import {
   PaginatedMessageListContextValue,
   usePaginatedMessageListContext,
 } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
-import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
-
 import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 
 // This is just to make sure that the scrolling happens in a different task queue.
@@ -247,8 +243,6 @@ const MessageListWithContext = <
     HeaderComponent = LoadingMoreRecentIndicator,
     hideStickyDateHeader,
     highlightedMessageId,
-    InlineDateSeparator,
-    InlineUnreadIndicator,
     inverted = true,
     isListActive = false,
     legacyImageViewerSwipeBehaviour,
@@ -260,13 +254,9 @@ const MessageListWithContext = <
     loadMoreRecentThread,
     loadMoreThread,
     markRead,
-    Message,
-    MessageSystem,
-    myMessageTheme,
     NetworkDownIndicator,
     noGroupByUser,
     onListScroll,
-    onThreadSelect,
     overlay,
     reloadChannel,
     ScrollToBottomButton,
@@ -275,7 +265,6 @@ const MessageListWithContext = <
     setMessages,
     setSelectedPicker,
     setTargetedMessage,
-    shouldShowUnreadUnderlay,
     StickyHeader,
     targetedMessage,
     thread,
@@ -285,22 +274,14 @@ const MessageListWithContext = <
     TypingIndicatorContainer,
     UnreadMessagesNotification,
   } = props;
+  const clientUserId = client.user?.id;
   const [isUnreadNotificationOpen, setIsUnreadNotificationOpen] = useState<boolean>(false);
   const { theme } = useTheme();
 
   const {
     colors: { white_snow },
-    messageList: { container, contentContainer, listContainer, messageContainer },
-    screenPadding,
+    messageList: { container, contentContainer, listContainer },
   } = theme;
-
-  const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
-
-  const modifiedTheme = useMemo(
-    () => mergeThemes({ style: myMessageTheme, theme }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [myMessageThemeString, theme],
-  );
 
   /**
    * NOTE: rawMessageList changes only when messages array state changes
@@ -325,7 +306,7 @@ const MessageListWithContext = <
 
   const shouldScrollToRecentOnNewOwnMessageRef = useShouldScrollToRecentOnNewOwnMessage(
     rawMessageList,
-    client.userID,
+    clientUserId,
   );
 
   const [autoscrollToRecent, setAutoscrollToRecent] = useState(false);
@@ -360,9 +341,9 @@ const MessageListWithContext = <
    */
   const messageIdLastScrolledToRef = useRef<string>(undefined);
   const [hasMoved, setHasMoved] = useState(false);
-  const [lastReceivedId, setLastReceivedId] = useState(
-    getLastReceivedMessage(processedMessageList)?.id,
-  );
+  const lastReceivedMessageId = useMemo(() => {
+    return getLastReceivedMessage(processedMessageList)?.id;
+  }, [processedMessageList]);
   const [scrollToBottomButtonVisible, setScrollToBottomButtonVisible] = useState(false);
 
   const [stickyHeaderDate, setStickyHeaderDate] = useState<Date | undefined>();
@@ -500,9 +481,6 @@ const MessageListWithContext = <
   }, [channel, markRead, scrollToBottomButtonVisible]);
 
   useEffect(() => {
-    const lastReceivedMessage = getLastReceivedMessage(processedMessageList);
-    setLastReceivedId(lastReceivedMessage?.id);
-
     /**
      * Scroll down when
      * created_at timestamp of top message before update is lesser than created_at timestamp of top message after update - channel has resynced
@@ -598,35 +576,38 @@ const MessageListWithContext = <
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channel, rawMessageList, threadList]);
 
-  const goToMessage = async (messageId: string) => {
-    const indexOfParentInMessageList = processedMessageList.findIndex(
-      (message) => message?.id === messageId,
-    );
-    try {
-      if (indexOfParentInMessageList === -1) {
-        await loadChannelAroundMessage({ messageId });
-        return;
-      } else {
-        if (!flatListRef.current) {
+  const goToMessage = useCallback(
+    async (messageId: string) => {
+      const indexOfParentInMessageList = processedMessageList.findIndex(
+        (message) => message?.id === messageId,
+      );
+      try {
+        if (indexOfParentInMessageList === -1) {
+          await loadChannelAroundMessage({ messageId });
+          return;
+        } else {
+          if (!flatListRef.current) {
+            return;
+          }
+          clearTimeout(failScrollTimeoutId.current);
+          scrollToIndexFailedRetryCountRef.current = 0;
+          // keep track of this messageId, so that we dont scroll to again in useEffect for targeted message change
+          messageIdLastScrolledToRef.current = messageId;
+          setTargetedMessage(messageId);
+          // now scroll to it with animated=true
+          flatListRef.current.scrollToIndex({
+            animated: true,
+            index: indexOfParentInMessageList,
+            viewPosition: 0.5, // try to place message in the center of the screen
+          });
           return;
         }
-        clearTimeout(failScrollTimeoutId.current);
-        scrollToIndexFailedRetryCountRef.current = 0;
-        // keep track of this messageId, so that we dont scroll to again in useEffect for targeted message change
-        messageIdLastScrolledToRef.current = messageId;
-        setTargetedMessage(messageId);
-        // now scroll to it with animated=true
-        flatListRef.current.scrollToIndex({
-          animated: true,
-          index: indexOfParentInMessageList,
-          viewPosition: 0.5, // try to place message in the center of the screen
-        });
-        return;
+      } catch (e) {
+        console.warn('Error while scrolling to message', e);
       }
-    } catch (e) {
-      console.warn('Error while scrolling to message', e);
-    }
-  };
+    },
+    [loadChannelAroundMessage, processedMessageList, setTargetedMessage],
+  );
 
   /**
    * Check if a messageId needs to be scrolled to after list loads, and scroll to it
@@ -669,78 +650,19 @@ const MessageListWithContext = <
   // TODO: do not apply on RN 0.73 and above
   const shouldApplyAndroidWorkaround = inverted && Platform.OS === 'android';
 
-  const renderItem = ({
-    index,
-    item: message,
-  }: {
-    index: number;
-    item: MessageType<StreamChatGenerics>;
-  }) => {
-    if (!channel || channel.disconnected || (!channel.initialized && !channel.offlineMode)) {
-      return null;
-    }
-
-    const createdAtTimestamp = message.created_at && new Date(message.created_at).getTime();
-    const lastReadTimestamp = channelUnreadState?.last_read.getTime();
-    const isNewestMessage = index === 0;
-    const isLastReadMessage =
-      channelUnreadState?.last_read_message_id === message.id ||
-      (!channelUnreadState?.unread_messages && createdAtTimestamp === lastReadTimestamp);
-
-    const showUnreadSeparator =
-      isLastReadMessage &&
-      !isNewestMessage &&
-      // The `channelUnreadState?.first_unread_message_id` is here for sent messages unread label
-      (!!channelUnreadState?.first_unread_message_id || !!channelUnreadState?.unread_messages);
-
-    const showUnreadUnderlay = !!shouldShowUnreadUnderlay && showUnreadSeparator;
-
-    const wrapMessageInTheme = client.userID === message.user?.id && !!myMessageTheme;
-    const renderDateSeperator = isMessageWithStylesReadByAndDateSeparator(message) &&
-      message.dateSeparator && <InlineDateSeparator date={message.dateSeparator} />;
-    const renderMessage = (
-      <Message
+  const renderItem = useCallback(
+    ({ index, item: message }: { index: number; item: MessageType<StreamChatGenerics> }) => (
+      <MessageItem
         goToMessage={goToMessage}
-        groupStyles={isMessageWithStylesReadByAndDateSeparator(message) ? message.groupStyles : []}
-        isTargetedMessage={highlightedMessageId === message.id}
-        lastReceivedId={
-          lastReceivedId === message.id || message.quoted_message_id ? lastReceivedId : undefined
-        }
+        highlightedMessageId={highlightedMessageId}
+        index={index}
+        lastReceivedMessageId={lastReceivedMessageId}
         message={message}
-        onThreadSelect={onThreadSelect}
-        showUnreadUnderlay={showUnreadUnderlay}
-        style={[messageContainer]}
-        threadList={threadList}
+        shouldApplyAndroidWorkaround={shouldApplyAndroidWorkaround}
       />
-    );
-
-    return (
-      <View
-        style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}
-        testID={`message-list-item-${index}`}
-      >
-        {message.type === 'system' ? (
-          <MessageSystem
-            message={message}
-            style={[{ paddingHorizontal: screenPadding }, messageContainer]}
-          />
-        ) : wrapMessageInTheme ? (
-          <ThemeProvider mergedStyle={modifiedTheme}>
-            <View testID={`message-list-item-${index}`}>
-              {renderDateSeperator}
-              {renderMessage}
-            </View>
-          </ThemeProvider>
-        ) : (
-          <View testID={`message-list-item-${index}`}>
-            {renderDateSeperator}
-            {renderMessage}
-          </View>
-        )}
-        {showUnreadUnderlay && <InlineUnreadIndicator />}
-      </View>
-    );
-  };
+    ),
+    [goToMessage, highlightedMessageId, lastReceivedMessageId, shouldApplyAndroidWorkaround],
+  );
 
   /**
    * We are keeping full control on message pagination, and not relying on react-native for it.
