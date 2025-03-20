@@ -94,7 +94,6 @@ import * as dbApi from '../../store/apis';
 import { ChannelUnreadState, FileTypes } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
 import { compressedImageURI } from '../../utils/compressImage';
-import { DBSyncManager } from '../../utils/DBSyncManager';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
 import { removeReactionFromLocalState } from '../../utils/removeReactionFromLocalState';
 import { removeReservedFields } from '../../utils/removeReservedFields';
@@ -1065,11 +1064,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     let connectionChangedSubscription: ReturnType<ChannelType['on']>;
 
     if (enableOfflineSupport) {
-      connectionChangedSubscription = DBSyncManager.onSyncStatusChange((statusChanged) => {
-        if (statusChanged) {
-          connectionChangedHandler();
-        }
-      });
+      connectionChangedSubscription = client.offlineDb.syncManager.onSyncStatusChange(
+        (statusChanged) => {
+          if (statusChanged) {
+            connectionChangedHandler();
+          }
+        },
+      );
     } else {
       connectionChangedSubscription = client.on('connection.changed', (event) => {
         if (event.online) {
@@ -1080,8 +1081,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     return () => {
       connectionChangedSubscription.unsubscribe();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enableOfflineSupport, shouldSyncChannel]);
+  }, [enableOfflineSupport, client, shouldSyncChannel]);
 
   // In case the channel is disconnected which may happen when channel is deleted,
   // underlying js client throws an error. Following function ensures that Channel component
@@ -1493,8 +1493,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
     copyMessagesStateFromChannel(channel);
 
-    const sendReactionResponse = await DBSyncManager.queueTask({
-      client,
+    const sendReactionResponse = await client.offlineDb.syncManager.queueTask({
       task: {
         channelId: channel.id,
         channelType: channel.type,
@@ -1523,7 +1522,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     }
 
     if (message.status === MessageStatusTypes.FAILED) {
-      await DBSyncManager.dropPendingTasks({ messageId: message.id });
+      await client.offlineDb.syncManager.dropPendingTasks({ messageId: message.id });
       await removeMessage(message);
     } else {
       const updatedMessage = {
@@ -1536,8 +1535,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
       threadInstance?.upsertReplyLocally({ message: updatedMessage });
 
-      const data = await DBSyncManager.queueTask({
-        client,
+      const data = await client.offlineDb.syncManager.queueTask({
         task: {
           channelId: channel.id,
           channelType: channel.type,
@@ -1577,8 +1575,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
     copyMessagesStateFromChannel(channel);
 
-    await DBSyncManager.queueTask({
-      client,
+    await client.offlineDb.syncManager.queueTask({
       task: {
         channelId: channel.id,
         channelType: channel.type,

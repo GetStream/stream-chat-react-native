@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { Image, Platform } from 'react-native';
 
-import type { Channel, StreamChat } from 'stream-chat';
+import type { Channel } from 'stream-chat';
 
 import { useAppSettings } from './hooks/useAppSettings';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
@@ -27,7 +27,6 @@ import { NativeHandlers } from '../../native';
 import { OfflineDB } from '../../store/OfflineDB';
 import { SqliteClient } from '../../store/SqliteClient';
 
-import { DBSyncManager } from '../../utils/DBSyncManager';
 import type { Streami18n } from '../../utils/i18n/Streami18n';
 import { version } from '../../version.json';
 
@@ -215,10 +214,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
 
     const initializeDatabase = () => {
       // TODO: Rethink this, it looks ugly
-      console.log('TESTING2', client);
-      const offlineDBInstance = new OfflineDB({ client });
-      console.log(offlineDBInstance);
-      client.setOfflineDBApi(offlineDBInstance);
+      client.setOfflineDBApi(new OfflineDB({ client }));
       // This acts as a lock for some very rare occurrences of concurrency
       // issues we've encountered before with the QuickSqliteClient being
       // uninitialized before it's being invoked.
@@ -226,7 +222,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
       SqliteClient.initializeDatabase()
         .then(async () => {
           setInitialisedDatabaseConfig({ initialised: true, userID });
-          await DBSyncManager.init(client as unknown as StreamChat);
+          await client.offlineDb.syncManager.init();
         })
         .catch((error) => {
           console.log('Error Initializing DB:', error);
@@ -254,12 +250,12 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     return () => {
       client.threads.unregisterSubscriptions();
       client.polls.unregisterSubscriptions();
+      // In case something went wrong, make sure to also unsubscribe the listener
+      // on unmount if it exists to prevent a memory leak.
+      // FIXME: Should be wrapped in its own unregistration mechanism
+      client.offlineDb.syncManager?.connectionChangedListener?.unsubscribe();
     };
   }, [client]);
-
-  // In case something went wrong, make sure to also unsubscribe the listener
-  // on unmount if it exists to prevent a memory leak.
-  useEffect(() => () => DBSyncManager.connectionChangedListener?.unsubscribe(), []);
 
   const initialisedDatabase =
     initialisedDatabaseConfig.initialised && userID === initialisedDatabaseConfig.userID;

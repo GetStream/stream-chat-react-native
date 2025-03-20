@@ -229,18 +229,18 @@ export const usePaginatedChannels = ({
       return true;
     };
 
-    let listener: ReturnType<typeof DBSyncManager.onSyncStatusChange>;
+    let listener: ReturnType<typeof client.offlineDb.syncManager.onSyncStatusChange>;
     if (enableOfflineSupport) {
       // Any time DB is synced, we need to update the UI with local DB channels first,
       // and then call queryChannels to ensure any new channels are added to UI.
-      listener = DBSyncManager.onSyncStatusChange(async (syncStatus) => {
-        // if (syncStatus) {
-        //   const loadingChannelsSucceeded = await loadOfflineChannels();
-        //   if (loadingChannelsSucceeded) {
-        //     await reloadList();
-        //     setForceUpdate((u) => u + 1);
-        //   }
-        // }
+      listener = client.offlineDb.syncManager.onSyncStatusChange(async (syncStatus) => {
+        if (syncStatus) {
+          //   const loadingChannelsSucceeded = await loadOfflineChannels();
+          //   if (loadingChannelsSucceeded) {
+          await reloadList();
+          //     setForceUpdate((u) => u + 1);
+          //   }
+        }
       });
       // On start, load the channels from local db.
       // loadOfflineChannels().then((success) => {
@@ -265,7 +265,7 @@ export const usePaginatedChannels = ({
 
     return () => listener?.unsubscribe?.();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterStr, sortStr, channelManager]);
+  }, [client, filterStr, sortStr, channelManager]);
 
   return {
     channelListInitialized,
