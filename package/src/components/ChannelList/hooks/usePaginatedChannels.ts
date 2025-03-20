@@ -13,10 +13,7 @@ import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useStateStore } from '../../../hooks';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
-import { getChannelsForFilterSort } from '../../../store/apis/getChannelsForFilterSort';
-
 import { ONE_SECOND_IN_MS } from '../../../utils/date';
-import { DBSyncManager } from '../../../utils/DBSyncManager';
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
 const waitSeconds = (seconds: number) =>

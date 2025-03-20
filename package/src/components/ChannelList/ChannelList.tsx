@@ -19,7 +19,6 @@ import {
   ChannelsProvider,
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
-import { upsertCidsForQuery } from '../../store/apis/upsertCidsForQuery';
 import type { ChannelListEventListenerOptions } from '../../types/types';
 import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';

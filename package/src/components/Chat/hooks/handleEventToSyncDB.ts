@@ -7,7 +7,6 @@ import { updateMessage } from '../../../store/apis/updateMessage';
 import { updatePollMessage } from '../../../store/apis/updatePollMessage';
 import { upsertChannelData } from '../../../store/apis/upsertChannelData';
 import { upsertChannelDataFromChannel } from '../../../store/apis/upsertChannelDataFromChannel';
-import { upsertChannels } from '../../../store/apis/upsertChannels';
 import { upsertMembers } from '../../../store/apis/upsertMembers';
 import { upsertMessages } from '../../../store/apis/upsertMessages';
 import { upsertReads } from '../../../store/apis/upsertReads';
