@@ -560,7 +560,6 @@ const MessageListWithContext = <
           };
         });
       } else if (mainChannelUpdated && shouldMarkRead()) {
-        console.log('marking read');
         await markRead();
       }
     };
