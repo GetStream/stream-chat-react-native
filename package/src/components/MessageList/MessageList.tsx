@@ -288,6 +288,7 @@ const MessageListWithContext = <
     NetworkDownIndicator,
     noGroupByUser,
     onListScroll,
+    onThreadSelect,
     overlay,
     reloadChannel,
     ScrollToBottomButton,
@@ -740,10 +741,17 @@ const MessageListWithContext = <
         index={index}
         lastReceivedMessageId={lastReceivedMessageId}
         message={message}
+        onThreadSelect={onThreadSelect}
         shouldApplyAndroidWorkaround={shouldApplyAndroidWorkaround}
       />
     ),
-    [goToMessage, highlightedMessageId, lastReceivedMessageId, shouldApplyAndroidWorkaround],
+    [
+      goToMessage,
+      highlightedMessageId,
+      lastReceivedMessageId,
+      onThreadSelect,
+      shouldApplyAndroidWorkaround,
+    ],
   );
 
   /**

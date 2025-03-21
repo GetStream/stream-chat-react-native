@@ -9,6 +9,7 @@ import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
 
 import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
+import { ThreadContextValue } from '../../contexts/threadContext/ThreadContext';
 import { ChannelUnreadState, DefaultStreamChatGenerics } from '../../types/types';
 
 const shouldShowUnreadSeparator = <
@@ -36,103 +37,103 @@ const shouldShowUnreadSeparator = <
   return showUnreadSeparator;
 };
 
-export const MessageItem = React.memo(
-  <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>({
-    index,
-    message,
-    goToMessage,
-    highlightedMessageId,
-    lastReceivedMessageId,
-    onThreadSelect,
-    shouldApplyAndroidWorkaround,
-  }: {
-    index: number;
-    message: MessageType<StreamChatGenerics>;
-    goToMessage: (messageId: string) => Promise<void>;
-    highlightedMessageId?: string;
-    lastReceivedMessageId?: string;
-    onThreadSelect?: (message: MessageType<DefaultStreamChatGenerics>) => void;
-    shouldApplyAndroidWorkaround: boolean;
-  }) => {
-    const { client } = useChatContext();
-    const clientUserId = client.user?.id;
-    const { theme } = useTheme();
-    const {
-      messageList: { messageContainer },
-      screenPadding,
-    } = theme;
+export const UnmemoizedMessageItem = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>({
+  index,
+  message,
+  goToMessage,
+  highlightedMessageId,
+  lastReceivedMessageId,
+  onThreadSelect,
+  shouldApplyAndroidWorkaround,
+}: {
+  index: number;
+  message: MessageType<StreamChatGenerics>;
+  goToMessage: (messageId: string) => Promise<void>;
+  highlightedMessageId?: string;
+  lastReceivedMessageId?: string;
+  onThreadSelect?: (message: ThreadContextValue<StreamChatGenerics>['thread']) => void;
+  shouldApplyAndroidWorkaround: boolean;
+}) => {
+  const { client } = useChatContext();
+  const clientUserId = client.user?.id;
+  const { theme } = useTheme();
+  const {
+    messageList: { messageContainer },
+    screenPadding,
+  } = theme;
 
-    const { channelUnreadState, threadList } = useChannelContext();
-    const {
-      Message,
-      MessageSystem,
-      myMessageTheme,
-      InlineDateSeparator,
-      InlineUnreadIndicator,
-      shouldShowUnreadUnderlay,
-    } = useMessagesContext();
+  const { channelUnreadState, threadList } = useChannelContext();
+  const {
+    Message,
+    MessageSystem,
+    myMessageTheme,
+    InlineDateSeparator,
+    InlineUnreadIndicator,
+    shouldShowUnreadUnderlay,
+  } = useMessagesContext<StreamChatGenerics>();
 
-    const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
+  const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
 
-    const modifiedTheme = useMemo(
-      () => mergeThemes({ style: myMessageTheme, theme }),
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [myMessageThemeString, theme],
-    );
+  const modifiedTheme = useMemo(
+    () => mergeThemes({ style: myMessageTheme, theme }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [myMessageThemeString, theme],
+  );
 
-    const showUnreadUnderlay =
-      !!shouldShowUnreadUnderlay && shouldShowUnreadSeparator(message, index, channelUnreadState);
+  const showUnreadUnderlay =
+    !!shouldShowUnreadUnderlay && shouldShowUnreadSeparator(message, index, channelUnreadState);
 
-    const wrapMessageInTheme = clientUserId === message.user?.id && !!myMessageTheme;
-    const renderDateSeperator = isMessageWithStylesReadByAndDateSeparator(message) &&
-      message.dateSeparator && <InlineDateSeparator date={message.dateSeparator} />;
+  const wrapMessageInTheme = clientUserId === message.user?.id && !!myMessageTheme;
+  const renderDateSeperator = isMessageWithStylesReadByAndDateSeparator(message) &&
+    message.dateSeparator && <InlineDateSeparator date={message.dateSeparator} />;
 
-    const renderMessage = (
-      <Message
-        goToMessage={goToMessage}
-        groupStyles={isMessageWithStylesReadByAndDateSeparator(message) ? message.groupStyles : []}
-        isTargetedMessage={highlightedMessageId === message.id}
-        lastReceivedId={
-          lastReceivedMessageId === message.id || message.quoted_message_id
-            ? lastReceivedMessageId
-            : undefined
-        }
-        message={message}
-        onThreadSelect={onThreadSelect}
-        showUnreadUnderlay={showUnreadUnderlay}
-        style={[messageContainer]}
-        threadList={threadList}
-      />
-    );
+  const renderMessage = (
+    <Message
+      goToMessage={goToMessage}
+      groupStyles={isMessageWithStylesReadByAndDateSeparator(message) ? message.groupStyles : []}
+      isTargetedMessage={highlightedMessageId === message.id}
+      lastReceivedId={
+        lastReceivedMessageId === message.id || message.quoted_message_id
+          ? lastReceivedMessageId
+          : undefined
+      }
+      message={message}
+      onThreadSelect={onThreadSelect}
+      showUnreadUnderlay={showUnreadUnderlay}
+      style={[messageContainer]}
+      threadList={threadList}
+    />
+  );
 
-    return (
-      <View
-        style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}
-        testID={`message-list-item-${index}`}
-      >
-        {message.type === 'system' ? (
-          <MessageSystem
-            message={message}
-            style={[{ paddingHorizontal: screenPadding }, messageContainer]}
-          />
-        ) : wrapMessageInTheme ? (
-          <ThemeProvider mergedStyle={modifiedTheme}>
-            <View testID={`message-list-item-${index}`}>
-              {renderDateSeperator}
-              {renderMessage}
-            </View>
-          </ThemeProvider>
-        ) : (
+  return (
+    <View
+      style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}
+      testID={`message-list-item-${index}`}
+    >
+      {message.type === 'system' ? (
+        <MessageSystem
+          message={message}
+          style={[{ paddingHorizontal: screenPadding }, messageContainer]}
+        />
+      ) : wrapMessageInTheme ? (
+        <ThemeProvider mergedStyle={modifiedTheme}>
           <View testID={`message-list-item-${index}`}>
             {renderDateSeperator}
             {renderMessage}
           </View>
-        )}
-        {showUnreadUnderlay && <InlineUnreadIndicator />}
-      </View>
-    );
-  },
-);
+        </ThemeProvider>
+      ) : (
+        <View testID={`message-list-item-${index}`}>
+          {renderDateSeperator}
+          {renderMessage}
+        </View>
+      )}
+      {showUnreadUnderlay && <InlineUnreadIndicator />}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   invertAndroid: {
@@ -140,4 +141,4 @@ const styles = StyleSheet.create({
   },
 });
 
-MessageItem.displayName = 'MessageItem';
+export const MessageItem = React.memo(UnmemoizedMessageItem) as typeof UnmemoizedMessageItem;

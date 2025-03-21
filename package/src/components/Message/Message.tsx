@@ -209,7 +209,7 @@ export type MessagePropsWithContext<
      *
      * @param message A message object to open the thread upon.
      */
-    onThreadSelect?: (message: MessageType<StreamChatGenerics>) => void;
+    onThreadSelect?: (message: ThreadContextValue<StreamChatGenerics>['thread']) => void;
     showUnreadUnderlay?: boolean;
     style?: StyleProp<ViewStyle>;
   };
