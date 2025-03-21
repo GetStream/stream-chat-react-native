@@ -541,7 +541,6 @@ const MessageListWithContext = <
 
     const handleEvent = async (event: Event<StreamChatGenerics>) => {
       const mainChannelUpdated = !event.message?.parent_id || event.message?.show_in_channel;
-      console.log(mainChannelUpdated, shouldMarkRead());
       // When the scrollToBottomButtonVisible is true, we need to manually update the channelUnreadState.
       if (scrollToBottomButtonVisible || channelUnreadState?.first_unread_message_id) {
         setChannelUnreadState((prev) => {
