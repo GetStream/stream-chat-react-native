@@ -214,7 +214,9 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
 
     const initializeDatabase = () => {
       // TODO: Rethink this, it looks ugly
-      client.setOfflineDBApi(new OfflineDB({ client }));
+      if (!client.offlineDb.initialized) {
+        client.setOfflineDBApi(new OfflineDB({ client }));
+      }
       // This acts as a lock for some very rare occurrences of concurrency
       // issues we've encountered before with the QuickSqliteClient being
       // uninitialized before it's being invoked.

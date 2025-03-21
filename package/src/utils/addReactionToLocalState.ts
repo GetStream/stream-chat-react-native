@@ -1,8 +1,5 @@
 import type { Channel, ReactionResponse, UserResponse } from 'stream-chat';
 
-import { updateReaction } from '../store/apis';
-import { insertReaction } from '../store/apis/insertReaction';
-
 export const addReactionToLocalState = ({
   channel,
   enforceUniqueReaction,
@@ -31,7 +28,6 @@ export const addReactionToLocalState = ({
     user_id: user?.id,
   };
 
-  const hasOwnReaction = message.own_reactions && message.own_reactions.length > 0;
   if (!message.own_reactions) {
     message.own_reactions = [];
   }
@@ -92,15 +88,5 @@ export const addReactionToLocalState = ({
   message.own_reactions = [...message.own_reactions, reaction];
   message.latest_reactions = [...message.latest_reactions, reaction];
 
-  if (enforceUniqueReaction && hasOwnReaction) {
-    updateReaction({
-      message,
-      reaction,
-    });
-  } else {
-    insertReaction({
-      message,
-      reaction,
-    });
-  }
+  return { message, reaction };
 };

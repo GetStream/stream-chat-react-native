@@ -1478,30 +1478,20 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       { enforce_unique: enforceUniqueReaction },
     ];
 
-    if (!enableOfflineSupport) {
-      await channel.sendReaction(...payload);
-      return;
+    if (enableOfflineSupport) {
+      addReactionToLocalState({
+        channel,
+        enforceUniqueReaction,
+        messageId,
+        reactionType: type,
+        user: client.user,
+      });
+
+      copyMessagesStateFromChannel(channel);
     }
 
-    addReactionToLocalState({
-      channel,
-      enforceUniqueReaction,
-      messageId,
-      reactionType: type,
-      user: client.user,
-    });
+    const sendReactionResponse = await channel.sendReaction(...payload);
 
-    copyMessagesStateFromChannel(channel);
-
-    const sendReactionResponse = await client.offlineDb.syncManager.queueTask({
-      task: {
-        channelId: channel.id,
-        channelType: channel.type,
-        messageId,
-        payload,
-        type: 'send-reaction',
-      },
-    });
     if (sendReactionResponse?.message) {
       threadInstance?.upsertReplyLocally?.({ message: sendReactionResponse.message });
     }
