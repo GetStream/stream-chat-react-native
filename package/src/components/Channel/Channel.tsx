@@ -1479,7 +1479,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     ];
 
     if (enableOfflineSupport) {
-      addReactionToLocalState({
+      await addReactionToLocalState({
         channel,
         enforceUniqueReaction,
         messageId,
@@ -1551,29 +1551,18 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
     const payload: Parameters<ChannelClass['deleteReaction']> = [messageId, type];
 
-    if (!enableOfflineSupport) {
-      await channel.deleteReaction(...payload);
-      return;
+    if (enableOfflineSupport) {
+      removeReactionFromLocalState({
+        channel,
+        messageId,
+        reactionType: type,
+        user: client.user,
+      });
+
+      copyMessagesStateFromChannel(channel);
     }
 
-    removeReactionFromLocalState({
-      channel,
-      messageId,
-      reactionType: type,
-      user: client.user,
-    });
-
-    copyMessagesStateFromChannel(channel);
-
-    await client.offlineDb.syncManager.queueTask({
-      task: {
-        channelId: channel.id,
-        channelType: channel.type,
-        messageId,
-        payload,
-        type: 'delete-reaction',
-      },
-    });
+    await channel.deleteReaction(...payload);
   };
 
   /**

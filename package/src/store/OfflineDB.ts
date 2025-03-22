@@ -1,11 +1,11 @@
-import {
-  AbstractOfflineDB,
+import { AbstractOfflineDB, StreamChat } from 'stream-chat';
+import type {
+  GetChannelsForQueryType,
+  GetChannelsType,
   GetLastSyncedAtType,
-  type ReactionResponse,
-  StreamChat,
+  UpsertReactionType,
   UpsertUserSyncStatusType,
 } from 'stream-chat';
-import type { GetChannelsForQueryType, GetChannelsType, UpsertReactionType } from 'stream-chat';
 
 import * as api from './apis';
 import { SqliteClient } from './SqliteClient';
@@ -36,46 +36,16 @@ export class OfflineDB extends AbstractOfflineDB {
   upsertUserSyncStatus = ({ userId, lastSyncedAt }: UpsertUserSyncStatusType) =>
     api.upsertUserSyncStatus({ currentUserId: userId, lastSyncedAt });
 
-  upsertReaction = async ({
-    channel,
-    enforceUniqueReaction,
-    messageId,
-    reactionType,
-    user,
-  }: UpsertReactionType) => {
-    const message = channel.state.messages.find(({ id }) => id === messageId);
-
-    if (!message) {
-      return;
-    }
-
-    const hasOwnReaction = message.own_reactions && message.own_reactions.length > 0;
-
-    const reaction: ReactionResponse = {
-      created_at: new Date().toISOString(),
-      message_id: messageId,
-      type: reactionType,
-      updated_at: new Date().toISOString(),
-      user,
-      user_id: user?.id,
-    };
-
-    if (enforceUniqueReaction && hasOwnReaction) {
-      await api.updateReaction({
-        message,
-        reaction,
-      });
-    } else {
-      await api.insertReaction({
-        message,
-        reaction,
-      });
-    }
-  };
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  // @ts-expect-error Not yet impelmented
+  upsertReaction = async (options: UpsertReactionType) => {};
+  /* eslint-enable */
 
   addPendingTask = api.addPendingTask;
 
   deletePendingTask = api.deletePendingTask;
+
+  deleteReaction = api.deleteReaction;
 
   getPendingTasks = api.getPendingTasks;
 
