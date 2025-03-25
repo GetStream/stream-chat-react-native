@@ -11,12 +11,8 @@ import * as api from './apis';
 import { SqliteClient } from './SqliteClient';
 
 export class OfflineDB extends AbstractOfflineDB {
-  public initialized = false;
-
   constructor({ client }: { client: StreamChat }) {
     super({ client });
-
-    this.initialized = true;
   }
 
   upsertCidsForQuery = api.upsertCidsForQuery;

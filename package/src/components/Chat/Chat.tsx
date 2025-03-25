@@ -214,7 +214,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
 
     const initializeDatabase = () => {
       // TODO: Rethink this, it looks ugly
-      if (!client.offlineDb.initialized) {
+      if (!client.offlineDb) {
         client.setOfflineDBApi(new OfflineDB({ client }));
       }
       // This acts as a lock for some very rare occurrences of concurrency
@@ -224,7 +224,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
       SqliteClient.initializeDatabase()
         .then(async () => {
           setInitialisedDatabaseConfig({ initialised: true, userID });
-          await client.offlineDb.syncManager.init();
+          await client.offlineDb?.syncManager.init();
         })
         .catch((error) => {
           console.log('Error Initializing DB:', error);
@@ -255,7 +255,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
       // In case something went wrong, make sure to also unsubscribe the listener
       // on unmount if it exists to prevent a memory leak.
       // FIXME: Should be wrapped in its own unregistration mechanism
-      client.offlineDb.syncManager?.connectionChangedListener?.unsubscribe();
+      client.offlineDb?.syncManager.connectionChangedListener?.unsubscribe();
     };
   }, [client]);
 

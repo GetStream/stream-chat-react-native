@@ -100,6 +100,7 @@ export const OptimisticUpdates = () => {
       const channelResponse = createChannel();
       useMockedApis(chatClient, [getOrCreateChannelApi(channelResponse)]);
       channel = chatClient.channel('messaging', channelResponse.id);
+      console.log('BEFORE HERE');
       await channel.watch();
 
       channel.cid = channelResponse.channel.cid;
@@ -364,14 +365,14 @@ export const OptimisticUpdates = () => {
         expect(pendingTasksRows.length).toBe(2);
       });
 
-      jest.spyOn(chatClient, 'deleteMessage').mockImplementation();
-      jest.spyOn(channel, 'sendReaction').mockImplementation();
+      const deleteMessageSpy = jest.spyOn(chatClient, 'deleteMessage').mockImplementation();
+      const sendReactionSpy = jest.spyOn(channel, '_sendReaction').mockImplementation();
 
       act(() => dispatchConnectionChangedEvent(chatClient, true));
 
       await waitFor(() => {
-        expect(chatClient.deleteMessage).toHaveBeenCalled();
-        expect(channel.sendReaction).toHaveBeenCalled();
+        expect(deleteMessageSpy).toHaveBeenCalled();
+        expect(sendReactionSpy).toHaveBeenCalled();
       });
     });
   });

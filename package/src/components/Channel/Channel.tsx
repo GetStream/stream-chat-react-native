@@ -1063,7 +1063,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     };
     let connectionChangedSubscription: ReturnType<ChannelType['on']>;
 
-    if (enableOfflineSupport) {
+    if (enableOfflineSupport && client.offlineDb) {
       connectionChangedSubscription = client.offlineDb.syncManager.onSyncStatusChange(
         (statusChanged) => {
           if (statusChanged) {
@@ -1512,7 +1512,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     }
 
     if (message.status === MessageStatusTypes.FAILED) {
-      await client.offlineDb.syncManager.dropPendingTasks({ messageId: message.id });
+      await client.offlineDb?.syncManager.dropPendingTasks({ messageId: message.id });
       await removeMessage(message);
     } else {
       const updatedMessage = {
@@ -1525,7 +1525,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
       threadInstance?.upsertReplyLocally({ message: updatedMessage });
 
-      const data = await client.offlineDb.syncManager.queueTask({
+      const data = await client.offlineDb?.syncManager.queueTask({
         task: {
           channelId: channel.id,
           channelType: channel.type,
