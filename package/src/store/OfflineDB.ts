@@ -3,7 +3,6 @@ import type {
   GetChannelsForQueryType,
   GetChannelsType,
   GetLastSyncedAtType,
-  UpsertReactionType,
   UpsertUserSyncStatusType,
 } from 'stream-chat';
 
@@ -32,16 +31,15 @@ export class OfflineDB extends AbstractOfflineDB {
   upsertUserSyncStatus = ({ userId, lastSyncedAt }: UpsertUserSyncStatusType) =>
     api.upsertUserSyncStatus({ currentUserId: userId, lastSyncedAt });
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  // @ts-expect-error Not yet impelmented
-  upsertReaction = async (options: UpsertReactionType) => {};
-  /* eslint-enable */
-
   addPendingTask = api.addPendingTask;
 
   deletePendingTask = api.deletePendingTask;
 
   deleteReaction = api.deleteReaction;
+
+  hardDeleteMessage = api.deleteMessage;
+
+  softDeleteMessage = api.softDeleteMessage;
 
   getPendingTasks = api.getPendingTasks;
 

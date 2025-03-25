@@ -27,3 +27,4 @@ export * from './updatePollMessage';
 export * from './addPendingTask';
 export * from './deletePendingTask';
 export * from './getPendingTasks';
+export * from './softDeleteMessage';

@@ -1450,6 +1450,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
    */
   const removeMessage: MessagesContextValue['removeMessage'] = async (message) => {
     if (channel) {
+      // TODO: See if it's easy to refactor this to be able to accept DB queries
       channel.state.removeMessage(message);
       copyMessagesStateFromChannel(channel);
 
@@ -1458,10 +1459,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
     }
 
-    if (enableOfflineSupport) {
-      await dbApi.deleteMessage({
-        id: message.id,
-      });
+    if (client.offlineDb) {
+      // FIXME: Batch these maybe ?.
+      await Promise.all([
+        client.offlineDb.dropPendingTasks({ messageId: message.id }),
+        client.offlineDb.hardDeleteMessage({
+          id: message.id,
+        }),
+      ]);
     }
   };
 
@@ -1497,47 +1502,32 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     }
   };
 
-  const deleteMessage: MessagesContextValue['deleteMessage'] = async (message) => {
+  const deleteMessage: MessagesContextValue['deleteMessage'] = async (
+    message,
+    hardDelete = false,
+  ) => {
     if (!channel.id) {
       throw new Error('Channel has not been initialized yet');
     }
 
-    if (!enableOfflineSupport) {
-      if (message.status === MessageStatusTypes.FAILED) {
-        await removeMessage(message);
-        return;
-      }
-      await client.deleteMessage(message.id);
+    if (message.status === MessageStatusTypes.FAILED) {
+      await removeMessage(message);
       return;
     }
+    const updatedMessage = {
+      ...message,
+      cid: channel.cid,
+      deleted_at: new Date().toISOString(),
+      type: 'deleted' as MessageLabel,
+    };
+    updateMessage(updatedMessage);
 
-    if (message.status === MessageStatusTypes.FAILED) {
-      await client.offlineDb?.syncManager.dropPendingTasks({ messageId: message.id });
-      await removeMessage(message);
-    } else {
-      const updatedMessage = {
-        ...message,
-        cid: channel.cid,
-        deleted_at: new Date().toISOString(),
-        type: 'deleted' as MessageLabel,
-      };
-      updateMessage(updatedMessage);
+    threadInstance?.upsertReplyLocally({ message: updatedMessage });
 
-      threadInstance?.upsertReplyLocally({ message: updatedMessage });
+    const data = await client.deleteMessage(message.id, hardDelete);
 
-      const data = await client.offlineDb?.syncManager.queueTask({
-        task: {
-          channelId: channel.id,
-          channelType: channel.type,
-          messageId: message.id,
-          payload: [message.id],
-          type: 'delete-message',
-        },
-      });
-
-      if (data?.message) {
-        updateMessage({ ...data.message });
-      }
+    if (data?.message) {
+      updateMessage({ ...data.message });
     }
   };
 
