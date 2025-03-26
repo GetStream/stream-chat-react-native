@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { NativeHandlers, SoundReturnType } from '../native';
 
@@ -15,7 +15,7 @@ export const useAudioPlayer = (props: UseSoundPlayerProps) => {
 
   const isExpoCLI = NativeHandlers.SDK === 'stream-chat-expo';
 
-  const playAudio = async () => {
+  const playAudio = useCallback(async () => {
     if (isExpoCLI) {
       if (soundRef.current?.playAsync) {
         await soundRef.current.playAsync();
@@ -25,9 +25,9 @@ export const useAudioPlayer = (props: UseSoundPlayerProps) => {
         soundRef.current.resume();
       }
     }
-  };
+  }, [soundRef.current, isExpoCLI]);
 
-  const pauseAudio = async () => {
+  const pauseAudio = useCallback(async () => {
     if (isExpoCLI) {
       if (soundRef.current?.pauseAsync) {
         await soundRef.current.pauseAsync();
@@ -37,7 +37,7 @@ export const useAudioPlayer = (props: UseSoundPlayerProps) => {
         soundRef.current.pause();
       }
     }
-  };
+  }, [soundRef.current, isExpoCLI]);
 
   const seekAudio = async (currentTime: number) => {
     if (isExpoCLI) {
