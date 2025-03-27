@@ -1,5 +1,20 @@
 # Change Log
 
+### [6.7.1](https://github.com/GetStream/stream-chat-react-native/compare/v6.7.0...v6.7.1) (2025-03-27)
+
+
+### Bug Fixes
+
+* audio component recursive loading for expo ([#3038](https://github.com/GetStream/stream-chat-react-native/issues/3038)) ([57f67e7](https://github.com/GetStream/stream-chat-react-native/commit/57f67e752ab3ec5d6f4ffb83e36b648d4341a9fd))
+* thread list variety bugs ([#3033](https://github.com/GetStream/stream-chat-react-native/issues/3033)) ([ef46aac](https://github.com/GetStream/stream-chat-react-native/commit/ef46aac5f6b1679e5c503edcf546415003c70d3e))
+* unread indicator label presence in message list ([#3031](https://github.com/GetStream/stream-chat-react-native/issues/3031)) ([53eeafb](https://github.com/GetStream/stream-chat-react-native/commit/53eeafb8b8915f0a2c765b83e525ee86ea0af64f))
+
+
+### Refactors
+
+* remove redundant console.log ([2a9d168](https://github.com/GetStream/stream-chat-react-native/commit/2a9d168b7439aa0dc5b4cb2a9663440863a58810))
+* remove redundant console.log ([f076c89](https://github.com/GetStream/stream-chat-react-native/commit/f076c899dadba5639e3e347b0d680d454e6d9f32))
+
 ## [6.7.0](https://github.com/GetStream/stream-chat-react-native/compare/v6.6.8...v6.7.0) (2025-03-17)
 
 
