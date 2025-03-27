@@ -1,4 +1,9 @@
-import { AbstractOfflineDB, StreamChat } from 'stream-chat';
+import {
+  AbstractOfflineDB,
+  GetAppSettingsType,
+  StreamChat,
+  UpsertAppSettingsType,
+} from 'stream-chat';
 import type {
   GetChannelsForQueryType,
   GetChannelsType,
@@ -15,10 +20,21 @@ export class OfflineDB extends AbstractOfflineDB {
   }
 
   upsertCidsForQuery = api.upsertCidsForQuery;
+
   upsertChannels = api.upsertChannels;
+
+  // FIXME
+  upsertUserSyncStatus = ({ userId, lastSyncedAt }: UpsertUserSyncStatusType) =>
+    api.upsertUserSyncStatus({ currentUserId: userId, lastSyncedAt });
+
+  // FIXME
+  upsertAppSettings = ({ appSettings, userId, flush }: UpsertAppSettingsType) =>
+    api.upsertAppSettings({ appSettings, currentUserId: userId, flush });
+
   // FIXME
   getChannels = ({ cids, userId }: GetChannelsType) =>
     api.getChannels({ channelIds: cids, currentUserId: userId });
+
   // FIXME
   getChannelsForQuery = ({ userId, filters, sort }: GetChannelsForQueryType) =>
     api.getChannelsForFilterSort({ currentUserId: userId, filters, sort });
@@ -27,9 +43,9 @@ export class OfflineDB extends AbstractOfflineDB {
   // FIXME
   getLastSyncedAt = ({ userId }: GetLastSyncedAtType) =>
     api.getLastSyncedAt({ currentUserId: userId });
-  // FIXME
-  upsertUserSyncStatus = ({ userId, lastSyncedAt }: UpsertUserSyncStatusType) =>
-    api.upsertUserSyncStatus({ currentUserId: userId, lastSyncedAt });
+
+  getAppSettings = ({ userId }: GetAppSettingsType) =>
+    api.getAppSettings({ currentUserId: userId });
 
   addPendingTask = api.addPendingTask;
 

@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import type { AppSettingsAPIResponse, StreamChat } from 'stream-chat';
 
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
-import * as dbApi from '../../../store/apis';
 
 export const useAppSettings = (
   client: StreamChat,
@@ -18,22 +17,6 @@ export const useAppSettings = (
     /**
      * Fetches app settings from the backend when offline support is disabled.
      */
-    const enforceAppSettingsWithoutOfflineSupport = async () => {
-      if (!client.userID) {
-        return;
-      }
-
-      try {
-        const appSettings = await client.getAppSettings();
-        if (isMounted.current) {
-          setAppSettings(appSettings);
-        }
-      } catch (error: unknown) {
-        if (error instanceof Error) {
-          console.error(`An error occurred while getting app settings: ${error}`);
-        }
-      }
-    };
 
     /**
      * Fetches app settings from the local database when offline support is enabled if internet is off else fetches from the backend.
@@ -41,47 +24,30 @@ export const useAppSettings = (
      *
      * TODO: Remove client.userID usage for offline support case.
      */
-    const enforceAppSettingsWithOfflineSupport = async () => {
+
+    async function enforceAppSettings() {
       if (!client.userID) {
         return;
       }
-      if (!initialisedDatabase) {
-        return;
-      }
 
-      if (!isOnline) {
-        const appSettings = await dbApi.getAppSettings({ currentUserId: client.userID });
-        setAppSettings(appSettings);
+      if (enableOfflineSupport && !initialisedDatabase) {
         return;
       }
 
       try {
-        const appSettings = await client.getAppSettings();
+        const appSettings = (await client.getAppSettings()) as AppSettingsAPIResponse;
         if (isMounted.current) {
           setAppSettings(appSettings);
-          await dbApi.upsertAppSettings({
-            appSettings,
-            currentUserId: client.userID as string,
-          });
         }
       } catch (error: unknown) {
         if (error instanceof Error) {
           console.error(`An error occurred while getting app settings: ${error}`);
         }
       }
-    };
-
-    async function enforeAppSettings() {
-      if (enableOfflineSupport) {
-        await enforceAppSettingsWithOfflineSupport();
-      } else {
-        await enforceAppSettingsWithoutOfflineSupport();
-      }
     }
 
-    enforeAppSettings();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client, isOnline, initialisedDatabase]);
+    enforceAppSettings();
+  }, [client, isOnline, initialisedDatabase, enableOfflineSupport, isMounted]);
 
   return appSettings;
 };
