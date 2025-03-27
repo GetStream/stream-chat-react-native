@@ -195,8 +195,8 @@ export const usePaginatedChannels = ({
   const sortStr = useMemo(() => JSON.stringify(sort), [sort]);
 
   useEffect(() => {
-    let listener: ReturnType<typeof client.offlineDb.syncManager.onSyncStatusChange>;
-    if (enableOfflineSupport) {
+    let listener: ReturnType<typeof client.on>;
+    if (client.offlineDb) {
       // Any time DB is synced, we need to update the UI with local DB channels first,
       // and then call queryChannels to ensure any new channels are added to UI.
       listener = client.offlineDb.syncManager.onSyncStatusChange(async (syncStatus) => {
