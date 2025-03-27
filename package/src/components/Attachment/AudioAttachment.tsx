@@ -208,10 +208,14 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
       if (!isExpoCLI) {
         return;
       }
-      if (item.paused) {
-        await pauseAudio();
-      } else {
-        await playAudio();
+      try {
+        if (item.paused) {
+          await pauseAudio();
+        } else {
+          await playAudio();
+        }
+      } catch (e) {
+        console.log('An error has occurred while trying to interact with the audio. ', e);
       }
     };
     // For expo CLI

@@ -2,6 +2,8 @@ import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
+import type { ThreadState } from 'stream-chat';
+
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -12,6 +14,7 @@ import {
   useThreadContext,
 } from '../../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { useStateStore } from '../../../hooks';
 import { useViewport } from '../../../hooks/useViewport';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
@@ -42,7 +45,10 @@ const styles = StyleSheet.create({
 type ThreadFooterComponentPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<MessagesContextValue<StreamChatGenerics>, 'Message'> &
-  Pick<ThreadContextValue<StreamChatGenerics>, 'parentMessagePreventPress' | 'thread'>;
+  Pick<
+    ThreadContextValue<StreamChatGenerics>,
+    'parentMessagePreventPress' | 'thread' | 'threadInstance'
+  >;
 
 export const InlineLoadingMoreThreadIndicator = () => {
   const { threadLoadingMore } = useThreadContext();
@@ -63,12 +69,17 @@ export const InlineLoadingMoreThreadIndicator = () => {
   );
 };
 
+const selector = (nextValue: ThreadState) =>
+  ({
+    replyCount: nextValue.replyCount,
+  }) as const;
+
 const ThreadFooterComponentWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: ThreadFooterComponentPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { Message, parentMessagePreventPress, thread } = props;
+  const { Message, parentMessagePreventPress, thread, threadInstance } = props;
   const { t } = useTranslationContext();
   const { vw } = useViewport();
 
@@ -87,11 +98,11 @@ const ThreadFooterComponentWithContext = <
     },
   } = useTheme();
 
+  const { replyCount = thread?.reply_count } = useStateStore(threadInstance?.state, selector) ?? {};
+
   if (!thread) {
     return null;
   }
-
-  const replyCount = thread.reply_count;
 
   return (
     <View style={styles.threadHeaderContainer} testID='thread-footer-component'>
@@ -145,10 +156,16 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   prevProps: ThreadFooterComponentPropsWithContext<StreamChatGenerics>,
   nextProps: ThreadFooterComponentPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { parentMessagePreventPress: prevParentMessagePreventPress, thread: prevThread } =
-    prevProps;
-  const { parentMessagePreventPress: nextParentMessagePreventPress, thread: nextThread } =
-    nextProps;
+  const {
+    parentMessagePreventPress: prevParentMessagePreventPress,
+    thread: prevThread,
+    threadInstance: prevThreadInstance,
+  } = prevProps;
+  const {
+    parentMessagePreventPress: nextParentMessagePreventPress,
+    thread: nextThread,
+    threadInstance: nextThreadInstance,
+  } = nextProps;
 
   if (prevParentMessagePreventPress !== nextParentMessagePreventPress) {
     return false;
@@ -158,7 +175,12 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     prevThread?.id === nextThread?.id &&
     prevThread?.text === nextThread?.text &&
     prevThread?.reply_count === nextThread?.reply_count;
+
   if (!threadEqual) {
+    return false;
+  }
+
+  if (prevThreadInstance !== nextThreadInstance) {
     return false;
   }
 
@@ -195,7 +217,7 @@ export const ThreadFooterComponent = <
   props: ThreadFooterComponentProps<StreamChatGenerics>,
 ) => {
   const { Message } = useMessagesContext<StreamChatGenerics>();
-  const { parentMessagePreventPress, thread, threadLoadingMore } =
+  const { parentMessagePreventPress, thread, threadInstance, threadLoadingMore } =
     useThreadContext<StreamChatGenerics>();
 
   return (
@@ -204,6 +226,7 @@ export const ThreadFooterComponent = <
         Message,
         parentMessagePreventPress,
         thread,
+        threadInstance,
         threadLoadingMore,
       }}
       {...props}
