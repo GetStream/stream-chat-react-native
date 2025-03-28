@@ -31,74 +31,21 @@ export const addReactionToLocalState = async ({
   };
 
   const hasOwnReaction = message.own_reactions && message.own_reactions.length > 0;
-  if (!message.own_reactions) {
-    message.own_reactions = [];
+
+  const messageWithReaction = channel.state.addReaction(reaction, undefined, enforceUniqueReaction);
+
+  if (!messageWithReaction) {
+    return;
   }
-
-  if (!message.latest_reactions) {
-    message.latest_reactions = [];
-  }
-
-  if (enforceUniqueReaction) {
-    const currentReaction = message.own_reactions[0];
-    message.own_reactions = [];
-    if (!message.latest_reactions) {
-      message.latest_reactions = [];
-    }
-    message.latest_reactions = message.latest_reactions.filter((r) => r.user_id !== user.id);
-
-    if (
-      currentReaction &&
-      message.reaction_groups &&
-      message.reaction_groups[currentReaction.type] &&
-      message.reaction_groups[currentReaction.type].count > 0 &&
-      message.reaction_groups[currentReaction.type].sum_scores > 0
-    ) {
-      message.reaction_groups[currentReaction.type].count =
-        message.reaction_groups[currentReaction.type].count - 1;
-      message.reaction_groups[currentReaction.type].sum_scores =
-        message.reaction_groups[currentReaction.type].sum_scores - 1;
-    }
-
-    if (!message.reaction_groups) {
-      message.reaction_groups = {
-        [reactionType]: {
-          count: 1,
-          first_reaction_at: new Date().toISOString(),
-          last_reaction_at: new Date().toISOString(),
-          sum_scores: 1,
-        },
-      };
-    } else {
-      if (!message.reaction_groups[reactionType]) {
-        message.reaction_groups[reactionType] = {
-          count: 1,
-          first_reaction_at: new Date().toISOString(),
-          last_reaction_at: new Date().toISOString(),
-          sum_scores: 1,
-        };
-      } else {
-        message.reaction_groups[reactionType] = {
-          ...message.reaction_groups[reactionType],
-          count: message.reaction_groups[reactionType].count + 1,
-          last_reaction_at: new Date().toISOString(),
-          sum_scores: message.reaction_groups[reactionType].sum_scores + 1,
-        };
-      }
-    }
-  }
-
-  message.own_reactions = [...message.own_reactions, reaction];
-  message.latest_reactions = [...message.latest_reactions, reaction];
 
   if (enforceUniqueReaction && hasOwnReaction) {
     await updateReaction({
-      message,
+      message: messageWithReaction,
       reaction,
     });
   } else {
     await insertReaction({
-      message,
+      message: messageWithReaction,
       reaction,
     });
   }

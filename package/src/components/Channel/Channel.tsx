@@ -1484,7 +1484,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     ];
 
     if (enableOfflineSupport) {
-      addReactionToLocalState({
+      await addReactionToLocalState({
         channel,
         enforceUniqueReaction,
         messageId,
