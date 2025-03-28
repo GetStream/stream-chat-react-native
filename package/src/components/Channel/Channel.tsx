@@ -95,7 +95,6 @@ import { ChannelUnreadState, FileTypes } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
 import { compressedImageURI } from '../../utils/compressImage';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
-import { removeReactionFromLocalState } from '../../utils/removeReactionFromLocalState';
 import { removeReservedFields } from '../../utils/removeReservedFields';
 import {
   defaultEmojiSearchIndex,
@@ -1542,12 +1541,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     const payload: Parameters<ChannelClass['deleteReaction']> = [messageId, type];
 
     if (enableOfflineSupport) {
-      removeReactionFromLocalState({
-        channel,
-        messageId,
-        reactionType: type,
-        user: client.user,
-      });
+      channel.state.removeReaction({ created_at: '', message_id: messageId, type, updated_at: '' });
 
       copyMessagesStateFromChannel(channel);
     }
