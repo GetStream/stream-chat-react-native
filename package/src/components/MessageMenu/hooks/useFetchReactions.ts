@@ -64,19 +64,48 @@ export const useFetchReactions = ({
   }, [fetchReactions, messageId, reactionType, sortString]);
 
   useEffect(() => {
-    const listener = client.on('offline_reactions.queried', (event) => {
-      const { offlineReactions } = event;
-      if (offlineReactions) {
-        setReactions(offlineReactions);
-        setLoading(false);
-        setNext(undefined);
-      }
+    const listeners: ReturnType<typeof client.on>[] = [];
+    listeners.push(
+      client.on('offline_reactions.queried', (event) => {
+        const { offlineReactions } = event;
+        if (offlineReactions) {
+          setReactions(offlineReactions);
+          setLoading(false);
+          setNext(undefined);
+        }
+      }),
+    );
+
+    ['reaction.new', 'reaction.updated'].forEach((eventType) => {
+      listeners.push(
+        client.on(eventType, (event) => {
+          const { reaction } = event;
+
+          if (reaction && reaction.type === reactionType) {
+            setReactions((prevReactions) => [reaction, ...prevReactions]);
+          }
+        }),
+      );
     });
 
+    listeners.push(
+      client.on('reaction.deleted', (event) => {
+        const { reaction } = event;
+
+        if (reaction && reaction.type === reactionType) {
+          setReactions((prevReactions) =>
+            prevReactions.filter((r) => r.user_id !== reaction.user_id),
+          );
+        }
+      }),
+    );
+
     return () => {
-      listener?.unsubscribe();
+      listeners.forEach((listener) => {
+        listener?.unsubscribe();
+      });
     };
-  }, [client]);
+  }, [client, reactionType]);
 
   return { loading, loadNextPage, reactions };
 };
