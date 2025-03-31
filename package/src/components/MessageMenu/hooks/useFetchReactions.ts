@@ -76,17 +76,31 @@ export const useFetchReactions = ({
       }),
     );
 
-    ['reaction.new', 'reaction.updated'].forEach((eventType) => {
-      listeners.push(
-        client.on(eventType, (event) => {
-          const { reaction } = event;
+    listeners.push(
+      client.on('reaction.new', (event) => {
+        const { reaction } = event;
 
-          if (reaction && reaction.type === reactionType) {
+        if (reaction && reaction.type === reactionType) {
+          setReactions((prevReactions) => [reaction, ...prevReactions]);
+        }
+      }),
+    );
+
+    listeners.push(
+      client.on('reaction.updated', (event) => {
+        const { reaction } = event;
+
+        if (reaction) {
+          if (reaction.type === reactionType) {
             setReactions((prevReactions) => [reaction, ...prevReactions]);
+          } else {
+            setReactions((prevReactions) =>
+              prevReactions.filter((r) => r.user_id !== reaction.user_id),
+            );
           }
-        }),
-      );
-    });
+        }
+      }),
+    );
 
     listeners.push(
       client.on('reaction.deleted', (event) => {
