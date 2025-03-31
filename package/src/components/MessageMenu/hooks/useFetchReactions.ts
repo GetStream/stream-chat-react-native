@@ -36,6 +36,7 @@ export const useFetchReactions = ({
       const reactionsFromDB = await getReactionsForFilterSort({
         currentMessageId: messageId,
         filters: reactionType ? { type: reactionType } : {},
+        limit,
         sort,
       });
       if (reactionsFromDB) {
