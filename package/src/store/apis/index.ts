@@ -8,6 +8,7 @@ export * from './getAppSettings';
 export * from './getChannelMessages';
 export * from './getChannels';
 export * from './getChannelsForFilterSort';
+export * from './getReactionsforFilterSort';
 export * from './getLastSyncedAt';
 export * from './getMembers';
 export * from './getReads';

@@ -47,6 +47,8 @@ export class OfflineDB extends AbstractOfflineDB {
   getAppSettings = ({ userId }: GetAppSettingsType) =>
     api.getAppSettings({ currentUserId: userId });
 
+  getReactions = api.getReactionsForFilterSort;
+
   addPendingTask = api.addPendingTask;
 
   deletePendingTask = api.deletePendingTask;

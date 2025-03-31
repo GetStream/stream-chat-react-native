@@ -1,4 +1,4 @@
-import type { ReactionSort } from 'stream-chat';
+import type { ReactionFilters, ReactionSort } from 'stream-chat';
 
 import { tables } from '../../schema';
 import { SqliteClient } from '../../SqliteClient';
@@ -14,7 +14,7 @@ import type { TableRowJoinedUser } from '../../types';
 export const selectReactionsForMessages = async (
   messageIds: string[],
   limit: number = 25,
-  filters?: { type?: string },
+  filters?: Pick<ReactionFilters, 'type'>,
   sort?: ReactionSort,
 ): Promise<TableRowJoinedUser<'reactions'>[]> => {
   const questionMarks = Array(messageIds.length).fill('?').join(',');
@@ -24,12 +24,14 @@ export const selectReactionsForMessages = async (
   const userColumnNames = Object.keys(tables.users.columns)
     .map((name) => `'${name}', b.${name}`)
     .join(', ');
-  const filterValue = filters?.type ? [filters.type] : [];
+  const filterValue = filters?.type
+    ? [typeof filters.type === 'string' ? filters.type : filters.type.$eq]
+    : [];
   const createdAtSort = Array.isArray(sort)
     ? sort.find((s) => !!s.created_at)?.created_at
     : sort?.created_at;
   const orderByClause = createdAtSort
-    ? `ORDER BY cast(strftime('%s', a.createdAt) AS INTEGER) ${createdAtSort === 1 ? 'DESC' : 'ASC'}`
+    ? `ORDER BY cast(strftime('%s', a.createdAt) AS INTEGER) ${createdAtSort === 1 ? 'ASC' : 'DESC'}`
     : '';
 
   SqliteClient.logger?.('info', 'selectReactionsForMessages', {

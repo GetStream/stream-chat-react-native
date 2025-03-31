@@ -1,4 +1,4 @@
-import type { ReactionResponse, ReactionSort } from 'stream-chat';
+import type { ReactionFilters, ReactionResponse, ReactionSort } from 'stream-chat';
 
 import { getReactions } from './getReactions';
 import { selectReactionsForMessages } from './queries/selectReactionsForMessages';
@@ -13,13 +13,13 @@ import { SqliteClient } from '../SqliteClient';
  * @param limit The limit of how many reactions should be returned.
  */
 export const getReactionsForFilterSort = async ({
-  currentMessageId,
+  messageId,
   filters,
   sort,
   limit,
 }: {
-  currentMessageId: string;
-  filters?: { type?: string };
+  messageId: string;
+  filters?: Pick<ReactionFilters, 'type'>;
   sort?: ReactionSort;
   limit?: number;
 }): Promise<ReactionResponse[] | null> => {
@@ -30,7 +30,7 @@ export const getReactionsForFilterSort = async ({
 
   SqliteClient.logger?.('info', 'getReactionsForFilterSort', { filters, sort });
 
-  const reactions = await selectReactionsForMessages([currentMessageId], limit, filters, sort);
+  const reactions = await selectReactionsForMessages([messageId], limit, filters, sort);
 
   if (!reactions) {
     return null;
@@ -39,9 +39,6 @@ export const getReactionsForFilterSort = async ({
   if (reactions.length === 0) {
     return [];
   }
-
-  // const filteredReactions = reactions.filter((reaction) => reaction.type === filters?.type);
-  // console.log('FILTERED', filteredReactions);
 
   return getReactions({ reactions });
 };
