@@ -25,6 +25,7 @@ export * from './upsertMembers';
 export * from './upsertMessages';
 export * from './upsertReads';
 export * from './updatePollMessage';
+export * from './upsertPoll';
 export * from './addPendingTask';
 export * from './deletePendingTask';
 export * from './getPendingTasks';

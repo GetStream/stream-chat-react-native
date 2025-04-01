@@ -31,6 +31,8 @@ export class OfflineDB extends AbstractOfflineDB {
   upsertAppSettings = ({ appSettings, userId, flush }: UpsertAppSettingsType) =>
     api.upsertAppSettings({ appSettings, currentUserId: userId, flush });
 
+  upsertPoll = api.upsertPoll;
+
   // FIXME
   getChannels = ({ cids, userId }: GetChannelsType) =>
     api.getChannels({ channelIds: cids, currentUserId: userId });

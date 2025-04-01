@@ -4,7 +4,6 @@ import { deleteChannel } from '../../../store/apis/deleteChannel';
 import { deleteMember } from '../../../store/apis/deleteMember';
 import { deleteMessagesForChannel } from '../../../store/apis/deleteMessagesForChannel';
 import { updateMessage } from '../../../store/apis/updateMessage';
-import { updatePollMessage } from '../../../store/apis/updatePollMessage';
 import { upsertChannelData } from '../../../store/apis/upsertChannelData';
 import { upsertChannelDataFromChannel } from '../../../store/apis/upsertChannelDataFromChannel';
 import { upsertMembers } from '../../../store/apis/upsertMembers';
@@ -261,27 +260,6 @@ export const handleEventToSyncDB = async (event: Event, client: StreamChat, flus
           member,
         }),
       );
-    }
-  }
-
-  if (
-    [
-      'poll.closed',
-      'poll.updated',
-      'poll.vote_casted',
-      'poll.vote_changed',
-      'poll.vote_removed',
-    ].includes(type)
-  ) {
-    const { poll, poll_vote, type } = event;
-    if (poll) {
-      return updatePollMessage({
-        eventType: type,
-        flush,
-        poll,
-        poll_vote,
-        userID: client?.userID || '',
-      });
     }
   }
 
