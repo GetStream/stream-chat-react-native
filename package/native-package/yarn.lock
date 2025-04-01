@@ -3493,7 +3493,7 @@ statuses@~1.5.0:
   version "0.0.0"
   uid ""
 
-"stream-chat@https://github.com/GetStream/stream-chat-js.git#9bc79358e9d0a23e0ff7e2a056711289e5bdf917":
+"stream-chat@https://github.com/GetStream/stream-chat-js.git#feat/message-composer":
   version "0.0.0-development"
   resolved "https://github.com/GetStream/stream-chat-js.git#9bc79358e9d0a23e0ff7e2a056711289e5bdf917"
   dependencies:
