@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react';
 
-import type { FormatMessageResponse } from 'stream-chat';
+import type { LocalMessage } from 'stream-chat';
 
 export function useShouldScrollToRecentOnNewOwnMessage(
-  rawMessageList: FormatMessageResponse[],
+  rawMessageList: LocalMessage[],
   currentUserId?: string,
 ) {
   const lastFocusedOwnMessageId = useRef('');

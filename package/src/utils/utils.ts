@@ -2,7 +2,7 @@ import type React from 'react';
 
 import dayjs from 'dayjs';
 import EmojiRegex from 'emoji-regex';
-import type { ChannelState, FormatMessageResponse, MessageResponse } from 'stream-chat';
+import type { ChannelState, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { IconProps } from '../../src/icons/utils/base';
 import {
@@ -187,12 +187,10 @@ export const hasOnlyEmojis = (text: string) => {
 
 /**
  * Stringifies a message object
- * @param {FormatMessageResponse} message - the message object to be stringified
+ * @param {LocalMessage} message - the message object to be stringified
  * @returns {string} The stringified message
  */
-export const stringifyMessage = (
-  message: MessageResponse | FormatMessageResponse | MessageType,
-): string => {
+export const stringifyMessage = (message: MessageResponse | LocalMessage | MessageType): string => {
   const {
     deleted_at,
     i18n,
@@ -224,7 +222,7 @@ export const stringifyMessage = (
  * @param {messages} messages - the array of messages to be compared
  * @returns {string} The mapped message string
  */
-export const reduceMessagesToString = (messages: FormatMessageResponse[]): string =>
+export const reduceMessagesToString = (messages: LocalMessage[]): string =>
   messages.map(stringifyMessage).join();
 
 /**

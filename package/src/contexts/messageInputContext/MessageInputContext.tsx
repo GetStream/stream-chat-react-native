@@ -998,7 +998,8 @@ export const MessageInputProvider = ({
       const updatedMessage = {
         ...message,
         attachments,
-        mentioned_users: mentionedUsers,
+        // FIXME: Temp fix, check the implications of this.
+        mentioned_users: mentionedUsers.map((userId) => ({ id: userId })),
         quoted_message: undefined,
         text: prevText,
         ...customMessageData,

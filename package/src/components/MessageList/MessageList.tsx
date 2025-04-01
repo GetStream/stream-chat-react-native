@@ -10,7 +10,7 @@ import {
   ViewToken,
 } from 'react-native';
 
-import type { FormatMessageResponse } from 'stream-chat';
+import type { LocalMessage } from 'stream-chat';
 
 import {
   isMessageWithStylesReadByAndDateSeparator,
@@ -310,9 +310,9 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    * We need topMessage and channelLastRead values to set the initial scroll position.
    * So these values only get used if `initialScrollToFirstUnreadMessage` prop is true.
    */
-  const topMessageBeforeUpdate = useRef<FormatMessageResponse>(undefined);
-  const latestNonCurrentMessageBeforeUpdateRef = useRef<FormatMessageResponse>(undefined);
-  const topMessageAfterUpdate: FormatMessageResponse | undefined = rawMessageList[0];
+  const topMessageBeforeUpdate = useRef<LocalMessage>(undefined);
+  const latestNonCurrentMessageBeforeUpdateRef = useRef<LocalMessage>(undefined);
+  const topMessageAfterUpdate: LocalMessage | undefined = rawMessageList[0];
 
   const shouldScrollToRecentOnNewOwnMessageRef = useShouldScrollToRecentOnNewOwnMessage(
     rawMessageList,

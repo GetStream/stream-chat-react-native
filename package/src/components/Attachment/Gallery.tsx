@@ -605,6 +605,7 @@ export const Gallery = (props: GalleryProps) => {
   const videos = propVideos || contextVideos;
   const message = propMessage || contextMessage;
 
+  console.log('TEST: ', images, videos);
   if (!images.length && !videos.length) {
     return null;
   }

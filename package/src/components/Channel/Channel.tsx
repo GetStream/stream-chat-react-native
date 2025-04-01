@@ -11,7 +11,7 @@ import {
   ChannelState,
   Channel as ChannelType,
   EventHandler,
-  FormatMessageResponse,
+  LocalMessage,
   MessageLabel,
   MessageResponse,
   Reaction,
@@ -1009,7 +1009,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       });
     }
 
-    const parseMessage = (message: FormatMessageResponse) =>
+    const parseMessage = (message: LocalMessage) =>
       ({
         ...message,
         created_at: message.created_at.toString(),

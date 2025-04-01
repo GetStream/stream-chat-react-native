@@ -1,10 +1,4 @@
-import type {
-  Attachment,
-  Channel,
-  FormatMessageResponse,
-  MessageResponse,
-  UserResponse,
-} from 'stream-chat';
+import type { Attachment, Channel, LocalMessage, MessageResponse, UserResponse } from 'stream-chat';
 
 import {
   GROUP_CHANNEL_MEMBERS_MOCK,
@@ -168,7 +162,7 @@ const LATEST_MESSAGE = {
   user: { id: 'okechukwu' } as unknown as UserResponse,
 } as unknown as MessageResponse;
 
-const FORMATTED_MESSAGE: FormatMessageResponse = {
+const FORMATTED_MESSAGE: LocalMessage = {
   created_at: new Date('2021-02-12T12:12:35.862282Z'),
   id: '',
   message: {} as unknown as MessageResponse,
