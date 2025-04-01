@@ -9,7 +9,6 @@ runs:
     - name: Install & Build the Core Package
       run: |
         cd package/
-        yarn cache clean
         yarn --frozen-lockfile
       shell: bash
     - name: Install & Build the Native Package
