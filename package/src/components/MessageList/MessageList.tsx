@@ -10,7 +10,7 @@ import {
   ViewToken,
 } from 'react-native';
 
-import type { Channel, LocalMessage } from 'stream-chat';
+import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
 import {
   isMessageWithStylesReadByAndDateSeparator,
@@ -104,19 +104,13 @@ const flatListViewabilityConfig: ViewabilityConfig = {
   viewAreaCoveragePercentThreshold: 1,
 };
 
-const hasReadLastMessage = (
-  channel: Channel,
-  userId: string,
-) => {
+const hasReadLastMessage = (channel: Channel, userId: string) => {
   const latestMessageIdInChannel = channel.state.latestMessages.slice(-1)[0]?.id;
   const lastReadMessageIdServer = channel.state.read[userId]?.last_read_message_id;
   return latestMessageIdInChannel === lastReadMessageIdServer;
 };
 
-const getPreviousLastMessage = (
-  messages: MessageType[],
-  newMessage?: MessageResponse,
-) => {
+const getPreviousLastMessage = (messages: MessageType[], newMessage?: MessageResponse) => {
   if (!newMessage) return;
   let previousLastMessage;
   for (let i = messages.length - 1; i >= 0; i--) {
@@ -526,16 +520,13 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       );
     };
 
-    const handleEvent = async (event: Event<StreamChatGenerics>) => {
+    const handleEvent = async (event: Event) => {
       const mainChannelUpdated = !event.message?.parent_id || event.message?.show_in_channel;
       // When the scrollToBottomButtonVisible is true, we need to manually update the channelUnreadState.
       if (scrollToBottomButtonVisible || channelUnreadState?.first_unread_message_id) {
         setChannelUnreadState((prev) => {
           const previousUnreadCount = prev?.unread_messages ?? 0;
-          const previousLastMessage = getPreviousLastMessage<StreamChatGenerics>(
-            channel.state.messages,
-            event.message,
-          );
+          const previousLastMessage = getPreviousLastMessage(channel.state.messages, event.message);
           return {
             ...(prev || {}),
             last_read:

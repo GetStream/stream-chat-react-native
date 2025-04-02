@@ -41,11 +41,8 @@ const styles = StyleSheet.create({
   },
 });
 
-type ThreadFooterComponentPropsWithContext = Pick<MessagesContextValue<StreamChatGenerics>, 'Message'> &
-  Pick<
-    ThreadContextValue,
-    'parentMessagePreventPress' | 'thread' | 'threadInstance'
-  >;
+type ThreadFooterComponentPropsWithContext = Pick<MessagesContextValue, 'Message'> &
+  Pick<ThreadContextValue, 'parentMessagePreventPress' | 'thread' | 'threadInstance'>;
 
 export const InlineLoadingMoreThreadIndicator = () => {
   const { threadLoadingMore } = useThreadContext();
@@ -71,9 +68,7 @@ const selector = (nextValue: ThreadState) =>
     replyCount: nextValue.replyCount,
   }) as const;
 
-const ThreadFooterComponentWithContext = (
-  props: ThreadFooterComponentPropsWithContext,
-) => {
+const ThreadFooterComponentWithContext = (props: ThreadFooterComponentPropsWithContext) => {
   const { Message, parentMessagePreventPress, thread, threadInstance } = props;
   const { t } = useTranslationContext();
   const { vw } = useViewport();
@@ -204,9 +199,7 @@ const MemoizedThreadFooter = React.memo(
 export type ThreadFooterComponentProps = Partial<Pick<MessagesContextValue, 'Message'>> &
   Partial<Pick<ThreadContextValue, 'parentMessagePreventPress' | 'thread'>>;
 
-export const ThreadFooterComponent = (
-  props: ThreadFooterComponentProps,
-) => {
+export const ThreadFooterComponent = (props: ThreadFooterComponentProps) => {
   const { Message } = useMessagesContext();
   const { parentMessagePreventPress, thread, threadInstance, threadLoadingMore } =
     useThreadContext();
