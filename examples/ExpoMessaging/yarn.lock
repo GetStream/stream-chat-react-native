@@ -4926,9 +4926,9 @@ ignore@^5.2.0:
   integrity sha512-MAb38BcSbH0eHNBxn7ql2NH/kX33OkB3lZ1BNdh7ENeRChHTYsTvWrMubiIAMNS2llXEEgZ1MUOBtXChP3kaFQ==
 
 image-size@^1.0.2:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/image-size/-/image-size-1.1.1.tgz#ddd67d4dc340e52ac29ce5f546a09f4e29e840ac"
-  integrity sha512-541xKlUw6jr/6gGuk92F+mYM5zaFAc5ahphvkqvNe2bQ6gVBkd6bfrmVJ2t4KDAfikAYZyIqTnktX3i6/aQDrQ==
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/image-size/-/image-size-1.2.1.tgz#ee118aedfe666db1a6ee12bed5821cde3740276d"
+  integrity sha512-rH+46sQJ2dlwfjfhCyNx5thzrv+dtmBIhPHk0zgRUukHzZ/kRueTJXoYYsclBaKcSMBWuGbOFXtioLpzTb5euw==
   dependencies:
     queue "6.0.2"
 
@@ -7355,13 +7355,14 @@ stream-buffers@2.2.x, stream-buffers@~2.2.0:
   integrity sha512-uyQK/mx5QjHun80FLJTfaWE7JtwfRMKBLkMne6udYOmvH0CawotVa7TfgYHzAnpphn4+TweIx1QKMnRIbipmUg==
 
 "stream-chat-expo@link:../../package/expo-package":
-  version "0.0.0"
-  uid ""
+  version "6.7.1"
+  dependencies:
+    stream-chat-react-native-core "6.7.1"
 
-stream-chat-react-native-core@6.6.8:
-  version "6.6.8"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-6.6.8.tgz#483ade63ba051426480ab2dfd8ab3b248b90ae88"
-  integrity sha512-F8S70DHaiit6BEdKOkSMHq2bjMONhrouvJ+szBQuE430EJDgUlc2VErHk3yJCzqIt5lwfVZktjHuqSIOGVg5LQ==
+stream-chat-react-native-core@6.7.1:
+  version "6.7.1"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-6.7.1.tgz#37cdfbc5c7f8a5bac5634b954da4bbdcd2fb95f2"
+  integrity sha512-4ePEMt1W+iw3zUulSDRFO9Nt4HPa8kW6wJ3Qv+ZN+y886rvcUuTuH18MFrdrJtHYb+UxCU+X3oz++3qzq7Jzxw==
   dependencies:
     "@gorhom/bottom-sheet" "^5.1.1"
     dayjs "1.10.5"
@@ -7378,8 +7379,21 @@ stream-chat-react-native-core@6.6.8:
     use-sync-external-store "^1.4.0"
 
 "stream-chat-react-native-core@link:../../package":
-  version "0.0.0"
-  uid ""
+  version "6.7.1"
+  dependencies:
+    "@gorhom/bottom-sheet" "^5.1.1"
+    dayjs "1.10.5"
+    emoji-regex "^10.3.0"
+    i18next "^21.6.14"
+    intl-pluralrules "^2.0.1"
+    linkifyjs "^4.1.1"
+    lodash-es "4.17.21"
+    mime-types "^2.1.34"
+    path "0.12.7"
+    react-native-markdown-package "1.8.2"
+    react-native-url-polyfill "^1.3.0"
+    stream-chat "^8.57.6"
+    use-sync-external-store "^1.4.0"
 
 stream-chat@^8.57.6:
   version "8.57.6"
