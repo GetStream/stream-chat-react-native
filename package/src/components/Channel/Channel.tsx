@@ -686,7 +686,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const [deleted, setDeleted] = useState<boolean>(false);
   const [editing, setEditing] = useState<MessageType | undefined>(undefined);
   const [error, setError] = useState<Error | boolean>(false);
-  const [lastRead, setLastRead] = useState<ChannelContextValue['lastRead']>();
+  const [lastRead, setLastRead] = useState<Date | undefined>();
+
   const [quotedMessage, setQuotedMessage] = useState<MessageType | undefined>(undefined);
   const [thread, setThread] = useState<MessageType | null>(threadProps || null);
   const [threadHasMore, setThreadHasMore] = useState(true);
@@ -949,6 +950,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
               last_read_message_id: response?.event.last_read_message_id,
               unread_messages: 0,
             });
+            setLastRead(new Date());
           }
         } catch (err) {
           console.log('Error marking channel as read:', err);
@@ -1360,8 +1362,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         } else {
           updateMessage(messageResponse.message);
         }
-
-        threadInstance?.upsertReplyLocally?.({ message: messageResponse.message });
       }
     } catch (err) {
       console.log(err);

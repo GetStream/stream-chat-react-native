@@ -2,6 +2,8 @@ import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
+import type { ThreadState } from 'stream-chat';
+
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -12,6 +14,7 @@ import {
   useThreadContext,
 } from '../../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { useStateStore } from '../../../hooks';
 import { useViewport } from '../../../hooks/useViewport';
 
 const styles = StyleSheet.create({
@@ -38,8 +41,11 @@ const styles = StyleSheet.create({
   },
 });
 
-type ThreadFooterComponentPropsWithContext = Pick<MessagesContextValue, 'Message'> &
-  Pick<ThreadContextValue, 'parentMessagePreventPress' | 'thread'>;
+type ThreadFooterComponentPropsWithContext = Pick<MessagesContextValue<StreamChatGenerics>, 'Message'> &
+  Pick<
+    ThreadContextValue,
+    'parentMessagePreventPress' | 'thread' | 'threadInstance'
+  >;
 
 export const InlineLoadingMoreThreadIndicator = () => {
   const { threadLoadingMore } = useThreadContext();
@@ -60,8 +66,15 @@ export const InlineLoadingMoreThreadIndicator = () => {
   );
 };
 
-const ThreadFooterComponentWithContext = (props: ThreadFooterComponentPropsWithContext) => {
-  const { Message, parentMessagePreventPress, thread } = props;
+const selector = (nextValue: ThreadState) =>
+  ({
+    replyCount: nextValue.replyCount,
+  }) as const;
+
+const ThreadFooterComponentWithContext = (
+  props: ThreadFooterComponentPropsWithContext,
+) => {
+  const { Message, parentMessagePreventPress, thread, threadInstance } = props;
   const { t } = useTranslationContext();
   const { vw } = useViewport();
 
@@ -80,11 +93,11 @@ const ThreadFooterComponentWithContext = (props: ThreadFooterComponentPropsWithC
     },
   } = useTheme();
 
+  const { replyCount = thread?.reply_count } = useStateStore(threadInstance?.state, selector) ?? {};
+
   if (!thread) {
     return null;
   }
-
-  const replyCount = thread.reply_count;
 
   return (
     <View style={styles.threadHeaderContainer} testID='thread-footer-component'>
@@ -138,10 +151,16 @@ const areEqual = (
   prevProps: ThreadFooterComponentPropsWithContext,
   nextProps: ThreadFooterComponentPropsWithContext,
 ) => {
-  const { parentMessagePreventPress: prevParentMessagePreventPress, thread: prevThread } =
-    prevProps;
-  const { parentMessagePreventPress: nextParentMessagePreventPress, thread: nextThread } =
-    nextProps;
+  const {
+    parentMessagePreventPress: prevParentMessagePreventPress,
+    thread: prevThread,
+    threadInstance: prevThreadInstance,
+  } = prevProps;
+  const {
+    parentMessagePreventPress: nextParentMessagePreventPress,
+    thread: nextThread,
+    threadInstance: nextThreadInstance,
+  } = nextProps;
 
   if (prevParentMessagePreventPress !== nextParentMessagePreventPress) {
     return false;
@@ -151,7 +170,12 @@ const areEqual = (
     prevThread?.id === nextThread?.id &&
     prevThread?.text === nextThread?.text &&
     prevThread?.reply_count === nextThread?.reply_count;
+
   if (!threadEqual) {
+    return false;
+  }
+
+  if (prevThreadInstance !== nextThreadInstance) {
     return false;
   }
 
@@ -180,9 +204,12 @@ const MemoizedThreadFooter = React.memo(
 export type ThreadFooterComponentProps = Partial<Pick<MessagesContextValue, 'Message'>> &
   Partial<Pick<ThreadContextValue, 'parentMessagePreventPress' | 'thread'>>;
 
-export const ThreadFooterComponent = (props: ThreadFooterComponentProps) => {
+export const ThreadFooterComponent = (
+  props: ThreadFooterComponentProps,
+) => {
   const { Message } = useMessagesContext();
-  const { parentMessagePreventPress, thread, threadLoadingMore } = useThreadContext();
+  const { parentMessagePreventPress, thread, threadInstance, threadLoadingMore } =
+    useThreadContext();
 
   return (
     <MemoizedThreadFooter
@@ -190,6 +217,7 @@ export const ThreadFooterComponent = (props: ThreadFooterComponentProps) => {
         Message,
         parentMessagePreventPress,
         thread,
+        threadInstance,
         threadLoadingMore,
       }}
       {...props}
