@@ -140,19 +140,19 @@ describe('ImageUploadPreview', () => {
     const imageUploads = [
       generateImageUploadPreview({
         id: 'image-upload-preview-1',
-        state: FileState.NOT_SUPPORTED,
+        state: FileState.BLOCKED,
       }),
       generateImageUploadPreview({
         id: 'image-upload-preview-2',
-        state: FileState.NOT_SUPPORTED,
+        state: FileState.BLOCKED,
       }),
       generateImageUploadPreview({
         id: 'image-upload-preview-3',
-        state: FileState.NOT_SUPPORTED,
+        state: FileState.BLOCKED,
       }),
       generateImageUploadPreview({
         id: 'image-upload-preview-4',
-        state: FileState.NOT_SUPPORTED,
+        state: FileState.BLOCKED,
       }),
     ];
     const removeImage = jest.fn();
@@ -187,7 +187,7 @@ describe('ImageUploadPreview', () => {
       generateImageUploadPreview({ id: 'image-upload-preview-1', state: FileState.UPLOADING }),
       generateImageUploadPreview({ id: 'image-upload-preview-2', state: FileState.UPLOADED }),
       generateImageUploadPreview({ id: 'image-upload-preview-3', state: FileState.UPLOAD_FAILED }),
-      generateImageUploadPreview({ id: 'image-upload-preview-4', state: FileState.NOT_SUPPORTED }),
+      generateImageUploadPreview({ id: 'image-upload-preview-4', state: FileState.BLOCKED }),
     ];
     const removeImage = jest.fn();
     const uploadImage = jest.fn();

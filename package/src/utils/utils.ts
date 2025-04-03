@@ -2,7 +2,12 @@ import type React from 'react';
 
 import dayjs from 'dayjs';
 import EmojiRegex from 'emoji-regex';
-import type { ChannelState, LocalMessage, MessageResponse } from 'stream-chat';
+import type {
+  AttachmentLoadingState,
+  ChannelState,
+  LocalMessage,
+  MessageResponse,
+} from 'stream-chat';
 
 import { IconProps } from '../../src/icons/utils/base';
 import {
@@ -19,26 +24,17 @@ export type ReactionData = {
   type: string;
 };
 
-export const FileState = Object.freeze({
-  // finished and uploaded state are the same thing. First is set on frontend,
-  // while later is set on backend side
-  // TODO: Unify both of them
-  FINISHED: 'finished',
-  NOT_SUPPORTED: 'not_supported',
-  UPLOAD_FAILED: 'upload_failed',
-  UPLOADED: 'uploaded',
-  UPLOADING: 'uploading',
-});
+export type FileState = AttachmentLoadingState;
 
 export const ProgressIndicatorTypes: {
+  BLOCKED: 'blocked';
   IN_PROGRESS: 'in_progress';
   INACTIVE: 'inactive';
-  NOT_SUPPORTED: 'not_supported';
   RETRY: 'retry';
 } = Object.freeze({
+  BLOCKED: 'blocked',
   IN_PROGRESS: 'in_progress',
   INACTIVE: 'inactive',
-  NOT_SUPPORTED: 'not_supported',
   RETRY: 'retry',
 });
 
@@ -48,26 +44,30 @@ export const MessageStatusTypes = {
   SENDING: 'sending',
 };
 
-export type FileStateValue = (typeof FileState)[keyof typeof FileState];
-
 type Progress = ValueOf<typeof ProgressIndicatorTypes>;
-type IndicatorStatesMap = Record<ValueOf<typeof FileState>, Progress | null>;
+type IndicatorStatesMap = Record<AttachmentLoadingState, Progress | null>;
 
-export const getIndicatorTypeForFileState = (
-  fileState: FileStateValue,
-  enableOfflineSupport: boolean,
-): Progress | null => {
+export const getIndicatorTypeForFileState = ({
+  enableOfflineSupport,
+  fileState,
+}: {
+  enableOfflineSupport: boolean;
+  fileState?: AttachmentLoadingState;
+}): Progress | null => {
+  if (!fileState) {
+    return null;
+  }
+
   const indicatorMap: IndicatorStatesMap = {
-    [FileState.UPLOADING]: enableOfflineSupport
-      ? ProgressIndicatorTypes.INACTIVE
-      : ProgressIndicatorTypes.IN_PROGRESS,
+    ['blocked']: ProgressIndicatorTypes.BLOCKED,
     // If offline support is disabled, then there is no need
-    [FileState.UPLOAD_FAILED]: enableOfflineSupport
+    ['failed']: enableOfflineSupport
       ? ProgressIndicatorTypes.INACTIVE
       : ProgressIndicatorTypes.RETRY,
-    [FileState.NOT_SUPPORTED]: ProgressIndicatorTypes.NOT_SUPPORTED,
-    [FileState.UPLOADED]: ProgressIndicatorTypes.INACTIVE,
-    [FileState.FINISHED]: ProgressIndicatorTypes.INACTIVE,
+    ['finished']: ProgressIndicatorTypes.INACTIVE,
+    ['uploading']: enableOfflineSupport
+      ? ProgressIndicatorTypes.INACTIVE
+      : ProgressIndicatorTypes.IN_PROGRESS,
   };
 
   return indicatorMap[fileState];

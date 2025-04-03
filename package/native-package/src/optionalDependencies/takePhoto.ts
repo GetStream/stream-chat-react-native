@@ -56,8 +56,7 @@ export const takePhoto = ImagePicker
             mimeType: asset.type,
             name: 'video_recording_' + date + '.' + asset.fileName.split('.').pop(),
             size: asset.fileSize,
-            source: 'camera',
-            type: asset.type,
+            type: asset.type.split('/')[0],
             uri: asset.uri,
           };
         } else {
@@ -93,8 +92,7 @@ export const takePhoto = ImagePicker
               mimeType: asset.type,
               name: 'video_recording_' + date + '.' + asset.fileName.split('.').pop(),
               size: asset.size,
-              source: 'camera',
-              type: asset.type,
+              type: asset.type.split('/')[0],
               uri: asset.uri,
               ...size,
             };

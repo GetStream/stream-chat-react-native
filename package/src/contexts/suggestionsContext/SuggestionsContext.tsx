@@ -27,11 +27,7 @@ export type Suggestion = Emoji | SuggestionCommand | SuggestionUser;
 export type SuggestionCommand = CommandResponse;
 export type SuggestionUser = UserResponse;
 
-export type Suggestions = {
-  data: Suggestion[];
-  onSelect: (item: Suggestion) => void;
-  queryText?: string;
-};
+export type Suggestions = Suggestion[];
 
 export type SuggestionsContextValue = {
   AutoCompleteSuggestionHeader: React.ComponentType<AutoCompleteSuggestionHeaderProps>;
@@ -47,7 +43,7 @@ export type SuggestionsContextValue = {
    */
   openSuggestions: (component: SuggestionComponentType) => Promise<void>;
   suggestions: Suggestions;
-  triggerType: SuggestionComponentType;
+  triggerType?: string;
   /**
    * Override handler for updating suggestions (mentions, command autocomplete etc)
    *

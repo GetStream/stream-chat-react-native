@@ -63,9 +63,8 @@ export const takePhoto = ImagePicker
               duration: photo.duration, // in milliseconds
               name: 'video_recording_' + date + '.' + photo.uri.split('.').pop(),
               size: photo.fileSize,
-              source: 'camera',
-              type: photo.mimeType,
               uri: photo.uri,
+              type: photo.mimeType.split('/')[0],
             };
           } else {
             if (photo && photo.height && photo.width && photo.uri) {
@@ -98,9 +97,8 @@ export const takePhoto = ImagePicker
                 mimeType: photo.mimeType,
                 name: 'image_' + date + '.' + photo.uri.split('.').pop(),
                 size: photo.fileSize,
-                source: 'camera',
-                type: photo.mimeType,
                 uri: photo.uri,
+                type: photo.mimeType.split('/')[0],
                 ...size,
               };
             }

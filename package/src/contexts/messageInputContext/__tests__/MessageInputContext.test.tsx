@@ -113,7 +113,7 @@ describe('MessageInputContext', () => {
       );
     });
 
-    expect(result.current.imageUploads[0].state).toBe(FileState.NOT_SUPPORTED);
+    expect(result.current.imageUploads[0].state).toBe(FileState.BLOCKED);
 
     act(() => {
       result.current.uploadNewFile({
@@ -121,7 +121,7 @@ describe('MessageInputContext', () => {
         uri: 'https://www.bastiaanmulder.nl/wp-content/uploads/2013/11/dummy.mp3',
       });
     });
-    expect(result.current.imageUploads[0].state).toBe(FileState.NOT_SUPPORTED);
+    expect(result.current.imageUploads[0].state).toBe(FileState.BLOCKED);
   });
 
   it('onSelectItem works', () => {

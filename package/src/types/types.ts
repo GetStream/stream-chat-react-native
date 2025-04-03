@@ -1,6 +1,6 @@
 import type { ChannelFilters, ChannelSort, ChannelState } from 'stream-chat';
 
-import type { FileStateValue } from '../utils/utils';
+import type { FileState } from '../utils/utils';
 
 export enum FileTypes {
   Audio = 'audio',
@@ -12,52 +12,53 @@ export enum FileTypes {
   VoiceRecording = 'voiceRecording',
 }
 
-export type Asset = {
-  duration: number;
-  height: number;
-  name: string;
-  source: 'camera' | 'picker';
-  type: string;
-  uri: string;
-  width: number;
-  id?: string;
-  mimeType?: string;
-  originalUri?: string;
-  size?: number;
-};
-
 export type File = {
+  // common to all files(images/files)
   name: string;
+  uri: string;
+  size: number;
+  mimeType: string;
+  type: FileTypes;
+
+  // For voice recordings
   duration?: number;
-  id?: string;
-  mimeType?: string;
-  originalUri?: string;
-  size?: number;
-  type?: FileTypes;
-  // The uri should be of type `string`. But is `string|undefined` because the same type is used for the response from Stream's Attachment. This shall be fixed.
-  uri?: string;
   waveform_data?: number[];
+
+  // For images
+  height?: number;
+  width?: number;
+
+  // This is specially needed for video in camera roll
+  thumb_url?: string;
 };
 
 export type FileUpload = {
   file: File;
   id: string;
-  state: FileStateValue;
-  duration?: number;
-  paused?: boolean;
-  progress?: number;
-  thumb_url?: string;
-  type?: string;
+  state: FileState;
   url?: string;
+
+  // For videos
+  thumb_url?: string;
+
+  // For voice recordings
+  duration?: number;
   waveform_data?: number[];
+
+  // For images
+  height?: number;
+  width?: number;
 };
+
+export type AudioUpload = FileUpload & {
+  progress: number;
+  paused: boolean;
+};
+
 export interface DefaultAttachmentType {
   duration?: number;
-  file_size?: number;
-  mime_type?: string;
   originalFile?: File;
-  originalImage?: Partial<Asset>;
-  waveform_data?: number[];
+  originalImage?: File;
 }
 
 export interface DefaultUserType {
@@ -89,16 +90,6 @@ export interface DefaultPollType {}
 export interface DefaultReactionType {}
 
 export interface DefaultThreadType {}
-
-/* eslint-enable @typescript-eslint/no-empty-object-type */
-export type ImageUpload = {
-  file: Partial<Asset>;
-  id: string;
-  state: FileStateValue;
-  height?: number;
-  url?: string;
-  width?: number;
-};
 
 export type Reaction = {
   id: string;

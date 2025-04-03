@@ -46,6 +46,7 @@ export const pickDocument = DocumentPicker
             mimeType: type,
             name,
             size,
+            type: type.split('/')[0],
             uri,
           })),
           cancelled: false,

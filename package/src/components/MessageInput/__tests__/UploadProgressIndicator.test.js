@@ -44,7 +44,7 @@ describe('UploadProgressIndicator', () => {
 
     render(
       <ThemeProvider>
-        <UploadProgressIndicator action={action} type={ProgressIndicatorTypes.NOT_SUPPORTED} />
+        <UploadProgressIndicator action={action} type={ProgressIndicatorTypes.BLOCKED} />
       </ThemeProvider>,
     );
 

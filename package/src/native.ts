@@ -1,7 +1,7 @@
 import type React from 'react';
 import { FlatList as DefaultFlatList, StyleProp, ViewStyle } from 'react-native';
 
-import type { Asset, File } from './types/types';
+import type { File } from './types/types';
 
 const fail = () => {
   throw Error(
@@ -31,7 +31,7 @@ type iOS14RefreshGallerySelection = () => Promise<void>;
 
 type GetPhotos = ({ after, first }: { first: number; after?: string }) =>
   | Promise<{
-      assets: Array<Omit<Asset, 'source'> & { source: 'picker' }>;
+      assets: Array<File & { source: 'picker' }>;
       endCursor: string;
       hasNextPage: boolean;
       iOSLimited: boolean;
@@ -47,7 +47,7 @@ type PickDocument = ({ maxNumberOfFiles }: { maxNumberOfFiles?: number }) =>
 
 type PickImageAssetType = {
   askToOpenSettings?: boolean;
-  assets?: Array<Omit<Asset, 'source'> & { source: 'picker' }>;
+  assets?: Array<File>;
   cancelled?: boolean;
 };
 
@@ -67,8 +67,8 @@ type ShareOptions = {
 };
 type ShareImage = (options: ShareOptions) => Promise<boolean> | never;
 
-type Photo = Omit<Asset, 'source'> & {
-  source: 'camera';
+type Photo = File & {
+  source?: 'camera';
   askToOpenSettings?: boolean;
   cancelled?: boolean;
 };

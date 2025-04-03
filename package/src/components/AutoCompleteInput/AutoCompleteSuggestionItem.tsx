@@ -6,7 +6,7 @@ import { AutoCompleteSuggestionCommandIcon } from './AutoCompleteSuggestionComma
 import type {
   Suggestion,
   SuggestionCommand,
-  SuggestionsContextValue,
+  SuggestionComponentType,
   SuggestionUser,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -15,11 +15,100 @@ import { AtMentions } from '../../icons/AtMentions';
 
 import { Avatar } from '../Avatar/Avatar';
 
-export type AutoCompleteSuggestionItemPropsWithContext = Pick<
-  SuggestionsContextValue,
-  'triggerType'
-> & {
+export type AutoCompleteSuggestionItemProps = {
   itemProps: Suggestion;
+  triggerType: SuggestionComponentType;
+};
+
+export const MentionSuggestionItem = (item: SuggestionUser) => {
+  const { id, image, name, online } = item;
+  const {
+    theme: {
+      colors: { accent_blue, black },
+      messageInput: {
+        suggestions: {
+          mention: { avatarSize, column, container: mentionContainer, name: nameStyle },
+        },
+      },
+    },
+  } = useTheme();
+  return (
+    <View style={[styles.container, mentionContainer]}>
+      <Avatar image={image} name={name} online={online} size={avatarSize} />
+      <View style={[styles.column, column]}>
+        <Text style={[styles.name, { color: black }, nameStyle]} testID='mentions-item-name'>
+          {name || id}
+        </Text>
+      </View>
+      <AtMentions pathFill={accent_blue} />
+    </View>
+  );
+};
+
+const EmojiSuggestionItem = (item: Emoji) => {
+  const { unicode, name } = item;
+  const {
+    theme: {
+      colors: { black },
+      messageInput: {
+        suggestions: {
+          emoji: { container: emojiContainer, text },
+        },
+      },
+    },
+  } = useTheme();
+  return (
+    <View style={[styles.container, emojiContainer]}>
+      <Text style={[styles.text, { color: black }, text]} testID='emojis-item-unicode'>
+        {unicode}
+      </Text>
+      <Text style={[styles.text, { color: black }, text]} testID='emojis-item-name'>
+        {` ${name}`}
+      </Text>
+    </View>
+  );
+};
+
+const CommandSuggestionItem = (item: SuggestionCommand) => {
+  const { args, name } = item;
+  const {
+    theme: {
+      colors: { black, grey },
+      messageInput: {
+        suggestions: {
+          command: { args: argsStyle, container: commandContainer, title },
+        },
+      },
+    },
+  } = useTheme();
+
+  return (
+    <View style={[styles.container, commandContainer]}>
+      <AutoCompleteSuggestionCommandIcon name={name} />
+      <Text style={[styles.title, { color: black }, title]} testID='commands-item-title'>
+        {(name || '').replace(/^\w/, (char) => char.toUpperCase())}
+      </Text>
+      <Text style={[styles.args, { color: grey }, argsStyle]} testID='commands-item-args'>
+        {`/${name} ${args}`}
+      </Text>
+    </View>
+  );
+};
+
+export const AutoCompleteSuggestionItem = ({
+  itemProps,
+  triggerType,
+}: AutoCompleteSuggestionItemProps) => {
+  switch (triggerType) {
+    case 'mention':
+      return <MentionSuggestionItem {...(itemProps as SuggestionUser)} />;
+    case 'emoji':
+      return <EmojiSuggestionItem {...(itemProps as Emoji)} />;
+    case 'command':
+      return <CommandSuggestionItem {...(itemProps as SuggestionCommand)} />;
+    default:
+      return null;
+  }
 };
 
 const styles = StyleSheet.create({
@@ -55,94 +144,3 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
 });
-
-const AutoCompleteSuggestionItemWithContext = ({
-  itemProps,
-  triggerType,
-}: AutoCompleteSuggestionItemPropsWithContext) => {
-  const {
-    theme: {
-      colors: { accent_blue, black, grey },
-      messageInput: {
-        suggestions: {
-          command: { args: argsStyle, container: commandContainer, title },
-          emoji: { container: emojiContainer, text },
-          mention: { avatarSize, column, container: mentionContainer, name: nameStyle },
-        },
-      },
-    },
-  } = useTheme();
-
-  if (triggerType === 'mention') {
-    const { id, image, name, online } = itemProps as SuggestionUser;
-    return (
-      <View style={[styles.container, mentionContainer]}>
-        <Avatar image={image} name={name} online={online} size={avatarSize} />
-        <View style={[styles.column, column]}>
-          <Text style={[styles.name, { color: black }, nameStyle]} testID='mentions-item-name'>
-            {name || id}
-          </Text>
-        </View>
-        <AtMentions pathFill={accent_blue} />
-      </View>
-    );
-  } else if (triggerType === 'emoji') {
-    const { name, unicode } = itemProps as Emoji;
-    return (
-      <View style={[styles.container, emojiContainer]}>
-        <Text style={[styles.text, { color: black }, text]} testID='emojis-item-unicode'>
-          {unicode}
-        </Text>
-        <Text style={[styles.text, { color: black }, text]} testID='emojis-item-name'>
-          {` ${name}`}
-        </Text>
-      </View>
-    );
-  } else if (triggerType === 'command') {
-    const { args, name } = itemProps as SuggestionCommand;
-    return (
-      <View style={[styles.container, commandContainer]}>
-        <AutoCompleteSuggestionCommandIcon name={name} />
-        <Text style={[styles.title, { color: black }, title]} testID='commands-item-title'>
-          {(name || '').replace(/^\w/, (char) => char.toUpperCase())}
-        </Text>
-        <Text style={[styles.args, { color: grey }, argsStyle]} testID='commands-item-args'>
-          {`/${name} ${args}`}
-        </Text>
-      </View>
-    );
-  } else {
-    return null;
-  }
-};
-
-const areEqual = (
-  prevProps: AutoCompleteSuggestionItemPropsWithContext,
-  nextProps: AutoCompleteSuggestionItemPropsWithContext,
-) => {
-  const { itemProps: prevItemProps, triggerType: prevType } = prevProps;
-  const { itemProps: nextItemProps, triggerType: nextType } = nextProps;
-  const itemPropsEqual = prevItemProps === nextItemProps;
-  if (!itemPropsEqual) {
-    return false;
-  }
-  const typeEqual = prevType === nextType;
-  if (!typeEqual) {
-    return false;
-  }
-  return true;
-};
-
-const MemoizedAutoCompleteSuggestionItem = React.memo(
-  AutoCompleteSuggestionItemWithContext,
-  areEqual,
-) as typeof AutoCompleteSuggestionItemWithContext;
-
-export type AutoCompleteSuggestionItemProps = AutoCompleteSuggestionItemPropsWithContext;
-
-export const AutoCompleteSuggestionItem = (props: AutoCompleteSuggestionItemProps) => (
-  <MemoizedAutoCompleteSuggestionItem {...props} />
-);
-
-AutoCompleteSuggestionItem.displayName =
-  'AutoCompleteSuggestionItem{messageInput{suggestions{Item}}}';

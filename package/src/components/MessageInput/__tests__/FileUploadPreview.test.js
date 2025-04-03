@@ -225,10 +225,10 @@ describe('FileUploadPreview', () => {
 
   it('should render FileUploadPreview with all unsupported files', async () => {
     const fileUploads = [
-      generateFileUploadPreview({ id: 'file-upload-id-1', state: FileState.NOT_SUPPORTED }),
-      generateFileUploadPreview({ id: 'file-upload-id-2', state: FileState.NOT_SUPPORTED }),
-      generateFileUploadPreview({ id: 'file-upload-id-3', state: FileState.NOT_SUPPORTED }),
-      generateFileUploadPreview({ id: 'file-upload-id-4', state: FileState.NOT_SUPPORTED }),
+      generateFileUploadPreview({ id: 'file-upload-id-1', state: FileState.BLOCKED }),
+      generateFileUploadPreview({ id: 'file-upload-id-2', state: FileState.BLOCKED }),
+      generateFileUploadPreview({ id: 'file-upload-id-3', state: FileState.BLOCKED }),
+      generateFileUploadPreview({ id: 'file-upload-id-4', state: FileState.BLOCKED }),
     ];
     const removeFile = jest.fn();
     const uploadFile = jest.fn();
@@ -285,7 +285,7 @@ describe('FileUploadPreview', () => {
       generateFileUploadPreview({ id: 'file-upload-id-1', state: FileState.UPLOADING }),
       generateFileUploadPreview({ id: 'file-upload-id-2', state: FileState.UPLOADED }),
       generateFileUploadPreview({ id: 'file-upload-id-3', state: FileState.UPLOAD_FAILED }),
-      generateFileUploadPreview({ id: 'file-upload-id-4', state: FileState.NOT_SUPPORTED }),
+      generateFileUploadPreview({ id: 'file-upload-id-4', state: FileState.BLOCKED }),
     ];
     const removeFile = jest.fn();
     const uploadFile = jest.fn();
