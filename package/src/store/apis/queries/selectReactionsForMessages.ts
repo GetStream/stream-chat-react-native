@@ -13,7 +13,7 @@ import type { TableRowJoinedUser } from '../../types';
  */
 export const selectReactionsForMessages = async (
   messageIds: string[],
-  limit: number = 25,
+  limit: number | null = 25,
   filters?: Pick<ReactionFilters, 'type'>,
   sort?: ReactionSort,
 ): Promise<TableRowJoinedUser<'reactions'>[]> => {
@@ -52,8 +52,8 @@ export const selectReactionsForMessages = async (
     ON b.id = a.userId
     WHERE a.messageId in (${questionMarks}) ${filters?.type ? `AND a.type = ?` : ''}
     ${orderByClause}
-    LIMIT ?`,
-    [...messageIds, ...filterValue, limit],
+    ${limit ? 'LIMIT ?' : ''}`,
+    [...messageIds, ...filterValue, ...(limit ? [limit] : [])],
   );
 
   return result.map((r) => JSON.parse(r.value));

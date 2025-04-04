@@ -1,13 +1,10 @@
-import {
-  AbstractOfflineDB,
-  GetAppSettingsType,
-  StreamChat,
-  UpsertAppSettingsType,
-} from 'stream-chat';
+import { AbstractOfflineDB, StreamChat } from 'stream-chat';
 import type {
+  GetAppSettingsType,
   GetChannelsForQueryType,
   GetChannelsType,
   GetLastSyncedAtType,
+  UpsertAppSettingsType,
   UpsertUserSyncStatusType,
 } from 'stream-chat';
 
