@@ -814,7 +814,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     const initChannel = async () => {
       setLastRead(new Date());
       const unreadCount = channel.countUnread();
-      if (!channel || !shouldSyncChannel || channel.offlineMode) {
+      if (!channel || !shouldSyncChannel) {
         return;
       }
       let errored = false;
