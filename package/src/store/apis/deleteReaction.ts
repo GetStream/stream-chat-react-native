@@ -1,4 +1,4 @@
-import { Channel } from 'stream-chat';
+import { FormatMessageResponse, MessageResponse, ReactionResponse } from 'stream-chat';
 
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
@@ -6,21 +6,15 @@ import { SqliteClient } from '../SqliteClient';
 import { PreparedQueries } from '../types';
 
 export const deleteReaction = async ({
-  channel,
   flush = true,
-  messageId,
-  reactionType,
-  userId,
+  message,
+  reaction,
 }: {
-  channel: Channel;
-  messageId: string;
-  reactionType: string;
-  userId: string;
+  reaction: ReactionResponse;
+  message?: MessageResponse | FormatMessageResponse;
   flush?: boolean;
 }) => {
   const queries: PreparedQueries[] = [];
-
-  const message = channel.state.messages.find(({ id }) => id === messageId);
 
   if (!message) {
     return;
@@ -28,9 +22,9 @@ export const deleteReaction = async ({
 
   queries.push(
     createDeleteQuery('reactions', {
-      messageId,
-      type: reactionType,
-      userId,
+      messageId: reaction.message_id,
+      type: reaction.type,
+      userId: reaction.user_id,
     }),
   );
 
@@ -47,9 +41,7 @@ export const deleteReaction = async ({
   );
 
   SqliteClient.logger?.('info', 'deleteReaction', {
-    messageId,
-    type: reactionType,
-    userId,
+    reaction,
   });
 
   if (flush) {

@@ -3,6 +3,7 @@ import type { FormatMessageResponse, MessageResponse, ReactionResponse } from 's
 import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
+import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
@@ -17,6 +18,7 @@ export const updateReaction = async ({
   reaction: ReactionResponse;
   flush?: boolean;
 }) => {
+  console.log('EXECUTING UPDATE');
   const queries: PreparedQueries[] = [];
   let storableUser: ReturnType<typeof mapUserToStorable> | undefined;
 
@@ -28,11 +30,12 @@ export const updateReaction = async ({
   const storableReaction = mapReactionToStorable(reaction);
 
   queries.push(
-    createUpdateQuery('reactions', storableReaction, {
+    createDeleteQuery('reactions', {
       messageId: reaction.message_id,
       userId: reaction.user_id,
     }),
   );
+  queries.push(createUpsertQuery('reactions', storableReaction));
 
   let updatedReactionGroups: string | undefined;
   if (message.reaction_groups) {

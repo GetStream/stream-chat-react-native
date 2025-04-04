@@ -148,7 +148,7 @@
     "react-native-svg": "15.11.2",
     "react-test-renderer": "19.0.0",
     "typescript": "5.8.2",
-    "typescript-eslint": "^8.25.0",
+    "typescript-eslint": "^8.29.0",
     "uuid": "^11.1.0"
   },
   "resolutions": {

@@ -60,6 +60,12 @@ export class OfflineDB extends AbstractOfflineDB {
 
   getPendingTasks = api.getPendingTasks;
 
+  updateReaction = api.updateReaction;
+
+  insertReaction = api.insertReaction;
+
+  updateMessage = api.updateMessage;
+
   resetDB = SqliteClient.resetDB;
 
   executeSqlBatch = SqliteClient.executeSqlBatch;

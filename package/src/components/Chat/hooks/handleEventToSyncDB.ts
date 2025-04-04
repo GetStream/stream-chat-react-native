@@ -161,33 +161,33 @@ export const handleEventToSyncDB = async (event: Event, client: StreamChat, flus
     }
   }
 
-  if (type === 'reaction.updated') {
-    const message = event.message;
-    if (message && event.reaction) {
-      // We update the entire message to make sure we also update reaction_groups
-      return await queriesWithChannelGuard((flushOverride) =>
-        updateMessage({
-          flush: flushOverride,
-          message,
-        }),
-      );
-    }
-  }
-
-  if (type === 'reaction.new' || type === 'reaction.deleted') {
-    const message = event.message;
-    if (message && !message.parent_id) {
-      // Here we are relying on the fact message.latest_reactions always includes
-      // the new reaction. So we first delete all the existing reactions and populate
-      // the reactions table with message.latest_reactions
-      return await queriesWithChannelGuard((flushOverride) =>
-        updateMessage({
-          flush: flushOverride,
-          message,
-        }),
-      );
-    }
-  }
+  // if (type === 'reaction.updated') {
+  //   const message = event.message;
+  //   if (message && event.reaction) {
+  //     // We update the entire message to make sure we also update reaction_groups
+  //     return await queriesWithChannelGuard((flushOverride) =>
+  //       updateMessage({
+  //         flush: flushOverride,
+  //         message,
+  //       }),
+  //     );
+  //   }
+  // }
+  //
+  // if (type === 'reaction.new' || type === 'reaction.deleted') {
+  //   const message = event.message;
+  //   if (message && !message.parent_id) {
+  //     // Here we are relying on the fact message.latest_reactions always includes
+  //     // the new reaction. So we first delete all the existing reactions and populate
+  //     // the reactions table with message.latest_reactions
+  //     return await queriesWithChannelGuard((flushOverride) =>
+  //       updateMessage({
+  //         flush: flushOverride,
+  //         message,
+  //       }),
+  //     );
+  //   }
+  // }
 
   if (
     type === 'channel.updated' ||
