@@ -14,7 +14,7 @@ export type QueryUsersFunction = (
     limit?: number;
     mentionAllAppUsersQuery?: MentionAllAppUsersQuery;
   },
-) => Promise<void>;
+) => Promise<SuggestionUser[]>;
 
 const queryUsers = async (
   client: StreamChat,
@@ -24,9 +24,9 @@ const queryUsers = async (
     limit?: number;
     mentionAllAppUsersQuery?: MentionAllAppUsersQuery;
   } = {},
-): Promise<void> => {
+): Promise<SuggestionUser[]> => {
   if (!query) {
-    return;
+    return [];
   }
   try {
     const {
@@ -49,6 +49,7 @@ const queryUsers = async (
     if (onReady && users) {
       onReady(usersWithoutClientUserId);
     }
+    return usersWithoutClientUserId;
   } catch (error) {
     console.warn('Error querying users:', error);
     throw error;

@@ -15,6 +15,7 @@ import {
   Attachment,
   logChatPromiseExecution,
   Message,
+  MessageComposer,
   SendFileAPIResponse,
   StreamChat,
   Message as StreamMessage,
@@ -25,6 +26,7 @@ import {
 } from 'stream-chat';
 
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
+import { useMessageComposer } from './hooks/useMessageComposer';
 import { useMessageDetailsForState } from './hooks/useMessageDetailsForState';
 
 import { isUploadAllowed, MAX_FILE_SIZE_TO_UPLOAD, prettifyFileSize } from './utils/utils';
@@ -163,6 +165,7 @@ export type LocalMessageInputContext = {
   inputBoxRef: React.MutableRefObject<TextInput | null>;
   isValidMessage: () => boolean;
   mentionedUsers: string[];
+  messageComposer: MessageComposer;
   numberOfUploads: number;
   onChange: (newText: string) => void;
   onSelectItem: (item: UserResponse) => void;
@@ -1416,6 +1419,12 @@ export const MessageInputProvider = ({
     defaultOpenPollCreationDialog();
   };
 
+  const messageComposer = useMessageComposer({
+    autoCompleteTriggerSettings: triggerSettings,
+    editing,
+    emojiSearchIndex: value.emojiSearchIndex,
+  });
+
   const messageInputContext = useCreateMessageInputContext({
     appendText,
     asyncIds,
@@ -1428,6 +1437,7 @@ export const MessageInputProvider = ({
     inputBoxRef,
     isValidMessage,
     mentionedUsers,
+    messageComposer,
     numberOfUploads,
     onChange,
     onSelectItem,

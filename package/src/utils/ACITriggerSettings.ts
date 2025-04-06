@@ -10,7 +10,6 @@ import type {
   MentionAllAppUsersQuery,
 } from '../contexts/messageInputContext/MessageInputContext';
 import type {
-  SuggestionCommand,
   SuggestionComponentType,
   SuggestionUser,
 } from '../contexts/suggestionsContext/SuggestionsContext';
@@ -24,40 +23,31 @@ export type TriggerSettingsOutputType = {
   text: string;
 };
 
+export type TriggerSettingsDataProvider<T> = (
+  query: string,
+  _: string,
+  onReady?: (data: T[], q: string) => void,
+  options?: {
+    limit?: number;
+    mentionAllAppUsersEnabled?: boolean;
+    mentionAllAppUsersQuery?: MentionAllAppUsersQuery;
+  },
+) => T[] | Promise<T[]>;
+
 export type TriggerSettings = {
   '/'?: {
-    dataProvider: (
-      query: CommandResponse['name'],
-      text: string,
-      onReady?: (data: CommandResponse[], q: CommandResponse['name']) => void,
-      options?: {
-        limit?: number;
-      },
-    ) => SuggestionCommand[];
+    dataProvider: TriggerSettingsDataProvider<CommandResponse>;
     output: (entity: CommandResponse) => TriggerSettingsOutputType;
     type: SuggestionComponentType;
   };
   ':'?: {
-    dataProvider: (
-      query: Emoji['name'],
-      _: string,
-      onReady?: (data: Emoji[], q: Emoji['name']) => void,
-    ) => Emoji[] | Promise<Emoji[]>;
+    dataProvider: TriggerSettingsDataProvider<Emoji>;
     output: (entity: Emoji) => TriggerSettingsOutputType;
     type: SuggestionComponentType;
   };
   '@'?: {
     callback: (item: SuggestionUser) => void;
-    dataProvider: (
-      query: SuggestionUser['name'],
-      _: string,
-      onReady?: (data: SuggestionUser[], q: SuggestionUser['name']) => void,
-      options?: {
-        limit?: number;
-        mentionAllAppUsersEnabled?: boolean;
-        mentionAllAppUsersQuery?: MentionAllAppUsersQuery;
-      },
-    ) => SuggestionUser[] | Promise<void> | void;
+    dataProvider: TriggerSettingsDataProvider<SuggestionUser>;
     output: (entity: SuggestionUser) => TriggerSettingsOutputType;
     type: SuggestionComponentType;
   };
@@ -66,7 +56,7 @@ export type TriggerSettings = {
 export type ACITriggerSettingsParams = {
   channel: Channel;
   client: StreamChat;
-  onMentionSelectItem: (item: SuggestionUser) => void;
+  onMentionSelectItem?: (item: SuggestionUser) => void;
   emojiSearchIndex?: EmojiSearchIndex;
 };
 
@@ -142,7 +132,7 @@ export const ACITriggerSettings = ({
     output: (entity) => ({
       caretPosition: 'next',
       key: `${entity.name}`,
-      text: `/${entity.name}`,
+      text: `+/+${entity.name}`,
     }),
     type: 'command',
   },
@@ -174,7 +164,7 @@ export const ACITriggerSettings = ({
   },
   '@': {
     callback: (item) => {
-      onMentionSelectItem(item);
+      onMentionSelectItem?.(item);
     },
     dataProvider: (
       query,
@@ -191,7 +181,7 @@ export const ACITriggerSettings = ({
           return [];
         }
         if (options?.mentionAllAppUsersEnabled) {
-          return (queryUsersDebounced as DebouncedFunc<QueryUsersFunction>)(
+          const result = (queryUsersDebounced as DebouncedFunc<QueryUsersFunction>)(
             client,
             query,
             (data) => {
@@ -204,6 +194,8 @@ export const ACITriggerSettings = ({
               mentionAllAppUsersQuery: options.mentionAllAppUsersQuery,
             },
           );
+
+          return result ?? [];
         }
         /**
          * By default, we return maximum 100 members via queryChannels api call.
@@ -240,7 +232,7 @@ export const ACITriggerSettings = ({
           return data;
         }
 
-        return (queryMembersDebounced as DebouncedFunc<QueryMembersFunction>)(
+        const result = (queryMembersDebounced as DebouncedFunc<QueryMembersFunction>)(
           client,
           channel,
           query,
@@ -253,6 +245,8 @@ export const ACITriggerSettings = ({
             limit: options.limit,
           },
         );
+
+        return result ?? [];
       } catch (error) {
         console.warn("Error querying users/members while using '@':", error);
         throw error;

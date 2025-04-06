@@ -45,7 +45,7 @@ export type QueryMembersFunction = (
   options?: {
     limit?: number;
   },
-) => Promise<void>;
+) => Promise<SuggestionUser[]>;
 
 const queryMembers = async (
   client: StreamChat,
@@ -55,9 +55,9 @@ const queryMembers = async (
   options: {
     limit?: number;
   } = {},
-): Promise<void> => {
+): Promise<SuggestionUser[]> => {
   if (!query) {
-    return;
+    return [];
   }
   try {
     const { limit = defaultAutoCompleteSuggestionsLimit } = options;
@@ -78,6 +78,7 @@ const queryMembers = async (
     if (onReady && users) {
       onReady(users);
     }
+    return users;
   } catch (error) {
     console.warn('Error querying members:', error);
     throw error;
