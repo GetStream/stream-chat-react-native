@@ -1,7 +1,7 @@
 {
   "name": "stream-chat-react-native-core",
   "description": "The official React Native and Expo components for Stream Chat, a service for building chat applications",
-  "version": "6.6.8",
+  "version": "6.7.1",
   "author": {
     "company": "Stream.io Inc",
     "name": "Stream.io Inc"
@@ -22,7 +22,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "rm -rf lib && yarn run --silent build-translations && bob build && yarn run --silent copy-translations",
+    "build": "rimraf lib && yarn run --silent build-translations && bob build && yarn run --silent copy-translations",
     "build-translations": "i18next",
     "copy-translations": "echo '\u001b[34mℹ\u001b[0m Copying translation files to \u001b[34mlib/typescript/i18n\u001b[0m' && cp -R -f ./src/i18n ./lib/typescript/i18n && echo '\u001b[32m✓\u001b[0m Done Copying Translations'",
     "eslint": "eslint 'src/**/*.{js,md,ts,jsx,tsx}' --max-warnings 0",
@@ -147,6 +147,7 @@
     "react-native-reanimated": "~3.17.1",
     "react-native-svg": "15.11.2",
     "react-test-renderer": "19.0.0",
+    "rimraf": "^6.0.1",
     "typescript": "5.8.2",
     "typescript-eslint": "^8.25.0",
     "uuid": "^11.1.0"
