@@ -1,11 +1,13 @@
 import { lookup } from 'mime-types';
-import type { FileUploadConfig, RNFile } from 'stream-chat';
+import type { FileUploadConfig } from 'stream-chat';
+
+import { File } from '../../../types/types';
 
 export const MAX_FILE_SIZE_TO_UPLOAD = 100 * 1024 * 1024; // 100 MB
 
 type CheckUploadPermissionsParams = {
   config: FileUploadConfig;
-  file: RNFile;
+  file: File;
 };
 
 /**

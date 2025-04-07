@@ -1,8 +1,7 @@
 import type React from 'react';
 import { FlatList as DefaultFlatList, StyleProp, ViewStyle } from 'react-native';
 
-import { RNFile } from 'stream-chat';
-
+import type { File } from './types/types';
 const fail = () => {
   throw Error(
     'Native handler was not registered, you should import stream-chat-expo or stream-chat-react-native',
@@ -31,7 +30,7 @@ type iOS14RefreshGallerySelection = () => Promise<void>;
 
 type GetPhotos = ({ after, first }: { first: number; after?: string }) =>
   | Promise<{
-      assets: RNFile[];
+      assets: File[];
       endCursor: string;
       hasNextPage: boolean;
       iOSLimited: boolean;
@@ -41,13 +40,13 @@ type GetPhotos = ({ after, first }: { first: number; after?: string }) =>
 type PickDocument = ({ maxNumberOfFiles }: { maxNumberOfFiles?: number }) =>
   | Promise<{
       cancelled: boolean;
-      assets?: RNFile[];
+      assets?: File[];
     }>
   | never;
 
 type PickImageAssetType = {
   askToOpenSettings?: boolean;
-  assets?: RNFile[];
+  assets?: File[];
   cancelled?: boolean;
 };
 
@@ -67,7 +66,7 @@ type ShareOptions = {
 };
 type ShareImage = (options: ShareOptions) => Promise<boolean> | never;
 
-type TakePhotoFileType = RNFile & {
+type TakePhotoFileType = File & {
   askToOpenSettings?: boolean;
   cancelled?: boolean;
 };

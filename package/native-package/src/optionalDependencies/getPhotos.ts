@@ -1,6 +1,7 @@
 import { PermissionsAndroid, Platform } from 'react-native';
 import mime from 'mime';
-import { RNFile } from 'stream-chat';
+
+import type { File } from 'stream-chat-react-native-core';
 
 let CameraRollDependency;
 
@@ -16,7 +17,7 @@ try {
 import { getLocalAssetUri } from './getLocalAssetUri';
 
 type ReturnType = {
-  assets: RNFile[];
+  assets: File[];
   endCursor: string | undefined;
   hasNextPage: boolean;
   iOSLimited: boolean;

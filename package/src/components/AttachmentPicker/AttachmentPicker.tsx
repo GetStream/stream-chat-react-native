@@ -7,8 +7,6 @@ import type { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
-import { RNFile } from 'stream-chat';
-
 import type { AttachmentPickerErrorProps } from './components/AttachmentPickerError';
 
 import { renderAttachmentPickerItem } from './components/AttachmentPickerItem';
@@ -20,6 +18,7 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useScreenDimensions } from '../../hooks/useScreenDimensions';
 import { NativeHandlers } from '../../native';
+import type { File } from '../../types/types';
 import { BottomSheet } from '../BottomSheetCompatibility/BottomSheet';
 import { BottomSheetFlatList } from '../BottomSheetCompatibility/BottomSheetFlatList';
 
@@ -109,7 +108,7 @@ export const AttachmentPicker = React.forwardRef(
     const [iOSLimited, setIosLimited] = useState(false);
     const hasNextPageRef = useRef(true);
     const [loadingPhotos, setLoadingPhotos] = useState(false);
-    const [photos, setPhotos] = useState<RNFile[]>([]);
+    const [photos, setPhotos] = useState<File[]>([]);
     const attemptedToLoadPhotosOnOpenRef = useRef(false);
 
     const getMorePhotos = useCallback(async () => {

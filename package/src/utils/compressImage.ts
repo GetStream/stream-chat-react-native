@@ -1,6 +1,5 @@
-import { RNFile } from 'stream-chat';
-
 import { NativeHandlers } from '../native';
+import type { File } from '../types/types';
 
 /**
  * Function to compress and Image and return the compressed Image URI
@@ -8,7 +7,7 @@ import { NativeHandlers } from '../native';
  * @param compressImageQuality
  * @returns string
  */
-export const compressedImageURI = async (image: RNFile, compressImageQuality?: number) => {
+export const compressedImageURI = async (image: File, compressImageQuality?: number) => {
   const uri = image.uri || '';
   /**
    * We skip compression if:

@@ -12,12 +12,14 @@ export enum FileTypes {
   VoiceRecording = 'voiceRecording',
 }
 
+export type File = RNFile;
+
 /**
  * This is nothing but a substitute for the attachment type prior to sending the message.
  * This will change if we unify the file uploads to attachments.
  */
 export type FileUpload = {
-  file: RNFile;
+  file: File;
   id: string;
   state: FileStateValue;
 
@@ -44,8 +46,8 @@ export interface DefaultAttachmentType {
   duration?: number;
   file_size?: number;
   mime_type?: string;
-  originalFile?: RNFile;
-  originalImage?: RNFile;
+  originalFile?: File;
+  originalImage?: File;
   waveform_data?: number[];
 }
 

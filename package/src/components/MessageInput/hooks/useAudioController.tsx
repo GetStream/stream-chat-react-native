@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Alert, Platform } from 'react-native';
 
-import { RNFile } from 'stream-chat';
-
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import {
   AudioRecordingReturnType,
@@ -12,6 +10,7 @@ import {
   RecordingStatus,
   SoundReturnType,
 } from '../../../native';
+import type { File } from '../../../types/types';
 import { FileTypes } from '../../../types/types';
 import { resampleWaveformData } from '../utils/audioSampling';
 import { normalizeAudioLevel } from '../utils/normalizeAudioLevel';
@@ -267,7 +266,7 @@ export const useAudioController = () => {
     const clearFilter = new RegExp('[.:]', 'g');
     const date = new Date().toISOString().replace(clearFilter, '_');
 
-    const file: RNFile = {
+    const file: File = {
       duration: durationInSeconds,
       name: `audio_recording_${date}.aac`,
       size: 0,

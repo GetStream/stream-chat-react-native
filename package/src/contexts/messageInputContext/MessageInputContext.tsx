@@ -14,7 +14,6 @@ import {
   Attachment,
   logChatPromiseExecution,
   Message,
-  RNFile,
   SendFileAPIResponse,
   StreamChat,
   Message as StreamMessage,
@@ -60,7 +59,7 @@ import {
   MediaTypes,
   NativeHandlers,
 } from '../../native';
-import { FileTypes, FileUpload } from '../../types/types';
+import { File, FileTypes, FileUpload } from '../../types/types';
 import {
   ACITriggerSettings,
   ACITriggerSettingsParams,
@@ -231,8 +230,8 @@ export type LocalMessageInputContext = {
   uploadFile: ({ newFile }: { newFile: FileUpload }) => Promise<void>;
   /** Function for attempting to upload an image */
   uploadImage: ({ newImage }: { newImage: FileUpload }) => Promise<void>;
-  uploadNewFile: (file: RNFile, fileType?: FileTypes) => Promise<void>;
-  uploadNewImage: (image: RNFile) => Promise<void>;
+  uploadNewFile: (file: File, fileType?: FileTypes) => Promise<void>;
+  uploadNewImage: (image: File) => Promise<void>;
 };
 
 export type InputMessageInputContextValue = {
@@ -416,7 +415,7 @@ export type InputMessageInputContextValue = {
    * @overrideType Function
    */
   doDocUploadRequest?: (
-    file: RNFile,
+    file: File,
     channel: ChannelContextValue['channel'],
   ) => Promise<SendFileAPIResponse>;
 
@@ -429,7 +428,7 @@ export type InputMessageInputContextValue = {
    * @overrideType Function
    */
   doImageUploadRequest?: (
-    file: RNFile,
+    file: File,
     channel: ChannelContextValue['channel'],
   ) => Promise<SendFileAPIResponse>;
 
@@ -1320,7 +1319,7 @@ export const MessageInputProvider = ({
    * This is useful for voice recordings, where the file type is not always detected correctly.
    * This will change if we unify the file uploads to attachments.
    */
-  const uploadNewFile = async (file: RNFile, fileType?: FileTypes) => {
+  const uploadNewFile = async (file: File, fileType?: FileTypes) => {
     try {
       const id: string = generateRandomId();
       const fileConfig = getFileUploadConfig();
@@ -1368,7 +1367,7 @@ export const MessageInputProvider = ({
     }
   };
 
-  const uploadNewImage = async (image: RNFile) => {
+  const uploadNewImage = async (image: File) => {
     try {
       const id = generateRandomId();
       const imageUploadConfig = getImageUploadConfig();

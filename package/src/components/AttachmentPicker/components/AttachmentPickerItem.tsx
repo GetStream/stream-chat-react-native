@@ -2,20 +2,19 @@ import React from 'react';
 
 import { Alert, ImageBackground, StyleSheet, Text, View } from 'react-native';
 
-import { RNFile } from 'stream-chat';
-
 import { AttachmentPickerContextValue } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useViewport } from '../../../hooks/useViewport';
 import { Recorder } from '../../../icons';
+import type { File } from '../../../types/types';
 import { getDurationLabelFromDuration } from '../../../utils/utils';
 import { BottomSheetTouchableOpacity } from '../../BottomSheetCompatibility/BottomSheetTouchableOpacity';
 type AttachmentPickerItemType = Pick<
   AttachmentPickerContextValue,
   'selectedFiles' | 'setSelectedFiles' | 'setSelectedImages' | 'selectedImages' | 'maxNumberOfFiles'
 > & {
-  asset: RNFile;
+  asset: File;
   ImageOverlaySelectedComponent: React.ComponentType;
   numberOfUploads: number;
   selected: boolean;
@@ -48,7 +47,7 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
 
   const { duration: videoDuration, thumb_url, uri } = asset;
 
-  const durationLabel = getDurationLabelFromDuration(videoDuration);
+  const durationLabel = videoDuration ? getDurationLabelFromDuration(videoDuration) : '00:00';
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 

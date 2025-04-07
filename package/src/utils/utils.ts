@@ -256,7 +256,7 @@ export const getFileTypeFromMimeType = (mimeType: string) => {
  * @param duration number
  * @returns string
  */
-export const getDurationLabelFromDuration = (duration?: number) => {
+export const getDurationLabelFromDuration = (duration: number) => {
   if (!duration) {
     return '00:00';
   }

@@ -1,6 +1,8 @@
 import { Platform } from 'react-native';
 import mime from 'mime';
 
+import type { File } from 'stream-chat-react-native-core';
+
 let MediaLibrary;
 
 try {
@@ -14,12 +16,11 @@ if (!MediaLibrary) {
     'expo-media-library is not installed. Please install it or you can choose to install expo-image-picker for native image picker.',
   );
 }
-import type { RNFile } from 'stream-chat';
 
 import { getLocalAssetUri } from './getLocalAssetUri';
 
 type ReturnType = {
-  assets: RNFile[];
+  assets: File[];
   endCursor: string | undefined;
   hasNextPage: boolean;
   iOSLimited: boolean;
