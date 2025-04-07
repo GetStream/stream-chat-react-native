@@ -15,7 +15,7 @@ import {
   VideoProgressData,
   VideoSeekResponse,
 } from '../../native';
-import { FileTypes, type FileUpload } from '../../types/types';
+import { AudioUpload, FileTypes } from '../../types/types';
 import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
 import { ProgressControl } from '../ProgressControl/ProgressControl';
 import { WaveProgressBar } from '../ProgressControl/WaveProgressBar';
@@ -23,7 +23,7 @@ import { WaveProgressBar } from '../ProgressControl/WaveProgressBar';
 dayjs.extend(duration);
 
 export type AudioAttachmentProps = {
-  item: Omit<FileUpload, 'state'>;
+  item: Omit<AudioUpload, 'state'>;
   onLoad: (index: string, duration: number) => void;
   onPlayPause: (index: string, pausedStatus?: boolean) => void;
   onProgress: (index: string, progress: number) => void;

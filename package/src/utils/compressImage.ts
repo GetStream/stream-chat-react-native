@@ -1,5 +1,6 @@
+import { RNFile } from 'stream-chat';
+
 import { NativeHandlers } from '../native';
-import type { Asset } from '../types/types';
 
 /**
  * Function to compress and Image and return the compressed Image URI
@@ -7,7 +8,7 @@ import type { Asset } from '../types/types';
  * @param compressImageQuality
  * @returns string
  */
-export const compressedImageURI = async (image: Partial<Asset>, compressImageQuality?: number) => {
+export const compressedImageURI = async (image: RNFile, compressImageQuality?: number) => {
   const uri = image.uri || '';
   /**
    * We skip compression if:
@@ -15,8 +16,7 @@ export const compressedImageURI = async (image: Partial<Asset>, compressImageQua
    * - the file has no height/width value to maintain for compression
    * - the compressImageQuality number is not present or is 1 (meaning no compression)
    */
-  const compressedUri = await (image.source === 'camera' ||
-  !image.height ||
+  const compressedUri = await (!image.height ||
   !image.width ||
   typeof compressImageQuality !== 'number' ||
   compressImageQuality === 1

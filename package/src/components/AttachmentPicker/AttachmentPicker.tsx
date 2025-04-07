@@ -7,6 +7,8 @@ import type { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
+import { RNFile } from 'stream-chat';
+
 import type { AttachmentPickerErrorProps } from './components/AttachmentPickerError';
 
 import { renderAttachmentPickerItem } from './components/AttachmentPickerItem';
@@ -18,7 +20,6 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useScreenDimensions } from '../../hooks/useScreenDimensions';
 import { NativeHandlers } from '../../native';
-import type { Asset } from '../../types/types';
 import { BottomSheet } from '../BottomSheetCompatibility/BottomSheet';
 import { BottomSheetFlatList } from '../BottomSheetCompatibility/BottomSheetFlatList';
 
@@ -108,7 +109,7 @@ export const AttachmentPicker = React.forwardRef(
     const [iOSLimited, setIosLimited] = useState(false);
     const hasNextPageRef = useRef(true);
     const [loadingPhotos, setLoadingPhotos] = useState(false);
-    const [photos, setPhotos] = useState<Asset[]>([]);
+    const [photos, setPhotos] = useState<RNFile[]>([]);
     const attemptedToLoadPhotosOnOpenRef = useRef(false);
 
     const getMorePhotos = useCallback(async () => {
@@ -245,14 +246,8 @@ export const AttachmentPicker = React.forwardRef(
       numberOfUploads: selectedFiles.length + selectedImages.length,
       // `id` is available for Expo MediaLibrary while Cameraroll doesn't share id therefore we use `uri`
       selected:
-        selectedImages.some((image) =>
-          image.id
-            ? image.id === asset.id
-            : image.uri === asset.uri || image.originalUri === asset.uri,
-        ) ||
-        selectedFiles.some((file) =>
-          file.id ? file.id === asset.id : file.uri === asset.uri || file.originalUri === asset.uri,
-        ),
+        selectedImages.some((image) => image.uri === asset.uri) ||
+        selectedFiles.some((file) => file.uri === asset.uri),
       selectedFiles,
       selectedImages,
       setSelectedFiles,

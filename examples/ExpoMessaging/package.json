@@ -23,7 +23,6 @@
     "expo-image-manipulator": "~13.0.6",
     "expo-image-picker": "~16.0.6",
     "expo-linking": "~7.0.5",
-    "expo-media-library": "~17.0.6",
     "expo-router": "~4.0.17",
     "expo-sharing": "~13.0.1",
     "expo-splash-screen": "~0.29.22",

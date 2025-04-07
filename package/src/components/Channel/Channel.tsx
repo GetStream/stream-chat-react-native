@@ -1283,7 +1283,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           }
           const response = doDocUploadRequest
             ? await doDocUploadRequest(file, channel)
-            : await channel.sendFile(file.uri, file.name, file.mimeType);
+            : await channel.sendFile(file.uri, file.name, file.type);
           attachment.asset_url = response.file;
           if (response.thumb_url) {
             attachment.thumb_url = response.thumb_url;

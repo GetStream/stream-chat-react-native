@@ -2,22 +2,20 @@ import React from 'react';
 
 import { Alert, ImageBackground, StyleSheet, Text, View } from 'react-native';
 
-import { lookup } from 'mime-types';
+import { RNFile } from 'stream-chat';
 
 import { AttachmentPickerContextValue } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useViewport } from '../../../hooks/useViewport';
 import { Recorder } from '../../../icons';
-import type { Asset, File } from '../../../types/types';
 import { getDurationLabelFromDuration } from '../../../utils/utils';
 import { BottomSheetTouchableOpacity } from '../../BottomSheetCompatibility/BottomSheetTouchableOpacity';
-
 type AttachmentPickerItemType = Pick<
   AttachmentPickerContextValue,
   'selectedFiles' | 'setSelectedFiles' | 'setSelectedImages' | 'selectedImages' | 'maxNumberOfFiles'
 > & {
-  asset: Asset;
+  asset: RNFile;
   ImageOverlaySelectedComponent: React.ComponentType;
   numberOfUploads: number;
   selected: boolean;
@@ -48,46 +46,25 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
     },
   } = useTheme();
 
-  const { duration: videoDuration, id: assetId, originalUri, uri } = asset;
+  const { duration: videoDuration, thumb_url, uri } = asset;
 
   const durationLabel = getDurationLabelFromDuration(videoDuration);
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
-
-  /* Patches video files with uri and mimetype */
-  const patchVideoFile = (files: File[]) => {
-    // We need a mime-type to upload a video file.
-    const mimeType = lookup(asset.name) || 'multipart/form-data';
-    return [
-      ...files,
-      {
-        duration: asset.duration,
-        id: asset.id,
-        mimeType,
-        name: asset.name,
-        originalUri,
-        size: asset.size,
-        uri,
-      },
-    ];
-  };
 
   const updateSelectedFiles = () => {
     if (numberOfUploads >= maxNumberOfFiles) {
       Alert.alert(t('Maximum number of files reached'));
       return;
     }
-    const files = patchVideoFile(selectedFiles);
-    setSelectedFiles(files);
+    setSelectedFiles([...selectedFiles, asset]);
   };
 
   const onPressVideo = () => {
     if (selected) {
       setSelectedFiles((files) =>
         // `id` is available for Expo MediaLibrary while Cameraroll doesn't share id therefore we use `uri`
-        files.filter((file) =>
-          file.id ? file.id !== assetId : file.uri !== uri && file.originalUri !== uri,
-        ),
+        files.filter((file) => file.uri !== uri),
       );
     } else {
       updateSelectedFiles();
@@ -97,7 +74,7 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
   return (
     <BottomSheetTouchableOpacity onPress={onPressVideo}>
       <ImageBackground
-        source={{ uri: originalUri }}
+        source={{ uri: thumb_url }}
         style={[
           {
             height: size,
@@ -147,7 +124,7 @@ const AttachmentImage = (props: AttachmentImageProps) => {
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 
-  const { id: assetId, originalUri, uri } = asset;
+  const { uri } = asset;
 
   const updateSelectedImages = () => {
     if (numberOfUploads >= maxNumberOfFiles) {
@@ -160,11 +137,7 @@ const AttachmentImage = (props: AttachmentImageProps) => {
   const onPressImage = () => {
     if (selected) {
       // `id` is available for Expo MediaLibrary while Cameraroll doesn't share id therefore we use `uri`
-      setSelectedImages((images) =>
-        images.filter((image) =>
-          assetId ? image.id !== assetId : image.uri !== uri && originalUri !== uri,
-        ),
-      );
+      setSelectedImages((images) => images.filter((image) => image.uri !== uri));
     } else {
       updateSelectedImages();
     }

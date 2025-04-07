@@ -114,9 +114,7 @@ export const useCreateMessageInputContext = ({
   UploadProgressIndicator,
 }: MessageInputContextValue & Pick<ThreadContextValue, 'thread'>) => {
   const editingdep = editing?.id;
-  const fileUploadsValue = fileUploads
-    .map(({ duration, paused, progress, state }) => `${state},${paused},${progress},${duration}`)
-    .join();
+  const fileUploadsValue = fileUploads.map(({ state }) => state).join();
   const imageUploadsValue = imageUploads.map(({ state }) => state).join();
   const asyncUploadsValue = Object.keys(asyncUploads).join();
   const mentionedUsersLength = mentionedUsers.length;

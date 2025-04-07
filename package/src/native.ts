@@ -1,7 +1,7 @@
 import type React from 'react';
 import { FlatList as DefaultFlatList, StyleProp, ViewStyle } from 'react-native';
 
-import type { Asset, File } from './types/types';
+import { RNFile } from 'stream-chat';
 
 const fail = () => {
   throw Error(
@@ -31,7 +31,7 @@ type iOS14RefreshGallerySelection = () => Promise<void>;
 
 type GetPhotos = ({ after, first }: { first: number; after?: string }) =>
   | Promise<{
-      assets: Array<Omit<Asset, 'source'> & { source: 'picker' }>;
+      assets: RNFile[];
       endCursor: string;
       hasNextPage: boolean;
       iOSLimited: boolean;
@@ -41,13 +41,13 @@ type GetPhotos = ({ after, first }: { first: number; after?: string }) =>
 type PickDocument = ({ maxNumberOfFiles }: { maxNumberOfFiles?: number }) =>
   | Promise<{
       cancelled: boolean;
-      assets?: File[];
+      assets?: RNFile[];
     }>
   | never;
 
 type PickImageAssetType = {
   askToOpenSettings?: boolean;
-  assets?: Array<Omit<Asset, 'source'> & { source: 'picker' }>;
+  assets?: RNFile[];
   cancelled?: boolean;
 };
 
@@ -67,8 +67,7 @@ type ShareOptions = {
 };
 type ShareImage = (options: ShareOptions) => Promise<boolean> | never;
 
-type Photo = Omit<Asset, 'source'> & {
-  source: 'camera';
+type TakePhotoFileType = RNFile & {
   askToOpenSettings?: boolean;
   cancelled?: boolean;
 };
@@ -78,7 +77,7 @@ export type MediaTypes = 'image' | 'video' | 'mixed';
 type TakePhoto = (options: {
   compressImageQuality?: number;
   mediaType?: MediaTypes;
-}) => Promise<Photo> | never;
+}) => Promise<TakePhotoFileType> | never;
 
 type HapticFeedbackMethod =
   | 'impactHeavy'

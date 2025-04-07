@@ -1433,7 +1433,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-cameraroll (7.9.0):
+  - react-native-cameraroll (7.10.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1455,6 +1455,27 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - react-native-document-picker (10.1.1):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - react-native-image-picker (8.2.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2213,7 +2234,7 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
   - SocketRocket (0.7.1)
-  - stream-chat-react-native (6.6.7):
+  - stream-chat-react-native (6.6.8):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2284,6 +2305,7 @@ DEPENDENCIES:
   - react-native-blob-util (from `../node_modules/react-native-blob-util`)
   - "react-native-cameraroll (from `../node_modules/@react-native-camera-roll/camera-roll`)"
   - "react-native-document-picker (from `../node_modules/@react-native-documents/picker`)"
+  - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-video (from `../node_modules/react-native-video`)
@@ -2439,6 +2461,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-camera-roll/camera-roll"
   react-native-document-picker:
     :path: "../node_modules/@react-native-documents/picker"
+  react-native-image-picker:
+    :path: "../node_modules/react-native-image-picker"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-safe-area-context:
@@ -2557,7 +2581,7 @@ SPEC CHECKSUMS:
   op-sqlite: c33561ea312a2ae38aae032fd3a42635dc6b57e8
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
-  RCT-Folly: 36fe2295e44b10d831836cc0d1daec5f8abcf809
+  RCT-Folly: e78785aa9ba2ed998ea4151e314036f6c49e6d82
   RCTDeprecation: b2eecf2d60216df56bc5e6be5f063826d3c1ee35
   RCTRequired: 78522de7dc73b81f3ed7890d145fa341f5bb32ea
   RCTTypeSafety: c135dd2bf50402d87fd12884cbad5d5e64850edd
@@ -2589,8 +2613,9 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 0df2a235bd0182f5cbed6c5f095e66deca12e335
   React-microtasksnativemodule: b31e56a980634f383221bfefd5111d04c14c110b
   react-native-blob-util: 875bbeee07e4ada135e4edf9fc7b22acf8d9721d
-  react-native-cameraroll: 36dc62b41c7943a79ac2f7cf4d3da10d4138513f
+  react-native-cameraroll: cdc91c4c953d1a18aa3ce88b5a25698025c8c4d2
   react-native-document-picker: 19be73c0423e4bc886cef74ec282eff750698013
+  react-native-image-picker: 1c620a65f900a47d6d12ec94874c6a1820ebea7d
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-safe-area-context: 0b43456abcaaa3c8323bbfafe9c5f0f9511219d2
   react-native-video: a225b4d4d3286f3253dc7b00a62e7c8e59d04d51
@@ -2637,9 +2662,9 @@ SPEC CHECKSUMS:
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  stream-chat-react-native: 6b89c43ee042e7a6f00e6eaddf3228b712884846
+  stream-chat-react-native: aa6626ef9dd68e28b1239c9f2ee2fc7ce1fd3c3f
   Yoga: be02ca501b03c79d7027a6bbbd0a8db985034f11
 
 PODFILE CHECKSUM: 4f662370295f8f9cee909f1a4c59a614999a209d
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.14.3
