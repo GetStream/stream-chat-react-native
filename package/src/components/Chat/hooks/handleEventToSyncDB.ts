@@ -7,7 +7,6 @@ import { updateMessage } from '../../../store/apis/updateMessage';
 import { upsertChannelData } from '../../../store/apis/upsertChannelData';
 import { upsertChannelDataFromChannel } from '../../../store/apis/upsertChannelDataFromChannel';
 import { upsertMembers } from '../../../store/apis/upsertMembers';
-import { upsertMessages } from '../../../store/apis/upsertMessages';
 import { upsertReads } from '../../../store/apis/upsertReads';
 import { createSelectQuery } from '../../../store/sqlite-utils/createSelectQuery';
 import { SqliteClient } from '../../../store/SqliteClient';
@@ -112,40 +111,40 @@ export const handleEventToSyncDB = async (event: Event, client: StreamChat, flus
     }
   }
 
-  if (type === 'message.new') {
-    const { cid, message, user } = event;
-
-    if (message && (!message.parent_id || message.show_in_channel)) {
-      return await queriesWithChannelGuard(async (flushOverride) => {
-        let queries = await upsertMessages({
-          flush: flushOverride,
-          messages: [message],
-        });
-        if (cid && client.user && client.user.id !== user?.id) {
-          const userId = client.user.id;
-          const channel = client.activeChannels[cid];
-          if (channel) {
-            const ownReads = channel.state.read[userId];
-            const unreadCount = channel.countUnread();
-            const upsertReadsQueries = await upsertReads({
-              cid,
-              flush: flushOverride,
-              reads: [
-                {
-                  last_read: ownReads.last_read.toString() as string,
-                  last_read_message_id: ownReads.last_read_message_id,
-                  unread_messages: unreadCount,
-                  user: client.user,
-                },
-              ],
-            });
-            queries = [...queries, ...upsertReadsQueries];
-          }
-        }
-        return queries;
-      });
-    }
-  }
+  // if (type === 'message.new') {
+  //   const { cid, message, user } = event;
+  //
+  //   if (message && (!message.parent_id || message.show_in_channel)) {
+  //     return await queriesWithChannelGuard(async (flushOverride) => {
+  //       let queries = await upsertMessages({
+  //         flush: flushOverride,
+  //         messages: [message],
+  //       });
+  //       if (cid && client.user && client.user.id !== user?.id) {
+  //         const userId = client.user.id;
+  //         const channel = client.activeChannels[cid];
+  //         if (channel) {
+  //           const ownReads = channel.state.read[userId];
+  //           const unreadCount = channel.countUnread();
+  //           const upsertReadsQueries = await upsertReads({
+  //             cid,
+  //             flush: flushOverride,
+  //             reads: [
+  //               {
+  //                 last_read: ownReads.last_read.toString() as string,
+  //                 last_read_message_id: ownReads.last_read_message_id,
+  //                 unread_messages: unreadCount,
+  //                 user: client.user,
+  //               },
+  //             ],
+  //           });
+  //           queries = [...queries, ...upsertReadsQueries];
+  //         }
+  //       }
+  //       return queries;
+  //     });
+  //   }
+  // }
 
   if (type === 'message.updated' || type === 'message.deleted') {
     const message = event.message;
