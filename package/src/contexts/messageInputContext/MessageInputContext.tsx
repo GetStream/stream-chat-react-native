@@ -608,6 +608,7 @@ export const MessageInputProvider = <
     text,
   } = useMessageDetailsForState<StreamChatGenerics>(editing, initialValue);
   const { endsAt: cooldownEndsAt, start: startCooldown } = useCooldown<StreamChatGenerics>();
+  const { onChangeText } = value;
 
   const threadId = thread?.id;
   useEffect(() => {
@@ -655,20 +656,23 @@ export const MessageInputProvider = <
     return false;
   };
 
-  const onChange = (newText: string) => {
-    if (sending.current) {
-      return;
-    }
-    setText(newText);
+  const onChange = useCallback(
+    (newText: string) => {
+      if (sending.current) {
+        return;
+      }
+      setText(newText);
 
-    if (newText && channel && channelCapabities.sendTypingEvents && isOnline) {
-      logChatPromiseExecution(channel.keystroke(thread?.id), 'start typing event');
-    }
+      if (newText && channel && channelCapabities.sendTypingEvents && isOnline) {
+        logChatPromiseExecution(channel.keystroke(thread?.id), 'start typing event');
+      }
 
-    if (value.onChangeText) {
-      value.onChangeText(newText);
-    }
-  };
+      if (onChangeText) {
+        onChangeText(newText);
+      }
+    },
+    [channel, channelCapabities.sendTypingEvents, isOnline, setText, thread?.id, onChangeText],
+  );
 
   const openCommandsPicker = () => {
     appendText('/');
