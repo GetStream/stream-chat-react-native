@@ -952,10 +952,6 @@ export const MessageInputProvider = <
     const prevText = giphyEnabled && giphyActive ? `/giphy ${text}` : text;
     setText('');
 
-    if (inputBoxRef.current) {
-      inputBoxRef.current.clear();
-    }
-
     const attachments = [] as Attachment<StreamChatGenerics>[];
     for (const image of imageUploads) {
       if (enableOfflineSupport) {

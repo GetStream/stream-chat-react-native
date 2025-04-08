@@ -860,9 +860,8 @@ const MessageInputWithContext = <
 
               {shouldDisplayStopAIGeneration ? (
                 <StopMessageStreamingButton onPress={stopGenerating} />
-              ) : (
-                isSendingButtonVisible() &&
-                (cooldownRemainingSeconds ? (
+              ) : isSendingButtonVisible() ? (
+                cooldownRemainingSeconds ? (
                   <CooldownTimer seconds={cooldownRemainingSeconds} />
                 ) : (
                   <View style={[styles.sendButtonContainer, sendButtonContainer]}>
@@ -870,8 +869,8 @@ const MessageInputWithContext = <
                       disabled={sending.current || !isValidMessage() || (giphyActive && !isOnline)}
                     />
                   </View>
-                ))
-              )}
+                )
+              ) : null}
               {audioRecordingEnabled && isAudioRecorderAvailable() && !micLocked && (
                 <GestureDetector gesture={panGestureMic}>
                   <Animated.View
