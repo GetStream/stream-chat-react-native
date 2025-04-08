@@ -1758,6 +1758,11 @@ const ChannelWithContext = <
   const sendMessageRef =
     useRef<InputMessageInputContextValue<StreamChatGenerics>['sendMessage']>(sendMessage);
   sendMessageRef.current = sendMessage;
+  const sendMessageStable = useCallback<
+    InputMessageInputContextValue<StreamChatGenerics>['sendMessage']
+  >((...args) => {
+    return sendMessageRef.current(...args);
+  }, []);
 
   const inputMessageInputContext = useCreateInputMessageInputContext<StreamChatGenerics>({
     additionalTextInputProps,
@@ -1811,7 +1816,7 @@ const ChannelWithContext = <
     quotedMessage,
     SendButton,
     sendImageAsync,
-    sendMessage: (...args) => sendMessageRef.current(...args),
+    sendMessage: sendMessageStable,
     SendMessageDisallowedIndicator,
     setInputRef,
     setQuotedMessageState,
