@@ -818,7 +818,6 @@ const ChannelWithContext = <
 
       // only update channel state if the events are not the previously subscribed useEffect's subscription events
       if (channel && channel.initialized) {
-        console.log('COPYING CHANNEL STATE LOL');
         copyChannelState();
       }
     }
