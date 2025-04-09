@@ -1721,9 +1721,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   // once our memoization issues are fixed in most places in the app or we move to a reactive state store.
   const sendMessageRef = useRef<InputMessageInputContextValue['sendMessage']>(sendMessage);
   sendMessageRef.current = sendMessage;
-  const sendMessageStable = useCallback<
-    InputMessageInputContextValue<StreamChatGenerics>['sendMessage']
-  >((...args) => {
+  const sendMessageStable = useCallback<InputMessageInputContextValue['sendMessage']>((...args) => {
     return sendMessageRef.current(...args);
   }, []);
 
