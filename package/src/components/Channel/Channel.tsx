@@ -781,9 +781,10 @@ const ChannelWithContext = <
       }
 
       // If the event is typing.start or typing.stop, set the typing state
-      const isTypingEvent = event.type === 'typing.start' || event.type === 'typing.stop';
-      if (isTypingEvent) {
-        setTyping(channel);
+      if (event.type === 'typing.start' || event.type === 'typing.stop') {
+        if (event.user?.id !== client.userID) {
+          setTyping(channel);
+        }
         return;
       } else {
         if (thread?.id) {
