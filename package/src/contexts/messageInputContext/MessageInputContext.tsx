@@ -152,6 +152,7 @@ export type LocalMessageInputContext<
    */
   fileUploads: FileUpload[];
   giphyActive: boolean;
+  hasText: boolean;
   /**
    * An array of image objects which are set for upload. It has the following structure:
    *
@@ -1492,6 +1493,7 @@ export const MessageInputProvider = <
     uploadNewImage,
     ...value,
     closePollCreationDialog,
+    hasText: !!text,
     openPollCreationDialog,
     sendMessage, // overriding the originally passed in sendMessage
     showPollCreationDialog,
