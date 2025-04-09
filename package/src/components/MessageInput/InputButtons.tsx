@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import {
@@ -29,12 +29,12 @@ export type InputButtonsWithContextProps<
   | 'hasCommands'
   | 'hasFilePicker'
   | 'hasImagePicker'
+  | 'hasText'
   | 'MoreOptionsButton'
   | 'openCommandsPicker'
   | 'selectedPicker'
   | 'setShowMoreOptions'
   | 'showMoreOptions'
-  | 'text'
   | 'toggleAttachmentPicker'
 >;
 
@@ -51,11 +51,11 @@ export const InputButtonsWithContext = <
     hasCommands,
     hasFilePicker,
     hasImagePicker,
+    hasText,
     MoreOptionsButton,
     openCommandsPicker,
     setShowMoreOptions,
     showMoreOptions,
-    text,
   } = props;
 
   const {
@@ -64,6 +64,10 @@ export const InputButtonsWithContext = <
     },
   } = useTheme();
 
+  const handleShowMoreOptions = useCallback(() => {
+    setShowMoreOptions(true);
+  }, [setShowMoreOptions]);
+
   const ownCapabilities = useOwnCapabilitiesContext();
 
   if (giphyActive) {
@@ -71,7 +75,7 @@ export const InputButtonsWithContext = <
   }
 
   return !showMoreOptions && (hasCameraPicker || hasImagePicker || hasFilePicker) && hasCommands ? (
-    <MoreOptionsButton handleOnPress={() => setShowMoreOptions(true)} />
+    <MoreOptionsButton handleOnPress={handleShowMoreOptions} />
   ) : (
     <>
       {(hasCameraPicker || hasImagePicker || hasFilePicker) && ownCapabilities.uploadFile && (
@@ -81,7 +85,7 @@ export const InputButtonsWithContext = <
           <AttachButton />
         </View>
       )}
-      {hasCommands && !text && (
+      {hasCommands && !hasText && (
         <View style={commandsButtonContainer}>
           <CommandsButton handleOnPress={openCommandsPicker} />
         </View>
@@ -100,9 +104,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     hasCommands: prevHasCommands,
     hasFilePicker: prevHasFilePicker,
     hasImagePicker: prevHasImagePicker,
+    hasText: prevHasText,
     selectedPicker: prevSelectedPicker,
     showMoreOptions: prevShowMoreOptions,
-    text: prevText,
   } = prevProps;
 
   const {
@@ -111,9 +115,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     hasCommands: nextHasCommands,
     hasFilePicker: nextHasFilePicker,
     hasImagePicker: nextHasImagePicker,
+    hasText: nextHasText,
     selectedPicker: nextSelectedPicker,
     showMoreOptions: nextShowMoreOptions,
-    text: nextText,
   } = nextProps;
 
   if (prevHasCameraPicker !== nextHasCameraPicker) {
@@ -140,7 +144,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     return false;
   }
 
-  if ((!prevProps.text && nextText) || (prevText && !nextText)) {
+  if (prevHasText !== nextHasText) {
     return false;
   }
 
@@ -169,12 +173,12 @@ export const InputButtons = <
     hasCommands,
     hasFilePicker,
     hasImagePicker,
+    hasText,
     MoreOptionsButton,
     openCommandsPicker,
     selectedPicker,
     setShowMoreOptions,
     showMoreOptions,
-    text,
     toggleAttachmentPicker,
   } = useMessageInputContext<StreamChatGenerics>();
 
@@ -188,12 +192,12 @@ export const InputButtons = <
         hasCommands,
         hasFilePicker,
         hasImagePicker,
+        hasText,
         MoreOptionsButton,
         openCommandsPicker,
         selectedPicker,
         setShowMoreOptions,
         showMoreOptions,
-        text,
         toggleAttachmentPicker,
       }}
       {...props}
