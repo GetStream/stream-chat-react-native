@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useContext, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useContext, useMemo, useState } from 'react';
 
 import type { CommandResponse, UserResponse } from 'stream-chat';
 
@@ -95,35 +95,54 @@ export const SuggestionsProvider = <
   children,
   value,
 }: PropsWithChildren<{ value?: Partial<SuggestionsContextValue<StreamChatGenerics>> }>) => {
+  const { AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem, AutoCompleteSuggestionList } =
+    value ?? {};
   const [triggerType, setTriggerType] = useState<SuggestionComponentType | null>(null);
   const [suggestions, setSuggestions] = useState<Suggestions<StreamChatGenerics>>();
   const [suggestionsViewActive, setSuggestionsViewActive] = useState(false);
 
-  const openSuggestions = (component: SuggestionComponentType) => {
+  const openSuggestions = useCallback((component: SuggestionComponentType) => {
     setTriggerType(component);
     setSuggestionsViewActive(true);
-  };
+  }, []);
 
-  const updateSuggestions = (newSuggestions: Suggestions<StreamChatGenerics>) => {
-    setSuggestions(newSuggestions);
-    setSuggestionsViewActive(!!triggerType);
-  };
+  const updateSuggestions = useCallback(
+    (newSuggestions: Suggestions<StreamChatGenerics>) => {
+      setSuggestions(newSuggestions);
+      setSuggestionsViewActive(!!triggerType);
+    },
+    [triggerType],
+  );
 
-  const closeSuggestions = () => {
+  const closeSuggestions = useCallback(() => {
     setTriggerType(null);
     setSuggestions(undefined);
     setSuggestionsViewActive(false);
-  };
+  }, []);
 
-  const suggestionsContext = {
-    ...value,
+  const suggestionsContext = useMemo(() => {
+    return {
+      AutoCompleteSuggestionHeader,
+      AutoCompleteSuggestionItem,
+      AutoCompleteSuggestionList,
+      closeSuggestions,
+      openSuggestions,
+      suggestions,
+      suggestionsViewActive,
+      triggerType,
+      updateSuggestions,
+    };
+  }, [
+    AutoCompleteSuggestionHeader,
+    AutoCompleteSuggestionItem,
+    AutoCompleteSuggestionList,
     closeSuggestions,
     openSuggestions,
     suggestions,
     suggestionsViewActive,
     triggerType,
     updateSuggestions,
-  };
+  ]);
 
   return (
     <SuggestionsContext.Provider value={suggestionsContext as unknown as SuggestionsContextValue}>

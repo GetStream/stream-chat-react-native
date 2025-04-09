@@ -1951,11 +1951,13 @@ const ChannelWithContext = <
     VideoThumbnail,
   });
 
-  const suggestionsContext = {
-    AutoCompleteSuggestionHeader,
-    AutoCompleteSuggestionItem,
-    AutoCompleteSuggestionList,
-  };
+  const suggestionsContext = useMemo(() => {
+    return {
+      AutoCompleteSuggestionHeader,
+      AutoCompleteSuggestionItem,
+      AutoCompleteSuggestionList,
+    };
+  }, [AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem, AutoCompleteSuggestionList]);
 
   const threadContext = useCreateThreadContext({
     allowThreadMessagesInChannel,
