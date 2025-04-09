@@ -736,14 +736,14 @@ const MessageWithContext = <
       >
         <View
           style={[
-            { marginTop: 2, paddingHorizontal: screenPadding, ...wrapper },
+            { marginTop: 2, paddingHorizontal: screenPadding },
+            wrapper,
             (isTargetedMessage || message.pinned) && !isMessageTypeDeleted
               ? {
                   backgroundColor: targetedMessageBackground,
-                  ...wrapper,
                   ...targetedMessageContainer,
                 }
-              : wrapper,
+              : {},
           ]}
           testID='message-wrapper'
         >
