@@ -674,6 +674,7 @@ export type Theme = {
       roundedView: ViewStyle;
     };
     unreadUnderlayColor?: ColorValue;
+    wrapper: ViewStyle;
   };
   poll: {
     allOptions: {
@@ -1466,6 +1467,7 @@ export const defaultTheme: Theme = {
       container: {},
       roundedView: {},
     },
+    wrapper: {},
   },
   poll: {
     allOptions: {
