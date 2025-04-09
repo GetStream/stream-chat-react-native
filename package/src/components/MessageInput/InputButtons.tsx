@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import {
@@ -64,6 +64,10 @@ export const InputButtonsWithContext = <
     },
   } = useTheme();
 
+  const handleShowMoreOptions = useCallback(() => {
+    setShowMoreOptions(true);
+  }, [setShowMoreOptions]);
+
   const ownCapabilities = useOwnCapabilitiesContext();
 
   if (giphyActive) {
@@ -71,7 +75,7 @@ export const InputButtonsWithContext = <
   }
 
   return !showMoreOptions && (hasCameraPicker || hasImagePicker || hasFilePicker) && hasCommands ? (
-    <MoreOptionsButton handleOnPress={() => setShowMoreOptions(true)} />
+    <MoreOptionsButton handleOnPress={handleShowMoreOptions} />
   ) : (
     <>
       {(hasCameraPicker || hasImagePicker || hasFilePicker) && ownCapabilities.uploadFile && (
