@@ -125,6 +125,7 @@ export type LocalMessageInputContext<
       url: string;
     };
   };
+  giphyEnabled: boolean;
   closeAttachmentPicker: () => void;
   /** The time at which the active cooldown will end */
   cooldownEndsAt: Date;
@@ -1446,6 +1447,7 @@ export const MessageInputProvider = <
     cooldownEndsAt,
     fileUploads,
     giphyActive,
+    giphyEnabled,
     imageUploads,
     inputBoxRef,
     isValidMessage,
