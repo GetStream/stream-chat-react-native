@@ -104,12 +104,9 @@ const styles = StyleSheet.create({
   },
 });
 
-type MessageInputPropsWithContext = Pick<
-  AttachmentPickerContextValue,
-  'AttachmentPickerSelectionBar'
-> &
+type MessageInputPropsWithContext = Pick<AttachmentPickerContextValue, 'AttachmentPickerSelectionBar'> &
   Pick<ChatContextValue, 'isOnline'> &
-  Pick<ChannelContextValue, 'members' | 'threadList' | 'watchers'> &
+  Pick<ChannelContextValue, 'channel' | 'members' | 'threadList' | 'watchers'> &
   Pick<
     MessageInputContextValue,
     | 'additionalTextInputProps'
@@ -195,6 +192,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     AudioRecordingLockIndicator,
     AudioRecordingPreview,
     AutoCompleteSuggestionList,
+    channel,
     closeAttachmentPicker,
     closePollCreationDialog,
     cooldownEndsAt,
@@ -743,7 +741,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     })),
   };
 
-  const { channel } = useChannelContext();
   const { aiState } = useAIState(channel);
 
   const stopGenerating = useCallback(() => channel?.stopAIResponse(), [channel]);
@@ -857,9 +854,8 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 
               {shouldDisplayStopAIGeneration ? (
                 <StopMessageStreamingButton onPress={stopGenerating} />
-              ) : (
-                isSendingButtonVisible() &&
-                (cooldownRemainingSeconds ? (
+              ) : isSendingButtonVisible() ? (
+                cooldownRemainingSeconds ? (
                   <CooldownTimer seconds={cooldownRemainingSeconds} />
                 ) : (
                   <View style={[styles.sendButtonContainer, sendButtonContainer]}>
@@ -867,8 +863,8 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                       disabled={sending.current || !isValidMessage() || (giphyActive && !isOnline)}
                     />
                   </View>
-                ))
-              )}
+                )
+              ) : null}
               {audioRecordingEnabled && isAudioRecorderAvailable() && !micLocked && (
                 <GestureDetector gesture={panGestureMic}>
                   <Animated.View
@@ -954,6 +950,7 @@ const areEqual = (
     asyncMessagesSlideToCancelDistance: prevAsyncMessagesSlideToCancelDistance,
     asyncUploads: prevAsyncUploads,
     audioRecordingEnabled: prevAsyncMessagesEnabled,
+    channel: prevChannel,
     closePollCreationDialog: prevClosePollCreationDialog,
     editing: prevEditing,
     fileUploads: prevFileUploads,
@@ -979,6 +976,7 @@ const areEqual = (
     asyncMessagesSlideToCancelDistance: nextAsyncMessagesSlideToCancelDistance,
     asyncUploads: nextAsyncUploads,
     audioRecordingEnabled: nextAsyncMessagesEnabled,
+    channel: nextChannel,
     closePollCreationDialog: nextClosePollCreationDialog,
     editing: nextEditing,
     fileUploads: nextFileUploads,
@@ -1019,6 +1017,11 @@ const areEqual = (
 
   const asyncMessagesEnabledEqual = prevAsyncMessagesEnabled === nextAsyncMessagesEnabled;
   if (!asyncMessagesEnabledEqual) {
+    return false;
+  }
+
+  const channelEqual = prevChannel.cid === nextChannel.cid;
+  if (!channelEqual) {
     return false;
   }
 
@@ -1151,7 +1154,7 @@ export const MessageInput = (props: MessageInputProps) => {
   const { isOnline } = useChatContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
-  const { members, threadList, watchers } = useChannelContext();
+  const { channel, members, threadList, watchers } = useChannelContext();
 
   const {
     additionalTextInputProps,
@@ -1254,6 +1257,7 @@ export const MessageInput = (props: MessageInputProps) => {
         AutoCompleteSuggestionHeader,
         AutoCompleteSuggestionItem,
         AutoCompleteSuggestionList,
+        channel,
         clearEditingState,
         clearQuotedMessageState,
         closeAttachmentPicker,

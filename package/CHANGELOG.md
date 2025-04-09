@@ -1,5 +1,13 @@
 # Change Log
 
+### [6.7.2](https://github.com/GetStream/stream-chat-react-native/compare/v6.7.1...v6.7.2) (2025-04-09)
+
+
+### Bug Fixes
+
+* add property to customize the wrapper style of message ([#3052](https://github.com/GetStream/stream-chat-react-native/issues/3052)) ([74a3d04](https://github.com/GetStream/stream-chat-react-native/commit/74a3d04c73e6790bf2d8ac7beffa43cccb2bbfca))
+* bottom sheet animations on new reactions ([#3044](https://github.com/GetStream/stream-chat-react-native/issues/3044)) ([3e49044](https://github.com/GetStream/stream-chat-react-native/commit/3e49044a86fa747a63c11ecb8afc9c136f86c5ed))
+
 ### [6.7.1](https://github.com/GetStream/stream-chat-react-native/compare/v6.7.0...v6.7.1) (2025-03-27)
 
 

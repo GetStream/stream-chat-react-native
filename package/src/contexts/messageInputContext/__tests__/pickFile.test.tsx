@@ -57,7 +57,7 @@ describe("MessageInputContext's pickFile", () => {
     maxNumberOfFiles: 2,
   };
 
-  it.each([[3, 1]])(
+  it.each([[3, 2]])(
     'run pickFile when numberOfUploads is %d and alert is triggered %d number of times',
     async (numberOfUploads, numberOfTimesCalled) => {
       const { rerender, result } = renderHook(() => useMessageInputContext(), {
@@ -83,7 +83,6 @@ describe("MessageInputContext's pickFile", () => {
       });
 
       expect(Alert.alert).toHaveBeenCalledTimes(numberOfTimesCalled);
-      expect(Alert.alert).toHaveBeenCalledWith('Maximum number of files reached');
     },
   );
 

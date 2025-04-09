@@ -15,20 +15,22 @@ export const useMessageDetailsForState = (
   const [imageUploads, setImageUploads] = useState<ImageUpload[]>([]);
   const [mentionedUsers, setMentionedUsers] = useState<string[]>([]);
   const [numberOfUploads, setNumberOfUploads] = useState(0);
-  const [showMoreOptions, setShowMoreOptions] = useState(true);
 
   const initialTextValue = initialValue || '';
   const [text, setText] = useState(initialTextValue);
 
+  const isEqualToInitialText = text === initialTextValue;
+
+  const [showMoreOptions, setShowMoreOptions] = useState(true);
+
   useEffect(() => {
-    if (text !== initialTextValue) {
+    if (!isEqualToInitialText) {
       setShowMoreOptions(false);
     }
     if (fileUploads.length || imageUploads.length) {
       setShowMoreOptions(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [text, imageUploads.length, fileUploads.length]);
+  }, [isEqualToInitialText, imageUploads.length, fileUploads.length]);
 
   const messageValue = message ? stringifyMessage(message) : '';
 

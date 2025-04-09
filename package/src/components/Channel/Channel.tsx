@@ -771,9 +771,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
 
       // If the event is typing.start or typing.stop, set the typing state
-      const isTypingEvent = event.type === 'typing.start' || event.type === 'typing.stop';
-      if (isTypingEvent) {
-        setTyping(channel);
+      if (event.type === 'typing.start' || event.type === 'typing.stop') {
+        if (event.user?.id !== client.userID) {
+          setTyping(channel);
+        }
+        return;
       } else {
         if (thread?.id) {
           const updatedThreadMessages =
@@ -1719,6 +1721,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   // once our memoization issues are fixed in most places in the app or we move to a reactive state store.
   const sendMessageRef = useRef<InputMessageInputContextValue['sendMessage']>(sendMessage);
   sendMessageRef.current = sendMessage;
+  const sendMessageStable = useCallback<
+    InputMessageInputContextValue<StreamChatGenerics>['sendMessage']
+  >((...args) => {
+    return sendMessageRef.current(...args);
+  }, []);
 
   const inputMessageInputContext = useCreateInputMessageInputContext({
     additionalTextInputProps,
@@ -1772,7 +1779,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     quotedMessage,
     SendButton,
     sendImageAsync,
-    sendMessage: (...args) => sendMessageRef.current(...args),
+    sendMessage: sendMessageStable,
     SendMessageDisallowedIndicator,
     setInputRef,
     setQuotedMessageState,
@@ -1905,11 +1912,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     VideoThumbnail,
   });
 
-  const suggestionsContext = {
-    AutoCompleteSuggestionHeader,
-    AutoCompleteSuggestionItem,
-    AutoCompleteSuggestionList,
-  };
+  const suggestionsContext = useMemo(() => {
+    return {
+      AutoCompleteSuggestionHeader,
+      AutoCompleteSuggestionItem,
+      AutoCompleteSuggestionList,
+    };
+  }, [AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem, AutoCompleteSuggestionList]);
 
   const threadContext = useCreateThreadContext({
     allowThreadMessagesInChannel,

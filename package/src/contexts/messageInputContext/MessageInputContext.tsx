@@ -114,6 +114,7 @@ export type LocalMessageInputContext = {
       url: string;
     };
   };
+  giphyEnabled: boolean;
   closeAttachmentPicker: () => void;
   /** The time at which the active cooldown will end */
   cooldownEndsAt: Date;
@@ -140,6 +141,7 @@ export type LocalMessageInputContext = {
    */
   fileUploads: FileUpload[];
   giphyActive: boolean;
+  hasText: boolean;
   /**
    * An array of image objects which are set for upload. It has the following structure:
    *
@@ -585,6 +587,7 @@ export const MessageInputProvider = ({
     text,
   } = useMessageDetailsForState(editing, initialValue);
   const { endsAt: cooldownEndsAt, start: startCooldown } = useCooldown();
+  const { onChangeText } = value;
 
   const threadId = thread?.id;
   useEffect(() => {
@@ -632,20 +635,23 @@ export const MessageInputProvider = ({
     return false;
   };
 
-  const onChange = (newText: string) => {
-    if (sending.current) {
-      return;
-    }
-    setText(newText);
+  const onChange = useCallback(
+    (newText: string) => {
+      if (sending.current) {
+        return;
+      }
+      setText(newText);
 
-    if (newText && channel && channelCapabities.sendTypingEvents && isOnline) {
-      logChatPromiseExecution(channel.keystroke(thread?.id), 'start typing event');
-    }
+      if (newText && channel && channelCapabities.sendTypingEvents && isOnline) {
+        logChatPromiseExecution(channel.keystroke(thread?.id), 'start typing event');
+      }
 
-    if (value.onChangeText) {
-      value.onChangeText(newText);
-    }
-  };
+      if (onChangeText) {
+        onChangeText(newText);
+      }
+    },
+    [channel, channelCapabities.sendTypingEvents, isOnline, setText, thread?.id, onChangeText],
+  );
 
   const openCommandsPicker = () => {
     appendText('/');
@@ -998,7 +1004,6 @@ export const MessageInputProvider = ({
       const updatedMessage = {
         ...message,
         attachments,
-        // FIXME: Temp fix, check the implications of this.
         mentioned_users: mentionedUsers.map((userId) => ({ id: userId })),
         quoted_message: undefined,
         text: prevText,
@@ -1424,6 +1429,7 @@ export const MessageInputProvider = ({
     cooldownEndsAt,
     fileUploads,
     giphyActive,
+    giphyEnabled,
     imageUploads,
     inputBoxRef,
     isValidMessage,
@@ -1468,6 +1474,7 @@ export const MessageInputProvider = ({
     uploadNewImage,
     ...value,
     closePollCreationDialog,
+    hasText: !!text,
     openPollCreationDialog,
     sendMessage, // overriding the originally passed in sendMessage
     showPollCreationDialog,

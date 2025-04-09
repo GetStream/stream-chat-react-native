@@ -4,10 +4,6 @@ import { I18nManager, StyleSheet, TextInput, TextInputProps } from 'react-native
 import throttle from 'lodash/throttle';
 
 import {
-  ChannelContextValue,
-  useChannelContext,
-} from '../../contexts/channelContext/ChannelContext';
-import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
@@ -51,23 +47,26 @@ const computeCaretPosition = (token: string, startOfTokenPosition: number) =>
 
 const isCommand = (text: string) => text[0] === '/' && text.split(' ').length <= 1;
 
-type AutoCompleteInputPropsWithContext = Pick<ChannelContextValue, 'giphyEnabled'> &
+type AutoCompleteInputPropsWithContext = Pick<
+  MessageInputContextValue,
+  | 'additionalTextInputProps'
+  | 'autoCompleteSuggestionsLimit'
+  | 'giphyActive'
+  | 'giphyEnabled'
+  | 'maxMessageLength'
+  | 'mentionAllAppUsersEnabled'
+  | 'mentionAllAppUsersQuery'
+  | 'numberOfLines'
+  | 'onChange'
+  | 'setGiphyActive'
+  | 'setInputBoxRef'
+  | 'text'
+  | 'triggerSettings'
+> &
   Pick<
-    MessageInputContextValue,
-    | 'additionalTextInputProps'
-    | 'autoCompleteSuggestionsLimit'
-    | 'giphyActive'
-    | 'maxMessageLength'
-    | 'mentionAllAppUsersEnabled'
-    | 'mentionAllAppUsersQuery'
-    | 'numberOfLines'
-    | 'onChange'
-    | 'setGiphyActive'
-    | 'setInputBoxRef'
-    | 'text'
-    | 'triggerSettings'
+    SuggestionsContextValue,
+    'closeSuggestions' | 'openSuggestions' | 'updateSuggestions'
   > &
-  Pick<SuggestionsContextValue, 'closeSuggestions' | 'openSuggestions' | 'updateSuggestions'> &
   Pick<TranslationContextValue, 't'> & {
     /**
      * This is currently passed in from MessageInput to avoid rerenders
@@ -462,9 +461,11 @@ const MemoizedAutoCompleteInput = React.memo(
   areEqual,
 ) as typeof AutoCompleteInputWithContext;
 
-export const AutoCompleteInput = (props: AutoCompleteInputProps) => {
-  const { giphyEnabled } = useChannelContext();
+export const AutoCompleteInput = (
+  props: AutoCompleteInputProps,
+) => {
   const {
+    giphyEnabled,
     additionalTextInputProps,
     autoCompleteSuggestionsLimit,
     giphyActive,
