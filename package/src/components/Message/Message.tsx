@@ -296,7 +296,7 @@ const MessageWithContext = <
   const {
     theme: {
       colors: { targetedMessageBackground },
-      messageSimple: { targetedMessageContainer, unreadUnderlayColor },
+      messageSimple: { targetedMessageContainer, unreadUnderlayColor, wrapper },
       screenPadding,
     },
   } = useTheme();
@@ -737,8 +737,12 @@ const MessageWithContext = <
         <View
           style={[
             { marginTop: 2, paddingHorizontal: screenPadding },
+            wrapper,
             (isTargetedMessage || message.pinned) && !isMessageTypeDeleted
-              ? { backgroundColor: targetedMessageBackground, ...targetedMessageContainer }
+              ? {
+                  backgroundColor: targetedMessageBackground,
+                  ...targetedMessageContainer,
+                }
               : {},
           ]}
           testID='message-wrapper'

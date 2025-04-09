@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo } from 'react';
 import {
   Animated,
   Keyboard,
@@ -50,13 +50,17 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     },
   } = useTheme();
 
-  const translateY = new Animated.Value(height);
+  const translateY = useMemo(() => new Animated.Value(height), [height]);
 
-  const openAnimation = Animated.timing(translateY, {
-    duration: 200,
-    toValue: 0,
-    useNativeDriver: true,
-  });
+  const openAnimation = useMemo(
+    () =>
+      Animated.timing(translateY, {
+        duration: 200,
+        toValue: 0,
+        useNativeDriver: true,
+      }),
+    [translateY],
+  );
 
   const closeAnimation = Animated.timing(translateY, {
     duration: 50,
