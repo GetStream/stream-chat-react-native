@@ -3498,9 +3498,19 @@ statuses@~1.5.0:
   version "0.0.0"
   uid ""
 
-"stream-chat@link:../../../stream-chat-js":
-  version "0.0.0"
-  uid ""
+"stream-chat@https://github.com/GetStream/stream-chat-js.git#6d936386dbf69e33b8e146e5e48c20a74482eb50":
+  version "0.0.0-development"
+  resolved "https://github.com/GetStream/stream-chat-js.git#6d936386dbf69e33b8e146e5e48c20a74482eb50"
+  dependencies:
+    "@types/jsonwebtoken" "^9.0.8"
+    "@types/ws" "^8.5.14"
+    axios "^1.6.0"
+    base64-js "^1.5.1"
+    form-data "^4.0.0"
+    isomorphic-ws "^5.0.0"
+    jsonwebtoken "^9.0.2"
+    linkifyjs "^4.2.0"
+    ws "^8.18.1"
 
 string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
   version "4.2.3"
