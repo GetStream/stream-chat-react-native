@@ -77,14 +77,11 @@ export type AutoCompleteInputProps = Partial<AutoCompleteInputPropsWithContext>;
 const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) => {
   const {
     additionalTextInputProps,
-    autoCompleteSuggestionsLimit,
     closeSuggestions,
     cooldownActive = false,
     giphyActive,
     giphyEnabled,
     maxMessageLength,
-    mentionAllAppUsersEnabled,
-    mentionAllAppUsersQuery,
     numberOfLines,
     onChange,
     openSuggestions,
@@ -92,9 +89,15 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
     setInputBoxRef,
     t,
     text,
-    triggerSettings,
     updateSuggestions: updateSuggestionsContext,
   } = props;
+
+  const {
+    autoCompleteSuggestionsLimit,
+    mentionAllAppUsersEnabled,
+    mentionAllAppUsersQuery,
+    triggerSettings,
+  } = useMessageInputContext();
 
   const isTrackingStarted = useRef(false);
   const selectionEnd = useRef(0);

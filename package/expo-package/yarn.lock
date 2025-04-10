@@ -3764,6 +3764,11 @@ mime@1.6.0:
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.6.0.tgz#32cd9e5c64553bd58d19a568af452acff04981b1"
   integrity sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==
 
+mime@^4.0.7:
+  version "4.0.7"
+  resolved "https://registry.yarnpkg.com/mime/-/mime-4.0.7.tgz#0b7a98b08c63bd3c10251e797d67840c9bde9f13"
+  integrity sha512-2OfDPL+e03E0LrXaGYOtTFIYhiuzep94NSsuhrNULq+stylcJedcHdzHtz0atMUuGwJfFYs0YL5xeC/Ca2x0eQ==
+
 mimic-fn@^1.0.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/mimic-fn/-/mimic-fn-1.2.0.tgz#820c86a39334640e99516928bd03fca88057d022"
@@ -4777,19 +4782,9 @@ stream-buffers@2.2.x, stream-buffers@~2.2.0:
   version "0.0.0"
   uid ""
 
-"stream-chat@https://github.com/GetStream/stream-chat-js.git#9bc79358e9d0a23e0ff7e2a056711289e5bdf917":
-  version "0.0.0-development"
-  resolved "https://github.com/GetStream/stream-chat-js.git#9bc79358e9d0a23e0ff7e2a056711289e5bdf917"
-  dependencies:
-    "@types/jsonwebtoken" "^9.0.8"
-    "@types/ws" "^8.5.14"
-    axios "^1.6.0"
-    base64-js "^1.5.1"
-    form-data "^4.0.0"
-    isomorphic-ws "^5.0.0"
-    jsonwebtoken "^9.0.2"
-    linkifyjs "^4.2.0"
-    ws "^8.18.1"
+"stream-chat@link:../../../stream-chat-js":
+  version "0.0.0"
+  uid ""
 
 "string-width-cjs@npm:string-width@^4.2.0":
   version "4.2.3"

@@ -4301,11 +4301,6 @@ expo-linking@~7.0.5:
     expo-constants "~17.0.5"
     invariant "^2.2.4"
 
-expo-media-library@~17.0.6:
-  version "17.0.6"
-  resolved "https://registry.yarnpkg.com/expo-media-library/-/expo-media-library-17.0.6.tgz#355f5f5abf0b5b35cdf009f18567cbba12d8dc82"
-  integrity sha512-LUnfrddmee1xLOkyG2NN1l9xQbtvMX3fbM1brEGHg0SKSndvjod3FQdhTzZEYAariqW2RSxQR8v1IsheIoLQXg==
-
 expo-modules-autolinking@2.0.8:
   version "2.0.8"
   resolved "https://registry.yarnpkg.com/expo-modules-autolinking/-/expo-modules-autolinking-2.0.8.tgz#b00c10ebb589ce2220548bbaee4865db1cf1f1f7"
@@ -5540,6 +5535,11 @@ linkifyjs@^4.1.1:
   resolved "https://registry.yarnpkg.com/linkifyjs/-/linkifyjs-4.1.1.tgz#73d427e3bbaaf4ca8e71c589ad4ffda11a9a5fde"
   integrity sha512-zFN/CTVmbcVef+WaDXT63dNzzkfRBKT1j464NJQkV7iSgJU0sLBus9W0HBwnXK13/hf168pbrx/V/bjEHOXNHA==
 
+linkifyjs@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/linkifyjs/-/linkifyjs-4.2.0.tgz#9dd30222b9cbabec9c950e725ec00031c7fa3f08"
+  integrity sha512-pCj3PrQyATaoTYKHrgWRF3SJwsm61udVh+vuls/Rl6SptiDhgE7ziUIudAedRY9QEfynmM7/RmLEfPUyw1HPCw==
+
 locate-path@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/locate-path/-/locate-path-3.0.0.tgz#dbec3b3ab759758071b58fe59fc41871af21400e"
@@ -5942,6 +5942,11 @@ mime@1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.6.0.tgz#32cd9e5c64553bd58d19a568af452acff04981b1"
   integrity sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==
+
+mime@^4.0.7:
+  version "4.0.7"
+  resolved "https://registry.yarnpkg.com/mime/-/mime-4.0.7.tgz#0b7a98b08c63bd3c10251e797d67840c9bde9f13"
+  integrity sha512-2OfDPL+e03E0LrXaGYOtTFIYhiuzep94NSsuhrNULq+stylcJedcHdzHtz0atMUuGwJfFYs0YL5xeC/Ca2x0eQ==
 
 mimic-fn@^1.0.0:
   version "1.2.0"
@@ -7402,10 +7407,9 @@ stream-buffers@2.2.x, stream-buffers@~2.2.0:
   version "0.0.0"
   uid ""
 
-stream-chat@9.0.0-rc.8:
-  version "9.0.0-rc.8"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.0.0-rc.8.tgz#e188e481841493584691ae491916843d0ef5f9cd"
-  integrity sha512-P+Ksnu1cQQfL1t2/QTJ5rr/z2Jehvd2ap41xZgtfbJssHSD7ahe14TCF/1L7q4jjaNlZcTtLcKXCWbbOdKjDcg==
+"stream-chat@https://github.com/GetStream/stream-chat-js.git#9bc79358e9d0a23e0ff7e2a056711289e5bdf917":
+  version "0.0.0-development"
+  resolved "https://github.com/GetStream/stream-chat-js.git#9bc79358e9d0a23e0ff7e2a056711289e5bdf917"
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"
@@ -7414,6 +7418,7 @@ stream-chat@9.0.0-rc.8:
     form-data "^4.0.0"
     isomorphic-ws "^5.0.0"
     jsonwebtoken "^9.0.2"
+    linkifyjs "^4.2.0"
     ws "^8.18.1"
 
 stream-slice@^0.1.2:

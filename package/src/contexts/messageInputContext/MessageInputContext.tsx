@@ -10,7 +10,6 @@ import React, {
 import { Alert, Keyboard, Linking, TextInput, TextInputProps } from 'react-native';
 
 import uniq from 'lodash/uniq';
-import { lookup } from 'mime-types';
 import {
   Attachment,
   logChatPromiseExecution,
@@ -60,7 +59,7 @@ import {
   MediaTypes,
   NativeHandlers,
 } from '../../native';
-import { Asset, File, FileTypes, FileUpload, ImageUpload } from '../../types/types';
+import { File, FileTypes, FileUpload } from '../../types/types';
 import {
   ACITriggerSettings,
   ACITriggerSettingsParams,
@@ -73,6 +72,7 @@ import {
   FileStateValue,
   generateRandomId,
   getFileNameFromPath,
+  getFileTypeFromMimeType,
   isBouncedMessage,
 } from '../../utils/utils';
 import { useAttachmentPickerContext } from '../attachmentPickerContext/AttachmentPickerContext';
@@ -161,7 +161,7 @@ export type LocalMessageInputContext = {
    * ```
    *
    */
-  imageUploads: ImageUpload[];
+  imageUploads: FileUpload[];
   inputBoxRef: React.MutableRefObject<TextInput | null>;
   isValidMessage: () => boolean;
   mentionedUsers: string[];
@@ -206,7 +206,7 @@ export type LocalMessageInputContext = {
   >;
   setFileUploads: React.Dispatch<React.SetStateAction<FileUpload[]>>;
   setGiphyActive: React.Dispatch<React.SetStateAction<boolean>>;
-  setImageUploads: React.Dispatch<React.SetStateAction<ImageUpload[]>>;
+  setImageUploads: React.Dispatch<React.SetStateAction<FileUpload[]>>;
   /**
    * Ref callback to set reference on input box
    */
@@ -231,9 +231,9 @@ export type LocalMessageInputContext = {
   /** Function for attempting to upload a file */
   uploadFile: ({ newFile }: { newFile: FileUpload }) => Promise<void>;
   /** Function for attempting to upload an image */
-  uploadImage: ({ newImage }: { newImage: ImageUpload }) => Promise<void>;
-  uploadNewFile: (file: File) => Promise<void>;
-  uploadNewImage: (image: Partial<Asset>) => Promise<void>;
+  uploadImage: ({ newImage }: { newImage: FileUpload }) => Promise<void>;
+  uploadNewFile: (file: File, fileType?: FileTypes) => Promise<void>;
+  uploadNewImage: (image: File) => Promise<void>;
 };
 
 export type InputMessageInputContextValue = {
@@ -430,10 +430,7 @@ export type InputMessageInputContextValue = {
    * @overrideType Function
    */
   doImageUploadRequest?: (
-    file: {
-      name?: string;
-      uri?: string;
-    },
+    file: File,
     channel: ChannelContextValue['channel'],
   ) => Promise<SendFileAPIResponse>;
 
@@ -673,11 +670,11 @@ export const MessageInputProvider = ({
   const takeAndUploadImage = async (mediaType?: MediaTypes) => {
     setSelectedPicker(undefined);
     closePicker();
-    const photo = await NativeHandlers.takePhoto({
+    const file = await NativeHandlers.takePhoto({
       compressImageQuality: value.compressImageQuality,
       mediaType,
     });
-    if (photo.askToOpenSettings) {
+    if (file.askToOpenSettings) {
       Alert.alert(
         t('Allow camera access in device settings'),
         t('Device camera is used to take photos or videos.'),
@@ -687,11 +684,12 @@ export const MessageInputProvider = ({
         ],
       );
     }
-    if (!photo.cancelled) {
-      if (photo.type.includes('image')) {
-        await uploadNewImage(photo);
+    if (!file.cancelled) {
+      if (file.type.includes('image')) {
+        // We already compressed the image in the native handler, so we can upload it directly.
+        await uploadNewImage(file);
       } else {
-        await uploadNewFile({ ...photo, mimeType: photo.type, type: FileTypes.Video });
+        await uploadNewFile(file);
       }
     }
   };
@@ -726,9 +724,13 @@ export const MessageInputProvider = ({
       }
       result.assets.forEach(async (asset) => {
         if (asset.type.includes('image')) {
-          await uploadNewImage(asset);
+          const compressedURI = await compressedImageURI(asset, value.compressImageQuality);
+          await uploadNewImage({
+            ...asset,
+            uri: compressedURI,
+          });
         } else {
-          await uploadNewFile({ ...asset, mimeType: asset.type, type: FileTypes.Video });
+          await uploadNewFile(asset);
         }
       });
     }
@@ -785,14 +787,15 @@ export const MessageInputProvider = ({
 
     if (!result.cancelled && result.assets) {
       result.assets.forEach(async (asset) => {
-        /**
-         * TODO: The current tight coupling of images to the image
-         * picker does not allow images picked from the file picker
-         * to be rendered in a preview via the uploadNewImage call.
-         * This should be updated alongside allowing image a file
-         * uploads together.
-         */
-        await uploadNewFile(asset);
+        if (asset.type.includes('image')) {
+          const compressedURI = await compressedImageURI(asset, value.compressImageQuality);
+          await uploadNewImage({
+            ...asset,
+            uri: compressedURI,
+          });
+        } else {
+          await uploadNewFile(asset);
+        }
       });
     }
   };
@@ -840,15 +843,13 @@ export const MessageInputProvider = ({
     }
   };
 
-  const mapImageUploadToAttachment = (image: ImageUpload): Attachment => {
-    const mime_type: string | boolean = lookup(image.file.name as string);
-    const name = image.file.name as string;
+  const mapImageUploadToAttachment = (image: FileUpload): Attachment => {
     return {
-      fallback: name,
+      fallback: image.file.name,
       image_url: image.url,
-      mime_type: mime_type ? mime_type : undefined,
-      original_height: image.height,
-      original_width: image.width,
+      mime_type: image.file.type,
+      original_height: image.file.height,
+      original_width: image.file.width,
       originalImage: image.file,
       type: FileTypes.Image,
     };
@@ -859,7 +860,9 @@ export const MessageInputProvider = ({
       return {
         fallback: file.file.name,
         image_url: file.url,
-        mime_type: file.file.mimeType,
+        mime_type: file.file.type,
+        original_height: file.file.height,
+        original_width: file.file.width,
         originalFile: file.file,
         type: FileTypes.Image,
       };
@@ -868,7 +871,7 @@ export const MessageInputProvider = ({
         asset_url: file.url || file.file.uri,
         duration: file.file.duration,
         file_size: file.file.size,
-        mime_type: file.file.mimeType,
+        mime_type: file.file.type,
         originalFile: file.file,
         title: file.file.name,
         type: FileTypes.Audio,
@@ -878,7 +881,7 @@ export const MessageInputProvider = ({
         asset_url: file.url || file.file.uri,
         duration: file.file.duration,
         file_size: file.file.size,
-        mime_type: file.file.mimeType,
+        mime_type: file.file.type,
         originalFile: file.file,
         thumb_url: file.thumb_url,
         title: file.file.name,
@@ -889,7 +892,7 @@ export const MessageInputProvider = ({
         asset_url: file.url || file.file.uri,
         duration: file.file.duration,
         file_size: file.file.size,
-        mime_type: file.file.mimeType,
+        mime_type: file.file.type,
         originalFile: file.file,
         title: file.file.name,
         type: FileTypes.VoiceRecording,
@@ -899,7 +902,7 @@ export const MessageInputProvider = ({
       return {
         asset_url: file.url || file.file.uri,
         file_size: file.file.size,
-        mime_type: file.file.mimeType,
+        mime_type: file.file.type,
         originalFile: file.file,
         title: file.file.name,
         type: FileTypes.File,
@@ -1150,7 +1153,7 @@ export const MessageInputProvider = ({
   const regexCondition = /File (extension \.\w{2,4}|type \S+) is not supported/;
 
   const getUploadSetStateAction =
-    <UploadType extends ImageUpload | FileUpload>(
+    <UploadType extends FileUpload>(
       id: string,
       fileState: FileStateValue,
       extraData: Partial<UploadType> = {},
@@ -1207,11 +1210,11 @@ export const MessageInputProvider = ({
           client.createAbortControllerForNextRequest(),
         );
         // Compress images selected through file picker when uploading them
-        if (file.mimeType?.includes('image')) {
+        if (file.type?.includes('image')) {
           const compressedUri = await compressedImageURI(file, value.compressImageQuality);
-          response = await channel.sendFile(compressedUri, filename, file.mimeType);
+          response = await channel.sendFile(compressedUri, filename, file.type);
         } else {
-          response = await channel.sendFile(file.uri, filename, file.mimeType);
+          response = await channel.sendFile(file.uri, filename, file.type);
         }
         uploadAbortControllerRef.current.delete(filename);
       }
@@ -1234,7 +1237,7 @@ export const MessageInputProvider = ({
     }
   };
 
-  const uploadImage = async ({ newImage }: { newImage: ImageUpload }) => {
+  const uploadImage = async ({ newImage }: { newImage: FileUpload }) => {
     const { file, id } = newImage || {};
 
     if (!file) {
@@ -1248,17 +1251,16 @@ export const MessageInputProvider = ({
     const filename = escapeRegExp(file.name ?? getFileNameFromPath(uri));
 
     try {
-      const compressedUri = await compressedImageURI(file, value.compressImageQuality);
-      const contentType = lookup(filename) || 'multipart/form-data';
+      const contentType = file.type || 'multipart/form-data';
       if (value.doImageUploadRequest) {
         response = await value.doImageUploadRequest(file, channel);
-      } else if (compressedUri && channel) {
+      } else if (channel) {
         if (value.sendImageAsync) {
           uploadAbortControllerRef.current.set(
             filename,
             client.createAbortControllerForNextRequest(),
           );
-          channel.sendImage(compressedUri, filename, contentType).then(
+          channel.sendImage(file.uri, filename, contentType).then(
             (res) => {
               uploadAbortControllerRef.current.delete(filename);
               if (asyncIds.includes(id)) {
@@ -1272,7 +1274,7 @@ export const MessageInputProvider = ({
                   return prevAsyncUploads;
                 });
               } else {
-                const newImageUploads = getUploadSetStateAction<ImageUpload>(
+                const newImageUploads = getUploadSetStateAction<FileUpload>(
                   id,
                   FileState.UPLOADED,
                   {
@@ -1291,13 +1293,13 @@ export const MessageInputProvider = ({
             filename,
             client.createAbortControllerForNextRequest(),
           );
-          response = await channel.sendImage(compressedUri, filename, contentType);
+          response = await channel.sendImage(file.uri, filename, contentType);
           uploadAbortControllerRef.current.delete(filename);
         }
       }
 
       if (Object.keys(response).length) {
-        const newImageUploads = getUploadSetStateAction<ImageUpload>(id, FileState.UPLOADED, {
+        const newImageUploads = getUploadSetStateAction<FileUpload>(id, FileState.UPLOADED, {
           height: file.height,
           url: response.file,
           width: file.width,
@@ -1317,7 +1319,12 @@ export const MessageInputProvider = ({
     }
   };
 
-  const uploadNewFile = async (file: File) => {
+  /**
+   * The fileType is optional and is used to override the file type detection.
+   * This is useful for voice recordings, where the file type is not always detected correctly.
+   * This will change if we unify the file uploads to attachments.
+   */
+  const uploadNewFile = async (file: File, fileType?: FileTypes) => {
     try {
       const id: string = generateRandomId();
       const fileConfig = getFileUploadConfig();
@@ -1339,16 +1346,16 @@ export const MessageInputProvider = ({
       }
 
       const fileState = isAllowed ? FileState.UPLOADING : FileState.NOT_SUPPORTED;
-
-      // If file type is explicitly provided while upload we use it, else we derive the file type.
-      const fileType = file.type || file.mimeType?.split('/')[0];
+      const derivedFileType = fileType ?? getFileTypeFromMimeType(file.type);
 
       const newFile: FileUpload = {
         duration: file.duration || 0,
         file,
-        id: file.id || id,
+        id,
+        mime_type: file.type,
         state: fileState,
-        type: fileType,
+        thumb_url: file.thumb_url,
+        type: derivedFileType,
         url: file.uri,
       };
 
@@ -1365,7 +1372,7 @@ export const MessageInputProvider = ({
     }
   };
 
-  const uploadNewImage = async (image: Partial<Asset>) => {
+  const uploadNewImage = async (image: File) => {
     try {
       const id = generateRandomId();
       const imageUploadConfig = getImageUploadConfig();
@@ -1391,11 +1398,13 @@ export const MessageInputProvider = ({
 
       const imageState = isAllowed ? FileState.UPLOADING : FileState.NOT_SUPPORTED;
 
-      const newImage: ImageUpload = {
+      const newImage: FileUpload = {
         file: image,
         height: image.height,
         id,
+        mime_type: image.type,
         state: imageState,
+        type: FileTypes.Image,
         url: image.uri,
         width: image.width,
       };

@@ -12,7 +12,7 @@ import {
 import type { EmojiSearchIndex } from '../contexts/messageInputContext/MessageInputContext';
 import { compiledEmojis } from '../emoji-data';
 import type { TableRowJoinedUser } from '../store/types';
-import type { ValueOf } from '../types/types';
+import { FileTypes, ValueOf } from '../types/types';
 
 export type ReactionData = {
   Icon: React.ComponentType<IconProps>;
@@ -239,12 +239,28 @@ export const getFileNameFromPath = (path: string) => {
   return match ? match[0] : '';
 };
 
+export const getFileTypeFromMimeType = (mimeType: string) => {
+  const fileType = mimeType.split('/')[0];
+  if (fileType === 'image') {
+    return FileTypes.Image;
+  } else if (fileType === 'video') {
+    return FileTypes.Video;
+  } else if (fileType === 'audio') {
+    return FileTypes.Audio;
+  }
+  return FileTypes.File;
+};
+
 /**
  * Utility to get the duration label from the duration in seconds.
  * @param duration number
  * @returns string
  */
 export const getDurationLabelFromDuration = (duration: number) => {
+  if (!duration) {
+    return '00:00';
+  }
+
   const ONE_HOUR_IN_SECONDS = 3600;
   const ONE_HOUR_IN_MILLISECONDS = ONE_HOUR_IN_SECONDS * 1000;
   let durationLabel = '00:00';
