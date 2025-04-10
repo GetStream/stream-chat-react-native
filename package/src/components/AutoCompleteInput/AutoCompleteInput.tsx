@@ -63,10 +63,7 @@ type AutoCompleteInputPropsWithContext = Pick<
   | 'text'
   | 'triggerSettings'
 > &
-  Pick<
-    SuggestionsContextValue,
-    'closeSuggestions' | 'openSuggestions' | 'updateSuggestions'
-  > &
+  Pick<SuggestionsContextValue, 'closeSuggestions' | 'openSuggestions' | 'updateSuggestions'> &
   Pick<TranslationContextValue, 't'> & {
     /**
      * This is currently passed in from MessageInput to avoid rerenders
@@ -461,9 +458,7 @@ const MemoizedAutoCompleteInput = React.memo(
   areEqual,
 ) as typeof AutoCompleteInputWithContext;
 
-export const AutoCompleteInput = (
-  props: AutoCompleteInputProps,
-) => {
+export const AutoCompleteInput = (props: AutoCompleteInputProps) => {
   const {
     giphyEnabled,
     additionalTextInputProps,

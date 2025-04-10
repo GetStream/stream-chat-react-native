@@ -104,7 +104,10 @@ const styles = StyleSheet.create({
   },
 });
 
-type MessageInputPropsWithContext = Pick<AttachmentPickerContextValue, 'AttachmentPickerSelectionBar'> &
+type MessageInputPropsWithContext = Pick<
+  AttachmentPickerContextValue,
+  'AttachmentPickerSelectionBar'
+> &
   Pick<ChatContextValue, 'isOnline'> &
   Pick<ChannelContextValue, 'channel' | 'members' | 'threadList' | 'watchers'> &
   Pick<
