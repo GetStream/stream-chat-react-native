@@ -642,13 +642,18 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     waveformData,
   } = useAudioController();
 
-  const isSendingButtonVisible = () => {
+  const isSendingButtonVisible = useMemo(() => {
+    console.log('IS SENDING VISIBLE: ', hasText);
+    if (hasText) {
+      return true;
+    }
+    if (sending.current) {
+      return false;
+    }
+
     if (audioRecordingEnabled && isAudioRecorderAvailable()) {
       if (recording) {
         return false;
-      }
-      if (hasText) {
-        return true;
       }
 
       const imagesAndFiles = [...imageUploads, ...fileUploads];
@@ -658,7 +663,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     }
 
     return true;
-  };
+  }, [audioRecordingEnabled, fileUploads, hasText, imageUploads, recording, sending]);
 
   const micPositionX = useSharedValue(0);
   const micPositionY = useSharedValue(0);
@@ -864,7 +869,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 
               {shouldDisplayStopAIGeneration ? (
                 <StopMessageStreamingButton onPress={stopGenerating} />
-              ) : isSendingButtonVisible() ? (
+              ) : isSendingButtonVisible ? (
                 cooldownRemainingSeconds ? (
                   <CooldownTimer seconds={cooldownRemainingSeconds} />
                 ) : (
