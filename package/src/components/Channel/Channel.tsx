@@ -746,7 +746,7 @@ const ChannelWithContext = <
    * This is done until we remove the newMessageStateUpdateThrottleInterval prop.
    */
 
-  const copyMsgsStateFromChannel = useMemo(
+  const copyMessagesStateFromChannelThrottled = useMemo(
     () =>
       throttle(
         () => {
@@ -776,6 +776,7 @@ const ChannelWithContext = <
   );
 
   const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
+    console.log('SHOULD SYNC: ', event.type);
     if (shouldSyncChannel) {
       /**
        * Ignore user.watching.start and user.watching.stop as we should not copy the entire state when
@@ -830,11 +831,11 @@ const ChannelWithContext = <
       // only update channel state if the events are not the previously subscribed useEffect's subscription events
       if (channel && channel.initialized) {
         if (event.type === 'message.new') {
-          copyMsgsStateFromChannel();
+          copyMessagesStateFromChannelThrottled();
           return;
         }
 
-        if (event.type === 'message.read') {
+        if (event.type === 'message.read' || event.type === 'notification.mark_read') {
           return;
         }
 
@@ -1190,7 +1191,7 @@ const ChannelWithContext = <
     }
 
     channel.state.addMessageSorted(updatedMessage, true);
-    copyMsgsStateFromChannel(channel);
+    copyMessagesStateFromChannelThrottled();
 
     if (thread && updatedMessage.parent_id) {
       extraState.threadMessages = channel.state.threads[updatedMessage.parent_id] || [];
@@ -1205,7 +1206,7 @@ const ChannelWithContext = <
     if (channel) {
       channel.state.removeMessage(oldMessage);
       channel.state.addMessageSorted(newMessage, true);
-      copyMsgsStateFromChannel(channel);
+      copyMessagesStateFromChannelThrottled();
 
       if (thread && newMessage.parent_id) {
         const threadMessages = channel.state.threads[newMessage.parent_id] || [];
@@ -1505,7 +1506,7 @@ const ChannelWithContext = <
   ) => {
     if (channel) {
       channel.state.removeMessage(message);
-      copyMsgsStateFromChannel(channel);
+      copyMessagesStateFromChannelThrottled();
 
       if (thread) {
         setThreadMessages(channel.state.threads[thread.id] || []);
@@ -1545,7 +1546,7 @@ const ChannelWithContext = <
       user: client.user,
     });
 
-    copyMsgsStateFromChannel(channel);
+    copyMessagesStateFromChannelThrottled();
 
     const sendReactionResponse = await DBSyncManager.queueTask<StreamChatGenerics>({
       client,
@@ -1631,7 +1632,7 @@ const ChannelWithContext = <
       user: client.user,
     });
 
-    copyMsgsStateFromChannel(channel);
+    copyMessagesStateFromChannelThrottled();
 
     await DBSyncManager.queueTask<StreamChatGenerics>({
       client,
