@@ -5,23 +5,18 @@ import { Attachment } from 'stream-chat';
 import { FileTypes, FileUpload, ImageUpload } from '../../../types/types';
 import { generateRandomId, stringifyMessage } from '../../../utils/utils';
 
+import { useMessageInputTextContext } from '../../messageInputTextContext/MessageInputTextContext';
 import type { MessageInputContextValue } from '../MessageInputContext';
 
-export const useMessageDetailsForState = (
-  message: MessageInputContextValue['editing'],
-  initialValue?: string,
-) => {
+export const useMessageDetailsForState = (message: MessageInputContextValue['editing']) => {
   const [fileUploads, setFileUploads] = useState<FileUpload[]>([]);
   const [imageUploads, setImageUploads] = useState<ImageUpload[]>([]);
   const [mentionedUsers, setMentionedUsers] = useState<string[]>([]);
   const [numberOfUploads, setNumberOfUploads] = useState(0);
 
-  const initialTextValue = initialValue || '';
-  const [text, setText] = useState(initialTextValue);
-
-  const isEqualToInitialText = text === initialTextValue;
-
   const [showMoreOptions, setShowMoreOptions] = useState(true);
+
+  const { isEqualToInitialText, setText } = useMessageInputTextContext();
 
   useEffect(() => {
     if (!isEqualToInitialText) {
@@ -163,8 +158,6 @@ export const useMessageDetailsForState = (
     setMentionedUsers,
     setNumberOfUploads,
     setShowMoreOptions,
-    setText,
     showMoreOptions,
-    text,
   };
 };

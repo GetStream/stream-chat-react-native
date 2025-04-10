@@ -28,7 +28,13 @@ import type { UserResponse } from 'stream-chat';
 import { useAudioController } from './hooks/useAudioController';
 import { useCountdown } from './hooks/useCountdown';
 
-import { ChatContextValue, useChatContext, useOwnCapabilitiesContext } from '../../contexts';
+import {
+  ChatContextValue,
+  MessageInputTextContextValue,
+  useChatContext,
+  useMessageInputTextContext,
+  useOwnCapabilitiesContext,
+} from '../../contexts';
 import {
   AttachmentPickerContextValue,
   useAttachmentPickerContext,
@@ -104,7 +110,10 @@ const styles = StyleSheet.create({
   },
 });
 
-type MessageInputPropsWithContext = Pick<AttachmentPickerContextValue, 'AttachmentPickerSelectionBar'> &
+type MessageInputPropsWithContext = Pick<
+  AttachmentPickerContextValue,
+  'AttachmentPickerSelectionBar'
+> &
   Pick<ChatContextValue, 'isOnline'> &
   Pick<ChannelContextValue, 'channel' | 'members' | 'threadList' | 'watchers'> &
   Pick<
@@ -154,7 +163,6 @@ type MessageInputPropsWithContext = Pick<AttachmentPickerContextValue, 'Attachme
     | 'StartAudioRecordingButton'
     | 'removeFile'
     | 'removeImage'
-    | 'text'
     | 'uploadNewFile'
     | 'uploadNewImage'
     | 'openPollCreationDialog'
@@ -174,7 +182,8 @@ type MessageInputPropsWithContext = Pick<AttachmentPickerContextValue, 'Attachme
     | 'triggerType'
   > &
   Pick<ThreadContextValue, 'thread'> &
-  Pick<TranslationContextValue, 't'>;
+  Pick<TranslationContextValue, 't'> &
+  Pick<MessageInputTextContextValue, 'hasText'>;
 
 const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const {
@@ -231,14 +240,15 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     StartAudioRecordingButton,
     StopMessageStreamingButton,
     suggestions,
-    text,
     thread,
     threadList,
     triggerType,
     uploadNewFile,
     uploadNewImage,
     watchers,
+    hasText,
   } = props;
+  console.log('HASTEXT: ', hasText);
 
   const [height, setHeight] = useState(0);
 
@@ -637,7 +647,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
       if (recording) {
         return false;
       }
-      if (text && text.trim()) {
+      if (hasText) {
         return true;
       }
 
@@ -968,6 +978,7 @@ const areEqual = (
     t: prevT,
     thread: prevThread,
     threadList: prevThreadList,
+    hasText: prevHasText,
   } = prevProps;
   const {
     additionalTextInputProps: nextAdditionalTextInputProps,
@@ -994,7 +1005,13 @@ const areEqual = (
     t: nextT,
     thread: nextThread,
     threadList: nextThreadList,
+    hasText: nextHasText,
   } = nextProps;
+
+  const hasTextEqual = prevHasText === nextHasText;
+  if (!hasTextEqual) {
+    return false;
+  }
 
   const tEqual = prevT === nextT;
   if (!tEqual) {
@@ -1210,12 +1227,12 @@ export const MessageInput = (props: MessageInputProps) => {
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
     StopMessageStreamingButton,
-    text,
     uploadNewFile,
     uploadNewImage,
   } = useMessageInputContext();
 
   const { Reply } = useMessagesContext();
+  const { hasText } = useMessageInputTextContext();
 
   const {
     AutoCompleteSuggestionHeader,
@@ -1269,6 +1286,7 @@ export const MessageInput = (props: MessageInputProps) => {
         FileUploadPreview,
         fileUploads,
         giphyActive,
+        hasText,
         ImageUploadPreview,
         imageUploads,
         Input,
@@ -1303,7 +1321,6 @@ export const MessageInput = (props: MessageInputProps) => {
         StopMessageStreamingButton,
         suggestions,
         t,
-        text,
         thread,
         threadList,
         triggerType,

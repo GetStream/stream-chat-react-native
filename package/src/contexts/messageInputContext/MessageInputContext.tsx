@@ -78,6 +78,7 @@ import {
 import { useAttachmentPickerContext } from '../attachmentPickerContext/AttachmentPickerContext';
 import { ChannelContextValue, useChannelContext } from '../channelContext/ChannelContext';
 import { useChatContext } from '../chatContext/ChatContext';
+import { useMessageInputTextContext } from '../messageInputTextContext/MessageInputTextContext';
 import { useMessagesContext } from '../messagesContext/MessagesContext';
 import { useOwnCapabilitiesContext } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useThreadContext } from '../threadContext/ThreadContext';
@@ -141,7 +142,6 @@ export type LocalMessageInputContext = {
    */
   fileUploads: FileUpload[];
   giphyActive: boolean;
-  hasText: boolean;
   /**
    * An array of image objects which are set for upload. It has the following structure:
    *
@@ -215,13 +215,11 @@ export type LocalMessageInputContext = {
   setNumberOfUploads: React.Dispatch<React.SetStateAction<number>>;
   setSendThreadMessageInChannel: React.Dispatch<React.SetStateAction<boolean>>;
   setShowMoreOptions: React.Dispatch<React.SetStateAction<boolean>>;
-  setText: React.Dispatch<React.SetStateAction<string>>;
   showMoreOptions: boolean;
   /**
    * Function for taking a photo and uploading it
    */
   takeAndUploadImage: (mediaType?: MediaTypes) => Promise<void>;
-  text: string;
   toggleAttachmentPicker: () => void;
   /**
    * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
@@ -450,8 +448,6 @@ export type InputMessageInputContextValue = {
    * Handler for when the attach button is pressed.
    */
   handleAttachButtonPress?: () => void;
-  /** Initial value to set on input */
-  initialValue?: string;
   /**
    * Custom UI component for AutoCompleteInput.
    * Has access to all of [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/messageInputContext/MessageInputContext.tsx)
@@ -567,7 +563,6 @@ export const MessageInputProvider = ({
 
   const {
     editing,
-    initialValue,
     openPollCreationDialog: openPollCreationDialogFromContext,
     StopMessageStreamingButton,
   } = value;
@@ -582,10 +577,9 @@ export const MessageInputProvider = ({
     setMentionedUsers,
     setNumberOfUploads,
     setShowMoreOptions,
-    setText,
     showMoreOptions,
-    text,
-  } = useMessageDetailsForState(editing, initialValue);
+  } = useMessageDetailsForState(editing);
+  const { text, hasText, setText } = useMessageInputTextContext();
   const { endsAt: cooldownEndsAt, start: startCooldown } = useCooldown();
   const { onChangeText } = value;
 
@@ -600,7 +594,7 @@ export const MessageInputProvider = ({
 
   /** Checks if the message is valid or not. Accordingly we can enable/disable send button */
   const isValidMessage = () => {
-    if (text && text.trim()) {
+    if (hasText) {
       return true;
     }
 
@@ -634,6 +628,11 @@ export const MessageInputProvider = ({
 
     return false;
   };
+  const isValidMessageRef = useRef(isValidMessage);
+  isValidMessageRef.current = isValidMessage;
+  const isValidMessageStableCallback = useCallback(() => {
+    return isValidMessageRef.current();
+  }, []);
 
   const onChange = useCallback(
     (newText: string) => {
@@ -1055,6 +1054,18 @@ export const MessageInputProvider = ({
       }
     }
   };
+  const sendMessageRef = useRef(sendMessage);
+  sendMessageRef.current = sendMessage;
+  const sendMessageStableCallback = useCallback(
+    ({
+      customMessageData,
+    }: {
+      customMessageData?: Partial<Message>;
+    } = {}) => {
+      return sendMessageRef.current({ customMessageData });
+    },
+    [],
+  );
 
   const sendMessageAsync = (id: string) => {
     const image = asyncUploads[id];
@@ -1432,7 +1443,7 @@ export const MessageInputProvider = ({
     giphyEnabled,
     imageUploads,
     inputBoxRef,
-    isValidMessage,
+    isValidMessage: isValidMessageStableCallback,
     mentionedUsers,
     numberOfUploads,
     onChange,
@@ -1460,10 +1471,8 @@ export const MessageInputProvider = ({
     setNumberOfUploads,
     setSendThreadMessageInChannel,
     setShowMoreOptions,
-    setText,
     showMoreOptions,
     takeAndUploadImage,
-    text,
     thread,
     toggleAttachmentPicker,
     triggerSettings,
@@ -1474,9 +1483,8 @@ export const MessageInputProvider = ({
     uploadNewImage,
     ...value,
     closePollCreationDialog,
-    hasText: !!text,
     openPollCreationDialog,
-    sendMessage, // overriding the originally passed in sendMessage
+    sendMessage: sendMessageStableCallback, // overriding the originally passed in sendMessage
     showPollCreationDialog,
     StopMessageStreamingButton,
   });

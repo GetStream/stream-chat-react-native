@@ -40,6 +40,7 @@ import { useMessageListPagination } from './hooks/useMessageListPagination';
 import { useTargetedMessage } from './hooks/useTargetedMessage';
 
 import { MessageContextValue } from '../../contexts';
+import { MessageInputTextContextValue, MessageInputTextProvider } from '../../contexts';
 import { ChannelContextValue, ChannelProvider } from '../../contexts/channelContext/ChannelContext';
 import type { UseChannelStateValue } from '../../contexts/channelsStateContext/useChannelState';
 import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
@@ -471,7 +472,8 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       InputMessageInputContextValue,
       'openPollCreationDialog' | 'CreatePollContent' | 'StopMessageStreamingButton'
     >
-  >;
+  > &
+  Partial<Pick<MessageInputTextContextValue, 'initialValue'>>;
 
 const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) => {
   const {
@@ -1760,7 +1762,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     hasFilePicker,
     hasImagePicker,
     ImageUploadPreview,
-    initialValue,
     Input,
     InputButtons,
     InputEditingStateHeader,
@@ -1918,6 +1919,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     };
   }, [AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem, AutoCompleteSuggestionList]);
 
+  const messageInputTextContext = useMemo(
+    () => ({
+      initialValue,
+    }),
+    [initialValue],
+  );
+
   const threadContext = useCreateThreadContext({
     allowThreadMessagesInChannel,
     closeThread,
@@ -1967,9 +1975,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
               <MessagesProvider value={messagesContext}>
                 <ThreadProvider value={threadContext}>
                   <SuggestionsProvider value={suggestionsContext}>
-                    <MessageInputProvider value={inputMessageInputContext}>
-                      <View style={{ height: '100%' }}>{children}</View>
-                    </MessageInputProvider>
+                    <MessageInputTextProvider value={messageInputTextContext}>
+                      <MessageInputProvider value={inputMessageInputContext}>
+                        <View style={{ height: '100%' }}>{children}</View>
+                      </MessageInputProvider>
+                    </MessageInputTextProvider>
                   </SuggestionsProvider>
                 </ThreadProvider>
               </MessagesProvider>

@@ -3,6 +3,8 @@ import { I18nManager, StyleSheet, TextInput, TextInputProps } from 'react-native
 
 import throttle from 'lodash/throttle';
 
+import { MessageInputTextContextValue, useMessageInputTextContext } from '../../contexts';
+
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -60,20 +62,16 @@ type AutoCompleteInputPropsWithContext = Pick<
   | 'onChange'
   | 'setGiphyActive'
   | 'setInputBoxRef'
-  | 'text'
   | 'triggerSettings'
 > &
-  Pick<
-    SuggestionsContextValue,
-    'closeSuggestions' | 'openSuggestions' | 'updateSuggestions'
-  > &
+  Pick<SuggestionsContextValue, 'closeSuggestions' | 'openSuggestions' | 'updateSuggestions'> &
   Pick<TranslationContextValue, 't'> & {
     /**
      * This is currently passed in from MessageInput to avoid rerenders
      * that would happen if we put this in the MessageInputContext
      */
     cooldownActive?: boolean;
-  };
+  } & Pick<MessageInputTextContextValue, 'text'>;
 
 export type AutoCompleteInputProps = Partial<AutoCompleteInputPropsWithContext>;
 
@@ -461,9 +459,7 @@ const MemoizedAutoCompleteInput = React.memo(
   areEqual,
 ) as typeof AutoCompleteInputWithContext;
 
-export const AutoCompleteInput = (
-  props: AutoCompleteInputProps,
-) => {
+export const AutoCompleteInput = (props: AutoCompleteInputProps) => {
   const {
     giphyEnabled,
     additionalTextInputProps,
@@ -476,11 +472,11 @@ export const AutoCompleteInput = (
     onChange,
     setGiphyActive,
     setInputBoxRef,
-    text,
     triggerSettings,
   } = useMessageInputContext();
   const { closeSuggestions, openSuggestions, updateSuggestions } = useSuggestionsContext();
   const { t } = useTranslationContext();
+  const { text } = useMessageInputTextContext();
 
   return (
     <MemoizedAutoCompleteInput

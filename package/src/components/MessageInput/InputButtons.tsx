@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { MessageInputTextContextValue, useMessageInputTextContext } from '../../contexts';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -23,14 +24,14 @@ export type InputButtonsWithContextProps = Pick<
   | 'hasCommands'
   | 'hasFilePicker'
   | 'hasImagePicker'
-  | 'hasText'
   | 'MoreOptionsButton'
   | 'openCommandsPicker'
   | 'selectedPicker'
   | 'setShowMoreOptions'
   | 'showMoreOptions'
   | 'toggleAttachmentPicker'
->;
+> &
+  Pick<MessageInputTextContextValue, 'hasText'>;
 
 export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => {
   const {
@@ -159,7 +160,6 @@ export const InputButtons = (props: InputButtonsProps) => {
     hasCommands,
     hasFilePicker,
     hasImagePicker,
-    hasText,
     MoreOptionsButton,
     openCommandsPicker,
     selectedPicker,
@@ -167,6 +167,7 @@ export const InputButtons = (props: InputButtonsProps) => {
     showMoreOptions,
     toggleAttachmentPicker,
   } = useMessageInputContext();
+  const { hasText } = useMessageInputTextContext();
 
   return (
     <MemoizedInputButtonsWithContext
