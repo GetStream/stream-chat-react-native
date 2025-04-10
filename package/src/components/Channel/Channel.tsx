@@ -1190,7 +1190,7 @@ const ChannelWithContext = <
     }
 
     channel.state.addMessageSorted(updatedMessage, true);
-    copyMessagesStateFromChannel(channel);
+    copyMsgsStateFromChannel(channel);
 
     if (thread && updatedMessage.parent_id) {
       extraState.threadMessages = channel.state.threads[updatedMessage.parent_id] || [];
@@ -1205,7 +1205,7 @@ const ChannelWithContext = <
     if (channel) {
       channel.state.removeMessage(oldMessage);
       channel.state.addMessageSorted(newMessage, true);
-      copyMessagesStateFromChannel(channel);
+      copyMsgsStateFromChannel(channel);
 
       if (thread && newMessage.parent_id) {
         const threadMessages = channel.state.threads[newMessage.parent_id] || [];
@@ -1505,7 +1505,7 @@ const ChannelWithContext = <
   ) => {
     if (channel) {
       channel.state.removeMessage(message);
-      copyMessagesStateFromChannel(channel);
+      copyMsgsStateFromChannel(channel);
 
       if (thread) {
         setThreadMessages(channel.state.threads[thread.id] || []);
@@ -1545,7 +1545,7 @@ const ChannelWithContext = <
       user: client.user,
     });
 
-    copyMessagesStateFromChannel(channel);
+    copyMsgsStateFromChannel(channel);
 
     const sendReactionResponse = await DBSyncManager.queueTask<StreamChatGenerics>({
       client,
@@ -1631,7 +1631,7 @@ const ChannelWithContext = <
       user: client.user,
     });
 
-    copyMessagesStateFromChannel(channel);
+    copyMsgsStateFromChannel(channel);
 
     await DBSyncManager.queueTask<StreamChatGenerics>({
       client,
