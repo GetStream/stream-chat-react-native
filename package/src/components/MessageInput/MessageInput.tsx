@@ -108,7 +108,7 @@ type MessageInputPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<AttachmentPickerContextValue, 'AttachmentPickerSelectionBar'> &
   Pick<ChatContextValue<StreamChatGenerics>, 'isOnline'> &
-  Pick<ChannelContextValue<StreamChatGenerics>, 'members' | 'threadList' | 'watchers'> &
+  Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'members' | 'threadList' | 'watchers'> &
   Pick<
     MessageInputContextValue<StreamChatGenerics>,
     | 'additionalTextInputProps'
@@ -198,6 +198,7 @@ const MessageInputWithContext = <
     AudioRecordingLockIndicator,
     AudioRecordingPreview,
     AutoCompleteSuggestionList,
+    channel,
     closeAttachmentPicker,
     closePollCreationDialog,
     cooldownEndsAt,
@@ -746,7 +747,6 @@ const MessageInputWithContext = <
     })),
   };
 
-  const { channel } = useChannelContext<StreamChatGenerics>();
   const { aiState } = useAIState(channel);
 
   const stopGenerating = useCallback(() => channel?.stopAIResponse(), [channel]);
@@ -860,9 +860,8 @@ const MessageInputWithContext = <
 
               {shouldDisplayStopAIGeneration ? (
                 <StopMessageStreamingButton onPress={stopGenerating} />
-              ) : (
-                isSendingButtonVisible() &&
-                (cooldownRemainingSeconds ? (
+              ) : isSendingButtonVisible() ? (
+                cooldownRemainingSeconds ? (
                   <CooldownTimer seconds={cooldownRemainingSeconds} />
                 ) : (
                   <View style={[styles.sendButtonContainer, sendButtonContainer]}>
@@ -870,8 +869,8 @@ const MessageInputWithContext = <
                       disabled={sending.current || !isValidMessage() || (giphyActive && !isOnline)}
                     />
                   </View>
-                ))
-              )}
+                )
+              ) : null}
               {audioRecordingEnabled && isAudioRecorderAvailable() && !micLocked && (
                 <GestureDetector gesture={panGestureMic}>
                   <Animated.View
@@ -957,6 +956,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     asyncMessagesSlideToCancelDistance: prevAsyncMessagesSlideToCancelDistance,
     asyncUploads: prevAsyncUploads,
     audioRecordingEnabled: prevAsyncMessagesEnabled,
+    channel: prevChannel,
     closePollCreationDialog: prevClosePollCreationDialog,
     editing: prevEditing,
     fileUploads: prevFileUploads,
@@ -982,6 +982,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     asyncMessagesSlideToCancelDistance: nextAsyncMessagesSlideToCancelDistance,
     asyncUploads: nextAsyncUploads,
     audioRecordingEnabled: nextAsyncMessagesEnabled,
+    channel: nextChannel,
     closePollCreationDialog: nextClosePollCreationDialog,
     editing: nextEditing,
     fileUploads: nextFileUploads,
@@ -1022,6 +1023,11 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const asyncMessagesEnabledEqual = prevAsyncMessagesEnabled === nextAsyncMessagesEnabled;
   if (!asyncMessagesEnabledEqual) {
+    return false;
+  }
+
+  const channelEqual = prevChannel.cid === nextChannel.cid;
+  if (!channelEqual) {
     return false;
   }
 
@@ -1160,7 +1166,7 @@ export const MessageInput = <
   const { isOnline } = useChatContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
-  const { members, threadList, watchers } = useChannelContext<StreamChatGenerics>();
+  const { channel, members, threadList, watchers } = useChannelContext<StreamChatGenerics>();
 
   const {
     additionalTextInputProps,
@@ -1263,6 +1269,7 @@ export const MessageInput = <
         AutoCompleteSuggestionHeader,
         AutoCompleteSuggestionItem,
         AutoCompleteSuggestionList,
+        channel,
         clearEditingState,
         clearQuotedMessageState,
         closeAttachmentPicker,

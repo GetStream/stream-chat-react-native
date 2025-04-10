@@ -356,7 +356,7 @@ describe('Channel initial load useEffect', () => {
     cleanup();
   });
 
-  it('should not call channel.watch if channel is not initialized', async () => {
+  it('should still call channel.watch if we are online and DB channels are loaded', async () => {
     const messages = Array.from({ length: 10 }, (_, i) => generateMessage({ id: i }));
     const mockedChannel = generateChannelResponse({
       messages,
@@ -366,13 +366,18 @@ describe('Channel initial load useEffect', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.watch();
     channel.offlineMode = true;
-    channel.state = channelInitialState;
+    channel.state = {
+      ...channelInitialState,
+      messagePagination: {
+        hasPrev: true,
+      },
+    };
     const watchSpy = jest.fn();
     channel.watch = watchSpy;
 
     renderComponent({ channel });
 
-    await waitFor(() => expect(watchSpy).not.toHaveBeenCalled());
+    await waitFor(() => expect(watchSpy).toHaveBeenCalledTimes(1));
   });
 
   it("should call channel.watch if channel is initialized and it's not in offline mode", async () => {

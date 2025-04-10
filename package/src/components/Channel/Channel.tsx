@@ -741,14 +741,33 @@ const ChannelWithContext = <
     channel,
   });
 
-  /**
-   * Since we copy the current channel state all together, we need to find the greatest time among the below two and apply it as the throttling time for copying the channel state.
-   * This is done until we remove the newMessageStateUpdateThrottleInterval prop.
-   */
-  const copyChannelStateThrottlingTime =
-    newMessageStateUpdateThrottleInterval > stateUpdateThrottleInterval
-      ? newMessageStateUpdateThrottleInterval
-      : stateUpdateThrottleInterval;
+  const setReadThrottled = useMemo(
+    () =>
+      throttle(
+        () => {
+          if (channel) {
+            setRead(channel);
+          }
+        },
+        stateUpdateThrottleInterval,
+        throttleOptions,
+      ),
+    [channel, stateUpdateThrottleInterval, setRead],
+  );
+
+  const copyMessagesStateFromChannelThrottled = useMemo(
+    () =>
+      throttle(
+        () => {
+          if (channel) {
+            copyMessagesStateFromChannel(channel);
+          }
+        },
+        newMessageStateUpdateThrottleInterval,
+        throttleOptions,
+      ),
+    [channel, newMessageStateUpdateThrottleInterval, copyMessagesStateFromChannel],
+  );
 
   const copyChannelState = useMemo(
     () =>
@@ -759,10 +778,10 @@ const ChannelWithContext = <
             copyMessagesStateFromChannel(channel);
           }
         },
-        copyChannelStateThrottlingTime,
+        stateUpdateThrottleInterval,
         throttleOptions,
       ),
-    [channel, copyChannelStateThrottlingTime, copyMessagesStateFromChannel, copyStateFromChannel],
+    [stateUpdateThrottleInterval, channel, copyStateFromChannel, copyMessagesStateFromChannel],
   );
 
   const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
@@ -781,9 +800,11 @@ const ChannelWithContext = <
       }
 
       // If the event is typing.start or typing.stop, set the typing state
-      const isTypingEvent = event.type === 'typing.start' || event.type === 'typing.stop';
-      if (isTypingEvent) {
-        setTyping(channel);
+      if (event.type === 'typing.start' || event.type === 'typing.stop') {
+        if (event.user?.id !== client.userID) {
+          setTyping(channel);
+        }
+        return;
       } else {
         if (thread?.id) {
           const updatedThreadMessages =
@@ -817,6 +838,16 @@ const ChannelWithContext = <
 
       // only update channel state if the events are not the previously subscribed useEffect's subscription events
       if (channel && channel.initialized) {
+        if (event.type === 'message.new') {
+          copyMessagesStateFromChannelThrottled();
+          return;
+        }
+
+        if (event.type === 'message.read' || event.type === 'notification.mark_read') {
+          setReadThrottled();
+          return;
+        }
+
         copyChannelState();
       }
     }
@@ -827,7 +858,7 @@ const ChannelWithContext = <
     const initChannel = async () => {
       setLastRead(new Date());
       const unreadCount = channel.countUnread();
-      if (!channel || !shouldSyncChannel || channel.offlineMode) {
+      if (!channel || !shouldSyncChannel) {
         return;
       }
       let errored = false;
@@ -897,20 +928,6 @@ const ChannelWithContext = <
 
     return unsubscribe;
   }, [channel?.cid, client]);
-
-  /**
-   * Subscription to the Notification mark_read event.
-   */
-  useEffect(() => {
-    const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
-      if (channel.cid === event.cid) {
-        setRead(channel);
-      }
-    };
-
-    const { unsubscribe } = client.on('notification.mark_read', handleEvent);
-    return unsubscribe;
-  }, [channel, client, setRead]);
 
   const threadPropsExists = !!threadProps;
 
@@ -1758,6 +1775,11 @@ const ChannelWithContext = <
   const sendMessageRef =
     useRef<InputMessageInputContextValue<StreamChatGenerics>['sendMessage']>(sendMessage);
   sendMessageRef.current = sendMessage;
+  const sendMessageStable = useCallback<
+    InputMessageInputContextValue<StreamChatGenerics>['sendMessage']
+  >((...args) => {
+    return sendMessageRef.current(...args);
+  }, []);
 
   const inputMessageInputContext = useCreateInputMessageInputContext<StreamChatGenerics>({
     additionalTextInputProps,
@@ -1811,7 +1833,7 @@ const ChannelWithContext = <
     quotedMessage,
     SendButton,
     sendImageAsync,
-    sendMessage: (...args) => sendMessageRef.current(...args),
+    sendMessage: sendMessageStable,
     SendMessageDisallowedIndicator,
     setInputRef,
     setQuotedMessageState,
@@ -1944,11 +1966,13 @@ const ChannelWithContext = <
     VideoThumbnail,
   });
 
-  const suggestionsContext = {
-    AutoCompleteSuggestionHeader,
-    AutoCompleteSuggestionItem,
-    AutoCompleteSuggestionList,
-  };
+  const suggestionsContext = useMemo(() => {
+    return {
+      AutoCompleteSuggestionHeader,
+      AutoCompleteSuggestionItem,
+      AutoCompleteSuggestionList,
+    };
+  }, [AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem, AutoCompleteSuggestionList]);
 
   const threadContext = useCreateThreadContext({
     allowThreadMessagesInChannel,

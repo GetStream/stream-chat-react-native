@@ -617,7 +617,6 @@ const MessageListWithContext = <
         setTimeout(() => {
           channelResyncScrollSet.current = true;
           if (channel.countUnread() > 0) {
-            console.log('marking read');
             markRead();
           }
         }, 500);

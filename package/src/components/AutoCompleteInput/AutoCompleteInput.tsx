@@ -4,10 +4,6 @@ import { I18nManager, StyleSheet, TextInput, TextInputProps } from 'react-native
 import throttle from 'lodash/throttle';
 
 import {
-  ChannelContextValue,
-  useChannelContext,
-} from '../../contexts/channelContext/ChannelContext';
-import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
@@ -53,22 +49,22 @@ const isCommand = (text: string) => text[0] === '/' && text.split(' ').length <=
 
 type AutoCompleteInputPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChannelContextValue<StreamChatGenerics>, 'giphyEnabled'> &
-  Pick<
-    MessageInputContextValue<StreamChatGenerics>,
-    | 'additionalTextInputProps'
-    | 'autoCompleteSuggestionsLimit'
-    | 'giphyActive'
-    | 'maxMessageLength'
-    | 'mentionAllAppUsersEnabled'
-    | 'mentionAllAppUsersQuery'
-    | 'numberOfLines'
-    | 'onChange'
-    | 'setGiphyActive'
-    | 'setInputBoxRef'
-    | 'text'
-    | 'triggerSettings'
-  > &
+> = Pick<
+  MessageInputContextValue<StreamChatGenerics>,
+  | 'additionalTextInputProps'
+  | 'autoCompleteSuggestionsLimit'
+  | 'giphyActive'
+  | 'giphyEnabled'
+  | 'maxMessageLength'
+  | 'mentionAllAppUsersEnabled'
+  | 'mentionAllAppUsersQuery'
+  | 'numberOfLines'
+  | 'onChange'
+  | 'setGiphyActive'
+  | 'setInputBoxRef'
+  | 'text'
+  | 'triggerSettings'
+> &
   Pick<
     SuggestionsContextValue<StreamChatGenerics>,
     'closeSuggestions' | 'openSuggestions' | 'updateSuggestions'
@@ -484,8 +480,8 @@ export const AutoCompleteInput = <
 >(
   props: AutoCompleteInputProps<StreamChatGenerics>,
 ) => {
-  const { giphyEnabled } = useChannelContext<StreamChatGenerics>();
   const {
+    giphyEnabled,
     additionalTextInputProps,
     autoCompleteSuggestionsLimit,
     giphyActive,

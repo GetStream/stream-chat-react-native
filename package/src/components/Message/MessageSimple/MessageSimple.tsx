@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Dimensions, LayoutChangeEvent, StyleSheet, View } from 'react-native';
 
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -11,6 +11,8 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+
+const AnimatedWrapper = Animated.createAnimatedComponent(View);
 
 import {
   MessageContextValue,
@@ -205,77 +207,104 @@ const MessageSimpleWithContext = <
 
   const translateX = useSharedValue(0);
   const touchStart = useSharedValue<{ x: number; y: number } | null>(null);
+  const isSwiping = useSharedValue<boolean>(false);
+  const [isBeingSwiped, setIsBeingSwiped] = useState<boolean>(false);
 
-  const onSwipeToReply = () => {
+  const onSwipeToReply = useCallback(() => {
     clearQuotedMessageState();
     setQuotedMessageState(message);
-  };
+  }, [clearQuotedMessageState, message, setQuotedMessageState]);
 
   const THRESHOLD = 25;
 
   const triggerHaptic = NativeHandlers.triggerHaptic;
 
-  const swipeGesture = Gesture.Pan()
-    .hitSlop(messageSwipeToReplyHitSlop)
-    .onBegin((event) => {
-      touchStart.value = { x: event.x, y: event.y };
-    })
-    .onTouchesMove((event, state) => {
-      if (!touchStart.value || !event.changedTouches.length) {
-        state.fail();
-        return;
-      }
+  const swipeGesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .hitSlop(messageSwipeToReplyHitSlop)
+        .onBegin((event) => {
+          touchStart.value = { x: event.x, y: event.y };
+        })
+        .onTouchesMove((event, state) => {
+          if (!touchStart.value || !event.changedTouches.length) {
+            state.fail();
+            return;
+          }
 
-      const xDiff = Math.abs(event.changedTouches[0].x - touchStart.value.x);
-      const yDiff = Math.abs(event.changedTouches[0].y - touchStart.value.y);
-      const isHorizontalPanning = xDiff > yDiff;
+          const xDiff = Math.abs(event.changedTouches[0].x - touchStart.value.x);
+          const yDiff = Math.abs(event.changedTouches[0].y - touchStart.value.y);
+          const isHorizontalPanning = xDiff > yDiff;
 
-      if (isHorizontalPanning) {
-        state.activate();
-      } else {
-        state.fail();
-      }
-    })
-    .onStart(() => {
-      translateX.value = 0;
-    })
-    .onChange(({ translationX }) => {
-      if (translationX > 0) {
-        translateX.value = translationX;
-      }
-    })
-    .onEnd(() => {
-      if (translateX.value >= THRESHOLD) {
-        runOnJS(onSwipeToReply)();
-        if (triggerHaptic) {
-          runOnJS(triggerHaptic)('impactMedium');
-        }
-      }
-      translateX.value = withSpring(0, {
-        dampingRatio: 1,
-        duration: 500,
-        overshootClamping: true,
-        stiffness: 1,
-      });
-    });
+          if (isHorizontalPanning) {
+            state.activate();
+            isSwiping.value = true;
+            runOnJS(setIsBeingSwiped)(true);
+          } else {
+            state.fail();
+          }
+        })
+        .onStart(() => {
+          translateX.value = 0;
+        })
+        .onChange(({ translationX }) => {
+          if (translationX > 0) {
+            translateX.value = translationX;
+          }
+        })
+        .onEnd(() => {
+          if (translateX.value >= THRESHOLD) {
+            runOnJS(onSwipeToReply)();
+            if (triggerHaptic) {
+              runOnJS(triggerHaptic)('impactMedium');
+            }
+          }
+          translateX.value = withSpring(
+            0,
+            {
+              dampingRatio: 1,
+              duration: 500,
+              overshootClamping: true,
+              stiffness: 1,
+            },
+            () => {
+              isSwiping.value = false;
+              runOnJS(setIsBeingSwiped)(false);
+            },
+          );
+        }),
+    [isSwiping, messageSwipeToReplyHitSlop, onSwipeToReply, touchStart, translateX, triggerHaptic],
+  );
 
-  const messageBubbleAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
-  }));
+  const messageBubbleAnimatedStyle = useAnimatedStyle(
+    () =>
+      isSwiping.value
+        ? {
+            transform: [{ translateX: translateX.value }],
+          }
+        : {},
+    [],
+  );
 
-  const swipeContentAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(translateX.value, [0, THRESHOLD], [0, 1]),
-    transform: [
-      {
-        translateX: interpolate(
-          translateX.value,
-          [0, THRESHOLD],
-          [-THRESHOLD, 0],
-          Extrapolation.CLAMP,
-        ),
-      },
-    ],
-  }));
+  const swipeContentAnimatedStyle = useAnimatedStyle(
+    () =>
+      isSwiping.value
+        ? {
+            opacity: interpolate(translateX.value, [0, THRESHOLD], [0, 1]),
+            transform: [
+              {
+                translateX: interpolate(
+                  translateX.value,
+                  [0, THRESHOLD],
+                  [-THRESHOLD, 0],
+                  Extrapolation.CLAMP,
+                ),
+              },
+            ],
+          }
+        : {},
+    [],
+  );
 
   const renderMessageBubble = useMemo(
     () => (
@@ -309,18 +338,31 @@ const MessageSimpleWithContext = <
     () => (
       <GestureDetector gesture={swipeGesture}>
         <View hitSlop={messageSwipeToReplyHitSlop} style={[styles.contentWrapper, contentWrapper]}>
-          <Animated.View
-            style={[styles.swipeContentContainer, swipeContentAnimatedStyle, swipeContentContainer]}
-          >
-            {MessageSwipeContent ? <MessageSwipeContent /> : null}
-          </Animated.View>
-          <Animated.View style={messageBubbleAnimatedStyle}>{renderMessageBubble}</Animated.View>
+          {isBeingSwiped ? (
+            <>
+              <AnimatedWrapper
+                style={[
+                  styles.swipeContentContainer,
+                  swipeContentAnimatedStyle,
+                  swipeContentContainer,
+                ]}
+              >
+                {MessageSwipeContent ? <MessageSwipeContent /> : null}
+              </AnimatedWrapper>
+              <AnimatedWrapper pointerEvents='box-none' style={messageBubbleAnimatedStyle}>
+                {renderMessageBubble}
+              </AnimatedWrapper>
+            </>
+          ) : (
+            renderMessageBubble
+          )}
         </View>
       </GestureDetector>
     ),
     [
       MessageSwipeContent,
       contentWrapper,
+      isBeingSwiped,
       messageBubbleAnimatedStyle,
       messageSwipeToReplyHitSlop,
       renderMessageBubble,
