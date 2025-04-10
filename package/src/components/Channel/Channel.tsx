@@ -731,14 +731,33 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     channel,
   });
 
-  /**
-   * Since we copy the current channel state all together, we need to find the greatest time among the below two and apply it as the throttling time for copying the channel state.
-   * This is done until we remove the newMessageStateUpdateThrottleInterval prop.
-   */
-  const copyChannelStateThrottlingTime =
-    newMessageStateUpdateThrottleInterval > stateUpdateThrottleInterval
-      ? newMessageStateUpdateThrottleInterval
-      : stateUpdateThrottleInterval;
+  const setReadThrottled = useMemo(
+    () =>
+      throttle(
+        () => {
+          if (channel) {
+            setRead(channel);
+          }
+        },
+        stateUpdateThrottleInterval,
+        throttleOptions,
+      ),
+    [channel, stateUpdateThrottleInterval, setRead],
+  );
+
+  const copyMessagesStateFromChannelThrottled = useMemo(
+    () =>
+      throttle(
+        () => {
+          if (channel) {
+            copyMessagesStateFromChannel(channel);
+          }
+        },
+        newMessageStateUpdateThrottleInterval,
+        throttleOptions,
+      ),
+    [channel, newMessageStateUpdateThrottleInterval, copyMessagesStateFromChannel],
+  );
 
   const copyChannelState = useMemo(
     () =>
@@ -749,10 +768,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
             copyMessagesStateFromChannel(channel);
           }
         },
-        copyChannelStateThrottlingTime,
+        stateUpdateThrottleInterval,
         throttleOptions,
       ),
-    [channel, copyChannelStateThrottlingTime, copyMessagesStateFromChannel, copyStateFromChannel],
+    [stateUpdateThrottleInterval, channel, copyStateFromChannel, copyMessagesStateFromChannel],
   );
 
   const handleEvent: EventHandler = (event) => {
@@ -809,6 +828,16 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
       // only update channel state if the events are not the previously subscribed useEffect's subscription events
       if (channel && channel.initialized) {
+        if (event.type === 'message.new') {
+          copyMessagesStateFromChannelThrottled();
+          return;
+        }
+
+        if (event.type === 'message.read' || event.type === 'notification.mark_read') {
+          setReadThrottled();
+          return;
+        }
+
         copyChannelState();
       }
     }
@@ -819,7 +848,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     const initChannel = async () => {
       setLastRead(new Date());
       const unreadCount = channel.countUnread();
-      if (!channel || !shouldSyncChannel || channel.offlineMode) {
+      if (!channel || !shouldSyncChannel) {
         return;
       }
       let errored = false;
@@ -889,20 +918,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
     return unsubscribe;
   }, [channel?.cid, client]);
-
-  /**
-   * Subscription to the Notification mark_read event.
-   */
-  useEffect(() => {
-    const handleEvent: EventHandler = (event) => {
-      if (channel.cid === event.cid) {
-        setRead(channel);
-      }
-    };
-
-    const { unsubscribe } = client.on('notification.mark_read', handleEvent);
-    return unsubscribe;
-  }, [channel, client, setRead]);
 
   const threadPropsExists = !!threadProps;
 
