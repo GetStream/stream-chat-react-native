@@ -72,15 +72,26 @@ type AutoCompleteInputPropsWithContext = Pick<
     cooldownActive?: boolean;
   };
 
-export type AutoCompleteInputProps = Partial<AutoCompleteInputPropsWithContext>;
+export type AutoCompleteInputProps = Partial<
+  Omit<
+    AutoCompleteInputPropsWithContext,
+    | 'triggerSettings'
+    | 'mentionAllAppUsersQuery'
+    | 'mentionAllAppUsersEnabled'
+    | 'autoCompleteSuggestionsLimit'
+  >
+>;
 
 const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) => {
   const {
     additionalTextInputProps,
+    autoCompleteSuggestionsLimit,
     closeSuggestions,
     cooldownActive = false,
     giphyActive,
     giphyEnabled,
+    mentionAllAppUsersEnabled,
+    mentionAllAppUsersQuery,
     maxMessageLength,
     numberOfLines,
     onChange,
@@ -89,15 +100,9 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
     setInputBoxRef,
     t,
     text,
+    triggerSettings,
     updateSuggestions: updateSuggestionsContext,
   } = props;
-
-  const {
-    autoCompleteSuggestionsLimit,
-    mentionAllAppUsersEnabled,
-    mentionAllAppUsersQuery,
-    triggerSettings,
-  } = useMessageInputContext();
 
   const isTrackingStarted = useRef(false);
   const selectionEnd = useRef(0);
