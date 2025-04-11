@@ -184,7 +184,9 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
           soundRef.current = await NativeHandlers.Sound.initializeSound(
             { uri: item.file.uri },
             {
+              pitchCorrectionQuality: 'high',
               progressUpdateIntervalMillis: 100,
+              shouldCorrectPitch: true,
             },
             onPlaybackStatusUpdate,
           );
