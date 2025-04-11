@@ -3,8 +3,6 @@ import type { ChannelAPIResponse, ChannelFilters, ChannelSort } from 'stream-cha
 import { getChannels } from './getChannels';
 import { selectChannelIdsForFilterSort } from './queries/selectChannelIdsForFilterSort';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
-
 import { SqliteClient } from '../SqliteClient';
 
 /**
@@ -17,17 +15,15 @@ import { SqliteClient } from '../SqliteClient';
  *
  * @returns Array of channels corresponding to filters & sort. Returns null if filters + sort query doesn't exist in "channelQueries" table.
  */
-export const getChannelsForFilterSort = async <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const getChannelsForFilterSort = async ({
   currentUserId,
   filters,
   sort,
 }: {
   currentUserId: string;
-  filters?: ChannelFilters<StreamChatGenerics>;
-  sort?: ChannelSort<StreamChatGenerics>;
-}): Promise<Omit<ChannelAPIResponse<StreamChatGenerics>, 'duration'>[] | null> => {
+  filters?: ChannelFilters;
+  sort?: ChannelSort;
+}): Promise<Omit<ChannelAPIResponse, 'duration'>[] | null> => {
   if (!filters && !sort) {
     console.warn('Please provide the query (filters/sort) to fetch channels from DB');
     return null;

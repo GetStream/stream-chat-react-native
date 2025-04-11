@@ -18,8 +18,12 @@ exports[`MessageInputContext's sendMessage exit sendMessage when edit message is
   "html": "<p>regular</p>",
   "id": "7a85f744-cc89-4f82-a1d4-5456432cc8bf",
   "mentioned_users": [
-    "dummy1",
-    "dummy2",
+    {
+      "id": "dummy1",
+    },
+    {
+      "id": "dummy2",
+    },
   ],
   "quoted_message": undefined,
   "text": "",
@@ -42,7 +46,7 @@ exports[`MessageInputContext's sendMessage exit sendMessage when file upload sta
     {
       "asset_url": undefined,
       "file_size": undefined,
-      "mime_type": undefined,
+      "mime_type": "file",
       "originalFile": {
         "name": "dummy.pdf",
         "state": "uploaded",
@@ -54,7 +58,7 @@ exports[`MessageInputContext's sendMessage exit sendMessage when file upload sta
     {
       "asset_url": undefined,
       "file_size": undefined,
-      "mime_type": undefined,
+      "mime_type": "video/mp4",
       "originalFile": {
         "name": "dummy.pdf",
         "state": "finished",
@@ -66,7 +70,7 @@ exports[`MessageInputContext's sendMessage exit sendMessage when file upload sta
     {
       "asset_url": undefined,
       "file_size": undefined,
-      "mime_type": undefined,
+      "mime_type": "audio/mp3",
       "originalFile": {
         "name": "dummy.pdf",
         "state": "uploaded",
@@ -78,7 +82,7 @@ exports[`MessageInputContext's sendMessage exit sendMessage when file upload sta
     {
       "asset_url": undefined,
       "file_size": undefined,
-      "mime_type": undefined,
+      "mime_type": "image/jpeg",
       "originalFile": {
         "name": "dummy.pdf",
         "state": "finished",

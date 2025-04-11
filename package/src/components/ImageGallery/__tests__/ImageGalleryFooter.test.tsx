@@ -20,7 +20,6 @@ import {
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { NativeHandlers } from '../../../native';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { MessageType } from '../../MessageList/hooks/useMessageList';
 import { ImageGallery, ImageGalleryCustomComponents } from '../ImageGallery';
 
@@ -77,7 +76,7 @@ describe('ImageGalleryFooter', () => {
                 generateMessage({
                   attachments: [generateVideoAttachment({ type: 'video' })],
                 }),
-              ] as unknown as MessageType<DefaultStreamChatGenerics>[],
+              ] as unknown as MessageType[],
             } as unknown as ImageGalleryContextValue
           }
         >
@@ -132,7 +131,7 @@ describe('ImageGalleryFooter', () => {
                 generateMessage({
                   attachments: [generateVideoAttachment({ type: 'video' })],
                 }),
-              ] as unknown as MessageType<DefaultStreamChatGenerics>[],
+              ] as unknown as MessageType[],
             } as unknown as ImageGalleryContextValue
           }
         >
@@ -175,7 +174,7 @@ describe('ImageGalleryFooter', () => {
                 generateMessage({
                   attachments: [generateImageAttachment()],
                 }),
-              ] as unknown as MessageType<DefaultStreamChatGenerics>[],
+              ] as unknown as MessageType[],
             } as unknown as ImageGalleryContextValue
           }
         >

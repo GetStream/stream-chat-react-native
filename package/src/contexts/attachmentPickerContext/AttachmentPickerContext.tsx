@@ -2,7 +2,8 @@ import React, { PropsWithChildren, useContext, useEffect, useState } from 'react
 
 import { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 
-import type { Asset, File } from '../../types/types';
+import type { File } from '../../types/types';
+
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -82,11 +83,11 @@ export type AttachmentPickerContextValue = {
   maxNumberOfFiles: number;
   openPicker: () => void;
   selectedFiles: File[];
-  selectedImages: Asset[];
+  selectedImages: File[];
   setBottomInset: React.Dispatch<React.SetStateAction<number>>;
   setMaxNumberOfFiles: React.Dispatch<React.SetStateAction<number>>;
   setSelectedFiles: React.Dispatch<React.SetStateAction<File[]>>;
-  setSelectedImages: React.Dispatch<React.SetStateAction<Asset[]>>;
+  setSelectedImages: React.Dispatch<React.SetStateAction<File[]>>;
   setSelectedPicker: React.Dispatch<React.SetStateAction<'images' | undefined>>;
   setTopInset: React.Dispatch<React.SetStateAction<number>>;
   topInset: number;
@@ -124,7 +125,7 @@ export const AttachmentPickerProvider = ({
 
   const [bottomInset, setBottomInset] = useState<number>(bottomInsetValue ?? 0);
   const [maxNumberOfFiles, setMaxNumberOfFiles] = useState(10);
-  const [selectedImages, setSelectedImages] = useState<Asset[]>([]);
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedPicker, setSelectedPicker] = useState<'images'>();
   const [topInset, setTopInset] = useState<number>(topInsetValue ?? 0);

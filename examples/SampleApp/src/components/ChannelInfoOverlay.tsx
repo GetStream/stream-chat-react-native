@@ -29,6 +29,7 @@ import {
   useTheme,
   useViewport,
 } from 'stream-chat-react-native';
+import { ChannelMemberResponse } from 'stream-chat';
 
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
@@ -224,9 +225,9 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
     : 0;
   const channelName = channel
     ? channel.data?.name ||
-      Object.values(channel.state.members)
+      Object.values<ChannelMemberResponse>(channel.state.members)
         .slice(0)
-        .reduce((returnString, currentMember, index, originalArray) => {
+        .reduce<string>((returnString, currentMember, index, originalArray) => {
           const returnStringLength = returnString.length;
           const currentMemberName =
             currentMember.user?.name || currentMember.user?.id || 'Unknown User';
@@ -246,7 +247,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
         }, '')
     : '';
   const otherMembers = channel
-    ? Object.values(channel.state.members).filter((member) => member.user?.id !== clientId)
+    ? Object.values<ChannelMemberResponse>(channel.state.members).filter((member) => member.user?.id !== clientId)
     : [];
 
   return (
@@ -292,14 +293,14 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                               ? 'Online'
                               : `Last Seen ${dayjs(otherMembers[0].user?.last_active).fromNow()}`
                             : `${Object.keys(channel.state.members).length} Members, ${
-                                Object.values(channel.state.members).filter(
+                                Object.values<ChannelMemberResponse>(channel.state.members).filter(
                                   (member) => !!member.user?.online,
                                 ).length
                               } Online`}
                         </Text>
                         <FlatList
                           contentContainerStyle={styles.flatListContent}
-                          data={Object.values(channel.state.members)
+                          data={Object.values<ChannelMemberResponse>(channel.state.members)
                             .map((member) => member.user)
                             .sort((a, b) =>
                               !!a?.online && !b?.online

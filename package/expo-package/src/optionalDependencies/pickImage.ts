@@ -45,11 +45,10 @@ export const pickImage = ImagePicker
               duration: asset.duration,
               name: asset.fileName,
               size: asset.fileSize,
-              source: 'picker',
               type: asset.mimeType,
               uri: asset.uri,
             }));
-            return { assets, cancelled: false, source: 'picker' };
+            return { assets, cancelled: false };
           } else {
             return { cancelled: true };
           }

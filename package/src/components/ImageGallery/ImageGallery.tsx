@@ -42,7 +42,7 @@ import { OverlayProviderProps } from '../../contexts/overlayContext/OverlayConte
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useViewport } from '../../hooks/useViewport';
 import { isVideoPlayerAvailable, VideoType } from '../../native';
-import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
+import { FileTypes } from '../../types/types';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
 import { getGiphyMimeType } from '../Attachment/utils/getGiphyMimeType';
@@ -64,9 +64,7 @@ export enum IsSwiping {
   FALSE,
 }
 
-export type ImageGalleryCustomComponents<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+export type ImageGalleryCustomComponents = {
   /**
    * Override props for following UI components, which are part of [image gallery](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#gallery-components).
    *
@@ -99,30 +97,25 @@ export type ImageGalleryCustomComponents<
    * @overrideType object
    */
   imageGalleryCustomComponents?: {
-    footer?: ImageGalleryFooterCustomComponentProps<StreamChatGenerics>;
-    grid?: ImageGalleryGridImageComponents<StreamChatGenerics>;
+    footer?: ImageGalleryFooterCustomComponentProps;
+    grid?: ImageGalleryGridImageComponents;
     gridHandle?: ImageGalleryGridHandleCustomComponentProps;
-    header?: ImageGalleryHeaderCustomComponentProps<StreamChatGenerics>;
+    header?: ImageGalleryHeaderCustomComponentProps;
   };
 };
 
-type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  ImageGalleryCustomComponents<StreamChatGenerics> & {
-    overlayOpacity: SharedValue<number>;
-  } & Pick<
-      OverlayProviderProps<StreamChatGenerics>,
-      | 'giphyVersion'
-      | 'imageGalleryGridSnapPoints'
-      | 'imageGalleryGridHandleHeight'
-      | 'numberOfImageGalleryGridColumns'
-      | 'autoPlayVideo'
-    >;
+type Props = ImageGalleryCustomComponents & {
+  overlayOpacity: SharedValue<number>;
+} & Pick<
+    OverlayProviderProps,
+    | 'giphyVersion'
+    | 'imageGalleryGridSnapPoints'
+    | 'imageGalleryGridHandleHeight'
+    | 'numberOfImageGalleryGridColumns'
+    | 'autoPlayVideo'
+  >;
 
-export const ImageGallery = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: Props<StreamChatGenerics>,
-) => {
+export const ImageGallery = (props: Props) => {
   const {
     autoPlayVideo = false,
     giphyVersion = 'fixed_height',
@@ -132,9 +125,7 @@ export const ImageGallery = <
     numberOfImageGalleryGridColumns,
     overlayOpacity,
   } = props;
-  const [imageGalleryAttachments, setImageGalleryAttachments] = useState<
-    Photo<StreamChatGenerics>[]
-  >([]);
+  const [imageGalleryAttachments, setImageGalleryAttachments] = useState<Photo[]>([]);
   const { resizableCDNHosts } = useChatConfigContext();
   const {
     theme: {
@@ -142,9 +133,8 @@ export const ImageGallery = <
       imageGallery: { backgroundColor, pager, slide },
     },
   } = useTheme();
-  const [gridPhotos, setGridPhotos] = useState<Photo<StreamChatGenerics>[]>([]);
-  const { messages, selectedMessage, setSelectedMessage } =
-    useImageGalleryContext<StreamChatGenerics>();
+  const [gridPhotos, setGridPhotos] = useState<Photo[]>([]);
+  const { messages, selectedMessage, setSelectedMessage } = useImageGalleryContext();
 
   const { vh, vw } = useViewport();
 
@@ -224,7 +214,7 @@ export const ImageGallery = <
    * photo attachments
    */
 
-  const photos = messages.reduce((acc: Photo<StreamChatGenerics>[], cur) => {
+  const photos = messages.reduce((acc: Photo[], cur) => {
     const attachmentImages =
       cur.attachments
         ?.filter(
@@ -273,7 +263,7 @@ export const ImageGallery = <
       };
     });
 
-    return [...attachmentPhotos, ...acc] as Photo<StreamChatGenerics>[];
+    return [...attachmentPhotos, ...acc] as Photo[];
   }, []);
 
   /**
@@ -482,6 +472,10 @@ export const ImageGallery = <
           paused: imageGalleryAttachment.id === index ? false : true,
         })),
       );
+
+      if (videoRef.current?.play) {
+        videoRef.current.play();
+      }
     } else {
       // If the status is true we simply set all the audio's paused state as true.
       setImageGalleryAttachments((prevImageGalleryAttachment) =>
@@ -490,6 +484,10 @@ export const ImageGallery = <
           paused: true,
         })),
       );
+
+      if (videoRef.current?.pause) {
+        videoRef.current.pause();
+      }
     }
   };
 
@@ -583,7 +581,7 @@ export const ImageGallery = <
           </Animated.View>
         </Animated.View>
       </GestureDetector>
-      <ImageGalleryHeader<StreamChatGenerics>
+      <ImageGalleryHeader
         opacity={headerFooterOpacity}
         photo={imageGalleryAttachments[selectedIndex]}
         visible={headerFooterVisible}
@@ -591,7 +589,7 @@ export const ImageGallery = <
       />
 
       {imageGalleryAttachments[selectedIndex] && (
-        <ImageGalleryFooter<StreamChatGenerics>
+        <ImageGalleryFooter
           accessibilityLabel={'Image Gallery Footer'}
           duration={imageGalleryAttachments[selectedIndex].duration || 0}
           onPlayPause={onPlayPause}
@@ -653,9 +651,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export type Photo<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+export type Photo = {
   id: string;
   uri: string;
   channelId?: string;
@@ -669,7 +665,7 @@ export type Photo<
   progress?: number;
   thumb_url?: string;
   type?: string;
-  user?: UserResponse<StreamChatGenerics> | null;
+  user?: UserResponse | null;
   user_id?: string;
 };
 

@@ -19,7 +19,7 @@ import {
 import { generateImageAttachment } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 import type { MessageType } from '../../MessageList/hooks/useMessageList';
 import { ImageGalleryOverlay } from '../components/ImageGalleryOverlay';
 
@@ -39,7 +39,7 @@ describe('ImageGalleryOverlay', () => {
                 generateMessage({
                   attachments: [generateImageAttachment()],
                 }),
-              ] as unknown as MessageType<DefaultStreamChatGenerics>[],
+              ] as unknown as MessageType[],
             } as unknown as ImageGalleryContextValue
           }
         >

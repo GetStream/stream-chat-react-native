@@ -1,12 +1,9 @@
 import { useMemo } from 'react';
 
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { ThreadContextValue } from '../../threadContext/ThreadContext';
 import type { MessageInputContextValue } from '../MessageInputContext';
 
-export const useCreateMessageInputContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const useCreateMessageInputContext = ({
   additionalTextInputProps,
   appendText,
   asyncIds,
@@ -117,12 +114,9 @@ export const useCreateMessageInputContext = <
   uploadNewFile,
   uploadNewImage,
   UploadProgressIndicator,
-}: MessageInputContextValue<StreamChatGenerics> &
-  Pick<ThreadContextValue<StreamChatGenerics>, 'thread'>) => {
+}: MessageInputContextValue & Pick<ThreadContextValue, 'thread'>) => {
   const editingdep = editing?.id;
-  const fileUploadsValue = fileUploads
-    .map(({ duration, paused, progress, state }) => `${state},${paused},${progress},${duration}`)
-    .join();
+  const fileUploadsValue = fileUploads.map(({ state }) => state).join();
   const imageUploadsValue = imageUploads.map(({ state }) => state).join();
   const asyncUploadsValue = Object.keys(asyncUploads).join();
   const mentionedUsersLength = mentionedUsers.length;
@@ -130,7 +124,7 @@ export const useCreateMessageInputContext = <
   const threadId = thread?.id;
   const asyncIdsLength = asyncIds.length;
 
-  const messageInputContext: MessageInputContextValue<StreamChatGenerics> = useMemo(
+  const messageInputContext: MessageInputContextValue = useMemo(
     () => ({
       additionalTextInputProps,
       appendText,

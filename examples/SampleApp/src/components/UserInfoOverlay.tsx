@@ -35,7 +35,6 @@ import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
 import { useUserInfoOverlayContext } from '../context/UserInfoOverlayContext';
 
-import type { StreamChatGenerics } from '../types';
 import { useAppContext } from '../context/AppContext';
 import { UserResponse } from 'stream-chat';
 
@@ -105,7 +104,7 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
   const { overlayOpacity, visible } = props;
   const { chatClient } = useAppContext();
   const { overlay, setOverlay } = useAppOverlayContext();
-  const { client } = useChatContext<StreamChatGenerics>();
+  const { client } = useChatContext();
   const { setData } = useBottomSheetOverlayContext();
   const { data, reset } = useUserInfoOverlayContext();
   const { vh } = useViewport();
@@ -298,7 +297,6 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
 
                             // Check if the channel already exists.
                             const channels = await client.queryChannels({
-                              distinct: true,
                               members,
                             });
 
@@ -351,7 +349,6 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
 
                             // Check if the channel already exists.
                             const channels = await client.queryChannels({
-                              distinct: true,
                               members,
                             });
 

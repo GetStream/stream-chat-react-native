@@ -12,7 +12,6 @@ import { generateImageAttachment } from '../../../mock-builders/generator/attach
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { FileState } from '../../../utils/utils';
 import {
   InputMessageInputContextValue,
@@ -21,20 +20,14 @@ import {
   useMessageInputContext,
 } from '../MessageInputContext';
 
-type WrapperType<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  Partial<InputMessageInputContextValue<StreamChatGenerics>>;
+type WrapperType = Partial<InputMessageInputContextValue>;
 
 afterEach(jest.clearAllMocks);
 
 const user1 = generateUser();
 const message = generateMessage({ user: user1 });
 describe('MessageInputContext', () => {
-  const Wrapper = <
-    StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-  >({
-    children,
-    ...rest
-  }: PropsWithChildren<WrapperType<StreamChatGenerics>>) => (
+  const Wrapper = ({ children, ...rest }: PropsWithChildren<WrapperType>) => (
     <ChatProvider
       value={
         {
@@ -49,18 +42,18 @@ describe('MessageInputContext', () => {
                 blocked_mime_types: ['image/png'],
               },
             },
-          } as unknown as AppSettingsAPIResponse<StreamChatGenerics>,
+          } as unknown as AppSettingsAPIResponse,
           client: {
             updateMessage: jest.fn().mockResolvedValue({ message }),
-          } as unknown as StreamChat<StreamChatGenerics>,
-        } as ChatContextValue<StreamChatGenerics>
+          } as unknown as StreamChat,
+        } as ChatContextValue
       }
     >
       <MessageInputProvider
         value={
           {
             ...rest,
-          } as MessageInputContextValue<StreamChatGenerics>
+          } as MessageInputContextValue
         }
       >
         {children}

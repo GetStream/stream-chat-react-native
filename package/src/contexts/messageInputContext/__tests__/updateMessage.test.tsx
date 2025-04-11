@@ -10,7 +10,7 @@ import type { MessageType } from '../../../components/MessageList/hooks/useMessa
 import { ChatContextValue, ChatProvider } from '../../../contexts/chatContext/ChatContext';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 import * as AttachmentPickerContext from '../../attachmentPickerContext/AttachmentPickerContext';
 import {
   InputMessageInputContextValue,
@@ -21,27 +21,23 @@ import {
 
 const message = generateMessage({});
 
-type WrapperType<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  Partial<InputMessageInputContextValue<StreamChatGenerics>>;
+type WrapperType = Partial<InputMessageInputContextValue>;
 
-const Wrapper = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>({
-  children,
-  ...rest
-}: PropsWithChildren<WrapperType<StreamChatGenerics>>) => (
+const Wrapper = ({ children, ...rest }: PropsWithChildren<WrapperType>) => (
   <ChatProvider
     value={
       {
         client: {
           updateMessage: jest.fn().mockResolvedValue({ message }),
-        } as unknown as StreamChat<StreamChatGenerics>,
-      } as ChatContextValue<StreamChatGenerics>
+        } as unknown as StreamChat,
+      } as ChatContextValue
     }
   >
     <MessageInputProvider
       value={
         {
           ...rest,
-        } as MessageInputContextValue<StreamChatGenerics>
+        } as MessageInputContextValue
       }
     >
       {children}
@@ -55,7 +51,7 @@ describe("MessageInputContext's updateMessage", () => {
     setSelectedImages: jest.fn(),
   }));
   const clearEditingStateMock = jest.fn();
-  const generatedMessage: boolean | MessageType<DefaultStreamChatGenerics> = generateMessage({
+  const generatedMessage: boolean | MessageType = generateMessage({
     created_at: 'Sat Jul 02 2022 23:55:13 GMT+0530 (India Standard Time)',
     id: '7a85f744-cc89-4f82-a1d4-5456432cc8bf',
     text: 'hey',
@@ -65,7 +61,7 @@ describe("MessageInputContext's updateMessage", () => {
       image: 'fc86ddcb-bac4-400c-9afd-b0c0a1c0cd33',
       name: '50cbdd0e-ca7e-4478-9e2c-be0f1ac6a995',
     }),
-  }) as unknown as MessageType<DefaultStreamChatGenerics>;
+  }) as unknown as MessageType;
 
   it('updateMessage throws error as clearEditingState is not available', async () => {
     const initialProps = {

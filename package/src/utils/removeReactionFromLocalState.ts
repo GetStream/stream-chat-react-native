@@ -2,20 +2,16 @@ import type { Channel, UserResponse } from 'stream-chat';
 
 import { deleteReaction } from '../store/apis/deleteReaction';
 
-import type { DefaultStreamChatGenerics } from '../types/types';
-
-export const removeReactionFromLocalState = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const removeReactionFromLocalState = ({
   channel,
   messageId,
   reactionType,
   user,
 }: {
-  channel: Channel<StreamChatGenerics>;
+  channel: Channel;
   messageId: string;
   reactionType: string;
-  user: UserResponse<StreamChatGenerics>;
+  user: UserResponse;
 }) => {
   const message = channel.state.messages.find(({ id }) => id === messageId);
   if (!message || !channel?.id || !user?.id) {

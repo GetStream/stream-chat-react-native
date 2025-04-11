@@ -10,7 +10,7 @@ module.exports = Promise.resolve().then(() => {
       {
         preset: 'angular',
         releaseRules: [
-          { type: 'chore', scope: 'deps', release: 'patch' },
+          { type: 'chore', release: 'patch' },
           { type: 'refactor', release: 'patch' },
         ],
         parserOpts: {

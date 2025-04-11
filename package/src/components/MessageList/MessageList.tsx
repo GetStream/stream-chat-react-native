@@ -10,7 +10,7 @@ import {
   ViewToken,
 } from 'react-native';
 
-import type { Channel, Event, FormatMessageResponse, MessageResponse } from 'stream-chat';
+import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
 import {
   isMessageWithStylesReadByAndDateSeparator,
@@ -53,7 +53,7 @@ import {
 import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
-import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
+import { FileTypes } from '../../types/types';
 
 // This is just to make sure that the scrolling happens in a different task queue.
 // TODO: Think if we really need this and strive to remove it if we can.
@@ -90,11 +90,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const keyExtractor = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  item: MessageType<StreamChatGenerics>,
-) => {
+const keyExtractor = (item: MessageType) => {
   if (item.id) {
     return item.id;
   }
@@ -108,23 +104,13 @@ const flatListViewabilityConfig: ViewabilityConfig = {
   viewAreaCoveragePercentThreshold: 1,
 };
 
-const hasReadLastMessage = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  channel: Channel<StreamChatGenerics>,
-  userId: string,
-) => {
+const hasReadLastMessage = (channel: Channel, userId: string) => {
   const latestMessageIdInChannel = channel.state.latestMessages.slice(-1)[0]?.id;
   const lastReadMessageIdServer = channel.state.read[userId]?.last_read_message_id;
   return latestMessageIdInChannel === lastReadMessageIdServer;
 };
 
-const getPreviousLastMessage = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  messages: MessageType<StreamChatGenerics>[],
-  newMessage?: MessageResponse<StreamChatGenerics>,
-) => {
+const getPreviousLastMessage = (messages: MessageType[], newMessage?: MessageResponse) => {
   if (!newMessage) return;
   let previousLastMessage;
   for (let i = messages.length - 1; i >= 0; i--) {
@@ -138,11 +124,12 @@ const getPreviousLastMessage = <
   return previousLastMessage;
 };
 
-type MessageListPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<AttachmentPickerContextValue, 'closePicker' | 'selectedPicker' | 'setSelectedPicker'> &
+type MessageListPropsWithContext = Pick<
+  AttachmentPickerContextValue,
+  'closePicker' | 'selectedPicker' | 'setSelectedPicker'
+> &
   Pick<
-    ChannelContextValue<StreamChatGenerics>,
+    ChannelContextValue,
     | 'channel'
     | 'channelUnreadState'
     | 'disabled'
@@ -162,12 +149,12 @@ type MessageListPropsWithContext<
     | 'targetedMessage'
     | 'threadList'
   > &
-  Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
-  Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setMessages'> &
-  Pick<PaginatedMessageListContextValue<StreamChatGenerics>, 'loadMore' | 'loadMoreRecent'> &
+  Pick<ChatContextValue, 'client'> &
+  Pick<ImageGalleryContextValue, 'setMessages'> &
+  Pick<PaginatedMessageListContextValue, 'loadMore' | 'loadMoreRecent'> &
   Pick<OverlayContextValue, 'overlay'> &
   Pick<
-    MessagesContextValue<StreamChatGenerics>,
+    MessagesContextValue,
     | 'DateHeader'
     | 'disableTypingIndicator'
     | 'FlatList'
@@ -184,7 +171,7 @@ type MessageListPropsWithContext<
     | 'UnreadMessagesNotification'
   > &
   Pick<
-    ThreadContextValue<StreamChatGenerics>,
+    ThreadContextValue,
     'loadMoreRecentThread' | 'loadMoreThread' | 'thread' | 'threadInstance'
   > & {
     /**
@@ -201,7 +188,7 @@ type MessageListPropsWithContext<
      *  additionalFlatListProps={{ bounces: true, keyboardDismissMode: true }} />
      * ```
      */
-    additionalFlatListProps?: Partial<FlatListProps<MessageType<StreamChatGenerics>>>;
+    additionalFlatListProps?: Partial<FlatListProps<MessageType>>;
     /**
      * UI component for footer of message list. By default message list will use `InlineLoadingMoreIndicator`
      * as FooterComponent. If you want to implement your own inline loading indicator, you can access `loadingMore`
@@ -231,7 +218,7 @@ type MessageListPropsWithContext<
      *
      * @param message A message object to open the thread upon.
      */
-    onThreadSelect?: (message: ThreadContextValue<StreamChatGenerics>['thread']) => void;
+    onThreadSelect?: (message: ThreadContextValue['thread']) => void;
     /**
      * Use `setFlatListRef` to get access to ref to inner FlatList.
      *
@@ -243,7 +230,7 @@ type MessageListPropsWithContext<
      *  }}
      * ```
      */
-    setFlatListRef?: (ref: FlatListType<MessageType<StreamChatGenerics>> | null) => void;
+    setFlatListRef?: (ref: FlatListType<MessageType> | null) => void;
   };
 
 /**
@@ -255,11 +242,7 @@ type MessageListPropsWithContext<
  * [ThreadContext](https://getstream.io/chat/docs/sdk/reactnative/contexts/thread-context/)
  * [TranslationContext](https://getstream.io/chat/docs/sdk/reactnative/contexts/translation-context/)
  */
-const MessageListWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageListPropsWithContext<StreamChatGenerics>,
-) => {
+const MessageListWithContext = (props: MessageListPropsWithContext) => {
   const LoadingMoreRecentIndicator = props.threadList
     ? InlineLoadingMoreRecentThreadIndicator
     : InlineLoadingMoreRecentIndicator;
@@ -338,7 +321,7 @@ const MessageListWithContext = <
    * NOTE: rawMessageList changes only when messages array state changes
    * processedMessageList changes on any state change
    */
-  const { processedMessageList, rawMessageList } = useMessageList<StreamChatGenerics>({
+  const { processedMessageList, rawMessageList } = useMessageList({
     noGroupByUser,
     threadList,
   });
@@ -349,11 +332,9 @@ const MessageListWithContext = <
    * We need topMessage and channelLastRead values to set the initial scroll position.
    * So these values only get used if `initialScrollToFirstUnreadMessage` prop is true.
    */
-  const topMessageBeforeUpdate = useRef<FormatMessageResponse<StreamChatGenerics>>(undefined);
-  const latestNonCurrentMessageBeforeUpdateRef =
-    useRef<FormatMessageResponse<StreamChatGenerics>>(undefined);
-  const topMessageAfterUpdate: FormatMessageResponse<StreamChatGenerics> | undefined =
-    rawMessageList[0];
+  const topMessageBeforeUpdate = useRef<LocalMessage>(undefined);
+  const latestNonCurrentMessageBeforeUpdateRef = useRef<LocalMessage>(undefined);
+  const topMessageAfterUpdate: LocalMessage | undefined = rawMessageList[0];
 
   const shouldScrollToRecentOnNewOwnMessageRef = useShouldScrollToRecentOnNewOwnMessage(
     rawMessageList,
@@ -372,7 +353,7 @@ const MessageListWithContext = <
   const onStartReachedInPromise = useRef<Promise<void> | null>(null);
   const onEndReachedInPromise = useRef<Promise<void> | null>(null);
 
-  const flatListRef = useRef<FlatListType<MessageType<StreamChatGenerics>> | null>(null);
+  const flatListRef = useRef<FlatListType<MessageType> | null>(null);
 
   const channelResyncScrollSet = useRef<boolean>(true);
 
@@ -539,16 +520,13 @@ const MessageListWithContext = <
       );
     };
 
-    const handleEvent = async (event: Event<StreamChatGenerics>) => {
+    const handleEvent = async (event: Event) => {
       const mainChannelUpdated = !event.message?.parent_id || event.message?.show_in_channel;
       // When the scrollToBottomButtonVisible is true, we need to manually update the channelUnreadState.
       if (scrollToBottomButtonVisible || channelUnreadState?.first_unread_message_id) {
         setChannelUnreadState((prev) => {
           const previousUnreadCount = prev?.unread_messages ?? 0;
-          const previousLastMessage = getPreviousLastMessage<StreamChatGenerics>(
-            channel.state.messages,
-            event.message,
-          );
+          const previousLastMessage = getPreviousLastMessage(channel.state.messages, event.message);
           return {
             ...(prev || {}),
             last_read:
@@ -749,13 +727,7 @@ const MessageListWithContext = <
   // TODO: do not apply on RN 0.73 and above
   const shouldApplyAndroidWorkaround = inverted && Platform.OS === 'android';
 
-  const renderItem = ({
-    index,
-    item: message,
-  }: {
-    index: number;
-    item: MessageType<StreamChatGenerics>;
-  }) => {
+  const renderItem = ({ index, item: message }: { index: number; item: MessageType }) => {
     if (!channel || channel.disconnected || (!channel.initialized && !channel.offlineMode)) {
       return null;
     }
@@ -992,49 +964,49 @@ const MessageListWithContext = <
 
   const scrollToIndexFailedRetryCountRef = useRef<number>(0);
   const failScrollTimeoutId = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const onScrollToIndexFailedRef = useRef<
-    FlatListProps<MessageType<StreamChatGenerics>>['onScrollToIndexFailed']
-  >((info) => {
-    // We got a failure as we tried to scroll to an item that was outside the render length
-    if (!flatListRef.current) {
-      return;
-    }
-    // we don't know the actual size of all items but we can see the average, so scroll to the closest offset
-    // since we used only an average offset... we won't go to the center of the item yet
-    // with a little delay to wait for scroll to offset to complete, we can then scroll to the index
-    failScrollTimeoutId.current = setTimeout(() => {
-      try {
-        flatListRef.current?.scrollToIndex({
-          animated: true,
-          index: info.index,
-          viewPosition: 0.5, // try to place message in the center of the screen
-        });
-        if (messageIdLastScrolledToRef.current) {
-          // in case the target message was cleared out
-          // the state being set again will trigger the highlight again
-          setTargetedMessage(messageIdLastScrolledToRef.current);
-        }
-        scrollToIndexFailedRetryCountRef.current = 0;
-      } catch (e) {
-        if (
-          !onScrollToIndexFailedRef.current ||
-          scrollToIndexFailedRetryCountRef.current > MAX_RETRIES_AFTER_SCROLL_FAILURE
-        ) {
-          scrollToIndexFailedRetryCountRef.current = 0;
-          return;
-        }
-        // At some cases the index we're trying to scroll to, doesn't exist yet in the messageList
-        // Scrolling to an index not in range of the Flatlist's data will result in a crash that
-        // won't call onScrollToIndexFailed.
-        // By catching this error we retry scrolling by calling onScrollToIndexFailedRef
-        scrollToIndexFailedRetryCountRef.current += 1;
-        onScrollToIndexFailedRef.current(info);
+  const onScrollToIndexFailedRef = useRef<FlatListProps<MessageType>['onScrollToIndexFailed']>(
+    (info) => {
+      // We got a failure as we tried to scroll to an item that was outside the render length
+      if (!flatListRef.current) {
+        return;
       }
-    }, WAIT_FOR_SCROLL_TIMEOUT);
+      // we don't know the actual size of all items but we can see the average, so scroll to the closest offset
+      // since we used only an average offset... we won't go to the center of the item yet
+      // with a little delay to wait for scroll to offset to complete, we can then scroll to the index
+      failScrollTimeoutId.current = setTimeout(() => {
+        try {
+          flatListRef.current?.scrollToIndex({
+            animated: true,
+            index: info.index,
+            viewPosition: 0.5, // try to place message in the center of the screen
+          });
+          if (messageIdLastScrolledToRef.current) {
+            // in case the target message was cleared out
+            // the state being set again will trigger the highlight again
+            setTargetedMessage(messageIdLastScrolledToRef.current);
+          }
+          scrollToIndexFailedRetryCountRef.current = 0;
+        } catch (e) {
+          if (
+            !onScrollToIndexFailedRef.current ||
+            scrollToIndexFailedRetryCountRef.current > MAX_RETRIES_AFTER_SCROLL_FAILURE
+          ) {
+            scrollToIndexFailedRetryCountRef.current = 0;
+            return;
+          }
+          // At some cases the index we're trying to scroll to, doesn't exist yet in the messageList
+          // Scrolling to an index not in range of the Flatlist's data will result in a crash that
+          // won't call onScrollToIndexFailed.
+          // By catching this error we retry scrolling by calling onScrollToIndexFailedRef
+          scrollToIndexFailedRetryCountRef.current += 1;
+          onScrollToIndexFailedRef.current(info);
+        }
+      }, WAIT_FOR_SCROLL_TIMEOUT);
 
-    // Only when index is greater than 0 and in range of items in FlatList
-    // this onScrollToIndexFailed will be called again
-  });
+      // Only when index is greater than 0 and in range of items in FlatList
+      // this onScrollToIndexFailed will be called again
+    },
+  );
 
   const messagesWithImages =
     legacyImageViewerSwipeBehaviour &&
@@ -1077,7 +1049,7 @@ const MessageListWithContext = <
       isListActive &&
       ((threadList && thread) || (!threadList && !thread))
     ) {
-      setMessages(messagesWithImages as MessageType<StreamChatGenerics>[]);
+      setMessages(messagesWithImages as MessageType[]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -1106,7 +1078,7 @@ const MessageListWithContext = <
     onUserScrollEvent(event);
   };
 
-  const refCallback = (ref: FlatListType<MessageType<StreamChatGenerics>>) => {
+  const refCallback = (ref: FlatListType<MessageType>) => {
     flatListRef.current = ref;
 
     if (setFlatListRef) {
@@ -1272,15 +1244,9 @@ const MessageListWithContext = <
   );
 };
 
-export type MessageListProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<MessageListPropsWithContext<StreamChatGenerics>>;
+export type MessageListProps = Partial<MessageListPropsWithContext>;
 
-export const MessageList = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageListProps<StreamChatGenerics>,
-) => {
+export const MessageList = (props: MessageListProps) => {
   const { closePicker, selectedPicker, setSelectedPicker } = useAttachmentPickerContext();
   const {
     channel,
@@ -1304,9 +1270,9 @@ export const MessageList = <
     StickyHeader,
     targetedMessage,
     threadList,
-  } = useChannelContext<StreamChatGenerics>();
-  const { client } = useChatContext<StreamChatGenerics>();
-  const { setMessages } = useImageGalleryContext<StreamChatGenerics>();
+  } = useChannelContext();
+  const { client } = useChatContext();
+  const { setMessages } = useImageGalleryContext();
   const {
     DateHeader,
     disableTypingIndicator,
@@ -1322,11 +1288,10 @@ export const MessageList = <
     TypingIndicator,
     TypingIndicatorContainer,
     UnreadMessagesNotification,
-  } = useMessagesContext<StreamChatGenerics>();
-  const { loadMore, loadMoreRecent } = usePaginatedMessageListContext<StreamChatGenerics>();
+  } = useMessagesContext();
+  const { loadMore, loadMoreRecent } = usePaginatedMessageListContext();
   const { overlay } = useOverlayContext();
-  const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } =
-    useThreadContext<StreamChatGenerics>();
+  const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } = useThreadContext();
 
   return (
     <MessageListWithContext

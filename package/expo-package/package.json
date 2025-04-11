@@ -10,7 +10,8 @@
   "main": "src/index.js",
   "types": "types/index.d.ts",
   "dependencies": {
-    "stream-chat-react-native-core": "6.7.2"
+    "mime": "^4.0.7",
+    "stream-chat-react-native-core": "link:../"
   },
   "peerDependencies": {
     "expo": ">=51.0.0",
@@ -22,10 +23,14 @@
     "expo-image-manipulator": "*",
     "expo-image-picker": "*",
     "expo-media-library": "*",
-    "expo-sharing": "*"
+    "expo-sharing": "*",
+    "expo-video": "*"
   },
   "peerDependenciesMeta": {
     "expo-av": {
+      "optional": true
+    },
+    "expo-video": {
       "optional": true
     },
     "expo-clipboard": {

@@ -7,12 +7,13 @@ import { MessagesContextValue } from '../../contexts/messagesContext/MessagesCon
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Unknown } from '../../icons';
 
-import type { DefaultStreamChatGenerics, Reaction } from '../../types/types';
+import type { Reaction } from '../../types/types';
 import { ReactionData } from '../../utils/utils';
 
-export type MessageUserReactionsItemProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessagesContextValue<StreamChatGenerics>, 'MessageUserReactionsAvatar'> & {
+export type MessageUserReactionsItemProps = Pick<
+  MessagesContextValue,
+  'MessageUserReactionsAvatar'
+> & {
   /**
    * The reaction object
    */
@@ -23,13 +24,11 @@ export type MessageUserReactionsItemProps<
   supportedReactions: ReactionData[];
 };
 
-export const MessageUserReactionsItem = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const MessageUserReactionsItem = ({
   MessageUserReactionsAvatar,
   reaction,
   supportedReactions,
-}: MessageUserReactionsItemProps<StreamChatGenerics>) => {
+}: MessageUserReactionsItemProps) => {
   const { id, name, type } = reaction;
   const {
     theme: {

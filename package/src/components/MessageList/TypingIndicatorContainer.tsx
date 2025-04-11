@@ -8,8 +8,6 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { TypingContextValue, useTypingContext } from '../../contexts/typingContext/TypingContext';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
-
 const styles = StyleSheet.create({
   container: {
     bottom: 0,
@@ -18,16 +16,12 @@ const styles = StyleSheet.create({
   },
 });
 
-type TypingIndicatorContainerPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<TypingContextValue<StreamChatGenerics>, 'typing'> &
-  Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
-  Pick<ThreadContextValue<StreamChatGenerics>, 'thread'>;
+type TypingIndicatorContainerPropsWithContext = Pick<TypingContextValue, 'typing'> &
+  Pick<ChatContextValue, 'client'> &
+  Pick<ThreadContextValue, 'thread'>;
 
-const TypingIndicatorContainerWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: PropsWithChildren<TypingIndicatorContainerPropsWithContext<StreamChatGenerics>>,
+const TypingIndicatorContainerWithContext = (
+  props: PropsWithChildren<TypingIndicatorContainerPropsWithContext>,
 ) => {
   const { children, client, thread, typing } = props;
 
@@ -49,18 +43,14 @@ const TypingIndicatorContainerWithContext = <
   );
 };
 
-export type TypingIndicatorContainerProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = PropsWithChildren<Partial<TypingIndicatorContainerPropsWithContext<StreamChatGenerics>>>;
+export type TypingIndicatorContainerProps = PropsWithChildren<
+  Partial<TypingIndicatorContainerPropsWithContext>
+>;
 
-export const TypingIndicatorContainer = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: TypingIndicatorContainerProps<StreamChatGenerics>,
-) => {
-  const { typing } = useTypingContext<StreamChatGenerics>();
-  const { client } = useChatContext<StreamChatGenerics>();
-  const { thread } = useThreadContext<StreamChatGenerics>();
+export const TypingIndicatorContainer = (props: TypingIndicatorContainerProps) => {
+  const { typing } = useTypingContext();
+  const { client } = useChatContext();
+  const { thread } = useThreadContext();
 
   return <TypingIndicatorContainerWithContext {...{ client, thread, typing }} {...props} />;
 };

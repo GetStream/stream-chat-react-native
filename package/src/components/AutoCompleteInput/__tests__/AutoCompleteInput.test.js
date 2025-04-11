@@ -9,6 +9,7 @@ import { generateChannelResponse } from '../../../mock-builders/generator/channe
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { ACITriggerSettings } from '../../../utils/ACITriggerSettings';
+import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { AutoCompleteInput } from '../AutoCompleteInput';
 
@@ -19,18 +20,17 @@ describe('AutoCompleteInput', () => {
 
   const getComponent = (props = {}) => (
     <Chat client={chatClient}>
-      <SuggestionsProvider value={props}>
-        <AutoCompleteInput
-          giphyEnabled
-          onChange={jest.fn}
-          text={props.text}
-          triggerSettings={ACITriggerSettings({
-            channel,
-            onMentionSelectItem: jest.fn(),
-            t: jest.fn(),
-          })}
-        />
-      </SuggestionsProvider>
+      <Channel
+        channel={channel}
+        triggerSettings={ACITriggerSettings({
+          channel,
+          onMentionSelectItem: jest.fn(),
+          t: jest.fn(),
+        })}
+      >
+        <AutoCompleteInput giphyEnabled onChange={jest.fn} text={props.text} />
+        <SuggestionsProvider value={props} />
+      </Channel>
     </Chat>
   );
 

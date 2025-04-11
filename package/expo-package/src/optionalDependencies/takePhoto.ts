@@ -63,7 +63,6 @@ export const takePhoto = ImagePicker
               duration: photo.duration, // in milliseconds
               name: 'video_recording_' + date + '.' + photo.uri.split('.').pop(),
               size: photo.fileSize,
-              source: 'camera',
               type: photo.mimeType,
               uri: photo.uri,
             };
@@ -95,10 +94,8 @@ export const takePhoto = ImagePicker
               const date = new Date().toISOString().replace(clearFilter, '_');
               return {
                 cancelled: false,
-                mimeType: photo.mimeType,
                 name: 'image_' + date + '.' + photo.uri.split('.').pop(),
                 size: photo.fileSize,
-                source: 'camera',
                 type: photo.mimeType,
                 uri: photo.uri,
                 ...size,

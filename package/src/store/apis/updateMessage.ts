@@ -1,4 +1,4 @@
-import type { FormatMessageResponse, MessageResponse } from 'stream-chat';
+import type { LocalMessage, MessageResponse } from 'stream-chat';
 
 import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
@@ -14,7 +14,7 @@ export const updateMessage = async ({
   flush = true,
   message,
 }: {
-  message: MessageResponse | FormatMessageResponse;
+  message: MessageResponse | LocalMessage;
   flush?: boolean;
 }) => {
   const queries: PreparedQueries[] = [];

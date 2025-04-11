@@ -4,7 +4,7 @@ import { ChannelState } from 'stream-chat';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { ChannelContextValue } from 'stream-chat-react-native';
 
-import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
+import type { StackNavigatorParamList } from '../types';
 
 type ChannelListScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -12,10 +12,10 @@ type ChannelListScreenNavigationProp = StackNavigationProp<
 >;
 
 export type ChannelInfoOverlayData = Partial<
-  Pick<ChannelContextValue<StreamChatGenerics>, 'channel'>
+  Pick<ChannelContextValue, 'channel'>
 > & {
   clientId?: string;
-  membership?: ChannelState<StreamChatGenerics>['membership'];
+  membership?: ChannelState['membership'];
   navigation?: ChannelListScreenNavigationProp;
 };
 

@@ -10,20 +10,12 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Lightning } from '../../icons/Lightning';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
-
-type CommandsButtonPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<SuggestionsContextValue<StreamChatGenerics>, 'suggestions'> & {
+type CommandsButtonPropsWithContext = Pick<SuggestionsContextValue, 'suggestions'> & {
   /** Function that opens commands selector */
   handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
 };
 
-const CommandsButtonWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: CommandsButtonPropsWithContext<StreamChatGenerics>,
-) => {
+const CommandsButtonWithContext = (props: CommandsButtonPropsWithContext) => {
   const { handleOnPress, suggestions } = props;
 
   const {
@@ -47,9 +39,9 @@ const CommandsButtonWithContext = <
   );
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: CommandsButtonPropsWithContext<StreamChatGenerics>,
-  nextProps: CommandsButtonPropsWithContext<StreamChatGenerics>,
+const areEqual = (
+  prevProps: CommandsButtonPropsWithContext,
+  nextProps: CommandsButtonPropsWithContext,
 ) => {
   const { suggestions: prevSuggestions } = prevProps;
   const { suggestions: nextSuggestions } = nextProps;
@@ -67,19 +59,13 @@ const MemoizedCommandsButton = React.memo(
   areEqual,
 ) as typeof CommandsButtonWithContext;
 
-export type CommandsButtonProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<CommandsButtonPropsWithContext<StreamChatGenerics>>;
+export type CommandsButtonProps = Partial<CommandsButtonPropsWithContext>;
 
 /**
  * UI Component for attach button in MessageInput component.
  */
-export const CommandsButton = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: CommandsButtonProps<StreamChatGenerics>,
-) => {
-  const { suggestions } = useSuggestionsContext<StreamChatGenerics>();
+export const CommandsButton = (props: CommandsButtonProps) => {
+  const { suggestions } = useSuggestionsContext();
 
   return <MemoizedCommandsButton {...{ suggestions }} {...props} />;
 };

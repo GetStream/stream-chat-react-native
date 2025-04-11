@@ -2,19 +2,11 @@ import { useEffect, useState } from 'react';
 
 import type { Event, Mute, StreamChat } from 'stream-chat';
 
-import type { DefaultStreamChatGenerics } from '../../../types/types';
-
-export const useMutedUsers = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  client: StreamChat<StreamChatGenerics>,
-) => {
-  const [mutedUsers, setMutedUsers] = useState<Mute<StreamChatGenerics>[]>(
-    client?.mutedUsers || [],
-  );
+export const useMutedUsers = (client: StreamChat) => {
+  const [mutedUsers, setMutedUsers] = useState<Mute[]>(client?.mutedUsers || []);
 
   useEffect(() => {
-    const handleEvent = (event: Event<StreamChatGenerics>) => {
+    const handleEvent = (event: Event) => {
       setMutedUsers((mutes) => event.me?.mutes || mutes || []);
     };
 

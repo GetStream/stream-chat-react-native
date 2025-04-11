@@ -1,16 +1,10 @@
 import type { ChannelAPIResponse } from 'stream-chat';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { TableRow } from '../types';
 
-export const mapStorableToChannel = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
+export const mapStorableToChannel = (
   channelRow: TableRow<'channels'>,
-): Omit<
-  ChannelAPIResponse<StreamChatGenerics>,
-  'duration' | 'messages' | 'members' | 'pinned_messages'
-> => {
+): Omit<ChannelAPIResponse, 'duration' | 'messages' | 'members' | 'pinned_messages'> => {
   const {
     autoTranslationEnabled,
     autoTranslationLanguage,

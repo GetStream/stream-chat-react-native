@@ -10,7 +10,8 @@ import {
   RecordingStatus,
   SoundReturnType,
 } from '../../../native';
-import { File, FileTypes } from '../../../types/types';
+import type { File } from '../../../types/types';
+import { FileTypes } from '../../../types/types';
 import { resampleWaveformData } from '../utils/audioSampling';
 import { normalizeAudioLevel } from '../utils/normalizeAudioLevel';
 
@@ -267,18 +268,18 @@ export const useAudioController = () => {
 
     const file: File = {
       duration: durationInSeconds,
-      mimeType: 'audio/aac',
       name: `audio_recording_${date}.aac`,
-      type: FileTypes.VoiceRecording,
+      size: 0,
+      type: 'audio/aac',
       uri: typeof recording !== 'string' ? (recording?.getURI() as string) : (recording as string),
       waveform_data: resampledWaveformData,
     };
 
     if (multiSendEnabled) {
-      await uploadNewFile(file);
+      await uploadNewFile(file, FileTypes.VoiceRecording);
     } else {
       // FIXME: cannot call handleSubmit() directly as the function has stale reference to file uploads
-      await uploadNewFile(file);
+      await uploadNewFile(file, FileTypes.VoiceRecording);
       setIsScheduleForSubmit(true);
     }
     resetState();

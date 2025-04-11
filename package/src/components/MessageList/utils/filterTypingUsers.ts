@@ -1,21 +1,12 @@
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type { TypingContextValue } from '../../../contexts/typingContext/TypingContext';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 
-type FilterTypingUsersParams<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<TypingContextValue<StreamChatGenerics>, 'typing'> &
-  Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
-  Pick<ThreadContextValue<StreamChatGenerics>, 'thread'>;
+type FilterTypingUsersParams = Pick<TypingContextValue, 'typing'> &
+  Pick<ChatContextValue, 'client'> &
+  Pick<ThreadContextValue, 'thread'>;
 
-export const filterTypingUsers = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
-  client,
-  thread,
-  typing,
-}: FilterTypingUsersParams<StreamChatGenerics>) => {
+export const filterTypingUsers = ({ client, thread, typing }: FilterTypingUsersParams) => {
   const nonSelfUsers: string[] = [];
 
   if (!client || !client.user || !typing) {

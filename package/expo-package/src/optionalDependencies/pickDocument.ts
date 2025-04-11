@@ -38,13 +38,21 @@ export const pickDocument = DocumentPicker
         // Applicable to latest version of expo-document-picker
         if (assets) {
           return {
-            assets,
+            assets: assets.map((asset) => ({
+              ...asset,
+              type: asset.mimeType,
+            })),
             cancelled: false,
           };
         }
         // Applicable to older version of expo-document-picker
         return {
-          assets: [rest],
+          assets: [
+            {
+              ...rest,
+              type: rest.mimeType,
+            },
+          ],
           cancelled: false,
         };
       } catch (err) {

@@ -13,7 +13,7 @@ import {
   useThreadsContext,
 } from '../../contexts/threadsContext/ThreadsContext';
 import { useStateStore } from '../../hooks';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+
 import { EmptyStateIndicator } from '../Indicators/EmptyStateIndicator';
 import { LoadingIndicator } from '../Indicators/LoadingIndicator';
 
@@ -24,10 +24,8 @@ const selector = (nextValue: ThreadManagerState) =>
     threads: nextValue.threads,
   }) as const;
 
-export type ThreadListProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<
-  ThreadsContextValue<StreamChatGenerics>,
+export type ThreadListProps = Pick<
+  ThreadsContextValue,
   | 'additionalFlatListProps'
   | 'isFocused'
   | 'onThreadSelect'

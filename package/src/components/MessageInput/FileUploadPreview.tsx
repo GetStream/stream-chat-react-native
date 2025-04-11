@@ -17,7 +17,7 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 import { Close } from '../../icons/Close';
 import { Warning } from '../../icons/Warning';
 import { isSoundPackageAvailable } from '../../native';
-import type { DefaultStreamChatGenerics, FileUpload } from '../../types/types';
+import type { AudioUpload, FileUpload } from '../../types/types';
 import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
 import {
   getDurationLabelFromDuration,
@@ -123,32 +123,49 @@ const UnsupportedFileTypeOrFileSizeIndicator = ({
   );
 };
 
-type FileUploadPreviewPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<
-  MessageInputContextValue<StreamChatGenerics>,
-  'fileUploads' | 'removeFile' | 'uploadFile' | 'setFileUploads' | 'AudioAttachmentUploadPreview'
+export type FileUploadPreviewProps = Partial<
+  Pick<
+    MessageInputContextValue,
+    'fileUploads' | 'removeFile' | 'uploadFile' | 'setFileUploads' | 'AudioAttachmentUploadPreview'
+  >
 > &
-  Pick<MessagesContextValue<StreamChatGenerics>, 'FileAttachmentIcon'> &
-  Pick<ChatContextValue<StreamChatGenerics>, 'enableOfflineSupport'>;
+  Partial<Pick<MessagesContextValue, 'FileAttachmentIcon'>> &
+  Partial<Pick<ChatContextValue, 'enableOfflineSupport'>>;
 
-const FileUploadPreviewWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: FileUploadPreviewPropsWithContext<StreamChatGenerics>,
-) => {
+/**
+ * FileUploadPreview
+ * UI Component to preview the files set for upload
+ */
+export const FileUploadPreview = (props: FileUploadPreviewProps) => {
   const {
-    AudioAttachmentUploadPreview,
-    enableOfflineSupport,
-    FileAttachmentIcon,
-    fileUploads,
-    removeFile,
-    uploadFile,
+    AudioAttachmentUploadPreview: propAudioAttachmentUploadPreview,
+    enableOfflineSupport: propEnableOfflineSupport,
+    FileAttachmentIcon: propFileAttachmentIcon,
+    fileUploads: propFileUploads,
+    removeFile: propRemoveFile,
+    uploadFile: propUploadFile,
   } = props;
 
-  const [filesToDisplay, setFilesToDisplay] = useState<FileUpload[]>([]);
+  const { enableOfflineSupport: contextEnableOfflineSupport } = useChatContext();
+  const {
+    AudioAttachmentUploadPreview: contextAudioAttachmentUploadPreview,
+    fileUploads: contextFileUploads,
+    removeFile: contextRemoveFile,
+    uploadFile: contextUploadFile,
+  } = useMessageInputContext();
+  const { FileAttachmentIcon: contextFileAttachmentIcon } = useMessagesContext();
 
-  const flatListRef = useRef<FlatList<FileUpload> | null>(null);
+  const enableOfflineSupport = propEnableOfflineSupport ?? contextEnableOfflineSupport;
+  const AudioAttachmentUploadPreview =
+    propAudioAttachmentUploadPreview ?? contextAudioAttachmentUploadPreview;
+  const fileUploads = propFileUploads ?? contextFileUploads;
+  const removeFile = propRemoveFile ?? contextRemoveFile;
+  const uploadFile = propUploadFile ?? contextUploadFile;
+  const FileAttachmentIcon = propFileAttachmentIcon ?? contextFileAttachmentIcon;
+
+  const [filesToDisplay, setFilesToDisplay] = useState<AudioUpload[]>([]);
+
+  const flatListRef = useRef<FlatList<AudioUpload> | null>(null);
   const [flatListWidth, setFlatListWidth] = useState(0);
 
   useEffect(() => {
@@ -213,9 +230,9 @@ const FileUploadPreviewWithContext = <
     },
   } = useTheme();
 
-  const renderItem = ({ item }: { item: FileUpload }) => {
+  const renderItem = ({ item }: { item: AudioUpload }) => {
     const indicatorType = getIndicatorTypeForFileState(item.state, enableOfflineSupport);
-    const isAudio = item.file.mimeType?.startsWith('audio/');
+    const isAudio = item.file.type?.startsWith('audio/');
 
     return (
       <>
@@ -247,7 +264,7 @@ const FileUploadPreviewWithContext = <
               ]}
             >
               <View style={styles.fileIcon}>
-                <FileAttachmentIcon mimeType={item.file.mimeType} />
+                <FileAttachmentIcon mimeType={item.file.type} />
               </View>
               <View style={[styles.fileTextContainer, fileTextContainer]}>
                 <Text
@@ -321,64 +338,6 @@ const FileUploadPreviewWithContext = <
       style={[styles.flatList, flatList]}
     />
   ) : null;
-};
-
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: FileUploadPreviewPropsWithContext<StreamChatGenerics>,
-  nextProps: FileUploadPreviewPropsWithContext<StreamChatGenerics>,
-) => {
-  const { fileUploads: prevFileUploads } = prevProps;
-  const { fileUploads: nextFileUploads } = nextProps;
-
-  return (
-    prevFileUploads.length === nextFileUploads.length &&
-    prevFileUploads.every(
-      (prevFileUpload, index) =>
-        prevFileUpload.state === nextFileUploads[index].state &&
-        prevFileUpload.paused === nextFileUploads[index].paused &&
-        prevFileUpload.progress === nextFileUploads[index].progress &&
-        prevFileUpload.duration === nextFileUploads[index].duration,
-    )
-  );
-};
-
-const MemoizedFileUploadPreview = React.memo(
-  FileUploadPreviewWithContext,
-  areEqual,
-) as typeof FileUploadPreviewWithContext;
-
-export type FileUploadPreviewProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<FileUploadPreviewPropsWithContext<StreamChatGenerics>>;
-
-/**
- * FileUploadPreview
- * UI Component to preview the files set for upload
- */
-export const FileUploadPreview = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: FileUploadPreviewProps<StreamChatGenerics>,
-) => {
-  const { enableOfflineSupport } = useChatContext<StreamChatGenerics>();
-  const { AudioAttachmentUploadPreview, fileUploads, removeFile, setFileUploads, uploadFile } =
-    useMessageInputContext<StreamChatGenerics>();
-  const { FileAttachmentIcon } = useMessagesContext<StreamChatGenerics>();
-
-  return (
-    <MemoizedFileUploadPreview
-      {...{
-        AudioAttachmentUploadPreview,
-        FileAttachmentIcon,
-        fileUploads,
-        removeFile,
-        setFileUploads,
-        uploadFile,
-      }}
-      {...{ enableOfflineSupport }}
-      {...props}
-    />
-  );
 };
 
 FileUploadPreview.displayName = 'FileUploadPreview{messageInput{fileUploadPreview}}';

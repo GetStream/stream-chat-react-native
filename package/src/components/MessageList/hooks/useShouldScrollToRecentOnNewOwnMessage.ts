@@ -1,12 +1,11 @@
 import { useEffect, useRef } from 'react';
 
-import type { FormatMessageResponse } from 'stream-chat';
+import type { LocalMessage } from 'stream-chat';
 
-import type { DefaultStreamChatGenerics } from '../../../types/types';
-
-export function useShouldScrollToRecentOnNewOwnMessage<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(rawMessageList: FormatMessageResponse<StreamChatGenerics>[], currentUserId?: string) {
+export function useShouldScrollToRecentOnNewOwnMessage(
+  rawMessageList: LocalMessage[],
+  currentUserId?: string,
+) {
   const lastFocusedOwnMessageId = useRef('');
   const initialFocusRegistered = useRef(false);
   const messagesRef = useRef(rawMessageList);

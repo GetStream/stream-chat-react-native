@@ -11,21 +11,14 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Attach } from '../../icons/Attach';
 
 import { isImageMediaLibraryAvailable } from '../../native';
-import type { DefaultStreamChatGenerics } from '../../types/types';
 
-type AttachButtonPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled'> & {
+type AttachButtonPropsWithContext = Pick<ChannelContextValue, 'disabled'> & {
   /** Function that opens attachment options bottom sheet */
   handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
   selectedPicker?: 'images';
 };
 
-const AttachButtonWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: AttachButtonPropsWithContext<StreamChatGenerics>,
-) => {
+const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
   const [showAttachButtonPicker, setShowAttachButtonPicker] = useState<boolean>(false);
   const [attachButtonLayoutRectangle, setAttachButtonLayoutRectangle] = useState<LayoutRectangle>();
   const { disabled, handleOnPress, selectedPicker } = props;

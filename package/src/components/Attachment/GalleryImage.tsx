@@ -3,12 +3,10 @@ import { Image, ImageProps } from 'react-native';
 
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getUrlWithoutParams, isLocalUrl, makeImageCompatibleUrl } from '../../utils/utils';
 
-export type GalleryImageWithContextProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = GalleryImageProps & Pick<ChatContextValue<StreamChatGenerics>, 'ImageComponent'>;
+export type GalleryImageWithContextProps = GalleryImageProps &
+  Pick<ChatContextValue, 'ImageComponent'>;
 
 export const GalleryImageWithContext = (props: GalleryImageWithContextProps) => {
   const { ImageComponent = Image, uri, ...rest } = props;
@@ -47,12 +45,8 @@ export type GalleryImageProps = Omit<ImageProps, 'height' | 'source'> & {
   uri: string;
 };
 
-export const GalleryImage = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: GalleryImageProps,
-) => {
-  const { ImageComponent } = useChatContext<StreamChatGenerics>();
+export const GalleryImage = (props: GalleryImageProps) => {
+  const { ImageComponent } = useChatContext();
 
   return <MemoizedGalleryImage ImageComponent={ImageComponent} {...props} />;
 };
