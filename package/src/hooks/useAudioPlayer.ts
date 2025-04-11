@@ -71,7 +71,7 @@ export const useAudioPlayer = (props: UseSoundPlayerProps) => {
         return;
       }
       if (soundRef.current?.setRateAsync) {
-        await soundRef.current.setRateAsync(speed);
+        await soundRef.current.setRateAsync(speed, true, 'high');
       }
     },
     [isExpoCLI, soundRef],
