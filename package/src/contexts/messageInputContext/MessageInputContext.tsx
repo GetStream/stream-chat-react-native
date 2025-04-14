@@ -4,10 +4,18 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
-import { Alert, Keyboard, Linking, TextInput, TextInputProps } from 'react-native';
+import {
+  Alert,
+  InteractionManager,
+  Keyboard,
+  Linking,
+  TextInput,
+  TextInputProps,
+} from 'react-native';
 
 import uniq from 'lodash/uniq';
 import { lookup } from 'mime-types';
@@ -617,12 +625,12 @@ export const MessageInputProvider = <
     setSendThreadMessageInChannel(false);
   }, [threadId]);
 
-  const appendText = (newText: string) => {
+  const appendText = useStableCallback((newText: string) => {
     setText((prevText) => `${prevText}${newText}`);
-  };
+  });
 
   /** Checks if the message is valid or not. Accordingly we can enable/disable send button */
-  const isValidMessage = () => {
+  const isValidMessage = useStableCallback(() => {
     if (text && text.trim()) {
       return true;
     }
@@ -656,7 +664,7 @@ export const MessageInputProvider = <
     }
 
     return false;
-  };
+  });
 
   const onChange = useCallback(
     (newText: string) => {
@@ -676,24 +684,24 @@ export const MessageInputProvider = <
     [channel, channelCapabities.sendTypingEvents, isOnline, setText, thread?.id, onChangeText],
   );
 
-  const openCommandsPicker = () => {
+  const openCommandsPicker = useStableCallback(() => {
     appendText('/');
     if (inputBoxRef.current) {
       inputBoxRef.current.focus();
     }
-  };
+  });
 
-  const openMentionsPicker = () => {
+  const openMentionsPicker = useStableCallback(() => {
     appendText('@');
     if (inputBoxRef.current) {
       inputBoxRef.current.focus();
     }
-  };
+  });
 
   /**
    * Function for capturing a photo and uploading it
    */
-  const takeAndUploadImage = async (mediaType?: MediaTypes) => {
+  const takeAndUploadImage = useStableCallback(async (mediaType?: MediaTypes) => {
     setSelectedPicker(undefined);
     closePicker();
     const photo = await NativeHandlers.takePhoto({
@@ -717,12 +725,12 @@ export const MessageInputProvider = <
         await uploadNewFile({ ...photo, mimeType: photo.type, type: FileTypes.Video });
       }
     }
-  };
+  });
 
   /**
    * Function for picking a photo from native image picker and uploading it
    */
-  const pickAndUploadImageFromNativePicker = async () => {
+  const pickAndUploadImageFromNativePicker = useStableCallback(async () => {
     const result = await NativeHandlers.pickImage();
     if (result.askToOpenSettings) {
       Alert.alert(
@@ -755,7 +763,7 @@ export const MessageInputProvider = <
         }
       });
     }
-  };
+  });
 
   /**
    * Function to open the attachment picker if the MediaLibary is installed.
@@ -785,11 +793,11 @@ export const MessageInputProvider = <
     }
   }, [closeAttachmentPicker, openAttachmentPicker, selectedPicker]);
 
-  const onSelectItem = (item: UserResponse<StreamChatGenerics>) => {
+  const onSelectItem = useStableCallback((item: UserResponse<StreamChatGenerics>) => {
     setMentionedUsers((prevMentionedUsers) => [...prevMentionedUsers, item.id]);
-  };
+  });
 
-  const pickFile = async () => {
+  const pickFile = useStableCallback(async () => {
     if (!isDocumentPickerAvailable()) {
       console.log(
         'The file picker is not installed. Check our Getting Started documentation to install it.',
@@ -818,7 +826,7 @@ export const MessageInputProvider = <
         await uploadNewFile(asset);
       });
     }
-  };
+  });
 
   const removeFile = useCallback(
     (id: string) => {
@@ -840,7 +848,7 @@ export const MessageInputProvider = <
     [imageUploads, setImageUploads, setNumberOfUploads],
   );
 
-  const resetInput = (pendingAttachments: Attachment<StreamChatGenerics>[] = []) => {
+  const resetInput = useStableCallback((pendingAttachments: Attachment<StreamChatGenerics>[] = []) => {
     /**
      * If the MediaLibrary is available, reset the selected files and images
      */
@@ -861,9 +869,9 @@ export const MessageInputProvider = <
     if (value.editing) {
       value.clearEditingState();
     }
-  };
+  });
 
-  const mapImageUploadToAttachment = (image: ImageUpload): Attachment<StreamChatGenerics> => {
+  const mapImageUploadToAttachment = useStableCallback((image: ImageUpload): Attachment<StreamChatGenerics> => {
     const mime_type: string | boolean = lookup(image.file.name as string);
     const name = image.file.name as string;
     return {
@@ -875,9 +883,9 @@ export const MessageInputProvider = <
       originalImage: image.file,
       type: FileTypes.Image,
     };
-  };
+  });
 
-  const mapFileUploadToAttachment = (file: FileUpload): Attachment<StreamChatGenerics> => {
+  const mapFileUploadToAttachment = useStableCallback((file: FileUpload): Attachment<StreamChatGenerics> => {
     if (file.type === FileTypes.Image) {
       return {
         fallback: file.file.name,
@@ -928,10 +936,10 @@ export const MessageInputProvider = <
         type: FileTypes.File,
       };
     }
-  };
+  });
 
   // TODO: Figure out why this is async, as it doesn't await any promise.
-  const sendMessage = async ({
+  const sendMessage = useStableCallback(async ({
     customMessageData,
   }: {
     customMessageData?: Partial<Message<StreamChatGenerics>>;
@@ -941,18 +949,26 @@ export const MessageInputProvider = <
     }
     const linkInfos = parseLinksFromText(text);
 
-    if (!channelCapabities.sendLinks && linkInfos.length > 0) {
-      Alert.alert(t('Links are disabled'), t('Sending links is not allowed in this conversation'));
+      if (!channelCapabities.sendLinks && linkInfos.length > 0) {
+        Alert.alert(
+          t('Links are disabled'),
+          t('Sending links is not allowed in this conversation'),
+        );
 
-      return;
-    }
+        return;
+      }
 
-    sending.current = true;
+      sending.current = true;
 
-    startCooldown();
+      startCooldown();
 
-    const prevText = giphyEnabled && giphyActive ? `/giphy ${text}` : text;
-    setText('');
+      const prevText = giphyEnabled && giphyActive ? `/giphy ${text}` : text;
+      const handle = InteractionManager.createInteractionHandle();
+      setText('');
+
+      if (inputBoxRef.current) {
+        inputBoxRef.current.clear();
+      }
 
     const attachments = [] as Attachment<StreamChatGenerics>[];
     for (const image of imageUploads) {
@@ -964,59 +980,59 @@ export const MessageInputProvider = <
         continue;
       }
 
-      if ((!image || image.state === FileState.UPLOAD_FAILED) && !enableOfflineSupport) {
-        continue;
-      }
+        if ((!image || image.state === FileState.UPLOAD_FAILED) && !enableOfflineSupport) {
+          continue;
+        }
 
-      if (image.state === FileState.UPLOADING) {
-        // TODO: show error to user that they should wait until image is uploaded
-        if (value.sendImageAsync) {
-          /**
-           * If user hit send before image uploaded, push ID into a queue to later
-           * be matched with the successful CDN response
-           */
-          setAsyncIds((prevAsyncIds) => [...prevAsyncIds, image.id]);
-        } else {
-          sending.current = false;
-          return setText(prevText);
+        if (image.state === FileState.UPLOADING) {
+          // TODO: show error to user that they should wait until image is uploaded
+          if (value.sendImageAsync) {
+            /**
+             * If user hit send before image uploaded, push ID into a queue to later
+             * be matched with the successful CDN response
+             */
+            setAsyncIds((prevAsyncIds) => [...prevAsyncIds, image.id]);
+          } else {
+            sending.current = false;
+            return setText(prevText);
+          }
+        }
+
+        // To get the mime type of the image from the file name and send it as an response for an image
+        if (image.state === FileState.UPLOADED || image.state === FileState.FINISHED) {
+          attachments.push(mapImageUploadToAttachment(image));
         }
       }
 
-      // To get the mime type of the image from the file name and send it as an response for an image
-      if (image.state === FileState.UPLOADED || image.state === FileState.FINISHED) {
-        attachments.push(mapImageUploadToAttachment(image));
-      }
-    }
+      for (const file of fileUploads) {
+        if (enableOfflineSupport) {
+          if (file.state === FileState.NOT_SUPPORTED) {
+            return;
+          }
+          attachments.push(mapFileUploadToAttachment(file));
+          continue;
+        }
 
-    for (const file of fileUploads) {
-      if (enableOfflineSupport) {
-        if (file.state === FileState.NOT_SUPPORTED) {
+        if (!file || file.state === FileState.UPLOAD_FAILED) {
+          continue;
+        }
+
+        if (file.state === FileState.UPLOADING) {
+          // TODO: show error to user that they should wait until image is uploaded
+          sending.current = false;
           return;
         }
-        attachments.push(mapFileUploadToAttachment(file));
-        continue;
+
+        if (file.state === FileState.UPLOADED || file.state === FileState.FINISHED) {
+          attachments.push(mapFileUploadToAttachment(file));
+        }
       }
 
-      if (!file || file.state === FileState.UPLOAD_FAILED) {
-        continue;
-      }
-
-      if (file.state === FileState.UPLOADING) {
-        // TODO: show error to user that they should wait until image is uploaded
+      // Disallow sending message if its empty.
+      if (!prevText && attachments.length === 0 && !customMessageData?.poll_id) {
         sending.current = false;
         return;
       }
-
-      if (file.state === FileState.UPLOADED || file.state === FileState.FINISHED) {
-        attachments.push(mapFileUploadToAttachment(file));
-      }
-    }
-
-    // Disallow sending message if its empty.
-    if (!prevText && attachments.length === 0 && !customMessageData?.poll_id) {
-      sending.current = false;
-      return;
-    }
 
     const message = value.editing;
     if (message && message.type !== 'error') {
@@ -1029,17 +1045,17 @@ export const MessageInputProvider = <
         ...customMessageData,
       } as Parameters<StreamChat<StreamChatGenerics>['updateMessage']>[0];
 
-      // TODO: Remove this line and show an error when submit fails
-      value.clearEditingState();
+        // TODO: Remove this line and show an error when submit fails
+        value.clearEditingState();
 
-      const updateMessagePromise = value
-        .editMessage(
-          // @ts-ignore
-          removeReservedFields(updatedMessage),
-        )
-        .then(value.clearEditingState);
-      resetInput(attachments);
-      logChatPromiseExecution(updateMessagePromise, 'update message');
+        const updateMessagePromise = value
+          .editMessage(
+            // @ts-ignore
+            removeReservedFields(updatedMessage),
+          )
+          .then(value.clearEditingState);
+        logChatPromiseExecution(updateMessagePromise, 'update message');
+        resetInput(attachments);
 
       sending.current = false;
     } else {
@@ -1050,6 +1066,7 @@ export const MessageInputProvider = <
         if (message && isBouncedMessage(message as MessageType<StreamChatGenerics>)) {
           await removeMessage(message);
         }
+        InteractionManager.runAfterInteractions(() => {
         value.sendMessage({
           attachments,
           mentioned_users: uniq(mentionedUsers),
@@ -1060,22 +1077,24 @@ export const MessageInputProvider = <
           text: prevText,
           ...customMessageData,
         } as unknown as StreamMessage<StreamChatGenerics>);
+        });
 
-        value.clearQuotedMessageState();
-        sending.current = false;
-        resetInput(attachments);
-      } catch (_error) {
-        sending.current = false;
-        if (value.quotedMessage && typeof value.quotedMessage !== 'boolean') {
-          value.setQuotedMessageState(value.quotedMessage);
+          value.clearQuotedMessageState();
+          sending.current = false;
+          resetInput(attachments);
+        } catch (_error) {
+          sending.current = false;
+          if (value.quotedMessage && typeof value.quotedMessage !== 'boolean') {
+            value.setQuotedMessageState(value.quotedMessage);
+          }
+          setText(prevText.slice(giphyEnabled && giphyActive ? 7 : 0)); // 7 because of '/giphy ' length
+          console.log('Failed to send message');
         }
-        setText(prevText.slice(giphyEnabled && giphyActive ? 7 : 0)); // 7 because of '/giphy ' length
-        console.log('Failed to send message');
       }
-    }
-  };
+    },
+  );
 
-  const sendMessageAsync = (id: string) => {
+  const sendMessageAsync = useStableCallback((id: string) => {
     const image = asyncUploads[id];
     if (!image || image.state === FileState.UPLOAD_FAILED) {
       return;
@@ -1111,16 +1130,16 @@ export const MessageInputProvider = <
         console.log('Failed');
       }
     }
-  };
+  });
 
-  const setInputBoxRef = (ref: TextInput | null) => {
+  const setInputBoxRef = useStableCallback((ref: TextInput | null) => {
     inputBoxRef.current = ref;
     if (value.setInputRef) {
       value.setInputRef(ref);
     }
-  };
+  });
 
-  const getTriggerSettings = () => {
+  const triggerSettings = useMemo(() => {
     try {
       let triggerSettings: TriggerSettings<StreamChatGenerics> = {};
       if (channel) {
@@ -1145,11 +1164,11 @@ export const MessageInputProvider = <
       console.warn('Error in getting trigger settings', error);
       throw error;
     }
-  };
+  }, [channel, client, onSelectItem, value.autoCompleteTriggerSettings]);
 
-  const triggerSettings = getTriggerSettings();
+  // const triggerSettings = getTriggerSettings();
 
-  const updateMessage = async () => {
+  const updateMessage = useStableCallback(async () => {
     try {
       if (value.editing) {
         await client.updateMessage({
@@ -1164,51 +1183,54 @@ export const MessageInputProvider = <
     } catch (error) {
       console.log(error);
     }
-  };
+  });
 
   const regexCondition = /File (extension \.\w{2,4}|type \S+) is not supported/;
 
-  const getUploadSetStateAction =
+  const getUploadSetStateAction = useStableCallback(
     <UploadType extends ImageUpload | FileUpload>(
       id: string,
       fileState: FileStateValue,
       extraData: Partial<UploadType> = {},
     ): React.SetStateAction<UploadType[]> =>
-    (prevUploads: UploadType[]) =>
-      prevUploads.map((prevUpload) => {
-        if (prevUpload.id === id) {
-          return {
-            ...prevUpload,
-            ...extraData,
-            state: fileState,
-          };
-        }
-        return prevUpload;
-      });
+      (prevUploads: UploadType[]) =>
+        prevUploads.map((prevUpload) => {
+          if (prevUpload.id === id) {
+            return {
+              ...prevUpload,
+              ...extraData,
+              state: fileState,
+            };
+          }
+          return prevUpload;
+        }),
+  );
 
-  const handleFileOrImageUploadError = (error: unknown, isImageError: boolean, id: string) => {
-    if (isImageError) {
-      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
-      if (error instanceof Error) {
-        if (regexCondition.test(error.message)) {
-          return setImageUploads(getUploadSetStateAction(id, FileState.NOT_SUPPORTED));
-        }
+  const handleFileOrImageUploadError = useStableCallback(
+    (error: unknown, isImageError: boolean, id: string) => {
+      if (isImageError) {
+        setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
+        if (error instanceof Error) {
+          if (regexCondition.test(error.message)) {
+            return setImageUploads(getUploadSetStateAction(id, FileState.NOT_SUPPORTED));
+          }
 
-        return setImageUploads(getUploadSetStateAction(id, FileState.UPLOAD_FAILED));
+          return setImageUploads(getUploadSetStateAction(id, FileState.UPLOAD_FAILED));
+        }
+      } else {
+        setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
+
+        if (error instanceof Error) {
+          if (regexCondition.test(error.message)) {
+            return setFileUploads(getUploadSetStateAction(id, FileState.NOT_SUPPORTED));
+          }
+          return setFileUploads(getUploadSetStateAction(id, FileState.UPLOAD_FAILED));
+        }
       }
-    } else {
-      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
+    },
+  );
 
-      if (error instanceof Error) {
-        if (regexCondition.test(error.message)) {
-          return setFileUploads(getUploadSetStateAction(id, FileState.NOT_SUPPORTED));
-        }
-        return setFileUploads(getUploadSetStateAction(id, FileState.UPLOAD_FAILED));
-      }
-    }
-  };
-
-  const uploadFile = async ({ newFile }: { newFile: FileUpload }) => {
+  const uploadFile = useStableCallback(async ({ newFile }: { newFile: FileUpload }) => {
     const { file, id } = newFile;
 
     // The file name can have special characters, so we escape it.
@@ -1251,9 +1273,9 @@ export const MessageInputProvider = <
       }
       handleFileOrImageUploadError(error, false, id);
     }
-  };
+  });
 
-  const uploadImage = async ({ newImage }: { newImage: ImageUpload }) => {
+  const uploadImage = useStableCallback(async ({ newImage }: { newImage: ImageUpload }) => {
     const { file, id } = newImage || {};
 
     if (!file) {
@@ -1334,9 +1356,9 @@ export const MessageInputProvider = <
       }
       handleFileOrImageUploadError(error, true, id);
     }
-  };
+  });
 
-  const uploadNewFile = async (file: File) => {
+  const uploadNewFile = useStableCallback(async (file: File) => {
     try {
       const id: string = generateRandomId();
       const fileConfig = getFileUploadConfig();
@@ -1382,9 +1404,9 @@ export const MessageInputProvider = <
     } catch (error) {
       console.log('Error uploading file', error);
     }
-  };
+  });
 
-  const uploadNewImage = async (image: Partial<Asset>) => {
+  const uploadNewImage = useStableCallback(async (image: Partial<Asset>) => {
     try {
       const id = generateRandomId();
       const imageUploadConfig = getImageUploadConfig();
@@ -1430,15 +1452,15 @@ export const MessageInputProvider = <
     } catch (error) {
       console.log('Error uploading image', error);
     }
-  };
+  });
 
-  const openPollCreationDialog = () => {
+  const openPollCreationDialog = useStableCallback(() => {
     if (openPollCreationDialogFromContext) {
       openPollCreationDialogFromContext({ sendMessage });
       return;
     }
     defaultOpenPollCreationDialog();
-  };
+  });
 
   const messageInputContext = useCreateMessageInputContext({
     appendText,
@@ -1522,4 +1544,11 @@ export const useMessageInputContext = <
   }
 
   return contextValue;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+const useStableCallback = <T extends Function>(callback: T): T => {
+  const ref = useRef<T>(callback);
+  ref.current = callback;
+  return useCallback(((...args: unknown[]) => ref.current(...args)) as unknown as T, []);
 };

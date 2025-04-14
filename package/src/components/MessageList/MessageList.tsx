@@ -404,7 +404,7 @@ const MessageListWithContext = <
   const channelRef = useRef(channel);
   channelRef.current = channel;
 
-  const updateStickyHeaderDateIfNeeded = (viewableItems: ViewToken[]) => {
+  const updateStickyHeaderDateIfNeeded = useStableCallback((viewableItems: ViewToken[]) => {
     if (!viewableItems.length) {
       return;
     }
@@ -431,12 +431,12 @@ const MessageListWithContext = <
         setStickyHeaderDate(lastItem.item.created_at);
       }
     }
-  };
+  });
 
   /**
    * This function should show or hide the unread indicator depending on the
    */
-  const updateStickyUnreadIndicator = (viewableItems: ViewToken[]) => {
+  const updateStickyUnreadIndicator = useStableCallback((viewableItems: ViewToken[]) => {
     if (!viewableItems.length) {
       setIsUnreadNotificationOpen(false);
       return;
@@ -482,7 +482,7 @@ const MessageListWithContext = <
         setIsUnreadNotificationOpen(false);
       }
     }
-  };
+  });
 
   /**
    * FlatList doesn't accept changeable function for onViewableItemsChanged prop.
@@ -678,7 +678,7 @@ const MessageListWithContext = <
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channel, rawMessageList, threadList]);
 
-  const goToMessage = async (messageId: string) => {
+  const goToMessage = useStableCallback(async (messageId: string) => {
     const indexOfParentInMessageList = processedMessageList.findIndex(
       (message) => message?.id === messageId,
     );
@@ -706,7 +706,7 @@ const MessageListWithContext = <
     } catch (e) {
       console.warn('Error while scrolling to message', e);
     }
-  };
+  });
 
   /**
    * Check if a messageId needs to be scrolled to after list loads, and scroll to it
@@ -749,7 +749,7 @@ const MessageListWithContext = <
   // TODO: do not apply on RN 0.73 and above
   const shouldApplyAndroidWorkaround = inverted && Platform.OS === 'android';
 
-  const renderItem = ({
+  const renderItem = useStableCallback(({
     index,
     item: message,
   }: {
@@ -760,67 +760,74 @@ const MessageListWithContext = <
       return null;
     }
 
-    const createdAtTimestamp = message.created_at && new Date(message.created_at).getTime();
-    const lastReadTimestamp = channelUnreadState?.last_read.getTime();
-    const isNewestMessage = index === 0;
-    const isLastReadMessage =
-      channelUnreadState?.last_read_message_id === message.id ||
-      (!channelUnreadState?.unread_messages && createdAtTimestamp === lastReadTimestamp);
+      const createdAtTimestamp = message.created_at && new Date(message.created_at).getTime();
+      const lastReadTimestamp = channelUnreadState?.last_read.getTime();
+      const isNewestMessage = index === 0;
+      const isLastReadMessage =
+        channelUnreadState?.last_read_message_id === message.id ||
+        (!channelUnreadState?.unread_messages && createdAtTimestamp === lastReadTimestamp);
 
-    const showUnreadSeparator =
-      isLastReadMessage &&
-      !isNewestMessage &&
-      // The `channelUnreadState?.first_unread_message_id` is here for sent messages unread label
-      (!!channelUnreadState?.first_unread_message_id || !!channelUnreadState?.unread_messages);
+      const showUnreadSeparator =
+        isLastReadMessage &&
+        !isNewestMessage &&
+        // The `channelUnreadState?.first_unread_message_id` is here for sent messages unread label
+        (!!channelUnreadState?.first_unread_message_id || !!channelUnreadState?.unread_messages);
 
-    const showUnreadUnderlay = !!shouldShowUnreadUnderlay && showUnreadSeparator;
+      const showUnreadUnderlay = !!shouldShowUnreadUnderlay && showUnreadSeparator;
 
-    const wrapMessageInTheme = client.userID === message.user?.id && !!myMessageTheme;
-    const renderDateSeperator = isMessageWithStylesReadByAndDateSeparator(message) &&
-      message.dateSeparator && <InlineDateSeparator date={message.dateSeparator} />;
-    const renderMessage = (
-      <Message
-        goToMessage={goToMessage}
-        groupStyles={isMessageWithStylesReadByAndDateSeparator(message) ? message.groupStyles : []}
-        isTargetedMessage={highlightedMessageId === message.id}
-        lastReceivedId={
-          lastReceivedId === message.id || message.quoted_message_id ? lastReceivedId : undefined
-        }
-        message={message}
-        onThreadSelect={onThreadSelect}
-        showUnreadUnderlay={showUnreadUnderlay}
-        style={[messageContainer]}
-        threadList={threadList}
-      />
-    );
+      const wrapMessageInTheme = client.userID === message.user?.id && !!myMessageTheme;
+      const renderDateSeperator = isMessageWithStylesReadByAndDateSeparator(message) &&
+        message.dateSeparator && <InlineDateSeparator date={message.dateSeparator} />;
+      const renderMessage = (
+        <Message
+          goToMessage={goToMessage}
+          groupStyles={
+            isMessageWithStylesReadByAndDateSeparator(message) ? message.groupStyles : []
+          }
+          isTargetedMessage={highlightedMessageId === message.id}
+          lastReceivedId={
+            lastReceivedId === message.id || message.quoted_message_id ? lastReceivedId : undefined
+          }
+          message={message}
+          onThreadSelect={onThreadSelect}
+          showUnreadUnderlay={showUnreadUnderlay}
+          style={[messageContainer]}
+          threadList={threadList}
+        />
+      );
 
-    return (
-      <View
-        style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}
-        testID={`message-list-item-${index}`}
-      >
-        {message.type === 'system' ? (
-          <MessageSystem
-            message={message}
-            style={[{ paddingHorizontal: screenPadding }, messageContainer]}
-          />
-        ) : wrapMessageInTheme ? (
-          <ThemeProvider mergedStyle={modifiedTheme}>
+      return (
+        <View
+          style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}
+          testID={`message-list-item-${index}`}
+        >
+          {message.type === 'system' ? (
+            <MessageSystem
+              message={message}
+              style={[{ paddingHorizontal: screenPadding }, messageContainer]}
+            />
+          ) : wrapMessageInTheme ? (
+            <ThemeProvider mergedStyle={modifiedTheme}>
+              <View testID={`message-list-item-${index}`}>
+                {renderDateSeperator}
+                {renderMessage}
+              </View>
+            </ThemeProvider>
+          ) : (
             <View testID={`message-list-item-${index}`}>
               {renderDateSeperator}
               {renderMessage}
             </View>
-          </ThemeProvider>
-        ) : (
-          <View testID={`message-list-item-${index}`}>
-            {renderDateSeperator}
-            {renderMessage}
-          </View>
-        )}
-        {showUnreadUnderlay && <InlineUnreadIndicator />}
-      </View>
-    );
-  };
+          )}
+          {showUnreadUnderlay && <InlineUnreadIndicator />}
+        </View>
+      );
+    },
+  );
+
+  useEffect(() => {
+    console.log('RENDER ITEM CHANGED OH NOOOO');
+  }, [renderItem]);
 
   /**
    * We are keeping full control on message pagination, and not relying on react-native for it.
@@ -845,7 +852,7 @@ const MessageListWithContext = <
    * 2. Ensures that we call `loadMoreRecent`, once per content length
    * 3. If the call to `loadMore` is in progress, we wait for it to finish to make sure scroll doesn't jump.
    */
-  const maybeCallOnStartReached = async () => {
+  const maybeCallOnStartReached = useStableCallback(async () => {
     // If onStartReached has already been called for given data length, then ignore.
     if (
       processedMessageList?.length &&
@@ -882,14 +889,14 @@ const MessageListWithContext = <
     )
       .then(callback)
       .catch(onError);
-  };
+  });
 
   /**
    * 1. Makes a call to `loadMore` function, which queries more older messages.
    * 2. Ensures that we call `loadMore`, once per content length
    * 3. If the call to `loadMoreRecent` is in progress, we wait for it to finish to make sure scroll doesn't jump.
    */
-  const maybeCallOnEndReached = async () => {
+  const maybeCallOnEndReached = useStableCallback(async () => {
     // If onEndReached has already been called for given messageList length, then ignore.
     if (processedMessageList?.length && onEndReachedTracker.current[processedMessageList.length]) {
       return;
@@ -918,9 +925,9 @@ const MessageListWithContext = <
     onEndReachedInPromise.current = (threadList ? loadMoreThread() : loadMore())
       .then(callback)
       .catch(onError);
-  };
+  });
 
-  const onUserScrollEvent: NonNullable<ScrollViewProps['onScroll']> = (event) => {
+  const onUserScrollEvent: NonNullable<ScrollViewProps['onScroll']> = useStableCallback((event) => {
     const nativeEvent = event.nativeEvent;
     clearTimeout(onScrollEventTimeoutRef.current);
     const offset = nativeEvent.contentOffset.y;
@@ -941,9 +948,10 @@ const MessageListWithContext = <
     if (isScrollAtEnd) {
       maybeCallOnEndReached();
     }
-  };
+  });
 
-  const handleScroll: ScrollViewProps['onScroll'] = (event) => {
+  // @ts-expect-error will fix later
+  const handleScroll: ScrollViewProps['onScroll'] = useStableCallback((event) => {
     const messageListHasMessages = processedMessageList.length > 0;
     const offset = event.nativeEvent.contentOffset.y;
     // Show scrollToBottom button once scroll position goes beyond 150.
@@ -965,9 +973,9 @@ const MessageListWithContext = <
     if (onListScroll) {
       onListScroll(event);
     }
-  };
+  });
 
-  const goToNewMessages = async () => {
+  const goToNewMessages = useStableCallback(async () => {
     const isNotLatestSet = channel.state.messages !== channel.state.latestMessages;
 
     if (isNotLatestSet) {
@@ -988,7 +996,7 @@ const MessageListWithContext = <
     await markRead({
       updateChannelUnreadState: false,
     });
-  };
+  });
 
   const scrollToIndexFailedRetryCountRef = useRef<number>(0);
   const failScrollTimeoutId = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -1089,35 +1097,37 @@ const MessageListWithContext = <
     threadList,
   ]);
 
-  const dismissImagePicker = () => {
+  const dismissImagePicker = useStableCallback(() => {
     if (selectedPicker) {
       setSelectedPicker(undefined);
       closePicker();
     }
-  };
+  });
 
-  const onScrollBeginDrag: ScrollViewProps['onScrollBeginDrag'] = (event) => {
+  // @ts-expect-error will fix later
+  const onScrollBeginDrag: ScrollViewProps['onScrollBeginDrag'] = useStableCallback((event) => {
     !hasMoved && selectedPicker && setHasMoved(true);
     onUserScrollEvent(event);
-  };
+  });
 
-  const onScrollEndDrag: ScrollViewProps['onScrollEndDrag'] = (event) => {
+  // @ts-expect-error will fix later
+  const onScrollEndDrag: ScrollViewProps['onScrollEndDrag'] = useStableCallback((event) => {
     hasMoved && selectedPicker && setHasMoved(false);
     onUserScrollEvent(event);
-  };
+  });
 
-  const refCallback = (ref: FlatListType<MessageType<StreamChatGenerics>>) => {
+  const refCallback = useStableCallback((ref: FlatListType<MessageType<StreamChatGenerics>>) => {
     flatListRef.current = ref;
 
     if (setFlatListRef) {
       setFlatListRef(ref);
     }
-  };
+  });
 
-  const onUnreadNotificationClose = async () => {
+  const onUnreadNotificationClose = useStableCallback(async () => {
     await markRead();
     setIsUnreadNotificationOpen(false);
-  };
+  });
 
   const debugRef = useDebugContext();
 
@@ -1328,6 +1338,10 @@ export const MessageList = <
   const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } =
     useThreadContext<StreamChatGenerics>();
 
+  useEffect(() => {
+    console.log('MARK READ CHANGED');
+  }, [markRead]);
+
   return (
     <MessageListWithContext
       {...{
@@ -1383,4 +1397,11 @@ export const MessageList = <
       noGroupByUser={!enableMessageGroupingByUser || props.noGroupByUser}
     />
   );
+};
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+export const useStableCallback = <T extends Function>(callback: T): T => {
+  const ref = useRef<T>(callback);
+  ref.current = callback;
+  return useCallback(((...args: unknown[]) => ref.current(...args)) as unknown as T, []);
 };
