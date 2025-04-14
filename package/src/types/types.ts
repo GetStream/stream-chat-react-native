@@ -42,7 +42,7 @@ export type AudioUpload = FileUpload & {
   paused?: boolean;
 };
 
-export interface DefaultAttachmentType {
+export interface DefaultAttachmentData {
   duration?: number;
   file_size?: number;
   mime_type?: string;
@@ -51,35 +51,35 @@ export interface DefaultAttachmentType {
   waveform_data?: number[];
 }
 
-export interface DefaultUserType {
+export interface DefaultUserData {
   image?: string;
 }
 
-export interface DefaultChannelType {
+export interface DefaultChannelData {
   image?: string;
   name?: string;
 }
 
-export interface DefaultCommandType {
+export interface DefaultCommandData {
   flag: unknown;
   imgur: unknown;
 }
 
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 
-export interface DefaultEventType {}
+export interface DefaultEventData {}
 
-export interface DefaultMemberType {}
+export interface DefaultMemberData {}
 
-export interface DefaultMessageType {}
+export interface DefaultMessageData {}
 
-export interface DefaultPollOptionType {}
+export interface DefaultPollOptionData {}
 
-export interface DefaultPollType {}
+export interface DefaultPollData {}
 
-export interface DefaultReactionType {}
+export interface DefaultReactionData {}
 
-export interface DefaultThreadType {}
+export interface DefaultThreadData {}
 
 export type Reaction = {
   id: string;
