@@ -63,7 +63,7 @@ export class KeyboardCompatibleView extends React.Component<
     }
 
     const keyboardY =
-      (keyboardFrame.height
+      (keyboardFrame.height && Platform.OS === 'android'
         ? Math.min(keyboardFrame.screenY, keyboardFrame.height)
         : keyboardFrame.screenY) - (this.props.keyboardVerticalOffset ?? 0);
     const relativeHeight = frame.y + frame.height - keyboardY;
