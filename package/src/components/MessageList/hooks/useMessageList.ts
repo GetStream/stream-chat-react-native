@@ -71,7 +71,7 @@ export const useMessageList = <
     userID: client.userID,
   });
 
-  const processedMessageList = useMemo(() => {
+  const processedMessageList = useMemo<MessageType<StreamChatGenerics>[]>(() => {
     const dateSeparators = getDateSeparators({
       deletedMessagesVisibilityType,
       hideDateSeparators,
@@ -106,7 +106,7 @@ export const useMessageList = <
         groupStyles: messageGroupStyles[msg.id] || ['single'],
         readBy: msg.id ? readData[msg.id] || false : false,
       }))
-      .reverse() as MessageType[];
+      .reverse() as MessageType<StreamChatGenerics>[];
   }, [
     client.userID,
     deletedMessagesVisibilityType,

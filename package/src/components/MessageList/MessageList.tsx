@@ -749,16 +749,11 @@ const MessageListWithContext = <
   // TODO: do not apply on RN 0.73 and above
   const shouldApplyAndroidWorkaround = inverted && Platform.OS === 'android';
 
-  const renderItem = useStableCallback(({
-    index,
-    item: message,
-  }: {
-    index: number;
-    item: MessageType<StreamChatGenerics>;
-  }) => {
-    if (!channel || channel.disconnected || (!channel.initialized && !channel.offlineMode)) {
-      return null;
-    }
+  const renderItem = useStableCallback(
+    ({ index, item: message }: { index: number; item: MessageType<StreamChatGenerics> }) => {
+      if (!channel || channel.disconnected || (!channel.initialized && !channel.offlineMode)) {
+        return null;
+      }
 
       const createdAtTimestamp = message.created_at && new Date(message.created_at).getTime();
       const lastReadTimestamp = channelUnreadState?.last_read.getTime();

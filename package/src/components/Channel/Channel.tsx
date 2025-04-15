@@ -961,7 +961,7 @@ const ChannelWithContext = <
   /**
    * CHANNEL METHODS
    */
-  const _markRead: ChannelContextValue<StreamChatGenerics>['markRead'] = throttle(
+  const markReadInternal: ChannelContextValue<StreamChatGenerics>['markRead'] = throttle(
     async (options?: MarkReadFunctionOptions) => {
       const { updateChannelUnreadState = true } = options ?? {};
       if (!channel || channel?.disconnected || !clientChannelConfig?.read_events) {
@@ -990,7 +990,7 @@ const ChannelWithContext = <
     throttleOptions,
   );
 
-  const markRead = useStableCallback(_markRead);
+  const markRead = useStableCallback(markReadInternal);
 
   const reloadThread = useStableCallback(async () => {
     if (!channel || !thread?.id) {
@@ -1179,13 +1179,11 @@ const ChannelWithContext = <
   /**
    * MESSAGE METHODS
    */
-  const updateMessage: MessagesContextValue<StreamChatGenerics>['updateMessage'] = useStableCallback((
-    updatedMessage,
-    extraState = {},
-  ) => {
-    if (!channel) {
-      return;
-    }
+  const updateMessage: MessagesContextValue<StreamChatGenerics>['updateMessage'] =
+    useStableCallback((updatedMessage, extraState = {}) => {
+      if (!channel) {
+        return;
+      }
 
       channel.state.addMessageSorted(updatedMessage, true);
       copyMessagesStateFromChannelThrottled();
@@ -1194,17 +1192,17 @@ const ChannelWithContext = <
         extraState.threadMessages = channel.state.threads[updatedMessage.parent_id] || [];
         setThreadMessages(extraState.threadMessages);
       }
-    },
-  );
+    });
 
-  const replaceMessage = useStableCallback((
-    oldMessage: MessageResponse<StreamChatGenerics>,
-    newMessage: MessageResponse<StreamChatGenerics>,
-  ) => {
-    if (channel) {
-      channel.state.removeMessage(oldMessage);
-      channel.state.addMessageSorted(newMessage, true);
-      copyMessagesStateFromChannel(channel);
+  const replaceMessage = useStableCallback(
+    (
+      oldMessage: MessageResponse<StreamChatGenerics>,
+      newMessage: MessageResponse<StreamChatGenerics>,
+    ) => {
+      if (channel) {
+        channel.state.removeMessage(oldMessage);
+        channel.state.addMessageSorted(newMessage, true);
+        copyMessagesStateFromChannel(channel);
 
         if (thread && newMessage.parent_id) {
           const threadMessages = channel.state.threads[newMessage.parent_id] || [];
@@ -1214,45 +1212,46 @@ const ChannelWithContext = <
     },
   );
 
-  const createMessagePreview = useStableCallback(({
-    attachments,
-    mentioned_users,
-    parent_id,
-    poll,
-    poll_id,
-    text,
-    ...extraFields
-  }: Partial<StreamMessage<StreamChatGenerics>>) => {
-    // Exclude following properties from message.user within message preview,
-    // since they could be long arrays and have no meaning as sender of message.
-    // Storing such large value within user's table may cause sqlite queries to crash.
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { channel_mutes, devices, mutes, ...messageUser } = client.user;
-
-    const preview = {
-      __html: text,
+  const createMessagePreview = useStableCallback(
+    ({
       attachments,
-      created_at: new Date(),
-      html: text,
-      id: `${client.userID}-${generateRandomId()}`,
-      mentioned_users:
-        mentioned_users?.map((userId) => ({
-          id: userId,
-        })) || [],
+      mentioned_users,
       parent_id,
       poll,
       poll_id,
-      reactions: [],
-      status: MessageStatusTypes.SENDING,
       text,
-      type: 'regular',
-      user: {
-        ...messageUser,
-        id: client.userID,
-      },
-      ...extraFields,
-    } as unknown as MessageResponse<StreamChatGenerics>;
+      ...extraFields
+    }: Partial<StreamMessage<StreamChatGenerics>>) => {
+      // Exclude following properties from message.user within message preview,
+      // since they could be long arrays and have no meaning as sender of message.
+      // Storing such large value within user's table may cause sqlite queries to crash.
+      // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { channel_mutes, devices, mutes, ...messageUser } = client.user;
+
+      const preview = {
+        __html: text,
+        attachments,
+        created_at: new Date(),
+        html: text,
+        id: `${client.userID}-${generateRandomId()}`,
+        mentioned_users:
+          mentioned_users?.map((userId) => ({
+            id: userId,
+          })) || [],
+        parent_id,
+        poll,
+        poll_id,
+        reactions: [],
+        status: MessageStatusTypes.SENDING,
+        text,
+        type: 'regular',
+        user: {
+          ...messageUser,
+          id: client.userID,
+        },
+        ...extraFields,
+      } as unknown as MessageResponse<StreamChatGenerics>;
 
       /**
        * This is added to the message for local rendering prior to the message
@@ -1264,131 +1263,132 @@ const ChannelWithContext = <
           (message) => message.id === preview.quoted_message_id,
         );
 
-      preview.quoted_message =
-        quotedMessage as MessageResponse<StreamChatGenerics>['quoted_message'];
-    }
-    return preview;
-  });
+        preview.quoted_message =
+          quotedMessage as MessageResponse<StreamChatGenerics>['quoted_message'];
+      }
+      return preview;
+    },
+  );
 
-  const uploadPendingAttachments = useStableCallback(async (message: MessageResponse<StreamChatGenerics>) => {
-    const updatedMessage = { ...message };
-    if (updatedMessage.attachments?.length) {
-      for (let i = 0; i < updatedMessage.attachments?.length; i++) {
-        const attachment = updatedMessage.attachments[i];
-        const image = attachment.originalImage;
-        const file = attachment.originalFile;
-        // check if image_url is not a remote url
-        if (
-          attachment.type === FileTypes.Image &&
-          image?.uri &&
-          attachment.image_url &&
-          isLocalUrl(attachment.image_url)
-        ) {
-          const filename = image.name ?? getFileNameFromPath(image.uri);
-          // if any upload is in progress, cancel it
-          const controller = uploadAbortControllerRef.current.get(filename);
-          if (controller) {
-            controller.abort();
-            uploadAbortControllerRef.current.delete(filename);
-          }
-          const compressedUri = await compressedImageURI(image, compressImageQuality);
-          const contentType = lookup(filename) || 'multipart/form-data';
+  const uploadPendingAttachments = useStableCallback(
+    async (message: MessageResponse<StreamChatGenerics>) => {
+      const updatedMessage = { ...message };
+      if (updatedMessage.attachments?.length) {
+        for (let i = 0; i < updatedMessage.attachments?.length; i++) {
+          const attachment = updatedMessage.attachments[i];
+          const image = attachment.originalImage;
+          const file = attachment.originalFile;
+          // check if image_url is not a remote url
+          if (
+            attachment.type === FileTypes.Image &&
+            image?.uri &&
+            attachment.image_url &&
+            isLocalUrl(attachment.image_url)
+          ) {
+            const filename = image.name ?? getFileNameFromPath(image.uri);
+            // if any upload is in progress, cancel it
+            const controller = uploadAbortControllerRef.current.get(filename);
+            if (controller) {
+              controller.abort();
+              uploadAbortControllerRef.current.delete(filename);
+            }
+            const compressedUri = await compressedImageURI(image, compressImageQuality);
+            const contentType = lookup(filename) || 'multipart/form-data';
 
-          const uploadResponse = doImageUploadRequest
-            ? await doImageUploadRequest(image, channel)
-            : await channel.sendImage(compressedUri, filename, contentType);
+            const uploadResponse = doImageUploadRequest
+              ? await doImageUploadRequest(image, channel)
+              : await channel.sendImage(compressedUri, filename, contentType);
 
-          attachment.image_url = uploadResponse.file;
-          delete attachment.originalFile;
+            attachment.image_url = uploadResponse.file;
+            delete attachment.originalFile;
 
-          await dbApi.updateMessage({
-            message: { ...updatedMessage, cid: channel.cid },
-          });
-        }
-
-        if (
-          (attachment.type === FileTypes.File ||
-            attachment.type === FileTypes.Audio ||
-            attachment.type === FileTypes.VoiceRecording ||
-            attachment.type === FileTypes.Video) &&
-          attachment.asset_url &&
-          isLocalUrl(attachment.asset_url) &&
-          file?.uri
-        ) {
-          // if any upload is in progress, cancel it
-          const controller = uploadAbortControllerRef.current.get(file.name);
-          if (controller) {
-            controller.abort();
-            uploadAbortControllerRef.current.delete(file.name);
-          }
-          const response = doDocUploadRequest
-            ? await doDocUploadRequest(file, channel)
-            : await channel.sendFile(file.uri, file.name, file.mimeType);
-          attachment.asset_url = response.file;
-          if (response.thumb_url) {
-            attachment.thumb_url = response.thumb_url;
+            await dbApi.updateMessage({
+              message: { ...updatedMessage, cid: channel.cid },
+            });
           }
 
-          delete attachment.originalFile;
-          await dbApi.updateMessage({
-            message: { ...updatedMessage, cid: channel.cid },
-          });
+          if (
+            (attachment.type === FileTypes.File ||
+              attachment.type === FileTypes.Audio ||
+              attachment.type === FileTypes.VoiceRecording ||
+              attachment.type === FileTypes.Video) &&
+            attachment.asset_url &&
+            isLocalUrl(attachment.asset_url) &&
+            file?.uri
+          ) {
+            // if any upload is in progress, cancel it
+            const controller = uploadAbortControllerRef.current.get(file.name);
+            if (controller) {
+              controller.abort();
+              uploadAbortControllerRef.current.delete(file.name);
+            }
+            const response = doDocUploadRequest
+              ? await doDocUploadRequest(file, channel)
+              : await channel.sendFile(file.uri, file.name, file.mimeType);
+            attachment.asset_url = response.file;
+            if (response.thumb_url) {
+              attachment.thumb_url = response.thumb_url;
+            }
+
+            delete attachment.originalFile;
+            await dbApi.updateMessage({
+              message: { ...updatedMessage, cid: channel.cid },
+            });
+          }
         }
       }
-    }
 
-    return updatedMessage;
-  });
+      return updatedMessage;
+    },
+  );
 
-  const sendMessageRequest = useStableCallback(async (
-    message: MessageResponse<StreamChatGenerics>,
-    retrying?: boolean,
-  ) => {
-    try {
-      const updatedMessage = await uploadPendingAttachments(message);
-      const extraFields = omit(updatedMessage, [
-        '__html',
-        'attachments',
-        'created_at',
-        'deleted_at',
-        'html',
-        'id',
-        'latest_reactions',
-        'mentioned_users',
-        'own_reactions',
-        'parent_id',
-        'quoted_message',
-        'reaction_counts',
-        'reaction_groups',
-        'reactions',
-        'status',
-        'text',
-        'type',
-        'updated_at',
-        'user',
-      ]);
-      const { attachments, id, mentioned_users, parent_id, text } = updatedMessage;
-      if (!channel.id) {
-        return;
-      }
+  const sendMessageRequest = useStableCallback(
+    async (message: MessageResponse<StreamChatGenerics>, retrying?: boolean) => {
+      try {
+        const updatedMessage = await uploadPendingAttachments(message);
+        const extraFields = omit(updatedMessage, [
+          '__html',
+          'attachments',
+          'created_at',
+          'deleted_at',
+          'html',
+          'id',
+          'latest_reactions',
+          'mentioned_users',
+          'own_reactions',
+          'parent_id',
+          'quoted_message',
+          'reaction_counts',
+          'reaction_groups',
+          'reactions',
+          'status',
+          'text',
+          'type',
+          'updated_at',
+          'user',
+        ]);
+        const { attachments, id, mentioned_users, parent_id, text } = updatedMessage;
+        if (!channel.id) {
+          return;
+        }
 
         const mentionedUserIds = mentioned_users?.map((user) => user.id) || [];
 
-      const messageData = {
-        attachments,
-        id,
-        mentioned_users: mentionedUserIds,
-        parent_id,
-        text: patchMessageTextCommand(text ?? '', mentionedUserIds),
-        ...extraFields,
-      } as StreamMessage<StreamChatGenerics>;
+        const messageData = {
+          attachments,
+          id,
+          mentioned_users: mentionedUserIds,
+          parent_id,
+          text: patchMessageTextCommand(text ?? '', mentionedUserIds),
+          ...extraFields,
+        } as StreamMessage<StreamChatGenerics>;
 
-      let messageResponse = {} as SendMessageAPIResponse<StreamChatGenerics>;
-      if (doSendMessageRequest) {
-        messageResponse = await doSendMessageRequest(channel?.cid || '', messageData);
-      } else if (channel) {
-        messageResponse = await channel.sendMessage(messageData);
-      }
+        let messageResponse = {} as SendMessageAPIResponse<StreamChatGenerics>;
+        if (doSendMessageRequest) {
+          messageResponse = await doSendMessageRequest(channel?.cid || '', messageData);
+        } else if (channel) {
+          messageResponse = await channel.sendMessage(messageData);
+        }
 
         if (messageResponse.message) {
           messageResponse.message.status = MessageStatusTypes.RECEIVED;
@@ -1420,12 +1420,11 @@ const ChannelWithContext = <
     },
   );
 
-  const sendMessage: InputMessageInputContextValue<StreamChatGenerics>['sendMessage'] = useStableCallback(async (
-    message,
-  ) => {
-    if (channel?.state?.filterErrorMessages) {
-      channel.state.filterErrorMessages();
-    }
+  const sendMessage: InputMessageInputContextValue<StreamChatGenerics>['sendMessage'] =
+    useStableCallback(async (message) => {
+      if (channel?.state?.filterErrorMessages) {
+        channel.state.filterErrorMessages();
+      }
 
       const messagePreview = createMessagePreview({
         ...message,
@@ -1449,49 +1448,45 @@ const ChannelWithContext = <
       }
 
       await sendMessageRequest(messagePreview);
-    },
-  );
+    });
 
-  const retrySendMessage: MessagesContextValue<StreamChatGenerics>['retrySendMessage'] = useStableCallback(async (
-    message,
-  ) => {
-    const statusPendingMessage = {
-      ...message,
-      status: MessageStatusTypes.SENDING,
-    };
+  const retrySendMessage: MessagesContextValue<StreamChatGenerics>['retrySendMessage'] =
+    useStableCallback(async (message) => {
+      const statusPendingMessage = {
+        ...message,
+        status: MessageStatusTypes.SENDING,
+      };
 
       const messageWithoutReservedFields = removeReservedFields(statusPendingMessage);
 
-    // For bounced messages, we don't need to update the message, instead always send a new message.
-    if (!isBouncedMessage(message)) {
-      updateMessage(messageWithoutReservedFields as MessageResponse<StreamChatGenerics>);
-    }
+      // For bounced messages, we don't need to update the message, instead always send a new message.
+      if (!isBouncedMessage(message)) {
+        updateMessage(messageWithoutReservedFields as MessageResponse<StreamChatGenerics>);
+      }
 
-    await sendMessageRequest(
-      messageWithoutReservedFields as MessageResponse<StreamChatGenerics>,
-      true,
+      await sendMessageRequest(
+        messageWithoutReservedFields as MessageResponse<StreamChatGenerics>,
+        true,
+      );
+    });
+
+  const editMessage: InputMessageInputContextValue<StreamChatGenerics>['editMessage'] =
+    useStableCallback((updatedMessage) =>
+      doUpdateMessageRequest
+        ? doUpdateMessageRequest(channel?.cid || '', updatedMessage)
+        : client.updateMessage(updatedMessage),
     );
-  });
 
-  const editMessage: InputMessageInputContextValue<StreamChatGenerics>['editMessage'] = useStableCallback((
-    updatedMessage,
-  ) =>
-    doUpdateMessageRequest
-      ? doUpdateMessageRequest(channel?.cid || '', updatedMessage)
-      : client.updateMessage(updatedMessage));
+  const setEditingState: MessagesContextValue<StreamChatGenerics>['setEditingState'] =
+    useStableCallback((message) => {
+      clearQuotedMessageState();
+      setEditing(message);
+    });
 
-  const setEditingState: MessagesContextValue<StreamChatGenerics>['setEditingState'] = useStableCallback((
-    message,
-  ) => {
-    clearQuotedMessageState();
-    setEditing(message);
-  });
-
-  const setQuotedMessageState: MessagesContextValue<StreamChatGenerics>['setQuotedMessageState'] = useStableCallback((
-    messageOrBoolean,
-  ) => {
-    setQuotedMessage(messageOrBoolean);
-  });
+  const setQuotedMessageState: MessagesContextValue<StreamChatGenerics>['setQuotedMessageState'] =
+    useStableCallback((messageOrBoolean) => {
+      setQuotedMessage(messageOrBoolean);
+    });
 
   const clearEditingState: InputMessageInputContextValue<StreamChatGenerics>['clearEditingState'] =
     useStableCallback(() => setEditing(undefined));
@@ -1502,12 +1497,11 @@ const ChannelWithContext = <
   /**
    * Removes the message from local state
    */
-  const removeMessage: MessagesContextValue<StreamChatGenerics>['removeMessage'] = useStableCallback(async (
-    message,
-  ) => {
-    if (channel) {
-      channel.state.removeMessage(message);
-      copyMessagesStateFromChannel(channel);
+  const removeMessage: MessagesContextValue<StreamChatGenerics>['removeMessage'] =
+    useStableCallback(async (message) => {
+      if (channel) {
+        channel.state.removeMessage(message);
+        copyMessagesStateFromChannel(channel);
 
         if (thread) {
           setThreadMessages(channel.state.threads[thread.id] || []);
@@ -1519,8 +1513,7 @@ const ChannelWithContext = <
           id: message.id,
         });
       }
-    },
-  );
+    });
 
   const sendReaction = useStableCallback(async (type: string, messageId: string) => {
     if (!channel?.id || !client.user) {
@@ -1565,12 +1558,11 @@ const ChannelWithContext = <
     }
   });
 
-  const deleteMessage: MessagesContextValue<StreamChatGenerics>['deleteMessage'] = useStableCallback(async (
-    message,
-  ) => {
-    if (!channel.id) {
-      throw new Error('Channel has not been initialized yet');
-    }
+  const deleteMessage: MessagesContextValue<StreamChatGenerics>['deleteMessage'] =
+    useStableCallback(async (message) => {
+      if (!channel.id) {
+        throw new Error('Channel has not been initialized yet');
+      }
 
       if (!enableOfflineSupport) {
         if (message.status === MessageStatusTypes.FAILED) {
@@ -1581,45 +1573,42 @@ const ChannelWithContext = <
         return;
       }
 
-    if (message.status === MessageStatusTypes.FAILED) {
-      await DBSyncManager.dropPendingTasks({ messageId: message.id });
-      await removeMessage(message);
-    } else {
-      const updatedMessage = {
-        ...message,
-        cid: channel.cid,
-        deleted_at: new Date().toISOString(),
-        type: 'deleted',
-      };
-      updateMessage(updatedMessage);
+      if (message.status === MessageStatusTypes.FAILED) {
+        await DBSyncManager.dropPendingTasks({ messageId: message.id });
+        await removeMessage(message);
+      } else {
+        const updatedMessage = {
+          ...message,
+          cid: channel.cid,
+          deleted_at: new Date().toISOString(),
+          type: 'deleted',
+        };
+        updateMessage(updatedMessage);
 
         threadInstance?.upsertReplyLocally({ message: updatedMessage });
 
-      const data = await DBSyncManager.queueTask<StreamChatGenerics>({
-        client,
-        task: {
-          channelId: channel.id,
-          channelType: channel.type,
-          messageId: message.id,
-          payload: [message.id],
-          type: 'delete-message',
-        },
-      });
+        const data = await DBSyncManager.queueTask<StreamChatGenerics>({
+          client,
+          task: {
+            channelId: channel.id,
+            channelType: channel.type,
+            messageId: message.id,
+            payload: [message.id],
+            type: 'delete-message',
+          },
+        });
 
         if (data?.message) {
           updateMessage({ ...data.message });
         }
       }
-    },
-  );
+    });
 
-  const deleteReaction: MessagesContextValue<StreamChatGenerics>['deleteReaction'] = useStableCallback(async (
-    type: string,
-    messageId: string,
-  ) => {
-    if (!channel?.id || !client.user) {
-      throw new Error('Channel has not been initialized');
-    }
+  const deleteReaction: MessagesContextValue<StreamChatGenerics>['deleteReaction'] =
+    useStableCallback(async (type: string, messageId: string) => {
+      if (!channel?.id || !client.user) {
+        throw new Error('Channel has not been initialized');
+      }
 
       const payload: Parameters<ChannelClass['deleteReaction']> = [messageId, type];
 
@@ -1637,17 +1626,17 @@ const ChannelWithContext = <
 
       copyMessagesStateFromChannel(channel);
 
-    await DBSyncManager.queueTask<StreamChatGenerics>({
-      client,
-      task: {
-        channelId: channel.id,
-        channelType: channel.type,
-        messageId,
-        payload,
-        type: 'delete-reaction',
-      },
+      await DBSyncManager.queueTask<StreamChatGenerics>({
+        client,
+        task: {
+          channelId: channel.id,
+          channelType: channel.type,
+          messageId,
+          payload,
+          type: 'delete-reaction',
+        },
+      });
     });
-  });
 
   /**
    * THREAD METHODS
@@ -1689,46 +1678,47 @@ const ChannelWithContext = <
     ),
   ).current;
 
-  const loadMoreThread: ThreadContextValue<StreamChatGenerics>['loadMoreThread'] = useStableCallback(async () => {
-    if (threadLoadingMore || !thread?.id) {
-      return;
-    }
-    setThreadLoadingMore(true);
-
-    try {
-      if (channel) {
-        const parentID = thread.id;
-
-        /**
-         * In the channel is re-initializing, then threads may get wiped out during the process
-         * (check `addMessagesSorted` method on channel.state). In those cases, we still want to
-         * preserve the messages on active thread, so lets simply copy messages from UI state to
-         * `channel.state`.
-         */
-        channel.state.threads[parentID] = threadMessages;
-        const oldestMessageID = threadMessages?.[0]?.id;
-
-        const limit = 50;
-        const queryResponse = await channel.getReplies(parentID, {
-          id_lt: oldestMessageID,
-          limit,
-        });
-
-        const updatedHasMore = queryResponse.messages.length === limit;
-        const updatedThreadMessages = channel.state.threads[parentID] || [];
-        loadMoreThreadFinished(updatedHasMore, updatedThreadMessages);
+  const loadMoreThread: ThreadContextValue<StreamChatGenerics>['loadMoreThread'] =
+    useStableCallback(async () => {
+      if (threadLoadingMore || !thread?.id) {
+        return;
       }
-    } catch (err) {
-      console.warn('Message pagination request failed with error', err);
-      if (err instanceof Error) {
-        setError(err);
-      } else {
-        setError(true);
+      setThreadLoadingMore(true);
+
+      try {
+        if (channel) {
+          const parentID = thread.id;
+
+          /**
+           * In the channel is re-initializing, then threads may get wiped out during the process
+           * (check `addMessagesSorted` method on channel.state). In those cases, we still want to
+           * preserve the messages on active thread, so lets simply copy messages from UI state to
+           * `channel.state`.
+           */
+          channel.state.threads[parentID] = threadMessages;
+          const oldestMessageID = threadMessages?.[0]?.id;
+
+          const limit = 50;
+          const queryResponse = await channel.getReplies(parentID, {
+            id_lt: oldestMessageID,
+            limit,
+          });
+
+          const updatedHasMore = queryResponse.messages.length === limit;
+          const updatedThreadMessages = channel.state.threads[parentID] || [];
+          loadMoreThreadFinished(updatedHasMore, updatedThreadMessages);
+        }
+      } catch (err) {
+        console.warn('Message pagination request failed with error', err);
+        if (err instanceof Error) {
+          setError(err);
+        } else {
+          setError(true);
+        }
+        setThreadLoadingMore(false);
+        throw err;
       }
-      setThreadLoadingMore(false);
-      throw err;
-    }
-  });
+    });
 
   const ownCapabilitiesContext = useCreateOwnCapabilitiesContext({
     channel,

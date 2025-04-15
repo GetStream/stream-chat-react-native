@@ -8,14 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  Alert,
-  InteractionManager,
-  Keyboard,
-  Linking,
-  TextInput,
-  TextInputProps,
-} from 'react-native';
+import { Alert, Keyboard, Linking, TextInput, TextInputProps } from 'react-native';
 
 import uniq from 'lodash/uniq';
 import { lookup } from 'mime-types';
@@ -618,7 +611,7 @@ export const MessageInputProvider = <
     text,
   } = useMessageDetailsForState<StreamChatGenerics>(editing, initialValue);
   const { endsAt: cooldownEndsAt, start: startCooldown } = useCooldown<StreamChatGenerics>();
-  const { onChangeText } = value;
+  const { onChangeText, emojiSearchIndex, autoCompleteTriggerSettings } = value;
 
   const threadId = thread?.id;
   useEffect(() => {
@@ -848,106 +841,113 @@ export const MessageInputProvider = <
     [imageUploads, setImageUploads, setNumberOfUploads],
   );
 
-  const resetInput = useStableCallback((pendingAttachments: Attachment<StreamChatGenerics>[] = []) => {
-    /**
-     * If the MediaLibrary is available, reset the selected files and images
-     */
-    if (isImageMediaLibraryAvailable()) {
-      setSelectedFiles([]);
-      setSelectedImages([]);
-    }
+  const resetInput = useStableCallback(
+    (pendingAttachments: Attachment<StreamChatGenerics>[] = []) => {
+      /**
+       * If the MediaLibrary is available, reset the selected files and images
+       */
+      if (isImageMediaLibraryAvailable()) {
+        setSelectedFiles([]);
+        setSelectedImages([]);
+      }
 
-    setFileUploads([]);
-    setGiphyActive(false);
-    setShowMoreOptions(true);
-    setImageUploads([]);
-    setMentionedUsers([]);
-    setNumberOfUploads(
-      (prevNumberOfUploads) => prevNumberOfUploads - (pendingAttachments?.length || 0),
-    );
-    setText('');
-    if (value.editing) {
-      value.clearEditingState();
-    }
-  });
+      setFileUploads([]);
+      setGiphyActive(false);
+      setShowMoreOptions(true);
+      setImageUploads([]);
+      setMentionedUsers([]);
+      setNumberOfUploads(
+        (prevNumberOfUploads) => prevNumberOfUploads - (pendingAttachments?.length || 0),
+      );
+      setText('');
+      if (value.editing) {
+        value.clearEditingState();
+      }
+    },
+  );
 
-  const mapImageUploadToAttachment = useStableCallback((image: ImageUpload): Attachment<StreamChatGenerics> => {
-    const mime_type: string | boolean = lookup(image.file.name as string);
-    const name = image.file.name as string;
-    return {
-      fallback: name,
-      image_url: image.url,
-      mime_type: mime_type ? mime_type : undefined,
-      original_height: image.height,
-      original_width: image.width,
-      originalImage: image.file,
-      type: FileTypes.Image,
-    };
-  });
-
-  const mapFileUploadToAttachment = useStableCallback((file: FileUpload): Attachment<StreamChatGenerics> => {
-    if (file.type === FileTypes.Image) {
+  const mapImageUploadToAttachment = useStableCallback(
+    (image: ImageUpload): Attachment<StreamChatGenerics> => {
+      const mime_type: string | boolean = lookup(image.file.name as string);
+      const name = image.file.name as string;
       return {
-        fallback: file.file.name,
-        image_url: file.url,
-        mime_type: file.file.mimeType,
-        originalFile: file.file,
+        fallback: name,
+        image_url: image.url,
+        mime_type: mime_type ? mime_type : undefined,
+        original_height: image.height,
+        original_width: image.width,
+        originalImage: image.file,
         type: FileTypes.Image,
       };
-    } else if (file.type === FileTypes.Audio) {
-      return {
-        asset_url: file.url || file.file.uri,
-        duration: file.file.duration,
-        file_size: file.file.size,
-        mime_type: file.file.mimeType,
-        originalFile: file.file,
-        title: file.file.name,
-        type: FileTypes.Audio,
-      };
-    } else if (file.type === FileTypes.Video) {
-      return {
-        asset_url: file.url || file.file.uri,
-        duration: file.file.duration,
-        file_size: file.file.size,
-        mime_type: file.file.mimeType,
-        originalFile: file.file,
-        thumb_url: file.thumb_url,
-        title: file.file.name,
-        type: FileTypes.Video,
-      };
-    } else if (file.type === FileTypes.VoiceRecording) {
-      return {
-        asset_url: file.url || file.file.uri,
-        duration: file.file.duration,
-        file_size: file.file.size,
-        mime_type: file.file.mimeType,
-        originalFile: file.file,
-        title: file.file.name,
-        type: FileTypes.VoiceRecording,
-        waveform_data: file.file.waveform_data,
-      };
-    } else {
-      return {
-        asset_url: file.url || file.file.uri,
-        file_size: file.file.size,
-        mime_type: file.file.mimeType,
-        originalFile: file.file,
-        title: file.file.name,
-        type: FileTypes.File,
-      };
-    }
-  });
+    },
+  );
+
+  const mapFileUploadToAttachment = useStableCallback(
+    (file: FileUpload): Attachment<StreamChatGenerics> => {
+      if (file.type === FileTypes.Image) {
+        return {
+          fallback: file.file.name,
+          image_url: file.url,
+          mime_type: file.file.mimeType,
+          originalFile: file.file,
+          type: FileTypes.Image,
+        };
+      } else if (file.type === FileTypes.Audio) {
+        return {
+          asset_url: file.url || file.file.uri,
+          duration: file.file.duration,
+          file_size: file.file.size,
+          mime_type: file.file.mimeType,
+          originalFile: file.file,
+          title: file.file.name,
+          type: FileTypes.Audio,
+        };
+      } else if (file.type === FileTypes.Video) {
+        return {
+          asset_url: file.url || file.file.uri,
+          duration: file.file.duration,
+          file_size: file.file.size,
+          mime_type: file.file.mimeType,
+          originalFile: file.file,
+          thumb_url: file.thumb_url,
+          title: file.file.name,
+          type: FileTypes.Video,
+        };
+      } else if (file.type === FileTypes.VoiceRecording) {
+        return {
+          asset_url: file.url || file.file.uri,
+          duration: file.file.duration,
+          file_size: file.file.size,
+          mime_type: file.file.mimeType,
+          originalFile: file.file,
+          title: file.file.name,
+          type: FileTypes.VoiceRecording,
+          waveform_data: file.file.waveform_data,
+        };
+      } else {
+        return {
+          asset_url: file.url || file.file.uri,
+          file_size: file.file.size,
+          mime_type: file.file.mimeType,
+          originalFile: file.file,
+          title: file.file.name,
+          type: FileTypes.File,
+        };
+      }
+    },
+  );
 
   // TODO: Figure out why this is async, as it doesn't await any promise.
-  const sendMessage = useStableCallback(async ({
-    customMessageData,
-  }: {
-    customMessageData?: Partial<Message<StreamChatGenerics>>;
-  } = {}) => {
-    if (sending.current) {
-      return;
-    }
-    const linkInfos = parseLinksFromText(text);
+  const sendMessage = useStableCallback(
+    async ({
+      customMessageData,
+    }: {
+      customMessageData?: Partial<Message<StreamChatGenerics>>;
+    } = {}) => {
+      if (sending.current) {
+        return;
+      }
+      const linkInfos = parseLinksFromText(text);
 
       if (!channelCapabities.sendLinks && linkInfos.length > 0) {
         Alert.alert(
@@ -963,22 +963,21 @@ export const MessageInputProvider = <
       startCooldown();
 
       const prevText = giphyEnabled && giphyActive ? `/giphy ${text}` : text;
-      const handle = InteractionManager.createInteractionHandle();
       setText('');
 
       if (inputBoxRef.current) {
         inputBoxRef.current.clear();
       }
 
-    const attachments = [] as Attachment<StreamChatGenerics>[];
-    for (const image of imageUploads) {
-      if (enableOfflineSupport) {
-        if (image.state === FileState.NOT_SUPPORTED) {
-          return;
+      const attachments = [] as Attachment<StreamChatGenerics>[];
+      for (const image of imageUploads) {
+        if (enableOfflineSupport) {
+          if (image.state === FileState.NOT_SUPPORTED) {
+            return;
+          }
+          attachments.push(mapImageUploadToAttachment(image));
+          continue;
         }
-        attachments.push(mapImageUploadToAttachment(image));
-        continue;
-      }
 
         if ((!image || image.state === FileState.UPLOAD_FAILED) && !enableOfflineSupport) {
           continue;
@@ -1034,16 +1033,16 @@ export const MessageInputProvider = <
         return;
       }
 
-    const message = value.editing;
-    if (message && message.type !== 'error') {
-      const updatedMessage = {
-        ...message,
-        attachments,
-        mentioned_users: mentionedUsers,
-        quoted_message: undefined,
-        text: prevText,
-        ...customMessageData,
-      } as Parameters<StreamChat<StreamChatGenerics>['updateMessage']>[0];
+      const message = value.editing;
+      if (message && message.type !== 'error') {
+        const updatedMessage = {
+          ...message,
+          attachments,
+          mentioned_users: mentionedUsers,
+          quoted_message: undefined,
+          text: prevText,
+          ...customMessageData,
+        } as Parameters<StreamChat<StreamChatGenerics>['updateMessage']>[0];
 
         // TODO: Remove this line and show an error when submit fails
         value.clearEditingState();
@@ -1057,27 +1056,25 @@ export const MessageInputProvider = <
         logChatPromiseExecution(updateMessagePromise, 'update message');
         resetInput(attachments);
 
-      sending.current = false;
-    } else {
-      try {
-        /**
-         * If the message is bounced by moderation, we firstly remove the message from message list and then send a new message.
-         */
-        if (message && isBouncedMessage(message as MessageType<StreamChatGenerics>)) {
-          await removeMessage(message);
-        }
-        InteractionManager.runAfterInteractions(() => {
-        value.sendMessage({
-          attachments,
-          mentioned_users: uniq(mentionedUsers),
-          /** Parent message id - in case of thread */
-          parent_id: thread?.id,
-          quoted_message_id: value.quotedMessage ? value.quotedMessage.id : undefined,
-          show_in_channel: sendThreadMessageInChannel || undefined,
-          text: prevText,
-          ...customMessageData,
-        } as unknown as StreamMessage<StreamChatGenerics>);
-        });
+        sending.current = false;
+      } else {
+        try {
+          /**
+           * If the message is bounced by moderation, we firstly remove the message from message list and then send a new message.
+           */
+          if (message && isBouncedMessage(message as MessageType<StreamChatGenerics>)) {
+            await removeMessage(message);
+          }
+          value.sendMessage({
+            attachments,
+            mentioned_users: uniq(mentionedUsers),
+            /** Parent message id - in case of thread */
+            parent_id: thread?.id,
+            quoted_message_id: value.quotedMessage ? value.quotedMessage.id : undefined,
+            show_in_channel: sendThreadMessageInChannel || undefined,
+            text: prevText,
+            ...customMessageData,
+          } as unknown as StreamMessage<StreamChatGenerics>);
 
           value.clearQuotedMessageState();
           sending.current = false;
@@ -1143,18 +1140,18 @@ export const MessageInputProvider = <
     try {
       let triggerSettings: TriggerSettings<StreamChatGenerics> = {};
       if (channel) {
-        if (value.autoCompleteTriggerSettings) {
-          triggerSettings = value.autoCompleteTriggerSettings({
+        if (autoCompleteTriggerSettings) {
+          triggerSettings = autoCompleteTriggerSettings({
             channel,
             client,
-            emojiSearchIndex: value.emojiSearchIndex,
+            emojiSearchIndex,
             onMentionSelectItem: onSelectItem,
           });
         } else {
           triggerSettings = ACITriggerSettings<StreamChatGenerics>({
             channel,
             client,
-            emojiSearchIndex: value.emojiSearchIndex,
+            emojiSearchIndex,
             onMentionSelectItem: onSelectItem,
           });
         }
@@ -1164,7 +1161,7 @@ export const MessageInputProvider = <
       console.warn('Error in getting trigger settings', error);
       throw error;
     }
-  }, [channel, client, onSelectItem, value.autoCompleteTriggerSettings]);
+  }, [channel, client, onSelectItem, autoCompleteTriggerSettings, emojiSearchIndex]);
 
   // const triggerSettings = getTriggerSettings();
 
