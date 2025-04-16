@@ -716,6 +716,7 @@ const ChannelWithContext = <
    * Its a map of filename to AbortController
    */
   const uploadAbortControllerRef = useRef<Map<string, AbortController>>(new Map());
+  const optimisticallyUpdatedNewMessages = useRef<Set<string>>(new Set());
 
   const channelId = channel?.id || '';
   const pollCreationEnabled = !channel.disconnected && !!channel?.id && channel?.getConfig()?.polls;
@@ -837,9 +838,18 @@ const ChannelWithContext = <
       }
 
       // only update channel state if the events are not the previously subscribed useEffect's subscription events
+      console.log('EVENT: ', event);
       if (channel && channel.initialized) {
-        if (event.type === 'message.new') {
-          copyMessagesStateFromChannelThrottled();
+        if (event.type === 'message.new' || event.type === 'notification.message_new') {
+          const messageId = event.message?.id ?? '';
+          if (
+            event.user?.id !== client.userID ||
+            !optimisticallyUpdatedNewMessages.current.has(messageId)
+          ) {
+            console.log('INSIDE', Array.from(optimisticallyUpdatedNewMessages.current));
+            copyMessagesStateFromChannelThrottled();
+          }
+          optimisticallyUpdatedNewMessages.current.delete(messageId);
           return;
         }
 
@@ -848,6 +858,7 @@ const ChannelWithContext = <
           return;
         }
 
+        console.log('FULL STATE UPDATE');
         copyChannelState();
       }
     }
@@ -1180,13 +1191,17 @@ const ChannelWithContext = <
    * MESSAGE METHODS
    */
   const updateMessage: MessagesContextValue<StreamChatGenerics>['updateMessage'] =
-    useStableCallback((updatedMessage, extraState = {}) => {
+    useStableCallback((updatedMessage, extraState = {}, throttled = false) => {
       if (!channel) {
         return;
       }
 
       channel.state.addMessageSorted(updatedMessage, true);
-      copyMessagesStateFromChannelThrottled();
+      if (throttled) {
+        copyMessagesStateFromChannelThrottled();
+      } else {
+        copyMessagesStateFromChannel(channel);
+      }
 
       if (thread && updatedMessage.parent_id) {
         extraState.threadMessages = channel.state.threads[updatedMessage.parent_id] || [];
@@ -1401,7 +1416,7 @@ const ChannelWithContext = <
           if (retrying) {
             replaceMessage(message, messageResponse.message);
           } else {
-            updateMessage(messageResponse.message);
+            updateMessage(messageResponse.message, {}, true);
           }
         }
       } catch (err) {
@@ -1436,6 +1451,7 @@ const ChannelWithContext = <
         messageInput: '',
       });
       threadInstance?.upsertReplyLocally?.({ message: messagePreview });
+      optimisticallyUpdatedNewMessages.current.add(messagePreview.id);
 
       if (enableOfflineSupport) {
         // While sending a message, we add the message to local db with failed status, so that
