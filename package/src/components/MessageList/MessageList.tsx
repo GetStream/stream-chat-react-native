@@ -362,6 +362,14 @@ const MessageListWithContext = <
 
   const [autoscrollToRecent, setAutoscrollToRecent] = useState(false);
 
+  const maintainVisibleContentPosition = useMemo(
+    () => ({
+      autoscrollToTopThreshold: autoscrollToRecent ? 10 : undefined,
+      minIndexForVisible: 1,
+    }),
+    [autoscrollToRecent],
+  );
+
   /**
    * We want to call onEndReached and onStartReached only once, per content length.
    * We keep track of calls to these functions per content length, with following trackers.
@@ -1183,6 +1191,25 @@ const MessageListWithContext = <
     additionalFlatListPropsExcludingStyle = rest;
   }
 
+  const flatListStyle = useMemo(
+    () => [
+      styles.listContainer,
+      listContainer,
+      additionalFlatListProps?.style,
+      shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined,
+    ],
+    [additionalFlatListProps?.style, listContainer, shouldApplyAndroidWorkaround],
+  );
+
+  const flatListContentContainerStyle = useMemo(
+    () => [
+      styles.contentContainer,
+      additionalFlatListProps?.contentContainerStyle,
+      contentContainer,
+    ],
+    [additionalFlatListProps?.contentContainerStyle, contentContainer],
+  );
+
   if (!FlatList) {
     return null;
   }
@@ -1207,11 +1234,7 @@ const MessageListWithContext = <
         </View>
       ) : (
         <FlatList
-          contentContainerStyle={[
-            styles.contentContainer,
-            additionalFlatListProps?.contentContainerStyle,
-            contentContainer,
-          ]}
+          contentContainerStyle={flatListContentContainerStyle}
           /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
           data={processedMessageList}
           extraData={disabled}
@@ -1227,10 +1250,7 @@ const MessageListWithContext = <
             minIndexForVisible = 1 means that beyond the item at index 1 we will not change the position on list updates,
             however it is not used when autoscrollToTopThreshold = 10.
           */
-          maintainVisibleContentPosition={{
-            autoscrollToTopThreshold: autoscrollToRecent ? 10 : undefined,
-            minIndexForVisible: 1,
-          }}
+          maintainVisibleContentPosition={maintainVisibleContentPosition}
           maxToRenderPerBatch={30}
           onMomentumScrollEnd={onUserScrollEvent}
           onScroll={handleScroll}
@@ -1243,12 +1263,7 @@ const MessageListWithContext = <
           renderItem={renderItem}
           scrollEnabled={overlay === 'none'}
           showsVerticalScrollIndicator={!shouldApplyAndroidWorkaround}
-          style={[
-            styles.listContainer,
-            listContainer,
-            additionalFlatListProps?.style,
-            shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined,
-          ]}
+          style={flatListStyle}
           testID='message-flat-list'
           viewabilityConfig={flatListViewabilityConfig}
           {...additionalFlatListPropsExcludingStyle}
