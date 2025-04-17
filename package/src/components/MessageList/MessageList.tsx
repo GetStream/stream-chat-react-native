@@ -400,8 +400,9 @@ const MessageListWithContext = <
    */
   const messageIdLastScrolledToRef = useRef<string>(undefined);
   const [hasMoved, setHasMoved] = useState(false);
-  const [lastReceivedId, setLastReceivedId] = useState(
-    getLastReceivedMessage(processedMessageList)?.id,
+  const lastReceivedId = useMemo(
+    () => getLastReceivedMessage(processedMessageList)?.id,
+    [processedMessageList],
   );
   const [scrollToBottomButtonVisible, setScrollToBottomButtonVisible] = useState(false);
 
@@ -588,9 +589,6 @@ const MessageListWithContext = <
   ]);
 
   useEffect(() => {
-    const lastReceivedMessage = getLastReceivedMessage(processedMessageList);
-    setLastReceivedId(lastReceivedMessage?.id);
-
     /**
      * Scroll down when
      * created_at timestamp of top message before update is lesser than created_at timestamp of top message after update - channel has resynced
@@ -698,6 +696,7 @@ const MessageListWithContext = <
         if (!flatListRef.current) {
           return;
         }
+        console.log('DOING IT HERE');
         clearTimeout(failScrollTimeoutId.current);
         scrollToIndexFailedRetryCountRef.current = 0;
         // keep track of this messageId, so that we dont scroll to again in useEffect for targeted message change
@@ -757,7 +756,7 @@ const MessageListWithContext = <
   // TODO: do not apply on RN 0.73 and above
   const shouldApplyAndroidWorkaround = inverted && Platform.OS === 'android';
 
-  const renderItem = useStableCallback(
+  const renderItem = useCallback(
     ({ index, item: message }: { index: number; item: MessageType<StreamChatGenerics> }) => {
       if (!channel || channel.disconnected || (!channel.initialized && !channel.offlineMode)) {
         return null;
@@ -826,6 +825,29 @@ const MessageListWithContext = <
         </View>
       );
     },
+    [
+      InlineDateSeparator,
+      InlineUnreadIndicator,
+      Message,
+      MessageSystem,
+      channel,
+      channelUnreadState?.first_unread_message_id,
+      channelUnreadState?.last_read,
+      channelUnreadState?.last_read_message_id,
+      channelUnreadState?.unread_messages,
+      client.userID,
+      goToMessage,
+      highlightedMessageId,
+      lastReceivedId,
+      messageContainer,
+      modifiedTheme,
+      myMessageTheme,
+      onThreadSelect,
+      screenPadding,
+      shouldApplyAndroidWorkaround,
+      shouldShowUnreadUnderlay,
+      threadList,
+    ],
   );
 
   useEffect(() => {
