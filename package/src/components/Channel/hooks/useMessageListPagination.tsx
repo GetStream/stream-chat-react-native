@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useRef } from 'react';
 
 import debounce from 'lodash/debounce';
 import { Channel, ChannelState, MessageResponse } from 'stream-chat';
@@ -6,6 +6,7 @@ import { Channel, ChannelState, MessageResponse } from 'stream-chat';
 import { useChannelMessageDataState } from './useChannelDataState';
 
 import { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
+import { useStableCallback } from '../../../hooks';
 import { DefaultStreamChatGenerics } from '../../../types/types';
 import { findInMessagesByDate, findInMessagesById } from '../../../utils/utils';
 
@@ -80,7 +81,7 @@ export const useMessageListPagination = <
   /**
    * This function loads more messages before the first message in current channel state.
    */
-  const loadMore = useStableCallback(async (limit = 20) => {
+  const loadMore = useStableCallback(async (limit: number = 20) => {
     if (!channel.state.messagePagination.hasPrev) {
       return;
     }
@@ -109,7 +110,7 @@ export const useMessageListPagination = <
   /**
    * This function loads more messages after the most recent message in current channel state.
    */
-  const loadMoreRecent = useStableCallback(async (limit = 10) => {
+  const loadMoreRecent = useStableCallback(async (limit: number = 10) => {
     if (!channel.state.messagePagination.hasNext) {
       return;
     }
@@ -321,11 +322,4 @@ export const useMessageListPagination = <
     loadMoreRecent,
     state,
   };
-};
-
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-const useStableCallback = <T extends Function>(callback: T): T => {
-  const ref = useRef<T>(callback);
-  ref.current = callback;
-  return useCallback(((...args: unknown[]) => ref.current(...args)) as unknown as T, []);
 };

@@ -74,6 +74,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 import { TypingProvider } from '../../contexts/typingContext/TypingContext';
+import { useStableCallback } from '../../hooks';
 import { useAppStateListener } from '../../hooks/useAppStateListener';
 
 import {
@@ -2107,11 +2108,4 @@ export const Channel = <
       }}
     />
   );
-};
-
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-const useStableCallback = <T extends Function>(callback: T): T => {
-  const ref = useRef<T>(callback);
-  ref.current = callback;
-  return useCallback(((...args: unknown[]) => ref.current(...args)) as unknown as T, []);
 };

@@ -53,6 +53,7 @@ import {
 import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
+import { useStableCallback } from '../../hooks';
 import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
 
 // This is just to make sure that the scrolling happens in a different task queue.
@@ -975,7 +976,6 @@ const MessageListWithContext = <
     }
   });
 
-  // @ts-expect-error will fix later
   const handleScroll: ScrollViewProps['onScroll'] = useStableCallback((event) => {
     const messageListHasMessages = processedMessageList.length > 0;
     const offset = event.nativeEvent.contentOffset.y;
@@ -1129,13 +1129,11 @@ const MessageListWithContext = <
     }
   });
 
-  // @ts-expect-error will fix later
   const onScrollBeginDrag: ScrollViewProps['onScrollBeginDrag'] = useStableCallback((event) => {
     !hasMoved && selectedPicker && setHasMoved(true);
     onUserScrollEvent(event);
   });
 
-  // @ts-expect-error will fix later
   const onScrollEndDrag: ScrollViewProps['onScrollEndDrag'] = useStableCallback((event) => {
     hasMoved && selectedPicker && setHasMoved(false);
     onUserScrollEvent(event);
@@ -1429,11 +1427,4 @@ export const MessageList = <
       noGroupByUser={!enableMessageGroupingByUser || props.noGroupByUser}
     />
   );
-};
-
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-export const useStableCallback = <T extends Function>(callback: T): T => {
-  const ref = useRef<T>(callback);
-  ref.current = callback;
-  return useCallback(((...args: unknown[]) => ref.current(...args)) as unknown as T, []);
 };
