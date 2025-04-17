@@ -46,6 +46,29 @@ export const isMessageWithStylesReadByAndDateSeparator = <
 ): message is MessagesWithStylesReadByAndDateSeparator<StreamChatGenerics> =>
   (message as MessagesWithStylesReadByAndDateSeparator<StreamChatGenerics>).readBy !== undefined;
 
+export const shouldIncludeMessageInList = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  message: MessageType<StreamChatGenerics>,
+  options: { deletedMessagesVisibilityType?: DeletedMessagesVisibilityType; userId?: string },
+) => {
+  const { deletedMessagesVisibilityType, userId } = options;
+  const isMessageTypeDeleted = message.type === 'deleted';
+  switch (deletedMessagesVisibilityType) {
+    case 'sender':
+      return !isMessageTypeDeleted || message.user?.id === userId;
+
+    case 'receiver':
+      return !isMessageTypeDeleted || message.user?.id !== userId;
+
+    case 'never':
+      return !isMessageTypeDeleted;
+
+    default:
+      return !!message;
+  }
+};
+
 export const useMessageList = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
@@ -87,26 +110,25 @@ export const useMessageList = <
       noGroupByUser,
       userId: client.userID,
     });
-    return messageList
-      .filter((msg) => {
-        const isMessageTypeDeleted = msg.type === 'deleted';
-        if (deletedMessagesVisibilityType === 'sender') {
-          return !isMessageTypeDeleted || msg.user?.id === client.userID;
-        } else if (deletedMessagesVisibilityType === 'receiver') {
-          return !isMessageTypeDeleted || msg.user?.id !== client.userID;
-        } else if (deletedMessagesVisibilityType === 'never') {
-          return !isMessageTypeDeleted;
-        } else {
-          return msg;
-        }
-      })
-      .map((msg) => ({
-        ...msg,
-        dateSeparator: dateSeparators[msg.id] || undefined,
-        groupStyles: messageGroupStyles[msg.id] || ['single'],
-        readBy: msg.id ? readData[msg.id] || false : false,
-      }))
-      .reverse() as MessageType<StreamChatGenerics>[];
+
+    const newMessageList = [];
+    for (const message of messageList) {
+      if (
+        shouldIncludeMessageInList(message, {
+          deletedMessagesVisibilityType,
+          userId: client.userID,
+        })
+      ) {
+        const messageId = message.id;
+        newMessageList.unshift({
+          ...message,
+          dateSeparator: dateSeparators[messageId] || undefined,
+          groupStyles: messageGroupStyles[messageId] || ['single'],
+          readBy: messageId ? readData[messageId] || false : false,
+        });
+      }
+    }
+    return newMessageList;
   }, [
     client.userID,
     deletedMessagesVisibilityType,
