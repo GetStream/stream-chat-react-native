@@ -197,6 +197,8 @@ export class KeyboardCompatibleView extends React.Component<
     this.unsetKeyboardListeners();
   }
 
+  keyboardContextValue = { dismissKeyboard: this.dismissKeyboard };
+
   render() {
     const { behavior, children, contentContainerStyle, enabled, style, ...props } = this.props;
     const bottomHeight = enabled ? this.state.bottom : 0;
@@ -215,7 +217,7 @@ export class KeyboardCompatibleView extends React.Component<
           };
         }
         return (
-          <KeyboardProvider value={{ dismissKeyboard: this.dismissKeyboard }}>
+          <KeyboardProvider value={this.keyboardContextValue}>
             <View
               onLayout={this._onLayout}
               ref={this.viewRef}
@@ -229,7 +231,7 @@ export class KeyboardCompatibleView extends React.Component<
 
       case 'position':
         return (
-          <KeyboardProvider value={{ dismissKeyboard: this.dismissKeyboard }}>
+          <KeyboardProvider value={this.keyboardContextValue}>
             <View onLayout={this._onLayout} ref={this.viewRef} style={style} {...props}>
               <View
                 style={StyleSheet.compose(contentContainerStyle, {
@@ -244,7 +246,7 @@ export class KeyboardCompatibleView extends React.Component<
 
       case 'padding':
         return (
-          <KeyboardProvider value={{ dismissKeyboard: this.dismissKeyboard }}>
+          <KeyboardProvider value={this.keyboardContextValue}>
             <View
               onLayout={this._onLayout}
               ref={this.viewRef}
@@ -258,7 +260,7 @@ export class KeyboardCompatibleView extends React.Component<
 
       default:
         return (
-          <KeyboardProvider value={{ dismissKeyboard: this.dismissKeyboard }}>
+          <KeyboardProvider value={this.keyboardContextValue}>
             <View onLayout={this._onLayout} ref={this.viewRef} style={style} {...props}>
               {children}
             </View>
