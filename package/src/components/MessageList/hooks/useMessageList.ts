@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import type { ChannelState, MessageResponse } from 'stream-chat';
 
@@ -139,10 +139,6 @@ export const useMessageList = <
     noGroupByUser,
     readData,
   ]);
-
-  useEffect(() => {
-    console.log('PROCESSED LIST CHANGED', processedMessageList);
-  }, [processedMessageList]);
 
   return {
     /** Messages enriched with dates/readby/groups and also reversed in order */

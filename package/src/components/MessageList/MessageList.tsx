@@ -697,7 +697,6 @@ const MessageListWithContext = <
         if (!flatListRef.current) {
           return;
         }
-        console.log('DOING IT HERE');
         clearTimeout(failScrollTimeoutId.current);
         scrollToIndexFailedRetryCountRef.current = 0;
         // keep track of this messageId, so that we dont scroll to again in useEffect for targeted message change
@@ -850,10 +849,6 @@ const MessageListWithContext = <
       threadList,
     ],
   );
-
-  useEffect(() => {
-    console.log('RENDER ITEM CHANGED OH NOOOO');
-  }, [renderItem]);
 
   /**
    * We are keeping full control on message pagination, and not relying on react-native for it.
@@ -1367,10 +1362,6 @@ export const MessageList = <
   const { overlay } = useOverlayContext();
   const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } =
     useThreadContext<StreamChatGenerics>();
-
-  useEffect(() => {
-    console.log('MARK READ CHANGED');
-  }, [markRead]);
 
   return (
     <MessageListWithContext

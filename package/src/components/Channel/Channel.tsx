@@ -717,6 +717,11 @@ const ChannelWithContext = <
    * Its a map of filename to AbortController
    */
   const uploadAbortControllerRef = useRef<Map<string, AbortController>>(new Map());
+  /**
+   * This ref keeps track of message IDs which have already been optimistically updated.
+   * We need it to make sure we don't react on message.new/notification.message_new events
+   * if this is indeed the case, as it's a full list update for nothing.
+   */
   const optimisticallyUpdatedNewMessages = useRef<Set<string>>(new Set());
 
   const channelId = channel?.id || '';
@@ -839,15 +844,14 @@ const ChannelWithContext = <
       }
 
       // only update channel state if the events are not the previously subscribed useEffect's subscription events
-      console.log('EVENT: ', event);
       if (channel && channel.initialized) {
+        // we skip the new message events if we've already done an optimistic update for the new message
         if (event.type === 'message.new' || event.type === 'notification.message_new') {
           const messageId = event.message?.id ?? '';
           if (
             event.user?.id !== client.userID ||
             !optimisticallyUpdatedNewMessages.current.has(messageId)
           ) {
-            console.log('INSIDE', Array.from(optimisticallyUpdatedNewMessages.current));
             copyMessagesStateFromChannelThrottled();
           }
           optimisticallyUpdatedNewMessages.current.delete(messageId);
@@ -859,7 +863,6 @@ const ChannelWithContext = <
           return;
         }
 
-        console.log('FULL STATE UPDATE');
         copyChannelState();
       }
     }
@@ -1426,6 +1429,7 @@ const ChannelWithContext = <
         const updatedMessage = { ...message, cid: channel.cid };
         updateMessage(updatedMessage);
         threadInstance?.upsertReplyLocally?.({ message: updatedMessage });
+        optimisticallyUpdatedNewMessages.current.delete(message.id);
 
         if (enableOfflineSupport) {
           await dbApi.updateMessage({
