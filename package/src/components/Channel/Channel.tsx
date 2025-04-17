@@ -722,7 +722,7 @@ const ChannelWithContext = <
    * We need it to make sure we don't react on message.new/notification.message_new events
    * if this is indeed the case, as it's a full list update for nothing.
    */
-  const optimisticallyUpdatedNewMessages = useRef<Set<string>>(new Set());
+  const optimisticallyUpdatedNewMessages = useMemo<Set<string>>(() => new Set(), []);
 
   const channelId = channel?.id || '';
   const pollCreationEnabled = !channel.disconnected && !!channel?.id && channel?.getConfig()?.polls;
@@ -850,11 +850,11 @@ const ChannelWithContext = <
           const messageId = event.message?.id ?? '';
           if (
             event.user?.id !== client.userID ||
-            !optimisticallyUpdatedNewMessages.current.has(messageId)
+            !optimisticallyUpdatedNewMessages.has(messageId)
           ) {
             copyMessagesStateFromChannelThrottled();
           }
-          optimisticallyUpdatedNewMessages.current.delete(messageId);
+          optimisticallyUpdatedNewMessages.delete(messageId);
           return;
         }
 
@@ -1429,7 +1429,7 @@ const ChannelWithContext = <
         const updatedMessage = { ...message, cid: channel.cid };
         updateMessage(updatedMessage);
         threadInstance?.upsertReplyLocally?.({ message: updatedMessage });
-        optimisticallyUpdatedNewMessages.current.delete(message.id);
+        optimisticallyUpdatedNewMessages.delete(message.id);
 
         if (enableOfflineSupport) {
           await dbApi.updateMessage({
@@ -1456,7 +1456,7 @@ const ChannelWithContext = <
         messageInput: '',
       });
       threadInstance?.upsertReplyLocally?.({ message: messagePreview });
-      optimisticallyUpdatedNewMessages.current.add(messagePreview.id);
+      optimisticallyUpdatedNewMessages.add(messagePreview.id);
 
       if (enableOfflineSupport) {
         // While sending a message, we add the message to local db with failed status, so that
