@@ -107,9 +107,12 @@ export type PlaybackStatus = {
   shouldPlay: boolean;
 };
 
+export type PitchCorrectionQuality = 'low' | 'medium' | 'high';
+
 export type AVPlaybackStatusToSet = {
   isLooping: boolean;
   isMuted: boolean;
+  pitchCorrectionQuality: PitchCorrectionQuality;
   positionMillis: number;
   progressUpdateIntervalMillis: number;
   rate: number;
@@ -152,7 +155,11 @@ export type SoundReturnType = {
   seek?: (progress: number, tolerance?: number) => void;
   setPositionAsync?: (millis: number) => void;
   setProgressUpdateIntervalAsync?: (progressUpdateIntervalMillis: number) => void;
-  setRateAsync?: (rate: number) => void;
+  setRateAsync?: (
+    rate: number,
+    shouldCorrectPitch: boolean,
+    pitchCorrectionQuality?: PitchCorrectionQuality,
+  ) => void;
   soundRef?: React.RefObject<SoundReturnType>;
   stopAsync?: () => void;
   style?: StyleProp<ViewStyle>;
