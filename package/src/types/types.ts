@@ -1,4 +1,4 @@
-import type { ChannelFilters, ChannelSort, ChannelState, RNFile } from 'stream-chat';
+import type { ChannelFilters, ChannelSort, ChannelState, FileReference } from 'stream-chat';
 
 import type { FileStateValue } from '../utils/utils';
 
@@ -12,7 +12,7 @@ export enum FileTypes {
   VoiceRecording = 'voiceRecording',
 }
 
-export type File = RNFile;
+export type File = FileReference;
 
 /**
  * This is nothing but a substitute for the attachment type prior to sending the message.
