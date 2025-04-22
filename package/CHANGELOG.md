@@ -1,5 +1,19 @@
 # Change Log
 
+### [6.7.3](https://github.com/GetStream/stream-chat-react-native/compare/v6.7.2...v6.7.3) (2025-04-22)
+
+
+### Bug Fixes
+
+* audio distortion on audio rate change ([#3056](https://github.com/GetStream/stream-chat-react-native/issues/3056)) ([2c84e8d](https://github.com/GetStream/stream-chat-react-native/commit/2c84e8d16e921487f3f44f26ffb845e3cdeea606))
+
+
+### Performance Improvements
+
+* channel state updates ([#3055](https://github.com/GetStream/stream-chat-react-native/issues/3055)) ([6cca07d](https://github.com/GetStream/stream-chat-react-native/commit/6cca07d31dd44a3c8bfaa34a6af4231740a479bd))
+* message list and input perf fixes ([#3051](https://github.com/GetStream/stream-chat-react-native/issues/3051)) ([e787038](https://github.com/GetStream/stream-chat-react-native/commit/e787038f0b1420fcb5f7055ab005316c427ae2ce))
+* message list performance ([#3060](https://github.com/GetStream/stream-chat-react-native/issues/3060)) ([8b2d7e3](https://github.com/GetStream/stream-chat-react-native/commit/8b2d7e31e57acd497726876b56b4350065bb3c2d))
+
 ### [6.7.2](https://github.com/GetStream/stream-chat-react-native/compare/v6.7.1...v6.7.2) (2025-04-09)
 
 
