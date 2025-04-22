@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import type { Channel as StreamChatChannel } from 'stream-chat';
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import {
@@ -142,6 +142,14 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     setSelectedThread(undefined);
   });
 
+  const onThreadSelect = useCallback((thread) => {
+    setSelectedThread(thread);
+    navigation.navigate('ThreadScreen', {
+      channel,
+      thread,
+    });
+  }, [channel, navigation]);
+
   if (!channel || !chatClient) {
     return null;
   }
@@ -161,13 +169,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
       >
         <ChannelHeader channel={channel} />
         <MessageList<StreamChatGenerics>
-          onThreadSelect={(thread) => {
-            setSelectedThread(thread);
-            navigation.navigate('ThreadScreen', {
-              channel,
-              thread,
-            });
-          }}
+          onThreadSelect={onThreadSelect}
         />
         <AITypingIndicatorView channel={channel} />
         <MessageInput />
