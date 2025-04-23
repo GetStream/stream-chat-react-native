@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import type { Attachment } from 'stream-chat';
+import type { Attachment, LocalMessage } from 'stream-chat';
 
 import { GalleryImage } from './GalleryImage';
 import { ImageReloadIndicator } from './ImageReloadIndicator';
@@ -12,7 +12,6 @@ import { getGalleryImageBorderRadius } from './utils/getGalleryImageBorderRadius
 
 import { openUrlSafely } from './utils/openUrlSafely';
 
-import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import { useChatConfigContext } from '../../contexts/chatConfigContext/ChatConfigContext';
 import {
   ImageGalleryContextValue,
@@ -76,7 +75,7 @@ export type GalleryPropsWithContext = Pick<
      *
      * TODO: Fix circular dependencies of imports
      */
-    message?: MessageType;
+    message?: LocalMessage;
   };
 
 const GalleryWithContext = (props: GalleryPropsWithContext) => {
@@ -241,7 +240,7 @@ type GalleryThumbnailProps = {
   colIndex: number;
   imagesAndVideos: Attachment[];
   invertedDirections: boolean;
-  message: MessageType;
+  message: LocalMessage;
   numOfColumns: number;
   numOfRows: number;
   rowIndex: number;

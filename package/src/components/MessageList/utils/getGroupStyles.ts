@@ -1,10 +1,12 @@
+import { LocalMessage } from 'stream-chat';
+
 import type { DateSeparators } from './getDateSeparators';
 
 import type { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 
 import { isEditedMessage } from '../../../utils/utils';
-import type { GroupType, MessageType } from '../hooks/useMessageList';
+import type { GroupType } from '../hooks/useMessageList';
 
 export type GetGroupStylesParams = {
   dateSeparators: DateSeparators;
@@ -19,9 +21,9 @@ export type GroupStyle = '' | 'middle' | 'top' | 'bottom' | 'single';
 
 const getGroupStyle = (
   dateSeparators: DateSeparators,
-  message: MessageType,
-  previousMessage: MessageType,
-  nextMessage: MessageType,
+  message: LocalMessage,
+  previousMessage: LocalMessage,
+  nextMessage: LocalMessage,
   hideDateSeparators?: boolean,
   maxTimeBetweenGroupedMessages?: number,
 ): GroupStyle[] => {

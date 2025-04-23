@@ -1,8 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { Channel, ChannelState as StreamChannelState } from 'stream-chat';
-
-import { MessageType } from '../../MessageList/hooks/useMessageList';
+import { Channel, LocalMessage, ChannelState as StreamChannelState } from 'stream-chat';
 
 export const channelInitialState = {
   hasMore: true,
@@ -38,7 +36,7 @@ export type ChannelMessagesState = {
  * The ChannelThreadState object
  */
 export type ChannelThreadState = {
-  thread: MessageType | null;
+  thread: LocalMessage | null;
   threadHasMore?: boolean;
   threadLoadingMore?: boolean;
   threadMessages?: StreamChannelState['messages'];

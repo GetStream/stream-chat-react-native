@@ -1,8 +1,8 @@
+import { LocalMessage } from 'stream-chat';
+
 import { MessageStatusTypes } from '../../../utils/utils';
 
-import type { MessageType } from '../hooks/useMessageList';
-
-export const getLastReceivedMessage = (messages: MessageType[]) => {
+export const getLastReceivedMessage = (messages: LocalMessage[]) => {
   /**
    * There are no status on dates so they will be skipped
    */

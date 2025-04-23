@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
-import type { MessageType } from './hooks/useMessageList';
+import { LocalMessage } from 'stream-chat';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
@@ -10,7 +10,7 @@ import { getDateString } from '../../utils/i18n/getDateString';
 
 export type MessageSystemProps = {
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
-  message: MessageType;
+  message: LocalMessage;
   /**
    * Additional styles for the system message container.
    */

@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { Modal, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
-import { Poll, PollOption, PollVote as PollVoteClass } from 'stream-chat';
+import { LocalMessage, Poll, PollOption, PollVote as PollVoteClass } from 'stream-chat';
 
 import { PollOptionFullResults } from './PollOptionFullResults';
 import { PollVote } from './PollVote';
@@ -13,7 +13,6 @@ import {
   useTranslationContext,
 } from '../../../../contexts';
 
-import { MessageType } from '../../../MessageList/hooks/useMessageList';
 import { usePollState } from '../../hooks/usePollState';
 import { GenericPollButton } from '../Button';
 import { PollModalHeader } from '../PollModalHeader';
@@ -25,7 +24,7 @@ export type ShowAllVotesButtonProps = {
     option,
     poll,
   }: {
-    message: MessageType;
+    message: LocalMessage;
     option: PollOption;
     poll: Poll;
   }) => void;

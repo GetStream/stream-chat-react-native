@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react-native';
 
-import type { MessageType } from '../../../components';
+import { LocalMessage } from 'stream-chat';
 
 import {
   generateFileAttachment,
@@ -13,24 +13,28 @@ import { generateUser } from '../../../mock-builders/generator/user';
 import { useMessageDetailsForState } from '../hooks/useMessageDetailsForState';
 
 describe('useMessageDetailsForState', () => {
-  it.each([[{ message: true }], [{ initialValue: '', message: true }]])(
-    'test state of useMessageDetailsForState when initialProps differ',
-    () => {
-      const { result } = renderHook(({ message }) => useMessageDetailsForState(message), {
-        initialProps: { message: true },
-      });
+  it.each([
+    [{ message: generateMessage({ text: 'Dummy text' }) }],
+    [{ initialValue: '', message: generateMessage({ text: 'Dummy text' }) }],
+  ])('test state of useMessageDetailsForState when initialProps differ', () => {
+    const { result } = renderHook(
+      ({ message }) => useMessageDetailsForState(message as unknown as LocalMessage),
+      {
+        initialProps: { message: generateMessage({ text: 'Dummy text' }) },
+      },
+    );
 
-      expect(result.current.text).toBe('');
-    },
-  );
+    expect(result.current.text).toBe('');
+  });
 
   it('showMoreOptions is true when initialValue and text is same', () => {
     const { result } = renderHook(
-      ({ initialValue, message }) => useMessageDetailsForState(message, initialValue),
+      ({ initialValue, message }) =>
+        useMessageDetailsForState(message as unknown as LocalMessage, initialValue),
       {
         initialProps: {
           initialValue: 'Dummy text',
-          message: generateMessage({ text: 'Dummy text' }) as MessageType,
+          message: generateMessage({ text: 'Dummy text' }),
         },
       },
     );
@@ -41,7 +45,7 @@ describe('useMessageDetailsForState', () => {
   it('fileUploads, imageUploads and mentionedUsers are not empty when attachments are present in message', () => {
     const { result } = renderHook(
       ({ initialValue, message }) =>
-        useMessageDetailsForState(message as unknown as MessageType | boolean, initialValue),
+        useMessageDetailsForState(message as unknown as LocalMessage, initialValue),
       {
         initialProps: {
           initialValue: '',

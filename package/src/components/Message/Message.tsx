@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 
-import type { Attachment, UserResponse } from 'stream-chat';
+import type { Attachment, LocalMessage, UserResponse } from 'stream-chat';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
@@ -41,11 +41,6 @@ import {
   MessageStatusTypes,
 } from '../../utils/utils';
 import type { Thumbnail } from '../Attachment/utils/buildGallery/types';
-
-import {
-  isMessageWithStylesReadByAndDateSeparator,
-  MessageType,
-} from '../MessageList/hooks/useMessageList';
 
 export type TouchableEmitter =
   | 'fileAttachment'
@@ -114,7 +109,7 @@ export type MessagePressableHandlerPayload = PressableHandlerPayload & {
   /**
    * Message object, on which interaction occurred.
    */
-  message?: MessageType;
+  message?: LocalMessage;
 };
 
 export type MessageActionHandlers = {
@@ -130,7 +125,7 @@ export type MessageActionHandlers = {
   toggleMuteUser: () => Promise<void>;
   toggleReaction: (reactionType: string) => Promise<void>;
   unpinMessage: () => Promise<void>;
-  threadReply?: (message: MessageType) => Promise<void>;
+  threadReply?: (message: LocalMessage) => Promise<void>;
 };
 
 export type MessagePropsWithContext = Pick<
@@ -141,7 +136,7 @@ export type MessagePropsWithContext = Pick<
   Partial<
     Omit<MessageContextValue, 'groupStyles' | 'handleReaction' | 'message' | 'isMessageAIGenerated'>
   > &
-  Pick<MessageContextValue, 'groupStyles' | 'message' | 'isMessageAIGenerated'> &
+  Pick<MessageContextValue, 'groupStyles' | 'message' | 'isMessageAIGenerated' | 'readBy'> &
   Pick<
     MessagesContextValue,
     | 'sendReaction'
@@ -194,7 +189,7 @@ export type MessagePropsWithContext = Pick<
      *
      * @param message A message object to open the thread upon.
      */
-    onThreadSelect?: (message: MessageType) => void;
+    onThreadSelect?: (message: LocalMessage) => void;
     showUnreadUnderlay?: boolean;
     style?: StyleProp<ViewStyle>;
   };
@@ -252,6 +247,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     onThreadSelect,
     openThread,
     preventPress,
+    readBy,
     removeMessage,
     retrySendMessage,
     selectReaction,
@@ -312,7 +308,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     }
   };
 
-  const onPressQuotedMessage = (quotedMessage: MessageType) => {
+  const onPressQuotedMessage = (quotedMessage: LocalMessage) => {
     if (!goToMessage) {
       return;
     }
@@ -329,7 +325,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     if (isEditedMessage(message)) {
       setIsEditedMessageOpen((prevState) => !prevState);
     }
-    const quotedMessage = message.quoted_message as MessageType;
+    const quotedMessage = message.quoted_message;
     if (error) {
       setIsErrorInMessage(true);
       /**
@@ -693,6 +689,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     otherAttachments: attachments.other,
     preventPress,
     reactions,
+    readBy,
     setIsEditedMessageOpen,
     showAvatar,
     showMessageOverlay,
@@ -759,6 +756,7 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     members: prevMembers,
     message: prevMessage,
     messagesContext: prevMessagesContext,
+    readBy: prevReadBy,
     showUnreadUnderlay: prevShowUnreadUnderlay,
     t: prevT,
   } = prevProps;
@@ -771,6 +769,7 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     members: nextMembers,
     message: nextMessage,
     messagesContext: nextMessagesContext,
+    readBy: nextReadBy,
     showUnreadUnderlay: nextShowUnreadUnderlay,
     t: nextT,
   } = nextProps;
@@ -814,8 +813,6 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
 
   const messageEqual =
     isPrevMessageTypeDeleted === isNextMessageTypeDeleted &&
-    (isMessageWithStylesReadByAndDateSeparator(prevMessage) && prevMessage.readBy) ===
-      (isMessageWithStylesReadByAndDateSeparator(nextMessage) && nextMessage.readBy) &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
@@ -888,6 +885,11 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     return false;
   }
 
+  const readByEqual = prevReadBy === nextReadBy;
+  if (!readByEqual) {
+    return false;
+  }
+
   const showUnreadUnderlayEqual = prevShowUnreadUnderlay === nextShowUnreadUnderlay;
   if (!showUnreadUnderlayEqual) {
     return false;
@@ -917,9 +919,9 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
 const MemoizedMessage = React.memo(MessageWithContext, areEqual) as typeof MessageWithContext;
 
 export type MessageProps = Partial<
-  Omit<MessagePropsWithContext, 'groupStyles' | 'handleReaction' | 'message'>
+  Omit<MessagePropsWithContext, 'groupStyles' | 'handleReaction' | 'message' | 'readBy'>
 > &
-  Pick<MessagePropsWithContext, 'groupStyles' | 'message'>;
+  Pick<MessagePropsWithContext, 'groupStyles' | 'message' | 'readBy'>;
 
 /**
  * Message - A high level component which implements all the logic required for a message.

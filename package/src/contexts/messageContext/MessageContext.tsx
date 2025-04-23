@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { Attachment } from 'stream-chat';
+import type { Attachment, LocalMessage } from 'stream-chat';
 
 import type { ActionHandler } from '../../components/Attachment/Attachment';
 import { ReactionSummary } from '../../components/Message/hooks/useProcessReactions';
@@ -8,7 +8,7 @@ import type {
   MessagePressableHandlerPayload,
   PressableHandlerPayload,
 } from '../../components/Message/Message';
-import type { GroupType, MessageType } from '../../components/MessageList/hooks/useMessageList';
+import type { GroupType } from '../../components/MessageList/hooks/useMessageList';
 import type { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
 import type { MessageContentType } from '../../contexts/messagesContext/MessagesContext';
 import type { DeepPartial } from '../../contexts/themeContext/ThemeContext';
@@ -48,13 +48,13 @@ export type MessageContextValue = {
   /**
    * A factory function that determines whether a message is AI generated or not.
    */
-  isMessageAIGenerated: (message: MessageType) => boolean;
+  isMessageAIGenerated: (message: LocalMessage) => boolean;
   /** Whether or not this is the active user's message */
   isMyMessage: boolean;
   /** Whether or not this is the last message in a group of messages */
   lastGroupMessage: boolean;
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
-  message: MessageType;
+  message: LocalMessage;
   /** Order to render the message content */
   messageContentOrder: MessageContentType[];
   /**
@@ -87,6 +87,8 @@ export type MessageContextValue = {
   /** The images attached to a message */
   otherAttachments: Attachment[];
   reactions: ReactionSummary[];
+  /** Whether or not the message has been read by the current user */
+  readBy: number | boolean;
   /** React set state function to set the state of `isEditedMessageOpen` */
   setIsEditedMessageOpen: React.Dispatch<React.SetStateAction<boolean>>;
   /**

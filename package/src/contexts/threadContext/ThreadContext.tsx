@@ -1,23 +1,21 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { ChannelState, Thread } from 'stream-chat';
-
-import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
+import { ChannelState, LocalMessage, Thread } from 'stream-chat';
 
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-export type ThreadType = { thread: MessageType; threadInstance: Thread };
+export type ThreadType = { thread: LocalMessage; threadInstance: Thread };
 
 export type ThreadContextValue = {
   allowThreadMessagesInChannel: boolean;
   closeThread: () => void;
   loadMoreThread: () => Promise<void>;
-  openThread: (message: MessageType) => void;
+  openThread: (message: LocalMessage) => void;
   reloadThread: () => void;
   setThreadLoadingMore: React.Dispatch<React.SetStateAction<boolean>>;
-  thread: MessageType | null;
+  thread: LocalMessage | null;
   threadHasMore: boolean;
   threadMessages: ChannelState['threads'][string];
   loadMoreRecentThread?: (opts: { limit?: number }) => Promise<void>;

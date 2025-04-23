@@ -1,14 +1,12 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
 
-import { Poll, PollOption } from 'stream-chat';
+import { LocalMessage, Poll, PollOption } from 'stream-chat';
 
 import { useTheme } from '../../../contexts';
 
-import { MessageType } from '../../MessageList/hooks/useMessageList';
-
 export type PollButtonProps = {
-  onPress?: ({ message, poll }: { message: MessageType; poll: Poll }) => void;
+  onPress?: ({ message, poll }: { message: LocalMessage; poll: Poll }) => void;
 };
 
 export type PollVoteButtonProps = {
