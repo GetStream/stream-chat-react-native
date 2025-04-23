@@ -63,21 +63,37 @@ export const useMessageList = (params: UseMessageListParams) => {
     userID: client.userID,
   });
 
-  const dateSeparators = getDateSeparators({
-    deletedMessagesVisibilityType,
-    hideDateSeparators,
-    messages: messageList,
-    userId: client.userID,
-  });
+  const dateSeparators = useMemo(
+    () =>
+      getDateSeparators({
+        deletedMessagesVisibilityType,
+        hideDateSeparators,
+        messages: messageList,
+        userId: client.userID,
+      }),
+    [deletedMessagesVisibilityType, hideDateSeparators, messageList, client.userID],
+  );
 
-  const messageGroupStyles = getMessagesGroupStyles({
-    dateSeparators,
-    hideDateSeparators,
-    maxTimeBetweenGroupedMessages,
-    messages: messageList,
-    noGroupByUser,
-    userId: client.userID,
-  });
+  const messageGroupStyles = useMemo(
+    () =>
+      getMessagesGroupStyles({
+        dateSeparators,
+        hideDateSeparators,
+        maxTimeBetweenGroupedMessages,
+        messages: messageList,
+        noGroupByUser,
+        userId: client.userID,
+      }),
+    [
+      getMessagesGroupStyles,
+      dateSeparators,
+      hideDateSeparators,
+      maxTimeBetweenGroupedMessages,
+      messageList,
+      noGroupByUser,
+      client.userID,
+    ],
+  );
 
   const processedMessageList = useMemo<LocalMessage[]>(() => {
     const newMessageList = [];
