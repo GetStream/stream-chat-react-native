@@ -13,19 +13,20 @@ import { generateUser } from '../../../mock-builders/generator/user';
 import { useMessageDetailsForState } from '../hooks/useMessageDetailsForState';
 
 describe('useMessageDetailsForState', () => {
-  it.each([
-    [{ message: generateMessage({ text: 'Dummy text' }) }],
-    [{ initialValue: '', message: generateMessage({ text: 'Dummy text' }) }],
-  ])('test state of useMessageDetailsForState when initialProps differ', () => {
-    const { result } = renderHook(
-      ({ message }) => useMessageDetailsForState(message as unknown as LocalMessage),
-      {
-        initialProps: { message: generateMessage({ text: 'Dummy text' }) },
-      },
-    );
+  const message = generateMessage({ text: 'Dummy text' });
+  it.each([[{ message }, { initialValue: '', message }]])(
+    'test state of useMessageDetailsForState when initialProps differ',
+    () => {
+      const { result } = renderHook(
+        ({ message }) => useMessageDetailsForState(message as unknown as LocalMessage),
+        {
+          initialProps: { message },
+        },
+      );
 
-    expect(result.current.text).toBe('');
-  });
+      expect(result.current.text).toBe(message.text);
+    },
+  );
 
   it('showMoreOptions is true when initialValue and text is same', () => {
     const { result } = renderHook(

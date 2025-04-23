@@ -72,26 +72,32 @@ describe('MessageStatus', () => {
 
   it('should render message status with read by container', async () => {
     const user = generateUser();
-    const message = generateMessage({ readBy: 2, user });
+    const message = generateMessage({ user });
+    const readBy = 2;
 
     const { getByTestId, getByText, rerender, toJSON } = renderMessageStatus({
       lastReceivedId: message.id,
       message,
+      readBy,
     });
 
     await waitFor(() => {
       expect(getByTestId('read-by-container')).toBeTruthy();
-      expect(getByText((message.readBy - 1).toString())).toBeTruthy();
+      expect(getByText((readBy - 1).toString())).toBeTruthy();
     });
 
     const staticUser = generateStaticUser(0);
-    const staticMessage = generateMessage({ readBy: 2, staticUser });
+    const staticMessage = generateMessage({ readBy, user: staticUser });
 
     rerender(
       <ChannelsStateProvider>
         <Chat client={chatClient} i18nInstance={i18nInstance}>
           <Channel channel={channel}>
-            <MessageStatus lastReceivedId={staticMessage.id} message={staticMessage} />
+            <MessageStatus
+              lastReceivedId={staticMessage.id}
+              message={staticMessage}
+              readBy={readBy}
+            />
           </Channel>
         </Chat>
       </ChannelsStateProvider>,
@@ -100,7 +106,7 @@ describe('MessageStatus', () => {
     await waitFor(() => {
       expect(toJSON()).toMatchSnapshot();
       expect(getByTestId('read-by-container')).toBeTruthy();
-      expect(getByText((staticMessage.readBy - 1).toString())).toBeTruthy();
+      expect(getByText((readBy - 1).toString())).toBeTruthy();
     });
   });
 
