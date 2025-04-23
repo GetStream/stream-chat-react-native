@@ -75,6 +75,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 import { TypingProvider } from '../../contexts/typingContext/TypingContext';
+import { useStableCallback } from '../../hooks';
 import { useAppStateListener } from '../../hooks/useAppStateListener';
 
 import {
@@ -705,6 +706,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
    * Its a map of filename to AbortController
    */
   const uploadAbortControllerRef = useRef<Map<string, AbortController>>(new Map());
+  /**
+   * This ref keeps track of message IDs which have already been optimistically updated.
+   * We need it to make sure we don't react on message.new/notification.message_new events
+   * if this is indeed the case, as it's a full list update for nothing.
+   */
+  const optimisticallyUpdatedNewMessages = useMemo<Set<string>>(() => new Set(), []);
 
   const channelId = channel?.id || '';
   const pollCreationEnabled = !channel.disconnected && !!channel?.id && channel?.getConfig()?.polls;
@@ -773,7 +780,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     [stateUpdateThrottleInterval, channel, copyStateFromChannel, copyMessagesStateFromChannel],
   );
 
-  const handleEvent: EventHandler = (event) => {
+  const handleEvent: EventHandler = useStableCallback((event) => {
     if (shouldSyncChannel) {
       /**
        * Ignore user.watching.start and user.watching.stop as we should not copy the entire state when
@@ -827,8 +834,16 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
       // only update channel state if the events are not the previously subscribed useEffect's subscription events
       if (channel && channel.initialized) {
-        if (event.type === 'message.new') {
-          copyMessagesStateFromChannelThrottled();
+        // we skip the new message events if we've already done an optimistic update for the new message
+        if (event.type === 'message.new' || event.type === 'notification.message_new') {
+          const messageId = event.message?.id ?? '';
+          if (
+            event.user?.id !== client.userID ||
+            !optimisticallyUpdatedNewMessages.has(messageId)
+          ) {
+            copyMessagesStateFromChannelThrottled();
+          }
+          optimisticallyUpdatedNewMessages.delete(messageId);
           return;
         }
 
@@ -840,7 +855,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         copyChannelState();
       }
     }
-  };
+  });
 
   useEffect(() => {
     let listener: ReturnType<typeof channel.on>;
@@ -948,7 +963,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   /**
    * CHANNEL METHODS
    */
-  const markRead: ChannelContextValue['markRead'] = throttle(
+  const markReadInternal: ChannelContextValue['markRead'] = throttle(
     async (options?: MarkReadFunctionOptions) => {
       const { updateChannelUnreadState = true } = options ?? {};
       if (!channel || channel?.disconnected || !clientChannelConfig?.read_events) {
@@ -977,7 +992,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     throttleOptions,
   );
 
-  const reloadThread = async () => {
+  const markRead = useStableCallback(markReadInternal);
+
+  const reloadThread = useStableCallback(async () => {
     if (!channel || !thread?.id) {
       return;
     }
@@ -1010,9 +1027,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       setThreadLoadingMore(false);
       throw err;
     }
-  };
+  });
 
-  const resyncChannel = async () => {
+  const resyncChannel = useStableCallback(async () => {
     if (!channel || syncingChannelRef.current) {
       return;
     }
@@ -1068,7 +1085,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     }
 
     syncingChannelRef.current = false;
-  };
+  });
 
   // resync channel is added to ref so that it can be used in useEffect without adding it as a dependency
   const resyncChannelRef = useRef(resyncChannel);
@@ -1119,136 +1136,142 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
    */
   const clientChannelConfig = getChannelConfigSafely();
 
-  const reloadChannel = async () => {
+  const reloadChannel = useStableCallback(async () => {
     try {
       await loadLatestMessages();
     } catch (err) {
       console.warn('Reloading channel failed with error:', err);
     }
-  };
+  });
 
-  const loadChannelAroundMessage: ChannelContextValue['loadChannelAroundMessage'] = async ({
-    messageId: messageIdToLoadAround,
-  }): Promise<void> => {
-    if (!messageIdToLoadAround) {
-      return;
-    }
-    try {
-      if (thread) {
-        setThreadLoadingMore(true);
-        try {
-          await channel.state.loadMessageIntoState(messageIdToLoadAround, thread.id);
-          setThreadLoadingMore(false);
-          setThreadMessages(channel.state.threads[thread.id]);
-          if (setTargetedMessage) {
-            setTargetedMessage(messageIdToLoadAround);
-          }
-        } catch (err) {
-          if (err instanceof Error) {
-            setError(err);
-          } else {
-            setError(true);
-          }
-          setThreadLoadingMore(false);
-        }
-      } else {
-        await loadChannelAroundMessageFn({
-          messageId: messageIdToLoadAround,
-          setTargetedMessage,
-        });
+  const loadChannelAroundMessage: ChannelContextValue['loadChannelAroundMessage'] =
+    useStableCallback(async ({ messageId: messageIdToLoadAround }): Promise<void> => {
+      if (!messageIdToLoadAround) {
+        return;
       }
-    } catch (err) {
-      console.warn('Loading channel around message failed with error:', err);
-    }
-  };
+      try {
+        if (thread) {
+          setThreadLoadingMore(true);
+          try {
+            await channel.state.loadMessageIntoState(messageIdToLoadAround, thread.id);
+            setThreadLoadingMore(false);
+            setThreadMessages(channel.state.threads[thread.id]);
+            if (setTargetedMessage) {
+              setTargetedMessage(messageIdToLoadAround);
+            }
+          } catch (err) {
+            if (err instanceof Error) {
+              setError(err);
+            } else {
+              setError(true);
+            }
+            setThreadLoadingMore(false);
+          }
+        } else {
+          await loadChannelAroundMessageFn({
+            messageId: messageIdToLoadAround,
+            setTargetedMessage,
+          });
+        }
+      } catch (err) {
+        console.warn('Loading channel around message failed with error:', err);
+      }
+    });
 
   /**
    * MESSAGE METHODS
    */
-  const updateMessage: MessagesContextValue['updateMessage'] = (
-    updatedMessage,
-    extraState = {},
-  ) => {
-    if (!channel) {
-      return;
-    }
-
-    channel.state.addMessageSorted(updatedMessage, true);
-    copyMessagesStateFromChannel(channel);
-
-    if (thread && updatedMessage.parent_id) {
-      extraState.threadMessages = channel.state.threads[updatedMessage.parent_id] || [];
-      setThreadMessages(extraState.threadMessages);
-    }
-  };
-
-  const replaceMessage = (oldMessage: MessageResponse, newMessage: MessageResponse) => {
-    if (channel) {
-      channel.state.removeMessage(oldMessage);
-      channel.state.addMessageSorted(newMessage, true);
-      copyMessagesStateFromChannel(channel);
-
-      if (thread && newMessage.parent_id) {
-        const threadMessages = channel.state.threads[newMessage.parent_id] || [];
-        setThreadMessages(threadMessages);
+  const updateMessage: MessagesContextValue['updateMessage'] = useStableCallback(
+    (updatedMessage, extraState = {}, throttled = false) => {
+      if (!channel) {
+        return;
       }
-    }
-  };
 
-  const createMessagePreview = ({
-    attachments,
-    mentioned_users,
-    parent_id,
-    poll_id,
-    text,
-    ...extraFields
-  }: Partial<StreamMessage>) => {
-    // Exclude following properties from message.user within message preview,
-    // since they could be long arrays and have no meaning as sender of message.
-    // Storing such large value within user's table may cause sqlite queries to crash.
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { channel_mutes, devices, mutes, ...messageUser } = client.user;
+      channel.state.addMessageSorted(updatedMessage, true);
+      if (throttled) {
+        copyMessagesStateFromChannelThrottled();
+      } else {
+        copyMessagesStateFromChannel(channel);
+      }
 
-    const preview = {
-      __html: text,
+      if (thread && updatedMessage.parent_id) {
+        extraState.threadMessages = channel.state.threads[updatedMessage.parent_id] || [];
+        setThreadMessages(extraState.threadMessages);
+      }
+    },
+  );
+
+  const replaceMessage = useStableCallback(
+    (oldMessage: MessageResponse, newMessage: MessageResponse) => {
+      if (channel) {
+        channel.state.removeMessage(oldMessage);
+        channel.state.addMessageSorted(newMessage, true);
+        copyMessagesStateFromChannel(channel);
+
+        if (thread && newMessage.parent_id) {
+          const threadMessages = channel.state.threads[newMessage.parent_id] || [];
+          setThreadMessages(threadMessages);
+        }
+      }
+    },
+  );
+
+  const createMessagePreview = useStableCallback(
+    ({
       attachments,
-      created_at: new Date(),
-      html: text,
-      id: `${client.userID}-${generateRandomId()}`,
-      mentioned_users:
-        mentioned_users?.map((userId) => ({
-          id: userId,
-        })) || [],
+      mentioned_users,
       parent_id,
       poll_id,
-      reactions: [],
-      status: MessageStatusTypes.SENDING,
       text,
-      type: 'regular',
-      user: {
-        ...messageUser,
-        id: client.userID,
-      },
-      ...extraFields,
-    } as unknown as MessageResponse;
+      ...extraFields
+    }: Partial<StreamMessage>) => {
+      // Exclude following properties from message.user within message preview,
+      // since they could be long arrays and have no meaning as sender of message.
+      // Storing such large value within user's table may cause sqlite queries to crash.
+      // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { channel_mutes, devices, mutes, ...messageUser } = client.user;
 
-    /**
-     * This is added to the message for local rendering prior to the message
-     * being returned from the backend, it is removed when the message is sent
-     * as quoted_message is a reserved field.
-     */
-    if (preview.quoted_message_id) {
-      const quotedMessage = channelMessagesState.messages?.find(
-        (message) => message.id === preview.quoted_message_id,
-      );
+      const preview = {
+        __html: text,
+        attachments,
+        created_at: new Date(),
+        html: text,
+        id: `${client.userID}-${generateRandomId()}`,
+        mentioned_users:
+          mentioned_users?.map((userId) => ({
+            id: userId,
+          })) || [],
+        parent_id,
+        poll_id,
+        reactions: [],
+        status: MessageStatusTypes.SENDING,
+        text,
+        type: 'regular',
+        user: {
+          ...messageUser,
+          id: client.userID,
+        },
+        ...extraFields,
+      } as unknown as MessageResponse;
 
-      preview.quoted_message = quotedMessage as MessageResponse['quoted_message'];
-    }
-    return preview;
-  };
+      /**
+       * This is added to the message for local rendering prior to the message
+       * being returned from the backend, it is removed when the message is sent
+       * as quoted_message is a reserved field.
+       */
+      if (preview.quoted_message_id) {
+        const quotedMessage = channelMessagesState.messages?.find(
+          (message) => message.id === preview.quoted_message_id,
+        );
 
-  const uploadPendingAttachments = async (message: MessageResponse) => {
+        preview.quoted_message = quotedMessage as MessageResponse['quoted_message'];
+      }
+      return preview;
+    },
+  );
+
+  const uploadPendingAttachments = useStableCallback(async (message: MessageResponse) => {
     const updatedMessage = { ...message };
     if (updatedMessage.attachments?.length) {
       for (let i = 0; i < updatedMessage.attachments?.length; i++) {
@@ -1316,172 +1339,185 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     }
 
     return updatedMessage;
-  };
+  });
 
-  const sendMessageRequest = async (message: MessageResponse, retrying?: boolean) => {
-    try {
-      const updatedMessage = await uploadPendingAttachments(message);
-      const extraFields = omit(updatedMessage, [
-        '__html',
-        'attachments',
-        'created_at',
-        'deleted_at',
-        'html',
-        'id',
-        'latest_reactions',
-        'mentioned_users',
-        'own_reactions',
-        'parent_id',
-        'quoted_message',
-        'reaction_counts',
-        'reaction_groups',
-        'reactions',
-        'status',
-        'text',
-        'type',
-        'updated_at',
-        'user',
-      ]);
-      const { attachments, id, mentioned_users, parent_id, text } = updatedMessage;
-      if (!channel.id) {
-        return;
-      }
+  const sendMessageRequest = useStableCallback(
+    async (message: MessageResponse, retrying?: boolean) => {
+      try {
+        const updatedMessage = await uploadPendingAttachments(message);
+        const extraFields = omit(updatedMessage, [
+          '__html',
+          'attachments',
+          'created_at',
+          'deleted_at',
+          'html',
+          'id',
+          'latest_reactions',
+          'mentioned_users',
+          'own_reactions',
+          'parent_id',
+          'quoted_message',
+          'reaction_counts',
+          'reaction_groups',
+          'reactions',
+          'status',
+          'text',
+          'type',
+          'updated_at',
+          'user',
+        ]);
+        const { attachments, id, mentioned_users, parent_id, text } = updatedMessage;
+        if (!channel.id) {
+          return;
+        }
 
-      const mentionedUserIds = mentioned_users?.map((user) => user.id) || [];
+        const mentionedUserIds = mentioned_users?.map((user) => user.id) || [];
 
-      const messageData = {
-        attachments,
-        id,
-        mentioned_users: mentionedUserIds,
-        parent_id,
-        text: patchMessageTextCommand(text ?? '', mentionedUserIds),
-        ...extraFields,
-      } as StreamMessage;
+        const messageData = {
+          attachments,
+          id,
+          mentioned_users: mentionedUserIds,
+          parent_id,
+          text: patchMessageTextCommand(text ?? '', mentionedUserIds),
+          ...extraFields,
+        } as StreamMessage;
 
-      let messageResponse = {} as SendMessageAPIResponse;
-      if (doSendMessageRequest) {
-        messageResponse = await doSendMessageRequest(channel?.cid || '', messageData);
-      } else if (channel) {
-        messageResponse = await channel.sendMessage(messageData);
-      }
+        let messageResponse = {} as SendMessageAPIResponse;
+        if (doSendMessageRequest) {
+          messageResponse = await doSendMessageRequest(channel?.cid || '', messageData);
+        } else if (channel) {
+          messageResponse = await channel.sendMessage(messageData);
+        }
 
-      if (messageResponse.message) {
-        messageResponse.message.status = MessageStatusTypes.RECEIVED;
+        if (messageResponse.message) {
+          messageResponse.message.status = MessageStatusTypes.RECEIVED;
+
+          if (enableOfflineSupport) {
+            await dbApi.updateMessage({
+              message: { ...messageResponse.message, cid: channel.cid },
+            });
+          }
+          if (retrying) {
+            replaceMessage(message, messageResponse.message);
+          } else {
+            updateMessage(messageResponse.message, {}, true);
+          }
+        }
+      } catch (err) {
+        console.log(err);
+        message.status = MessageStatusTypes.FAILED;
+        const updatedMessage = { ...message, cid: channel.cid };
+        updateMessage(updatedMessage);
+        threadInstance?.upsertReplyLocally?.({ message: updatedMessage });
+        optimisticallyUpdatedNewMessages.delete(message.id);
 
         if (enableOfflineSupport) {
           await dbApi.updateMessage({
-            message: { ...messageResponse.message, cid: channel.cid },
+            message: { ...message, cid: channel.cid },
           });
         }
-        if (retrying) {
-          replaceMessage(message, messageResponse.message);
-        } else {
-          updateMessage(messageResponse.message);
-        }
       }
-    } catch (err) {
-      console.log(err);
-      message.status = MessageStatusTypes.FAILED;
-      const updatedMessage = { ...message, cid: channel.cid };
-      updateMessage(updatedMessage);
-      threadInstance?.upsertReplyLocally?.({ message: updatedMessage });
+    },
+  );
+
+  const sendMessage: InputMessageInputContextValue['sendMessage'] = useStableCallback(
+    async (message) => {
+      if (channel?.state?.filterErrorMessages) {
+        channel.state.filterErrorMessages();
+      }
+
+      const messagePreview = createMessagePreview({
+        ...message,
+        attachments: message.attachments || [],
+      });
+
+      updateMessage(messagePreview, {
+        commands: [],
+        messageInput: '',
+      });
+      threadInstance?.upsertReplyLocally?.({ message: messagePreview });
+      optimisticallyUpdatedNewMessages.add(messagePreview.id);
 
       if (enableOfflineSupport) {
-        await dbApi.updateMessage({
-          message: { ...message, cid: channel.cid },
+        // While sending a message, we add the message to local db with failed status, so that
+        // if app gets closed before message gets sent and next time user opens the app
+        // then user can see that message in failed state and can retry.
+        // If succesfull, it will be updated with received status.
+        await dbApi.upsertMessages({
+          messages: [{ ...messagePreview, cid: channel.cid, status: MessageStatusTypes.FAILED }],
         });
       }
-    }
-  };
 
-  const sendMessage: InputMessageInputContextValue['sendMessage'] = async (message) => {
-    if (channel?.state?.filterErrorMessages) {
-      channel.state.filterErrorMessages();
-    }
+      await sendMessageRequest(messagePreview);
+    },
+  );
 
-    const messagePreview = createMessagePreview({
-      ...message,
-      attachments: message.attachments || [],
-    });
+  const retrySendMessage: MessagesContextValue['retrySendMessage'] = useStableCallback(
+    async (message) => {
+      const statusPendingMessage = {
+        ...message,
+        status: MessageStatusTypes.SENDING,
+      };
 
-    updateMessage(messagePreview, {
-      commands: [],
-      messageInput: '',
-    });
-    threadInstance?.upsertReplyLocally?.({ message: messagePreview });
+      const messageWithoutReservedFields = removeReservedFields(statusPendingMessage);
 
-    if (enableOfflineSupport) {
-      // While sending a message, we add the message to local db with failed status, so that
-      // if app gets closed before message gets sent and next time user opens the app
-      // then user can see that message in failed state and can retry.
-      // If succesfull, it will be updated with received status.
-      await dbApi.upsertMessages({
-        messages: [{ ...messagePreview, cid: channel.cid, status: MessageStatusTypes.FAILED }],
-      });
-    }
+      // For bounced messages, we don't need to update the message, instead always send a new message.
+      if (!isBouncedMessage(message)) {
+        updateMessage(messageWithoutReservedFields as MessageResponse);
+      }
 
-    await sendMessageRequest(messagePreview);
-  };
+      await sendMessageRequest(messageWithoutReservedFields as MessageResponse, true);
+    },
+  );
 
-  const retrySendMessage: MessagesContextValue['retrySendMessage'] = async (message) => {
-    const statusPendingMessage = {
-      ...message,
-      status: MessageStatusTypes.SENDING,
-    };
+  const editMessage: InputMessageInputContextValue['editMessage'] = useStableCallback(
+    (updatedMessage) =>
+      doUpdateMessageRequest
+        ? doUpdateMessageRequest(channel?.cid || '', updatedMessage)
+        : client.updateMessage(updatedMessage),
+  );
 
-    const messageWithoutReservedFields = removeReservedFields(statusPendingMessage);
-
-    // For bounced messages, we don't need to update the message, instead always send a new message.
-    if (!isBouncedMessage(message)) {
-      updateMessage(messageWithoutReservedFields as MessageResponse);
-    }
-
-    await sendMessageRequest(messageWithoutReservedFields as MessageResponse, true);
-  };
-
-  const editMessage: InputMessageInputContextValue['editMessage'] = (updatedMessage) =>
-    doUpdateMessageRequest
-      ? doUpdateMessageRequest(channel?.cid || '', updatedMessage)
-      : client.updateMessage(updatedMessage);
-
-  const setEditingState: MessagesContextValue['setEditingState'] = (message) => {
+  const setEditingState: MessagesContextValue['setEditingState'] = useStableCallback((message) => {
     clearQuotedMessageState();
     setEditing(message);
-  };
+  });
 
-  const setQuotedMessageState: MessagesContextValue['setQuotedMessageState'] = (
-    messageOrBoolean,
-  ) => {
-    setQuotedMessage(messageOrBoolean);
-  };
+  const setQuotedMessageState: MessagesContextValue['setQuotedMessageState'] = useStableCallback(
+    (messageOrBoolean) => {
+      setQuotedMessage(messageOrBoolean);
+    },
+  );
 
-  const clearEditingState: InputMessageInputContextValue['clearEditingState'] = () =>
-    setEditing(undefined);
+  const clearEditingState: InputMessageInputContextValue['clearEditingState'] = useStableCallback(
+    () => setEditing(undefined),
+  );
 
-  const clearQuotedMessageState: InputMessageInputContextValue['clearQuotedMessageState'] = () =>
-    setQuotedMessage(undefined);
+  const clearQuotedMessageState: InputMessageInputContextValue['clearQuotedMessageState'] =
+    useStableCallback(() => setQuotedMessage(undefined));
 
   /**
    * Removes the message from local state
    */
-  const removeMessage: MessagesContextValue['removeMessage'] = async (message) => {
-    if (channel) {
-      channel.state.removeMessage(message);
-      copyMessagesStateFromChannel(channel);
+  const removeMessage: MessagesContextValue['removeMessage'] = useStableCallback(
+    async (message) => {
+      if (channel) {
+        channel.state.removeMessage(message);
+        copyMessagesStateFromChannel(channel);
 
-      if (thread) {
-        setThreadMessages(channel.state.threads[thread.id] || []);
+        if (thread) {
+          setThreadMessages(channel.state.threads[thread.id] || []);
+        }
       }
-    }
 
-    if (enableOfflineSupport) {
-      await dbApi.deleteMessage({
-        id: message.id,
-      });
-    }
-  };
+      if (enableOfflineSupport) {
+        await dbApi.deleteMessage({
+          id: message.id,
+        });
+      }
+    },
+  );
 
-  const sendReaction = async (type: string, messageId: string) => {
+  const sendReaction = useStableCallback(async (type: string, messageId: string) => {
     if (!channel?.id || !client.user) {
       throw new Error('Channel has not been initialized');
     }
@@ -1522,88 +1558,89 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     if (sendReactionResponse?.message) {
       threadInstance?.upsertReplyLocally?.({ message: sendReactionResponse.message });
     }
-  };
+  });
 
-  const deleteMessage: MessagesContextValue['deleteMessage'] = async (message) => {
-    if (!channel.id) {
-      throw new Error('Channel has not been initialized yet');
-    }
+  const deleteMessage: MessagesContextValue['deleteMessage'] = useStableCallback(
+    async (message) => {
+      if (!channel.id) {
+        throw new Error('Channel has not been initialized yet');
+      }
 
-    if (!enableOfflineSupport) {
-      if (message.status === MessageStatusTypes.FAILED) {
-        await removeMessage(message);
+      if (!enableOfflineSupport) {
+        if (message.status === MessageStatusTypes.FAILED) {
+          await removeMessage(message);
+          return;
+        }
+        await client.deleteMessage(message.id);
         return;
       }
-      await client.deleteMessage(message.id);
-      return;
-    }
 
-    if (message.status === MessageStatusTypes.FAILED) {
-      await DBSyncManager.dropPendingTasks({ messageId: message.id });
-      await removeMessage(message);
-    } else {
-      const updatedMessage = {
-        ...message,
-        cid: channel.cid,
-        deleted_at: new Date(),
-        type: 'deleted' as MessageLabel,
-      };
-      updateMessage(updatedMessage);
+      if (message.status === MessageStatusTypes.FAILED) {
+        await DBSyncManager.dropPendingTasks({ messageId: message.id });
+        await removeMessage(message);
+      } else {
+        const updatedMessage = {
+          ...message,
+          cid: channel.cid,
+          deleted_at: new Date(),
+          type: 'deleted' as MessageLabel,
+        };
+        updateMessage(updatedMessage);
 
-      threadInstance?.upsertReplyLocally({ message: updatedMessage });
+        threadInstance?.upsertReplyLocally({ message: updatedMessage });
 
-      const data = await DBSyncManager.queueTask({
+        const data = await DBSyncManager.queueTask({
+          client,
+          task: {
+            channelId: channel.id,
+            channelType: channel.type,
+            messageId: message.id,
+            payload: [message.id],
+            type: 'delete-message',
+          },
+        });
+
+        if (data?.message) {
+          updateMessage({ ...data.message });
+        }
+      }
+    },
+  );
+
+  const deleteReaction: MessagesContextValue['deleteReaction'] = useStableCallback(
+    async (type: string, messageId: string) => {
+      if (!channel?.id || !client.user) {
+        throw new Error('Channel has not been initialized');
+      }
+
+      const payload: Parameters<ChannelClass['deleteReaction']> = [messageId, type];
+
+      if (!enableOfflineSupport) {
+        await channel.deleteReaction(...payload);
+        return;
+      }
+
+      removeReactionFromLocalState({
+        channel,
+        messageId,
+        reactionType: type,
+        user: client.user,
+      });
+
+      copyMessagesStateFromChannel(channel);
+
+      await DBSyncManager.queueTask({
         client,
         task: {
           channelId: channel.id,
           channelType: channel.type,
-          messageId: message.id,
-          payload: [message.id],
-          type: 'delete-message',
+          messageId,
+          payload,
+          type: 'delete-reaction',
         },
       });
-
-      if (data?.message) {
-        updateMessage({ ...data.message });
-      }
-    }
-  };
-
-  const deleteReaction: MessagesContextValue['deleteReaction'] = async (
-    type: string,
-    messageId: string,
-  ) => {
-    if (!channel?.id || !client.user) {
-      throw new Error('Channel has not been initialized');
-    }
-
-    const payload: Parameters<ChannelClass['deleteReaction']> = [messageId, type];
-
-    if (!enableOfflineSupport) {
-      await channel.deleteReaction(...payload);
-      return;
-    }
-
-    removeReactionFromLocalState({
-      channel,
-      messageId,
-      reactionType: type,
-      user: client.user,
-    });
-
-    copyMessagesStateFromChannel(channel);
-
-    await DBSyncManager.queueTask({
-      client,
-      task: {
-        channelId: channel.id,
-        channelType: channel.type,
-        messageId,
-        payload,
-        type: 'delete-reaction',
-      },
-    });
-  };
+    },
+  );
 
   /**
    * THREAD METHODS
@@ -1642,7 +1679,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     ),
   ).current;
 
-  const loadMoreThread: ThreadContextValue['loadMoreThread'] = async () => {
+  const loadMoreThread: ThreadContextValue['loadMoreThread'] = useStableCallback(async () => {
     if (threadLoadingMore || !thread?.id) {
       return;
     }
@@ -1681,7 +1718,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       setThreadLoadingMore(false);
       throw err;
     }
-  };
+  });
 
   const ownCapabilitiesContext = useCreateOwnCapabilitiesContext({
     channel,
@@ -1733,11 +1770,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   // but it is definitely not trivial, especially considering it depends on other inline functions that
   // are not wrapped in a useCallback() themselves hence creating a huge cascading change. Can be removed
   // once our memoization issues are fixed in most places in the app or we move to a reactive state store.
-  const sendMessageRef = useRef<InputMessageInputContextValue['sendMessage']>(sendMessage);
-  sendMessageRef.current = sendMessage;
-  const sendMessageStable = useCallback<InputMessageInputContextValue['sendMessage']>((...args) => {
-    return sendMessageRef.current(...args);
-  }, []);
+  // const sendMessageRef = useRef<InputMessageInputContextValue['sendMessage']>(sendMessage);
+  // sendMessageRef.current = sendMessage;
+  // const sendMessageStable = useCallback<InputMessageInputContextValue['sendMessage']>((...args) => {
+  //   return sendMessageRef.current(...args);
+  // }, []);
 
   const inputMessageInputContext = useCreateInputMessageInputContext({
     additionalTextInputProps,
@@ -1791,7 +1828,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     quotedMessage,
     SendButton,
     sendImageAsync,
-    sendMessage: sendMessageStable,
+    sendMessage,
     SendMessageDisallowedIndicator,
     setInputRef,
     setQuotedMessageState,

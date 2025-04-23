@@ -1,5 +1,12 @@
 # Change Log
 
+### [2.5.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v2.5.1...sampleapp@v2.5.2) (2025-04-22)
+
+
+### Performance Improvements
+
+* message list performance ([#3060](https://github.com/GetStream/stream-chat-react-native/issues/3060)) ([8b2d7e3](https://github.com/GetStream/stream-chat-react-native/commit/8b2d7e31e57acd497726876b56b4350065bb3c2d))
+
 ### [2.5.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v2.5.0...sampleapp@v2.5.1) (2025-03-13)
 
 

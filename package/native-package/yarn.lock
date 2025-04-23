@@ -3498,9 +3498,9 @@ statuses@~1.5.0:
   version "0.0.0"
   uid ""
 
-"stream-chat@https://github.com/GetStream/stream-chat-js.git#6d936386dbf69e33b8e146e5e48c20a74482eb50":
+"stream-chat@https://github.com/GetStream/stream-chat-js.git#4ff638045e434cc091a1200ecff4749b428d6936":
   version "0.0.0-development"
-  resolved "https://github.com/GetStream/stream-chat-js.git#6d936386dbf69e33b8e146e5e48c20a74482eb50"
+  resolved "https://github.com/GetStream/stream-chat-js.git#4ff638045e434cc091a1200ecff4749b428d6936"
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"

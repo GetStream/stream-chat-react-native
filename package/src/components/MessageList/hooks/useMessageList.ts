@@ -1,4 +1,6 @@
-import type { ChannelState } from 'stream-chat';
+import { useMemo } from 'react';
+
+import type { ChannelState, LocalMessage } from 'stream-chat';
 
 import { useLastReadData } from './useLastReadData';
 
@@ -22,6 +24,27 @@ export type UseMessageListParams = {
 
 export type GroupType = string;
 
+export const shouldIncludeMessageInList = (
+  message: LocalMessage,
+  options: { deletedMessagesVisibilityType?: DeletedMessagesVisibilityType; userId?: string },
+) => {
+  const { deletedMessagesVisibilityType, userId } = options;
+  const isMessageTypeDeleted = message.type === 'deleted';
+  switch (deletedMessagesVisibilityType) {
+    case 'sender':
+      return !isMessageTypeDeleted || message.user?.id === userId;
+
+    case 'receiver':
+      return !isMessageTypeDeleted || message.user?.id !== userId;
+
+    case 'never':
+      return !isMessageTypeDeleted;
+
+    default:
+      return !!message;
+  }
+};
+
 export const useMessageList = (params: UseMessageListParams) => {
   const { noGroupByUser, threadList } = params;
   const { client } = useChatContext();
@@ -33,6 +56,12 @@ export const useMessageList = (params: UseMessageListParams) => {
 
   const messageList = threadList ? threadMessages : messages;
   const readList: ChannelState['read'] | undefined = threadList ? undefined : read;
+
+  const readData = useLastReadData({
+    messages: messageList,
+    read: readList,
+    userID: client.userID,
+  });
 
   const dateSeparators = getDateSeparators({
     deletedMessagesVisibilityType,
@@ -50,26 +79,20 @@ export const useMessageList = (params: UseMessageListParams) => {
     userId: client.userID,
   });
 
-  const readData = useLastReadData({
-    messages: messageList,
-    read: readList,
-    userID: client.userID,
-  });
-
-  const messagesWithStyles = messageList.filter((msg) => {
-    const isMessageTypeDeleted = msg.type === 'deleted';
-    if (deletedMessagesVisibilityType === 'sender') {
-      return !isMessageTypeDeleted || msg.user?.id === client.userID;
-    } else if (deletedMessagesVisibilityType === 'receiver') {
-      return !isMessageTypeDeleted || msg.user?.id !== client.userID;
-    } else if (deletedMessagesVisibilityType === 'never') {
-      return !isMessageTypeDeleted;
-    } else {
-      return msg;
+  const processedMessageList = useMemo<LocalMessage[]>(() => {
+    const newMessageList = [];
+    for (const message of messageList) {
+      if (
+        shouldIncludeMessageInList(message, {
+          deletedMessagesVisibilityType,
+          userId: client.userID,
+        })
+      ) {
+        newMessageList.unshift(message);
+      }
     }
-  });
-
-  const processedMessageList = [...messagesWithStyles].reverse();
+    return newMessageList;
+  }, [client.userID, deletedMessagesVisibilityType, messageList]);
 
   return {
     /** Date separators */
