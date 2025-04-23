@@ -134,69 +134,67 @@ export const useMessageListPagination = ({ channel }: { channel: Channel }) => {
    *
    * @param messageId If undefined, channel will be loaded at most recent message.
    */
-  const loadChannelAroundMessage: ChannelContextValue['loadChannelAroundMessage'] = useStableCallback(async ({
-    limit = 25,
-    messageId: messageIdToLoadAround,
-    setTargetedMessage,
-  }) => {
-    if (!messageIdToLoadAround) {
-      return;
-    }
-    setLoadingMore(true);
-    setLoading(true);
-    try {
-      await channel.state.loadMessageIntoState(messageIdToLoadAround, undefined, limit);
-      loadMoreFinished(channel.state.messagePagination.hasPrev, channel.state.messages);
-      jumpToMessageFinished(channel.state.messagePagination.hasNext, messageIdToLoadAround);
+  const loadChannelAroundMessage: ChannelContextValue['loadChannelAroundMessage'] =
+    useStableCallback(
+      async ({ limit = 25, messageId: messageIdToLoadAround, setTargetedMessage }) => {
+        if (!messageIdToLoadAround) {
+          return;
+        }
+        setLoadingMore(true);
+        setLoading(true);
+        try {
+          await channel.state.loadMessageIntoState(messageIdToLoadAround, undefined, limit);
+          loadMoreFinished(channel.state.messagePagination.hasPrev, channel.state.messages);
+          jumpToMessageFinished(channel.state.messagePagination.hasNext, messageIdToLoadAround);
 
-      if (setTargetedMessage) {
-        setTargetedMessage(messageIdToLoadAround);
-      }
-    } catch (error) {
-      setLoadingMore(false);
-      setLoading(false);
-      console.warn(
-        'Message pagination(fetching messages in the channel around a message id) request failed with error:',
-        error,
-      );
-      return;
-    }
-  });
+          if (setTargetedMessage) {
+            setTargetedMessage(messageIdToLoadAround);
+          }
+        } catch (error) {
+          setLoadingMore(false);
+          setLoading(false);
+          console.warn(
+            'Message pagination(fetching messages in the channel around a message id) request failed with error:',
+            error,
+          );
+          return;
+        }
+      },
+    );
 
   /**
    * Fetch messages around a specific timestamp.
    */
-  const fetchMessagesAround = useStableCallback(async (
-    channel: Channel,
-    timestamp: string,
-    limit: number,
-  ): Promise<MessageResponse[]> => {
-    try {
-      const { messages } = await channel.query(
-        { messages: { created_at_around: timestamp, limit } },
-        'new',
-      );
-      return messages;
-    } catch (error) {
-      console.error('Error fetching messages around timestamp:', error);
-      throw error;
-    }
-  });
+  const fetchMessagesAround = useStableCallback(
+    async (channel: Channel, timestamp: string, limit: number): Promise<MessageResponse[]> => {
+      try {
+        const { messages } = await channel.query(
+          { messages: { created_at_around: timestamp, limit } },
+          'new',
+        );
+        return messages;
+      } catch (error) {
+        console.error('Error fetching messages around timestamp:', error);
+        throw error;
+      }
+    },
+  );
 
   /**
    * Loads channel at first unread message.
    */
   const loadChannelAtFirstUnreadMessage: ChannelContextValue['loadChannelAtFirstUnreadMessage'] =
-    useStableCallback(async ({ channelUnreadState, limit = 25, setChannelUnreadState, setTargetedMessage }) => {
-      try {
-        if (!channelUnreadState?.unread_messages) {
-          return;
-        }
-        const { first_unread_message_id, last_read, last_read_message_id } = channelUnreadState;
-        let firstUnreadMessageId = first_unread_message_id;
-        let lastReadMessageId = last_read_message_id;
-        let isInCurrentMessageSet = false;
-        const messagesState = channel.state.messages;
+    useStableCallback(
+      async ({ channelUnreadState, limit = 25, setChannelUnreadState, setTargetedMessage }) => {
+        try {
+          if (!channelUnreadState?.unread_messages) {
+            return;
+          }
+          const { first_unread_message_id, last_read, last_read_message_id } = channelUnreadState;
+          let firstUnreadMessageId = first_unread_message_id;
+          let lastReadMessageId = last_read_message_id;
+          let isInCurrentMessageSet = false;
+          const messagesState = channel.state.messages;
 
           // If the first unread message is already in the current message set, we don't need to load more messages.
           if (firstUnreadMessageId) {

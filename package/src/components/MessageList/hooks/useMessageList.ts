@@ -61,9 +61,7 @@ export const shouldIncludeMessageInList = (
   }
 };
 
-export const useMessageList = (
-  params: UseMessageListParams,
-) => {
+export const useMessageList = (params: UseMessageListParams) => {
   const { noGroupByUser, threadList } = params;
   const { client } = useChatContext();
   const { hideDateSeparators, maxTimeBetweenGroupedMessages, read } = useChannelContext();
@@ -81,7 +79,7 @@ export const useMessageList = (
     userID: client.userID,
   });
 
-  const processedMessageList = useMemo<MessageType<StreamChatGenerics>[]>(() => {
+  const processedMessageList = useMemo<MessageType[]>(() => {
     const dateSeparators = getDateSeparators({
       deletedMessagesVisibilityType,
       hideDateSeparators,

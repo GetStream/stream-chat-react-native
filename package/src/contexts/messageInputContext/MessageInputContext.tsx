@@ -830,20 +830,19 @@ export const MessageInputProvider = ({
       setSelectedImages([]);
     }
 
-      setFileUploads([]);
-      setGiphyActive(false);
-      setShowMoreOptions(true);
-      setImageUploads([]);
-      setMentionedUsers([]);
-      setNumberOfUploads(
-        (prevNumberOfUploads) => prevNumberOfUploads - (pendingAttachments?.length || 0),
-      );
-      setText('');
-      if (value.editing) {
-        value.clearEditingState();
-      }
-    },
-  );
+    setFileUploads([]);
+    setGiphyActive(false);
+    setShowMoreOptions(true);
+    setImageUploads([]);
+    setMentionedUsers([]);
+    setNumberOfUploads(
+      (prevNumberOfUploads) => prevNumberOfUploads - (pendingAttachments?.length || 0),
+    );
+    setText('');
+    if (value.editing) {
+      value.clearEditingState();
+    }
+  });
 
   const mapImageUploadToAttachment = useStableCallback((image: FileUpload): Attachment => {
     return {
@@ -913,15 +912,16 @@ export const MessageInputProvider = ({
   });
 
   // TODO: Figure out why this is async, as it doesn't await any promise.
-  const sendMessage = useStableCallback(async ({
-    customMessageData,
-  }: {
-    customMessageData?: Partial<Message>;
-  } = {}) => {
-    if (sending.current) {
-      return;
-    }
-    const linkInfos = parseLinksFromText(text);
+  const sendMessage = useStableCallback(
+    async ({
+      customMessageData,
+    }: {
+      customMessageData?: Partial<Message>;
+    } = {}) => {
+      if (sending.current) {
+        return;
+      }
+      const linkInfos = parseLinksFromText(text);
 
       if (!channelCapabities.sendLinks && linkInfos.length > 0) {
         Alert.alert(
@@ -939,19 +939,19 @@ export const MessageInputProvider = ({
       const prevText = giphyEnabled && giphyActive ? `/giphy ${text}` : text;
       setText('');
 
-    if (inputBoxRef.current) {
-      inputBoxRef.current.clear();
-    }
-
-    const attachments = [] as Attachment[];
-    for (const image of imageUploads) {
-      if (enableOfflineSupport) {
-        if (image.state === FileState.NOT_SUPPORTED) {
-          return;
-        }
-        attachments.push(mapImageUploadToAttachment(image));
-        continue;
+      if (inputBoxRef.current) {
+        inputBoxRef.current.clear();
       }
+
+      const attachments = [] as Attachment[];
+      for (const image of imageUploads) {
+        if (enableOfflineSupport) {
+          if (image.state === FileState.NOT_SUPPORTED) {
+            return;
+          }
+          attachments.push(mapImageUploadToAttachment(image));
+          continue;
+        }
 
         if ((!image || image.state === FileState.UPLOAD_FAILED) && !enableOfflineSupport) {
           continue;
@@ -1007,16 +1007,16 @@ export const MessageInputProvider = ({
         return;
       }
 
-    const message = value.editing;
-    if (message && message.type !== 'error') {
-      const updatedMessage = {
-        ...message,
-        attachments,
-        mentioned_users: mentionedUsers.map((userId) => ({ id: userId })),
-        quoted_message: undefined,
-        text: prevText,
-        ...customMessageData,
-      } as Parameters<StreamChat['updateMessage']>[0];
+      const message = value.editing;
+      if (message && message.type !== 'error') {
+        const updatedMessage = {
+          ...message,
+          attachments,
+          mentioned_users: mentionedUsers.map((userId) => ({ id: userId })),
+          quoted_message: undefined,
+          text: prevText,
+          ...customMessageData,
+        } as Parameters<StreamChat['updateMessage']>[0];
 
         // TODO: Remove this line and show an error when submit fails
         value.clearEditingState();
@@ -1030,25 +1030,25 @@ export const MessageInputProvider = ({
         logChatPromiseExecution(updateMessagePromise, 'update message');
         resetInput(attachments);
 
-      sending.current = false;
-    } else {
-      try {
-        /**
-         * If the message is bounced by moderation, we firstly remove the message from message list and then send a new message.
-         */
-        if (message && isBouncedMessage(message as MessageType)) {
-          await removeMessage(message);
-        }
-        value.sendMessage({
-          attachments,
-          mentioned_users: uniq(mentionedUsers),
-          /** Parent message id - in case of thread */
-          parent_id: thread?.id,
-          quoted_message_id: value.quotedMessage ? value.quotedMessage.id : undefined,
-          show_in_channel: sendThreadMessageInChannel || undefined,
-          text: prevText,
-          ...customMessageData,
-        } as unknown as StreamMessage);
+        sending.current = false;
+      } else {
+        try {
+          /**
+           * If the message is bounced by moderation, we firstly remove the message from message list and then send a new message.
+           */
+          if (message && isBouncedMessage(message as MessageType)) {
+            await removeMessage(message);
+          }
+          value.sendMessage({
+            attachments,
+            mentioned_users: uniq(mentionedUsers),
+            /** Parent message id - in case of thread */
+            parent_id: thread?.id,
+            quoted_message_id: value.quotedMessage ? value.quotedMessage.id : undefined,
+            show_in_channel: sendThreadMessageInChannel || undefined,
+            text: prevText,
+            ...customMessageData,
+          } as unknown as StreamMessage);
 
           value.clearQuotedMessageState();
           sending.current = false;
@@ -1158,8 +1158,8 @@ export const MessageInputProvider = ({
 
   const regexCondition = /File (extension \.\w{2,4}|type \S+) is not supported/;
 
-  const getUploadSetStateAction =
-    useStableCallback(<UploadType extends FileUpload>(
+  const getUploadSetStateAction = useStableCallback(
+    <UploadType extends FileUpload>(
       id: string,
       fileState: FileStateValue,
       extraData: Partial<UploadType> = {},
