@@ -318,7 +318,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    * NOTE: rawMessageList changes only when messages array state changes
    * processedMessageList changes on any state change
    */
-  const { dateSeparators, messageGroupStyles, processedMessageList, rawMessageList, readData } =
+  const { dateSeparators, messageGroupStyles, processedMessageList, rawMessageList } =
     useMessageList({
       noGroupByUser,
       threadList,
@@ -766,7 +766,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           }
           message={message}
           onThreadSelect={onThreadSelect}
-          readBy={readData[message.id]}
           showUnreadUnderlay={showUnreadUnderlay}
           style={[messageContainer]}
           threadList={threadList}
@@ -820,7 +819,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       modifiedTheme,
       myMessageTheme,
       onThreadSelect,
-      readData,
       screenPadding,
       shouldApplyAndroidWorkaround,
       shouldShowUnreadUnderlay,

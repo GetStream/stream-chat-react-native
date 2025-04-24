@@ -41,6 +41,7 @@ import {
   MessageStatusTypes,
 } from '../../utils/utils';
 import type { Thumbnail } from '../Attachment/utils/buildGallery/types';
+import { getReadState } from '../MessageList/utils/getReadState';
 
 export type TouchableEmitter =
   | 'fileAttachment'
@@ -136,7 +137,7 @@ export type MessagePropsWithContext = Pick<
   Partial<
     Omit<MessageContextValue, 'groupStyles' | 'handleReaction' | 'message' | 'isMessageAIGenerated'>
   > &
-  Pick<MessageContextValue, 'groupStyles' | 'message' | 'isMessageAIGenerated' | 'readBy'> &
+  Pick<MessageContextValue, 'groupStyles' | 'message' | 'isMessageAIGenerated'> &
   Pick<
     MessagesContextValue,
     | 'sendReaction'
@@ -247,7 +248,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     onThreadSelect,
     openThread,
     preventPress,
-    readBy,
     removeMessage,
     retrySendMessage,
     selectReaction,
@@ -263,6 +263,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     threadList = false,
     updateMessage,
   } = props;
+  const { read } = useChannelContext();
   const isMessageAIGenerated = messagesContext.isMessageAIGenerated;
   const isAIGenerated = useMemo(
     () => isMessageAIGenerated(message),
@@ -277,6 +278,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
       screenPadding,
     },
   } = useTheme();
+  const readBy = useMemo(() => getReadState(message, read), [message, read]);
 
   const showMessageOverlay = async (showMessageReactions = false, selectedReaction?: string) => {
     await dismissKeyboard();
@@ -756,7 +758,6 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     members: prevMembers,
     message: prevMessage,
     messagesContext: prevMessagesContext,
-    readBy: prevReadBy,
     showUnreadUnderlay: prevShowUnreadUnderlay,
     t: prevT,
   } = prevProps;
@@ -769,7 +770,6 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     members: nextMembers,
     message: nextMessage,
     messagesContext: nextMessagesContext,
-    readBy: nextReadBy,
     showUnreadUnderlay: nextShowUnreadUnderlay,
     t: nextT,
   } = nextProps;
@@ -885,11 +885,6 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     return false;
   }
 
-  const readByEqual = prevReadBy === nextReadBy;
-  if (!readByEqual) {
-    return false;
-  }
-
   const showUnreadUnderlayEqual = prevShowUnreadUnderlay === nextShowUnreadUnderlay;
   if (!showUnreadUnderlayEqual) {
     return false;
@@ -919,9 +914,9 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
 const MemoizedMessage = React.memo(MessageWithContext, areEqual) as typeof MessageWithContext;
 
 export type MessageProps = Partial<
-  Omit<MessagePropsWithContext, 'groupStyles' | 'handleReaction' | 'message' | 'readBy'>
+  Omit<MessagePropsWithContext, 'groupStyles' | 'handleReaction' | 'message'>
 > &
-  Pick<MessagePropsWithContext, 'groupStyles' | 'message' | 'readBy'>;
+  Pick<MessagePropsWithContext, 'groupStyles' | 'message'>;
 
 /**
  * Message - A high level component which implements all the logic required for a message.

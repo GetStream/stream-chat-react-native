@@ -1,8 +1,6 @@
 import { useMemo } from 'react';
 
-import type { ChannelState, LocalMessage } from 'stream-chat';
-
-import { useLastReadData } from './useLastReadData';
+import type { LocalMessage } from 'stream-chat';
 
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
@@ -48,20 +46,13 @@ export const shouldIncludeMessageInList = (
 export const useMessageList = (params: UseMessageListParams) => {
   const { noGroupByUser, threadList } = params;
   const { client } = useChatContext();
-  const { hideDateSeparators, maxTimeBetweenGroupedMessages, read } = useChannelContext();
+  const { hideDateSeparators, maxTimeBetweenGroupedMessages } = useChannelContext();
   const { deletedMessagesVisibilityType, getMessagesGroupStyles = getGroupStyles } =
     useMessagesContext();
   const { messages } = usePaginatedMessageListContext();
   const { threadMessages } = useThreadContext();
 
   const messageList = threadList ? threadMessages : messages;
-  const readList: ChannelState['read'] | undefined = threadList ? undefined : read;
-
-  const readData = useLastReadData({
-    messages: messageList,
-    read: readList,
-    userID: client.userID,
-  });
 
   const dateSeparators = useMemo(
     () =>
@@ -119,7 +110,5 @@ export const useMessageList = (params: UseMessageListParams) => {
     processedMessageList,
     /** Raw messages from the channel state */
     rawMessageList: messageList,
-    /** Read data */
-    readData,
   };
 };

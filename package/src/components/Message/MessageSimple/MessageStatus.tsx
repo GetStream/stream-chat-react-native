@@ -10,7 +10,6 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { Check } from '../../../icons/Check';
 import { CheckAll } from '../../../icons/CheckAll';
 import { Time } from '../../../icons/Time';
-
 import { MessageStatusTypes } from '../../../utils/utils';
 
 export type MessageStatusPropsWithContext = Pick<
