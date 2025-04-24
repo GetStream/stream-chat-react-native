@@ -53,10 +53,8 @@ export const takePhoto = ImagePicker
             ...asset,
             cancelled: false,
             duration: asset.duration * 1000,
-            mimeType: asset.type,
             name: 'video_recording_' + date + '.' + asset.fileName.split('.').pop(),
             size: asset.fileSize,
-            source: 'camera',
             type: asset.type,
             uri: asset.uri,
           };
@@ -90,10 +88,8 @@ export const takePhoto = ImagePicker
             const date = new Date().toISOString().replace(clearFilter, '_');
             return {
               cancelled: false,
-              mimeType: asset.type,
               name: 'video_recording_' + date + '.' + asset.fileName.split('.').pop(),
               size: asset.size,
-              source: 'camera',
               type: asset.type,
               uri: asset.uri,
               ...size,

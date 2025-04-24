@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import type { ChannelState, MessageResponse } from 'stream-chat';
 
 import { useLastReadData } from './useLastReadData';
@@ -38,6 +40,27 @@ export const isMessageWithStylesReadByAndDateSeparator = (
 ): message is MessagesWithStylesReadByAndDateSeparator =>
   (message as MessagesWithStylesReadByAndDateSeparator).readBy !== undefined;
 
+export const shouldIncludeMessageInList = (
+  message: MessageType,
+  options: { deletedMessagesVisibilityType?: DeletedMessagesVisibilityType; userId?: string },
+) => {
+  const { deletedMessagesVisibilityType, userId } = options;
+  const isMessageTypeDeleted = message.type === 'deleted';
+  switch (deletedMessagesVisibilityType) {
+    case 'sender':
+      return !isMessageTypeDeleted || message.user?.id === userId;
+
+    case 'receiver':
+      return !isMessageTypeDeleted || message.user?.id !== userId;
+
+    case 'never':
+      return !isMessageTypeDeleted;
+
+    default:
+      return !!message;
+  }
+};
+
 export const useMessageList = (params: UseMessageListParams) => {
   const { noGroupByUser, threadList } = params;
   const { client } = useChatContext();
@@ -50,51 +73,57 @@ export const useMessageList = (params: UseMessageListParams) => {
   const messageList = threadList ? threadMessages : messages;
   const readList: ChannelState['read'] | undefined = threadList ? undefined : read;
 
-  const dateSeparators = getDateSeparators({
-    deletedMessagesVisibilityType,
-    hideDateSeparators,
-    messages: messageList,
-    userId: client.userID,
-  });
-
-  const messageGroupStyles = getMessagesGroupStyles({
-    dateSeparators,
-    hideDateSeparators,
-    maxTimeBetweenGroupedMessages,
-    messages: messageList,
-    noGroupByUser,
-    userId: client.userID,
-  });
-
   const readData = useLastReadData({
     messages: messageList,
     read: readList,
     userID: client.userID,
   });
 
-  const messagesWithStylesReadByAndDateSeparator = messageList
-    .filter((msg) => {
-      const isMessageTypeDeleted = msg.type === 'deleted';
-      if (deletedMessagesVisibilityType === 'sender') {
-        return !isMessageTypeDeleted || msg.user?.id === client.userID;
-      } else if (deletedMessagesVisibilityType === 'receiver') {
-        return !isMessageTypeDeleted || msg.user?.id !== client.userID;
-      } else if (deletedMessagesVisibilityType === 'never') {
-        return !isMessageTypeDeleted;
-      } else {
-        return msg;
-      }
-    })
-    .map((msg) => ({
-      ...msg,
-      dateSeparator: dateSeparators[msg.id] || undefined,
-      groupStyles: messageGroupStyles[msg.id] || ['single'],
-      readBy: msg.id ? readData[msg.id] || false : false,
-    }));
+  const processedMessageList = useMemo<MessageType[]>(() => {
+    const dateSeparators = getDateSeparators({
+      deletedMessagesVisibilityType,
+      hideDateSeparators,
+      messages: messageList,
+      userId: client.userID,
+    });
 
-  const processedMessageList = [
-    ...messagesWithStylesReadByAndDateSeparator,
-  ].reverse() as MessageType[];
+    const messageGroupStyles = getMessagesGroupStyles({
+      dateSeparators,
+      hideDateSeparators,
+      maxTimeBetweenGroupedMessages,
+      messages: messageList,
+      noGroupByUser,
+      userId: client.userID,
+    });
+
+    const newMessageList = [];
+    for (const message of messageList) {
+      if (
+        shouldIncludeMessageInList(message, {
+          deletedMessagesVisibilityType,
+          userId: client.userID,
+        })
+      ) {
+        const messageId = message.id;
+        newMessageList.unshift({
+          ...message,
+          dateSeparator: dateSeparators[messageId] || undefined,
+          groupStyles: messageGroupStyles[messageId] || ['single'],
+          readBy: messageId ? readData[messageId] || false : false,
+        });
+      }
+    }
+    return newMessageList;
+  }, [
+    client.userID,
+    deletedMessagesVisibilityType,
+    getMessagesGroupStyles,
+    hideDateSeparators,
+    maxTimeBetweenGroupedMessages,
+    messageList,
+    noGroupByUser,
+    readData,
+  ]);
 
   return {
     /** Messages enriched with dates/readby/groups and also reversed in order */

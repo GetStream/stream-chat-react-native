@@ -15,7 +15,7 @@ import {
   VideoProgressData,
   VideoSeekResponse,
 } from '../../native';
-import { FileTypes, type FileUpload } from '../../types/types';
+import { AudioUpload, FileTypes } from '../../types/types';
 import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
 import { ProgressControl } from '../ProgressControl/ProgressControl';
 import { WaveProgressBar } from '../ProgressControl/WaveProgressBar';
@@ -23,7 +23,7 @@ import { WaveProgressBar } from '../ProgressControl/WaveProgressBar';
 dayjs.extend(duration);
 
 export type AudioAttachmentProps = {
-  item: Omit<FileUpload, 'state'>;
+  item: Omit<AudioUpload, 'state'>;
   onLoad: (index: string, duration: number) => void;
   onPlayPause: (index: string, pausedStatus?: boolean) => void;
   onProgress: (index: string, progress: number) => void;
@@ -184,7 +184,9 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
           soundRef.current = await NativeHandlers.Sound.initializeSound(
             { uri: item.file.uri },
             {
+              pitchCorrectionQuality: 'high',
               progressUpdateIntervalMillis: 100,
+              shouldCorrectPitch: true,
             },
             onPlaybackStatusUpdate,
           );
@@ -208,10 +210,14 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
       if (!isExpoCLI) {
         return;
       }
-      if (item.paused) {
-        await pauseAudio();
-      } else {
-        await playAudio();
+      try {
+        if (item.paused) {
+          await pauseAudio();
+        } else {
+          await playAudio();
+        }
+      } catch (e) {
+        console.log('An error has occurred while trying to interact with the audio. ', e);
       }
     };
     // For expo CLI

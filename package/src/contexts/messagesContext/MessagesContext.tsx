@@ -320,6 +320,7 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
       messageInput?: string;
       threadMessages?: ChannelState['threads'][string];
     },
+    throttled?: boolean,
   ) => void;
   /**
    * Custom UI component to display enriched url preview.

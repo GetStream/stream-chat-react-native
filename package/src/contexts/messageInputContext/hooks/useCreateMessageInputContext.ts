@@ -38,11 +38,13 @@ export const useCreateMessageInputContext = ({
   FileUploadPreview,
   fileUploads,
   giphyActive,
+  giphyEnabled,
   handleAttachButtonPress,
   hasCameraPicker,
   hasCommands,
   hasFilePicker,
   hasImagePicker,
+  hasText,
   ImageUploadPreview,
   imageUploads,
   initialValue,
@@ -114,9 +116,7 @@ export const useCreateMessageInputContext = ({
   UploadProgressIndicator,
 }: MessageInputContextValue & Pick<ThreadContextValue, 'thread'>) => {
   const editingdep = editing?.id;
-  const fileUploadsValue = fileUploads
-    .map(({ duration, paused, progress, state }) => `${state},${paused},${progress},${duration}`)
-    .join();
+  const fileUploadsValue = fileUploads.map(({ state }) => state).join();
   const imageUploadsValue = imageUploads.map(({ state }) => state).join();
   const asyncUploadsValue = Object.keys(asyncUploads).join();
   const mentionedUsersLength = mentionedUsers.length;
@@ -160,11 +160,13 @@ export const useCreateMessageInputContext = ({
       FileUploadPreview,
       fileUploads,
       giphyActive,
+      giphyEnabled,
       handleAttachButtonPress,
       hasCameraPicker,
       hasCommands,
       hasFilePicker,
       hasImagePicker,
+      hasText,
       ImageUploadPreview,
       imageUploads,
       initialValue,
@@ -242,6 +244,8 @@ export const useCreateMessageInputContext = ({
       editingdep,
       fileUploadsValue,
       giphyActive,
+      giphyEnabled,
+      hasText,
       imageUploadsValue,
       maxMessageLength,
       mentionedUsersLength,

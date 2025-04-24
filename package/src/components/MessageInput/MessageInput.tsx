@@ -61,7 +61,7 @@ import {
   isImageMediaLibraryAvailable,
   NativeHandlers,
 } from '../../native';
-import type { Asset } from '../../types/types';
+import { compressedImageURI } from '../../utils/compressImage';
 import { AIStates, useAIState } from '../AITypingIndicatorView';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
@@ -109,7 +109,7 @@ type MessageInputPropsWithContext = Pick<
   'AttachmentPickerSelectionBar'
 > &
   Pick<ChatContextValue, 'isOnline'> &
-  Pick<ChannelContextValue, 'members' | 'threadList' | 'watchers'> &
+  Pick<ChannelContextValue, 'channel' | 'members' | 'threadList' | 'watchers'> &
   Pick<
     MessageInputContextValue,
     | 'additionalTextInputProps'
@@ -129,6 +129,7 @@ type MessageInputPropsWithContext = Pick<
     | 'clearEditingState'
     | 'clearQuotedMessageState'
     | 'closeAttachmentPicker'
+    | 'compressImageQuality'
     | 'editing'
     | 'FileUploadPreview'
     | 'fileUploads'
@@ -195,8 +196,10 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     AudioRecordingLockIndicator,
     AudioRecordingPreview,
     AutoCompleteSuggestionList,
+    channel,
     closeAttachmentPicker,
     closePollCreationDialog,
+    compressImageQuality,
     cooldownEndsAt,
     CooldownTimer,
     CreatePollContent,
@@ -347,7 +350,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagesForInput, imageUploadsLength]);
 
-  const uploadImagesHandler = () => {
+  const uploadImagesHandler = async () => {
     const imageToUpload = selectedImages.find((selectedImage) => {
       const uploadedImage = imageUploads.find(
         (imageUpload) =>
@@ -357,7 +360,11 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     });
 
     if (imageToUpload) {
-      uploadNewImage(imageToUpload);
+      const compressedImage = await compressedImageURI(imageToUpload, compressImageQuality);
+      uploadNewImage({
+        ...imageToUpload,
+        uri: compressedImage,
+      });
     }
   };
 
@@ -455,16 +462,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
         /**
          * User is editing some message which contains image attachments.
          **/
-        setSelectedImages(
-          imageUploads
-            .map((imageUpload) => ({
-              height: imageUpload.file.height,
-              source: imageUpload.file.source,
-              uri: imageUpload.url || imageUpload.file.uri,
-              width: imageUpload.file.width,
-            }))
-            .filter(Boolean) as Asset[],
-        );
+        setSelectedImages(imageUploads.map((imageUpload) => imageUpload.file));
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -489,15 +487,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
         /**
          * User is editing some message which contains video attachments.
          **/
-        setSelectedFiles(
-          fileUploads.map((fileUpload) => ({
-            duration: fileUpload.file.duration,
-            mimeType: fileUpload.file.mimeType,
-            name: fileUpload.file.name,
-            size: fileUpload.file.size,
-            uri: fileUpload.file.uri,
-          })),
-        );
+        setSelectedFiles(fileUploads.map((fileUpload) => fileUpload.file));
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -743,7 +733,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     })),
   };
 
-  const { channel } = useChannelContext();
   const { aiState } = useAIState(channel);
 
   const stopGenerating = useCallback(() => channel?.stopAIResponse(), [channel]);
@@ -857,9 +846,8 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 
               {shouldDisplayStopAIGeneration ? (
                 <StopMessageStreamingButton onPress={stopGenerating} />
-              ) : (
-                isSendingButtonVisible() &&
-                (cooldownRemainingSeconds ? (
+              ) : isSendingButtonVisible() ? (
+                cooldownRemainingSeconds ? (
                   <CooldownTimer seconds={cooldownRemainingSeconds} />
                 ) : (
                   <View style={[styles.sendButtonContainer, sendButtonContainer]}>
@@ -867,8 +855,8 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                       disabled={sending.current || !isValidMessage() || (giphyActive && !isOnline)}
                     />
                   </View>
-                ))
-              )}
+                )
+              ) : null}
               {audioRecordingEnabled && isAudioRecorderAvailable() && !micLocked && (
                 <GestureDetector gesture={panGestureMic}>
                   <Animated.View
@@ -954,6 +942,7 @@ const areEqual = (
     asyncMessagesSlideToCancelDistance: prevAsyncMessagesSlideToCancelDistance,
     asyncUploads: prevAsyncUploads,
     audioRecordingEnabled: prevAsyncMessagesEnabled,
+    channel: prevChannel,
     closePollCreationDialog: prevClosePollCreationDialog,
     editing: prevEditing,
     fileUploads: prevFileUploads,
@@ -979,6 +968,7 @@ const areEqual = (
     asyncMessagesSlideToCancelDistance: nextAsyncMessagesSlideToCancelDistance,
     asyncUploads: nextAsyncUploads,
     audioRecordingEnabled: nextAsyncMessagesEnabled,
+    channel: nextChannel,
     closePollCreationDialog: nextClosePollCreationDialog,
     editing: nextEditing,
     fileUploads: nextFileUploads,
@@ -1019,6 +1009,11 @@ const areEqual = (
 
   const asyncMessagesEnabledEqual = prevAsyncMessagesEnabled === nextAsyncMessagesEnabled;
   if (!asyncMessagesEnabledEqual) {
+    return false;
+  }
+
+  const channelEqual = prevChannel.cid === nextChannel.cid;
+  if (!channelEqual) {
     return false;
   }
 
@@ -1151,7 +1146,7 @@ export const MessageInput = (props: MessageInputProps) => {
   const { isOnline } = useChatContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
-  const { members, threadList, watchers } = useChannelContext();
+  const { channel, members, threadList, watchers } = useChannelContext();
 
   const {
     additionalTextInputProps,
@@ -1171,6 +1166,7 @@ export const MessageInput = (props: MessageInputProps) => {
     clearQuotedMessageState,
     closeAttachmentPicker,
     closePollCreationDialog,
+    compressImageQuality,
     cooldownEndsAt,
     CooldownTimer,
     CreatePollContent,
@@ -1254,10 +1250,12 @@ export const MessageInput = (props: MessageInputProps) => {
         AutoCompleteSuggestionHeader,
         AutoCompleteSuggestionItem,
         AutoCompleteSuggestionList,
+        channel,
         clearEditingState,
         clearQuotedMessageState,
         closeAttachmentPicker,
         closePollCreationDialog,
+        compressImageQuality,
         cooldownEndsAt,
         CooldownTimer,
         CreatePollContent,

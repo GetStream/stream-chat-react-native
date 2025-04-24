@@ -1,7 +1,7 @@
 {
   "name": "stream-chat-react-native",
   "description": "The official React Native SDK for Stream Chat, a service for building chat applications",
-  "version": "6.6.8",
+  "version": "6.7.3",
   "homepage": "https://www.npmjs.com/package/stream-chat-react-native",
   "author": {
     "company": "Stream.io Inc",
@@ -20,16 +20,17 @@
   "types": "types/index.d.ts",
   "dependencies": {
     "es6-symbol": "^3.1.4",
+    "mime": "^4.0.7",
     "stream-chat-react-native-core": "link:../"
   },
   "peerDependencies": {
     "@react-native-camera-roll/camera-roll": ">=7.8.0",
     "@react-native-clipboard/clipboard": ">=1.14.1",
+    "@react-native-documents/picker": ">=10.1.1",
     "@stream-io/flat-list-mvcp": ">=0.10.3",
     "react-native": ">=0.71.0",
     "react-native-audio-recorder-player": ">=3.6.4",
     "react-native-blob-util": ">=0.19.9",
-    "@react-native-documents/picker": ">=10.1.1",
     "react-native-haptic-feedback": ">=2.2.0",
     "react-native-image-picker": ">=7.1.2",
     "react-native-share": ">=10.2.1",

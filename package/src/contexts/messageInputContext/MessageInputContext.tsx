@@ -4,13 +4,13 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
 import { Alert, Keyboard, Linking, TextInput, TextInputProps } from 'react-native';
 
 import uniq from 'lodash/uniq';
-import { lookup } from 'mime-types';
 import {
   Attachment,
   logChatPromiseExecution,
@@ -60,7 +60,7 @@ import {
   MediaTypes,
   NativeHandlers,
 } from '../../native';
-import { Asset, File, FileTypes, FileUpload, ImageUpload } from '../../types/types';
+import { File, FileTypes, FileUpload } from '../../types/types';
 import {
   ACITriggerSettings,
   ACITriggerSettingsParams,
@@ -73,6 +73,7 @@ import {
   FileStateValue,
   generateRandomId,
   getFileNameFromPath,
+  getFileTypeFromMimeType,
   isBouncedMessage,
 } from '../../utils/utils';
 import { useAttachmentPickerContext } from '../attachmentPickerContext/AttachmentPickerContext';
@@ -114,6 +115,7 @@ export type LocalMessageInputContext = {
       url: string;
     };
   };
+  giphyEnabled: boolean;
   closeAttachmentPicker: () => void;
   /** The time at which the active cooldown will end */
   cooldownEndsAt: Date;
@@ -140,6 +142,7 @@ export type LocalMessageInputContext = {
    */
   fileUploads: FileUpload[];
   giphyActive: boolean;
+  hasText: boolean;
   /**
    * An array of image objects which are set for upload. It has the following structure:
    *
@@ -159,7 +162,7 @@ export type LocalMessageInputContext = {
    * ```
    *
    */
-  imageUploads: ImageUpload[];
+  imageUploads: FileUpload[];
   inputBoxRef: React.MutableRefObject<TextInput | null>;
   isValidMessage: () => boolean;
   mentionedUsers: string[];
@@ -204,7 +207,7 @@ export type LocalMessageInputContext = {
   >;
   setFileUploads: React.Dispatch<React.SetStateAction<FileUpload[]>>;
   setGiphyActive: React.Dispatch<React.SetStateAction<boolean>>;
-  setImageUploads: React.Dispatch<React.SetStateAction<ImageUpload[]>>;
+  setImageUploads: React.Dispatch<React.SetStateAction<FileUpload[]>>;
   /**
    * Ref callback to set reference on input box
    */
@@ -229,9 +232,9 @@ export type LocalMessageInputContext = {
   /** Function for attempting to upload a file */
   uploadFile: ({ newFile }: { newFile: FileUpload }) => Promise<void>;
   /** Function for attempting to upload an image */
-  uploadImage: ({ newImage }: { newImage: ImageUpload }) => Promise<void>;
-  uploadNewFile: (file: File) => Promise<void>;
-  uploadNewImage: (image: Partial<Asset>) => Promise<void>;
+  uploadImage: ({ newImage }: { newImage: FileUpload }) => Promise<void>;
+  uploadNewFile: (file: File, fileType?: FileTypes) => Promise<void>;
+  uploadNewImage: (image: File) => Promise<void>;
 };
 
 export type InputMessageInputContextValue = {
@@ -428,10 +431,7 @@ export type InputMessageInputContextValue = {
    * @overrideType Function
    */
   doImageUploadRequest?: (
-    file: {
-      name?: string;
-      uri?: string;
-    },
+    file: File,
     channel: ChannelContextValue['channel'],
   ) => Promise<SendFileAPIResponse>;
 
@@ -585,18 +585,19 @@ export const MessageInputProvider = ({
     text,
   } = useMessageDetailsForState(editing, initialValue);
   const { endsAt: cooldownEndsAt, start: startCooldown } = useCooldown();
+  const { onChangeText, emojiSearchIndex, autoCompleteTriggerSettings } = value;
 
   const threadId = thread?.id;
   useEffect(() => {
     setSendThreadMessageInChannel(false);
   }, [threadId]);
 
-  const appendText = (newText: string) => {
+  const appendText = useStableCallback((newText: string) => {
     setText((prevText) => `${prevText}${newText}`);
-  };
+  });
 
   /** Checks if the message is valid or not. Accordingly we can enable/disable send button */
-  const isValidMessage = () => {
+  const isValidMessage = useStableCallback(() => {
     if (text && text.trim()) {
       return true;
     }
@@ -630,48 +631,51 @@ export const MessageInputProvider = ({
     }
 
     return false;
-  };
+  });
 
-  const onChange = (newText: string) => {
-    if (sending.current) {
-      return;
-    }
-    setText(newText);
+  const onChange = useCallback(
+    (newText: string) => {
+      if (sending.current) {
+        return;
+      }
+      setText(newText);
 
-    if (newText && channel && channelCapabities.sendTypingEvents && isOnline) {
-      logChatPromiseExecution(channel.keystroke(thread?.id), 'start typing event');
-    }
+      if (newText && channel && channelCapabities.sendTypingEvents && isOnline) {
+        logChatPromiseExecution(channel.keystroke(thread?.id), 'start typing event');
+      }
 
-    if (value.onChangeText) {
-      value.onChangeText(newText);
-    }
-  };
+      if (onChangeText) {
+        onChangeText(newText);
+      }
+    },
+    [channel, channelCapabities.sendTypingEvents, isOnline, setText, thread?.id, onChangeText],
+  );
 
-  const openCommandsPicker = () => {
+  const openCommandsPicker = useStableCallback(() => {
     appendText('/');
     if (inputBoxRef.current) {
       inputBoxRef.current.focus();
     }
-  };
+  });
 
-  const openMentionsPicker = () => {
+  const openMentionsPicker = useStableCallback(() => {
     appendText('@');
     if (inputBoxRef.current) {
       inputBoxRef.current.focus();
     }
-  };
+  });
 
   /**
    * Function for capturing a photo and uploading it
    */
-  const takeAndUploadImage = async (mediaType?: MediaTypes) => {
+  const takeAndUploadImage = useStableCallback(async (mediaType?: MediaTypes) => {
     setSelectedPicker(undefined);
     closePicker();
-    const photo = await NativeHandlers.takePhoto({
+    const file = await NativeHandlers.takePhoto({
       compressImageQuality: value.compressImageQuality,
       mediaType,
     });
-    if (photo.askToOpenSettings) {
+    if (file.askToOpenSettings) {
       Alert.alert(
         t('Allow camera access in device settings'),
         t('Device camera is used to take photos or videos.'),
@@ -681,19 +685,20 @@ export const MessageInputProvider = ({
         ],
       );
     }
-    if (!photo.cancelled) {
-      if (photo.type.includes('image')) {
-        await uploadNewImage(photo);
+    if (!file.cancelled) {
+      if (file.type.includes('image')) {
+        // We already compressed the image in the native handler, so we can upload it directly.
+        await uploadNewImage(file);
       } else {
-        await uploadNewFile({ ...photo, mimeType: photo.type, type: FileTypes.Video });
+        await uploadNewFile(file);
       }
     }
-  };
+  });
 
   /**
    * Function for picking a photo from native image picker and uploading it
    */
-  const pickAndUploadImageFromNativePicker = async () => {
+  const pickAndUploadImageFromNativePicker = useStableCallback(async () => {
     const result = await NativeHandlers.pickImage();
     if (result.askToOpenSettings) {
       Alert.alert(
@@ -720,13 +725,17 @@ export const MessageInputProvider = ({
       }
       result.assets.forEach(async (asset) => {
         if (asset.type.includes('image')) {
-          await uploadNewImage(asset);
+          const compressedURI = await compressedImageURI(asset, value.compressImageQuality);
+          await uploadNewImage({
+            ...asset,
+            uri: compressedURI,
+          });
         } else {
-          await uploadNewFile({ ...asset, mimeType: asset.type, type: FileTypes.Video });
+          await uploadNewFile(asset);
         }
       });
     }
-  };
+  });
 
   /**
    * Function to open the attachment picker if the MediaLibary is installed.
@@ -756,11 +765,11 @@ export const MessageInputProvider = ({
     }
   }, [closeAttachmentPicker, openAttachmentPicker, selectedPicker]);
 
-  const onSelectItem = (item: UserResponse) => {
+  const onSelectItem = useStableCallback((item: UserResponse) => {
     setMentionedUsers((prevMentionedUsers) => [...prevMentionedUsers, item.id]);
-  };
+  });
 
-  const pickFile = async () => {
+  const pickFile = useStableCallback(async () => {
     if (!isDocumentPickerAvailable()) {
       console.log(
         'The file picker is not installed. Check our Getting Started documentation to install it.',
@@ -779,17 +788,18 @@ export const MessageInputProvider = ({
 
     if (!result.cancelled && result.assets) {
       result.assets.forEach(async (asset) => {
-        /**
-         * TODO: The current tight coupling of images to the image
-         * picker does not allow images picked from the file picker
-         * to be rendered in a preview via the uploadNewImage call.
-         * This should be updated alongside allowing image a file
-         * uploads together.
-         */
-        await uploadNewFile(asset);
+        if (asset.type.includes('image')) {
+          const compressedURI = await compressedImageURI(asset, value.compressImageQuality);
+          await uploadNewImage({
+            ...asset,
+            uri: compressedURI,
+          });
+        } else {
+          await uploadNewFile(asset);
+        }
       });
     }
-  };
+  });
 
   const removeFile = useCallback(
     (id: string) => {
@@ -811,7 +821,7 @@ export const MessageInputProvider = ({
     [imageUploads, setImageUploads, setNumberOfUploads],
   );
 
-  const resetInput = (pendingAttachments: Attachment[] = []) => {
+  const resetInput = useStableCallback((pendingAttachments: Attachment[] = []) => {
     /**
      * If the MediaLibrary is available, reset the selected files and images
      */
@@ -832,28 +842,28 @@ export const MessageInputProvider = ({
     if (value.editing) {
       value.clearEditingState();
     }
-  };
+  });
 
-  const mapImageUploadToAttachment = (image: ImageUpload): Attachment => {
-    const mime_type: string | boolean = lookup(image.file.name as string);
-    const name = image.file.name as string;
+  const mapImageUploadToAttachment = useStableCallback((image: FileUpload): Attachment => {
     return {
-      fallback: name,
+      fallback: image.file.name,
       image_url: image.url,
-      mime_type: mime_type ? mime_type : undefined,
-      original_height: image.height,
-      original_width: image.width,
+      mime_type: image.file.type,
+      original_height: image.file.height,
+      original_width: image.file.width,
       originalImage: image.file,
       type: FileTypes.Image,
     };
-  };
+  });
 
-  const mapFileUploadToAttachment = (file: FileUpload): Attachment => {
+  const mapFileUploadToAttachment = useStableCallback((file: FileUpload): Attachment => {
     if (file.type === FileTypes.Image) {
       return {
         fallback: file.file.name,
         image_url: file.url,
-        mime_type: file.file.mimeType,
+        mime_type: file.file.type,
+        original_height: file.file.height,
+        original_width: file.file.width,
         originalFile: file.file,
         type: FileTypes.Image,
       };
@@ -862,7 +872,7 @@ export const MessageInputProvider = ({
         asset_url: file.url || file.file.uri,
         duration: file.file.duration,
         file_size: file.file.size,
-        mime_type: file.file.mimeType,
+        mime_type: file.file.type,
         originalFile: file.file,
         title: file.file.name,
         type: FileTypes.Audio,
@@ -872,7 +882,7 @@ export const MessageInputProvider = ({
         asset_url: file.url || file.file.uri,
         duration: file.file.duration,
         file_size: file.file.size,
-        mime_type: file.file.mimeType,
+        mime_type: file.file.type,
         originalFile: file.file,
         thumb_url: file.thumb_url,
         title: file.file.name,
@@ -883,7 +893,7 @@ export const MessageInputProvider = ({
         asset_url: file.url || file.file.uri,
         duration: file.file.duration,
         file_size: file.file.size,
-        mime_type: file.file.mimeType,
+        mime_type: file.file.type,
         originalFile: file.file,
         title: file.file.name,
         type: FileTypes.VoiceRecording,
@@ -893,164 +903,169 @@ export const MessageInputProvider = ({
       return {
         asset_url: file.url || file.file.uri,
         file_size: file.file.size,
-        mime_type: file.file.mimeType,
+        mime_type: file.file.type,
         originalFile: file.file,
         title: file.file.name,
         type: FileTypes.File,
       };
     }
-  };
+  });
 
   // TODO: Figure out why this is async, as it doesn't await any promise.
-  const sendMessage = async ({
-    customMessageData,
-  }: {
-    customMessageData?: Partial<Message>;
-  } = {}) => {
-    if (sending.current) {
-      return;
-    }
-    const linkInfos = parseLinksFromText(text);
+  const sendMessage = useStableCallback(
+    async ({
+      customMessageData,
+    }: {
+      customMessageData?: Partial<Message>;
+    } = {}) => {
+      if (sending.current) {
+        return;
+      }
+      const linkInfos = parseLinksFromText(text);
 
-    if (!channelCapabities.sendLinks && linkInfos.length > 0) {
-      Alert.alert(t('Links are disabled'), t('Sending links is not allowed in this conversation'));
+      if (!channelCapabities.sendLinks && linkInfos.length > 0) {
+        Alert.alert(
+          t('Links are disabled'),
+          t('Sending links is not allowed in this conversation'),
+        );
 
-      return;
-    }
+        return;
+      }
 
-    sending.current = true;
+      sending.current = true;
 
-    startCooldown();
+      startCooldown();
 
-    const prevText = giphyEnabled && giphyActive ? `/giphy ${text}` : text;
-    setText('');
+      const prevText = giphyEnabled && giphyActive ? `/giphy ${text}` : text;
+      setText('');
 
-    if (inputBoxRef.current) {
-      inputBoxRef.current.clear();
-    }
+      if (inputBoxRef.current) {
+        inputBoxRef.current.clear();
+      }
 
-    const attachments = [] as Attachment[];
-    for (const image of imageUploads) {
-      if (enableOfflineSupport) {
-        if (image.state === FileState.NOT_SUPPORTED) {
-          return;
+      const attachments = [] as Attachment[];
+      for (const image of imageUploads) {
+        if (enableOfflineSupport) {
+          if (image.state === FileState.NOT_SUPPORTED) {
+            return;
+          }
+          attachments.push(mapImageUploadToAttachment(image));
+          continue;
         }
-        attachments.push(mapImageUploadToAttachment(image));
-        continue;
+
+        if ((!image || image.state === FileState.UPLOAD_FAILED) && !enableOfflineSupport) {
+          continue;
+        }
+
+        if (image.state === FileState.UPLOADING) {
+          // TODO: show error to user that they should wait until image is uploaded
+          if (value.sendImageAsync) {
+            /**
+             * If user hit send before image uploaded, push ID into a queue to later
+             * be matched with the successful CDN response
+             */
+            setAsyncIds((prevAsyncIds) => [...prevAsyncIds, image.id]);
+          } else {
+            sending.current = false;
+            return setText(prevText);
+          }
+        }
+
+        // To get the mime type of the image from the file name and send it as an response for an image
+        if (image.state === FileState.UPLOADED || image.state === FileState.FINISHED) {
+          attachments.push(mapImageUploadToAttachment(image));
+        }
       }
 
-      if ((!image || image.state === FileState.UPLOAD_FAILED) && !enableOfflineSupport) {
-        continue;
-      }
+      for (const file of fileUploads) {
+        if (enableOfflineSupport) {
+          if (file.state === FileState.NOT_SUPPORTED) {
+            return;
+          }
+          attachments.push(mapFileUploadToAttachment(file));
+          continue;
+        }
 
-      if (image.state === FileState.UPLOADING) {
-        // TODO: show error to user that they should wait until image is uploaded
-        if (value.sendImageAsync) {
-          /**
-           * If user hit send before image uploaded, push ID into a queue to later
-           * be matched with the successful CDN response
-           */
-          setAsyncIds((prevAsyncIds) => [...prevAsyncIds, image.id]);
-        } else {
+        if (!file || file.state === FileState.UPLOAD_FAILED) {
+          continue;
+        }
+
+        if (file.state === FileState.UPLOADING) {
+          // TODO: show error to user that they should wait until image is uploaded
           sending.current = false;
-          return setText(prevText);
-        }
-      }
-
-      // To get the mime type of the image from the file name and send it as an response for an image
-      if (image.state === FileState.UPLOADED || image.state === FileState.FINISHED) {
-        attachments.push(mapImageUploadToAttachment(image));
-      }
-    }
-
-    for (const file of fileUploads) {
-      if (enableOfflineSupport) {
-        if (file.state === FileState.NOT_SUPPORTED) {
           return;
         }
-        attachments.push(mapFileUploadToAttachment(file));
-        continue;
+
+        if (file.state === FileState.UPLOADED || file.state === FileState.FINISHED) {
+          attachments.push(mapFileUploadToAttachment(file));
+        }
       }
 
-      if (!file || file.state === FileState.UPLOAD_FAILED) {
-        continue;
-      }
-
-      if (file.state === FileState.UPLOADING) {
-        // TODO: show error to user that they should wait until image is uploaded
+      // Disallow sending message if its empty.
+      if (!prevText && attachments.length === 0 && !customMessageData?.poll_id) {
         sending.current = false;
         return;
       }
 
-      if (file.state === FileState.UPLOADED || file.state === FileState.FINISHED) {
-        attachments.push(mapFileUploadToAttachment(file));
-      }
-    }
-
-    // Disallow sending message if its empty.
-    if (!prevText && attachments.length === 0 && !customMessageData?.poll_id) {
-      sending.current = false;
-      return;
-    }
-
-    const message = value.editing;
-    if (message && message.type !== 'error') {
-      const updatedMessage = {
-        ...message,
-        attachments,
-        mentioned_users: mentionedUsers,
-        quoted_message: undefined,
-        text: prevText,
-        ...customMessageData,
-      } as Parameters<StreamChat['updateMessage']>[0];
-
-      // TODO: Remove this line and show an error when submit fails
-      value.clearEditingState();
-
-      const updateMessagePromise = value
-        .editMessage(
-          // @ts-ignore
-          removeReservedFields(updatedMessage),
-        )
-        .then(value.clearEditingState);
-      resetInput(attachments);
-      logChatPromiseExecution(updateMessagePromise, 'update message');
-
-      sending.current = false;
-    } else {
-      try {
-        /**
-         * If the message is bounced by moderation, we firstly remove the message from message list and then send a new message.
-         */
-        if (message && isBouncedMessage(message as MessageType)) {
-          await removeMessage(message);
-        }
-        value.sendMessage({
+      const message = value.editing;
+      if (message && message.type !== 'error') {
+        const updatedMessage = {
+          ...message,
           attachments,
-          mentioned_users: uniq(mentionedUsers),
-          /** Parent message id - in case of thread */
-          parent_id: thread?.id,
-          quoted_message_id: value.quotedMessage ? value.quotedMessage.id : undefined,
-          show_in_channel: sendThreadMessageInChannel || undefined,
+          mentioned_users: mentionedUsers.map((userId) => ({ id: userId })),
+          quoted_message: undefined,
           text: prevText,
           ...customMessageData,
-        } as unknown as StreamMessage);
+        } as Parameters<StreamChat['updateMessage']>[0];
 
-        value.clearQuotedMessageState();
-        sending.current = false;
+        // TODO: Remove this line and show an error when submit fails
+        value.clearEditingState();
+
+        const updateMessagePromise = value
+          .editMessage(
+            // @ts-ignore
+            removeReservedFields(updatedMessage),
+          )
+          .then(value.clearEditingState);
+        logChatPromiseExecution(updateMessagePromise, 'update message');
         resetInput(attachments);
-      } catch (_error) {
-        sending.current = false;
-        if (value.quotedMessage && typeof value.quotedMessage !== 'boolean') {
-          value.setQuotedMessageState(value.quotedMessage);
-        }
-        setText(prevText.slice(giphyEnabled && giphyActive ? 7 : 0)); // 7 because of '/giphy ' length
-        console.log('Failed to send message');
-      }
-    }
-  };
 
-  const sendMessageAsync = (id: string) => {
+        sending.current = false;
+      } else {
+        try {
+          /**
+           * If the message is bounced by moderation, we firstly remove the message from message list and then send a new message.
+           */
+          if (message && isBouncedMessage(message as MessageType)) {
+            await removeMessage(message);
+          }
+          value.sendMessage({
+            attachments,
+            mentioned_users: uniq(mentionedUsers),
+            /** Parent message id - in case of thread */
+            parent_id: thread?.id,
+            quoted_message_id: value.quotedMessage ? value.quotedMessage.id : undefined,
+            show_in_channel: sendThreadMessageInChannel || undefined,
+            text: prevText,
+            ...customMessageData,
+          } as unknown as StreamMessage);
+
+          value.clearQuotedMessageState();
+          sending.current = false;
+          resetInput(attachments);
+        } catch (_error) {
+          sending.current = false;
+          if (value.quotedMessage && typeof value.quotedMessage !== 'boolean') {
+            value.setQuotedMessageState(value.quotedMessage);
+          }
+          setText(prevText.slice(giphyEnabled && giphyActive ? 7 : 0)); // 7 because of '/giphy ' length
+          console.log('Failed to send message');
+        }
+      }
+    },
+  );
+
+  const sendMessageAsync = useStableCallback((id: string) => {
     const image = asyncUploads[id];
     if (!image || image.state === FileState.UPLOAD_FAILED) {
       return;
@@ -1086,31 +1101,31 @@ export const MessageInputProvider = ({
         console.log('Failed');
       }
     }
-  };
+  });
 
-  const setInputBoxRef = (ref: TextInput | null) => {
+  const setInputBoxRef = useStableCallback((ref: TextInput | null) => {
     inputBoxRef.current = ref;
     if (value.setInputRef) {
       value.setInputRef(ref);
     }
-  };
+  });
 
-  const getTriggerSettings = () => {
+  const triggerSettings = useMemo(() => {
     try {
       let triggerSettings: TriggerSettings = {};
       if (channel) {
-        if (value.autoCompleteTriggerSettings) {
-          triggerSettings = value.autoCompleteTriggerSettings({
+        if (autoCompleteTriggerSettings) {
+          triggerSettings = autoCompleteTriggerSettings({
             channel,
             client,
-            emojiSearchIndex: value.emojiSearchIndex,
+            emojiSearchIndex,
             onMentionSelectItem: onSelectItem,
           });
         } else {
           triggerSettings = ACITriggerSettings({
             channel,
             client,
-            emojiSearchIndex: value.emojiSearchIndex,
+            emojiSearchIndex,
             onMentionSelectItem: onSelectItem,
           });
         }
@@ -1120,11 +1135,11 @@ export const MessageInputProvider = ({
       console.warn('Error in getting trigger settings', error);
       throw error;
     }
-  };
+  }, [channel, client, onSelectItem, autoCompleteTriggerSettings, emojiSearchIndex]);
 
-  const triggerSettings = getTriggerSettings();
+  // const triggerSettings = getTriggerSettings();
 
-  const updateMessage = async () => {
+  const updateMessage = useStableCallback(async () => {
     try {
       if (value.editing) {
         await client.updateMessage({
@@ -1139,51 +1154,54 @@ export const MessageInputProvider = ({
     } catch (error) {
       console.log(error);
     }
-  };
+  });
 
   const regexCondition = /File (extension \.\w{2,4}|type \S+) is not supported/;
 
-  const getUploadSetStateAction =
-    <UploadType extends ImageUpload | FileUpload>(
+  const getUploadSetStateAction = useStableCallback(
+    <UploadType extends FileUpload>(
       id: string,
       fileState: FileStateValue,
       extraData: Partial<UploadType> = {},
     ): React.SetStateAction<UploadType[]> =>
-    (prevUploads: UploadType[]) =>
-      prevUploads.map((prevUpload) => {
-        if (prevUpload.id === id) {
-          return {
-            ...prevUpload,
-            ...extraData,
-            state: fileState,
-          };
-        }
-        return prevUpload;
-      });
+      (prevUploads: UploadType[]) =>
+        prevUploads.map((prevUpload) => {
+          if (prevUpload.id === id) {
+            return {
+              ...prevUpload,
+              ...extraData,
+              state: fileState,
+            };
+          }
+          return prevUpload;
+        }),
+  );
 
-  const handleFileOrImageUploadError = (error: unknown, isImageError: boolean, id: string) => {
-    if (isImageError) {
-      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
-      if (error instanceof Error) {
-        if (regexCondition.test(error.message)) {
-          return setImageUploads(getUploadSetStateAction(id, FileState.NOT_SUPPORTED));
-        }
+  const handleFileOrImageUploadError = useStableCallback(
+    (error: unknown, isImageError: boolean, id: string) => {
+      if (isImageError) {
+        setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
+        if (error instanceof Error) {
+          if (regexCondition.test(error.message)) {
+            return setImageUploads(getUploadSetStateAction(id, FileState.NOT_SUPPORTED));
+          }
 
-        return setImageUploads(getUploadSetStateAction(id, FileState.UPLOAD_FAILED));
+          return setImageUploads(getUploadSetStateAction(id, FileState.UPLOAD_FAILED));
+        }
+      } else {
+        setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
+
+        if (error instanceof Error) {
+          if (regexCondition.test(error.message)) {
+            return setFileUploads(getUploadSetStateAction(id, FileState.NOT_SUPPORTED));
+          }
+          return setFileUploads(getUploadSetStateAction(id, FileState.UPLOAD_FAILED));
+        }
       }
-    } else {
-      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
+    },
+  );
 
-      if (error instanceof Error) {
-        if (regexCondition.test(error.message)) {
-          return setFileUploads(getUploadSetStateAction(id, FileState.NOT_SUPPORTED));
-        }
-        return setFileUploads(getUploadSetStateAction(id, FileState.UPLOAD_FAILED));
-      }
-    }
-  };
-
-  const uploadFile = async ({ newFile }: { newFile: FileUpload }) => {
+  const uploadFile = useStableCallback(async ({ newFile }: { newFile: FileUpload }) => {
     const { file, id } = newFile;
 
     // The file name can have special characters, so we escape it.
@@ -1201,11 +1219,11 @@ export const MessageInputProvider = ({
           client.createAbortControllerForNextRequest(),
         );
         // Compress images selected through file picker when uploading them
-        if (file.mimeType?.includes('image')) {
+        if (file.type?.includes('image')) {
           const compressedUri = await compressedImageURI(file, value.compressImageQuality);
-          response = await channel.sendFile(compressedUri, filename, file.mimeType);
+          response = await channel.sendFile(compressedUri, filename, file.type);
         } else {
-          response = await channel.sendFile(file.uri, filename, file.mimeType);
+          response = await channel.sendFile(file.uri, filename, file.type);
         }
         uploadAbortControllerRef.current.delete(filename);
       }
@@ -1226,9 +1244,9 @@ export const MessageInputProvider = ({
       }
       handleFileOrImageUploadError(error, false, id);
     }
-  };
+  });
 
-  const uploadImage = async ({ newImage }: { newImage: ImageUpload }) => {
+  const uploadImage = useStableCallback(async ({ newImage }: { newImage: FileUpload }) => {
     const { file, id } = newImage || {};
 
     if (!file) {
@@ -1242,17 +1260,16 @@ export const MessageInputProvider = ({
     const filename = escapeRegExp(file.name ?? getFileNameFromPath(uri));
 
     try {
-      const compressedUri = await compressedImageURI(file, value.compressImageQuality);
-      const contentType = lookup(filename) || 'multipart/form-data';
+      const contentType = file.type || 'multipart/form-data';
       if (value.doImageUploadRequest) {
         response = await value.doImageUploadRequest(file, channel);
-      } else if (compressedUri && channel) {
+      } else if (channel) {
         if (value.sendImageAsync) {
           uploadAbortControllerRef.current.set(
             filename,
             client.createAbortControllerForNextRequest(),
           );
-          channel.sendImage(compressedUri, filename, contentType).then(
+          channel.sendImage(file.uri, filename, contentType).then(
             (res) => {
               uploadAbortControllerRef.current.delete(filename);
               if (asyncIds.includes(id)) {
@@ -1266,7 +1283,7 @@ export const MessageInputProvider = ({
                   return prevAsyncUploads;
                 });
               } else {
-                const newImageUploads = getUploadSetStateAction<ImageUpload>(
+                const newImageUploads = getUploadSetStateAction<FileUpload>(
                   id,
                   FileState.UPLOADED,
                   {
@@ -1285,13 +1302,13 @@ export const MessageInputProvider = ({
             filename,
             client.createAbortControllerForNextRequest(),
           );
-          response = await channel.sendImage(compressedUri, filename, contentType);
+          response = await channel.sendImage(file.uri, filename, contentType);
           uploadAbortControllerRef.current.delete(filename);
         }
       }
 
       if (Object.keys(response).length) {
-        const newImageUploads = getUploadSetStateAction<ImageUpload>(id, FileState.UPLOADED, {
+        const newImageUploads = getUploadSetStateAction<FileUpload>(id, FileState.UPLOADED, {
           height: file.height,
           url: response.file,
           width: file.width,
@@ -1309,9 +1326,14 @@ export const MessageInputProvider = ({
       }
       handleFileOrImageUploadError(error, true, id);
     }
-  };
+  });
 
-  const uploadNewFile = async (file: File) => {
+  /**
+   * The fileType is optional and is used to override the file type detection.
+   * This is useful for voice recordings, where the file type is not always detected correctly.
+   * This will change if we unify the file uploads to attachments.
+   */
+  const uploadNewFile = useStableCallback(async (file: File, fileType?: FileTypes) => {
     try {
       const id: string = generateRandomId();
       const fileConfig = getFileUploadConfig();
@@ -1333,16 +1355,16 @@ export const MessageInputProvider = ({
       }
 
       const fileState = isAllowed ? FileState.UPLOADING : FileState.NOT_SUPPORTED;
-
-      // If file type is explicitly provided while upload we use it, else we derive the file type.
-      const fileType = file.type || file.mimeType?.split('/')[0];
+      const derivedFileType = fileType ?? getFileTypeFromMimeType(file.type);
 
       const newFile: FileUpload = {
         duration: file.duration || 0,
         file,
-        id: file.id || id,
+        id,
+        mime_type: file.type,
         state: fileState,
-        type: fileType,
+        thumb_url: file.thumb_url,
+        type: derivedFileType,
         url: file.uri,
       };
 
@@ -1357,9 +1379,9 @@ export const MessageInputProvider = ({
     } catch (error) {
       console.log('Error uploading file', error);
     }
-  };
+  });
 
-  const uploadNewImage = async (image: Partial<Asset>) => {
+  const uploadNewImage = useStableCallback(async (image: File) => {
     try {
       const id = generateRandomId();
       const imageUploadConfig = getImageUploadConfig();
@@ -1385,11 +1407,13 @@ export const MessageInputProvider = ({
 
       const imageState = isAllowed ? FileState.UPLOADING : FileState.NOT_SUPPORTED;
 
-      const newImage: ImageUpload = {
+      const newImage: FileUpload = {
         file: image,
         height: image.height,
         id,
+        mime_type: image.type,
         state: imageState,
+        type: FileTypes.Image,
         url: image.uri,
         width: image.width,
       };
@@ -1405,15 +1429,15 @@ export const MessageInputProvider = ({
     } catch (error) {
       console.log('Error uploading image', error);
     }
-  };
+  });
 
-  const openPollCreationDialog = () => {
+  const openPollCreationDialog = useStableCallback(() => {
     if (openPollCreationDialogFromContext) {
       openPollCreationDialogFromContext({ sendMessage });
       return;
     }
     defaultOpenPollCreationDialog();
-  };
+  });
 
   const messageInputContext = useCreateMessageInputContext({
     appendText,
@@ -1423,6 +1447,7 @@ export const MessageInputProvider = ({
     cooldownEndsAt,
     fileUploads,
     giphyActive,
+    giphyEnabled,
     imageUploads,
     inputBoxRef,
     isValidMessage,
@@ -1467,6 +1492,7 @@ export const MessageInputProvider = ({
     uploadNewImage,
     ...value,
     closePollCreationDialog,
+    hasText: !!text,
     openPollCreationDialog,
     sendMessage, // overriding the originally passed in sendMessage
     showPollCreationDialog,
@@ -1491,4 +1517,11 @@ export const useMessageInputContext = () => {
   }
 
   return contextValue;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+const useStableCallback = <T extends Function>(callback: T): T => {
+  const ref = useRef<T>(callback);
+  ref.current = callback;
+  return useCallback(((...args: unknown[]) => ref.current(...args)) as unknown as T, []);
 };

@@ -1,4 +1,4 @@
-import type { ChannelFilters, ChannelSort, ChannelState } from 'stream-chat';
+import type { ChannelFilters, ChannelSort, ChannelState, FileReference } from 'stream-chat';
 
 import type { FileStateValue } from '../utils/utils';
 
@@ -12,93 +12,74 @@ export enum FileTypes {
   VoiceRecording = 'voiceRecording',
 }
 
-export type Asset = {
-  duration: number;
-  height: number;
-  name: string;
-  source: 'camera' | 'picker';
-  type: string;
-  uri: string;
-  width: number;
-  id?: string;
-  mimeType?: string;
-  originalUri?: string;
-  size?: number;
-};
+export type File = FileReference;
 
-export type File = {
-  name: string;
-  duration?: number;
-  id?: string;
-  mimeType?: string;
-  originalUri?: string;
-  size?: number;
-  type?: FileTypes;
-  // The uri should be of type `string`. But is `string|undefined` because the same type is used for the response from Stream's Attachment. This shall be fixed.
-  uri?: string;
-  waveform_data?: number[];
-};
-
+/**
+ * This is nothing but a substitute for the attachment type prior to sending the message.
+ * This will change if we unify the file uploads to attachments.
+ */
 export type FileUpload = {
   file: File;
   id: string;
   state: FileStateValue;
-  duration?: number;
-  paused?: boolean;
-  progress?: number;
-  thumb_url?: string;
-  type?: string;
+
+  mime_type?: string;
+
+  type?: FileTypes;
   url?: string;
+
+  thumb_url?: string;
+
+  duration?: number;
   waveform_data?: number[];
+
+  height?: number;
+  width?: number;
 };
-export interface DefaultAttachmentType {
+
+export type AudioUpload = FileUpload & {
+  progress?: number;
+  paused?: boolean;
+};
+
+export interface DefaultAttachmentData {
   duration?: number;
   file_size?: number;
   mime_type?: string;
   originalFile?: File;
-  originalImage?: Partial<Asset>;
+  originalImage?: File;
   waveform_data?: number[];
 }
 
-export interface DefaultUserType {
+export interface DefaultUserData {
   image?: string;
 }
 
-export interface DefaultChannelType {
+export interface DefaultChannelData {
   image?: string;
   name?: string;
 }
 
-export interface DefaultCommandType {
+export interface DefaultCommandData {
   flag: unknown;
   imgur: unknown;
 }
 
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 
-export interface DefaultEventType {}
+export interface DefaultEventData {}
 
-export interface DefaultMemberType {}
+export interface DefaultMemberData {}
 
-export interface DefaultMessageType {}
+export interface DefaultMessageData {}
 
-export interface DefaultPollOptionType {}
+export interface DefaultPollOptionData {}
 
-export interface DefaultPollType {}
+export interface DefaultPollData {}
 
-export interface DefaultReactionType {}
+export interface DefaultReactionData {}
 
-export interface DefaultThreadType {}
-
-/* eslint-enable @typescript-eslint/no-empty-object-type */
-export type ImageUpload = {
-  file: Partial<Asset>;
-  id: string;
-  state: FileStateValue;
-  height?: number;
-  url?: string;
-  width?: number;
-};
+export interface DefaultThreadData {}
 
 export type Reaction = {
   id: string;

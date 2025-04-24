@@ -4,10 +4,6 @@ import { I18nManager, StyleSheet, TextInput, TextInputProps } from 'react-native
 import throttle from 'lodash/throttle';
 
 import {
-  ChannelContextValue,
-  useChannelContext,
-} from '../../contexts/channelContext/ChannelContext';
-import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
@@ -51,22 +47,22 @@ const computeCaretPosition = (token: string, startOfTokenPosition: number) =>
 
 const isCommand = (text: string) => text[0] === '/' && text.split(' ').length <= 1;
 
-type AutoCompleteInputPropsWithContext = Pick<ChannelContextValue, 'giphyEnabled'> &
-  Pick<
-    MessageInputContextValue,
-    | 'additionalTextInputProps'
-    | 'autoCompleteSuggestionsLimit'
-    | 'giphyActive'
-    | 'maxMessageLength'
-    | 'mentionAllAppUsersEnabled'
-    | 'mentionAllAppUsersQuery'
-    | 'numberOfLines'
-    | 'onChange'
-    | 'setGiphyActive'
-    | 'setInputBoxRef'
-    | 'text'
-    | 'triggerSettings'
-  > &
+type AutoCompleteInputPropsWithContext = Pick<
+  MessageInputContextValue,
+  | 'additionalTextInputProps'
+  | 'autoCompleteSuggestionsLimit'
+  | 'giphyActive'
+  | 'giphyEnabled'
+  | 'maxMessageLength'
+  | 'mentionAllAppUsersEnabled'
+  | 'mentionAllAppUsersQuery'
+  | 'numberOfLines'
+  | 'onChange'
+  | 'setGiphyActive'
+  | 'setInputBoxRef'
+  | 'text'
+  | 'triggerSettings'
+> &
   Pick<SuggestionsContextValue, 'closeSuggestions' | 'openSuggestions' | 'updateSuggestions'> &
   Pick<TranslationContextValue, 't'> & {
     /**
@@ -76,7 +72,15 @@ type AutoCompleteInputPropsWithContext = Pick<ChannelContextValue, 'giphyEnabled
     cooldownActive?: boolean;
   };
 
-export type AutoCompleteInputProps = Partial<AutoCompleteInputPropsWithContext>;
+export type AutoCompleteInputProps = Partial<
+  Omit<
+    AutoCompleteInputPropsWithContext,
+    | 'triggerSettings'
+    | 'mentionAllAppUsersQuery'
+    | 'mentionAllAppUsersEnabled'
+    | 'autoCompleteSuggestionsLimit'
+  >
+>;
 
 const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) => {
   const {
@@ -86,9 +90,9 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
     cooldownActive = false,
     giphyActive,
     giphyEnabled,
-    maxMessageLength,
     mentionAllAppUsersEnabled,
     mentionAllAppUsersQuery,
+    maxMessageLength,
     numberOfLines,
     onChange,
     openSuggestions,
@@ -463,8 +467,8 @@ const MemoizedAutoCompleteInput = React.memo(
 ) as typeof AutoCompleteInputWithContext;
 
 export const AutoCompleteInput = (props: AutoCompleteInputProps) => {
-  const { giphyEnabled } = useChannelContext();
   const {
+    giphyEnabled,
     additionalTextInputProps,
     autoCompleteSuggestionsLimit,
     giphyActive,

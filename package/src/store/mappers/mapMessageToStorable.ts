@@ -1,11 +1,11 @@
-import type { FormatMessageResponse, MessageResponse } from 'stream-chat';
+import type { LocalMessage, MessageResponse } from 'stream-chat';
 
 import { mapDateTimeToStorable } from './mapDateTimeToStorable';
 
 import type { TableRow } from '../types';
 
 export const mapMessageToStorable = (
-  message: MessageResponse | FormatMessageResponse,
+  message: MessageResponse | LocalMessage,
 ): TableRow<'messages'> => {
   const {
     attachments,
