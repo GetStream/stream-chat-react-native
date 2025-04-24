@@ -26,6 +26,7 @@ import {
   UserDelete,
 } from '../../../icons';
 
+import { removeReservedFields } from '../../../utils/removeReservedFields';
 import { MessageStatusTypes } from '../../../utils/utils';
 
 import type { MessageActionType } from '../../MessageMenu/MessageActionListItem';
@@ -291,8 +292,9 @@ export const useMessageActions = ({
   const retry: MessageActionType = {
     action: async () => {
       dismissOverlay();
+      const messageWithoutReservedFields = removeReservedFields(message);
       if (handleRetry) {
-        handleRetry(message);
+        handleRetry(messageWithoutReservedFields as LocalMessage);
       }
 
       await handleResendMessage();
