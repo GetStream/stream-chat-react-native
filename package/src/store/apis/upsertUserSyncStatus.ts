@@ -4,19 +4,27 @@ import { SqliteClient } from '../SqliteClient';
 export const upsertUserSyncStatus = async ({
   currentUserId,
   lastSyncedAt,
+  flush = true,
 }: {
   currentUserId: string;
   lastSyncedAt: string;
+  flush?: boolean;
 }) => {
-  const query = createUpsertQuery('userSyncStatus', {
-    lastSyncedAt,
-    userId: currentUserId,
-  });
+  const queries = [
+    createUpsertQuery('userSyncStatus', {
+      lastSyncedAt,
+      userId: currentUserId,
+    }),
+  ];
 
   SqliteClient.logger?.('info', 'upsertUserSyncStatus', {
     lastSyncedAt,
     userId: currentUserId,
   });
 
-  await SqliteClient.executeSql.apply(null, query);
+  if (flush) {
+    await SqliteClient.executeSqlBatch(queries);
+  }
+
+  return queries;
 };

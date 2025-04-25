@@ -2520,6 +2520,11 @@ linkifyjs@^4.1.1:
   resolved "https://registry.yarnpkg.com/linkifyjs/-/linkifyjs-4.1.1.tgz#73d427e3bbaaf4ca8e71c589ad4ffda11a9a5fde"
   integrity sha512-zFN/CTVmbcVef+WaDXT63dNzzkfRBKT1j464NJQkV7iSgJU0sLBus9W0HBwnXK13/hf168pbrx/V/bjEHOXNHA==
 
+linkifyjs@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/linkifyjs/-/linkifyjs-4.2.0.tgz#9dd30222b9cbabec9c950e725ec00031c7fa3f08"
+  integrity sha512-pCj3PrQyATaoTYKHrgWRF3SJwsm61udVh+vuls/Rl6SptiDhgE7ziUIudAedRY9QEfynmM7/RmLEfPUyw1HPCw==
+
 locate-path@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/locate-path/-/locate-path-3.0.0.tgz#dbec3b3ab759758071b58fe59fc41871af21400e"
@@ -2858,6 +2863,11 @@ mime@1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.6.0.tgz#32cd9e5c64553bd58d19a568af452acff04981b1"
   integrity sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==
+
+mime@^4.0.7:
+  version "4.0.7"
+  resolved "https://registry.yarnpkg.com/mime/-/mime-4.0.7.tgz#0b7a98b08c63bd3c10251e797d67840c9bde9f13"
+  integrity sha512-2OfDPL+e03E0LrXaGYOtTFIYhiuzep94NSsuhrNULq+stylcJedcHdzHtz0atMUuGwJfFYs0YL5xeC/Ca2x0eQ==
 
 minimatch@^3.0.4, minimatch@^3.1.1:
   version "3.1.2"
@@ -3488,9 +3498,9 @@ statuses@~1.5.0:
   version "0.0.0"
   uid ""
 
-"stream-chat@https://github.com/GetStream/stream-chat-js.git#ab43f541954904c4efcf797a4fac8b162e3f342d":
+"stream-chat@https://github.com/GetStream/stream-chat-js.git#4ff638045e434cc091a1200ecff4749b428d6936":
   version "0.0.0-development"
-  resolved "https://github.com/GetStream/stream-chat-js.git#ab43f541954904c4efcf797a4fac8b162e3f342d"
+  resolved "https://github.com/GetStream/stream-chat-js.git#4ff638045e434cc091a1200ecff4749b428d6936"
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"
@@ -3499,6 +3509,7 @@ statuses@~1.5.0:
     form-data "^4.0.0"
     isomorphic-ws "^5.0.0"
     jsonwebtoken "^9.0.2"
+    linkifyjs "^4.2.0"
     ws "^8.18.1"
 
 string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:

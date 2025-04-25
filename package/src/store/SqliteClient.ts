@@ -96,6 +96,7 @@ export class SqliteClient {
       });
       await this.db.executeBatch(finalQueries);
     } catch (e) {
+      this.db?.execute('ROLLBACK');
       this.logger?.('error', 'SqlBatch queries failed', {
         error: e,
         queries,
@@ -214,6 +215,7 @@ export class SqliteClient {
   static resetDB = async () => {
     this.logger?.('info', 'resetDB');
     if (this.db) {
+      // await this.db.execute('ROLLBACK');
       await SqliteClient.dropTables();
       SqliteClient.closeDB();
     }

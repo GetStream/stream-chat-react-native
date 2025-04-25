@@ -13,10 +13,12 @@ export const upsertAppSettings = async ({
   flush?: boolean;
 }) => {
   const storableAppSettings = JSON.stringify(appSettings);
-  const query = createUpsertQuery('userSyncStatus', {
-    appSettings: storableAppSettings,
-    userId: currentUserId,
-  });
+  const queries = [
+    createUpsertQuery('userSyncStatus', {
+      appSettings: storableAppSettings,
+      userId: currentUserId,
+    }),
+  ];
 
   SqliteClient.logger?.('info', 'upsertAppSettings', {
     appSettings: storableAppSettings,
@@ -25,6 +27,8 @@ export const upsertAppSettings = async ({
   });
 
   if (flush) {
-    await SqliteClient.executeSql.apply(null, query);
+    await SqliteClient.executeSqlBatch(queries);
   }
+
+  return queries;
 };

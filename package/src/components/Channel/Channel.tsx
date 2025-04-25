@@ -1498,27 +1498,29 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   /**
    * Removes the message from local state
    */
-  const removeMessage: MessagesContextValue['removeMessage'] = useStableCallback(async (message) => {
-    if (channel) {
-      // TODO: See if it's easy to refactor this to be able to accept DB queries
-      channel.state.removeMessage(message);
-      copyMessagesStateFromChannel(channel);
+  const removeMessage: MessagesContextValue['removeMessage'] = useStableCallback(
+    async (message) => {
+      if (channel) {
+        // TODO: See if it's easy to refactor this to be able to accept DB queries
+        channel.state.removeMessage(message);
+        copyMessagesStateFromChannel(channel);
 
         if (thread) {
           setThreadMessages(channel.state.threads[thread.id] || []);
         }
       }
 
-    if (client.offlineDb) {
-      // FIXME: Batch these maybe ?.
-      await Promise.all([
-        client.offlineDb.dropPendingTasks({ messageId: message.id }),
-        client.offlineDb.hardDeleteMessage({
-          id: message.id,
-        }),
-      ]);
-    }
-  });
+      if (client.offlineDb) {
+        // FIXME: Batch these maybe ?.
+        await Promise.all([
+          client.offlineDb.dropPendingTasks({ messageId: message.id }),
+          client.offlineDb.hardDeleteMessage({
+            id: message.id,
+          }),
+        ]);
+      }
+    },
+  );
 
   const sendReaction = useStableCallback(async (type: string, messageId: string) => {
     if (!channel?.id || !client.user) {
@@ -1552,34 +1554,33 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     }
   });
 
-  const deleteMessage: MessagesContextValue['deleteMessage'] = useStableCallback(async (
-    message,
-    hardDelete = false,
-  ) => {
-    if (!channel.id) {
-      throw new Error('Channel has not been initialized yet');
-    }
+  const deleteMessage: MessagesContextValue['deleteMessage'] = useStableCallback(
+    async (message, hardDelete = false) => {
+      if (!channel.id) {
+        throw new Error('Channel has not been initialized yet');
+      }
 
-    if (message.status === MessageStatusTypes.FAILED) {
-      await removeMessage(message);
-      return;
-    }
-    const updatedMessage = {
-      ...message,
-      cid: channel.cid,
-      deleted_at: new Date().toISOString(),
-      type: 'deleted' as MessageLabel,
-    };
-    updateMessage(updatedMessage);
+      if (message.status === MessageStatusTypes.FAILED) {
+        await removeMessage(message);
+        return;
+      }
+      const updatedMessage = {
+        ...message,
+        cid: channel.cid,
+        deleted_at: new Date().toISOString(),
+        type: 'deleted' as MessageLabel,
+      };
+      updateMessage(updatedMessage);
 
-    threadInstance?.upsertReplyLocally({ message: updatedMessage });
+      threadInstance?.upsertReplyLocally({ message: updatedMessage });
 
-    const data = await client.deleteMessage(message.id, hardDelete);
+      const data = await client.deleteMessage(message.id, hardDelete);
 
-    if (data?.message) {
-      updateMessage({ ...data.message });
-    }
-  });
+      if (data?.message) {
+        updateMessage({ ...data.message });
+      }
+    },
+  );
 
   const deleteReaction: MessagesContextValue['deleteReaction'] = useStableCallback(
     async (type: string, messageId: string) => {
@@ -1589,14 +1590,20 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
       const payload: Parameters<ChannelClass['deleteReaction']> = [messageId, type];
 
-    if (enableOfflineSupport) {
-      channel.state.removeReaction({ created_at: '', message_id: messageId, type, updated_at: '' });
+      if (enableOfflineSupport) {
+        channel.state.removeReaction({
+          created_at: '',
+          message_id: messageId,
+          type,
+          updated_at: '',
+        });
 
-      copyMessagesStateFromChannel(channel);
-    }
+        copyMessagesStateFromChannel(channel);
+      }
 
-    await channel.deleteReaction(...payload);
-  });
+      await channel.deleteReaction(...payload);
+    },
+  );
 
   /**
    * THREAD METHODS

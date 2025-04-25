@@ -17,7 +17,7 @@ export const deleteReaction = async ({
   const queries: PreparedQueries[] = [];
 
   if (!message) {
-    return;
+    return [];
   }
 
   queries.push(

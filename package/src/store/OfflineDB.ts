@@ -21,14 +21,20 @@ export class OfflineDB extends AbstractOfflineDB {
   upsertChannels = api.upsertChannels;
 
   // FIXME
-  upsertUserSyncStatus = ({ userId, lastSyncedAt }: UpsertUserSyncStatusType) =>
-    api.upsertUserSyncStatus({ currentUserId: userId, lastSyncedAt });
+  upsertUserSyncStatus = ({ userId, lastSyncedAt, flush }: UpsertUserSyncStatusType) =>
+    api.upsertUserSyncStatus({ currentUserId: userId, flush, lastSyncedAt });
 
   // FIXME
   upsertAppSettings = ({ appSettings, userId, flush }: UpsertAppSettingsType) =>
     api.upsertAppSettings({ appSettings, currentUserId: userId, flush });
 
   upsertPoll = api.upsertPoll;
+
+  upsertChannelData = api.upsertChannelData;
+
+  upsertReads = api.upsertReads;
+
+  upsertMessages = api.upsertMessages;
 
   // FIXME
   getChannels = ({ cids, userId }: GetChannelsType) =>
@@ -65,6 +71,8 @@ export class OfflineDB extends AbstractOfflineDB {
   insertReaction = api.insertReaction;
 
   updateMessage = api.updateMessage;
+
+  channelExists = api.channelExists;
 
   resetDB = SqliteClient.resetDB;
 

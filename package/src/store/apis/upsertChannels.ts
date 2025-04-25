@@ -1,6 +1,5 @@
-import type { ChannelAPIResponse, ChannelFilters, ChannelSort } from 'stream-chat';
+import type { ChannelAPIResponse } from 'stream-chat';
 
-import { upsertCidsForQuery } from './upsertCidsForQuery';
 import { upsertMembers } from './upsertMembers';
 
 import { upsertMessages } from './upsertMessages';
@@ -13,16 +12,12 @@ import type { PreparedQueries } from '../types';
 
 export const upsertChannels = async ({
   channels,
-  filters,
   flush = true,
   isLatestMessagesSet,
-  sort,
 }: {
   channels: ChannelAPIResponse[];
-  filters?: ChannelFilters;
   flush?: boolean;
   isLatestMessagesSet?: boolean;
-  sort?: ChannelSort;
 }) => {
   // Update the database only if the query is provided.
   let queries: PreparedQueries[] = [];
@@ -32,17 +27,6 @@ export const upsertChannels = async ({
   SqliteClient.logger?.('info', 'upsertChannels', {
     channelIds,
   });
-
-  if (filters || sort) {
-    queries = queries.concat(
-      await upsertCidsForQuery({
-        cids: channelIds,
-        filters,
-        flush: false,
-        sort,
-      }),
-    );
-  }
 
   for (const channel of channels) {
     queries.push(createUpsertQuery('channels', mapChannelDataToStorable(channel.channel)));
