@@ -40,7 +40,7 @@ const getGroupStyle = (
     previousMessage.type === 'error' ||
     userId !== previousMessage?.user?.id ||
     !!isPrevMessageTypeDeleted ||
-    (!hideDateSeparators && dateSeparators[message.id]) ||
+    (!hideDateSeparators && dateSeparators[previousMessage.id]) ||
     isEditedMessage(previousMessage);
 
   const isBottomMessage =

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 
 import type { LocalMessage } from 'stream-chat';
 
@@ -11,7 +11,7 @@ import {
 import { usePaginatedMessageListContext } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 
-import { getDateSeparators } from '../utils/getDateSeparators';
+import { DateSeparators, getDateSeparators } from '../utils/getDateSeparators';
 import { getGroupStyles } from '../utils/getGroupStyles';
 
 export type UseMessageListParams = {
@@ -21,6 +21,10 @@ export type UseMessageListParams = {
 };
 
 export type GroupType = string;
+
+export type MessageGroupStyles = {
+  [key: string]: string[];
+};
 
 export const shouldIncludeMessageInList = (
   message: LocalMessage,
@@ -51,7 +55,6 @@ export const useMessageList = (params: UseMessageListParams) => {
     useMessagesContext();
   const { messages } = usePaginatedMessageListContext();
   const { threadMessages } = useThreadContext();
-
   const messageList = threadList ? threadMessages : messages;
 
   const dateSeparators = useMemo(
@@ -65,10 +68,13 @@ export const useMessageList = (params: UseMessageListParams) => {
     [deletedMessagesVisibilityType, hideDateSeparators, messageList, client.userID],
   );
 
+  const dateSeparatorsRef = useRef<DateSeparators>(dateSeparators);
+  dateSeparatorsRef.current = dateSeparators;
+
   const messageGroupStyles = useMemo(
     () =>
       getMessagesGroupStyles({
-        dateSeparators,
+        dateSeparators: dateSeparatorsRef.current,
         hideDateSeparators,
         maxTimeBetweenGroupedMessages,
         messages: messageList,
@@ -76,8 +82,8 @@ export const useMessageList = (params: UseMessageListParams) => {
         userId: client.userID,
       }),
     [
+      dateSeparatorsRef,
       getMessagesGroupStyles,
-      dateSeparators,
       hideDateSeparators,
       maxTimeBetweenGroupedMessages,
       messageList,
@@ -85,6 +91,9 @@ export const useMessageList = (params: UseMessageListParams) => {
       client.userID,
     ],
   );
+
+  const messageGroupStylesRef = useRef<MessageGroupStyles>(messageGroupStyles);
+  messageGroupStylesRef.current = messageGroupStyles;
 
   const processedMessageList = useMemo<LocalMessage[]>(() => {
     const newMessageList = [];
@@ -103,9 +112,9 @@ export const useMessageList = (params: UseMessageListParams) => {
 
   return {
     /** Date separators */
-    dateSeparators,
+    dateSeparatorsRef,
     /** Message group styles */
-    messageGroupStyles,
+    messageGroupStylesRef,
     /** Messages enriched with dates/readby/groups and also reversed in order */
     processedMessageList,
     /** Raw messages from the channel state */

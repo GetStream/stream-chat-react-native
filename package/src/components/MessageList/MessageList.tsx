@@ -318,7 +318,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    * NOTE: rawMessageList changes only when messages array state changes
    * processedMessageList changes on any state change
    */
-  const { dateSeparators, messageGroupStyles, processedMessageList, rawMessageList } =
+  const { dateSeparatorsRef, messageGroupStylesRef, processedMessageList, rawMessageList } =
     useMessageList({
       noGroupByUser,
       threadList,
@@ -493,7 +493,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   const onViewableItemsChanged = useRef(unstableOnViewableItemsChanged);
   onViewableItemsChanged.current = unstableOnViewableItemsChanged;
 
-  const stableOnViwableItemsChanged = useCallback(
+  const stableOnViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken[] | undefined }) => {
       onViewableItemsChanged.current({ viewableItems });
     },
@@ -753,13 +753,14 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       const showUnreadUnderlay = !!shouldShowUnreadUnderlay && showUnreadSeparator;
 
       const wrapMessageInTheme = client.userID === message.user?.id && !!myMessageTheme;
-      const renderDateSeperator = dateSeparators[message.id] && (
-        <InlineDateSeparator date={dateSeparators[message.id]} />
+      const renderDateSeperator = dateSeparatorsRef.current[message.id] && (
+        <InlineDateSeparator date={dateSeparatorsRef.current[message.id]} />
       );
+
       const renderMessage = (
         <Message
           goToMessage={goToMessage}
-          groupStyles={messageGroupStyles[message.id] ?? []}
+          groupStyles={messageGroupStylesRef.current[message.id] ?? []}
           isTargetedMessage={highlightedMessageId === message.id}
           lastReceivedId={
             lastReceivedId === message.id || message.quoted_message_id ? lastReceivedId : undefined
@@ -810,12 +811,12 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       channelUnreadState?.last_read_message_id,
       channelUnreadState?.unread_messages,
       client.userID,
-      dateSeparators,
+      dateSeparatorsRef,
       goToMessage,
       highlightedMessageId,
       lastReceivedId,
       messageContainer,
-      messageGroupStyles,
+      messageGroupStylesRef,
       modifiedTheme,
       myMessageTheme,
       onThreadSelect,
@@ -1249,7 +1250,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           onScrollEndDrag={onScrollEndDrag}
           onScrollToIndexFailed={onScrollToIndexFailedRef.current}
           onTouchEnd={dismissImagePicker}
-          onViewableItemsChanged={stableOnViwableItemsChanged}
+          onViewableItemsChanged={stableOnViewableItemsChanged}
           ref={refCallback}
           renderItem={renderItem}
           scrollEnabled={overlay === 'none'}
