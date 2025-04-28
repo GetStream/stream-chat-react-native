@@ -146,7 +146,7 @@ export const handleEventToSyncDB = async (event: Event, client: StreamChat, flus
   //   }
   // }
 
-  if (type === 'message.updated' || type === 'message.deleted') {
+  if (type === 'message.updated') {
     const message = event.message;
     if (message && !message.parent_id) {
       // Update only if it exists, otherwise event could be related
