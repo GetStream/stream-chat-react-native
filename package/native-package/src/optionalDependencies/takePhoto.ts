@@ -53,10 +53,9 @@ export const takePhoto = ImagePicker
             ...asset,
             cancelled: false,
             duration: asset.duration * 1000,
-            mimeType: asset.type,
             name: 'video_recording_' + date + '.' + asset.fileName.split('.').pop(),
             size: asset.fileSize,
-            type: asset.type.split('/')[0],
+            type: asset.type,
             uri: asset.uri,
           };
         } else {
@@ -89,10 +88,9 @@ export const takePhoto = ImagePicker
             const date = new Date().toISOString().replace(clearFilter, '_');
             return {
               cancelled: false,
-              mimeType: asset.type,
               name: 'video_recording_' + date + '.' + asset.fileName.split('.').pop(),
               size: asset.size,
-              type: asset.type.split('/')[0],
+              type: asset.type,
               uri: asset.uri,
               ...size,
             };

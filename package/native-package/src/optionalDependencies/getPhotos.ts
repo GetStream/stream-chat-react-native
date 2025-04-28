@@ -1,6 +1,8 @@
 import { PermissionsAndroid, Platform } from 'react-native';
 import mime from 'mime';
 
+import type { File } from 'stream-chat-react-native-core';
+
 let CameraRollDependency;
 
 try {
@@ -12,12 +14,10 @@ try {
   );
 }
 
-import type { File } from 'stream-chat-react-native-core';
-
 import { getLocalAssetUri } from './getLocalAssetUri';
 
 type ReturnType = {
-  assets: Array<File & { source: 'picker' }>;
+  assets: File[];
   endCursor: string | undefined;
   hasNextPage: boolean;
   iOSLimited: boolean;
@@ -91,13 +91,12 @@ export const getPhotos = CameraRollDependency
         const assets = await Promise.all(
           results.edges.map(async (edge) => {
             const originalUri = edge.node?.image?.uri;
-            const mimeType =
+            const type =
               Platform.OS === 'ios'
                 ? mime.getType(edge.node.image.filename as string)
                 : edge.node.type;
-            const isImage = mimeType.includes('image');
+            const isImage = type.includes('image');
 
-            // TODO: Review this is needed or not
             const uri =
               isImage && getLocalAssetUri ? await getLocalAssetUri(originalUri) : originalUri;
 
@@ -105,11 +104,9 @@ export const getPhotos = CameraRollDependency
               ...edge.node.image,
               name: edge.node.image.filename as string,
               duration: edge.node.image.playableDuration * 1000,
-              // since we include filename, fileSize in the query, we can safely assume it will be defined
               thumb_url: isImage ? undefined : originalUri,
               size: edge.node.image.fileSize as number,
-              mimeType,
-              type: isImage ? 'image' : 'video',
+              type,
               uri,
             };
           }),

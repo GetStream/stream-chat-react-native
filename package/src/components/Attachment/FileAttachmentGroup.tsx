@@ -114,7 +114,9 @@ const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithConte
                 duration: file.duration,
                 file: {
                   name: file.title as string,
-                  uri: file.asset_url,
+                  size: file.file_size as number,
+                  type: file.mime_type || '',
+                  uri: file.asset_url || '',
                   waveform_data: file.waveform_data,
                 },
                 id: index.toString(),

@@ -20,7 +20,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { Close } from '../../icons/Close';
 import { Warning } from '../../icons/Warning';
-import type { ImageUpload } from '../../types/types';
+import type { FileUpload } from '../../types/types';
 import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../utils/utils';
 
 const IMAGE_PREVIEW_SIZE = 100;
@@ -81,7 +81,7 @@ type ImageUploadPreviewPropsWithContext = Pick<
 
 export type ImageUploadPreviewProps = Partial<ImageUploadPreviewPropsWithContext>;
 
-type ImageUploadPreviewItem = { index: number; item: ImageUpload };
+type ImageUploadPreviewItem = { index: number; item: FileUpload };
 
 export const UnsupportedImageTypeIndicator = ({
   indicatorType,
@@ -95,7 +95,7 @@ export const UnsupportedImageTypeIndicator = ({
   } = useTheme();
 
   const { t } = useTranslationContext();
-  return indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
+  return indicatorType === ProgressIndicatorTypes.BLOCKED ? (
     <View style={[styles.unsupportedImage, { backgroundColor: overlay }]}>
       <View style={[styles.iconContainer]}>
         <Warning
@@ -122,7 +122,10 @@ const ImageUploadPreviewWithContext = (props: ImageUploadPreviewPropsWithContext
   } = useTheme();
 
   const renderItem = ({ index, item }: ImageUploadPreviewItem) => {
-    const indicatorType = getIndicatorTypeForFileState(item.state, enableOfflineSupport);
+    const indicatorType = getIndicatorTypeForFileState({
+      enableOfflineSupport,
+      fileState: item.state,
+    });
     const itemMarginForIndex = index === imageUploads.length - 1 ? { marginRight: 8 } : {};
 
     return (

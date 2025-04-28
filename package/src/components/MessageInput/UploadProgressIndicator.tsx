@@ -21,7 +21,7 @@ export type UploadProgressIndicatorProps = {
   /** style */
   style?: StyleProp<ViewStyle>;
   /** Type of active indicator */
-  type?: 'in_progress' | 'retry' | 'not_supported' | 'inactive' | null;
+  type?: 'in_progress' | 'retry' | 'blocked' | 'inactive' | null;
 };
 
 export const UploadProgressIndicator = (props: PropsWithChildren<UploadProgressIndicatorProps>) => {
@@ -45,7 +45,7 @@ export const UploadProgressIndicator = (props: PropsWithChildren<UploadProgressI
       {children}
       <View
         style={[
-          type === ProgressIndicatorTypes.NOT_SUPPORTED ? styles.overflowHidden : styles.container,
+          type === ProgressIndicatorTypes.BLOCKED ? styles.overflowHidden : styles.container,
           { backgroundColor: overlayColor },
           container,
         ]}

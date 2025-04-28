@@ -45,8 +45,7 @@ export const pickImage = ImagePicker
               duration: asset.duration,
               name: asset.fileName,
               size: asset.fileSize,
-              mimeType: asset.mimeType,
-              type: asset.mimeType.split('/')[0],
+              type: asset.mimeType,
               uri: asset.uri,
             }));
             return { assets, cancelled: false };

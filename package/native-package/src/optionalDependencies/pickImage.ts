@@ -26,8 +26,7 @@ export const pickImage = ImagePicker
             duration: asset.duration ? asset.duration * 1000 : undefined, // in milliseconds
             name: asset.fileName,
             size: asset.fileSize,
-            mimeType: asset.type,
-            type: asset.type.split('/')[0],
+            type: asset.type,
             uri: asset.uri,
           }));
           return { assets, cancelled: false };

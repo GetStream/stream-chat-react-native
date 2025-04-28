@@ -1,5 +1,8 @@
 import { Platform } from 'react-native';
 import mime from 'mime';
+
+import type { File } from 'stream-chat-react-native-core';
+
 let MediaLibrary;
 
 try {
@@ -13,12 +16,11 @@ if (!MediaLibrary) {
     'expo-media-library is not installed. Please install it or you can choose to install expo-image-picker for native image picker.',
   );
 }
-import type { File } from 'stream-chat-react-native-core';
 
 import { getLocalAssetUri } from './getLocalAssetUri';
 
 type ReturnType = {
-  assets: Array<File & { source: 'picker' }>;
+  assets: File[];
   endCursor: string | undefined;
   hasNextPage: boolean;
   iOSLimited: boolean;
@@ -53,14 +55,12 @@ export const getPhotos = MediaLibrary
           results.assets.map(async (asset) => {
             const localUri = await getLocalAssetUri(asset.id);
             const mimeType = mime.getType(asset.filename);
-
             return {
               duration: asset.duration * 1000,
               height: asset.height,
-              mimeType,
               name: asset.filename,
               thumb_url: asset.mediaType === 'photo' ? undefined : asset.uri,
-              type: asset.mediaType === 'photo' ? 'image' : 'video',
+              type: mimeType,
               uri: localUri || asset.uri,
               width: asset.width,
             };

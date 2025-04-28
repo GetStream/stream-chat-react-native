@@ -29,7 +29,7 @@ const CommandsButtonWithContext = (props: CommandsButtonPropsWithContext) => {
     <Pressable onPress={handleOnPress} style={[commandsButton]} testID='commands-button'>
       <Lightning
         fill={
-          suggestions && suggestions.data.some((suggestion) => isSuggestionCommand(suggestion))
+          suggestions && suggestions.some((suggestion) => isSuggestionCommand(suggestion))
             ? accent_blue
             : grey
         }

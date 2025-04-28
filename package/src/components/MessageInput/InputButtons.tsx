@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import {
@@ -23,12 +23,12 @@ export type InputButtonsWithContextProps = Pick<
   | 'hasCommands'
   | 'hasFilePicker'
   | 'hasImagePicker'
+  | 'hasText'
   | 'MoreOptionsButton'
   | 'openCommandsPicker'
   | 'selectedPicker'
   | 'setShowMoreOptions'
   | 'showMoreOptions'
-  | 'text'
   | 'toggleAttachmentPicker'
 >;
 
@@ -41,11 +41,11 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
     hasCommands,
     hasFilePicker,
     hasImagePicker,
+    hasText,
     MoreOptionsButton,
     openCommandsPicker,
     setShowMoreOptions,
     showMoreOptions,
-    text,
   } = props;
 
   const {
@@ -54,6 +54,10 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
     },
   } = useTheme();
 
+  const handleShowMoreOptions = useCallback(() => {
+    setShowMoreOptions(true);
+  }, [setShowMoreOptions]);
+
   const ownCapabilities = useOwnCapabilitiesContext();
 
   if (giphyActive) {
@@ -61,7 +65,7 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
   }
 
   return !showMoreOptions && (hasCameraPicker || hasImagePicker || hasFilePicker) && hasCommands ? (
-    <MoreOptionsButton handleOnPress={() => setShowMoreOptions(true)} />
+    <MoreOptionsButton handleOnPress={handleShowMoreOptions} />
   ) : (
     <>
       {(hasCameraPicker || hasImagePicker || hasFilePicker) && ownCapabilities.uploadFile && (
@@ -71,7 +75,7 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
           <AttachButton />
         </View>
       )}
-      {hasCommands && !text && (
+      {hasCommands && !hasText && (
         <View style={commandsButtonContainer}>
           <CommandsButton handleOnPress={openCommandsPicker} />
         </View>
@@ -90,9 +94,9 @@ const areEqual = (
     hasCommands: prevHasCommands,
     hasFilePicker: prevHasFilePicker,
     hasImagePicker: prevHasImagePicker,
+    hasText: prevHasText,
     selectedPicker: prevSelectedPicker,
     showMoreOptions: prevShowMoreOptions,
-    text: prevText,
   } = prevProps;
 
   const {
@@ -101,9 +105,9 @@ const areEqual = (
     hasCommands: nextHasCommands,
     hasFilePicker: nextHasFilePicker,
     hasImagePicker: nextHasImagePicker,
+    hasText: nextHasText,
     selectedPicker: nextSelectedPicker,
     showMoreOptions: nextShowMoreOptions,
-    text: nextText,
   } = nextProps;
 
   if (prevHasCameraPicker !== nextHasCameraPicker) {
@@ -130,7 +134,7 @@ const areEqual = (
     return false;
   }
 
-  if ((!prevProps.text && nextText) || (prevText && !nextText)) {
+  if (prevHasText !== nextHasText) {
     return false;
   }
 
@@ -155,12 +159,12 @@ export const InputButtons = (props: InputButtonsProps) => {
     hasCommands,
     hasFilePicker,
     hasImagePicker,
+    hasText,
     MoreOptionsButton,
     openCommandsPicker,
     selectedPicker,
     setShowMoreOptions,
     showMoreOptions,
-    text,
     toggleAttachmentPicker,
   } = useMessageInputContext();
 
@@ -174,12 +178,12 @@ export const InputButtons = (props: InputButtonsProps) => {
         hasCommands,
         hasFilePicker,
         hasImagePicker,
+        hasText,
         MoreOptionsButton,
         openCommandsPicker,
         selectedPicker,
         setShowMoreOptions,
         showMoreOptions,
-        text,
         toggleAttachmentPicker,
       }}
       {...props}

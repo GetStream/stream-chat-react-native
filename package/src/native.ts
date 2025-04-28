@@ -2,7 +2,6 @@ import type React from 'react';
 import { FlatList as DefaultFlatList, StyleProp, ViewStyle } from 'react-native';
 
 import type { File } from './types/types';
-
 const fail = () => {
   throw Error(
     'Native handler was not registered, you should import stream-chat-expo or stream-chat-react-native',
@@ -31,7 +30,7 @@ type iOS14RefreshGallerySelection = () => Promise<void>;
 
 type GetPhotos = ({ after, first }: { first: number; after?: string }) =>
   | Promise<{
-      assets: Array<File & { source: 'picker' }>;
+      assets: File[];
       endCursor: string;
       hasNextPage: boolean;
       iOSLimited: boolean;
@@ -47,7 +46,7 @@ type PickDocument = ({ maxNumberOfFiles }: { maxNumberOfFiles?: number }) =>
 
 type PickImageAssetType = {
   askToOpenSettings?: boolean;
-  assets?: Array<File>;
+  assets?: File[];
   cancelled?: boolean;
 };
 
@@ -67,8 +66,7 @@ type ShareOptions = {
 };
 type ShareImage = (options: ShareOptions) => Promise<boolean> | never;
 
-type Photo = File & {
-  source?: 'camera';
+type TakePhotoFileType = File & {
   askToOpenSettings?: boolean;
   cancelled?: boolean;
 };
@@ -78,7 +76,7 @@ export type MediaTypes = 'image' | 'video' | 'mixed';
 type TakePhoto = (options: {
   compressImageQuality?: number;
   mediaType?: MediaTypes;
-}) => Promise<Photo> | never;
+}) => Promise<TakePhotoFileType> | never;
 
 type HapticFeedbackMethod =
   | 'impactHeavy'
@@ -107,9 +105,12 @@ export type PlaybackStatus = {
   shouldPlay: boolean;
 };
 
+export type PitchCorrectionQuality = 'low' | 'medium' | 'high';
+
 export type AVPlaybackStatusToSet = {
   isLooping: boolean;
   isMuted: boolean;
+  pitchCorrectionQuality: PitchCorrectionQuality;
   positionMillis: number;
   progressUpdateIntervalMillis: number;
   rate: number;
@@ -152,7 +153,11 @@ export type SoundReturnType = {
   seek?: (progress: number, tolerance?: number) => void;
   setPositionAsync?: (millis: number) => void;
   setProgressUpdateIntervalAsync?: (progressUpdateIntervalMillis: number) => void;
-  setRateAsync?: (rate: number) => void;
+  setRateAsync?: (
+    rate: number,
+    shouldCorrectPitch: boolean,
+    pitchCorrectionQuality?: PitchCorrectionQuality,
+  ) => void;
   soundRef?: React.RefObject<SoundReturnType>;
   stopAsync?: () => void;
   style?: StyleProp<ViewStyle>;

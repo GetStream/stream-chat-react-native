@@ -1,4 +1,4 @@
-import type { ChannelFilters, ChannelSort, ChannelState } from 'stream-chat';
+import type { ChannelFilters, ChannelSort, ChannelState, FileReference } from 'stream-chat';
 
 import type { FileState } from '../utils/utils';
 
@@ -12,84 +12,73 @@ export enum FileTypes {
   VoiceRecording = 'voiceRecording',
 }
 
-export type File = {
-  // common to all files(images/files)
-  name: string;
-  uri: string;
-  size: number;
-  mimeType: string;
-  type: FileTypes;
+export type File = FileReference;
 
-  // For voice recordings
-  duration?: number;
-  waveform_data?: number[];
-
-  // For images
-  height?: number;
-  width?: number;
-
-  // This is specially needed for video in camera roll
-  thumb_url?: string;
-};
-
+/**
+ * This is nothing but a substitute for the attachment type prior to sending the message.
+ * This will change if we unify the file uploads to attachments.
+ */
 export type FileUpload = {
   file: File;
   id: string;
   state: FileState;
+
+  mime_type?: string;
+
+  type?: FileTypes;
   url?: string;
 
-  // For videos
   thumb_url?: string;
 
-  // For voice recordings
   duration?: number;
   waveform_data?: number[];
 
-  // For images
   height?: number;
   width?: number;
 };
 
 export type AudioUpload = FileUpload & {
-  progress: number;
-  paused: boolean;
+  progress?: number;
+  paused?: boolean;
 };
 
-export interface DefaultAttachmentType {
+export interface DefaultAttachmentData {
   duration?: number;
   originalFile?: File;
   originalImage?: File;
+  waveform_data?: number[];
 }
 
-export interface DefaultUserType {
+export interface DefaultUserData {
   image?: string;
 }
 
-export interface DefaultChannelType {
+export interface DefaultChannelData {
   image?: string;
   name?: string;
 }
 
-export interface DefaultCommandType {
+export interface DefaultCommandData {
   flag: unknown;
   imgur: unknown;
 }
 
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 
-export interface DefaultEventType {}
+export interface DefaultEventData {}
 
-export interface DefaultMemberType {}
+export interface DefaultMemberData {}
 
-export interface DefaultMessageType {}
+export interface DefaultMessageData {}
 
-export interface DefaultPollOptionType {}
+export interface DefaultPollOptionData {}
 
-export interface DefaultPollType {}
+export interface DefaultPollData {}
 
-export interface DefaultReactionType {}
+export interface DefaultReactionData {}
 
 export interface DefaultThreadType {}
+export interface DefaultThreadData {}
 
 export type Reaction = {
   id: string;

@@ -3,10 +3,6 @@ import { I18nManager, StyleSheet, TextInput, TextInputProps } from 'react-native
 
 import { TextComposerState } from 'stream-chat';
 
-import {
-  ChannelContextValue,
-  useChannelContext,
-} from '../../contexts/channelContext/ChannelContext';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
   MessageInputContextValue,
@@ -35,22 +31,16 @@ const messageComposerStateSelector = (state: TextComposerState) => ({
   text: state.text,
 });
 
-type AutoCompleteInputPropsWithContext = Pick<ChannelContextValue, 'giphyEnabled'> &
-  Pick<
-    MessageInputContextValue,
-    | 'additionalTextInputProps'
-    | 'autoCompleteSuggestionsLimit'
-    | 'giphyActive'
-    | 'maxMessageLength'
-    | 'mentionAllAppUsersEnabled'
-    | 'mentionAllAppUsersQuery'
-    | 'numberOfLines'
-    | 'onChange'
-    | 'setGiphyActive'
-    | 'setInputBoxRef'
-    // | 'text'
-    | 'triggerSettings'
-  > &
+type AutoCompleteInputPropsWithContext = Pick<
+  MessageInputContextValue,
+  | 'additionalTextInputProps'
+  | 'giphyActive'
+  | 'giphyEnabled'
+  | 'maxMessageLength'
+  | 'numberOfLines'
+  | 'setGiphyActive'
+  | 'setInputBoxRef'
+> &
   Pick<TranslationContextValue, 't'> & {
     /**
      * This is currently passed in from MessageInput to avoid rerenders
@@ -64,23 +54,17 @@ export type AutoCompleteInputProps = Partial<AutoCompleteInputPropsWithContext>;
 const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) => {
   const {
     additionalTextInputProps,
-    // autoCompleteSuggestionsLimit,
     cooldownActive,
     giphyActive,
     giphyEnabled,
     maxMessageLength,
-    // mentionAllAppUsersEnabled,
-    // mentionAllAppUsersQuery,
     numberOfLines,
-    // onChange,
     setGiphyActive,
     setInputBoxRef,
     t,
-    // text,
-    // triggerSettings
   } = props;
   const [localText, setLocalText] = useState('');
-  const messageComposer = useMessageComposer();
+  const messageComposer = useMessageComposer({});
   const [selection, setSelection] = useState({ end: 0, start: 0 });
 
   const { text } = useStateStore(messageComposer.textComposer.state, messageComposerStateSelector);
@@ -193,19 +177,14 @@ const MemoizedAutoCompleteInput = React.memo(
 ) as typeof AutoCompleteInputWithContext;
 
 export const AutoCompleteInput = (props: AutoCompleteInputProps) => {
-  const { giphyEnabled } = useChannelContext();
   const {
+    giphyEnabled,
     additionalTextInputProps,
-    autoCompleteSuggestionsLimit,
     giphyActive,
     maxMessageLength,
-    mentionAllAppUsersEnabled,
-    mentionAllAppUsersQuery,
     numberOfLines,
-    onChange,
     setGiphyActive,
     setInputBoxRef,
-    triggerSettings,
   } = useMessageInputContext();
   const { t } = useTranslationContext();
 
@@ -213,18 +192,13 @@ export const AutoCompleteInput = (props: AutoCompleteInputProps) => {
     <MemoizedAutoCompleteInput
       {...{
         additionalTextInputProps,
-        autoCompleteSuggestionsLimit,
         giphyActive,
         giphyEnabled,
         maxMessageLength,
-        mentionAllAppUsersEnabled,
-        mentionAllAppUsersQuery,
         numberOfLines,
-        onChange,
         setGiphyActive,
         setInputBoxRef,
         t,
-        triggerSettings,
       }}
       {...props}
     />

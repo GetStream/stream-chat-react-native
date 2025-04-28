@@ -129,7 +129,9 @@ describe('MessageInput', () => {
     );
 
     // Both for files and for images triggered in one test itself.
-    expect(Alert.alert).toHaveBeenCalledTimes(4);
+    await waitFor(() => {
+      expect(Alert.alert).toHaveBeenCalledTimes(4);
+    });
   });
 
   it('should start the audio recorder on long press and cleanup on unmount', async () => {

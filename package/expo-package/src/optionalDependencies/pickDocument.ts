@@ -40,7 +40,7 @@ export const pickDocument = DocumentPicker
           return {
             assets: assets.map((asset) => ({
               ...asset,
-              type: asset.mimeType.split('/')[0],
+              type: asset.mimeType,
             })),
             cancelled: false,
           };
@@ -50,7 +50,7 @@ export const pickDocument = DocumentPicker
           assets: [
             {
               ...rest,
-              type: rest.mimeType.split('/')[0],
+              type: rest.mimeType,
             },
           ],
           cancelled: false,

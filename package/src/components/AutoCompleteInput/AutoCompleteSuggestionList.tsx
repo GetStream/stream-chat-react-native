@@ -43,7 +43,7 @@ export const AutoCompleteSuggestionList = ({
   const AutoCompleteSuggestionItem =
     propsAutoCompleteSuggestionItem ?? contextAutoCompleteSuggestionItem;
 
-  const messageComposer = useMessageComposer();
+  const messageComposer = useMessageComposer({});
   const { textComposer } = messageComposer;
   const { suggestions, text } = useStateStore(textComposer.state, textComposerStateSelector);
   const { items } = useStateStore(suggestions?.searchSource.state, searchSourceStateSelector) ?? {};
