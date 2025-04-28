@@ -23,7 +23,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import type { UserResponse } from 'stream-chat';
+import type { TextComposerState, UserResponse } from 'stream-chat';
 
 import { useAudioController } from './hooks/useAudioController';
 import { useCountdown } from './hooks/useCountdown';
@@ -37,6 +37,7 @@ import {
   ChannelContextValue,
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
+import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -45,10 +46,7 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
-import {
-  SuggestionsContextValue,
-  useSuggestionsContext,
-} from '../../contexts/suggestionsContext/SuggestionsContext';
+
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import {
@@ -56,6 +54,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
+import { useStateStore } from '../../hooks/useStateStore';
 import {
   isAudioRecorderAvailable,
   isImageMediaLibraryAvailable,
@@ -124,6 +123,7 @@ type MessageInputPropsWithContext = Pick<
     | 'AudioRecordingInProgress'
     | 'AudioRecordingLockIndicator'
     | 'AudioRecordingPreview'
+    | 'AutoCompleteSuggestionList'
     | 'cooldownEndsAt'
     | 'CooldownTimer'
     | 'clearEditingState'
@@ -158,7 +158,6 @@ type MessageInputPropsWithContext = Pick<
     | 'StartAudioRecordingButton'
     | 'removeFile'
     | 'removeImage'
-    | 'text'
     | 'uploadNewFile'
     | 'uploadNewImage'
     | 'openPollCreationDialog'
@@ -169,16 +168,13 @@ type MessageInputPropsWithContext = Pick<
     | 'StopMessageStreamingButton'
   > &
   Pick<MessagesContextValue, 'Reply'> &
-  Pick<
-    SuggestionsContextValue,
-    | 'AutoCompleteSuggestionHeader'
-    | 'AutoCompleteSuggestionItem'
-    | 'AutoCompleteSuggestionList'
-    | 'suggestions'
-    | 'triggerType'
-  > &
   Pick<ThreadContextValue, 'thread'> &
   Pick<TranslationContextValue, 't'>;
+
+const textComposerStateSelector = (state: TextComposerState) => ({
+  suggestions: state.suggestions,
+  text: state.text,
+});
 
 const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const {
@@ -235,15 +231,16 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
     StopMessageStreamingButton,
-    suggestions,
-    text,
     thread,
     threadList,
-    triggerType,
     uploadNewFile,
     uploadNewImage,
     watchers,
   } = props;
+
+  const messageComposer = useMessageComposer();
+  const { textComposer } = messageComposer;
+  const { text } = useStateStore(textComposer.state, textComposerStateSelector);
 
   const [height, setHeight] = useState(0);
 
@@ -880,19 +877,9 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
         <ShowThreadMessageInChannelButton threadList={threadList} />
       </View>
 
-      {triggerType && suggestions ? (
-        <View
-          style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}
-        >
-          <AutoCompleteSuggestionList
-            active={!!suggestions}
-            data={suggestions.data}
-            onSelect={suggestions.onSelect}
-            queryText={suggestions.queryText}
-            triggerType={triggerType}
-          />
-        </View>
-      ) : null}
+      <View style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}>
+        <AutoCompleteSuggestionList />
+      </View>
 
       {selectedPicker && (
         <View
@@ -956,7 +943,6 @@ const areEqual = (
     sending: prevSending,
     showMoreOptions: prevShowMoreOptions,
     showPollCreationDialog: prevShowPollCreationDialog,
-    suggestions: prevSuggestions,
     t: prevT,
     thread: prevThread,
     threadList: prevThreadList,
@@ -982,7 +968,6 @@ const areEqual = (
     sending: nextSending,
     showMoreOptions: nextShowMoreOptions,
     showPollCreationDialog: nextShowPollCreationDialog,
-    suggestions: nextSuggestions,
     t: nextT,
     thread: nextThread,
     threadList: nextThreadList,
@@ -1100,15 +1085,6 @@ const areEqual = (
     return false;
   }
 
-  const suggestionsEqual =
-    !!prevSuggestions?.data && !!nextSuggestions?.data
-      ? prevSuggestions.data.length === nextSuggestions.data.length &&
-        prevSuggestions.data.every(({ name }, index) => name === nextSuggestions.data[index].name)
-      : !!prevSuggestions === !!nextSuggestions;
-  if (!suggestionsEqual) {
-    return false;
-  }
-
   const threadEqual =
     prevThread?.id === nextThread?.id &&
     prevThread?.text === nextThread?.text &&
@@ -1162,6 +1138,7 @@ export const MessageInput = (props: MessageInputProps) => {
     AudioRecordingLockIndicator,
     AudioRecordingPreview,
     AudioRecordingWaveform,
+    AutoCompleteSuggestionList,
     clearEditingState,
     clearQuotedMessageState,
     closeAttachmentPicker,
@@ -1203,20 +1180,11 @@ export const MessageInput = (props: MessageInputProps) => {
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
     StopMessageStreamingButton,
-    text,
     uploadNewFile,
     uploadNewImage,
   } = useMessageInputContext();
 
   const { Reply } = useMessagesContext();
-
-  const {
-    AutoCompleteSuggestionHeader,
-    AutoCompleteSuggestionItem,
-    AutoCompleteSuggestionList,
-    suggestions,
-    triggerType,
-  } = useSuggestionsContext();
 
   const { thread } = useThreadContext();
 
@@ -1247,8 +1215,6 @@ export const MessageInput = (props: MessageInputProps) => {
         AudioRecordingLockIndicator,
         AudioRecordingPreview,
         AudioRecordingWaveform,
-        AutoCompleteSuggestionHeader,
-        AutoCompleteSuggestionItem,
         AutoCompleteSuggestionList,
         channel,
         clearEditingState,
@@ -1295,12 +1261,9 @@ export const MessageInput = (props: MessageInputProps) => {
         ShowThreadMessageInChannelButton,
         StartAudioRecordingButton,
         StopMessageStreamingButton,
-        suggestions,
         t,
-        text,
         thread,
         threadList,
-        triggerType,
         uploadNewFile,
         uploadNewImage,
         watchers,

@@ -6,6 +6,7 @@ export const useCreateChannelContext = ({
   channel,
   channelUnreadState,
   disabled,
+  editing,
   EmptyStateIndicator,
   enableMessageGroupingByUser,
   enforceUniqueReaction,
@@ -51,6 +52,7 @@ export const useCreateChannelContext = ({
       channel,
       channelUnreadState,
       disabled,
+      editing,
       EmptyStateIndicator,
       enableMessageGroupingByUser,
       enforceUniqueReaction,
@@ -86,6 +88,7 @@ export const useCreateChannelContext = ({
     [
       channelId,
       disabled,
+      editing,
       error,
       isChannelActive,
       highlightedMessageId,

@@ -15,7 +15,6 @@ export * from './paginatedMessageListContext/PaginatedMessageListContext';
 export * from './overlayContext/OverlayContext';
 export * from './overlayContext/OverlayProvider';
 export * from './ownCapabilitiesContext/OwnCapabilitiesContext';
-export * from './suggestionsContext/SuggestionsContext';
 export * from './themeContext/ThemeContext';
 export * from './themeContext/utils/theme';
 export * from './threadContext/ThreadContext';

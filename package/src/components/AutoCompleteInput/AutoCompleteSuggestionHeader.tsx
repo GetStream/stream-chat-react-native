@@ -1,17 +1,16 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import type { SuggestionsContextValue } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 import { Lightning } from '../../icons/Lightning';
 import { Smile } from '../../icons/Smile';
 
-export type AutoCompleteSuggestionHeaderPropsWithContext = Pick<
-  SuggestionsContextValue,
-  'triggerType' | 'queryText'
->;
+export type AutoCompleteSuggestionHeaderProps = {
+  queryText: string;
+  triggerType: string;
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -25,10 +24,10 @@ const styles = StyleSheet.create({
   },
 });
 
-const AutoCompleteSuggestionHeaderWithContext = ({
+export const AutoCompleteSuggestionHeader = ({
   queryText,
   triggerType,
-}: AutoCompleteSuggestionHeaderPropsWithContext) => {
+}: AutoCompleteSuggestionHeaderProps) => {
   const { t } = useTranslationContext();
   const {
     theme: {
@@ -59,42 +58,10 @@ const AutoCompleteSuggestionHeaderWithContext = ({
         </Text>
       </View>
     );
-  } else if (triggerType === 'mention') {
-    return null;
   } else {
     return null;
   }
 };
-
-const areEqual = (
-  prevProps: AutoCompleteSuggestionHeaderPropsWithContext,
-  nextProps: AutoCompleteSuggestionHeaderPropsWithContext,
-) => {
-  const { queryText: prevQueryText, triggerType: prevType } = prevProps;
-  const { queryText: nextQueryText, triggerType: nextType } = nextProps;
-
-  const typeEqual = prevType === nextType;
-  if (!typeEqual) {
-    return false;
-  }
-
-  const valueEqual = prevQueryText === nextQueryText;
-  if (!valueEqual) {
-    return false;
-  }
-  return true;
-};
-
-const MemoizedAutoCompleteSuggestionHeader = React.memo(
-  AutoCompleteSuggestionHeaderWithContext,
-  areEqual,
-) as typeof AutoCompleteSuggestionHeaderWithContext;
-
-export type AutoCompleteSuggestionHeaderProps = AutoCompleteSuggestionHeaderPropsWithContext;
-
-export const AutoCompleteSuggestionHeader = (props: AutoCompleteSuggestionHeaderProps) => (
-  <MemoizedAutoCompleteSuggestionHeader {...props} />
-);
 
 AutoCompleteSuggestionHeader.displayName =
   'AutoCompleteSuggestionHeader{messageInput{suggestions{Header}}}';

@@ -23,7 +23,6 @@ export type InputButtonsWithContextProps = Pick<
   | 'hasCommands'
   | 'hasFilePicker'
   | 'hasImagePicker'
-  | 'hasText'
   | 'MoreOptionsButton'
   | 'openCommandsPicker'
   | 'selectedPicker'
@@ -41,7 +40,6 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
     hasCommands,
     hasFilePicker,
     hasImagePicker,
-    hasText,
     MoreOptionsButton,
     openCommandsPicker,
     setShowMoreOptions,
@@ -75,7 +73,7 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
           <AttachButton />
         </View>
       )}
-      {hasCommands && !hasText && (
+      {hasCommands && (
         <View style={commandsButtonContainer}>
           <CommandsButton handleOnPress={openCommandsPicker} />
         </View>
@@ -94,7 +92,6 @@ const areEqual = (
     hasCommands: prevHasCommands,
     hasFilePicker: prevHasFilePicker,
     hasImagePicker: prevHasImagePicker,
-    hasText: prevHasText,
     selectedPicker: prevSelectedPicker,
     showMoreOptions: prevShowMoreOptions,
   } = prevProps;
@@ -105,7 +102,6 @@ const areEqual = (
     hasCommands: nextHasCommands,
     hasFilePicker: nextHasFilePicker,
     hasImagePicker: nextHasImagePicker,
-    hasText: nextHasText,
     selectedPicker: nextSelectedPicker,
     showMoreOptions: nextShowMoreOptions,
   } = nextProps;
@@ -134,10 +130,6 @@ const areEqual = (
     return false;
   }
 
-  if (prevHasText !== nextHasText) {
-    return false;
-  }
-
   if (prevGiphyActive !== nextGiphyActive) {
     return false;
   }
@@ -159,7 +151,6 @@ export const InputButtons = (props: InputButtonsProps) => {
     hasCommands,
     hasFilePicker,
     hasImagePicker,
-    hasText,
     MoreOptionsButton,
     openCommandsPicker,
     selectedPicker,
@@ -178,7 +169,6 @@ export const InputButtons = (props: InputButtonsProps) => {
         hasCommands,
         hasFilePicker,
         hasImagePicker,
-        hasText,
         MoreOptionsButton,
         openCommandsPicker,
         selectedPicker,

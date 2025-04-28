@@ -2,7 +2,13 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import { PressableProps, ViewProps } from 'react-native';
 
-import type { Attachment, ChannelState, LocalMessage, MessageResponse } from 'stream-chat';
+import type {
+  Attachment,
+  ChannelState,
+  CommandSuggestion,
+  LocalMessage,
+  MessageResponse,
+} from 'stream-chat';
 
 import type { PollContentProps, StreamingMessageViewProps } from '../../components';
 import type { AttachmentProps } from '../../components/Attachment/Attachment';
@@ -62,7 +68,6 @@ import { NativeHandlers } from '../../native';
 
 import type { ReactionData } from '../../utils/utils';
 import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
-import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
@@ -315,7 +320,7 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   updateMessage: (
     updatedMessage: MessageResponse | LocalMessage,
     extraState?: {
-      commands?: SuggestionCommand[];
+      commands?: CommandSuggestion[];
       messageInput?: string;
       threadMessages?: ChannelState['threads'][string];
     },

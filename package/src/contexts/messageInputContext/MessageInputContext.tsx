@@ -19,6 +19,7 @@ import {
   SendFileAPIResponse,
   StreamChat,
   Message as StreamMessage,
+  TextComposerState,
   UserFilters,
   UserOptions,
   UserResponse,
@@ -26,11 +27,18 @@ import {
 } from 'stream-chat';
 
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
+import { useMessageComposer } from './hooks/useMessageComposer';
 import { useMessageDetailsForState } from './hooks/useMessageDetailsForState';
 
 import { isUploadAllowed, MAX_FILE_SIZE_TO_UPLOAD, prettifyFileSize } from './utils/utils';
 
-import { PollContentProps, StopMessageStreamingButtonProps } from '../../components';
+import {
+  AutoCompleteSuggestionHeaderProps,
+  AutoCompleteSuggestionItemProps,
+  AutoCompleteSuggestionListProps,
+  PollContentProps,
+  StopMessageStreamingButtonProps,
+} from '../../components';
 import { AudioAttachmentProps } from '../../components/Attachment/AudioAttachment';
 import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
@@ -54,6 +62,7 @@ import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreO
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { Emoji } from '../../emoji-data';
+import { useStateStore } from '../../hooks/useStateStore';
 import {
   isDocumentPickerAvailable,
   isImageMediaLibraryAvailable,
@@ -301,6 +310,10 @@ export type InputMessageInputContextValue = {
    */
   AudioRecordingWaveform: React.ComponentType<AudioRecordingWaveformProps>;
 
+  AutoCompleteSuggestionHeader: React.ComponentType<AutoCompleteSuggestionHeaderProps>;
+  AutoCompleteSuggestionItem: React.ComponentType<AutoCompleteSuggestionItemProps>;
+  AutoCompleteSuggestionList: React.ComponentType<AutoCompleteSuggestionListProps>;
+
   clearEditingState: () => void;
   clearQuotedMessageState: () => void;
   /**
@@ -505,6 +518,11 @@ export const MessageInputContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as MessageInputContextValue,
 );
 
+const textComposerStateSelector = (state: TextComposerState) => ({
+  suggestions: state.suggestions,
+  text: state.text,
+});
+
 export const MessageInputProvider = ({
   children,
   value,
@@ -582,16 +600,20 @@ export const MessageInputProvider = ({
     setShowMoreOptions,
     setText,
     showMoreOptions,
-    text,
   } = useMessageDetailsForState(editing, initialValue);
   const { endsAt: cooldownEndsAt, start: startCooldown } = useCooldown();
   const { onChangeText, emojiSearchIndex, autoCompleteTriggerSettings } = value;
+
+  const messageComposer = useMessageComposer();
+  const { textComposer } = messageComposer;
+  const { text } = useStateStore(textComposer.state, textComposerStateSelector);
 
   const threadId = thread?.id;
   useEffect(() => {
     setSendThreadMessageInChannel(false);
   }, [threadId]);
 
+  // TODO: Not needed anymore after we moved to the new text composer
   const appendText = useStableCallback((newText: string) => {
     setText((prevText) => `${prevText}${newText}`);
   });
@@ -633,6 +655,7 @@ export const MessageInputProvider = ({
     return false;
   });
 
+  // TODO: Not needed anymore after we moved to the new text composer
   const onChange = useCallback(
     (newText: string) => {
       if (sending.current) {
@@ -651,15 +674,29 @@ export const MessageInputProvider = ({
     [channel, channelCapabities.sendTypingEvents, isOnline, setText, thread?.id, onChangeText],
   );
 
-  const openCommandsPicker = useStableCallback(() => {
-    appendText('/');
+  // TODO: Not needed anymore after we moved to the new text composer
+  const openCommandsPicker = useStableCallback(async () => {
+    await textComposer.handleChange({
+      selection: {
+        end: 1,
+        start: 1,
+      },
+      text: '/',
+    });
     if (inputBoxRef.current) {
       inputBoxRef.current.focus();
     }
   });
 
-  const openMentionsPicker = useStableCallback(() => {
-    appendText('@');
+  // TODO: Not needed anymore after we moved to the new text composer
+  const openMentionsPicker = useStableCallback(async () => {
+    await textComposer.handleChange({
+      selection: {
+        end: 1,
+        start: 1,
+      },
+      text: '@',
+    });
     if (inputBoxRef.current) {
       inputBoxRef.current.focus();
     }

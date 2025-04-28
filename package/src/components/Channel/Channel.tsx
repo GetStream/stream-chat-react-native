@@ -60,10 +60,6 @@ import {
   PaginatedMessageListContextValue,
   PaginatedMessageListProvider,
 } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
-import {
-  SuggestionsContextValue,
-  SuggestionsProvider,
-} from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
   ThreadContextValue,
@@ -264,12 +260,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     Omit<
       InputMessageInputContextValue,
       'quotedMessage' | 'editing' | 'clearEditingState' | 'clearQuotedMessageState' | 'sendMessage'
-    >
-  > &
-  Partial<
-    Pick<
-      SuggestionsContextValue,
-      'AutoCompleteSuggestionHeader' | 'AutoCompleteSuggestionItem' | 'AutoCompleteSuggestionList'
     >
   > &
   Pick<TranslationContextValue, 't'> &
@@ -1729,6 +1719,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     channel,
     channelUnreadState,
     disabled: !!channel?.data?.frozen,
+    editing,
     EmptyStateIndicator,
     enableMessageGroupingByUser,
     enforceUniqueReaction,
@@ -1790,6 +1781,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AudioRecordingLockIndicator,
     AudioRecordingPreview,
     AudioRecordingWaveform,
+    AutoCompleteSuggestionHeader,
+    AutoCompleteSuggestionItem,
+    AutoCompleteSuggestionList,
     autoCompleteSuggestionsLimit,
     autoCompleteTriggerSettings,
     channelId,
@@ -1961,14 +1955,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     VideoThumbnail,
   });
 
-  const suggestionsContext = useMemo(() => {
-    return {
-      AutoCompleteSuggestionHeader,
-      AutoCompleteSuggestionItem,
-      AutoCompleteSuggestionList,
-    };
-  }, [AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem, AutoCompleteSuggestionList]);
-
   const threadContext = useCreateThreadContext({
     allowThreadMessagesInChannel,
     closeThread,
@@ -2017,11 +2003,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
             <PaginatedMessageListProvider value={messageListContext}>
               <MessagesProvider value={messagesContext}>
                 <ThreadProvider value={threadContext}>
-                  <SuggestionsProvider value={suggestionsContext}>
-                    <MessageInputProvider value={inputMessageInputContext}>
-                      <View style={{ height: '100%' }}>{children}</View>
-                    </MessageInputProvider>
-                  </SuggestionsProvider>
+                  <MessageInputProvider value={inputMessageInputContext}>
+                    <View style={{ height: '100%' }}>{children}</View>
+                  </MessageInputProvider>
                 </ThreadProvider>
               </MessagesProvider>
             </PaginatedMessageListProvider>

@@ -1,7 +1,8 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import type { SuggestionCommand } from '../../contexts/suggestionsContext/SuggestionsContext';
+import { CommandVariants } from 'stream-chat';
+
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Flag, GiphyIcon, Imgur, Lightning, Mute, Sound, UserAdd, UserDelete } from '../../icons';
 
@@ -16,11 +17,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const AutoCompleteSuggestionCommandIcon = ({
-  name,
-}: {
-  name: SuggestionCommand['name'];
-}) => {
+export const AutoCompleteSuggestionCommandIcon = ({ name }: { name: CommandVariants }) => {
   const {
     theme: {
       colors: { accent_blue, white },
