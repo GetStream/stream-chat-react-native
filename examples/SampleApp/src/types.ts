@@ -1,5 +1,5 @@
-import type { Channel, UserResponse } from 'stream-chat';
-import type { MessageType, ThreadType } from 'stream-chat-react-native';
+import type { Channel, LocalMessage, UserResponse } from 'stream-chat';
+import type { ThreadType } from 'stream-chat-react-native';
 import type { Theme } from '@react-navigation/native';
 
 export type DrawerNavigatorParamList = {
@@ -38,7 +38,7 @@ export type StackNavigatorParamList = {
   };
   ThreadScreen: {
     channel: Channel;
-    thread: MessageType | ThreadType;
+    thread: LocalMessage | ThreadType;
   };
 };
 
