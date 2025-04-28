@@ -2234,7 +2234,7 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
   - SocketRocket (0.7.1)
-  - stream-chat-react-native (6.6.8):
+  - stream-chat-react-native (6.7.3):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2581,7 +2581,7 @@ SPEC CHECKSUMS:
   op-sqlite: c33561ea312a2ae38aae032fd3a42635dc6b57e8
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
-  RCT-Folly: e78785aa9ba2ed998ea4151e314036f6c49e6d82
+  RCT-Folly: 36fe2295e44b10d831836cc0d1daec5f8abcf809
   RCTDeprecation: b2eecf2d60216df56bc5e6be5f063826d3c1ee35
   RCTRequired: 78522de7dc73b81f3ed7890d145fa341f5bb32ea
   RCTTypeSafety: c135dd2bf50402d87fd12884cbad5d5e64850edd
@@ -2662,9 +2662,9 @@ SPEC CHECKSUMS:
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  stream-chat-react-native: aa6626ef9dd68e28b1239c9f2ee2fc7ce1fd3c3f
+  stream-chat-react-native: e6555aac04d25ad09d9f219360dda7a00eb0d9d1
   Yoga: be02ca501b03c79d7027a6bbbd0a8db985034f11
 
 PODFILE CHECKSUM: 4f662370295f8f9cee909f1a4c59a614999a209d
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.16.2
