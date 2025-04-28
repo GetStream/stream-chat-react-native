@@ -7,7 +7,7 @@ import { updateMessage } from '../../../store/apis/updateMessage';
 import { upsertChannelData } from '../../../store/apis/upsertChannelData';
 import { upsertChannelDataFromChannel } from '../../../store/apis/upsertChannelDataFromChannel';
 import { upsertMembers } from '../../../store/apis/upsertMembers';
-import { upsertReads } from '../../../store/apis/upsertReads';
+// import { upsertReads } from '../../../store/apis/upsertReads';
 import { createSelectQuery } from '../../../store/sqlite-utils/createSelectQuery';
 import { SqliteClient } from '../../../store/SqliteClient';
 import { PreparedQueries } from '../../../store/types';
@@ -69,47 +69,47 @@ export const handleEventToSyncDB = async (event: Event, client: StreamChat, flus
     return createQueries(flush);
   };
 
-  if (type === 'message.read' || type === 'notification.mark_read') {
-    const cid = event.cid;
-    const user = event.user;
-    if (user?.id && cid) {
-      return await queriesWithChannelGuard((flushOverride) =>
-        upsertReads({
-          cid,
-          flush: flushOverride,
-          reads: [
-            {
-              last_read: event.received_at as string,
-              last_read_message_id: event.last_read_message_id,
-              unread_messages: 0,
-              user,
-            },
-          ],
-        }),
-      );
-    }
-  }
+  // if (type === 'message.read' || type === 'notification.mark_read') {
+  //   const cid = event.cid;
+  //   const user = event.user;
+  //   if (user?.id && cid) {
+  //     return await queriesWithChannelGuard((flushOverride) =>
+  //       upsertReads({
+  //         cid,
+  //         flush: flushOverride,
+  //         reads: [
+  //           {
+  //             last_read: event.received_at as string,
+  //             last_read_message_id: event.last_read_message_id,
+  //             unread_messages: 0,
+  //             user,
+  //           },
+  //         ],
+  //       }),
+  //     );
+  //   }
+  // }
 
-  if (type === 'notification.mark_unread') {
-    const cid = event.cid;
-    const user = event.user;
-    if (user?.id && cid) {
-      return await queriesWithChannelGuard((flushOverride) =>
-        upsertReads({
-          cid,
-          flush: flushOverride,
-          reads: [
-            {
-              last_read: event.received_at as string,
-              last_read_message_id: event.last_read_message_id,
-              unread_messages: event.unread_messages,
-              user,
-            },
-          ],
-        }),
-      );
-    }
-  }
+  // if (type === 'notification.mark_unread') {
+  //   const cid = event.cid;
+  //   const user = event.user;
+  //   if (user?.id && cid) {
+  //     return await queriesWithChannelGuard((flushOverride) =>
+  //       upsertReads({
+  //         cid,
+  //         flush: flushOverride,
+  //         reads: [
+  //           {
+  //             last_read: event.received_at as string,
+  //             last_read_message_id: event.last_read_message_id,
+  //             unread_messages: event.unread_messages,
+  //             user,
+  //           },
+  //         ],
+  //       }),
+  //     );
+  //   }
+  // }
 
   // if (type === 'message.new') {
   //   const { cid, message, user } = event;

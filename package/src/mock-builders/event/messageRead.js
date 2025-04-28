@@ -1,8 +1,10 @@
 export default (client, user, channel = {}) => {
+  const newDate = new Date();
   const event = {
     channel,
     cid: channel.cid,
-    received_at: new Date(),
+    created_at: newDate,
+    received_at: newDate,
     type: 'message.read',
     user,
   };
