@@ -1568,7 +1568,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       const updatedMessage = {
         ...message,
         cid: channel.cid,
-        deleted_at: new Date().toISOString(),
+        deleted_at: new Date(),
         type: 'deleted' as MessageLabel,
       };
       updateMessage(updatedMessage);
