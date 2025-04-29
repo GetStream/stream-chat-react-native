@@ -4,7 +4,6 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Attachment } from 'stream-chat';
 
 import { GalleryImage } from './GalleryImage';
-import { ImageReloadIndicator } from './ImageReloadIndicator';
 import { buildGallery } from './utils/buildGallery/buildGallery';
 
 import type { Thumbnail } from './utils/buildGallery/types';
@@ -13,6 +12,7 @@ import { getGalleryImageBorderRadius } from './utils/getGalleryImageBorderRadius
 import { openUrlSafely } from './utils/openUrlSafely';
 
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
+import { useTranslationContext } from '../../contexts';
 import { useChatConfigContext } from '../../contexts/chatConfigContext/ChatConfigContext';
 import {
   ImageGalleryContextValue,
@@ -58,6 +58,7 @@ export type GalleryPropsWithContext<
     | 'VideoThumbnail'
     | 'ImageLoadingIndicator'
     | 'ImageLoadingFailedIndicator'
+    | 'ImageReloadIndicator'
     | 'myMessageTheme'
   > &
   Pick<OverlayContextValue, 'setOverlay'> & {
@@ -90,6 +91,7 @@ const GalleryWithContext = <
     hasThreadReplies,
     ImageLoadingFailedIndicator,
     ImageLoadingIndicator,
+    ImageReloadIndicator,
     images,
     legacyImageViewerSwipeBehaviour,
     message,
@@ -207,6 +209,7 @@ const GalleryWithContext = <
                   colIndex={colIndex}
                   ImageLoadingFailedIndicator={ImageLoadingFailedIndicator}
                   ImageLoadingIndicator={ImageLoadingIndicator}
+                  ImageReloadIndicator={ImageReloadIndicator}
                   imagesAndVideos={imagesAndVideos}
                   invertedDirections={invertedDirections || false}
                   key={rowIndex}
@@ -258,6 +261,7 @@ type GalleryThumbnailProps<
   | 'VideoThumbnail'
   | 'ImageLoadingIndicator'
   | 'ImageLoadingFailedIndicator'
+  | 'ImageReloadIndicator'
 > &
   Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setSelectedMessage' | 'setMessages'> &
   Pick<
@@ -274,6 +278,7 @@ const GalleryThumbnail = <
   colIndex,
   ImageLoadingFailedIndicator,
   ImageLoadingIndicator,
+  ImageReloadIndicator,
   imagesAndVideos,
   invertedDirections,
   legacyImageViewerSwipeBehaviour,
@@ -306,6 +311,7 @@ const GalleryThumbnail = <
       },
     },
   } = useTheme();
+  const { t } = useTranslationContext();
 
   const openImageViewer = () => {
     if (!legacyImageViewerSwipeBehaviour && message) {
@@ -397,6 +403,7 @@ const GalleryThumbnail = <
             borderRadius={imageBorderRadius ?? borderRadius}
             ImageLoadingFailedIndicator={ImageLoadingFailedIndicator}
             ImageLoadingIndicator={ImageLoadingIndicator}
+            ImageReloadIndicator={ImageReloadIndicator}
             thumbnail={thumbnail}
           />
         </View>
@@ -411,7 +418,7 @@ const GalleryThumbnail = <
           ]}
         >
           <Text style={[styles.moreImagesText, moreImagesText]}>
-            {`+${imagesAndVideos.length - 4}`}
+            {String(t('+{{count}}', { count: imagesAndVideos.length - 4 }))}
           </Text>
         </View>
       ) : null}
@@ -425,10 +432,15 @@ const GalleryImageThumbnail = <
   borderRadius,
   ImageLoadingFailedIndicator,
   ImageLoadingIndicator,
+  ImageReloadIndicator,
   thumbnail,
 }: Pick<
   GalleryThumbnailProps<StreamChatGenerics>,
-  'ImageLoadingFailedIndicator' | 'ImageLoadingIndicator' | 'thumbnail' | 'borderRadius'
+  | 'ImageLoadingFailedIndicator'
+  | 'ImageLoadingIndicator'
+  | 'ImageReloadIndicator'
+  | 'thumbnail'
+  | 'borderRadius'
 >) => {
   const {
     isLoadingImage,
@@ -585,6 +597,7 @@ export const Gallery = <
     hasThreadReplies,
     ImageLoadingFailedIndicator: PropImageLoadingFailedIndicator,
     ImageLoadingIndicator: PropImageLoadingIndicator,
+    ImageReloadIndicator: PropImageReloadIndicator,
     images: propImages,
     message: propMessage,
     myMessageTheme: propMyMessageTheme,
@@ -617,6 +630,7 @@ export const Gallery = <
     additionalPressableProps: contextAdditionalPressableProps,
     ImageLoadingFailedIndicator: ContextImageLoadingFailedIndicator,
     ImageLoadingIndicator: ContextImageLoadingIndicator,
+    ImageReloadIndicator: ContextImageReloadIndicator,
     legacyImageViewerSwipeBehaviour,
     myMessageTheme: contextMyMessageTheme,
     VideoThumbnail: ContextVideoThumnbnail,
@@ -646,6 +660,7 @@ export const Gallery = <
   const ImageLoadingFailedIndicator =
     PropImageLoadingFailedIndicator || ContextImageLoadingFailedIndicator;
   const ImageLoadingIndicator = PropImageLoadingIndicator || ContextImageLoadingIndicator;
+  const ImageReloadIndicator = PropImageReloadIndicator || ContextImageReloadIndicator;
   const myMessageTheme = propMyMessageTheme || contextMyMessageTheme;
 
   return (
@@ -658,6 +673,7 @@ export const Gallery = <
         hasThreadReplies: hasThreadReplies || !!message?.reply_count,
         ImageLoadingFailedIndicator,
         ImageLoadingIndicator,
+        ImageReloadIndicator,
         images,
         legacyImageViewerSwipeBehaviour,
         message,

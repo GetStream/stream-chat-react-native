@@ -1,4 +1,6 @@
 {
+  "+{{count}}_one": "+{{count}}",
+  "+{{count}}_other": "+{{count}}",
   "1 Reply": "1 रिप्लाई",
   "1 Thread Reply": "1 धागा उत्तर",
   "Add a comment": "एक टिप्पणी जोड़ें",
