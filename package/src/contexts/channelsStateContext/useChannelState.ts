@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 
-import type { Channel as ChannelType, LocalMessage } from 'stream-chat';
+import type { Channel as ChannelType } from 'stream-chat';
 
 import { useChannelsStateContext } from './ChannelsStateContext';
 
@@ -55,7 +55,7 @@ export function useChannelState(
     (threadId && channel?.state?.threads?.[threadId]) || [],
   );
   const setThreadMessages = useCallback(
-    (value: LocalMessage[]) => setThreadMessagesInternal([...value]),
+    (value: ChannelState['threadMessages']) => setThreadMessagesInternal([...value]),
     [setThreadMessagesInternal],
   );
 
