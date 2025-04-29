@@ -560,7 +560,7 @@ const ChannelWithContext = <
     handleRetry,
     handleThreadReply,
     hasCameraPicker = isImagePickerAvailable(),
-    hasCommands = true,
+    hasCommands = (channel.getConfig()?.commands ?? []).length > 0,
     hasCreatePoll,
     // If pickDocument isn't available, default to hiding the file picker
     hasFilePicker = isDocumentPickerAvailable(),
