@@ -45,7 +45,7 @@ export function useChannelState(
   const cid = channel?.id || 'id'; // in case channel is not initialized, use generic id string for indexing
   const { setState, state } = useChannelsStateContext();
 
-  const [threadMessages, setThreadMessages] = useStateManager(
+  const [threadMessages, setThreadMessagesInternal] = useStateManager(
     {
       cid,
       key: 'threadMessages',
@@ -53,6 +53,10 @@ export function useChannelState(
       state,
     },
     (threadId && channel?.state?.threads?.[threadId]) || [],
+  );
+  const setThreadMessages = useCallback(
+    (value: ChannelState['threadMessages']) => setThreadMessagesInternal([...value]),
+    [setThreadMessagesInternal],
   );
 
   return {
