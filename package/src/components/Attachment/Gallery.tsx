@@ -12,6 +12,7 @@ import { getGalleryImageBorderRadius } from './utils/getGalleryImageBorderRadius
 import { openUrlSafely } from './utils/openUrlSafely';
 
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
+import { useTranslationContext } from '../../contexts';
 import { useChatConfigContext } from '../../contexts/chatConfigContext/ChatConfigContext';
 import {
   ImageGalleryContextValue,
@@ -310,6 +311,7 @@ const GalleryThumbnail = <
       },
     },
   } = useTheme();
+  const { t } = useTranslationContext();
 
   const openImageViewer = () => {
     if (!legacyImageViewerSwipeBehaviour && message) {
@@ -416,7 +418,7 @@ const GalleryThumbnail = <
           ]}
         >
           <Text style={[styles.moreImagesText, moreImagesText]}>
-            {`+${imagesAndVideos.length - 4}`}
+            {String(t('+{{count}}', { count: imagesAndVideos.length - 4 }))}
           </Text>
         </View>
       ) : null}

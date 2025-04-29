@@ -1,4 +1,7 @@
 {
+  "+{{count}}_one": "+{{count}}",
+  "+{{count}}_other": "+{{count}}",
+  "+{{count}}_two": "",
   "1 Reply": "תגובה אחת",
   "1 Thread Reply": "תגובה אחת לשרשור",
   "Add a comment": "הוסף תגובה",
