@@ -4,7 +4,6 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Attachment } from 'stream-chat';
 
 import { GalleryImage } from './GalleryImage';
-import { ImageReloadIndicator } from './ImageReloadIndicator';
 import { buildGallery } from './utils/buildGallery/buildGallery';
 
 import type { Thumbnail } from './utils/buildGallery/types';
@@ -58,6 +57,7 @@ export type GalleryPropsWithContext<
     | 'VideoThumbnail'
     | 'ImageLoadingIndicator'
     | 'ImageLoadingFailedIndicator'
+    | 'ImageReloadIndicator'
     | 'myMessageTheme'
   > &
   Pick<OverlayContextValue, 'setOverlay'> & {
@@ -90,6 +90,7 @@ const GalleryWithContext = <
     hasThreadReplies,
     ImageLoadingFailedIndicator,
     ImageLoadingIndicator,
+    ImageReloadIndicator,
     images,
     legacyImageViewerSwipeBehaviour,
     message,
@@ -207,6 +208,7 @@ const GalleryWithContext = <
                   colIndex={colIndex}
                   ImageLoadingFailedIndicator={ImageLoadingFailedIndicator}
                   ImageLoadingIndicator={ImageLoadingIndicator}
+                  ImageReloadIndicator={ImageReloadIndicator}
                   imagesAndVideos={imagesAndVideos}
                   invertedDirections={invertedDirections || false}
                   key={rowIndex}
@@ -258,6 +260,7 @@ type GalleryThumbnailProps<
   | 'VideoThumbnail'
   | 'ImageLoadingIndicator'
   | 'ImageLoadingFailedIndicator'
+  | 'ImageReloadIndicator'
 > &
   Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setSelectedMessage' | 'setMessages'> &
   Pick<
@@ -274,6 +277,7 @@ const GalleryThumbnail = <
   colIndex,
   ImageLoadingFailedIndicator,
   ImageLoadingIndicator,
+  ImageReloadIndicator,
   imagesAndVideos,
   invertedDirections,
   legacyImageViewerSwipeBehaviour,
@@ -397,6 +401,7 @@ const GalleryThumbnail = <
             borderRadius={imageBorderRadius ?? borderRadius}
             ImageLoadingFailedIndicator={ImageLoadingFailedIndicator}
             ImageLoadingIndicator={ImageLoadingIndicator}
+            ImageReloadIndicator={ImageReloadIndicator}
             thumbnail={thumbnail}
           />
         </View>
@@ -425,10 +430,15 @@ const GalleryImageThumbnail = <
   borderRadius,
   ImageLoadingFailedIndicator,
   ImageLoadingIndicator,
+  ImageReloadIndicator,
   thumbnail,
 }: Pick<
   GalleryThumbnailProps<StreamChatGenerics>,
-  'ImageLoadingFailedIndicator' | 'ImageLoadingIndicator' | 'thumbnail' | 'borderRadius'
+  | 'ImageLoadingFailedIndicator'
+  | 'ImageLoadingIndicator'
+  | 'ImageReloadIndicator'
+  | 'thumbnail'
+  | 'borderRadius'
 >) => {
   const {
     isLoadingImage,
@@ -585,6 +595,7 @@ export const Gallery = <
     hasThreadReplies,
     ImageLoadingFailedIndicator: PropImageLoadingFailedIndicator,
     ImageLoadingIndicator: PropImageLoadingIndicator,
+    ImageReloadIndicator: PropImageReloadIndicator,
     images: propImages,
     message: propMessage,
     myMessageTheme: propMyMessageTheme,
@@ -617,6 +628,7 @@ export const Gallery = <
     additionalPressableProps: contextAdditionalPressableProps,
     ImageLoadingFailedIndicator: ContextImageLoadingFailedIndicator,
     ImageLoadingIndicator: ContextImageLoadingIndicator,
+    ImageReloadIndicator: ContextImageReloadIndicator,
     legacyImageViewerSwipeBehaviour,
     myMessageTheme: contextMyMessageTheme,
     VideoThumbnail: ContextVideoThumnbnail,
@@ -646,6 +658,7 @@ export const Gallery = <
   const ImageLoadingFailedIndicator =
     PropImageLoadingFailedIndicator || ContextImageLoadingFailedIndicator;
   const ImageLoadingIndicator = PropImageLoadingIndicator || ContextImageLoadingIndicator;
+  const ImageReloadIndicator = PropImageReloadIndicator || ContextImageReloadIndicator;
   const myMessageTheme = propMyMessageTheme || contextMyMessageTheme;
 
   return (
@@ -658,6 +671,7 @@ export const Gallery = <
         hasThreadReplies: hasThreadReplies || !!message?.reply_count,
         ImageLoadingFailedIndicator,
         ImageLoadingIndicator,
+        ImageReloadIndicator,
         images,
         legacyImageViewerSwipeBehaviour,
         message,
