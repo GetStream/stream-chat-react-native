@@ -1,7 +1,5 @@
 import { Alert } from 'react-native';
 
-import type { MessageResponse } from 'stream-chat';
-
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
@@ -62,7 +60,7 @@ export const useMessageActionHandlers = ({
         { style: 'cancel', text: t('Cancel') },
         {
           onPress: async () => {
-            await deleteMessage(message as MessageResponse);
+            await deleteMessage(message);
           },
           style: 'destructive',
           text: t('Delete'),

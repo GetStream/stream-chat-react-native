@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { ReactionResponse, ReactionSort } from 'stream-chat';
+import { LocalMessage, ReactionResponse, ReactionSort } from 'stream-chat';
 
-import { MessageType } from '../../../components/MessageList/hooks/useMessageList';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
 export type UseFetchReactionParams = {
   limit?: number;
-  message?: MessageType;
+  message?: LocalMessage;
   reactionType?: string;
   sort?: ReactionSort;
 };

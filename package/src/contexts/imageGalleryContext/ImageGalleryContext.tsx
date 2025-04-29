@@ -1,6 +1,7 @@
 import React, { PropsWithChildren, useContext, useState } from 'react';
 
-import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
+import { LocalMessage } from 'stream-chat';
+
 import type { UnknownType } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
@@ -12,8 +13,8 @@ type SelectedMessage = {
 };
 
 export type ImageGalleryContextValue = {
-  messages: MessageType[];
-  setMessages: React.Dispatch<React.SetStateAction<MessageType[]>>;
+  messages: LocalMessage[];
+  setMessages: React.Dispatch<React.SetStateAction<LocalMessage[]>>;
   setSelectedMessage: React.Dispatch<React.SetStateAction<SelectedMessage | undefined>>;
   selectedMessage?: SelectedMessage;
 };
@@ -23,7 +24,7 @@ export const ImageGalleryContext = React.createContext(
 );
 
 export const ImageGalleryProvider = ({ children }: PropsWithChildren<UnknownType>) => {
-  const [messages, setMessages] = useState<MessageType[]>([]);
+  const [messages, setMessages] = useState<LocalMessage[]>([]);
   const [selectedMessage, setSelectedMessage] = useState<SelectedMessage>();
 
   return (

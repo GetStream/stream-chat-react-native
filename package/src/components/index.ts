@@ -8,6 +8,7 @@ export * from './Attachment/FileIcon';
 export * from './Attachment/Gallery';
 export * from './Attachment/Giphy';
 export * from './Attachment/VideoThumbnail';
+export * from './Attachment/ImageReloadIndicator';
 export * from './Attachment/utils/buildGallery/buildGallery';
 
 export * from './AttachmentPicker/AttachmentPicker';
@@ -148,7 +149,7 @@ export * from './MessageList/TypingIndicatorContainer';
 export * from './MessageList/utils/getDateSeparators';
 export * from './MessageList/utils/getGroupStyles';
 export * from './MessageList/utils/getLastReceivedMessage';
-export * from './MessageList/utils/getReadStates';
+export * from './MessageList/utils/getReadState';
 
 export * from './MessageMenu/MessageActionList';
 export * from './MessageMenu/MessageActionListItem';

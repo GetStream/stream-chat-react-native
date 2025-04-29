@@ -10,16 +10,16 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { Check } from '../../../icons/Check';
 import { CheckAll } from '../../../icons/CheckAll';
 import { Time } from '../../../icons/Time';
-
 import { MessageStatusTypes } from '../../../utils/utils';
 
-import { isMessageWithStylesReadByAndDateSeparator } from '../../MessageList/hooks/useMessageList';
-
-export type MessageStatusPropsWithContext = Pick<MessageContextValue, 'message' | 'threadList'>;
+export type MessageStatusPropsWithContext = Pick<
+  MessageContextValue,
+  'message' | 'readBy' | 'threadList'
+>;
 
 const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
   const { channel } = useChannelContext();
-  const { message, threadList } = props;
+  const { message, readBy, threadList } = props;
 
   const {
     theme: {
@@ -42,17 +42,17 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
     return null;
   }
 
-  if (isMessageWithStylesReadByAndDateSeparator(message)) {
+  if (readBy) {
     const members = channel?.state.members;
     const otherMembers = Object.values(members).filter(
       (member) => member.user_id !== message.user?.id,
     );
     const hasOtherMembersGreaterThanOne = otherMembers.length > 1;
-    const hasReadByGreaterThanOne = typeof message.readBy === 'number' && message.readBy > 1;
+    const hasReadByGreaterThanOne = typeof readBy === 'number' && readBy > 1;
     const shouldDisplayReadByCount = hasOtherMembersGreaterThanOne && hasReadByGreaterThanOne;
     const countOfReadBy =
-      typeof message.readBy === 'number' && hasOtherMembersGreaterThanOne ? message.readBy - 1 : 0;
-    const showDoubleCheck = hasReadByGreaterThanOne || message.readBy === true;
+      typeof readBy === 'number' && hasOtherMembersGreaterThanOne ? readBy - 1 : 0;
+    const showDoubleCheck = hasReadByGreaterThanOne || readBy === true;
 
     return (
       <View style={[styles.statusContainer, statusContainer]}>
@@ -90,19 +90,21 @@ const areEqual = (
   prevProps: MessageStatusPropsWithContext,
   nextProps: MessageStatusPropsWithContext,
 ) => {
-  const { message: prevMessage, threadList: prevThreadList } = prevProps;
-  const { message: nextMessage, threadList: nextThreadList } = nextProps;
+  const { message: prevMessage, readBy: prevReadBy, threadList: prevThreadList } = prevProps;
+  const { message: nextMessage, readBy: nextReadBy, threadList: nextThreadList } = nextProps;
 
   const threadListEqual = prevThreadList === nextThreadList;
   if (!threadListEqual) {
     return false;
   }
 
+  const readByEqual = prevReadBy === nextReadBy;
+  if (!readByEqual) {
+    return false;
+  }
+
   const messageEqual =
-    prevMessage.status === nextMessage.status &&
-    prevMessage.type === nextMessage.type &&
-    (isMessageWithStylesReadByAndDateSeparator(prevMessage) && prevMessage.readBy) ===
-      (isMessageWithStylesReadByAndDateSeparator(nextMessage) && nextMessage.readBy);
+    prevMessage.status === nextMessage.status && prevMessage.type === nextMessage.type;
   if (!messageEqual) {
     return false;
   }
@@ -118,9 +120,9 @@ const MemoizedMessageStatus = React.memo(
 export type MessageStatusProps = Partial<MessageStatusPropsWithContext>;
 
 export const MessageStatus = (props: MessageStatusProps) => {
-  const { message, threadList } = useMessageContext();
+  const { message, readBy, threadList } = useMessageContext();
 
-  return <MemoizedMessageStatus {...{ message, threadList }} {...props} />;
+  return <MemoizedMessageStatus {...{ message, readBy, threadList }} {...props} />;
 };
 
 MessageStatus.displayName = 'MessageStatus{messageSimple{status}}';

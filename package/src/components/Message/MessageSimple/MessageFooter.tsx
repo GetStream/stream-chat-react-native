@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import type { Attachment } from 'stream-chat';
+import type { Attachment, LocalMessage } from 'stream-chat';
 
 import type { MessageStatusProps } from './MessageStatus';
 
@@ -21,7 +21,6 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import { Eye } from '../../../icons';
 
 import { isEditedMessage, MessageStatusTypes } from '../../../utils/utils';
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
 
 type MessageFooterComponentProps = {
   date?: string | Date;
@@ -271,7 +270,7 @@ export type MessageFooterProps = Partial<Pick<ChannelContextValue, 'members'>> &
   MessageFooterComponentProps & {
     alignment?: Alignment;
     lastGroupMessage?: boolean;
-    message?: MessageType;
+    message?: LocalMessage;
     MessageStatus?: React.ComponentType<MessageStatusProps>;
     otherAttachments?: Attachment[];
     showMessageStatus?: boolean;

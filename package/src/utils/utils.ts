@@ -5,10 +5,6 @@ import EmojiRegex from 'emoji-regex';
 import type { ChannelState, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { IconProps } from '../../src/icons/utils/base';
-import {
-  MessagesWithStylesReadByAndDateSeparator,
-  MessageType,
-} from '../components/MessageList/hooks/useMessageList';
 import type { EmojiSearchIndex } from '../contexts/messageInputContext/MessageInputContext';
 import { compiledEmojis } from '../emoji-data';
 import type { TableRowJoinedUser } from '../store/types';
@@ -78,7 +74,7 @@ export const getIndicatorTypeForFileState = (
  * @param message
  * @returns boolean
  */
-export const isBlockedMessage = (message: MessageType | TableRowJoinedUser<'messages'>) => {
+export const isBlockedMessage = (message: LocalMessage | TableRowJoinedUser<'messages'>) => {
   // The only indicator for the blocked message is its message type is error and that the message text contains "Message was blocked by moderation policies".
   const pattern = /\bMessage was blocked by moderation policies\b/;
   return message.type === 'error' && message.text && pattern.test(message.text);
@@ -89,7 +85,7 @@ export const isBlockedMessage = (message: MessageType | TableRowJoinedUser<'mess
  * @param message
  * @returns boolean
  */
-export const isBouncedMessage = (message: MessageType) =>
+export const isBouncedMessage = (message: LocalMessage) =>
   (message.type === 'error' &&
     message?.moderation_details?.action === 'MESSAGE_RESPONSE_ACTION_BOUNCE') ||
   message?.moderation?.action === 'bounce';
@@ -99,7 +95,7 @@ export const isBouncedMessage = (message: MessageType) =>
  * @param message
  * @returns boolean
  */
-export const isEditedMessage = (message: MessageType) => !!message.message_text_updated_at;
+export const isEditedMessage = (message: LocalMessage) => !!message.message_text_updated_at;
 
 /**
  * Default emoji search index for auto complete text input
@@ -190,7 +186,7 @@ export const hasOnlyEmojis = (text: string) => {
  * @param {LocalMessage} message - the message object to be stringified
  * @returns {string} The stringified message
  */
-export const stringifyMessage = (message: MessageResponse | LocalMessage | MessageType): string => {
+export const stringifyMessage = (message: MessageResponse | LocalMessage): string => {
   const {
     deleted_at,
     i18n,
@@ -202,7 +198,6 @@ export const stringifyMessage = (message: MessageResponse | LocalMessage | Messa
     type,
     updated_at,
   } = message;
-  const readBy = (message as MessagesWithStylesReadByAndDateSeparator)?.readBy ?? '';
   return `${
     latest_reactions ? latest_reactions.map(({ type, user }) => `${type}${user?.id}`).join() : ''
   }${
@@ -214,7 +209,7 @@ export const stringifyMessage = (message: MessageResponse | LocalMessage | Messa
           )
           .join()
       : ''
-  }${type}${deleted_at}${text}${readBy}${reply_count}${status}${updated_at}${JSON.stringify(i18n)}`;
+  }${type}${deleted_at}${text}${reply_count}${status}${updated_at}${JSON.stringify(i18n)}`;
 };
 
 /**

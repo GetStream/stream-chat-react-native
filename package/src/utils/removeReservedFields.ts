@@ -1,10 +1,8 @@
-import type { MessageResponse } from 'stream-chat';
-
-import type { MessageType } from '../components/MessageList/hooks/useMessageList';
+import type { LocalMessage, MessageResponse } from 'stream-chat';
 
 export const removeReservedFields = (
-  message: MessageType | MessageResponse,
-): MessageType | MessageResponse => {
+  message: LocalMessage | MessageResponse,
+): LocalMessage | MessageResponse => {
   const retryMessage = { ...message };
   const reserved = [
     'cid',

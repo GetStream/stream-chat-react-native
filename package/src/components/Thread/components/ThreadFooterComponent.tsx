@@ -101,6 +101,7 @@ const ThreadFooterComponentWithContext = (props: ThreadFooterComponentPropsWithC
           groupStyles={['single']}
           message={thread}
           preventPress={parentMessagePreventPress}
+          readBy={0}
           threadList
         />
       </View>

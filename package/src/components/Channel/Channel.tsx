@@ -117,6 +117,7 @@ import { Gallery as GalleryDefault } from '../Attachment/Gallery';
 import { Giphy as GiphyDefault } from '../Attachment/Giphy';
 import { ImageLoadingFailedIndicator as ImageLoadingFailedIndicatorDefault } from '../Attachment/ImageLoadingFailedIndicator';
 import { ImageLoadingIndicator as ImageLoadingIndicatorDefault } from '../Attachment/ImageLoadingIndicator';
+import { ImageReloadIndicator as ImageReloadIndicatorDefault } from '../Attachment/ImageReloadIndicator';
 import { VideoThumbnail as VideoThumbnailDefault } from '../Attachment/VideoThumbnail';
 import { AutoCompleteSuggestionHeader as AutoCompleteSuggestionHeaderDefault } from '../AutoCompleteInput/AutoCompleteSuggestionHeader';
 import { AutoCompleteSuggestionItem as AutoCompleteSuggestionItemDefault } from '../AutoCompleteInput/AutoCompleteSuggestionItem';
@@ -168,7 +169,6 @@ import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDef
 import { StopMessageStreamingButton as DefaultStopMessageStreamingButton } from '../MessageInput/StopMessageStreamingButton';
 import { UploadProgressIndicator as UploadProgressIndicatorDefault } from '../MessageInput/UploadProgressIndicator';
 import { DateHeader as DateHeaderDefault } from '../MessageList/DateHeader';
-import type { MessageType } from '../MessageList/hooks/useMessageList';
 import { InlineDateSeparator as InlineDateSeparatorDefault } from '../MessageList/InlineDateSeparator';
 import { InlineUnreadIndicator as InlineUnreadIndicatorDefault } from '../MessageList/InlineUnreadIndicator';
 import { MessageList as MessageListDefault } from '../MessageList/MessageList';
@@ -319,6 +319,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'legacyImageViewerSwipeBehaviour'
       | 'ImageLoadingFailedIndicator'
       | 'ImageLoadingIndicator'
+      | 'ImageReloadIndicator'
       | 'markdownRules'
       | 'Message'
       | 'MessageActionList'
@@ -550,7 +551,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     handleRetry,
     handleThreadReply,
     hasCameraPicker = isImagePickerAvailable(),
-    hasCommands = true,
     hasCreatePoll,
     // If pickDocument isn't available, default to hiding the file picker
     hasFilePicker = isDocumentPickerAvailable(),
@@ -559,6 +559,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     hideStickyDateHeader = false,
     ImageLoadingFailedIndicator = ImageLoadingFailedIndicatorDefault,
     ImageLoadingIndicator = ImageLoadingIndicatorDefault,
+    ImageReloadIndicator = ImageReloadIndicatorDefault,
     ImageUploadPreview = ImageUploadPreviewDefault,
     initialScrollToFirstUnreadMessage = false,
     initialValue,
@@ -683,12 +684,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     },
   } = useTheme();
   const [deleted, setDeleted] = useState<boolean>(false);
-  const [editing, setEditing] = useState<MessageType | undefined>(undefined);
+  const [editing, setEditing] = useState<LocalMessage | undefined>(undefined);
   const [error, setError] = useState<Error | boolean>(false);
   const [lastRead, setLastRead] = useState<Date | undefined>();
 
-  const [quotedMessage, setQuotedMessage] = useState<MessageType | undefined>(undefined);
-  const [thread, setThread] = useState<MessageType | null>(threadProps || null);
+  const [quotedMessage, setQuotedMessage] = useState<LocalMessage | undefined>(undefined);
+  const [thread, setThread] = useState<LocalMessage | null>(threadProps || null);
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
   const [channelUnreadState, setChannelUnreadState] = useState<ChannelUnreadState | undefined>(
@@ -1770,7 +1771,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     FileUploadPreview,
     handleAttachButtonPress,
     hasCameraPicker,
-    hasCommands,
+    hasCommands: (getChannelConfigSafely()?.commands ?? []).length > 0,
     hasFilePicker,
     hasImagePicker,
     ImageUploadPreview,
@@ -1859,6 +1860,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       hasCreatePoll === undefined ? pollCreationEnabled : hasCreatePoll && pollCreationEnabled,
     ImageLoadingFailedIndicator,
     ImageLoadingIndicator,
+    ImageReloadIndicator,
     initialScrollToFirstUnreadMessage: !messageId && initialScrollToFirstUnreadMessage, // when messageId is set, we scroll to the messageId instead of first unread
     InlineDateSeparator,
     InlineUnreadIndicator,
@@ -1997,7 +1999,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
 export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel' | 'thread'>> &
   Pick<ChannelPropsWithContext, 'channel'> & {
-    thread?: MessageType | ThreadType | null;
+    thread?: LocalMessage | ThreadType | null;
   };
 
 /**
@@ -2016,7 +2018,7 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
   const threadInstance = (threadFromProps as ThreadType)?.threadInstance as Thread;
   const threadMessage = (
     threadInstance ? (threadFromProps as ThreadType).thread : threadFromProps
-  ) as MessageType;
+  ) as LocalMessage;
 
   const thread: ThreadType = {
     thread: threadMessage,

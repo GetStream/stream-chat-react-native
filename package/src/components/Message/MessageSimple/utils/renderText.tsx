@@ -26,7 +26,7 @@ import {
   State,
 } from 'simple-markdown';
 
-import type { UserResponse } from 'stream-chat';
+import type { LocalMessage, UserResponse } from 'stream-chat';
 
 import { generateMarkdownText } from './generateMarkdownText';
 
@@ -34,7 +34,6 @@ import type { MessageContextValue } from '../../../../contexts/messageContext/Me
 import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
 
 import { escapeRegExp } from '../../../../utils/utils';
-import type { MessageType } from '../../../MessageList/hooks/useMessageList';
 
 type ReactNodeOutput = NodeOutput<React.ReactNode>;
 type ReactOutput = Output<React.ReactNode>;
@@ -162,7 +161,7 @@ export type RenderTextParams = Partial<
   Pick<MessageContextValue, 'onLongPress' | 'onPress' | 'preventPress'>
 > & {
   colors: typeof Colors;
-  message: MessageType;
+  message: LocalMessage;
   markdownRules?: MarkdownRules;
   markdownStyles?: MarkdownStyle;
   messageOverlay?: boolean;

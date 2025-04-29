@@ -7817,9 +7817,10 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-"stream-chat@https://github.com/GetStream/stream-chat-js.git#4ff638045e434cc091a1200ecff4749b428d6936":
-  version "0.0.0-development"
-  resolved "https://github.com/GetStream/stream-chat-js.git#4ff638045e434cc091a1200ecff4749b428d6936"
+stream-chat@9.0.0-rc.14:
+  version "9.0.0-rc.14"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.0.0-rc.14.tgz#dd004add99e4fae24ec912f92bcb5487aa57a06f"
+  integrity sha512-dmRSWXkMljW+FNfui/Jy//Dn8ALWvNN25yaXaF4mcGgK5J+Qzq8mkK+YNeqp6VB3rVrotfFEGJk8Ma8FDhsFmA==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"

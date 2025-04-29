@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { LocalMessage } from 'stream-chat';
+
 import { useMessageActionHandlers } from './useMessageActionHandlers';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
@@ -27,7 +29,6 @@ import {
 import { removeReservedFields } from '../../../utils/removeReservedFields';
 import { MessageStatusTypes } from '../../../utils/utils';
 
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
 import type { MessageActionType } from '../../MessageMenu/MessageActionListItem';
 
 export type MessageActionsHookProps = Pick<
@@ -60,7 +61,7 @@ export type MessageActionsHookProps = Pick<
   Pick<ThreadContextValue, 'openThread'> &
   Pick<MessageContextValue, 'dismissOverlay' | 'message'> &
   Pick<TranslationContextValue, 't'> & {
-    onThreadSelect?: (message: MessageType) => void;
+    onThreadSelect?: (message: LocalMessage) => void;
   };
 
 export const useMessageActions = ({
@@ -293,7 +294,7 @@ export const useMessageActions = ({
       dismissOverlay();
       const messageWithoutReservedFields = removeReservedFields(message);
       if (handleRetry) {
-        handleRetry(messageWithoutReservedFields as MessageType);
+        handleRetry(messageWithoutReservedFields as LocalMessage);
       }
 
       await handleResendMessage();

@@ -12,11 +12,7 @@ import {
 
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
-import {
-  isMessageWithStylesReadByAndDateSeparator,
-  MessageType,
-  useMessageList,
-} from './hooks/useMessageList';
+import { useMessageList } from './hooks/useMessageList';
 import { useShouldScrollToRecentOnNewOwnMessage } from './hooks/useShouldScrollToRecentOnNewOwnMessage';
 
 import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
@@ -91,7 +87,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const keyExtractor = (item: MessageType) => {
+const keyExtractor = (item: LocalMessage) => {
   if (item.id) {
     return item.id;
   }
@@ -111,7 +107,7 @@ const hasReadLastMessage = (channel: Channel, userId: string) => {
   return latestMessageIdInChannel === lastReadMessageIdServer;
 };
 
-const getPreviousLastMessage = (messages: MessageType[], newMessage?: MessageResponse) => {
+const getPreviousLastMessage = (messages: LocalMessage[], newMessage?: MessageResponse) => {
   if (!newMessage) return;
   let previousLastMessage;
   for (let i = messages.length - 1; i >= 0; i--) {
@@ -189,7 +185,7 @@ type MessageListPropsWithContext = Pick<
      *  additionalFlatListProps={{ bounces: true, keyboardDismissMode: true }} />
      * ```
      */
-    additionalFlatListProps?: Partial<FlatListProps<MessageType>>;
+    additionalFlatListProps?: Partial<FlatListProps<LocalMessage>>;
     /**
      * UI component for footer of message list. By default message list will use `InlineLoadingMoreIndicator`
      * as FooterComponent. If you want to implement your own inline loading indicator, you can access `loadingMore`
@@ -231,7 +227,7 @@ type MessageListPropsWithContext = Pick<
      *  }}
      * ```
      */
-    setFlatListRef?: (ref: FlatListType<MessageType> | null) => void;
+    setFlatListRef?: (ref: FlatListType<LocalMessage> | null) => void;
   };
 
 /**
@@ -322,10 +318,11 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    * NOTE: rawMessageList changes only when messages array state changes
    * processedMessageList changes on any state change
    */
-  const { processedMessageList, rawMessageList } = useMessageList({
-    noGroupByUser,
-    threadList,
-  });
+  const { dateSeparatorsRef, messageGroupStylesRef, processedMessageList, rawMessageList } =
+    useMessageList({
+      noGroupByUser,
+      threadList,
+    });
   const messageListLengthBeforeUpdate = useRef(0);
   const messageListLengthAfterUpdate = processedMessageList.length;
 
@@ -362,7 +359,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   const onStartReachedInPromise = useRef<Promise<void> | null>(null);
   const onEndReachedInPromise = useRef<Promise<void> | null>(null);
 
-  const flatListRef = useRef<FlatListType<MessageType> | null>(null);
+  const flatListRef = useRef<FlatListType<LocalMessage> | null>(null);
 
   const channelResyncScrollSet = useRef<boolean>(true);
 
@@ -496,7 +493,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   const onViewableItemsChanged = useRef(unstableOnViewableItemsChanged);
   onViewableItemsChanged.current = unstableOnViewableItemsChanged;
 
-  const stableOnViwableItemsChanged = useCallback(
+  const stableOnViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken[] | undefined }) => {
       onViewableItemsChanged.current({ viewableItems });
     },
@@ -735,7 +732,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   const shouldApplyAndroidWorkaround = inverted && Platform.OS === 'android';
 
   const renderItem = useCallback(
-    ({ index, item: message }: { index: number; item: MessageType }) => {
+    ({ index, item: message }: { index: number; item: LocalMessage }) => {
       if (!channel || channel.disconnected || (!channel.initialized && !channel.offlineMode)) {
         return null;
       }
@@ -756,14 +753,14 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       const showUnreadUnderlay = !!shouldShowUnreadUnderlay && showUnreadSeparator;
 
       const wrapMessageInTheme = client.userID === message.user?.id && !!myMessageTheme;
-      const renderDateSeperator = isMessageWithStylesReadByAndDateSeparator(message) &&
-        message.dateSeparator && <InlineDateSeparator date={message.dateSeparator} />;
+      const renderDateSeperator = dateSeparatorsRef.current[message.id] && (
+        <InlineDateSeparator date={dateSeparatorsRef.current[message.id]} />
+      );
+
       const renderMessage = (
         <Message
           goToMessage={goToMessage}
-          groupStyles={
-            isMessageWithStylesReadByAndDateSeparator(message) ? message.groupStyles : []
-          }
+          groupStyles={messageGroupStylesRef.current[message.id] ?? []}
           isTargetedMessage={highlightedMessageId === message.id}
           lastReceivedId={
             lastReceivedId === message.id || message.quoted_message_id ? lastReceivedId : undefined
@@ -814,10 +811,12 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       channelUnreadState?.last_read_message_id,
       channelUnreadState?.unread_messages,
       client.userID,
+      dateSeparatorsRef,
       goToMessage,
       highlightedMessageId,
       lastReceivedId,
       messageContainer,
+      messageGroupStylesRef,
       modifiedTheme,
       myMessageTheme,
       onThreadSelect,
@@ -998,7 +997,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const scrollToIndexFailedRetryCountRef = useRef<number>(0);
   const failScrollTimeoutId = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const onScrollToIndexFailedRef = useRef<FlatListProps<MessageType>['onScrollToIndexFailed']>(
+  const onScrollToIndexFailedRef = useRef<FlatListProps<LocalMessage>['onScrollToIndexFailed']>(
     (info) => {
       // We got a failure as we tried to scroll to an item that was outside the render length
       if (!flatListRef.current) {
@@ -1083,7 +1082,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       isListActive &&
       ((threadList && thread) || (!threadList && !thread))
     ) {
-      setMessages(messagesWithImages as MessageType[]);
+      setMessages(messagesWithImages as LocalMessage[]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -1112,7 +1111,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     onUserScrollEvent(event);
   });
 
-  const refCallback = useStableCallback((ref: FlatListType<MessageType>) => {
+  const refCallback = useStableCallback((ref: FlatListType<LocalMessage>) => {
     flatListRef.current = ref;
 
     if (setFlatListRef) {
@@ -1251,7 +1250,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           onScrollEndDrag={onScrollEndDrag}
           onScrollToIndexFailed={onScrollToIndexFailedRef.current}
           onTouchEnd={dismissImagePicker}
-          onViewableItemsChanged={stableOnViwableItemsChanged}
+          onViewableItemsChanged={stableOnViewableItemsChanged}
           ref={refCallback}
           renderItem={renderItem}
           scrollEnabled={overlay === 'none'}

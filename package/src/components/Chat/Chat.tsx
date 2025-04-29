@@ -312,15 +312,6 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
  * - connectionRecovering - whether or not websocket is reconnecting
  * - isOnline - whether or not set user is active
  * - setActiveChannel - function to set the currently active channel
- *
- * The Chat Component takes the following generics in order:
- * - At (AttachmentType) - custom Attachment object extension
- * - Ct (ChannelType) - custom Channel object extension
- * - Co (CommandType) - custom Command string union extension
- * - Ev (EventType) - custom Event object extension
- * - Me (MessageType) - custom Message object extension
- * - Re (ReactionType) - custom Reaction object extension
- * - Us (UserType) - custom User object extension
  */
 export const Chat = (props: PropsWithChildren<ChatProps>) => {
   const { style } = useOverlayContext();

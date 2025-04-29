@@ -3,9 +3,7 @@ import { act } from 'react-test-renderer';
 
 import { renderHook } from '@testing-library/react-native';
 
-import type { StreamChat } from 'stream-chat';
-
-import type { MessageType } from '../../../components/MessageList/hooks/useMessageList';
+import type { LocalMessage, StreamChat } from 'stream-chat';
 
 import { ChatContextValue, ChatProvider } from '../../../contexts/chatContext/ChatContext';
 import { generateMessage } from '../../../mock-builders/generator/message';
@@ -51,7 +49,7 @@ describe("MessageInputContext's updateMessage", () => {
     setSelectedImages: jest.fn(),
   }));
   const clearEditingStateMock = jest.fn();
-  const generatedMessage: boolean | MessageType = generateMessage({
+  const generatedMessage: boolean | LocalMessage = generateMessage({
     created_at: 'Sat Jul 02 2022 23:55:13 GMT+0530 (India Standard Time)',
     id: '7a85f744-cc89-4f82-a1d4-5456432cc8bf',
     text: 'hey',
@@ -61,7 +59,7 @@ describe("MessageInputContext's updateMessage", () => {
       image: 'fc86ddcb-bac4-400c-9afd-b0c0a1c0cd33',
       name: '50cbdd0e-ca7e-4478-9e2c-be0f1ac6a995',
     }),
-  }) as unknown as MessageType;
+  }) as unknown as LocalMessage;
 
   it('updateMessage throws error as clearEditingState is not available', async () => {
     const initialProps = {
