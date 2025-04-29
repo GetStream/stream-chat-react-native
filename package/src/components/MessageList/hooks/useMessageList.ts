@@ -1,8 +1,6 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 
-import type { ChannelState, MessageResponse } from 'stream-chat';
-
-import { useLastReadData } from './useLastReadData';
+import type { LocalMessage } from 'stream-chat';
 
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
@@ -13,7 +11,7 @@ import {
 import { usePaginatedMessageListContext } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 
-import { getDateSeparators } from '../utils/getDateSeparators';
+import { DateSeparators, getDateSeparators } from '../utils/getDateSeparators';
 import { getGroupStyles } from '../utils/getGroupStyles';
 
 export type UseMessageListParams = {
@@ -24,24 +22,12 @@ export type UseMessageListParams = {
 
 export type GroupType = string;
 
-export type MessagesWithStylesReadByAndDateSeparator = MessageResponse & {
-  groupStyles: GroupType[];
-  readBy: boolean | number;
-  dateSeparator?: Date;
+export type MessageGroupStyles = {
+  [key: string]: string[];
 };
 
-export type MessageType =
-  | ReturnType<ChannelState['formatMessage']>
-  | MessagesWithStylesReadByAndDateSeparator;
-
-// Type guards to check MessageType
-export const isMessageWithStylesReadByAndDateSeparator = (
-  message: MessageType,
-): message is MessagesWithStylesReadByAndDateSeparator =>
-  (message as MessagesWithStylesReadByAndDateSeparator).readBy !== undefined;
-
 export const shouldIncludeMessageInList = (
-  message: MessageType,
+  message: LocalMessage,
   options: { deletedMessagesVisibilityType?: DeletedMessagesVisibilityType; userId?: string },
 ) => {
   const { deletedMessagesVisibilityType, userId } = options;
@@ -64,38 +50,52 @@ export const shouldIncludeMessageInList = (
 export const useMessageList = (params: UseMessageListParams) => {
   const { noGroupByUser, threadList } = params;
   const { client } = useChatContext();
-  const { hideDateSeparators, maxTimeBetweenGroupedMessages, read } = useChannelContext();
+  const { hideDateSeparators, maxTimeBetweenGroupedMessages } = useChannelContext();
   const { deletedMessagesVisibilityType, getMessagesGroupStyles = getGroupStyles } =
     useMessagesContext();
   const { messages } = usePaginatedMessageListContext();
   const { threadMessages } = useThreadContext();
-
   const messageList = threadList ? threadMessages : messages;
-  const readList: ChannelState['read'] | undefined = threadList ? undefined : read;
 
-  const readData = useLastReadData({
-    messages: messageList,
-    read: readList,
-    userID: client.userID,
-  });
+  const dateSeparators = useMemo(
+    () =>
+      getDateSeparators({
+        deletedMessagesVisibilityType,
+        hideDateSeparators,
+        messages: messageList,
+        userId: client.userID,
+      }),
+    [deletedMessagesVisibilityType, hideDateSeparators, messageList, client.userID],
+  );
 
-  const processedMessageList = useMemo<MessageType[]>(() => {
-    const dateSeparators = getDateSeparators({
-      deletedMessagesVisibilityType,
-      hideDateSeparators,
-      messages: messageList,
-      userId: client.userID,
-    });
+  const dateSeparatorsRef = useRef<DateSeparators>(dateSeparators);
+  dateSeparatorsRef.current = dateSeparators;
 
-    const messageGroupStyles = getMessagesGroupStyles({
-      dateSeparators,
+  const messageGroupStyles = useMemo(
+    () =>
+      getMessagesGroupStyles({
+        dateSeparators: dateSeparatorsRef.current,
+        hideDateSeparators,
+        maxTimeBetweenGroupedMessages,
+        messages: messageList,
+        noGroupByUser,
+        userId: client.userID,
+      }),
+    [
+      dateSeparatorsRef,
+      getMessagesGroupStyles,
       hideDateSeparators,
       maxTimeBetweenGroupedMessages,
-      messages: messageList,
+      messageList,
       noGroupByUser,
-      userId: client.userID,
-    });
+      client.userID,
+    ],
+  );
 
+  const messageGroupStylesRef = useRef<MessageGroupStyles>(messageGroupStyles);
+  messageGroupStylesRef.current = messageGroupStyles;
+
+  const processedMessageList = useMemo<LocalMessage[]>(() => {
     const newMessageList = [];
     for (const message of messageList) {
       if (
@@ -104,28 +104,17 @@ export const useMessageList = (params: UseMessageListParams) => {
           userId: client.userID,
         })
       ) {
-        const messageId = message.id;
-        newMessageList.unshift({
-          ...message,
-          dateSeparator: dateSeparators[messageId] || undefined,
-          groupStyles: messageGroupStyles[messageId] || ['single'],
-          readBy: messageId ? readData[messageId] || false : false,
-        });
+        newMessageList.unshift(message);
       }
     }
     return newMessageList;
-  }, [
-    client.userID,
-    deletedMessagesVisibilityType,
-    getMessagesGroupStyles,
-    hideDateSeparators,
-    maxTimeBetweenGroupedMessages,
-    messageList,
-    noGroupByUser,
-    readData,
-  ]);
+  }, [client.userID, deletedMessagesVisibilityType, messageList]);
 
   return {
+    /** Date separators */
+    dateSeparatorsRef,
+    /** Message group styles */
+    messageGroupStylesRef,
     /** Messages enriched with dates/readby/groups and also reversed in order */
     processedMessageList,
     /** Raw messages from the channel state */

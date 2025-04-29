@@ -34,7 +34,6 @@ import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
 import { VideoThumbnail } from '../Attachment/VideoThumbnail';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
-import { MessageType } from '../MessageList/hooks/useMessageList';
 
 const styles = StyleSheet.create({
   container: {
@@ -177,7 +176,7 @@ const ReplyWithContext = (props: ReplyPropsWithContext) => {
     },
   } = useTheme();
 
-  const poll = client.polls.fromState((quotedMessage as MessageType)?.poll_id ?? '');
+  const poll = client.polls.fromState(quotedMessage?.poll_id ?? '');
   const { name: pollName }: ReplySelectorReturnType = useStateStore(poll?.state, selector) ?? {};
 
   const messageText = quotedMessage ? quotedMessage.text : '';

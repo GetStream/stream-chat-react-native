@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { Thread, ThreadState } from 'stream-chat';
+import { LocalMessage, Thread, ThreadState } from 'stream-chat';
 
 import {
   TranslationContextValue,
@@ -19,7 +19,6 @@ import { MessageBubble } from '../../icons';
 import { getDateString } from '../../utils/i18n/getDateString';
 import { Avatar } from '../Avatar/Avatar';
 import { useChannelPreviewDisplayName } from '../ChannelPreview/hooks/useChannelPreviewDisplayName';
-import { MessageType } from '../MessageList/hooks/useMessageList';
 
 export type ThreadListItemProps = {
   thread: Thread;
@@ -76,7 +75,7 @@ const getTitleFromMessage = ({
 }: {
   t: TranslationContextValue['t'];
   currentUserId?: string;
-  message?: MessageType | undefined;
+  message?: LocalMessage;
 }) => {
   const attachment = message?.attachments?.at(0);
 
@@ -132,7 +131,10 @@ export const ThreadListItemComponent = () => {
     <TouchableOpacity
       onPress={() => {
         if (onThreadSelect) {
-          onThreadSelect({ thread: parentMessage as MessageType, threadInstance: thread }, channel);
+          onThreadSelect(
+            { thread: parentMessage as LocalMessage, threadInstance: thread },
+            channel,
+          );
         }
       }}
       style={[styles.touchableWrapper, threadListItem.touchableWrapper]}

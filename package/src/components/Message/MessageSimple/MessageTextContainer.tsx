@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
+import { LocalMessage } from 'stream-chat';
+
 import { renderText, RenderTextParams } from './utils/renderText';
 
 import {
@@ -15,8 +17,6 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import type { MarkdownStyle, Theme } from '../../../contexts/themeContext/utils/theme';
 import { useTranslatedMessage } from '../../../hooks/useTranslatedMessage';
-
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
 
 const styles = StyleSheet.create({
   textContainer: { maxWidth: 250, paddingHorizontal: 16 },
@@ -71,7 +71,7 @@ const MessageTextContainerWithContext = (props: MessageTextContainerPropsWithCon
     },
   } = theme;
 
-  const translatedMessage = useTranslatedMessage(message) as MessageType;
+  const translatedMessage = useTranslatedMessage(message) as LocalMessage;
 
   if (!message.text) {
     return null;

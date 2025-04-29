@@ -170,7 +170,6 @@ import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDef
 import { StopMessageStreamingButton as DefaultStopMessageStreamingButton } from '../MessageInput/StopMessageStreamingButton';
 import { UploadProgressIndicator as UploadProgressIndicatorDefault } from '../MessageInput/UploadProgressIndicator';
 import { DateHeader as DateHeaderDefault } from '../MessageList/DateHeader';
-import type { MessageType } from '../MessageList/hooks/useMessageList';
 import { InlineDateSeparator as InlineDateSeparatorDefault } from '../MessageList/InlineDateSeparator';
 import { InlineUnreadIndicator as InlineUnreadIndicatorDefault } from '../MessageList/InlineUnreadIndicator';
 import { MessageList as MessageListDefault } from '../MessageList/MessageList';
@@ -685,12 +684,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     },
   } = useTheme();
   const [deleted, setDeleted] = useState<boolean>(false);
-  const [editing, setEditing] = useState<MessageType | undefined>(undefined);
+  const [editing, setEditing] = useState<LocalMessage | undefined>(undefined);
   const [error, setError] = useState<Error | boolean>(false);
   const [lastRead, setLastRead] = useState<Date | undefined>();
 
-  const [quotedMessage, setQuotedMessage] = useState<MessageType | undefined>(undefined);
-  const [thread, setThread] = useState<MessageType | null>(threadProps || null);
+  const [quotedMessage, setQuotedMessage] = useState<LocalMessage | undefined>(undefined);
+  const [thread, setThread] = useState<LocalMessage | null>(threadProps || null);
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
   const [channelUnreadState, setChannelUnreadState] = useState<ChannelUnreadState | undefined>(
@@ -1583,7 +1582,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         const updatedMessage = {
           ...message,
           cid: channel.cid,
-          deleted_at: new Date().toISOString(),
+          deleted_at: new Date(),
           type: 'deleted' as MessageLabel,
         };
         updateMessage(updatedMessage);
@@ -2035,7 +2034,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
 export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel' | 'thread'>> &
   Pick<ChannelPropsWithContext, 'channel'> & {
-    thread?: MessageType | ThreadType | null;
+    thread?: LocalMessage | ThreadType | null;
   };
 
 /**
@@ -2054,7 +2053,7 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
   const threadInstance = (threadFromProps as ThreadType)?.threadInstance as Thread;
   const threadMessage = (
     threadInstance ? (threadFromProps as ThreadType).thread : threadFromProps
-  ) as MessageType;
+  ) as LocalMessage;
 
   const thread: ThreadType = {
     thread: threadMessage,

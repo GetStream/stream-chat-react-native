@@ -3,6 +3,8 @@ import { Text } from 'react-native';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
+import { LocalMessage } from 'stream-chat';
+
 import { OverlayProvider } from '../../../../contexts/overlayContext/OverlayProvider';
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
@@ -17,7 +19,6 @@ import { generateStaticUser } from '../../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
 import { Channel } from '../../../Channel/Channel';
 import { Chat } from '../../../Chat/Chat';
-import type { MessageType } from '../../../MessageList/hooks/useMessageList';
 import { MessageList } from '../../../MessageList/MessageList';
 import { MessageTextContainer } from '../MessageTextContainer';
 
@@ -31,7 +32,7 @@ describe('MessageTextContainer', () => {
     });
     const { getByTestId, getByText, rerender, toJSON } = render(
       <ThemeProvider theme={defaultTheme}>
-        <MessageTextContainer message={message as unknown as MessageType} />
+        <MessageTextContainer message={message as unknown as LocalMessage} />
       </ThemeProvider>,
     );
 
@@ -43,7 +44,7 @@ describe('MessageTextContainer', () => {
     rerender(
       <ThemeProvider theme={defaultTheme}>
         <MessageTextContainer
-          message={message as unknown as MessageType}
+          message={message as unknown as LocalMessage}
           MessageText={({ message }) => <Text testID='message-text'>{message?.text}</Text>}
         />
       </ThemeProvider>,
@@ -61,7 +62,7 @@ describe('MessageTextContainer', () => {
 
     rerender(
       <ThemeProvider theme={defaultTheme}>
-        <MessageTextContainer message={staticMessage as unknown as MessageType} />
+        <MessageTextContainer message={staticMessage as unknown as LocalMessage} />
       </ThemeProvider>,
     );
 
