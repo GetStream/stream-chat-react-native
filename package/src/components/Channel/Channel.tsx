@@ -560,7 +560,6 @@ const ChannelWithContext = <
     handleRetry,
     handleThreadReply,
     hasCameraPicker = isImagePickerAvailable(),
-    hasCommands = true,
     hasCreatePoll,
     // If pickDocument isn't available, default to hiding the file picker
     hasFilePicker = isDocumentPickerAvailable(),
@@ -1828,7 +1827,7 @@ const ChannelWithContext = <
     FileUploadPreview,
     handleAttachButtonPress,
     hasCameraPicker,
-    hasCommands,
+    hasCommands: (getChannelConfigSafely()?.commands ?? []).length > 0,
     hasFilePicker,
     hasImagePicker,
     ImageUploadPreview,
