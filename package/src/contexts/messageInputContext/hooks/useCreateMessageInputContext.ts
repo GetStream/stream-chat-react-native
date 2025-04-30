@@ -5,7 +5,6 @@ import type { MessageInputContextValue } from '../MessageInputContext';
 
 export const useCreateMessageInputContext = ({
   additionalTextInputProps,
-  appendText,
   asyncIds,
   asyncMessagesLockDistance,
   asyncMessagesMinimumPressDuration,
@@ -66,13 +65,9 @@ export const useCreateMessageInputContext = ({
   MoreOptionsButton,
   numberOfLines,
   numberOfUploads,
-  onChange,
   onChangeText,
-  onSelectItem,
   openAttachmentPicker,
-  openCommandsPicker,
   openFilePicker,
-  openMentionsPicker,
   openPollCreationDialog,
   pickAndUploadImageFromNativePicker,
   pickFile,
@@ -110,7 +105,6 @@ export const useCreateMessageInputContext = ({
   text,
   thread,
   toggleAttachmentPicker,
-  triggerSettings,
   updateMessage,
   uploadFile,
   uploadImage,
@@ -130,7 +124,6 @@ export const useCreateMessageInputContext = ({
   const messageInputContext: MessageInputContextValue = useMemo(
     () => ({
       additionalTextInputProps,
-      appendText,
       asyncIds,
       asyncMessagesLockDistance,
       asyncMessagesMinimumPressDuration,
@@ -191,13 +184,9 @@ export const useCreateMessageInputContext = ({
       MoreOptionsButton,
       numberOfLines,
       numberOfUploads,
-      onChange,
       onChangeText,
-      onSelectItem,
       openAttachmentPicker,
-      openCommandsPicker,
       openFilePicker,
-      openMentionsPicker,
       openPollCreationDialog,
       pickAndUploadImageFromNativePicker,
       pickFile,
@@ -234,7 +223,6 @@ export const useCreateMessageInputContext = ({
       takeAndUploadImage,
       text,
       toggleAttachmentPicker,
-      triggerSettings,
       updateMessage,
       uploadFile,
       uploadImage,
@@ -262,7 +250,6 @@ export const useCreateMessageInputContext = ({
       text,
       threadId,
       showPollCreationDialog,
-      onChange,
     ],
   );
 

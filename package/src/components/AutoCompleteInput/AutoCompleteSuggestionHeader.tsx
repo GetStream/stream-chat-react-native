@@ -8,8 +8,8 @@ import { Lightning } from '../../icons/Lightning';
 import { Smile } from '../../icons/Smile';
 
 export type AutoCompleteSuggestionHeaderProps = {
-  queryText: string;
-  triggerType: string;
+  queryText?: string;
+  triggerType?: string;
 };
 
 const styles = StyleSheet.create({

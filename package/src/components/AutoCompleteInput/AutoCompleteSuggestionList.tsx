@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { FlatList, LayoutChangeEvent, Pressable, StyleSheet, View } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { FlatList, StyleSheet, View } from 'react-native';
 
 import { SearchSourceState, TextComposerState, TextComposerSuggestion } from 'stream-chat';
 
@@ -11,7 +11,7 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks/useStateStore';
 
-const AUTO_COMPLETE_SUGGESTION_LIST_HEADER_HEIGHT = 50;
+export const DEFAULT_LIST_HEIGHT = 200;
 
 export type AutoCompleteSuggestionListProps = Partial<
   Pick<MessageInputContextValue, 'AutoCompleteSuggestionHeader' | 'AutoCompleteSuggestionItem'>
@@ -35,8 +35,6 @@ export const AutoCompleteSuggestionList = ({
     AutoCompleteSuggestionItem: contextAutoCompleteSuggestionItem,
   } = useMessageInputContext();
 
-  const [itemHeight, setItemHeight] = useState<number>(0);
-
   const AutoCompleteSuggestionHeader =
     propsAutoCompleteSuggestionHeader ?? contextAutoCompleteSuggestionHeader;
   const AutoCompleteSuggestionItem =
@@ -44,7 +42,7 @@ export const AutoCompleteSuggestionList = ({
 
   const messageComposer = useMessageComposer();
   const { textComposer } = messageComposer;
-  const { suggestions, text } = useStateStore(textComposer.state, textComposerStateSelector);
+  const { suggestions } = useStateStore(textComposer.state, textComposerStateSelector);
   const { items } = useStateStore(suggestions?.searchSource.state, searchSourceStateSelector) ?? {};
   const trigger = suggestions?.trigger;
   const queryText = suggestions?.query;
@@ -56,76 +54,51 @@ export const AutoCompleteSuggestionList = ({
   }[trigger ?? ''];
 
   const showList = useMemo(() => {
-    return items && queryText && items?.length > 0 && triggerType;
-  }, [items, queryText, triggerType]);
+    return items && items?.length > 0;
+  }, [items]);
 
   const {
     theme: {
-      colors: { white },
+      colors: { black, white },
       messageInput: {
         container: { maxHeight },
-        suggestions: { item: itemStyle },
         suggestionsListContainer: { flatlist },
       },
     },
   } = useTheme();
 
-  const flatlistHeight = useMemo(() => {
-    const data = items ?? [];
-    let totalItemHeight;
-    if (triggerType === 'emoji') {
-      totalItemHeight = data.length < 7 ? data.length * itemHeight : itemHeight * 6;
-    } else {
-      totalItemHeight = data.length < 4 ? data.length * itemHeight : itemHeight * 3;
-    }
+  const renderItem = useCallback(
+    ({ item }: { item: TextComposerSuggestion }) => {
+      return AutoCompleteSuggestionItem ? (
+        <AutoCompleteSuggestionItem itemProps={item} triggerType={triggerType} />
+      ) : null;
+    },
+    [AutoCompleteSuggestionItem, triggerType],
+  );
 
-    return triggerType === 'emoji' || triggerType === 'command'
-      ? totalItemHeight + AUTO_COMPLETE_SUGGESTION_LIST_HEADER_HEIGHT
-      : totalItemHeight;
-  }, [itemHeight, items, triggerType]);
-
-  const renderItem = ({ item }: { item: TextComposerSuggestion }) => {
-    const handleSelect = () => {
-      textComposer.handleSelect(item);
-    };
-
-    switch (triggerType) {
-      case 'command':
-      case 'mention':
-      case 'emoji':
-        return (
-          <Pressable
-            onLayout={(event: LayoutChangeEvent) => setItemHeight(event.nativeEvent.layout.height)}
-            onPress={handleSelect}
-            style={({ pressed }) => [{ opacity: pressed ? 0.2 : 1 }, itemStyle]}
-          >
-            {AutoCompleteSuggestionItem && (
-              <AutoCompleteSuggestionItem itemProps={item} triggerType={triggerType} />
-            )}
-          </Pressable>
-        );
-      default:
-        return null;
-    }
-  };
+  const renderHeader = useCallback(() => {
+    return AutoCompleteSuggestionHeader ? (
+      <AutoCompleteSuggestionHeader queryText={queryText} triggerType={triggerType} />
+    ) : null;
+  }, [AutoCompleteSuggestionHeader, queryText, triggerType]);
 
   if (!showList || !triggerType) {
     return null;
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: white, height: flatlistHeight }]}>
+    <View style={[styles.container]}>
       <FlatList
         data={items}
         keyboardShouldPersistTaps='always'
-        keyExtractor={(item) => `${item.id}`}
-        ListHeaderComponent={
-          AutoCompleteSuggestionHeader ? (
-            <AutoCompleteSuggestionHeader queryText={text} triggerType={triggerType} />
-          ) : null
-        }
+        keyExtractor={(item) => item.id}
+        ListHeaderComponent={renderHeader}
         renderItem={renderItem}
-        style={[flatlist, { maxHeight }]}
+        style={[
+          styles.flatlist,
+          flatlist,
+          { backgroundColor: white, maxHeight, shadowColor: black },
+        ]}
       />
     </View>
   );
@@ -133,12 +106,18 @@ export const AutoCompleteSuggestionList = ({
 
 const styles = StyleSheet.create({
   container: {
+    maxHeight: DEFAULT_LIST_HEIGHT,
+  },
+  flatlist: {
     borderRadius: 8,
     elevation: 3,
     marginHorizontal: 8,
-    marginVertical: 8,
-    shadowOffset: { height: 1, width: 0 },
-    shadowOpacity: 0.15,
+    shadowOffset: {
+      height: 1,
+      width: 0,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
   },
 });
 

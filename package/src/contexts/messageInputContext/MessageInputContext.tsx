@@ -4,13 +4,11 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react';
 import { Alert, Keyboard, Linking, TextInput, TextInputProps } from 'react-native';
 
-import uniq from 'lodash/uniq';
 import {
   Attachment,
   LocalMessage,
@@ -70,11 +68,7 @@ import {
   NativeHandlers,
 } from '../../native';
 import { File, FileTypes, FileUpload } from '../../types/types';
-import {
-  ACITriggerSettings,
-  ACITriggerSettingsParams,
-  TriggerSettings,
-} from '../../utils/ACITriggerSettings';
+import { ACITriggerSettingsParams, TriggerSettings } from '../../utils/ACITriggerSettings';
 import { compressedImageURI } from '../../utils/compressImage';
 import { removeReservedFields } from '../../utils/removeReservedFields';
 import {
@@ -116,7 +110,6 @@ export type MentionAllAppUsersQuery = {
 };
 
 export type LocalMessageInputContext = {
-  appendText: (newText: string) => void;
   asyncIds: string[];
   asyncUploads: {
     [key: string]: {
@@ -176,12 +169,8 @@ export type LocalMessageInputContext = {
   isValidMessage: () => boolean;
   mentionedUsers: string[];
   numberOfUploads: number;
-  onChange: (newText: string) => void;
-  onSelectItem: (item: UserResponse) => void;
   openAttachmentPicker: () => void;
-  openCommandsPicker: () => void;
   openFilePicker: () => void;
-  openMentionsPicker: () => void;
   /**
    * Function for picking a photo from native image picker and uploading it.
    */
@@ -233,10 +222,6 @@ export type LocalMessageInputContext = {
   takeAndUploadImage: (mediaType?: MediaTypes) => Promise<void>;
   text: string;
   toggleAttachmentPicker: () => void;
-  /**
-   * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
-   */
-  triggerSettings: TriggerSettings;
   updateMessage: () => Promise<void>;
   /** Function for attempting to upload a file */
   uploadFile: ({ newFile }: { newFile: FileUpload }) => Promise<void>;
@@ -519,6 +504,7 @@ export const MessageInputContext = React.createContext(
 );
 
 const textComposerStateSelector = (state: TextComposerState) => ({
+  mentionedUsers: state.mentionedUsers,
   suggestions: state.suggestions,
   text: state.text,
 });
@@ -539,7 +525,7 @@ export const MessageInputProvider = ({
     setSelectedImages,
     setSelectedPicker,
   } = useAttachmentPickerContext();
-  const { appSettings, client, enableOfflineSupport, isOnline } = useChatContext();
+  const { appSettings, client, enableOfflineSupport } = useChatContext();
   const { removeMessage } = useMessagesContext();
 
   const getFileUploadConfig = () => {
@@ -591,7 +577,6 @@ export const MessageInputProvider = ({
   const {
     fileUploads,
     imageUploads,
-    mentionedUsers,
     numberOfUploads,
     setFileUploads,
     setImageUploads,
@@ -602,21 +587,15 @@ export const MessageInputProvider = ({
     showMoreOptions,
   } = useMessageDetailsForState(editing, initialValue);
   const { endsAt: cooldownEndsAt, start: startCooldown } = useCooldown();
-  const { onChangeText, emojiSearchIndex, autoCompleteTriggerSettings } = value;
 
   const messageComposer = useMessageComposer();
   const { textComposer } = messageComposer;
-  const { text } = useStateStore(textComposer.state, textComposerStateSelector);
+  const { mentionedUsers, text } = useStateStore(textComposer.state, textComposerStateSelector);
 
   const threadId = thread?.id;
   useEffect(() => {
     setSendThreadMessageInChannel(false);
   }, [threadId]);
-
-  // TODO: Not needed anymore after we moved to the new text composer
-  const appendText = useStableCallback((newText: string) => {
-    setText((prevText) => `${prevText}${newText}`);
-  });
 
   /** Checks if the message is valid or not. Accordingly we can enable/disable send button */
   const isValidMessage = useStableCallback(() => {
@@ -653,53 +632,6 @@ export const MessageInputProvider = ({
     }
 
     return false;
-  });
-
-  // TODO: Not needed anymore after we moved to the new text composer
-  const onChange = useCallback(
-    (newText: string) => {
-      if (sending.current) {
-        return;
-      }
-      setText(newText);
-
-      if (newText && channel && channelCapabities.sendTypingEvents && isOnline) {
-        logChatPromiseExecution(channel.keystroke(thread?.id), 'start typing event');
-      }
-
-      if (onChangeText) {
-        onChangeText(newText);
-      }
-    },
-    [channel, channelCapabities.sendTypingEvents, isOnline, setText, thread?.id, onChangeText],
-  );
-
-  // TODO: Not needed anymore after we moved to the new text composer
-  const openCommandsPicker = useStableCallback(async () => {
-    await textComposer.handleChange({
-      selection: {
-        end: 1,
-        start: 1,
-      },
-      text: '/',
-    });
-    if (inputBoxRef.current) {
-      inputBoxRef.current.focus();
-    }
-  });
-
-  // TODO: Not needed anymore after we moved to the new text composer
-  const openMentionsPicker = useStableCallback(async () => {
-    await textComposer.handleChange({
-      selection: {
-        end: 1,
-        start: 1,
-      },
-      text: '@',
-    });
-    if (inputBoxRef.current) {
-      inputBoxRef.current.focus();
-    }
   });
 
   /**
@@ -801,10 +733,6 @@ export const MessageInputProvider = ({
       openAttachmentPicker();
     }
   }, [closeAttachmentPicker, openAttachmentPicker, selectedPicker]);
-
-  const onSelectItem = useStableCallback((item: UserResponse) => {
-    setMentionedUsers((prevMentionedUsers) => [...prevMentionedUsers, item.id]);
-  });
 
   const pickFile = useStableCallback(async () => {
     if (!isDocumentPickerAvailable()) {
@@ -1049,7 +977,7 @@ export const MessageInputProvider = ({
         const updatedMessage = {
           ...message,
           attachments,
-          mentioned_users: mentionedUsers.map((userId) => ({ id: userId })),
+          mentioned_users: mentionedUsers.map((user) => ({ id: user.id })),
           quoted_message: undefined,
           text: prevText,
           ...customMessageData,
@@ -1076,16 +1004,18 @@ export const MessageInputProvider = ({
           if (message && isBouncedMessage(message)) {
             await removeMessage(message);
           }
+
           value.sendMessage({
             attachments,
-            mentioned_users: uniq(mentionedUsers),
+            // TODO: Handle unique users
+            mentioned_users: mentionedUsers.map((user) => user.id),
             /** Parent message id - in case of thread */
             parent_id: thread?.id,
             quoted_message_id: value.quotedMessage ? value.quotedMessage.id : undefined,
             show_in_channel: sendThreadMessageInChannel || undefined,
             text: prevText,
             ...customMessageData,
-          } as unknown as StreamMessage);
+          });
 
           value.clearQuotedMessageState();
           sending.current = false;
@@ -1146,35 +1076,6 @@ export const MessageInputProvider = ({
       value.setInputRef(ref);
     }
   });
-
-  const triggerSettings = useMemo(() => {
-    try {
-      let triggerSettings: TriggerSettings = {};
-      if (channel) {
-        if (autoCompleteTriggerSettings) {
-          triggerSettings = autoCompleteTriggerSettings({
-            channel,
-            client,
-            emojiSearchIndex,
-            onMentionSelectItem: onSelectItem,
-          });
-        } else {
-          triggerSettings = ACITriggerSettings({
-            channel,
-            client,
-            emojiSearchIndex,
-            onMentionSelectItem: onSelectItem,
-          });
-        }
-      }
-      return triggerSettings;
-    } catch (error) {
-      console.warn('Error in getting trigger settings', error);
-      throw error;
-    }
-  }, [channel, client, onSelectItem, autoCompleteTriggerSettings, emojiSearchIndex]);
-
-  // const triggerSettings = getTriggerSettings();
 
   const updateMessage = useStableCallback(async () => {
     try {
@@ -1477,7 +1378,6 @@ export const MessageInputProvider = ({
   });
 
   const messageInputContext = useCreateMessageInputContext({
-    appendText,
     asyncIds,
     asyncUploads,
     closeAttachmentPicker,
@@ -1488,14 +1388,10 @@ export const MessageInputProvider = ({
     imageUploads,
     inputBoxRef,
     isValidMessage,
-    mentionedUsers,
+    mentionedUsers: mentionedUsers.map((user) => user.id),
     numberOfUploads,
-    onChange,
-    onSelectItem,
     openAttachmentPicker,
-    openCommandsPicker,
     openFilePicker: pickFile,
-    openMentionsPicker,
     pickAndUploadImageFromNativePicker,
     pickFile,
     removeFile,
@@ -1521,7 +1417,6 @@ export const MessageInputProvider = ({
     text,
     thread,
     toggleAttachmentPicker,
-    triggerSettings,
     updateMessage,
     uploadFile,
     uploadImage,

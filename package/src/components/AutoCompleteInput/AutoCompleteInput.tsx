@@ -1,5 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { I18nManager, StyleSheet, TextInput, TextInputProps } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  I18nManager,
+  NativeSyntheticEvent,
+  StyleSheet,
+  TextInput,
+  TextInputContentSizeChangeEventData,
+  TextInputSelectionChangeEventData,
+} from 'react-native';
 
 import { TextComposerState } from 'stream-chat';
 
@@ -34,6 +41,7 @@ type AutoCompleteInputPropsWithContext = Pick<
   | 'giphyEnabled'
   | 'maxMessageLength'
   | 'numberOfLines'
+  | 'onChangeText'
   | 'setGiphyActive'
   | 'setInputBoxRef'
 > &
@@ -59,44 +67,70 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
     giphyEnabled,
     maxMessageLength,
     numberOfLines,
+    onChangeText,
     setGiphyActive,
     setInputBoxRef,
     t,
   } = props;
   const [localText, setLocalText] = useState('');
   const [selection, setSelection] = useState({ end: 0, start: 0 });
+  const [textHeight, setTextHeight] = useState(0);
   const messageComposer = useMessageComposer();
+  const { textComposer } = messageComposer;
 
-  const { text } = useStateStore(messageComposer.textComposer.state, messageComposerStateSelector);
+  const { text } = useStateStore(textComposer.state, messageComposerStateSelector);
 
   useEffect(() => {
     setLocalText(text);
   }, [text]);
 
-  const handleSelectionChange: TextInputProps['onSelectionChange'] = ({
-    nativeEvent: { selection },
-  }) => {
-    setSelection(selection);
-  };
+  const handleSelectionChange = useCallback(
+    (e: NativeSyntheticEvent<TextInputSelectionChangeEventData>) => {
+      const { selection } = e.nativeEvent;
+      if (additionalTextInputProps?.onSelectionChange) {
+        additionalTextInputProps.onSelectionChange(e);
+        return;
+      }
+      setSelection(selection);
+    },
+    [additionalTextInputProps],
+  );
 
-  const onTextChangeHandler = async (newText: string) => {
-    setLocalText(newText);
-    const isGiphy = giphyEnabled && newText && newText.startsWith('/giphy ');
+  const onTextChangeHandler = useCallback(
+    async (newText: string) => {
+      if (onChangeText) {
+        onChangeText(newText);
+        return;
+      }
+      if (additionalTextInputProps?.onChangeText) {
+        additionalTextInputProps.onChangeText(newText);
+        return;
+      }
+      setLocalText(newText);
+      const isGiphy = giphyEnabled && newText && newText.startsWith('/giphy ');
 
-    if (isGiphy) {
-      setGiphyActive(true);
-    }
+      if (isGiphy) {
+        setGiphyActive(true);
+      }
 
-    await messageComposer.textComposer.handleChange({
-      selection: {
-        end: selection.end + 1,
-        start: selection.start + 1,
-      },
-      text: isGiphy ? newText.slice(7) : newText,
-    });
-  };
-
-  const [textHeight, setTextHeight] = useState(0);
+      await textComposer.handleChange({
+        selection: {
+          end: selection.end + 1,
+          start: selection.start + 1,
+        },
+        text: isGiphy ? newText.slice(7) : newText,
+      });
+    },
+    [
+      additionalTextInputProps,
+      giphyEnabled,
+      onChangeText,
+      textComposer,
+      selection.end,
+      selection.start,
+      setGiphyActive,
+    ],
+  );
 
   const {
     theme: {
@@ -105,11 +139,22 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
     },
   } = useTheme();
 
-  const placeholderText = giphyActive
-    ? t('Search GIFs')
-    : cooldownActive
-      ? t('Slow mode ON')
-      : t('Send a message');
+  const placeholderText = useMemo(() => {
+    return giphyActive
+      ? t('Search GIFs')
+      : cooldownActive
+        ? t('Slow mode ON')
+        : t('Send a message');
+  }, [cooldownActive, giphyActive, t]);
+
+  const handleContentSizeChange = useCallback(
+    ({
+      nativeEvent: { contentSize },
+    }: NativeSyntheticEvent<TextInputContentSizeChangeEventData>) => {
+      setTextHeight(contentSize.height);
+    },
+    [],
+  );
 
   return (
     <TextInput
@@ -117,15 +162,7 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
       maxLength={maxMessageLength}
       multiline
       onChangeText={onTextChangeHandler}
-      onContentSizeChange={({
-        nativeEvent: {
-          contentSize: { height },
-        },
-      }) => {
-        if (!textHeight) {
-          setTextHeight(height);
-        }
-      }}
+      onContentSizeChange={handleContentSizeChange}
       onSelectionChange={handleSelectionChange}
       placeholder={placeholderText}
       placeholderTextColor={grey}
@@ -183,6 +220,7 @@ export const AutoCompleteInput = (props: AutoCompleteInputProps) => {
     giphyActive,
     maxMessageLength,
     numberOfLines,
+    onChangeText,
     setGiphyActive,
     setInputBoxRef,
   } = useMessageInputContext();
@@ -196,6 +234,7 @@ export const AutoCompleteInput = (props: AutoCompleteInputProps) => {
         giphyEnabled,
         maxMessageLength,
         numberOfLines,
+        onChangeText,
         setGiphyActive,
         setInputBoxRef,
         t,

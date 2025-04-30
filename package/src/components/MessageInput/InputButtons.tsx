@@ -24,7 +24,6 @@ export type InputButtonsWithContextProps = Pick<
   | 'hasFilePicker'
   | 'hasImagePicker'
   | 'MoreOptionsButton'
-  | 'openCommandsPicker'
   | 'selectedPicker'
   | 'setShowMoreOptions'
   | 'showMoreOptions'
@@ -41,14 +40,13 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
     hasFilePicker,
     hasImagePicker,
     MoreOptionsButton,
-    openCommandsPicker,
     setShowMoreOptions,
     showMoreOptions,
   } = props;
 
   const {
     theme: {
-      messageInput: { attachButtonContainer, commandsButtonContainer },
+      messageInput: { attachButtonContainer },
     },
   } = useTheme();
 
@@ -73,11 +71,7 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
           <AttachButton />
         </View>
       )}
-      {hasCommands && (
-        <View style={commandsButtonContainer}>
-          <CommandsButton handleOnPress={openCommandsPicker} />
-        </View>
-      )}
+      {hasCommands && <CommandsButton />}
     </>
   );
 };
@@ -152,7 +146,6 @@ export const InputButtons = (props: InputButtonsProps) => {
     hasFilePicker,
     hasImagePicker,
     MoreOptionsButton,
-    openCommandsPicker,
     selectedPicker,
     setShowMoreOptions,
     showMoreOptions,
@@ -170,7 +163,6 @@ export const InputButtons = (props: InputButtonsProps) => {
         hasFilePicker,
         hasImagePicker,
         MoreOptionsButton,
-        openCommandsPicker,
         selectedPicker,
         setShowMoreOptions,
         showMoreOptions,

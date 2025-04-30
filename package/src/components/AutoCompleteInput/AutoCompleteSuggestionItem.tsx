@@ -1,10 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { CommandSuggestion, TextComposerSuggestion, UserSuggestion } from 'stream-chat';
 
 import { AutoCompleteSuggestionCommandIcon } from './AutoCompleteSuggestionCommandIcon';
 
+import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import type { Emoji } from '../../emoji-data';
 import { AtMentions } from '../../icons/AtMentions';
@@ -13,7 +14,7 @@ import { Avatar } from '../Avatar/Avatar';
 
 export type AutoCompleteSuggestionItemProps = {
   itemProps: TextComposerSuggestion;
-  triggerType: string;
+  triggerType?: string;
 };
 
 export const MentionSuggestionItem = (item: UserSuggestion) => {
@@ -91,20 +92,42 @@ const CommandSuggestionItem = (item: CommandSuggestion) => {
   );
 };
 
+const renderSuggestionItem = (item: TextComposerSuggestion, triggerType?: string) => {
+  switch (triggerType) {
+    case 'mention':
+      return <MentionSuggestionItem {...(item as UserSuggestion)} />;
+    case 'emoji':
+      return <EmojiSuggestionItem {...(item as Emoji)} />;
+    case 'command':
+      return <CommandSuggestionItem {...(item as CommandSuggestion)} />;
+    default:
+      return null;
+  }
+};
+
 export const AutoCompleteSuggestionItem = ({
   itemProps,
   triggerType,
 }: AutoCompleteSuggestionItemProps) => {
-  switch (triggerType) {
-    case 'mention':
-      return <MentionSuggestionItem {...(itemProps as UserSuggestion)} />;
-    case 'emoji':
-      return <EmojiSuggestionItem {...(itemProps as Emoji)} />;
-    case 'command':
-      return <CommandSuggestionItem {...itemProps} />;
-    default:
-      return null;
-  }
+  const messageComposer = useMessageComposer();
+  const { textComposer } = messageComposer;
+
+  const {
+    theme: {
+      messageInput: {
+        suggestions: { item: itemStyle },
+      },
+    },
+  } = useTheme();
+
+  return (
+    <Pressable
+      onPress={() => textComposer.handleSelect(itemProps)}
+      style={({ pressed }) => [{ opacity: pressed ? 0.2 : 1 }, itemStyle]}
+    >
+      {renderSuggestionItem(itemProps, triggerType)}
+    </Pressable>
+  );
 };
 
 const styles = StyleSheet.create({

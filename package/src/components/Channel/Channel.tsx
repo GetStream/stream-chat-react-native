@@ -1361,7 +1361,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           return;
         }
 
-        const mentionedUserIds = mentioned_users?.map((user) => user.id) || [];
+        const mentionedUserIds = mentioned_users?.map((user) => user.id) ?? [];
 
         const messageData = {
           attachments,
