@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { CommandSuggestion, TextComposerSuggestion, UserSuggestion } from 'stream-chat';
@@ -120,9 +120,13 @@ export const AutoCompleteSuggestionItem = ({
     },
   } = useTheme();
 
+  const handlePress = useCallback(async () => {
+    await textComposer.handleSelect(itemProps);
+  }, [itemProps, textComposer]);
+
   return (
     <Pressable
-      onPress={() => textComposer.handleSelect(itemProps)}
+      onPress={handlePress}
       style={({ pressed }) => [{ opacity: pressed ? 0.2 : 1 }, itemStyle]}
     >
       {renderSuggestionItem(itemProps, triggerType)}

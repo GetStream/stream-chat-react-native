@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   I18nManager,
   NativeSyntheticEvent,
@@ -23,17 +23,6 @@ import {
 
 import { useStateStore } from '../../hooks/useStateStore';
 
-const styles = StyleSheet.create({
-  inputBox: {
-    flex: 1,
-    fontSize: 16,
-    includeFontPadding: false, // for android vertical text centering
-    padding: 0, // removal of default text input padding on android
-    paddingTop: 0, // removal of iOS top padding for weird centering
-    textAlignVertical: 'center', // for android vertical text centering
-  },
-});
-
 type AutoCompleteInputPropsWithContext = Pick<
   MessageInputContextValue,
   | 'additionalTextInputProps'
@@ -56,6 +45,7 @@ type AutoCompleteInputPropsWithContext = Pick<
 export type AutoCompleteInputProps = Partial<AutoCompleteInputPropsWithContext>;
 
 const messageComposerStateSelector = (state: TextComposerState) => ({
+  selection: state.selection,
   text: state.text,
 });
 
@@ -72,17 +62,12 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
     setInputBoxRef,
     t,
   } = props;
-  const [localText, setLocalText] = useState('');
   const [selection, setSelection] = useState({ end: 0, start: 0 });
   const [textHeight, setTextHeight] = useState(0);
   const messageComposer = useMessageComposer();
   const { textComposer } = messageComposer;
 
   const { text } = useStateStore(textComposer.state, messageComposerStateSelector);
-
-  useEffect(() => {
-    setLocalText(text);
-  }, [text]);
 
   const handleSelectionChange = useCallback(
     (e: NativeSyntheticEvent<TextInputSelectionChangeEventData>) => {
@@ -106,7 +91,6 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
         additionalTextInputProps.onChangeText(newText);
         return;
       }
-      setLocalText(newText);
       const isGiphy = giphyEnabled && newText && newText.startsWith('/giphy ');
 
       if (isGiphy) {
@@ -121,15 +105,7 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
         text: isGiphy ? newText.slice(7) : newText,
       });
     },
-    [
-      additionalTextInputProps,
-      giphyEnabled,
-      onChangeText,
-      textComposer,
-      selection.end,
-      selection.start,
-      setGiphyActive,
-    ],
+    [additionalTextInputProps, giphyEnabled, onChangeText, textComposer, selection, setGiphyActive],
   );
 
   const {
@@ -177,7 +153,7 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
         inputBox,
       ]}
       testID='auto-complete-text-input'
-      value={localText}
+      value={text}
       {...additionalTextInputProps}
     />
   );
@@ -243,5 +219,16 @@ export const AutoCompleteInput = (props: AutoCompleteInputProps) => {
     />
   );
 };
+
+const styles = StyleSheet.create({
+  inputBox: {
+    flex: 1,
+    fontSize: 16,
+    includeFontPadding: false, // for android vertical text centering
+    padding: 0, // removal of default text input padding on android
+    paddingTop: 0, // removal of iOS top padding for weird centering
+    textAlignVertical: 'center', // for android vertical text centering
+  },
+});
 
 AutoCompleteInput.displayName = 'AutoCompleteInput{messageInput{inputBox}}';
