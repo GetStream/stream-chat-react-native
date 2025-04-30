@@ -12,6 +12,7 @@ import { upsertChannelData } from '../../../store/apis/upsertChannelData';
 // import { SqliteClient } from '../../../store/SqliteClient';
 // import { PreparedQueries } from '../../../store/types';
 
+// eslint-disable-next-line require-await
 export const handleEventToSyncDB = async (event: Event, client: StreamChat, flush?: boolean) => {
   const { type } = event;
   console.log('client', !!client);
@@ -190,8 +191,8 @@ export const handleEventToSyncDB = async (event: Event, client: StreamChat, flus
   // }
 
   if (
-    type === 'channel.updated' ||
-    type === 'channel.visible' ||
+    // type === 'channel.updated' ||
+    // type === 'channel.visible' ||
     type === 'notification.added_to_channel' ||
     type === 'notification.message_new'
   ) {
@@ -204,8 +205,8 @@ export const handleEventToSyncDB = async (event: Event, client: StreamChat, flus
   }
 
   if (
-    type === 'channel.hidden' ||
-    type === 'channel.deleted' ||
+    // type === 'channel.hidden' ||
+    // type === 'channel.deleted' ||
     type === 'notification.removed_from_channel'
   ) {
     if (event.channel) {

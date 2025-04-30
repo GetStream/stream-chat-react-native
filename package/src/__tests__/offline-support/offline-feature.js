@@ -13,8 +13,11 @@ import { useChannelsContext } from '../../contexts/channelsContext/ChannelsConte
 import { getOrCreateChannelApi } from '../../mock-builders/api/getOrCreateChannel';
 import { queryChannelsApi } from '../../mock-builders/api/queryChannels';
 import { useMockedApis } from '../../mock-builders/api/useMockedApis';
+import dispatchChannelDeletedEvent from '../../mock-builders/event/channelDeleted';
+import dispatchChannelHiddenEvent from '../../mock-builders/event/channelHidden';
 import dispatchChannelTruncatedEvent from '../../mock-builders/event/channelTruncated';
 import dispatchChannelUpdatedEvent from '../../mock-builders/event/channelUpdated';
+// import dispatchChannelVisibleEvent from '../../mock-builders/event/channelVisible';
 import dispatchConnectionChangedEvent from '../../mock-builders/event/connectionChanged';
 import dispatchMemberAddedEvent from '../../mock-builders/event/memberAdded';
 import dispatchMemberRemovedEvent from '../../mock-builders/event/memberRemoved';
@@ -438,6 +441,61 @@ export const Generic = () => {
 
         expect(matchingRows.length).toBe(0);
         expect(matchingMessagesRows.length).toBe(0);
+      });
+    });
+
+    it('should remove the channel from DB if the channel is deleted', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+      const removedChannel = channels[getRandomInt(0, channels.length - 1)].channel;
+      act(() => dispatchChannelDeletedEvent(chatClient, removedChannel));
+      await waitFor(async () => {
+        const channelIdsOnUI = screen
+          .queryAllByLabelText('list-item')
+          .map((node) => node._fiber.pendingProps.testID);
+        expect(channelIdsOnUI.includes(removedChannel.cid)).toBeFalsy();
+        await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
+
+        const channelsRows = await BetterSqlite.selectFromTable('channels');
+        const matchingRows = channelsRows.filter((c) => c.id === removedChannel.id);
+
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const matchingMessagesRows = messagesRows.filter((m) => m.cid === removedChannel.cid);
+
+        expect(matchingRows.length).toBe(0);
+        expect(matchingMessagesRows.length).toBe(0);
+      });
+    });
+
+    it('should correctly mark the channel as hidden in the db', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+      const hiddenChannel = channels[getRandomInt(0, channels.length - 1)].channel;
+      act(() => dispatchChannelHiddenEvent(chatClient, hiddenChannel));
+      await waitFor(async () => {
+        const channelIdsOnUI = screen
+          .queryAllByLabelText('list-item')
+          .map((node) => node._fiber.pendingProps.testID);
+        expect(channelIdsOnUI.includes(hiddenChannel.cid)).toBeFalsy();
+        await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
+
+        const channelsRows = await BetterSqlite.selectFromTable('channels');
+        const matchingRows = channelsRows.filter((c) => c.id === hiddenChannel.id);
+
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const matchingMessagesRows = messagesRows.filter((m) => m.cid === hiddenChannel.cid);
+
+        expect(matchingRows.length).toBe(1);
+        expect(matchingRows[0].hidden).toBeTruthy();
+        expect(matchingMessagesRows.length).toBe(
+          chatClient.activeChannels[hiddenChannel.cid].state.messages.length,
+        );
       });
     });
 
