@@ -7,6 +7,8 @@ import { ReactTestInstance } from 'react-test-renderer';
 
 import { render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
+import { LocalMessage } from 'stream-chat';
+
 import { Chat } from '../../../components/Chat/Chat';
 import {
   ImageGalleryContext,
@@ -20,7 +22,6 @@ import {
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { NativeHandlers } from '../../../native';
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
 import { ImageGallery, ImageGalleryCustomComponents } from '../ImageGallery';
 
 jest.mock('../../../native.ts', () => {
@@ -76,7 +77,7 @@ describe('ImageGalleryFooter', () => {
                 generateMessage({
                   attachments: [generateVideoAttachment({ type: 'video' })],
                 }),
-              ] as unknown as MessageType[],
+              ] as unknown as LocalMessage[],
             } as unknown as ImageGalleryContextValue
           }
         >
@@ -131,7 +132,7 @@ describe('ImageGalleryFooter', () => {
                 generateMessage({
                   attachments: [generateVideoAttachment({ type: 'video' })],
                 }),
-              ] as unknown as MessageType[],
+              ] as unknown as LocalMessage[],
             } as unknown as ImageGalleryContextValue
           }
         >
@@ -174,7 +175,7 @@ describe('ImageGalleryFooter', () => {
                 generateMessage({
                   attachments: [generateImageAttachment()],
                 }),
-              ] as unknown as MessageType[],
+              ] as unknown as LocalMessage[],
             } as unknown as ImageGalleryContextValue
           }
         >

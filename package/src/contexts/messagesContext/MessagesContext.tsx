@@ -2,7 +2,7 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import { PressableProps, ViewProps } from 'react-native';
 
-import type { Attachment, ChannelState, MessageResponse } from 'stream-chat';
+import type { Attachment, ChannelState, LocalMessage, MessageResponse } from 'stream-chat';
 
 import type { PollContentProps, StreamingMessageViewProps } from '../../components';
 import type { AttachmentProps } from '../../components/Attachment/Attachment';
@@ -41,7 +41,6 @@ import type { ReactionListTopProps } from '../../components/Message/MessageSimpl
 import type { MarkdownRules } from '../../components/Message/MessageSimple/utils/renderText';
 import type { MessageActionsParams } from '../../components/Message/utils/messageActions';
 import type { DateHeaderProps } from '../../components/MessageList/DateHeader';
-import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { InlineDateSeparatorProps } from '../../components/MessageList/InlineDateSeparator';
 import type { MessageListProps } from '../../components/MessageList/MessageList';
 import type { MessageSystemProps } from '../../components/MessageList/MessageSystem';
@@ -108,7 +107,7 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * Defaults to: [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)
    **/
   DateHeader: React.ComponentType<DateHeaderProps>;
-  deleteMessage: (message: MessageResponse) => Promise<void>;
+  deleteMessage: (message: LocalMessage) => Promise<void>;
   deleteReaction: (type: string, messageId: string) => Promise<void>;
 
   /** Should keyboard be dismissed when messaged is touched */
@@ -295,15 +294,15 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   /**
    * Override the api request for retry message functionality.
    */
-  retrySendMessage: (message: MessageType) => Promise<void>;
+  retrySendMessage: (message: LocalMessage) => Promise<void>;
   /**
    * UI component for ScrollToBottomButton
    * Defaults to: [ScrollToBottomButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/scroll-to-bottom-button/)
    */
   ScrollToBottomButton: React.ComponentType<ScrollToBottomButtonProps>;
   sendReaction: (type: string, messageId: string) => Promise<void>;
-  setEditingState: (message?: MessageType) => void;
-  setQuotedMessageState: (message?: MessageType) => void;
+  setEditingState: (message?: LocalMessage) => void;
+  setQuotedMessageState: (message?: LocalMessage) => void;
   /**
    * UI component for StreamingMessageView. Displays the text of a message with a typewriter animation.
    */
@@ -320,7 +319,7 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   TypingIndicatorContainer: React.ComponentType<TypingIndicatorContainerProps>;
   UnreadMessagesNotification: React.ComponentType<UnreadMessagesNotificationProps>;
   updateMessage: (
-    updatedMessage: MessageResponse,
+    updatedMessage: MessageResponse | LocalMessage,
     extraState?: {
       commands?: SuggestionCommand[];
       messageInput?: string;
@@ -383,29 +382,29 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * Handler to access when a ban user action is invoked.
    * @param message
    */
-  handleBan?: (message: MessageType) => Promise<void>;
+  handleBan?: (message: LocalMessage) => Promise<void>;
   /** Handler to access when a copy message action is invoked */
-  handleCopy?: (message: MessageType) => Promise<void>;
+  handleCopy?: (message: LocalMessage) => Promise<void>;
   /** Handler to access when a delete message action is invoked */
-  handleDelete?: (message: MessageType) => Promise<void>;
+  handleDelete?: (message: LocalMessage) => Promise<void>;
   /** Handler to access when an edit message action is invoked */
-  handleEdit?: (message: MessageType) => void;
+  handleEdit?: (message: LocalMessage) => void;
   /** Handler to access when a flag message action is invoked */
-  handleFlag?: (message: MessageType) => Promise<void>;
+  handleFlag?: (message: LocalMessage) => Promise<void>;
   /** Handler to access when a mark unread action is invoked */
-  handleMarkUnread?: (message: MessageType) => Promise<void>;
+  handleMarkUnread?: (message: LocalMessage) => Promise<void>;
   /** Handler to access when a mute user action is invoked */
-  handleMute?: (message: MessageType) => Promise<void>;
+  handleMute?: (message: LocalMessage) => Promise<void>;
   /** Handler to access when a pin/unpin user action is invoked*/
-  handlePinMessage?: ((message: MessageType) => MessageActionType) | null;
+  handlePinMessage?: ((message: LocalMessage) => MessageActionType) | null;
   /** Handler to access when a quoted reply action is invoked */
-  handleQuotedReply?: (message: MessageType) => Promise<void>;
+  handleQuotedReply?: (message: LocalMessage) => Promise<void>;
   /** Handler to process a reaction */
-  handleReaction?: (message: MessageType, reactionType: string) => Promise<void>;
+  handleReaction?: (message: LocalMessage, reactionType: string) => Promise<void>;
   /** Handler to access when a retry action is invoked */
-  handleRetry?: (message: MessageType) => Promise<void>;
+  handleRetry?: (message: LocalMessage) => Promise<void>;
   /** Handler to access when a thread reply action is invoked */
-  handleThreadReply?: (message: MessageType) => Promise<void>;
+  handleThreadReply?: (message: LocalMessage) => Promise<void>;
   /** A flag specifying whether the poll creation button is available or not. */
   hasCreatePoll?: boolean;
   /** Handler to deal with custom memoization logic of Attachment */
@@ -593,7 +592,7 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    * */
-  selectReaction?: (message: MessageType) => (reactionType: string) => Promise<void>;
+  selectReaction?: (message: LocalMessage) => (reactionType: string) => Promise<void>;
 
   /**
    * Boolean to enable/disable the message underlay background when there are unread messages in the Message List.

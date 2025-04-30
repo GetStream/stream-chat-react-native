@@ -1,15 +1,13 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { Poll } from 'stream-chat';
-
-import { MessageType } from '../../components';
+import { LocalMessage, Poll } from 'stream-chat';
 
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type PollContextValue = {
-  message: MessageType;
+  message: LocalMessage;
   poll: Poll;
 };
 

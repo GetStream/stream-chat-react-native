@@ -51,12 +51,8 @@ exports[`Thread should match thread snapshot 1`] = `
             {
               "attachments": [],
               "created_at": 2020-05-05T14:50:00.000Z,
-              "dateSeparator": undefined,
               "deleted_at": null,
               "error": null,
-              "groupStyles": [
-                "single",
-              ],
               "html": "<p>regular</p>",
               "id": "38ef6f7c-3090-5759-a37f-ab0053aadb96",
               "message_text_updated_at": "2020-05-05T14:50:00.000Z",
@@ -64,7 +60,6 @@ exports[`Thread should match thread snapshot 1`] = `
               "pinned_at": null,
               "quoted_message": null,
               "reaction_groups": null,
-              "readBy": false,
               "status": "received",
               "text": "Message6",
               "type": "regular",
@@ -83,12 +78,8 @@ exports[`Thread should match thread snapshot 1`] = `
             {
               "attachments": [],
               "created_at": 2020-05-05T14:50:00.000Z,
-              "dateSeparator": undefined,
               "deleted_at": null,
               "error": null,
-              "groupStyles": [
-                "single",
-              ],
               "html": "<p>regular</p>",
               "id": "516efa25-5d29-5c9a-ad2d-4cc183e785bd",
               "message_text_updated_at": "2020-05-05T14:50:00.000Z",
@@ -96,7 +87,6 @@ exports[`Thread should match thread snapshot 1`] = `
               "pinned_at": null,
               "quoted_message": null,
               "reaction_groups": null,
-              "readBy": false,
               "status": "received",
               "text": "Message5",
               "type": "regular",
@@ -115,12 +105,8 @@ exports[`Thread should match thread snapshot 1`] = `
             {
               "attachments": [],
               "created_at": 2020-05-05T14:50:00.000Z,
-              "dateSeparator": 2020-05-05T14:50:00.000Z,
               "deleted_at": null,
               "error": null,
-              "groupStyles": [
-                "single",
-              ],
               "html": "<p>regular</p>",
               "id": "82a83b16-b611-527c-b3ac-765ef6220490",
               "message_text_updated_at": "2020-05-05T14:50:00.000Z",
@@ -128,7 +114,6 @@ exports[`Thread should match thread snapshot 1`] = `
               "pinned_at": null,
               "quoted_message": null,
               "reaction_groups": null,
-              "readBy": false,
               "status": "received",
               "text": "Message4",
               "type": "regular",

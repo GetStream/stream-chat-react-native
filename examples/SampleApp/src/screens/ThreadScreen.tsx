@@ -3,7 +3,6 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Channel,
-  MessageType,
   Thread,
   ThreadType,
   useAttachmentPickerContext,
@@ -17,7 +16,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import type { RouteProp } from '@react-navigation/native';
 
 import type { StackNavigatorParamList } from '../types';
-import { ThreadState, UserResponse } from 'stream-chat';
+import { LocalMessage, ThreadState, UserResponse } from 'stream-chat';
 
 const selector = (nextValue: ThreadState) => ({ parentMessage: nextValue.parentMessage }) as const;
 
@@ -34,12 +33,12 @@ type ThreadScreenProps = {
 };
 
 export type ThreadHeaderProps = {
-  thread: MessageType | ThreadType;
+  thread: LocalMessage | ThreadType;
 };
 
 const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
   const typing = useTypingString();
-  let subtitleText = ((thread as MessageType)?.user as UserResponse)?.name;
+  let subtitleText = ((thread as LocalMessage)?.user as UserResponse)?.name;
   const { parentMessage } =
     useStateStore((thread as ThreadType)?.threadInstance?.state, selector) || {};
 

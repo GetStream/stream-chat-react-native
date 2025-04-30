@@ -13,6 +13,7 @@ import { Alert, Keyboard, Linking, TextInput, TextInputProps } from 'react-nativ
 import uniq from 'lodash/uniq';
 import {
   Attachment,
+  LocalMessage,
   logChatPromiseExecution,
   Message,
   SendFileAPIResponse,
@@ -52,7 +53,6 @@ import type { MessageInputProps } from '../../components/MessageInput/MessageInp
 import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreOptionsButton';
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
-import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { Emoji } from '../../emoji-data';
 import {
   isDocumentPickerAvailable,
@@ -360,7 +360,7 @@ export type InputMessageInputContextValue = {
   SendButton: React.ComponentType<SendButtonProps>;
   sendImageAsync: boolean;
   sendMessage: (message: Partial<StreamMessage>) => Promise<void>;
-  setQuotedMessageState: (message: MessageType) => void;
+  setQuotedMessageState: (message: LocalMessage) => void;
   /**
    * Custom UI component to render checkbox with text ("Also send to channel") in Thread's input box.
    * When ticked, message will also be sent in parent channel.
@@ -439,7 +439,7 @@ export type InputMessageInputContextValue = {
    * Variable that tracks the editing state.
    * It is defined with message type if the editing state is true, else its undefined.
    */
-  editing?: MessageType;
+  editing?: LocalMessage;
   /**
    * Prop to override the default emoji search index in auto complete suggestion list.
    */
@@ -485,7 +485,7 @@ export type InputMessageInputContextValue = {
    */
   onChangeText?: (newText: string) => void;
   openPollCreationDialog?: ({ sendMessage }: Pick<LocalMessageInputContext, 'sendMessage'>) => void;
-  quotedMessage?: MessageType;
+  quotedMessage?: LocalMessage;
   SendMessageDisallowedIndicator?: React.ComponentType;
   /**
    * ref for input setter function
@@ -1036,7 +1036,7 @@ export const MessageInputProvider = ({
           /**
            * If the message is bounced by moderation, we firstly remove the message from message list and then send a new message.
            */
-          if (message && isBouncedMessage(message as MessageType)) {
+          if (message && isBouncedMessage(message)) {
             await removeMessage(message);
           }
           value.sendMessage({

@@ -1,8 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { Channel, Thread } from 'stream-chat';
-
-import { MessageType } from '../../components';
+import { Channel, LocalMessage, Thread } from 'stream-chat';
 
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
@@ -10,9 +8,9 @@ export type ThreadListItemContextValue = {
   channel: Channel;
   dateString: string | number | undefined;
   deletedAtDateString: string | number | undefined;
-  lastReply: MessageType | undefined;
+  lastReply: LocalMessage | undefined;
   ownUnreadMessageCount: number;
-  parentMessage: MessageType | undefined;
+  parentMessage: LocalMessage | undefined;
   thread: Thread;
 };
 

@@ -1,8 +1,6 @@
 import React, { PropsWithChildren, useContext, useRef } from 'react';
 
-import type { Channel, ChannelState, StreamChat } from 'stream-chat';
-
-import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
+import type { Channel, ChannelState, LocalMessage, StreamChat } from 'stream-chat';
 
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
@@ -12,7 +10,7 @@ export type DebugDataType =
       data: Channel['data'];
       members: ChannelState['members'];
     }[]
-  | MessageType[];
+  | LocalMessage[];
 
 export type DebugContextValue = {
   eventType?: string;
