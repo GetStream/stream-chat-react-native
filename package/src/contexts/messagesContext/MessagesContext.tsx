@@ -16,6 +16,7 @@ import type { GalleryProps } from '../../components/Attachment/Gallery';
 import type { GiphyProps } from '../../components/Attachment/Giphy';
 import type { ImageLoadingFailedIndicatorProps } from '../../components/Attachment/ImageLoadingFailedIndicator';
 import type { ImageLoadingIndicatorProps } from '../../components/Attachment/ImageLoadingIndicator';
+import { ImageReloadIndicatorProps } from '../../components/Attachment/ImageReloadIndicator';
 import type { VideoThumbnailProps } from '../../components/Attachment/VideoThumbnail';
 import type {
   MessagePressableHandlerPayload,
@@ -152,6 +153,11 @@ export type MessagesContextValue<
    * The indicator rendered when loading an image fails.
    */
   ImageLoadingFailedIndicator: React.ComponentType<ImageLoadingFailedIndicatorProps>;
+
+  /**
+   * The indicator rendered at the center of an image whenever its loading fails, used to trigger retries.
+   */
+  ImageReloadIndicator: React.ComponentType<ImageReloadIndicatorProps>;
 
   /**
    * The indicator rendered when image is loading. By default renders <ActivityIndicator/>

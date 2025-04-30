@@ -1,4 +1,6 @@
 {
+  "+{{count}}_one": "+{{count}}",
+  "+{{count}}_other": "+{{count}}",
   "1 Reply": "1 Cevap",
   "1 Thread Reply": "1 Konu Yanıtı",
   "Add a comment": "Yorum ekle",
