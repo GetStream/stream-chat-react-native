@@ -58,7 +58,12 @@ export class KeyboardCompatibleView extends React.Component<
 
   _relativeKeyboardHeight(keyboardFrame: KeyboardMetrics) {
     const frame = this._frame;
-    if (!frame || !keyboardFrame) {
+    /**
+     * With iOS 14 & Reduce Motion > Prefer Cross-Fade Transitions enabled, the keyboard position
+     * height is reported differently (0 instead of Y position value) which caused the view to take full height
+     * of the screen.
+     */
+    if (!frame || !keyboardFrame || keyboardFrame.screenY === 0) {
       return 0;
     }
 
