@@ -4780,24 +4780,9 @@ stream-buffers@2.2.x, stream-buffers@~2.2.0:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha512-uyQK/mx5QjHun80FLJTfaWE7JtwfRMKBLkMne6udYOmvH0CawotVa7TfgYHzAnpphn4+TweIx1QKMnRIbipmUg==
 
-stream-chat-react-native-core@6.7.3:
-  version "6.7.3"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-6.7.3.tgz#7e213c03a7414c85ec4ba9da247d9703878ab520"
-  integrity sha512-dYoYkVah7l4bmkI0vl7Ma6qD+xjsmeFWOdz7EVwbtR+B3HPMsgz8eRAmBj/p2xcSANxh1bPRD0iLlvD30vXyzg==
-  dependencies:
-    "@gorhom/bottom-sheet" "^5.1.1"
-    dayjs "1.10.5"
-    emoji-regex "^10.3.0"
-    i18next "^21.6.14"
-    intl-pluralrules "^2.0.1"
-    linkifyjs "^4.1.1"
-    lodash-es "4.17.21"
-    mime-types "^2.1.34"
-    path "0.12.7"
-    react-native-markdown-package "1.8.2"
-    react-native-url-polyfill "^1.3.0"
-    stream-chat "^8.57.6"
-    use-sync-external-store "^1.4.0"
+"stream-chat-react-native-core@link:..":
+  version "0.0.0"
+  uid ""
 
 stream-chat@^8.57.6:
   version "8.60.0"
