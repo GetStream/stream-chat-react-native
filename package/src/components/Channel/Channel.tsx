@@ -551,6 +551,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     handleRetry,
     handleThreadReply,
     hasCameraPicker = isImagePickerAvailable(),
+    hasCommands,
     hasCreatePoll,
     // If pickDocument isn't available, default to hiding the file picker
     hasFilePicker = isDocumentPickerAvailable(),
@@ -1771,7 +1772,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     FileUploadPreview,
     handleAttachButtonPress,
     hasCameraPicker,
-    hasCommands: (getChannelConfigSafely()?.commands ?? []).length > 0,
+    hasCommands: hasCommands ?? (getChannelConfigSafely()?.commands ?? []).length > 0,
     hasFilePicker,
     hasImagePicker,
     ImageUploadPreview,
