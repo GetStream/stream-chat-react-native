@@ -119,6 +119,7 @@ import { Gallery as GalleryDefault } from '../Attachment/Gallery';
 import { Giphy as GiphyDefault } from '../Attachment/Giphy';
 import { ImageLoadingFailedIndicator as ImageLoadingFailedIndicatorDefault } from '../Attachment/ImageLoadingFailedIndicator';
 import { ImageLoadingIndicator as ImageLoadingIndicatorDefault } from '../Attachment/ImageLoadingIndicator';
+import { ImageReloadIndicator as ImageReloadIndicatorDefault } from '../Attachment/ImageReloadIndicator';
 import { VideoThumbnail as VideoThumbnailDefault } from '../Attachment/VideoThumbnail';
 import { AutoCompleteSuggestionHeader as AutoCompleteSuggestionHeaderDefault } from '../AutoCompleteInput/AutoCompleteSuggestionHeader';
 import { AutoCompleteSuggestionItem as AutoCompleteSuggestionItemDefault } from '../AutoCompleteInput/AutoCompleteSuggestionItem';
@@ -321,6 +322,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'legacyImageViewerSwipeBehaviour'
       | 'ImageLoadingFailedIndicator'
       | 'ImageLoadingIndicator'
+      | 'ImageReloadIndicator'
       | 'markdownRules'
       | 'Message'
       | 'MessageActionList'
@@ -552,7 +554,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     handleRetry,
     handleThreadReply,
     hasCameraPicker = isImagePickerAvailable(),
-    hasCommands = true,
+    hasCommands,
     hasCreatePoll,
     // If pickDocument isn't available, default to hiding the file picker
     hasFilePicker = isDocumentPickerAvailable(),
@@ -561,6 +563,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     hideStickyDateHeader = false,
     ImageLoadingFailedIndicator = ImageLoadingFailedIndicatorDefault,
     ImageLoadingIndicator = ImageLoadingIndicatorDefault,
+    ImageReloadIndicator = ImageReloadIndicatorDefault,
     ImageUploadPreview = ImageUploadPreviewDefault,
     initialScrollToFirstUnreadMessage = false,
     initialValue,
@@ -1808,7 +1811,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     FileUploadPreview,
     handleAttachButtonPress,
     hasCameraPicker,
-    hasCommands,
+    hasCommands: hasCommands ?? (getChannelConfigSafely()?.commands ?? []).length > 0,
     hasFilePicker,
     hasImagePicker,
     ImageUploadPreview,
@@ -1897,6 +1900,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       hasCreatePoll === undefined ? pollCreationEnabled : hasCreatePoll && pollCreationEnabled,
     ImageLoadingFailedIndicator,
     ImageLoadingIndicator,
+    ImageReloadIndicator,
     initialScrollToFirstUnreadMessage: !messageId && initialScrollToFirstUnreadMessage, // when messageId is set, we scroll to the messageId instead of first unread
     InlineDateSeparator,
     InlineUnreadIndicator,

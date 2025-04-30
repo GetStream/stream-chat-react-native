@@ -77,6 +77,8 @@ describe('Channel', () => {
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     channel = chatClient.channel('messaging', mockedChannel.id);
     channel.cid = mockedChannel.channel.cid;
+    const getConfigSpy = jest.fn();
+    channel.getConfig = getConfigSpy;
   });
 
   afterEach(() => {

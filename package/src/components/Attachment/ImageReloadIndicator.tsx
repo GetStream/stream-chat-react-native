@@ -6,13 +6,12 @@ import { Refresh } from '../../icons';
 
 const REFRESH_ICON_SIZE = 24;
 
-export const ImageReloadIndicator = ({
-  onReloadImage,
-  style,
-}: {
+export type ImageReloadIndicatorProps = {
   onReloadImage: () => void;
   style: React.ComponentProps<typeof Pressable>['style'];
-}) => {
+};
+
+export const ImageReloadIndicator = ({ onReloadImage, style }: ImageReloadIndicatorProps) => {
   const {
     theme: {
       colors: { grey_dark },

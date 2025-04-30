@@ -4,3 +4,4 @@ export * from './useViewport';
 export * from './useScreenDimensions';
 export * from './useStateStore';
 export * from './useStableCallback';
+export * from './useLoadingImage';

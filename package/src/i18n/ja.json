@@ -1,4 +1,5 @@
 {
+  "+{{count}}_other": "+{{count}}",
   "1 Reply": "1件の返信",
   "1 Thread Reply": "1件のスレッド返信",
   "Add a comment": "コメントを追加",
