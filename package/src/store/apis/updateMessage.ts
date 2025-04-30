@@ -3,7 +3,6 @@ import type { LocalMessage, MessageResponse } from 'stream-chat';
 import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
-import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
 import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
@@ -47,12 +46,6 @@ export const updateMessage = async ({
     storableUsers.push(storableUser);
     queries.push(createUpsertQuery('users', storableUser));
   }
-
-  queries.push(
-    createDeleteQuery('reactions', {
-      messageId: message.id,
-    }),
-  );
 
   const latestReactions = message.latest_reactions || [];
   const ownReactions = message.own_reactions || [];

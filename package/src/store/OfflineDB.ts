@@ -36,6 +36,10 @@ export class OfflineDB extends AbstractOfflineDB {
 
   upsertMessages = api.upsertMessages;
 
+  upsertMembers = api.upsertMembers;
+
+  updateMessage = api.updateMessage;
+
   // FIXME
   getChannels = ({ cids, userId }: GetChannelsType) =>
     api.getChannels({ channelIds: cids, currentUserId: userId });
@@ -60,6 +64,8 @@ export class OfflineDB extends AbstractOfflineDB {
 
   deleteReaction = api.deleteReaction;
 
+  deleteMember = api.deleteMember;
+
   hardDeleteMessage = api.deleteMessage;
 
   softDeleteMessage = api.softDeleteMessage;
@@ -69,8 +75,6 @@ export class OfflineDB extends AbstractOfflineDB {
   updateReaction = api.updateReaction;
 
   insertReaction = api.insertReaction;
-
-  updateMessage = api.updateMessage;
 
   channelExists = api.channelExists;
 
