@@ -1,5 +1,16 @@
 # Change Log
 
+### [6.7.4](https://github.com/GetStream/stream-chat-react-native/compare/v6.7.3...v6.7.4) (2025-04-30)
+
+
+### Bug Fixes
+
+* image gallery extra customizations ([#3071](https://github.com/GetStream/stream-chat-react-native/issues/3071)) ([76ca4b1](https://github.com/GetStream/stream-chat-react-native/commit/76ca4b1dcf15cc9cef94faef648593f3021f16d0))
+* keybaord taking full screen issue when the prefer cross-fade transition setting is enabled ([#3072](https://github.com/GetStream/stream-chat-react-native/issues/3072)) ([7199f39](https://github.com/GetStream/stream-chat-react-native/commit/7199f39ad7353f0ef000d6ad4421f721e9b10c70))
+* respect commands config from dashboard ([#3070](https://github.com/GetStream/stream-chat-react-native/issues/3070)) ([816081d](https://github.com/GetStream/stream-chat-react-native/commit/816081d9b991d39ca819b144a9ff8eacb3d662ff))
+* respect the hasCommand channel prop as well ([322b242](https://github.com/GetStream/stream-chat-react-native/commit/322b242fb59c0b28bc6d0d8c5de1baed8205fd3e))
+* thread messages updates ([#3069](https://github.com/GetStream/stream-chat-react-native/issues/3069)) ([9705d90](https://github.com/GetStream/stream-chat-react-native/commit/9705d90fbfbf60f7c0f791795e240dd40cd85eab))
+
 ### [6.7.3](https://github.com/GetStream/stream-chat-react-native/compare/v6.7.2...v6.7.3) (2025-04-22)
 
 
