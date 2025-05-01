@@ -1732,6 +1732,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     channel,
     channelUnreadState,
     disabled: !!channel?.data?.frozen,
+    editing,
     EmptyStateIndicator,
     enableMessageGroupingByUser,
     enforceUniqueReaction,

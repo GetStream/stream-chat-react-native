@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -12,9 +12,11 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import { PollOptionData } from 'stream-chat';
+import { PollComposerState, PollOptionData } from 'stream-chat';
 
 import { useCreatePollContentContext, useTheme, useTranslationContext } from '../../../contexts';
+import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
+import { useStateStore } from '../../../hooks/useStateStore';
 import { DragHandle } from '../../../icons';
 
 export type CurrentOptionPositionsCache = {
@@ -237,22 +239,27 @@ export const CreatePollOption = ({
 
 const MemoizedCreatePollOption = React.memo(CreatePollOption);
 
+const pollComposerStateSelector = (state: PollComposerState) => ({
+  options: state.data.options,
+});
+
 export const CreatePollOptions = (props: {
   currentOptionPositions: SharedValue<CurrentOptionPositionsCache>;
   duplicates: string[];
-  pollOptions: PollOptionData[];
-  setPollOptions: Dispatch<SetStateAction<PollOptionData[]>>;
 }) => {
   const { t } = useTranslationContext();
+  const messageComposer = useMessageComposer();
+  const { pollComposer } = messageComposer;
+  const { options } = useStateStore(pollComposer.state, pollComposerStateSelector);
   const { createPollOptionHeight = OPTION_HEIGHT } = useCreatePollContentContext();
-  const { currentOptionPositions, duplicates = [], pollOptions, setPollOptions } = props;
+  const { currentOptionPositions, duplicates = [] } = props;
   const updateOption = useCallback(
     (newText: string, index: number) => {
-      setPollOptions((prevOptions) =>
-        prevOptions.map((option, idx) => (idx === index ? { ...option, text: newText } : option)),
-      );
+      pollComposer.updateFields({
+        options: { index, text: newText },
+      });
     },
-    [setPollOptions],
+    [pollComposer],
   );
 
   // used to know if drag is happening or not
@@ -261,13 +268,13 @@ export const CreatePollOptions = (props: {
   const draggedItemId = useSharedValue<number | null>(null);
 
   const boundaries = useMemo(
-    () => ({ maxBound: (pollOptions.length - 1) * createPollOptionHeight, minBound: 0 }),
-    [createPollOptionHeight, pollOptions.length],
+    () => ({ maxBound: (options.length - 1) * createPollOptionHeight, minBound: 0 }),
+    [createPollOptionHeight, options.length],
   );
 
   const {
     theme: {
-      colors: { bg_user, black },
+      colors: { black, bg_user },
       poll: {
         createContent: {
           pollOptions: { addOption, container, title },
@@ -279,8 +286,8 @@ export const CreatePollOptions = (props: {
   return (
     <View style={[styles.container, container]}>
       <Text style={[styles.text, { color: black }, title]}>{t<string>('Options')}</Text>
-      <View style={{ height: createPollOptionHeight * pollOptions.length }}>
-        {pollOptions.map((option, index) => (
+      <View style={{ height: createPollOptionHeight * options.length }}>
+        {options.map((option, index) => (
           <MemoizedCreatePollOption
             boundaries={boundaries}
             currentOptionPositions={currentOptionPositions}
@@ -296,7 +303,7 @@ export const CreatePollOptions = (props: {
       </View>
       <Pressable
         onPress={() => {
-          const newIndex = pollOptions.length;
+          const newIndex = options.length;
           currentOptionPositions.value = {
             inverseIndexCache: {
               ...currentOptionPositions.value.inverseIndexCache,
@@ -310,7 +317,6 @@ export const CreatePollOptions = (props: {
               },
             },
           };
-          setPollOptions([...pollOptions, { text: '' }]);
         }}
         style={({ pressed }) => [
           { opacity: pressed ? 0.5 : 1 },
