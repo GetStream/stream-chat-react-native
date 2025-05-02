@@ -1,10 +1,10 @@
 import type { Event, StreamChat } from 'stream-chat';
 
-import { deleteChannel } from '../../../store/apis/deleteChannel';
+// import { deleteChannel } from '../../../store/apis/deleteChannel';
 // import { deleteMember } from '../../../store/apis/deleteMember';
 import { deleteMessagesForChannel } from '../../../store/apis/deleteMessagesForChannel';
 // import { updateMessage } from '../../../store/apis/updateMessage';
-import { upsertChannelData } from '../../../store/apis/upsertChannelData';
+// import { upsertChannelData } from '../../../store/apis/upsertChannelData';
 // import { upsertChannelDataFromChannel } from '../../../store/apis/upsertChannelDataFromChannel';
 // import { upsertMembers } from '../../../store/apis/upsertMembers';
 // import { upsertReads } from '../../../store/apis/upsertReads';
@@ -190,32 +190,32 @@ export const handleEventToSyncDB = async (event: Event, client: StreamChat, flus
   //   }
   // }
 
-  if (
-    // type === 'channel.updated' ||
-    // type === 'channel.visible' ||
-    type === 'notification.added_to_channel' ||
-    type === 'notification.message_new'
-  ) {
-    if (event.channel) {
-      return upsertChannelData({
-        channel: event.channel,
-        flush,
-      });
-    }
-  }
+  // if (
+  //   // type === 'channel.updated' ||
+  //   // type === 'channel.visible' ||
+  //   // type === 'notification.added_to_channel' ||
+  //   type === 'notification.message_new'
+  // ) {
+  //   if (event.channel) {
+  //     return upsertChannelData({
+  //       channel: event.channel,
+  //       flush,
+  //     });
+  //   }
+  // }
 
-  if (
-    // type === 'channel.hidden' ||
-    // type === 'channel.deleted' ||
-    type === 'notification.removed_from_channel'
-  ) {
-    if (event.channel) {
-      return deleteChannel({
-        cid: event.channel.cid,
-        flush,
-      });
-    }
-  }
+  // if (
+  //   // type === 'channel.hidden' ||
+  //   // type === 'channel.deleted' ||
+  //   type === 'notification.removed_from_channel'
+  // ) {
+  //   if (event.channel) {
+  //     return deleteChannel({
+  //       cid: event.channel.cid,
+  //       flush,
+  //     });
+  //   }
+  // }
 
   if (type === 'channel.truncated') {
     if (event.channel) {
