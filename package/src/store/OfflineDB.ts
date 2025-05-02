@@ -68,6 +68,8 @@ export class OfflineDB extends AbstractOfflineDB {
 
   deleteChannel = api.deleteChannel;
 
+  deleteMessagesForChannel = api.deleteMessagesForChannel;
+
   hardDeleteMessage = api.deleteMessage;
 
   softDeleteMessage = api.softDeleteMessage;

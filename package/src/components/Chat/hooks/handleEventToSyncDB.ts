@@ -1,8 +1,8 @@
-import type { Event, StreamChat } from 'stream-chat';
+// import type { Event, StreamChat } from 'stream-chat';
 
 // import { deleteChannel } from '../../../store/apis/deleteChannel';
 // import { deleteMember } from '../../../store/apis/deleteMember';
-import { deleteMessagesForChannel } from '../../../store/apis/deleteMessagesForChannel';
+// import { deleteMessagesForChannel } from '../../../store/apis/deleteMessagesForChannel';
 // import { updateMessage } from '../../../store/apis/updateMessage';
 // import { upsertChannelData } from '../../../store/apis/upsertChannelData';
 // import { upsertChannelDataFromChannel } from '../../../store/apis/upsertChannelDataFromChannel';
@@ -13,9 +13,9 @@ import { deleteMessagesForChannel } from '../../../store/apis/deleteMessagesForC
 // import { PreparedQueries } from '../../../store/types';
 
 // eslint-disable-next-line require-await
-export const handleEventToSyncDB = async (event: Event, client: StreamChat, flush?: boolean) => {
-  const { type } = event;
-  console.log('client', !!client);
+export const handleEventToSyncDB = async () => {
+  // const { type } = event;
+  // console.log('client', !!client);
 
   // This function is used to guard the queries that require channel to be present in the db first
   // If channel is not present in the db, we first fetch the channel data from the channel object
@@ -217,14 +217,16 @@ export const handleEventToSyncDB = async (event: Event, client: StreamChat, flus
   //   }
   // }
 
-  if (type === 'channel.truncated') {
-    if (event.channel) {
-      return deleteMessagesForChannel({
-        cid: event.channel.cid,
-        flush,
-      });
-    }
-  }
+  // if (type === 'channel.truncated') {
+  //   console.log('TRUNCATINO: ', event);
+  //   if (event.channel) {
+  //     return deleteMessagesForChannel({
+  //       cid: event.channel.cid,
+  //       flush,
+  //       truncated_at: event.channel.truncated_at,
+  //     });
+  //   }
+  // }
 
   // if (type === 'member.added' || type === 'member.updated') {
   //   const member = event.member;
