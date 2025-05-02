@@ -689,22 +689,28 @@ export const Generic = () => {
 
     it('should add a member to DB when a new member is added to channel', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
-
       renderComponent();
+
       act(() => dispatchConnectionChangedEvent(chatClient));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
-
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
+
+      const oldMemberCount = targetChannel.channel.member_count;
       const newMember = generateMember();
       act(() => dispatchMemberAddedEvent(chatClient, newMember, targetChannel.channel));
 
       await waitFor(async () => {
         const membersRows = await BetterSqlite.selectFromTable('members');
+        const channelRows = await BetterSqlite.selectFromTable('channels');
         const matchingMembersRows = membersRows.filter(
           (m) => m.cid === targetChannel.channel.cid && m.userId === newMember.user_id,
         );
+        const targetChannelFromDb = channelRows.filter(
+          (c) => c.cid === targetChannel.channel.cid,
+        )[0];
 
         expect(matchingMembersRows.length).toBe(1);
+        expect(targetChannelFromDb.memberCount).toBe(oldMemberCount + 1);
       });
     });
 
@@ -717,15 +723,21 @@ export const Generic = () => {
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
       const targetMember = targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
+      const oldMemberCount = targetChannel.channel.member_count;
       act(() => dispatchMemberRemovedEvent(chatClient, targetMember, targetChannel.channel));
 
       await waitFor(async () => {
         const membersRows = await BetterSqlite.selectFromTable('members');
+        const channelRows = await BetterSqlite.selectFromTable('channels');
         const matchingMembersRows = membersRows.filter(
           (m) => m.cid === targetChannel.channel.cid && m.userId === targetMember.user_id,
         );
+        const targetChannelFromDb = channelRows.filter(
+          (c) => c.cid === targetChannel.channel.cid,
+        )[0];
 
         expect(matchingMembersRows.length).toBe(0);
+        expect(targetChannelFromDb.memberCount).toBe(oldMemberCount - 1);
       });
     });
 

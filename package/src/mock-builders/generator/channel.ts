@@ -97,10 +97,18 @@ export const generateChannelResponse = (
     channel?: Record<string, any>;
     id?: string;
     messages?: Record<string, any>[];
+    members?: Record<string, any>[];
     type?: string;
-  } = { channel: {}, id: uuidv4(), messages: [], type: 'messaging' },
+  } = { channel: {}, id: uuidv4(), members: [], messages: [], type: 'messaging' },
 ) => {
-  const { channel = {}, id = uuidv4(), messages = [], type = 'messaging', ...rest } = customValues;
+  const {
+    channel = {},
+    id = uuidv4(),
+    messages = [],
+    members = [],
+    type = 'messaging',
+    ...rest
+  } = customValues;
 
   const defaults = getChannelDefaults();
   return {
@@ -110,11 +118,12 @@ export const generateChannelResponse = (
         cid: `${type}:${id}`,
         ...channel,
         id,
+        member_count: members.length,
         type,
         user: generateUser(),
       },
     },
-    members: [],
+    members,
     messages,
     ...rest,
   };
