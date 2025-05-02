@@ -43,20 +43,17 @@ export type InputGiphySearchProps = Partial<
 };
 
 export const InputGiphySearch = ({
-  additionalTextInputProps: propAdditionalTextInputProps,
   cooldownEndsAt: propCooldownEndsAt,
   disabled,
   setGiphyActive: propSetGiphyActive,
   setShowMoreOptions: propSetShowMoreOptions,
 }: InputGiphySearchProps) => {
   const {
-    additionalTextInputProps: contextAdditionalTextInputProps,
     cooldownEndsAt: contextCooldownEndsAt,
     setGiphyActive: contextSetGiphyActive,
     setShowMoreOptions: contextSetShowMoreOptions,
   } = useMessageInputContext();
 
-  const additionalTextInputProps = propAdditionalTextInputProps || contextAdditionalTextInputProps;
   const cooldownEndsAt = propCooldownEndsAt || contextCooldownEndsAt;
   const setGiphyActive = propSetGiphyActive || contextSetGiphyActive;
   const setShowMoreOptions = propSetShowMoreOptions || contextSetShowMoreOptions;
@@ -80,14 +77,12 @@ export const InputGiphySearch = ({
         <Text style={[styles.giphyText, { color: white }, giphyText]}>GIPHY</Text>
       </View>
 
-      <AutoCompleteInput
-        additionalTextInputProps={additionalTextInputProps}
-        cooldownActive={!!cooldownRemainingSeconds}
-      />
+      <AutoCompleteInput cooldownActive={!!cooldownRemainingSeconds} />
       <TouchableOpacity
         disabled={disabled}
         onPress={() => {
           setGiphyActive(false);
+          // TODO: Rethink setShowMoreOptions
           setShowMoreOptions(true);
         }}
         testID='close-button'

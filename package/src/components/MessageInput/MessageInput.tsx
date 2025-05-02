@@ -1,12 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  Modal,
-  NativeSyntheticEvent,
-  SafeAreaView,
-  StyleSheet,
-  TextInputFocusEventData,
-  View,
-} from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Modal, SafeAreaView, StyleSheet, View } from 'react-native';
 
 import {
   Gesture,
@@ -226,7 +219,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     sending,
     sendMessage,
     sendMessageAsync,
-    setShowMoreOptions,
     showPollCreationDialog,
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
@@ -294,7 +286,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 
   const [hasResetImages, setHasResetImages] = useState(false);
   const [hasResetFiles, setHasResetFiles] = useState(false);
-  const [focused, setFocused] = useState(false);
   const selectedImagesLength = hasResetImages ? selectedImages.length : 0;
   const imageUploadsLength = hasResetImages ? imageUploads.length : 0;
   const selectedFilesLength = hasResetFiles ? selectedFiles.length : 0;
@@ -574,34 +565,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     return result;
   };
 
-  const additionalTextInputContainerProps = {
-    ...additionalTextInputProps,
-  };
-
-  const memoizedAdditionalTextInputProps = useMemo(
-    () => ({
-      ...additionalTextInputProps,
-      onBlur: (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
-        if (additionalTextInputProps?.onBlur) {
-          additionalTextInputProps?.onBlur(event);
-        }
-        if (setFocused) {
-          setFocused(false);
-        }
-        setShowMoreOptions(true);
-      },
-      onFocus: (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
-        if (additionalTextInputProps?.onFocus) {
-          additionalTextInputProps.onFocus(event);
-        }
-        if (setFocused) {
-          setFocused(true);
-        }
-      },
-    }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [additionalTextInputProps],
-  );
+  const isFocused = inputBoxRef.current?.isFocused();
 
   const {
     deleteVoiceRecording,
@@ -774,10 +738,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 
         <View style={[styles.composerContainer, composerContainer]}>
           {Input ? (
-            <Input
-              additionalTextInputProps={additionalTextInputContainerProps}
-              getUsers={getUsers}
-            />
+            <Input additionalTextInputProps={additionalTextInputProps} getUsers={getUsers} />
           ) : (
             <>
               {recording ? (
@@ -804,7 +765,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                         paddingVertical: giphyActive ? 8 : 12,
                       },
                       inputBoxContainer,
-                      focused ? focusedInputBoxContainer : null,
+                      isFocused ? focusedInputBoxContainer : null,
                     ]}
                   >
                     {((typeof editing !== 'boolean' && editing?.quoted_message) ||
@@ -832,8 +793,8 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                     ) : (
                       <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
                         <AutoCompleteInput
-                          additionalTextInputProps={memoizedAdditionalTextInputProps}
                           cooldownActive={!!cooldownRemainingSeconds}
+                          {...additionalTextInputProps}
                         />
                       </View>
                     )}

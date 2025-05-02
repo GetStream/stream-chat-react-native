@@ -1,12 +1,16 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { TextComposerState } from 'stream-chat';
+
+import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
 import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useStateStore } from '../../hooks/useStateStore';
 
 const styles = StyleSheet.create({
   attachButtonContainer: { paddingRight: 5 },
@@ -30,6 +34,11 @@ export type InputButtonsWithContextProps = Pick<
   | 'toggleAttachmentPicker'
 >;
 
+const textComposerStateSelector = (state: TextComposerState) => ({
+  suggestions: state.suggestions,
+  text: state.text,
+});
+
 export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => {
   const {
     AttachButton,
@@ -40,9 +49,18 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
     hasFilePicker,
     hasImagePicker,
     MoreOptionsButton,
-    setShowMoreOptions,
-    showMoreOptions,
   } = props;
+  const { textComposer } = useMessageComposer();
+  const { text } = useStateStore(textComposer.state, textComposerStateSelector);
+  const [showMoreOptions, setShowMoreOptions] = useState(true);
+
+  useEffect(() => {
+    if (text.length > 0) {
+      setShowMoreOptions(false);
+    } else {
+      setShowMoreOptions(true);
+    }
+  }, [text]);
 
   const {
     theme: {

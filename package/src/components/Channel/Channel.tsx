@@ -96,7 +96,6 @@ import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
 import { removeReactionFromLocalState } from '../../utils/removeReactionFromLocalState';
 import { removeReservedFields } from '../../utils/removeReservedFields';
 import {
-  defaultEmojiSearchIndex,
   generateRandomId,
   getFileNameFromPath,
   isBouncedMessage,
@@ -488,7 +487,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AutoCompleteSuggestionItem = AutoCompleteSuggestionItemDefault,
     AutoCompleteSuggestionList = AutoCompleteSuggestionListDefault,
     autoCompleteSuggestionsLimit,
-    autoCompleteTriggerSettings,
     Card = CardDefault,
     CardCover,
     CardFooter,
@@ -510,7 +508,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     doMarkReadRequest,
     doSendMessageRequest,
     doUpdateMessageRequest,
-    emojiSearchIndex = defaultEmojiSearchIndex,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     enableMessageGroupingByUser = true,
     enableOfflineSupport,
@@ -1785,7 +1782,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AutoCompleteSuggestionItem,
     AutoCompleteSuggestionList,
     autoCompleteSuggestionsLimit,
-    autoCompleteTriggerSettings,
     channelId,
     clearEditingState,
     clearQuotedMessageState,
@@ -1797,7 +1793,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     doImageUploadRequest,
     editing,
     editMessage,
-    emojiSearchIndex,
     FileUploadPreview,
     handleAttachButtonPress,
     hasCameraPicker,

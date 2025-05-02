@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import type { Channel as StreamChatChannel } from 'stream-chat';
+import type { Channel as StreamChatChannel, TextComposerMiddleware } from 'stream-chat';
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import {
   Channel,
@@ -25,6 +25,11 @@ import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 
 import type { StackNavigatorParamList } from '../types';
 import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
+import { createTextComposerEmojiMiddleware } from '../middlewares/textComposerEmojiMiddleware';
+import { init, SearchIndex } from 'emoji-mart';
+import data from '@emoji-mart/data';
+
+init({ data });
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
@@ -115,12 +120,9 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     },
   } = useTheme();
 
-  const [channel, setChannel] = useState<StreamChatChannel | undefined>(
-    channelFromProp,
-  );
+  const [channel, setChannel] = useState<StreamChatChannel | undefined>(channelFromProp);
 
-  const [selectedThread, setSelectedThread] =
-    useState<ThreadContextValue['thread']>();
+  const [selectedThread, setSelectedThread] = useState<ThreadContextValue['thread']>();
 
   useEffect(() => {
     const initChannel = async () => {
@@ -142,13 +144,30 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     setSelectedThread(undefined);
   });
 
-  const onThreadSelect = useCallback((thread) => {
-    setSelectedThread(thread);
-    navigation.navigate('ThreadScreen', {
-      channel,
-      thread,
+  useEffect(() => {
+    if (!chatClient) {
+      return;
+    }
+
+    chatClient.setMessageComposerSetupFunction(({ composer }) => {
+      composer.textComposer.middlewareExecutor.insert({
+        middleware: [createTextComposerEmojiMiddleware(SearchIndex) as TextComposerMiddleware],
+        position: { before: 'stream-io/text-composer/mentions-middleware' },
+        unique: true,
+      });
     });
-  }, [channel, navigation]);
+  }, [chatClient]);
+
+  const onThreadSelect = useCallback(
+    (thread) => {
+      setSelectedThread(thread);
+      navigation.navigate('ThreadScreen', {
+        channel,
+        thread,
+      });
+    },
+    [channel, navigation],
+  );
 
   if (!channel || !chatClient) {
     return null;
@@ -168,9 +187,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         thread={selectedThread}
       >
         <ChannelHeader channel={channel} />
-        <MessageList
-          onThreadSelect={onThreadSelect}
-        />
+        <MessageList onThreadSelect={onThreadSelect} />
         <AITypingIndicatorView channel={channel} />
         <MessageInput />
       </Channel>

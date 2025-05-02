@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TextInput,
   TextInputContentSizeChangeEventData,
+  TextInputProps,
   TextInputSelectionChangeEventData,
 } from 'react-native';
 
@@ -23,17 +24,17 @@ import {
 
 import { useStateStore } from '../../hooks/useStateStore';
 
-type AutoCompleteInputPropsWithContext = Pick<
-  MessageInputContextValue,
-  | 'additionalTextInputProps'
-  | 'giphyActive'
-  | 'giphyEnabled'
-  | 'maxMessageLength'
-  | 'numberOfLines'
-  | 'onChangeText'
-  | 'setGiphyActive'
-  | 'setInputBoxRef'
-> &
+type AutoCompleteInputPropsWithContext = TextInputProps &
+  Pick<
+    MessageInputContextValue,
+    | 'giphyActive'
+    | 'giphyEnabled'
+    | 'maxMessageLength'
+    | 'numberOfLines'
+    | 'onChangeText'
+    | 'setGiphyActive'
+    | 'setInputBoxRef'
+  > &
   Pick<TranslationContextValue, 't'> & {
     /**
      * This is currently passed in from MessageInput to avoid rerenders
@@ -44,68 +45,54 @@ type AutoCompleteInputPropsWithContext = Pick<
 
 export type AutoCompleteInputProps = Partial<AutoCompleteInputPropsWithContext>;
 
-const messageComposerStateSelector = (state: TextComposerState) => ({
-  selection: state.selection,
+const textComposerStateSelector = (state: TextComposerState) => ({
   text: state.text,
 });
 
 const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) => {
   const {
-    additionalTextInputProps,
     cooldownActive = false,
     giphyActive,
-    giphyEnabled,
     maxMessageLength,
     numberOfLines,
     onChangeText,
-    setGiphyActive,
     setInputBoxRef,
     t,
+    ...rest
   } = props;
-  const [selection, setSelection] = useState({ end: 0, start: 0 });
   const [textHeight, setTextHeight] = useState(0);
   const messageComposer = useMessageComposer();
   const { textComposer } = messageComposer;
-
-  const { text } = useStateStore(textComposer.state, messageComposerStateSelector);
+  const { text } = useStateStore(textComposer.state, textComposerStateSelector);
 
   const handleSelectionChange = useCallback(
     (e: NativeSyntheticEvent<TextInputSelectionChangeEventData>) => {
       const { selection } = e.nativeEvent;
-      if (additionalTextInputProps?.onSelectionChange) {
-        additionalTextInputProps.onSelectionChange(e);
-        return;
-      }
-      setSelection(selection);
+      textComposer.setSelection(selection);
     },
-    [additionalTextInputProps],
+    [textComposer],
   );
 
   const onTextChangeHandler = useCallback(
-    async (newText: string) => {
+    (newText: string) => {
       if (onChangeText) {
         onChangeText(newText);
         return;
       }
-      if (additionalTextInputProps?.onChangeText) {
-        additionalTextInputProps.onChangeText(newText);
-        return;
-      }
-      const isGiphy = giphyEnabled && newText && newText.startsWith('/giphy ');
 
-      if (isGiphy) {
-        setGiphyActive(true);
-      }
-
-      await textComposer.handleChange({
-        selection: {
-          end: selection.end + 1,
-          start: selection.start + 1,
-        },
-        text: isGiphy ? newText.slice(7) : newText,
-      });
+      textComposer.setText(newText);
+      /**
+       * This is a hack to ensure the selection is up to date. We should find a better way to do this.
+       * The onSelectChange event is triggered after the onChangeText event currently which is why the selection value is stale.
+       */
+      setTimeout(() => {
+        textComposer.handleChange({
+          selection: textComposer.selection,
+          text: newText,
+        });
+      }, 0);
     },
-    [additionalTextInputProps, giphyEnabled, onChangeText, textComposer, selection, setGiphyActive],
+    [textComposer, onChangeText],
   );
 
   const {
@@ -154,7 +141,7 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
       ]}
       testID='auto-complete-text-input'
       value={text}
-      {...additionalTextInputProps}
+      {...rest}
     />
   );
 };

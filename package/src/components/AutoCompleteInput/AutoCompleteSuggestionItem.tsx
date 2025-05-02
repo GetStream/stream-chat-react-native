@@ -7,8 +7,8 @@ import { AutoCompleteSuggestionCommandIcon } from './AutoCompleteSuggestionComma
 
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import type { Emoji } from '../../emoji-data';
 import { AtMentions } from '../../icons/AtMentions';
+import type { Emoji } from '../../types/types';
 
 import { Avatar } from '../Avatar/Avatar';
 
@@ -43,7 +43,7 @@ export const MentionSuggestionItem = (item: UserSuggestion) => {
 };
 
 const EmojiSuggestionItem = (item: Emoji) => {
-  const { unicode, name } = item;
+  const { native, name } = item;
   const {
     theme: {
       colors: { black },
@@ -57,7 +57,7 @@ const EmojiSuggestionItem = (item: Emoji) => {
   return (
     <View style={[styles.container, emojiContainer]}>
       <Text style={[styles.text, { color: black }, text]} testID='emojis-item-unicode'>
-        {unicode}
+        {native}
       </Text>
       <Text style={[styles.text, { color: black }, text]} testID='emojis-item-name'>
         {` ${name}`}

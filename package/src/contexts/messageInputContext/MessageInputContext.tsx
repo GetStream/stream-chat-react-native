@@ -59,7 +59,6 @@ import type { MessageInputProps } from '../../components/MessageInput/MessageInp
 import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreOptionsButton';
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
-import type { Emoji } from '../../emoji-data';
 import { useStateStore } from '../../hooks/useStateStore';
 import {
   isDocumentPickerAvailable,
@@ -68,7 +67,6 @@ import {
   NativeHandlers,
 } from '../../native';
 import { File, FileTypes, FileUpload } from '../../types/types';
-import { ACITriggerSettingsParams, TriggerSettings } from '../../utils/ACITriggerSettings';
 import { compressedImageURI } from '../../utils/compressImage';
 import { removeReservedFields } from '../../utils/removeReservedFields';
 import {
@@ -98,10 +96,6 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 function escapeRegExp(text: string) {
   return text.replace(/[[\]{}()*+?,\\^$|#\s]/g, '_');
 }
-
-export type EmojiSearchIndex = {
-  search: (query: string) => PromiseLike<Array<Emoji>> | Array<Emoji> | null;
-};
 
 export type MentionAllAppUsersQuery = {
   filters?: UserFilters;
@@ -388,10 +382,6 @@ export type InputMessageInputContextValue = {
   additionalTextInputProps?: TextInputProps;
   /** Max number of suggestions to display in autocomplete list. Defaults to 10. */
   autoCompleteSuggestionsLimit?: number;
-  /**
-   * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
-   */
-  autoCompleteTriggerSettings?: (settings: ACITriggerSettingsParams) => TriggerSettings;
   closePollCreationDialog?: () => void;
   /**
    * Compress image with quality (from 0 to 1, where 1 is best quality).
@@ -438,10 +428,6 @@ export type InputMessageInputContextValue = {
    * It is defined with message type if the editing state is true, else its undefined.
    */
   editing?: LocalMessage;
-  /**
-   * Prop to override the default emoji search index in auto complete suggestion list.
-   */
-  emojiSearchIndex?: EmojiSearchIndex;
   /**
    * Handler for when the attach button is pressed.
    */
@@ -797,7 +783,7 @@ export const MessageInputProvider = ({
 
     setFileUploads([]);
     setGiphyActive(false);
-    setShowMoreOptions(true);
+    // setShowMoreOptions(true);
     setImageUploads([]);
     setMentionedUsers([]);
     setNumberOfUploads(
