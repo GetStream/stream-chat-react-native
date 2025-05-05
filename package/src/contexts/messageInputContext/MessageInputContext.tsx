@@ -206,7 +206,6 @@ export type LocalMessageInputContext = {
    * Ref callback to set reference on input box
    */
   setInputBoxRef: LegacyRef<TextInput> | undefined;
-  setMentionedUsers: React.Dispatch<React.SetStateAction<string[]>>;
   setNumberOfUploads: React.Dispatch<React.SetStateAction<number>>;
   setSendThreadMessageInChannel: React.Dispatch<React.SetStateAction<boolean>>;
   setShowMoreOptions: React.Dispatch<React.SetStateAction<boolean>>;
@@ -565,7 +564,6 @@ export const MessageInputProvider = ({
     numberOfUploads,
     setFileUploads,
     setImageUploads,
-    setMentionedUsers,
     setNumberOfUploads,
     setShowMoreOptions,
     showMoreOptions,
@@ -800,11 +798,12 @@ export const MessageInputProvider = ({
       setSelectedImages([]);
     }
 
+    // setText('');
     setFileUploads([]);
     // setGiphyActive(false);
     // setShowMoreOptions(true);
     setImageUploads([]);
-    setMentionedUsers([]);
+    // setMentionedUsers([]);
     setNumberOfUploads(
       (prevNumberOfUploads) => prevNumberOfUploads - (pendingAttachments?.length || 0),
     );
@@ -1403,7 +1402,6 @@ export const MessageInputProvider = ({
     setFileUploads,
     setImageUploads,
     setInputBoxRef,
-    setMentionedUsers,
     setNumberOfUploads,
     setSendThreadMessageInChannel,
     setShowMoreOptions,
