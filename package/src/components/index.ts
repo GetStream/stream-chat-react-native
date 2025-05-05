@@ -121,6 +121,7 @@ export * from './MessageInput/components/AudioRecorder/AudioRecordingInProgress'
 export * from './MessageInput/components/AudioRecorder/AudioRecordingLockIndicator';
 export * from './MessageInput/components/AudioRecorder/AudioRecordingPreview';
 export * from './MessageInput/components/AudioRecorder/AudioRecordingWaveform';
+export * from './MessageInput/components/CommandInput';
 export * from './MessageInput/CooldownTimer';
 export * from './MessageInput/FileUploadPreview';
 export * from './MessageInput/ImageUploadPreview';

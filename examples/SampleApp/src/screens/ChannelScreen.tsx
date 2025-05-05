@@ -1,5 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import type { Channel as StreamChatChannel, TextComposerMiddleware } from 'stream-chat';
+import type {
+  CustomDataManagerState,
+  LocalMessage,
+  Channel as StreamChatChannel,
+  TextComposerMiddleware,
+} from 'stream-chat';
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import {
   Channel,
@@ -10,11 +15,17 @@ import {
   useAttachmentPickerContext,
   useChannelPreviewDisplayName,
   useChatContext,
+  useMessageComposer,
   useTheme,
   useTypingString,
   AITypingIndicatorView,
+  AutoCompleteInput,
+  GiphyLightning,
+  useStateStore,
+  CircleClose,
+  SendButton,
 } from 'stream-chat-react-native';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -25,15 +36,11 @@ import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 
 import type { StackNavigatorParamList } from '../types';
 import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
-import { createTextComposerEmojiMiddleware } from '../middlewares/textComposerEmojiMiddleware';
+import { createTextComposerEmojiMiddleware } from '../middlewares/emojiControl';
 import { init, SearchIndex } from 'emoji-mart';
 import data from '@emoji-mart/data';
 
 init({ data });
-
-const styles = StyleSheet.create({
-  flex: { flex: 1 },
-});
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -152,14 +159,14 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     chatClient.setMessageComposerSetupFunction(({ composer }) => {
       composer.textComposer.middlewareExecutor.insert({
         middleware: [createTextComposerEmojiMiddleware(SearchIndex) as TextComposerMiddleware],
-        position: { before: 'stream-io/text-composer/mentions-middleware' },
+        position: { after: 'stream-io/text-composer/mentions-middleware' },
         unique: true,
       });
     });
   }, [chatClient]);
 
   const onThreadSelect = useCallback(
-    (thread) => {
+    (thread: LocalMessage | null) => {
       setSelectedThread(thread);
       navigation.navigate('ThreadScreen', {
         channel,
@@ -194,3 +201,23 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  flex: { flex: 1 },
+  input: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  giphyContainer: {
+    alignItems: 'center',
+    borderRadius: 12,
+    flexDirection: 'row',
+    marginRight: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  giphyText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+});

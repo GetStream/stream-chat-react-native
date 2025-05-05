@@ -16,7 +16,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import type { TextComposerState, UserResponse } from 'stream-chat';
+import type { CustomDataManagerState, TextComposerState, UserResponse } from 'stream-chat';
 
 import { useAudioController } from './hooks/useAudioController';
 import { useCountdown } from './hooks/useCountdown';
@@ -126,14 +126,13 @@ type MessageInputPropsWithContext = Pick<
     | 'editing'
     | 'FileUploadPreview'
     | 'fileUploads'
-    | 'giphyActive'
     | 'ImageUploadPreview'
     | 'imageUploads'
     | 'Input'
     | 'inputBoxRef'
     | 'InputButtons'
     | 'InputEditingStateHeader'
-    | 'InputGiphySearch'
+    | 'CommandInput'
     | 'InputReplyStateHeader'
     | 'isValidMessage'
     | 'maxNumberOfFiles'
@@ -145,7 +144,6 @@ type MessageInputPropsWithContext = Pick<
     | 'sending'
     | 'sendMessageAsync'
     | 'setShowMoreOptions'
-    | 'setGiphyActive'
     | 'showMoreOptions'
     | 'ShowThreadMessageInChannelButton'
     | 'StartAudioRecordingButton'
@@ -167,6 +165,10 @@ type MessageInputPropsWithContext = Pick<
 const textComposerStateSelector = (state: TextComposerState) => ({
   suggestions: state.suggestions,
   text: state.text,
+});
+
+const customComposerDataSelector = (state: CustomDataManagerState) => ({
+  command: state.custom.command,
 });
 
 const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
@@ -195,14 +197,13 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     editing,
     FileUploadPreview,
     fileUploads,
-    giphyActive,
     ImageUploadPreview,
     imageUploads,
     Input,
     inputBoxRef,
     InputButtons,
     InputEditingStateHeader,
-    InputGiphySearch,
+    CommandInput,
     InputReplyStateHeader,
     isOnline,
     isValidMessage,
@@ -231,8 +232,9 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   } = props;
 
   const messageComposer = useMessageComposer();
-  const { textComposer } = messageComposer;
+  const { customDataManager, textComposer } = messageComposer;
   const { text } = useStateStore(textComposer.state, textComposerStateSelector);
+  const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
 
   const [height, setHeight] = useState(0);
 
@@ -499,7 +501,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
      */
     if (
       !editing &&
-      (giphyActive ||
+      (command ||
         fileUploads.length > 0 ||
         mentionedUsers.length > 0 ||
         imageUploads.length > 0 ||
@@ -762,7 +764,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                       styles.inputBoxContainer,
                       {
                         borderColor: grey_whisper,
-                        paddingVertical: giphyActive ? 8 : 12,
+                        paddingVertical: command ? 8 : 12,
                       },
                       inputBoxContainer,
                       isFocused ? focusedInputBoxContainer : null,
@@ -781,15 +783,15 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                           styles.attachmentSeparator,
                           {
                             borderBottomColor: grey_whisper,
-                            marginHorizontal: giphyActive ? 8 : 12,
+                            marginHorizontal: command ? 8 : 12,
                           },
                           attachmentSeparator,
                         ]}
                       />
                     ) : null}
                     {fileUploads.length ? <FileUploadPreview /> : null}
-                    {giphyActive ? (
-                      <InputGiphySearch disabled={!isOnline} />
+                    {command ? (
+                      <CommandInput disabled={!isOnline} />
                     ) : (
                       <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
                         <AutoCompleteInput
@@ -810,7 +812,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                 ) : (
                   <View style={[styles.sendButtonContainer, sendButtonContainer]}>
                     <SendButton
-                      disabled={sending.current || !isValidMessage() || (giphyActive && !isOnline)}
+                      disabled={sending.current || !isValidMessage() || (!!command && !isOnline)}
                     />
                   </View>
                 )
@@ -894,7 +896,6 @@ const areEqual = (
     closePollCreationDialog: prevClosePollCreationDialog,
     editing: prevEditing,
     fileUploads: prevFileUploads,
-    giphyActive: prevGiphyActive,
     imageUploads: prevImageUploads,
     isOnline: prevIsOnline,
     isValidMessage: prevIsValidMessage,
@@ -919,7 +920,6 @@ const areEqual = (
     closePollCreationDialog: nextClosePollCreationDialog,
     editing: nextEditing,
     fileUploads: nextFileUploads,
-    giphyActive: nextGiphyActive,
     imageUploads: nextImageUploads,
     isOnline: nextIsOnline,
     isValidMessage: nextIsValidMessage,
@@ -988,11 +988,6 @@ const areEqual = (
 
   const imageUploadsEqual = prevImageUploads.length === nextImageUploads.length;
   if (!imageUploadsEqual) {
-    return false;
-  }
-
-  const giphyActiveEqual = prevGiphyActive === nextGiphyActive;
-  if (!giphyActiveEqual) {
     return false;
   }
 
@@ -1111,14 +1106,13 @@ export const MessageInput = (props: MessageInputProps) => {
     editing,
     FileUploadPreview,
     fileUploads,
-    giphyActive,
     ImageUploadPreview,
     imageUploads,
     Input,
     inputBoxRef,
     InputButtons,
     InputEditingStateHeader,
-    InputGiphySearch,
+    CommandInput,
     InputReplyStateHeader,
     isValidMessage,
     maxNumberOfFiles,
@@ -1134,7 +1128,6 @@ export const MessageInput = (props: MessageInputProps) => {
     sendMessage,
     sendMessageAsync,
     SendMessageDisallowedIndicator,
-    setGiphyActive,
     setShowMoreOptions,
     showMoreOptions,
     showPollCreationDialog,
@@ -1182,6 +1175,7 @@ export const MessageInput = (props: MessageInputProps) => {
         clearQuotedMessageState,
         closeAttachmentPicker,
         closePollCreationDialog,
+        CommandInput,
         compressImageQuality,
         cooldownEndsAt,
         CooldownTimer,
@@ -1189,14 +1183,12 @@ export const MessageInput = (props: MessageInputProps) => {
         editing,
         FileUploadPreview,
         fileUploads,
-        giphyActive,
         ImageUploadPreview,
         imageUploads,
         Input,
         inputBoxRef,
         InputButtons,
         InputEditingStateHeader,
-        InputGiphySearch,
         InputReplyStateHeader,
         isOnline,
         isValidMessage,
@@ -1215,7 +1207,6 @@ export const MessageInput = (props: MessageInputProps) => {
         sendMessage,
         sendMessageAsync,
         SendMessageDisallowedIndicator,
-        setGiphyActive,
         setShowMoreOptions,
         showMoreOptions,
         showPollCreationDialog,

@@ -42,7 +42,7 @@ export const MentionSuggestionItem = (item: UserSuggestion) => {
   );
 };
 
-const EmojiSuggestionItem = (item: Emoji) => {
+export const EmojiSuggestionItem = (item: Emoji) => {
   const { native, name } = item;
   const {
     theme: {
@@ -66,7 +66,7 @@ const EmojiSuggestionItem = (item: Emoji) => {
   );
 };
 
-const CommandSuggestionItem = (item: CommandSuggestion) => {
+export const CommandSuggestionItem = (item: CommandSuggestion) => {
   const { args, name } = item;
   const {
     theme: {

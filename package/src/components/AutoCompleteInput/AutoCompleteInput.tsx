@@ -9,7 +9,7 @@ import {
   TextInputSelectionChangeEventData,
 } from 'react-native';
 
-import { TextComposerState } from 'stream-chat';
+import { CustomDataManagerState, TextComposerState } from 'stream-chat';
 
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
@@ -27,13 +27,7 @@ import { useStateStore } from '../../hooks/useStateStore';
 type AutoCompleteInputPropsWithContext = TextInputProps &
   Pick<
     MessageInputContextValue,
-    | 'giphyActive'
-    | 'giphyEnabled'
-    | 'maxMessageLength'
-    | 'numberOfLines'
-    | 'onChangeText'
-    | 'setGiphyActive'
-    | 'setInputBoxRef'
+    'isCommandUIEnabled' | 'maxMessageLength' | 'numberOfLines' | 'onChangeText' | 'setInputBoxRef'
   > &
   Pick<TranslationContextValue, 't'> & {
     /**
@@ -49,10 +43,13 @@ const textComposerStateSelector = (state: TextComposerState) => ({
   text: state.text,
 });
 
+const customComposerDataSelector = (state: CustomDataManagerState) => ({
+  command: state.custom.command,
+});
+
 const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) => {
   const {
     cooldownActive = false,
-    giphyActive,
     maxMessageLength,
     numberOfLines,
     onChangeText,
@@ -62,8 +59,9 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
   } = props;
   const [textHeight, setTextHeight] = useState(0);
   const messageComposer = useMessageComposer();
-  const { textComposer } = messageComposer;
+  const { customDataManager, textComposer } = messageComposer;
   const { text } = useStateStore(textComposer.state, textComposerStateSelector);
+  const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
 
   const handleSelectionChange = useCallback(
     (e: NativeSyntheticEvent<TextInputSelectionChangeEventData>) => {
@@ -103,12 +101,8 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
   } = useTheme();
 
   const placeholderText = useMemo(() => {
-    return giphyActive
-      ? t('Search GIFs')
-      : cooldownActive
-        ? t('Slow mode ON')
-        : t('Send a message');
-  }, [cooldownActive, giphyActive, t]);
+    return command ? t('Search GIFs') : cooldownActive ? t('Slow mode ON') : t('Send a message');
+  }, [command, cooldownActive, t]);
 
   const handleContentSizeChange = useCallback(
     ({
@@ -121,7 +115,7 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
 
   return (
     <TextInput
-      autoFocus={giphyActive}
+      autoFocus={!!command}
       maxLength={maxMessageLength}
       multiline
       onChangeText={onTextChangeHandler}
@@ -150,13 +144,8 @@ const areEqual = (
   prevProps: AutoCompleteInputPropsWithContext,
   nextProps: AutoCompleteInputPropsWithContext,
 ) => {
-  const { cooldownActive: prevCooldownActive, giphyActive: prevGiphyActive, t: prevT } = prevProps;
-  const { cooldownActive: nextCooldownActive, giphyActive: nextGiphyActive, t: nextT } = nextProps;
-
-  const giphyActiveEqual = prevGiphyActive === nextGiphyActive;
-  if (!giphyActiveEqual) {
-    return false;
-  }
+  const { cooldownActive: prevCooldownActive, t: prevT } = prevProps;
+  const { cooldownActive: nextCooldownActive, t: nextT } = nextProps;
 
   const tEqual = prevT === nextT;
   if (!tEqual) {
@@ -178,13 +167,11 @@ const MemoizedAutoCompleteInput = React.memo(
 
 export const AutoCompleteInput = (props: AutoCompleteInputProps) => {
   const {
-    giphyEnabled,
+    isCommandUIEnabled,
     additionalTextInputProps,
-    giphyActive,
     maxMessageLength,
     numberOfLines,
     onChangeText,
-    setGiphyActive,
     setInputBoxRef,
   } = useMessageInputContext();
   const { t } = useTranslationContext();
@@ -193,12 +180,10 @@ export const AutoCompleteInput = (props: AutoCompleteInputProps) => {
     <MemoizedAutoCompleteInput
       {...{
         additionalTextInputProps,
-        giphyActive,
-        giphyEnabled,
+        isCommandUIEnabled,
         maxMessageLength,
         numberOfLines,
         onChangeText,
-        setGiphyActive,
         setInputBoxRef,
         t,
       }}

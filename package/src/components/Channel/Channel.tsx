@@ -151,8 +151,8 @@ import { AudioRecordingInProgress as AudioRecordingInProgressDefault } from '../
 import { AudioRecordingLockIndicator as AudioRecordingLockIndicatorDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingLockIndicator';
 import { AudioRecordingPreview as AudioRecordingPreviewDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingPreview';
 import { AudioRecordingWaveform as AudioRecordingWaveformDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingWaveform';
+import { CommandInput as CommandInputDefault } from '../MessageInput/components/CommandInput';
 import { InputEditingStateHeader as InputEditingStateHeaderDefault } from '../MessageInput/components/InputEditingStateHeader';
-import { InputGiphySearch as InputGiphyCommandInputDefault } from '../MessageInput/components/InputGiphySearch';
 import { InputReplyStateHeader as InputReplyStateHeaderDefault } from '../MessageInput/components/InputReplyStateHeader';
 import { CooldownTimer as CooldownTimerDefault } from '../MessageInput/CooldownTimer';
 import { FileUploadPreview as FileUploadPreviewDefault } from '../MessageInput/FileUploadPreview';
@@ -245,7 +245,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'EmptyStateIndicator'
       | 'enableMessageGroupingByUser'
       | 'enforceUniqueReaction'
-      | 'giphyEnabled'
+      | 'isCommandUIEnabled'
       | 'hideStickyDateHeader'
       | 'hideDateSeparators'
       | 'LoadingIndicator'
@@ -522,7 +522,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     Gallery = GalleryDefault,
     getMessagesGroupStyles,
     Giphy = GiphyDefault,
-    giphyEnabled,
+    isCommandUIEnabled,
     giphyVersion = 'fixed_height',
     handleAttachButtonPress,
     handleBan,
@@ -555,7 +555,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     Input,
     InputButtons = InputButtonsDefault,
     InputEditingStateHeader = InputEditingStateHeaderDefault,
-    InputGiphySearch = InputGiphyCommandInputDefault,
+    CommandInput = CommandInputDefault,
     InputReplyStateHeader = InputReplyStateHeaderDefault,
     isAttachmentEqual,
     isMessageAIGenerated = () => false,
@@ -1721,13 +1721,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     enableMessageGroupingByUser,
     enforceUniqueReaction,
     error,
-    giphyEnabled:
-      giphyEnabled ??
-      !!(clientChannelConfig?.commands || [])?.some((command) => command.name === 'giphy'),
     hideDateSeparators,
     hideStickyDateHeader,
     highlightedMessageId,
     isChannelActive: shouldSyncChannel,
+    isCommandUIEnabled:
+      isCommandUIEnabled ??
+      !!(clientChannelConfig?.commands || [])?.some((command) => command.name === 'giphy'),
     lastRead,
     loadChannelAroundMessage,
     loadChannelAtFirstUnreadMessage,
@@ -1785,6 +1785,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     channelId,
     clearEditingState,
     clearQuotedMessageState,
+    CommandInput,
     CommandsButton,
     compressImageQuality,
     CooldownTimer,
@@ -1804,7 +1805,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     Input,
     InputButtons,
     InputEditingStateHeader,
-    InputGiphySearch,
     InputReplyStateHeader,
     maxMessageLength: maxMessageLengthProp ?? clientChannelConfig?.max_message_length ?? undefined,
     maxNumberOfFiles,

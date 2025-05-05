@@ -10,6 +10,7 @@ export * from './messageContext/MessageContext';
 export * from './messageInputContext/hooks/useCreateMessageInputContext';
 export * from './messageInputContext/hooks/useMessageDetailsForState';
 export * from './messageInputContext/MessageInputContext';
+export * from './messageInputContext/hooks/useMessageComposer';
 export * from './messagesContext/MessagesContext';
 export * from './paginatedMessageListContext/PaginatedMessageListContext';
 export * from './overlayContext/OverlayContext';

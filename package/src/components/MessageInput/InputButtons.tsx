@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { TextComposerState } from 'stream-chat';
+import { CustomDataManagerState, TextComposerState } from 'stream-chat';
 
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
@@ -22,7 +22,6 @@ export type InputButtonsWithContextProps = Pick<
   MessageInputContextValue,
   | 'AttachButton'
   | 'CommandsButton'
-  | 'giphyActive'
   | 'hasCameraPicker'
   | 'hasCommands'
   | 'hasFilePicker'
@@ -39,19 +38,23 @@ const textComposerStateSelector = (state: TextComposerState) => ({
   text: state.text,
 });
 
+const customComposerDataSelector = (state: CustomDataManagerState) => ({
+  command: state.custom.command,
+});
+
 export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => {
   const {
     AttachButton,
     CommandsButton,
-    giphyActive,
     hasCameraPicker,
     hasCommands,
     hasFilePicker,
     hasImagePicker,
     MoreOptionsButton,
   } = props;
-  const { textComposer } = useMessageComposer();
+  const { customDataManager, textComposer } = useMessageComposer();
   const { text } = useStateStore(textComposer.state, textComposerStateSelector);
+  const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
   const [showMoreOptions, setShowMoreOptions] = useState(true);
 
   useEffect(() => {
@@ -74,7 +77,7 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
 
   const ownCapabilities = useOwnCapabilitiesContext();
 
-  if (giphyActive) {
+  if (command) {
     return null;
   }
 
@@ -99,7 +102,6 @@ const areEqual = (
   nextProps: InputButtonsWithContextProps,
 ) => {
   const {
-    giphyActive: prevGiphyActive,
     hasCameraPicker: prevHasCameraPicker,
     hasCommands: prevHasCommands,
     hasFilePicker: prevHasFilePicker,
@@ -109,7 +111,6 @@ const areEqual = (
   } = prevProps;
 
   const {
-    giphyActive: nextGiphyActive,
     hasCameraPicker: nextHasCameraPicker,
     hasCommands: nextHasCommands,
     hasFilePicker: nextHasFilePicker,
@@ -142,10 +143,6 @@ const areEqual = (
     return false;
   }
 
-  if (prevGiphyActive !== nextGiphyActive) {
-    return false;
-  }
-
   return true;
 };
 
@@ -158,7 +155,6 @@ export const InputButtons = (props: InputButtonsProps) => {
   const {
     AttachButton,
     CommandsButton,
-    giphyActive,
     hasCameraPicker,
     hasCommands,
     hasFilePicker,
@@ -175,7 +171,6 @@ export const InputButtons = (props: InputButtonsProps) => {
       {...{
         AttachButton,
         CommandsButton,
-        giphyActive,
         hasCameraPicker,
         hasCommands,
         hasFilePicker,

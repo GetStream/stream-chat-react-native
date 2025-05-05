@@ -1,12 +1,16 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { CustomDataManagerState } from 'stream-chat';
+
+import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
+import { useStateStore } from '../../../hooks/useStateStore';
 import { CircleClose, GiphyLightning } from '../../../icons';
 
 import { AutoCompleteInput } from '../../AutoCompleteInput/AutoCompleteInput';
@@ -33,29 +37,31 @@ const styles = StyleSheet.create({
   },
 });
 
-export type InputGiphySearchProps = Partial<
+export type CommandInputProps = Partial<
   Pick<
     MessageInputContextValue,
-    'additionalTextInputProps' | 'cooldownEndsAt' | 'setGiphyActive' | 'setShowMoreOptions'
+    'additionalTextInputProps' | 'cooldownEndsAt' | 'setShowMoreOptions'
   >
 > & {
   disabled: boolean;
 };
 
-export const InputGiphySearch = ({
+const customComposerDataSelector = (state: CustomDataManagerState) => ({
+  command: state.custom.command,
+});
+
+export const CommandInput = ({
   cooldownEndsAt: propCooldownEndsAt,
   disabled,
-  setGiphyActive: propSetGiphyActive,
   setShowMoreOptions: propSetShowMoreOptions,
-}: InputGiphySearchProps) => {
-  const {
-    cooldownEndsAt: contextCooldownEndsAt,
-    setGiphyActive: contextSetGiphyActive,
-    setShowMoreOptions: contextSetShowMoreOptions,
-  } = useMessageInputContext();
+}: CommandInputProps) => {
+  const { cooldownEndsAt: contextCooldownEndsAt, setShowMoreOptions: contextSetShowMoreOptions } =
+    useMessageInputContext();
+  const messageComposer = useMessageComposer();
+  const { customDataManager } = messageComposer;
+  const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
 
   const cooldownEndsAt = propCooldownEndsAt || contextCooldownEndsAt;
-  const setGiphyActive = propSetGiphyActive || contextSetGiphyActive;
   const setShowMoreOptions = propSetShowMoreOptions || contextSetShowMoreOptions;
 
   const { seconds: cooldownRemainingSeconds } = useCountdown(cooldownEndsAt);
@@ -70,27 +76,31 @@ export const InputGiphySearch = ({
     },
   } = useTheme();
 
+  const onCloseHandler = () => {
+    customDataManager.setCustomData({ command: null });
+    // TODO: Rethink setShowMoreOptions
+    setShowMoreOptions(true);
+  };
+
   return (
     <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
-      <View style={[styles.giphyContainer, { backgroundColor: accent_blue }, giphyContainer]}>
-        <GiphyLightning fill={white} size={16} />
-        <Text style={[styles.giphyText, { color: white }, giphyText]}>GIPHY</Text>
-      </View>
+      {command ? (
+        <View style={[styles.giphyContainer, { backgroundColor: accent_blue }, giphyContainer]}>
+          <GiphyLightning fill={white} size={16} />
+          <Text style={[styles.giphyText, { color: white }, giphyText]}>
+            {command.toUpperCase()}
+          </Text>
+        </View>
+      ) : null}
 
       <AutoCompleteInput cooldownActive={!!cooldownRemainingSeconds} />
-      <TouchableOpacity
-        disabled={disabled}
-        onPress={() => {
-          setGiphyActive(false);
-          // TODO: Rethink setShowMoreOptions
-          setShowMoreOptions(true);
-        }}
-        testID='close-button'
-      >
-        <CircleClose height={20} pathFill={grey} width={20} />
-      </TouchableOpacity>
+      {command ? (
+        <TouchableOpacity disabled={disabled} onPress={onCloseHandler} testID='close-button'>
+          <CircleClose height={20} pathFill={grey} width={20} />
+        </TouchableOpacity>
+      ) : null}
     </View>
   );
 };
 
-InputGiphySearch.displayName = 'InputGiphySearch{messageInput}';
+CommandInput.displayName = 'CommandInput{messageInput}';

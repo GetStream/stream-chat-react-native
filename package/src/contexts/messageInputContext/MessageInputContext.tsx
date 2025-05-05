@@ -17,6 +17,7 @@ import {
   SendFileAPIResponse,
   StreamChat,
   Message as StreamMessage,
+  TextComposerMiddleware,
   TextComposerState,
   UserFilters,
   UserOptions,
@@ -47,8 +48,8 @@ import type { AudioRecordingInProgressProps } from '../../components/MessageInpu
 import type { AudioRecordingLockIndicatorProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingLockIndicator';
 import type { AudioRecordingPreviewProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingPreview';
 import type { AudioRecordingWaveformProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingWaveform';
+import type { CommandInputProps } from '../../components/MessageInput/components/CommandInput';
 import type { InputEditingStateHeaderProps } from '../../components/MessageInput/components/InputEditingStateHeader';
-import type { InputGiphySearchProps } from '../../components/MessageInput/components/InputGiphySearch';
 import type { InputReplyStateHeaderProps } from '../../components/MessageInput/components/InputReplyStateHeader';
 import type { CooldownTimerProps } from '../../components/MessageInput/CooldownTimer';
 import type { FileUploadPreviewProps } from '../../components/MessageInput/FileUploadPreview';
@@ -60,6 +61,11 @@ import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreO
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import { useStateStore } from '../../hooks/useStateStore';
+import {
+  createCommandControlMiddleware,
+  createCommandInjectionMiddleware,
+  createDraftCommandInjectionMiddleware,
+} from '../../middlewares/commandControl';
 import {
   isDocumentPickerAvailable,
   isImageMediaLibraryAvailable,
@@ -111,7 +117,7 @@ export type LocalMessageInputContext = {
       url: string;
     };
   };
-  giphyEnabled: boolean;
+  isCommandUIEnabled: boolean;
   closeAttachmentPicker: () => void;
   /** The time at which the active cooldown will end */
   cooldownEndsAt: Date;
@@ -137,7 +143,6 @@ export type LocalMessageInputContext = {
    *
    */
   fileUploads: FileUpload[];
-  giphyActive: boolean;
   hasText: boolean;
   /**
    * An array of image objects which are set for upload. It has the following structure:
@@ -198,7 +203,6 @@ export type LocalMessageInputContext = {
     }>
   >;
   setFileUploads: React.Dispatch<React.SetStateAction<FileUpload[]>>;
-  setGiphyActive: React.Dispatch<React.SetStateAction<boolean>>;
   setImageUploads: React.Dispatch<React.SetStateAction<FileUpload[]>>;
   /**
    * Ref callback to set reference on input box
@@ -208,7 +212,6 @@ export type LocalMessageInputContext = {
   setNumberOfUploads: React.Dispatch<React.SetStateAction<number>>;
   setSendThreadMessageInChannel: React.Dispatch<React.SetStateAction<boolean>>;
   setShowMoreOptions: React.Dispatch<React.SetStateAction<boolean>>;
-  setText: React.Dispatch<React.SetStateAction<string>>;
   showMoreOptions: boolean;
   /**
    * Function for taking a photo and uploading it
@@ -331,7 +334,7 @@ export type InputMessageInputContextValue = {
    */
   ImageUploadPreview: React.ComponentType<ImageUploadPreviewProps>;
   InputEditingStateHeader: React.ComponentType<InputEditingStateHeaderProps>;
-  InputGiphySearch: React.ComponentType<InputGiphySearchProps>;
+  CommandInput: React.ComponentType<CommandInputProps>;
   InputReplyStateHeader: React.ComponentType<InputReplyStateHeaderProps>;
   /** Limit on allowed number of files to attach at a time. */
   maxNumberOfFiles: number;
@@ -533,7 +536,7 @@ export const MessageInputProvider = ({
 
   const channelCapabities = useOwnCapabilitiesContext();
 
-  const { channel, giphyEnabled, uploadAbortControllerRef } = useChannelContext();
+  const { channel, isCommandUIEnabled, uploadAbortControllerRef } = useChannelContext();
   const { thread } = useThreadContext();
   const { t } = useTranslationContext();
   const inputBoxRef = useRef<TextInput | null>(null);
@@ -546,7 +549,6 @@ export const MessageInputProvider = ({
       url: string;
     };
   }>({});
-  const [giphyActive, setGiphyActive] = useState(false);
   const [sendThreadMessageInChannel, setSendThreadMessageInChannel] = useState(false);
   const [showPollCreationDialog, setShowPollCreationDialog] = useState(false);
 
@@ -569,7 +571,6 @@ export const MessageInputProvider = ({
     setMentionedUsers,
     setNumberOfUploads,
     setShowMoreOptions,
-    setText,
     showMoreOptions,
   } = useMessageDetailsForState(editing, initialValue);
   const { endsAt: cooldownEndsAt, start: startCooldown } = useCooldown();
@@ -582,6 +583,27 @@ export const MessageInputProvider = ({
   useEffect(() => {
     setSendThreadMessageInChannel(false);
   }, [threadId]);
+
+  useEffect(() => {
+    if (!client || !isCommandUIEnabled) {
+      return;
+    }
+
+    client.setMessageComposerSetupFunction(({ composer }) => {
+      composer.compositionMiddlewareExecutor.insert({
+        middleware: [createCommandInjectionMiddleware(composer)],
+        position: { after: 'stream-io/message-composer-middleware/attachments' },
+      });
+      composer.draftCompositionMiddlewareExecutor.insert({
+        middleware: [createDraftCommandInjectionMiddleware(composer)],
+        position: { after: 'stream-io/message-composer-middleware/draft-attachments' },
+      });
+      composer.textComposer.middlewareExecutor.insert({
+        middleware: [createCommandControlMiddleware(composer) as TextComposerMiddleware],
+        position: { before: 'stream-io/text-composer/pre-validation-middleware' },
+      });
+    });
+  }, [client, isCommandUIEnabled]);
 
   /** Checks if the message is valid or not. Accordingly we can enable/disable send button */
   const isValidMessage = useStableCallback(() => {
@@ -782,14 +804,13 @@ export const MessageInputProvider = ({
     }
 
     setFileUploads([]);
-    setGiphyActive(false);
+    // setGiphyActive(false);
     // setShowMoreOptions(true);
     setImageUploads([]);
     setMentionedUsers([]);
     setNumberOfUploads(
       (prevNumberOfUploads) => prevNumberOfUploads - (pendingAttachments?.length || 0),
     );
-    setText('');
     if (value.editing) {
       value.clearEditingState();
     }
@@ -887,9 +908,6 @@ export const MessageInputProvider = ({
 
       startCooldown();
 
-      const prevText = giphyEnabled && giphyActive ? `/giphy ${text}` : text;
-      setText('');
-
       if (inputBoxRef.current) {
         inputBoxRef.current.clear();
       }
@@ -918,7 +936,6 @@ export const MessageInputProvider = ({
             setAsyncIds((prevAsyncIds) => [...prevAsyncIds, image.id]);
           } else {
             sending.current = false;
-            return setText(prevText);
           }
         }
 
@@ -953,7 +970,7 @@ export const MessageInputProvider = ({
       }
 
       // Disallow sending message if its empty.
-      if (!prevText && attachments.length === 0 && !customMessageData?.poll_id) {
+      if (!text && attachments.length === 0 && !customMessageData?.poll_id) {
         sending.current = false;
         return;
       }
@@ -965,7 +982,7 @@ export const MessageInputProvider = ({
           attachments,
           mentioned_users: mentionedUsers.map((user) => ({ id: user.id })),
           quoted_message: undefined,
-          text: prevText,
+          text,
           ...customMessageData,
         } as Parameters<StreamChat['updateMessage']>[0];
 
@@ -999,7 +1016,7 @@ export const MessageInputProvider = ({
             parent_id: thread?.id,
             quoted_message_id: value.quotedMessage ? value.quotedMessage.id : undefined,
             show_in_channel: sendThreadMessageInChannel || undefined,
-            text: prevText,
+            text,
             ...customMessageData,
           });
 
@@ -1011,7 +1028,6 @@ export const MessageInputProvider = ({
           if (value.quotedMessage && typeof value.quotedMessage !== 'boolean') {
             value.setQuotedMessageState(value.quotedMessage);
           }
-          setText(prevText.slice(giphyEnabled && giphyActive ? 7 : 0)); // 7 because of '/giphy ' length
           console.log('Failed to send message');
         }
       }
@@ -1069,7 +1085,7 @@ export const MessageInputProvider = ({
         await client.updateMessage({
           ...value.editing,
           quoted_message: undefined,
-          text: giphyEnabled && giphyActive ? `/giphy ${text}` : text,
+          text,
         } as Parameters<StreamChat['updateMessage']>[0]);
       }
 
@@ -1369,10 +1385,9 @@ export const MessageInputProvider = ({
     closeAttachmentPicker,
     cooldownEndsAt,
     fileUploads,
-    giphyActive,
-    giphyEnabled,
     imageUploads,
     inputBoxRef,
+    isCommandUIEnabled,
     isValidMessage,
     mentionedUsers: mentionedUsers.map((user) => user.id),
     numberOfUploads,
@@ -1390,14 +1405,12 @@ export const MessageInputProvider = ({
     setAsyncIds,
     setAsyncUploads,
     setFileUploads,
-    setGiphyActive,
     setImageUploads,
     setInputBoxRef,
     setMentionedUsers,
     setNumberOfUploads,
     setSendThreadMessageInChannel,
     setShowMoreOptions,
-    setText,
     showMoreOptions,
     takeAndUploadImage,
     text,
