@@ -12,10 +12,6 @@ import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks/useStateStore';
 
-const styles = StyleSheet.create({
-  attachButtonContainer: { paddingRight: 5 },
-});
-
 export type InputButtonsProps = Partial<InputButtonsWithContextProps>;
 
 export type InputButtonsWithContextProps = Pick<
@@ -28,13 +24,10 @@ export type InputButtonsWithContextProps = Pick<
   | 'hasImagePicker'
   | 'MoreOptionsButton'
   | 'selectedPicker'
-  | 'setShowMoreOptions'
-  | 'showMoreOptions'
   | 'toggleAttachmentPicker'
 >;
 
 const textComposerStateSelector = (state: TextComposerState) => ({
-  suggestions: state.suggestions,
   text: state.text,
 });
 
@@ -107,7 +100,6 @@ const areEqual = (
     hasFilePicker: prevHasFilePicker,
     hasImagePicker: prevHasImagePicker,
     selectedPicker: prevSelectedPicker,
-    showMoreOptions: prevShowMoreOptions,
   } = prevProps;
 
   const {
@@ -116,7 +108,6 @@ const areEqual = (
     hasFilePicker: nextHasFilePicker,
     hasImagePicker: nextHasImagePicker,
     selectedPicker: nextSelectedPicker,
-    showMoreOptions: nextShowMoreOptions,
   } = nextProps;
 
   if (prevHasCameraPicker !== nextHasCameraPicker) {
@@ -139,10 +130,6 @@ const areEqual = (
     return false;
   }
 
-  if (prevShowMoreOptions !== nextShowMoreOptions) {
-    return false;
-  }
-
   return true;
 };
 
@@ -161,8 +148,6 @@ export const InputButtons = (props: InputButtonsProps) => {
     hasImagePicker,
     MoreOptionsButton,
     selectedPicker,
-    setShowMoreOptions,
-    showMoreOptions,
     toggleAttachmentPicker,
   } = useMessageInputContext();
 
@@ -177,11 +162,13 @@ export const InputButtons = (props: InputButtonsProps) => {
         hasImagePicker,
         MoreOptionsButton,
         selectedPicker,
-        setShowMoreOptions,
-        showMoreOptions,
         toggleAttachmentPicker,
       }}
       {...props}
     />
   );
 };
+
+const styles = StyleSheet.create({
+  attachButtonContainer: { paddingRight: 5 },
+});

@@ -1725,9 +1725,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     hideStickyDateHeader,
     highlightedMessageId,
     isChannelActive: shouldSyncChannel,
-    isCommandUIEnabled:
-      isCommandUIEnabled ??
-      !!(clientChannelConfig?.commands || [])?.some((command) => command.name === 'giphy'),
+    isCommandUIEnabled: isCommandUIEnabled ?? !!clientChannelConfig?.commands?.length,
     lastRead,
     loadChannelAroundMessage,
     loadChannelAtFirstUnreadMessage,

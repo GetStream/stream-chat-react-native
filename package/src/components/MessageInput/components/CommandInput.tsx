@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { CustomDataManagerState } from 'stream-chat';
 
@@ -15,27 +15,6 @@ import { CircleClose, GiphyLightning } from '../../../icons';
 
 import { AutoCompleteInput } from '../../AutoCompleteInput/AutoCompleteInput';
 import { useCountdown } from '../hooks/useCountdown';
-
-const styles = StyleSheet.create({
-  autoCompleteInputContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingLeft: 8,
-    paddingRight: 10,
-  },
-  giphyContainer: {
-    alignItems: 'center',
-    borderRadius: 12,
-    flexDirection: 'row',
-    marginRight: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  giphyText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-});
 
 export type CommandInputProps = Partial<
   Pick<
@@ -71,7 +50,7 @@ export const CommandInput = ({
       colors: { accent_blue, grey, white },
       messageInput: {
         autoCompleteInputContainer,
-        giphyCommandInput: { giphyContainer, giphyText },
+        commandInput: { closeButton, container, text },
       },
     },
   } = useTheme();
@@ -82,25 +61,56 @@ export const CommandInput = ({
     setShowMoreOptions(true);
   };
 
+  if (!command) {
+    return null;
+  }
+
   return (
     <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
-      {command ? (
-        <View style={[styles.giphyContainer, { backgroundColor: accent_blue }, giphyContainer]}>
-          <GiphyLightning fill={white} size={16} />
-          <Text style={[styles.giphyText, { color: white }, giphyText]}>
-            {command.toUpperCase()}
-          </Text>
-        </View>
-      ) : null}
+      <View style={[styles.giphyContainer, { backgroundColor: accent_blue }, container]}>
+        <GiphyLightning fill={white} size={16} />
+        <Text style={[styles.giphyText, { color: white }, text]}>{command.toUpperCase()}</Text>
+      </View>
 
       <AutoCompleteInput cooldownActive={!!cooldownRemainingSeconds} />
-      {command ? (
-        <TouchableOpacity disabled={disabled} onPress={onCloseHandler} testID='close-button'>
-          <CircleClose height={20} pathFill={grey} width={20} />
-        </TouchableOpacity>
-      ) : null}
+      <Pressable
+        disabled={disabled}
+        onPress={onCloseHandler}
+        style={({ pressed }) => {
+          return [
+            {
+              opacity: pressed ? 0.8 : 1,
+            },
+            closeButton,
+          ];
+        }}
+        testID='close-button'
+      >
+        <CircleClose height={20} pathFill={grey} width={20} />
+      </Pressable>
     </View>
   );
 };
 
 CommandInput.displayName = 'CommandInput{messageInput}';
+
+const styles = StyleSheet.create({
+  autoCompleteInputContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingLeft: 8,
+    paddingRight: 10,
+  },
+  giphyContainer: {
+    alignItems: 'center',
+    borderRadius: 12,
+    flexDirection: 'row',
+    marginRight: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  giphyText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+});

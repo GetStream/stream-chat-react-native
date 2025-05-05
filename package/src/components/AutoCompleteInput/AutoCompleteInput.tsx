@@ -27,7 +27,7 @@ import { useStateStore } from '../../hooks/useStateStore';
 type AutoCompleteInputPropsWithContext = TextInputProps &
   Pick<
     MessageInputContextValue,
-    'isCommandUIEnabled' | 'maxMessageLength' | 'numberOfLines' | 'onChangeText' | 'setInputBoxRef'
+    'maxMessageLength' | 'numberOfLines' | 'onChangeText' | 'setInputBoxRef'
   > &
   Pick<TranslationContextValue, 't'> & {
     /**
@@ -166,21 +166,13 @@ const MemoizedAutoCompleteInput = React.memo(
 ) as typeof AutoCompleteInputWithContext;
 
 export const AutoCompleteInput = (props: AutoCompleteInputProps) => {
-  const {
-    isCommandUIEnabled,
-    additionalTextInputProps,
-    maxMessageLength,
-    numberOfLines,
-    onChangeText,
-    setInputBoxRef,
-  } = useMessageInputContext();
+  const { maxMessageLength, numberOfLines, onChangeText, setInputBoxRef } =
+    useMessageInputContext();
   const { t } = useTranslationContext();
 
   return (
     <MemoizedAutoCompleteInput
       {...{
-        additionalTextInputProps,
-        isCommandUIEnabled,
         maxMessageLength,
         numberOfLines,
         onChangeText,
