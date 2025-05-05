@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import type {
-  CustomDataManagerState,
   LocalMessage,
   Channel as StreamChatChannel,
   TextComposerMiddleware,
@@ -15,17 +14,11 @@ import {
   useAttachmentPickerContext,
   useChannelPreviewDisplayName,
   useChatContext,
-  useMessageComposer,
   useTheme,
   useTypingString,
   AITypingIndicatorView,
-  AutoCompleteInput,
-  GiphyLightning,
-  useStateStore,
-  CircleClose,
-  SendButton,
 } from 'stream-chat-react-native';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -204,20 +197,4 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  input: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  giphyContainer: {
-    alignItems: 'center',
-    borderRadius: 12,
-    flexDirection: 'row',
-    marginRight: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  giphyText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
 });
