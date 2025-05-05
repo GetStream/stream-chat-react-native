@@ -45,7 +45,6 @@ export const useCreateMessageInputContext = ({
   hasCommands,
   hasFilePicker,
   hasImagePicker,
-  hasText,
   ImageUploadPreview,
   imageUploads,
   initialValue,
@@ -59,7 +58,6 @@ export const useCreateMessageInputContext = ({
   maxNumberOfFiles,
   mentionAllAppUsersEnabled,
   mentionAllAppUsersQuery,
-  mentionedUsers,
   MoreOptionsButton,
   numberOfLines,
   numberOfUploads,
@@ -98,7 +96,6 @@ export const useCreateMessageInputContext = ({
   StartAudioRecordingButton,
   StopMessageStreamingButton,
   takeAndUploadImage,
-  text,
   thread,
   toggleAttachmentPicker,
   updateMessage,
@@ -112,7 +109,6 @@ export const useCreateMessageInputContext = ({
   const fileUploadsValue = fileUploads.map(({ state }) => state).join();
   const imageUploadsValue = imageUploads.map(({ state }) => state).join();
   const asyncUploadsValue = Object.keys(asyncUploads).join();
-  const mentionedUsersLength = mentionedUsers.length;
   const quotedMessageId = quotedMessage ? quotedMessage.id : '';
   const threadId = thread?.id;
   const asyncIdsLength = asyncIds.length;
@@ -159,7 +155,6 @@ export const useCreateMessageInputContext = ({
       hasCommands,
       hasFilePicker,
       hasImagePicker,
-      hasText,
       ImageUploadPreview,
       imageUploads,
       initialValue,
@@ -174,7 +169,6 @@ export const useCreateMessageInputContext = ({
       maxNumberOfFiles,
       mentionAllAppUsersEnabled,
       mentionAllAppUsersQuery,
-      mentionedUsers,
       MoreOptionsButton,
       numberOfLines,
       numberOfUploads,
@@ -213,7 +207,6 @@ export const useCreateMessageInputContext = ({
       StartAudioRecordingButton,
       StopMessageStreamingButton,
       takeAndUploadImage,
-      text,
       toggleAttachmentPicker,
       updateMessage,
       uploadFile,
@@ -230,15 +223,12 @@ export const useCreateMessageInputContext = ({
       editingdep,
       fileUploadsValue,
       isCommandUIEnabled,
-      hasText,
       imageUploadsValue,
       maxMessageLength,
-      mentionedUsersLength,
       quotedMessageId,
       selectedPicker,
       sendThreadMessageInChannel,
       showMoreOptions,
-      text,
       threadId,
       showPollCreationDialog,
     ],

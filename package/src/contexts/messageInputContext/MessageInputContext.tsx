@@ -143,7 +143,6 @@ export type LocalMessageInputContext = {
    *
    */
   fileUploads: FileUpload[];
-  hasText: boolean;
   /**
    * An array of image objects which are set for upload. It has the following structure:
    *
@@ -166,7 +165,6 @@ export type LocalMessageInputContext = {
   imageUploads: FileUpload[];
   inputBoxRef: React.MutableRefObject<TextInput | null>;
   isValidMessage: () => boolean;
-  mentionedUsers: string[];
   numberOfUploads: number;
   openAttachmentPicker: () => void;
   openFilePicker: () => void;
@@ -217,7 +215,6 @@ export type LocalMessageInputContext = {
    * Function for taking a photo and uploading it
    */
   takeAndUploadImage: (mediaType?: MediaTypes) => Promise<void>;
-  text: string;
   toggleAttachmentPicker: () => void;
   updateMessage: () => Promise<void>;
   /** Function for attempting to upload a file */
@@ -1389,7 +1386,6 @@ export const MessageInputProvider = ({
     inputBoxRef,
     isCommandUIEnabled,
     isValidMessage,
-    mentionedUsers: mentionedUsers.map((user) => user.id),
     numberOfUploads,
     openAttachmentPicker,
     openFilePicker: pickFile,
@@ -1413,7 +1409,6 @@ export const MessageInputProvider = ({
     setShowMoreOptions,
     showMoreOptions,
     takeAndUploadImage,
-    text,
     thread,
     toggleAttachmentPicker,
     updateMessage,
@@ -1423,7 +1418,6 @@ export const MessageInputProvider = ({
     uploadNewImage,
     ...value,
     closePollCreationDialog,
-    hasText: !!text,
     openPollCreationDialog,
     sendMessage, // overriding the originally passed in sendMessage
     showPollCreationDialog,

@@ -136,7 +136,6 @@ type MessageInputPropsWithContext = Pick<
     | 'InputReplyStateHeader'
     | 'isValidMessage'
     | 'maxNumberOfFiles'
-    | 'mentionedUsers'
     | 'numberOfUploads'
     | 'quotedMessage'
     | 'resetInput'
@@ -163,6 +162,7 @@ type MessageInputPropsWithContext = Pick<
   Pick<TranslationContextValue, 't'>;
 
 const textComposerStateSelector = (state: TextComposerState) => ({
+  mentionedUsers: state.mentionedUsers,
   suggestions: state.suggestions,
   text: state.text,
 });
@@ -209,7 +209,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     isValidMessage,
     maxNumberOfFiles,
     members,
-    mentionedUsers,
     numberOfUploads,
     quotedMessage,
     removeFile,
@@ -233,7 +232,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 
   const messageComposer = useMessageComposer();
   const { customDataManager, textComposer } = messageComposer;
-  const { text } = useStateStore(textComposer.state, textComposerStateSelector);
+  const { mentionedUsers, text } = useStateStore(textComposer.state, textComposerStateSelector);
   const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
 
   const [height, setHeight] = useState(0);
@@ -899,7 +898,6 @@ const areEqual = (
     imageUploads: prevImageUploads,
     isOnline: prevIsOnline,
     isValidMessage: prevIsValidMessage,
-    mentionedUsers: prevMentionedUsers,
     openPollCreationDialog: prevOpenPollCreationDialog,
     quotedMessage: prevQuotedMessage,
     sending: prevSending,
@@ -923,7 +921,6 @@ const areEqual = (
     imageUploads: nextImageUploads,
     isOnline: nextIsOnline,
     isValidMessage: nextIsValidMessage,
-    mentionedUsers: nextMentionedUsers,
     openPollCreationDialog: nextOpenPollCreationDialog,
     quotedMessage: nextQuotedMessage,
     sending: nextSending,
@@ -1036,11 +1033,6 @@ const areEqual = (
     return false;
   }
 
-  const mentionedUsersEqual = prevMentionedUsers.length === nextMentionedUsers.length;
-  if (!mentionedUsersEqual) {
-    return false;
-  }
-
   const threadEqual =
     prevThread?.id === nextThread?.id &&
     prevThread?.text === nextThread?.text &&
@@ -1116,7 +1108,6 @@ export const MessageInput = (props: MessageInputProps) => {
     InputReplyStateHeader,
     isValidMessage,
     maxNumberOfFiles,
-    mentionedUsers,
     numberOfUploads,
     openPollCreationDialog,
     quotedMessage,
@@ -1194,7 +1185,6 @@ export const MessageInput = (props: MessageInputProps) => {
         isValidMessage,
         maxNumberOfFiles,
         members,
-        mentionedUsers,
         numberOfUploads,
         openPollCreationDialog,
         quotedMessage,
