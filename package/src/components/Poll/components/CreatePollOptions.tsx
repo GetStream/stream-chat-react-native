@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
@@ -224,7 +224,7 @@ export const CreatePollOption = ({
       ) : null}
       <TextInput
         onChangeText={(newText) => handleChangeText(newText, index)}
-        placeholder={t<string>('Option')}
+        placeholder={'Add an option'}
         style={[styles.optionInput, { color: black }, optionStyle.input]}
         value={option.text}
       />
@@ -274,10 +274,10 @@ export const CreatePollOptions = (props: {
 
   const {
     theme: {
-      colors: { black, bg_user },
+      colors: { black },
       poll: {
         createContent: {
-          pollOptions: { addOption, container, title },
+          pollOptions: { container, title },
         },
       },
     },
@@ -301,34 +301,6 @@ export const CreatePollOptions = (props: {
           />
         ))}
       </View>
-      <Pressable
-        onPress={() => {
-          const newIndex = options.length;
-          currentOptionPositions.value = {
-            inverseIndexCache: {
-              ...currentOptionPositions.value.inverseIndexCache,
-              [newIndex]: newIndex,
-            },
-            positionCache: {
-              ...currentOptionPositions.value.positionCache,
-              [newIndex]: {
-                updatedIndex: newIndex,
-                updatedTop: newIndex * createPollOptionHeight,
-              },
-            },
-          };
-        }}
-        style={({ pressed }) => [
-          { opacity: pressed ? 0.5 : 1 },
-          styles.addOptionWrapper,
-          { backgroundColor: bg_user },
-          addOption.wrapper,
-        ]}
-      >
-        <Text style={[styles.text, { color: black }, addOption.text]}>
-          {t<string>('Add an option')}
-        </Text>
-      </Pressable>
     </View>
   );
 };

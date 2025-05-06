@@ -8,7 +8,6 @@ import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/
 import { useStateStore } from '../../../hooks/useStateStore';
 
 const pollComposerStateSelector = (state: PollComposerState) => ({
-  error: state.errors.name,
   name: state.data.name,
 });
 
@@ -27,12 +26,20 @@ export const NameField = () => {
     },
   } = useTheme();
 
+  const onChangeText = async (text: string) => {
+    await pollComposer.updateFields({ name: text });
+  };
+
+  const onBlur = async () => {
+    await pollComposer.handleFieldBlur('name');
+  };
+
   return (
     <View>
       <Text style={[styles.text, { color: black }, name.title]}>{t<string>('Questions')}</Text>
       <TextInput
-        onBlur={() => pollComposer.handleFieldBlur('name')}
-        onChangeText={(text) => pollComposer.updateFields({ name: text })}
+        onBlur={onBlur}
+        onChangeText={onChangeText}
         placeholder={t('Ask a question')}
         style={[
           styles.textInputWrapper,

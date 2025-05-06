@@ -77,8 +77,7 @@ export const CreatePollContent = () => {
 
   useEffect(() => {
     if (!createPollOptionHeight) return;
-    const newID = options.find((option) => option.text === '')?.id;
-    const newIndex = options.findIndex((option) => option.id === newID);
+    const newIndex = options.length;
     currentOptionPositions.value = {
       inverseIndexCache: {
         ...currentOptionPositions.value.inverseIndexCache,
@@ -93,7 +92,7 @@ export const CreatePollContent = () => {
       },
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [createPollOptionHeight, options]);
+  }, [createPollOptionHeight, options.length]);
 
   useEffect(() => {
     const seenTexts = new Set<string>();
@@ -134,7 +133,7 @@ export const CreatePollContent = () => {
                 reorderedPollOptions.push(currentOption);
               }
             }
-            pollComposer.updateFields({
+            await pollComposer.updateFields({
               options: reorderedPollOptions,
             });
             await createAndSendPoll();
