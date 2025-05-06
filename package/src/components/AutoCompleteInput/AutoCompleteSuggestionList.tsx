@@ -20,25 +20,23 @@ import {
   useSuggestionsContext,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const AUTO_COMPLETE_SUGGESTION_LIST_HEADER_HEIGHT = 50;
 
-type AutoCompleteSuggestionListComponentProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<SuggestionsContextValue, 'queryText' | 'triggerType'> & {
+type AutoCompleteSuggestionListComponentProps = Pick<
+  SuggestionsContextValue,
+  'queryText' | 'triggerType'
+> & {
   active: boolean;
-  data: Suggestion<StreamChatGenerics>[];
-  onSelect: (item: Suggestion<StreamChatGenerics>) => void;
+  data: Suggestion[];
+  onSelect: (item: Suggestion) => void;
 };
 
-export type AutoCompleteSuggestionListPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<
-  SuggestionsContextValue<StreamChatGenerics>,
+export type AutoCompleteSuggestionListPropsWithContext = Pick<
+  SuggestionsContextValue,
   'AutoCompleteSuggestionHeader' | 'AutoCompleteSuggestionItem'
 > &
-  AutoCompleteSuggestionListComponentProps<StreamChatGenerics>;
+  AutoCompleteSuggestionListComponentProps;
 
 const SuggestionsItem = (props: PressableProps) => {
   const { children, style: propsStyle, ...pressableProps } = props;
@@ -57,10 +55,8 @@ const SuggestionsItem = (props: PressableProps) => {
 
 SuggestionsItem.displayName = 'SuggestionsHeader{messageInput{suggestions}}';
 
-export const AutoCompleteSuggestionListWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: AutoCompleteSuggestionListPropsWithContext<StreamChatGenerics>,
+export const AutoCompleteSuggestionListWithContext = (
+  props: AutoCompleteSuggestionListPropsWithContext,
 ) => {
   const [itemHeight, setItemHeight] = useState<number>(0);
   const {
@@ -98,7 +94,7 @@ export const AutoCompleteSuggestionListWithContext = <
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [itemHeight, data.length]);
 
-  const renderItem = ({ item }: { item: Suggestion<StreamChatGenerics> }) => {
+  const renderItem = ({ item }: { item: Suggestion }) => {
     switch (triggerType) {
       case 'command':
       case 'mention':
@@ -145,9 +141,9 @@ export const AutoCompleteSuggestionListWithContext = <
   );
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: AutoCompleteSuggestionListPropsWithContext<StreamChatGenerics>,
-  nextProps: AutoCompleteSuggestionListPropsWithContext<StreamChatGenerics>,
+const areEqual = (
+  prevProps: AutoCompleteSuggestionListPropsWithContext,
+  nextProps: AutoCompleteSuggestionListPropsWithContext,
 ) => {
   const {
     active: prevActive,
@@ -190,22 +186,13 @@ const MemoizedAutoCompleteSuggestionList = React.memo(
   areEqual,
 ) as typeof AutoCompleteSuggestionListWithContext;
 
-export type AutoCompleteSuggestionListProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = AutoCompleteSuggestionListComponentProps<StreamChatGenerics> & {
+export type AutoCompleteSuggestionListProps = AutoCompleteSuggestionListComponentProps & {
   AutoCompleteSuggestionHeader?: React.ComponentType<AutoCompleteSuggestionHeaderProps>;
-  AutoCompleteSuggestionItem?: React.ComponentType<
-    AutoCompleteSuggestionItemProps<StreamChatGenerics>
-  >;
+  AutoCompleteSuggestionItem?: React.ComponentType<AutoCompleteSuggestionItemProps>;
 };
 
-export const AutoCompleteSuggestionList = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: AutoCompleteSuggestionListProps<StreamChatGenerics>,
-) => {
-  const { AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem } =
-    useSuggestionsContext<StreamChatGenerics>();
+export const AutoCompleteSuggestionList = (props: AutoCompleteSuggestionListProps) => {
+  const { AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem } = useSuggestionsContext();
 
   return (
     <MemoizedAutoCompleteSuggestionList

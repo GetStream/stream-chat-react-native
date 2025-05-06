@@ -3,33 +3,25 @@ import { useCallback } from 'react';
 import type { Channel, EventTypes } from 'stream-chat';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import { DefaultStreamChatGenerics } from '../types/types';
-
 const noop = () => {};
 
-export function useSelectedChannelState<
-  StreamChatGenerics extends DefaultStreamChatGenerics,
-  O,
->(_: {
-  channel: Channel<StreamChatGenerics>;
-  selector: (channel: Channel<StreamChatGenerics>) => O;
+export function useSelectedChannelState<O>(_: {
+  channel: Channel;
+  selector: (channel: Channel) => O;
   stateChangeEventKeys?: EventTypes[];
 }): O;
-export function useSelectedChannelState<
-  StreamChatGenerics extends DefaultStreamChatGenerics,
-  O,
->(_: {
-  selector: (channel: Channel<StreamChatGenerics>) => O;
-  channel?: Channel<StreamChatGenerics> | undefined;
+export function useSelectedChannelState<O>(_: {
+  selector: (channel: Channel) => O;
+  channel?: Channel | undefined;
   stateChangeEventKeys?: EventTypes[];
 }): O | undefined;
-export function useSelectedChannelState<StreamChatGenerics extends DefaultStreamChatGenerics, O>({
+export function useSelectedChannelState<O>({
   channel,
   selector,
   stateChangeEventKeys = ['all'],
 }: {
-  selector: (channel: Channel<StreamChatGenerics>) => O;
-  channel?: Channel<StreamChatGenerics>;
+  selector: (channel: Channel) => O;
+  channel?: Channel;
   stateChangeEventKeys?: EventTypes[];
 }): O | undefined {
   const subscribe = useCallback(

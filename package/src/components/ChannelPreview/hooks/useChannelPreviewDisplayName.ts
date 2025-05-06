@@ -5,16 +5,12 @@ import type { Channel, ChannelMemberResponse } from 'stream-chat';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useViewport } from '../../../hooks/useViewport';
 
-import type { DefaultStreamChatGenerics } from '../../../types/types';
-
 const ELLIPSIS = '...';
 
 const getMemberName = (member: ChannelMemberResponse) =>
   member.user?.name || member.user?.id || 'Unknown User';
 
-export const getChannelPreviewDisplayName = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const getChannelPreviewDisplayName = ({
   channelName,
   characterLimit,
   currentUserId,
@@ -23,7 +19,7 @@ export const getChannelPreviewDisplayName = <
   characterLimit: number;
   channelName?: string;
   currentUserId?: string;
-  members?: Channel<StreamChatGenerics>['state']['members'];
+  members?: Channel['state']['members'];
 }): string => {
   if (channelName) {
     return channelName.length > characterLimit
@@ -76,13 +72,8 @@ export const getChannelPreviewDisplayName = <
   return name;
 };
 
-export const useChannelPreviewDisplayName = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  channel?: Channel<StreamChatGenerics>,
-  characterLength?: number,
-) => {
-  const { client } = useChatContext<StreamChatGenerics>();
+export const useChannelPreviewDisplayName = (channel?: Channel, characterLength?: number) => {
+  const { client } = useChatContext();
   const { vw } = useViewport();
 
   const DEFAULT_MAX_CHARACTER_LENGTH = Math.floor((vw(100) - 16) / 6);

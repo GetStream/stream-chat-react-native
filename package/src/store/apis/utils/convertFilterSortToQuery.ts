@@ -1,14 +1,10 @@
 import type { ChannelFilters, ChannelSort } from 'stream-chat';
 
-import type { DefaultStreamChatGenerics } from '../../../types/types';
-
-export const convertFilterSortToQuery = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const convertFilterSortToQuery = ({
   filters,
   sort,
 }: {
-  filters?: ChannelFilters<StreamChatGenerics>;
-  sort?: ChannelSort<StreamChatGenerics>;
+  filters?: ChannelFilters;
+  sort?: ChannelSort;
 }) =>
   JSON.stringify(`${filters ? JSON.stringify(filters) : ''}-${sort ? JSON.stringify(sort) : ''}`);

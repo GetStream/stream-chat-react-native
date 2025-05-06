@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react-native';
 
-import type { MessageType } from '../../../components';
+import { LocalMessage } from 'stream-chat';
 
 import {
   generateFileAttachment,
@@ -9,28 +9,33 @@ import {
 import { generateMessage } from '../../../mock-builders/generator/message';
 
 import { generateUser } from '../../../mock-builders/generator/user';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 import { useMessageDetailsForState } from '../hooks/useMessageDetailsForState';
 
 describe('useMessageDetailsForState', () => {
-  it.each([[{ message: true }], [{ initialValue: '', message: true }]])(
+  const message = generateMessage({ text: 'Dummy text' });
+  it.each([[{ message }, { initialValue: '', message }]])(
     'test state of useMessageDetailsForState when initialProps differ',
     () => {
-      const { result } = renderHook(({ message }) => useMessageDetailsForState(message), {
-        initialProps: { message: true },
-      });
+      const { result } = renderHook(
+        ({ message }) => useMessageDetailsForState(message as unknown as LocalMessage),
+        {
+          initialProps: { message },
+        },
+      );
 
-      expect(result.current.text).toBe('');
+      expect(result.current.text).toBe(message.text);
     },
   );
 
   it('showMoreOptions is true when initialValue and text is same', () => {
     const { result } = renderHook(
-      ({ initialValue, message }) => useMessageDetailsForState(message, initialValue),
+      ({ initialValue, message }) =>
+        useMessageDetailsForState(message as unknown as LocalMessage, initialValue),
       {
         initialProps: {
           initialValue: 'Dummy text',
-          message: generateMessage({ text: 'Dummy text' }) as MessageType,
+          message: generateMessage({ text: 'Dummy text' }),
         },
       },
     );
@@ -41,10 +46,7 @@ describe('useMessageDetailsForState', () => {
   it('fileUploads, imageUploads and mentionedUsers are not empty when attachments are present in message', () => {
     const { result } = renderHook(
       ({ initialValue, message }) =>
-        useMessageDetailsForState(
-          message as unknown as MessageType<DefaultStreamChatGenerics> | boolean,
-          initialValue,
-        ),
+        useMessageDetailsForState(message as unknown as LocalMessage, initialValue),
       {
         initialProps: {
           initialValue: '',

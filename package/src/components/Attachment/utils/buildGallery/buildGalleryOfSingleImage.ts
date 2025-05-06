@@ -5,7 +5,7 @@ import { buildThumbnail } from './buildThumbnail';
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
 
 import { ChatConfigContextValue } from '../../../../contexts/chatConfigContext/ChatConfigContext';
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
+
 import { getAspectRatio } from '../getAspectRatio';
 
 /**
@@ -20,9 +20,13 @@ function clamp(number: number, min: number, max: number) {
   return Math.min(Math.max(number, min), max);
 }
 
-function getContainerSize<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({ image, sizeConfig }: { image: Attachment<StreamChatGenerics>; sizeConfig: GallerySizeConfig }) {
+function getContainerSize({
+  image,
+  sizeConfig,
+}: {
+  image: Attachment;
+  sizeConfig: GallerySizeConfig;
+}) {
   const { original_height: height, original_width: width } = image;
   const { gridHeight, gridWidth, maxHeight, maxWidth, minHeight, minWidth } = sizeConfig;
 
@@ -64,14 +68,12 @@ function getContainerSize<
   };
 }
 
-export function buildGalleryOfSingleImage<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export function buildGalleryOfSingleImage({
   image,
   resizableCDNHosts,
   sizeConfig,
 }: Pick<ChatConfigContextValue, 'resizableCDNHosts'> & {
-  image: Attachment<StreamChatGenerics>;
+  image: Attachment;
   sizeConfig: GallerySizeConfig;
 }): GallerySizeAndThumbnailGrid {
   const container = getContainerSize({

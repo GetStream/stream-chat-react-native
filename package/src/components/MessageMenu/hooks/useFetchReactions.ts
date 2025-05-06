@@ -1,30 +1,24 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { ReactionResponse, ReactionSort } from 'stream-chat';
+import { LocalMessage, ReactionResponse, ReactionSort } from 'stream-chat';
 
-import { MessageType } from '../../../components/MessageList/hooks/useMessageList';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { getReactionsForFilterSort } from '../../../store/apis/getReactionsforFilterSort';
-import { DefaultStreamChatGenerics } from '../../../types/types';
 
-export type UseFetchReactionParams<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+export type UseFetchReactionParams = {
   limit?: number;
-  message?: MessageType<StreamChatGenerics>;
+  message?: LocalMessage;
   reactionType?: string;
-  sort?: ReactionSort<StreamChatGenerics>;
+  sort?: ReactionSort;
 };
 
-export const useFetchReactions = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const useFetchReactions = ({
   limit = 25,
   message,
   reactionType,
   sort,
 }: UseFetchReactionParams) => {
-  const [reactions, setReactions] = useState<ReactionResponse<StreamChatGenerics>[]>([]);
+  const [reactions, setReactions] = useState<ReactionResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [next, setNext] = useState<string | undefined>(undefined);
   const messageId = message?.id;

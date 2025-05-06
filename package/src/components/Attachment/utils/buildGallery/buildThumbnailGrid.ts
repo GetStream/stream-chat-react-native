@@ -5,8 +5,6 @@ import type { GallerySizeAndThumbnailGrid, GallerySizeConfig, ThumbnailGrid } fr
 
 import { ChatConfigContextValue } from '../../../../contexts/chatConfigContext/ChatConfigContext';
 
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
-
 /**
  * Builds a grid of thumbnail images from image attachments.
  * This function take a object parameter with following properties:
@@ -135,9 +133,7 @@ import type { DefaultStreamChatGenerics } from '../../../../types/types';
  *
  * @return {GallerySizeAndThumbnailGrid}
  */
-export function buildThumbnailGrid<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export function buildThumbnailGrid({
   grid,
   images,
   invertedDirections = false,
@@ -145,7 +141,7 @@ export function buildThumbnailGrid<
   sizeConfig,
 }: Pick<ChatConfigContextValue, 'resizableCDNHosts'> & {
   grid: number[][];
-  images: Attachment<StreamChatGenerics>[];
+  images: Attachment[];
   invertedDirections: boolean;
   sizeConfig: GallerySizeConfig;
 }): GallerySizeAndThumbnailGrid {

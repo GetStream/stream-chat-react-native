@@ -12,7 +12,6 @@ import {
   chatConfigContextDefaultvalue,
   ChatConfigContextValue,
 } from '../../../../contexts/chatConfigContext/ChatConfigContext';
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
 /**
  * Builds and returns a gallery of optimized images to be rendered on UI.
@@ -30,14 +29,12 @@ import type { DefaultStreamChatGenerics } from '../../../../types/types';
  *
  * @return {GallerySizeAndThumbnailGrid}
  */
-export function buildGallery<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export function buildGallery({
   images,
   resizableCDNHosts = chatConfigContextDefaultvalue.resizableCDNHosts,
   sizeConfig,
 }: Pick<ChatConfigContextValue, 'resizableCDNHosts'> & {
-  images: Attachment<StreamChatGenerics>[];
+  images: Attachment[];
   sizeConfig: GallerySizeConfig;
 }): GallerySizeAndThumbnailGrid {
   if (images.length === 1) {

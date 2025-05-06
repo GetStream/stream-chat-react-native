@@ -61,7 +61,7 @@ import {
   isImageMediaLibraryAvailable,
   NativeHandlers,
 } from '../../native';
-import type { Asset, DefaultStreamChatGenerics } from '../../types/types';
+import { compressedImageURI } from '../../utils/compressImage';
 import { AIStates, useAIState } from '../AITypingIndicatorView';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
@@ -104,13 +104,14 @@ const styles = StyleSheet.create({
   },
 });
 
-type MessageInputPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<AttachmentPickerContextValue, 'AttachmentPickerSelectionBar'> &
-  Pick<ChatContextValue<StreamChatGenerics>, 'isOnline'> &
-  Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'members' | 'threadList' | 'watchers'> &
+type MessageInputPropsWithContext = Pick<
+  AttachmentPickerContextValue,
+  'AttachmentPickerSelectionBar'
+> &
+  Pick<ChatContextValue, 'isOnline'> &
+  Pick<ChannelContextValue, 'channel' | 'members' | 'threadList' | 'watchers'> &
   Pick<
-    MessageInputContextValue<StreamChatGenerics>,
+    MessageInputContextValue,
     | 'additionalTextInputProps'
     | 'asyncIds'
     | 'audioRecordingEnabled'
@@ -128,6 +129,7 @@ type MessageInputPropsWithContext<
     | 'clearEditingState'
     | 'clearQuotedMessageState'
     | 'closeAttachmentPicker'
+    | 'compressImageQuality'
     | 'editing'
     | 'FileUploadPreview'
     | 'fileUploads'
@@ -166,23 +168,19 @@ type MessageInputPropsWithContext<
     | 'CreatePollContent'
     | 'StopMessageStreamingButton'
   > &
-  Pick<MessagesContextValue<StreamChatGenerics>, 'Reply'> &
+  Pick<MessagesContextValue, 'Reply'> &
   Pick<
-    SuggestionsContextValue<StreamChatGenerics>,
+    SuggestionsContextValue,
     | 'AutoCompleteSuggestionHeader'
     | 'AutoCompleteSuggestionItem'
     | 'AutoCompleteSuggestionList'
     | 'suggestions'
     | 'triggerType'
   > &
-  Pick<ThreadContextValue<StreamChatGenerics>, 'thread'> &
+  Pick<ThreadContextValue, 'thread'> &
   Pick<TranslationContextValue, 't'>;
 
-const MessageInputWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageInputPropsWithContext<StreamChatGenerics>,
-) => {
+const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const {
     additionalTextInputProps,
     asyncIds,
@@ -201,6 +199,7 @@ const MessageInputWithContext = <
     channel,
     closeAttachmentPicker,
     closePollCreationDialog,
+    compressImageQuality,
     cooldownEndsAt,
     CooldownTimer,
     CreatePollContent,
@@ -351,7 +350,7 @@ const MessageInputWithContext = <
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagesForInput, imageUploadsLength]);
 
-  const uploadImagesHandler = () => {
+  const uploadImagesHandler = async () => {
     const imageToUpload = selectedImages.find((selectedImage) => {
       const uploadedImage = imageUploads.find(
         (imageUpload) =>
@@ -361,7 +360,11 @@ const MessageInputWithContext = <
     });
 
     if (imageToUpload) {
-      uploadNewImage(imageToUpload);
+      const compressedImage = await compressedImageURI(imageToUpload, compressImageQuality);
+      uploadNewImage({
+        ...imageToUpload,
+        uri: compressedImage,
+      });
     }
   };
 
@@ -459,16 +462,7 @@ const MessageInputWithContext = <
         /**
          * User is editing some message which contains image attachments.
          **/
-        setSelectedImages(
-          imageUploads
-            .map((imageUpload) => ({
-              height: imageUpload.file.height,
-              source: imageUpload.file.source,
-              uri: imageUpload.url || imageUpload.file.uri,
-              width: imageUpload.file.width,
-            }))
-            .filter(Boolean) as Asset[],
-        );
+        setSelectedImages(imageUploads.map((imageUpload) => imageUpload.file));
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -493,15 +487,7 @@ const MessageInputWithContext = <
         /**
          * User is editing some message which contains video attachments.
          **/
-        setSelectedFiles(
-          fileUploads.map((fileUpload) => ({
-            duration: fileUpload.file.duration,
-            mimeType: fileUpload.file.mimeType,
-            name: fileUpload.file.name,
-            size: fileUpload.file.size,
-            uri: fileUpload.file.uri,
-          })),
-        );
+        setSelectedFiles(fileUploads.map((fileUpload) => fileUpload.file));
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -555,7 +541,7 @@ const MessageInputWithContext = <
   }, [asyncIdsString, asyncUploadsString, sendMessageAsync]);
 
   const getMembers = () => {
-    const result: UserResponse<StreamChatGenerics>[] = [];
+    const result: UserResponse[] = [];
     if (members && Object.values(members).length) {
       Object.values(members).forEach((member) => {
         if (member.user) {
@@ -571,7 +557,7 @@ const MessageInputWithContext = <
     const users = [...getMembers(), ...getWatchers()];
 
     // make sure we don't list users twice
-    const uniqueUsers: { [key: string]: UserResponse<StreamChatGenerics> } = {};
+    const uniqueUsers: { [key: string]: UserResponse } = {};
     for (const user of users) {
       if (user && !uniqueUsers[user.id]) {
         uniqueUsers[user.id] = user;
@@ -583,7 +569,7 @@ const MessageInputWithContext = <
   };
 
   const getWatchers = () => {
-    const result: UserResponse<StreamChatGenerics>[] = [];
+    const result: UserResponse[] = [];
     if (watchers && Object.values(watchers).length) {
       result.push(...Object.values(watchers));
     }
@@ -848,7 +834,7 @@ const MessageInputWithContext = <
                       <InputGiphySearch disabled={!isOnline} />
                     ) : (
                       <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
-                        <AutoCompleteInput<StreamChatGenerics>
+                        <AutoCompleteInput
                           additionalTextInputProps={memoizedAdditionalTextInputProps}
                           cooldownActive={!!cooldownRemainingSeconds}
                         />
@@ -945,9 +931,9 @@ const MessageInputWithContext = <
   );
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: MessageInputPropsWithContext<StreamChatGenerics>,
-  nextProps: MessageInputPropsWithContext<StreamChatGenerics>,
+const areEqual = (
+  prevProps: MessageInputPropsWithContext,
+  nextProps: MessageInputPropsWithContext,
 ) => {
   const {
     additionalTextInputProps: prevAdditionalTextInputProps,
@@ -1144,9 +1130,7 @@ const MemoizedMessageInput = React.memo(
   areEqual,
 ) as typeof MessageInputWithContext;
 
-export type MessageInputProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<MessageInputPropsWithContext<StreamChatGenerics>>;
+export type MessageInputProps = Partial<MessageInputPropsWithContext>;
 
 /**
  * UI Component for message input
@@ -1157,16 +1141,12 @@ export type MessageInputProps<
  * [Suggestions Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/suggestions-context/), and
  * [Translation Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/translation-context/)
  */
-export const MessageInput = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageInputProps<StreamChatGenerics>,
-) => {
+export const MessageInput = (props: MessageInputProps) => {
   const { AttachmentPickerSelectionBar } = useAttachmentPickerContext();
   const { isOnline } = useChatContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
-  const { channel, members, threadList, watchers } = useChannelContext<StreamChatGenerics>();
+  const { channel, members, threadList, watchers } = useChannelContext();
 
   const {
     additionalTextInputProps,
@@ -1186,6 +1166,7 @@ export const MessageInput = <
     clearQuotedMessageState,
     closeAttachmentPicker,
     closePollCreationDialog,
+    compressImageQuality,
     cooldownEndsAt,
     CooldownTimer,
     CreatePollContent,
@@ -1225,9 +1206,9 @@ export const MessageInput = <
     text,
     uploadNewFile,
     uploadNewImage,
-  } = useMessageInputContext<StreamChatGenerics>();
+  } = useMessageInputContext();
 
-  const { Reply } = useMessagesContext<StreamChatGenerics>();
+  const { Reply } = useMessagesContext();
 
   const {
     AutoCompleteSuggestionHeader,
@@ -1235,9 +1216,9 @@ export const MessageInput = <
     AutoCompleteSuggestionList,
     suggestions,
     triggerType,
-  } = useSuggestionsContext<StreamChatGenerics>();
+  } = useSuggestionsContext();
 
-  const { thread } = useThreadContext<StreamChatGenerics>();
+  const { thread } = useThreadContext();
 
   const { t } = useTranslationContext();
 
@@ -1274,6 +1255,7 @@ export const MessageInput = <
         clearQuotedMessageState,
         closeAttachmentPicker,
         closePollCreationDialog,
+        compressImageQuality,
         cooldownEndsAt,
         CooldownTimer,
         CreatePollContent,

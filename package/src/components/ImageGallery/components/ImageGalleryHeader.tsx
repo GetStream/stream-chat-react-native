@@ -12,7 +12,6 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Close } from '../../../icons';
 
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { getDateString } from '../../../utils/i18n/getDateString';
 import type { Photo } from '../ImageGallery';
 
@@ -20,38 +19,29 @@ const ReanimatedSafeAreaView = Animated.createAnimatedComponent
   ? Animated.createAnimatedComponent(SafeAreaView)
   : SafeAreaView;
 
-export type ImageGalleryHeaderCustomComponent<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = ({
+export type ImageGalleryHeaderCustomComponent = ({
   hideOverlay,
   photo,
 }: {
   hideOverlay: () => void;
-  photo?: Photo<StreamChatGenerics>;
+  photo?: Photo;
 }) => React.ReactElement | null;
 
-export type ImageGalleryHeaderCustomComponentProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
-  centerElement?: ImageGalleryHeaderCustomComponent<StreamChatGenerics>;
+export type ImageGalleryHeaderCustomComponentProps = {
+  centerElement?: ImageGalleryHeaderCustomComponent;
   CloseIcon?: React.ReactElement;
-  leftElement?: ImageGalleryHeaderCustomComponent<StreamChatGenerics>;
-  rightElement?: ImageGalleryHeaderCustomComponent<StreamChatGenerics>;
+  leftElement?: ImageGalleryHeaderCustomComponent;
+  rightElement?: ImageGalleryHeaderCustomComponent;
 };
 
-type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  ImageGalleryHeaderCustomComponentProps<StreamChatGenerics> & {
-    opacity: SharedValue<number>;
-    visible: SharedValue<number>;
-    photo?: Photo<StreamChatGenerics>;
-    /* Lookup key in the language corresponding translations sheet to perform date formatting */
-  };
+type Props = ImageGalleryHeaderCustomComponentProps & {
+  opacity: SharedValue<number>;
+  visible: SharedValue<number>;
+  photo?: Photo;
+  /* Lookup key in the language corresponding translations sheet to perform date formatting */
+};
 
-export const ImageGalleryHeader = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: Props<StreamChatGenerics>,
-) => {
+export const ImageGalleryHeader = (props: Props) => {
   const { centerElement, CloseIcon, leftElement, opacity, photo, rightElement, visible } = props;
   const [height, setHeight] = useState(200);
   const {

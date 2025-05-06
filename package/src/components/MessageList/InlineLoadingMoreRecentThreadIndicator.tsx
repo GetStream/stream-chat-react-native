@@ -4,8 +4,6 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useThreadContext } from '../../contexts';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
-
 const styles = StyleSheet.create({
   activityIndicatorContainer: {
     padding: 10,
@@ -57,10 +55,8 @@ const MemoizedInlineLoadingMoreRecentIndicator = React.memo(
   areEqual,
 ) as typeof InlineLoadingMoreRecentIndicatorWithContext;
 
-export const InlineLoadingMoreRecentThreadIndicator = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => {
-  const { threadLoadingMoreRecent } = useThreadContext<StreamChatGenerics>();
+export const InlineLoadingMoreRecentThreadIndicator = () => {
+  const { threadLoadingMoreRecent } = useThreadContext();
 
   return <MemoizedInlineLoadingMoreRecentIndicator loadingMoreRecent={threadLoadingMoreRecent} />;
 };

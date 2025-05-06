@@ -2,14 +2,13 @@ import type React from 'react';
 
 import dayjs from 'dayjs';
 import EmojiRegex from 'emoji-regex';
-import type { ChannelState, FormatMessageResponse, MessageResponse } from 'stream-chat';
+import type { ChannelState, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { IconProps } from '../../src/icons/utils/base';
-import { MessageType } from '../components/MessageList/hooks/useMessageList';
 import type { EmojiSearchIndex } from '../contexts/messageInputContext/MessageInputContext';
 import { compiledEmojis } from '../emoji-data';
 import type { TableRowJoinedUser } from '../store/types';
-import type { DefaultStreamChatGenerics, ValueOf } from '../types/types';
+import { FileTypes, ValueOf } from '../types/types';
 
 export type ReactionData = {
   Icon: React.ComponentType<IconProps>;
@@ -75,11 +74,7 @@ export const getIndicatorTypeForFileState = (
  * @param message
  * @returns boolean
  */
-export const isBlockedMessage = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  message: MessageType<StreamChatGenerics> | TableRowJoinedUser<'messages'>,
-) => {
+export const isBlockedMessage = (message: LocalMessage | TableRowJoinedUser<'messages'>) => {
   // The only indicator for the blocked message is its message type is error and that the message text contains "Message was blocked by moderation policies".
   const pattern = /\bMessage was blocked by moderation policies\b/;
   return message.type === 'error' && message.text && pattern.test(message.text);
@@ -90,11 +85,7 @@ export const isBlockedMessage = <
  * @param message
  * @returns boolean
  */
-export const isBouncedMessage = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  message: MessageType<StreamChatGenerics>,
-) =>
+export const isBouncedMessage = (message: LocalMessage) =>
   (message.type === 'error' &&
     message?.moderation_details?.action === 'MESSAGE_RESPONSE_ACTION_BOUNCE') ||
   message?.moderation?.action === 'bounce';
@@ -104,11 +95,7 @@ export const isBouncedMessage = <
  * @param message
  * @returns boolean
  */
-export const isEditedMessage = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  message: MessageType<StreamChatGenerics>,
-) => !!message.message_text_updated_at && !message.ai_generated;
+export const isEditedMessage = (message: LocalMessage) => !!message.message_text_updated_at;
 
 /**
  * Default emoji search index for auto complete text input
@@ -196,27 +183,22 @@ export const hasOnlyEmojis = (text: string) => {
 
 /**
  * Stringifies a message object
- * @param {FormatMessageResponse<StreamChatGenerics>} message - the message object to be stringified
+ * @param {LocalMessage} message - the message object to be stringified
  * @returns {string} The stringified message
  */
-export const stringifyMessage = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
-  deleted_at,
-  i18n,
-  latest_reactions,
-  reaction_groups,
-  readBy,
-  reply_count,
-  status,
-  text,
-  type,
-  updated_at,
-}:
-  | MessageResponse<StreamChatGenerics>
-  | FormatMessageResponse<StreamChatGenerics>
-  | MessageType<StreamChatGenerics>): string =>
-  `${
+export const stringifyMessage = (message: MessageResponse | LocalMessage): string => {
+  const {
+    deleted_at,
+    i18n,
+    latest_reactions,
+    reaction_groups,
+    reply_count,
+    status,
+    text,
+    type,
+    updated_at,
+  } = message;
+  return `${
     latest_reactions ? latest_reactions.map(({ type, user }) => `${type}${user?.id}`).join() : ''
   }${
     reaction_groups
@@ -227,18 +209,16 @@ export const stringifyMessage = <
           )
           .join()
       : ''
-  }${type}${deleted_at}${text}${readBy}${reply_count}${status}${updated_at}${JSON.stringify(i18n)}`;
+  }${type}${deleted_at}${text}${reply_count}${status}${updated_at}${JSON.stringify(i18n)}`;
+};
 
 /**
  * Reduces a list of messages to strings that are used in useEffect & useMemo
  * @param {messages} messages - the array of messages to be compared
  * @returns {string} The mapped message string
  */
-export const reduceMessagesToString = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  messages: FormatMessageResponse<StreamChatGenerics>[],
-): string => messages.map(stringifyMessage).join();
+export const reduceMessagesToString = (messages: LocalMessage[]): string =>
+  messages.map(stringifyMessage).join();
 
 /**
  * Utility to get the file name from the path using regex.
@@ -254,12 +234,28 @@ export const getFileNameFromPath = (path: string) => {
   return match ? match[0] : '';
 };
 
+export const getFileTypeFromMimeType = (mimeType: string) => {
+  const fileType = mimeType.split('/')[0];
+  if (fileType === 'image') {
+    return FileTypes.Image;
+  } else if (fileType === 'video') {
+    return FileTypes.Video;
+  } else if (fileType === 'audio') {
+    return FileTypes.Audio;
+  }
+  return FileTypes.File;
+};
+
 /**
  * Utility to get the duration label from the duration in seconds.
  * @param duration number
  * @returns string
  */
 export const getDurationLabelFromDuration = (duration: number) => {
+  if (!duration) {
+    return '00:00';
+  }
+
   const ONE_HOUR_IN_SECONDS = 3600;
   const ONE_HOUR_IN_MILLISECONDS = ONE_HOUR_IN_SECONDS * 1000;
   let durationLabel = '00:00';
@@ -288,12 +284,7 @@ export function escapeRegExp(text: string) {
  * @param targetId
  * @returns number
  */
-export const findInMessagesById = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  messages: ChannelState<StreamChatGenerics>['messages'],
-  targetId: string,
-) => {
+export const findInMessagesById = (messages: ChannelState['messages'], targetId: string) => {
   const idx = messages.findIndex((message) => message.id === targetId);
   return idx;
 };
@@ -304,10 +295,8 @@ export const findInMessagesById = <
  * @param targetDate
  * @returns an object with the index and the message object
  */
-export const findInMessagesByDate = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  messages: MessageResponse<StreamChatGenerics>[] | ChannelState<StreamChatGenerics>['messages'],
+export const findInMessagesByDate = (
+  messages: MessageResponse[] | ChannelState['messages'],
   targetDate: Date,
 ) => {
   // Binary search

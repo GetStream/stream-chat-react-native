@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import type { Attachment } from 'stream-chat';
+import type { Attachment, LocalMessage } from 'stream-chat';
 
 import type { MessageStatusProps } from './MessageStatus';
 
@@ -20,9 +20,7 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Eye } from '../../../icons';
 
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { isEditedMessage, MessageStatusTypes } from '../../../utils/utils';
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
 
 type MessageFooterComponentProps = {
   date?: string | Date;
@@ -30,10 +28,8 @@ type MessageFooterComponentProps = {
   isDeleted?: boolean;
 };
 
-type MessageFooterPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<
-  MessageContextValue<StreamChatGenerics>,
+type MessageFooterPropsWithContext = Pick<
+  MessageContextValue,
   | 'alignment'
   | 'isEditedMessageOpen'
   | 'members'
@@ -44,7 +40,7 @@ type MessageFooterPropsWithContext<
   | 'isMessageAIGenerated'
 > &
   Pick<
-    MessagesContextValue<StreamChatGenerics>,
+    MessagesContextValue,
     | 'deletedMessagesVisibilityType'
     | 'MessageEditedTimestamp'
     | 'MessageStatus'
@@ -83,11 +79,7 @@ const OnlyVisibleToYouComponent = ({ alignment }: { alignment: Alignment }) => {
   );
 };
 
-const MessageFooterWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageFooterPropsWithContext<StreamChatGenerics>,
-) => {
+const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
   const {
     alignment,
     date,
@@ -177,9 +169,9 @@ const MessageFooterWithContext = <
   );
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: MessageFooterPropsWithContext<StreamChatGenerics>,
-  nextProps: MessageFooterPropsWithContext<StreamChatGenerics>,
+const areEqual = (
+  prevProps: MessageFooterPropsWithContext,
+  nextProps: MessageFooterPropsWithContext,
 ) => {
   const {
     alignment: prevAlignment,
@@ -274,23 +266,17 @@ const MemoizedMessageFooter = React.memo(
   areEqual,
 ) as typeof MessageFooterWithContext;
 
-export type MessageFooterProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<Pick<ChannelContextValue<StreamChatGenerics>, 'members'>> &
+export type MessageFooterProps = Partial<Pick<ChannelContextValue, 'members'>> &
   MessageFooterComponentProps & {
     alignment?: Alignment;
     lastGroupMessage?: boolean;
-    message?: MessageType<StreamChatGenerics>;
-    MessageStatus?: React.ComponentType<MessageStatusProps<StreamChatGenerics>>;
-    otherAttachments?: Attachment<StreamChatGenerics>[];
+    message?: LocalMessage;
+    MessageStatus?: React.ComponentType<MessageStatusProps>;
+    otherAttachments?: Attachment[];
     showMessageStatus?: boolean;
   };
 
-export const MessageFooter = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageFooterProps<StreamChatGenerics>,
-) => {
+export const MessageFooter = (props: MessageFooterProps) => {
   const {
     alignment,
     isEditedMessageOpen,
@@ -300,10 +286,10 @@ export const MessageFooter = <
     message,
     otherAttachments,
     showMessageStatus,
-  } = useMessageContext<StreamChatGenerics>();
+  } = useMessageContext();
 
   const { deletedMessagesVisibilityType, MessageEditedTimestamp, MessageStatus, MessageTimestamp } =
-    useMessagesContext<StreamChatGenerics>();
+    useMessagesContext();
 
   return (
     <MemoizedMessageFooter

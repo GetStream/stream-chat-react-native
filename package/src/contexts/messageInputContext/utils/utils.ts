@@ -1,13 +1,13 @@
 import { lookup } from 'mime-types';
 import type { FileUploadConfig } from 'stream-chat';
 
-import { Asset, File } from '../../../types/types';
+import { File } from '../../../types/types';
 
 export const MAX_FILE_SIZE_TO_UPLOAD = 100 * 1024 * 1024; // 100 MB
 
 type CheckUploadPermissionsParams = {
   config: FileUploadConfig;
-  file: File | Partial<Asset>;
+  file: File;
 };
 
 /**
@@ -44,10 +44,9 @@ export const isUploadAllowed = ({ config, file }: CheckUploadPermissionsParams) 
   }
 
   if (allowed_mime_types?.length) {
-    if (file.mimeType) {
+    if (file.type) {
       const allowed = allowed_mime_types.some(
-        (mimeType: string) =>
-          file.mimeType && file.mimeType.toLowerCase() === mimeType.toLowerCase(),
+        (mimeType: string) => file.type && file.type.toLowerCase() === mimeType.toLowerCase(),
       );
 
       if (!allowed) {
@@ -66,10 +65,9 @@ export const isUploadAllowed = ({ config, file }: CheckUploadPermissionsParams) 
   }
 
   if (blocked_mime_types?.length) {
-    if (file.mimeType) {
+    if (file.type) {
       const blocked = blocked_mime_types.some(
-        (mimeType: string) =>
-          file.mimeType && file.mimeType.toLowerCase() === mimeType.toLowerCase(),
+        (mimeType: string) => file.type && file.type.toLowerCase() === mimeType.toLowerCase(),
       );
 
       if (blocked) {

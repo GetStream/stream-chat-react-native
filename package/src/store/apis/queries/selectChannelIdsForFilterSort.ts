@@ -1,6 +1,5 @@
 import type { ChannelFilters, ChannelSort } from 'stream-chat';
 
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { createSelectQuery } from '../../sqlite-utils/createSelectQuery';
 import { SqliteClient } from '../../SqliteClient';
 
@@ -16,14 +15,12 @@ import { convertFilterSortToQuery } from '../utils/convertFilterSortToQuery';
  * @returns Array of channel ids corresponding to filters & sort. Returns null if filters + sort query doesn't exist in "channelQueries" table.
  */
 
-export const selectChannelIdsForFilterSort = async <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const selectChannelIdsForFilterSort = async ({
   filters,
   sort,
 }: {
-  filters?: ChannelFilters<StreamChatGenerics>;
-  sort?: ChannelSort<StreamChatGenerics>;
+  filters?: ChannelFilters;
+  sort?: ChannelSort;
 }): Promise<string[] | null> => {
   const query = convertFilterSortToQuery({ filters, sort });
 

@@ -1,12 +1,10 @@
 import { useMemo } from 'react';
 
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 import { stringifyMessage } from '../../../utils/utils';
 
-export const useCreateMessageContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const useCreateMessageContext = ({
   actionsEnabled,
   alignment,
   channel,
@@ -36,13 +34,14 @@ export const useCreateMessageContext = <
   otherAttachments,
   preventPress,
   reactions,
+  readBy,
   setIsEditedMessageOpen,
   showAvatar,
   showMessageOverlay,
   showMessageStatus,
   threadList,
   videos,
-}: MessageContextValue<StreamChatGenerics>) => {
+}: MessageContextValue) => {
   const groupStylesLength = groupStyles.length;
   const reactionsValue = reactions.map(({ count, own, type }) => `${own}${type}${count}`).join();
   const stringifiedMessage = stringifyMessage(message);
@@ -52,7 +51,7 @@ export const useCreateMessageContext = <
 
   const quotedMessageDeletedValue = message.quoted_message?.deleted_at;
 
-  const messageContext: MessageContextValue<StreamChatGenerics> = useMemo(
+  const messageContext: MessageContextValue = useMemo(
     () => ({
       actionsEnabled,
       alignment,
@@ -83,6 +82,7 @@ export const useCreateMessageContext = <
       otherAttachments,
       preventPress,
       reactions,
+      readBy,
       setIsEditedMessageOpen,
       showAvatar,
       showMessageOverlay,
@@ -105,6 +105,7 @@ export const useCreateMessageContext = <
       stringifiedMessage,
       myMessageThemeString,
       reactionsValue,
+      readBy,
       showAvatar,
       showMessageStatus,
       threadList,

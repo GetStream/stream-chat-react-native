@@ -14,7 +14,7 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { Unknown } from '../../../../icons/Unknown';
 
 import type { IconProps } from '../../../../icons/utils/base';
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
+
 import type { ReactionData } from '../../../../utils/utils';
 import { ReactionSummary } from '../../hooks/useProcessReactions';
 
@@ -31,11 +31,9 @@ const Icon = ({ pathFill, size, style, supportedReactions, type }: Props) => {
   return <ReactionIcon height={size} pathFill={pathFill} style={style} width={size} />;
 };
 
-export type ReactionListBottomItemProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<
+export type ReactionListBottomItemProps = Partial<
   Pick<
-    MessageContextValue<StreamChatGenerics>,
+    MessageContextValue,
     | 'handleReaction'
     | 'onLongPress'
     | 'onPress'
@@ -44,15 +42,11 @@ export type ReactionListBottomItemProps<
     | 'showMessageOverlay'
   >
 > &
-  Partial<Pick<MessagesContextValue<StreamChatGenerics>, 'supportedReactions'>> & {
+  Partial<Pick<MessagesContextValue, 'supportedReactions'>> & {
     reaction: ReactionSummary;
   };
 
-export const ReactionListBottomItem = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: ReactionListBottomItemProps<StreamChatGenerics>,
-) => {
+export const ReactionListBottomItem = (props: ReactionListBottomItemProps) => {
   const {
     handleReaction,
     onLongPress,
@@ -174,11 +168,9 @@ const renderItem = ({ index, item }: { index: number; item: ReactionListBottomIt
   />
 );
 
-export type ReactionListBottomProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<
+export type ReactionListBottomProps = Partial<
   Pick<
-    MessageContextValue<StreamChatGenerics>,
+    MessageContextValue,
     | 'handleReaction'
     | 'hasReactions'
     | 'onLongPress'
@@ -189,13 +181,9 @@ export type ReactionListBottomProps<
     | 'showMessageOverlay'
   >
 > &
-  Partial<Pick<MessagesContextValue<StreamChatGenerics>, 'supportedReactions'>>;
+  Partial<Pick<MessagesContextValue, 'supportedReactions'>>;
 
-export const ReactionListBottom = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: ReactionListBottomProps<StreamChatGenerics>,
-) => {
+export const ReactionListBottom = (props: ReactionListBottomProps) => {
   const {
     handleReaction: propHandlerReaction,
     hasReactions: propHasReactions,
@@ -217,10 +205,9 @@ export const ReactionListBottom = <
     preventPress: contextPreventPress,
     reactions: contextReactions,
     showMessageOverlay: contextShowMessageOverlay,
-  } = useMessageContext<StreamChatGenerics>();
+  } = useMessageContext();
 
-  const { supportedReactions: contextSupportedReactions } =
-    useMessagesContext<StreamChatGenerics>();
+  const { supportedReactions: contextSupportedReactions } = useMessagesContext();
 
   const handleReaction = propHandlerReaction || contextHandleReaction;
   const hasReactions = propHasReactions || contextHasReactions;

@@ -26,11 +26,10 @@ export const pickImage = ImagePicker
             duration: asset.duration ? asset.duration * 1000 : undefined, // in milliseconds
             name: asset.fileName,
             size: asset.fileSize,
-            source: 'picker',
             type: asset.type,
             uri: asset.uri,
           }));
-          return { assets, cancelled: false, source: 'picker' };
+          return { assets, cancelled: false };
         } else {
           return { cancelled: true };
         }

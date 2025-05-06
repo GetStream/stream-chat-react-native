@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { Modal, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
-import { Poll, PollOption, PollVote as PollVoteClass } from 'stream-chat';
+import { LocalMessage, Poll, PollOption, PollVote as PollVoteClass } from 'stream-chat';
 
 import { PollOptionFullResults } from './PollOptionFullResults';
 import { PollVote } from './PollVote';
@@ -12,24 +12,21 @@ import {
   useTheme,
   useTranslationContext,
 } from '../../../../contexts';
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
-import { MessageType } from '../../../MessageList/hooks/useMessageList';
+
 import { usePollState } from '../../hooks/usePollState';
 import { GenericPollButton } from '../Button';
 import { PollModalHeader } from '../PollModalHeader';
 
-export type ShowAllVotesButtonProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
-  option: PollOption<StreamChatGenerics>;
+export type ShowAllVotesButtonProps = {
+  option: PollOption;
   onPress?: ({
     message,
     option,
     poll,
   }: {
-    message: MessageType<StreamChatGenerics>;
-    option: PollOption<StreamChatGenerics>;
-    poll: Poll<StreamChatGenerics>;
+    message: LocalMessage;
+    option: PollOption;
+    poll: Poll;
   }) => void;
 };
 
@@ -79,10 +76,8 @@ export const ShowAllVotesButton = (props: ShowAllVotesButtonProps) => {
   );
 };
 
-export type PollResultItemProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
-  option: PollOption<StreamChatGenerics>;
+export type PollResultItemProps = {
+  option: PollOption;
 };
 
 const PollResultsVoteItem = (vote: PollVoteClass) => (

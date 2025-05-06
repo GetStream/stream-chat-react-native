@@ -4,27 +4,19 @@ import type { Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
+type Parameters = {
+  setChannels: React.Dispatch<React.SetStateAction<Channel[]>>;
+  onChannelUpdated?: (
+    setChannels: React.Dispatch<React.SetStateAction<Channel[]>>,
+    event: Event,
+  ) => void;
+};
 
-type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  {
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>;
-    onChannelUpdated?: (
-      setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
-      event: Event<StreamChatGenerics>,
-    ) => void;
-  };
-
-export const useChannelUpdated = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
-  onChannelUpdated,
-  setChannels,
-}: Parameters<StreamChatGenerics>) => {
-  const { client } = useChatContext<StreamChatGenerics>();
+export const useChannelUpdated = ({ onChannelUpdated, setChannels }: Parameters) => {
+  const { client } = useChatContext();
 
   useEffect(() => {
-    const handleEvent = (event: Event<StreamChatGenerics>) => {
+    const handleEvent = (event: Event) => {
       if (typeof onChannelUpdated === 'function') {
         onChannelUpdated(setChannels, event);
       } else {

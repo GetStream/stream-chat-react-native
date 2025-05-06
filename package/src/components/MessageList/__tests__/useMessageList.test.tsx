@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 
 import { renderHook } from '@testing-library/react-native';
 
-import type { DefaultGenerics, StreamChat } from 'stream-chat';
+import type { StreamChat } from 'stream-chat';
 
 import { useCreatePaginatedMessageListContext } from '../../../components/Channel/hooks/useCreatePaginatedMessageListContext';
 import {
@@ -15,11 +15,11 @@ import {
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
+
 import { useMessageList } from '../hooks/useMessageList';
 
 const clientUser = generateUser();
-let chatClient: StreamChat<DefaultGenerics> | StreamChat<DefaultStreamChatGenerics>;
+let chatClient: StreamChat;
 
 beforeEach(async () => {
   chatClient = await getTestClientWithUser(clientUser);

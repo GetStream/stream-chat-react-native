@@ -6,7 +6,7 @@ import { SqliteClient } from 'stream-chat-react-native';
 import { USER_TOKENS, USERS } from '../ChatUsers';
 import AsyncStore from '../utils/AsyncStore';
 
-import type { LoginConfig, StreamChatGenerics } from '../types';
+import type { LoginConfig } from '../types';
 import { PermissionsAndroid, Platform } from 'react-native';
 
 const messaging = getMessaging();
@@ -30,10 +30,10 @@ const requestAndroidPermission = async () => {
 };
 
 export const useChatClient = () => {
-  const [chatClient, setChatClient] = useState<StreamChat<StreamChatGenerics> | null>(null);
+  const [chatClient, setChatClient] = useState<StreamChat | null>(null);
   const [isConnecting, setIsConnecting] = useState(true);
 
-  const unsubscribePushListenersRef = useRef<() => void>();
+  const unsubscribePushListenersRef = useRef<() => void>(undefined);
 
   /**
    * @param config the user login config
@@ -42,7 +42,7 @@ export const useChatClient = () => {
   const loginUser = async (config: LoginConfig) => {
     // unsubscribe from previous push listeners
     unsubscribePushListenersRef.current?.();
-    const client = StreamChat.getInstance<StreamChatGenerics>(config.apiKey, {
+    const client = StreamChat.getInstance(config.apiKey, {
       timeout: 6000,
       // logger: (type, msg) => console.log(type, msg)
     });

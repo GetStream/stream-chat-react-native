@@ -4,31 +4,18 @@ import type { Channel, ChannelMemberAPIResponse, StreamChat, User } from 'stream
 import { defaultAutoCompleteSuggestionsLimit } from './constants';
 
 import type { SuggestionUser } from '../contexts/suggestionsContext/SuggestionsContext';
-import type { DefaultStreamChatGenerics } from '../types/types';
 
-const getMembers = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  channel: Channel<StreamChatGenerics>,
-) => {
+const getMembers = (channel: Channel) => {
   const members = channel.state.members;
   return members ? Object.values(members).map(({ user }) => user) : [];
 };
 
-const getWatchers = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  channel: Channel<StreamChatGenerics>,
-) => {
+const getWatchers = (channel: Channel) => {
   const watchers = channel.state.watchers;
   return watchers ? Object.values(watchers) : [];
 };
 
-export const getMembersAndWatchers = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  channel: Channel<StreamChatGenerics>,
-) => {
+export const getMembersAndWatchers = (channel: Channel) => {
   const members = getMembers(channel);
   const watchers = getWatchers(channel);
   const users = [...members, ...watchers];
@@ -47,32 +34,24 @@ export const getMembersAndWatchers = <
   return uniqueUsers;
 };
 
-const isUserResponse = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  user: SuggestionUser<StreamChatGenerics> | undefined,
-): user is SuggestionUser<StreamChatGenerics> =>
-  (user as SuggestionUser<StreamChatGenerics>) !== undefined;
+const isUserResponse = (user: SuggestionUser | undefined): user is SuggestionUser =>
+  (user as SuggestionUser) !== undefined;
 
-export type QueryMembersFunction<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = (
-  client: StreamChat<StreamChatGenerics>,
-  channel: Channel<StreamChatGenerics>,
-  query: SuggestionUser<StreamChatGenerics>['name'],
-  onReady?: (users: SuggestionUser<StreamChatGenerics>[]) => void,
+export type QueryMembersFunction = (
+  client: StreamChat,
+  channel: Channel,
+  query: SuggestionUser['name'],
+  onReady?: (users: SuggestionUser[]) => void,
   options?: {
     limit?: number;
   },
 ) => Promise<void>;
 
-const queryMembers = async <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  client: StreamChat<StreamChatGenerics>,
-  channel: Channel<StreamChatGenerics>,
-  query: SuggestionUser<StreamChatGenerics>['name'],
-  onReady?: (users: SuggestionUser<StreamChatGenerics>[]) => void,
+const queryMembers = async (
+  client: StreamChat,
+  channel: Channel,
+  query: SuggestionUser['name'],
+  onReady?: (users: SuggestionUser[]) => void,
   options: {
     limit?: number;
   } = {},
@@ -89,9 +68,9 @@ const queryMembers = async <
       },
       {},
       { limit },
-    )) as ChannelMemberAPIResponse<StreamChatGenerics>;
+    )) as ChannelMemberAPIResponse;
 
-    const users: SuggestionUser<StreamChatGenerics>[] = [];
+    const users: SuggestionUser[] = [];
     members
       .filter((member) => member.user?.id !== client.userID)
       .forEach((member) => isUserResponse(member.user) && users.push(member.user));

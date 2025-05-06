@@ -6,13 +6,11 @@ import { useChannelPreviewDisplayPresence } from './hooks/useChannelPreviewDispl
 
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+
 import { Avatar } from '../Avatar/Avatar';
 import { GroupAvatar } from '../Avatar/GroupAvatar';
 
-export type ChannelAvatarProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChannelPreviewProps<StreamChatGenerics>, 'channel'> & {
+export type ChannelAvatarProps = Pick<ChannelPreviewProps, 'channel'> & {
   /**
    * The size of the avatar.
    */
@@ -22,10 +20,8 @@ export type ChannelAvatarProps<
 /**
  * This UI component displays an avatar for a particular channel.
  */
-export const ChannelAvatarWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: ChannelAvatarProps<StreamChatGenerics> & Pick<ChatContextValue, 'ImageComponent'>,
+export const ChannelAvatarWithContext = (
+  props: ChannelAvatarProps & Pick<ChatContextValue, 'ImageComponent'>,
 ) => {
   const { channel, ImageComponent, size: propSize } = props;
   const {
@@ -63,12 +59,8 @@ export const ChannelAvatarWithContext = <
   );
 };
 
-export const ChannelAvatar = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: ChannelAvatarProps<StreamChatGenerics>,
-) => {
-  const { ImageComponent } = useChatContext<StreamChatGenerics>();
+export const ChannelAvatar = (props: ChannelAvatarProps) => {
+  const { ImageComponent } = useChatContext();
 
   return <ChannelAvatarWithContext {...props} ImageComponent={ImageComponent} />;
 };

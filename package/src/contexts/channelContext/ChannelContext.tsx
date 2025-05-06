@@ -6,14 +6,12 @@ import { MarkReadFunctionOptions } from '../../components/Channel/Channel';
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
 import { StickyHeaderProps } from '../../components/MessageList/StickyHeader';
-import type { ChannelUnreadState, DefaultStreamChatGenerics } from '../../types/types';
+import type { ChannelUnreadState } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-export type ChannelContextValue<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+export type ChannelContextValue = {
   /**
    * Instance of channel object from stream-chat package.
    *
@@ -36,7 +34,7 @@ export type ChannelContextValue<
    *
    * @overrideType Channel
    */
-  channel: Channel<StreamChatGenerics>;
+  channel: Channel;
   /**
    * Custom UI component to display empty state when channel has no messages.
    *
@@ -87,11 +85,9 @@ export type ChannelContextValue<
     limit,
     setTargetedMessage,
   }: {
-    channelUnreadState?: ChannelUnreadState<StreamChatGenerics>;
+    channelUnreadState?: ChannelUnreadState;
     limit?: number;
-    setChannelUnreadState?: React.Dispatch<
-      React.SetStateAction<ChannelUnreadState<StreamChatGenerics> | undefined>
-    >;
+    setChannelUnreadState?: React.Dispatch<React.SetStateAction<ChannelUnreadState | undefined>>;
     setTargetedMessage?: (messageId: string) => void;
   }) => Promise<void>;
 
@@ -123,17 +119,15 @@ export type ChannelContextValue<
    * }
    * ```
    */
-  members: ChannelState<StreamChatGenerics>['members'];
+  members: ChannelState['members'];
   /**
    * Custom network down indicator to override the Stream default
    */
   NetworkDownIndicator: React.ComponentType;
-  read: ChannelState<StreamChatGenerics>['read'];
+  read: ChannelState['read'];
   reloadChannel: () => Promise<void>;
   scrollToFirstUnreadThreshold: number;
-  setChannelUnreadState: React.Dispatch<
-    React.SetStateAction<ChannelUnreadState<StreamChatGenerics> | undefined>
-  >;
+  setChannelUnreadState: React.Dispatch<React.SetStateAction<ChannelUnreadState | undefined>>;
   setLastRead: React.Dispatch<React.SetStateAction<Date | undefined>>;
   setTargetedMessage: (messageId?: string) => void;
   /**
@@ -141,7 +135,7 @@ export type ChannelContextValue<
    * Its a map of filename and AbortController
    */
   uploadAbortControllerRef: React.MutableRefObject<Map<string, AbortController>>;
-  channelUnreadState?: ChannelUnreadState<StreamChatGenerics>;
+  channelUnreadState?: ChannelUnreadState;
   disabled?: boolean;
   enableMessageGroupingByUser?: boolean;
   /**
@@ -170,7 +164,7 @@ export type ChannelContextValue<
    */
   targetedMessage?: string;
   threadList?: boolean;
-  watcherCount?: ChannelState<StreamChatGenerics>['watcher_count'];
+  watcherCount?: ChannelState['watcher_count'];
   /**
    *
    * ```json
@@ -194,32 +188,26 @@ export type ChannelContextValue<
    * }
    * ```
    */
-  watchers?: ChannelState<StreamChatGenerics>['watchers'];
+  watchers?: ChannelState['watchers'];
 };
 
 export const ChannelContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as ChannelContextValue,
 );
 
-export const ChannelProvider = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const ChannelProvider = ({
   children,
   value,
 }: PropsWithChildren<{
-  value: ChannelContextValue<StreamChatGenerics>;
+  value: ChannelContextValue;
 }>) => (
   <ChannelContext.Provider value={value as unknown as ChannelContextValue}>
     {children}
   </ChannelContext.Provider>
 );
 
-export const useChannelContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => {
-  const contextValue = useContext(
-    ChannelContext,
-  ) as unknown as ChannelContextValue<StreamChatGenerics>;
+export const useChannelContext = () => {
+  const contextValue = useContext(ChannelContext) as unknown as ChannelContextValue;
 
   if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(

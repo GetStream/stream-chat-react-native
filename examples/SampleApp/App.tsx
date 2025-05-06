@@ -6,7 +6,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Chat,
-  MessageType,
   OverlayProvider,
   SqliteClient,
   ThemeProvider,
@@ -36,7 +35,7 @@ import { SharedGroupsScreen } from './src/screens/SharedGroupsScreen';
 import { ThreadScreen } from './src/screens/ThreadScreen';
 import { UserSelectorScreen } from './src/screens/UserSelectorScreen';
 
-import type { StreamChat } from 'stream-chat';
+import type { LocalMessage, StreamChat } from 'stream-chat';
 
 if (__DEV__) {
   DevSettings.addMenuItem('Reset local DB (offline storage)', () => {
@@ -45,11 +44,7 @@ if (__DEV__) {
   });
 }
 
-import type {
-  StackNavigatorParamList,
-  StreamChatGenerics,
-  UserSelectorParamList,
-} from './src/types';
+import type { StackNavigatorParamList, UserSelectorParamList } from './src/types';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { navigateToChannel, RootNavigationRef } from './src/utils/RootNavigation';
 import FastImage from 'react-native-fast-image';
@@ -107,18 +102,16 @@ const App = () => {
         }
       }
     });
-    messaging
-      .getInitialNotification()
-      .then((remoteMessage) => {
-        if (remoteMessage) {
-          // Notification caused app to open from quit state on iOS
-          const channelId = remoteMessage.data?.channel_id as string;
-          if (channelId) {
-            // this will make the app to start with the channel screen with this channel id
-            initialChannelIdGlobalRef.current = channelId;
-          }
+    messaging.getInitialNotification().then((remoteMessage) => {
+      if (remoteMessage) {
+        // Notification caused app to open from quit state on iOS
+        const channelId = remoteMessage.data?.channel_id as string;
+        if (channelId) {
+          // this will make the app to start with the channel screen with this channel id
+          initialChannelIdGlobalRef.current = channelId;
         }
-      });
+      }
+    });
     return () => {
       unsubscribeOnNotificationOpen();
       unsubscribeForegroundEvent();
@@ -171,21 +164,23 @@ const DrawerNavigator: React.FC = () => (
   </Drawer.Navigator>
 );
 
+const isMessageAIGenerated = (message: LocalMessage) => !!message.ai_generated;
+
 const DrawerNavigatorWrapper: React.FC<{
-  chatClient: StreamChat<StreamChatGenerics>;
+  chatClient: StreamChat;
 }> = ({ chatClient }) => {
   const { bottom } = useSafeAreaInsets();
   const streamChatTheme = useStreamChatTheme();
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <OverlayProvider<StreamChatGenerics> bottomInset={bottom} value={{ style: streamChatTheme }}>
-        <Chat<StreamChatGenerics>
+      <OverlayProvider bottomInset={bottom} value={{ style: streamChatTheme }}>
+        <Chat
           client={chatClient}
           enableOfflineSupport
           // @ts-expect-error - the `ImageComponent` prop is generic, meaning we can expect an error
           ImageComponent={FastImage}
-          isMessageAIGenerated={(message: MessageType) => !!message.ai_generated}
+          isMessageAIGenerated={isMessageAIGenerated}
         >
           <AppOverlayProvider>
             <UserSearchProvider>

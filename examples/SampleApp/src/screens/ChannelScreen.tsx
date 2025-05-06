@@ -23,7 +23,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 
-import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
+import type { StackNavigatorParamList } from '../types';
 import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
 
 const styles = StyleSheet.create({
@@ -41,7 +41,7 @@ export type ChannelScreenProps = {
 };
 
 export type ChannelHeaderProps = {
-  channel: StreamChatChannel<StreamChatGenerics>;
+  channel: StreamChatChannel;
 };
 
 const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
@@ -115,12 +115,12 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     },
   } = useTheme();
 
-  const [channel, setChannel] = useState<StreamChatChannel<StreamChatGenerics> | undefined>(
+  const [channel, setChannel] = useState<StreamChatChannel | undefined>(
     channelFromProp,
   );
 
   const [selectedThread, setSelectedThread] =
-    useState<ThreadContextValue<StreamChatGenerics>['thread']>();
+    useState<ThreadContextValue['thread']>();
 
   useEffect(() => {
     const initChannel = async () => {
@@ -168,7 +168,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         thread={selectedThread}
       >
         <ChannelHeader channel={channel} />
-        <MessageList<StreamChatGenerics>
+        <MessageList
           onThreadSelect={onThreadSelect}
         />
         <AITypingIndicatorView channel={channel} />

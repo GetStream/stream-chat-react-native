@@ -13,7 +13,6 @@ import {
   useTheme,
   useTranslationContext,
 } from '../../../contexts';
-import { DefaultStreamChatGenerics } from '../../../types/types';
 import { getDateString } from '../../../utils/i18n/getDateString';
 import { Avatar } from '../../Avatar/Avatar';
 import { usePollAnswersPagination } from '../hooks/usePollAnswersPagination';
@@ -73,10 +72,8 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
   );
 };
 
-export type PollAnswersListProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = PollContextValue & {
-  additionalFlatListProps?: Partial<FlatListProps<PollAnswer<StreamChatGenerics>>>;
+export type PollAnswersListProps = PollContextValue & {
+  additionalFlatListProps?: Partial<FlatListProps<PollAnswer>>;
   PollAnswersListContent?: React.ComponentType;
 };
 
