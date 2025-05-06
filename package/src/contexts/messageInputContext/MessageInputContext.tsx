@@ -572,7 +572,7 @@ export const MessageInputProvider = ({
 
   const messageComposer = useMessageComposer();
   const { textComposer } = messageComposer;
-  const { mentionedUsers, text } = useStateStore(textComposer.state, textComposerStateSelector);
+  const { text } = useStateStore(textComposer.state, textComposerStateSelector);
 
   const threadId = thread?.id;
   useEffect(() => {
@@ -789,7 +789,8 @@ export const MessageInputProvider = ({
     [imageUploads, setImageUploads, setNumberOfUploads],
   );
 
-  const resetInput = useStableCallback((pendingAttachments: Attachment[] = []) => {
+  const resetInput = useStableCallback(async (pendingAttachments: Attachment[] = []) => {
+    await messageComposer.clear();
     /**
      * If the MediaLibrary is available, reset the selected files and images
      */
@@ -971,14 +972,18 @@ export const MessageInputProvider = ({
         return;
       }
 
+      const composition = await messageComposer.compose();
+      if (!composition || !composition.message) return;
+      const { localMessage } = composition;
+
       const message = value.editing;
       if (message && message.type !== 'error') {
         const updatedMessage = {
           ...message,
           attachments,
-          mentioned_users: mentionedUsers.map((user) => ({ id: user.id })),
+          mentioned_users: localMessage.mentioned_users?.map((user) => user.id),
           quoted_message: undefined,
-          text,
+          text: localMessage.text,
           ...customMessageData,
         } as Parameters<StreamChat['updateMessage']>[0];
 
@@ -1007,12 +1012,12 @@ export const MessageInputProvider = ({
           value.sendMessage({
             attachments,
             // TODO: Handle unique users
-            mentioned_users: mentionedUsers.map((user) => user.id),
+            mentioned_users: localMessage.mentioned_users?.map((user) => user.id),
             /** Parent message id - in case of thread */
             parent_id: thread?.id,
             quoted_message_id: value.quotedMessage ? value.quotedMessage.id : undefined,
             show_in_channel: sendThreadMessageInChannel || undefined,
-            text,
+            text: localMessage.text,
             ...customMessageData,
           });
 

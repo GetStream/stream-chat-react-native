@@ -16,12 +16,12 @@ export const createCommandControlMiddleware = (
   const triggers = commands.map((command) => `/${command.name} `.toLowerCase());
   return {
     handlers: {
-      onChange: ({ next, state }) => {
+      onChange: ({ complete, forward, next, state }) => {
         const { customDataManager } = composer;
 
         if (!state.text && customDataManager.customComposerData.command) {
           customDataManager.setCustomData({ command: null });
-          return next(state);
+          return forward();
         }
 
         const inputText = state.text.toLowerCase();
@@ -41,19 +41,20 @@ export const createCommandControlMiddleware = (
         const commandName = command?.slice(1, -1);
         composer.customDataManager.setCustomData({ command: commandName });
         const newText = state.text.slice(command.length);
-        return next({
+        return complete({
           ...state,
           selection: {
             end: state.selection.end - command.length,
             start: state.selection.start - command.length,
           },
+          suggestions: undefined,
           text: newText,
         });
       },
-      onSuggestionItemSelect: ({ next, state }) => {
+      onSuggestionItemSelect: ({ complete, forward, state }) => {
         const { selectedSuggestion } = state.change ?? {};
         if (!selectedSuggestion || !commands.some((c) => c.name === selectedSuggestion.name)) {
-          return next(state);
+          return forward();
         }
 
         composer.customDataManager.setCustomData({ command: selectedSuggestion.name });
@@ -61,10 +62,10 @@ export const createCommandControlMiddleware = (
         const trigger = `/${command?.name} `;
 
         if (!trigger) {
-          return next(state);
+          return forward();
         }
         const newText = state.text.slice(trigger.length + 1);
-        return next({
+        return complete({
           ...state,
           selection: {
             end: state.selection.end - trigger.length,
@@ -83,17 +84,21 @@ export const createCommandInjectionMiddleware = (
   composer: MessageComposer,
 ): MessageCompositionMiddleware => ({
   handlers: {
-    compose: ({ state, next }: MiddlewareHandlerParams<MessageComposerMiddlewareState>) => {
+    compose: ({
+      complete,
+      forward,
+      state,
+    }: MiddlewareHandlerParams<MessageComposerMiddlewareState>) => {
       const {
         custom: { command },
       } = composer.customDataManager.state.getLatestValue();
       const { attachments, text } = state.localMessage;
       const injection = command && `/${command}`;
       if (!command || !injection || text?.startsWith(injection) || attachments?.length) {
-        return next(state);
+        return forward();
       }
       const enrichedText = `${injection} ${text}`;
-      return next({
+      return complete({
         ...state,
         localMessage: {
           ...state.localMessage,
@@ -114,8 +119,9 @@ export const createDraftCommandInjectionMiddleware = (
 ): MessageDraftCompositionMiddleware => ({
   handlers: {
     compose: ({
+      forward,
       state,
-      next,
+      complete,
     }: MiddlewareHandlerParams<MessageDraftComposerMiddlewareValueState>) => {
       const {
         custom: { command },
@@ -123,10 +129,10 @@ export const createDraftCommandInjectionMiddleware = (
       const text = state.draft.text;
       const injection = command && `/${command}`;
       if (!command || !injection || text?.startsWith(injection)) {
-        return next(state);
+        return forward();
       }
       const enrichedText = `${injection} ${text}`;
-      return next({
+      return complete({
         ...state,
         draft: {
           ...state.draft,

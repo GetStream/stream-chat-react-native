@@ -9,6 +9,8 @@ export * from './contexts';
 
 export * from './icons';
 
+export * from './middlewares';
+
 export * from './types/types';
 
 export * from './utils/patchMessageTextCommand';

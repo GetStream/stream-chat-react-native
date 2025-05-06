@@ -17,6 +17,7 @@ import {
   useTheme,
   useTypingString,
   AITypingIndicatorView,
+  createTextComposerEmojiMiddleware,
 } from 'stream-chat-react-native';
 import { Platform, StyleSheet, View } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -29,7 +30,6 @@ import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 
 import type { StackNavigatorParamList } from '../types';
 import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
-import { createTextComposerEmojiMiddleware } from '../middlewares/emojiControl';
 import { init, SearchIndex } from 'emoji-mart';
 import data from '@emoji-mart/data';
 

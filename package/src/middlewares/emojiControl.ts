@@ -1,4 +1,4 @@
-import mergeWith from 'lodash.mergewith';
+import mergeWith from 'lodash/mergeWith';
 import type {
   Middleware,
   SearchSourceOptions,
@@ -14,7 +14,8 @@ import {
   insertItemWithTrigger,
   replaceWordWithEntity,
 } from 'stream-chat';
-import { Emoji, EmojiSearchIndex } from 'stream-chat-react-native';
+
+import { Emoji, EmojiSearchIndex } from '../types/types';
 
 export type EmojiSuggestion<T extends Emoji = Emoji> = TextComposerSuggestion<T>;
 
