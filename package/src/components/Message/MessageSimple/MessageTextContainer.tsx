@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
+import { LocalMessage } from 'stream-chat';
+
 import { renderText, RenderTextParams } from './utils/renderText';
 
 import {
@@ -15,28 +17,22 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import type { MarkdownStyle, Theme } from '../../../contexts/themeContext/utils/theme';
 import { useTranslatedMessage } from '../../../hooks/useTranslatedMessage';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
 
 const styles = StyleSheet.create({
   textContainer: { maxWidth: 250, paddingHorizontal: 16 },
 });
 
-export type MessageTextProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = MessageTextContainerProps<StreamChatGenerics> & {
-  renderText: (params: RenderTextParams<StreamChatGenerics>) => React.ReactNode | null;
+export type MessageTextProps = MessageTextContainerProps & {
+  renderText: (params: RenderTextParams) => React.ReactNode | null;
   theme: { theme: Theme };
 };
 
-export type MessageTextContainerPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<
-  MessageContextValue<StreamChatGenerics>,
+export type MessageTextContainerPropsWithContext = Pick<
+  MessageContextValue,
   'message' | 'onLongPress' | 'onlyEmojis' | 'onPress' | 'preventPress'
 > &
   Pick<
-    MessagesContextValue<StreamChatGenerics>,
+    MessagesContextValue,
     'markdownRules' | 'MessageText' | 'myMessageTheme' | 'messageTextNumberOfLines'
   > & {
     markdownStyles?: MarkdownStyle;
@@ -46,11 +42,7 @@ export type MessageTextContainerPropsWithContext<
     }>;
   };
 
-const MessageTextContainerWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageTextContainerPropsWithContext<StreamChatGenerics>,
-) => {
+const MessageTextContainerWithContext = (props: MessageTextContainerPropsWithContext) => {
   const theme = useTheme();
 
   const {
@@ -79,9 +71,7 @@ const MessageTextContainerWithContext = <
     },
   } = theme;
 
-  const translatedMessage = useTranslatedMessage<StreamChatGenerics>(
-    message,
-  ) as MessageType<StreamChatGenerics>;
+  const translatedMessage = useTranslatedMessage(message) as LocalMessage;
 
   if (!message.text) {
     return null;
@@ -97,7 +87,7 @@ const MessageTextContainerWithContext = <
       {MessageText ? (
         <MessageText {...props} renderText={renderText} theme={theme} />
       ) : (
-        renderText<StreamChatGenerics>({
+        renderText({
           colors,
           markdownRules,
           markdownStyles: {
@@ -117,9 +107,9 @@ const MessageTextContainerWithContext = <
   );
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: MessageTextContainerPropsWithContext<StreamChatGenerics>,
-  nextProps: MessageTextContainerPropsWithContext<StreamChatGenerics>,
+const areEqual = (
+  prevProps: MessageTextContainerPropsWithContext,
+  nextProps: MessageTextContainerPropsWithContext,
 ) => {
   const {
     markdownStyles: prevMarkdownStyles,
@@ -188,19 +178,12 @@ const MemoizedMessageTextContainer = React.memo(
   areEqual,
 ) as typeof MessageTextContainerWithContext;
 
-export type MessageTextContainerProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<MessageTextContainerPropsWithContext<StreamChatGenerics>>;
+export type MessageTextContainerProps = Partial<MessageTextContainerPropsWithContext>;
 
-export const MessageTextContainer = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageTextContainerProps<StreamChatGenerics>,
-) => {
-  const { message, onLongPress, onlyEmojis, onPress, preventPress } =
-    useMessageContext<StreamChatGenerics>();
+export const MessageTextContainer = (props: MessageTextContainerProps) => {
+  const { message, onLongPress, onlyEmojis, onPress, preventPress } = useMessageContext();
   const { markdownRules, MessageText, messageTextNumberOfLines, myMessageTheme } =
-    useMessagesContext<StreamChatGenerics>();
+    useMessagesContext();
 
   return (
     <MemoizedMessageTextContainer

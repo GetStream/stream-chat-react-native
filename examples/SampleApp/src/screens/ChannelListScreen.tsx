@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { RefObject, useCallback, useMemo, useRef, useState } from 'react';
 import {
   FlatList,
   FlatListProps,
@@ -18,8 +18,6 @@ import { useAppContext } from '../context/AppContext';
 import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessages';
 
 import type { ChannelSort } from 'stream-chat';
-
-import type { StreamChatGenerics } from '../types';
 
 const styles = StyleSheet.create({
   channelListContainer: {
@@ -61,7 +59,7 @@ const baseFilters = {
   type: 'messaging',
 };
 
-const sort: ChannelSort<StreamChatGenerics> = [
+const sort: ChannelSort = [
   { pinned_at: -1 },
   { last_message_at: -1 },
   { updated_at: -1 },
@@ -85,7 +83,7 @@ export const ChannelListScreen: React.FC = () => {
   } = useTheme();
 
   const searchInputRef = useRef<TextInput | null>(null);
-  const scrollRef = useRef<FlatList<Channel<StreamChatGenerics>> | null>(null);
+  const scrollRef = useRef<FlatList<Channel> | null>(null);
 
   const [searchInputText, setSearchInputText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -104,7 +102,7 @@ export const ChannelListScreen: React.FC = () => {
     [chatClientUserId],
   );
 
-  useScrollToTop(scrollRef);
+  useScrollToTop(scrollRef as RefObject<FlatList<Channel>>);
 
   // eslint-disable-next-line react/no-unstable-nested-components
   const EmptySearchIndicator = () => (
@@ -116,7 +114,7 @@ export const ChannelListScreen: React.FC = () => {
     </View>
   );
 
-  const additionalFlatListProps = useMemo<Partial<FlatListProps<Channel<StreamChatGenerics>>>>(
+  const additionalFlatListProps = useMemo<Partial<FlatListProps<Channel>>>(
     () => ({
       getItemLayout: (_: unknown, index: number) => ({
         index,
@@ -138,7 +136,7 @@ export const ChannelListScreen: React.FC = () => {
   );
 
   const setScrollRef = useCallback(
-    () => (ref: FlatList<Channel<StreamChatGenerics>> | null) => {
+    () => (ref: FlatList<Channel> | null) => {
       scrollRef.current = ref;
     },
     [],
@@ -217,7 +215,7 @@ export const ChannelListScreen: React.FC = () => {
         )}
         <View style={{ flex: searchQuery ? 0 : 1 }}>
           <View style={[styles.channelListContainer, { opacity: searchQuery ? 0 : 1 }]}>
-            <ChannelList<StreamChatGenerics>
+            <ChannelList
               additionalFlatListProps={additionalFlatListProps}
               filters={filters}
               HeaderNetworkDownIndicator={HeaderNetworkDownIndicator}

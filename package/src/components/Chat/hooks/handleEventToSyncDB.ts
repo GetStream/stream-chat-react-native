@@ -14,15 +14,8 @@ import { upsertReads } from '../../../store/apis/upsertReads';
 import { createSelectQuery } from '../../../store/sqlite-utils/createSelectQuery';
 import { SqliteClient } from '../../../store/SqliteClient';
 import { PreparedQueries } from '../../../store/types';
-import { DefaultStreamChatGenerics } from '../../../types/types';
 
-export const handleEventToSyncDB = async <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  event: Event,
-  client: StreamChat<StreamChatGenerics>,
-  flush?: boolean,
-) => {
+export const handleEventToSyncDB = async (event: Event, client: StreamChat, flush?: boolean) => {
   const { type } = event;
 
   // This function is used to guard the queries that require channel to be present in the db first

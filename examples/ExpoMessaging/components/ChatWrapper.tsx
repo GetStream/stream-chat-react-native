@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useRef } from 'react';
 import {
   Chat,
   OverlayProvider,
@@ -7,7 +7,6 @@ import {
   useCreateChatClient,
 } from 'stream-chat-expo';
 import { AuthProgressLoader } from './AuthProgressLoader';
-import { StreamChatGenerics } from '../types';
 import { STREAM_API_KEY, user, userToken } from '../constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useStreamChatTheme } from '../useStreamChatTheme';
@@ -34,7 +33,7 @@ export const ChatWrapper = ({ children }: PropsWithChildren<{}>) => {
   }
 
   return (
-    <OverlayProvider<StreamChatGenerics>
+    <OverlayProvider
       bottomInset={bottom}
       i18nInstance={streami18n}
       value={{ style: theme }}

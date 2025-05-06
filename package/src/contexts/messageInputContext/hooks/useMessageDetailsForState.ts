@@ -2,24 +2,17 @@ import { useEffect, useState } from 'react';
 
 import { Attachment } from 'stream-chat';
 
-import {
-  DefaultStreamChatGenerics,
-  FileTypes,
-  FileUpload,
-  ImageUpload,
-} from '../../../types/types';
-import { generateRandomId, stringifyMessage } from '../../../utils/utils';
+import { FileTypes, FileUpload } from '../../../types/types';
+import { generateRandomId, getFileTypeFromMimeType, stringifyMessage } from '../../../utils/utils';
 
 import type { MessageInputContextValue } from '../MessageInputContext';
 
-export const useMessageDetailsForState = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  message: MessageInputContextValue<StreamChatGenerics>['editing'],
+export const useMessageDetailsForState = (
+  message: MessageInputContextValue['editing'],
   initialValue?: string,
 ) => {
   const [fileUploads, setFileUploads] = useState<FileUpload[]>([]);
-  const [imageUploads, setImageUploads] = useState<ImageUpload[]>([]);
+  const [imageUploads, setImageUploads] = useState<FileUpload[]>([]);
   const [mentionedUsers, setMentionedUsers] = useState<string[]>([]);
   const [numberOfUploads, setNumberOfUploads] = useState(0);
 
@@ -49,72 +42,65 @@ export const useMessageDetailsForState = <
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messageValue]);
 
-  const mapAttachmentToFileUpload = (attachment: Attachment<StreamChatGenerics>): FileUpload => {
+  const mapAttachmentToFileUpload = (attachment: Attachment): FileUpload => {
     const id = generateRandomId();
 
     if (attachment.type === FileTypes.Audio) {
       return {
         file: {
-          duration: attachment.duration,
-          mimeType: attachment.mime_type,
+          duration: attachment.duration || 0,
           name: attachment.title || '',
-          size: attachment.file_size,
-          uri: attachment.asset_url,
+          size: attachment.file_size || 0,
+          type: attachment.mime_type || '',
+          uri: attachment.asset_url || '',
         },
         id,
         state: 'finished',
+        type: FileTypes.Audio,
         url: attachment.asset_url,
       };
     } else if (attachment.type === FileTypes.Video) {
       return {
         file: {
-          duration: attachment.duration,
-          mimeType: attachment.mime_type,
+          duration: attachment.duration || 0,
           name: attachment.title || '',
-          size: attachment.file_size,
-          uri: attachment.asset_url,
+          size: attachment.file_size || 0,
+          thumb_url: attachment.thumb_url || '',
+          type: attachment.mime_type || '',
+          uri: attachment.asset_url || '',
         },
         id,
         state: 'finished',
         thumb_url: attachment.thumb_url,
+        type: FileTypes.Video,
         url: attachment.asset_url,
       };
     } else if (attachment.type === FileTypes.VoiceRecording) {
       return {
         file: {
-          duration: attachment.duration,
-          mimeType: attachment.mime_type,
+          duration: attachment.duration || 0,
           name: attachment.title || '',
-          size: attachment.file_size,
-          uri: attachment.asset_url,
+          size: attachment.file_size || 0,
+          type: attachment.mime_type || '',
+          uri: attachment.asset_url || '',
           waveform_data: attachment.waveform_data,
         },
         id,
         state: 'finished',
-        url: attachment.asset_url,
-      };
-    } else if (attachment.type === FileTypes.File) {
-      return {
-        file: {
-          mimeType: attachment.mime_type,
-          name: attachment.title || '',
-          size: attachment.file_size,
-          uri: attachment.asset_url,
-        },
-        id,
-        state: 'finished',
+        type: FileTypes.VoiceRecording,
         url: attachment.asset_url,
       };
     } else {
       return {
         file: {
-          mimeType: attachment.mime_type,
           name: attachment.title || '',
-          size: attachment.file_size,
-          uri: attachment.asset_url,
+          size: attachment.file_size || 0,
+          type: attachment.mime_type || '',
+          uri: attachment.asset_url || '',
         },
         id,
         state: 'finished',
+        type: getFileTypeFromMimeType(attachment.mime_type || ''),
         url: attachment.asset_url,
       };
     }
@@ -124,7 +110,7 @@ export const useMessageDetailsForState = <
     if (message) {
       setText(message?.text || '');
       const newFileUploads: FileUpload[] = [];
-      const newImageUploads: ImageUpload[] = [];
+      const newImageUploads: FileUpload[] = [];
 
       const attachments = Array.isArray(message.attachments) ? message.attachments : [];
 
@@ -133,14 +119,16 @@ export const useMessageDetailsForState = <
           const id = generateRandomId();
           newImageUploads.push({
             file: {
-              height: attachment.original_height,
-              name: attachment.fallback,
-              size: attachment.file_size,
-              type: attachment.type,
-              width: attachment.original_width,
+              height: attachment.original_height || 0,
+              name: attachment.fallback || '',
+              size: attachment.file_size || 0,
+              type: attachment.type || '',
+              uri: attachment.image_url || '',
+              width: attachment.original_width || 0,
             },
             id,
             state: 'finished',
+            type: FileTypes.Image,
             url: attachment.image_url || attachment.asset_url || attachment.thumb_url,
           });
         } else {

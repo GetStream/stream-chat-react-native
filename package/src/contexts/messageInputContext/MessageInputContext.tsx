@@ -11,9 +11,9 @@ import React, {
 import { Alert, Keyboard, Linking, TextInput, TextInputProps } from 'react-native';
 
 import uniq from 'lodash/uniq';
-import { lookup } from 'mime-types';
 import {
   Attachment,
+  LocalMessage,
   logChatPromiseExecution,
   Message,
   SendFileAPIResponse,
@@ -53,7 +53,6 @@ import type { MessageInputProps } from '../../components/MessageInput/MessageInp
 import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreOptionsButton';
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
-import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { Emoji } from '../../emoji-data';
 import {
   isDocumentPickerAvailable,
@@ -61,14 +60,7 @@ import {
   MediaTypes,
   NativeHandlers,
 } from '../../native';
-import {
-  Asset,
-  DefaultStreamChatGenerics,
-  File,
-  FileTypes,
-  FileUpload,
-  ImageUpload,
-} from '../../types/types';
+import { File, FileTypes, FileUpload } from '../../types/types';
 import {
   ACITriggerSettings,
   ACITriggerSettingsParams,
@@ -81,6 +73,7 @@ import {
   FileStateValue,
   generateRandomId,
   getFileNameFromPath,
+  getFileTypeFromMimeType,
   isBouncedMessage,
 } from '../../utils/utils';
 import { useAttachmentPickerContext } from '../attachmentPickerContext/AttachmentPickerContext';
@@ -107,17 +100,13 @@ export type EmojiSearchIndex = {
   search: (query: string) => PromiseLike<Array<Emoji>> | Array<Emoji> | null;
 };
 
-export type MentionAllAppUsersQuery<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
-  filters?: UserFilters<StreamChatGenerics>;
+export type MentionAllAppUsersQuery = {
+  filters?: UserFilters;
   options?: UserOptions;
-  sort?: UserSort<StreamChatGenerics>;
+  sort?: UserSort;
 };
 
-export type LocalMessageInputContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+export type LocalMessageInputContext = {
   appendText: (newText: string) => void;
   asyncIds: string[];
   asyncUploads: {
@@ -173,13 +162,13 @@ export type LocalMessageInputContext<
    * ```
    *
    */
-  imageUploads: ImageUpload[];
+  imageUploads: FileUpload[];
   inputBoxRef: React.MutableRefObject<TextInput | null>;
   isValidMessage: () => boolean;
   mentionedUsers: string[];
   numberOfUploads: number;
   onChange: (newText: string) => void;
-  onSelectItem: (item: UserResponse<StreamChatGenerics>) => void;
+  onSelectItem: (item: UserResponse) => void;
   openAttachmentPicker: () => void;
   openCommandsPicker: () => void;
   openFilePicker: () => void;
@@ -201,12 +190,10 @@ export type LocalMessageInputContext<
    * @param id string ID of image in `imageUploads` object in state of MessageInput
    */
   removeImage: (id: string) => void;
-  resetInput: (pendingAttachments?: Attachment<StreamChatGenerics>[]) => void;
+  resetInput: (pendingAttachments?: Attachment[]) => void;
   selectedPicker: string | undefined;
   sending: React.MutableRefObject<boolean>;
-  sendMessage: (params?: {
-    customMessageData?: Partial<Message<StreamChatGenerics>>;
-  }) => Promise<void>;
+  sendMessage: (params?: { customMessageData?: Partial<Message> }) => Promise<void>;
   sendMessageAsync: (id: string) => void;
   sendThreadMessageInChannel: boolean;
   setAsyncIds: React.Dispatch<React.SetStateAction<string[]>>;
@@ -220,7 +207,7 @@ export type LocalMessageInputContext<
   >;
   setFileUploads: React.Dispatch<React.SetStateAction<FileUpload[]>>;
   setGiphyActive: React.Dispatch<React.SetStateAction<boolean>>;
-  setImageUploads: React.Dispatch<React.SetStateAction<ImageUpload[]>>;
+  setImageUploads: React.Dispatch<React.SetStateAction<FileUpload[]>>;
   /**
    * Ref callback to set reference on input box
    */
@@ -240,19 +227,17 @@ export type LocalMessageInputContext<
   /**
    * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
    */
-  triggerSettings: TriggerSettings<StreamChatGenerics>;
+  triggerSettings: TriggerSettings;
   updateMessage: () => Promise<void>;
   /** Function for attempting to upload a file */
   uploadFile: ({ newFile }: { newFile: FileUpload }) => Promise<void>;
   /** Function for attempting to upload an image */
-  uploadImage: ({ newImage }: { newImage: ImageUpload }) => Promise<void>;
-  uploadNewFile: (file: File) => Promise<void>;
-  uploadNewImage: (image: Partial<Asset>) => Promise<void>;
+  uploadImage: ({ newImage }: { newImage: FileUpload }) => Promise<void>;
+  uploadNewFile: (file: File, fileType?: FileTypes) => Promise<void>;
+  uploadNewImage: (image: File) => Promise<void>;
 };
 
-export type InputMessageInputContextValue<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+export type InputMessageInputContextValue = {
   /**
    * Controls how many pixels to the top side the user has to scroll in order to lock the recording view and allow the user to lift their finger from the screen without stopping the recording.
    */
@@ -286,7 +271,7 @@ export type InputMessageInputContextValue<
    *
    * Defaults to and accepts same props as: [AudioRecorder](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/AudioRecorder.tsx)
    */
-  AudioRecorder: React.ComponentType<AudioRecorderProps<StreamChatGenerics>>;
+  AudioRecorder: React.ComponentType<AudioRecorderProps>;
   /**
    * Controls whether the async audio feature is enabled.
    */
@@ -323,7 +308,7 @@ export type InputMessageInputContextValue<
    *
    * Defaults to and accepts same props as: [CommandsButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/commands-button/)
    */
-  CommandsButton: React.ComponentType<CommandsButtonProps<StreamChatGenerics>>;
+  CommandsButton: React.ComponentType<CommandsButtonProps>;
   /**
    * Custom UI component to display the remaining cooldown a user will have to wait before
    * being allowed to send another message. This component is displayed in place of the
@@ -332,12 +317,12 @@ export type InputMessageInputContextValue<
    * **default** [CooldownTimer](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/CooldownTimer.tsx)
    */
   CooldownTimer: React.ComponentType<CooldownTimerProps>;
-  editMessage: StreamChat<StreamChatGenerics>['updateMessage'];
+  editMessage: StreamChat['updateMessage'];
   /**
    * Custom UI component for FileUploadPreview.
    * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/FileUploadPreview.tsx
    */
-  FileUploadPreview: React.ComponentType<FileUploadPreviewProps<StreamChatGenerics>>;
+  FileUploadPreview: React.ComponentType<FileUploadPreviewProps>;
 
   /** When false, CameraSelectorIcon will be hidden */
   hasCameraPicker: boolean;
@@ -352,10 +337,10 @@ export type InputMessageInputContextValue<
    * Custom UI component for ImageUploadPreview.
    * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/ImageUploadPreview.tsx
    */
-  ImageUploadPreview: React.ComponentType<ImageUploadPreviewProps<StreamChatGenerics>>;
-  InputEditingStateHeader: React.ComponentType<InputEditingStateHeaderProps<StreamChatGenerics>>;
-  InputGiphySearch: React.ComponentType<InputGiphySearchProps<StreamChatGenerics>>;
-  InputReplyStateHeader: React.ComponentType<InputReplyStateHeaderProps<StreamChatGenerics>>;
+  ImageUploadPreview: React.ComponentType<ImageUploadPreviewProps>;
+  InputEditingStateHeader: React.ComponentType<InputEditingStateHeaderProps>;
+  InputGiphySearch: React.ComponentType<InputGiphySearchProps>;
+  InputReplyStateHeader: React.ComponentType<InputReplyStateHeaderProps>;
   /** Limit on allowed number of files to attach at a time. */
   maxNumberOfFiles: number;
   /**
@@ -372,10 +357,10 @@ export type InputMessageInputContextValue<
    *
    * Defaults to and accepts same props as: [SendButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/send-button/)
    */
-  SendButton: React.ComponentType<SendButtonProps<StreamChatGenerics>>;
+  SendButton: React.ComponentType<SendButtonProps>;
   sendImageAsync: boolean;
-  sendMessage: (message: Partial<StreamMessage<StreamChatGenerics>>) => Promise<void>;
-  setQuotedMessageState: (message: MessageType<StreamChatGenerics>) => void;
+  sendMessage: (message: Partial<StreamMessage>) => Promise<void>;
+  setQuotedMessageState: (message: LocalMessage) => void;
   /**
    * Custom UI component to render checkbox with text ("Also send to channel") in Thread's input box.
    * When ticked, message will also be sent in parent channel.
@@ -389,7 +374,7 @@ export type InputMessageInputContextValue<
    *
    * Defaults to and accepts same props as: [AudioRecordingButton](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingButton.tsx)
    */
-  StartAudioRecordingButton: React.ComponentType<AudioRecordingButtonProps<StreamChatGenerics>>;
+  StartAudioRecordingButton: React.ComponentType<AudioRecordingButtonProps>;
   StopMessageStreamingButton: React.ComponentType<StopMessageStreamingButtonProps> | null;
   /**
    * Custom UI component to render upload progress indicator on attachment preview.
@@ -408,9 +393,7 @@ export type InputMessageInputContextValue<
   /**
    * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
    */
-  autoCompleteTriggerSettings?: (
-    settings: ACITriggerSettingsParams<StreamChatGenerics>,
-  ) => TriggerSettings<StreamChatGenerics>;
+  autoCompleteTriggerSettings?: (settings: ACITriggerSettingsParams) => TriggerSettings;
   closePollCreationDialog?: () => void;
   /**
    * Compress image with quality (from 0 to 1, where 1 is best quality).
@@ -436,7 +419,7 @@ export type InputMessageInputContextValue<
    */
   doDocUploadRequest?: (
     file: File,
-    channel: ChannelContextValue<StreamChatGenerics>['channel'],
+    channel: ChannelContextValue['channel'],
   ) => Promise<SendFileAPIResponse>;
 
   /**
@@ -448,18 +431,15 @@ export type InputMessageInputContextValue<
    * @overrideType Function
    */
   doImageUploadRequest?: (
-    file: {
-      name?: string;
-      uri?: string;
-    },
-    channel: ChannelContextValue<StreamChatGenerics>['channel'],
+    file: File,
+    channel: ChannelContextValue['channel'],
   ) => Promise<SendFileAPIResponse>;
 
   /**
    * Variable that tracks the editing state.
    * It is defined with message type if the editing state is true, else its undefined.
    */
-  editing?: MessageType<StreamChatGenerics>;
+  editing?: LocalMessage;
   /**
    * Prop to override the default emoji search index in auto complete suggestion list.
    */
@@ -475,9 +455,9 @@ export type InputMessageInputContextValue<
    * Has access to all of [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/messageInputContext/MessageInputContext.tsx)
    */
   Input?: React.ComponentType<
-    Omit<MessageInputProps<StreamChatGenerics>, 'Input'> &
-      InputButtonsProps<StreamChatGenerics> & {
-        getUsers: () => UserResponse<StreamChatGenerics>[];
+    Omit<MessageInputProps, 'Input'> &
+      InputButtonsProps & {
+        getUsers: () => UserResponse[];
       }
   >;
   /**
@@ -495,17 +475,17 @@ export type InputMessageInputContextValue<
    * - openCommandsPicker
    * - toggleAttachmentPicker
    */
-  InputButtons?: React.ComponentType<InputButtonsProps<StreamChatGenerics>>;
+  InputButtons?: React.ComponentType<InputButtonsProps>;
   maxMessageLength?: number;
   /** Object containing filters/sort/options overrides for an @mention user query */
   mentionAllAppUsersEnabled?: boolean;
-  mentionAllAppUsersQuery?: MentionAllAppUsersQuery<StreamChatGenerics>;
+  mentionAllAppUsersQuery?: MentionAllAppUsersQuery;
   /**
    * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
    */
   onChangeText?: (newText: string) => void;
   openPollCreationDialog?: ({ sendMessage }: Pick<LocalMessageInputContext, 'sendMessage'>) => void;
-  quotedMessage?: MessageType<StreamChatGenerics>;
+  quotedMessage?: LocalMessage;
   SendMessageDisallowedIndicator?: React.ComponentType;
   /**
    * ref for input setter function
@@ -518,22 +498,18 @@ export type InputMessageInputContextValue<
   showPollCreationDialog?: boolean;
 };
 
-export type MessageInputContextValue<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = LocalMessageInputContext<StreamChatGenerics> &
-  Omit<InputMessageInputContextValue<StreamChatGenerics>, 'sendMessage'>;
+export type MessageInputContextValue = LocalMessageInputContext &
+  Omit<InputMessageInputContextValue, 'sendMessage'>;
 
 export const MessageInputContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as MessageInputContextValue,
 );
 
-export const MessageInputProvider = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const MessageInputProvider = ({
   children,
   value,
 }: PropsWithChildren<{
-  value: InputMessageInputContextValue<StreamChatGenerics>;
+  value: InputMessageInputContextValue;
 }>) => {
   const {
     closePicker,
@@ -545,8 +521,7 @@ export const MessageInputProvider = <
     setSelectedImages,
     setSelectedPicker,
   } = useAttachmentPickerContext();
-  const { appSettings, client, enableOfflineSupport, isOnline } =
-    useChatContext<StreamChatGenerics>();
+  const { appSettings, client, enableOfflineSupport, isOnline } = useChatContext();
   const { removeMessage } = useMessagesContext();
 
   const getFileUploadConfig = () => {
@@ -568,9 +543,8 @@ export const MessageInputProvider = <
 
   const channelCapabities = useOwnCapabilitiesContext();
 
-  const { channel, giphyEnabled, uploadAbortControllerRef } =
-    useChannelContext<StreamChatGenerics>();
-  const { thread } = useThreadContext<StreamChatGenerics>();
+  const { channel, giphyEnabled, uploadAbortControllerRef } = useChannelContext();
+  const { thread } = useThreadContext();
   const { t } = useTranslationContext();
   const inputBoxRef = useRef<TextInput | null>(null);
   const sending = useRef(false);
@@ -609,8 +583,8 @@ export const MessageInputProvider = <
     setText,
     showMoreOptions,
     text,
-  } = useMessageDetailsForState<StreamChatGenerics>(editing, initialValue);
-  const { endsAt: cooldownEndsAt, start: startCooldown } = useCooldown<StreamChatGenerics>();
+  } = useMessageDetailsForState(editing, initialValue);
+  const { endsAt: cooldownEndsAt, start: startCooldown } = useCooldown();
   const { onChangeText, emojiSearchIndex, autoCompleteTriggerSettings } = value;
 
   const threadId = thread?.id;
@@ -697,11 +671,11 @@ export const MessageInputProvider = <
   const takeAndUploadImage = useStableCallback(async (mediaType?: MediaTypes) => {
     setSelectedPicker(undefined);
     closePicker();
-    const photo = await NativeHandlers.takePhoto({
+    const file = await NativeHandlers.takePhoto({
       compressImageQuality: value.compressImageQuality,
       mediaType,
     });
-    if (photo.askToOpenSettings) {
+    if (file.askToOpenSettings) {
       Alert.alert(
         t('Allow camera access in device settings'),
         t('Device camera is used to take photos or videos.'),
@@ -711,11 +685,12 @@ export const MessageInputProvider = <
         ],
       );
     }
-    if (!photo.cancelled) {
-      if (photo.type.includes('image')) {
-        await uploadNewImage(photo);
+    if (!file.cancelled) {
+      if (file.type.includes('image')) {
+        // We already compressed the image in the native handler, so we can upload it directly.
+        await uploadNewImage(file);
       } else {
-        await uploadNewFile({ ...photo, mimeType: photo.type, type: FileTypes.Video });
+        await uploadNewFile(file);
       }
     }
   });
@@ -750,9 +725,13 @@ export const MessageInputProvider = <
       }
       result.assets.forEach(async (asset) => {
         if (asset.type.includes('image')) {
-          await uploadNewImage(asset);
+          const compressedURI = await compressedImageURI(asset, value.compressImageQuality);
+          await uploadNewImage({
+            ...asset,
+            uri: compressedURI,
+          });
         } else {
-          await uploadNewFile({ ...asset, mimeType: asset.type, type: FileTypes.Video });
+          await uploadNewFile(asset);
         }
       });
     }
@@ -786,7 +765,7 @@ export const MessageInputProvider = <
     }
   }, [closeAttachmentPicker, openAttachmentPicker, selectedPicker]);
 
-  const onSelectItem = useStableCallback((item: UserResponse<StreamChatGenerics>) => {
+  const onSelectItem = useStableCallback((item: UserResponse) => {
     setMentionedUsers((prevMentionedUsers) => [...prevMentionedUsers, item.id]);
   });
 
@@ -809,14 +788,15 @@ export const MessageInputProvider = <
 
     if (!result.cancelled && result.assets) {
       result.assets.forEach(async (asset) => {
-        /**
-         * TODO: The current tight coupling of images to the image
-         * picker does not allow images picked from the file picker
-         * to be rendered in a preview via the uploadNewImage call.
-         * This should be updated alongside allowing image a file
-         * uploads together.
-         */
-        await uploadNewFile(asset);
+        if (asset.type.includes('image')) {
+          const compressedURI = await compressedImageURI(asset, value.compressImageQuality);
+          await uploadNewImage({
+            ...asset,
+            uri: compressedURI,
+          });
+        } else {
+          await uploadNewFile(asset);
+        }
       });
     }
   });
@@ -841,108 +821,102 @@ export const MessageInputProvider = <
     [imageUploads, setImageUploads, setNumberOfUploads],
   );
 
-  const resetInput = useStableCallback(
-    (pendingAttachments: Attachment<StreamChatGenerics>[] = []) => {
-      /**
-       * If the MediaLibrary is available, reset the selected files and images
-       */
-      if (isImageMediaLibraryAvailable()) {
-        setSelectedFiles([]);
-        setSelectedImages([]);
-      }
+  const resetInput = useStableCallback((pendingAttachments: Attachment[] = []) => {
+    /**
+     * If the MediaLibrary is available, reset the selected files and images
+     */
+    if (isImageMediaLibraryAvailable()) {
+      setSelectedFiles([]);
+      setSelectedImages([]);
+    }
 
-      setFileUploads([]);
-      setGiphyActive(false);
-      setShowMoreOptions(true);
-      setImageUploads([]);
-      setMentionedUsers([]);
-      setNumberOfUploads(
-        (prevNumberOfUploads) => prevNumberOfUploads - (pendingAttachments?.length || 0),
-      );
-      setText('');
-      if (value.editing) {
-        value.clearEditingState();
-      }
-    },
-  );
+    setFileUploads([]);
+    setGiphyActive(false);
+    setShowMoreOptions(true);
+    setImageUploads([]);
+    setMentionedUsers([]);
+    setNumberOfUploads(
+      (prevNumberOfUploads) => prevNumberOfUploads - (pendingAttachments?.length || 0),
+    );
+    setText('');
+    if (value.editing) {
+      value.clearEditingState();
+    }
+  });
 
-  const mapImageUploadToAttachment = useStableCallback(
-    (image: ImageUpload): Attachment<StreamChatGenerics> => {
-      const mime_type: string | boolean = lookup(image.file.name as string);
-      const name = image.file.name as string;
+  const mapImageUploadToAttachment = useStableCallback((image: FileUpload): Attachment => {
+    return {
+      fallback: image.file.name,
+      image_url: image.url,
+      mime_type: image.file.type,
+      original_height: image.file.height,
+      original_width: image.file.width,
+      originalImage: image.file,
+      type: FileTypes.Image,
+    };
+  });
+
+  const mapFileUploadToAttachment = useStableCallback((file: FileUpload): Attachment => {
+    if (file.type === FileTypes.Image) {
       return {
-        fallback: name,
-        image_url: image.url,
-        mime_type: mime_type ? mime_type : undefined,
-        original_height: image.height,
-        original_width: image.width,
-        originalImage: image.file,
+        fallback: file.file.name,
+        image_url: file.url,
+        mime_type: file.file.type,
+        original_height: file.file.height,
+        original_width: file.file.width,
+        originalFile: file.file,
         type: FileTypes.Image,
       };
-    },
-  );
-
-  const mapFileUploadToAttachment = useStableCallback(
-    (file: FileUpload): Attachment<StreamChatGenerics> => {
-      if (file.type === FileTypes.Image) {
-        return {
-          fallback: file.file.name,
-          image_url: file.url,
-          mime_type: file.file.mimeType,
-          originalFile: file.file,
-          type: FileTypes.Image,
-        };
-      } else if (file.type === FileTypes.Audio) {
-        return {
-          asset_url: file.url || file.file.uri,
-          duration: file.file.duration,
-          file_size: file.file.size,
-          mime_type: file.file.mimeType,
-          originalFile: file.file,
-          title: file.file.name,
-          type: FileTypes.Audio,
-        };
-      } else if (file.type === FileTypes.Video) {
-        return {
-          asset_url: file.url || file.file.uri,
-          duration: file.file.duration,
-          file_size: file.file.size,
-          mime_type: file.file.mimeType,
-          originalFile: file.file,
-          thumb_url: file.thumb_url,
-          title: file.file.name,
-          type: FileTypes.Video,
-        };
-      } else if (file.type === FileTypes.VoiceRecording) {
-        return {
-          asset_url: file.url || file.file.uri,
-          duration: file.file.duration,
-          file_size: file.file.size,
-          mime_type: file.file.mimeType,
-          originalFile: file.file,
-          title: file.file.name,
-          type: FileTypes.VoiceRecording,
-          waveform_data: file.file.waveform_data,
-        };
-      } else {
-        return {
-          asset_url: file.url || file.file.uri,
-          file_size: file.file.size,
-          mime_type: file.file.mimeType,
-          originalFile: file.file,
-          title: file.file.name,
-          type: FileTypes.File,
-        };
-      }
-    },
-  );
+    } else if (file.type === FileTypes.Audio) {
+      return {
+        asset_url: file.url || file.file.uri,
+        duration: file.file.duration,
+        file_size: file.file.size,
+        mime_type: file.file.type,
+        originalFile: file.file,
+        title: file.file.name,
+        type: FileTypes.Audio,
+      };
+    } else if (file.type === FileTypes.Video) {
+      return {
+        asset_url: file.url || file.file.uri,
+        duration: file.file.duration,
+        file_size: file.file.size,
+        mime_type: file.file.type,
+        originalFile: file.file,
+        thumb_url: file.thumb_url,
+        title: file.file.name,
+        type: FileTypes.Video,
+      };
+    } else if (file.type === FileTypes.VoiceRecording) {
+      return {
+        asset_url: file.url || file.file.uri,
+        duration: file.file.duration,
+        file_size: file.file.size,
+        mime_type: file.file.type,
+        originalFile: file.file,
+        title: file.file.name,
+        type: FileTypes.VoiceRecording,
+        waveform_data: file.file.waveform_data,
+      };
+    } else {
+      return {
+        asset_url: file.url || file.file.uri,
+        file_size: file.file.size,
+        mime_type: file.file.type,
+        originalFile: file.file,
+        title: file.file.name,
+        type: FileTypes.File,
+      };
+    }
+  });
 
   // TODO: Figure out why this is async, as it doesn't await any promise.
   const sendMessage = useStableCallback(
     async ({
       customMessageData,
     }: {
-      customMessageData?: Partial<Message<StreamChatGenerics>>;
+      customMessageData?: Partial<Message>;
     } = {}) => {
       if (sending.current) {
         return;
@@ -969,7 +943,7 @@ export const MessageInputProvider = <
         inputBoxRef.current.clear();
       }
 
-      const attachments = [] as Attachment<StreamChatGenerics>[];
+      const attachments = [] as Attachment[];
       for (const image of imageUploads) {
         if (enableOfflineSupport) {
           if (image.state === FileState.NOT_SUPPORTED) {
@@ -1038,11 +1012,11 @@ export const MessageInputProvider = <
         const updatedMessage = {
           ...message,
           attachments,
-          mentioned_users: mentionedUsers,
+          mentioned_users: mentionedUsers.map((userId) => ({ id: userId })),
           quoted_message: undefined,
           text: prevText,
           ...customMessageData,
-        } as Parameters<StreamChat<StreamChatGenerics>['updateMessage']>[0];
+        } as Parameters<StreamChat['updateMessage']>[0];
 
         // TODO: Remove this line and show an error when submit fails
         value.clearEditingState();
@@ -1062,7 +1036,7 @@ export const MessageInputProvider = <
           /**
            * If the message is bounced by moderation, we firstly remove the message from message list and then send a new message.
            */
-          if (message && isBouncedMessage(message as MessageType<StreamChatGenerics>)) {
+          if (message && isBouncedMessage(message)) {
             await removeMessage(message);
           }
           value.sendMessage({
@@ -1074,7 +1048,7 @@ export const MessageInputProvider = <
             show_in_channel: sendThreadMessageInChannel || undefined,
             text: prevText,
             ...customMessageData,
-          } as unknown as StreamMessage<StreamChatGenerics>);
+          } as unknown as StreamMessage);
 
           value.clearQuotedMessageState();
           sending.current = false;
@@ -1103,7 +1077,7 @@ export const MessageInputProvider = <
           image_url: image.url,
           type: FileTypes.Image,
         },
-      ] as StreamMessage<StreamChatGenerics>['attachments'];
+      ] as StreamMessage['attachments'];
 
       startCooldown();
       try {
@@ -1114,7 +1088,7 @@ export const MessageInputProvider = <
           quoted_message_id: value.quotedMessage ? value.quotedMessage.id : undefined,
           show_in_channel: sendThreadMessageInChannel || undefined,
           text: '',
-        } as unknown as Partial<StreamMessage<StreamChatGenerics>>);
+        } as unknown as Partial<StreamMessage>);
 
         setAsyncIds((prevAsyncIds) => prevAsyncIds.splice(prevAsyncIds.indexOf(id), 1));
         setAsyncUploads((prevAsyncUploads) => {
@@ -1138,7 +1112,7 @@ export const MessageInputProvider = <
 
   const triggerSettings = useMemo(() => {
     try {
-      let triggerSettings: TriggerSettings<StreamChatGenerics> = {};
+      let triggerSettings: TriggerSettings = {};
       if (channel) {
         if (autoCompleteTriggerSettings) {
           triggerSettings = autoCompleteTriggerSettings({
@@ -1148,7 +1122,7 @@ export const MessageInputProvider = <
             onMentionSelectItem: onSelectItem,
           });
         } else {
-          triggerSettings = ACITriggerSettings<StreamChatGenerics>({
+          triggerSettings = ACITriggerSettings({
             channel,
             client,
             emojiSearchIndex,
@@ -1172,7 +1146,7 @@ export const MessageInputProvider = <
           ...value.editing,
           quoted_message: undefined,
           text: giphyEnabled && giphyActive ? `/giphy ${text}` : text,
-        } as Parameters<StreamChat<StreamChatGenerics>['updateMessage']>[0]);
+        } as Parameters<StreamChat['updateMessage']>[0]);
       }
 
       value.clearEditingState();
@@ -1185,7 +1159,7 @@ export const MessageInputProvider = <
   const regexCondition = /File (extension \.\w{2,4}|type \S+) is not supported/;
 
   const getUploadSetStateAction = useStableCallback(
-    <UploadType extends ImageUpload | FileUpload>(
+    <UploadType extends FileUpload>(
       id: string,
       fileState: FileStateValue,
       extraData: Partial<UploadType> = {},
@@ -1245,11 +1219,11 @@ export const MessageInputProvider = <
           client.createAbortControllerForNextRequest(),
         );
         // Compress images selected through file picker when uploading them
-        if (file.mimeType?.includes('image')) {
+        if (file.type?.includes('image')) {
           const compressedUri = await compressedImageURI(file, value.compressImageQuality);
-          response = await channel.sendFile(compressedUri, filename, file.mimeType);
+          response = await channel.sendFile(compressedUri, filename, file.type);
         } else {
-          response = await channel.sendFile(file.uri, filename, file.mimeType);
+          response = await channel.sendFile(file.uri, filename, file.type);
         }
         uploadAbortControllerRef.current.delete(filename);
       }
@@ -1272,7 +1246,7 @@ export const MessageInputProvider = <
     }
   });
 
-  const uploadImage = useStableCallback(async ({ newImage }: { newImage: ImageUpload }) => {
+  const uploadImage = useStableCallback(async ({ newImage }: { newImage: FileUpload }) => {
     const { file, id } = newImage || {};
 
     if (!file) {
@@ -1286,17 +1260,16 @@ export const MessageInputProvider = <
     const filename = escapeRegExp(file.name ?? getFileNameFromPath(uri));
 
     try {
-      const compressedUri = await compressedImageURI(file, value.compressImageQuality);
-      const contentType = lookup(filename) || 'multipart/form-data';
+      const contentType = file.type || 'multipart/form-data';
       if (value.doImageUploadRequest) {
         response = await value.doImageUploadRequest(file, channel);
-      } else if (compressedUri && channel) {
+      } else if (channel) {
         if (value.sendImageAsync) {
           uploadAbortControllerRef.current.set(
             filename,
             client.createAbortControllerForNextRequest(),
           );
-          channel.sendImage(compressedUri, filename, contentType).then(
+          channel.sendImage(file.uri, filename, contentType).then(
             (res) => {
               uploadAbortControllerRef.current.delete(filename);
               if (asyncIds.includes(id)) {
@@ -1310,7 +1283,7 @@ export const MessageInputProvider = <
                   return prevAsyncUploads;
                 });
               } else {
-                const newImageUploads = getUploadSetStateAction<ImageUpload>(
+                const newImageUploads = getUploadSetStateAction<FileUpload>(
                   id,
                   FileState.UPLOADED,
                   {
@@ -1329,13 +1302,13 @@ export const MessageInputProvider = <
             filename,
             client.createAbortControllerForNextRequest(),
           );
-          response = await channel.sendImage(compressedUri, filename, contentType);
+          response = await channel.sendImage(file.uri, filename, contentType);
           uploadAbortControllerRef.current.delete(filename);
         }
       }
 
       if (Object.keys(response).length) {
-        const newImageUploads = getUploadSetStateAction<ImageUpload>(id, FileState.UPLOADED, {
+        const newImageUploads = getUploadSetStateAction<FileUpload>(id, FileState.UPLOADED, {
           height: file.height,
           url: response.file,
           width: file.width,
@@ -1355,7 +1328,12 @@ export const MessageInputProvider = <
     }
   });
 
-  const uploadNewFile = useStableCallback(async (file: File) => {
+  /**
+   * The fileType is optional and is used to override the file type detection.
+   * This is useful for voice recordings, where the file type is not always detected correctly.
+   * This will change if we unify the file uploads to attachments.
+   */
+  const uploadNewFile = useStableCallback(async (file: File, fileType?: FileTypes) => {
     try {
       const id: string = generateRandomId();
       const fileConfig = getFileUploadConfig();
@@ -1377,16 +1355,16 @@ export const MessageInputProvider = <
       }
 
       const fileState = isAllowed ? FileState.UPLOADING : FileState.NOT_SUPPORTED;
-
-      // If file type is explicitly provided while upload we use it, else we derive the file type.
-      const fileType = file.type || file.mimeType?.split('/')[0];
+      const derivedFileType = fileType ?? getFileTypeFromMimeType(file.type);
 
       const newFile: FileUpload = {
         duration: file.duration || 0,
         file,
-        id: file.id || id,
+        id,
+        mime_type: file.type,
         state: fileState,
-        type: fileType,
+        thumb_url: file.thumb_url,
+        type: derivedFileType,
         url: file.uri,
       };
 
@@ -1403,7 +1381,7 @@ export const MessageInputProvider = <
     }
   });
 
-  const uploadNewImage = useStableCallback(async (image: Partial<Asset>) => {
+  const uploadNewImage = useStableCallback(async (image: File) => {
     try {
       const id = generateRandomId();
       const imageUploadConfig = getImageUploadConfig();
@@ -1429,11 +1407,13 @@ export const MessageInputProvider = <
 
       const imageState = isAllowed ? FileState.UPLOADING : FileState.NOT_SUPPORTED;
 
-      const newImage: ImageUpload = {
+      const newImage: FileUpload = {
         file: image,
         height: image.height,
         id,
+        mime_type: image.type,
         state: imageState,
+        type: FileTypes.Image,
         url: image.uri,
         width: image.width,
       };
@@ -1527,12 +1507,8 @@ export const MessageInputProvider = <
   );
 };
 
-export const useMessageInputContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => {
-  const contextValue = useContext(
-    MessageInputContext,
-  ) as unknown as MessageInputContextValue<StreamChatGenerics>;
+export const useMessageInputContext = () => {
+  const contextValue = useContext(MessageInputContext) as unknown as MessageInputContextValue;
 
   if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(

@@ -1,10 +1,4 @@
-import type {
-  ChannelFilters,
-  ChannelSort,
-  ChannelState,
-  ExtendableGenerics,
-  LiteralStringForUnion,
-} from 'stream-chat';
+import type { ChannelFilters, ChannelSort, ChannelState, FileReference } from 'stream-chat';
 
 import type { FileStateValue } from '../utils/utils';
 
@@ -18,63 +12,74 @@ export enum FileTypes {
   VoiceRecording = 'voiceRecording',
 }
 
-export type Asset = {
-  duration: number;
-  height: number;
-  name: string;
-  source: 'camera' | 'picker';
-  type: string;
-  uri: string;
-  width: number;
-  id?: string;
-  mimeType?: string;
-  originalUri?: string;
-  size?: number;
-};
+export type File = FileReference;
 
-export type File = {
-  name: string;
-  duration?: number;
-  id?: string;
-  mimeType?: string;
-  originalUri?: string;
-  size?: number;
-  type?: FileTypes;
-  // The uri should be of type `string`. But is `string|undefined` because the same type is used for the response from Stream's Attachment. This shall be fixed.
-  uri?: string;
-  waveform_data?: number[];
-};
-
+/**
+ * This is nothing but a substitute for the attachment type prior to sending the message.
+ * This will change if we unify the file uploads to attachments.
+ */
 export type FileUpload = {
   file: File;
   id: string;
   state: FileStateValue;
-  duration?: number;
-  paused?: boolean;
-  progress?: number;
-  thumb_url?: string;
-  type?: string;
-  url?: string;
-  waveform_data?: number[];
-};
 
-export type ImageUpload = {
-  file: Partial<Asset>;
-  id: string;
-  state: FileStateValue;
-  height?: number;
+  mime_type?: string;
+
+  type?: FileTypes;
   url?: string;
+
+  thumb_url?: string;
+
+  duration?: number;
+  waveform_data?: number[];
+
+  height?: number;
   width?: number;
 };
 
-export type DefaultAttachmentType = UnknownType & {
+export type AudioUpload = FileUpload & {
+  progress?: number;
+  paused?: boolean;
+};
+
+export interface DefaultAttachmentData {
   duration?: number;
   file_size?: number;
   mime_type?: string;
   originalFile?: File;
-  originalImage?: Partial<Asset>;
+  originalImage?: File;
   waveform_data?: number[];
-};
+}
+
+export interface DefaultUserData {
+  image?: string;
+}
+
+export interface DefaultChannelData {
+  image?: string;
+  name?: string;
+}
+
+export interface DefaultCommandData {
+  flag: unknown;
+  imgur: unknown;
+}
+
+/* eslint-disable @typescript-eslint/no-empty-object-type */
+
+export interface DefaultEventData {}
+
+export interface DefaultMemberData {}
+
+export interface DefaultMessageData {}
+
+export interface DefaultPollOptionData {}
+
+export interface DefaultPollData {}
+
+export interface DefaultReactionData {}
+
+export interface DefaultThreadData {}
 
 export type Reaction = {
   id: string;
@@ -83,41 +88,16 @@ export type Reaction = {
   image?: string;
 };
 
-interface DefaultUserType extends UnknownType {
-  image?: string;
-}
-
-interface DefaultChannelType extends UnknownType {
-  [key: string]: unknown;
-
-  image?: string;
-}
-
-export interface DefaultStreamChatGenerics extends ExtendableGenerics {
-  attachmentType: DefaultAttachmentType;
-  channelType: DefaultChannelType;
-  commandType: LiteralStringForUnion;
-  eventType: UnknownType;
-  memberType: UnknownType;
-  messageType: UnknownType;
-  reactionType: UnknownType;
-  userType: DefaultUserType;
-}
-
-export type ChannelListEventListenerOptions<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
-  filters?: ChannelFilters<StreamChatGenerics>;
-  sort?: ChannelSort<StreamChatGenerics>;
+export type ChannelListEventListenerOptions = {
+  filters?: ChannelFilters;
+  sort?: ChannelSort;
 };
 
 export type UnknownType = Record<string, unknown>;
 
 export type ValueOf<T> = T[keyof T];
 
-export type ChannelUnreadState<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Omit<ValueOf<ChannelState<StreamChatGenerics>['read']>, 'user'>;
+export type ChannelUnreadState = Omit<ValueOf<ChannelState['read']>, 'user'>;
 
 // ASYNC AUDIO EXPO:
 export enum AndroidOutputFormat {

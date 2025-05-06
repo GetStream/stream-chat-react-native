@@ -4,12 +4,9 @@ import type { AppSettingsAPIResponse, StreamChat } from 'stream-chat';
 
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 import * as dbApi from '../../../store/apis';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 
-export const useAppSettings = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  client: StreamChat<StreamChatGenerics>,
+export const useAppSettings = (
+  client: StreamChat,
   isOnline: boolean | null,
   enableOfflineSupport: boolean,
   initialisedDatabase: boolean,

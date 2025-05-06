@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 
-import type { Attachment, UserResponse } from 'stream-chat';
+import type { Attachment, LocalMessage, UserResponse } from 'stream-chat';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
@@ -32,7 +32,7 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 
 import { isVideoPlayerAvailable, NativeHandlers } from '../../native';
-import { DefaultStreamChatGenerics, FileTypes } from '../../types/types';
+import { FileTypes } from '../../types/types';
 import {
   hasOnlyEmojis,
   isBlockedMessage,
@@ -41,11 +41,7 @@ import {
   MessageStatusTypes,
 } from '../../utils/utils';
 import type { Thumbnail } from '../Attachment/utils/buildGallery/types';
-
-import {
-  isMessageWithStylesReadByAndDateSeparator,
-  MessageType,
-} from '../MessageList/hooks/useMessageList';
+import { getReadState } from '../MessageList/utils/getReadState';
 
 export type TouchableEmitter =
   | 'fileAttachment'
@@ -56,15 +52,11 @@ export type TouchableEmitter =
   | 'messageReplies'
   | 'reactionList';
 
-export type TextMentionTouchableHandlerAdditionalInfo<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = { user?: UserResponse<StreamChatGenerics> };
+export type TextMentionTouchableHandlerAdditionalInfo = { user?: UserResponse };
 
-export type TextMentionTouchableHandlerPayload<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+export type TextMentionTouchableHandlerPayload = {
   emitter: 'textMention';
-  additionalInfo?: TextMentionTouchableHandlerAdditionalInfo<StreamChatGenerics>;
+  additionalInfo?: TextMentionTouchableHandlerAdditionalInfo;
 };
 
 export type UrlTouchableHandlerAdditionalInfo = { url?: string };
@@ -74,15 +66,13 @@ export type UrlTouchableHandlerPayload = {
   additionalInfo?: UrlTouchableHandlerAdditionalInfo;
 };
 
-export type FileAttachmentTouchableHandlerAdditionalInfo<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = { attachment?: Attachment<StreamChatGenerics> };
+export type FileAttachmentTouchableHandlerAdditionalInfo = {
+  attachment?: Attachment;
+};
 
-export type FileAttachmentTouchableHandlerPayload<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+export type FileAttachmentTouchableHandlerPayload = {
   emitter: 'fileAttachment';
-  additionalInfo?: FileAttachmentTouchableHandlerAdditionalInfo<StreamChatGenerics>;
+  additionalInfo?: FileAttachmentTouchableHandlerAdditionalInfo;
 };
 
 export type GalleryThumbnailTouchableHandlerAdditionalInfo = { thumbnail?: Thumbnail };
@@ -108,13 +98,11 @@ export type PressableHandlerPayload = {
   | GalleryThumbnailTouchableHandlerPayload
 );
 
-export type MessagePressableHandlerPayload<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = PressableHandlerPayload & {
+export type MessagePressableHandlerPayload = PressableHandlerPayload & {
   /**
    * Set of action handler functions for various message actions. You can use these functions to perform any action when give interaction occurs.
    */
-  actionHandlers?: MessageActionHandlers<StreamChatGenerics>;
+  actionHandlers?: MessageActionHandlers;
   /**
    * Additional message touchable handler info.
    */
@@ -122,12 +110,10 @@ export type MessagePressableHandlerPayload<
   /**
    * Message object, on which interaction occurred.
    */
-  message?: MessageType<StreamChatGenerics>;
+  message?: LocalMessage;
 };
 
-export type MessageActionHandlers<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+export type MessageActionHandlers = {
   copyMessage: () => void;
   deleteMessage: () => void;
   editMessage: () => void;
@@ -140,25 +126,20 @@ export type MessageActionHandlers<
   toggleMuteUser: () => Promise<void>;
   toggleReaction: (reactionType: string) => Promise<void>;
   unpinMessage: () => Promise<void>;
-  threadReply?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
+  threadReply?: (message: LocalMessage) => Promise<void>;
 };
 
-export type MessagePropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'enforceUniqueReaction' | 'members'> &
+export type MessagePropsWithContext = Pick<
+  ChannelContextValue,
+  'channel' | 'enforceUniqueReaction' | 'members'
+> &
   Pick<KeyboardContextValue, 'dismissKeyboard'> &
   Partial<
-    Omit<
-      MessageContextValue<StreamChatGenerics>,
-      'groupStyles' | 'handleReaction' | 'message' | 'isMessageAIGenerated'
-    >
+    Omit<MessageContextValue, 'groupStyles' | 'handleReaction' | 'message' | 'isMessageAIGenerated'>
   > &
+  Pick<MessageContextValue, 'groupStyles' | 'message' | 'isMessageAIGenerated'> &
   Pick<
-    MessageContextValue<StreamChatGenerics>,
-    'groupStyles' | 'message' | 'isMessageAIGenerated'
-  > &
-  Pick<
-    MessagesContextValue<StreamChatGenerics>,
+    MessagesContextValue,
     | 'sendReaction'
     | 'deleteMessage'
     | 'dismissKeyboardOnMessageTouch'
@@ -194,10 +175,10 @@ export type MessagePropsWithContext<
     | 'updateMessage'
     | 'PollContent'
   > &
-  Pick<ThreadContextValue<StreamChatGenerics>, 'openThread'> &
+  Pick<ThreadContextValue, 'openThread'> &
   Pick<TranslationContextValue, 't'> & {
-    chatContext: ChatContextValue<StreamChatGenerics>;
-    messagesContext: MessagesContextValue<StreamChatGenerics>;
+    chatContext: ChatContextValue;
+    messagesContext: MessagesContextValue;
     /**
      * Whether or not users are able to long press messages.
      */
@@ -209,7 +190,7 @@ export type MessagePropsWithContext<
      *
      * @param message A message object to open the thread upon.
      */
-    onThreadSelect?: (message: MessageType<StreamChatGenerics>) => void;
+    onThreadSelect?: (message: LocalMessage) => void;
     showUnreadUnderlay?: boolean;
     style?: StyleProp<ViewStyle>;
   };
@@ -219,11 +200,7 @@ export type MessagePropsWithContext<
  * we memoized and broke it up to prevent new messages from re-rendering
  * each individual Message component.
  */
-const MessageWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessagePropsWithContext<StreamChatGenerics>,
-) => {
+const MessageWithContext = (props: MessagePropsWithContext) => {
   const [messageOverlayVisible, setMessageOverlayVisible] = useState(false);
   const [isErrorInMessage, setIsErrorInMessage] = useState(false);
   const [showMessageReactions, setShowMessageReactions] = useState(true);
@@ -286,6 +263,7 @@ const MessageWithContext = <
     threadList = false,
     updateMessage,
   } = props;
+  const { read } = useChannelContext();
   const isMessageAIGenerated = messagesContext.isMessageAIGenerated;
   const isAIGenerated = useMemo(
     () => isMessageAIGenerated(message),
@@ -300,6 +278,7 @@ const MessageWithContext = <
       screenPadding,
     },
   } = useTheme();
+  const readBy = useMemo(() => getReadState(message, read), [message, read]);
 
   const showMessageOverlay = async (showMessageReactions = false, selectedReaction?: string) => {
     await dismissKeyboard();
@@ -331,7 +310,7 @@ const MessageWithContext = <
     }
   };
 
-  const onPressQuotedMessage = (quotedMessage: MessageType<StreamChatGenerics>) => {
+  const onPressQuotedMessage = (quotedMessage: LocalMessage) => {
     if (!goToMessage) {
       return;
     }
@@ -348,7 +327,7 @@ const MessageWithContext = <
     if (isEditedMessage(message)) {
       setIsEditedMessageOpen((prevState) => !prevState);
     }
-    const quotedMessage = message.quoted_message as MessageType<StreamChatGenerics>;
+    const quotedMessage = message.quoted_message;
     if (error) {
       setIsErrorInMessage(true);
       /**
@@ -424,17 +403,17 @@ const MessageWithContext = <
             return acc;
           },
           {
-            files: [] as Attachment<StreamChatGenerics>[],
-            images: [] as Attachment<StreamChatGenerics>[],
-            other: [] as Attachment<StreamChatGenerics>[],
-            videos: [] as Attachment<StreamChatGenerics>[],
+            files: [] as Attachment[],
+            images: [] as Attachment[],
+            other: [] as Attachment[],
+            videos: [] as Attachment[],
           },
         )
       : {
-          files: [] as Attachment<StreamChatGenerics>[],
-          images: [] as Attachment<StreamChatGenerics>[],
-          other: [] as Attachment<StreamChatGenerics>[],
-          videos: [] as Attachment<StreamChatGenerics>[],
+          files: [] as Attachment[],
+          images: [] as Attachment[],
+          other: [] as Attachment[],
+          videos: [] as Attachment[],
         };
   /**
    * Check if any actions to prevent long press
@@ -598,7 +577,7 @@ const MessageWithContext = <
           unpinMessage,
         });
 
-  const actionHandlers: MessageActionHandlers<StreamChatGenerics> = {
+  const actionHandlers: MessageActionHandlers = {
     copyMessage: handleCopyMessage,
     deleteMessage: handleDeleteMessage,
     editMessage: handleEditMessage,
@@ -712,6 +691,7 @@ const MessageWithContext = <
     otherAttachments: attachments.other,
     preventPress,
     reactions,
+    readBy,
     setIsEditedMessageOpen,
     showAvatar,
     showMessageOverlay,
@@ -767,10 +747,7 @@ const MessageWithContext = <
   );
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: MessagePropsWithContext<StreamChatGenerics>,
-  nextProps: MessagePropsWithContext<StreamChatGenerics>,
-) => {
+const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWithContext) => {
   const {
     chatContext: { mutedUsers: prevMutedUsers },
     goToMessage: prevGoToMessage,
@@ -836,8 +813,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const messageEqual =
     isPrevMessageTypeDeleted === isNextMessageTypeDeleted &&
-    (isMessageWithStylesReadByAndDateSeparator(prevMessage) && prevMessage.readBy) ===
-      (isMessageWithStylesReadByAndDateSeparator(nextMessage) && nextMessage.readBy) &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
@@ -938,12 +913,10 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
 const MemoizedMessage = React.memo(MessageWithContext, areEqual) as typeof MessageWithContext;
 
-export type MessageProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<
-  Omit<MessagePropsWithContext<StreamChatGenerics>, 'groupStyles' | 'handleReaction' | 'message'>
+export type MessageProps = Partial<
+  Omit<MessagePropsWithContext, 'groupStyles' | 'handleReaction' | 'message'>
 > &
-  Pick<MessagePropsWithContext<StreamChatGenerics>, 'groupStyles' | 'message'>;
+  Pick<MessagePropsWithContext, 'groupStyles' | 'message'>;
 
 /**
  * Message - A high level component which implements all the logic required for a message.
@@ -951,20 +924,16 @@ export type MessageProps<
  *
  * @example ./Message.md
  */
-export const Message = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: MessageProps<StreamChatGenerics>,
-) => {
-  const { channel, enforceUniqueReaction, members } = useChannelContext<StreamChatGenerics>();
-  const chatContext = useChatContext<StreamChatGenerics>();
+export const Message = (props: MessageProps) => {
+  const { channel, enforceUniqueReaction, members } = useChannelContext();
+  const chatContext = useChatContext();
   const { dismissKeyboard } = useKeyboardContext();
-  const messagesContext = useMessagesContext<StreamChatGenerics>();
-  const { openThread } = useThreadContext<StreamChatGenerics>();
+  const messagesContext = useMessagesContext();
+  const { openThread } = useThreadContext();
   const { t } = useTranslationContext();
 
   return (
-    <MemoizedMessage<StreamChatGenerics>
+    <MemoizedMessage
       {...messagesContext}
       {...{
         channel,

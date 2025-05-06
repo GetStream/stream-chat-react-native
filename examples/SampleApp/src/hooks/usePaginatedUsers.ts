@@ -4,41 +4,40 @@ import { useAppContext } from '../context/AppContext';
 
 import type { UserFilters, UserResponse } from 'stream-chat';
 
-import type { StreamChatGenerics } from '../types';
 
 export type PaginatedUsers = {
   clearText: () => void;
-  initialResults: UserResponse<StreamChatGenerics>[] | null;
+  initialResults: UserResponse[] | null;
   loading: boolean;
   loadMore: () => void;
   onChangeSearchText: (newText: string) => void;
   onFocusInput: () => void;
   removeUser: (index: number) => void;
   reset: () => void;
-  results: UserResponse<StreamChatGenerics>[];
+  results: UserResponse[];
   searchText: string;
   selectedUserIds: string[];
-  selectedUsers: UserResponse<StreamChatGenerics>[];
+  selectedUsers: UserResponse[];
   setInitialResults: React.Dispatch<
-    React.SetStateAction<UserResponse<StreamChatGenerics>[] | null>
+    React.SetStateAction<UserResponse[] | null>
   >;
-  setResults: React.Dispatch<React.SetStateAction<UserResponse<StreamChatGenerics>[]>>;
+  setResults: React.Dispatch<React.SetStateAction<UserResponse[]>>;
   setSearchText: React.Dispatch<React.SetStateAction<string>>;
-  setSelectedUsers: React.Dispatch<React.SetStateAction<UserResponse<StreamChatGenerics>[]>>;
-  toggleUser: (user: UserResponse<StreamChatGenerics>) => void;
+  setSelectedUsers: React.Dispatch<React.SetStateAction<UserResponse[]>>;
+  toggleUser: (user: UserResponse) => void;
 };
 
 export const usePaginatedUsers = (): PaginatedUsers => {
   const { chatClient } = useAppContext();
 
-  const [initialResults, setInitialResults] = useState<UserResponse<StreamChatGenerics>[] | null>(
+  const [initialResults, setInitialResults] = useState<UserResponse[] | null>(
     null,
   );
   const [loading, setLoading] = useState(true);
-  const [results, setResults] = useState<UserResponse<StreamChatGenerics>[]>([]);
+  const [results, setResults] = useState<UserResponse[]>([]);
   const [searchText, setSearchText] = useState('');
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-  const [selectedUsers, setSelectedUsers] = useState<UserResponse<StreamChatGenerics>[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<UserResponse[]>([]);
 
   const hasMoreResults = useRef(true);
   const offset = useRef(0);
@@ -51,7 +50,7 @@ export const usePaginatedUsers = (): PaginatedUsers => {
     setSelectedUsers([]);
   };
 
-  const addUser = (user: UserResponse<StreamChatGenerics>) => {
+  const addUser = (user: UserResponse) => {
     setSelectedUsers([...selectedUsers, user]);
     setSelectedUserIds((prevSelectedUserIds) => {
       prevSelectedUserIds.push(user.id);
@@ -79,7 +78,7 @@ export const usePaginatedUsers = (): PaginatedUsers => {
     });
   };
 
-  const toggleUser = (user: UserResponse<StreamChatGenerics>) => {
+  const toggleUser = (user: UserResponse) => {
     if (!user.id) {
       return;
     }

@@ -1,7 +1,5 @@
 import { Alert } from 'react-native';
 
-import type { MessageResponse } from 'stream-chat';
-
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
@@ -9,11 +7,8 @@ import type { MessagesContextValue } from '../../../contexts/messagesContext/Mes
 
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { NativeHandlers } from '../../../native';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 
-export const useMessageActionHandlers = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const useMessageActionHandlers = ({
   channel,
   client,
   deleteMessage,
@@ -24,7 +19,7 @@ export const useMessageActionHandlers = <
   setEditingState,
   setQuotedMessageState,
 }: Pick<
-  MessagesContextValue<StreamChatGenerics>,
+  MessagesContextValue,
   | 'sendReaction'
   | 'deleteMessage'
   | 'deleteReaction'
@@ -33,9 +28,9 @@ export const useMessageActionHandlers = <
   | 'setQuotedMessageState'
   | 'supportedReactions'
 > &
-  Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'enforceUniqueReaction'> &
-  Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
-  Pick<MessageContextValue<StreamChatGenerics>, 'message'>) => {
+  Pick<ChannelContextValue, 'channel' | 'enforceUniqueReaction'> &
+  Pick<ChatContextValue, 'client'> &
+  Pick<MessageContextValue, 'message'>) => {
   const { t } = useTranslationContext();
   const handleResendMessage = () => retrySendMessage(message);
 
@@ -65,7 +60,7 @@ export const useMessageActionHandlers = <
         { style: 'cancel', text: t('Cancel') },
         {
           onPress: async () => {
-            await deleteMessage(message as MessageResponse<StreamChatGenerics>);
+            await deleteMessage(message);
           },
           style: 'destructive',
           text: t('Delete'),

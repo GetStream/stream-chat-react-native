@@ -15,13 +15,8 @@ import type {
   SuggestionUser,
 } from '../contexts/suggestionsContext/SuggestionsContext';
 import { Emoji } from '../emoji-data';
-import type { DefaultStreamChatGenerics } from '../types/types';
 
-const getCommands = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  channel: Channel<StreamChatGenerics>,
-) => channel.getConfig()?.commands || [];
+const getCommands = (channel: Channel) => channel.getConfig()?.commands || [];
 
 export type TriggerSettingsOutputType = {
   caretPosition: string;
@@ -29,22 +24,17 @@ export type TriggerSettingsOutputType = {
   text: string;
 };
 
-export type TriggerSettings<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+export type TriggerSettings = {
   '/'?: {
     dataProvider: (
-      query: CommandResponse<StreamChatGenerics>['name'],
+      query: CommandResponse['name'],
       text: string,
-      onReady?: (
-        data: CommandResponse<StreamChatGenerics>[],
-        q: CommandResponse<StreamChatGenerics>['name'],
-      ) => void,
+      onReady?: (data: CommandResponse[], q: CommandResponse['name']) => void,
       options?: {
         limit?: number;
       },
-    ) => SuggestionCommand<StreamChatGenerics>[];
-    output: (entity: CommandResponse<StreamChatGenerics>) => TriggerSettingsOutputType;
+    ) => SuggestionCommand[];
+    output: (entity: CommandResponse) => TriggerSettingsOutputType;
     type: SuggestionComponentType;
   };
   ':'?: {
@@ -57,31 +47,26 @@ export type TriggerSettings<
     type: SuggestionComponentType;
   };
   '@'?: {
-    callback: (item: SuggestionUser<StreamChatGenerics>) => void;
+    callback: (item: SuggestionUser) => void;
     dataProvider: (
-      query: SuggestionUser<StreamChatGenerics>['name'],
+      query: SuggestionUser['name'],
       _: string,
-      onReady?: (
-        data: SuggestionUser<StreamChatGenerics>[],
-        q: SuggestionUser<StreamChatGenerics>['name'],
-      ) => void,
+      onReady?: (data: SuggestionUser[], q: SuggestionUser['name']) => void,
       options?: {
         limit?: number;
         mentionAllAppUsersEnabled?: boolean;
-        mentionAllAppUsersQuery?: MentionAllAppUsersQuery<StreamChatGenerics>;
+        mentionAllAppUsersQuery?: MentionAllAppUsersQuery;
       },
-    ) => SuggestionUser<StreamChatGenerics>[] | Promise<void> | void;
-    output: (entity: SuggestionUser<StreamChatGenerics>) => TriggerSettingsOutputType;
+    ) => SuggestionUser[] | Promise<void> | void;
+    output: (entity: SuggestionUser) => TriggerSettingsOutputType;
     type: SuggestionComponentType;
   };
 };
 
-export type ACITriggerSettingsParams<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
-  channel: Channel<StreamChatGenerics>;
-  client: StreamChat<StreamChatGenerics>;
-  onMentionSelectItem: (item: SuggestionUser<StreamChatGenerics>) => void;
+export type ACITriggerSettingsParams = {
+  channel: Channel;
+  client: StreamChat;
+  onMentionSelectItem: (item: SuggestionUser) => void;
   emojiSearchIndex?: EmojiSearchIndex;
 };
 
@@ -104,14 +89,12 @@ export type Trigger = '/' | '@' | ':';
  * previous call without waiting for a1. So in this case, we want to execute onReady, when trailing
  * end of debounce executes.
  */
-export const ACITriggerSettings = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const ACITriggerSettings = ({
   channel,
   client,
   emojiSearchIndex,
   onMentionSelectItem,
-}: ACITriggerSettingsParams<StreamChatGenerics>): TriggerSettings<StreamChatGenerics> => ({
+}: ACITriggerSettingsParams): TriggerSettings => ({
   '/': {
     dataProvider: (query, text, onReady, options = {}) => {
       try {
@@ -208,7 +191,7 @@ export const ACITriggerSettings = <
           return [];
         }
         if (options?.mentionAllAppUsersEnabled) {
-          return (queryUsersDebounced as DebouncedFunc<QueryUsersFunction<StreamChatGenerics>>)(
+          return (queryUsersDebounced as DebouncedFunc<QueryUsersFunction>)(
             client,
             query,
             (data) => {
@@ -257,7 +240,7 @@ export const ACITriggerSettings = <
           return data;
         }
 
-        return (queryMembersDebounced as DebouncedFunc<QueryMembersFunction<StreamChatGenerics>>)(
+        return (queryMembersDebounced as DebouncedFunc<QueryMembersFunction>)(
           client,
           channel,
           query,

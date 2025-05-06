@@ -4,6 +4,8 @@ import type { SharedValue } from 'react-native-reanimated';
 
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
+import { LocalMessage } from 'stream-chat';
+
 import {
   ImageGalleryContext,
   ImageGalleryContextValue,
@@ -17,8 +19,7 @@ import {
   generateVideoAttachment,
 } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
+
 import { ImageGallery } from '../ImageGallery';
 
 jest.mock('../../../native.ts', () => {
@@ -56,7 +57,7 @@ describe('ImageGallery', () => {
               generateVideoAttachment({ type: 'video' }),
             ],
           }),
-        ] as unknown as MessageType<DefaultStreamChatGenerics>[],
+        ] as unknown as LocalMessage[],
       }),
     );
 
@@ -73,7 +74,7 @@ describe('ImageGallery', () => {
     });
     render(
       getComponent({
-        messages: [message] as unknown as MessageType<DefaultStreamChatGenerics>[],
+        messages: [message] as unknown as LocalMessage[],
       }),
     );
 
@@ -102,7 +103,7 @@ describe('ImageGallery', () => {
           generateMessage({
             attachments: [generateVideoAttachment({ type: 'video' })],
           }),
-        ] as unknown as MessageType<DefaultStreamChatGenerics>[],
+        ] as unknown as LocalMessage[],
       }),
     );
 
@@ -128,7 +129,7 @@ describe('ImageGallery', () => {
 
     render(
       getComponent({
-        messages: [message] as unknown as MessageType<DefaultStreamChatGenerics>[],
+        messages: [message] as unknown as LocalMessage[],
       }),
     );
 
@@ -163,7 +164,7 @@ describe('ImageGallery', () => {
           generateMessage({
             attachments: [generateVideoAttachment({ type: 'video' })],
           }),
-        ] as unknown as MessageType<DefaultStreamChatGenerics>[],
+        ] as unknown as LocalMessage[],
       }),
     );
 
@@ -193,7 +194,7 @@ describe('ImageGallery', () => {
     });
     render(
       getComponent({
-        messages: [message] as unknown as MessageType<DefaultStreamChatGenerics>[],
+        messages: [message] as unknown as LocalMessage[],
       }),
     );
 

@@ -60,10 +60,12 @@ export const ImageGalleryVideoControl = React.memo(
     } = useTheme();
 
     const handlePlayPause = async () => {
+      // Note: Not particularly sure why this was ever added, but
+      // will keep it for now for backwards compatibility.
       if (progress === 1) {
         // For expo CLI
-        if (videoRef.current?.setPositionAsync) {
-          await videoRef.current.setPositionAsync(0);
+        if (videoRef.current?.replay) {
+          await videoRef.current.replay();
         }
       }
       onPlayPause();

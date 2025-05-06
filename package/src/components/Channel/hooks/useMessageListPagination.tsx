@@ -7,7 +7,6 @@ import { useChannelMessageDataState } from './useChannelDataState';
 
 import { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import { useStableCallback } from '../../../hooks';
-import { DefaultStreamChatGenerics } from '../../../types/types';
 import { findInMessagesByDate, findInMessagesById } from '../../../utils/utils';
 
 const defaultDebounceInterval = 500;
@@ -22,13 +21,7 @@ const debounceOptions = {
  *
  * @param channel The channel object for which the message list pagination is being handled.
  */
-export const useMessageListPagination = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
-  channel,
-}: {
-  channel: Channel<StreamChatGenerics>;
-}) => {
+export const useMessageListPagination = ({ channel }: { channel: Channel }) => {
   const {
     copyMessagesStateFromChannel,
     jumpToLatestMessage,
@@ -40,12 +33,12 @@ export const useMessageListPagination = <
     setLoadingMore,
     setLoadingMoreRecent,
     state,
-  } = useChannelMessageDataState<StreamChatGenerics>(channel);
+  } = useChannelMessageDataState(channel);
 
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
   const loadMoreFinished = useRef(
     debounce(
-      (hasMore: boolean, messages: ChannelState<StreamChatGenerics>['messages']) => {
+      (hasMore: boolean, messages: ChannelState['messages']) => {
         loadMoreFinishedFn(hasMore, messages);
       },
       defaultDebounceInterval,
@@ -56,7 +49,7 @@ export const useMessageListPagination = <
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
   const loadMoreRecentFinished = useRef(
     debounce(
-      (hasMore: boolean, newMessages: ChannelState<StreamChatGenerics>['messages']) => {
+      (hasMore: boolean, newMessages: ChannelState['messages']) => {
         loadMoreRecentFinishedFn(hasMore, newMessages);
       },
       defaultDebounceInterval,
@@ -141,7 +134,7 @@ export const useMessageListPagination = <
    *
    * @param messageId If undefined, channel will be loaded at most recent message.
    */
-  const loadChannelAroundMessage: ChannelContextValue<StreamChatGenerics>['loadChannelAroundMessage'] =
+  const loadChannelAroundMessage: ChannelContextValue['loadChannelAroundMessage'] =
     useStableCallback(
       async ({ limit = 25, messageId: messageIdToLoadAround, setTargetedMessage }) => {
         if (!messageIdToLoadAround) {
@@ -173,11 +166,7 @@ export const useMessageListPagination = <
    * Fetch messages around a specific timestamp.
    */
   const fetchMessagesAround = useStableCallback(
-    async <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-      channel: Channel<StreamChatGenerics>,
-      timestamp: string,
-      limit: number,
-    ): Promise<MessageResponse<StreamChatGenerics>[]> => {
+    async (channel: Channel, timestamp: string, limit: number): Promise<MessageResponse[]> => {
       try {
         const { messages } = await channel.query(
           { messages: { created_at_around: timestamp, limit } },
@@ -194,7 +183,7 @@ export const useMessageListPagination = <
   /**
    * Loads channel at first unread message.
    */
-  const loadChannelAtFirstUnreadMessage: ChannelContextValue<StreamChatGenerics>['loadChannelAtFirstUnreadMessage'] =
+  const loadChannelAtFirstUnreadMessage: ChannelContextValue['loadChannelAtFirstUnreadMessage'] =
     useStableCallback(
       async ({ channelUnreadState, limit = 25, setChannelUnreadState, setTargetedMessage }) => {
         try {

@@ -1,6 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { ChannelAvatar } from './ChannelAvatar';
 import type { ChannelPreviewProps } from './ChannelPreview';
@@ -19,7 +18,6 @@ import {
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useViewport } from '../../hooks/useViewport';
-import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   container: {
@@ -44,11 +42,9 @@ const styles = StyleSheet.create({
   title: { fontSize: 14, fontWeight: '700' },
 });
 
-export type ChannelPreviewMessengerPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChannelPreviewProps<StreamChatGenerics>, 'channel'> &
+export type ChannelPreviewMessengerPropsWithContext = Pick<ChannelPreviewProps, 'channel'> &
   Pick<
-    ChannelsContextValue<StreamChatGenerics>,
+    ChannelsContextValue,
     | 'maxUnreadCount'
     | 'onSelect'
     | 'PreviewAvatar'
@@ -83,7 +79,7 @@ export type ChannelPreviewMessengerPropsWithContext<
      *
      * @overrideType object
      */
-    latestMessagePreview: LatestMessagePreview<StreamChatGenerics>;
+    latestMessagePreview: LatestMessagePreview;
     /**
      * Formatter function for date of latest message.
      * @param date Message date
@@ -100,11 +96,7 @@ export type ChannelPreviewMessengerPropsWithContext<
     unread?: number;
   };
 
-const ChannelPreviewMessengerWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: ChannelPreviewMessengerPropsWithContext<StreamChatGenerics>,
-) => {
+const ChannelPreviewMessengerWithContext = (props: ChannelPreviewMessengerPropsWithContext) => {
   const {
     channel,
     formatLatestMessageDate,
@@ -144,6 +136,7 @@ const ChannelPreviewMessengerWithContext = <
         }
       }}
       style={[
+        // { opacity: pressed ? 0.5 : 1 },
         styles.container,
         { backgroundColor: white_snow, borderBottomColor: border },
         container,
@@ -175,18 +168,10 @@ const ChannelPreviewMessengerWithContext = <
   );
 };
 
-export type ChannelPreviewMessengerProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<
-  Omit<
-    ChannelPreviewMessengerPropsWithContext<StreamChatGenerics>,
-    'channel' | 'latestMessagePreview'
-  >
+export type ChannelPreviewMessengerProps = Partial<
+  Omit<ChannelPreviewMessengerPropsWithContext, 'channel' | 'latestMessagePreview'>
 > &
-  Pick<
-    ChannelPreviewMessengerPropsWithContext<StreamChatGenerics>,
-    'channel' | 'latestMessagePreview'
-  >;
+  Pick<ChannelPreviewMessengerPropsWithContext, 'channel' | 'latestMessagePreview'>;
 
 const MemoizedChannelPreviewMessengerWithContext = React.memo(
   ChannelPreviewMessengerWithContext,
@@ -196,11 +181,7 @@ const MemoizedChannelPreviewMessengerWithContext = React.memo(
  * This UI component displays an individual preview item for each channel in a list. It also receives all props
  * from the ChannelPreview component.
  */
-export const ChannelPreviewMessenger = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: ChannelPreviewMessengerProps<StreamChatGenerics>,
-) => {
+export const ChannelPreviewMessenger = (props: ChannelPreviewMessengerProps) => {
   const {
     forceUpdate,
     maxUnreadCount,
@@ -211,7 +192,7 @@ export const ChannelPreviewMessenger = <
     PreviewStatus,
     PreviewTitle,
     PreviewUnreadCount,
-  } = useChannelsContext<StreamChatGenerics>();
+  } = useChannelsContext();
   return (
     <MemoizedChannelPreviewMessengerWithContext
       {...{

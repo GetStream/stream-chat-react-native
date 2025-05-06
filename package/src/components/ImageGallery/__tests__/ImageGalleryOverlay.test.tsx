@@ -7,6 +7,8 @@ import { act } from 'react-test-renderer';
 
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
+import { LocalMessage } from 'stream-chat';
+
 import { Chat } from '../../../components/Chat/Chat';
 import {
   ImageGalleryContext,
@@ -19,8 +21,7 @@ import {
 import { generateImageAttachment } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
+
 import { ImageGalleryOverlay } from '../components/ImageGalleryOverlay';
 
 describe('ImageGalleryOverlay', () => {
@@ -39,7 +40,7 @@ describe('ImageGalleryOverlay', () => {
                 generateMessage({
                   attachments: [generateImageAttachment()],
                 }),
-              ] as unknown as MessageType<DefaultStreamChatGenerics>[],
+              ] as unknown as LocalMessage[],
             } as unknown as ImageGalleryContextValue
           }
         >

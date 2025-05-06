@@ -4,26 +4,19 @@ import { StyleSheet, Text } from 'react-native';
 import type { ChannelPreviewProps } from './ChannelPreview';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   title: { fontSize: 14, fontWeight: '700' },
 });
 
-export type ChannelPreviewTitleProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChannelPreviewProps<StreamChatGenerics>, 'channel'> & {
+export type ChannelPreviewTitleProps = Pick<ChannelPreviewProps, 'channel'> & {
   /**
    * Formatted name for the previewed channel.
    */
   displayName: string;
 };
 
-export const ChannelPreviewTitle = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: ChannelPreviewTitleProps<StreamChatGenerics>,
-) => {
+export const ChannelPreviewTitle = (props: ChannelPreviewTitleProps) => {
   const { displayName } = props;
   const {
     theme: {

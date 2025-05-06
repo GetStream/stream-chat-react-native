@@ -16,7 +16,6 @@ import {
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../../hooks';
 import { useViewport } from '../../../hooks/useViewport';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 const styles = StyleSheet.create({
   absolute: { position: 'absolute' },
@@ -42,13 +41,8 @@ const styles = StyleSheet.create({
   },
 });
 
-type ThreadFooterComponentPropsWithContext<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessagesContextValue<StreamChatGenerics>, 'Message'> &
-  Pick<
-    ThreadContextValue<StreamChatGenerics>,
-    'parentMessagePreventPress' | 'thread' | 'threadInstance'
-  >;
+type ThreadFooterComponentPropsWithContext = Pick<MessagesContextValue, 'Message'> &
+  Pick<ThreadContextValue, 'parentMessagePreventPress' | 'thread' | 'threadInstance'>;
 
 export const InlineLoadingMoreThreadIndicator = () => {
   const { threadLoadingMore } = useThreadContext();
@@ -74,11 +68,7 @@ const selector = (nextValue: ThreadState) =>
     replyCount: nextValue.replyCount,
   }) as const;
 
-const ThreadFooterComponentWithContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: ThreadFooterComponentPropsWithContext<StreamChatGenerics>,
-) => {
+const ThreadFooterComponentWithContext = (props: ThreadFooterComponentPropsWithContext) => {
   const { Message, parentMessagePreventPress, thread, threadInstance } = props;
   const { t } = useTranslationContext();
   const { vw } = useViewport();
@@ -111,6 +101,7 @@ const ThreadFooterComponentWithContext = <
           groupStyles={['single']}
           message={thread}
           preventPress={parentMessagePreventPress}
+          readBy={0}
           threadList
         />
       </View>
@@ -152,9 +143,9 @@ const ThreadFooterComponentWithContext = <
   );
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: ThreadFooterComponentPropsWithContext<StreamChatGenerics>,
-  nextProps: ThreadFooterComponentPropsWithContext<StreamChatGenerics>,
+const areEqual = (
+  prevProps: ThreadFooterComponentPropsWithContext,
+  nextProps: ThreadFooterComponentPropsWithContext,
 ) => {
   const {
     parentMessagePreventPress: prevParentMessagePreventPress,
@@ -206,19 +197,13 @@ const MemoizedThreadFooter = React.memo(
   areEqual,
 ) as typeof ThreadFooterComponentWithContext;
 
-export type ThreadFooterComponentProps<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<Pick<MessagesContextValue<StreamChatGenerics>, 'Message'>> &
-  Partial<Pick<ThreadContextValue<StreamChatGenerics>, 'parentMessagePreventPress' | 'thread'>>;
+export type ThreadFooterComponentProps = Partial<Pick<MessagesContextValue, 'Message'>> &
+  Partial<Pick<ThreadContextValue, 'parentMessagePreventPress' | 'thread'>>;
 
-export const ThreadFooterComponent = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  props: ThreadFooterComponentProps<StreamChatGenerics>,
-) => {
-  const { Message } = useMessagesContext<StreamChatGenerics>();
+export const ThreadFooterComponent = (props: ThreadFooterComponentProps) => {
+  const { Message } = useMessagesContext();
   const { parentMessagePreventPress, thread, threadInstance, threadLoadingMore } =
-    useThreadContext<StreamChatGenerics>();
+    useThreadContext();
 
   return (
     <MemoizedThreadFooter

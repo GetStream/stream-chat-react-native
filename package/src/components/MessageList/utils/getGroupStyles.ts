@@ -1,18 +1,16 @@
+import { LocalMessage } from 'stream-chat';
+
 import type { DateSeparators } from './getDateSeparators';
 
 import type { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { isEditedMessage } from '../../../utils/utils';
-import type { GroupType, MessageType } from '../hooks/useMessageList';
 
-export type GetGroupStylesParams<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+import { isEditedMessage } from '../../../utils/utils';
+import type { GroupType } from '../hooks/useMessageList';
+
+export type GetGroupStylesParams = {
   dateSeparators: DateSeparators;
-  messages:
-    | PaginatedMessageListContextValue<StreamChatGenerics>['messages']
-    | ThreadContextValue<StreamChatGenerics>['threadMessages'];
+  messages: PaginatedMessageListContextValue['messages'] | ThreadContextValue['threadMessages'];
   hideDateSeparators?: boolean;
   maxTimeBetweenGroupedMessages?: number;
   noGroupByUser?: boolean;
@@ -21,13 +19,11 @@ export type GetGroupStylesParams<
 
 export type GroupStyle = '' | 'middle' | 'top' | 'bottom' | 'single';
 
-const getGroupStyle = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
+const getGroupStyle = (
   dateSeparators: DateSeparators,
-  message: MessageType<StreamChatGenerics>,
-  previousMessage: MessageType<StreamChatGenerics>,
-  nextMessage: MessageType<StreamChatGenerics>,
+  message: LocalMessage,
+  previousMessage: LocalMessage,
+  nextMessage: LocalMessage,
   hideDateSeparators?: boolean,
   maxTimeBetweenGroupedMessages?: number,
 ): GroupStyle[] => {
@@ -44,7 +40,7 @@ const getGroupStyle = <
     previousMessage.type === 'error' ||
     userId !== previousMessage?.user?.id ||
     !!isPrevMessageTypeDeleted ||
-    (!hideDateSeparators && dateSeparators[message.id]) ||
+    (!hideDateSeparators && dateSeparators[previousMessage.id]) ||
     isEditedMessage(previousMessage);
 
   const isBottomMessage =
@@ -101,11 +97,7 @@ const getGroupStyle = <
   return groupStyles;
 };
 
-export const getGroupStyles = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  params: GetGroupStylesParams<StreamChatGenerics>,
-) => {
+export const getGroupStyles = (params: GetGroupStylesParams) => {
   const {
     dateSeparators,
     hideDateSeparators,

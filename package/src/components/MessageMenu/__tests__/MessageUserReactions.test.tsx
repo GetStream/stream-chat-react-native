@@ -4,7 +4,7 @@ import { Text } from 'react-native';
 
 import { fireEvent, render } from '@testing-library/react-native';
 
-import { ReactionResponse } from 'stream-chat';
+import { LocalMessage, ReactionResponse } from 'stream-chat';
 
 import {
   MessagesContextValue,
@@ -17,7 +17,6 @@ import {
   TranslationProvider,
 } from '../../../contexts/translationContext/TranslationContext';
 import { generateMessage } from '../../../mock-builders/generator/message';
-import { MessageType } from '../../MessageList/hooks/useMessageList';
 import * as useFetchReactionsModule from '../hooks/useFetchReactions';
 import { MessageUserReactions } from '../MessageUserReactions';
 import { MessageUserReactionsItemProps } from '../MessageUserReactionsItem';
@@ -35,7 +34,7 @@ const defaultProps = {
   message: {
     ...generateMessage(),
     reaction_groups: { like: { count: 1, sum_scores: 1 }, love: { count: 1, sum_scores: 1 } },
-  } as unknown as MessageType,
+  } as unknown as LocalMessage,
   supportedReactions: mockSupportedReactions,
 };
 

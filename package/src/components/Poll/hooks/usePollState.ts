@@ -16,8 +16,6 @@ import { usePollStateStore } from './usePollStateStore';
 
 import { usePollContext } from '../../../contexts';
 
-import { DefaultStreamChatGenerics } from '../../../types/types';
-
 export type UsePollStateSelectorReturnType = {
   allowAnswers: boolean | undefined;
   allowUserSuggestedOptions: boolean | undefined;
@@ -36,19 +34,13 @@ export type UsePollStateSelectorReturnType = {
   votingVisibility: VotingVisibility | undefined;
 };
 
-export type UsePollStateReturnType<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = UsePollStateSelectorReturnType & {
-  addComment: (
-    answerText: string,
-  ) => Promise<APIResponse & CastVoteAPIResponse<StreamChatGenerics>>;
+export type UsePollStateReturnType = UsePollStateSelectorReturnType & {
+  addComment: (answerText: string) => Promise<APIResponse & CastVoteAPIResponse>;
   addOption: (optionText: string) => Promise<void>;
-  endVote: () => Promise<APIResponse & UpdatePollAPIResponse<StreamChatGenerics>>;
+  endVote: () => Promise<APIResponse & UpdatePollAPIResponse>;
 };
 
-const selector = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  nextValue: PollState<StreamChatGenerics>,
-): UsePollStateSelectorReturnType => ({
+const selector = (nextValue: PollState): UsePollStateSelectorReturnType => ({
   allowAnswers: nextValue.allow_answers,
   allowUserSuggestedOptions: nextValue.allow_user_suggested_options,
   answersCount: nextValue.answers_count,

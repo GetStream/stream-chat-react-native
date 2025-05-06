@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { Attachment } from 'stream-chat';
+import type { Attachment, LocalMessage } from 'stream-chat';
 
 import type { ActionHandler } from '../../components/Attachment/Attachment';
 import { ReactionSummary } from '../../components/Message/hooks/useProcessReactions';
@@ -8,19 +8,17 @@ import type {
   MessagePressableHandlerPayload,
   PressableHandlerPayload,
 } from '../../components/Message/Message';
-import type { GroupType, MessageType } from '../../components/MessageList/hooks/useMessageList';
+import type { GroupType } from '../../components/MessageList/hooks/useMessageList';
 import type { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
 import type { MessageContentType } from '../../contexts/messagesContext/MessagesContext';
 import type { DeepPartial } from '../../contexts/themeContext/ThemeContext';
 import type { Theme } from '../../contexts/themeContext/utils/theme';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 export type Alignment = 'right' | 'left';
 
-export type MessageContextValue<
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = {
+export type MessageContextValue = {
   /** Whether or not actions can be performed on message */
   actionsEnabled: boolean;
   /** Position of the message, either 'right' or 'left' */
@@ -30,7 +28,7 @@ export type MessageContextValue<
    */
   dismissOverlay: () => void;
   /** The files attached to a message */
-  files: Attachment<StreamChatGenerics>[];
+  files: Attachment[];
   /**
    * Position of message in group - top, bottom, middle, single.
    *
@@ -44,19 +42,19 @@ export type MessageContextValue<
   /** Whether or not message has reactions */
   hasReactions: boolean;
   /** The images attached to a message */
-  images: Attachment<StreamChatGenerics>[];
+  images: Attachment[];
   /** Boolean that determines if the edited message is pressed. */
   isEditedMessageOpen: boolean;
   /**
    * A factory function that determines whether a message is AI generated or not.
    */
-  isMessageAIGenerated: (message: MessageType<StreamChatGenerics>) => boolean;
+  isMessageAIGenerated: (message: LocalMessage) => boolean;
   /** Whether or not this is the active user's message */
   isMyMessage: boolean;
   /** Whether or not this is the last message in a group of messages */
   lastGroupMessage: boolean;
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
-  message: MessageType<StreamChatGenerics>;
+  message: LocalMessage;
   /** Order to render the message content */
   messageContentOrder: MessageContentType[];
   /**
@@ -87,8 +85,10 @@ export type MessageContextValue<
   onPress: (payload: MessagePressableHandlerPayload) => void;
   onPressIn: ((payload: PressableHandlerPayload) => void) | null;
   /** The images attached to a message */
-  otherAttachments: Attachment<StreamChatGenerics>[];
+  otherAttachments: Attachment[];
   reactions: ReactionSummary[];
+  /** Whether or not the message has been read by the current user */
+  readBy: number | boolean;
   /** React set state function to set the state of `isEditedMessageOpen` */
   setIsEditedMessageOpen: React.Dispatch<React.SetStateAction<boolean>>;
   /**
@@ -101,7 +101,7 @@ export type MessageContextValue<
   /** Whether or not the Message is part of a Thread */
   threadList: boolean;
   /** The videos attached to a message */
-  videos: Attachment<StreamChatGenerics>[];
+  videos: Attachment[];
   goToMessage?: (messageId: string) => void;
   /**
    * Function to handle reaction on message
@@ -119,31 +119,25 @@ export type MessageContextValue<
   preventPress?: boolean;
   /** Whether or not the avatar show show next to Message */
   showAvatar?: boolean;
-} & Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'members'>;
+} & Pick<ChannelContextValue, 'channel' | 'members'>;
 
 export const MessageContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as MessageContextValue,
 );
 
-export const MessageProvider = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const MessageProvider = ({
   children,
   value,
 }: PropsWithChildren<{
-  value?: MessageContextValue<StreamChatGenerics>;
+  value?: MessageContextValue;
 }>) => (
   <MessageContext.Provider value={value as unknown as MessageContextValue}>
     {children}
   </MessageContext.Provider>
 );
 
-export const useMessageContext = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => {
-  const contextValue = useContext(
-    MessageContext,
-  ) as unknown as MessageContextValue<StreamChatGenerics>;
+export const useMessageContext = () => {
+  const contextValue = useContext(MessageContext) as unknown as MessageContextValue;
 
   return contextValue;
 };

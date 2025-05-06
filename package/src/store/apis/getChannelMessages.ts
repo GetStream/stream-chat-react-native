@@ -4,16 +4,13 @@ import { selectMessagesForChannels } from './queries/selectMessagesForChannels';
 
 import { selectReactionsForMessages } from './queries/selectReactionsForMessages';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
 import { isBlockedMessage } from '../../utils/utils';
 import { mapStorableToMessage } from '../mappers/mapStorableToMessage';
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
 import { SqliteClient } from '../SqliteClient';
 import type { TableRow, TableRowJoinedUser } from '../types';
 
-export const getChannelMessages = async <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const getChannelMessages = async ({
   channelIds,
   currentUserId,
 }: {
@@ -53,7 +50,7 @@ export const getChannelMessages = async <
   });
 
   // Populate the messages.
-  const cidVsMessages: Record<string, MessageResponse<StreamChatGenerics>[]> = {};
+  const cidVsMessages: Record<string, MessageResponse[]> = {};
   messageRows.forEach((m) => {
     if (!cidVsMessages[m.cid]) {
       cidVsMessages[m.cid] = [];
@@ -61,7 +58,7 @@ export const getChannelMessages = async <
 
     if (!isBlockedMessage(m)) {
       cidVsMessages[m.cid].push(
-        mapStorableToMessage<StreamChatGenerics>({
+        mapStorableToMessage({
           currentUserId,
           messageRow: m,
           pollRow: messageIdsVsPolls[m.poll_id],

@@ -2,17 +2,14 @@ import type { ReadResponse } from 'stream-chat';
 
 import { mapDateTimeToStorable } from './mapDateTimeToStorable';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { TableRow } from '../types';
 
-export const mapReadToStorable = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const mapReadToStorable = ({
   cid,
   read,
 }: {
   cid: string;
-  read: ReadResponse<StreamChatGenerics>;
+  read: ReadResponse;
 }): TableRow<'reads'> => {
   const { last_read, unread_messages, user } = read;
 
