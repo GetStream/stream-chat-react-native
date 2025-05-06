@@ -1,5 +1,32 @@
 # Change Log
 
+## [7.0.0](https://github.com/GetStream/stream-chat-react-native/compare/v6.7.4...v7.0.0) (2025-05-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* V7 release candidate
+
+* chore: add rc channel
+
+* fix: typo in branch name
+* Release V7
+
+* chore: remove dryRun
+
+* chore: bump stream-chat version to latest rc
+
+* chore: bump stream-chat to latest
+
+### Features
+
+* V7 ([#2999](https://github.com/GetStream/stream-chat-react-native/issues/2999)) ([e2a01e9](https://github.com/GetStream/stream-chat-react-native/commit/e2a01e9375267b97a7b552055edaf4548c9ef551)), closes [#2993](https://github.com/GetStream/stream-chat-react-native/issues/2993) [#3000](https://github.com/GetStream/stream-chat-react-native/issues/3000) [#3005](https://github.com/GetStream/stream-chat-react-native/issues/3005) [#3010](https://github.com/GetStream/stream-chat-react-native/issues/3010) [#3050](https://github.com/GetStream/stream-chat-react-native/issues/3050) [#3061](https://github.com/GetStream/stream-chat-react-native/issues/3061) [#3073](https://github.com/GetStream/stream-chat-react-native/issues/3073) [#3072](https://github.com/GetStream/stream-chat-react-native/issues/3072)
+
+
+### Bug Fixes
+
+* async audio button ui spacing with other buttons ([#3076](https://github.com/GetStream/stream-chat-react-native/issues/3076)) ([07376e8](https://github.com/GetStream/stream-chat-react-native/commit/07376e8bb10d46ec12774e55b2c240c0a701eb3c))
+
 ### [6.7.4](https://github.com/GetStream/stream-chat-react-native/compare/v6.7.3...v6.7.4) (2025-04-30)
 
 
