@@ -1,145 +1,139 @@
 import {
   CommandSuggestion,
   MessageComposer,
-  MessageComposerMiddlewareValueState,
+  MessageComposerMiddlewareState,
+  MessageCompositionMiddleware,
   MessageDraftComposerMiddlewareValueState,
+  MessageDraftCompositionMiddleware,
   MiddlewareHandlerParams,
-  TextComposerMiddlewareParams,
-  UserSuggestion,
+  TextComposerMiddleware,
 } from 'stream-chat';
 
-export const createCommandControlMiddleware = (composer: MessageComposer) => {
+export const createCommandControlMiddleware = (
+  composer: MessageComposer,
+): TextComposerMiddleware<CommandSuggestion> => {
   const commands = composer.channel?.getConfig()?.commands ?? [];
   const triggers = commands.map((command) => `/${command.name} `.toLowerCase());
   return {
-    id: 'stream-io/react-native-sdk/text-composer/command-control',
-    onChange: ({ input, nextHandler }: TextComposerMiddlewareParams<UserSuggestion>) => {
-      const { customDataManager } = composer;
+    handlers: {
+      onChange: ({ next, state }) => {
+        const { customDataManager } = composer;
 
-      if (!input.state.text && customDataManager.customComposerData.command) {
-        customDataManager.setCustomData({ command: null });
-        return nextHandler(input);
-      }
+        if (!state.text && customDataManager.customComposerData.command) {
+          customDataManager.setCustomData({ command: null });
+          return next(state);
+        }
 
-      const inputText = input.state.text.toLowerCase();
+        const inputText = state.text.toLowerCase();
 
-      if (
-        !triggers.some((t) => inputText.startsWith(t)) ||
-        customDataManager.customComposerData.command
-      ) {
-        return nextHandler(input);
-      }
+        if (
+          !triggers.some((t) => inputText.startsWith(t)) ||
+          customDataManager.customComposerData.command
+        ) {
+          return next(state);
+        }
 
-      // Handle the case where the text can be any command and not just giphy
-      const command = triggers.find((t) => inputText.startsWith(t));
-      if (!command) {
-        return nextHandler(input);
-      }
-      const commandName = command?.slice(1, -1);
-      composer.customDataManager.setCustomData({ command: commandName });
-      const newText = input.state.text.slice(command.length);
-      return nextHandler({
-        ...input,
-        state: {
-          ...input.state,
+        // Handle the case where the text can be any command and not just giphy
+        const command = triggers.find((t) => inputText.startsWith(t));
+        if (!command) {
+          return next(state);
+        }
+        const commandName = command?.slice(1, -1);
+        composer.customDataManager.setCustomData({ command: commandName });
+        const newText = state.text.slice(command.length);
+        return next({
+          ...state,
           selection: {
-            end: input.state.selection.end - command.length,
-            start: input.state.selection.start - command.length,
+            end: state.selection.end - command.length,
+            start: state.selection.start - command.length,
           },
           text: newText,
-        },
-      });
-    },
-    onSuggestionItemSelect: ({
-      input,
-      nextHandler,
-      selectedSuggestion,
-    }: TextComposerMiddlewareParams<CommandSuggestion>) => {
-      if (!selectedSuggestion || !commands.some((c) => c.name === selectedSuggestion.name)) {
-        return nextHandler(input);
-      }
+        });
+      },
+      onSuggestionItemSelect: ({ next, state }) => {
+        const { selectedSuggestion } = state.change ?? {};
+        if (!selectedSuggestion || !commands.some((c) => c.name === selectedSuggestion.name)) {
+          return next(state);
+        }
 
-      composer.customDataManager.setCustomData({ command: selectedSuggestion.name });
-      const command = commands.find((t) => t.name === selectedSuggestion.name);
-      const trigger = `/${command?.name} `;
+        composer.customDataManager.setCustomData({ command: selectedSuggestion.name });
+        const command = commands.find((t) => t.name === selectedSuggestion.name);
+        const trigger = `/${command?.name} `;
 
-      if (!trigger) {
-        return nextHandler(input);
-      }
-      const newText = input.state.text.slice(trigger.length + 1);
-      return nextHandler({
-        ...input,
-        state: {
-          ...input.state,
+        if (!trigger) {
+          return next(state);
+        }
+        const newText = state.text.slice(trigger.length + 1);
+        return next({
+          ...state,
           selection: {
-            end: input.state.selection.end - trigger.length,
-            start: input.state.selection.start - trigger.length,
+            end: state.selection.end - trigger.length,
+            start: state.selection.start - trigger.length,
           },
           suggestions: undefined,
           text: newText,
-        },
-        status: 'complete',
-      });
+        });
+      },
     },
+    id: 'stream-io/react-native-sdk/text-composer/command-control',
   };
 };
 
-export const createCommandInjectionMiddleware = (composer: MessageComposer) => ({
-  compose: ({
-    input,
-    nextHandler,
-  }: MiddlewareHandlerParams<MessageComposerMiddlewareValueState>) => {
-    const {
-      custom: { command },
-    } = composer.customDataManager.state.getLatestValue();
-    const { attachments, text } = input.state.localMessage;
-    const injection = command && `/${command}`;
-    if (!command || !injection || text?.startsWith(injection) || attachments?.length) {
-      return nextHandler(input);
-    }
-    const enrichedText = `${injection} ${text}`;
-    return nextHandler({
-      ...input,
-      state: {
-        ...input.state,
+export const createCommandInjectionMiddleware = (
+  composer: MessageComposer,
+): MessageCompositionMiddleware => ({
+  handlers: {
+    compose: ({ state, next }: MiddlewareHandlerParams<MessageComposerMiddlewareState>) => {
+      const {
+        custom: { command },
+      } = composer.customDataManager.state.getLatestValue();
+      const { attachments, text } = state.localMessage;
+      const injection = command && `/${command}`;
+      if (!command || !injection || text?.startsWith(injection) || attachments?.length) {
+        return next(state);
+      }
+      const enrichedText = `${injection} ${text}`;
+      return next({
+        ...state,
         localMessage: {
-          ...input.state.localMessage,
+          ...state.localMessage,
           text: enrichedText,
         },
         message: {
-          ...input.state.message,
+          ...state.message,
           text: enrichedText,
         },
-      },
-    });
+      });
+    },
   },
   id: 'stream-io/react-native-sdk/message-composer-middleware/command-injection',
 });
 
-export const createDraftCommandInjectionMiddleware = (composer: MessageComposer) => ({
-  compose: ({
-    input,
-    nextHandler,
-  }: MiddlewareHandlerParams<MessageDraftComposerMiddlewareValueState>) => {
-    const {
-      custom: { command },
-    } = composer.customDataManager.state.getLatestValue();
-    const text = input.state.draft.text;
-    const injection = command && `/${command}`;
-    if (!command || !injection || text?.startsWith(injection)) {
-      return nextHandler(input);
-    }
-    const enrichedText = `${injection} ${text}`;
-    return nextHandler({
-      ...input,
-      state: {
-        ...input.state,
+export const createDraftCommandInjectionMiddleware = (
+  composer: MessageComposer,
+): MessageDraftCompositionMiddleware => ({
+  handlers: {
+    compose: ({
+      state,
+      next,
+    }: MiddlewareHandlerParams<MessageDraftComposerMiddlewareValueState>) => {
+      const {
+        custom: { command },
+      } = composer.customDataManager.state.getLatestValue();
+      const text = state.draft.text;
+      const injection = command && `/${command}`;
+      if (!command || !injection || text?.startsWith(injection)) {
+        return next(state);
+      }
+      const enrichedText = `${injection} ${text}`;
+      return next({
+        ...state,
         draft: {
-          ...input.state.draft,
+          ...state.draft,
           text: enrichedText,
         },
-      },
-    });
+      });
+    },
   },
   id: 'demo-team/message-composer-middleware/draft-giphy-command-injection',
 });

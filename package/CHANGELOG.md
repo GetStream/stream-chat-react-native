@@ -1,5 +1,43 @@
 # Change Log
 
+## [7.0.0](https://github.com/GetStream/stream-chat-react-native/compare/v6.7.4...v7.0.0) (2025-05-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* V7 release candidate
+
+* chore: add rc channel
+
+* fix: typo in branch name
+* Release V7
+
+* chore: remove dryRun
+
+* chore: bump stream-chat version to latest rc
+
+* chore: bump stream-chat to latest
+
+### Features
+
+* V7 ([#2999](https://github.com/GetStream/stream-chat-react-native/issues/2999)) ([e2a01e9](https://github.com/GetStream/stream-chat-react-native/commit/e2a01e9375267b97a7b552055edaf4548c9ef551)), closes [#2993](https://github.com/GetStream/stream-chat-react-native/issues/2993) [#3000](https://github.com/GetStream/stream-chat-react-native/issues/3000) [#3005](https://github.com/GetStream/stream-chat-react-native/issues/3005) [#3010](https://github.com/GetStream/stream-chat-react-native/issues/3010) [#3050](https://github.com/GetStream/stream-chat-react-native/issues/3050) [#3061](https://github.com/GetStream/stream-chat-react-native/issues/3061) [#3073](https://github.com/GetStream/stream-chat-react-native/issues/3073) [#3072](https://github.com/GetStream/stream-chat-react-native/issues/3072)
+
+
+### Bug Fixes
+
+* async audio button ui spacing with other buttons ([#3076](https://github.com/GetStream/stream-chat-react-native/issues/3076)) ([07376e8](https://github.com/GetStream/stream-chat-react-native/commit/07376e8bb10d46ec12774e55b2c240c0a701eb3c))
+
+### [6.7.4](https://github.com/GetStream/stream-chat-react-native/compare/v6.7.3...v6.7.4) (2025-04-30)
+
+
+### Bug Fixes
+
+* image gallery extra customizations ([#3071](https://github.com/GetStream/stream-chat-react-native/issues/3071)) ([76ca4b1](https://github.com/GetStream/stream-chat-react-native/commit/76ca4b1dcf15cc9cef94faef648593f3021f16d0))
+* keybaord taking full screen issue when the prefer cross-fade transition setting is enabled ([#3072](https://github.com/GetStream/stream-chat-react-native/issues/3072)) ([7199f39](https://github.com/GetStream/stream-chat-react-native/commit/7199f39ad7353f0ef000d6ad4421f721e9b10c70))
+* respect commands config from dashboard ([#3070](https://github.com/GetStream/stream-chat-react-native/issues/3070)) ([816081d](https://github.com/GetStream/stream-chat-react-native/commit/816081d9b991d39ca819b144a9ff8eacb3d662ff))
+* respect the hasCommand channel prop as well ([322b242](https://github.com/GetStream/stream-chat-react-native/commit/322b242fb59c0b28bc6d0d8c5de1baed8205fd3e))
+* thread messages updates ([#3069](https://github.com/GetStream/stream-chat-react-native/issues/3069)) ([9705d90](https://github.com/GetStream/stream-chat-react-native/commit/9705d90fbfbf60f7c0f791795e240dd40cd85eab))
+
 ### [6.7.3](https://github.com/GetStream/stream-chat-react-native/compare/v6.7.2...v6.7.3) (2025-04-22)
 
 
