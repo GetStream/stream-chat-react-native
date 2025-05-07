@@ -20,8 +20,8 @@ export const useIsChannelMuted = (channel: Channel) => {
       const newMuteStatus = channel.muteStatus();
       if (
         newMuteStatus.muted === muted.muted &&
-        newMuteStatus.createdAt?.getTime() === muted.createdAt?.getTime() &&
-        newMuteStatus.expiresAt?.getTime() === muted.expiresAt?.getTime()
+        newMuteStatus.createdAt?.getTime?.() === muted.createdAt?.getTime?.() &&
+        newMuteStatus.expiresAt?.getTime?.() === muted.expiresAt?.getTime?.()
       ) {
         return;
       }

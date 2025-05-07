@@ -319,6 +319,7 @@ export const Generic = () => {
       await act(() => dispatchConnectionChangedEvent(chatClient, false));
       // await waiter();
       await act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
 
       await waitFor(async () => {
         expect(screen.getByTestId('channel-list')).toBeTruthy();
@@ -331,8 +332,10 @@ export const Generic = () => {
 
       renderComponent();
 
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+
       await waitFor(async () => {
-        act(() => dispatchConnectionChangedEvent(chatClient));
         expect(screen.getByTestId('channel-list')).toBeTruthy();
         await expectAllChannelsWithStateToBeInDB(screen.queryAllByLabelText);
       });
@@ -345,8 +348,11 @@ export const Generic = () => {
 
       renderComponent();
 
-      await waitFor(() => {
+      await waitFor(async () => {
         act(() => dispatchConnectionChangedEvent(chatClient));
+        await act(
+          async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true),
+        );
         expect(screen.getByTestId('channel-list')).toBeTruthy();
         expect(screen.getByTestId(emptyChannel.cid)).toBeTruthy();
         expect(chatClient.hydrateActiveChannels).toHaveBeenCalled();
@@ -359,6 +365,7 @@ export const Generic = () => {
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
       const newMessage = generateMessage({
         cid: channels[0].channel.cid,
@@ -378,8 +385,11 @@ export const Generic = () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
       renderComponent();
-      await waitFor(() => {
+      await waitFor(async () => {
         act(() => dispatchConnectionChangedEvent(chatClient));
+        await act(
+          async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true),
+        );
         expect(screen.getByTestId('channel-list')).toBeTruthy();
       });
 
@@ -402,6 +412,7 @@ export const Generic = () => {
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const updatedMessage = { ...channels[0].messages[0] };
@@ -423,6 +434,7 @@ export const Generic = () => {
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
       const removedChannel = channels[getRandomInt(0, channels.length - 1)].channel;
       act(() => dispatchNotificationRemovedFromChannel(chatClient, removedChannel));
@@ -449,6 +461,7 @@ export const Generic = () => {
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
       const removedChannel = channels[getRandomInt(0, channels.length - 1)].channel;
       act(() => dispatchChannelDeletedEvent(chatClient, removedChannel));
@@ -475,6 +488,7 @@ export const Generic = () => {
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
       const hiddenChannel = channels[getRandomInt(0, channels.length - 1)].channel;
       act(() => dispatchChannelHiddenEvent(chatClient, hiddenChannel));
@@ -504,6 +518,7 @@ export const Generic = () => {
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const newChannel = createChannel();
@@ -534,6 +549,7 @@ export const Generic = () => {
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const channelToTruncate = channels[getRandomInt(0, channels.length - 1)].channel;
@@ -557,6 +573,7 @@ export const Generic = () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
@@ -602,6 +619,7 @@ export const Generic = () => {
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
@@ -655,6 +673,7 @@ export const Generic = () => {
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
@@ -692,6 +711,7 @@ export const Generic = () => {
       renderComponent();
 
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
 
@@ -719,6 +739,7 @@ export const Generic = () => {
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
@@ -746,6 +767,7 @@ export const Generic = () => {
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
@@ -772,6 +794,7 @@ export const Generic = () => {
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
@@ -797,6 +820,7 @@ export const Generic = () => {
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
       const targetMember = targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
