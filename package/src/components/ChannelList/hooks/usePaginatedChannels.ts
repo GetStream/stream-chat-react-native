@@ -176,7 +176,6 @@ export const usePaginatedChannels = ({
       'connection.changed',
       async (event) => {
         if (event.online) {
-          console.log('DOES THIS THING HAPPEN ?!?!?!');
           await refreshList();
         }
       },
@@ -186,8 +185,6 @@ export const usePaginatedChannels = ({
     return () => listener?.unsubscribe?.();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterStr, sortStr, channelManager]);
-
-  console.log('ERROR: ', error);
 
   return {
     channelListInitialized,

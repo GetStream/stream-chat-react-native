@@ -222,7 +222,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
       // uninitialized before it's being invoked.
       setInitialisedDatabaseConfig({ initialised: false, userID });
       SqliteClient.initializeDatabase()
-        .then(async (initialised) => {
+        .then(async () => {
           setInitialisedDatabaseConfig({ initialised: true, userID });
           if (client.offlineDb) {
             await client.offlineDb?.syncManager.init();
