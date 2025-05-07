@@ -17,11 +17,25 @@ export const useIsChannelMuted = (channel: Channel) => {
 
   useEffect(() => {
     const handleEvent = () => {
+      const newMuteStatus = channel.muteStatus();
+      if (
+        newMuteStatus.muted === muted.muted &&
+        newMuteStatus.createdAt?.getTime() === muted.createdAt?.getTime() &&
+        newMuteStatus.expiresAt?.getTime() === muted.expiresAt?.getTime()
+      ) {
+        return;
+      }
+
       setMuted(channel.muteStatus());
     };
 
-    client.on('notification.channel_mutes_updated', handleEvent);
-    return () => client.off('notification.channel_mutes_updated', handleEvent);
+    const listeners = [
+      client.on('notification.channel_mutes_updated', handleEvent),
+      client.on('health.check', handleEvent),
+    ];
+    return () => {
+      listeners.forEach((listener) => listener.unsubscribe());
+    };
   }, [channel, client, muted]);
 
   return muted ?? defaultMuteStatus;
