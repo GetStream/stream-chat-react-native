@@ -3,6 +3,7 @@ import { Alert } from 'react-native';
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
+import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
@@ -17,7 +18,6 @@ export const useMessageActionHandlers = ({
   retrySendMessage,
   sendReaction,
   setEditingState,
-  setQuotedMessageState,
 }: Pick<
   MessagesContextValue,
   | 'sendReaction'
@@ -25,7 +25,6 @@ export const useMessageActionHandlers = ({
   | 'deleteReaction'
   | 'retrySendMessage'
   | 'setEditingState'
-  | 'setQuotedMessageState'
   | 'supportedReactions'
 > &
   Pick<ChannelContextValue, 'channel' | 'enforceUniqueReaction'> &
@@ -33,9 +32,10 @@ export const useMessageActionHandlers = ({
   Pick<MessageContextValue, 'message'>) => {
   const { t } = useTranslationContext();
   const handleResendMessage = () => retrySendMessage(message);
+  const messageComposer = useMessageComposer();
 
   const handleQuotedReplyMessage = () => {
-    setQuotedMessageState(message);
+    messageComposer.setQuotedMessage(message);
   };
 
   const isMuted = (client.mutedUsers || []).some(
@@ -106,6 +106,7 @@ export const useMessageActionHandlers = ({
 
   const handleEditMessage = () => {
     setEditingState(message);
+    messageComposer.setQuotedMessage(null);
   };
 
   const handleFlagMessage = () => {

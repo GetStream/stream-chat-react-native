@@ -16,7 +16,12 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import type { CustomDataManagerState, TextComposerState, UserResponse } from 'stream-chat';
+import type {
+  CustomDataManagerState,
+  MessageComposerState,
+  TextComposerState,
+  UserResponse,
+} from 'stream-chat';
 
 import { useAudioController } from './hooks/useAudioController';
 import { useCountdown } from './hooks/useCountdown';
@@ -120,7 +125,6 @@ type MessageInputPropsWithContext = Pick<
     | 'cooldownEndsAt'
     | 'CooldownTimer'
     | 'clearEditingState'
-    | 'clearQuotedMessageState'
     | 'closeAttachmentPicker'
     | 'compressImageQuality'
     | 'editing'
@@ -137,7 +141,6 @@ type MessageInputPropsWithContext = Pick<
     | 'isValidMessage'
     | 'maxNumberOfFiles'
     | 'numberOfUploads'
-    | 'quotedMessage'
     | 'resetInput'
     | 'SendButton'
     | 'sending'
@@ -169,6 +172,10 @@ const textComposerStateSelector = (state: TextComposerState) => ({
 
 const customComposerDataSelector = (state: CustomDataManagerState) => ({
   command: state.custom.command,
+});
+
+const messageComposerStateStoreSelector = (state: MessageComposerState) => ({
+  quotedMessage: state.quotedMessage,
 });
 
 const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
@@ -210,7 +217,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     maxNumberOfFiles,
     members,
     numberOfUploads,
-    quotedMessage,
     removeFile,
     removeImage,
     Reply,
@@ -234,6 +240,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const { customDataManager, textComposer } = messageComposer;
   const { mentionedUsers, text } = useStateStore(textComposer.state, textComposerStateSelector);
   const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
+  const { quotedMessage } = useStateStore(messageComposer.state, messageComposerStateStoreSelector);
 
   const [height, setHeight] = useState(0);
 
@@ -712,7 +719,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
         style={[styles.container, { backgroundColor: white, borderColor: border }, container]}
       >
         {editing && <InputEditingStateHeader />}
-        {quotedMessage && <InputReplyStateHeader />}
+        {quotedMessage && !editing && <InputReplyStateHeader />}
         {recording && (
           <>
             <AudioRecordingLockIndicator
@@ -769,8 +776,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                       isFocused ? focusedInputBoxContainer : null,
                     ]}
                   >
-                    {((typeof editing !== 'boolean' && editing?.quoted_message) ||
-                      quotedMessage) && (
+                    {quotedMessage && (
                       <View style={[styles.replyContainer, replyContainer]}>
                         <Reply />
                       </View>
@@ -899,7 +905,6 @@ const areEqual = (
     isOnline: prevIsOnline,
     isValidMessage: prevIsValidMessage,
     openPollCreationDialog: prevOpenPollCreationDialog,
-    quotedMessage: prevQuotedMessage,
     sending: prevSending,
     showMoreOptions: prevShowMoreOptions,
     showPollCreationDialog: prevShowPollCreationDialog,
@@ -922,7 +927,6 @@ const areEqual = (
     isOnline: nextIsOnline,
     isValidMessage: nextIsValidMessage,
     openPollCreationDialog: nextOpenPollCreationDialog,
-    quotedMessage: nextQuotedMessage,
     sending: nextSending,
     showMoreOptions: nextShowMoreOptions,
     showPollCreationDialog: nextShowPollCreationDialog,
@@ -985,17 +989,6 @@ const areEqual = (
 
   const imageUploadsEqual = prevImageUploads.length === nextImageUploads.length;
   if (!imageUploadsEqual) {
-    return false;
-  }
-
-  const quotedMessageEqual =
-    !!prevQuotedMessage &&
-    !!nextQuotedMessage &&
-    typeof prevQuotedMessage !== 'boolean' &&
-    typeof nextQuotedMessage !== 'boolean'
-      ? prevQuotedMessage.id === nextQuotedMessage.id
-      : !!prevQuotedMessage === !!nextQuotedMessage;
-  if (!quotedMessageEqual) {
     return false;
   }
 
@@ -1088,7 +1081,6 @@ export const MessageInput = (props: MessageInputProps) => {
     AudioRecordingWaveform,
     AutoCompleteSuggestionList,
     clearEditingState,
-    clearQuotedMessageState,
     closeAttachmentPicker,
     closePollCreationDialog,
     compressImageQuality,
@@ -1110,7 +1102,6 @@ export const MessageInput = (props: MessageInputProps) => {
     maxNumberOfFiles,
     numberOfUploads,
     openPollCreationDialog,
-    quotedMessage,
     removeFile,
     removeImage,
     resetInput,
@@ -1163,7 +1154,6 @@ export const MessageInput = (props: MessageInputProps) => {
         AutoCompleteSuggestionList,
         channel,
         clearEditingState,
-        clearQuotedMessageState,
         closeAttachmentPicker,
         closePollCreationDialog,
         CommandInput,
@@ -1187,7 +1177,6 @@ export const MessageInput = (props: MessageInputProps) => {
         members,
         numberOfUploads,
         openPollCreationDialog,
-        quotedMessage,
         removeFile,
         removeImage,
         Reply,

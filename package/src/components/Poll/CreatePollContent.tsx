@@ -17,7 +17,6 @@ import {
   CreatePollContentContextValue,
   CreatePollContentProvider,
   InputMessageInputContextValue,
-  useChatContext,
   useCreatePollContentContext,
   useTheme,
   useTranslationContext,
@@ -210,24 +209,19 @@ export const CreatePoll = ({
   'createPollOptionHeight' | 'closePollCreationDialog' | 'sendMessage'
 > &
   Pick<InputMessageInputContextValue, 'CreatePollContent'>) => {
-  const { client } = useChatContext();
   const messageComposer = useMessageComposer();
   const { pollComposer } = messageComposer;
 
   const createAndSendPoll = useCallback(async () => {
     try {
-      const composition = await pollComposer.compose();
-      if (!composition || !composition.data.id) return;
-
-      const { poll } = await client.createPoll(composition.data);
-
-      await sendMessage({ customMessageData: { poll_id: poll.id } });
+      await messageComposer.createPoll();
+      await sendMessage();
       await pollComposer.initState();
       closePollCreationDialog?.();
     } catch (error) {
       console.log('error', error);
     }
-  }, [pollComposer, client, sendMessage, closePollCreationDialog]);
+  }, [messageComposer, sendMessage, pollComposer, closePollCreationDialog]);
 
   return (
     <CreatePollContentProvider

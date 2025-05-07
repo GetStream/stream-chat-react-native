@@ -22,7 +22,6 @@ export const useCreateInputMessageInputContext = ({
   autoCompleteSuggestionsLimit,
   channelId,
   clearEditingState,
-  clearQuotedMessageState,
   CommandInput,
   CommandsButton,
   compressImageQuality,
@@ -52,13 +51,11 @@ export const useCreateInputMessageInputContext = ({
   numberOfLines,
   onChangeText,
   openPollCreationDialog,
-  quotedMessage,
   SendButton,
   sendImageAsync,
   sendMessage,
   SendMessageDisallowedIndicator,
   setInputRef,
-  setQuotedMessageState,
   showPollCreationDialog,
   ShowThreadMessageInChannelButton,
   StartAudioRecordingButton,
@@ -71,7 +68,6 @@ export const useCreateInputMessageInputContext = ({
   channelId?: string;
 }) => {
   const editingDep = editing ? editing.id : '';
-  const quotedMessageId = quotedMessage ? quotedMessage.id : '';
 
   const inputMessageInputContext: InputMessageInputContextValue = useMemo(
     () => ({
@@ -93,7 +89,6 @@ export const useCreateInputMessageInputContext = ({
       AutoCompleteSuggestionList,
       autoCompleteSuggestionsLimit,
       clearEditingState,
-      clearQuotedMessageState,
       CommandInput,
       CommandsButton,
       compressImageQuality,
@@ -123,13 +118,11 @@ export const useCreateInputMessageInputContext = ({
       numberOfLines,
       onChangeText,
       openPollCreationDialog,
-      quotedMessage,
       SendButton,
       sendImageAsync,
       sendMessage,
       SendMessageDisallowedIndicator,
       setInputRef,
-      setQuotedMessageState,
       showPollCreationDialog,
       ShowThreadMessageInChannelButton,
       StartAudioRecordingButton,
@@ -143,7 +136,6 @@ export const useCreateInputMessageInputContext = ({
       editingDep,
       initialValue,
       maxMessageLength,
-      quotedMessageId,
       CreatePollContent,
       showPollCreationDialog,
     ],

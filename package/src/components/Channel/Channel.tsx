@@ -256,12 +256,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     >
   > &
   Pick<ChatContextValue, 'client' | 'enableOfflineSupport'> &
-  Partial<
-    Omit<
-      InputMessageInputContextValue,
-      'quotedMessage' | 'editing' | 'clearEditingState' | 'clearQuotedMessageState' | 'sendMessage'
-    >
-  > &
+  Partial<Omit<InputMessageInputContextValue, 'editing' | 'clearEditingState' | 'sendMessage'>> &
   Pick<TranslationContextValue, 't'> &
   Partial<
     Pick<PaginatedMessageListContextValue, 'messages' | 'loadingMore' | 'loadingMoreRecent'>
@@ -677,8 +672,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const [editing, setEditing] = useState<LocalMessage | undefined>(undefined);
   const [error, setError] = useState<Error | boolean>(false);
   const [lastRead, setLastRead] = useState<Date | undefined>();
-
-  const [quotedMessage, setQuotedMessage] = useState<LocalMessage | undefined>(undefined);
   const [thread, setThread] = useState<LocalMessage | null>(threadProps || null);
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
@@ -1468,22 +1461,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   );
 
   const setEditingState: MessagesContextValue['setEditingState'] = useStableCallback((message) => {
-    clearQuotedMessageState();
     setEditing(message);
   });
-
-  const setQuotedMessageState: MessagesContextValue['setQuotedMessageState'] = useStableCallback(
-    (messageOrBoolean) => {
-      setQuotedMessage(messageOrBoolean);
-    },
-  );
 
   const clearEditingState: InputMessageInputContextValue['clearEditingState'] = useStableCallback(
     () => setEditing(undefined),
   );
-
-  const clearQuotedMessageState: InputMessageInputContextValue['clearQuotedMessageState'] =
-    useStableCallback(() => setQuotedMessage(undefined));
 
   /**
    * Removes the message from local state
@@ -1785,7 +1768,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     autoCompleteSuggestionsLimit,
     channelId,
     clearEditingState,
-    clearQuotedMessageState,
     CommandInput,
     CommandsButton,
     compressImageQuality,
@@ -1815,13 +1797,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     numberOfLines,
     onChangeText,
     openPollCreationDialog,
-    quotedMessage,
     SendButton,
     sendImageAsync,
     sendMessage,
     SendMessageDisallowedIndicator,
     setInputRef,
-    setQuotedMessageState,
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
     StopMessageStreamingButton,
@@ -1852,7 +1832,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     CardFooter,
     CardHeader,
     channelId,
-    clearQuotedMessageState,
     DateHeader,
     deletedMessagesVisibilityType,
     deleteMessage,
@@ -1939,7 +1918,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     selectReaction,
     sendReaction,
     setEditingState,
-    setQuotedMessageState,
     shouldShowUnreadUnderlay,
     StreamingMessageView,
     supportedReactions,

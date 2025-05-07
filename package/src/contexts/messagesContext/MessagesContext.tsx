@@ -104,10 +104,6 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    */
   Card: React.ComponentType<CardProps>;
   /**
-   * Handler to clear the quoted state of the message.
-   */
-  clearQuotedMessageState: () => void;
-  /**
    * UI component for DateHeader
    * Defaults to: [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)
    **/
@@ -307,7 +303,6 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   ScrollToBottomButton: React.ComponentType<ScrollToBottomButtonProps>;
   sendReaction: (type: string, messageId: string) => Promise<void>;
   setEditingState: (message?: LocalMessage) => void;
-  setQuotedMessageState: (message?: LocalMessage) => void;
   /**
    * UI component for StreamingMessageView. Displays the text of a message with a typewriter animation.
    */
@@ -576,6 +571,7 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * usePollState() and usePollContext() hooks.
    * */
   PollContent?: React.ComponentType<PollContentProps>;
+  quotedMessage?: LocalMessage | null;
   /**
    * UI component for ReactionListTop
    * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionList.tsx)

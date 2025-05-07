@@ -24,7 +24,6 @@ export const useCreateMessageInputContext = ({
   AutoCompleteSuggestionList,
   autoCompleteSuggestionsLimit,
   clearEditingState,
-  clearQuotedMessageState,
   closeAttachmentPicker,
   closePollCreationDialog,
   CommandInput,
@@ -67,7 +66,6 @@ export const useCreateMessageInputContext = ({
   openPollCreationDialog,
   pickAndUploadImageFromNativePicker,
   pickFile,
-  quotedMessage,
   removeFile,
   removeImage,
   resetInput,
@@ -86,7 +84,6 @@ export const useCreateMessageInputContext = ({
   setInputBoxRef,
   setInputRef,
   setNumberOfUploads,
-  setQuotedMessageState,
   setSendThreadMessageInChannel,
   setShowMoreOptions,
   showMoreOptions,
@@ -108,7 +105,6 @@ export const useCreateMessageInputContext = ({
   const fileUploadsValue = fileUploads.map(({ state }) => state).join();
   const imageUploadsValue = imageUploads.map(({ state }) => state).join();
   const asyncUploadsValue = Object.keys(asyncUploads).join();
-  const quotedMessageId = quotedMessage ? quotedMessage.id : '';
   const threadId = thread?.id;
   const asyncIdsLength = asyncIds.length;
 
@@ -134,7 +130,6 @@ export const useCreateMessageInputContext = ({
       AutoCompleteSuggestionList,
       autoCompleteSuggestionsLimit,
       clearEditingState,
-      clearQuotedMessageState,
       closeAttachmentPicker,
       closePollCreationDialog,
       CommandInput,
@@ -177,7 +172,6 @@ export const useCreateMessageInputContext = ({
       openPollCreationDialog,
       pickAndUploadImageFromNativePicker,
       pickFile,
-      quotedMessage,
       removeFile,
       removeImage,
       resetInput,
@@ -196,7 +190,6 @@ export const useCreateMessageInputContext = ({
       setInputBoxRef,
       setInputRef,
       setNumberOfUploads,
-      setQuotedMessageState,
       setSendThreadMessageInChannel,
       setShowMoreOptions,
       showMoreOptions,
@@ -223,7 +216,6 @@ export const useCreateMessageInputContext = ({
       isCommandUIEnabled,
       imageUploadsValue,
       maxMessageLength,
-      quotedMessageId,
       selectedPicker,
       sendThreadMessageInChannel,
       showMoreOptions,

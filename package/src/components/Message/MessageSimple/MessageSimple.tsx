@@ -18,6 +18,7 @@ import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
+import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -72,7 +73,6 @@ export type MessageSimplePropsWithContext = Pick<
 > &
   Pick<
     MessagesContextValue,
-    | 'clearQuotedMessageState'
     | 'enableMessageGroupingByUser'
     | 'enableSwipeToReply'
     | 'myMessageTheme'
@@ -89,7 +89,6 @@ export type MessageSimplePropsWithContext = Pick<
     | 'ReactionListBottom'
     | 'reactionListPosition'
     | 'ReactionListTop'
-    | 'setQuotedMessageState'
   >;
 
 const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
@@ -97,7 +96,6 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
   const { width } = Dimensions.get('screen');
   const {
     alignment,
-    clearQuotedMessageState,
     enableMessageGroupingByUser,
     enableSwipeToReply,
     groupStyles,
@@ -121,7 +119,6 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
     ReactionListBottom,
     reactionListPosition,
     ReactionListTop,
-    setQuotedMessageState,
     showMessageStatus,
   } = props;
 
@@ -154,6 +151,7 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
     isVeryLastMessage,
     messageGroupedSingleOrBottom,
   } = useMessageData({});
+  const messageComposer = useMessageComposer();
 
   const lastMessageInMessageListStyles = [styles.lastMessageContainer, lastMessageContainer];
   const messageGroupedSingleOrBottomStyles = {
@@ -205,9 +203,8 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
   const [isBeingSwiped, setIsBeingSwiped] = useState<boolean>(false);
 
   const onSwipeToReply = useCallback(() => {
-    clearQuotedMessageState();
-    setQuotedMessageState(message);
-  }, [clearQuotedMessageState, message, setQuotedMessageState]);
+    messageComposer.setQuotedMessage(message);
+  }, [messageComposer, message]);
 
   const THRESHOLD = 25;
 
@@ -594,7 +591,6 @@ export const MessageSimple = (props: MessageSimpleProps) => {
     showMessageStatus,
   } = useMessageContext();
   const {
-    clearQuotedMessageState,
     enableMessageGroupingByUser,
     enableSwipeToReply,
     MessageAvatar,
@@ -611,7 +607,6 @@ export const MessageSimple = (props: MessageSimpleProps) => {
     ReactionListBottom,
     reactionListPosition,
     ReactionListTop,
-    setQuotedMessageState,
   } = useMessagesContext();
 
   return (
@@ -619,7 +614,6 @@ export const MessageSimple = (props: MessageSimpleProps) => {
       {...{
         alignment,
         channel,
-        clearQuotedMessageState,
         enableMessageGroupingByUser,
         enableSwipeToReply,
         groupStyles,
@@ -644,7 +638,6 @@ export const MessageSimple = (props: MessageSimpleProps) => {
         ReactionListBottom,
         reactionListPosition,
         ReactionListTop,
-        setQuotedMessageState,
         showMessageStatus,
       }}
       {...props}

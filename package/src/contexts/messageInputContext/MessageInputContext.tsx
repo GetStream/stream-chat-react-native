@@ -293,7 +293,6 @@ export type InputMessageInputContextValue = {
   AutoCompleteSuggestionList: React.ComponentType<AutoCompleteSuggestionListProps>;
 
   clearEditingState: () => void;
-  clearQuotedMessageState: () => void;
   /**
    * Custom UI component for commands button.
    *
@@ -351,7 +350,6 @@ export type InputMessageInputContextValue = {
   SendButton: React.ComponentType<SendButtonProps>;
   sendImageAsync: boolean;
   sendMessage: (message: Partial<StreamMessage>) => Promise<void>;
-  setQuotedMessageState: (message: LocalMessage) => void;
   /**
    * Custom UI component to render checkbox with text ("Also send to channel") in Thread's input box.
    * When ticked, message will also be sent in parent channel.
@@ -468,7 +466,6 @@ export type InputMessageInputContextValue = {
    */
   onChangeText?: (newText: string) => void;
   openPollCreationDialog?: ({ sendMessage }: Pick<LocalMessageInputContext, 'sendMessage'>) => void;
-  quotedMessage?: LocalMessage;
   SendMessageDisallowedIndicator?: React.ComponentType;
   /**
    * ref for input setter function
@@ -966,15 +963,15 @@ export const MessageInputProvider = ({
         }
       }
 
-      // Disallow sending message if its empty.
-      if (!text && attachments.length === 0 && !customMessageData?.poll_id) {
-        sending.current = false;
-        return;
-      }
-
       const composition = await messageComposer.compose();
       if (!composition || !composition.message) return;
       const { localMessage } = composition;
+
+      // Disallow sending message if its empty.
+      if (!localMessage.text && attachments.length === 0 && !localMessage.poll_id) {
+        sending.current = false;
+        return;
+      }
 
       const message = value.editing;
       if (message && message.type !== 'error') {
@@ -1015,20 +1012,23 @@ export const MessageInputProvider = ({
             mentioned_users: localMessage.mentioned_users?.map((user) => user.id),
             /** Parent message id - in case of thread */
             parent_id: thread?.id,
-            quoted_message_id: value.quotedMessage ? value.quotedMessage.id : undefined,
+            poll_id: localMessage.poll_id,
+            quoted_message_id: localMessage.quoted_message_id,
             show_in_channel: sendThreadMessageInChannel || undefined,
             text: localMessage.text,
             ...customMessageData,
           });
 
-          value.clearQuotedMessageState();
+          // TODO: This might not be needed. Think about it.
+          // value.clearQuotedMessageState();
           sending.current = false;
           resetInput(attachments);
         } catch (_error) {
           sending.current = false;
-          if (value.quotedMessage && typeof value.quotedMessage !== 'boolean') {
-            value.setQuotedMessageState(value.quotedMessage);
-          }
+          // TODO: Test if this is really needed?
+          // if (value.quotedMessage && typeof value.quotedMessage !== 'boolean') {
+          //   value.setQuotedMessageState(value.quotedMessage);
+          // }
           console.log('Failed to send message');
         }
       }
@@ -1055,7 +1055,7 @@ export const MessageInputProvider = ({
           attachments,
           mentioned_users: [],
           parent_id: thread?.id,
-          quoted_message_id: value.quotedMessage ? value.quotedMessage.id : undefined,
+          quoted_message_id: messageComposer.quotedMessage?.id || undefined,
           show_in_channel: sendThreadMessageInChannel || undefined,
           text: '',
         } as unknown as Partial<StreamMessage>);
