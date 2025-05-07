@@ -85,4 +85,6 @@ export class OfflineDB extends AbstractOfflineDB {
   resetDB = SqliteClient.resetDB;
 
   executeSqlBatch = SqliteClient.executeSqlBatch;
+
+  initializeDB = SqliteClient.initializeDatabase;
 }

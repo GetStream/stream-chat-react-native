@@ -130,6 +130,7 @@ export class DBSyncManager {
         try {
           const result = await this.client.sync(cids, lastSyncedAtDate.toISOString());
           const queryPromises = result.events.map(
+            // @ts-ignore
             async (event) => await handleEventToSyncDB(event, client),
           );
           const queriesArray = await Promise.all(queryPromises);

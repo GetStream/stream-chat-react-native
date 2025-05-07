@@ -222,9 +222,12 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
       // uninitialized before it's being invoked.
       setInitialisedDatabaseConfig({ initialised: false, userID });
       SqliteClient.initializeDatabase()
-        .then(async () => {
+        .then(async (initialised) => {
           setInitialisedDatabaseConfig({ initialised: true, userID });
-          await client.offlineDb?.syncManager.init();
+          if (client.offlineDb) {
+            await client.offlineDb?.syncManager.init();
+            // client.offlineDb.initialised = initialised;
+          }
         })
         .catch((error) => {
           console.log('Error Initializing DB:', error);
@@ -235,7 +238,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
 
     return () => {
       if (userID && enableOfflineSupport) {
-        SqliteClient.closeDB();
+        // SqliteClient.closeDB();
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

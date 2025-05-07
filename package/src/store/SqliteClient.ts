@@ -177,6 +177,8 @@ export class SqliteClient {
       );
 
       await SqliteClient.executeSqlBatch(q);
+
+      return true;
     } catch (e) {
       console.log('Error initializing DB', e);
       this.logger?.('error', 'Error initializing DB', {
@@ -184,6 +186,8 @@ export class SqliteClient {
         dbname: SqliteClient.dbName,
         error: e,
       });
+
+      return false;
     }
   };
 
