@@ -35,7 +35,6 @@ export type ChannelContextValue = {
    * @overrideType Channel
    */
   channel: Channel;
-
   editing?: LocalMessage;
   /**
    * Custom UI component to display empty state when channel has no messages.

@@ -1,12 +1,17 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSharedValue } from 'react-native-reanimated';
 
-import { CreatePollData, PollOptionData, VotingVisibility } from 'stream-chat';
+import { PollComposerState, VotingVisibility } from 'stream-chat';
 
 import { CreatePollOptions, CurrentOptionPositionsCache, PollModalHeader } from './components';
+
+import { MultipleAnswersField } from './components/MultipleAnswersField';
+import { NameField } from './components/NameField';
+
+import { useCanCreatePoll } from './hooks/useCanCreatePoll';
 
 import {
   CreatePollContentContextValue,
@@ -17,29 +22,35 @@ import {
   useTheme,
   useTranslationContext,
 } from '../../contexts';
+import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
+import { useStateStore } from '../../hooks/useStateStore';
 import { SendPoll } from '../../icons';
 
-export const isMaxNumberOfVotesValid = (maxNumberOfVotes: string) => {
-  const parsedMaxNumberOfVotes = Number(maxNumberOfVotes);
-
-  return (
-    !isNaN(parsedMaxNumberOfVotes) && parsedMaxNumberOfVotes > 1 && parsedMaxNumberOfVotes <= 10
-  );
-};
+const pollComposerStateSelector = (state: PollComposerState) => ({
+  allow_answers: state.data.allow_answers,
+  allow_user_suggested_options: state.data.allow_user_suggested_options,
+  enforce_unique_vote: state.data.enforce_unique_vote,
+  max_votes_allowed: state.data.max_votes_allowed,
+  name: state.data.name,
+  options: state.data.options,
+  voting_visibility: state.data.voting_visibility,
+});
 
 export const CreatePollContent = () => {
   const { t } = useTranslationContext();
-  const [pollTitle, setPollTitle] = useState('');
-  const [pollOptions, setPollOptions] = useState<PollOptionData[]>([{ text: '' }]);
-  const [multipleAnswersAllowed, setMultipleAnswersAllowed] = useState(false);
-  const [maxVotesPerPerson, setMaxVotesPerPerson] = useState('');
-  const [maxVotesPerPersonEnabled, setMaxVotesPerPersonEnabled] = useState(false);
-  const [isAnonymous, setIsAnonymous] = useState(false);
-  const [optionSuggestionsAllowed, setOptionSuggestionsAllowed] = useState(false);
-  const [commentsAllowed, setCommentsAllowed] = useState(false);
-  const [duplicates, setDuplicates] = useState<string[]>([]);
+  // const [pollOptions, setPollOptions] = useState<PollOptionData[]>([{ text: '' }]);
 
-  const { closePollCreationDialog, createAndSendPoll } = useCreatePollContentContext();
+  const [duplicates, setDuplicates] = useState<string[]>([]);
+  const messageComposer = useMessageComposer();
+  const canCreatePoll = useCanCreatePoll();
+  const { pollComposer } = messageComposer;
+  const { allow_answers, allow_user_suggested_options, options, voting_visibility } = useStateStore(
+    pollComposer.state,
+    pollComposerStateSelector,
+  );
+
+  const { createPollOptionHeight, closePollCreationDialog, createAndSendPoll } =
+    useCreatePollContentContext();
 
   // positions and index lookup map
   // TODO: Please rethink the structure of this, bidirectional data flow is not great
@@ -50,15 +61,12 @@ export const CreatePollContent = () => {
 
   const {
     theme: {
-      colors: { accent_error, bg_user, black, white },
+      colors: { bg_user, black, white },
       poll: {
         createContent: {
           addComment,
           anonymousPoll,
           headerContainer,
-          maxVotes,
-          multipleAnswers,
-          name,
           scrollView,
           sendButton,
           suggestOption,
@@ -68,9 +76,28 @@ export const CreatePollContent = () => {
   } = useTheme();
 
   useEffect(() => {
+    if (!createPollOptionHeight) return;
+    const newIndex = options.length;
+    currentOptionPositions.value = {
+      inverseIndexCache: {
+        ...currentOptionPositions.value.inverseIndexCache,
+        [newIndex]: newIndex,
+      },
+      positionCache: {
+        ...currentOptionPositions.value.positionCache,
+        [newIndex]: {
+          updatedIndex: newIndex,
+          updatedTop: newIndex * createPollOptionHeight,
+        },
+      },
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [createPollOptionHeight, options.length]);
+
+  useEffect(() => {
     const seenTexts = new Set<string>();
     const duplicateTexts = new Set<string>();
-    for (const option of pollOptions) {
+    for (const option of options) {
       const { text } = option;
       if (seenTexts.has(text)) {
         duplicateTexts.add(text);
@@ -81,50 +108,41 @@ export const CreatePollContent = () => {
     }
 
     setDuplicates(Array.from(duplicateTexts));
-  }, [pollOptions]);
-
-  const isPollValid =
-    pollTitle &&
-    pollTitle?.length > 0 &&
-    duplicates.length === 0 &&
-    ((maxVotesPerPersonEnabled && isMaxNumberOfVotesValid(maxVotesPerPerson)) ||
-      !maxVotesPerPersonEnabled);
+  }, [options]);
 
   return (
     <>
       <View style={[styles.headerContainer, { backgroundColor: white }, headerContainer]}>
-        <PollModalHeader onPress={() => closePollCreationDialog?.()} title={t('Create Poll')} />
-        <Pressable
-          disabled={!isPollValid}
+        <PollModalHeader
           onPress={() => {
-            const currentPollOptions = Object.assign({}, pollOptions);
+            pollComposer.initState();
+            closePollCreationDialog?.();
+          }}
+          title={t('Create Poll')}
+        />
+        <Pressable
+          disabled={!canCreatePoll}
+          onPress={async () => {
+            const currentPollOptions = Object.assign({}, options);
             const reorderedPollOptions = [];
 
-            for (let i = 0; i < pollOptions.length; i++) {
+            for (let i = 0; i < options.length; i++) {
               const currentOption =
                 currentPollOptions[currentOptionPositions.value.inverseIndexCache[i]];
               if (currentOption.text.length > 0) {
                 reorderedPollOptions.push(currentOption);
               }
             }
-
-            createAndSendPoll({
-              allow_answers: commentsAllowed,
-              allow_user_suggested_options: optionSuggestionsAllowed,
-              enforce_unique_vote: !multipleAnswersAllowed,
-              name: pollTitle,
+            await pollComposer.updateFields({
               options: reorderedPollOptions,
-              voting_visibility: isAnonymous ? VotingVisibility.anonymous : VotingVisibility.public,
-              ...(isMaxNumberOfVotesValid(maxVotesPerPerson) && maxVotesPerPersonEnabled
-                ? { max_votes_allowed: Number(maxVotesPerPerson) }
-                : {}),
             });
+            await createAndSendPoll();
           }}
           style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }, styles.sendButton, sendButton]}
         >
           <SendPoll
             height={24}
-            pathFill={isPollValid ? '#005DFF' : '#B4BBBA'}
+            pathFill={canCreatePoll ? '#005DFF' : '#B4BBBA'}
             viewBox='0 0 24 24'
             width={24}
           />
@@ -134,81 +152,26 @@ export const CreatePollContent = () => {
         contentContainerStyle={{ paddingBottom: 70 }}
         style={[styles.scrollView, { backgroundColor: white }, scrollView]}
       >
-        <Text style={[styles.text, { color: black }, name.title]}>{t<string>('Questions')}</Text>
-        <TextInput
-          onChangeText={setPollTitle}
-          placeholder={t('Ask a question')}
-          style={[
-            styles.textInputWrapper,
-            styles.text,
-            { backgroundColor: bg_user, color: black },
-            name.input,
-          ]}
-          value={pollTitle}
-        />
+        <NameField />
         <CreatePollOptions
           currentOptionPositions={currentOptionPositions}
           duplicates={duplicates}
-          pollOptions={pollOptions}
-          setPollOptions={setPollOptions}
         />
-        <View
-          style={[
-            styles.multipleAnswersWrapper,
-            { backgroundColor: bg_user },
-            multipleAnswers.wrapper,
-          ]}
-        >
-          <View style={[styles.multipleAnswersRow, multipleAnswers.row]}>
-            <Text style={[styles.text, { color: black }, multipleAnswers.title]}>
-              {t<string>('Multiple answers')}
-            </Text>
-            <Switch
-              onValueChange={() => {
-                if (multipleAnswersAllowed) {
-                  setMaxVotesPerPersonEnabled(false);
-                }
-                setMultipleAnswersAllowed(!multipleAnswersAllowed);
-              }}
-              value={multipleAnswersAllowed}
-            />
-          </View>
-          {multipleAnswersAllowed ? (
-            <View style={[styles.maxVotesWrapper, maxVotes.wrapper]}>
-              {maxVotesPerPersonEnabled && !isMaxNumberOfVotesValid(maxVotesPerPerson) ? (
-                <Text
-                  style={[
-                    styles.maxVotesValidationText,
-                    { color: accent_error },
-                    maxVotes.validationText,
-                  ]}
-                >
-                  {t<string>('Type a number from 2 to 10')}
-                </Text>
-              ) : null}
-              <View style={{ flexDirection: 'row' }}>
-                <TextInput
-                  inputMode='numeric'
-                  onChangeText={setMaxVotesPerPerson}
-                  placeholder={t('Maximum votes per person')}
-                  style={[styles.maxVotesInput, { color: black }, maxVotes.input]}
-                  value={maxVotesPerPerson}
-                />
-                <Switch
-                  onValueChange={() => setMaxVotesPerPersonEnabled(!maxVotesPerPersonEnabled)}
-                  value={maxVotesPerPersonEnabled}
-                />
-              </View>
-            </View>
-          ) : null}
-        </View>
+        <MultipleAnswersField />
         <View
           style={[styles.textInputWrapper, { backgroundColor: bg_user }, anonymousPoll.wrapper]}
         >
           <Text style={[styles.text, { color: black }, anonymousPoll.title]}>
             {t<string>('Anonymous poll')}
           </Text>
-          <Switch onValueChange={() => setIsAnonymous(!isAnonymous)} value={isAnonymous} />
+          <Switch
+            onValueChange={(value) =>
+              pollComposer.updateFields({
+                voting_visibility: value ? VotingVisibility.anonymous : VotingVisibility.public,
+              })
+            }
+            value={voting_visibility === VotingVisibility.anonymous}
+          />
         </View>
         <View
           style={[styles.textInputWrapper, { backgroundColor: bg_user }, suggestOption.wrapper]}
@@ -217,8 +180,10 @@ export const CreatePollContent = () => {
             {t<string>('Suggest an option')}
           </Text>
           <Switch
-            onValueChange={() => setOptionSuggestionsAllowed(!optionSuggestionsAllowed)}
-            value={optionSuggestionsAllowed}
+            onValueChange={(value) =>
+              pollComposer.updateFields({ allow_user_suggested_options: value })
+            }
+            value={allow_user_suggested_options}
           />
         </View>
         <View style={[styles.textInputWrapper, { backgroundColor: bg_user }, addComment.wrapper]}>
@@ -226,8 +191,8 @@ export const CreatePollContent = () => {
             {t<string>('Add a comment')}
           </Text>
           <Switch
-            onValueChange={() => setCommentsAllowed(!commentsAllowed)}
-            value={commentsAllowed}
+            onValueChange={(value) => pollComposer.updateFields({ allow_answers: value })}
+            value={allow_answers}
           />
         </View>
       </ScrollView>
@@ -238,7 +203,7 @@ export const CreatePollContent = () => {
 export const CreatePoll = ({
   closePollCreationDialog,
   CreatePollContent: CreatePollContentOverride,
-  createPollOptionHeight,
+  createPollOptionHeight = 71,
   sendMessage,
 }: Pick<
   CreatePollContentContextValue,
@@ -246,15 +211,23 @@ export const CreatePoll = ({
 > &
   Pick<InputMessageInputContextValue, 'CreatePollContent'>) => {
   const { client } = useChatContext();
+  const messageComposer = useMessageComposer();
+  const { pollComposer } = messageComposer;
 
-  const createAndSendPoll = useCallback(
-    async (pollData: CreatePollData) => {
-      const poll = await client.polls.createPoll(pollData);
+  const createAndSendPoll = useCallback(async () => {
+    try {
+      const composition = await pollComposer.compose();
+      if (!composition || !composition.data.id) return;
+
+      const { poll } = await client.createPoll(composition.data);
+
       await sendMessage({ customMessageData: { poll_id: poll.id } });
+      await pollComposer.initState();
       closePollCreationDialog?.();
-    },
-    [client, sendMessage, closePollCreationDialog],
-  );
+    } catch (error) {
+      console.log('error', error);
+    }
+  }, [pollComposer, client, sendMessage, closePollCreationDialog]);
 
   return (
     <CreatePollContentProvider
@@ -267,28 +240,6 @@ export const CreatePoll = ({
 
 const styles = StyleSheet.create({
   headerContainer: { flexDirection: 'row', justifyContent: 'space-between' },
-  maxVotesInput: { flex: 1, fontSize: 16 },
-  maxVotesValidationText: {
-    fontSize: 12,
-    left: 16,
-    position: 'absolute',
-    top: 0,
-  },
-  maxVotesWrapper: {
-    alignItems: 'flex-start',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 18,
-  },
-  multipleAnswersRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 18,
-  },
-  multipleAnswersWrapper: { borderRadius: 12, marginTop: 16 },
   scrollView: { flex: 1, padding: 16 },
   sendButton: { paddingHorizontal: 16, paddingVertical: 18 },
   text: { fontSize: 16 },
