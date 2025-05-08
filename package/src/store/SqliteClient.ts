@@ -165,6 +165,7 @@ export class SqliteClient {
         await SqliteClient.dropTables();
         await SqliteClient.updateUserPragmaVersion(SqliteClient.dbVersion);
       }
+
       SqliteClient.logger?.('info', 'create tables if not exists', {
         tables: Object.keys(tables),
       });

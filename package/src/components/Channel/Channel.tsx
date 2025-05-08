@@ -1037,14 +1037,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     syncingChannelRef.current = true;
     setError(false);
 
-    if (channelMessagesState?.messages) {
-      await channel?.watch({
-        messages: {
-          limit: channelMessagesState.messages.length + 30,
-        },
-      });
-    }
-
     const parseMessage = (message: LocalMessage) =>
       ({
         ...message,
@@ -1054,6 +1046,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }) as unknown as MessageResponse;
 
     try {
+      if (channelMessagesState?.messages) {
+        await channel?.watch({
+          messages: {
+            limit: channelMessagesState.messages.length + 30,
+          },
+        });
+      }
+
       if (!thread) {
         copyChannelState();
 

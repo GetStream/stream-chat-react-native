@@ -365,7 +365,7 @@ export const OptimisticUpdates = () => {
         expect(pendingTasksRows.length).toBe(2);
       });
 
-      const deleteMessageSpy = jest.spyOn(chatClient, 'deleteMessage').mockImplementation();
+      const deleteMessageSpy = jest.spyOn(chatClient, '_deleteMessage').mockImplementation();
       const sendReactionSpy = jest.spyOn(channel, '_sendReaction').mockImplementation();
 
       act(() => dispatchConnectionChangedEvent(chatClient, true));

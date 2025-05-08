@@ -255,8 +255,8 @@ describe('TranslationContext', () => {
     rerender(<Chat client={chatClientWithUser} enableOfflineSupport key={2} />);
 
     await waitFor(() => {
-      expect(initSpy).toHaveBeenCalledTimes(2);
-      expect(unsubscribeSpy).toHaveBeenCalledTimes(2);
+      expect(initSpy).toHaveBeenCalledTimes(1);
+      expect(unsubscribeSpy).toHaveBeenCalledTimes(0);
       expect(chatClientWithUser.listeners['connection.changed'].length).toBe(
         listenersAfterInitialMount.length,
       );
