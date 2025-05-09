@@ -31,7 +31,10 @@ export const upsertChannels = async ({
   for (const channel of channels) {
     queries.push(createUpsertQuery('channels', mapChannelDataToStorable(channel.channel)));
 
-    const { members, messages, read } = channel;
+    const { members, membership, messages, read } = channel;
+    if (membership) {
+      members.push(membership);
+    }
     queries = queries.concat(
       await upsertMembers({
         cid: channel.channel.cid,
