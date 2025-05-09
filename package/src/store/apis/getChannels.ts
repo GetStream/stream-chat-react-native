@@ -25,14 +25,16 @@ export const getChannels = async ({
   currentUserId: string;
 }): Promise<Omit<ChannelAPIResponse, 'duration'>[]> => {
   SqliteClient.logger?.('info', 'getChannels', { channelIds, currentUserId });
-  const channels = await selectChannels({ channelIds });
 
-  const cidVsMembers = await getMembers({ channelIds });
-  const cidVsReads = await getReads({ channelIds });
-  const cidVsMessages = await getChannelMessages({
-    channelIds,
-    currentUserId,
-  });
+  const [channels, cidVsMembers, cidVsReads, cidVsMessages] = await Promise.all([
+    selectChannels({ channelIds }),
+    getMembers({ channelIds }),
+    getReads({ channelIds }),
+    getChannelMessages({
+      channelIds,
+      currentUserId,
+    }),
+  ]);
 
   // Enrich the channels with state
   return channels.map((c) => ({
