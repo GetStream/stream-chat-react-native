@@ -1,6 +1,4 @@
-import type { MessageLabel, Role } from 'stream-chat';
-
-import type { PendingTaskTypes } from './types';
+import type { MessageLabel, PendingTaskTypes, Role } from 'stream-chat';
 
 import type { ValueOf } from '../types/types';
 

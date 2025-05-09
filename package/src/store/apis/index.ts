@@ -30,3 +30,4 @@ export * from './deletePendingTask';
 export * from './getPendingTasks';
 export * from './softDeleteMessage';
 export * from './channelExists';
+export * from './dropPendingTasks';

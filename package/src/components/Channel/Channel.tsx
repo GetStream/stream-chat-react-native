@@ -1503,7 +1503,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const removeMessage: MessagesContextValue['removeMessage'] = useStableCallback(
     async (message) => {
       if (channel) {
-        // TODO: See if it's easy to refactor this to be able to accept DB queries
         channel.state.removeMessage(message);
         copyMessagesStateFromChannel(channel);
 
@@ -1513,13 +1512,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
 
       if (client.offlineDb) {
-        // FIXME: Batch these maybe ?.
-        await Promise.all([
-          client.offlineDb.dropPendingTasks({ messageId: message.id }),
-          client.offlineDb.hardDeleteMessage({
-            id: message.id,
-          }),
-        ]);
+        await client.offlineDb.handleRemoveMessage({ messageId: message.id });
       }
     },
   );

@@ -163,14 +163,6 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
    */
   const { connectionRecovering, isOnline } = useIsOnline(client, closeConnectionOnBackground);
 
-  // const [initialisedDatabaseConfig, setInitialisedDatabaseConfig] = useState<{
-  //   initialised: boolean;
-  //   userID?: string;
-  // }>({
-  //   initialised: false,
-  //   userID: client.userID,
-  // });
-
   const { initialized: offlineDbInitialized, userId: offlineDbUserId } =
     useStateStore(client.offlineDb?.state, selector) ?? {};
 
