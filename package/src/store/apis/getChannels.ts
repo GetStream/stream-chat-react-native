@@ -38,6 +38,7 @@ export const getChannels = async ({
   return channels.map((c) => ({
     ...mapStorableToChannel(c),
     members: cidVsMembers[c.cid] || [],
+    membership: (cidVsMembers[c.cid] || []).find((member) => member.user_id === currentUserId),
     messages: cidVsMessages[c.cid] || [],
     pinned_messages: [],
     read: cidVsReads[c.cid] || [],
