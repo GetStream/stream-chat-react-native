@@ -17,10 +17,7 @@ import { AutoCompleteInput } from '../../AutoCompleteInput/AutoCompleteInput';
 import { useCountdown } from '../hooks/useCountdown';
 
 export type CommandInputProps = Partial<
-  Pick<
-    MessageInputContextValue,
-    'additionalTextInputProps' | 'cooldownEndsAt' | 'setShowMoreOptions'
-  >
+  Pick<MessageInputContextValue, 'additionalTextInputProps' | 'cooldownEndsAt'>
 > & {
   disabled: boolean;
 };
@@ -32,16 +29,13 @@ const customComposerDataSelector = (state: CustomDataManagerState) => ({
 export const CommandInput = ({
   cooldownEndsAt: propCooldownEndsAt,
   disabled,
-  setShowMoreOptions: propSetShowMoreOptions,
 }: CommandInputProps) => {
-  const { cooldownEndsAt: contextCooldownEndsAt, setShowMoreOptions: contextSetShowMoreOptions } =
-    useMessageInputContext();
+  const { cooldownEndsAt: contextCooldownEndsAt } = useMessageInputContext();
   const messageComposer = useMessageComposer();
   const { customDataManager } = messageComposer;
   const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
 
   const cooldownEndsAt = propCooldownEndsAt || contextCooldownEndsAt;
-  const setShowMoreOptions = propSetShowMoreOptions || contextSetShowMoreOptions;
 
   const { seconds: cooldownRemainingSeconds } = useCountdown(cooldownEndsAt);
 
@@ -57,8 +51,6 @@ export const CommandInput = ({
 
   const onCloseHandler = () => {
     customDataManager.setCustomData({ command: null });
-    // TODO: Rethink setShowMoreOptions
-    setShowMoreOptions(true);
   };
 
   if (!command) {

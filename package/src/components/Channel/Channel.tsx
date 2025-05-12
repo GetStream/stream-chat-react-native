@@ -436,7 +436,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      * Boolean flag to enable/disable marking the channel as read on mount
      */
     markReadOnMount?: boolean;
-    maxMessageLength?: number;
     /**
      * Load the channel at a specified message instead of the most recent message.
      */
@@ -567,7 +566,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     loadingMoreRecent: loadingMoreRecentProp,
     markdownRules,
     markReadOnMount = true,
-    maxMessageLength: maxMessageLengthProp,
     maxNumberOfFiles = 10,
     maxTimeBetweenGroupedMessages,
     mentionAllAppUsersEnabled = false,
@@ -616,8 +614,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     NetworkDownIndicator = NetworkDownIndicatorDefault,
     // TODO: Think about this one
     newMessageStateUpdateThrottleInterval = defaultThrottleInterval,
-    numberOfLines = 5,
-    onChangeText,
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
@@ -1789,13 +1785,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     InputButtons,
     InputEditingStateHeader,
     InputReplyStateHeader,
-    maxMessageLength: maxMessageLengthProp ?? clientChannelConfig?.max_message_length ?? undefined,
     maxNumberOfFiles,
     mentionAllAppUsersEnabled,
     mentionAllAppUsersQuery,
     MoreOptionsButton,
-    numberOfLines,
-    onChangeText,
     openPollCreationDialog,
     SendButton,
     sendImageAsync,

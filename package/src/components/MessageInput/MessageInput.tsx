@@ -145,8 +145,6 @@ type MessageInputPropsWithContext = Pick<
     | 'SendButton'
     | 'sending'
     | 'sendMessageAsync'
-    | 'setShowMoreOptions'
-    | 'showMoreOptions'
     | 'ShowThreadMessageInChannelButton'
     | 'StartAudioRecordingButton'
     | 'removeFile'
@@ -906,7 +904,6 @@ const areEqual = (
     isValidMessage: prevIsValidMessage,
     openPollCreationDialog: prevOpenPollCreationDialog,
     sending: prevSending,
-    showMoreOptions: prevShowMoreOptions,
     showPollCreationDialog: prevShowPollCreationDialog,
     t: prevT,
     thread: prevThread,
@@ -928,7 +925,6 @@ const areEqual = (
     isValidMessage: nextIsValidMessage,
     openPollCreationDialog: nextOpenPollCreationDialog,
     sending: nextSending,
-    showMoreOptions: nextShowMoreOptions,
     showPollCreationDialog: nextShowPollCreationDialog,
     t: nextT,
     thread: nextThread,
@@ -994,11 +990,6 @@ const areEqual = (
 
   const sendingEqual = prevSending.current === nextSending.current;
   if (!sendingEqual) {
-    return false;
-  }
-
-  const showMoreOptionsEqual = prevShowMoreOptions === nextShowMoreOptions;
-  if (!showMoreOptionsEqual) {
     return false;
   }
 
@@ -1110,8 +1101,6 @@ export const MessageInput = (props: MessageInputProps) => {
     sendMessage,
     sendMessageAsync,
     SendMessageDisallowedIndicator,
-    setShowMoreOptions,
-    showMoreOptions,
     showPollCreationDialog,
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
@@ -1186,8 +1175,6 @@ export const MessageInput = (props: MessageInputProps) => {
         sendMessage,
         sendMessageAsync,
         SendMessageDisallowedIndicator,
-        setShowMoreOptions,
-        showMoreOptions,
         showPollCreationDialog,
         ShowThreadMessageInChannelButton,
         StartAudioRecordingButton,

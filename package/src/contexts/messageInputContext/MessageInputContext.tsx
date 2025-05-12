@@ -208,8 +208,6 @@ export type LocalMessageInputContext = {
   setInputBoxRef: LegacyRef<TextInput> | undefined;
   setNumberOfUploads: React.Dispatch<React.SetStateAction<number>>;
   setSendThreadMessageInChannel: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowMoreOptions: React.Dispatch<React.SetStateAction<boolean>>;
-  showMoreOptions: boolean;
   /**
    * Function for taking a photo and uploading it
    */
@@ -340,8 +338,6 @@ export type InputMessageInputContextValue = {
    */
   MoreOptionsButton: React.ComponentType<MoreOptionsButtonProps>;
 
-  /** Limit on the number of lines in the text input before scrolling */
-  numberOfLines: number;
   /**
    * Custom UI component for send button.
    *
@@ -457,14 +453,9 @@ export type InputMessageInputContextValue = {
    * - toggleAttachmentPicker
    */
   InputButtons?: React.ComponentType<InputButtonsProps>;
-  maxMessageLength?: number;
   /** Object containing filters/sort/options overrides for an @mention user query */
   mentionAllAppUsersEnabled?: boolean;
   mentionAllAppUsersQuery?: MentionAllAppUsersQuery;
-  /**
-   * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
-   */
-  onChangeText?: (newText: string) => void;
   openPollCreationDialog?: ({ sendMessage }: Pick<LocalMessageInputContext, 'sendMessage'>) => void;
   SendMessageDisallowedIndicator?: React.ComponentType;
   /**
@@ -562,8 +553,6 @@ export const MessageInputProvider = ({
     setFileUploads,
     setImageUploads,
     setNumberOfUploads,
-    setShowMoreOptions,
-    showMoreOptions,
   } = useMessageDetailsForState(editing, initialValue);
   const { endsAt: cooldownEndsAt, start: startCooldown } = useCooldown();
 
@@ -1409,8 +1398,6 @@ export const MessageInputProvider = ({
     setInputBoxRef,
     setNumberOfUploads,
     setSendThreadMessageInChannel,
-    setShowMoreOptions,
-    showMoreOptions,
     takeAndUploadImage,
     thread,
     toggleAttachmentPicker,

@@ -106,7 +106,6 @@ export const useMessageActionHandlers = ({
 
   const handleEditMessage = () => {
     setEditingState(message);
-    messageComposer.setQuotedMessage(null);
   };
 
   const handleFlagMessage = () => {
