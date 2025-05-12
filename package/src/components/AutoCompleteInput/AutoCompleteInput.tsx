@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   I18nManager,
   NativeSyntheticEvent,
@@ -57,11 +57,16 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
     t,
     ...rest
   } = props;
+  const [localText, setLocalText] = useState('');
   const [textHeight, setTextHeight] = useState(0);
   const messageComposer = useMessageComposer();
   const { customDataManager, textComposer } = messageComposer;
   const { text } = useStateStore(textComposer.state, textComposerStateSelector);
   const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
+
+  useEffect(() => {
+    setLocalText(text);
+  }, [text]);
 
   const handleSelectionChange = useCallback(
     (e: NativeSyntheticEvent<TextInputSelectionChangeEventData>) => {
@@ -78,7 +83,8 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
         return;
       }
 
-      textComposer.setText(newText);
+      setLocalText(newText);
+
       /**
        * This is a hack to ensure the selection is up to date. We should find a better way to do this.
        * The onSelectChange event is triggered after the onChangeText event currently which is why the selection value is stale.
@@ -134,7 +140,7 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
         inputBox,
       ]}
       testID='auto-complete-text-input'
-      value={text}
+      value={localText}
       {...rest}
     />
   );

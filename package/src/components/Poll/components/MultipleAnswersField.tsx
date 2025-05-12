@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 
 import { PollComposerState } from 'stream-chat';
@@ -6,14 +6,6 @@ import { PollComposerState } from 'stream-chat';
 import { useTheme, useTranslationContext } from '../../../contexts';
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStateStore } from '../../../hooks/useStateStore';
-
-export const isMaxNumberOfVotesValid = (maxNumberOfVotes: string) => {
-  const parsedMaxNumberOfVotes = Number(maxNumberOfVotes);
-
-  return (
-    !isNaN(parsedMaxNumberOfVotes) && parsedMaxNumberOfVotes > 1 && parsedMaxNumberOfVotes <= 10
-  );
-};
 
 const pollComposerStateSelector = (state: PollComposerState) => ({
   enforce_unique_vote: state.data.enforce_unique_vote,
@@ -25,7 +17,7 @@ export const MultipleAnswersField = () => {
   const { t } = useTranslationContext();
   const messageComposer = useMessageComposer();
   const { pollComposer } = messageComposer;
-  const { enforce_unique_vote, max_votes_allowed } = useStateStore(
+  const { enforce_unique_vote, error, max_votes_allowed } = useStateStore(
     pollComposer.state,
     pollComposerStateSelector,
   );
@@ -39,6 +31,24 @@ export const MultipleAnswersField = () => {
     },
   } = useTheme();
 
+  const onEnforceUniqueVoteHandler = useCallback(
+    async (value: boolean) => {
+      await pollComposer.updateFields({ enforce_unique_vote: !value });
+    },
+    [pollComposer],
+  );
+
+  const onChangeTextHandler = useCallback(
+    async (newText: string) => {
+      await pollComposer.updateFields({ max_votes_allowed: newText });
+    },
+    [pollComposer],
+  );
+
+  const onBlurHandler = useCallback(async () => {
+    await pollComposer.handleFieldBlur('max_votes_allowed');
+  }, [pollComposer]);
+
   return (
     <View
       style={[styles.multipleAnswersWrapper, { backgroundColor: bg_user }, multipleAnswers.wrapper]}
@@ -47,16 +57,11 @@ export const MultipleAnswersField = () => {
         <Text style={[styles.text, { color: black }, multipleAnswers.title]}>
           {t<string>('Multiple answers')}
         </Text>
-        <Switch
-          onValueChange={(value) => {
-            pollComposer.updateFields({ enforce_unique_vote: !value });
-          }}
-          value={!enforce_unique_vote}
-        />
+        <Switch onValueChange={onEnforceUniqueVoteHandler} value={!enforce_unique_vote} />
       </View>
       {!enforce_unique_vote ? (
         <View style={[styles.maxVotesWrapper, maxVotes.wrapper]}>
-          {max_votes_allowed && !isMaxNumberOfVotesValid(max_votes_allowed) ? (
+          {max_votes_allowed && error ? (
             <Text
               style={[
                 styles.maxVotesValidationText,
@@ -64,17 +69,16 @@ export const MultipleAnswersField = () => {
                 maxVotes.validationText,
               ]}
             >
-              {t<string>('Type a number from 2 to 10')}
+              {error}
             </Text>
           ) : null}
           <View style={{ flexDirection: 'row' }}>
             <TextInput
               inputMode='numeric'
-              onBlur={() => pollComposer.handleFieldBlur('max_votes_allowed')}
-              onChangeText={(text) => pollComposer.updateFields({ max_votes_allowed: text })}
+              onBlur={onBlurHandler}
+              onChangeText={onChangeTextHandler}
               placeholder={t('Maximum votes per person')}
               style={[styles.maxVotesInput, { color: black }, maxVotes.input]}
-              value={max_votes_allowed}
             />
           </View>
         </View>

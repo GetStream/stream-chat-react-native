@@ -3,6 +3,7 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
+  runOnJS,
   SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
@@ -12,55 +13,64 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import { PollComposerState, PollOptionData } from 'stream-chat';
+import { PollComposerOption, PollComposerState } from 'stream-chat';
 
 import { useCreatePollContentContext, useTheme, useTranslationContext } from '../../../contexts';
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStateStore } from '../../../hooks/useStateStore';
 import { DragHandle } from '../../../icons';
+import { POLL_OPTION_HEIGHT } from '../CreatePollContent';
 
 export type CurrentOptionPositionsCache = {
   inverseIndexCache: {
-    [key: number]: number;
+    [key: number]: string;
   };
   positionCache: {
-    [key: number]: {
+    [key: string]: {
       updatedIndex: number;
       updatedTop: number;
     };
   };
 };
 
-const OPTION_HEIGHT = 71;
+export type CreatePollOptionType = {
+  boundaries: { maxBound: number; minBound: number };
+  currentOptionPositions: SharedValue<CurrentOptionPositionsCache>;
+  draggedItemId: SharedValue<string | null>;
+  error?: string;
+  handleChangeText: (newText: string, index: number) => void;
+  handleBlur: () => void;
+  index: number;
+  isDragging: SharedValue<1 | 0>;
+  option: PollComposerOption;
+  /**
+   *
+   * @param newOrder The inverse index object of the new options position after re-ordering.
+   * @returns
+   */
+  onNewOrder: (newOrder: CurrentOptionPositionsCache['inverseIndexCache']) => void;
+};
 
 export const CreatePollOption = ({
   boundaries,
   currentOptionPositions,
   draggedItemId,
+  error,
+  handleBlur,
   handleChangeText,
-  hasDuplicate,
   index,
   isDragging,
   option,
-}: {
-  boundaries: { maxBound: number; minBound: number };
-  currentOptionPositions: SharedValue<CurrentOptionPositionsCache>;
-  draggedItemId: SharedValue<number | null>;
-  handleChangeText: (newText: string, index: number) => void;
-  hasDuplicate: boolean;
-  index: number;
-  isDragging: SharedValue<1 | 0>;
-  option: PollOptionData;
-}) => {
-  const { t } = useTranslationContext();
-  const { createPollOptionHeight = OPTION_HEIGHT } = useCreatePollContentContext();
+  onNewOrder,
+}: CreatePollOptionType) => {
+  const { createPollOptionHeight = POLL_OPTION_HEIGHT } = useCreatePollContentContext();
   const top = useSharedValue(index * createPollOptionHeight);
   const isDraggingDerived = useDerivedValue(() => isDragging.value);
 
   const draggedItemIdDerived = useDerivedValue(() => draggedItemId.value);
 
   const isCurrentDraggingItem = useDerivedValue(
-    () => isDraggingDerived.value && draggedItemIdDerived.value === index,
+    () => isDraggingDerived.value && draggedItemIdDerived.value === option.id,
   );
 
   const animatedStyles = useAnimatedStyle(() => ({
@@ -84,11 +94,11 @@ export const CreatePollOption = ({
   const currentIndex = useSharedValue<number | null>(null);
 
   useAnimatedReaction(
-    () => currentOptionPositionsDerived.value.positionCache[index].updatedIndex,
+    () => currentOptionPositionsDerived.value.positionCache[option.id].updatedIndex,
     (currentValue, previousValue) => {
       if (currentValue !== previousValue) {
         top.value = withSpring(
-          currentOptionPositionsDerived.value.positionCache[index].updatedIndex *
+          currentOptionPositionsDerived.value.positionCache[option.id].updatedIndex *
             createPollOptionHeight,
         );
       }
@@ -101,10 +111,11 @@ export const CreatePollOption = ({
       isDragging.value = withSpring(1);
 
       // keep track of dragged item
-      draggedItemId.value = index;
+      draggedItemId.value = option.id;
 
       // store dragged item id for future swap
-      currentIndex.value = currentOptionPositionsDerived.value.positionCache[index].updatedIndex;
+      currentIndex.value =
+        currentOptionPositionsDerived.value.positionCache[option.id].updatedIndex;
     })
     .onUpdate((e) => {
       const { inverseIndexCache, positionCache } = currentOptionPositionsDerived.value;
@@ -184,6 +195,7 @@ export const CreatePollOption = ({
       }
       // stop dragging
       isDragging.value = withDelay(200, withSpring(0));
+      runOnJS(onNewOrder)(currentOptionPositionsDerived.value.inverseIndexCache);
     });
 
   const {
@@ -197,6 +209,10 @@ export const CreatePollOption = ({
     },
   } = useTheme();
 
+  const onChangeTextHandler = (newText: string) => {
+    handleChangeText(newText, index);
+  };
+
   return (
     <Animated.View
       style={[
@@ -204,14 +220,14 @@ export const CreatePollOption = ({
         optionStyle.wrapper,
         {
           backgroundColor: bg_user,
-          borderColor: hasDuplicate ? accent_error : bg_user,
+          borderColor: error ? accent_error : bg_user,
           position: 'absolute',
           width: '100%',
         },
         animatedStyles,
       ]}
     >
-      {hasDuplicate ? (
+      {error ? (
         <Text
           style={[
             styles.optionValidationError,
@@ -219,14 +235,14 @@ export const CreatePollOption = ({
             optionStyle.validationErrorText,
           ]}
         >
-          {t<string>('This is already an option')}
+          {error}
         </Text>
       ) : null}
       <TextInput
-        onChangeText={(newText) => handleChangeText(newText, index)}
+        onBlur={handleBlur}
+        onChangeText={onChangeTextHandler}
         placeholder={'Add an option'}
         style={[styles.optionInput, { color: black }, optionStyle.input]}
-        value={option.text}
       />
       <GestureDetector gesture={gesture}>
         <Animated.View>
@@ -240,19 +256,20 @@ export const CreatePollOption = ({
 const MemoizedCreatePollOption = React.memo(CreatePollOption);
 
 const pollComposerStateSelector = (state: PollComposerState) => ({
+  errors: state.errors.options,
   options: state.data.options,
 });
 
-export const CreatePollOptions = (props: {
+export type CreatePollOptionsProps = {
   currentOptionPositions: SharedValue<CurrentOptionPositionsCache>;
-  duplicates: string[];
-}) => {
+};
+
+export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsProps) => {
   const { t } = useTranslationContext();
   const messageComposer = useMessageComposer();
   const { pollComposer } = messageComposer;
-  const { options } = useStateStore(pollComposer.state, pollComposerStateSelector);
-  const { createPollOptionHeight = OPTION_HEIGHT } = useCreatePollContentContext();
-  const { currentOptionPositions, duplicates = [] } = props;
+  const { errors, options } = useStateStore(pollComposer.state, pollComposerStateSelector);
+  const { createPollOptionHeight = POLL_OPTION_HEIGHT } = useCreatePollContentContext();
   const updateOption = useCallback(
     (newText: string, index: number) => {
       pollComposer.updateFields({
@@ -262,10 +279,15 @@ export const CreatePollOptions = (props: {
     [pollComposer],
   );
 
+  const handleBlur = useCallback(() => {
+    pollComposer.handleFieldBlur('options');
+  }, [pollComposer]);
+
   // used to know if drag is happening or not
   const isDragging = useSharedValue<0 | 1>(0);
+
   // this will hold id for item which user started dragging
-  const draggedItemId = useSharedValue<number | null>(null);
+  const draggedItemId = useSharedValue<string | null>(null);
 
   const boundaries = useMemo(
     () => ({ maxBound: (options.length - 1) * createPollOptionHeight, minBound: 0 }),
@@ -283,6 +305,21 @@ export const CreatePollOptions = (props: {
     },
   } = useTheme();
 
+  const onNewOrderChange = async (newOrder: CurrentOptionPositionsCache['inverseIndexCache']) => {
+    const reorderedPollOptions = [];
+
+    for (let i = 0; i < options.length; i++) {
+      const currentOption = options.find((option) => option.id === newOrder[i]);
+      if (currentOption) {
+        reorderedPollOptions.push(currentOption);
+      }
+    }
+
+    await pollComposer.updateFields({
+      options: reorderedPollOptions,
+    });
+  };
+
   return (
     <View style={[styles.container, container]}>
       <Text style={[styles.text, { color: black }, title]}>{t<string>('Options')}</Text>
@@ -292,11 +329,13 @@ export const CreatePollOptions = (props: {
             boundaries={boundaries}
             currentOptionPositions={currentOptionPositions}
             draggedItemId={draggedItemId}
+            error={errors?.[option.id]}
+            handleBlur={handleBlur}
             handleChangeText={updateOption}
-            hasDuplicate={duplicates.includes(option.text)}
             index={index}
             isDragging={isDragging}
-            key={index}
+            key={option.id}
+            onNewOrder={onNewOrderChange}
             option={option}
           />
         ))}

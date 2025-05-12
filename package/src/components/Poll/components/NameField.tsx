@@ -1,21 +1,13 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
-
-import { PollComposerState } from 'stream-chat';
 
 import { useTheme, useTranslationContext } from '../../../contexts';
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
-import { useStateStore } from '../../../hooks/useStateStore';
-
-const pollComposerStateSelector = (state: PollComposerState) => ({
-  name: state.data.name,
-});
 
 export const NameField = () => {
   const { t } = useTranslationContext();
   const messageComposer = useMessageComposer();
   const { pollComposer } = messageComposer;
-  const { name: pollName } = useStateStore(pollComposer.state, pollComposerStateSelector);
 
   const {
     theme: {
@@ -26,13 +18,16 @@ export const NameField = () => {
     },
   } = useTheme();
 
-  const onChangeText = async (text: string) => {
-    await pollComposer.updateFields({ name: text });
-  };
+  const onChangeText = useCallback(
+    async (newText: string) => {
+      await pollComposer.updateFields({ name: newText });
+    },
+    [pollComposer],
+  );
 
-  const onBlur = async () => {
+  const onBlur = useCallback(async () => {
     await pollComposer.handleFieldBlur('name');
-  };
+  }, [pollComposer]);
 
   return (
     <View>
@@ -47,7 +42,6 @@ export const NameField = () => {
           { backgroundColor: bg_user, color: black },
           name.input,
         ]}
-        value={pollName}
       />
     </View>
   );

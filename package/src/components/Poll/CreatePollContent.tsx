@@ -1,17 +1,16 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
+import React, { useCallback, useEffect } from 'react';
+import { StyleSheet, Switch, Text, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSharedValue } from 'react-native-reanimated';
 
 import { PollComposerState, VotingVisibility } from 'stream-chat';
 
-import { CreatePollOptions, CurrentOptionPositionsCache, PollModalHeader } from './components';
+import { CreatePollOptions, CurrentOptionPositionsCache } from './components';
 
+import { CreatePollHeader } from './components/CreatePollHeader';
 import { MultipleAnswersField } from './components/MultipleAnswersField';
 import { NameField } from './components/NameField';
-
-import { useCanCreatePoll } from './hooks/useCanCreatePoll';
 
 import {
   CreatePollContentContextValue,
@@ -23,7 +22,6 @@ import {
 } from '../../contexts';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStateStore } from '../../hooks/useStateStore';
-import { SendPoll } from '../../icons';
 
 const pollComposerStateSelector = (state: PollComposerState) => ({
   allow_answers: state.data.allow_answers,
@@ -35,127 +33,68 @@ const pollComposerStateSelector = (state: PollComposerState) => ({
   voting_visibility: state.data.voting_visibility,
 });
 
+export const POLL_OPTION_HEIGHT = 71;
+
 export const CreatePollContent = () => {
   const { t } = useTranslationContext();
-  // const [pollOptions, setPollOptions] = useState<PollOptionData[]>([{ text: '' }]);
 
-  const [duplicates, setDuplicates] = useState<string[]>([]);
   const messageComposer = useMessageComposer();
-  const canCreatePoll = useCanCreatePoll();
   const { pollComposer } = messageComposer;
   const { allow_answers, allow_user_suggested_options, options, voting_visibility } = useStateStore(
     pollComposer.state,
     pollComposerStateSelector,
   );
 
-  const { createPollOptionHeight, closePollCreationDialog, createAndSendPoll } =
-    useCreatePollContentContext();
+  const firstOption = options[0];
+
+  const { createPollOptionHeight } = useCreatePollContentContext();
 
   // positions and index lookup map
   // TODO: Please rethink the structure of this, bidirectional data flow is not great
   const currentOptionPositions = useSharedValue<CurrentOptionPositionsCache>({
-    inverseIndexCache: { 0: 0 },
-    positionCache: { 0: { updatedIndex: 0, updatedTop: 0 } },
+    inverseIndexCache: { 0: firstOption.id },
+    positionCache: { [firstOption.id]: { updatedIndex: 0, updatedTop: 0 } },
   });
 
   const {
     theme: {
       colors: { bg_user, black, white },
       poll: {
-        createContent: {
-          addComment,
-          anonymousPoll,
-          headerContainer,
-          scrollView,
-          sendButton,
-          suggestOption,
-        },
+        createContent: { addComment, anonymousPoll, scrollView, suggestOption },
       },
     },
   } = useTheme();
 
   useEffect(() => {
     if (!createPollOptionHeight) return;
-    const newIndex = options.length;
-    currentOptionPositions.value = {
-      inverseIndexCache: {
-        ...currentOptionPositions.value.inverseIndexCache,
-        [newIndex]: newIndex,
-      },
-      positionCache: {
-        ...currentOptionPositions.value.positionCache,
-        [newIndex]: {
-          updatedIndex: newIndex,
-          updatedTop: newIndex * createPollOptionHeight,
+    options.forEach((option, index) => {
+      currentOptionPositions.value = {
+        ...currentOptionPositions.value,
+        inverseIndexCache: {
+          ...currentOptionPositions.value.inverseIndexCache,
+          [index]: option.id,
         },
-      },
-    };
+        positionCache: {
+          ...currentOptionPositions.value.positionCache,
+          [option.id]: {
+            updatedIndex: index,
+            updatedTop: index * createPollOptionHeight,
+          },
+        },
+      };
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [createPollOptionHeight, options.length]);
 
-  useEffect(() => {
-    const seenTexts = new Set<string>();
-    const duplicateTexts = new Set<string>();
-    for (const option of options) {
-      const { text } = option;
-      if (seenTexts.has(text)) {
-        duplicateTexts.add(text);
-      }
-      if (text.length > 0) {
-        seenTexts.add(text);
-      }
-    }
-
-    setDuplicates(Array.from(duplicateTexts));
-  }, [options]);
-
   return (
     <>
-      <View style={[styles.headerContainer, { backgroundColor: white }, headerContainer]}>
-        <PollModalHeader
-          onPress={() => {
-            pollComposer.initState();
-            closePollCreationDialog?.();
-          }}
-          title={t('Create Poll')}
-        />
-        <Pressable
-          disabled={!canCreatePoll}
-          onPress={async () => {
-            const currentPollOptions = Object.assign({}, options);
-            const reorderedPollOptions = [];
-
-            for (let i = 0; i < options.length; i++) {
-              const currentOption =
-                currentPollOptions[currentOptionPositions.value.inverseIndexCache[i]];
-              if (currentOption.text.length > 0) {
-                reorderedPollOptions.push(currentOption);
-              }
-            }
-            await pollComposer.updateFields({
-              options: reorderedPollOptions,
-            });
-            await createAndSendPoll();
-          }}
-          style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }, styles.sendButton, sendButton]}
-        >
-          <SendPoll
-            height={24}
-            pathFill={canCreatePoll ? '#005DFF' : '#B4BBBA'}
-            viewBox='0 0 24 24'
-            width={24}
-          />
-        </Pressable>
-      </View>
+      <CreatePollHeader />
       <ScrollView
         contentContainerStyle={{ paddingBottom: 70 }}
         style={[styles.scrollView, { backgroundColor: white }, scrollView]}
       >
         <NameField />
-        <CreatePollOptions
-          currentOptionPositions={currentOptionPositions}
-          duplicates={duplicates}
-        />
+        <CreatePollOptions currentOptionPositions={currentOptionPositions} />
         <MultipleAnswersField />
         <View
           style={[styles.textInputWrapper, { backgroundColor: bg_user }, anonymousPoll.wrapper]}
@@ -202,7 +141,7 @@ export const CreatePollContent = () => {
 export const CreatePoll = ({
   closePollCreationDialog,
   CreatePollContent: CreatePollContentOverride,
-  createPollOptionHeight = 71,
+  createPollOptionHeight = POLL_OPTION_HEIGHT,
   sendMessage,
 }: Pick<
   CreatePollContentContextValue,
@@ -233,9 +172,7 @@ export const CreatePoll = ({
 };
 
 const styles = StyleSheet.create({
-  headerContainer: { flexDirection: 'row', justifyContent: 'space-between' },
   scrollView: { flex: 1, padding: 16 },
-  sendButton: { paddingHorizontal: 16, paddingVertical: 18 },
   text: { fontSize: 16 },
   textInputWrapper: {
     alignItems: 'center',
