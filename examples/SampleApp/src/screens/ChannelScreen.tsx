@@ -124,7 +124,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
 
   useEffect(() => {
     const initChannel = async () => {
-      if (!chatClient || !channelId) {
+      if (!chatClient || !channelId || channelFromProp) {
         return;
       }
 
@@ -136,7 +136,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     };
 
     initChannel();
-  }, [channelId, chatClient]);
+  }, [channelFromProp, channelId, chatClient]);
 
   useFocusEffect(() => {
     setSelectedThread(undefined);
