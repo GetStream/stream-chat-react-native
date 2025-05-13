@@ -6,11 +6,12 @@ export const useCreateChannelContext = ({
   channel,
   channelUnreadState,
   disabled,
+  editing,
   EmptyStateIndicator,
   enableMessageGroupingByUser,
   enforceUniqueReaction,
   error,
-  giphyEnabled,
+  isCommandUIEnabled,
   hideDateSeparators,
   hideStickyDateHeader,
   highlightedMessageId,
@@ -45,21 +46,23 @@ export const useCreateChannelContext = ({
   const readUsersLength = readUsers.length;
   const readUsersLastReads = readUsers.map(({ last_read }) => last_read.toISOString()).join();
   const stringifiedChannelUnreadState = JSON.stringify(channelUnreadState);
+  const editingDep = editing ? editing.id : '';
 
   const channelContext: ChannelContextValue = useMemo(
     () => ({
       channel,
       channelUnreadState,
       disabled,
+      editing,
       EmptyStateIndicator,
       enableMessageGroupingByUser,
       enforceUniqueReaction,
       error,
-      giphyEnabled,
       hideDateSeparators,
       hideStickyDateHeader,
       highlightedMessageId,
       isChannelActive,
+      isCommandUIEnabled,
       lastRead,
       loadChannelAroundMessage,
       loadChannelAtFirstUnreadMessage,
@@ -86,6 +89,7 @@ export const useCreateChannelContext = ({
     [
       channelId,
       disabled,
+      editingDep,
       error,
       isChannelActive,
       highlightedMessageId,

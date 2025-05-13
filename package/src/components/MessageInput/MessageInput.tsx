@@ -1,12 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  Modal,
-  NativeSyntheticEvent,
-  SafeAreaView,
-  StyleSheet,
-  TextInputFocusEventData,
-  View,
-} from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Modal, SafeAreaView, StyleSheet, View } from 'react-native';
 
 import {
   Gesture,
@@ -23,7 +16,12 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import type { UserResponse } from 'stream-chat';
+import type {
+  CustomDataManagerState,
+  MessageComposerState,
+  TextComposerState,
+  UserResponse,
+} from 'stream-chat';
 
 import { useAudioController } from './hooks/useAudioController';
 import { useCountdown } from './hooks/useCountdown';
@@ -37,6 +35,7 @@ import {
   ChannelContextValue,
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
+import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -45,10 +44,7 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
-import {
-  SuggestionsContextValue,
-  useSuggestionsContext,
-} from '../../contexts/suggestionsContext/SuggestionsContext';
+
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import {
@@ -56,6 +52,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
+import { useStateStore } from '../../hooks/useStateStore';
 import {
   isAudioRecorderAvailable,
   isImageMediaLibraryAvailable,
@@ -124,41 +121,34 @@ type MessageInputPropsWithContext = Pick<
     | 'AudioRecordingInProgress'
     | 'AudioRecordingLockIndicator'
     | 'AudioRecordingPreview'
+    | 'AutoCompleteSuggestionList'
     | 'cooldownEndsAt'
     | 'CooldownTimer'
     | 'clearEditingState'
-    | 'clearQuotedMessageState'
     | 'closeAttachmentPicker'
     | 'compressImageQuality'
     | 'editing'
     | 'FileUploadPreview'
     | 'fileUploads'
-    | 'giphyActive'
     | 'ImageUploadPreview'
     | 'imageUploads'
     | 'Input'
     | 'inputBoxRef'
     | 'InputButtons'
     | 'InputEditingStateHeader'
-    | 'InputGiphySearch'
+    | 'CommandInput'
     | 'InputReplyStateHeader'
     | 'isValidMessage'
     | 'maxNumberOfFiles'
-    | 'mentionedUsers'
     | 'numberOfUploads'
-    | 'quotedMessage'
     | 'resetInput'
     | 'SendButton'
     | 'sending'
     | 'sendMessageAsync'
-    | 'setShowMoreOptions'
-    | 'setGiphyActive'
-    | 'showMoreOptions'
     | 'ShowThreadMessageInChannelButton'
     | 'StartAudioRecordingButton'
     | 'removeFile'
     | 'removeImage'
-    | 'text'
     | 'uploadNewFile'
     | 'uploadNewImage'
     | 'openPollCreationDialog'
@@ -169,16 +159,22 @@ type MessageInputPropsWithContext = Pick<
     | 'StopMessageStreamingButton'
   > &
   Pick<MessagesContextValue, 'Reply'> &
-  Pick<
-    SuggestionsContextValue,
-    | 'AutoCompleteSuggestionHeader'
-    | 'AutoCompleteSuggestionItem'
-    | 'AutoCompleteSuggestionList'
-    | 'suggestions'
-    | 'triggerType'
-  > &
   Pick<ThreadContextValue, 'thread'> &
   Pick<TranslationContextValue, 't'>;
+
+const textComposerStateSelector = (state: TextComposerState) => ({
+  mentionedUsers: state.mentionedUsers,
+  suggestions: state.suggestions,
+  text: state.text,
+});
+
+const customComposerDataSelector = (state: CustomDataManagerState) => ({
+  command: state.custom.command,
+});
+
+const messageComposerStateStoreSelector = (state: MessageComposerState) => ({
+  quotedMessage: state.quotedMessage,
+});
 
 const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const {
@@ -206,22 +202,19 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     editing,
     FileUploadPreview,
     fileUploads,
-    giphyActive,
     ImageUploadPreview,
     imageUploads,
     Input,
     inputBoxRef,
     InputButtons,
     InputEditingStateHeader,
-    InputGiphySearch,
+    CommandInput,
     InputReplyStateHeader,
     isOnline,
     isValidMessage,
     maxNumberOfFiles,
     members,
-    mentionedUsers,
     numberOfUploads,
-    quotedMessage,
     removeFile,
     removeImage,
     Reply,
@@ -230,20 +223,22 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     sending,
     sendMessage,
     sendMessageAsync,
-    setShowMoreOptions,
     showPollCreationDialog,
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
     StopMessageStreamingButton,
-    suggestions,
-    text,
     thread,
     threadList,
-    triggerType,
     uploadNewFile,
     uploadNewImage,
     watchers,
   } = props;
+
+  const messageComposer = useMessageComposer();
+  const { customDataManager, textComposer } = messageComposer;
+  const { mentionedUsers, text } = useStateStore(textComposer.state, textComposerStateSelector);
+  const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
+  const { quotedMessage } = useStateStore(messageComposer.state, messageComposerStateStoreSelector);
 
   const [height, setHeight] = useState(0);
 
@@ -297,7 +292,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 
   const [hasResetImages, setHasResetImages] = useState(false);
   const [hasResetFiles, setHasResetFiles] = useState(false);
-  const [focused, setFocused] = useState(false);
   const selectedImagesLength = hasResetImages ? selectedImages.length : 0;
   const imageUploadsLength = hasResetImages ? imageUploads.length : 0;
   const selectedFilesLength = hasResetFiles ? selectedFiles.length : 0;
@@ -511,7 +505,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
      */
     if (
       !editing &&
-      (giphyActive ||
+      (command ||
         fileUploads.length > 0 ||
         mentionedUsers.length > 0 ||
         imageUploads.length > 0 ||
@@ -577,34 +571,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     return result;
   };
 
-  const additionalTextInputContainerProps = {
-    ...additionalTextInputProps,
-  };
-
-  const memoizedAdditionalTextInputProps = useMemo(
-    () => ({
-      ...additionalTextInputProps,
-      onBlur: (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
-        if (additionalTextInputProps?.onBlur) {
-          additionalTextInputProps?.onBlur(event);
-        }
-        if (setFocused) {
-          setFocused(false);
-        }
-        setShowMoreOptions(true);
-      },
-      onFocus: (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
-        if (additionalTextInputProps?.onFocus) {
-          additionalTextInputProps.onFocus(event);
-        }
-        if (setFocused) {
-          setFocused(true);
-        }
-      },
-    }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [additionalTextInputProps],
-  );
+  const isFocused = inputBoxRef.current?.isFocused();
 
   const {
     deleteVoiceRecording,
@@ -750,7 +717,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
         style={[styles.container, { backgroundColor: white, borderColor: border }, container]}
       >
         {editing && <InputEditingStateHeader />}
-        {quotedMessage && <InputReplyStateHeader />}
+        {quotedMessage && !editing && <InputReplyStateHeader />}
         {recording && (
           <>
             <AudioRecordingLockIndicator
@@ -777,10 +744,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 
         <View style={[styles.composerContainer, composerContainer]}>
           {Input ? (
-            <Input
-              additionalTextInputProps={additionalTextInputContainerProps}
-              getUsers={getUsers}
-            />
+            <Input additionalTextInputProps={additionalTextInputProps} getUsers={getUsers} />
           ) : (
             <>
               {recording ? (
@@ -804,14 +768,13 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                       styles.inputBoxContainer,
                       {
                         borderColor: grey_whisper,
-                        paddingVertical: giphyActive ? 8 : 12,
+                        paddingVertical: command ? 8 : 12,
                       },
                       inputBoxContainer,
-                      focused ? focusedInputBoxContainer : null,
+                      isFocused ? focusedInputBoxContainer : null,
                     ]}
                   >
-                    {((typeof editing !== 'boolean' && editing?.quoted_message) ||
-                      quotedMessage) && (
+                    {quotedMessage && (
                       <View style={[styles.replyContainer, replyContainer]}>
                         <Reply />
                       </View>
@@ -823,20 +786,20 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                           styles.attachmentSeparator,
                           {
                             borderBottomColor: grey_whisper,
-                            marginHorizontal: giphyActive ? 8 : 12,
+                            marginHorizontal: command ? 8 : 12,
                           },
                           attachmentSeparator,
                         ]}
                       />
                     ) : null}
                     {fileUploads.length ? <FileUploadPreview /> : null}
-                    {giphyActive ? (
-                      <InputGiphySearch disabled={!isOnline} />
+                    {command ? (
+                      <CommandInput disabled={!isOnline} />
                     ) : (
                       <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
                         <AutoCompleteInput
-                          additionalTextInputProps={memoizedAdditionalTextInputProps}
                           cooldownActive={!!cooldownRemainingSeconds}
+                          {...additionalTextInputProps}
                         />
                       </View>
                     )}
@@ -852,7 +815,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                 ) : (
                   <View style={[styles.sendButtonContainer, sendButtonContainer]}>
                     <SendButton
-                      disabled={sending.current || !isValidMessage() || (giphyActive && !isOnline)}
+                      disabled={sending.current || !isValidMessage() || (!!command && !isOnline)}
                     />
                   </View>
                 )
@@ -880,19 +843,9 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
         <ShowThreadMessageInChannelButton threadList={threadList} />
       </View>
 
-      {triggerType && suggestions ? (
-        <View
-          style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}
-        >
-          <AutoCompleteSuggestionList
-            active={!!suggestions}
-            data={suggestions.data}
-            onSelect={suggestions.onSelect}
-            queryText={suggestions.queryText}
-            triggerType={triggerType}
-          />
-        </View>
-      ) : null}
+      <View style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}>
+        <AutoCompleteSuggestionList />
+      </View>
 
       {selectedPicker && (
         <View
@@ -946,17 +899,12 @@ const areEqual = (
     closePollCreationDialog: prevClosePollCreationDialog,
     editing: prevEditing,
     fileUploads: prevFileUploads,
-    giphyActive: prevGiphyActive,
     imageUploads: prevImageUploads,
     isOnline: prevIsOnline,
     isValidMessage: prevIsValidMessage,
-    mentionedUsers: prevMentionedUsers,
     openPollCreationDialog: prevOpenPollCreationDialog,
-    quotedMessage: prevQuotedMessage,
     sending: prevSending,
-    showMoreOptions: prevShowMoreOptions,
     showPollCreationDialog: prevShowPollCreationDialog,
-    suggestions: prevSuggestions,
     t: prevT,
     thread: prevThread,
     threadList: prevThreadList,
@@ -972,17 +920,12 @@ const areEqual = (
     closePollCreationDialog: nextClosePollCreationDialog,
     editing: nextEditing,
     fileUploads: nextFileUploads,
-    giphyActive: nextGiphyActive,
     imageUploads: nextImageUploads,
     isOnline: nextIsOnline,
     isValidMessage: nextIsValidMessage,
-    mentionedUsers: nextMentionedUsers,
     openPollCreationDialog: nextOpenPollCreationDialog,
-    quotedMessage: nextQuotedMessage,
     sending: nextSending,
-    showMoreOptions: nextShowMoreOptions,
     showPollCreationDialog: nextShowPollCreationDialog,
-    suggestions: nextSuggestions,
     t: nextT,
     thread: nextThread,
     threadList: nextThreadList,
@@ -1045,29 +988,8 @@ const areEqual = (
     return false;
   }
 
-  const giphyActiveEqual = prevGiphyActive === nextGiphyActive;
-  if (!giphyActiveEqual) {
-    return false;
-  }
-
-  const quotedMessageEqual =
-    !!prevQuotedMessage &&
-    !!nextQuotedMessage &&
-    typeof prevQuotedMessage !== 'boolean' &&
-    typeof nextQuotedMessage !== 'boolean'
-      ? prevQuotedMessage.id === nextQuotedMessage.id
-      : !!prevQuotedMessage === !!nextQuotedMessage;
-  if (!quotedMessageEqual) {
-    return false;
-  }
-
   const sendingEqual = prevSending.current === nextSending.current;
   if (!sendingEqual) {
-    return false;
-  }
-
-  const showMoreOptionsEqual = prevShowMoreOptions === nextShowMoreOptions;
-  if (!showMoreOptionsEqual) {
     return false;
   }
 
@@ -1092,20 +1014,6 @@ const areEqual = (
 
   const fileUploadsEqual = prevFileUploads.length === nextFileUploads.length;
   if (!fileUploadsEqual) {
-    return false;
-  }
-
-  const mentionedUsersEqual = prevMentionedUsers.length === nextMentionedUsers.length;
-  if (!mentionedUsersEqual) {
-    return false;
-  }
-
-  const suggestionsEqual =
-    !!prevSuggestions?.data && !!nextSuggestions?.data
-      ? prevSuggestions.data.length === nextSuggestions.data.length &&
-        prevSuggestions.data.every(({ name }, index) => name === nextSuggestions.data[index].name)
-      : !!prevSuggestions === !!nextSuggestions;
-  if (!suggestionsEqual) {
     return false;
   }
 
@@ -1162,8 +1070,8 @@ export const MessageInput = (props: MessageInputProps) => {
     AudioRecordingLockIndicator,
     AudioRecordingPreview,
     AudioRecordingWaveform,
+    AutoCompleteSuggestionList,
     clearEditingState,
-    clearQuotedMessageState,
     closeAttachmentPicker,
     closePollCreationDialog,
     compressImageQuality,
@@ -1173,21 +1081,18 @@ export const MessageInput = (props: MessageInputProps) => {
     editing,
     FileUploadPreview,
     fileUploads,
-    giphyActive,
     ImageUploadPreview,
     imageUploads,
     Input,
     inputBoxRef,
     InputButtons,
     InputEditingStateHeader,
-    InputGiphySearch,
+    CommandInput,
     InputReplyStateHeader,
     isValidMessage,
     maxNumberOfFiles,
-    mentionedUsers,
     numberOfUploads,
     openPollCreationDialog,
-    quotedMessage,
     removeFile,
     removeImage,
     resetInput,
@@ -1196,27 +1101,15 @@ export const MessageInput = (props: MessageInputProps) => {
     sendMessage,
     sendMessageAsync,
     SendMessageDisallowedIndicator,
-    setGiphyActive,
-    setShowMoreOptions,
-    showMoreOptions,
     showPollCreationDialog,
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
     StopMessageStreamingButton,
-    text,
     uploadNewFile,
     uploadNewImage,
   } = useMessageInputContext();
 
   const { Reply } = useMessagesContext();
-
-  const {
-    AutoCompleteSuggestionHeader,
-    AutoCompleteSuggestionItem,
-    AutoCompleteSuggestionList,
-    suggestions,
-    triggerType,
-  } = useSuggestionsContext();
 
   const { thread } = useThreadContext();
 
@@ -1247,14 +1140,12 @@ export const MessageInput = (props: MessageInputProps) => {
         AudioRecordingLockIndicator,
         AudioRecordingPreview,
         AudioRecordingWaveform,
-        AutoCompleteSuggestionHeader,
-        AutoCompleteSuggestionItem,
         AutoCompleteSuggestionList,
         channel,
         clearEditingState,
-        clearQuotedMessageState,
         closeAttachmentPicker,
         closePollCreationDialog,
+        CommandInput,
         compressImageQuality,
         cooldownEndsAt,
         CooldownTimer,
@@ -1262,23 +1153,19 @@ export const MessageInput = (props: MessageInputProps) => {
         editing,
         FileUploadPreview,
         fileUploads,
-        giphyActive,
         ImageUploadPreview,
         imageUploads,
         Input,
         inputBoxRef,
         InputButtons,
         InputEditingStateHeader,
-        InputGiphySearch,
         InputReplyStateHeader,
         isOnline,
         isValidMessage,
         maxNumberOfFiles,
         members,
-        mentionedUsers,
         numberOfUploads,
         openPollCreationDialog,
-        quotedMessage,
         removeFile,
         removeImage,
         Reply,
@@ -1288,19 +1175,13 @@ export const MessageInput = (props: MessageInputProps) => {
         sendMessage,
         sendMessageAsync,
         SendMessageDisallowedIndicator,
-        setGiphyActive,
-        setShowMoreOptions,
-        showMoreOptions,
         showPollCreationDialog,
         ShowThreadMessageInChannelButton,
         StartAudioRecordingButton,
         StopMessageStreamingButton,
-        suggestions,
         t,
-        text,
         thread,
         threadList,
-        triggerType,
         uploadNewFile,
         uploadNewImage,
         watchers,

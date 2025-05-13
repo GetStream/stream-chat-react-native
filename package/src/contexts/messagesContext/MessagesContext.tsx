@@ -2,7 +2,13 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import { PressableProps, ViewProps } from 'react-native';
 
-import type { Attachment, ChannelState, LocalMessage, MessageResponse } from 'stream-chat';
+import type {
+  Attachment,
+  ChannelState,
+  CommandSuggestion,
+  LocalMessage,
+  MessageResponse,
+} from 'stream-chat';
 
 import type { PollContentProps, StreamingMessageViewProps } from '../../components';
 import type { AttachmentProps } from '../../components/Attachment/Attachment';
@@ -63,7 +69,6 @@ import { NativeHandlers } from '../../native';
 
 import type { ReactionData } from '../../utils/utils';
 import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
-import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
@@ -98,10 +103,6 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * Defaults to: [Card](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Card.tsx)
    */
   Card: React.ComponentType<CardProps>;
-  /**
-   * Handler to clear the quoted state of the message.
-   */
-  clearQuotedMessageState: () => void;
   /**
    * UI component for DateHeader
    * Defaults to: [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)
@@ -302,7 +303,6 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   ScrollToBottomButton: React.ComponentType<ScrollToBottomButtonProps>;
   sendReaction: (type: string, messageId: string) => Promise<void>;
   setEditingState: (message?: LocalMessage) => void;
-  setQuotedMessageState: (message?: LocalMessage) => void;
   /**
    * UI component for StreamingMessageView. Displays the text of a message with a typewriter animation.
    */
@@ -321,7 +321,7 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   updateMessage: (
     updatedMessage: MessageResponse | LocalMessage,
     extraState?: {
-      commands?: SuggestionCommand[];
+      commands?: CommandSuggestion[];
       messageInput?: string;
       threadMessages?: ChannelState['threads'][string];
     },
@@ -571,6 +571,7 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * usePollState() and usePollContext() hooks.
    * */
   PollContent?: React.ComponentType<PollContentProps>;
+  quotedMessage?: LocalMessage | null;
   /**
    * UI component for ReactionListTop
    * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionList.tsx)

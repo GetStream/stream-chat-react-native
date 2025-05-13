@@ -70,10 +70,10 @@ const styles = StyleSheet.create({
   giphyHeaderText: {
     fontSize: 16,
     fontWeight: '600',
+    marginHorizontal: 8,
   },
   giphyHeaderTitle: {
     fontSize: 14,
-    marginLeft: 8,
   },
   giphyMask: {
     bottom: 8,
@@ -88,9 +88,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
     padding: 8,
-    width: '60%',
   },
   imageErrorIndicatorStyle: {
     alignItems: 'center',

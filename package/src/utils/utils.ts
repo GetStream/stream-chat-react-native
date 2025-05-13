@@ -5,8 +5,6 @@ import EmojiRegex from 'emoji-regex';
 import type { ChannelState, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { IconProps } from '../../src/icons/utils/base';
-import type { EmojiSearchIndex } from '../contexts/messageInputContext/MessageInputContext';
-import { compiledEmojis } from '../emoji-data';
 import type { TableRowJoinedUser } from '../store/types';
 import { FileTypes, ValueOf } from '../types/types';
 
@@ -96,48 +94,6 @@ export const isBouncedMessage = (message: LocalMessage) =>
  * @returns boolean
  */
 export const isEditedMessage = (message: LocalMessage) => !!message.message_text_updated_at;
-
-/**
- * Default emoji search index for auto complete text input
- */
-export const defaultEmojiSearchIndex: EmojiSearchIndex = {
-  search: (query) => {
-    try {
-      const results = [];
-
-      for (const emoji of compiledEmojis) {
-        if (results.length >= 10) {
-          return results;
-        }
-        if (emoji.names.some((name) => name.includes(query))) {
-          // Aggregate skins as different toned emojis - if skins are present
-          if (emoji.skins) {
-            results.push({
-              ...emoji,
-              name: `${emoji.name}-tone-1`,
-              skins: undefined,
-            });
-            emoji.skins.forEach((tone, index) =>
-              results.push({
-                ...emoji,
-                name: `${emoji.name}-tone-${index + 2}`,
-                skins: undefined,
-                unicode: tone,
-              }),
-            );
-          } else {
-            results.push(emoji);
-          }
-        }
-      }
-
-      return results;
-    } catch (error) {
-      console.warn('Error searching emojis:', error);
-      throw error;
-    }
-  },
-};
 
 export const makeImageCompatibleUrl = (url: string) =>
   (url.indexOf('//') === 0 ? `https:${url}` : url).trim();

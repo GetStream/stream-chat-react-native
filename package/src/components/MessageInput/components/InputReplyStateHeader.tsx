@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -15,7 +16,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingBottom: 10,
+    paddingBottom: 8,
   },
   replyBoxHeaderTitle: {
     fontSize: 14,
@@ -23,17 +24,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export type InputReplyStateHeaderProps = Partial<
-  Pick<MessageInputContextValue, 'clearQuotedMessageState' | 'resetInput'>
->;
+export type InputReplyStateHeaderProps = Partial<Pick<MessageInputContextValue, 'resetInput'>>;
 
 export const InputReplyStateHeader = ({
-  clearQuotedMessageState: propClearQuotedMessageState,
   resetInput: propResetInput,
 }: InputReplyStateHeaderProps) => {
   const { t } = useTranslationContext();
-  const { clearQuotedMessageState: contextClearQuotedMessageState, resetInput: contextResetInput } =
-    useMessageInputContext();
+  const messageComposer = useMessageComposer();
+  const { resetInput: contextResetInput } = useMessageInputContext();
   const {
     theme: {
       colors: { black, grey, grey_gainsboro },
@@ -43,8 +41,15 @@ export const InputReplyStateHeader = ({
     },
   } = useTheme();
 
-  const clearQuotedMessageState = propClearQuotedMessageState || contextClearQuotedMessageState;
   const resetInput = propResetInput || contextResetInput;
+
+  const onCloseHandler = () => {
+    if (resetInput) {
+      resetInput();
+    }
+
+    messageComposer.setQuotedMessage(null);
+  };
 
   return (
     <View style={[styles.replyBoxHeader, editingBoxHeader]}>
@@ -52,19 +57,13 @@ export const InputReplyStateHeader = ({
       <Text style={[styles.replyBoxHeaderTitle, { color: black }, editingBoxHeaderTitle]}>
         {t<string>('Reply to Message')}
       </Text>
-      <TouchableOpacity
-        onPress={() => {
-          if (resetInput) {
-            resetInput();
-          }
-          if (clearQuotedMessageState) {
-            clearQuotedMessageState();
-          }
-        }}
+      <Pressable
+        onPress={onCloseHandler}
+        style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
         testID='close-button'
       >
         <CircleClose pathFill={grey} />
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 };

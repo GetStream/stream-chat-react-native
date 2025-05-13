@@ -2,21 +2,32 @@ import React from 'react';
 
 import { Pressable } from 'react-native';
 
+import { CustomDataManagerState } from 'stream-chat';
+
+import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useStateStore } from '../../hooks/useStateStore';
 import { Search } from '../../icons/Search';
 import { SendRight } from '../../icons/SendRight';
 import { SendUp } from '../../icons/SendUp';
 
-type SendButtonPropsWithContext = Pick<MessageInputContextValue, 'giphyActive' | 'sendMessage'> & {
+type SendButtonPropsWithContext = Pick<MessageInputContextValue, 'sendMessage'> & {
   /** Disables the button */ disabled: boolean;
 };
 
+const customComposerDataSelector = (state: CustomDataManagerState) => ({
+  command: state.custom.command,
+});
+
 const SendButtonWithContext = (props: SendButtonPropsWithContext) => {
-  const { disabled = false, giphyActive, sendMessage } = props;
+  const { disabled = false, sendMessage } = props;
+  const messageComposer = useMessageComposer();
+  const { customDataManager } = messageComposer;
+  const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
   const {
     theme: {
       colors: { accent_blue, grey_gainsboro },
@@ -31,7 +42,7 @@ const SendButtonWithContext = (props: SendButtonPropsWithContext) => {
       style={[sendButton]}
       testID='send-button'
     >
-      {giphyActive ? (
+      {command ? (
         <Search pathFill={disabled ? grey_gainsboro : accent_blue} {...searchIcon} />
       ) : disabled ? (
         <SendRight fill={grey_gainsboro} size={32} {...sendRightIcon} />
@@ -43,24 +54,11 @@ const SendButtonWithContext = (props: SendButtonPropsWithContext) => {
 };
 
 const areEqual = (prevProps: SendButtonPropsWithContext, nextProps: SendButtonPropsWithContext) => {
-  const {
-    disabled: prevDisabled,
-    giphyActive: prevGiphyActive,
-    sendMessage: prevSendMessage,
-  } = prevProps;
-  const {
-    disabled: nextDisabled,
-    giphyActive: nextGiphyActive,
-    sendMessage: nextSendMessage,
-  } = nextProps;
+  const { disabled: prevDisabled, sendMessage: prevSendMessage } = prevProps;
+  const { disabled: nextDisabled, sendMessage: nextSendMessage } = nextProps;
 
   const disabledEqual = prevDisabled === nextDisabled;
   if (!disabledEqual) {
-    return false;
-  }
-
-  const giphyActiveEqual = prevGiphyActive === nextGiphyActive;
-  if (!giphyActiveEqual) {
     return false;
   }
 
@@ -83,11 +81,11 @@ export type SendButtonProps = Partial<SendButtonPropsWithContext>;
  * UI Component for send button in MessageInput component.
  */
 export const SendButton = (props: SendButtonProps) => {
-  const { giphyActive, sendMessage } = useMessageInputContext();
+  const { sendMessage } = useMessageInputContext();
 
   return (
     <MemoizedSendButton
-      {...{ giphyActive, sendMessage }}
+      {...{ sendMessage }}
       {...props}
       {...{ disabled: props.disabled || false }}
     />
