@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+      - V6
 
 jobs:
   publish-next:
