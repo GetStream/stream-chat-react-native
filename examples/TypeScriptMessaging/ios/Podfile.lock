@@ -2039,7 +2039,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - SocketRocket (0.7.1)
-  - stream-chat-react-native (6.6.8):
+  - stream-chat-react-native (7.0.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2404,7 +2404,7 @@ SPEC CHECKSUMS:
   RNShare: 56b5431c60e1e9ee167191f4f327471af1c2941a
   RNSVG: 8126581b369adf6a0004b6a6cab1a55e3002d5b0
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  stream-chat-react-native: f394c3690415a9ad3c3ab741da3f0e72660de074
+  stream-chat-react-native: ad7b0924fab4b907f3ac17210322f8b435affe80
   Yoga: afd04ff05ebe0121a00c468a8a3c8080221cb14c
 
 PODFILE CHECKSUM: 6b7a4b74915b42bfe4ffddaf67cbf5e7a2bfeab3
