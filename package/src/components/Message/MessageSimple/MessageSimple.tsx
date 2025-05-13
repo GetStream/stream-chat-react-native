@@ -233,7 +233,7 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
           if (isHorizontalPanning) {
             state.activate();
             isSwiping.value = true;
-            runOnJS(setIsBeingSwiped)(true);
+            runOnJS(setIsBeingSwiped)(isSwiping.value);
           } else {
             state.fail();
           }
@@ -253,6 +253,7 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
               runOnJS(triggerHaptic)('impactMedium');
             }
           }
+          isSwiping.value = false;
           translateX.value = withSpring(
             0,
             {
@@ -262,8 +263,7 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
               stiffness: 1,
             },
             () => {
-              isSwiping.value = false;
-              runOnJS(setIsBeingSwiped)(false);
+              runOnJS(setIsBeingSwiped)(isSwiping.value);
             },
           );
         }),
@@ -271,32 +271,26 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
   );
 
   const messageBubbleAnimatedStyle = useAnimatedStyle(
-    () =>
-      isSwiping.value
-        ? {
-            transform: [{ translateX: translateX.value }],
-          }
-        : {},
+    () => ({
+      transform: [{ translateX: translateX.value }],
+    }),
     [],
   );
 
   const swipeContentAnimatedStyle = useAnimatedStyle(
-    () =>
-      isSwiping.value
-        ? {
-            opacity: interpolate(translateX.value, [0, THRESHOLD], [0, 1]),
-            transform: [
-              {
-                translateX: interpolate(
-                  translateX.value,
-                  [0, THRESHOLD],
-                  [-THRESHOLD, 0],
-                  Extrapolation.CLAMP,
-                ),
-              },
-            ],
-          }
-        : {},
+    () => ({
+      opacity: interpolate(translateX.value, [0, THRESHOLD], [0, 1]),
+      transform: [
+        {
+          translateX: interpolate(
+            translateX.value,
+            [0, THRESHOLD],
+            [-THRESHOLD, 0],
+            Extrapolation.CLAMP,
+          ),
+        },
+      ],
+    }),
     [],
   );
 
