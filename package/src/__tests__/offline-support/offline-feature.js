@@ -569,6 +569,108 @@ export const Generic = () => {
       });
     });
 
+    it('should truncate the correct messages if channel.truncated arrives with truncated_at', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+
+      const channelResponse = channels[getRandomInt(0, channels.length - 1)];
+      const channelToTruncate = channelResponse.channel;
+      const messages = channelResponse.messages;
+      messages.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+      // truncate at the middle
+      const truncatedAt = messages[Number(messages.length / 2)].created_at;
+      act(() =>
+        dispatchChannelTruncatedEvent(chatClient, {
+          ...channelToTruncate,
+          truncated_at: truncatedAt,
+        }),
+      );
+
+      await waitFor(async () => {
+        const channelIdsOnUI = screen
+          .queryAllByLabelText('list-item')
+          .map((node) => node._fiber.pendingProps.testID);
+        expect(channelIdsOnUI.includes(channelToTruncate.cid)).toBeTruthy();
+        expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
+
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const matchingMessagesRows = messagesRows.filter((m) => m.cid === channelToTruncate.cid);
+
+        expect(matchingMessagesRows.length).toBe(messages.length / 2 - 1);
+      });
+    });
+
+    it('should gracefully handle a truncated_at date before each message', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+
+      const channelResponse = channels[getRandomInt(0, channels.length - 1)];
+      const channelToTruncate = channelResponse.channel;
+      const truncatedAt = new Date(0).toISOString();
+      act(() =>
+        dispatchChannelTruncatedEvent(chatClient, {
+          ...channelToTruncate,
+          truncated_at: truncatedAt,
+        }),
+      );
+
+      await waitFor(async () => {
+        const channelIdsOnUI = screen
+          .queryAllByLabelText('list-item')
+          .map((node) => node._fiber.pendingProps.testID);
+        expect(channelIdsOnUI.includes(channelToTruncate.cid)).toBeTruthy();
+        expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
+
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const matchingMessagesRows = messagesRows.filter((m) => m.cid === channelToTruncate.cid);
+
+        expect(matchingMessagesRows.length).toBe(channelResponse.messages.length);
+      });
+    });
+
+    it('should gracefully handle a truncated_at date after each message', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+
+      const channelResponse = channels[getRandomInt(0, channels.length - 1)];
+      const channelToTruncate = channelResponse.channel;
+      const messages = channelResponse.messages;
+      const latestTimestamp = Math.max(...messages.map((m) => new Date(m.created_at).getTime()));
+      // truncate at the middle
+      const truncatedAt = new Date(latestTimestamp + 1).toISOString();
+      act(() =>
+        dispatchChannelTruncatedEvent(chatClient, {
+          ...channelToTruncate,
+          truncated_at: truncatedAt,
+        }),
+      );
+
+      await waitFor(async () => {
+        const channelIdsOnUI = screen
+          .queryAllByLabelText('list-item')
+          .map((node) => node._fiber.pendingProps.testID);
+        expect(channelIdsOnUI.includes(channelToTruncate.cid)).toBeTruthy();
+        expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
+
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const matchingMessagesRows = messagesRows.filter((m) => m.cid === channelToTruncate.cid);
+
+        expect(matchingMessagesRows.length).toBe(0);
+      });
+    });
+
     it('should add a reaction to DB when a new reaction is added', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
       renderComponent();
