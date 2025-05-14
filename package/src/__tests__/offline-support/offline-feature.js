@@ -565,7 +565,14 @@ export const Generic = () => {
         const messagesRows = await BetterSqlite.selectFromTable('messages');
         const matchingMessagesRows = messagesRows.filter((m) => m.cid === channelToTruncate.cid);
 
+        const readsRows = await BetterSqlite.selectFromTable('reads');
+        const matchingReadRows = readsRows.filter(
+          (r) => r.userId === chatClient.userID && r.cid === channelToTruncate.cid,
+        );
+
         expect(matchingMessagesRows.length).toBe(0);
+        expect(matchingReadRows.length).toBe(1);
+        expect(matchingReadRows[0].unreadMessages).toBe(0);
       });
     });
 
@@ -600,7 +607,16 @@ export const Generic = () => {
         const messagesRows = await BetterSqlite.selectFromTable('messages');
         const matchingMessagesRows = messagesRows.filter((m) => m.cid === channelToTruncate.cid);
 
-        expect(matchingMessagesRows.length).toBe(messages.length / 2 - 1);
+        const readsRows = await BetterSqlite.selectFromTable('reads');
+        const matchingReadRows = readsRows.filter(
+          (r) => r.userId === chatClient.userID && r.cid === channelToTruncate.cid,
+        );
+
+        const messagesLeft = messages.length / 2 - 1;
+
+        expect(matchingMessagesRows.length).toBe(messagesLeft);
+        expect(matchingReadRows.length).toBe(1);
+        expect(matchingReadRows[0].unreadMessages).toBe(messagesLeft);
       });
     });
 
