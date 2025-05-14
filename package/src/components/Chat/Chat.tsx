@@ -8,8 +8,6 @@ import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
 import { useMutedUsers } from './hooks/useMutedUsers';
 
-import { useSyncDatabase } from './hooks/useSyncDatabase';
-
 import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
 import { ChatContextValue, ChatProvider } from '../../contexts/chatContext/ChatContext';
 import { useDebugContext } from '../../contexts/debugContext/DebugContext';
@@ -214,7 +212,6 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     }
 
     const initializeDatabase = async () => {
-      // TODO: Rethink this, it looks ugly
       if (!client.offlineDb) {
         client.setOfflineDBApi(new OfflineDB({ client }));
       }
@@ -225,8 +222,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     };
 
     initializeDatabase();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userID, enableOfflineSupport]);
+  }, [userID, enableOfflineSupport, client]);
 
   useEffect(() => {
     if (!client) {
@@ -239,10 +235,6 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     return () => {
       client.threads.unregisterSubscriptions();
       client.polls.unregisterSubscriptions();
-      // In case something went wrong, make sure to also unsubscribe the listener
-      // on unmount if it exists to prevent a memory leak.
-      // FIXME: Should be wrapped in its own unregistration mechanism
-      // client.offlineDb?.syncManager.connectionChangedListener?.unsubscribe();
     };
   }, [client]);
 
@@ -261,12 +253,6 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     isOnline,
     mutedUsers,
     setActiveChannel,
-  });
-
-  useSyncDatabase({
-    client,
-    enableOfflineSupport,
-    initialisedDatabase,
   });
 
   if (userID && enableOfflineSupport && !initialisedDatabase) {

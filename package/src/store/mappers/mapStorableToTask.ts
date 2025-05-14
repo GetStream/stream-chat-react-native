@@ -1,4 +1,6 @@
-import type { PendingTask, TableRowJoinedUser } from '../types';
+import { PendingTask } from 'stream-chat';
+
+import type { TableRowJoinedUser } from '../types';
 
 export const mapStorableToTask = (row: TableRowJoinedUser<'pendingTasks'>): PendingTask => {
   const { channelId, channelType, id, messageId, type } = row;

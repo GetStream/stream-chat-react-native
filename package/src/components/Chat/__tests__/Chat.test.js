@@ -11,7 +11,6 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import dispatchConnectionChangedEvent from '../../../mock-builders/event/connectionChanged';
 import dispatchConnectionRecoveredEvent from '../../../mock-builders/event/connectionRecovered';
 import { getTestClient, getTestClientWithUser, setUser } from '../../../mock-builders/mock';
-import { DBSyncManager } from '../../../utils/DBSyncManager';
 import { Streami18n } from '../../../utils/i18n/Streami18n';
 import { Chat } from '../Chat';
 
@@ -132,10 +131,6 @@ describe('ChatContext', () => {
 });
 
 describe('TranslationContext', () => {
-  beforeEach(() => {
-    jest.spyOn(DBSyncManager, 'init');
-  });
-
   afterEach(() => {
     jest.clearAllMocks();
     cleanup();
