@@ -8,12 +8,12 @@ import { SqliteClient } from '../SqliteClient';
 export const upsertCidsForQuery = async ({
   cids,
   filters,
-  flush = true,
+  execute = true,
   sort,
 }: {
   cids: string[];
   filters?: ChannelFilters;
-  flush?: boolean;
+  execute?: boolean;
   sort?: ChannelSort;
 }) => {
   // Update the database only if the query is provided.
@@ -26,11 +26,11 @@ export const upsertCidsForQuery = async ({
 
   SqliteClient.logger?.('info', 'upsertCidsForQuery', {
     cids: cidsString,
-    flush,
+    execute,
     id,
   });
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSql.apply(null, query);
   }
 

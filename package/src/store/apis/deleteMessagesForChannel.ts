@@ -3,11 +3,11 @@ import { SqliteClient } from '../SqliteClient';
 export const deleteMessagesForChannel = async ({
   cid,
   truncated_at,
-  flush = true,
+  execute = true,
 }: {
   cid: string;
   truncated_at?: string;
-  flush?: boolean;
+  execute?: boolean;
 }) => {
   const timestamp = truncated_at ? new Date(truncated_at).toISOString() : new Date().toISOString();
   const query: [string, (string | number)[]] = [
@@ -17,11 +17,11 @@ export const deleteMessagesForChannel = async ({
 
   SqliteClient.logger?.('info', 'deleteMessagesForChannel', {
     cid,
-    flush,
+    execute,
     truncated_at,
   });
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSql.apply(null, query);
   }
 

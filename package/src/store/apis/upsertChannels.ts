@@ -12,11 +12,11 @@ import type { PreparedQueries } from '../types';
 
 export const upsertChannels = async ({
   channels,
-  flush = true,
+  execute = true,
   isLatestMessagesSet,
 }: {
   channels: ChannelAPIResponse[];
-  flush?: boolean;
+  execute?: boolean;
   isLatestMessagesSet?: boolean;
 }) => {
   // Update the database only if the query is provided.
@@ -41,7 +41,7 @@ export const upsertChannels = async ({
     queries = queries.concat(
       await upsertMembers({
         cid: channel.channel.cid,
-        flush: false,
+        execute: false,
         members,
       }),
     );
@@ -50,7 +50,7 @@ export const upsertChannels = async ({
       queries = queries.concat(
         await upsertReads({
           cid: channel.channel.cid,
-          flush: false,
+          execute: false,
           reads: read,
         }),
       );
@@ -59,14 +59,14 @@ export const upsertChannels = async ({
     if (isLatestMessagesSet) {
       queries = queries.concat(
         await upsertMessages({
-          flush: false,
+          execute: false,
           messages,
         }),
       );
     }
   }
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSqlBatch(queries);
   }
 

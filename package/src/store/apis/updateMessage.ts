@@ -10,11 +10,11 @@ import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries } from '../types';
 
 export const updateMessage = async ({
-  flush = true,
+  execute = true,
   message,
 }: {
   message: MessageResponse | LocalMessage;
-  flush?: boolean;
+  execute?: boolean;
 }) => {
   const queries: PreparedQueries[] = [];
 
@@ -70,7 +70,7 @@ export const updateMessage = async ({
     users: storableUsers,
   });
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSqlBatch(queries);
   }
 

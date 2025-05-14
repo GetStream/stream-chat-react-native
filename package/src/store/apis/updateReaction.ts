@@ -10,13 +10,13 @@ import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries } from '../types';
 
 export const updateReaction = async ({
-  flush = true,
+  execute = true,
   message,
   reaction,
 }: {
   message: MessageResponse | LocalMessage;
   reaction: ReactionResponse;
-  flush?: boolean;
+  execute?: boolean;
 }) => {
   console.log('EXECUTING UPDATE');
   const queries: PreparedQueries[] = [];
@@ -46,12 +46,12 @@ export const updateReaction = async ({
 
   SqliteClient.logger?.('info', 'updateReaction', {
     addedUser: storableUser,
-    flush,
+    execute,
     updatedReaction: storableReaction,
     updatedReactionGroups,
   });
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSqlBatch(queries);
   }
 

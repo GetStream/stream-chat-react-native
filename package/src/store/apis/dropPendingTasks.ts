@@ -8,23 +8,23 @@ import { SqliteClient } from '../SqliteClient';
  *
  * @param {Object} param
  * @param {string} param.messageId The messageId for which we want to remove the pending tasks.
- * @param {boolean} param.flush Whether we should immediately execute the query or return it as a prepared one.
+ * @param {boolean} param.execute Whether we should immediately execute the query or return it as a prepared one.
  *
  * @return {() => void} - A function that can be called to remove the task from the database
  */
 export const dropPendingTasks = async ({
   messageId,
-  flush = true,
+  execute = true,
 }: {
   messageId: string;
-  flush?: boolean;
+  execute?: boolean;
 }) => {
   const queries = [createDeleteQuery('pendingTasks', { messageId })];
   SqliteClient.logger?.('info', 'dropPendingTasks', {
     messageId,
   });
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSqlBatch(queries);
   }
 

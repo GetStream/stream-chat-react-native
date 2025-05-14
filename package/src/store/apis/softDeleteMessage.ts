@@ -3,7 +3,13 @@ import { MessageLabel } from 'stream-chat';
 import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
 import { SqliteClient } from '../SqliteClient';
 
-export const softDeleteMessage = async ({ flush = true, id }: { id: string; flush?: boolean }) => {
+export const softDeleteMessage = async ({
+  execute = true,
+  id,
+}: {
+  id: string;
+  execute?: boolean;
+}) => {
   const query = createUpdateQuery(
     'messages',
     {
@@ -14,11 +20,11 @@ export const softDeleteMessage = async ({ flush = true, id }: { id: string; flus
   );
 
   SqliteClient.logger?.('info', 'softDeleteMessage', {
-    flush,
+    execute,
     id,
   });
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSql.apply(null, query);
   }
 

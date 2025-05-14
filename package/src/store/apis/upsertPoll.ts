@@ -6,11 +6,11 @@ import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries } from '../types';
 
 export const upsertPoll = async ({
-  flush = true,
+  execute = true,
   poll,
 }: {
   poll: PollResponse;
-  flush?: boolean;
+  execute?: boolean;
 }) => {
   const queries: PreparedQueries[] = [];
 
@@ -21,7 +21,7 @@ export const upsertPoll = async ({
     poll: storablePoll,
   });
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSqlBatch(queries);
   }
 

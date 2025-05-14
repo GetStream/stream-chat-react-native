@@ -21,12 +21,12 @@ export class OfflineDB extends AbstractOfflineDB {
   upsertChannels = api.upsertChannels;
 
   // FIXME
-  upsertUserSyncStatus = ({ userId, lastSyncedAt, flush }: UpsertUserSyncStatusType) =>
-    api.upsertUserSyncStatus({ currentUserId: userId, flush, lastSyncedAt });
+  upsertUserSyncStatus = ({ userId, lastSyncedAt, execute }: UpsertUserSyncStatusType) =>
+    api.upsertUserSyncStatus({ currentUserId: userId, execute, lastSyncedAt });
 
   // FIXME
-  upsertAppSettings = ({ appSettings, userId, flush }: UpsertAppSettingsType) =>
-    api.upsertAppSettings({ appSettings, currentUserId: userId, flush });
+  upsertAppSettings = ({ appSettings, userId, execute }: UpsertAppSettingsType) =>
+    api.upsertAppSettings({ appSettings, currentUserId: userId, execute });
 
   upsertPoll = api.upsertPoll;
 

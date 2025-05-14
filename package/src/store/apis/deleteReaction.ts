@@ -6,13 +6,13 @@ import { SqliteClient } from '../SqliteClient';
 import { PreparedQueries } from '../types';
 
 export const deleteReaction = async ({
-  flush = true,
+  execute = true,
   message,
   reaction,
 }: {
   reaction: ReactionResponse;
   message?: MessageResponse | FormatMessageResponse;
-  flush?: boolean;
+  execute?: boolean;
 }) => {
   const queries: PreparedQueries[] = [];
 
@@ -44,7 +44,7 @@ export const deleteReaction = async ({
     reaction,
   });
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSqlBatch(queries);
   }
 

@@ -6,11 +6,11 @@ import { SqliteClient } from '../SqliteClient';
 export const upsertAppSettings = async ({
   appSettings,
   currentUserId,
-  flush = true,
+  execute = true,
 }: {
   appSettings: AppSettingsAPIResponse;
   currentUserId: string;
-  flush?: boolean;
+  execute?: boolean;
 }) => {
   const storableAppSettings = JSON.stringify(appSettings);
   const queries = [
@@ -22,11 +22,11 @@ export const upsertAppSettings = async ({
 
   SqliteClient.logger?.('info', 'upsertAppSettings', {
     appSettings: storableAppSettings,
-    flush,
+    execute,
     userId: currentUserId,
   });
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSqlBatch(queries);
   }
 

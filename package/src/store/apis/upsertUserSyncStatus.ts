@@ -4,11 +4,11 @@ import { SqliteClient } from '../SqliteClient';
 export const upsertUserSyncStatus = async ({
   currentUserId,
   lastSyncedAt,
-  flush = true,
+  execute = true,
 }: {
   currentUserId: string;
   lastSyncedAt: string;
-  flush?: boolean;
+  execute?: boolean;
 }) => {
   const queries = [
     createUpsertQuery('userSyncStatus', {
@@ -22,7 +22,7 @@ export const upsertUserSyncStatus = async ({
     userId: currentUserId,
   });
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSqlBatch(queries);
   }
 
