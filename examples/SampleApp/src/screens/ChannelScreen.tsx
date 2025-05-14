@@ -129,8 +129,12 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
       }
 
       const newChannel = chatClient?.channel('messaging', channelId);
-      if (!newChannel?.initialized) {
-        await newChannel?.watch();
+      try {
+        if (!newChannel?.initialized) {
+          await newChannel?.watch();
+        }
+      } catch(error) {
+        console.log('An error has occurred while watching the channel: ', error);
       }
       setChannel(newChannel);
     };
