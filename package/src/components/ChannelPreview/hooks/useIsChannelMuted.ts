@@ -31,7 +31,11 @@ export const useIsChannelMuted = (channel: Channel) => {
 
     const listeners = [
       client.on('notification.channel_mutes_updated', handleEvent),
-      client.on('health.check', handleEvent),
+      client.on('health.check', (event) => {
+        if (event.me) {
+          handleEvent();
+        }
+      }),
     ];
     return () => {
       listeners.forEach((listener) => listener.unsubscribe());
