@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import type { Attachment } from 'stream-chat';
@@ -42,6 +42,12 @@ const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithConte
   const [filesToDisplay, setFilesToDisplay] = useState<FilesToDisplayType[]>(() =>
     files.map((file) => ({ ...file, duration: file.duration || 0, paused: true, progress: 0 })),
   );
+
+  useEffect(() => {
+    setFilesToDisplay(
+      files.map((file) => ({ ...file, duration: file.duration || 0, paused: true, progress: 0 })),
+    );
+  }, [files]);
 
   // Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here and the duration is set.
   const onLoad = (index: string, duration: number) => {
