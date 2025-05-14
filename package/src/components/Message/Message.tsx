@@ -761,6 +761,7 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     message: prevMessage,
     messagesContext: prevMessagesContext,
     showUnreadUnderlay: prevShowUnreadUnderlay,
+    readBy: prevReadBy,
     t: prevT,
   } = prevProps;
   const {
@@ -773,8 +774,14 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     message: nextMessage,
     messagesContext: nextMessagesContext,
     showUnreadUnderlay: nextShowUnreadUnderlay,
+    readBy: nextReadBy,
     t: nextT,
   } = nextProps;
+
+  const readByEqual = prevReadBy === nextReadBy;
+  if (!readByEqual) {
+    return false;
+  }
 
   const membersEqual = Object.keys(prevMembers).length === Object.keys(nextMembers).length;
   if (!membersEqual) {
