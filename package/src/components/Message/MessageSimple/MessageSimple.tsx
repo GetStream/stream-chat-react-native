@@ -90,7 +90,16 @@ export type MessageSimplePropsWithContext = Pick<
     | 'reactionListPosition'
     | 'ReactionListTop'
     | 'setQuotedMessageState'
-  > & { shouldRenderSwipeableWrapper: boolean };
+  > & {
+    /**
+     * Will determine whether the swipeable wrapper is always rendered for each
+     * message. If set to false, the animated wrapper will be rendered only when
+     * a swiping gesture is active and not otherwise.
+     * Since stateful components would lose their state if we remount them while
+     * an animation is happening, this should always be set to true in those instances.
+     */
+    shouldRenderSwipeableWrapper: boolean;
+  };
 
 const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
   const [messageContentWidth, setMessageContentWidth] = useState(0);
@@ -203,7 +212,9 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
   const translateX = useSharedValue(0);
   const touchStart = useSharedValue<{ x: number; y: number } | null>(null);
   const isSwiping = useSharedValue<boolean>(false);
-  const [isBeingSwiped, setIsBeingSwiped] = useState<boolean>(shouldRenderSwipeableWrapper);
+  const [shouldRenderAnimatedWrapper, setShouldRenderAnimatedWrapper] = useState<boolean>(
+    shouldRenderSwipeableWrapper,
+  );
 
   const onSwipeToReply = useCallback(() => {
     clearQuotedMessageState();
@@ -235,7 +246,7 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
             state.activate();
             isSwiping.value = true;
             if (!shouldRenderSwipeableWrapper) {
-              runOnJS(setIsBeingSwiped)(isSwiping.value);
+              runOnJS(setShouldRenderAnimatedWrapper)(isSwiping.value);
             }
           } else {
             state.fail();
@@ -267,7 +278,7 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
             },
             () => {
               if (!shouldRenderSwipeableWrapper) {
-                runOnJS(setIsBeingSwiped)(isSwiping.value);
+                runOnJS(setShouldRenderAnimatedWrapper)(isSwiping.value);
               }
             },
           );
@@ -339,7 +350,7 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
     () => (
       <GestureDetector gesture={swipeGesture}>
         <View hitSlop={messageSwipeToReplyHitSlop} style={[styles.contentWrapper, contentWrapper]}>
-          {isBeingSwiped ? (
+          {shouldRenderAnimatedWrapper ? (
             <>
               <AnimatedWrapper
                 style={[
@@ -363,7 +374,7 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
     [
       MessageSwipeContent,
       contentWrapper,
-      isBeingSwiped,
+      shouldRenderAnimatedWrapper,
       messageBubbleAnimatedStyle,
       messageSwipeToReplyHitSlop,
       renderMessageBubble,
