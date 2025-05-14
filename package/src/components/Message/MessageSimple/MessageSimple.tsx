@@ -92,7 +92,16 @@ export type MessageSimplePropsWithContext<
     | 'reactionListPosition'
     | 'ReactionListTop'
     | 'setQuotedMessageState'
-  >;
+  > & {
+    /**
+     * Will determine whether the swipeable wrapper is always rendered for each
+     * message. If set to false, the animated wrapper will be rendered only when
+     * a swiping gesture is active and not otherwise.
+     * Since stateful components would lose their state if we remount them while
+     * an animation is happening, this should always be set to true in those instances.
+     */
+    shouldRenderSwipeableWrapper: boolean;
+  };
 
 const MessageSimpleWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -129,6 +138,7 @@ const MessageSimpleWithContext = <
     ReactionListTop,
     setQuotedMessageState,
     showMessageStatus,
+    shouldRenderSwipeableWrapper,
   } = props;
 
   const {
@@ -208,7 +218,9 @@ const MessageSimpleWithContext = <
   const translateX = useSharedValue(0);
   const touchStart = useSharedValue<{ x: number; y: number } | null>(null);
   const isSwiping = useSharedValue<boolean>(false);
-  const [isBeingSwiped, setIsBeingSwiped] = useState<boolean>(false);
+  const [shouldRenderAnimatedWrapper, setShouldRenderAnimatedWrapper] = useState<boolean>(
+    shouldRenderSwipeableWrapper,
+  );
 
   const onSwipeToReply = useCallback(() => {
     clearQuotedMessageState();
@@ -239,7 +251,9 @@ const MessageSimpleWithContext = <
           if (isHorizontalPanning) {
             state.activate();
             isSwiping.value = true;
-            runOnJS(setIsBeingSwiped)(isSwiping.value);
+            if (!shouldRenderSwipeableWrapper) {
+              runOnJS(setShouldRenderAnimatedWrapper)(isSwiping.value);
+            }
           } else {
             state.fail();
           }
@@ -269,11 +283,21 @@ const MessageSimpleWithContext = <
               stiffness: 1,
             },
             () => {
-              runOnJS(setIsBeingSwiped)(isSwiping.value);
+              if (!shouldRenderSwipeableWrapper) {
+                runOnJS(setShouldRenderAnimatedWrapper)(isSwiping.value);
+              }
             },
           );
         }),
-    [isSwiping, messageSwipeToReplyHitSlop, onSwipeToReply, touchStart, translateX, triggerHaptic],
+    [
+      isSwiping,
+      messageSwipeToReplyHitSlop,
+      onSwipeToReply,
+      touchStart,
+      translateX,
+      triggerHaptic,
+      shouldRenderSwipeableWrapper,
+    ],
   );
 
   const messageBubbleAnimatedStyle = useAnimatedStyle(
@@ -332,7 +356,7 @@ const MessageSimpleWithContext = <
     () => (
       <GestureDetector gesture={swipeGesture}>
         <View hitSlop={messageSwipeToReplyHitSlop} style={[styles.contentWrapper, contentWrapper]}>
-          {isBeingSwiped ? (
+          {shouldRenderAnimatedWrapper ? (
             <>
               <AnimatedWrapper
                 style={[
@@ -356,7 +380,7 @@ const MessageSimpleWithContext = <
     [
       MessageSwipeContent,
       contentWrapper,
-      isBeingSwiped,
+      shouldRenderAnimatedWrapper,
       messageBubbleAnimatedStyle,
       messageSwipeToReplyHitSlop,
       renderMessageBubble,
@@ -598,6 +622,7 @@ export const MessageSimple = <
     onlyEmojis,
     otherAttachments,
     showMessageStatus,
+    isMessageAIGenerated,
   } = useMessageContext<StreamChatGenerics>();
   const {
     clearQuotedMessageState,
@@ -619,6 +644,11 @@ export const MessageSimple = <
     ReactionListTop,
     setQuotedMessageState,
   } = useMessagesContext<StreamChatGenerics>();
+  const isAIGenerated = useMemo(
+    () => isMessageAIGenerated(message),
+    [message, isMessageAIGenerated],
+  );
+  const shouldRenderSwipeableWrapper = (message?.attachments || []).length > 0 || isAIGenerated;
 
   return (
     <MemoizedMessageSimple<StreamChatGenerics>
@@ -651,6 +681,7 @@ export const MessageSimple = <
         reactionListPosition,
         ReactionListTop,
         setQuotedMessageState,
+        shouldRenderSwipeableWrapper,
         showMessageStatus,
       }}
       {...props}
