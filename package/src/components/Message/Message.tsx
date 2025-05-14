@@ -135,9 +135,12 @@ export type MessagePropsWithContext = Pick<
 > &
   Pick<KeyboardContextValue, 'dismissKeyboard'> &
   Partial<
-    Omit<MessageContextValue, 'groupStyles' | 'handleReaction' | 'message' | 'isMessageAIGenerated'>
+    Omit<
+      MessageContextValue,
+      'groupStyles' | 'handleReaction' | 'message' | 'isMessageAIGenerated' | 'readBy'
+    >
   > &
-  Pick<MessageContextValue, 'groupStyles' | 'message' | 'isMessageAIGenerated'> &
+  Pick<MessageContextValue, 'groupStyles' | 'message' | 'isMessageAIGenerated' | 'readBy'> &
   Pick<
     MessagesContextValue,
     | 'sendReaction'
@@ -262,8 +265,8 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     t,
     threadList = false,
     updateMessage,
+    readBy,
   } = props;
-  const { read } = useChannelContext();
   const isMessageAIGenerated = messagesContext.isMessageAIGenerated;
   const isAIGenerated = useMemo(
     () => isMessageAIGenerated(message),
@@ -278,7 +281,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
       screenPadding,
     },
   } = useTheme();
-  const readBy = useMemo(() => getReadState(message, read), [message, read]);
 
   const showMessageOverlay = async (showMessageReactions = false, selectedReaction?: string) => {
     await dismissKeyboard();
@@ -925,12 +927,14 @@ export type MessageProps = Partial<
  * @example ./Message.md
  */
 export const Message = (props: MessageProps) => {
-  const { channel, enforceUniqueReaction, members } = useChannelContext();
+  const { message } = props;
+  const { channel, enforceUniqueReaction, members, read } = useChannelContext();
   const chatContext = useChatContext();
   const { dismissKeyboard } = useKeyboardContext();
   const messagesContext = useMessagesContext();
   const { openThread } = useThreadContext();
   const { t } = useTranslationContext();
+  const readBy = useMemo(() => getReadState(message, read), [message, read]);
 
   return (
     <MemoizedMessage
@@ -943,6 +947,7 @@ export const Message = (props: MessageProps) => {
         members,
         messagesContext,
         openThread,
+        readBy,
         t,
       }}
       {...props}
