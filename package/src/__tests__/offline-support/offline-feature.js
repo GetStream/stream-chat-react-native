@@ -1126,6 +1126,177 @@ export const Generic = () => {
       });
     });
 
+    it('should also update the corresponding message.reaction_groups with reaction.new', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+
+      const targetChannel = channels[getRandomInt(0, channels.length - 1)];
+      const targetMessage =
+        targetChannel.messages[getRandomInt(0, targetChannel.messages.length - 1)];
+      const reactionMember =
+        targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
+
+      const newReaction = generateReaction({
+        message_id: targetMessage.id,
+        type: 'wow',
+        user: reactionMember.user,
+      });
+      const newDate = new Date().toISOString();
+      const messageWithNewReaction = {
+        ...targetMessage,
+        latest_reactions: [...targetMessage.latest_reactions, newReaction],
+        reaction_groups: {
+          ...targetMessage.reaction_groups,
+          [newReaction.type]: {
+            count: 1,
+            first_reaction_at: newDate,
+            last_reaction_at: newDate,
+            sum_scores: 1,
+          },
+        },
+      };
+
+      act(() =>
+        dispatchReactionNewEvent(
+          chatClient,
+          newReaction,
+          messageWithNewReaction,
+          targetChannel.channel,
+        ),
+      );
+
+      await waitFor(async () => {
+        const messageRows = await BetterSqlite.selectFromTable('messages');
+        const messageWithReactionRow = messageRows.filter(
+          (m) => m.id === messageWithNewReaction.id,
+        )[0];
+
+        const reactionGroups = JSON.parse(messageWithReactionRow.reactionGroups);
+
+        expect(reactionGroups[newReaction.type]?.count).toBe(1);
+        expect(reactionGroups[newReaction.type]?.sum_scores).toBe(1);
+        expect(reactionGroups[newReaction.type]?.first_reaction_at).toBe(newDate);
+        expect(reactionGroups[newReaction.type]?.last_reaction_at).toBe(newDate);
+      });
+    });
+
+    it('should also update the corresponding message.reaction_groups with reaction.updated', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+
+      const targetChannel = channels[getRandomInt(0, channels.length - 1)];
+      const targetMessage =
+        targetChannel.messages[getRandomInt(0, targetChannel.messages.length - 1)];
+      const reactionMember =
+        targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
+
+      const newReaction = generateReaction({
+        message_id: targetMessage.id,
+        type: 'wow',
+        user: reactionMember.user,
+      });
+      const newDate = new Date().toISOString();
+      const messageWithNewReaction = {
+        ...targetMessage,
+        latest_reactions: [...targetMessage.latest_reactions, newReaction],
+        reaction_groups: {
+          ...targetMessage.reaction_groups,
+          [newReaction.type]: {
+            count: 1,
+            first_reaction_at: newDate,
+            last_reaction_at: newDate,
+            sum_scores: 1,
+          },
+        },
+      };
+
+      act(() =>
+        dispatchReactionUpdatedEvent(
+          chatClient,
+          newReaction,
+          messageWithNewReaction,
+          targetChannel.channel,
+        ),
+      );
+
+      await waitFor(async () => {
+        const messageRows = await BetterSqlite.selectFromTable('messages');
+        const messageWithReactionRow = messageRows.filter(
+          (m) => m.id === messageWithNewReaction.id,
+        )[0];
+
+        const reactionGroups = JSON.parse(messageWithReactionRow.reactionGroups);
+
+        expect(reactionGroups[newReaction.type]?.count).toBe(1);
+        expect(reactionGroups[newReaction.type]?.sum_scores).toBe(1);
+        expect(reactionGroups[newReaction.type]?.first_reaction_at).toBe(newDate);
+        expect(reactionGroups[newReaction.type]?.last_reaction_at).toBe(newDate);
+      });
+    });
+
+    it('should also update the corresponding message.reaction_groups with reaction.deleted', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+
+      const targetChannel = channels[getRandomInt(0, channels.length - 1)];
+      const targetMessage =
+        targetChannel.messages[getRandomInt(0, targetChannel.messages.length - 1)];
+      const reactionMember =
+        targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
+
+      const newReaction = generateReaction({
+        message_id: targetMessage.id,
+        type: 'wow',
+        user: reactionMember.user,
+      });
+      const newDate = new Date().toISOString();
+      const messageWithNewReaction = {
+        ...targetMessage,
+        latest_reactions: [...targetMessage.latest_reactions, newReaction],
+        reaction_groups: {
+          ...targetMessage.reaction_groups,
+          [newReaction.type]: {
+            count: 1,
+            first_reaction_at: newDate,
+            last_reaction_at: newDate,
+            sum_scores: 1,
+          },
+        },
+      };
+
+      act(() =>
+        dispatchReactionDeletedEvent(
+          chatClient,
+          newReaction,
+          messageWithNewReaction,
+          targetChannel.channel,
+        ),
+      );
+
+      await waitFor(async () => {
+        const messageRows = await BetterSqlite.selectFromTable('messages');
+        const messageWithReactionRow = messageRows.filter(
+          (m) => m.id === messageWithNewReaction.id,
+        )[0];
+
+        const reactionGroups = JSON.parse(messageWithReactionRow.reactionGroups);
+
+        expect(reactionGroups[newReaction.type]?.count).toBe(1);
+        expect(reactionGroups[newReaction.type]?.sum_scores).toBe(1);
+        expect(reactionGroups[newReaction.type]?.first_reaction_at).toBe(newDate);
+        expect(reactionGroups[newReaction.type]?.last_reaction_at).toBe(newDate);
+      });
+    });
+
     it('should add a member to DB when a new member is added to channel', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
       renderComponent();
