@@ -1,4 +1,4 @@
-export default (client, user, channel = {}) => {
+export default (client, user, channel = {}, payload = {}) => {
   const newDate = new Date();
   const event = {
     channel,
@@ -7,6 +7,7 @@ export default (client, user, channel = {}) => {
     received_at: newDate,
     type: 'message.read',
     user,
+    ...payload,
   };
   client.dispatchEvent(event);
 

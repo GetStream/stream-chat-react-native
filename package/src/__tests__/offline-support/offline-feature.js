@@ -26,6 +26,7 @@ import dispatchMessageNewEvent from '../../mock-builders/event/messageNew';
 import dispatchMessageReadEvent from '../../mock-builders/event/messageRead';
 import dispatchMessageUpdatedEvent from '../../mock-builders/event/messageUpdated';
 import dispatchNotificationAddedToChannel from '../../mock-builders/event/notificationAddedToChannel';
+import dispatchNotificationMarkUnread from '../../mock-builders/event/notificationMarkUnread';
 import dispatchNotificationMessageNewEvent from '../../mock-builders/event/notificationMessageNew';
 import dispatchNotificationRemovedFromChannel from '../../mock-builders/event/notificationRemovedFromChannel';
 import dispatchReactionDeletedEvent from '../../mock-builders/event/reactionDeleted';
@@ -1244,8 +1245,14 @@ export const Generic = () => {
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
       const targetMember = targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
 
+      const readTimestamp = new Date().toISOString();
+
       act(() => {
-        dispatchMessageReadEvent(chatClient, targetMember.user, targetChannel.channel);
+        dispatchMessageReadEvent(chatClient, targetMember.user, targetChannel.channel, {
+          first_unread_message_id: '123',
+          last_read: readTimestamp,
+          last_read_message_id: '321',
+        });
       });
 
       await waitFor(async () => {
@@ -1256,6 +1263,54 @@ export const Generic = () => {
 
         expect(matchingReadRows.length).toBe(1);
         expect(matchingReadRows[0].unreadMessages).toBe(0);
+        expect(matchingReadRows[0].lastReadMessageId).toBe('321');
+        // FIXME: Currently missing from the DB, uncomment when added.
+        // expect(matchingReadRows[0].firstUnreadMessageId).toBe('123');
+        expect(matchingReadRows[0].lastRead).toBe(readTimestamp);
+      });
+    });
+
+    it('should update reads in DB when a channel is marked as unread', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+      const targetChannel = channels[getRandomInt(0, channels.length - 1)];
+      const targetMember = targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
+
+      chatClient.userID = targetMember.user.id;
+      chatClient.user = targetMember.user;
+
+      const readTimestamp = new Date().toISOString();
+
+      act(() => {
+        dispatchNotificationMarkUnread(
+          chatClient,
+          targetChannel.channel,
+          {
+            first_unread_message_id: '123',
+            last_read: readTimestamp,
+            last_read_message_id: '321',
+            unread_messages: 5,
+          },
+          targetMember.user,
+        );
+      });
+
+      await waitFor(async () => {
+        const readsRows = await BetterSqlite.selectFromTable('reads');
+        const matchingReadRows = readsRows.filter(
+          (r) => r.userId === targetMember.user_id && r.cid === targetChannel.cid,
+        );
+
+        expect(matchingReadRows.length).toBe(1);
+        expect(matchingReadRows[0].unreadMessages).toBe(5);
+        expect(matchingReadRows[0].lastReadMessageId).toBe('321');
+        // FIXME: Currently missing from the DB, uncomment when added.
+        // expect(matchingReadRows[0].firstUnreadMessageId).toBe('123');
+        expect(matchingReadRows[0].lastRead).toBe(readTimestamp);
       });
     });
   });
