@@ -1145,16 +1145,18 @@ export const Generic = () => {
         user: reactionMember.user,
       });
       const newDate = new Date().toISOString();
+      // the actual content of the reaction_groups does not matter, as we just want to know if it updates to it
+      // anything impossible given the scenarios is fine
       const messageWithNewReaction = {
         ...targetMessage,
         latest_reactions: [...targetMessage.latest_reactions, newReaction],
         reaction_groups: {
           ...targetMessage.reaction_groups,
           [newReaction.type]: {
-            count: 1,
+            count: 999,
             first_reaction_at: newDate,
             last_reaction_at: newDate,
-            sum_scores: 1,
+            sum_scores: 999,
           },
         },
       };
@@ -1176,8 +1178,8 @@ export const Generic = () => {
 
         const reactionGroups = JSON.parse(messageWithReactionRow.reactionGroups);
 
-        expect(reactionGroups[newReaction.type]?.count).toBe(1);
-        expect(reactionGroups[newReaction.type]?.sum_scores).toBe(1);
+        expect(reactionGroups[newReaction.type]?.count).toBe(999);
+        expect(reactionGroups[newReaction.type]?.sum_scores).toBe(999);
         expect(reactionGroups[newReaction.type]?.first_reaction_at).toBe(newDate);
         expect(reactionGroups[newReaction.type]?.last_reaction_at).toBe(newDate);
       });
@@ -1208,10 +1210,10 @@ export const Generic = () => {
         reaction_groups: {
           ...targetMessage.reaction_groups,
           [newReaction.type]: {
-            count: 1,
+            count: 999,
             first_reaction_at: newDate,
             last_reaction_at: newDate,
-            sum_scores: 1,
+            sum_scores: 999,
           },
         },
       };
@@ -1233,8 +1235,8 @@ export const Generic = () => {
 
         const reactionGroups = JSON.parse(messageWithReactionRow.reactionGroups);
 
-        expect(reactionGroups[newReaction.type]?.count).toBe(1);
-        expect(reactionGroups[newReaction.type]?.sum_scores).toBe(1);
+        expect(reactionGroups[newReaction.type]?.count).toBe(999);
+        expect(reactionGroups[newReaction.type]?.sum_scores).toBe(999);
         expect(reactionGroups[newReaction.type]?.first_reaction_at).toBe(newDate);
         expect(reactionGroups[newReaction.type]?.last_reaction_at).toBe(newDate);
       });
@@ -1265,10 +1267,10 @@ export const Generic = () => {
         reaction_groups: {
           ...targetMessage.reaction_groups,
           [newReaction.type]: {
-            count: 1,
+            count: 999,
             first_reaction_at: newDate,
             last_reaction_at: newDate,
-            sum_scores: 1,
+            sum_scores: 999,
           },
         },
       };
@@ -1290,8 +1292,8 @@ export const Generic = () => {
 
         const reactionGroups = JSON.parse(messageWithReactionRow.reactionGroups);
 
-        expect(reactionGroups[newReaction.type]?.count).toBe(1);
-        expect(reactionGroups[newReaction.type]?.sum_scores).toBe(1);
+        expect(reactionGroups[newReaction.type]?.count).toBe(999);
+        expect(reactionGroups[newReaction.type]?.sum_scores).toBe(999);
         expect(reactionGroups[newReaction.type]?.first_reaction_at).toBe(newDate);
         expect(reactionGroups[newReaction.type]?.last_reaction_at).toBe(newDate);
       });
