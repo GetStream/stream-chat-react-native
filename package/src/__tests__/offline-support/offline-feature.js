@@ -127,8 +127,10 @@ export const Generic = () => {
     const createChannel = (messagesOverride) => {
       const id = uuidv4();
       const cid = `messaging:${id}`;
-      const begin = getRandomInt(0, allUsers.length - 2); // begin shouldn't be the end of users.length
-      const end = getRandomInt(begin + 1, allUsers.length - 1);
+      // always guarantee at least 2 members for ease of use; cases that need to test specific behaviour
+      // for 1 or 0 member channels should explicitly generate them.
+      const begin = getRandomInt(0, allUsers.length - 3); // begin shouldn't be the end of users.length
+      const end = getRandomInt(begin + 2, allUsers.length - 1);
       const usersForMembers = allUsers.slice(begin, end);
       const members = usersForMembers.map((user) =>
         generateMember({
@@ -785,6 +787,155 @@ export const Generic = () => {
       });
     });
 
+    it('should correctly add multiple reactions to the DB', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+
+      const targetChannel = channels[getRandomInt(0, channels.length - 1)];
+      const targetMessage =
+        targetChannel.messages[getRandomInt(0, targetChannel.messages.length - 1)];
+      const reactionMember =
+        targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
+      const someOtherMember = targetChannel.members.filter(
+        (member) => reactionMember.user.id !== member.user.id,
+      )[getRandomInt(0, targetChannel.members.length - 2)];
+
+      const newReactions = [
+        generateReaction({
+          message_id: targetMessage.id,
+          type: 'wow',
+          user: reactionMember.user,
+        }),
+        generateReaction({
+          message_id: targetMessage.id,
+          type: 'wow',
+          user: someOtherMember.user,
+        }),
+        generateReaction({
+          message_id: targetMessage.id,
+          type: 'love',
+          user: reactionMember.user,
+        }),
+      ];
+      const messageWithNewReactionBase = {
+        ...targetMessage,
+        latest_reactions: [...targetMessage.latest_reactions],
+      };
+      const newLatestReactions = [];
+
+      newReactions.forEach((newReaction) => {
+        newLatestReactions.push(newReaction);
+        const messageWithNewReaction = {
+          ...messageWithNewReactionBase,
+          latest_reactions: [...messageWithNewReactionBase.latest_reactions, ...newLatestReactions],
+        };
+        act(() =>
+          dispatchReactionNewEvent(
+            chatClient,
+            newReaction,
+            messageWithNewReaction,
+            targetChannel.channel,
+          ),
+        );
+      });
+
+      const finalReactionCount =
+        messageWithNewReactionBase.latest_reactions.length +
+        newReactions.filter(
+          (newReaction) =>
+            !messageWithNewReactionBase.latest_reactions.some(
+              (initialReaction) =>
+                initialReaction.type === newReaction.type &&
+                initialReaction.user.id === newReaction.user.id,
+            ),
+        ).length;
+
+      await waitFor(async () => {
+        const reactionsRows = await BetterSqlite.selectFromTable('reactions');
+        const matchingReactionsRows = reactionsRows.filter(
+          (r) => r.messageId === messageWithNewReactionBase.id,
+        );
+
+        expect(matchingReactionsRows.length).toBe(finalReactionCount);
+        newReactions.forEach((newReaction) => {
+          expect(
+            matchingReactionsRows.filter(
+              (reaction) =>
+                reaction.type === newReaction.type && reaction.userId === newReaction.user.id,
+            ).length,
+          ).toBe(1);
+        });
+      });
+    });
+
+    it('should gracefully handle multiple reaction.new events of the same type for the same user', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+
+      const targetChannel = channels[getRandomInt(0, channels.length - 1)];
+      const targetMessage =
+        targetChannel.messages[getRandomInt(0, targetChannel.messages.length - 1)];
+      const reactionMember =
+        targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
+
+      const newReactions = [
+        generateReaction({
+          message_id: targetMessage.id,
+          type: 'wow',
+          user: reactionMember.user,
+        }),
+        generateReaction({
+          message_id: targetMessage.id,
+          type: 'wow',
+          user: reactionMember.user,
+        }),
+        generateReaction({
+          message_id: targetMessage.id,
+          type: 'wow',
+          user: reactionMember.user,
+        }),
+      ];
+      const messageWithNewReactionBase = {
+        ...targetMessage,
+        latest_reactions: [...targetMessage.latest_reactions],
+      };
+      const newLatestReactions = [];
+
+      newReactions.forEach((newReaction) => {
+        newLatestReactions.push(newReaction);
+        const messageWithNewReaction = {
+          ...messageWithNewReactionBase,
+          latest_reactions: [...messageWithNewReactionBase.latest_reactions, ...newLatestReactions],
+        };
+        act(() =>
+          dispatchReactionNewEvent(
+            chatClient,
+            newReaction,
+            messageWithNewReaction,
+            targetChannel.channel,
+          ),
+        );
+      });
+
+      await waitFor(async () => {
+        const reactionsRows = await BetterSqlite.selectFromTable('reactions');
+        const matchingReactionsRows = reactionsRows.filter(
+          (r) =>
+            r.type === 'wow' &&
+            r.userId === reactionMember.user.id &&
+            r.messageId === messageWithNewReactionBase.id,
+        );
+
+        expect(matchingReactionsRows.length).toBe(1);
+      });
+    });
+
     it('should remove a reaction from DB when reaction is deleted', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
@@ -871,6 +1022,103 @@ export const Generic = () => {
             r.type === reactionToBeUpdated.type &&
             r.userId === reactionToBeUpdated.user_id &&
             r.messageId === targetMessage.id,
+        );
+
+        expect(matchingReactionsRows.length).toBe(1);
+      });
+    });
+
+    it('should correctly upsert reactions when enforce_unique is true', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+
+      const targetChannel = channels[getRandomInt(0, channels.length - 1)];
+      const targetMessage =
+        targetChannel.messages[getRandomInt(0, targetChannel.messages.length - 1)];
+      const reactionMember =
+        targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
+
+      const newReactions = [
+        generateReaction({
+          message_id: targetMessage.id,
+          type: 'wow',
+          user: reactionMember.user,
+        }),
+        generateReaction({
+          message_id: targetMessage.id,
+          type: 'love',
+          user: reactionMember.user,
+        }),
+      ];
+      const messageWithNewReactionBase = {
+        ...targetMessage,
+        latest_reactions: [...targetMessage.latest_reactions],
+      };
+      const newLatestReactions = [];
+
+      newReactions.forEach((newReaction) => {
+        newLatestReactions.push(newReaction);
+        const messageWithNewReaction = {
+          ...messageWithNewReactionBase,
+          latest_reactions: [...messageWithNewReactionBase.latest_reactions, ...newLatestReactions],
+        };
+        act(() =>
+          dispatchReactionNewEvent(
+            chatClient,
+            newReaction,
+            messageWithNewReaction,
+            targetChannel.channel,
+          ),
+        );
+      });
+
+      await waitFor(async () => {
+        const reactionsRows = await BetterSqlite.selectFromTable('reactions');
+        const matchingReactionsRows = reactionsRows.filter(
+          (r) =>
+            r.messageId === messageWithNewReactionBase.id && r.userId === reactionMember.user.id,
+        );
+
+        expect(matchingReactionsRows.length).toBe(2);
+        newReactions.forEach((newReaction) => {
+          expect(
+            matchingReactionsRows.filter(
+              (reaction) =>
+                reaction.type === newReaction.type && reaction.userId === newReaction.user.id,
+            ).length,
+          ).toBe(1);
+        });
+      });
+
+      const uniqueReaction = generateReaction({
+        message_id: targetMessage.id,
+        type: 'like',
+        user: reactionMember.user,
+      });
+      const messageWithNewReaction = {
+        ...targetMessage,
+        latest_reactions: [...targetMessage.latest_reactions, uniqueReaction],
+      };
+
+      act(() =>
+        dispatchReactionUpdatedEvent(
+          chatClient,
+          uniqueReaction,
+          messageWithNewReaction,
+          targetChannel.channel,
+        ),
+      );
+
+      await waitFor(async () => {
+        const reactionsRows = await BetterSqlite.selectFromTable('reactions');
+        const matchingReactionsRows = reactionsRows.filter(
+          (r) =>
+            r.type === uniqueReaction.type &&
+            r.userId === reactionMember.user.id &&
+            r.messageId === messageWithNewReaction.id,
         );
 
         expect(matchingReactionsRows.length).toBe(1);
