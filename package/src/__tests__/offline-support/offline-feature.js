@@ -17,7 +17,7 @@ import dispatchChannelDeletedEvent from '../../mock-builders/event/channelDelete
 import dispatchChannelHiddenEvent from '../../mock-builders/event/channelHidden';
 import dispatchChannelTruncatedEvent from '../../mock-builders/event/channelTruncated';
 import dispatchChannelUpdatedEvent from '../../mock-builders/event/channelUpdated';
-// import dispatchChannelVisibleEvent from '../../mock-builders/event/channelVisible';
+import dispatchChannelVisibleEvent from '../../mock-builders/event/channelVisible';
 import dispatchConnectionChangedEvent from '../../mock-builders/event/connectionChanged';
 import dispatchMemberAddedEvent from '../../mock-builders/event/memberAdded';
 import dispatchMemberRemovedEvent from '../../mock-builders/event/memberRemoved';
@@ -507,6 +507,59 @@ export const Generic = () => {
 
         expect(matchingRows.length).toBe(1);
         expect(matchingRows[0].hidden).toBeTruthy();
+        expect(matchingMessagesRows.length).toBe(
+          chatClient.activeChannels[hiddenChannel.cid].state.messages.length,
+        );
+      });
+    });
+
+    it('should correctly mark the channel as visible if it was hidden before in the db', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+      const hiddenChannel = channels[getRandomInt(0, channels.length - 1)].channel;
+      // first, we mark it as hidden
+      act(() => dispatchChannelHiddenEvent(chatClient, hiddenChannel));
+      await waitFor(async () => {
+        const channelIdsOnUI = screen
+          .queryAllByLabelText('list-item')
+          .map((node) => node._fiber.pendingProps.testID);
+        expect(channelIdsOnUI.includes(hiddenChannel.cid)).toBeFalsy();
+        await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
+
+        const channelsRows = await BetterSqlite.selectFromTable('channels');
+        const matchingRows = channelsRows.filter((c) => c.id === hiddenChannel.id);
+
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const matchingMessagesRows = messagesRows.filter((m) => m.cid === hiddenChannel.cid);
+
+        expect(matchingRows.length).toBe(1);
+        expect(matchingRows[0].hidden).toBeTruthy();
+        expect(matchingMessagesRows.length).toBe(
+          chatClient.activeChannels[hiddenChannel.cid].state.messages.length,
+        );
+      });
+
+      // then, we make it visible after waiting for everything to finish
+      act(() => dispatchChannelVisibleEvent(chatClient, hiddenChannel));
+      await waitFor(async () => {
+        const channelIdsOnUI = screen
+          .queryAllByLabelText('list-item')
+          .map((node) => node._fiber.pendingProps.testID);
+        expect(channelIdsOnUI.includes(hiddenChannel.cid)).toBeFalsy();
+        await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
+
+        const channelsRows = await BetterSqlite.selectFromTable('channels');
+        const matchingRows = channelsRows.filter((c) => c.id === hiddenChannel.id);
+
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const matchingMessagesRows = messagesRows.filter((m) => m.cid === hiddenChannel.cid);
+
+        expect(matchingRows.length).toBe(1);
+        expect(matchingRows[0].hidden).toBeFalsy();
         expect(matchingMessagesRows.length).toBe(
           chatClient.activeChannels[hiddenChannel.cid].state.messages.length,
         );
