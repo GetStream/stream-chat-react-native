@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Channel } from '../../components/Channel/Channel';
 import { Chat } from '../../components/Chat/Chat';
-import { ChannelContext, ChatContext, MessageInputContext, MessagesContext } from '../../contexts';
+import { MessageInputContext, MessagesContext } from '../../contexts';
 import { deleteMessageApi } from '../../mock-builders/api/deleteMessage';
 import { deleteReactionApi } from '../../mock-builders/api/deleteReaction';
 import { erroredDeleteApi, erroredPostApi } from '../../mock-builders/api/error';
@@ -470,7 +470,6 @@ export const OptimisticUpdates = () => {
 
         await waitFor(async () => {
           const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
-          console.log('TESTINGROWS: ', pendingTasksRows);
 
           expect(pendingTasksRows.length).toBe(1);
         });
