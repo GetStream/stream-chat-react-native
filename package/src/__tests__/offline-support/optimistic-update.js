@@ -7,11 +7,12 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Channel } from '../../components/Channel/Channel';
 import { Chat } from '../../components/Chat/Chat';
-import { MessagesContext } from '../../contexts';
+import { ChannelContext, ChatContext, MessageInputContext, MessagesContext } from '../../contexts';
 import { deleteMessageApi } from '../../mock-builders/api/deleteMessage';
 import { deleteReactionApi } from '../../mock-builders/api/deleteReaction';
 import { erroredDeleteApi, erroredPostApi } from '../../mock-builders/api/error';
 import { getOrCreateChannelApi } from '../../mock-builders/api/getOrCreateChannel';
+import { sendMessageApi } from '../../mock-builders/api/sendMessage';
 import { sendReactionApi } from '../../mock-builders/api/sendReaction';
 import { useMockedApis } from '../../mock-builders/api/useMockedApis';
 import dispatchConnectionChangedEvent from '../../mock-builders/event/connectionChanged';
@@ -100,7 +101,6 @@ export const OptimisticUpdates = () => {
       const channelResponse = createChannel();
       useMockedApis(chatClient, [getOrCreateChannelApi(channelResponse)]);
       channel = chatClient.channel('messaging', channelResponse.id);
-      console.log('BEFORE HERE');
       await channel.watch();
 
       channel.cid = channelResponse.channel.cid;
@@ -178,7 +178,7 @@ export const OptimisticUpdates = () => {
         });
       });
 
-      it('pending task should be cleared if deleteMessage request is succesful', async () => {
+      it('pending task should be cleared if deleteMessage request is successful', async () => {
         const message = generateMessage();
         render(
           <Chat client={chatClient} enableOfflineSupport>
@@ -238,7 +238,7 @@ export const OptimisticUpdates = () => {
         });
       });
 
-      it('pending task should be cleared if sendReaction request is succesful', async () => {
+      it('pending task should be cleared if sendReaction request is successful', async () => {
         const reaction = generateReaction();
         const targetMessage = channel.state.messages[0];
 
@@ -258,6 +258,69 @@ export const OptimisticUpdates = () => {
           </Chat>,
         );
         await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
+        await waitFor(async () => {
+          const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
+          expect(pendingTasksRows.length).toBe(0);
+        });
+      });
+    });
+
+    describe('send message', () => {
+      it('pending task should exist if sendMessage request fails', async () => {
+        const newMessage = generateMessage();
+
+        render(
+          <Chat client={chatClient} enableOfflineSupport>
+            <Channel channel={channel} initialValue={newMessage.text}>
+              <CallbackEffectWithContext
+                callback={async ({ sendMessage }) => {
+                  useMockedApis(chatClient, [erroredPostApi()]);
+                  try {
+                    await sendMessage({ customMessageData: newMessage });
+                  } catch (e) {
+                    // do nothing
+                  }
+                }}
+                context={MessageInputContext}
+              >
+                <View testID='children' />
+              </CallbackEffectWithContext>
+            </Channel>
+          </Chat>,
+        );
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
+        await waitFor(async () => {
+          const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
+          const pendingTaskType = pendingTasksRows?.[0]?.type;
+          const pendingTaskPayload = JSON.parse(pendingTasksRows?.[0]?.payload || '{}');
+          expect(pendingTaskType).toBe('send-message');
+          expect(pendingTaskPayload[0].id).toEqual(newMessage.id);
+          expect(pendingTaskPayload[0].text).toEqual(newMessage.text);
+        });
+      });
+
+      it('pending task should be cleared if sendMessage request is successful', async () => {
+        const newMessage = generateMessage();
+
+        // initialValue is needed as a prop to trick the message input ctx into thinking
+        // we are sending a message.
+        render(
+          <Chat client={chatClient} enableOfflineSupport>
+            <Channel channel={channel} initialValue={newMessage.text}>
+              <CallbackEffectWithContext
+                callback={async ({ sendMessage }) => {
+                  useMockedApis(chatClient, [sendMessageApi(newMessage)]);
+                  await sendMessage({ customMessageData: newMessage });
+                }}
+                context={MessageInputContext}
+              >
+                <View testID='children' />
+              </CallbackEffectWithContext>
+            </Channel>
+          </Chat>,
+        );
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
+
         await waitFor(async () => {
           const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
           expect(pendingTasksRows.length).toBe(0);
@@ -299,7 +362,7 @@ export const OptimisticUpdates = () => {
         });
       });
 
-      it('pending task should be cleared if deleteReaction request is succesful', async () => {
+      it('pending task should be cleared if deleteReaction request is successful', async () => {
         const reaction = generateReaction();
         const targetMessage = channel.state.messages[0];
 
@@ -327,52 +390,98 @@ export const OptimisticUpdates = () => {
       });
     });
 
-    it('pending task should be executed after connection is recovered', async () => {
-      const message = channel.state.messages[0];
-      const reaction = generateReaction();
+    describe('pending task execution', () => {
+      it('pending task should be executed after connection is recovered', async () => {
+        const message = channel.state.messages[0];
+        const reaction = generateReaction();
 
-      render(
-        <Chat client={chatClient} enableOfflineSupport>
-          <Channel channel={channel} initialValue={message.text}>
-            <CallbackEffectWithContext
-              callback={async ({ deleteMessage, sendReaction }) => {
-                useMockedApis(chatClient, [erroredDeleteApi()]);
-                try {
-                  await deleteMessage(reaction);
-                } catch (e) {
-                  // do nothing
-                }
+        render(
+          <Chat client={chatClient} enableOfflineSupport>
+            <Channel channel={channel} initialValue={message.text}>
+              <CallbackEffectWithContext
+                callback={async ({ deleteMessage, sendReaction }) => {
+                  useMockedApis(chatClient, [erroredDeleteApi()]);
+                  try {
+                    await deleteMessage(message);
+                  } catch (e) {
+                    // do nothing
+                  }
 
-                useMockedApis(chatClient, [erroredPostApi()]);
-                try {
-                  await sendReaction(reaction.type, message.id);
-                } catch (e) {
-                  // do nothing
-                }
-              }}
-              context={MessagesContext}
-            >
-              <View testID='children' />
-            </CallbackEffectWithContext>
-          </Channel>
-        </Chat>,
-      );
-      await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
+                  useMockedApis(chatClient, [erroredPostApi()]);
+                  try {
+                    await sendReaction(reaction.type, message.id);
+                  } catch (e) {
+                    // do nothing
+                  }
+                }}
+                context={MessagesContext}
+              >
+                <View testID='children' />
+              </CallbackEffectWithContext>
+            </Channel>
+          </Chat>,
+        );
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
 
-      await waitFor(async () => {
-        const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
+        await waitFor(async () => {
+          const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
 
-        expect(pendingTasksRows.length).toBe(2);
+          expect(pendingTasksRows.length).toBe(2);
+        });
+
+        const deleteMessageSpy = jest.spyOn(chatClient, '_deleteMessage').mockImplementation();
+        const sendReactionSpy = jest.spyOn(channel, '_sendReaction').mockImplementation();
+
+        act(() => dispatchConnectionChangedEvent(chatClient, true));
+
+        await waitFor(() => {
+          expect(deleteMessageSpy).toHaveBeenCalled();
+          expect(sendReactionSpy).toHaveBeenCalled();
+        });
       });
 
-      const deleteMessageSpy = jest.spyOn(chatClient, '_deleteMessage').mockImplementation();
-      const sendReactionSpy = jest.spyOn(channel, '_sendReaction').mockImplementation();
+      // This is a separate test so CallbackEffectWithContext does not need to be modified in order
+      // to accept multiple contexts. It can be improved in the future.
+      it('send message pending task should be executed after connection is recovered', async () => {
+        const newMessage = generateMessage();
 
-      act(() => dispatchConnectionChangedEvent(chatClient, true));
+        // initialValue is needed as a prop to trick the message input ctx into thinking
+        // we are sending a message.
+        render(
+          <Chat client={chatClient} enableOfflineSupport>
+            <Channel channel={channel} initialValue={newMessage.text}>
+              <CallbackEffectWithContext
+                callback={async ({ sendMessage }) => {
+                  useMockedApis(chatClient, [erroredPostApi()]);
+                  try {
+                    await sendMessage({ customMessageData: newMessage });
+                  } catch (e) {
+                    // do nothing
+                  }
+                }}
+                context={MessageInputContext}
+              >
+                <View testID='children' />
+              </CallbackEffectWithContext>
+            </Channel>
+          </Chat>,
+        );
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
 
-      await waitFor(() => {
-        expect(deleteMessageSpy).toHaveBeenCalled();
-        expect(sendReactionSpy).toHaveBeenCalled();
+        await waitFor(async () => {
+          const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
+          console.log('TESTINGROWS: ', pendingTasksRows);
+
+          expect(pendingTasksRows.length).toBe(1);
+        });
+
+        const sendMessageSpy = jest.spyOn(channel, '_sendMessage').mockImplementation();
+
+        act(() => dispatchConnectionChangedEvent(chatClient, true));
+
+        await waitFor(() => {
+          expect(sendMessageSpy).toHaveBeenCalled();
+        });
       });
     });
   });
