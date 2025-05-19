@@ -18,7 +18,6 @@ export const updateReaction = async ({
   reaction: ReactionResponse;
   execute?: boolean;
 }) => {
-  console.log('EXECUTING UPDATE');
   const queries: PreparedQueries[] = [];
   let storableUser: ReturnType<typeof mapUserToStorable> | undefined;
 
