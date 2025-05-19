@@ -98,14 +98,16 @@ export const generateChannelResponse = (
     id?: string;
     messages?: Record<string, any>[];
     members?: Record<string, any>[];
+    read?: Record<string, any>[];
     type?: string;
-  } = { channel: {}, id: uuidv4(), members: [], messages: [], type: 'messaging' },
+  } = { channel: {}, id: uuidv4(), members: [], messages: [], read: [], type: 'messaging' },
 ) => {
   const {
     channel = {},
     id = uuidv4(),
     messages = [],
     members = [],
+    read,
     type = 'messaging',
     ...rest
   } = customValues;
@@ -125,6 +127,7 @@ export const generateChannelResponse = (
     },
     members,
     messages,
+    read,
     ...rest,
   };
 };

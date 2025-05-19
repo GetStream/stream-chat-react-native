@@ -139,6 +139,8 @@ export const Generic = () => {
           user,
         }),
       );
+      members.push(generateMember({ cid, user: chatClient.user }));
+
       const messages =
         messagesOverride ||
         Array(10)
@@ -168,8 +170,9 @@ export const Generic = () => {
           });
 
       const reads = members.map((member) => ({
+        cid,
         last_read: new Date(new Date().setDate(new Date().getDate() - getRandomInt(0, 20))),
-        unread_messages: getRandomInt(0, messages.length),
+        unread_messages: 0,
         user: member.user,
       }));
 
@@ -182,21 +185,23 @@ export const Generic = () => {
         id,
         members,
         messages,
+        read: reads,
       });
     };
 
     beforeEach(async () => {
       jest.clearAllMocks();
+      chatClient = await getTestClientWithUser({ id: 'dan' });
       allUsers = Array(20).fill(1).map(generateUser);
+      allUsers.push(chatClient.user);
       allMessages = [];
       allMembers = [];
       allReactions = [];
       allReads = [];
+
       channels = Array(10)
         .fill(1)
         .map(() => createChannel());
-
-      chatClient = await getTestClientWithUser({ id: 'dan' });
       await BetterSqlite.openDB();
       BetterSqlite.dropAllTables();
     });
@@ -288,12 +293,7 @@ export const Generic = () => {
         );
         readsRows.forEach((row) =>
           expect(
-            allReads.filter(
-              (r) =>
-                r.last_read === row.lastRead &&
-                r.user.id === row.userId &&
-                r.unread_messages === row.unreadMessages,
-            ),
+            allReads.filter((r) => r.user.id === row.userId && r.cid === row.cid),
           ).toHaveLength(1),
         );
       });
@@ -370,17 +370,89 @@ export const Generic = () => {
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+      const targetChannel = channels[0].channel;
       const newMessage = generateMessage({
-        cid: channels[0].channel.cid,
+        cid: targetChannel.cid,
         user: generateUser(),
       });
-      act(() => dispatchMessageNewEvent(chatClient, newMessage, channels[0].channel));
+      act(() => dispatchMessageNewEvent(chatClient, newMessage, targetChannel));
 
       await waitFor(async () => {
         const messagesRows = await BetterSqlite.selectFromTable('messages');
-        const matchingRows = messagesRows.filter((m) => m.id === newMessage.id);
-        expect(matchingRows.length).toBe(1);
-        expect(matchingRows[0].id).toBe(newMessage.id);
+        const readRows = await BetterSqlite.selectFromTable('reads');
+        const matchingMessageRows = messagesRows.filter((m) => m.id === newMessage.id);
+        const matchingReadRows = readRows.filter(
+          (r) => targetChannel.cid === r.cid && chatClient.userID === r.userId,
+        );
+
+        expect(matchingMessageRows.length).toBe(1);
+        expect(matchingMessageRows[0].id).toBe(newMessage.id);
+        expect(matchingReadRows.length).toBe(1);
+        expect(matchingReadRows[0].unreadMessages).toBe(1);
+      });
+    });
+
+    it('should correctly handle multiple new messages and add them to the database', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+      const targetChannel = channels[0].channel;
+
+      // check if the reads state is correct first
+      await waitFor(async () => {
+        const readRows = await BetterSqlite.selectFromTable('reads');
+        const matchingReadRows = readRows.filter(
+          (r) => targetChannel.cid === r.cid && chatClient.userID === r.userId,
+        );
+
+        console.log('READROWS: ', readRows);
+
+        expect(matchingReadRows.length).toBe(1);
+        expect(matchingReadRows[0].unreadMessages).toBe(0);
+      });
+
+      const newMessages = [
+        generateMessage({
+          cid: targetChannel.cid,
+          user: generateUser(),
+        }),
+        generateMessage({
+          cid: targetChannel.cid,
+          user: generateUser(),
+        }),
+        generateMessage({
+          cid: targetChannel.cid,
+          user: generateUser(),
+        }),
+      ];
+
+      newMessages.forEach((newMessage) => {
+        act(() => dispatchMessageNewEvent(chatClient, newMessage, targetChannel));
+      });
+
+      await waitFor(async () => {
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const readRows = await BetterSqlite.selectFromTable('reads');
+        const matchingMessageRows = messagesRows.filter((m) =>
+          newMessages.some((newMessage) => newMessage.id === m.id),
+        );
+        const matchingReadRows = readRows.filter(
+          (r) => targetChannel.cid === r.cid && chatClient.userID === r.userId,
+        );
+
+        expect(matchingMessageRows.length).toBe(3);
+        newMessages.forEach((newMessage) => {
+          expect(
+            matchingMessageRows.some(
+              (matchingMessageRow) => matchingMessageRow.id === newMessage.id,
+            ),
+          ).toBe(true);
+        });
+        expect(matchingReadRows.length).toBe(1);
+        expect(matchingReadRows[0].unreadMessages).toBe(3);
       });
     });
 
