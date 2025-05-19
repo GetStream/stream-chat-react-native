@@ -408,8 +408,6 @@ export const Generic = () => {
           (r) => targetChannel.cid === r.cid && chatClient.userID === r.userId,
         );
 
-        console.log('READROWS: ', readRows);
-
         expect(matchingReadRows.length).toBe(1);
         expect(matchingReadRows[0].unreadMessages).toBe(0);
       });
@@ -453,6 +451,68 @@ export const Generic = () => {
         });
         expect(matchingReadRows.length).toBe(1);
         expect(matchingReadRows[0].unreadMessages).toBe(3);
+      });
+    });
+
+    it('should correctly handle multiple new messages from our own user', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+      const targetChannel = channels[0].channel;
+
+      // check if the reads state is correct first
+      await waitFor(async () => {
+        const readRows = await BetterSqlite.selectFromTable('reads');
+        const matchingReadRows = readRows.filter(
+          (r) => targetChannel.cid === r.cid && chatClient.userID === r.userId,
+        );
+
+        expect(matchingReadRows.length).toBe(1);
+        expect(matchingReadRows[0].unreadMessages).toBe(0);
+      });
+
+      const newMessages = [
+        generateMessage({
+          cid: targetChannel.cid,
+          user: chatClient.user,
+        }),
+        generateMessage({
+          cid: targetChannel.cid,
+          user: chatClient.user,
+        }),
+        generateMessage({
+          cid: targetChannel.cid,
+          user: chatClient.user,
+        }),
+      ];
+
+      newMessages.forEach((newMessage) => {
+        act(() => dispatchMessageNewEvent(chatClient, newMessage, targetChannel));
+      });
+
+      await waitFor(async () => {
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const readRows = await BetterSqlite.selectFromTable('reads');
+        const matchingMessageRows = messagesRows.filter((m) =>
+          newMessages.some((newMessage) => newMessage.id === m.id),
+        );
+        const matchingReadRows = readRows.filter(
+          (r) => targetChannel.cid === r.cid && chatClient.userID === r.userId,
+        );
+
+        expect(matchingMessageRows.length).toBe(3);
+        newMessages.forEach((newMessage) => {
+          expect(
+            matchingMessageRows.some(
+              (matchingMessageRow) => matchingMessageRow.id === newMessage.id,
+            ),
+          ).toBe(true);
+        });
+        expect(matchingReadRows.length).toBe(1);
+        expect(matchingReadRows[0].unreadMessages).toBe(0);
       });
     });
 
