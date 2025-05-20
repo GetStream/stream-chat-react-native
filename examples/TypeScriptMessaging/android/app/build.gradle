@@ -120,8 +120,8 @@ dependencies {
     // For React native video
     implementation("androidx.appcompat:appcompat:1.0.0")
     // For animated GIF support
-    implementation('com.facebook.fresco:animated-gif:2.6.0')
+    implementation('com.facebook.fresco:animated-gif:3.6.0')
     // For WebP support, including animated WebP
-    implementation('com.facebook.fresco:animated-webp:2.6.0')
-    implementation('com.facebook.fresco:webpsupport:2.6.0')
+    implementation('com.facebook.fresco:animated-webp:3.6.0')
+    implementation('com.facebook.fresco:webpsupport:3.6.0')
 }
