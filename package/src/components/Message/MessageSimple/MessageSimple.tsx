@@ -89,7 +89,16 @@ export type MessageSimplePropsWithContext = Pick<
     | 'ReactionListBottom'
     | 'reactionListPosition'
     | 'ReactionListTop'
-  >;
+  > & {
+    /**
+     * Will determine whether the swipeable wrapper is always rendered for each
+     * message. If set to false, the animated wrapper will be rendered only when
+     * a swiping gesture is active and not otherwise.
+     * Since stateful components would lose their state if we remount them while
+     * an animation is happening, this should always be set to true in those instances.
+     */
+    shouldRenderSwipeableWrapper: boolean;
+  };
 
 const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
   const [messageContentWidth, setMessageContentWidth] = useState(0);
@@ -120,6 +129,7 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
     reactionListPosition,
     ReactionListTop,
     showMessageStatus,
+    shouldRenderSwipeableWrapper,
   } = props;
 
   const {
@@ -200,7 +210,9 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
   const translateX = useSharedValue(0);
   const touchStart = useSharedValue<{ x: number; y: number } | null>(null);
   const isSwiping = useSharedValue<boolean>(false);
-  const [isBeingSwiped, setIsBeingSwiped] = useState<boolean>(false);
+  const [shouldRenderAnimatedWrapper, setShouldRenderAnimatedWrapper] = useState<boolean>(
+    shouldRenderSwipeableWrapper,
+  );
 
   const onSwipeToReply = useCallback(() => {
     messageComposer.setQuotedMessage(message);
@@ -230,7 +242,9 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
           if (isHorizontalPanning) {
             state.activate();
             isSwiping.value = true;
-            runOnJS(setIsBeingSwiped)(true);
+            if (!shouldRenderSwipeableWrapper) {
+              runOnJS(setShouldRenderAnimatedWrapper)(isSwiping.value);
+            }
           } else {
             state.fail();
           }
@@ -250,6 +264,7 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
               runOnJS(triggerHaptic)('impactMedium');
             }
           }
+          isSwiping.value = false;
           translateX.value = withSpring(
             0,
             {
@@ -259,41 +274,44 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
               stiffness: 1,
             },
             () => {
-              isSwiping.value = false;
-              runOnJS(setIsBeingSwiped)(false);
+              if (!shouldRenderSwipeableWrapper) {
+                runOnJS(setShouldRenderAnimatedWrapper)(isSwiping.value);
+              }
             },
           );
         }),
-    [isSwiping, messageSwipeToReplyHitSlop, onSwipeToReply, touchStart, translateX, triggerHaptic],
+    [
+      isSwiping,
+      messageSwipeToReplyHitSlop,
+      onSwipeToReply,
+      touchStart,
+      translateX,
+      triggerHaptic,
+      shouldRenderSwipeableWrapper,
+    ],
   );
 
   const messageBubbleAnimatedStyle = useAnimatedStyle(
-    () =>
-      isSwiping.value
-        ? {
-            transform: [{ translateX: translateX.value }],
-          }
-        : {},
+    () => ({
+      transform: [{ translateX: translateX.value }],
+    }),
     [],
   );
 
   const swipeContentAnimatedStyle = useAnimatedStyle(
-    () =>
-      isSwiping.value
-        ? {
-            opacity: interpolate(translateX.value, [0, THRESHOLD], [0, 1]),
-            transform: [
-              {
-                translateX: interpolate(
-                  translateX.value,
-                  [0, THRESHOLD],
-                  [-THRESHOLD, 0],
-                  Extrapolation.CLAMP,
-                ),
-              },
-            ],
-          }
-        : {},
+    () => ({
+      opacity: interpolate(translateX.value, [0, THRESHOLD], [0, 1]),
+      transform: [
+        {
+          translateX: interpolate(
+            translateX.value,
+            [0, THRESHOLD],
+            [-THRESHOLD, 0],
+            Extrapolation.CLAMP,
+          ),
+        },
+      ],
+    }),
     [],
   );
 
@@ -329,7 +347,7 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
     () => (
       <GestureDetector gesture={swipeGesture}>
         <View hitSlop={messageSwipeToReplyHitSlop} style={[styles.contentWrapper, contentWrapper]}>
-          {isBeingSwiped ? (
+          {shouldRenderAnimatedWrapper ? (
             <>
               <AnimatedWrapper
                 style={[
@@ -353,7 +371,7 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
     [
       MessageSwipeContent,
       contentWrapper,
-      isBeingSwiped,
+      shouldRenderAnimatedWrapper,
       messageBubbleAnimatedStyle,
       messageSwipeToReplyHitSlop,
       renderMessageBubble,
@@ -589,6 +607,7 @@ export const MessageSimple = (props: MessageSimpleProps) => {
     onlyEmojis,
     otherAttachments,
     showMessageStatus,
+    isMessageAIGenerated,
   } = useMessageContext();
   const {
     enableMessageGroupingByUser,
@@ -608,6 +627,11 @@ export const MessageSimple = (props: MessageSimpleProps) => {
     reactionListPosition,
     ReactionListTop,
   } = useMessagesContext();
+  const isAIGenerated = useMemo(
+    () => isMessageAIGenerated(message),
+    [message, isMessageAIGenerated],
+  );
+  const shouldRenderSwipeableWrapper = (message?.attachments || []).length > 0 || isAIGenerated;
 
   return (
     <MemoizedMessageSimple
@@ -638,6 +662,7 @@ export const MessageSimple = (props: MessageSimpleProps) => {
         ReactionListBottom,
         reactionListPosition,
         ReactionListTop,
+        shouldRenderSwipeableWrapper,
         showMessageStatus,
       }}
       {...props}
