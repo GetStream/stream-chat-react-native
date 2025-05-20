@@ -63,6 +63,7 @@ export const CreatePollOption = ({
   option,
   onNewOrder,
 }: CreatePollOptionType) => {
+  const { t } = useTranslationContext();
   const { createPollOptionHeight = POLL_OPTION_HEIGHT } = useCreatePollContentContext();
   const top = useSharedValue(index * createPollOptionHeight);
   const isDraggingDerived = useDerivedValue(() => isDragging.value);
@@ -93,14 +94,19 @@ export const CreatePollOption = ({
   // used for swapping with newIndex
   const currentIndex = useSharedValue<number | null>(null);
 
+  // The sanity check for position cache updated index, is added because after a poll is sent its been reset
+  // by the composer and it throws an undefined error. This can be removed in future.
   useAnimatedReaction(
-    () => currentOptionPositionsDerived.value.positionCache[option.id].updatedIndex,
+    () =>
+      currentOptionPositionsDerived.value.positionCache[option.id]
+        ? currentOptionPositionsDerived.value.positionCache[option.id].updatedIndex
+        : 0,
     (currentValue, previousValue) => {
       if (currentValue !== previousValue) {
-        top.value = withSpring(
-          currentOptionPositionsDerived.value.positionCache[option.id].updatedIndex *
-            createPollOptionHeight,
-        );
+        const updatedIndex = currentOptionPositionsDerived.value.positionCache[option.id]
+          ? currentOptionPositionsDerived.value.positionCache[option.id].updatedIndex
+          : 0;
+        top.value = withSpring(updatedIndex * createPollOptionHeight);
       }
     },
   );
@@ -209,9 +215,12 @@ export const CreatePollOption = ({
     },
   } = useTheme();
 
-  const onChangeTextHandler = (newText: string) => {
-    handleChangeText(newText, index);
-  };
+  const onChangeTextHandler = useCallback(
+    (newText: string) => {
+      handleChangeText(newText, index);
+    },
+    [handleChangeText, index],
+  );
 
   return (
     <Animated.View
@@ -235,13 +244,13 @@ export const CreatePollOption = ({
             optionStyle.validationErrorText,
           ]}
         >
-          {error}
+          {t<string>(error)}
         </Text>
       ) : null}
       <TextInput
         onBlur={handleBlur}
         onChangeText={onChangeTextHandler}
-        placeholder={'Add an option'}
+        placeholder={t<string>('Add an option')}
         style={[styles.optionInput, { color: black }, optionStyle.input]}
       />
       <GestureDetector gesture={gesture}>
@@ -270,6 +279,7 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
   const { pollComposer } = messageComposer;
   const { errors, options } = useStateStore(pollComposer.state, pollComposerStateSelector);
   const { createPollOptionHeight = POLL_OPTION_HEIGHT } = useCreatePollContentContext();
+
   const updateOption = useCallback(
     (newText: string, index: number) => {
       pollComposer.updateFields({
@@ -305,20 +315,23 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
     },
   } = useTheme();
 
-  const onNewOrderChange = async (newOrder: CurrentOptionPositionsCache['inverseIndexCache']) => {
-    const reorderedPollOptions = [];
+  const onNewOrderChange = useCallback(
+    async (newOrder: CurrentOptionPositionsCache['inverseIndexCache']) => {
+      const reorderedPollOptions = [];
 
-    for (let i = 0; i < options.length; i++) {
-      const currentOption = options.find((option) => option.id === newOrder[i]);
-      if (currentOption) {
-        reorderedPollOptions.push(currentOption);
+      for (let i = 0; i < options.length; i++) {
+        const currentOption = options.find((option) => option.id === newOrder[i]);
+        if (currentOption) {
+          reorderedPollOptions.push(currentOption);
+        }
       }
-    }
 
-    await pollComposer.updateFields({
-      options: reorderedPollOptions,
-    });
-  };
+      await pollComposer.updateFields({
+        options: reorderedPollOptions,
+      });
+    },
+    [options, pollComposer],
+  );
 
   return (
     <View style={[styles.container, container]}>

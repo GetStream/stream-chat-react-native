@@ -88,16 +88,13 @@ export const AutoCompleteInput = (props: AutoCompleteInputProps) => {
     (newText: string) => {
       setLocalText(newText);
 
-      /**
-       * This is a hack to ensure the selection is up to date. We should find a better way to do this.
-       * The onSelectChange event is triggered after the onChangeText event currently which is why the selection value is stale.
-       */
-      setTimeout(() => {
-        textComposer.handleChange({
-          selection: textComposer.selection,
-          text: newText,
-        });
-      }, 0);
+      textComposer.handleChange({
+        selection: {
+          end: newText.length,
+          start: newText.length,
+        },
+        text: newText,
+      });
     },
     [textComposer],
   );
@@ -110,7 +107,7 @@ export const AutoCompleteInput = (props: AutoCompleteInputProps) => {
   } = useTheme();
 
   const placeholderText = useMemo(() => {
-    return command ? t('Search GIFs') : cooldownActive ? t('Slow mode ON') : t('Send a message');
+    return command ? t('Search') : cooldownActive ? t('Slow mode ON') : t('Send a message');
   }, [command, cooldownActive, t]);
 
   const handleContentSizeChange = useCallback(
