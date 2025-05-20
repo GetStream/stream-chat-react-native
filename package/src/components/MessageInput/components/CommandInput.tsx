@@ -51,6 +51,7 @@ export const CommandInput = ({
 
   const onCloseHandler = () => {
     customDataManager.setCustomData({ command: null });
+    messageComposer?.restore();
   };
 
   if (!command) {

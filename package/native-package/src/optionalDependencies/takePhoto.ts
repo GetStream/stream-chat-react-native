@@ -88,8 +88,8 @@ export const takePhoto = ImagePicker
             const date = new Date().toISOString().replace(clearFilter, '_');
             return {
               cancelled: false,
-              name: 'video_recording_' + date + '.' + asset.fileName.split('.').pop(),
-              size: asset.size,
+              name: 'image_' + date + '.' + asset.uri.split('.').pop(),
+              size: asset.fileSize,
               type: asset.type,
               uri: asset.uri,
               ...size,

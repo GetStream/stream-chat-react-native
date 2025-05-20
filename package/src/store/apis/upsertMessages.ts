@@ -1,4 +1,4 @@
-import type { MessageResponse } from 'stream-chat';
+import type { LocalMessage, MessageResponse } from 'stream-chat';
 
 import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapPollToStorable } from '../mappers/mapPollToStorable';
@@ -11,7 +11,7 @@ export const upsertMessages = async ({
   flush = true,
   messages,
 }: {
-  messages: MessageResponse[];
+  messages: (MessageResponse | LocalMessage)[];
   flush?: boolean;
 }) => {
   const storableMessages: Array<ReturnType<typeof mapMessageToStorable>> = [];
@@ -19,7 +19,7 @@ export const upsertMessages = async ({
   const storableReactions: Array<ReturnType<typeof mapReactionToStorable>> = [];
   const storablePolls: Array<ReturnType<typeof mapPollToStorable>> = [];
 
-  messages?.forEach((message: MessageResponse) => {
+  messages?.forEach((message: MessageResponse | LocalMessage) => {
     storableMessages.push(mapMessageToStorable(message));
     if (message.user) {
       storableUsers.push(mapUserToStorable(message.user));

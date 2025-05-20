@@ -4,7 +4,8 @@ import { render, screen, userEvent, waitFor } from '@testing-library/react-nativ
 
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { ProgressIndicatorTypes } from '../../../utils/utils';
-import { UploadProgressIndicator } from '../UploadProgressIndicator';
+
+import { AttachmentUploadProgressIndicator } from '../components/AttachmentPreview/AttachmentUploadProgressIndicator';
 
 describe('UploadProgressIndicator', () => {
   it('should render an inactive UploadProgressIndicator', async () => {
@@ -12,7 +13,10 @@ describe('UploadProgressIndicator', () => {
 
     render(
       <ThemeProvider>
-        <UploadProgressIndicator action={action} type={ProgressIndicatorTypes.INACTIVE} />
+        <AttachmentUploadProgressIndicator
+          onPress={action}
+          type={ProgressIndicatorTypes.INACTIVE}
+        />
       </ThemeProvider>,
     );
 
@@ -28,7 +32,10 @@ describe('UploadProgressIndicator', () => {
 
     render(
       <ThemeProvider>
-        <UploadProgressIndicator action={action} type={ProgressIndicatorTypes.IN_PROGRESS} />
+        <AttachmentUploadProgressIndicator
+          onPress={action}
+          type={ProgressIndicatorTypes.IN_PROGRESS}
+        />
       </ThemeProvider>,
     );
 
@@ -44,7 +51,10 @@ describe('UploadProgressIndicator', () => {
 
     render(
       <ThemeProvider>
-        <UploadProgressIndicator action={action} type={ProgressIndicatorTypes.NOT_SUPPORTED} />
+        <AttachmentUploadProgressIndicator
+          onPress={action}
+          type={ProgressIndicatorTypes.NOT_SUPPORTED}
+        />
       </ThemeProvider>,
     );
 
@@ -61,7 +71,10 @@ describe('UploadProgressIndicator', () => {
 
     render(
       <ThemeProvider>
-        <UploadProgressIndicator action={action} type={ProgressIndicatorTypes.IN_PROGRESS} />
+        <AttachmentUploadProgressIndicator
+          onPress={action}
+          type={ProgressIndicatorTypes.IN_PROGRESS}
+        />
       </ThemeProvider>,
     );
 
@@ -79,7 +92,7 @@ describe('UploadProgressIndicator', () => {
 
     render(
       <ThemeProvider>
-        <UploadProgressIndicator action={action} type={ProgressIndicatorTypes.RETRY} />
+        <AttachmentUploadProgressIndicator onPress={action} type={ProgressIndicatorTypes.RETRY} />
       </ThemeProvider>,
     );
 

@@ -1,31 +1,33 @@
 import React, { PropsWithChildren } from 'react';
 import {
   ActivityIndicator,
-  GestureResponderEvent,
+  Pressable,
+  PressableProps,
   StyleProp,
   StyleSheet,
-  TouchableOpacity,
   View,
   ViewStyle,
 } from 'react-native';
 
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Refresh } from '../../icons';
-import { ProgressIndicatorTypes } from '../../utils/utils';
+import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { Refresh } from '../../../../icons';
+import { Progress, ProgressIndicatorTypes } from '../../../../utils/utils';
 
 const REFRESH_ICON_SIZE = 18;
 
-export type UploadProgressIndicatorProps = {
+export type AttachmentUploadProgressIndicatorProps = {
   /** Action triggered when clicked indicator */
-  action?: (event: GestureResponderEvent) => void;
+  onPress?: PressableProps['onPress'];
   /** style */
   style?: StyleProp<ViewStyle>;
   /** Type of active indicator */
-  type?: 'in_progress' | 'retry' | 'not_supported' | 'inactive' | null;
+  type?: Progress;
 };
 
-export const UploadProgressIndicator = (props: PropsWithChildren<UploadProgressIndicatorProps>) => {
-  const { action, children, style, type } = props;
+export const AttachmentUploadProgressIndicator = (
+  props: PropsWithChildren<AttachmentUploadProgressIndicatorProps>,
+) => {
+  const { onPress, children, style, type } = props;
 
   const {
     theme: {
@@ -52,7 +54,7 @@ export const UploadProgressIndicator = (props: PropsWithChildren<UploadProgressI
         testID='not-supported-upload-progress-indicator'
       >
         {type === ProgressIndicatorTypes.IN_PROGRESS && <InProgressIndicator />}
-        {type === ProgressIndicatorTypes.RETRY && <RetryIndicator action={action} />}
+        {type === ProgressIndicatorTypes.RETRY && <RetryIndicator onPress={onPress} />}
       </View>
     </View>
   );
@@ -75,7 +77,7 @@ const InProgressIndicator = () => {
   );
 };
 
-const RetryIndicator = ({ action }: Pick<UploadProgressIndicatorProps, 'action'>) => {
+const RetryIndicator = ({ onPress }: Pick<AttachmentUploadProgressIndicatorProps, 'onPress'>) => {
   const {
     theme: {
       colors: { white_smoke },
@@ -86,14 +88,17 @@ const RetryIndicator = ({ action }: Pick<UploadProgressIndicatorProps, 'action'>
   } = useTheme();
 
   return (
-    <TouchableOpacity onPress={action} style={styles.retryButtonContainer}>
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [styles.retryButtonContainer, { opacity: pressed ? 0.8 : 1 }]}
+    >
       <Refresh
         height={REFRESH_ICON_SIZE}
         pathFill={indicatorColor || white_smoke}
         testID='retry-upload-progress-indicator'
         width={REFRESH_ICON_SIZE}
       />
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
@@ -136,5 +141,5 @@ const styles = StyleSheet.create({
   },
 });
 
-UploadProgressIndicator.displayName =
-  'UploadProgressIndicator{messageInput{uploadProgressIndicator}}';
+AttachmentUploadProgressIndicator.displayName =
+  'AttachmentUploadProgressIndicator{messageInput{uploadProgressIndicator}}';

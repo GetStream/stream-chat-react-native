@@ -2,7 +2,6 @@ import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useS
 import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
 
 import debounce from 'lodash/debounce';
-import omit from 'lodash/omit';
 import throttle from 'lodash/throttle';
 
 import { lookup } from 'mime-types';
@@ -12,14 +11,17 @@ import {
   Channel as ChannelType,
   EventHandler,
   LocalMessage,
+  localMessageToNewMessagePayload,
   MessageLabel,
   MessageResponse,
   Reaction,
   SendMessageAPIResponse,
+  SendMessageOptions,
   StreamChat,
   Event as StreamEvent,
   Message as StreamMessage,
   Thread,
+  UpdateMessageOptions,
 } from 'stream-chat';
 
 import { useChannelDataState } from './hooks/useChannelDataState';
@@ -94,9 +96,7 @@ import { compressedImageURI } from '../../utils/compressImage';
 import { DBSyncManager } from '../../utils/DBSyncManager';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
 import { removeReactionFromLocalState } from '../../utils/removeReactionFromLocalState';
-import { removeReservedFields } from '../../utils/removeReservedFields';
 import {
-  generateRandomId,
   getFileNameFromPath,
   isBouncedMessage,
   isLocalUrl,
@@ -146,6 +146,7 @@ import { ReactionListTop as ReactionListTopDefault } from '../Message/MessageSim
 import { StreamingMessageView as DefaultStreamingMessageView } from '../Message/MessageSimple/StreamingMessageView';
 import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButton';
 import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
+import { AttachmentUploadProgressIndicator as AttachmentUploadProgressIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
 import { AudioRecorder as AudioRecorderDefault } from '../MessageInput/components/AudioRecorder/AudioRecorder';
 import { AudioRecordingButton as AudioRecordingButtonDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingButton';
 import { AudioRecordingInProgress as AudioRecordingInProgressDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingInProgress';
@@ -164,7 +165,6 @@ import { SendButton as SendButtonDefault } from '../MessageInput/SendButton';
 import { SendMessageDisallowedIndicator as SendMessageDisallowedIndicatorDefault } from '../MessageInput/SendMessageDisallowedIndicator';
 import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDefault } from '../MessageInput/ShowThreadMessageInChannelButton';
 import { StopMessageStreamingButton as DefaultStopMessageStreamingButton } from '../MessageInput/StopMessageStreamingButton';
-import { UploadProgressIndicator as UploadProgressIndicatorDefault } from '../MessageInput/UploadProgressIndicator';
 import { DateHeader as DateHeaderDefault } from '../MessageList/DateHeader';
 import { InlineDateSeparator as InlineDateSeparatorDefault } from '../MessageList/InlineDateSeparator';
 import { InlineUnreadIndicator as InlineUnreadIndicatorDefault } from '../MessageList/InlineUnreadIndicator';
@@ -392,6 +392,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     doSendMessageRequest?: (
       channelId: string,
       messageData: StreamMessage,
+      options?: SendMessageOptions,
     ) => Promise<SendMessageAPIResponse>;
     /**
      * Overrides the Stream default update message request (Advanced usage only)
@@ -401,6 +402,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     doUpdateMessageRequest?: (
       channelId: string,
       updatedMessage: Parameters<StreamChat['updateMessage']>[0],
+      options?: UpdateMessageOptions,
     ) => ReturnType<StreamChat['updateMessage']>;
     /**
      * When true, messageList will be scrolled at first unread message, when opened.
@@ -499,8 +501,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     disableKeyboardCompatibleView = false,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch = true,
-    doDocUploadRequest,
-    doImageUploadRequest,
+    doFileUploadRequest,
     doMarkReadRequest,
     doSendMessageRequest,
     doUpdateMessageRequest,
@@ -627,7 +628,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     ScrollToBottomButton = ScrollToBottomButtonDefault,
     selectReaction,
     SendButton = SendButtonDefault,
-    sendImageAsync = false,
     SendMessageDisallowedIndicator = SendMessageDisallowedIndicatorDefault,
     setInputRef,
     setThreadMessages,
@@ -647,7 +647,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     TypingIndicator = TypingIndicatorDefault,
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
     UnreadMessagesNotification = UnreadMessagesNotificationDefault,
-    UploadProgressIndicator = UploadProgressIndicatorDefault,
+    UploadProgressIndicator = AttachmentUploadProgressIndicatorDefault,
     UrlPreview = CardDefault,
     VideoThumbnail = VideoThumbnailDefault,
   } = props;
@@ -1181,7 +1181,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   );
 
   const replaceMessage = useStableCallback(
-    (oldMessage: MessageResponse, newMessage: MessageResponse) => {
+    (oldMessage: LocalMessage, newMessage: MessageResponse) => {
       if (channel) {
         channel.state.removeMessage(oldMessage);
         channel.state.addMessageSorted(newMessage, true);
@@ -1195,67 +1195,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     },
   );
 
-  const createMessagePreview = useStableCallback(
-    ({
-      attachments,
-      mentioned_users,
-      parent_id,
-      poll_id,
-      text,
-      ...extraFields
-    }: Partial<StreamMessage>) => {
-      // Exclude following properties from message.user within message preview,
-      // since they could be long arrays and have no meaning as sender of message.
-      // Storing such large value within user's table may cause sqlite queries to crash.
-      // @ts-ignore
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { channel_mutes, devices, mutes, ...messageUser } = client.user;
-
-      const preview = {
-        __html: text,
-        attachments,
-        created_at: new Date(),
-        html: text,
-        id: `${client.userID}-${generateRandomId()}`,
-        mentioned_users:
-          mentioned_users?.map((userId) => ({
-            id: userId,
-          })) || [],
-        parent_id,
-        poll_id,
-        reactions: [],
-        status: MessageStatusTypes.SENDING,
-        text,
-        type: 'regular',
-        user: {
-          ...messageUser,
-          id: client.userID,
-        },
-        ...extraFields,
-      } as unknown as MessageResponse;
-
-      /**
-       * This is added to the message for local rendering prior to the message
-       * being returned from the backend, it is removed when the message is sent
-       * as quoted_message is a reserved field.
-       */
-      if (preview.quoted_message_id) {
-        const quotedMessage = channelMessagesState.messages?.find(
-          (message) => message.id === preview.quoted_message_id,
-        );
-
-        preview.quoted_message = quotedMessage as MessageResponse['quoted_message'];
-      }
-      return preview;
-    },
-  );
-
-  const uploadPendingAttachments = useStableCallback(async (message: MessageResponse) => {
+  const uploadPendingAttachments = useStableCallback(async (message: LocalMessage) => {
     const updatedMessage = { ...message };
     if (updatedMessage.attachments?.length) {
       for (let i = 0; i < updatedMessage.attachments?.length; i++) {
         const attachment = updatedMessage.attachments[i];
-        const image = attachment.originalImage;
+        const image = attachment.originalFile;
         const file = attachment.originalFile;
         // check if image_url is not a remote url
         if (
@@ -1274,8 +1219,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           const compressedUri = await compressedImageURI(image, compressImageQuality);
           const contentType = lookup(filename) || 'multipart/form-data';
 
-          const uploadResponse = doImageUploadRequest
-            ? await doImageUploadRequest(image, channel)
+          const uploadResponse = doFileUploadRequest
+            ? await doFileUploadRequest(image)
             : await channel.sendImage(compressedUri, filename, contentType);
 
           attachment.image_url = uploadResponse.file;
@@ -1287,10 +1232,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         }
 
         if (
-          (attachment.type === FileTypes.File ||
-            attachment.type === FileTypes.Audio ||
-            attachment.type === FileTypes.VoiceRecording ||
-            attachment.type === FileTypes.Video) &&
+          attachment.type !== FileTypes.Image &&
           attachment.asset_url &&
           isLocalUrl(attachment.asset_url) &&
           file?.uri
@@ -1301,8 +1243,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
             controller.abort();
             uploadAbortControllerRef.current.delete(file.name);
           }
-          const response = doDocUploadRequest
-            ? await doDocUploadRequest(file, channel)
+          const response = doFileUploadRequest
+            ? await doFileUploadRequest(file)
             : await channel.sendFile(file.uri, file.name, file.type);
           attachment.asset_url = response.file;
           if (response.thumb_url) {
@@ -1321,51 +1263,38 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   });
 
   const sendMessageRequest = useStableCallback(
-    async (message: MessageResponse, retrying?: boolean) => {
+    async ({
+      localMessage,
+      message,
+      options,
+      retrying,
+    }: {
+      localMessage: LocalMessage;
+      message: StreamMessage;
+      options?: SendMessageOptions;
+      retrying?: boolean;
+    }) => {
       try {
-        const updatedMessage = await uploadPendingAttachments(message);
-        const extraFields = omit(updatedMessage, [
-          '__html',
-          'attachments',
-          'created_at',
-          'deleted_at',
-          'html',
-          'id',
-          'latest_reactions',
-          'mentioned_users',
-          'own_reactions',
-          'parent_id',
-          'quoted_message',
-          'reaction_counts',
-          'reaction_groups',
-          'reactions',
-          'status',
-          'text',
-          'type',
-          'updated_at',
-          'user',
-        ]);
-        const { attachments, id, mentioned_users, parent_id, text } = updatedMessage;
+        const updatedLocalMessage = await uploadPendingAttachments(localMessage);
+
+        const { attachments } = updatedLocalMessage;
+        const { text, mentioned_users } = message;
         if (!channel.id) {
           return;
         }
 
-        const mentionedUserIds = mentioned_users?.map((user) => user.id) ?? [];
-
         const messageData = {
+          ...message,
           attachments,
-          id,
-          mentioned_users: mentionedUserIds,
-          parent_id,
-          text: patchMessageTextCommand(text ?? '', mentionedUserIds),
-          ...extraFields,
+          text: patchMessageTextCommand(text ?? '', mentioned_users ?? []),
         } as StreamMessage;
 
         let messageResponse = {} as SendMessageAPIResponse;
         if (doSendMessageRequest) {
-          messageResponse = await doSendMessageRequest(channel?.cid || '', messageData);
+          messageResponse = await doSendMessageRequest(channel?.cid || '', messageData, options);
         } else if (channel) {
-          messageResponse = await channel.sendMessage(messageData);
+          messageResponse = await channel.sendMessage(messageData, options);
+          console.log(messageResponse);
         }
 
         if (messageResponse.message) {
@@ -1377,22 +1306,22 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
             });
           }
           if (retrying) {
-            replaceMessage(message, messageResponse.message);
+            replaceMessage(localMessage, messageResponse.message);
           } else {
             updateMessage(messageResponse.message, {}, true);
           }
         }
       } catch (err) {
-        console.log(err);
-        message.status = MessageStatusTypes.FAILED;
-        const updatedMessage = { ...message, cid: channel.cid };
+        console.log('Error sending a message:', err);
+        localMessage.status = MessageStatusTypes.FAILED;
+        const updatedMessage = { ...localMessage, cid: channel.cid };
         updateMessage(updatedMessage);
         threadInstance?.upsertReplyLocally?.({ message: updatedMessage });
-        optimisticallyUpdatedNewMessages.delete(message.id);
+        optimisticallyUpdatedNewMessages.delete(localMessage.id);
 
         if (enableOfflineSupport) {
           await dbApi.updateMessage({
-            message: { ...message, cid: channel.cid },
+            message: { ...localMessage, cid: channel.cid },
           });
         }
       }
@@ -1400,22 +1329,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   );
 
   const sendMessage: InputMessageInputContextValue['sendMessage'] = useStableCallback(
-    async (message) => {
+    async ({ localMessage, message, options }) => {
       if (channel?.state?.filterErrorMessages) {
         channel.state.filterErrorMessages();
       }
 
-      const messagePreview = createMessagePreview({
-        ...message,
-        attachments: message.attachments || [],
-      });
-
-      updateMessage(messagePreview, {
-        commands: [],
-        messageInput: '',
-      });
-      threadInstance?.upsertReplyLocally?.({ message: messagePreview });
-      optimisticallyUpdatedNewMessages.add(messagePreview.id);
+      updateMessage(localMessage);
+      threadInstance?.upsertReplyLocally?.({ message: localMessage });
+      optimisticallyUpdatedNewMessages.add(localMessage.id);
 
       if (enableOfflineSupport) {
         // While sending a message, we add the message to local db with failed status, so that
@@ -1423,37 +1344,41 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         // then user can see that message in failed state and can retry.
         // If succesfull, it will be updated with received status.
         await dbApi.upsertMessages({
-          messages: [{ ...messagePreview, cid: channel.cid, status: MessageStatusTypes.FAILED }],
+          messages: [{ ...localMessage, cid: channel.cid, status: MessageStatusTypes.FAILED }],
         });
       }
 
-      await sendMessageRequest(messagePreview);
+      await sendMessageRequest({ localMessage, message, options });
     },
   );
 
   const retrySendMessage: MessagesContextValue['retrySendMessage'] = useStableCallback(
-    async (message) => {
+    async (localMessage) => {
       const statusPendingMessage = {
-        ...message,
+        ...localMessage,
         status: MessageStatusTypes.SENDING,
       };
 
-      const messageWithoutReservedFields = removeReservedFields(statusPendingMessage);
+      const messageWithoutReservedFields = localMessageToNewMessagePayload(statusPendingMessage);
 
       // For bounced messages, we don't need to update the message, instead always send a new message.
-      if (!isBouncedMessage(message)) {
+      if (!isBouncedMessage(localMessage)) {
         updateMessage(messageWithoutReservedFields as MessageResponse);
       }
 
-      await sendMessageRequest(messageWithoutReservedFields as MessageResponse, true);
+      await sendMessageRequest({
+        localMessage,
+        message: messageWithoutReservedFields,
+        retrying: true,
+      });
     },
   );
 
   const editMessage: InputMessageInputContextValue['editMessage'] = useStableCallback(
-    (updatedMessage) =>
+    ({ localMessage, options }) =>
       doUpdateMessageRequest
-        ? doUpdateMessageRequest(channel?.cid || '', updatedMessage)
-        : client.updateMessage(updatedMessage),
+        ? doUpdateMessageRequest(channel?.cid || '', localMessage, options)
+        : client.updateMessage(localMessage, undefined, options),
   );
 
   const setEditingState: MessagesContextValue['setEditingState'] = useStableCallback((message) => {
@@ -1540,7 +1465,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           await removeMessage(message);
           return;
         }
-        await client.deleteMessage(message.id);
+        try {
+          await client.deleteMessage(message.id);
+        } catch (err) {
+          console.warn('Error deleting message:', err);
+        }
         return;
       }
 
@@ -1769,8 +1698,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     compressImageQuality,
     CooldownTimer,
     CreatePollContent,
-    doDocUploadRequest,
-    doImageUploadRequest,
+    doFileUploadRequest,
     editing,
     editMessage,
     FileUploadPreview,
@@ -1785,13 +1713,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     InputButtons,
     InputEditingStateHeader,
     InputReplyStateHeader,
+    isCommandUIEnabled,
     maxNumberOfFiles,
     mentionAllAppUsersEnabled,
     mentionAllAppUsersQuery,
     MoreOptionsButton,
     openPollCreationDialog,
     SendButton,
-    sendImageAsync,
     sendMessage,
     SendMessageDisallowedIndicator,
     setInputRef,

@@ -334,6 +334,8 @@ export type Theme = {
       fileSizeText: TextStyle;
       fileTextContainer: ViewStyle;
       flatList: ViewStyle;
+      uploadProgressOverlay: ViewStyle;
+      wrapper: ViewStyle;
     };
     focusedInputBoxContainer: ViewStyle;
 
@@ -1101,6 +1103,8 @@ export const defaultTheme: Theme = {
       fileSizeText: {},
       fileTextContainer: {},
       flatList: {},
+      uploadProgressOverlay: {},
+      wrapper: {},
     },
     focusedInputBoxContainer: {},
     imageUploadPreview: {

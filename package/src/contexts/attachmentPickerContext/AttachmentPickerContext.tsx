@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext, useEffect, useState } from 'react';
 
-import { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 
 import type { File } from '../../types/types';
 
@@ -52,6 +52,7 @@ export type AttachmentPickerContextValue = {
    * for more details.
    */
   bottomInset: number;
+  bottomSheetRef: React.RefObject<BottomSheet | null>;
   /**
    * Custom UI component for [camera selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
    *
@@ -85,7 +86,6 @@ export type AttachmentPickerContextValue = {
   selectedFiles: File[];
   selectedImages: File[];
   setBottomInset: React.Dispatch<React.SetStateAction<number>>;
-  setMaxNumberOfFiles: React.Dispatch<React.SetStateAction<number>>;
   setSelectedFiles: React.Dispatch<React.SetStateAction<File[]>>;
   setSelectedImages: React.Dispatch<React.SetStateAction<File[]>>;
   setSelectedPicker: React.Dispatch<React.SetStateAction<'images' | undefined>>;
@@ -124,7 +124,6 @@ export const AttachmentPickerProvider = ({
   const topInsetValue = value?.topInset;
 
   const [bottomInset, setBottomInset] = useState<number>(bottomInsetValue ?? 0);
-  const [maxNumberOfFiles, setMaxNumberOfFiles] = useState(10);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedPicker, setSelectedPicker] = useState<'images'>();
@@ -139,12 +138,11 @@ export const AttachmentPickerProvider = ({
   }, [topInsetValue]);
 
   const combinedValue = {
-    maxNumberOfFiles,
+    maxNumberOfFiles: 10,
     selectedFiles,
     selectedImages,
     selectedPicker,
     setBottomInset,
-    setMaxNumberOfFiles,
     setSelectedFiles,
     setSelectedImages,
     setSelectedPicker,

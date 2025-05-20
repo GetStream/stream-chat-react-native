@@ -36,7 +36,6 @@ export const AttachmentPickerSelectionBar = () => {
     hasCameraPicker,
     hasFilePicker,
     hasImagePicker,
-    imageUploads,
     openPollCreationDialog,
     pickFile,
     sendMessage,
@@ -82,10 +81,7 @@ export const AttachmentPickerSelectionBar = () => {
           testID='upload-photo-touchable'
         >
           <View style={[styles.icon, icon]}>
-            <ImageSelectorIcon
-              numberOfImageUploads={imageUploads.length}
-              selectedPicker={selectedPicker}
-            />
+            <ImageSelectorIcon selectedPicker={selectedPicker} />
           </View>
         </TouchableOpacity>
       ) : null}
@@ -96,10 +92,7 @@ export const AttachmentPickerSelectionBar = () => {
           testID='upload-file-touchable'
         >
           <View style={[styles.icon, icon]}>
-            <FileSelectorIcon
-              numberOfImageUploads={imageUploads.length}
-              selectedPicker={selectedPicker}
-            />
+            <FileSelectorIcon selectedPicker={selectedPicker} />
           </View>
         </TouchableOpacity>
       ) : null}
@@ -112,10 +105,7 @@ export const AttachmentPickerSelectionBar = () => {
           testID='take-photo-touchable'
         >
           <View style={[styles.icon, icon]}>
-            <CameraSelectorIcon
-              numberOfImageUploads={imageUploads.length}
-              selectedPicker={selectedPicker}
-            />
+            <CameraSelectorIcon selectedPicker={selectedPicker} />
           </View>
         </TouchableOpacity>
       ) : null}
@@ -128,10 +118,7 @@ export const AttachmentPickerSelectionBar = () => {
           testID='take-photo-touchable'
         >
           <View style={[styles.icon, { marginTop: 4 }, icon]}>
-            <VideoRecorderSelectorIcon
-              numberOfImageUploads={imageUploads.length}
-              selectedPicker={selectedPicker}
-            />
+            <VideoRecorderSelectorIcon selectedPicker={selectedPicker} />
           </View>
         </TouchableOpacity>
       ) : null}

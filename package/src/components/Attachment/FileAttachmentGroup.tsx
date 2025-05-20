@@ -111,18 +111,14 @@ const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithConte
           isSoundPackageAvailable() ? (
             <AudioAttachment
               item={{
+                asset_url: file.asset_url,
                 duration: file.duration,
-                file: {
-                  name: file.title as string,
-                  size: file.file_size || 0,
-                  type: file.mime_type || '',
-                  uri: file.asset_url || '',
-                  waveform_data: file.waveform_data,
-                },
                 id: index.toString(),
                 paused: file.paused,
                 progress: file.progress,
+                title: file.title,
                 type: file.type,
+                waveform_data: file.waveform_data,
               }}
               onLoad={onLoad}
               onPlayPause={onPlayPause}

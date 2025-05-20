@@ -15,15 +15,23 @@ import {
   VideoProgressData,
   VideoSeekResponse,
 } from '../../native';
-import { AudioUpload, FileTypes } from '../../types/types';
+import { AudioConfig, FileTypes } from '../../types/types';
 import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
 import { ProgressControl } from '../ProgressControl/ProgressControl';
 import { WaveProgressBar } from '../ProgressControl/WaveProgressBar';
 
 dayjs.extend(duration);
 
+export type AudioAttachmentType = AudioConfig & {
+  asset_url?: string;
+  id: string;
+  title?: string;
+  type: 'audio' | 'voiceRecording';
+  waveform_data?: number[];
+};
+
 export type AudioAttachmentProps = {
-  item: Omit<AudioUpload, 'state'>;
+  item: AudioAttachmentType;
   onLoad: (index: string, duration: number) => void;
   onPlayPause: (index: string, pausedStatus?: boolean) => void;
   onProgress: (index: string, progress: number) => void;
@@ -180,9 +188,9 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   useEffect(() => {
     if (isExpoCLI) {
       const initiateSound = async () => {
-        if (item && item.file && item.file.uri && NativeHandlers.Sound?.initializeSound) {
+        if (item && item.asset_url && NativeHandlers.Sound?.initializeSound) {
           soundRef.current = await NativeHandlers.Sound.initializeSound(
-            { uri: item.file.uri },
+            { uri: item.asset_url },
             {
               pitchCorrectionQuality: 'high',
               progressUpdateIntervalMillis: 100,
@@ -318,7 +326,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             filenameText,
           ]}
         >
-          {getTrimmedAttachmentTitle(item.file.name)}
+          {getTrimmedAttachmentTitle(item.title)}
         </Text>
         <View style={styles.audioInfo}>
           <Text style={[styles.progressDurationText, { color: grey_dark }, progressDurationText]}>
@@ -326,14 +334,14 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
           </Text>
           {!hideProgressBar && (
             <View style={[styles.progressControlContainer, progressControlContainer]}>
-              {item.file.waveform_data ? (
+              {item.waveform_data ? (
                 <WaveProgressBar
                   amplitudesCount={30}
                   onEndDrag={dragEnd}
                   onProgressDrag={dragProgress}
                   onStartDrag={dragStart}
                   progress={item.progress as number}
-                  waveformData={item.file.waveform_data}
+                  waveformData={item.waveform_data}
                 />
               ) : (
                 <ProgressControl
@@ -359,7 +367,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             rate={currentSpeed}
             soundRef={soundRef as RefObject<SoundReturnType>}
             testID='sound-player'
-            uri={item.file.uri}
+            uri={item.asset_url}
           />
         )}
       </View>
