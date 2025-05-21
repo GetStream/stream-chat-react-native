@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import type { AppSettingsAPIResponse, StreamChat } from 'stream-chat';
 
@@ -15,9 +15,18 @@ export const useAppSettings = <
   initialisedDatabase: boolean,
 ): AppSettingsAPIResponse | null => {
   const [appSettings, setAppSettings] = useState<AppSettingsAPIResponse | null>(null);
+  const appSettingsPromise = useRef<Promise<AppSettingsAPIResponse | null>>(null);
+  const fetchedAppSettings = useRef(false);
   const isMounted = useIsMountedRef();
 
   useEffect(() => {
+    const fetchAppSettings = () => {
+      if (appSettingsPromise.current) {
+        return appSettingsPromise.current;
+      }
+      appSettingsPromise.current = client.getAppSettings();
+      return appSettingsPromise.current;
+    };
     /**
      * Fetches app settings from the backend when offline support is disabled.
      */
@@ -27,9 +36,10 @@ export const useAppSettings = <
       }
 
       try {
-        const appSettings = await client.getAppSettings();
+        const appSettings = await fetchAppSettings();
         if (isMounted.current) {
           setAppSettings(appSettings);
+          fetchedAppSettings.current = true;
         }
       } catch (error: unknown) {
         if (error instanceof Error) {
@@ -59,9 +69,10 @@ export const useAppSettings = <
       }
 
       try {
-        const appSettings = await client.getAppSettings();
-        if (isMounted.current) {
+        const appSettings = await fetchAppSettings();
+        if (isMounted.current && appSettings) {
           setAppSettings(appSettings);
+          fetchedAppSettings.current = true;
           await dbApi.upsertAppSettings({
             appSettings,
             currentUserId: client.userID as string,
@@ -75,6 +86,10 @@ export const useAppSettings = <
     };
 
     async function enforeAppSettings() {
+      if (fetchedAppSettings.current) {
+        return;
+      }
+
       if (enableOfflineSupport) {
         await enforceAppSettingsWithOfflineSupport();
       } else {
