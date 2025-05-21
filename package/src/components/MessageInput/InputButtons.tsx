@@ -50,13 +50,11 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
   const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
   const [showMoreOptions, setShowMoreOptions] = useState(true);
 
+  const hasText = !!text;
+
   useEffect(() => {
-    if (text.length > 0) {
-      setShowMoreOptions(false);
-    } else {
-      setShowMoreOptions(true);
-    }
-  }, [text]);
+    setShowMoreOptions(!hasText);
+  }, [hasText]);
 
   const {
     theme: {
