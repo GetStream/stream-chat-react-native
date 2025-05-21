@@ -92,7 +92,13 @@ export const CommandSuggestionItem = (item: CommandSuggestion) => {
   );
 };
 
-const renderSuggestionItem = (item: TextComposerSuggestion, triggerType?: string) => {
+const SuggestionItem = ({
+  item,
+  triggerType,
+}: {
+  item: TextComposerSuggestion;
+  triggerType?: string;
+}) => {
   switch (triggerType) {
     case 'mention':
       return <MentionSuggestionItem {...(item as UserSuggestion)} />;
@@ -127,9 +133,9 @@ export const AutoCompleteSuggestionItem = ({
   return (
     <Pressable
       onPress={handlePress}
-      style={({ pressed }) => [{ opacity: pressed ? 0.2 : 1 }, itemStyle]}
+      style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, itemStyle]}
     >
-      {renderSuggestionItem(itemProps, triggerType)}
+      <SuggestionItem item={itemProps} triggerType={triggerType} />
     </Pressable>
   );
 };

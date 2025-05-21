@@ -65,11 +65,7 @@ export const AutoCompleteInput = (props: AutoCompleteInputProps) => {
   }, [channel]);
 
   const numberOfLines = useMemo(() => {
-    if (props.numberOfLines) {
-      return props.numberOfLines;
-    }
-
-    return MAX_NUMBER_OF_LINES;
+    return props.numberOfLines ?? MAX_NUMBER_OF_LINES;
   }, [props.numberOfLines]);
 
   useEffect(() => {
