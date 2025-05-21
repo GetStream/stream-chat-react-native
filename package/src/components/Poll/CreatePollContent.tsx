@@ -167,7 +167,7 @@ export const CreatePoll = ({
       await sendMessage();
       closePollCreationDialog?.();
     } catch (error) {
-      console.log('error', error);
+      console.log('Error creating a poll and sending a message:', error);
     }
   }, [messageComposer, sendMessage, closePollCreationDialog]);
 

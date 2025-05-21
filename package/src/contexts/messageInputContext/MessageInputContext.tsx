@@ -785,12 +785,8 @@ export const MessageInputProvider = ({
       setSelectedImages([]);
     }
 
-    // setText('');
     setFileUploads([]);
-    // setGiphyActive(false);
-    // setShowMoreOptions(true);
     setImageUploads([]);
-    // setMentionedUsers([]);
     setNumberOfUploads(
       (prevNumberOfUploads) => prevNumberOfUploads - (pendingAttachments?.length || 0),
     );
