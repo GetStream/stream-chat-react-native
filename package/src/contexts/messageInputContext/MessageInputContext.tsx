@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { Alert, Keyboard, Linking, TextInput, TextInputProps } from 'react-native';
 
+import { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import {
   Attachment,
   LocalMessage,
@@ -63,15 +64,13 @@ import {
   createCommandInjectionMiddleware,
   createDraftCommandInjectionMiddleware,
 } from '../../middlewares/commandControl';
-import {
-  isDocumentPickerAvailable,
-  isImageMediaLibraryAvailable,
-  MediaTypes,
-  NativeHandlers,
-} from '../../native';
+import { isDocumentPickerAvailable, MediaTypes, NativeHandlers } from '../../native';
 import { File } from '../../types/types';
 import { compressedImageURI } from '../../utils/compressImage';
-import { useAttachmentPickerContext } from '../attachmentPickerContext/AttachmentPickerContext';
+import {
+  AttachmentPickerIconProps,
+  useAttachmentPickerContext,
+} from '../attachmentPickerContext/AttachmentPickerContext';
 import { useChannelContext } from '../channelContext/ChannelContext';
 import { useChatContext } from '../chatContext/ChatContext';
 import { useThreadContext } from '../threadContext/ThreadContext';
@@ -185,6 +184,68 @@ export type InputMessageInputContextValue = {
   AutoCompleteSuggestionHeader: React.ComponentType<AutoCompleteSuggestionHeaderProps>;
   AutoCompleteSuggestionItem: React.ComponentType<AutoCompleteSuggestionItemProps>;
   AutoCompleteSuggestionList: React.ComponentType<AutoCompleteSuggestionListProps>;
+
+  /**
+   * Custom UI component to render [draggable handle](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png) of attachment picker.
+   *
+   * **Default** [AttachmentPickerBottomSheetHandle](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerBottomSheetHandle.tsx)
+   */
+  AttachmentPickerBottomSheetHandle: React.FC<BottomSheetHandleProps>;
+  /**
+   * Height of the image picker bottom sheet handle.
+   * @type number
+   * @default 20
+   */
+  attachmentPickerBottomSheetHandleHeight: number;
+  /**
+   * Height of the image picker bottom sheet when opened.
+   * @type number
+   * @default 40% of window height
+   */
+  attachmentPickerBottomSheetHeight: number;
+  /**
+   * Custom UI component for AttachmentPickerSelectionBar
+   *
+   * **Default: ** [AttachmentPickerSelectionBar](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/AttachmentPicker/components/AttachmentPickerSelectionBar.tsx)
+   */
+  AttachmentPickerSelectionBar: React.ComponentType;
+  /**
+   * Height of the attachment selection bar displayed on the attachment picker.
+   * @type number
+   * @default 52
+   */
+  attachmentSelectionBarHeight: number;
+
+  /**
+   * Custom UI component for [camera selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
+   *
+   * **Default: ** [CameraSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/CameraSelectorIcon.tsx)
+   */
+  CameraSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
+  /**
+   * Custom UI component for the poll creation icon.
+   *
+   * **Default: ** [CreatePollIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/CreatePollIcon.tsx)
+   */
+  CreatePollIcon: React.ComponentType;
+  /**
+   * Custom UI component for [file selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
+   *
+   * **Default: ** [FileSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/FileSelectorIcon.tsx)
+   */
+  FileSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
+  /**
+   * Custom UI component for [image selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
+   *
+   * **Default: ** [ImageSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/ImageSelectorIcon.tsx)
+   */
+  ImageSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
+  /**
+   * Custom UI component for Android's video recorder selector icon.
+   *
+   * **Default: ** [VideoRecorderSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/VideoRecorderSelectorIcon.tsx)
+   */
+  VideoRecorderSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
 
   clearEditingState: () => void;
   /**
@@ -374,14 +435,8 @@ export const MessageInputProvider = ({
 }: PropsWithChildren<{
   value: InputMessageInputContextValue;
 }>) => {
-  const {
-    closePicker,
-    openPicker,
-    selectedPicker,
-    setSelectedFiles,
-    setSelectedImages,
-    setSelectedPicker,
-  } = useAttachmentPickerContext();
+  const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
+    useAttachmentPickerContext();
   const { client, enableOfflineSupport } = useChatContext();
 
   const { isCommandUIEnabled, uploadAbortControllerRef } = useChannelContext();
@@ -441,8 +496,6 @@ export const MessageInputProvider = ({
    * Function for capturing a photo and uploading it
    */
   const takeAndUploadImage = useStableCallback(async (mediaType?: MediaTypes) => {
-    setSelectedPicker(undefined);
-    closePicker();
     const file = await NativeHandlers.takePhoto({
       compressImageQuality: value.compressImageQuality,
       mediaType,
@@ -562,13 +615,6 @@ export const MessageInputProvider = ({
 
   const resetInput = useStableCallback(async () => {
     await messageComposer.clear();
-    /**
-     * If the MediaLibrary is available, reset the selected files and images
-     */
-    if (isImageMediaLibraryAvailable()) {
-      setSelectedFiles([]);
-      setSelectedImages([]);
-    }
 
     if (value.editing) {
       value.clearEditingState();

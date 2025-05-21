@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Modal, SafeAreaView, StyleSheet, View } from 'react-native';
 
 import {
@@ -18,7 +18,6 @@ import Animated, {
 
 import {
   type CustomDataManagerState,
-  FileReference,
   isLocalImageAttachment,
   type MessageComposerState,
   type TextComposerState,
@@ -63,6 +62,11 @@ import {
   NativeHandlers,
 } from '../../native';
 import { AIStates, useAIState } from '../AITypingIndicatorView';
+import { AttachmentPicker, AttachmentPickerProps } from '../AttachmentPicker/AttachmentPicker';
+import { AttachmentPickerError as DefaultAttachmentPickerError } from '../AttachmentPicker/components/AttachmentPickerError';
+import { AttachmentPickerErrorImage as DefaultAttachmentPickerErrorImage } from '../AttachmentPicker/components/AttachmentPickerErrorImage';
+import { AttachmentPickerIOSSelectMorePhotos as DefaultAttachmentPickerIOSSelectMorePhotos } from '../AttachmentPicker/components/AttachmentPickerIOSSelectMorePhotos';
+import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../AttachmentPicker/components/ImageOverlaySelectedComponent';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
 
@@ -104,10 +108,25 @@ const styles = StyleSheet.create({
   },
 });
 
-type MessageInputPropsWithContext = Pick<
-  AttachmentPickerContextValue,
-  'AttachmentPickerSelectionBar'
+type MessageInputPropsWithContext = Partial<
+  Pick<
+    AttachmentPickerProps,
+    | 'AttachmentPickerError'
+    | 'AttachmentPickerErrorImage'
+    | 'AttachmentPickerIOSSelectMorePhotos'
+    | 'ImageOverlaySelectedComponent'
+    | 'attachmentPickerErrorButtonText'
+    | 'attachmentPickerErrorText'
+    | 'numberOfAttachmentImagesToLoadPerCall'
+    | 'numberOfAttachmentPickerImageColumns'
+  >
 > &
+  Partial<
+    Pick<
+      AttachmentPickerContextValue,
+      'bottomInset' | 'topInset' | 'bottomSheetRef' | 'selectedPicker'
+    >
+  > &
   Pick<ChatContextValue, 'isOnline'> &
   Pick<ChannelContextValue, 'channel' | 'members' | 'threadList' | 'watchers'> &
   Pick<
@@ -118,6 +137,11 @@ type MessageInputPropsWithContext = Pick<
     | 'asyncMessagesMinimumPressDuration'
     | 'asyncMessagesSlideToCancelDistance'
     | 'asyncMessagesMultiSendEnabled'
+    | 'attachmentPickerBottomSheetHandleHeight'
+    | 'attachmentPickerBottomSheetHeight'
+    | 'AttachmentPickerBottomSheetHandle'
+    | 'AttachmentPickerSelectionBar'
+    | 'attachmentSelectionBarHeight'
     | 'AudioRecorder'
     | 'AudioRecordingInProgress'
     | 'AudioRecordingLockIndicator'
@@ -136,6 +160,11 @@ type MessageInputPropsWithContext = Pick<
     | 'inputBoxRef'
     | 'InputButtons'
     | 'InputEditingStateHeader'
+    | 'CameraSelectorIcon'
+    | 'CreatePollIcon'
+    | 'FileSelectorIcon'
+    | 'ImageSelectorIcon'
+    | 'VideoRecorderSelectorIcon'
     | 'CommandInput'
     | 'InputReplyStateHeader'
     | 'maxNumberOfFiles'
@@ -173,12 +202,28 @@ const messageComposerStateStoreSelector = (state: MessageComposerState) => ({
 
 const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const {
+    AttachmentPickerBottomSheetHandle,
+    AttachmentPickerError = DefaultAttachmentPickerError,
+    AttachmentPickerErrorImage = DefaultAttachmentPickerErrorImage,
+    AttachmentPickerIOSSelectMorePhotos = DefaultAttachmentPickerIOSSelectMorePhotos,
+    AttachmentPickerSelectionBar,
+    ImageOverlaySelectedComponent = DefaultImageOverlaySelectedComponent,
+    attachmentPickerBottomSheetHeight,
+    attachmentPickerBottomSheetHandleHeight,
+    attachmentPickerErrorButtonText,
+    attachmentPickerErrorText,
+    attachmentSelectionBarHeight,
+    numberOfAttachmentImagesToLoadPerCall = 60,
+    numberOfAttachmentPickerImageColumns = 3,
+    bottomInset = 0,
+    bottomSheetRef,
+    selectedPicker,
+
     additionalTextInputProps,
     asyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration,
     asyncMessagesMultiSendEnabled,
     asyncMessagesSlideToCancelDistance,
-    AttachmentPickerSelectionBar,
     AudioRecorder,
     audioRecordingEnabled,
     AudioRecordingInProgress,
@@ -214,13 +259,8 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     StartAudioRecordingButton,
     StopMessageStreamingButton,
     threadList,
-    uploadNewFile,
-    uploadNewImage,
     watchers,
   } = props;
-
-  const [hasResetImages, setHasResetImages] = useState(false);
-  const [hasResetFiles, setHasResetFiles] = useState(false);
 
   const messageComposer = useMessageComposer();
   const { attachmentManager, customDataManager, textComposer } = messageComposer;
@@ -255,16 +295,36 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     },
   } = useTheme();
 
-  const {
-    attachmentPickerBottomSheetHeight,
-    attachmentSelectionBarHeight,
-    bottomInset,
-    selectedFiles,
-    selectedImages,
-    selectedPicker,
-    setSelectedFiles,
-    setSelectedImages,
-  } = useAttachmentPickerContext();
+  const attachmentPickerProps = useMemo(
+    () => ({
+      AttachmentPickerBottomSheetHandle,
+      attachmentPickerBottomSheetHandleHeight,
+      attachmentPickerBottomSheetHeight,
+      AttachmentPickerError,
+      attachmentPickerErrorButtonText,
+      AttachmentPickerErrorImage,
+      attachmentPickerErrorText,
+      AttachmentPickerIOSSelectMorePhotos,
+      attachmentSelectionBarHeight,
+      ImageOverlaySelectedComponent,
+      numberOfAttachmentImagesToLoadPerCall,
+      numberOfAttachmentPickerImageColumns,
+    }),
+    [
+      AttachmentPickerBottomSheetHandle,
+      attachmentPickerBottomSheetHandleHeight,
+      attachmentPickerBottomSheetHeight,
+      AttachmentPickerError,
+      attachmentPickerErrorButtonText,
+      AttachmentPickerErrorImage,
+      attachmentPickerErrorText,
+      AttachmentPickerIOSSelectMorePhotos,
+      attachmentSelectionBarHeight,
+      ImageOverlaySelectedComponent,
+      numberOfAttachmentImagesToLoadPerCall,
+      numberOfAttachmentPickerImageColumns,
+    ],
+  );
 
   const { seconds: cooldownRemainingSeconds } = useCountdown(cooldownEndsAt);
 
@@ -282,38 +342,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     }
 
     return closeAttachmentPicker;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const selectedImagesLength = hasResetImages ? selectedImages.length : 0;
-  const imageUploadsLength = hasResetImages ? imageUploads.length : 0;
-  const selectedFilesLength = hasResetFiles ? selectedFiles.length : 0;
-  const fileUploadsLength = hasResetFiles ? fileUploads.length : 0;
-
-  useEffect(() => {
-    if (hasResetImages === false && imageUploadsLength === 0 && selectedImagesLength === 0) {
-      setHasResetImages(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imageUploadsLength, selectedImagesLength]);
-
-  useEffect(() => {
-    if (hasResetFiles === false && fileUploadsLength === 0 && selectedFilesLength === 0) {
-      setHasResetFiles(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fileUploadsLength, selectedFilesLength]);
-
-  /**
-   * Reset the selected images and files when the component is unmounted.
-   */
-  useEffect(() => {
-    setSelectedImages([]);
-    setSelectedFiles([]);
-    return () => {
-      setSelectedImages([]);
-      setSelectedFiles([]);
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -342,150 +370,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editingExists]);
-
-  const uploadImagesHandler = async () => {
-    const imageToUpload = selectedImages.find((selectedImage) => {
-      const uploadedImage = imageUploads.find(
-        (imageUpload) => imageUpload.localMetadata.previewUri === selectedImage.uri,
-      );
-      return !uploadedImage;
-    });
-
-    if (imageToUpload) {
-      await uploadNewImage(imageToUpload);
-    }
-  };
-
-  const removeImagesHandler = () => {
-    const imagesToRemove = imageUploads.filter(
-      (imageUpload) =>
-        !selectedImages.find(
-          (selectedImage) => selectedImage.uri === imageUpload.localMetadata.previewUri,
-        ),
-    );
-    imagesToRemove.forEach((image) =>
-      attachmentManager.removeAttachments([image.localMetadata.id]),
-    );
-  };
-
-  const uploadFilesHandler = async () => {
-    const fileToUpload = selectedFiles.find((selectedFile) => {
-      const uploadedFile = fileUploads.find(
-        (fileUpload) => (fileUpload.localMetadata.file as FileReference).uri === selectedFile.uri,
-      );
-      return !uploadedFile;
-    });
-    if (fileToUpload) {
-      await uploadNewFile(fileToUpload);
-    }
-  };
-
-  const removeFilesHandler = () => {
-    const filesToRemove = fileUploads.filter(
-      (fileUpload) =>
-        !selectedFiles.find(
-          (selectedFile) =>
-            selectedFile.uri === (fileUpload.localMetadata.file as FileReference).uri,
-        ),
-    );
-
-    filesToRemove.forEach((file) => attachmentManager.removeAttachments([file.localMetadata.id]));
-  };
-
-  /**
-   * When a user selects or deselects an image in the image picker using media library.
-   */
-  useEffect(() => {
-    const uploadOrRemoveImage = async () => {
-      if (selectedImagesLength > imageUploadsLength) {
-        /** User selected an image in bottom sheet attachment picker */
-        await uploadImagesHandler();
-      } else {
-        /** User de-selected an image in bottom sheet attachment picker */
-        removeImagesHandler();
-      }
-    };
-    // If image picker is not available, don't do anything
-    if (!isImageMediaLibraryAvailable()) {
-      return;
-    }
-    uploadOrRemoveImage();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedImagesLength]);
-
-  /**
-   * When a user selects or deselects a video in the image picker using media library.
-   */
-  useEffect(() => {
-    const uploadOrRemoveFile = async () => {
-      if (selectedFilesLength > fileUploadsLength) {
-        /** User selected a video in bottom sheet attachment picker */
-        await uploadFilesHandler();
-      } else {
-        /** User de-selected a video in bottom sheet attachment picker */
-        removeFilesHandler();
-      }
-    };
-
-    if (!isImageMediaLibraryAvailable()) {
-      return;
-    }
-    uploadOrRemoveFile();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedFilesLength]);
-
-  /**
-   * This is for image attachments selected from attachment picker.
-   */
-  useEffect(() => {
-    if (isImageMediaLibraryAvailable()) {
-      if (imageUploadsLength < selectedImagesLength) {
-        // /** User removed some image from seleted images within ImageUploadPreview. */
-        const updatedSelectedImages = selectedImages.filter((selectedImage) => {
-          const uploadedImage = imageUploads.find(
-            (imageUpload) => imageUpload.localMetadata.previewUri === selectedImage.uri,
-          );
-          return uploadedImage;
-        });
-        setSelectedImages(updatedSelectedImages);
-      } else if (imageUploadsLength > selectedImagesLength) {
-        /**
-         * User is editing some message which contains image attachments.
-         **/
-        setSelectedImages(
-          imageUploads.map((imageUpload) => imageUpload.localMetadata.file as FileReference),
-        );
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imageUploadsLength]);
-
-  /**
-   * This is for video attachments selected from attachment picker.
-   */
-  useEffect(() => {
-    if (isImageMediaLibraryAvailable()) {
-      if (fileUploadsLength < selectedFilesLength) {
-        /** User removed some video from seleted files within ImageUploadPreview. */
-        const updatedSelectedFiles = selectedFiles.filter((selectedFile) => {
-          const uploadedFile = fileUploads.find(
-            (fileUpload) =>
-              (fileUpload.localMetadata.file as FileReference).uri === selectedFile.uri,
-          );
-          return uploadedFile;
-        });
-        setSelectedFiles(updatedSelectedFiles);
-      } else if (fileUploadsLength > selectedFilesLength) {
-        /**
-         * User is editing some message which contains video attachments.
-         **/
-        setSelectedFiles(
-          fileUploads.map((fileUpload) => fileUpload.localMetadata.file as FileReference),
-        );
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fileUploadsLength]);
 
   const getMembers = () => {
     const result: UserResponse[] = [];
@@ -793,7 +677,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
         <AutoCompleteSuggestionList />
       </View>
 
-      {selectedPicker && (
+      {selectedPicker && AttachmentPickerSelectionBar && isImageMediaLibraryAvailable() ? (
         <View
           style={[
             {
@@ -806,7 +690,10 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
         >
           <AttachmentPickerSelectionBar />
         </View>
-      )}
+      ) : null}
+      {isImageMediaLibraryAvailable() ? (
+        <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
+      ) : null}
       {showPollCreationDialog ? (
         <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
           <Modal
@@ -845,6 +732,7 @@ const areEqual = (
     editing: prevEditing,
     isOnline: prevIsOnline,
     openPollCreationDialog: prevOpenPollCreationDialog,
+    selectedPicker: prevSelectedPicker,
     sending: prevSending,
     showPollCreationDialog: prevShowPollCreationDialog,
     t: prevT,
@@ -862,6 +750,7 @@ const areEqual = (
     editing: nextEditing,
     isOnline: nextIsOnline,
     openPollCreationDialog: nextOpenPollCreationDialog,
+    selectedPicker: nextSelectedPicker,
     sending: nextSending,
     showPollCreationDialog: nextShowPollCreationDialog,
     t: nextT,
@@ -944,6 +833,11 @@ const areEqual = (
     return false;
   }
 
+  const selectedPickerEqual = prevSelectedPicker === nextSelectedPicker;
+  if (!selectedPickerEqual) {
+    return false;
+  }
+
   return true;
 };
 
@@ -964,7 +858,6 @@ export type MessageInputProps = Partial<MessageInputPropsWithContext>;
  * [Translation Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/translation-context/)
  */
 export const MessageInput = (props: MessageInputProps) => {
-  const { AttachmentPickerSelectionBar } = useAttachmentPickerContext();
   const { isOnline } = useChatContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
@@ -976,6 +869,11 @@ export const MessageInput = (props: MessageInputProps) => {
     asyncMessagesMinimumPressDuration,
     asyncMessagesMultiSendEnabled,
     asyncMessagesSlideToCancelDistance,
+    AttachmentPickerBottomSheetHandle,
+    attachmentPickerBottomSheetHandleHeight,
+    attachmentPickerBottomSheetHeight,
+    AttachmentPickerSelectionBar,
+    attachmentSelectionBarHeight,
     AudioRecorder,
     audioRecordingEnabled,
     AudioRecordingInProgress,
@@ -983,6 +881,7 @@ export const MessageInput = (props: MessageInputProps) => {
     AudioRecordingPreview,
     AudioRecordingWaveform,
     AutoCompleteSuggestionList,
+    CameraSelectorIcon,
     clearEditingState,
     closeAttachmentPicker,
     closePollCreationDialog,
@@ -990,9 +889,12 @@ export const MessageInput = (props: MessageInputProps) => {
     cooldownEndsAt,
     CooldownTimer,
     CreatePollContent,
+    CreatePollIcon,
     doFileUploadRequest,
     editing,
+    FileSelectorIcon,
     FileUploadPreview,
+    ImageSelectorIcon,
     ImageUploadPreview,
     Input,
     inputBoxRef,
@@ -1013,7 +915,9 @@ export const MessageInput = (props: MessageInputProps) => {
     StopMessageStreamingButton,
     uploadNewFile,
     uploadNewImage,
+    VideoRecorderSelectorIcon,
   } = useMessageInputContext();
+  const { bottomInset, bottomSheetRef, selectedPicker, topInset } = useAttachmentPickerContext();
 
   const { Reply } = useMessagesContext();
 
@@ -1037,7 +941,11 @@ export const MessageInput = (props: MessageInputProps) => {
         asyncMessagesMinimumPressDuration,
         asyncMessagesMultiSendEnabled,
         asyncMessagesSlideToCancelDistance,
+        AttachmentPickerBottomSheetHandle,
+        attachmentPickerBottomSheetHandleHeight,
+        attachmentPickerBottomSheetHeight,
         AttachmentPickerSelectionBar,
+        attachmentSelectionBarHeight,
         AudioRecorder,
         audioRecordingEnabled,
         AudioRecordingInProgress,
@@ -1045,6 +953,9 @@ export const MessageInput = (props: MessageInputProps) => {
         AudioRecordingPreview,
         AudioRecordingWaveform,
         AutoCompleteSuggestionList,
+        bottomInset,
+        bottomSheetRef,
+        CameraSelectorIcon,
         channel,
         clearEditingState,
         closeAttachmentPicker,
@@ -1054,9 +965,12 @@ export const MessageInput = (props: MessageInputProps) => {
         cooldownEndsAt,
         CooldownTimer,
         CreatePollContent,
+        CreatePollIcon,
         doFileUploadRequest,
         editing,
+        FileSelectorIcon,
         FileUploadPreview,
+        ImageSelectorIcon,
         ImageUploadPreview,
         Input,
         inputBoxRef,
@@ -1069,6 +983,7 @@ export const MessageInput = (props: MessageInputProps) => {
         openPollCreationDialog,
         Reply,
         resetInput,
+        selectedPicker,
         SendButton,
         sending,
         sendMessage,
@@ -1080,8 +995,10 @@ export const MessageInput = (props: MessageInputProps) => {
         t,
         thread,
         threadList,
+        topInset,
         uploadNewFile,
         uploadNewImage,
+        VideoRecorderSelectorIcon,
         watchers,
       }}
       {...props}
