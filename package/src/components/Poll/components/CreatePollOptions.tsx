@@ -97,15 +97,11 @@ export const CreatePollOption = ({
   // The sanity check for position cache updated index, is added because after a poll is sent its been reset
   // by the composer and it throws an undefined error. This can be removed in future.
   useAnimatedReaction(
-    () =>
-      currentOptionPositionsDerived.value.positionCache[option.id]
-        ? currentOptionPositionsDerived.value.positionCache[option.id].updatedIndex
-        : 0,
+    () => currentOptionPositionsDerived.value.positionCache[option.id]?.updatedIndex ?? 0,
     (currentValue, previousValue) => {
       if (currentValue !== previousValue) {
-        const updatedIndex = currentOptionPositionsDerived.value.positionCache[option.id]
-          ? currentOptionPositionsDerived.value.positionCache[option.id].updatedIndex
-          : 0;
+        const updatedIndex =
+          currentOptionPositionsDerived.value.positionCache[option.id]?.updatedIndex ?? 0;
         top.value = withSpring(updatedIndex * createPollOptionHeight);
       }
     },
