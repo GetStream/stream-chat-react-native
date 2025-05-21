@@ -263,7 +263,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
       },
       colors: { accent_blue, black, grey_dark, grey_whisper, static_black, static_white, white },
       messageInput: {
-        fileUploadPreview: { filenameText },
+        fileAttachmentUploadPreview: { filenameText },
       },
     },
   } = useTheme();
