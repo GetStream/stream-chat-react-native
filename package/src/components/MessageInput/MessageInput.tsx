@@ -145,7 +145,6 @@ type MessageInputPropsWithContext = Pick<
     | 'ShowThreadMessageInChannelButton'
     | 'StartAudioRecordingButton'
     | 'uploadNewFile'
-    | 'uploadNewImage'
     | 'openPollCreationDialog'
     | 'closePollCreationDialog'
     | 'showPollCreationDialog'
@@ -215,7 +214,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     StopMessageStreamingButton,
     threadList,
     uploadNewFile,
-    uploadNewImage,
     watchers,
   } = props;
 
@@ -352,7 +350,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     });
 
     if (imageToUpload) {
-      await uploadNewImage(imageToUpload);
+      await uploadNewFile(imageToUpload);
     }
   };
 
@@ -1012,7 +1010,6 @@ export const MessageInput = (props: MessageInputProps) => {
     StartAudioRecordingButton,
     StopMessageStreamingButton,
     uploadNewFile,
-    uploadNewImage,
   } = useMessageInputContext();
 
   const { Reply } = useMessagesContext();
@@ -1081,7 +1078,6 @@ export const MessageInput = (props: MessageInputProps) => {
         thread,
         threadList,
         uploadNewFile,
-        uploadNewImage,
         watchers,
       }}
       {...props}

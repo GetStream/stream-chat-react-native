@@ -12,7 +12,7 @@ export const DismissAttachmentUpload = ({ onPress }: DismissAttachmentUploadProp
     theme: {
       colors: { overlay, white },
       messageInput: {
-        imageUploadPreview: { dismiss, dismissIconColor },
+        dismissAttachmentUpload: { dismiss, dismissIcon, dismissIconColor },
       },
     },
   } = useTheme();
@@ -27,7 +27,7 @@ export const DismissAttachmentUpload = ({ onPress }: DismissAttachmentUploadProp
       ]}
       testID='remove-image-upload-preview'
     >
-      <Close pathFill={dismissIconColor || white} />
+      <Close pathFill={dismissIconColor || white} {...dismissIcon} />
     </Pressable>
   );
 };

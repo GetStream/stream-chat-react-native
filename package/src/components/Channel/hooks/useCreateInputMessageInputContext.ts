@@ -30,12 +30,14 @@ export const useCreateInputMessageInputContext = ({
   doFileUploadRequest,
   editing,
   editMessage,
+  FileAttachmentUploadPreview,
   FileUploadPreview,
   handleAttachButtonPress,
   hasCameraPicker,
   hasCommands,
   hasFilePicker,
   hasImagePicker,
+  ImageAttachmentUploadPreview,
   ImageUploadPreview,
   initialValue,
   Input,
@@ -57,6 +59,7 @@ export const useCreateInputMessageInputContext = ({
   StartAudioRecordingButton,
   StopMessageStreamingButton,
   UploadProgressIndicator,
+  VideoAttachmentUploadPreview,
 }: InputMessageInputContextValue & {
   /**
    * To ensure we allow re-render, when channel is changed
@@ -93,12 +96,14 @@ export const useCreateInputMessageInputContext = ({
       doFileUploadRequest,
       editing,
       editMessage,
+      FileAttachmentUploadPreview,
       FileUploadPreview,
       handleAttachButtonPress,
       hasCameraPicker,
       hasCommands,
       hasFilePicker,
       hasImagePicker,
+      ImageAttachmentUploadPreview,
       ImageUploadPreview,
       initialValue,
       Input,
@@ -120,6 +125,7 @@ export const useCreateInputMessageInputContext = ({
       StartAudioRecordingButton,
       StopMessageStreamingButton,
       UploadProgressIndicator,
+      VideoAttachmentUploadPreview,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [

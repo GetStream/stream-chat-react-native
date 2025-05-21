@@ -36,10 +36,13 @@ import {
   PollContentProps,
   StopMessageStreamingButtonProps,
 } from '../../components';
-import { AudioAttachmentProps } from '../../components/Attachment/AudioAttachment';
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
 import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
 import type { AttachmentUploadProgressIndicatorProps } from '../../components/MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
+import { AudioAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
+import { FileAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
+import { ImageAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/ImageAttachmentUploadPreview';
+import { VideoAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/VideoAttachmentUploadPreview';
 import type { AudioRecorderProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecorder';
 import type { AudioRecordingButtonProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingButton';
 import type { AudioRecordingInProgressProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingInProgress';
@@ -115,7 +118,6 @@ export type LocalMessageInputContext = {
   takeAndUploadImage: (mediaType?: MediaTypes) => Promise<void>;
   toggleAttachmentPicker: () => void;
   uploadNewFile: (file: File) => Promise<void>;
-  uploadNewImage: (image: File) => Promise<void>;
 };
 
 export type InputMessageInputContextValue = {
@@ -141,12 +143,6 @@ export type InputMessageInputContextValue = {
    * Defaults to and accepts same props as: [AttachButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/attach-button/)
    */
   AttachButton: React.ComponentType<AttachButtonProps>;
-  /**
-   * Custom UI component for audio attachment upload preview.
-   *
-   * Defaults to and accepts same props as: [AudioAttachmentUploadPreview](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/AudioAttachment.tsx)
-   */
-  AudioAttachmentUploadPreview: React.ComponentType<AudioAttachmentProps>;
   /**
    * Custom UI component for audio recorder UI.
    *
@@ -185,6 +181,11 @@ export type InputMessageInputContextValue = {
   AutoCompleteSuggestionHeader: React.ComponentType<AutoCompleteSuggestionHeaderProps>;
   AutoCompleteSuggestionItem: React.ComponentType<AutoCompleteSuggestionItemProps>;
   AutoCompleteSuggestionList: React.ComponentType<AutoCompleteSuggestionListProps>;
+
+  AudioAttachmentUploadPreview: React.ComponentType<AudioAttachmentUploadPreviewProps>;
+  ImageAttachmentUploadPreview: React.ComponentType<ImageAttachmentUploadPreviewProps>;
+  FileAttachmentUploadPreview: React.ComponentType<FileAttachmentUploadPreviewProps>;
+  VideoAttachmentUploadPreview: React.ComponentType<VideoAttachmentUploadPreviewProps>;
 
   clearEditingState: () => void;
   /**
@@ -464,11 +465,7 @@ export const MessageInputProvider = ({
     }
 
     if (!file.cancelled) {
-      if (file.type.includes('image')) {
-        await uploadNewImage(file);
-      } else {
-        await uploadNewFile(file);
-      }
+      await uploadNewFile(file);
     }
   });
 
@@ -495,11 +492,7 @@ export const MessageInputProvider = ({
 
     if (result.assets && result.assets.length > 0) {
       result.assets.forEach(async (asset) => {
-        if (asset.type.includes('image')) {
-          await uploadNewImage(asset);
-        } else {
-          await uploadNewFile(asset);
-        }
+        await uploadNewFile(asset);
       });
     }
   });
@@ -523,11 +516,7 @@ export const MessageInputProvider = ({
 
     if (!result.cancelled && result.assets) {
       result.assets.forEach(async (asset) => {
-        if (asset.type.includes('image')) {
-          await uploadNewImage(asset);
-        } else {
-          await uploadNewFile(asset);
-        }
+        await uploadNewFile(asset);
       });
     }
   });
@@ -635,7 +624,12 @@ export const MessageInputProvider = ({
   const uploadNewFile = useStableCallback(async (file: File) => {
     try {
       uploadAbortControllerRef.current.set(file.name, client.createAbortControllerForNextRequest());
-      await attachmentManager.uploadFiles([file]);
+      if (file.type.includes('image')) {
+        const compressedURI = await compressedImageURI(file, value.compressImageQuality);
+        await attachmentManager.uploadFiles([{ ...file, uri: compressedURI }]);
+      } else {
+        await attachmentManager.uploadFiles([file]);
+      }
       uploadAbortControllerRef.current.delete(file.name);
     } catch (error) {
       if (
@@ -643,26 +637,6 @@ export const MessageInputProvider = ({
         (error.name === 'AbortError' || error.name === 'CanceledError')
       ) {
         uploadAbortControllerRef.current.delete(file.name);
-        return;
-      }
-    }
-  });
-
-  const uploadNewImage = useStableCallback(async (image: File) => {
-    try {
-      uploadAbortControllerRef.current.set(
-        image.name,
-        client.createAbortControllerForNextRequest(),
-      );
-      const compressedURI = await compressedImageURI(image, value.compressImageQuality);
-      await attachmentManager.uploadFiles([{ ...image, uri: compressedURI }]);
-      uploadAbortControllerRef.current.delete(image.name);
-    } catch (error) {
-      if (
-        error instanceof Error &&
-        (error.name === 'AbortError' || error.name === 'CanceledError')
-      ) {
-        uploadAbortControllerRef.current.delete(image.name);
         return;
       }
     }
@@ -694,7 +668,6 @@ export const MessageInputProvider = ({
     thread,
     toggleAttachmentPicker,
     uploadNewFile,
-    uploadNewImage,
     ...value,
     closePollCreationDialog,
     openPollCreationDialog,

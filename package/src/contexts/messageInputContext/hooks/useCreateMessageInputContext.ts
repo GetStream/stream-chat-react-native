@@ -32,6 +32,7 @@ export const useCreateMessageInputContext = ({
   CreatePollContent,
   editing,
   editMessage,
+  FileAttachmentUploadPreview,
   FileUploadPreview,
   isCommandUIEnabled,
   handleAttachButtonPress,
@@ -39,6 +40,7 @@ export const useCreateMessageInputContext = ({
   hasCommands,
   hasFilePicker,
   hasImagePicker,
+  ImageAttachmentUploadPreview,
   ImageUploadPreview,
   initialValue,
   Input,
@@ -73,8 +75,8 @@ export const useCreateMessageInputContext = ({
   thread,
   toggleAttachmentPicker,
   uploadNewFile,
-  uploadNewImage,
   UploadProgressIndicator,
+  VideoAttachmentUploadPreview,
 }: MessageInputContextValue & Pick<ThreadContextValue, 'thread'>) => {
   const editingdep = editing?.id;
   const threadId = thread?.id;
@@ -109,12 +111,14 @@ export const useCreateMessageInputContext = ({
       CreatePollContent,
       editing,
       editMessage,
+      FileAttachmentUploadPreview,
       FileUploadPreview,
       handleAttachButtonPress,
       hasCameraPicker,
       hasCommands,
       hasFilePicker,
       hasImagePicker,
+      ImageAttachmentUploadPreview,
       ImageUploadPreview,
       initialValue,
       Input,
@@ -149,8 +153,8 @@ export const useCreateMessageInputContext = ({
       takeAndUploadImage,
       toggleAttachmentPicker,
       uploadNewFile,
-      uploadNewImage,
       UploadProgressIndicator,
+      VideoAttachmentUploadPreview,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
