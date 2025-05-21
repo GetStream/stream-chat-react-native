@@ -83,7 +83,7 @@ export const CreatePollContent = () => {
       };
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [createPollOptionHeight, options.length]);
+  }, [createPollOptionHeight, options]);
 
   const onBackPressHandler = useCallback(() => {
     pollComposer.initState();

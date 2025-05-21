@@ -32,6 +32,7 @@ export const CommandsHeader: React.FC<AutoCompleteSuggestionHeaderProps> = () =>
     </View>
   );
 };
+
 export const EmojiHeader: React.FC<AutoCompleteSuggestionHeaderProps> = ({ queryText }) => {
   const {
     theme: {
@@ -54,7 +55,7 @@ export const EmojiHeader: React.FC<AutoCompleteSuggestionHeaderProps> = ({ query
   );
 };
 
-export const AutoCompleteSuggestionHeader = ({
+const UnMemoizedAutoCompleteSuggestionHeader = ({
   queryText,
   triggerType,
 }: AutoCompleteSuggestionHeaderProps) => {
@@ -66,6 +67,35 @@ export const AutoCompleteSuggestionHeader = ({
     return null;
   }
 };
+
+const areEqual = (
+  prevProps: AutoCompleteSuggestionHeaderProps,
+  nextProps: AutoCompleteSuggestionHeaderProps,
+) => {
+  const { queryText: prevQueryText, triggerType: prevType } = prevProps;
+  const { queryText: nextQueryText, triggerType: nextType } = nextProps;
+
+  const typeEqual = prevType === nextType;
+  if (!typeEqual) {
+    return false;
+  }
+
+  const valueEqual = prevQueryText === nextQueryText;
+  if (!valueEqual) {
+    return false;
+  }
+
+  return true;
+};
+
+const MemoizedAutoCompleteSuggestionHeader = React.memo(
+  UnMemoizedAutoCompleteSuggestionHeader,
+  areEqual,
+);
+
+export const AutoCompleteSuggestionHeader = (props: AutoCompleteSuggestionHeaderProps) => (
+  <MemoizedAutoCompleteSuggestionHeader {...props} />
+);
 
 AutoCompleteSuggestionHeader.displayName =
   'AutoCompleteSuggestionHeader{messageInput{suggestions{Header}}}';

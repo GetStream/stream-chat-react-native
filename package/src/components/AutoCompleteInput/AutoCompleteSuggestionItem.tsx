@@ -111,7 +111,7 @@ const SuggestionItem = ({
   }
 };
 
-export const AutoCompleteSuggestionItem = ({
+const UnMemoizedAutoCompleteSuggestionItem = ({
   itemProps,
   triggerType,
 }: AutoCompleteSuggestionItemProps) => {
@@ -139,6 +139,32 @@ export const AutoCompleteSuggestionItem = ({
     </Pressable>
   );
 };
+
+const areEqual = (
+  prevProps: AutoCompleteSuggestionItemProps,
+  nextProps: AutoCompleteSuggestionItemProps,
+) => {
+  const { itemProps: prevItemProps, triggerType: prevType } = prevProps;
+  const { itemProps: nextItemProps, triggerType: nextType } = nextProps;
+  const itemPropsEqual = prevItemProps === nextItemProps;
+  if (!itemPropsEqual) {
+    return false;
+  }
+  const typeEqual = prevType === nextType;
+  if (!typeEqual) {
+    return false;
+  }
+  return true;
+};
+
+const MemoizedAutoCompleteSuggestionItem = React.memo(
+  UnMemoizedAutoCompleteSuggestionItem,
+  areEqual,
+);
+
+export const AutoCompleteSuggestionItem = (props: AutoCompleteSuggestionItemProps) => (
+  <MemoizedAutoCompleteSuggestionItem {...props} />
+);
 
 const styles = StyleSheet.create({
   args: {
