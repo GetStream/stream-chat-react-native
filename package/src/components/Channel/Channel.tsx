@@ -1658,8 +1658,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     () => ({
       bottomInset,
       bottomSheetRef,
-      closePicker,
-      openPicker,
+      closePicker: () => closePicker(bottomSheetRef),
+      openPicker: () => openPicker(bottomSheetRef),
       topInset,
     }),
     [bottomInset, bottomSheetRef, closePicker, openPicker, topInset],

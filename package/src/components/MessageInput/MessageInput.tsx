@@ -675,24 +675,26 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
       <View style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}>
         <AutoCompleteSuggestionList />
       </View>
-
-      {selectedPicker && AttachmentPickerSelectionBar && isImageMediaLibraryAvailable() ? (
-        <View
-          style={[
-            {
-              backgroundColor: white_smoke,
-              height:
-                attachmentPickerBottomSheetHeight + attachmentSelectionBarHeight - bottomInset,
-            },
-            attachmentSelectionBar,
-          ]}
-        >
-          <AttachmentPickerSelectionBar />
-        </View>
-      ) : null}
       {isImageMediaLibraryAvailable() ? (
-        <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
+        <>
+          {selectedPicker && AttachmentPickerSelectionBar ? (
+            <View
+              style={[
+                {
+                  backgroundColor: white_smoke,
+                  height:
+                    attachmentPickerBottomSheetHeight + attachmentSelectionBarHeight - bottomInset,
+                },
+                attachmentSelectionBar,
+              ]}
+            >
+              <AttachmentPickerSelectionBar />
+            </View>
+          ) : null}
+          <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
+        </>
       ) : null}
+
       {showPollCreationDialog ? (
         <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
           <Modal
