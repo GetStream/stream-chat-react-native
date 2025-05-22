@@ -1,215 +1,123 @@
-import React, { useMemo, useState } from 'react';
-import {
-  FlatList,
-  LayoutChangeEvent,
-  Pressable,
-  PressableProps,
-  PressableStateCallbackType,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { FlatList, StyleSheet, View } from 'react-native';
 
-import type { AutoCompleteSuggestionHeaderProps } from './AutoCompleteSuggestionHeader';
-import type { AutoCompleteSuggestionItemProps } from './AutoCompleteSuggestionItem';
+import { SearchSourceState, TextComposerState, TextComposerSuggestion } from 'stream-chat';
 
+import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
-  isSuggestionUser,
-  Suggestion,
-  SuggestionsContextValue,
-  useSuggestionsContext,
-} from '../../contexts/suggestionsContext/SuggestionsContext';
+  MessageInputContextValue,
+  useMessageInputContext,
+} from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useStateStore } from '../../hooks/useStateStore';
 
-const AUTO_COMPLETE_SUGGESTION_LIST_HEADER_HEIGHT = 50;
+export const DEFAULT_LIST_HEIGHT = 200;
 
-type AutoCompleteSuggestionListComponentProps = Pick<
-  SuggestionsContextValue,
-  'queryText' | 'triggerType'
-> & {
-  active: boolean;
-  data: Suggestion[];
-  onSelect: (item: Suggestion) => void;
-};
+export type AutoCompleteSuggestionListProps = Partial<
+  Pick<MessageInputContextValue, 'AutoCompleteSuggestionHeader' | 'AutoCompleteSuggestionItem'>
+>;
 
-export type AutoCompleteSuggestionListPropsWithContext = Pick<
-  SuggestionsContextValue,
-  'AutoCompleteSuggestionHeader' | 'AutoCompleteSuggestionItem'
-> &
-  AutoCompleteSuggestionListComponentProps;
+const textComposerStateSelector = (state: TextComposerState) => ({
+  suggestions: state.suggestions,
+  text: state.text,
+});
 
-const SuggestionsItem = (props: PressableProps) => {
-  const { children, style: propsStyle, ...pressableProps } = props;
+const searchSourceStateSelector = (nextValue: SearchSourceState) => ({
+  items: nextValue.items,
+});
 
-  const style = ({ pressed }: PressableStateCallbackType) => [
-    propsStyle as ViewStyle,
-    { opacity: pressed ? 0.2 : 1 },
-  ];
-
-  return (
-    <Pressable {...pressableProps} style={style}>
-      {children}
-    </Pressable>
-  );
-};
-
-SuggestionsItem.displayName = 'SuggestionsHeader{messageInput{suggestions}}';
-
-export const AutoCompleteSuggestionListWithContext = (
-  props: AutoCompleteSuggestionListPropsWithContext,
-) => {
-  const [itemHeight, setItemHeight] = useState<number>(0);
+export const AutoCompleteSuggestionList = ({
+  AutoCompleteSuggestionHeader: propsAutoCompleteSuggestionHeader,
+  AutoCompleteSuggestionItem: propsAutoCompleteSuggestionItem,
+}: AutoCompleteSuggestionListProps) => {
   const {
-    active,
-    AutoCompleteSuggestionHeader,
-    AutoCompleteSuggestionItem,
-    data,
-    onSelect,
-    queryText,
-    triggerType,
-  } = props;
+    AutoCompleteSuggestionHeader: contextAutoCompleteSuggestionHeader,
+    AutoCompleteSuggestionItem: contextAutoCompleteSuggestionItem,
+  } = useMessageInputContext();
+
+  const AutoCompleteSuggestionHeader =
+    propsAutoCompleteSuggestionHeader ?? contextAutoCompleteSuggestionHeader;
+  const AutoCompleteSuggestionItem =
+    propsAutoCompleteSuggestionItem ?? contextAutoCompleteSuggestionItem;
+
+  const messageComposer = useMessageComposer();
+  const { textComposer } = messageComposer;
+  const { suggestions } = useStateStore(textComposer.state, textComposerStateSelector);
+  const { items } = useStateStore(suggestions?.searchSource.state, searchSourceStateSelector) ?? {};
+  const trigger = suggestions?.trigger;
+  const queryText = suggestions?.query;
+
+  const triggerType = {
+    '/': 'command',
+    ':': 'emoji',
+    '@': 'mention',
+  }[trigger ?? ''];
+
+  const showList = useMemo(() => {
+    return items && items?.length > 0;
+  }, [items]);
 
   const {
     theme: {
-      colors: { white },
+      colors: { black, white },
       messageInput: {
         container: { maxHeight },
-        suggestions: { item: itemStyle },
         suggestionsListContainer: { flatlist },
       },
     },
   } = useTheme();
 
-  const flatlistHeight = useMemo(() => {
-    let totalItemHeight;
-    if (triggerType === 'emoji') {
-      totalItemHeight = data.length < 7 ? data.length * itemHeight : itemHeight * 6;
-    } else {
-      totalItemHeight = data.length < 4 ? data.length * itemHeight : itemHeight * 3;
-    }
+  const renderItem = useCallback(
+    ({ item }: { item: TextComposerSuggestion }) => {
+      return AutoCompleteSuggestionItem ? (
+        <AutoCompleteSuggestionItem itemProps={item} triggerType={triggerType} />
+      ) : null;
+    },
+    [AutoCompleteSuggestionItem, triggerType],
+  );
 
-    return triggerType === 'emoji' || triggerType === 'command'
-      ? totalItemHeight + AUTO_COMPLETE_SUGGESTION_LIST_HEADER_HEIGHT
-      : totalItemHeight;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [itemHeight, data.length]);
+  const renderHeader = useCallback(() => {
+    return AutoCompleteSuggestionHeader ? (
+      <AutoCompleteSuggestionHeader queryText={queryText} triggerType={triggerType} />
+    ) : null;
+  }, [AutoCompleteSuggestionHeader, queryText, triggerType]);
 
-  const renderItem = ({ item }: { item: Suggestion }) => {
-    switch (triggerType) {
-      case 'command':
-      case 'mention':
-      case 'emoji':
-        return (
-          <SuggestionsItem
-            onLayout={(event: LayoutChangeEvent) => setItemHeight(event.nativeEvent.layout.height)}
-            onPress={() => {
-              onSelect(item);
-            }}
-            style={itemStyle}
-          >
-            {AutoCompleteSuggestionItem && (
-              <AutoCompleteSuggestionItem itemProps={item} triggerType={triggerType} />
-            )}
-          </SuggestionsItem>
-        );
-      default:
-        return null;
-    }
-  };
-
-  if (!active || data.length === 0) {
+  if (!showList || !triggerType) {
     return null;
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: white, height: flatlistHeight }]}>
+    <View style={[styles.container]}>
       <FlatList
-        data={data}
+        data={items}
         keyboardShouldPersistTaps='always'
-        keyExtractor={(item, index) =>
-          `${item.name || (isSuggestionUser(item) ? item.id : '')}${index}`
-        }
-        ListHeaderComponent={
-          AutoCompleteSuggestionHeader ? (
-            <AutoCompleteSuggestionHeader queryText={queryText} triggerType={triggerType} />
-          ) : null
-        }
+        keyExtractor={(item) => item.id}
+        ListHeaderComponent={renderHeader}
         renderItem={renderItem}
-        style={[flatlist, { maxHeight }]}
+        style={[
+          styles.flatlist,
+          flatlist,
+          { backgroundColor: white, maxHeight, shadowColor: black },
+        ]}
       />
     </View>
   );
 };
 
-const areEqual = (
-  prevProps: AutoCompleteSuggestionListPropsWithContext,
-  nextProps: AutoCompleteSuggestionListPropsWithContext,
-) => {
-  const {
-    active: prevActive,
-    data: prevData,
-    queryText: prevQueryText,
-    triggerType: prevType,
-  } = prevProps;
-  const {
-    active: nextActive,
-    data: nextData,
-    queryText: nextQueryText,
-    triggerType: nextType,
-  } = nextProps;
-
-  const activeEqual = prevActive === nextActive;
-  if (!activeEqual) {
-    return false;
-  }
-
-  const queryTextEqual = prevQueryText === nextQueryText;
-  if (!queryTextEqual) {
-    return false;
-  }
-
-  const dataEqual = prevData === nextData;
-  if (!dataEqual) {
-    return false;
-  }
-
-  const typeEqual = prevType === nextType;
-  if (!typeEqual) {
-    return false;
-  }
-
-  return true;
-};
-
-const MemoizedAutoCompleteSuggestionList = React.memo(
-  AutoCompleteSuggestionListWithContext,
-  areEqual,
-) as typeof AutoCompleteSuggestionListWithContext;
-
-export type AutoCompleteSuggestionListProps = AutoCompleteSuggestionListComponentProps & {
-  AutoCompleteSuggestionHeader?: React.ComponentType<AutoCompleteSuggestionHeaderProps>;
-  AutoCompleteSuggestionItem?: React.ComponentType<AutoCompleteSuggestionItemProps>;
-};
-
-export const AutoCompleteSuggestionList = (props: AutoCompleteSuggestionListProps) => {
-  const { AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem } = useSuggestionsContext();
-
-  return (
-    <MemoizedAutoCompleteSuggestionList
-      {...{ AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem }}
-      {...props}
-    />
-  );
-};
-
 const styles = StyleSheet.create({
   container: {
+    maxHeight: DEFAULT_LIST_HEIGHT,
+  },
+  flatlist: {
     borderRadius: 8,
     elevation: 3,
     marginHorizontal: 8,
-    marginVertical: 8,
-    shadowOffset: { height: 1, width: 0 },
-    shadowOpacity: 0.15,
+    shadowOffset: {
+      height: 1,
+      width: 0,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
   },
 });
 

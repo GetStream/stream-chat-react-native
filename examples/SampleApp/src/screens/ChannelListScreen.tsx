@@ -59,11 +59,7 @@ const baseFilters = {
   type: 'messaging',
 };
 
-const sort: ChannelSort = [
-  { pinned_at: -1 },
-  { last_message_at: -1 },
-  { updated_at: -1 },
-];
+const sort: ChannelSort = [{ pinned_at: -1 }, { last_message_at: -1 }, { updated_at: -1 }];
 
 const options = {
   presence: true,

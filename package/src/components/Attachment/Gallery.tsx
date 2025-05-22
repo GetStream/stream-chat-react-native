@@ -30,6 +30,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+
 import { useLoadingImage } from '../../hooks/useLoadingImage';
 import { isVideoPlayerAvailable } from '../../native';
 import { FileTypes } from '../../types/types';

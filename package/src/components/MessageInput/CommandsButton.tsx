@@ -1,73 +1,80 @@
-import React from 'react';
-import type { GestureResponderEvent } from 'react-native';
-import { Pressable } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import type { GestureResponderEvent, PressableProps } from 'react-native';
+import { Pressable, View } from 'react-native';
 
-import {
-  isSuggestionCommand,
-  SuggestionsContextValue,
-  useSuggestionsContext,
-} from '../../contexts/suggestionsContext/SuggestionsContext';
+import { SearchSourceState, TextComposerState } from 'stream-chat';
+
+import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useStateStore } from '../../hooks/useStateStore';
 import { Lightning } from '../../icons/Lightning';
 
-type CommandsButtonPropsWithContext = Pick<SuggestionsContextValue, 'suggestions'> & {
+export type CommandsButtonProps = {
   /** Function that opens commands selector */
-  handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
+  handleOnPress?: PressableProps['onPress'];
+  /**
+   * Determins if the text input has text
+   */
+  hasText?: boolean;
 };
 
-const CommandsButtonWithContext = (props: CommandsButtonPropsWithContext) => {
-  const { handleOnPress, suggestions } = props;
+const textComposerStateSelector = (state: TextComposerState) => ({
+  suggestions: state.suggestions,
+  text: state.text,
+});
+
+const searchSourceStateSelector = (nextValue: SearchSourceState) => ({
+  items: nextValue.items,
+});
+
+export const CommandsButton = (props: CommandsButtonProps) => {
+  const { handleOnPress, hasText } = props;
+  const messageComposer = useMessageComposer();
+  const { textComposer } = messageComposer;
+  const { suggestions } = useStateStore(textComposer.state, textComposerStateSelector);
+  const { items } = useStateStore(suggestions?.searchSource.state, searchSourceStateSelector) ?? {};
+  const trigger = suggestions?.trigger;
+
+  const commandsButtonEnabled = useMemo(() => {
+    return items && items?.length > 0 && trigger === '/';
+  }, [items, trigger]);
+
+  const onPressHandler = useCallback(
+    async (event: GestureResponderEvent) => {
+      if (handleOnPress) {
+        handleOnPress(event);
+        return;
+      }
+
+      await textComposer.handleChange({
+        selection: {
+          end: 1,
+          start: 1,
+        },
+        text: '/',
+      });
+    },
+    [handleOnPress, textComposer],
+  );
 
   const {
     theme: {
       colors: { accent_blue, grey },
-      messageInput: { commandsButton },
+      messageInput: { commandsButton, commandsButtonContainer },
     },
   } = useTheme();
 
-  return (
-    <Pressable onPress={handleOnPress} style={[commandsButton]} testID='commands-button'>
-      <Lightning
-        fill={
-          suggestions && suggestions.data.some((suggestion) => isSuggestionCommand(suggestion))
-            ? accent_blue
-            : grey
-        }
-        size={32}
-      />
-    </Pressable>
-  );
-};
-
-const areEqual = (
-  prevProps: CommandsButtonPropsWithContext,
-  nextProps: CommandsButtonPropsWithContext,
-) => {
-  const { suggestions: prevSuggestions } = prevProps;
-  const { suggestions: nextSuggestions } = nextProps;
-
-  const suggestionsEqual = !!prevSuggestions === !!nextSuggestions;
-  if (!suggestionsEqual) {
-    return false;
+  if (hasText) {
+    return null;
   }
 
-  return true;
-};
-
-const MemoizedCommandsButton = React.memo(
-  CommandsButtonWithContext,
-  areEqual,
-) as typeof CommandsButtonWithContext;
-
-export type CommandsButtonProps = Partial<CommandsButtonPropsWithContext>;
-
-/**
- * UI Component for attach button in MessageInput component.
- */
-export const CommandsButton = (props: CommandsButtonProps) => {
-  const { suggestions } = useSuggestionsContext();
-
-  return <MemoizedCommandsButton {...{ suggestions }} {...props} />;
+  return (
+    <View style={[commandsButtonContainer]}>
+      <Pressable onPress={onPressHandler} style={[commandsButton]} testID='commands-button'>
+        <Lightning fill={commandsButtonEnabled ? accent_blue : grey} size={32} />
+      </Pressable>
+    </View>
+  );
 };
 
 CommandsButton.displayName = 'CommandsButton{messageInput}';

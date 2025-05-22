@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import type { Channel as StreamChatChannel } from 'stream-chat';
+import type {
+  LocalMessage,
+  Channel as StreamChatChannel,
+  TextComposerMiddleware,
+} from 'stream-chat';
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import {
   Channel,
@@ -13,6 +17,7 @@ import {
   useTheme,
   useTypingString,
   AITypingIndicatorView,
+  createTextComposerEmojiMiddleware,
 } from 'stream-chat-react-native';
 import { Platform, StyleSheet, View } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -25,10 +30,10 @@ import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 
 import type { StackNavigatorParamList } from '../types';
 import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
+import { init, SearchIndex } from 'emoji-mart';
+import data from '@emoji-mart/data';
 
-const styles = StyleSheet.create({
-  flex: { flex: 1 },
-});
+init({ data });
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -115,12 +120,9 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     },
   } = useTheme();
 
-  const [channel, setChannel] = useState<StreamChatChannel | undefined>(
-    channelFromProp,
-  );
+  const [channel, setChannel] = useState<StreamChatChannel | undefined>(channelFromProp);
 
-  const [selectedThread, setSelectedThread] =
-    useState<ThreadContextValue['thread']>();
+  const [selectedThread, setSelectedThread] = useState<ThreadContextValue['thread']>();
 
   useEffect(() => {
     const initChannel = async () => {
@@ -142,13 +144,30 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     setSelectedThread(undefined);
   });
 
-  const onThreadSelect = useCallback((thread) => {
-    setSelectedThread(thread);
-    navigation.navigate('ThreadScreen', {
-      channel,
-      thread,
+  useEffect(() => {
+    if (!chatClient) {
+      return;
+    }
+
+    chatClient.setMessageComposerSetupFunction(({ composer }) => {
+      composer.textComposer.middlewareExecutor.insert({
+        middleware: [createTextComposerEmojiMiddleware(SearchIndex) as TextComposerMiddleware],
+        position: { after: 'stream-io/text-composer/mentions-middleware' },
+        unique: true,
+      });
     });
-  }, [channel, navigation]);
+  }, [chatClient]);
+
+  const onThreadSelect = useCallback(
+    (thread: LocalMessage | null) => {
+      setSelectedThread(thread);
+      navigation.navigate('ThreadScreen', {
+        channel,
+        thread,
+      });
+    },
+    [channel, navigation],
+  );
 
   if (!channel || !chatClient) {
     return null;
@@ -168,12 +187,14 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         thread={selectedThread}
       >
         <ChannelHeader channel={channel} />
-        <MessageList
-          onThreadSelect={onThreadSelect}
-        />
+        <MessageList onThreadSelect={onThreadSelect} />
         <AITypingIndicatorView channel={channel} />
         <MessageInput />
       </Channel>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  flex: { flex: 1 },
+});

@@ -1,14 +1,12 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { CreatePollData } from 'stream-chat';
-
 import { MessageInputContextValue } from '../messageInputContext/MessageInputContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type CreatePollContentContextValue = {
-  createAndSendPoll: (pollData: CreatePollData) => Promise<void>;
+  createAndSendPoll: () => Promise<void>;
   sendMessage: MessageInputContextValue['sendMessage'];
   /**
    * A property that defines the constant height of the options within the poll creation screen.

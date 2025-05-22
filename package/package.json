@@ -68,7 +68,7 @@
   "dependencies": {
     "@gorhom/bottom-sheet": "^5.1.1",
     "dayjs": "1.10.5",
-    "emoji-regex": "^10.3.0",
+    "emoji-regex": "^10.4.0",
     "i18next": "^21.6.14",
     "intl-pluralrules": "^2.0.1",
     "linkifyjs": "^4.1.1",
@@ -81,8 +81,10 @@
     "use-sync-external-store": "^1.4.0"
   },
   "peerDependencies": {
+    "@emoji-mart/data": "^1.1.0",
     "@op-engineering/op-sqlite": ">=9.3.0",
     "@react-native-community/netinfo": ">=11.3.1",
+    "emoji-mart": "^5.4.0",
     "react-native": ">=0.71.0",
     "react-native-gesture-handler": ">=2.16.1",
     "react-native-reanimated": ">=3.16.0",
@@ -90,6 +92,12 @@
   },
   "peerDependenciesMeta": {
     "@op-engineering/op-sqlite": {
+      "optional": true
+    },
+    "emoji-mart": {
+      "optional": true
+    },
+    "@emoji-mart/data": {
       "optional": true
     }
   },
