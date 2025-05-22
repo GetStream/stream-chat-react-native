@@ -243,7 +243,6 @@ export const AttachmentPicker = React.forwardRef(
       maxNumberOfFiles,
       numberOfAttachmentPickerImageColumns,
       numberOfUploads: selectedFiles.length + selectedImages.length,
-      // `id` is available for Expo MediaLibrary while Cameraroll doesn't share id therefore we use `uri`
       selected:
         selectedImages.some((image) => (image?.uri ? image.uri === asset.uri : false)) ||
         selectedFiles.some((file) => (file?.uri ? file.uri === asset.uri : false)),
