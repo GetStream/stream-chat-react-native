@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import type { AppSettingsAPIResponse, StreamChat } from 'stream-chat';
 
@@ -11,43 +11,55 @@ export const useAppSettings = (
   initialisedDatabase: boolean,
 ): AppSettingsAPIResponse | null => {
   const [appSettings, setAppSettings] = useState<AppSettingsAPIResponse | null>(null);
+  const appSettingsPromise = useRef<Promise<AppSettingsAPIResponse | null>>(null);
+  const fetchedAppSettings = useRef(false);
   const isMounted = useIsMountedRef();
 
   useEffect(() => {
-    /**
-     * Fetches app settings from the backend when offline support is disabled.
-     */
+    if (fetchedAppSettings.current) {
+      return;
+    }
 
-    /**
-     * Fetches app settings from the local database when offline support is enabled if internet is off else fetches from the backend.
-     * Note: We need to set the app settings from the local database when offline as the client will not have the app settings in memory. For this we store it for the `client.userID`.
-     *
-     * TODO: Remove client.userID usage for offline support case.
-     */
-
-    async function enforceAppSettings() {
-      if (!client.userID) {
-        return;
+    const fetchAppSettings = () => {
+      if (appSettingsPromise.current) {
+        return appSettingsPromise.current;
       }
+      appSettingsPromise.current = client.getAppSettings();
+      return appSettingsPromise.current;
+    };
 
-      if (enableOfflineSupport && !initialisedDatabase) {
+    const enforceAppSettings = async () => {
+      if (!client.userID) return;
+
+      if (enableOfflineSupport && !initialisedDatabase) return;
+
+      const userId = client.userID as string;
+
+      if (!isOnline && client.offlineDb) {
+        const appSettings = await client.offlineDb.getAppSettings({ userId });
+        setAppSettings(appSettings);
         return;
       }
 
       try {
-        const appSettings = (await client.getAppSettings()) as AppSettingsAPIResponse;
-        if (isMounted.current) {
+        const appSettings = await fetchAppSettings();
+        if (isMounted.current && appSettings) {
           setAppSettings(appSettings);
+          fetchedAppSettings.current = true;
+          client.offlineDb?.executeQuerySafely(
+            (db) => db.upsertAppSettings({ appSettings, userId }),
+            { method: 'upsertAppSettings' },
+          );
         }
       } catch (error: unknown) {
         if (error instanceof Error) {
           console.error(`An error occurred while getting app settings: ${error}`);
         }
       }
-    }
+    };
 
     enforceAppSettings();
-  }, [client, isOnline, initialisedDatabase, enableOfflineSupport, isMounted]);
+  }, [client, isOnline, initialisedDatabase, isMounted, enableOfflineSupport]);
 
   return appSettings;
 };
