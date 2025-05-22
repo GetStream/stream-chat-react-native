@@ -45,15 +45,14 @@ export const CreatePollContent = () => {
     pollComposerStateSelector,
   );
 
-  const firstOption = options[0];
-
-  const { createPollOptionHeight } = useCreatePollContentContext();
+  const { createPollOptionHeight, closePollCreationDialog, createAndSendPoll } =
+    useCreatePollContentContext();
 
   // positions and index lookup map
   // TODO: Please rethink the structure of this, bidirectional data flow is not great
   const currentOptionPositions = useSharedValue<CurrentOptionPositionsCache>({
-    inverseIndexCache: { 0: firstOption.id },
-    positionCache: { [firstOption.id]: { updatedIndex: 0, updatedTop: 0 } },
+    inverseIndexCache: {},
+    positionCache: {},
   });
 
   const {
@@ -84,11 +83,23 @@ export const CreatePollContent = () => {
       };
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [createPollOptionHeight, options.length]);
+  }, [createPollOptionHeight, options]);
+
+  const onBackPressHandler = useCallback(() => {
+    pollComposer.initState();
+    closePollCreationDialog?.();
+  }, [pollComposer, closePollCreationDialog]);
+
+  const onCreatePollPressHandler = useCallback(async () => {
+    await createAndSendPoll();
+  }, [createAndSendPoll]);
 
   return (
     <>
-      <CreatePollHeader />
+      <CreatePollHeader
+        onBackPressHandler={onBackPressHandler}
+        onCreatePollPressHandler={onCreatePollPressHandler}
+      />
       <ScrollView
         contentContainerStyle={{ paddingBottom: 70 }}
         style={[styles.scrollView, { backgroundColor: white }, scrollView]}
@@ -149,18 +160,16 @@ export const CreatePoll = ({
 > &
   Pick<InputMessageInputContextValue, 'CreatePollContent'>) => {
   const messageComposer = useMessageComposer();
-  const { pollComposer } = messageComposer;
 
   const createAndSendPoll = useCallback(async () => {
     try {
       await messageComposer.createPoll();
       await sendMessage();
-      await pollComposer.initState();
       closePollCreationDialog?.();
     } catch (error) {
-      console.log('error', error);
+      console.log('Error creating a poll and sending a message:', error);
     }
-  }, [messageComposer, sendMessage, pollComposer, closePollCreationDialog]);
+  }, [messageComposer, sendMessage, closePollCreationDialog]);
 
   return (
     <CreatePollContentProvider

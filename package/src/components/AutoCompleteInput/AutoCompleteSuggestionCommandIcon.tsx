@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { CommandVariants } from 'stream-chat';
@@ -6,10 +6,36 @@ import { CommandVariants } from 'stream-chat';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Flag, GiphyIcon, Imgur, Lightning, Mute, Sound, UserAdd, UserDelete } from '../../icons';
 
+export const SuggestionCommandIcon = ({ name }: { name: CommandVariants }) => {
+  const {
+    theme: {
+      colors: { white },
+    },
+  } = useTheme();
+
+  if (name === 'ban') {
+    return <UserDelete height={16} pathFill={white} width={16} />;
+  } else if (name === 'flag') {
+    return <Flag pathFill={white} />;
+  } else if (name === 'giphy') {
+    return <GiphyIcon />;
+  } else if (name === 'imgur') {
+    return <Imgur />;
+  } else if (name === 'mute') {
+    return <Mute height={16} pathFill={white} width={16} />;
+  } else if (name === 'unban') {
+    return <UserAdd height={16} pathFill={white} width={16} />;
+  } else if (name === 'unmute') {
+    return <Sound pathFill={white} />;
+  } else {
+    return <Lightning fill={white} size={16} />;
+  }
+};
+
 export const AutoCompleteSuggestionCommandIcon = ({ name }: { name: CommandVariants }) => {
   const {
     theme: {
-      colors: { accent_blue, white },
+      colors: { accent_blue },
       messageInput: {
         suggestions: {
           command: { iconContainer },
@@ -17,32 +43,6 @@ export const AutoCompleteSuggestionCommandIcon = ({ name }: { name: CommandVaria
       },
     },
   } = useTheme();
-
-  const renderIcon = useCallback(
-    (name: CommandVariants) => {
-      switch (name) {
-        case 'ban':
-          return <UserDelete height={16} pathFill={white} width={16} />;
-        case 'flag':
-          return <Flag pathFill={white} />;
-        case 'giphy':
-          return <GiphyIcon />;
-        case 'imgur':
-          return <Imgur />;
-        case 'mute':
-          return <Mute height={16} pathFill={white} width={16} />;
-        case 'unban':
-          return <UserAdd height={16} pathFill={white} width={16} />;
-        case 'unmute':
-          return <Sound pathFill={white} />;
-        default:
-          return <Lightning fill={white} size={16} />;
-      }
-    },
-    [white],
-  );
-
-  const icon = renderIcon(name);
 
   return (
     <View
@@ -54,7 +54,7 @@ export const AutoCompleteSuggestionCommandIcon = ({ name }: { name: CommandVaria
         iconContainer,
       ]}
     >
-      {icon}
+      <SuggestionCommandIcon name={name} />
     </View>
   );
 };
