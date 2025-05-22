@@ -220,7 +220,6 @@ export class SqliteClient {
   static resetDB = async () => {
     this.logger?.('info', 'resetDB');
     if (this.db) {
-      // await this.db.execute('ROLLBACK');
       await SqliteClient.dropTables();
       SqliteClient.closeDB();
     }
