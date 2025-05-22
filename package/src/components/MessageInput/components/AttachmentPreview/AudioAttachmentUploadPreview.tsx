@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 
 import { StyleSheet, View } from 'react-native';
 
-import { LocalAudioAttachment, LocalVoiceRecordingAttachment } from 'stream-chat';
+import { FileReference, LocalAudioAttachment, LocalVoiceRecordingAttachment } from 'stream-chat';
 
 import { AttachmentUploadProgressIndicator } from './AttachmentUploadProgressIndicator';
 import { DismissAttachmentUpload } from './DismissAttachmentUpload';
@@ -39,11 +39,9 @@ export const AudioAttachmentUploadPreview = ({
 
   const finalAttachment = useMemo(
     () => ({
-      asset_url: attachment.asset_url,
+      ...attachment,
+      asset_url: (attachment.localMetadata.file as FileReference).uri,
       id: attachment.localMetadata.id,
-      title: attachment.title,
-      type: attachment.type,
-      waveform_data: attachment.waveform_data,
       ...audioAttachmentConfig,
     }),
     [attachment, audioAttachmentConfig],
@@ -72,6 +70,7 @@ export const AudioAttachmentUploadPreview = ({
           onProgress={onProgress}
           showSpeedSettings={false}
           testID='audio-attachment-upload-preview'
+          titleMaxLength={12}
         />
       </AttachmentUploadProgressIndicator>
       <View style={styles.dismissWrapper}>

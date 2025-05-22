@@ -1302,7 +1302,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           messageResponse = await doSendMessageRequest(channel?.cid || '', messageData, options);
         } else if (channel) {
           messageResponse = await channel.sendMessage(messageData, options);
-          console.log(messageResponse);
         }
 
         if (messageResponse.message) {
