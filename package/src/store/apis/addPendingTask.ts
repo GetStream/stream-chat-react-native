@@ -23,8 +23,7 @@ export const addPendingTask = async (task: PendingTask) => {
     type,
   });
 
-  const r = await SqliteClient.executeSql.apply(null, query);
-  console.log('[OFFLINE]: QUERY: ', r);
+  await SqliteClient.executeSql.apply(null, query);
 
   return async () => {
     SqliteClient.logger?.('info', 'deletePendingTaskAfterAddition', {
