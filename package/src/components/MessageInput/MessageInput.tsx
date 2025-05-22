@@ -121,12 +121,7 @@ type MessageInputPropsWithContext = Partial<
     | 'numberOfAttachmentPickerImageColumns'
   >
 > &
-  Partial<
-    Pick<
-      AttachmentPickerContextValue,
-      'bottomInset' | 'topInset' | 'bottomSheetRef' | 'selectedPicker'
-    >
-  > &
+  Pick<AttachmentPickerContextValue, 'bottomInset' | 'bottomSheetRef' | 'selectedPicker'> &
   Pick<ChatContextValue, 'isOnline'> &
   Pick<ChannelContextValue, 'channel' | 'members' | 'threadList' | 'watchers'> &
   Pick<
@@ -214,7 +209,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     attachmentSelectionBarHeight,
     numberOfAttachmentImagesToLoadPerCall = 60,
     numberOfAttachmentPickerImageColumns = 3,
-    bottomInset = 0,
+    bottomInset,
     bottomSheetRef,
     selectedPicker,
 
@@ -677,7 +672,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
       </View>
       {isImageMediaLibraryAvailable() ? (
         <>
-          {selectedPicker && AttachmentPickerSelectionBar ? (
+          {selectedPicker ? (
             <View
               style={[
                 {
@@ -917,7 +912,7 @@ export const MessageInput = (props: MessageInputProps) => {
     uploadNewFile,
     VideoRecorderSelectorIcon,
   } = useMessageInputContext();
-  const { bottomInset, bottomSheetRef, selectedPicker, topInset } = useAttachmentPickerContext();
+  const { bottomInset, bottomSheetRef, selectedPicker } = useAttachmentPickerContext();
 
   const { Reply } = useMessagesContext();
 
@@ -995,7 +990,6 @@ export const MessageInput = (props: MessageInputProps) => {
         t,
         thread,
         threadList,
-        topInset,
         uploadNewFile,
         VideoRecorderSelectorIcon,
         watchers,

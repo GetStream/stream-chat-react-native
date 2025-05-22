@@ -510,7 +510,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AutoCompleteSuggestionList = AutoCompleteSuggestionListDefault,
 
     autoCompleteSuggestionsLimit,
-    bottomInset,
+    bottomInset = 0,
     CameraSelectorIcon = DefaultCameraSelectorIcon,
     FileSelectorIcon = DefaultFileSelectorIcon,
     CreatePollIcon = DefaultCreatePollIcon,
@@ -677,7 +677,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     thread: threadFromProps,
     threadList,
     threadMessages,
-    topInset,
+    topInset = 0,
     TypingIndicator = TypingIndicatorDefault,
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
     UnreadMessagesNotification = UnreadMessagesNotificationDefault,
