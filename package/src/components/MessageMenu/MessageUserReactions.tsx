@@ -126,8 +126,6 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
   } = useTheme();
   const { t } = useTranslationContext();
 
-  console.log('TESTTEST: ', fetchedReactions);
-
   const reactions = useMemo(
     () =>
       propReactions ||
