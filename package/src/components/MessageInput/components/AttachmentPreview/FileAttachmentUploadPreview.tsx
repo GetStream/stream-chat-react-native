@@ -21,7 +21,7 @@ import {
   ProgressIndicatorTypes,
 } from '../../../../utils/utils';
 
-export type FileAttachmentPreviewProps<CustomLocalMetadata = Record<string, unknown>> =
+export type FileAttachmentUploadPreviewProps<CustomLocalMetadata = Record<string, unknown>> =
   UploadAttachmentPreviewProps<
     | LocalFileAttachment<CustomLocalMetadata>
     | LocalVideoAttachment<CustomLocalMetadata>
@@ -35,7 +35,7 @@ export const FileAttachmentUploadPreview = ({
   flatListWidth,
   handleRetry,
   removeAttachments,
-}: FileAttachmentPreviewProps) => {
+}: FileAttachmentUploadPreviewProps) => {
   const { enableOfflineSupport } = useChatContext();
   const { FileAttachmentIcon } = useMessagesContext();
   const indicatorType = getIndicatorTypeForFileState(
@@ -47,7 +47,7 @@ export const FileAttachmentUploadPreview = ({
     theme: {
       colors: { black, grey, grey_whisper },
       messageInput: {
-        fileUploadPreview: {
+        fileAttachmentUploadPreview: {
           fileContainer,
           filenameText,
           fileSizeText,

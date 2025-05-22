@@ -11,6 +11,7 @@ import { getGalleryImageBorderRadius } from './utils/getGalleryImageBorderRadius
 
 import { openUrlSafely } from './utils/openUrlSafely';
 
+import { useTranslationContext } from '../../contexts';
 import { useChatConfigContext } from '../../contexts/chatConfigContext/ChatConfigContext';
 import {
   ImageGalleryContextValue,
@@ -29,7 +30,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+
 import { useLoadingImage } from '../../hooks/useLoadingImage';
 import { isVideoPlayerAvailable } from '../../native';
 import { FileTypes } from '../../types/types';

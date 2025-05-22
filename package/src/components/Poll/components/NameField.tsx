@@ -8,6 +8,7 @@ export const NameField = () => {
   const { t } = useTranslationContext();
   const messageComposer = useMessageComposer();
   const { pollComposer } = messageComposer;
+  const { handleFieldBlur, updateFields } = pollComposer;
 
   const {
     theme: {
@@ -20,14 +21,14 @@ export const NameField = () => {
 
   const onChangeText = useCallback(
     async (newText: string) => {
-      await pollComposer.updateFields({ name: newText });
+      await updateFields({ name: newText });
     },
-    [pollComposer],
+    [updateFields],
   );
 
   const onBlur = useCallback(async () => {
-    await pollComposer.handleFieldBlur('name');
-  }, [pollComposer]);
+    await handleFieldBlur('name');
+  }, [handleFieldBlur]);
 
   return (
     <View>

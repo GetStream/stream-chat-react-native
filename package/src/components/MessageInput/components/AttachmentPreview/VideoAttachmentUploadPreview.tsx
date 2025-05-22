@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 
 import { Image, StyleSheet, View } from 'react-native';
 
-import { LocalImageAttachment } from 'stream-chat';
+import { LocalVideoAttachment } from 'stream-chat';
 
 import { AttachmentUnsupportedIndicator } from './AttachmentUnsupportedIndicator';
 import { AttachmentUploadProgressIndicator } from './AttachmentUploadProgressIndicator';
@@ -10,19 +10,20 @@ import { DismissAttachmentUpload } from './DismissAttachmentUpload';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { Recorder } from '../../../../icons/Recorder';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
 import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../../../utils/utils';
 
 const IMAGE_PREVIEW_SIZE = 100;
 
-export type ImageAttachmentUploadPreviewProps<CustomLocalMetadata = Record<string, unknown>> =
-  UploadAttachmentPreviewProps<LocalImageAttachment<CustomLocalMetadata>>;
+export type VideoAttachmentUploadPreviewProps<CustomLocalMetadata = Record<string, unknown>> =
+  UploadAttachmentPreviewProps<LocalVideoAttachment<CustomLocalMetadata>>;
 
-export const ImageAttachmentUploadPreview = ({
+export const VideoAttachmentUploadPreview = ({
   attachment,
   handleRetry,
   removeAttachments,
-}: ImageAttachmentUploadPreviewProps) => {
+}: VideoAttachmentUploadPreviewProps) => {
   const { enableOfflineSupport } = useChatContext();
   const indicatorType = getIndicatorTypeForFileState(
     attachment.localMetadata.uploadState,
@@ -31,8 +32,14 @@ export const ImageAttachmentUploadPreview = ({
 
   const {
     theme: {
+      colors: { white },
       messageInput: {
-        imageAttachmentUploadPreview: { itemContainer, upload },
+        videoAttachmentUploadPreview: {
+          itemContainer,
+          recorderIcon,
+          recorderIconContainer,
+          upload,
+        },
       },
     },
   } = useTheme();
@@ -54,9 +61,12 @@ export const ImageAttachmentUploadPreview = ({
       >
         <Image
           resizeMode='cover'
-          source={{ uri: attachment.localMetadata.previewUri ?? attachment.image_url }}
+          source={{ uri: attachment.thumb_url }}
           style={[styles.upload, upload]}
         />
+        <View style={[styles.recorderIconContainer, recorderIconContainer]}>
+          <Recorder height={20} pathFill={white} width={20} {...recorderIcon} />
+        </View>
       </AttachmentUploadProgressIndicator>
       <DismissAttachmentUpload onPress={onDismissHandler} />
       {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
@@ -76,6 +86,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: IMAGE_PREVIEW_SIZE,
     marginLeft: 8,
+  },
+  recorderIconContainer: {
+    bottom: 8,
+    left: 8,
+    position: 'absolute',
   },
   upload: {
     borderRadius: 10,

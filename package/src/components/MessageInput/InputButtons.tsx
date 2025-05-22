@@ -52,13 +52,11 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
   const [showMoreOptions, setShowMoreOptions] = useState(true);
   const { attachments } = useAttachmentManagerState();
 
+  const shouldShowMoreOptions = !!text || !!attachments.length;
+
   useEffect(() => {
-    if (text.length > 0 || attachments.length > 0) {
-      setShowMoreOptions(false);
-    } else {
-      setShowMoreOptions(true);
-    }
-  }, [attachments.length, text]);
+    setShowMoreOptions(!shouldShowMoreOptions);
+  }, [shouldShowMoreOptions]);
 
   const {
     theme: {

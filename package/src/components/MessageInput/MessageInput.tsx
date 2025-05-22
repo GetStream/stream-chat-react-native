@@ -174,7 +174,6 @@ type MessageInputPropsWithContext = Partial<
     | 'ShowThreadMessageInChannelButton'
     | 'StartAudioRecordingButton'
     | 'uploadNewFile'
-    | 'uploadNewImage'
     | 'openPollCreationDialog'
     | 'closePollCreationDialog'
     | 'showPollCreationDialog'
@@ -914,7 +913,6 @@ export const MessageInput = (props: MessageInputProps) => {
     StartAudioRecordingButton,
     StopMessageStreamingButton,
     uploadNewFile,
-    uploadNewImage,
     VideoRecorderSelectorIcon,
   } = useMessageInputContext();
   const { bottomInset, bottomSheetRef, selectedPicker, topInset } = useAttachmentPickerContext();
@@ -997,7 +995,6 @@ export const MessageInput = (props: MessageInputProps) => {
         threadList,
         topInset,
         uploadNewFile,
-        uploadNewImage,
         VideoRecorderSelectorIcon,
         watchers,
       }}

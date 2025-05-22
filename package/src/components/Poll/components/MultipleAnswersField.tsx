@@ -17,6 +17,7 @@ export const MultipleAnswersField = () => {
   const { t } = useTranslationContext();
   const messageComposer = useMessageComposer();
   const { pollComposer } = messageComposer;
+  const { handleFieldBlur, updateFields } = pollComposer;
   const { enforce_unique_vote, error, max_votes_allowed } = useStateStore(
     pollComposer.state,
     pollComposerStateSelector,
@@ -33,21 +34,21 @@ export const MultipleAnswersField = () => {
 
   const onEnforceUniqueVoteHandler = useCallback(
     async (value: boolean) => {
-      await pollComposer.updateFields({ enforce_unique_vote: !value });
+      await updateFields({ enforce_unique_vote: !value });
     },
-    [pollComposer],
+    [updateFields],
   );
 
   const onChangeTextHandler = useCallback(
     async (newText: string) => {
-      await pollComposer.updateFields({ max_votes_allowed: newText });
+      await updateFields({ max_votes_allowed: newText });
     },
-    [pollComposer],
+    [updateFields],
   );
 
   const onBlurHandler = useCallback(async () => {
-    await pollComposer.handleFieldBlur('max_votes_allowed');
-  }, [pollComposer]);
+    await handleFieldBlur('max_votes_allowed');
+  }, [handleFieldBlur]);
 
   return (
     <View
@@ -69,7 +70,7 @@ export const MultipleAnswersField = () => {
                 maxVotes.validationText,
               ]}
             >
-              {error}
+              {t<string>(error)}
             </Text>
           ) : null}
           <View style={{ flexDirection: 'row' }}>
@@ -77,7 +78,7 @@ export const MultipleAnswersField = () => {
               inputMode='numeric'
               onBlur={onBlurHandler}
               onChangeText={onChangeTextHandler}
-              placeholder={t('Maximum votes per person')}
+              placeholder={t<string>('Maximum votes per person')}
               style={[styles.maxVotesInput, { color: black }, maxVotes.input]}
             />
           </View>

@@ -184,6 +184,6 @@ export const createTextComposerEmojiMiddleware = (
         });
       },
     },
-    id: 'stream-io/emoji-middleware',
+    id: 'stream-io/react-native-sdk/emoji-middleware',
   };
 };

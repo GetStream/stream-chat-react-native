@@ -4,6 +4,8 @@ import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
+import { AudioAttachment as StreamAudioAttachment } from 'stream-chat';
+
 import { useTheme } from '../../contexts';
 import { useAudioPlayer } from '../../hooks/useAudioPlayer';
 import { Audio, Pause, Play } from '../../icons';
@@ -22,19 +24,18 @@ import { WaveProgressBar } from '../ProgressControl/WaveProgressBar';
 
 dayjs.extend(duration);
 
-export type AudioAttachmentType = AudioConfig & {
-  asset_url?: string;
-  id: string;
-  title?: string;
-  type: 'audio' | 'voiceRecording';
-  waveform_data?: number[];
-};
+export type AudioAttachmentType = AudioConfig &
+  Pick<StreamAudioAttachment, 'waveform_data' | 'asset_url' | 'title'> & {
+    id: string;
+    type: 'audio' | 'voiceRecording';
+  };
 
 export type AudioAttachmentProps = {
   item: AudioAttachmentType;
   onLoad: (index: string, duration: number) => void;
   onPlayPause: (index: string, pausedStatus?: boolean) => void;
   onProgress: (index: string, progress: number) => void;
+  titleMaxLength?: number;
   hideProgressBar?: boolean;
   showSpeedSettings?: boolean;
   testID?: string;
@@ -56,6 +57,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     onProgress,
     showSpeedSettings = false,
     testID,
+    titleMaxLength,
   } = props;
   const { changeAudioSpeed, pauseAudio, playAudio, seekAudio } = useAudioPlayer({ soundRef });
   const isExpoCLI = NativeHandlers.SDK === 'stream-chat-expo';
@@ -263,7 +265,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
       },
       colors: { accent_blue, black, grey_dark, grey_whisper, static_black, static_white, white },
       messageInput: {
-        fileUploadPreview: { filenameText },
+        fileAttachmentUploadPreview: { filenameText },
       },
     },
   } = useTheme();
@@ -326,7 +328,9 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             filenameText,
           ]}
         >
-          {getTrimmedAttachmentTitle(item.title)}
+          {item.type === FileTypes.VoiceRecording
+            ? 'Recording'
+            : getTrimmedAttachmentTitle(item.title, titleMaxLength)}
         </Text>
         <View style={styles.audioInfo}>
           <Text style={[styles.progressDurationText, { color: grey_dark }, progressDurationText]}>

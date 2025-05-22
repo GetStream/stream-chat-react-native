@@ -39,7 +39,9 @@ type FilesToDisplayType = Attachment & {
 
 const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithContext) => {
   const { Attachment, AudioAttachment, files, messageId, styles: stylesProp = {} } = props;
-  const [filesToDisplay, setFilesToDisplay] = useState<FilesToDisplayType[]>([]);
+  const [filesToDisplay, setFilesToDisplay] = useState<FilesToDisplayType[]>(() =>
+    files.map((file) => ({ ...file, duration: file.duration || 0, paused: true, progress: 0 })),
+  );
 
   useEffect(() => {
     setFilesToDisplay(
@@ -111,14 +113,9 @@ const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithConte
           isSoundPackageAvailable() ? (
             <AudioAttachment
               item={{
-                asset_url: file.asset_url,
-                duration: file.duration,
+                ...file,
                 id: index.toString(),
-                paused: file.paused,
-                progress: file.progress,
-                title: file.title,
                 type: file.type,
-                waveform_data: file.waveform_data,
               }}
               onLoad={onLoad}
               onPlayPause={onPlayPause}

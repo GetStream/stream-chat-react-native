@@ -1,21 +1,32 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
-import { useCreatePollContentContext } from '../../../contexts/pollContext/createPollContentContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { SendPoll } from '../../../icons';
 import { PollModalHeader } from '../components';
 import { useCanCreatePoll } from '../hooks/useCanCreatePoll';
 
-export const CreatePollHeader = () => {
+export type CreatePollHeaderProps = {
+  /**
+   * Handler for back button press
+   * @returns void
+   */
+  onBackPressHandler: () => void;
+  /**
+   * Handler for create poll button press
+   * @returns void
+   */
+  onCreatePollPressHandler: () => void;
+};
+
+export const CreatePollHeader = ({
+  onBackPressHandler,
+  onCreatePollPressHandler,
+}: CreatePollHeaderProps) => {
   const { t } = useTranslationContext();
 
-  const messageComposer = useMessageComposer();
   const canCreatePoll = useCanCreatePoll();
-  const { pollComposer } = messageComposer;
-  const { closePollCreationDialog, createAndSendPoll } = useCreatePollContentContext();
 
   const {
     theme: {
@@ -28,18 +39,10 @@ export const CreatePollHeader = () => {
 
   return (
     <View style={[styles.headerContainer, { backgroundColor: white }, headerContainer]}>
-      <PollModalHeader
-        onPress={() => {
-          pollComposer.initState();
-          closePollCreationDialog?.();
-        }}
-        title={t('Create Poll')}
-      />
+      <PollModalHeader onPress={onBackPressHandler} title={t<string>('Create Poll')} />
       <Pressable
         disabled={!canCreatePoll}
-        onPress={async () => {
-          await createAndSendPoll();
-        }}
+        onPress={onCreatePollPressHandler}
         style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }, styles.sendButton, sendButton]}
       >
         <SendPoll

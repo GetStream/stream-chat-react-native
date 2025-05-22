@@ -19,6 +19,9 @@ export const AttachmentUnsupportedIndicator = ({
   const {
     theme: {
       colors: { accent_red, overlay, white },
+      messageInput: {
+        attachmentUnsupportedIndicator: { container, text, warningIcon, wrapper },
+      },
     },
   } = useTheme();
 
@@ -29,15 +32,18 @@ export const AttachmentUnsupportedIndicator = ({
   }
 
   return (
-    <View style={[styles.unsupportedImage, { backgroundColor: overlay }]}>
-      <View style={[styles.iconContainer]}>
+    <View style={[styles.unsupportedImageWrapper, { backgroundColor: overlay }, wrapper]}>
+      <View style={[styles.iconContainer, container]}>
         <Warning
           height={WARNING_ICON_SIZE}
           pathFill={accent_red}
           style={styles.warningIconStyle}
           width={WARNING_ICON_SIZE}
+          {...warningIcon}
         />
-        <Text style={[styles.warningText, { color: white }]}>{t<string>('Not supported')}</Text>
+        <Text style={[styles.warningText, { color: white }, text]}>
+          {t<string>('Not supported')}
+        </Text>
       </View>
     </View>
   );
@@ -49,7 +55,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
   },
-  unsupportedImage: {
+  unsupportedImageWrapper: {
     borderRadius: 20,
     bottom: 8,
     flexDirection: 'row',

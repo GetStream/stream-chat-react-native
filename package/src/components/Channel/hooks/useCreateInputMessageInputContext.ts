@@ -37,6 +37,7 @@ export const useCreateInputMessageInputContext = ({
   doFileUploadRequest,
   editing,
   editMessage,
+  FileAttachmentUploadPreview,
   FileSelectorIcon,
   FileUploadPreview,
   handleAttachButtonPress,
@@ -44,6 +45,7 @@ export const useCreateInputMessageInputContext = ({
   hasCommands,
   hasFilePicker,
   hasImagePicker,
+  ImageAttachmentUploadPreview,
   ImageSelectorIcon,
   ImageUploadPreview,
   initialValue,
@@ -66,6 +68,7 @@ export const useCreateInputMessageInputContext = ({
   StartAudioRecordingButton,
   StopMessageStreamingButton,
   UploadProgressIndicator,
+  VideoAttachmentUploadPreview,
   VideoRecorderSelectorIcon,
 }: InputMessageInputContextValue & {
   /**
@@ -110,6 +113,7 @@ export const useCreateInputMessageInputContext = ({
       doFileUploadRequest,
       editing,
       editMessage,
+      FileAttachmentUploadPreview,
       FileSelectorIcon,
       FileUploadPreview,
       handleAttachButtonPress,
@@ -117,6 +121,7 @@ export const useCreateInputMessageInputContext = ({
       hasCommands,
       hasFilePicker,
       hasImagePicker,
+      ImageAttachmentUploadPreview,
       ImageSelectorIcon,
       ImageUploadPreview,
       initialValue,
@@ -139,6 +144,7 @@ export const useCreateInputMessageInputContext = ({
       StartAudioRecordingButton,
       StopMessageStreamingButton,
       UploadProgressIndicator,
+      VideoAttachmentUploadPreview,
       VideoRecorderSelectorIcon,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

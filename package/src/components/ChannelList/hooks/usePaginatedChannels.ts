@@ -282,7 +282,7 @@ export const usePaginatedChannels = ({
           // ready. I do not like providing a way to set the ready state, as it should be managed
           // in the LLC entirely. Once we move offline support to the LLC, we can remove this check
           // too as it'll be redundant.
-          pagination?.isLoading || (!channelListInitialized && channels.length === 0),
+          pagination?.isLoading || (!channelListInitialized && channels.length === 0 && !error),
     loadingNextPage: pagination?.isLoadingNext,
     loadNextPage: channelManager.loadNext,
     refreshing: activeQueryType === 'refresh',

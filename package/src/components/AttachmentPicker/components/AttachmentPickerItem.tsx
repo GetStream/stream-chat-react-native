@@ -105,7 +105,7 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
     },
   } = useTheme();
   const { vw } = useViewport();
-  const { uploadNewImage } = useMessageInputContext();
+  const { uploadNewFile } = useMessageInputContext();
   const messageComposer = useMessageComposer();
   const { attachmentManager } = messageComposer;
   const { attachments, availableUploadSlots } = useAttachmentManagerState();
@@ -132,7 +132,7 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
         Alert.alert('Maximum number of files reached');
         return;
       }
-      await uploadNewImage(asset);
+      await uploadNewFile(asset);
     }
   };
 

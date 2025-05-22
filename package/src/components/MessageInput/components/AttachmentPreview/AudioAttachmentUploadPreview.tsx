@@ -2,17 +2,17 @@ import React, { useCallback, useMemo } from 'react';
 
 import { StyleSheet, View } from 'react-native';
 
-import { LocalAudioAttachment, LocalVoiceRecordingAttachment } from 'stream-chat';
+import { FileReference, LocalAudioAttachment, LocalVoiceRecordingAttachment } from 'stream-chat';
 
 import { AttachmentUploadProgressIndicator } from './AttachmentUploadProgressIndicator';
 import { DismissAttachmentUpload } from './DismissAttachmentUpload';
 
+import { AudioAttachment } from '../../../../components/Attachment/AudioAttachment';
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
-import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { AudioConfig, UploadAttachmentPreviewProps } from '../../../../types/types';
 import { getIndicatorTypeForFileState } from '../../../../utils/utils';
 
-export type AudioAttachmentPreviewProps<CustomLocalMetadata = Record<string, unknown>> =
+export type AudioAttachmentUploadPreviewProps<CustomLocalMetadata = Record<string, unknown>> =
   UploadAttachmentPreviewProps<
     LocalAudioAttachment<CustomLocalMetadata> | LocalVoiceRecordingAttachment<CustomLocalMetadata>
   > & {
@@ -30,9 +30,8 @@ export const AudioAttachmentUploadPreview = ({
   onLoad,
   onPlayPause,
   onProgress,
-}: AudioAttachmentPreviewProps) => {
+}: AudioAttachmentUploadPreviewProps) => {
   const { enableOfflineSupport } = useChatContext();
-  const { AudioAttachmentUploadPreview: AttachmentPreview } = useMessageInputContext();
   const indicatorType = getIndicatorTypeForFileState(
     attachment.localMetadata.uploadState,
     enableOfflineSupport,
@@ -40,11 +39,9 @@ export const AudioAttachmentUploadPreview = ({
 
   const finalAttachment = useMemo(
     () => ({
-      asset_url: attachment.asset_url,
+      ...attachment,
+      asset_url: (attachment.localMetadata.file as FileReference).uri,
       id: attachment.localMetadata.id,
-      title: attachment.title,
-      type: attachment.type,
-      waveform_data: attachment.waveform_data,
       ...audioAttachmentConfig,
     }),
     [attachment, audioAttachmentConfig],
@@ -65,7 +62,7 @@ export const AudioAttachmentUploadPreview = ({
         style={styles.overlay}
         type={indicatorType}
       >
-        <AttachmentPreview
+        <AudioAttachment
           hideProgressBar={true}
           item={finalAttachment}
           onLoad={onLoad}
@@ -73,6 +70,7 @@ export const AudioAttachmentUploadPreview = ({
           onProgress={onProgress}
           showSpeedSettings={false}
           testID='audio-attachment-upload-preview'
+          titleMaxLength={12}
         />
       </AttachmentUploadProgressIndicator>
       <View style={styles.dismissWrapper}>

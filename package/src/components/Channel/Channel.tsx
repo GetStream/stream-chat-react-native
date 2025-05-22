@@ -159,6 +159,10 @@ import { StreamingMessageView as DefaultStreamingMessageView } from '../Message/
 import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButton';
 import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
 import { AttachmentUploadProgressIndicator as AttachmentUploadProgressIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
+import { AudioAttachmentUploadPreview as AudioAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
+import { FileAttachmentUploadPreview as FileAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
+import { ImageAttachmentUploadPreview as ImageAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/ImageAttachmentUploadPreview';
+import { VideoAttachmentUploadPreview as VideoAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/VideoAttachmentUploadPreview';
 import { AudioRecorder as AudioRecorderDefault } from '../MessageInput/components/AudioRecorder/AudioRecorder';
 import { AudioRecordingButton as AudioRecordingButtonDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingButton';
 import { AudioRecordingInProgress as AudioRecordingInProgressDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingInProgress';
@@ -494,7 +498,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AttachmentPickerSelectionBar = DefaultAttachmentPickerSelectionBar,
     attachmentSelectionBarHeight = 52,
     AudioAttachment = AudioAttachmentDefault,
-    AudioAttachmentUploadPreview = AudioAttachmentDefault,
+    AudioAttachmentUploadPreview = AudioAttachmentUploadPreviewDefault,
     AudioRecorder = AudioRecorderDefault,
     audioRecordingEnabled = false,
     AudioRecordingInProgress = AudioRecordingInProgressDefault,
@@ -504,6 +508,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AutoCompleteSuggestionHeader = AutoCompleteSuggestionHeaderDefault,
     AutoCompleteSuggestionItem = AutoCompleteSuggestionItemDefault,
     AutoCompleteSuggestionList = AutoCompleteSuggestionListDefault,
+
     autoCompleteSuggestionsLimit,
     bottomInset,
     CameraSelectorIcon = DefaultCameraSelectorIcon,
@@ -537,6 +542,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     enableSwipeToReply = true,
     enforceUniqueReaction = false,
     FileAttachment = FileAttachmentDefault,
+    FileAttachmentUploadPreview = FileAttachmentUploadPreviewDefault,
     FileAttachmentGroup = FileAttachmentGroupDefault,
     FileAttachmentIcon = FileIconDefault,
     FileUploadPreview = FileUploadPreviewDefault,
@@ -568,6 +574,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     hasImagePicker = isImagePickerAvailable() || isImageMediaLibraryAvailable(),
     hideDateSeparators = false,
     hideStickyDateHeader = false,
+    ImageAttachmentUploadPreview = ImageAttachmentUploadPreviewDefault,
     ImageLoadingFailedIndicator = ImageLoadingFailedIndicatorDefault,
     ImageLoadingIndicator = ImageLoadingIndicatorDefault,
     ImageReloadIndicator = ImageReloadIndicatorDefault,
@@ -676,6 +683,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     UnreadMessagesNotification = UnreadMessagesNotificationDefault,
     UploadProgressIndicator = AttachmentUploadProgressIndicatorDefault,
     UrlPreview = CardDefault,
+    VideoAttachmentUploadPreview = VideoAttachmentUploadPreviewDefault,
     VideoThumbnail = VideoThumbnailDefault,
   } = props;
 
@@ -1323,7 +1331,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           messageResponse = await doSendMessageRequest(channel?.cid || '', messageData, options);
         } else if (channel) {
           messageResponse = await channel.sendMessage(messageData, options);
-          console.log(messageResponse);
         }
 
         if (messageResponse.message) {
@@ -1748,6 +1755,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     doFileUploadRequest,
     editing,
     editMessage,
+    FileAttachmentUploadPreview,
     FileSelectorIcon,
     FileUploadPreview,
     handleAttachButtonPress,
@@ -1755,6 +1763,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     hasCommands: hasCommands ?? (getChannelConfigSafely()?.commands ?? []).length > 0,
     hasFilePicker,
     hasImagePicker,
+    ImageAttachmentUploadPreview,
     ImageSelectorIcon,
     ImageUploadPreview,
     initialValue,
@@ -1776,6 +1785,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     StartAudioRecordingButton,
     StopMessageStreamingButton,
     UploadProgressIndicator,
+    VideoAttachmentUploadPreview,
     VideoRecorderSelectorIcon,
   });
 
