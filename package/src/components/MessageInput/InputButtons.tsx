@@ -55,7 +55,6 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
   const shouldShowMoreOptions = !!text || !!attachments.length;
 
   useEffect(() => {
-    console.log('shouldShowMoreOptions', shouldShowMoreOptions);
     setShowMoreOptions(!shouldShowMoreOptions);
   }, [shouldShowMoreOptions]);
 
