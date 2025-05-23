@@ -1,5 +1,12 @@
 # Change Log
 
+### [3.0.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v3.0.0...sampleapp@v3.0.1) (2025-05-23)
+
+
+### Bug Fixes
+
+* issue with animating giphy on android with latest RN version ([#3092](https://github.com/GetStream/stream-chat-react-native/issues/3092)) ([184ce7a](https://github.com/GetStream/stream-chat-react-native/commit/184ce7a40e8911aac6f3db2035788ab5a94ecb48))
+
 ## [3.0.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v2.5.3...sampleapp@v3.0.0) (2025-05-06)
 
 
