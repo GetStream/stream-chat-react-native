@@ -8,9 +8,11 @@ import {
   isLocalImageAttachment,
   isLocalVideoAttachment,
   isLocalVoiceRecordingAttachment,
+  isVideoAttachment,
   isVoiceRecordingAttachment,
   LocalAudioAttachment,
   LocalFileAttachment,
+  LocalVideoAttachment,
   LocalVoiceRecordingAttachment,
 } from 'stream-chat';
 
@@ -28,20 +30,25 @@ const FILE_PREVIEW_HEIGHT = 60;
 
 export type FileUploadPreviewPropsWithContext = Pick<
   MessageInputContextValue,
-  'AudioAttachmentUploadPreview' | 'FileAttachmentUploadPreview'
+  'AudioAttachmentUploadPreview' | 'FileAttachmentUploadPreview' | 'VideoAttachmentUploadPreview'
 >;
 
 type FileAttachmentType<CustomLocalMetadata = Record<string, unknown>> =
   | LocalFileAttachment<CustomLocalMetadata>
   | LocalAudioAttachment<CustomLocalMetadata>
-  | LocalVoiceRecordingAttachment<CustomLocalMetadata>;
+  | LocalVoiceRecordingAttachment<CustomLocalMetadata>
+  | LocalVideoAttachment<CustomLocalMetadata>;
 
 /**
  * FileUploadPreview
  * UI Component to preview the files set for upload
  */
 const UnMemoizedFileUploadPreview = (props: FileUploadPreviewPropsWithContext) => {
-  const { AudioAttachmentUploadPreview, FileAttachmentUploadPreview } = props;
+  const {
+    AudioAttachmentUploadPreview,
+    FileAttachmentUploadPreview,
+    VideoAttachmentUploadPreview,
+  } = props;
   const { attachmentManager } = useMessageComposer();
   const { attachments } = useAttachmentManagerState();
   const [audioAttachmentsStateMap, setAudioAttachmentsStateMap] = useState<
@@ -54,8 +61,9 @@ const UnMemoizedFileUploadPreview = (props: FileUploadPreviewPropsWithContext) =
     return attachments.filter(
       (attachment) =>
         isLocalFileAttachment(attachment) ||
-        isAudioAttachment(attachment) ||
-        isVoiceRecordingAttachment(attachment),
+        isLocalFileAttachment(attachment) ||
+        isLocalVoiceRecordingAttachment(attachment) ||
+        isLocalVideoAttachment(attachment),
     );
   }, [attachments]);
 
@@ -143,7 +151,7 @@ const UnMemoizedFileUploadPreview = (props: FileUploadPreviewPropsWithContext) =
 
   const renderItem = useCallback(
     ({ item }: { item: FileAttachmentType }) => {
-      if (isLocalImageAttachment(item) || isLocalVideoAttachment(item)) {
+      if (isLocalImageAttachment(item)) {
         // This is already handled in the `ImageUploadPreview` component
         return null;
       } else if (isLocalVoiceRecordingAttachment(item)) {
@@ -181,6 +189,15 @@ const UnMemoizedFileUploadPreview = (props: FileUploadPreviewPropsWithContext) =
             />
           );
         }
+      } else if (isVideoAttachment(item)) {
+        return (
+          <VideoAttachmentUploadPreview
+            attachment={item}
+            flatListWidth={flatListWidth}
+            handleRetry={attachmentManager.uploadAttachment}
+            removeAttachments={attachmentManager.removeAttachments}
+          />
+        );
       } else if (isLocalFileAttachment(item)) {
         return (
           <FileAttachmentUploadPreview
@@ -195,6 +212,7 @@ const UnMemoizedFileUploadPreview = (props: FileUploadPreviewPropsWithContext) =
     [
       AudioAttachmentUploadPreview,
       FileAttachmentUploadPreview,
+      VideoAttachmentUploadPreview,
       attachmentManager.removeAttachments,
       attachmentManager.uploadAttachment,
       audioAttachmentsStateMap,
@@ -250,12 +268,17 @@ const MemoizedFileUploadPreviewWithContext = React.memo(UnMemoizedFileUploadPrev
  * UI Component to preview the files set for upload
  */
 export const FileUploadPreview = (props: FileUploadPreviewProps) => {
-  const { AudioAttachmentUploadPreview, FileAttachmentUploadPreview } = useMessageInputContext();
+  const {
+    AudioAttachmentUploadPreview,
+    FileAttachmentUploadPreview,
+    VideoAttachmentUploadPreview,
+  } = useMessageInputContext();
   return (
     <MemoizedFileUploadPreviewWithContext
       {...{
         AudioAttachmentUploadPreview,
         FileAttachmentUploadPreview,
+        VideoAttachmentUploadPreview,
       }}
       {...props}
     />

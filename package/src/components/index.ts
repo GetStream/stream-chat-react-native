@@ -137,7 +137,6 @@ export * from './MessageInput/components/AttachmentPreview/AttachmentUnsupported
 export * from './MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
 export * from './MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
 export * from './MessageInput/components/AttachmentPreview/ImageAttachmentUploadPreview';
-export * from './MessageInput/components/AttachmentPreview/VideoAttachmentUploadPreview';
 
 export * from './MessageList/DateHeader';
 export * from './MessageList/hooks/useMessageList';

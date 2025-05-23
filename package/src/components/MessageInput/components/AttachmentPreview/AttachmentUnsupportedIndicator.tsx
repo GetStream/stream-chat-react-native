@@ -11,16 +11,19 @@ const WARNING_ICON_SIZE = 16;
 export type AttachmentUnsupportedIndicatorProps = {
   /** Type of active indicator */
   indicatorType?: Progress;
+  /** Boolean to determine whether the attachment is an image */
+  isImage?: boolean;
 };
 
 export const AttachmentUnsupportedIndicator = ({
   indicatorType,
+  isImage = false,
 }: AttachmentUnsupportedIndicatorProps) => {
   const {
     theme: {
-      colors: { accent_red, overlay, white },
+      colors: { accent_red, grey_dark, overlay, white },
       messageInput: {
-        attachmentUnsupportedIndicator: { container, text, warningIcon, wrapper },
+        attachmentUnsupportedIndicator: { container, text, warningIcon },
       },
     },
   } = useTheme();
@@ -32,34 +35,37 @@ export const AttachmentUnsupportedIndicator = ({
   }
 
   return (
-    <View style={[styles.unsupportedImageWrapper, { backgroundColor: overlay }, wrapper]}>
-      <View style={[styles.iconContainer, container]}>
-        <Warning
-          height={WARNING_ICON_SIZE}
-          pathFill={accent_red}
-          style={styles.warningIconStyle}
-          width={WARNING_ICON_SIZE}
-          {...warningIcon}
-        />
-        <Text style={[styles.warningText, { color: white }, text]}>
-          {t<string>('Not supported')}
-        </Text>
-      </View>
+    <View
+      style={[
+        styles.container,
+        isImage ? [styles.imageStyle, { backgroundColor: overlay }] : null,
+        container,
+      ]}
+    >
+      <Warning
+        height={WARNING_ICON_SIZE}
+        pathFill={accent_red}
+        style={styles.warningIconStyle}
+        width={WARNING_ICON_SIZE}
+        {...warningIcon}
+      />
+      <Text style={[styles.warningText, { color: isImage ? white : grey_dark }, text]}>
+        {t<string>('Not supported')}
+      </Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  iconContainer: {
+  container: {
     alignItems: 'center',
     flexDirection: 'row',
-    justifyContent: 'center',
+    marginTop: 4,
+    paddingHorizontal: 4,
   },
-  unsupportedImageWrapper: {
-    borderRadius: 20,
+  imageStyle: {
+    borderRadius: 16,
     bottom: 8,
-    flexDirection: 'row',
-    marginHorizontal: 3,
     position: 'absolute',
   },
   warningIconStyle: {

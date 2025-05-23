@@ -60,7 +60,7 @@ export const ImageAttachmentUploadPreview = ({
       </AttachmentUploadProgressIndicator>
       <DismissAttachmentUpload onPress={onDismissHandler} />
       {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
-        <AttachmentUnsupportedIndicator indicatorType={indicatorType} />
+        <AttachmentUnsupportedIndicator indicatorType={indicatorType} isImage={true} />
       ) : null}
     </View>
   );

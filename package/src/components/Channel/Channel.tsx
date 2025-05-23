@@ -150,7 +150,6 @@ import { AttachmentUploadProgressIndicator as AttachmentUploadProgressIndicatorD
 import { AudioAttachmentUploadPreview as AudioAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
 import { FileAttachmentUploadPreview as FileAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
 import { ImageAttachmentUploadPreview as ImageAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/ImageAttachmentUploadPreview';
-import { VideoAttachmentUploadPreview as VideoAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/VideoAttachmentUploadPreview';
 import { AudioRecorder as AudioRecorderDefault } from '../MessageInput/components/AudioRecorder/AudioRecorder';
 import { AudioRecordingButton as AudioRecordingButtonDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingButton';
 import { AudioRecordingInProgress as AudioRecordingInProgressDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingInProgress';
@@ -652,7 +651,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     UnreadMessagesNotification = UnreadMessagesNotificationDefault,
     AttachmentUploadProgressIndicator = AttachmentUploadProgressIndicatorDefault,
     UrlPreview = CardDefault,
-    VideoAttachmentUploadPreview = VideoAttachmentUploadPreviewDefault,
+    VideoAttachmentUploadPreview = FileAttachmentUploadPreviewDefault,
     VideoThumbnail = VideoThumbnailDefault,
   } = props;
 
