@@ -1,5 +1,22 @@
 # Change Log
 
+### [7.0.1](https://github.com/GetStream/stream-chat-react-native/compare/v7.0.0...v7.0.1) (2025-05-23)
+
+
+### Bug Fixes
+
+* guard against fetching appsettings many times ([#3095](https://github.com/GetStream/stream-chat-react-native/issues/3095)) ([06a4b61](https://github.com/GetStream/stream-chat-react-native/commit/06a4b61bfc4f09cccde0d8417117214aa10798e1))
+* prefer error screen over loading screen ([#3083](https://github.com/GetStream/stream-chat-react-native/issues/3083)) ([cb7d71a](https://github.com/GetStream/stream-chat-react-native/commit/cb7d71af452519a141622f71365705f2216e098f))
+* remounting specific attachments and jittery fast animations ([#3086](https://github.com/GetStream/stream-chat-react-native/issues/3086)) ([857fb68](https://github.com/GetStream/stream-chat-react-native/commit/857fb68fae995f941972c577af72c20669e94951))
+* swipe to reply remounting ([#3088](https://github.com/GetStream/stream-chat-react-native/issues/3088)) ([6c32f8b](https://github.com/GetStream/stream-chat-react-native/commit/6c32f8bbb79df58fa0a21cc027045752bce5ab34))
+* takePhoto regression with incorrect file name and size for image ([#3089](https://github.com/GetStream/stream-chat-react-native/issues/3089)) ([9793203](https://github.com/GetStream/stream-chat-react-native/commit/979320327263bda06d4e0d041ab40fff22020726))
+* use useSyncExternalStore in the useStateStore hook ([#3084](https://github.com/GetStream/stream-chat-react-native/issues/3084)) ([a15126f](https://github.com/GetStream/stream-chat-react-native/commit/a15126f0cc762f0ae67d85899afb11c1e352c678))
+
+
+### Performance Improvements
+
+* optimize channel ctx usage in message ([#3087](https://github.com/GetStream/stream-chat-react-native/issues/3087)) ([84010f1](https://github.com/GetStream/stream-chat-react-native/commit/84010f1765756800c07e58cf93616813f93e09d6))
+
 ## [7.0.0](https://github.com/GetStream/stream-chat-react-native/compare/v6.7.4...v7.0.0) (2025-05-06)
 
 
