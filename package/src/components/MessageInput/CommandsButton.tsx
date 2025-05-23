@@ -12,6 +12,10 @@ import { Lightning } from '../../icons/Lightning';
 export type CommandsButtonProps = {
   /** Function that opens commands selector */
   handleOnPress?: PressableProps['onPress'];
+  /**
+   * Determins if the text input has text
+   */
+  hasText?: boolean;
 };
 
 const textComposerStateSelector = (state: TextComposerState) => ({
@@ -24,10 +28,10 @@ const searchSourceStateSelector = (nextValue: SearchSourceState) => ({
 });
 
 export const CommandsButton = (props: CommandsButtonProps) => {
-  const { handleOnPress } = props;
+  const { handleOnPress, hasText } = props;
   const messageComposer = useMessageComposer();
   const { textComposer } = messageComposer;
-  const { suggestions, text } = useStateStore(textComposer.state, textComposerStateSelector);
+  const { suggestions } = useStateStore(textComposer.state, textComposerStateSelector);
   const { items } = useStateStore(suggestions?.searchSource.state, searchSourceStateSelector) ?? {};
   const trigger = suggestions?.trigger;
 
@@ -60,7 +64,7 @@ export const CommandsButton = (props: CommandsButtonProps) => {
     },
   } = useTheme();
 
-  if (text) {
+  if (hasText) {
     return null;
   }
 

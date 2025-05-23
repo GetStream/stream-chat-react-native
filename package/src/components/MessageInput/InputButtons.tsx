@@ -85,7 +85,7 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
           <AttachButton />
         </View>
       )}
-      {hasCommands && <CommandsButton />}
+      {hasCommands && <CommandsButton hasText={hasText} />}
     </>
   );
 };
