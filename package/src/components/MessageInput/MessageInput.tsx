@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Modal, SafeAreaView, StyleSheet, View } from 'react-native';
 
 import {
@@ -62,11 +62,7 @@ import {
   NativeHandlers,
 } from '../../native';
 import { AIStates, useAIState } from '../AITypingIndicatorView';
-import { AttachmentPicker, AttachmentPickerProps } from '../AttachmentPicker/AttachmentPicker';
-import { AttachmentPickerError as DefaultAttachmentPickerError } from '../AttachmentPicker/components/AttachmentPickerError';
-import { AttachmentPickerErrorImage as DefaultAttachmentPickerErrorImage } from '../AttachmentPicker/components/AttachmentPickerErrorImage';
-import { AttachmentPickerIOSSelectMorePhotos as DefaultAttachmentPickerIOSSelectMorePhotos } from '../AttachmentPicker/components/AttachmentPickerIOSSelectMorePhotos';
-import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../AttachmentPicker/components/ImageOverlaySelectedComponent';
+import { AttachmentPickerProps } from '../AttachmentPicker/AttachmentPicker';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
 
@@ -196,21 +192,10 @@ const messageComposerStateStoreSelector = (state: MessageComposerState) => ({
 
 const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const {
-    AttachmentPickerBottomSheetHandle,
-    AttachmentPickerError = DefaultAttachmentPickerError,
-    AttachmentPickerErrorImage = DefaultAttachmentPickerErrorImage,
-    AttachmentPickerIOSSelectMorePhotos = DefaultAttachmentPickerIOSSelectMorePhotos,
     AttachmentPickerSelectionBar,
-    ImageOverlaySelectedComponent = DefaultImageOverlaySelectedComponent,
     attachmentPickerBottomSheetHeight,
-    attachmentPickerBottomSheetHandleHeight,
-    attachmentPickerErrorButtonText,
-    attachmentPickerErrorText,
     attachmentSelectionBarHeight,
-    numberOfAttachmentImagesToLoadPerCall = 60,
-    numberOfAttachmentPickerImageColumns = 3,
     bottomInset,
-    bottomSheetRef,
     selectedPicker,
 
     additionalTextInputProps,
@@ -288,37 +273,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
       },
     },
   } = useTheme();
-
-  const attachmentPickerProps = useMemo(
-    () => ({
-      AttachmentPickerBottomSheetHandle,
-      attachmentPickerBottomSheetHandleHeight,
-      attachmentPickerBottomSheetHeight,
-      AttachmentPickerError,
-      attachmentPickerErrorButtonText,
-      AttachmentPickerErrorImage,
-      attachmentPickerErrorText,
-      AttachmentPickerIOSSelectMorePhotos,
-      attachmentSelectionBarHeight,
-      ImageOverlaySelectedComponent,
-      numberOfAttachmentImagesToLoadPerCall,
-      numberOfAttachmentPickerImageColumns,
-    }),
-    [
-      AttachmentPickerBottomSheetHandle,
-      attachmentPickerBottomSheetHandleHeight,
-      attachmentPickerBottomSheetHeight,
-      AttachmentPickerError,
-      attachmentPickerErrorButtonText,
-      AttachmentPickerErrorImage,
-      attachmentPickerErrorText,
-      AttachmentPickerIOSSelectMorePhotos,
-      attachmentSelectionBarHeight,
-      ImageOverlaySelectedComponent,
-      numberOfAttachmentImagesToLoadPerCall,
-      numberOfAttachmentPickerImageColumns,
-    ],
-  );
 
   const { seconds: cooldownRemainingSeconds } = useCountdown(cooldownEndsAt);
 
@@ -670,24 +624,19 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
       <View style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}>
         <AutoCompleteSuggestionList />
       </View>
-      {isImageMediaLibraryAvailable() ? (
-        <>
-          {selectedPicker ? (
-            <View
-              style={[
-                {
-                  backgroundColor: white_smoke,
-                  height:
-                    attachmentPickerBottomSheetHeight + attachmentSelectionBarHeight - bottomInset,
-                },
-                attachmentSelectionBar,
-              ]}
-            >
-              <AttachmentPickerSelectionBar />
-            </View>
-          ) : null}
-          {/* <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} /> */}
-        </>
+      {isImageMediaLibraryAvailable() && selectedPicker ? (
+        <View
+          style={[
+            {
+              backgroundColor: white_smoke,
+              height:
+                attachmentPickerBottomSheetHeight + attachmentSelectionBarHeight - bottomInset,
+            },
+            attachmentSelectionBar,
+          ]}
+        >
+          <AttachmentPickerSelectionBar />
+        </View>
       ) : null}
 
       {showPollCreationDialog ? (
