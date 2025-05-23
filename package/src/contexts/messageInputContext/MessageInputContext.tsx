@@ -19,10 +19,7 @@ import {
   TextComposerMiddleware,
   UpdateMessageOptions,
   UploadRequestFn,
-  UserFilters,
-  UserOptions,
   UserResponse,
-  UserSort,
 } from 'stream-chat';
 
 import { useAttachmentManagerState } from './hooks/useAttachmentManagerState';
@@ -82,12 +79,6 @@ import { useTranslationContext } from '../translationContext/TranslationContext'
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
-
-export type MentionAllAppUsersQuery = {
-  filters?: UserFilters;
-  options?: UserOptions;
-  sort?: UserSort;
-};
 
 export type LocalMessageInputContext = {
   closeAttachmentPicker: () => void;
@@ -202,10 +193,7 @@ export type InputMessageInputContextValue = {
    * **default** [CooldownTimer](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/CooldownTimer.tsx)
    */
   CooldownTimer: React.ComponentType<CooldownTimerProps>;
-  editMessage: ({
-    localMessage,
-    options,
-  }: {
+  editMessage: (params: {
     localMessage: LocalMessage;
     options?: UpdateMessageOptions;
   }) => ReturnType<StreamChat['updateMessage']>;
@@ -273,18 +261,14 @@ export type InputMessageInputContextValue = {
   StopMessageStreamingButton: React.ComponentType<StopMessageStreamingButtonProps> | null;
   /**
    * Custom UI component to render upload progress indicator on attachment preview.
-   *
-   * **Default** [UploadProgressIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/UploadProgressIndicator.tsx)
    */
-  UploadProgressIndicator: React.ComponentType<AttachmentUploadProgressIndicatorProps>;
+  AttachmentUploadProgressIndicator: React.ComponentType<AttachmentUploadProgressIndicatorProps>;
   /**
    * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
    *
    * @see See https://reactnative.dev/docs/textinput#reference
    */
   additionalTextInputProps?: TextInputProps;
-  /** Max number of suggestions to display in autocomplete list. Defaults to 10. */
-  autoCompleteSuggestionsLimit?: number;
   closePollCreationDialog?: () => void;
   /**
    * Compress image with quality (from 0 to 1, where 1 is best quality).
@@ -318,8 +302,7 @@ export type InputMessageInputContextValue = {
    * Handler for when the attach button is pressed.
    */
   handleAttachButtonPress?: () => void;
-  /** Initial value to set on input */
-  initialValue?: string;
+
   /**
    * Custom UI component for AutoCompleteInput.
    * Has access to all of [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/messageInputContext/MessageInputContext.tsx)
@@ -346,9 +329,6 @@ export type InputMessageInputContextValue = {
    * - toggleAttachmentPicker
    */
   InputButtons?: React.ComponentType<InputButtonsProps>;
-  mentionAllAppUsersEnabled?: boolean;
-  /** Object containing filters/sort/options overrides for an @mention user query */
-  mentionAllAppUsersQuery?: MentionAllAppUsersQuery;
   openPollCreationDialog?: ({ sendMessage }: Pick<LocalMessageInputContext, 'sendMessage'>) => void;
   SendMessageDisallowedIndicator?: React.ComponentType;
   /**
