@@ -3,7 +3,6 @@ import type { LocalMessage, MessageResponse } from 'stream-chat';
 import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
-import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
 import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
@@ -11,11 +10,11 @@ import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries } from '../types';
 
 export const updateMessage = async ({
-  flush = true,
+  execute = true,
   message,
 }: {
   message: MessageResponse | LocalMessage;
-  flush?: boolean;
+  execute?: boolean;
 }) => {
   const queries: PreparedQueries[] = [];
 
@@ -48,12 +47,6 @@ export const updateMessage = async ({
     queries.push(createUpsertQuery('users', storableUser));
   }
 
-  queries.push(
-    createDeleteQuery('reactions', {
-      messageId: message.id,
-    }),
-  );
-
   const latestReactions = message.latest_reactions || [];
   const ownReactions = message.own_reactions || [];
 
@@ -77,7 +70,7 @@ export const updateMessage = async ({
     users: storableUsers,
   });
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSqlBatch(queries);
   }
 

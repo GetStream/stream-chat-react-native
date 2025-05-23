@@ -6,25 +6,29 @@ import { SqliteClient } from '../SqliteClient';
 export const upsertAppSettings = async ({
   appSettings,
   currentUserId,
-  flush = true,
+  execute = true,
 }: {
   appSettings: AppSettingsAPIResponse;
   currentUserId: string;
-  flush?: boolean;
+  execute?: boolean;
 }) => {
   const storableAppSettings = JSON.stringify(appSettings);
-  const query = createUpsertQuery('userSyncStatus', {
-    appSettings: storableAppSettings,
-    userId: currentUserId,
-  });
+  const queries = [
+    createUpsertQuery('userSyncStatus', {
+      appSettings: storableAppSettings,
+      userId: currentUserId,
+    }),
+  ];
 
   SqliteClient.logger?.('info', 'upsertAppSettings', {
     appSettings: storableAppSettings,
-    flush,
+    execute,
     userId: currentUserId,
   });
 
-  if (flush) {
-    await SqliteClient.executeSql.apply(null, query);
+  if (execute) {
+    await SqliteClient.executeSqlBatch(queries);
   }
+
+  return queries;
 };

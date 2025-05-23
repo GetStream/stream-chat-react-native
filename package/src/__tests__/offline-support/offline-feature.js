@@ -13,8 +13,11 @@ import { useChannelsContext } from '../../contexts/channelsContext/ChannelsConte
 import { getOrCreateChannelApi } from '../../mock-builders/api/getOrCreateChannel';
 import { queryChannelsApi } from '../../mock-builders/api/queryChannels';
 import { useMockedApis } from '../../mock-builders/api/useMockedApis';
+import dispatchChannelDeletedEvent from '../../mock-builders/event/channelDeleted';
+import dispatchChannelHiddenEvent from '../../mock-builders/event/channelHidden';
 import dispatchChannelTruncatedEvent from '../../mock-builders/event/channelTruncated';
 import dispatchChannelUpdatedEvent from '../../mock-builders/event/channelUpdated';
+import dispatchChannelVisibleEvent from '../../mock-builders/event/channelVisible';
 import dispatchConnectionChangedEvent from '../../mock-builders/event/connectionChanged';
 import dispatchMemberAddedEvent from '../../mock-builders/event/memberAdded';
 import dispatchMemberRemovedEvent from '../../mock-builders/event/memberRemoved';
@@ -23,6 +26,7 @@ import dispatchMessageNewEvent from '../../mock-builders/event/messageNew';
 import dispatchMessageReadEvent from '../../mock-builders/event/messageRead';
 import dispatchMessageUpdatedEvent from '../../mock-builders/event/messageUpdated';
 import dispatchNotificationAddedToChannel from '../../mock-builders/event/notificationAddedToChannel';
+import dispatchNotificationMarkUnread from '../../mock-builders/event/notificationMarkUnread';
 import dispatchNotificationMessageNewEvent from '../../mock-builders/event/notificationMessageNew';
 import dispatchNotificationRemovedFromChannel from '../../mock-builders/event/notificationRemovedFromChannel';
 import dispatchReactionDeletedEvent from '../../mock-builders/event/reactionDeleted';
@@ -124,8 +128,10 @@ export const Generic = () => {
     const createChannel = (messagesOverride) => {
       const id = uuidv4();
       const cid = `messaging:${id}`;
-      const begin = getRandomInt(0, allUsers.length - 2); // begin shouldn't be the end of users.length
-      const end = getRandomInt(begin + 1, allUsers.length - 1);
+      // always guarantee at least 2 members for ease of use; cases that need to test specific behaviour
+      // for 1 or 0 member channels should explicitly generate them.
+      const begin = getRandomInt(0, allUsers.length - 3); // begin shouldn't be the end of users.length
+      const end = getRandomInt(begin + 2, allUsers.length - 1);
       const usersForMembers = allUsers.slice(begin, end);
       const members = usersForMembers.map((user) =>
         generateMember({
@@ -133,6 +139,8 @@ export const Generic = () => {
           user,
         }),
       );
+      members.push(generateMember({ cid, user: chatClient.user }));
+
       const messages =
         messagesOverride ||
         Array(10)
@@ -162,8 +170,9 @@ export const Generic = () => {
           });
 
       const reads = members.map((member) => ({
+        cid,
         last_read: new Date(new Date().setDate(new Date().getDate() - getRandomInt(0, 20))),
-        unread_messages: getRandomInt(0, messages.length),
+        unread_messages: 0,
         user: member.user,
       }));
 
@@ -176,21 +185,23 @@ export const Generic = () => {
         id,
         members,
         messages,
+        read: reads,
       });
     };
 
     beforeEach(async () => {
       jest.clearAllMocks();
+      chatClient = await getTestClientWithUser({ id: 'dan' });
       allUsers = Array(20).fill(1).map(generateUser);
+      allUsers.push(chatClient.user);
       allMessages = [];
       allMembers = [];
       allReactions = [];
       allReads = [];
+
       channels = Array(10)
         .fill(1)
         .map(() => createChannel());
-
-      chatClient = await getTestClientWithUser({ id: 'dan' });
       await BetterSqlite.openDB();
       BetterSqlite.dropAllTables();
     });
@@ -282,12 +293,7 @@ export const Generic = () => {
         );
         readsRows.forEach((row) =>
           expect(
-            allReads.filter(
-              (r) =>
-                r.last_read === row.lastRead &&
-                r.user.id === row.userId &&
-                r.unread_messages === row.unreadMessages,
-            ),
+            allReads.filter((r) => r.user.id === row.userId && r.cid === row.cid),
           ).toHaveLength(1),
         );
       });
@@ -316,6 +322,7 @@ export const Generic = () => {
       await act(() => dispatchConnectionChangedEvent(chatClient, false));
       // await waiter();
       await act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
 
       await waitFor(async () => {
         expect(screen.getByTestId('channel-list')).toBeTruthy();
@@ -328,8 +335,10 @@ export const Generic = () => {
 
       renderComponent();
 
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+
       await waitFor(async () => {
-        act(() => dispatchConnectionChangedEvent(chatClient));
         expect(screen.getByTestId('channel-list')).toBeTruthy();
         await expectAllChannelsWithStateToBeInDB(screen.queryAllByLabelText);
       });
@@ -342,8 +351,11 @@ export const Generic = () => {
 
       renderComponent();
 
-      await waitFor(() => {
+      await waitFor(async () => {
         act(() => dispatchConnectionChangedEvent(chatClient));
+        await act(
+          async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true),
+        );
         expect(screen.getByTestId('channel-list')).toBeTruthy();
         expect(screen.getByTestId(emptyChannel.cid)).toBeTruthy();
         expect(chatClient.hydrateActiveChannels).toHaveBeenCalled();
@@ -356,18 +368,151 @@ export const Generic = () => {
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+      const targetChannel = channels[0].channel;
       const newMessage = generateMessage({
-        cid: channels[0].channel.cid,
+        cid: targetChannel.cid,
         user: generateUser(),
       });
-      act(() => dispatchMessageNewEvent(chatClient, newMessage, channels[0].channel));
+      act(() => dispatchMessageNewEvent(chatClient, newMessage, targetChannel));
 
       await waitFor(async () => {
         const messagesRows = await BetterSqlite.selectFromTable('messages');
-        const matchingRows = messagesRows.filter((m) => m.id === newMessage.id);
-        expect(matchingRows.length).toBe(1);
-        expect(matchingRows[0].id).toBe(newMessage.id);
+        const readRows = await BetterSqlite.selectFromTable('reads');
+        const matchingMessageRows = messagesRows.filter((m) => m.id === newMessage.id);
+        const matchingReadRows = readRows.filter(
+          (r) => targetChannel.cid === r.cid && chatClient.userID === r.userId,
+        );
+
+        expect(matchingMessageRows.length).toBe(1);
+        expect(matchingMessageRows[0].id).toBe(newMessage.id);
+        expect(matchingReadRows.length).toBe(1);
+        expect(matchingReadRows[0].unreadMessages).toBe(1);
+      });
+    });
+
+    it('should correctly handle multiple new messages and add them to the database', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+      const targetChannel = channels[0].channel;
+
+      // check if the reads state is correct first
+      await waitFor(async () => {
+        const readRows = await BetterSqlite.selectFromTable('reads');
+        const matchingReadRows = readRows.filter(
+          (r) => targetChannel.cid === r.cid && chatClient.userID === r.userId,
+        );
+
+        expect(matchingReadRows.length).toBe(1);
+        expect(matchingReadRows[0].unreadMessages).toBe(0);
+      });
+
+      const newMessages = [
+        generateMessage({
+          cid: targetChannel.cid,
+          user: generateUser(),
+        }),
+        generateMessage({
+          cid: targetChannel.cid,
+          user: generateUser(),
+        }),
+        generateMessage({
+          cid: targetChannel.cid,
+          user: generateUser(),
+        }),
+      ];
+
+      newMessages.forEach((newMessage) => {
+        act(() => dispatchMessageNewEvent(chatClient, newMessage, targetChannel));
+      });
+
+      await waitFor(async () => {
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const readRows = await BetterSqlite.selectFromTable('reads');
+        const matchingMessageRows = messagesRows.filter((m) =>
+          newMessages.some((newMessage) => newMessage.id === m.id),
+        );
+        const matchingReadRows = readRows.filter(
+          (r) => targetChannel.cid === r.cid && chatClient.userID === r.userId,
+        );
+
+        expect(matchingMessageRows.length).toBe(3);
+        newMessages.forEach((newMessage) => {
+          expect(
+            matchingMessageRows.some(
+              (matchingMessageRow) => matchingMessageRow.id === newMessage.id,
+            ),
+          ).toBe(true);
+        });
+        expect(matchingReadRows.length).toBe(1);
+        expect(matchingReadRows[0].unreadMessages).toBe(3);
+      });
+    });
+
+    it('should correctly handle multiple new messages from our own user', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+      const targetChannel = channels[0].channel;
+
+      // check if the reads state is correct first
+      await waitFor(async () => {
+        const readRows = await BetterSqlite.selectFromTable('reads');
+        const matchingReadRows = readRows.filter(
+          (r) => targetChannel.cid === r.cid && chatClient.userID === r.userId,
+        );
+
+        expect(matchingReadRows.length).toBe(1);
+        expect(matchingReadRows[0].unreadMessages).toBe(0);
+      });
+
+      const newMessages = [
+        generateMessage({
+          cid: targetChannel.cid,
+          user: chatClient.user,
+        }),
+        generateMessage({
+          cid: targetChannel.cid,
+          user: chatClient.user,
+        }),
+        generateMessage({
+          cid: targetChannel.cid,
+          user: chatClient.user,
+        }),
+      ];
+
+      newMessages.forEach((newMessage) => {
+        act(() => dispatchMessageNewEvent(chatClient, newMessage, targetChannel));
+      });
+
+      await waitFor(async () => {
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const readRows = await BetterSqlite.selectFromTable('reads');
+        const matchingMessageRows = messagesRows.filter((m) =>
+          newMessages.some((newMessage) => newMessage.id === m.id),
+        );
+        const matchingReadRows = readRows.filter(
+          (r) => targetChannel.cid === r.cid && chatClient.userID === r.userId,
+        );
+
+        expect(matchingMessageRows.length).toBe(3);
+        newMessages.forEach((newMessage) => {
+          expect(
+            matchingMessageRows.some(
+              (matchingMessageRow) => matchingMessageRow.id === newMessage.id,
+            ),
+          ).toBe(true);
+        });
+        expect(matchingReadRows.length).toBe(1);
+        expect(matchingReadRows[0].unreadMessages).toBe(0);
       });
     });
 
@@ -375,8 +520,11 @@ export const Generic = () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
       renderComponent();
-      await waitFor(() => {
+      await waitFor(async () => {
         act(() => dispatchConnectionChangedEvent(chatClient));
+        await act(
+          async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true),
+        );
         expect(screen.getByTestId('channel-list')).toBeTruthy();
       });
 
@@ -399,6 +547,7 @@ export const Generic = () => {
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const updatedMessage = { ...channels[0].messages[0] };
@@ -420,6 +569,7 @@ export const Generic = () => {
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
       const removedChannel = channels[getRandomInt(0, channels.length - 1)].channel;
       act(() => dispatchNotificationRemovedFromChannel(chatClient, removedChannel));
@@ -441,11 +591,122 @@ export const Generic = () => {
       });
     });
 
+    it('should remove the channel from DB if the channel is deleted', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+      const removedChannel = channels[getRandomInt(0, channels.length - 1)].channel;
+      act(() => dispatchChannelDeletedEvent(chatClient, removedChannel));
+      await waitFor(async () => {
+        const channelIdsOnUI = screen
+          .queryAllByLabelText('list-item')
+          .map((node) => node._fiber.pendingProps.testID);
+        expect(channelIdsOnUI.includes(removedChannel.cid)).toBeFalsy();
+        await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
+
+        const channelsRows = await BetterSqlite.selectFromTable('channels');
+        const matchingRows = channelsRows.filter((c) => c.id === removedChannel.id);
+
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const matchingMessagesRows = messagesRows.filter((m) => m.cid === removedChannel.cid);
+
+        expect(matchingRows.length).toBe(0);
+        expect(matchingMessagesRows.length).toBe(0);
+      });
+    });
+
+    it('should correctly mark the channel as hidden in the db', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+      const hiddenChannel = channels[getRandomInt(0, channels.length - 1)].channel;
+      act(() => dispatchChannelHiddenEvent(chatClient, hiddenChannel));
+      await waitFor(async () => {
+        const channelIdsOnUI = screen
+          .queryAllByLabelText('list-item')
+          .map((node) => node._fiber.pendingProps.testID);
+        expect(channelIdsOnUI.includes(hiddenChannel.cid)).toBeFalsy();
+        await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
+
+        const channelsRows = await BetterSqlite.selectFromTable('channels');
+        const matchingRows = channelsRows.filter((c) => c.id === hiddenChannel.id);
+
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const matchingMessagesRows = messagesRows.filter((m) => m.cid === hiddenChannel.cid);
+
+        expect(matchingRows.length).toBe(1);
+        expect(matchingRows[0].hidden).toBeTruthy();
+        expect(matchingMessagesRows.length).toBe(
+          chatClient.activeChannels[hiddenChannel.cid].state.messages.length,
+        );
+      });
+    });
+
+    it('should correctly mark the channel as visible if it was hidden before in the db', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+      const hiddenChannel = channels[getRandomInt(0, channels.length - 1)].channel;
+      // first, we mark it as hidden
+      act(() => dispatchChannelHiddenEvent(chatClient, hiddenChannel));
+      await waitFor(async () => {
+        const channelIdsOnUI = screen
+          .queryAllByLabelText('list-item')
+          .map((node) => node._fiber.pendingProps.testID);
+        expect(channelIdsOnUI.includes(hiddenChannel.cid)).toBeFalsy();
+        await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
+
+        const channelsRows = await BetterSqlite.selectFromTable('channels');
+        const matchingRows = channelsRows.filter((c) => c.id === hiddenChannel.id);
+
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const matchingMessagesRows = messagesRows.filter((m) => m.cid === hiddenChannel.cid);
+
+        expect(matchingRows.length).toBe(1);
+        expect(matchingRows[0].hidden).toBeTruthy();
+        expect(matchingMessagesRows.length).toBe(
+          chatClient.activeChannels[hiddenChannel.cid].state.messages.length,
+        );
+      });
+
+      // then, we make it visible after waiting for everything to finish
+      act(() => dispatchChannelVisibleEvent(chatClient, hiddenChannel));
+      await waitFor(async () => {
+        const channelIdsOnUI = screen
+          .queryAllByLabelText('list-item')
+          .map((node) => node._fiber.pendingProps.testID);
+        expect(channelIdsOnUI.includes(hiddenChannel.cid)).toBeFalsy();
+        await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
+
+        const channelsRows = await BetterSqlite.selectFromTable('channels');
+        const matchingRows = channelsRows.filter((c) => c.id === hiddenChannel.id);
+
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const matchingMessagesRows = messagesRows.filter((m) => m.cid === hiddenChannel.cid);
+
+        expect(matchingRows.length).toBe(1);
+        expect(matchingRows[0].hidden).toBeFalsy();
+        expect(matchingMessagesRows.length).toBe(
+          chatClient.activeChannels[hiddenChannel.cid].state.messages.length,
+        );
+      });
+    });
+
     it('should add the channel to DB when user is added as member', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const newChannel = createChannel();
@@ -476,10 +737,129 @@ export const Generic = () => {
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const channelToTruncate = channels[getRandomInt(0, channels.length - 1)].channel;
       act(() => dispatchChannelTruncatedEvent(chatClient, channelToTruncate));
+
+      await waitFor(async () => {
+        const channelIdsOnUI = screen
+          .queryAllByLabelText('list-item')
+          .map((node) => node._fiber.pendingProps.testID);
+        expect(channelIdsOnUI.includes(channelToTruncate.cid)).toBeTruthy();
+        expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
+
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const matchingMessagesRows = messagesRows.filter((m) => m.cid === channelToTruncate.cid);
+
+        const readsRows = await BetterSqlite.selectFromTable('reads');
+        const matchingReadRows = readsRows.filter(
+          (r) => r.userId === chatClient.userID && r.cid === channelToTruncate.cid,
+        );
+
+        expect(matchingMessagesRows.length).toBe(0);
+        expect(matchingReadRows.length).toBe(1);
+        expect(matchingReadRows[0].unreadMessages).toBe(0);
+      });
+    });
+
+    it('should truncate the correct messages if channel.truncated arrives with truncated_at', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+
+      const channelResponse = channels[getRandomInt(0, channels.length - 1)];
+      const channelToTruncate = channelResponse.channel;
+      const messages = channelResponse.messages;
+      messages.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+      // truncate at the middle
+      const truncatedAt = messages[Number(messages.length / 2)].created_at;
+      act(() =>
+        dispatchChannelTruncatedEvent(chatClient, {
+          ...channelToTruncate,
+          truncated_at: truncatedAt,
+        }),
+      );
+
+      await waitFor(async () => {
+        const channelIdsOnUI = screen
+          .queryAllByLabelText('list-item')
+          .map((node) => node._fiber.pendingProps.testID);
+        expect(channelIdsOnUI.includes(channelToTruncate.cid)).toBeTruthy();
+        expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
+
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const matchingMessagesRows = messagesRows.filter((m) => m.cid === channelToTruncate.cid);
+
+        const readsRows = await BetterSqlite.selectFromTable('reads');
+        const matchingReadRows = readsRows.filter(
+          (r) => r.userId === chatClient.userID && r.cid === channelToTruncate.cid,
+        );
+
+        const messagesLeft = messages.length / 2 - 1;
+
+        expect(matchingMessagesRows.length).toBe(messagesLeft);
+        expect(matchingReadRows.length).toBe(1);
+        expect(matchingReadRows[0].unreadMessages).toBe(messagesLeft);
+      });
+    });
+
+    it('should gracefully handle a truncated_at date before each message', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+
+      const channelResponse = channels[getRandomInt(0, channels.length - 1)];
+      const channelToTruncate = channelResponse.channel;
+      const truncatedAt = new Date(0).toISOString();
+      act(() =>
+        dispatchChannelTruncatedEvent(chatClient, {
+          ...channelToTruncate,
+          truncated_at: truncatedAt,
+        }),
+      );
+
+      await waitFor(async () => {
+        const channelIdsOnUI = screen
+          .queryAllByLabelText('list-item')
+          .map((node) => node._fiber.pendingProps.testID);
+        expect(channelIdsOnUI.includes(channelToTruncate.cid)).toBeTruthy();
+        expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
+
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+        const matchingMessagesRows = messagesRows.filter((m) => m.cid === channelToTruncate.cid);
+
+        expect(matchingMessagesRows.length).toBe(channelResponse.messages.length);
+      });
+    });
+
+    it('should gracefully handle a truncated_at date after each message', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+
+      const channelResponse = channels[getRandomInt(0, channels.length - 1)];
+      const channelToTruncate = channelResponse.channel;
+      const messages = channelResponse.messages;
+      const latestTimestamp = Math.max(...messages.map((m) => new Date(m.created_at).getTime()));
+      // truncate at the middle
+      const truncatedAt = new Date(latestTimestamp + 1).toISOString();
+      act(() =>
+        dispatchChannelTruncatedEvent(chatClient, {
+          ...channelToTruncate,
+          truncated_at: truncatedAt,
+        }),
+      );
 
       await waitFor(async () => {
         const channelIdsOnUI = screen
@@ -499,6 +879,7 @@ export const Generic = () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
@@ -539,11 +920,161 @@ export const Generic = () => {
       });
     });
 
+    it('should correctly add multiple reactions to the DB', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+
+      const targetChannel = channels[getRandomInt(0, channels.length - 1)];
+      const targetMessage =
+        targetChannel.messages[getRandomInt(0, targetChannel.messages.length - 1)];
+      const reactionMember =
+        targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
+      const someOtherMember = targetChannel.members.filter(
+        (member) => reactionMember.user.id !== member.user.id,
+      )[getRandomInt(0, targetChannel.members.length - 2)];
+
+      const newReactions = [
+        generateReaction({
+          message_id: targetMessage.id,
+          type: 'wow',
+          user: reactionMember.user,
+        }),
+        generateReaction({
+          message_id: targetMessage.id,
+          type: 'wow',
+          user: someOtherMember.user,
+        }),
+        generateReaction({
+          message_id: targetMessage.id,
+          type: 'love',
+          user: reactionMember.user,
+        }),
+      ];
+      const messageWithNewReactionBase = {
+        ...targetMessage,
+        latest_reactions: [...targetMessage.latest_reactions],
+      };
+      const newLatestReactions = [];
+
+      newReactions.forEach((newReaction) => {
+        newLatestReactions.push(newReaction);
+        const messageWithNewReaction = {
+          ...messageWithNewReactionBase,
+          latest_reactions: [...messageWithNewReactionBase.latest_reactions, ...newLatestReactions],
+        };
+        act(() =>
+          dispatchReactionNewEvent(
+            chatClient,
+            newReaction,
+            messageWithNewReaction,
+            targetChannel.channel,
+          ),
+        );
+      });
+
+      const finalReactionCount =
+        messageWithNewReactionBase.latest_reactions.length +
+        newReactions.filter(
+          (newReaction) =>
+            !messageWithNewReactionBase.latest_reactions.some(
+              (initialReaction) =>
+                initialReaction.type === newReaction.type &&
+                initialReaction.user.id === newReaction.user.id,
+            ),
+        ).length;
+
+      await waitFor(async () => {
+        const reactionsRows = await BetterSqlite.selectFromTable('reactions');
+        const matchingReactionsRows = reactionsRows.filter(
+          (r) => r.messageId === messageWithNewReactionBase.id,
+        );
+
+        expect(matchingReactionsRows.length).toBe(finalReactionCount);
+        newReactions.forEach((newReaction) => {
+          expect(
+            matchingReactionsRows.filter(
+              (reaction) =>
+                reaction.type === newReaction.type && reaction.userId === newReaction.user.id,
+            ).length,
+          ).toBe(1);
+        });
+      });
+    });
+
+    it('should gracefully handle multiple reaction.new events of the same type for the same user', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+
+      const targetChannel = channels[getRandomInt(0, channels.length - 1)];
+      const targetMessage =
+        targetChannel.messages[getRandomInt(0, targetChannel.messages.length - 1)];
+      const reactionMember =
+        targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
+
+      const newReactions = [
+        generateReaction({
+          message_id: targetMessage.id,
+          type: 'wow',
+          user: reactionMember.user,
+        }),
+        generateReaction({
+          message_id: targetMessage.id,
+          type: 'wow',
+          user: reactionMember.user,
+        }),
+        generateReaction({
+          message_id: targetMessage.id,
+          type: 'wow',
+          user: reactionMember.user,
+        }),
+      ];
+      const messageWithNewReactionBase = {
+        ...targetMessage,
+        latest_reactions: [...targetMessage.latest_reactions],
+      };
+      const newLatestReactions = [];
+
+      newReactions.forEach((newReaction) => {
+        newLatestReactions.push(newReaction);
+        const messageWithNewReaction = {
+          ...messageWithNewReactionBase,
+          latest_reactions: [...messageWithNewReactionBase.latest_reactions, ...newLatestReactions],
+        };
+        act(() =>
+          dispatchReactionNewEvent(
+            chatClient,
+            newReaction,
+            messageWithNewReaction,
+            targetChannel.channel,
+          ),
+        );
+      });
+
+      await waitFor(async () => {
+        const reactionsRows = await BetterSqlite.selectFromTable('reactions');
+        const matchingReactionsRows = reactionsRows.filter(
+          (r) =>
+            r.type === 'wow' &&
+            r.userId === reactionMember.user.id &&
+            r.messageId === messageWithNewReactionBase.id,
+        );
+
+        expect(matchingReactionsRows.length).toBe(1);
+      });
+    });
+
     it('should remove a reaction from DB when reaction is deleted', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
@@ -597,6 +1128,7 @@ export const Generic = () => {
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
@@ -629,24 +1161,301 @@ export const Generic = () => {
       });
     });
 
-    it('should add a member to DB when a new member is added to channel', async () => {
+    it('should correctly upsert reactions when enforce_unique is true', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
-
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
+      const targetMessage =
+        targetChannel.messages[getRandomInt(0, targetChannel.messages.length - 1)];
+      const reactionMember =
+        targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
+
+      const newReactions = [
+        generateReaction({
+          message_id: targetMessage.id,
+          type: 'wow',
+          user: reactionMember.user,
+        }),
+        generateReaction({
+          message_id: targetMessage.id,
+          type: 'love',
+          user: reactionMember.user,
+        }),
+      ];
+      const messageWithNewReactionBase = {
+        ...targetMessage,
+        latest_reactions: [...targetMessage.latest_reactions],
+      };
+      const newLatestReactions = [];
+
+      newReactions.forEach((newReaction) => {
+        newLatestReactions.push(newReaction);
+        const messageWithNewReaction = {
+          ...messageWithNewReactionBase,
+          latest_reactions: [...messageWithNewReactionBase.latest_reactions, ...newLatestReactions],
+        };
+        act(() =>
+          dispatchReactionNewEvent(
+            chatClient,
+            newReaction,
+            messageWithNewReaction,
+            targetChannel.channel,
+          ),
+        );
+      });
+
+      await waitFor(async () => {
+        const reactionsRows = await BetterSqlite.selectFromTable('reactions');
+        const matchingReactionsRows = reactionsRows.filter(
+          (r) =>
+            r.messageId === messageWithNewReactionBase.id && r.userId === reactionMember.user.id,
+        );
+
+        expect(matchingReactionsRows.length).toBe(2);
+        newReactions.forEach((newReaction) => {
+          expect(
+            matchingReactionsRows.filter(
+              (reaction) =>
+                reaction.type === newReaction.type && reaction.userId === newReaction.user.id,
+            ).length,
+          ).toBe(1);
+        });
+      });
+
+      const uniqueReaction = generateReaction({
+        message_id: targetMessage.id,
+        type: 'like',
+        user: reactionMember.user,
+      });
+      const messageWithNewReaction = {
+        ...targetMessage,
+        latest_reactions: [...targetMessage.latest_reactions, uniqueReaction],
+      };
+
+      act(() =>
+        dispatchReactionUpdatedEvent(
+          chatClient,
+          uniqueReaction,
+          messageWithNewReaction,
+          targetChannel.channel,
+        ),
+      );
+
+      await waitFor(async () => {
+        const reactionsRows = await BetterSqlite.selectFromTable('reactions');
+        const matchingReactionsRows = reactionsRows.filter(
+          (r) =>
+            r.type === uniqueReaction.type &&
+            r.userId === reactionMember.user.id &&
+            r.messageId === messageWithNewReaction.id,
+        );
+
+        expect(matchingReactionsRows.length).toBe(1);
+      });
+    });
+
+    it('should also update the corresponding message.reaction_groups with reaction.new', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+
+      const targetChannel = channels[getRandomInt(0, channels.length - 1)];
+      const targetMessage =
+        targetChannel.messages[getRandomInt(0, targetChannel.messages.length - 1)];
+      const reactionMember =
+        targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
+
+      const newReaction = generateReaction({
+        message_id: targetMessage.id,
+        type: 'wow',
+        user: reactionMember.user,
+      });
+      const newDate = new Date().toISOString();
+      // the actual content of the reaction_groups does not matter, as we just want to know if it updates to it
+      // anything impossible given the scenarios is fine
+      const messageWithNewReaction = {
+        ...targetMessage,
+        latest_reactions: [...targetMessage.latest_reactions, newReaction],
+        reaction_groups: {
+          ...targetMessage.reaction_groups,
+          [newReaction.type]: {
+            count: 999,
+            first_reaction_at: newDate,
+            last_reaction_at: newDate,
+            sum_scores: 999,
+          },
+        },
+      };
+
+      act(() =>
+        dispatchReactionNewEvent(
+          chatClient,
+          newReaction,
+          messageWithNewReaction,
+          targetChannel.channel,
+        ),
+      );
+
+      await waitFor(async () => {
+        const messageRows = await BetterSqlite.selectFromTable('messages');
+        const messageWithReactionRow = messageRows.filter(
+          (m) => m.id === messageWithNewReaction.id,
+        )[0];
+
+        const reactionGroups = JSON.parse(messageWithReactionRow.reactionGroups);
+
+        expect(reactionGroups[newReaction.type]?.count).toBe(999);
+        expect(reactionGroups[newReaction.type]?.sum_scores).toBe(999);
+        expect(reactionGroups[newReaction.type]?.first_reaction_at).toBe(newDate);
+        expect(reactionGroups[newReaction.type]?.last_reaction_at).toBe(newDate);
+      });
+    });
+
+    it('should also update the corresponding message.reaction_groups with reaction.updated', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+
+      const targetChannel = channels[getRandomInt(0, channels.length - 1)];
+      const targetMessage =
+        targetChannel.messages[getRandomInt(0, targetChannel.messages.length - 1)];
+      const reactionMember =
+        targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
+
+      const newReaction = generateReaction({
+        message_id: targetMessage.id,
+        type: 'wow',
+        user: reactionMember.user,
+      });
+      const newDate = new Date().toISOString();
+      const messageWithNewReaction = {
+        ...targetMessage,
+        latest_reactions: [...targetMessage.latest_reactions, newReaction],
+        reaction_groups: {
+          ...targetMessage.reaction_groups,
+          [newReaction.type]: {
+            count: 999,
+            first_reaction_at: newDate,
+            last_reaction_at: newDate,
+            sum_scores: 999,
+          },
+        },
+      };
+
+      act(() =>
+        dispatchReactionUpdatedEvent(
+          chatClient,
+          newReaction,
+          messageWithNewReaction,
+          targetChannel.channel,
+        ),
+      );
+
+      await waitFor(async () => {
+        const messageRows = await BetterSqlite.selectFromTable('messages');
+        const messageWithReactionRow = messageRows.filter(
+          (m) => m.id === messageWithNewReaction.id,
+        )[0];
+
+        const reactionGroups = JSON.parse(messageWithReactionRow.reactionGroups);
+
+        expect(reactionGroups[newReaction.type]?.count).toBe(999);
+        expect(reactionGroups[newReaction.type]?.sum_scores).toBe(999);
+        expect(reactionGroups[newReaction.type]?.first_reaction_at).toBe(newDate);
+        expect(reactionGroups[newReaction.type]?.last_reaction_at).toBe(newDate);
+      });
+    });
+
+    it('should also update the corresponding message.reaction_groups with reaction.deleted', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+
+      const targetChannel = channels[getRandomInt(0, channels.length - 1)];
+      const targetMessage =
+        targetChannel.messages[getRandomInt(0, targetChannel.messages.length - 1)];
+      const reactionMember =
+        targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
+
+      const newReaction = generateReaction({
+        message_id: targetMessage.id,
+        type: 'wow',
+        user: reactionMember.user,
+      });
+      const newDate = new Date().toISOString();
+      const messageWithNewReaction = {
+        ...targetMessage,
+        latest_reactions: [...targetMessage.latest_reactions, newReaction],
+        reaction_groups: {
+          ...targetMessage.reaction_groups,
+          [newReaction.type]: {
+            count: 999,
+            first_reaction_at: newDate,
+            last_reaction_at: newDate,
+            sum_scores: 999,
+          },
+        },
+      };
+
+      act(() =>
+        dispatchReactionDeletedEvent(
+          chatClient,
+          newReaction,
+          messageWithNewReaction,
+          targetChannel.channel,
+        ),
+      );
+
+      await waitFor(async () => {
+        const messageRows = await BetterSqlite.selectFromTable('messages');
+        const messageWithReactionRow = messageRows.filter(
+          (m) => m.id === messageWithNewReaction.id,
+        )[0];
+
+        const reactionGroups = JSON.parse(messageWithReactionRow.reactionGroups);
+
+        expect(reactionGroups[newReaction.type]?.count).toBe(999);
+        expect(reactionGroups[newReaction.type]?.sum_scores).toBe(999);
+        expect(reactionGroups[newReaction.type]?.first_reaction_at).toBe(newDate);
+        expect(reactionGroups[newReaction.type]?.last_reaction_at).toBe(newDate);
+      });
+    });
+
+    it('should add a member to DB when a new member is added to channel', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+      renderComponent();
+
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+      const targetChannel = channels[getRandomInt(0, channels.length - 1)];
+
+      const oldMemberCount = targetChannel.channel.member_count;
       const newMember = generateMember();
       act(() => dispatchMemberAddedEvent(chatClient, newMember, targetChannel.channel));
 
       await waitFor(async () => {
         const membersRows = await BetterSqlite.selectFromTable('members');
+        const channelRows = await BetterSqlite.selectFromTable('channels');
         const matchingMembersRows = membersRows.filter(
           (m) => m.cid === targetChannel.channel.cid && m.userId === newMember.user_id,
         );
+        const targetChannelFromDb = channelRows.filter(
+          (c) => c.cid === targetChannel.channel.cid,
+        )[0];
 
         expect(matchingMembersRows.length).toBe(1);
+        expect(targetChannelFromDb.memberCount).toBe(oldMemberCount + 1);
       });
     });
 
@@ -655,19 +1464,26 @@ export const Generic = () => {
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
       const targetMember = targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
+      const oldMemberCount = targetChannel.channel.member_count;
       act(() => dispatchMemberRemovedEvent(chatClient, targetMember, targetChannel.channel));
 
       await waitFor(async () => {
         const membersRows = await BetterSqlite.selectFromTable('members');
+        const channelRows = await BetterSqlite.selectFromTable('channels');
         const matchingMembersRows = membersRows.filter(
           (m) => m.cid === targetChannel.channel.cid && m.userId === targetMember.user_id,
         );
+        const targetChannelFromDb = channelRows.filter(
+          (c) => c.cid === targetChannel.channel.cid,
+        )[0];
 
         expect(matchingMembersRows.length).toBe(0);
+        expect(targetChannelFromDb.memberCount).toBe(oldMemberCount - 1);
       });
     });
 
@@ -676,6 +1492,7 @@ export const Generic = () => {
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
@@ -702,6 +1519,7 @@ export const Generic = () => {
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
@@ -727,12 +1545,19 @@ export const Generic = () => {
 
       renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
       const targetMember = targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
 
+      const readTimestamp = new Date().toISOString();
+
       act(() => {
-        dispatchMessageReadEvent(chatClient, targetMember.user, targetChannel.channel);
+        dispatchMessageReadEvent(chatClient, targetMember.user, targetChannel.channel, {
+          first_unread_message_id: '123',
+          last_read: readTimestamp,
+          last_read_message_id: '321',
+        });
       });
 
       await waitFor(async () => {
@@ -743,6 +1568,54 @@ export const Generic = () => {
 
         expect(matchingReadRows.length).toBe(1);
         expect(matchingReadRows[0].unreadMessages).toBe(0);
+        expect(matchingReadRows[0].lastReadMessageId).toBe('321');
+        // FIXME: Currently missing from the DB, uncomment when added.
+        // expect(matchingReadRows[0].firstUnreadMessageId).toBe('123');
+        expect(matchingReadRows[0].lastRead).toBe(readTimestamp);
+      });
+    });
+
+    it('should update reads in DB when a channel is marked as unread', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+
+      renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+      const targetChannel = channels[getRandomInt(0, channels.length - 1)];
+      const targetMember = targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
+
+      chatClient.userID = targetMember.user.id;
+      chatClient.user = targetMember.user;
+
+      const readTimestamp = new Date().toISOString();
+
+      act(() => {
+        dispatchNotificationMarkUnread(
+          chatClient,
+          targetChannel.channel,
+          {
+            first_unread_message_id: '123',
+            last_read: readTimestamp,
+            last_read_message_id: '321',
+            unread_messages: 5,
+          },
+          targetMember.user,
+        );
+      });
+
+      await waitFor(async () => {
+        const readsRows = await BetterSqlite.selectFromTable('reads');
+        const matchingReadRows = readsRows.filter(
+          (r) => r.userId === targetMember.user_id && r.cid === targetChannel.cid,
+        );
+
+        expect(matchingReadRows.length).toBe(1);
+        expect(matchingReadRows[0].unreadMessages).toBe(5);
+        expect(matchingReadRows[0].lastReadMessageId).toBe('321');
+        // FIXME: Currently missing from the DB, uncomment when added.
+        // expect(matchingReadRows[0].firstUnreadMessageId).toBe('123');
+        expect(matchingReadRows[0].lastRead).toBe(readTimestamp);
       });
     });
   });

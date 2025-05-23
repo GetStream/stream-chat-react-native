@@ -2,20 +2,20 @@ import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { SqliteClient } from '../SqliteClient';
 
 export const deleteReactionsForMessage = async ({
-  flush = true,
+  execute = true,
   messageId,
 }: {
   messageId: string;
-  flush?: boolean;
+  execute?: boolean;
 }) => {
   const query = createDeleteQuery('reactions', {
     messageId,
   });
   console.log('deleteReactionsForMessage', {
-    flush,
+    execute,
     messageId,
   });
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSql.apply(null, query);
   }
 

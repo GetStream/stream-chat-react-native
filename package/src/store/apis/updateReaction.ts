@@ -3,19 +3,20 @@ import type { LocalMessage, MessageResponse, ReactionResponse } from 'stream-cha
 import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
+import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries } from '../types';
 
 export const updateReaction = async ({
-  flush = true,
+  execute = true,
   message,
   reaction,
 }: {
   message: MessageResponse | LocalMessage;
   reaction: ReactionResponse;
-  flush?: boolean;
+  execute?: boolean;
 }) => {
   const queries: PreparedQueries[] = [];
   let storableUser: ReturnType<typeof mapUserToStorable> | undefined;
@@ -28,11 +29,12 @@ export const updateReaction = async ({
   const storableReaction = mapReactionToStorable(reaction);
 
   queries.push(
-    createUpdateQuery('reactions', storableReaction, {
+    createDeleteQuery('reactions', {
       messageId: reaction.message_id,
       userId: reaction.user_id,
     }),
   );
+  queries.push(createUpsertQuery('reactions', storableReaction));
 
   let updatedReactionGroups: string | undefined;
   if (message.reaction_groups) {
@@ -43,12 +45,12 @@ export const updateReaction = async ({
 
   SqliteClient.logger?.('info', 'updateReaction', {
     addedUser: storableUser,
-    flush,
+    execute,
     updatedReaction: storableReaction,
     updatedReactionGroups,
   });
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSqlBatch(queries);
   }
 

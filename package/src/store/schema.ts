@@ -1,6 +1,4 @@
-import type { MessageLabel, Role } from 'stream-chat';
-
-import type { PendingTaskTypes } from './types';
+import type { MessageLabel, PendingTaskTypes, Role } from 'stream-chat';
 
 import type { ValueOf } from '../types/types';
 
@@ -64,6 +62,7 @@ export const tables: Tables = {
   },
   members: {
     columns: {
+      archivedAt: 'TEXT',
       banned: 'BOOLEAN DEFAULT FALSE',
       channelRole: 'TEXT',
       cid: 'TEXT NOT NULL',
@@ -72,6 +71,7 @@ export const tables: Tables = {
       invited: 'BOOLEAN',
       inviteRejectedAt: 'TEXT',
       isModerator: 'BOOLEAN',
+      pinnedAt: 'TEXT',
       role: 'TEXT',
       shadowBanned: 'BOOLEAN DEFAULT FALSE',
       updatedAt: 'TEXT',
@@ -270,6 +270,7 @@ export type Schema = {
     updatedAt?: string;
   };
   members: {
+    archivedAt?: string;
     cid: string;
     banned?: boolean;
     channelRole?: Role;
@@ -282,6 +283,7 @@ export type Schema = {
     shadowBanned?: boolean;
     updatedAt?: string;
     userId?: string;
+    pinnedAt?: string;
   };
   messages: {
     attachments: string;

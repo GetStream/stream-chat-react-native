@@ -8,12 +8,12 @@ import type { PreparedQueries } from '../types';
 
 export const upsertMembers = async ({
   cid,
-  flush = true,
+  execute = true,
   members,
 }: {
   cid: string;
   members: ChannelMemberResponse[];
-  flush?: boolean;
+  execute?: boolean;
 }) => {
   const queries: PreparedQueries[] = [];
 
@@ -34,12 +34,12 @@ export const upsertMembers = async ({
 
   SqliteClient.logger?.('info', 'upsertMembers', {
     cid,
-    flush,
+    execute,
     storableMembers,
     storableUsers,
   });
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSqlBatch(queries);
   }
 

@@ -4,5 +4,6 @@ export default (client, member, channel = {}) => {
     cid: channel.cid,
     member,
     type: 'member.removed',
+    user: member.user,
   });
 };

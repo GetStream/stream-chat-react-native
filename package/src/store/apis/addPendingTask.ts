@@ -1,8 +1,9 @@
+import type { PendingTask } from 'stream-chat';
+
 import { mapTaskToStorable } from '../mappers/mapTaskToStorable';
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
-import type { PendingTask } from '../types';
 
 /*
  * addPendingTask - Adds a pending task to the database

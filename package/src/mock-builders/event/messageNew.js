@@ -6,5 +6,6 @@ export default (client, newMessage, channel = {}) => {
     cid: channel.cid,
     message: newMessage,
     type: 'message.new',
+    ...(newMessage.user ? { user: newMessage.user } : {}),
   });
 };

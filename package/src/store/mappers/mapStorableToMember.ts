@@ -8,6 +8,7 @@ export const mapStorableToMember = (
   memberRow: TableRowJoinedUser<'members'>,
 ): ChannelMemberResponse => {
   const {
+    archivedAt,
     banned,
     channelRole,
     createdAt,
@@ -15,6 +16,7 @@ export const mapStorableToMember = (
     invited,
     inviteRejectedAt,
     isModerator,
+    pinnedAt,
     role,
     shadowBanned,
     updatedAt,
@@ -23,6 +25,7 @@ export const mapStorableToMember = (
   } = memberRow;
 
   return {
+    archived_at: archivedAt,
     banned,
     channel_role: channelRole,
     created_at: createdAt,
@@ -30,6 +33,7 @@ export const mapStorableToMember = (
     invite_rejected_at: inviteRejectedAt,
     invited,
     is_moderator: isModerator,
+    pinned_at: pinnedAt,
     role,
     shadow_banned: shadowBanned,
     updated_at: updatedAt,

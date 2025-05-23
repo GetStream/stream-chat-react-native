@@ -1,23 +1,27 @@
-import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { SqliteClient } from '../SqliteClient';
 
 export const deleteMessagesForChannel = async ({
   cid,
-  flush = true,
+  truncated_at,
+  execute = true,
 }: {
   cid: string;
-  flush?: boolean;
+  truncated_at?: string;
+  execute?: boolean;
 }) => {
-  const query = createDeleteQuery('messages', {
-    cid,
-  });
+  const timestamp = truncated_at ? new Date(truncated_at).toISOString() : new Date().toISOString();
+  const query: [string, (string | number)[]] = [
+    `DELETE FROM messages WHERE cid = ? AND createdAt <= ?`,
+    [cid, timestamp],
+  ];
 
   SqliteClient.logger?.('info', 'deleteMessagesForChannel', {
     cid,
-    flush,
+    execute,
+    truncated_at,
   });
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSql.apply(null, query);
   }
 

@@ -1,7 +1,5 @@
 import type { Channel, UserResponse } from 'stream-chat';
 
-import { deleteReaction } from '../store/apis/deleteReaction';
-
 export const removeReactionFromLocalState = ({
   channel,
   messageId,
@@ -48,10 +46,4 @@ export const removeReactionFromLocalState = ({
       delete message.reaction_groups[reactionType];
     }
   }
-
-  deleteReaction({
-    messageId,
-    reactionType,
-    userId: user.id,
-  });
 };
