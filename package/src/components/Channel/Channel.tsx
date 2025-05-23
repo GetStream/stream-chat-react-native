@@ -1392,30 +1392,32 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         }
 
         if (messageResponse.message) {
-          messageResponse.message.status = MessageStatusTypes.RECEIVED;
+          const newMessageResponse = {
+            ...messageResponse.message,
+            status: MessageStatusTypes.RECEIVED,
+          };
 
           if (enableOfflineSupport) {
             await dbApi.updateMessage({
-              message: { ...messageResponse.message, cid: channel.cid },
+              message: { ...newMessageResponse, cid: channel.cid },
             });
           }
           if (retrying) {
-            replaceMessage(message, messageResponse.message);
+            replaceMessage(message, newMessageResponse);
           } else {
-            updateMessage(messageResponse.message, {}, true);
+            updateMessage(newMessageResponse, {}, true);
           }
         }
       } catch (err) {
         console.log(err);
-        message.status = MessageStatusTypes.FAILED;
-        const updatedMessage = { ...message, cid: channel.cid };
+        const updatedMessage = { ...message, cid: channel.cid, status: MessageStatusTypes.FAILED };
         updateMessage(updatedMessage);
         threadInstance?.upsertReplyLocally?.({ message: updatedMessage });
         optimisticallyUpdatedNewMessages.delete(message.id);
 
         if (enableOfflineSupport) {
           await dbApi.updateMessage({
-            message: { ...message, cid: channel.cid },
+            message: updatedMessage,
           });
         }
       }
