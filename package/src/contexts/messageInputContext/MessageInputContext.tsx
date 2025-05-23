@@ -603,12 +603,11 @@ export const MessageInputProvider = ({
   const uploadNewFile = useStableCallback(async (file: File) => {
     try {
       uploadAbortControllerRef.current.set(file.name, client.createAbortControllerForNextRequest());
-      if (file.type.includes('image')) {
-        const compressedURI = await compressedImageURI(file, value.compressImageQuality);
-        await attachmentManager.uploadFiles([{ ...file, uri: compressedURI }]);
-      } else {
-        await attachmentManager.uploadFiles([file]);
-      }
+      const fileURI = file.type.includes('image')
+        ? await compressedImageURI(file, value.compressImageQuality)
+        : file.uri;
+      const updatedFile = { ...file, uri: fileURI };
+      await attachmentManager.uploadFiles([updatedFile]);
       uploadAbortControllerRef.current.delete(file.name);
     } catch (error) {
       if (
