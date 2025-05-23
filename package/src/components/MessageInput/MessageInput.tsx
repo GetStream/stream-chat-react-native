@@ -686,7 +686,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
               <AttachmentPickerSelectionBar />
             </View>
           ) : null}
-          <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
+          {/* <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} /> */}
         </>
       ) : null}
 

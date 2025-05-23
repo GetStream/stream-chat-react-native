@@ -126,8 +126,13 @@ import { ImageLoadingFailedIndicator as ImageLoadingFailedIndicatorDefault } fro
 import { ImageLoadingIndicator as ImageLoadingIndicatorDefault } from '../Attachment/ImageLoadingIndicator';
 import { ImageReloadIndicator as ImageReloadIndicatorDefault } from '../Attachment/ImageReloadIndicator';
 import { VideoThumbnail as VideoThumbnailDefault } from '../Attachment/VideoThumbnail';
+import { AttachmentPicker, AttachmentPickerProps } from '../AttachmentPicker/AttachmentPicker';
 import { AttachmentPickerBottomSheetHandle as DefaultAttachmentPickerBottomSheetHandle } from '../AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
+import { AttachmentPickerError as DefaultAttachmentPickerError } from '../AttachmentPicker/components/AttachmentPickerError';
+import { AttachmentPickerErrorImage as DefaultAttachmentPickerErrorImage } from '../AttachmentPicker/components/AttachmentPickerErrorImage';
+import { AttachmentPickerIOSSelectMorePhotos as DefaultAttachmentPickerIOSSelectMorePhotos } from '../AttachmentPicker/components/AttachmentPickerIOSSelectMorePhotos';
 import { AttachmentPickerSelectionBar as DefaultAttachmentPickerSelectionBar } from '../AttachmentPicker/components/AttachmentPickerSelectionBar';
+import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../AttachmentPicker/components/ImageOverlaySelectedComponent';
 import { AutoCompleteSuggestionHeader as AutoCompleteSuggestionHeaderDefault } from '../AutoCompleteInput/AutoCompleteSuggestionHeader';
 import { AutoCompleteSuggestionItem as AutoCompleteSuggestionItemDefault } from '../AutoCompleteInput/AutoCompleteSuggestionItem';
 import { AutoCompleteSuggestionList as AutoCompleteSuggestionListDefault } from '../AutoCompleteInput/AutoCompleteSuggestionList';
@@ -257,6 +262,19 @@ const debounceOptions = {
 
 export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
   Partial<Pick<AttachmentPickerContextValue, 'bottomInset' | 'topInset'>> &
+  Partial<
+    Pick<
+      AttachmentPickerProps,
+      | 'AttachmentPickerError'
+      | 'AttachmentPickerErrorImage'
+      | 'AttachmentPickerIOSSelectMorePhotos'
+      | 'ImageOverlaySelectedComponent'
+      | 'attachmentPickerErrorButtonText'
+      | 'attachmentPickerErrorText'
+      | 'numberOfAttachmentImagesToLoadPerCall'
+      | 'numberOfAttachmentPickerImageColumns'
+    >
+  > &
   Partial<
     Pick<
       ChannelContextValue,
@@ -508,6 +526,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AutoCompleteSuggestionHeader = AutoCompleteSuggestionHeaderDefault,
     AutoCompleteSuggestionItem = AutoCompleteSuggestionItemDefault,
     AutoCompleteSuggestionList = AutoCompleteSuggestionListDefault,
+    AttachmentPickerError = DefaultAttachmentPickerError,
+    AttachmentPickerErrorImage = DefaultAttachmentPickerErrorImage,
+    AttachmentPickerIOSSelectMorePhotos = DefaultAttachmentPickerIOSSelectMorePhotos,
+    ImageOverlaySelectedComponent = DefaultImageOverlaySelectedComponent,
+    attachmentPickerErrorButtonText,
+    attachmentPickerErrorText,
+    numberOfAttachmentImagesToLoadPerCall = 60,
+    numberOfAttachmentPickerImageColumns = 3,
 
     autoCompleteSuggestionsLimit,
     bottomInset = 0,
@@ -677,7 +703,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     thread: threadFromProps,
     threadList,
     threadMessages,
-    topInset = 0,
+    topInset,
     TypingIndicator = TypingIndicatorDefault,
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
     UnreadMessagesNotification = UnreadMessagesNotificationDefault,
@@ -1654,6 +1680,37 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     }
   });
 
+  const attachmentPickerProps = useMemo(
+    () => ({
+      AttachmentPickerBottomSheetHandle,
+      attachmentPickerBottomSheetHandleHeight,
+      attachmentPickerBottomSheetHeight,
+      AttachmentPickerError,
+      attachmentPickerErrorButtonText,
+      AttachmentPickerErrorImage,
+      attachmentPickerErrorText,
+      AttachmentPickerIOSSelectMorePhotos,
+      attachmentSelectionBarHeight,
+      ImageOverlaySelectedComponent,
+      numberOfAttachmentImagesToLoadPerCall,
+      numberOfAttachmentPickerImageColumns,
+    }),
+    [
+      AttachmentPickerBottomSheetHandle,
+      attachmentPickerBottomSheetHandleHeight,
+      attachmentPickerBottomSheetHeight,
+      AttachmentPickerError,
+      attachmentPickerErrorButtonText,
+      AttachmentPickerErrorImage,
+      attachmentPickerErrorText,
+      AttachmentPickerIOSSelectMorePhotos,
+      attachmentSelectionBarHeight,
+      ImageOverlaySelectedComponent,
+      numberOfAttachmentImagesToLoadPerCall,
+      numberOfAttachmentPickerImageColumns,
+    ],
+  );
+
   const attachmentPickerContext = useMemo(
     () => ({
       bottomInset,
@@ -1962,6 +2019,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
                   <AttachmentPickerProvider value={attachmentPickerContext}>
                     <MessageInputProvider value={inputMessageInputContext}>
                       <View style={{ height: '100%' }}>{children}</View>
+                      <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
                     </MessageInputProvider>
                   </AttachmentPickerProvider>
                 </ThreadProvider>
