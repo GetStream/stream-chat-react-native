@@ -52,7 +52,8 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
   const [showMoreOptions, setShowMoreOptions] = useState(true);
   const { attachments } = useAttachmentManagerState();
 
-  const shouldShowMoreOptions = !!text || !!attachments.length;
+  const hasText = !!text;
+  const shouldShowMoreOptions = hasText || !!attachments.length;
 
   useEffect(() => {
     setShowMoreOptions(!shouldShowMoreOptions);
