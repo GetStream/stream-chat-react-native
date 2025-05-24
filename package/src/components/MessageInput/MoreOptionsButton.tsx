@@ -9,7 +9,7 @@ export type MoreOptionsButtonProps = {
   handleOnPress?: () => void;
 };
 
-export const MoreOptionsButton = (props: MoreOptionsButtonProps) => {
+export const UnMemoizedMoreOptionsButton = (props: MoreOptionsButtonProps) => {
   const { handleOnPress } = props;
 
   const {
@@ -30,5 +30,7 @@ export const MoreOptionsButton = (props: MoreOptionsButtonProps) => {
     </Pressable>
   );
 };
+
+export const MoreOptionsButton = React.memo(UnMemoizedMoreOptionsButton);
 
 MoreOptionsButton.displayName = 'MoreOptionsButton{messageInput}';

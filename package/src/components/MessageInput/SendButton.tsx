@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { Profiler, useCallback } from 'react';
 
 import { Pressable } from 'react-native';
 
@@ -15,7 +15,7 @@ import { Search } from '../../icons/Search';
 import { SendRight } from '../../icons/SendRight';
 import { SendUp } from '../../icons/SendUp';
 
-export type SendButtonProps = Partial<Pick<MessageInputContextValue, 'sendMessage'>> & {
+type SendButtonPropsWithContext = Pick<MessageInputContextValue, 'sendMessage'> & {
   /** Disables the button */
   disabled: boolean;
 };
@@ -24,10 +24,8 @@ const customComposerDataSelector = (state: CustomDataManagerState) => ({
   command: state.custom.command,
 });
 
-export const SendButton = (props: SendButtonProps) => {
-  const { disabled = false, sendMessage: propsSendMessage } = props;
-  const { sendMessage: sendMessageFromContext } = useMessageInputContext();
-  const sendMessage = propsSendMessage || sendMessageFromContext;
+export const SendButtonWithContext = (props: SendButtonPropsWithContext) => {
+  const { disabled = false, sendMessage } = props;
   const messageComposer = useMessageComposer();
   const { customDataManager } = messageComposer;
   const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
@@ -46,20 +44,66 @@ export const SendButton = (props: SendButtonProps) => {
   }, [disabled, sendMessage]);
 
   return (
-    <Pressable
-      disabled={disabled}
-      onPress={onPressHandler}
-      style={[sendButton]}
-      testID='send-button'
+    <Profiler
+      id='Send Button'
+      onRender={(id, phase, actualDuration, baseDuration, start, end) => {
+        console.log({ actualDuration, baseDuration, end, id, phase, start });
+      }}
     >
-      {command ? (
-        <Search pathFill={disabled ? grey_gainsboro : accent_blue} {...searchIcon} />
-      ) : disabled ? (
-        <SendRight fill={grey_gainsboro} size={32} {...sendRightIcon} />
-      ) : (
-        <SendUp fill={accent_blue} size={32} {...sendUpIcon} />
-      )}
-    </Pressable>
+      <Pressable
+        disabled={disabled}
+        onPress={onPressHandler}
+        style={[sendButton]}
+        testID='send-button'
+      >
+        {command ? (
+          <Search pathFill={disabled ? grey_gainsboro : accent_blue} {...searchIcon} />
+        ) : disabled ? (
+          <SendRight fill={grey_gainsboro} size={32} {...sendRightIcon} />
+        ) : (
+          <SendUp fill={accent_blue} size={32} {...sendUpIcon} />
+        )}
+      </Pressable>
+    </Profiler>
+  );
+};
+
+const areEqual = (prevProps: SendButtonPropsWithContext, nextProps: SendButtonPropsWithContext) => {
+  const { disabled: prevDisabled, sendMessage: prevSendMessage } = prevProps;
+  const { disabled: nextDisabled, sendMessage: nextSendMessage } = nextProps;
+
+  const disabledEqual = prevDisabled === nextDisabled;
+  if (!disabledEqual) {
+    return false;
+  }
+
+  const sendMessageEqual = prevSendMessage === nextSendMessage;
+  if (!sendMessageEqual) {
+    return false;
+  }
+
+  return true;
+};
+
+const MemoizedSendButton = React.memo(
+  SendButtonWithContext,
+  areEqual,
+) as typeof SendButtonWithContext;
+
+export type SendButtonProps = Partial<SendButtonPropsWithContext>;
+
+/**
+ * UI Component for send button in MessageInput component.
+ */
+export const SendButton = (props: SendButtonProps) => {
+  const { sendMessage } = useMessageInputContext();
+
+  return (
+    <MemoizedSendButton
+      {...{ sendMessage }}
+      {...props}
+      {...{ disabled: props.disabled || false }}
+    />
   );
 };
 
