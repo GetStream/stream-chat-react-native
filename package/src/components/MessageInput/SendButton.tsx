@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { Pressable } from 'react-native';
 
@@ -38,10 +38,17 @@ export const SendButton = (props: SendButtonProps) => {
     },
   } = useTheme();
 
+  const onPressHandler = useCallback(() => {
+    if (disabled) {
+      return;
+    }
+    sendMessage();
+  }, [disabled, sendMessage]);
+
   return (
     <Pressable
       disabled={disabled}
-      onPress={disabled ? () => null : () => sendMessage()}
+      onPress={onPressHandler}
       style={[sendButton]}
       testID='send-button'
     >
