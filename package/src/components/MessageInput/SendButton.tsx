@@ -1,4 +1,4 @@
-import React, { Profiler, useCallback } from 'react';
+import React, { useCallback } from 'react';
 
 import { Pressable } from 'react-native';
 
@@ -44,27 +44,20 @@ export const SendButtonWithContext = (props: SendButtonPropsWithContext) => {
   }, [disabled, sendMessage]);
 
   return (
-    <Profiler
-      id='Send Button'
-      onRender={(id, phase, actualDuration, baseDuration, start, end) => {
-        console.log({ actualDuration, baseDuration, end, id, phase, start });
-      }}
+    <Pressable
+      disabled={disabled}
+      onPress={onPressHandler}
+      style={[sendButton]}
+      testID='send-button'
     >
-      <Pressable
-        disabled={disabled}
-        onPress={onPressHandler}
-        style={[sendButton]}
-        testID='send-button'
-      >
-        {command ? (
-          <Search pathFill={disabled ? grey_gainsboro : accent_blue} {...searchIcon} />
-        ) : disabled ? (
-          <SendRight fill={grey_gainsboro} size={32} {...sendRightIcon} />
-        ) : (
-          <SendUp fill={accent_blue} size={32} {...sendUpIcon} />
-        )}
-      </Pressable>
-    </Profiler>
+      {command ? (
+        <Search pathFill={disabled ? grey_gainsboro : accent_blue} {...searchIcon} />
+      ) : disabled ? (
+        <SendRight fill={grey_gainsboro} size={32} {...sendRightIcon} />
+      ) : (
+        <SendUp fill={accent_blue} size={32} {...sendUpIcon} />
+      )}
+    </Pressable>
   );
 };
 
