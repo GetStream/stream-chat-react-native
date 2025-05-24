@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { CustomDataManagerState, TextComposerState } from 'stream-chat';
 
+import { useAttachmentManagerState } from '../../contexts/messageInputContext/hooks/useAttachmentManagerState';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
   MessageInputContextValue,
@@ -49,12 +50,14 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
   const { text } = useStateStore(textComposer.state, textComposerStateSelector);
   const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
   const [showMoreOptions, setShowMoreOptions] = useState(true);
+  const { attachments } = useAttachmentManagerState();
 
   const hasText = !!text;
+  const shouldShowMoreOptions = hasText || !!attachments.length;
 
   useEffect(() => {
-    setShowMoreOptions(!hasText);
-  }, [hasText]);
+    setShowMoreOptions(!shouldShowMoreOptions);
+  }, [shouldShowMoreOptions]);
 
   const {
     theme: {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { Pressable } from 'react-native';
 
@@ -16,14 +16,15 @@ import { SendRight } from '../../icons/SendRight';
 import { SendUp } from '../../icons/SendUp';
 
 type SendButtonPropsWithContext = Pick<MessageInputContextValue, 'sendMessage'> & {
-  /** Disables the button */ disabled: boolean;
+  /** Disables the button */
+  disabled: boolean;
 };
 
 const customComposerDataSelector = (state: CustomDataManagerState) => ({
   command: state.custom.command,
 });
 
-const SendButtonWithContext = (props: SendButtonPropsWithContext) => {
+export const SendButtonWithContext = (props: SendButtonPropsWithContext) => {
   const { disabled = false, sendMessage } = props;
   const messageComposer = useMessageComposer();
   const { customDataManager } = messageComposer;
@@ -35,10 +36,17 @@ const SendButtonWithContext = (props: SendButtonPropsWithContext) => {
     },
   } = useTheme();
 
+  const onPressHandler = useCallback(() => {
+    if (disabled) {
+      return;
+    }
+    sendMessage();
+  }, [disabled, sendMessage]);
+
   return (
     <Pressable
       disabled={disabled}
-      onPress={disabled ? () => null : () => sendMessage()}
+      onPress={onPressHandler}
       style={[sendButton]}
       testID='send-button'
     >

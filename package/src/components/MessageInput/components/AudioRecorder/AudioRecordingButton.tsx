@@ -40,7 +40,7 @@ type AudioRecordingButtonPropsWithContext = Pick<
   startVoiceRecording?: () => Promise<void>;
 };
 
-const AudioRecordingButtonWithContext = (props: AudioRecordingButtonPropsWithContext) => {
+export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonPropsWithContext) => {
   const {
     asyncMessagesMinimumPressDuration,
     buttonSize,

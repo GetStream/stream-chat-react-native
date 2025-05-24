@@ -4,6 +4,8 @@ import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
+import { AudioAttachment as StreamAudioAttachment } from 'stream-chat';
+
 import { useTheme } from '../../contexts';
 import { useAudioPlayer } from '../../hooks/useAudioPlayer';
 import { Audio, Pause, Play } from '../../icons';
@@ -15,18 +17,25 @@ import {
   VideoProgressData,
   VideoSeekResponse,
 } from '../../native';
-import { AudioUpload, FileTypes } from '../../types/types';
+import { AudioConfig, FileTypes } from '../../types/types';
 import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
 import { ProgressControl } from '../ProgressControl/ProgressControl';
 import { WaveProgressBar } from '../ProgressControl/WaveProgressBar';
 
 dayjs.extend(duration);
 
+export type AudioAttachmentType = AudioConfig &
+  Pick<StreamAudioAttachment, 'waveform_data' | 'asset_url' | 'title'> & {
+    id: string;
+    type: 'audio' | 'voiceRecording';
+  };
+
 export type AudioAttachmentProps = {
-  item: Omit<AudioUpload, 'state'>;
+  item: AudioAttachmentType;
   onLoad: (index: string, duration: number) => void;
   onPlayPause: (index: string, pausedStatus?: boolean) => void;
   onProgress: (index: string, progress: number) => void;
+  titleMaxLength?: number;
   hideProgressBar?: boolean;
   showSpeedSettings?: boolean;
   testID?: string;
@@ -48,6 +57,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     onProgress,
     showSpeedSettings = false,
     testID,
+    titleMaxLength,
   } = props;
   const { changeAudioSpeed, pauseAudio, playAudio, seekAudio } = useAudioPlayer({ soundRef });
   const isExpoCLI = NativeHandlers.SDK === 'stream-chat-expo';
@@ -180,9 +190,9 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   useEffect(() => {
     if (isExpoCLI) {
       const initiateSound = async () => {
-        if (item && item.file && item.file.uri && NativeHandlers.Sound?.initializeSound) {
+        if (item && item.asset_url && NativeHandlers.Sound?.initializeSound) {
           soundRef.current = await NativeHandlers.Sound.initializeSound(
-            { uri: item.file.uri },
+            { uri: item.asset_url },
             {
               pitchCorrectionQuality: 'high',
               progressUpdateIntervalMillis: 100,
@@ -255,7 +265,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
       },
       colors: { accent_blue, black, grey_dark, grey_whisper, static_black, static_white, white },
       messageInput: {
-        fileUploadPreview: { filenameText },
+        fileAttachmentUploadPreview: { filenameText },
       },
     },
   } = useTheme();
@@ -318,7 +328,9 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             filenameText,
           ]}
         >
-          {getTrimmedAttachmentTitle(item.file.name)}
+          {item.type === FileTypes.VoiceRecording
+            ? 'Recording'
+            : getTrimmedAttachmentTitle(item.title, titleMaxLength)}
         </Text>
         <View style={styles.audioInfo}>
           <Text style={[styles.progressDurationText, { color: grey_dark }, progressDurationText]}>
@@ -326,14 +338,14 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
           </Text>
           {!hideProgressBar && (
             <View style={[styles.progressControlContainer, progressControlContainer]}>
-              {item.file.waveform_data ? (
+              {item.waveform_data ? (
                 <WaveProgressBar
                   amplitudesCount={30}
                   onEndDrag={dragEnd}
                   onProgressDrag={dragProgress}
                   onStartDrag={dragStart}
                   progress={item.progress as number}
-                  waveformData={item.file.waveform_data}
+                  waveformData={item.waveform_data}
                 />
               ) : (
                 <ProgressControl
@@ -359,7 +371,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             rate={currentSpeed}
             soundRef={soundRef as RefObject<SoundReturnType>}
             testID='sound-player'
-            uri={item.file.uri}
+            uri={item.asset_url}
           />
         )}
       </View>

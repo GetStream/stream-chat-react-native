@@ -2,11 +2,16 @@ import type React from 'react';
 
 import dayjs from 'dayjs';
 import EmojiRegex from 'emoji-regex';
-import type { ChannelState, LocalMessage, MessageResponse } from 'stream-chat';
+import type {
+  AttachmentLoadingState,
+  ChannelState,
+  LocalMessage,
+  MessageResponse,
+} from 'stream-chat';
 
 import { IconProps } from '../../src/icons/utils/base';
 import type { TableRowJoinedUser } from '../store/types';
-import { FileTypes, ValueOf } from '../types/types';
+import { ValueOf } from '../types/types';
 
 export type ReactionData = {
   Icon: React.ComponentType<IconProps>;
@@ -14,13 +19,10 @@ export type ReactionData = {
 };
 
 export const FileState = Object.freeze({
-  // finished and uploaded state are the same thing. First is set on frontend,
-  // while later is set on backend side
-  // TODO: Unify both of them
+  BLOCKED: 'blocked',
+  FAILED: 'failed',
   FINISHED: 'finished',
-  NOT_SUPPORTED: 'not_supported',
-  UPLOAD_FAILED: 'upload_failed',
-  UPLOADED: 'uploaded',
+  PENDING: 'pending',
   UPLOADING: 'uploading',
 });
 
@@ -28,11 +30,13 @@ export const ProgressIndicatorTypes: {
   IN_PROGRESS: 'in_progress';
   INACTIVE: 'inactive';
   NOT_SUPPORTED: 'not_supported';
+  PENDING: 'pending';
   RETRY: 'retry';
 } = Object.freeze({
   IN_PROGRESS: 'in_progress',
   INACTIVE: 'inactive',
   NOT_SUPPORTED: 'not_supported',
+  PENDING: 'pending',
   RETRY: 'retry',
 });
 
@@ -42,25 +46,22 @@ export const MessageStatusTypes = {
   SENDING: 'sending',
 };
 
-export type FileStateValue = (typeof FileState)[keyof typeof FileState];
-
-type Progress = ValueOf<typeof ProgressIndicatorTypes>;
-type IndicatorStatesMap = Record<ValueOf<typeof FileState>, Progress | null>;
+export type Progress = ValueOf<typeof ProgressIndicatorTypes>;
+type IndicatorStatesMap = Record<AttachmentLoadingState, Progress | undefined>;
 
 export const getIndicatorTypeForFileState = (
-  fileState: FileStateValue,
+  fileState: AttachmentLoadingState,
   enableOfflineSupport: boolean,
-): Progress | null => {
+): Progress | undefined => {
   const indicatorMap: IndicatorStatesMap = {
     [FileState.UPLOADING]: enableOfflineSupport
       ? ProgressIndicatorTypes.INACTIVE
       : ProgressIndicatorTypes.IN_PROGRESS,
-    // If offline support is disabled, then there is no need
-    [FileState.UPLOAD_FAILED]: enableOfflineSupport
+    [FileState.BLOCKED]: ProgressIndicatorTypes.NOT_SUPPORTED,
+    [FileState.FAILED]: enableOfflineSupport
       ? ProgressIndicatorTypes.INACTIVE
       : ProgressIndicatorTypes.RETRY,
-    [FileState.NOT_SUPPORTED]: ProgressIndicatorTypes.NOT_SUPPORTED,
-    [FileState.UPLOADED]: ProgressIndicatorTypes.INACTIVE,
+    [FileState.PENDING]: ProgressIndicatorTypes.PENDING,
     [FileState.FINISHED]: ProgressIndicatorTypes.INACTIVE,
   };
 
@@ -188,18 +189,6 @@ export const getFileNameFromPath = (path: string) => {
   const pattern = /[^/]+\.[^/]+$/;
   const match = path.match(pattern);
   return match ? match[0] : '';
-};
-
-export const getFileTypeFromMimeType = (mimeType: string) => {
-  const fileType = mimeType.split('/')[0];
-  if (fileType === 'image') {
-    return FileTypes.Image;
-  } else if (fileType === 'video') {
-    return FileTypes.Video;
-  } else if (fileType === 'audio') {
-    return FileTypes.Audio;
-  }
-  return FileTypes.File;
 };
 
 /**
