@@ -27,6 +27,7 @@ export function patchMessageTextCommand(messageText: string, mentionedUserIds: s
    * The required format is "/ban @userid reason"
    */
   if (trimmedMessageText.startsWith('/ban ')) {
+    // TODO: There is a bug here. If the name has two words, the reason will be the surname of the user.
     const reasonText = trimmedMessageText.split(' ').pop() ?? '';
     return `/ban @${mentionedUserIds[0]} ${reasonText}`.trim();
   }

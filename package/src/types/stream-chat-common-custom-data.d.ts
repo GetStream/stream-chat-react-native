@@ -38,5 +38,9 @@ declare module 'stream-chat' {
 
   interface CustomThreadData extends DefaultThreadData {}
 
+  interface CustomMessageComposerData {
+    command: string | null;
+  }
+
   /* eslint-enable @typescript-eslint/no-empty-object-type */
 }

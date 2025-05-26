@@ -51,7 +51,6 @@ export type MessageActionsHookProps = Pick<
   | 'deleteReaction'
   | 'retrySendMessage'
   | 'setEditingState'
-  | 'setQuotedMessageState'
   | 'selectReaction'
   | 'supportedReactions'
   | 'updateMessage'
@@ -90,7 +89,6 @@ export const useMessageActions = ({
   selectReaction,
   sendReaction,
   setEditingState,
-  setQuotedMessageState,
   supportedReactions,
   t,
 }: MessageActionsHookProps) => {
@@ -121,7 +119,6 @@ export const useMessageActions = ({
     retrySendMessage,
     sendReaction,
     setEditingState,
-    setQuotedMessageState,
     supportedReactions,
   });
 
