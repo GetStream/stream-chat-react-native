@@ -20,11 +20,11 @@ export class OfflineDB extends AbstractOfflineDB {
 
   upsertChannels = api.upsertChannels;
 
-  // FIXME
+  // TODO: Rename currentUserId -> userId in the next major version as it is technically breaking.
   upsertUserSyncStatus = ({ userId, lastSyncedAt, execute }: UpsertUserSyncStatusType) =>
     api.upsertUserSyncStatus({ currentUserId: userId, execute, lastSyncedAt });
 
-  // FIXME
+  // TODO: Rename currentUserId -> userId in the next major version as it is technically breaking.
   upsertAppSettings = ({ appSettings, userId, execute }: UpsertAppSettingsType) =>
     api.upsertAppSettings({ appSettings, currentUserId: userId, execute });
 
@@ -40,16 +40,17 @@ export class OfflineDB extends AbstractOfflineDB {
 
   updateMessage = api.updateMessage;
 
-  // FIXME
+  // TODO: Rename currentUserId -> userId in the next major version as it is technically breaking.
   getChannels = ({ cids, userId }: GetChannelsType) =>
     api.getChannels({ channelIds: cids, currentUserId: userId });
 
-  // FIXME
+  // TODO: Rename currentUserId -> userId in the next major version as it is technically breaking.
   getChannelsForQuery = ({ userId, filters, sort }: GetChannelsForQueryType) =>
     api.getChannelsForFilterSort({ currentUserId: userId, filters, sort });
 
   getAllChannelCids = api.getAllChannelIds;
-  // FIXME
+
+  // TODO: Rename currentUserId -> userId in the next major version as it is technically breaking.
   getLastSyncedAt = ({ userId }: GetLastSyncedAtType) =>
     api.getLastSyncedAt({ currentUserId: userId });
 

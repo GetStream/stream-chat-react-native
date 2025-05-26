@@ -66,7 +66,6 @@ export const usePaginatedChannels = ({
 
   const queryChannels: QueryChannels = async (
     queryType: QueryType = 'loadChannels',
-    // retryCount = 0,
   ): Promise<void> => {
     if (!client || !isMountedRef.current) {
       return;
@@ -95,7 +94,6 @@ export const usePaginatedChannels = ({
     filtersRef.current = filters;
     sortRef.current = sort;
     isQueryingRef.current = true;
-    // setError(undefined);
     activeRequestId.current++;
     const currentRequestId = activeRequestId.current;
     setActiveQueryType(queryType);
