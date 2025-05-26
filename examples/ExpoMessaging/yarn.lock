@@ -1521,13 +1521,6 @@
   dependencies:
     regenerator-runtime "^0.13.11"
 
-"@babel/runtime@^7.27.0":
-  version "7.27.0"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.27.0.tgz#fbee7cf97c709518ecc1f590984481d5460d4762"
-  integrity sha512-VtPOkrdPHZsKc/clNqyi9WUA8TINkZ4cGk63UUE3u4pmB2k+ZMQRDuIOagv8UVd6j7k0T3+RRIb7beKTebNbcw==
-  dependencies:
-    regenerator-runtime "^0.14.0"
-
 "@babel/template@^7.20.7", "@babel/template@^7.21.9":
   version "7.21.9"
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.21.9.tgz#bf8dad2859130ae46088a99c1f265394877446fb"
@@ -2888,7 +2881,7 @@
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.15.tgz#596a1747233694d50f6ad8a7869fcb6f56cf5841"
   integrity sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==
 
-"@types/jsonwebtoken@^9.0.8", "@types/jsonwebtoken@~9.0.0":
+"@types/jsonwebtoken@^9.0.8":
   version "9.0.9"
   resolved "https://registry.yarnpkg.com/@types/jsonwebtoken/-/jsonwebtoken-9.0.9.tgz#a4c3a446c0ebaaf467a58398382616f416345fb3"
   integrity sha512-uoe+GxEuHbvy12OUQct2X9JenKM3qAscquYymuQN4fMWG9DBQtykrQEFcAbVACF7qaLw9BePSodUL0kquqBJpQ==
@@ -2924,13 +2917,6 @@
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-2.0.1.tgz#20f18294f797f2209b5f65c8e3b5c8e8261d127c"
   integrity sha512-Hl219/BT5fLAaz6NDkSuhzasy49dwQS/DSdu4MdggFB8zcXv7vflBI3xp7FEmkmdDkBUI2bPUNeMttp2knYdxw==
-
-"@types/ws@^7.4.0":
-  version "7.4.7"
-  resolved "https://registry.yarnpkg.com/@types/ws/-/ws-7.4.7.tgz#f7c390a36f7a0679aa69de2d501319f4f8d9b702"
-  integrity sha512-JQbbmxZTZehdc2iszGKs5oC3NFnjeay7mtAWrdt7qNtAVK0g19muApzAy4bm9byz79xa2ZnO/BOBC2R8RC5Lww==
-  dependencies:
-    "@types/node" "*"
 
 "@types/ws@^8.5.14":
   version "8.18.0"
@@ -5156,11 +5142,6 @@ isobject@^3.0.1:
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
   integrity sha512-WhB9zCku7EGTj/HQQRz5aUQEUeoQZH2bWcltRErOpymJ4boYE6wL9Tbr23krRPSZ+C5zqNSrSw+Cc7sZZ4b7vg==
 
-isomorphic-ws@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/isomorphic-ws/-/isomorphic-ws-4.0.1.tgz#55fd4cd6c5e6491e76dc125938dd863f5cd4f2dc"
-  integrity sha512-BhBvN2MBpWTaSHdWRb/bwdZJ1WaehQ2L1KngkCkfLUGF0mAWAT1sQUQacEmQ0jXkFw/czDXPNQSL5u2/Krsz1w==
-
 isomorphic-ws@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/isomorphic-ws/-/isomorphic-ws-5.0.0.tgz#e5529148912ecb9b451b46ed44d53dae1ce04bbf"
@@ -5420,7 +5401,7 @@ jsonfile@^6.0.1:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
-jsonwebtoken@^9.0.2, jsonwebtoken@~9.0.0:
+jsonwebtoken@^9.0.2:
   version "9.0.2"
   resolved "https://registry.yarnpkg.com/jsonwebtoken/-/jsonwebtoken-9.0.2.tgz#65ff91f4abef1784697d40952bb1998c504caaf3"
   integrity sha512-PRp66vJ865SSqOlgqS8hujT5U4AOgMfhrwYIuIhfKaoSCZcirrmASQr8CX7cUg+RMih+hgznrjp99o+W4pJLHQ==
@@ -7422,10 +7403,10 @@ stream-buffers@2.2.x, stream-buffers@~2.2.0:
   version "0.0.0"
   uid ""
 
-stream-chat-react-native-core@6.7.4:
-  version "6.7.4"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-6.7.4.tgz#9709465e161e32cf358034a82c284cc16369397a"
-  integrity sha512-YCAXBfdbazFIpO1EI9Czd2QYaFCJX+i9q710L3xPB4mRuaNl2SL8kH+RTj4Ur9Fyl3u1fcDI+1o/iYnaap1Uwg==
+stream-chat-react-native-core@7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-7.0.0.tgz#ba5439c9a446713356105a40c7d2f90c3ccbf4a3"
+  integrity sha512-qjjukVUXl13/cQDCovTAUHMUXgweg6fhh0we2t+C3RI3gN0AaiXMpzejA6RSuArBtezV4AB/mv9BoT7BRTzqeA==
   dependencies:
     "@gorhom/bottom-sheet" "^5.1.1"
     dayjs "1.10.5"
@@ -7438,17 +7419,17 @@ stream-chat-react-native-core@6.7.4:
     path "0.12.7"
     react-native-markdown-package "1.8.2"
     react-native-url-polyfill "^1.3.0"
-    stream-chat "^8.57.6"
+    stream-chat "^9.0.0"
     use-sync-external-store "^1.4.0"
 
 "stream-chat-react-native-core@link:../../package":
   version "0.0.0"
   uid ""
 
-stream-chat@9.0.0-rc.15:
-  version "9.0.0-rc.15"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.0.0-rc.15.tgz#6a35f27c38be2e021a3e62abcffa40aaef84fc0a"
-  integrity sha512-n8IftP103jp8IVOUZA4mnOvEIbyzGTVjoL3rDm42apk8DRHz2/vdvgyTYUJysDNYh+Oxu5HwWObToKv1c/Bxdw==
+stream-chat@^9.0.0:
+  version "9.1.1"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.1.1.tgz#c81ffa84a7ca579d9812065bc159010191b59090"
+  integrity sha512-7Y23aIVQMppNZgRj/rTFwIx9pszxgDcS99idkSXJSgdV8C7FlyDtiF1yQSdP0oiNFAt7OUP/xSqmbJTljrm24Q==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"
@@ -7460,20 +7441,20 @@ stream-chat@9.0.0-rc.15:
     linkifyjs "^4.2.0"
     ws "^8.18.1"
 
-stream-chat@^8.57.6:
-  version "8.60.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.60.0.tgz#b67d4fbb185da53fb8ac5fc5759986d6ad7e19a3"
-  integrity sha512-7FpO7Wno++r+n+x9aFuXtGYtNO06CIMd2Bxe3doYZLhMfS0nuaXloeFlGcMT0r4U/6bnguz1qQdDJUPNQAS8bQ==
+stream-chat@^9.2.0-offline-support-beta.3:
+  version "9.2.0-offline-support-beta.3"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.2.0-offline-support-beta.3.tgz#58eb049fa1479ace1fd4a7f48d991821d8f48606"
+  integrity sha512-knFp7KYGXY3w1jgboJ9IipCHnZNnS9qiedfM5zpPweEJdZlc7G4NKiHo0yvqEfxJ+JOVIGn+wUg/cT2x0yf/RQ==
   dependencies:
-    "@babel/runtime" "^7.27.0"
-    "@types/jsonwebtoken" "~9.0.0"
-    "@types/ws" "^7.4.0"
+    "@types/jsonwebtoken" "^9.0.8"
+    "@types/ws" "^8.5.14"
     axios "^1.6.0"
     base64-js "^1.5.1"
     form-data "^4.0.0"
-    isomorphic-ws "^4.0.1"
-    jsonwebtoken "~9.0.0"
-    ws "^7.5.10"
+    isomorphic-ws "^5.0.0"
+    jsonwebtoken "^9.0.2"
+    linkifyjs "^4.2.0"
+    ws "^8.18.1"
 
 stream-slice@^0.1.2:
   version "0.1.2"
