@@ -7817,10 +7817,10 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-stream-chat@^9.2.0-offline-support-beta.2:
-  version "9.2.0-offline-support-beta.2"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.2.0-offline-support-beta.2.tgz#aeba2e147af46b78175839701c5f1ed02c8122c2"
-  integrity sha512-cJwGsxYSwsdOE2gCaubmvGhWLin3XX8wXUYpvJXyTsBg7IqANZzrhmZOKBmWdVzSXvItl00Q5NvrA47R+Ptusw==
+stream-chat@^9.2.0-offline-support-beta.3:
+  version "9.2.0-offline-support-beta.3"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.2.0-offline-support-beta.3.tgz#58eb049fa1479ace1fd4a7f48d991821d8f48606"
+  integrity sha512-knFp7KYGXY3w1jgboJ9IipCHnZNnS9qiedfM5zpPweEJdZlc7G4NKiHo0yvqEfxJ+JOVIGn+wUg/cT2x0yf/RQ==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"
