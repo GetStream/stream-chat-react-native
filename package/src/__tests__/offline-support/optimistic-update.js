@@ -113,6 +113,7 @@ export const OptimisticUpdates = () => {
         channels: [channelResponse],
         isLatestMessagesSet: true,
       });
+      chatClient.wsConnection = { isHealthy: true, onlineStatusChanged: jest.fn() };
     });
 
     afterEach(() => {

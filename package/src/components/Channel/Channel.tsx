@@ -258,7 +258,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'StickyHeader'
     >
   > &
-  Pick<ChatContextValue, 'client' | 'enableOfflineSupport'> &
+  Pick<ChatContextValue, 'client' | 'enableOfflineSupport' | 'isOnline'> &
   Partial<
     Omit<
       InputMessageInputContextValue,
@@ -670,6 +670,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     UploadProgressIndicator = UploadProgressIndicatorDefault,
     UrlPreview = CardDefault,
     VideoThumbnail = VideoThumbnailDefault,
+    isOnline,
   } = props;
 
   const { thread: threadProps, threadInstance } = threadFromProps;
@@ -1345,7 +1346,33 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const sendMessageRequest = useStableCallback(
     async (message: MessageResponse, retrying?: boolean) => {
+      let failedMessageUpdated = false;
+      const handleFailedMessage = async () => {
+        if (!failedMessageUpdated) {
+          const updatedMessage = {
+            ...message,
+            cid: channel.cid,
+            status: MessageStatusTypes.FAILED,
+          };
+          updateMessage(updatedMessage);
+          threadInstance?.upsertReplyLocally?.({ message: updatedMessage });
+          optimisticallyUpdatedNewMessages.delete(message.id);
+
+          if (enableOfflineSupport) {
+            await dbApi.updateMessage({
+              message: updatedMessage,
+            });
+          }
+
+          failedMessageUpdated = true;
+        }
+      };
+
       try {
+        if (!isOnline) {
+          await handleFailedMessage();
+        }
+
         const updatedMessage = await uploadPendingAttachments(message);
         const extraFields = omit(updatedMessage, [
           '__html',
@@ -1385,6 +1412,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         } as StreamMessage;
 
         let messageResponse = {} as SendMessageAPIResponse;
+
         if (doSendMessageRequest) {
           messageResponse = await doSendMessageRequest(channel?.cid || '', messageData);
         } else if (channel) {
@@ -1410,16 +1438,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         }
       } catch (err) {
         console.log(err);
-        const updatedMessage = { ...message, cid: channel.cid, status: MessageStatusTypes.FAILED };
-        updateMessage(updatedMessage);
-        threadInstance?.upsertReplyLocally?.({ message: updatedMessage });
-        optimisticallyUpdatedNewMessages.delete(message.id);
-
-        if (enableOfflineSupport) {
-          await dbApi.updateMessage({
-            message: updatedMessage,
-          });
-        }
+        await handleFailedMessage();
       }
     },
   );
@@ -2007,7 +2026,7 @@ export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel' | 'th
  * @example ./Channel.md
  */
 export const Channel = (props: PropsWithChildren<ChannelProps>) => {
-  const { client, enableOfflineSupport, isMessageAIGenerated } = useChatContext();
+  const { client, enableOfflineSupport, isOnline, isMessageAIGenerated } = useChatContext();
   const { t } = useTranslationContext();
 
   const threadFromProps = props?.thread;
@@ -2039,6 +2058,7 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
       shouldSyncChannel={shouldSyncChannel}
       {...{
         isMessageAIGenerated,
+        isOnline,
         setThreadMessages,
         thread,
         threadMessages,
