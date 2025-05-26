@@ -93,8 +93,6 @@ export type LocalMessageInputContext = {
   pickAndUploadImageFromNativePicker: () => Promise<void>;
   pickFile: () => Promise<void>;
   resetInput: (pendingAttachments?: Attachment[]) => void;
-  selectedPicker: string | undefined;
-  sending: React.MutableRefObject<boolean>;
   sendMessage: (params?: { customMessageData?: Partial<Message> }) => Promise<void>;
   sendThreadMessageInChannel: boolean;
   /**
@@ -368,7 +366,6 @@ export const MessageInputProvider = ({
   const { thread } = useThreadContext();
   const { t } = useTranslationContext();
   const inputBoxRef = useRef<TextInput | null>(null);
-  const sending = useRef(false);
 
   const [sendThreadMessageInChannel, setSendThreadMessageInChannel] = useState(false);
   const [showPollCreationDialog, setShowPollCreationDialog] = useState(false);
@@ -528,8 +525,8 @@ export const MessageInputProvider = ({
     }
   }, [closeAttachmentPicker, openAttachmentPicker, selectedPicker]);
 
-  const resetInput = useStableCallback(async () => {
-    await messageComposer.clear();
+  const resetInput = useStableCallback(() => {
+    messageComposer.clear();
     /**
      * If the MediaLibrary is available, reset the selected files and images
      */
@@ -544,12 +541,6 @@ export const MessageInputProvider = ({
   });
 
   const sendMessage = useStableCallback(async () => {
-    if (sending.current) {
-      return;
-    }
-
-    sending.current = true;
-
     startCooldown();
 
     if (inputBoxRef.current) {
@@ -562,16 +553,14 @@ export const MessageInputProvider = ({
 
     if (editedMessage && editedMessage.type !== 'error') {
       try {
-        value.clearEditingState();
+        resetInput();
         await value.editMessage({ localMessage, options: sendOptions });
-        await resetInput();
       } catch (error) {
-        console.log('Failed to edit message', error);
+        console.log('Failed to edit message:', error);
       }
-
-      sending.current = false;
     } else {
       try {
+        resetInput();
         await value.sendMessage({
           localMessage: {
             ...localMessage,
@@ -583,12 +572,8 @@ export const MessageInputProvider = ({
           },
           options: sendOptions,
         });
-
-        sending.current = false;
-        await resetInput();
       } catch (error) {
-        sending.current = false;
-        console.log('Failed to send message', error);
+        console.log('Failed to send message:', error);
       }
     }
   });
@@ -637,8 +622,6 @@ export const MessageInputProvider = ({
     pickAndUploadImageFromNativePicker,
     pickFile,
     resetInput,
-    selectedPicker,
-    sending,
     sendThreadMessageInChannel,
     setInputBoxRef,
     setSendThreadMessageInChannel,

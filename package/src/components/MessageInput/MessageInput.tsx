@@ -141,7 +141,6 @@ type MessageInputPropsWithContext = Pick<
     | 'maxNumberOfFiles'
     | 'resetInput'
     | 'SendButton'
-    | 'sending'
     | 'ShowThreadMessageInChannelButton'
     | 'StartAudioRecordingButton'
     | 'uploadNewFile'
@@ -206,7 +205,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     Reply,
     resetInput,
     SendButton,
-    sending,
     sendMessage,
     showPollCreationDialog,
     ShowThreadMessageInChannelButton,
@@ -748,9 +746,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                   <CooldownTimer seconds={cooldownRemainingSeconds} />
                 ) : (
                   <View style={[styles.sendButtonContainer, sendButtonContainer]}>
-                    <SendButton
-                      disabled={sending.current || !hasSendableData || (!!command && !isOnline)}
-                    />
+                    <SendButton disabled={!hasSendableData || (!!command && !isOnline)} />
                   </View>
                 )
               ) : null}
@@ -830,10 +826,10 @@ const areEqual = (
     audioRecordingEnabled: prevAsyncMessagesEnabled,
     channel: prevChannel,
     closePollCreationDialog: prevClosePollCreationDialog,
+    cooldownEndsAt: prevCooldownEndsAt,
     editing: prevEditing,
     isOnline: prevIsOnline,
     openPollCreationDialog: prevOpenPollCreationDialog,
-    sending: prevSending,
     showPollCreationDialog: prevShowPollCreationDialog,
     t: prevT,
     thread: prevThread,
@@ -847,10 +843,10 @@ const areEqual = (
     audioRecordingEnabled: nextAsyncMessagesEnabled,
     channel: nextChannel,
     closePollCreationDialog: nextClosePollCreationDialog,
+    cooldownEndsAt: nextCooldownEndsAt,
     editing: nextEditing,
     isOnline: nextIsOnline,
     openPollCreationDialog: nextOpenPollCreationDialog,
-    sending: nextSending,
     showPollCreationDialog: nextShowPollCreationDialog,
     t: nextT,
     thread: nextThread,
@@ -909,13 +905,13 @@ const areEqual = (
     return false;
   }
 
-  const sendingEqual = prevSending.current === nextSending.current;
-  if (!sendingEqual) {
+  const isOnlineEqual = prevIsOnline === nextIsOnline;
+  if (!isOnlineEqual) {
     return false;
   }
 
-  const isOnlineEqual = prevIsOnline === nextIsOnline;
-  if (!isOnlineEqual) {
+  const cooldownEndsAtEqual = prevCooldownEndsAt === nextCooldownEndsAt;
+  if (!cooldownEndsAtEqual) {
     return false;
   }
 
@@ -992,7 +988,6 @@ export const MessageInput = (props: MessageInputProps) => {
     openPollCreationDialog,
     resetInput,
     SendButton,
-    sending,
     sendMessage,
     SendMessageDisallowedIndicator,
     showPollCreationDialog,
@@ -1057,7 +1052,6 @@ export const MessageInput = (props: MessageInputProps) => {
         Reply,
         resetInput,
         SendButton,
-        sending,
         sendMessage,
         SendMessageDisallowedIndicator,
         showPollCreationDialog,

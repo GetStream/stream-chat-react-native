@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { CustomDataManagerState, TextComposerState } from 'stream-chat';
 
+import { AttachmentPickerContextValue, useAttachmentPickerContext } from '../../contexts';
 import { useAttachmentManagerState } from '../../contexts/messageInputContext/hooks/useAttachmentManagerState';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
@@ -24,9 +25,9 @@ export type InputButtonsWithContextProps = Pick<
   | 'hasFilePicker'
   | 'hasImagePicker'
   | 'MoreOptionsButton'
-  | 'selectedPicker'
   | 'toggleAttachmentPicker'
->;
+> &
+  Pick<AttachmentPickerContextValue, 'selectedPicker'>;
 
 const textComposerStateSelector = (state: TextComposerState) => ({
   text: state.text,
@@ -148,9 +149,9 @@ export const InputButtons = (props: InputButtonsProps) => {
     hasFilePicker,
     hasImagePicker,
     MoreOptionsButton,
-    selectedPicker,
     toggleAttachmentPicker,
   } = useMessageInputContext();
+  const { selectedPicker } = useAttachmentPickerContext();
 
   return (
     <MemoizedInputButtonsWithContext
