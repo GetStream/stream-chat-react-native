@@ -270,7 +270,6 @@ export type Theme = {
     attachmentSelectionBar: ViewStyle;
     attachmentSeparator: ViewStyle;
     attachmentUnsupportedIndicator: {
-      wrapper: ViewStyle;
       container: ViewStyle;
       warningIcon: IconProps;
       text: TextStyle;
@@ -1072,7 +1071,6 @@ export const defaultTheme: Theme = {
       container: {},
       text: {},
       warningIcon: {},
-      wrapper: {},
     },
     audioRecorder: {
       arrowLeftIcon: {},

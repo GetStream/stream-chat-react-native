@@ -7,8 +7,8 @@ import { ProgressIndicatorTypes } from '../../../utils/utils';
 
 import { AttachmentUploadProgressIndicator } from '../components/AttachmentPreview/AttachmentUploadProgressIndicator';
 
-describe('UploadProgressIndicator', () => {
-  it('should render an inactive UploadProgressIndicator', async () => {
+describe('AttachmentUploadProgressIndicator', () => {
+  it('should render an inactive AttachmentUploadProgressIndicator', async () => {
     const action = jest.fn();
 
     render(
@@ -27,7 +27,7 @@ describe('UploadProgressIndicator', () => {
     });
   });
 
-  it('should render an active UploadProgressIndicator', async () => {
+  it('should render an active AttachmentUploadProgressIndicator', async () => {
     const action = jest.fn();
 
     render(
@@ -46,7 +46,7 @@ describe('UploadProgressIndicator', () => {
     });
   });
 
-  it('should render an active UploadProgressIndicator and not-supported indicator', async () => {
+  it('should render an active AttachmentUploadProgressIndicator and not-supported indicator', async () => {
     const action = jest.fn();
 
     render(
@@ -66,7 +66,7 @@ describe('UploadProgressIndicator', () => {
     });
   });
 
-  it('should render an active UploadProgressIndicator and in-progress indicator', async () => {
+  it('should render an active AttachmentUploadProgressIndicator and in-progress indicator', async () => {
     const action = jest.fn();
 
     render(
@@ -86,7 +86,7 @@ describe('UploadProgressIndicator', () => {
     });
   });
 
-  it('should render an active UploadProgressIndicator and retry indicator', async () => {
+  it('should render an active AttachmentUploadProgressIndicator and retry indicator', async () => {
     const action = jest.fn();
     const user = userEvent.setup();
 

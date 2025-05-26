@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Modal, SafeAreaView, StyleSheet, View } from 'react-native';
 
 import {
@@ -276,13 +276,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 
   const { seconds: cooldownRemainingSeconds } = useCountdown(cooldownEndsAt);
 
-  /**
-   * Mounting and un-mounting logic are un-related in following useEffect.
-   * While mounting we want to pass maxNumberOfFiles (which is prop on Channel component)
-   * to AttachmentPicker (on OverlayProvider)
-   *
-   * While un-mounting, we want to close the picker e.g., while navigating away.
-   */
   useEffect(() => {
     attachmentManager.maxNumberOfFilesPerMessage = maxNumberOfFiles;
     if (doFileUploadRequest) {
@@ -376,16 +369,13 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     waveformData,
   } = useAudioController();
 
-  const isSendingButtonVisible = () => {
-    if (!(audioRecordingEnabled && isAudioRecorderAvailable())) {
-      return true;
-    }
+  const asyncAudioEnabled = audioRecordingEnabled && isAudioRecorderAvailable();
+  const hasText = !!text;
+  const showSendingButton = hasText || attachments.length;
 
-    if ((text && text.trim()) || attachments.length) {
-      return true;
-    }
-    return !recording;
-  };
+  const isSendingButtonVisible = useMemo(() => {
+    return asyncAudioEnabled && showSendingButton && !recording;
+  }, [asyncAudioEnabled, recording, showSendingButton]);
 
   const micPositionX = useSharedValue(0);
   const micPositionY = useSharedValue(0);
@@ -587,7 +577,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 
               {shouldDisplayStopAIGeneration ? (
                 <StopMessageStreamingButton onPress={stopGenerating} />
-              ) : isSendingButtonVisible() ? (
+              ) : isSendingButtonVisible ? (
                 cooldownRemainingSeconds ? (
                   <CooldownTimer seconds={cooldownRemainingSeconds} />
                 ) : (

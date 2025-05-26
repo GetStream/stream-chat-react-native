@@ -167,7 +167,6 @@ import { AttachmentUploadProgressIndicator as AttachmentUploadProgressIndicatorD
 import { AudioAttachmentUploadPreview as AudioAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
 import { FileAttachmentUploadPreview as FileAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
 import { ImageAttachmentUploadPreview as ImageAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/ImageAttachmentUploadPreview';
-import { VideoAttachmentUploadPreview as VideoAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/VideoAttachmentUploadPreview';
 import { AudioRecorder as AudioRecorderDefault } from '../MessageInput/components/AudioRecorder/AudioRecorder';
 import { AudioRecordingButton as AudioRecordingButtonDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingButton';
 import { AudioRecordingInProgress as AudioRecordingInProgressDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingInProgress';
@@ -535,7 +534,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     numberOfAttachmentImagesToLoadPerCall = 60,
     numberOfAttachmentPickerImageColumns = 3,
 
-    autoCompleteSuggestionsLimit,
     bottomInset = 0,
     CameraSelectorIcon = DefaultCameraSelectorIcon,
     FileSelectorIcon = DefaultFileSelectorIcon,
@@ -606,7 +604,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     ImageReloadIndicator = ImageReloadIndicatorDefault,
     ImageUploadPreview = ImageUploadPreviewDefault,
     initialScrollToFirstUnreadMessage = false,
-    initialValue,
     InlineDateSeparator = InlineDateSeparatorDefault,
     InlineUnreadIndicator = InlineUnreadIndicatorDefault,
     Input,
@@ -628,8 +625,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     markReadOnMount = true,
     maxNumberOfFiles = 10,
     maxTimeBetweenGroupedMessages,
-    mentionAllAppUsersEnabled = false,
-    mentionAllAppUsersQuery,
     Message = MessageDefault,
     MessageActionList = MessageActionListDefault,
     MessageActionListItem = MessageActionListItemDefault,
@@ -707,9 +702,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     TypingIndicator = TypingIndicatorDefault,
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
     UnreadMessagesNotification = UnreadMessagesNotificationDefault,
-    UploadProgressIndicator = AttachmentUploadProgressIndicatorDefault,
+    AttachmentUploadProgressIndicator = AttachmentUploadProgressIndicatorDefault,
     UrlPreview = CardDefault,
-    VideoAttachmentUploadPreview = VideoAttachmentUploadPreviewDefault,
+    VideoAttachmentUploadPreview = FileAttachmentUploadPreviewDefault,
     VideoThumbnail = VideoThumbnailDefault,
   } = props;
 
@@ -1789,6 +1784,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     attachmentPickerBottomSheetHeight,
     AttachmentPickerSelectionBar,
     attachmentSelectionBarHeight,
+    AttachmentUploadProgressIndicator,
     AudioAttachmentUploadPreview,
     AudioRecorder,
     audioRecordingEnabled,
@@ -1799,7 +1795,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AutoCompleteSuggestionHeader,
     AutoCompleteSuggestionItem,
     AutoCompleteSuggestionList,
-    autoCompleteSuggestionsLimit,
     CameraSelectorIcon,
     channelId,
     clearEditingState,
@@ -1823,15 +1818,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     ImageAttachmentUploadPreview,
     ImageSelectorIcon,
     ImageUploadPreview,
-    initialValue,
     Input,
     InputButtons,
     InputEditingStateHeader,
     InputReplyStateHeader,
     isCommandUIEnabled,
     maxNumberOfFiles,
-    mentionAllAppUsersEnabled,
-    mentionAllAppUsersQuery,
     MoreOptionsButton,
     openPollCreationDialog,
     SendButton,
@@ -1841,7 +1833,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
     StopMessageStreamingButton,
-    UploadProgressIndicator,
     VideoAttachmentUploadPreview,
     VideoRecorderSelectorIcon,
   });

@@ -1,12 +1,7 @@
 import React, { useCallback } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 
-import {
-  isLocalImageAttachment,
-  isLocalVideoAttachment,
-  LocalImageAttachment,
-  LocalVideoAttachment,
-} from 'stream-chat';
+import { isLocalImageAttachment, LocalImageAttachment } from 'stream-chat';
 
 import {
   MessageInputContextValue,
@@ -20,12 +15,11 @@ const IMAGE_PREVIEW_SIZE = 100;
 
 export type ImageUploadPreviewPropsWithContext = Pick<
   MessageInputContextValue,
-  'ImageAttachmentUploadPreview' | 'VideoAttachmentUploadPreview'
+  'ImageAttachmentUploadPreview'
 >;
 
 export type ImageAttachmentPreview<CustomLocalMetadata = Record<string, unknown>> =
-  | LocalImageAttachment<CustomLocalMetadata>
-  | LocalVideoAttachment<CustomLocalMetadata>;
+  LocalImageAttachment<CustomLocalMetadata>;
 
 type ImageUploadPreviewItem = { index: number; item: ImageAttachmentPreview };
 
@@ -33,12 +27,12 @@ type ImageUploadPreviewItem = { index: number; item: ImageAttachmentPreview };
  * UI Component to preview the images set for upload
  */
 const UnmemoizedImageUploadPreview = (props: ImageUploadPreviewPropsWithContext) => {
-  const { ImageAttachmentUploadPreview, VideoAttachmentUploadPreview } = props;
+  const { ImageAttachmentUploadPreview } = props;
   const { attachmentManager } = useMessageComposer();
   const { attachments } = useAttachmentManagerState();
 
-  const imageOrVideoUploads = attachments.filter(
-    (attachment) => isLocalImageAttachment(attachment) || isLocalVideoAttachment(attachment),
+  const imageOrVideoUploads = attachments.filter((attachment) =>
+    isLocalImageAttachment(attachment),
   );
 
   const {
@@ -51,27 +45,16 @@ const UnmemoizedImageUploadPreview = (props: ImageUploadPreviewPropsWithContext)
 
   const renderItem = useCallback(
     ({ item }: ImageUploadPreviewItem) => {
-      if (isLocalImageAttachment(item)) {
-        return (
-          <ImageAttachmentUploadPreview
-            attachment={item}
-            handleRetry={attachmentManager.uploadAttachment}
-            removeAttachments={attachmentManager.removeAttachments}
-          />
-        );
-      } else {
-        return (
-          <VideoAttachmentUploadPreview
-            attachment={item}
-            handleRetry={attachmentManager.uploadAttachment}
-            removeAttachments={attachmentManager.removeAttachments}
-          />
-        );
-      }
+      return (
+        <ImageAttachmentUploadPreview
+          attachment={item}
+          handleRetry={attachmentManager.uploadAttachment}
+          removeAttachments={attachmentManager.removeAttachments}
+        />
+      );
     },
     [
       ImageAttachmentUploadPreview,
-      VideoAttachmentUploadPreview,
       attachmentManager.removeAttachments,
       attachmentManager.uploadAttachment,
     ],
@@ -105,13 +88,8 @@ export type ImageUploadPreviewProps = Partial<ImageUploadPreviewPropsWithContext
  * UI Component to preview the images set for upload
  */
 export const ImageUploadPreview = (props: ImageUploadPreviewProps) => {
-  const { ImageAttachmentUploadPreview, VideoAttachmentUploadPreview } = useMessageInputContext();
-  return (
-    <MemoizedImageUploadPreviewWithContext
-      {...{ ImageAttachmentUploadPreview, VideoAttachmentUploadPreview }}
-      {...props}
-    />
-  );
+  const { ImageAttachmentUploadPreview } = useMessageInputContext();
+  return <MemoizedImageUploadPreviewWithContext {...{ ImageAttachmentUploadPreview }} {...props} />;
 };
 
 const styles = StyleSheet.create({

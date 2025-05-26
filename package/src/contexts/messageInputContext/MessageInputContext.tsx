@@ -20,10 +20,7 @@ import {
   TextComposerMiddleware,
   UpdateMessageOptions,
   UploadRequestFn,
-  UserFilters,
-  UserOptions,
   UserResponse,
-  UserSort,
 } from 'stream-chat';
 
 import { useAttachmentManagerState } from './hooks/useAttachmentManagerState';
@@ -43,7 +40,6 @@ import type { AttachmentUploadProgressIndicatorProps } from '../../components/Me
 import { AudioAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
 import { FileAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
 import { ImageAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/ImageAttachmentUploadPreview';
-import { VideoAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/VideoAttachmentUploadPreview';
 import type { AudioRecorderProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecorder';
 import type { AudioRecordingButtonProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingButton';
 import type { AudioRecordingInProgressProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingInProgress';
@@ -81,12 +77,6 @@ import { useTranslationContext } from '../translationContext/TranslationContext'
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
-
-export type MentionAllAppUsersQuery = {
-  filters?: UserFilters;
-  options?: UserOptions;
-  sort?: UserSort;
-};
 
 export type LocalMessageInputContext = {
   closeAttachmentPicker: () => void;
@@ -245,7 +235,7 @@ export type InputMessageInputContextValue = {
   AudioAttachmentUploadPreview: React.ComponentType<AudioAttachmentUploadPreviewProps>;
   ImageAttachmentUploadPreview: React.ComponentType<ImageAttachmentUploadPreviewProps>;
   FileAttachmentUploadPreview: React.ComponentType<FileAttachmentUploadPreviewProps>;
-  VideoAttachmentUploadPreview: React.ComponentType<VideoAttachmentUploadPreviewProps>;
+  VideoAttachmentUploadPreview: React.ComponentType<FileAttachmentUploadPreviewProps>;
 
   clearEditingState: () => void;
   /**
@@ -262,10 +252,7 @@ export type InputMessageInputContextValue = {
    * **default** [CooldownTimer](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/CooldownTimer.tsx)
    */
   CooldownTimer: React.ComponentType<CooldownTimerProps>;
-  editMessage: ({
-    localMessage,
-    options,
-  }: {
+  editMessage: (params: {
     localMessage: LocalMessage;
     options?: UpdateMessageOptions;
   }) => ReturnType<StreamChat['updateMessage']>;
@@ -333,18 +320,14 @@ export type InputMessageInputContextValue = {
   StopMessageStreamingButton: React.ComponentType<StopMessageStreamingButtonProps> | null;
   /**
    * Custom UI component to render upload progress indicator on attachment preview.
-   *
-   * **Default** [UploadProgressIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/UploadProgressIndicator.tsx)
    */
-  UploadProgressIndicator: React.ComponentType<AttachmentUploadProgressIndicatorProps>;
+  AttachmentUploadProgressIndicator: React.ComponentType<AttachmentUploadProgressIndicatorProps>;
   /**
    * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
    *
    * @see See https://reactnative.dev/docs/textinput#reference
    */
   additionalTextInputProps?: TextInputProps;
-  /** Max number of suggestions to display in autocomplete list. Defaults to 10. */
-  autoCompleteSuggestionsLimit?: number;
   closePollCreationDialog?: () => void;
   /**
    * Compress image with quality (from 0 to 1, where 1 is best quality).
@@ -378,8 +361,7 @@ export type InputMessageInputContextValue = {
    * Handler for when the attach button is pressed.
    */
   handleAttachButtonPress?: () => void;
-  /** Initial value to set on input */
-  initialValue?: string;
+
   /**
    * Custom UI component for AutoCompleteInput.
    * Has access to all of [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/messageInputContext/MessageInputContext.tsx)
@@ -406,9 +388,6 @@ export type InputMessageInputContextValue = {
    * - toggleAttachmentPicker
    */
   InputButtons?: React.ComponentType<InputButtonsProps>;
-  mentionAllAppUsersEnabled?: boolean;
-  /** Object containing filters/sort/options overrides for an @mention user query */
-  mentionAllAppUsersQuery?: MentionAllAppUsersQuery;
   openPollCreationDialog?: ({ sendMessage }: Pick<LocalMessageInputContext, 'sendMessage'>) => void;
   SendMessageDisallowedIndicator?: React.ComponentType;
   /**
@@ -669,12 +648,11 @@ export const MessageInputProvider = ({
   const uploadNewFile = useStableCallback(async (file: File) => {
     try {
       uploadAbortControllerRef.current.set(file.name, client.createAbortControllerForNextRequest());
-      if (file.type.includes('image')) {
-        const compressedURI = await compressedImageURI(file, value.compressImageQuality);
-        await attachmentManager.uploadFiles([{ ...file, uri: compressedURI }]);
-      } else {
-        await attachmentManager.uploadFiles([file]);
-      }
+      const fileURI = file.type.includes('image')
+        ? await compressedImageURI(file, value.compressImageQuality)
+        : file.uri;
+      const updatedFile = { ...file, uri: fileURI };
+      await attachmentManager.uploadFiles([updatedFile]);
       uploadAbortControllerRef.current.delete(file.name);
     } catch (error) {
       if (
