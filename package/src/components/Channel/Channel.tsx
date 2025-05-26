@@ -1419,7 +1419,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           messageResponse = await channel.sendMessage(messageData);
         }
 
-        if (messageResponse.message) {
+        if (messageResponse?.message) {
           const newMessageResponse = {
             ...messageResponse.message,
             status: MessageStatusTypes.RECEIVED,
