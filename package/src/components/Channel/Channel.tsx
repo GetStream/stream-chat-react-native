@@ -1203,15 +1203,18 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     if (updatedMessage.attachments?.length) {
       for (let i = 0; i < updatedMessage.attachments?.length; i++) {
         const attachment = updatedMessage.attachments[i];
+
+        // If the attachment is already uploaded, skip it.
+        if (
+          (attachment.image_url && !isLocalUrl(attachment.image_url)) ||
+          (attachment.asset_url && !isLocalUrl(attachment.asset_url))
+        ) {
+          continue;
+        }
+
         const image = attachment.originalFile;
         const file = attachment.originalFile;
-        // check if image_url is not a remote url
-        if (
-          attachment.type === FileTypes.Image &&
-          image?.uri &&
-          attachment.image_url &&
-          isLocalUrl(attachment.image_url)
-        ) {
+        if (attachment.type === FileTypes.Image && image?.uri) {
           const filename = image.name ?? getFileNameFromPath(image.uri);
           // if any upload is in progress, cancel it
           const controller = uploadAbortControllerRef.current.get(filename);
@@ -1234,12 +1237,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           });
         }
 
-        if (
-          attachment.type !== FileTypes.Image &&
-          attachment.asset_url &&
-          isLocalUrl(attachment.asset_url) &&
-          file?.uri
-        ) {
+        if (attachment.type !== FileTypes.Image && file?.uri) {
           // if any upload is in progress, cancel it
           const controller = uploadAbortControllerRef.current.get(file.name);
           if (controller) {

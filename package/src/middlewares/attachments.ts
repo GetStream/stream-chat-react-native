@@ -13,13 +13,21 @@ import {
 
 const localAttachmentToAttachment = (localAttachment: LocalAttachment) => {
   const { localMetadata, ...attachment } = localAttachment;
+
   if (isLocalImageAttachment(localAttachment)) {
+    const isRemoteUri = !!attachment.image_url;
+
+    if (isRemoteUri) return attachment as Attachment;
+
     return {
       ...attachment,
       image_url: localMetadata?.previewUri,
       originalFile: localMetadata.file,
     } as Attachment;
   } else {
+    const isRemoteUri = !!attachment.asset_url;
+    if (isRemoteUri) return attachment as Attachment;
+
     return {
       ...attachment,
       asset_url: (localMetadata.file as FileReference).uri,

@@ -112,7 +112,7 @@ export const getUrlWithoutParams = (url?: string) => {
   return url.substring(0, url.indexOf('?'));
 };
 
-export const isLocalUrl = (url: string) => url.includes('http');
+export const isLocalUrl = (url: string) => !url.includes('http');
 
 export const generateRandomId = (a = ''): string =>
   a
