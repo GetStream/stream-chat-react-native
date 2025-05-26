@@ -10,35 +10,34 @@ import { useTranslationContext } from '../../../../contexts/translationContext/T
 import { Mic } from '../../../../icons/Mic';
 import { AudioRecordingReturnType, NativeHandlers } from '../../../../native';
 
-type AudioRecordingButtonProps = Pick<
-  MessageInputContextValue,
-  'asyncMessagesMinimumPressDuration'
-> & {
-  /**
-   * The current voice recording that is in progress.
-   */
-  recording: AudioRecordingReturnType;
-  /**
-   * Size of the mic button.
-   */
-  buttonSize?: number;
-  /**
-   * Handler to determine what should happen on long press of the mic button.
-   */
-  handleLongPress?: () => void;
-  /**
-   * Handler to determine what should happen on press of the mic button.
-   */
-  handlePress?: () => void;
-  /**
-   * Boolean to determine if the audio recording permissions are granted.
-   */
-  permissionsGranted?: boolean;
-  /**
-   * Function to start the voice recording.
-   */
-  startVoiceRecording?: () => Promise<void>;
-};
+export type AudioRecordingButtonProps = Partial<
+  Pick<MessageInputContextValue, 'asyncMessagesMinimumPressDuration'> & {
+    /**
+     * The current voice recording that is in progress.
+     */
+    recording: AudioRecordingReturnType;
+    /**
+     * Size of the mic button.
+     */
+    buttonSize?: number;
+    /**
+     * Handler to determine what should happen on long press of the mic button.
+     */
+    handleLongPress?: () => void;
+    /**
+     * Handler to determine what should happen on press of the mic button.
+     */
+    handlePress?: () => void;
+    /**
+     * Boolean to determine if the audio recording permissions are granted.
+     */
+    permissionsGranted?: boolean;
+    /**
+     * Function to start the voice recording.
+     */
+    startVoiceRecording?: () => Promise<void>;
+  }
+>;
 
 /**
  * Component to display the mic button on the Message Input.
