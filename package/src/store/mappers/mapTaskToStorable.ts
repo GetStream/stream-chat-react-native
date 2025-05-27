@@ -1,4 +1,4 @@
-import type { PendingTask } from '../types';
+import type { PendingTask } from 'stream-chat';
 
 export const mapTaskToStorable = (task: PendingTask) => ({
   ...task,

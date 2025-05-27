@@ -7427,9 +7427,24 @@ stream-chat-react-native-core@7.0.0:
   uid ""
 
 stream-chat@^9.0.0:
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.0.0.tgz#cb22dcb8b7f070c623a13b6b75b212d560534d6c"
-  integrity sha512-I4+/DEp7dP3WBgRmqHaLswL+Y2fyQkUWJhYBS5zx4bpu1cYM6WEir9HYjToDNuJjltqa/FFIEF/tMPWr7iTc0A==
+  version "9.1.1"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.1.1.tgz#c81ffa84a7ca579d9812065bc159010191b59090"
+  integrity sha512-7Y23aIVQMppNZgRj/rTFwIx9pszxgDcS99idkSXJSgdV8C7FlyDtiF1yQSdP0oiNFAt7OUP/xSqmbJTljrm24Q==
+  dependencies:
+    "@types/jsonwebtoken" "^9.0.8"
+    "@types/ws" "^8.5.14"
+    axios "^1.6.0"
+    base64-js "^1.5.1"
+    form-data "^4.0.0"
+    isomorphic-ws "^5.0.0"
+    jsonwebtoken "^9.0.2"
+    linkifyjs "^4.2.0"
+    ws "^8.18.1"
+
+stream-chat@^9.2.0:
+  version "9.2.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.2.0.tgz#f3109891ca27f17b6fd0aa6ebcf66be12df1f88c"
+  integrity sha512-inz3CA5tuqqSrla7qjRTCKs+coRKOYROWf0wEWYgbCu0tAUuiBTRtu1PJL1isEXIaPLiWi00BuRrBEIFon9Kng==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"
