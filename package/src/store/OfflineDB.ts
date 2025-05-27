@@ -1,11 +1,11 @@
 import { AbstractOfflineDB, StreamChat } from 'stream-chat';
 import type {
-  GetAppSettingsType,
-  GetChannelsForQueryType,
-  GetChannelsType,
-  GetLastSyncedAtType,
-  UpsertAppSettingsType,
-  UpsertUserSyncStatusType,
+  DBGetAppSettingsType,
+  DBGetChannelsForQueryType,
+  DBGetChannelsType,
+  DBGetLastSyncedAtType,
+  DBUpsertAppSettingsType,
+  DBUpsertUserSyncStatusType,
 } from 'stream-chat';
 
 import * as api from './apis';
@@ -21,11 +21,11 @@ export class OfflineDB extends AbstractOfflineDB {
   upsertChannels = api.upsertChannels;
 
   // TODO: Rename currentUserId -> userId in the next major version as it is technically breaking.
-  upsertUserSyncStatus = ({ userId, lastSyncedAt, execute }: UpsertUserSyncStatusType) =>
+  upsertUserSyncStatus = ({ userId, lastSyncedAt, execute }: DBUpsertUserSyncStatusType) =>
     api.upsertUserSyncStatus({ currentUserId: userId, execute, lastSyncedAt });
 
   // TODO: Rename currentUserId -> userId in the next major version as it is technically breaking.
-  upsertAppSettings = ({ appSettings, userId, execute }: UpsertAppSettingsType) =>
+  upsertAppSettings = ({ appSettings, userId, execute }: DBUpsertAppSettingsType) =>
     api.upsertAppSettings({ appSettings, currentUserId: userId, execute });
 
   upsertPoll = api.upsertPoll;
@@ -41,20 +41,20 @@ export class OfflineDB extends AbstractOfflineDB {
   updateMessage = api.updateMessage;
 
   // TODO: Rename currentUserId -> userId in the next major version as it is technically breaking.
-  getChannels = ({ cids, userId }: GetChannelsType) =>
+  getChannels = ({ cids, userId }: DBGetChannelsType) =>
     api.getChannels({ channelIds: cids, currentUserId: userId });
 
   // TODO: Rename currentUserId -> userId in the next major version as it is technically breaking.
-  getChannelsForQuery = ({ userId, filters, sort }: GetChannelsForQueryType) =>
+  getChannelsForQuery = ({ userId, filters, sort }: DBGetChannelsForQueryType) =>
     api.getChannelsForFilterSort({ currentUserId: userId, filters, sort });
 
   getAllChannelCids = api.getAllChannelIds;
 
   // TODO: Rename currentUserId -> userId in the next major version as it is technically breaking.
-  getLastSyncedAt = ({ userId }: GetLastSyncedAtType) =>
+  getLastSyncedAt = ({ userId }: DBGetLastSyncedAtType) =>
     api.getLastSyncedAt({ currentUserId: userId });
 
-  getAppSettings = ({ userId }: GetAppSettingsType) =>
+  getAppSettings = ({ userId }: DBGetAppSettingsType) =>
     api.getAppSettings({ currentUserId: userId });
 
   getReactions = api.getReactionsForFilterSort;

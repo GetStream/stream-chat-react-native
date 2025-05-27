@@ -7582,10 +7582,10 @@ stream-chat@^9.0.0:
     linkifyjs "^4.2.0"
     ws "^8.18.1"
 
-stream-chat@^9.2.0-offline-support-beta.3:
-  version "9.2.0-offline-support-beta.3"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.2.0-offline-support-beta.3.tgz#58eb049fa1479ace1fd4a7f48d991821d8f48606"
-  integrity sha512-knFp7KYGXY3w1jgboJ9IipCHnZNnS9qiedfM5zpPweEJdZlc7G4NKiHo0yvqEfxJ+JOVIGn+wUg/cT2x0yf/RQ==
+stream-chat@^9.2.0:
+  version "9.2.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.2.0.tgz#f3109891ca27f17b6fd0aa6ebcf66be12df1f88c"
+  integrity sha512-inz3CA5tuqqSrla7qjRTCKs+coRKOYROWf0wEWYgbCu0tAUuiBTRtu1PJL1isEXIaPLiWi00BuRrBEIFon9Kng==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"
