@@ -5,12 +5,12 @@ import { SqliteClient } from '../SqliteClient';
 
 export const deleteMember = async ({
   cid,
-  flush = true,
+  execute = true,
   member,
 }: {
   cid: string;
   member: ChannelMemberResponse;
-  flush?: boolean;
+  execute?: boolean;
 }) => {
   const query = createDeleteQuery('members', {
     cid,
@@ -19,11 +19,11 @@ export const deleteMember = async ({
 
   SqliteClient.logger?.('info', 'deleteMember', {
     cid,
-    flush,
+    execute,
     userId: member.user_id,
   });
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSql.apply(null, query);
   }
 

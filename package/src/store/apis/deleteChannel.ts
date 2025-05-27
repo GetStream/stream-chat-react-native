@@ -1,17 +1,23 @@
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { SqliteClient } from '../SqliteClient';
 
-export const deleteChannel = async ({ cid, flush = true }: { cid: string; flush?: boolean }) => {
+export const deleteChannel = async ({
+  cid,
+  execute = true,
+}: {
+  cid: string;
+  execute?: boolean;
+}) => {
   const query = createDeleteQuery('channels', {
     cid,
   });
 
   SqliteClient.logger?.('info', 'deleteChannel', {
     cid,
-    flush,
+    execute,
   });
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSql.apply(null, query);
   }
 

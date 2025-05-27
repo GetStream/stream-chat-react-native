@@ -1,10 +1,13 @@
-export default (client, user, channel = {}) => {
+export default (client, user, channel = {}, payload = {}) => {
+  const newDate = new Date();
   const event = {
     channel,
     cid: channel.cid,
-    received_at: new Date(),
+    created_at: newDate,
+    received_at: newDate,
     type: 'message.read',
     user,
+    ...payload,
   };
   client.dispatchEvent(event);
 
