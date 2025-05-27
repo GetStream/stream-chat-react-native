@@ -109,7 +109,7 @@ type MessageInputPropsWithContext = Pick<
   'AttachmentPickerSelectionBar'
 > &
   Pick<ChatContextValue, 'isOnline'> &
-  Pick<ChannelContextValue, 'channel' | 'members' | 'threadList' | 'watchers'> &
+  Pick<ChannelContextValue, 'channel' | 'editing' | 'members' | 'threadList' | 'watchers'> &
   Pick<
     MessageInputContextValue,
     | 'additionalTextInputProps'
@@ -129,7 +129,6 @@ type MessageInputPropsWithContext = Pick<
     | 'closeAttachmentPicker'
     | 'compressImageQuality'
     | 'doFileUploadRequest'
-    | 'editing'
     | 'FileUploadPreview'
     | 'ImageUploadPreview'
     | 'Input'
@@ -952,7 +951,7 @@ export const MessageInput = (props: MessageInputProps) => {
   const { isOnline } = useChatContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
-  const { channel, members, threadList, watchers } = useChannelContext();
+  const { channel, editing, members, threadList, watchers } = useChannelContext();
 
   const {
     additionalTextInputProps,
@@ -975,7 +974,6 @@ export const MessageInput = (props: MessageInputProps) => {
     CooldownTimer,
     CreatePollContent,
     doFileUploadRequest,
-    editing,
     FileUploadPreview,
     ImageUploadPreview,
     Input,
