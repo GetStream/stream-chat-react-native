@@ -83,10 +83,9 @@ export const createDraftAttachmentsCompositionMiddleware = (
       const { attachmentManager } = composer;
       if (!attachmentManager) return forward();
 
-      const successfulUploads = attachmentManager.successfulUploads;
-      const attachments = successfulUploads.length
-        ? (state.draft.attachments ?? []).concat(successfulUploads.map(localAttachmentToAttachment))
-        : undefined;
+      const attachments = (state.draft.attachments ?? []).concat(
+        attachmentManager.attachments.map(localAttachmentToAttachment),
+      );
 
       return next({
         ...state,
