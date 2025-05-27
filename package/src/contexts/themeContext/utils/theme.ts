@@ -627,10 +627,12 @@ export type Theme = {
       item: {
         container: ViewStyle;
         countText: TextStyle;
+        filledBackgroundColor: ColorValue;
         icon: ViewStyle;
         iconFillColor: ColorValue;
         iconSize: number;
         iconUnFillColor: ColorValue;
+        unfilledBackgroundColor: ColorValue;
       };
     };
     reactionListTop: {
@@ -1412,10 +1414,12 @@ export const defaultTheme: Theme = {
       item: {
         container: {},
         countText: {},
+        filledBackgroundColor: Colors.light_blue,
         icon: {},
         iconFillColor: Colors.accent_blue,
         iconSize: 16,
         iconUnFillColor: Colors.grey,
+        unfilledBackgroundColor: Colors.grey_gainsboro,
       },
     },
     reactionListTop: {
