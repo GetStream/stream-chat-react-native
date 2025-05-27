@@ -25,19 +25,13 @@ export const createCommandControlMiddleware = (
         }
 
         const inputText = state.text.toLowerCase();
-
-        if (
-          !triggers.some((t) => inputText.startsWith(t)) ||
-          customDataManager.customComposerData.command
-        ) {
-          return next(state);
-        }
-
         // Handle the case where the text can be any command and not just giphy
         const command = triggers.find((t) => inputText.startsWith(t));
-        if (!command) {
+
+        if (!command || customDataManager.customComposerData.command) {
           return next(state);
         }
+
         const commandName = command?.slice(1, -1);
         composer.customDataManager.setCustomData({ command: commandName });
         const newText = state.text.slice(command.length);
@@ -53,17 +47,18 @@ export const createCommandControlMiddleware = (
       },
       onSuggestionItemSelect: ({ complete, forward, state }) => {
         const { selectedSuggestion } = state.change ?? {};
-        if (!selectedSuggestion || !commands.some((c) => c.name === selectedSuggestion.name)) {
+        if (!selectedSuggestion) {
+          return forward();
+        }
+
+        const command = commands.find((t) => t.name === selectedSuggestion.name);
+        if (!command) {
           return forward();
         }
 
         composer.customDataManager.setCustomData({ command: selectedSuggestion.name });
-        const command = commands.find((t) => t.name === selectedSuggestion.name);
         const trigger = `/${command?.name} `;
 
-        if (!trigger) {
-          return forward();
-        }
         const newText = state.text.slice(trigger.length + 1);
         return complete({
           ...state,
