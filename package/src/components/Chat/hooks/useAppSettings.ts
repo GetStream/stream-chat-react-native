@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from 'react';
 import type { AppSettingsAPIResponse, StreamChat } from 'stream-chat';
 
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
-import * as dbApi from '../../../store/apis';
 
 export const useAppSettings = (
   client: StreamChat,
@@ -17,6 +16,10 @@ export const useAppSettings = (
   const isMounted = useIsMountedRef();
 
   useEffect(() => {
+    if (fetchedAppSettings.current) {
+      return;
+    }
+
     const fetchAppSettings = () => {
       if (appSettingsPromise.current) {
         return appSettingsPromise.current;
@@ -24,43 +27,16 @@ export const useAppSettings = (
       appSettingsPromise.current = client.getAppSettings();
       return appSettingsPromise.current;
     };
-    /**
-     * Fetches app settings from the backend when offline support is disabled.
-     */
-    const enforceAppSettingsWithoutOfflineSupport = async () => {
-      if (!client.userID) {
-        return;
-      }
 
-      try {
-        const appSettings = await fetchAppSettings();
-        if (isMounted.current) {
-          setAppSettings(appSettings);
-          fetchedAppSettings.current = true;
-        }
-      } catch (error: unknown) {
-        if (error instanceof Error) {
-          console.error(`An error occurred while getting app settings: ${error}`);
-        }
-      }
-    };
+    const enforceAppSettings = async () => {
+      if (!client.userID) return;
 
-    /**
-     * Fetches app settings from the local database when offline support is enabled if internet is off else fetches from the backend.
-     * Note: We need to set the app settings from the local database when offline as the client will not have the app settings in memory. For this we store it for the `client.userID`.
-     *
-     * TODO: Remove client.userID usage for offline support case.
-     */
-    const enforceAppSettingsWithOfflineSupport = async () => {
-      if (!client.userID) {
-        return;
-      }
-      if (!initialisedDatabase) {
-        return;
-      }
+      if (enableOfflineSupport && !initialisedDatabase) return;
 
-      if (!isOnline) {
-        const appSettings = await dbApi.getAppSettings({ currentUserId: client.userID });
+      const userId = client.userID as string;
+
+      if (!isOnline && client.offlineDb) {
+        const appSettings = await client.offlineDb.getAppSettings({ userId });
         setAppSettings(appSettings);
         return;
       }
@@ -70,10 +46,10 @@ export const useAppSettings = (
         if (isMounted.current && appSettings) {
           setAppSettings(appSettings);
           fetchedAppSettings.current = true;
-          await dbApi.upsertAppSettings({
-            appSettings,
-            currentUserId: client.userID as string,
-          });
+          client.offlineDb?.executeQuerySafely(
+            (db) => db.upsertAppSettings({ appSettings, userId }),
+            { method: 'upsertAppSettings' },
+          );
         }
       } catch (error: unknown) {
         if (error instanceof Error) {
@@ -82,21 +58,8 @@ export const useAppSettings = (
       }
     };
 
-    async function enforeAppSettings() {
-      if (fetchedAppSettings.current) {
-        return;
-      }
-
-      if (enableOfflineSupport) {
-        await enforceAppSettingsWithOfflineSupport();
-      } else {
-        await enforceAppSettingsWithoutOfflineSupport();
-      }
-    }
-
-    enforeAppSettings();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client, isOnline, initialisedDatabase]);
+    enforceAppSettings();
+  }, [client, isOnline, initialisedDatabase, isMounted, enableOfflineSupport]);
 
   return appSettings;
 };

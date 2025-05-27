@@ -5,7 +5,7 @@ export const getLastSyncedAt = async ({
   currentUserId,
 }: {
   currentUserId: string;
-}): Promise<number | undefined> => {
+}): Promise<string | undefined> => {
   SqliteClient.logger?.('info', 'getLastSyncedAt', { currentUserId });
   const result = await SqliteClient.executeSql.apply(
     null,
@@ -14,8 +14,5 @@ export const getLastSyncedAt = async ({
     }),
   );
 
-  if (typeof result[0]?.lastSyncedAt === 'number') {
-    return result[0]?.lastSyncedAt;
-  }
-  return undefined;
+  return result[0]?.lastSyncedAt;
 };

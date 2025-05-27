@@ -11,11 +11,12 @@ export const mapReadToStorable = ({
   cid: string;
   read: ReadResponse;
 }): TableRow<'reads'> => {
-  const { last_read, unread_messages, user } = read;
+  const { last_read, unread_messages, user, last_read_message_id } = read;
 
   return {
     cid,
     lastRead: mapDateTimeToStorable(last_read),
+    lastReadMessageId: last_read_message_id,
     unreadMessages: unread_messages,
     userId: user?.id,
   };

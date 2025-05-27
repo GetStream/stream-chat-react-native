@@ -13,16 +13,7 @@ import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useStateStore } from '../../../hooks';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
-import { getChannelsForFilterSort } from '../../../store/apis/getChannelsForFilterSort';
-
-import { ONE_SECOND_IN_MS } from '../../../utils/date';
-import { DBSyncManager } from '../../../utils/DBSyncManager';
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
-
-const waitSeconds = (seconds: number) =>
-  new Promise((resolve) => {
-    setTimeout(resolve, seconds * ONE_SECOND_IN_MS);
-  });
 
 type Parameters = {
   channelManager: ChannelManager;
@@ -37,7 +28,6 @@ const DEFAULT_OPTIONS = {
   message_limit: 10,
 };
 
-const MAX_NUMBER_OF_RETRIES = 3;
 const RETRY_INTERVAL_IN_MS = 5000;
 
 type QueryType = 'queryLocalDB' | 'reload' | 'refresh' | 'loadChannels';
@@ -48,6 +38,7 @@ const selector = (nextValue: ChannelManagerState) =>
   ({
     channelListInitialized: nextValue.initialized,
     channels: nextValue.channels,
+    error: nextValue.error,
     pagination: nextValue.pagination,
   }) as const;
 
@@ -56,16 +47,14 @@ export const usePaginatedChannels = ({
   enableOfflineSupport,
   filters = {},
   options = DEFAULT_OPTIONS,
-  setForceUpdate,
   sort = {},
 }: Parameters) => {
-  const [error, setError] = useState<Error | undefined>(undefined);
   const [staticChannelsActive, setStaticChannelsActive] = useState<boolean>(false);
   const [activeQueryType, setActiveQueryType] = useState<QueryType | null>('queryLocalDB');
   const activeChannels = useActiveChannelsRefContext();
   const isMountedRef = useIsMountedRef();
   const { client } = useChatContext();
-  const { channelListInitialized, channels, pagination } =
+  const { channelListInitialized, channels, pagination, error } =
     useStateStore(channelManager?.state, selector) ?? {};
   const hasNextPage = pagination?.hasNext;
 
@@ -77,7 +66,6 @@ export const usePaginatedChannels = ({
 
   const queryChannels: QueryChannels = async (
     queryType: QueryType = 'loadChannels',
-    retryCount = 0,
   ): Promise<void> => {
     if (!client || !isMountedRef.current) {
       return;
@@ -106,7 +94,6 @@ export const usePaginatedChannels = ({
     filtersRef.current = filters;
     sortRef.current = sort;
     isQueryingRef.current = true;
-    setError(undefined);
     activeRequestId.current++;
     const currentRequestId = activeRequestId.current;
     setActiveQueryType(queryType);
@@ -138,27 +125,12 @@ export const usePaginatedChannels = ({
       isQueryingRef.current = false;
     } catch (err: unknown) {
       isQueryingRef.current = false;
-      await waitSeconds(2);
 
       if (isQueryStale()) {
         return;
       }
 
-      // querying.current check is needed in order to make sure the next query call doesnt flick an error
-      // state and then succeed (reconnect case)
-      if (retryCount === MAX_NUMBER_OF_RETRIES && !isQueryingRef.current) {
-        setActiveQueryType(null);
-        console.warn(err);
-
-        setError(
-          new Error(
-            `Maximum number of retries reached in queryChannels. Last error message is: ${err}`,
-          ),
-        );
-        return;
-      }
-
-      return queryChannels(queryType, retryCount + 1);
+      console.warn(err);
     }
 
     setActiveQueryType(null);
@@ -198,71 +170,15 @@ export const usePaginatedChannels = ({
   const sortStr = useMemo(() => JSON.stringify(sort), [sort]);
 
   useEffect(() => {
-    const loadOfflineChannels = async () => {
-      if (!client?.user?.id) {
-        return;
-      }
-
-      try {
-        const channelsFromDB = await getChannelsForFilterSort({
-          currentUserId: client.user.id,
-          filters,
-          sort,
-        });
-
-        if (channelsFromDB) {
-          const offlineChannels = client.hydrateActiveChannels(channelsFromDB, {
-            offlineMode: true,
-            skipInitialization: [], // passing empty array will clear out the existing messages from channel state, this removes the possibility of duplicate messages
-          });
-
-          channelManager.setChannels(offlineChannels);
-          setStaticChannelsActive(true);
-        }
-      } catch (e) {
-        console.warn('Failed to get channels from database: ', e);
-        return false;
-      }
-
-      setActiveQueryType(null);
-
-      return true;
-    };
-
-    let listener: ReturnType<typeof DBSyncManager.onSyncStatusChange>;
-    if (enableOfflineSupport) {
-      // Any time DB is synced, we need to update the UI with local DB channels first,
-      // and then call queryChannels to ensure any new channels are added to UI.
-      listener = DBSyncManager.onSyncStatusChange(async (syncStatus) => {
-        if (syncStatus) {
-          const loadingChannelsSucceeded = await loadOfflineChannels();
-          if (loadingChannelsSucceeded) {
-            await reloadList();
-            setForceUpdate((u) => u + 1);
-          }
-        }
-      });
-      // On start, load the channels from local db.
-      loadOfflineChannels().then((success) => {
-        // If db is already synced (sync api and pending api calls), then
-        // right away call queryChannels.
-        if (success) {
-          const dbSyncStatus = DBSyncManager.getSyncStatus();
-          if (dbSyncStatus) {
-            reloadList();
-          }
-        }
-      });
-    } else {
-      listener = client.on('connection.changed', async (event) => {
+    const listener: ReturnType<typeof client.on> = client.on(
+      'connection.changed',
+      async (event) => {
         if (event.online) {
           await refreshList();
-          setForceUpdate((u) => u + 1);
         }
-      });
-
-      reloadList();
-    }
+      },
+    );
+    reloadList();
 
     return () => listener?.unsubscribe?.();
     // eslint-disable-next-line react-hooks/exhaustive-deps

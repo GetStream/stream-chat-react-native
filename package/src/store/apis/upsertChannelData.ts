@@ -6,19 +6,19 @@ import { SqliteClient } from '../SqliteClient';
 
 export const upsertChannelData = async ({
   channel,
-  flush = true,
+  execute = true,
 }: {
   channel: ChannelResponse;
-  flush?: boolean;
+  execute?: boolean;
 }) => {
   const storableChannel = mapChannelDataToStorable(channel);
   const query = createUpsertQuery('channels', storableChannel);
   SqliteClient.logger?.('info', 'upsertChannelData', {
     channel: storableChannel,
-    flush,
+    execute,
   });
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSqlBatch([query]);
   }
 
