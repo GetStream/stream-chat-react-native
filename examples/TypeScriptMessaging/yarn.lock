@@ -6926,10 +6926,10 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-stream-chat-react-native-core@7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-7.0.0.tgz#ba5439c9a446713356105a40c7d2f90c3ccbf4a3"
-  integrity sha512-qjjukVUXl13/cQDCovTAUHMUXgweg6fhh0we2t+C3RI3gN0AaiXMpzejA6RSuArBtezV4AB/mv9BoT7BRTzqeA==
+stream-chat-react-native-core@7.1.0:
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-7.1.0.tgz#b5002ec967467a2ac4be54700e5e4e60bbd5fd97"
+  integrity sha512-Rfecu6kH2zBW0ufhVz076NlpOg6QxNgShGnK4js/ypjSZ4rGZIKMFHNuArLVr/uSuTWiVPNO1zMI/LyvljtwdQ==
   dependencies:
     "@gorhom/bottom-sheet" "^5.1.1"
     dayjs "1.10.5"
@@ -6942,7 +6942,7 @@ stream-chat-react-native-core@7.0.0:
     path "0.12.7"
     react-native-markdown-package "1.8.2"
     react-native-url-polyfill "^1.3.0"
-    stream-chat "^9.0.0"
+    stream-chat "^9.2.0"
     use-sync-external-store "^1.4.0"
 
 "stream-chat-react-native-core@link:../../package":
@@ -6953,10 +6953,10 @@ stream-chat-react-native-core@7.0.0:
   version "0.0.0"
   uid ""
 
-stream-chat@^9.0.0:
-  version "9.1.1"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.1.1.tgz#c81ffa84a7ca579d9812065bc159010191b59090"
-  integrity sha512-7Y23aIVQMppNZgRj/rTFwIx9pszxgDcS99idkSXJSgdV8C7FlyDtiF1yQSdP0oiNFAt7OUP/xSqmbJTljrm24Q==
+stream-chat@^9.2.0:
+  version "9.2.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.2.0.tgz#f3109891ca27f17b6fd0aa6ebcf66be12df1f88c"
+  integrity sha512-inz3CA5tuqqSrla7qjRTCKs+coRKOYROWf0wEWYgbCu0tAUuiBTRtu1PJL1isEXIaPLiWi00BuRrBEIFon9Kng==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"
@@ -6968,10 +6968,10 @@ stream-chat@^9.0.0:
     linkifyjs "^4.2.0"
     ws "^8.18.1"
 
-stream-chat@^9.2.0:
-  version "9.2.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.2.0.tgz#f3109891ca27f17b6fd0aa6ebcf66be12df1f88c"
-  integrity sha512-inz3CA5tuqqSrla7qjRTCKs+coRKOYROWf0wEWYgbCu0tAUuiBTRtu1PJL1isEXIaPLiWi00BuRrBEIFon9Kng==
+stream-chat@^9.3.0:
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.3.0.tgz#35ca4db9e841eb92d07413ae156de0500ad77b23"
+  integrity sha512-S73B3HrvmQvJjq58Zjo50vh74juhsWsVRpT+OBjGAxSGxlA+ITkZ3vKs8Y/r2eDK7mBTMmX5QCruFaDJH5dRuw==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"

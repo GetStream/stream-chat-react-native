@@ -520,11 +520,9 @@ export const Generic = () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
       renderComponent();
-      await waitFor(async () => {
-        act(() => dispatchConnectionChangedEvent(chatClient));
-        await act(
-          async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true),
-        );
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
+      await waitFor(() => {
         expect(screen.getByTestId('channel-list')).toBeTruthy();
       });
 
