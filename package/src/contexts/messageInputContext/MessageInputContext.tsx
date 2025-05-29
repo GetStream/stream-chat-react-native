@@ -4,13 +4,11 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react';
 import { Alert, Keyboard, Linking, TextInput, TextInputProps } from 'react-native';
 
-import uniq from 'lodash/uniq';
 import {
   Attachment,
   LocalMessage,
@@ -19,6 +17,8 @@ import {
   SendFileAPIResponse,
   StreamChat,
   Message as StreamMessage,
+  TextComposerMiddleware,
+  TextComposerState,
   UserFilters,
   UserOptions,
   UserResponse,
@@ -26,11 +26,18 @@ import {
 } from 'stream-chat';
 
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
+import { useMessageComposer } from './hooks/useMessageComposer';
 import { useMessageDetailsForState } from './hooks/useMessageDetailsForState';
 
 import { isUploadAllowed, MAX_FILE_SIZE_TO_UPLOAD, prettifyFileSize } from './utils/utils';
 
-import { PollContentProps, StopMessageStreamingButtonProps } from '../../components';
+import {
+  AutoCompleteSuggestionHeaderProps,
+  AutoCompleteSuggestionItemProps,
+  AutoCompleteSuggestionListProps,
+  PollContentProps,
+  StopMessageStreamingButtonProps,
+} from '../../components';
 import { AudioAttachmentProps } from '../../components/Attachment/AudioAttachment';
 import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
@@ -41,8 +48,8 @@ import type { AudioRecordingInProgressProps } from '../../components/MessageInpu
 import type { AudioRecordingLockIndicatorProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingLockIndicator';
 import type { AudioRecordingPreviewProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingPreview';
 import type { AudioRecordingWaveformProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingWaveform';
+import type { CommandInputProps } from '../../components/MessageInput/components/CommandInput';
 import type { InputEditingStateHeaderProps } from '../../components/MessageInput/components/InputEditingStateHeader';
-import type { InputGiphySearchProps } from '../../components/MessageInput/components/InputGiphySearch';
 import type { InputReplyStateHeaderProps } from '../../components/MessageInput/components/InputReplyStateHeader';
 import type { CooldownTimerProps } from '../../components/MessageInput/CooldownTimer';
 import type { FileUploadPreviewProps } from '../../components/MessageInput/FileUploadPreview';
@@ -53,7 +60,12 @@ import type { MessageInputProps } from '../../components/MessageInput/MessageInp
 import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreOptionsButton';
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
-import type { Emoji } from '../../emoji-data';
+import { useStateStore } from '../../hooks/useStateStore';
+import {
+  createCommandControlMiddleware,
+  createCommandInjectionMiddleware,
+  createDraftCommandInjectionMiddleware,
+} from '../../middlewares/commandControl';
 import {
   isDocumentPickerAvailable,
   isImageMediaLibraryAvailable,
@@ -61,11 +73,6 @@ import {
   NativeHandlers,
 } from '../../native';
 import { File, FileTypes, FileUpload } from '../../types/types';
-import {
-  ACITriggerSettings,
-  ACITriggerSettingsParams,
-  TriggerSettings,
-} from '../../utils/ACITriggerSettings';
 import { compressedImageURI } from '../../utils/compressImage';
 import { removeReservedFields } from '../../utils/removeReservedFields';
 import {
@@ -96,10 +103,6 @@ function escapeRegExp(text: string) {
   return text.replace(/[[\]{}()*+?,\\^$|#\s]/g, '_');
 }
 
-export type EmojiSearchIndex = {
-  search: (query: string) => PromiseLike<Array<Emoji>> | Array<Emoji> | null;
-};
-
 export type MentionAllAppUsersQuery = {
   filters?: UserFilters;
   options?: UserOptions;
@@ -107,7 +110,6 @@ export type MentionAllAppUsersQuery = {
 };
 
 export type LocalMessageInputContext = {
-  appendText: (newText: string) => void;
   asyncIds: string[];
   asyncUploads: {
     [key: string]: {
@@ -115,7 +117,7 @@ export type LocalMessageInputContext = {
       url: string;
     };
   };
-  giphyEnabled: boolean;
+  isCommandUIEnabled: boolean;
   closeAttachmentPicker: () => void;
   /** The time at which the active cooldown will end */
   cooldownEndsAt: Date;
@@ -141,8 +143,6 @@ export type LocalMessageInputContext = {
    *
    */
   fileUploads: FileUpload[];
-  giphyActive: boolean;
-  hasText: boolean;
   /**
    * An array of image objects which are set for upload. It has the following structure:
    *
@@ -165,14 +165,9 @@ export type LocalMessageInputContext = {
   imageUploads: FileUpload[];
   inputBoxRef: React.MutableRefObject<TextInput | null>;
   isValidMessage: () => boolean;
-  mentionedUsers: string[];
   numberOfUploads: number;
-  onChange: (newText: string) => void;
-  onSelectItem: (item: UserResponse) => void;
   openAttachmentPicker: () => void;
-  openCommandsPicker: () => void;
   openFilePicker: () => void;
-  openMentionsPicker: () => void;
   /**
    * Function for picking a photo from native image picker and uploading it.
    */
@@ -206,28 +201,18 @@ export type LocalMessageInputContext = {
     }>
   >;
   setFileUploads: React.Dispatch<React.SetStateAction<FileUpload[]>>;
-  setGiphyActive: React.Dispatch<React.SetStateAction<boolean>>;
   setImageUploads: React.Dispatch<React.SetStateAction<FileUpload[]>>;
   /**
    * Ref callback to set reference on input box
    */
   setInputBoxRef: LegacyRef<TextInput> | undefined;
-  setMentionedUsers: React.Dispatch<React.SetStateAction<string[]>>;
   setNumberOfUploads: React.Dispatch<React.SetStateAction<number>>;
   setSendThreadMessageInChannel: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowMoreOptions: React.Dispatch<React.SetStateAction<boolean>>;
-  setText: React.Dispatch<React.SetStateAction<string>>;
-  showMoreOptions: boolean;
   /**
    * Function for taking a photo and uploading it
    */
   takeAndUploadImage: (mediaType?: MediaTypes) => Promise<void>;
-  text: string;
   toggleAttachmentPicker: () => void;
-  /**
-   * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
-   */
-  triggerSettings: TriggerSettings;
   updateMessage: () => Promise<void>;
   /** Function for attempting to upload a file */
   uploadFile: ({ newFile }: { newFile: FileUpload }) => Promise<void>;
@@ -301,8 +286,11 @@ export type InputMessageInputContextValue = {
    */
   AudioRecordingWaveform: React.ComponentType<AudioRecordingWaveformProps>;
 
+  AutoCompleteSuggestionHeader: React.ComponentType<AutoCompleteSuggestionHeaderProps>;
+  AutoCompleteSuggestionItem: React.ComponentType<AutoCompleteSuggestionItemProps>;
+  AutoCompleteSuggestionList: React.ComponentType<AutoCompleteSuggestionListProps>;
+
   clearEditingState: () => void;
-  clearQuotedMessageState: () => void;
   /**
    * Custom UI component for commands button.
    *
@@ -339,7 +327,7 @@ export type InputMessageInputContextValue = {
    */
   ImageUploadPreview: React.ComponentType<ImageUploadPreviewProps>;
   InputEditingStateHeader: React.ComponentType<InputEditingStateHeaderProps>;
-  InputGiphySearch: React.ComponentType<InputGiphySearchProps>;
+  CommandInput: React.ComponentType<CommandInputProps>;
   InputReplyStateHeader: React.ComponentType<InputReplyStateHeaderProps>;
   /** Limit on allowed number of files to attach at a time. */
   maxNumberOfFiles: number;
@@ -350,8 +338,6 @@ export type InputMessageInputContextValue = {
    */
   MoreOptionsButton: React.ComponentType<MoreOptionsButtonProps>;
 
-  /** Limit on the number of lines in the text input before scrolling */
-  numberOfLines: number;
   /**
    * Custom UI component for send button.
    *
@@ -360,7 +346,6 @@ export type InputMessageInputContextValue = {
   SendButton: React.ComponentType<SendButtonProps>;
   sendImageAsync: boolean;
   sendMessage: (message: Partial<StreamMessage>) => Promise<void>;
-  setQuotedMessageState: (message: LocalMessage) => void;
   /**
    * Custom UI component to render checkbox with text ("Also send to channel") in Thread's input box.
    * When ticked, message will also be sent in parent channel.
@@ -390,10 +375,6 @@ export type InputMessageInputContextValue = {
   additionalTextInputProps?: TextInputProps;
   /** Max number of suggestions to display in autocomplete list. Defaults to 10. */
   autoCompleteSuggestionsLimit?: number;
-  /**
-   * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
-   */
-  autoCompleteTriggerSettings?: (settings: ACITriggerSettingsParams) => TriggerSettings;
   closePollCreationDialog?: () => void;
   /**
    * Compress image with quality (from 0 to 1, where 1 is best quality).
@@ -441,10 +422,6 @@ export type InputMessageInputContextValue = {
    */
   editing?: LocalMessage;
   /**
-   * Prop to override the default emoji search index in auto complete suggestion list.
-   */
-  emojiSearchIndex?: EmojiSearchIndex;
-  /**
    * Handler for when the attach button is pressed.
    */
   handleAttachButtonPress?: () => void;
@@ -476,16 +453,10 @@ export type InputMessageInputContextValue = {
    * - toggleAttachmentPicker
    */
   InputButtons?: React.ComponentType<InputButtonsProps>;
-  maxMessageLength?: number;
   /** Object containing filters/sort/options overrides for an @mention user query */
   mentionAllAppUsersEnabled?: boolean;
   mentionAllAppUsersQuery?: MentionAllAppUsersQuery;
-  /**
-   * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
-   */
-  onChangeText?: (newText: string) => void;
   openPollCreationDialog?: ({ sendMessage }: Pick<LocalMessageInputContext, 'sendMessage'>) => void;
-  quotedMessage?: LocalMessage;
   SendMessageDisallowedIndicator?: React.ComponentType;
   /**
    * ref for input setter function
@@ -505,6 +476,12 @@ export const MessageInputContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as MessageInputContextValue,
 );
 
+const textComposerStateSelector = (state: TextComposerState) => ({
+  mentionedUsers: state.mentionedUsers,
+  suggestions: state.suggestions,
+  text: state.text,
+});
+
 export const MessageInputProvider = ({
   children,
   value,
@@ -521,7 +498,7 @@ export const MessageInputProvider = ({
     setSelectedImages,
     setSelectedPicker,
   } = useAttachmentPickerContext();
-  const { appSettings, client, enableOfflineSupport, isOnline } = useChatContext();
+  const { appSettings, client, enableOfflineSupport } = useChatContext();
   const { removeMessage } = useMessagesContext();
 
   const getFileUploadConfig = () => {
@@ -543,7 +520,7 @@ export const MessageInputProvider = ({
 
   const channelCapabities = useOwnCapabilitiesContext();
 
-  const { channel, giphyEnabled, uploadAbortControllerRef } = useChannelContext();
+  const { channel, isCommandUIEnabled, uploadAbortControllerRef } = useChannelContext();
   const { thread } = useThreadContext();
   const { t } = useTranslationContext();
   const inputBoxRef = useRef<TextInput | null>(null);
@@ -556,7 +533,6 @@ export const MessageInputProvider = ({
       url: string;
     };
   }>({});
-  const [giphyActive, setGiphyActive] = useState(false);
   const [sendThreadMessageInChannel, setSendThreadMessageInChannel] = useState(false);
   const [showPollCreationDialog, setShowPollCreationDialog] = useState(false);
 
@@ -573,28 +549,42 @@ export const MessageInputProvider = ({
   const {
     fileUploads,
     imageUploads,
-    mentionedUsers,
     numberOfUploads,
     setFileUploads,
     setImageUploads,
-    setMentionedUsers,
     setNumberOfUploads,
-    setShowMoreOptions,
-    setText,
-    showMoreOptions,
-    text,
   } = useMessageDetailsForState(editing, initialValue);
   const { endsAt: cooldownEndsAt, start: startCooldown } = useCooldown();
-  const { onChangeText, emojiSearchIndex, autoCompleteTriggerSettings } = value;
+
+  const messageComposer = useMessageComposer();
+  const { textComposer } = messageComposer;
+  const { text } = useStateStore(textComposer.state, textComposerStateSelector);
 
   const threadId = thread?.id;
   useEffect(() => {
     setSendThreadMessageInChannel(false);
   }, [threadId]);
 
-  const appendText = useStableCallback((newText: string) => {
-    setText((prevText) => `${prevText}${newText}`);
-  });
+  useEffect(() => {
+    if (!client || !isCommandUIEnabled) {
+      return;
+    }
+
+    client.setMessageComposerSetupFunction(({ composer }) => {
+      composer.compositionMiddlewareExecutor.insert({
+        middleware: [createCommandInjectionMiddleware(composer)],
+        position: { after: 'stream-io/message-composer-middleware/attachments' },
+      });
+      composer.draftCompositionMiddlewareExecutor.insert({
+        middleware: [createDraftCommandInjectionMiddleware(composer)],
+        position: { after: 'stream-io/message-composer-middleware/draft-attachments' },
+      });
+      composer.textComposer.middlewareExecutor.insert({
+        middleware: [createCommandControlMiddleware(composer) as TextComposerMiddleware],
+        position: { before: 'stream-io/text-composer/pre-validation-middleware' },
+      });
+    });
+  }, [client, isCommandUIEnabled]);
 
   /** Checks if the message is valid or not. Accordingly we can enable/disable send button */
   const isValidMessage = useStableCallback(() => {
@@ -631,38 +621,6 @@ export const MessageInputProvider = ({
     }
 
     return false;
-  });
-
-  const onChange = useCallback(
-    (newText: string) => {
-      if (sending.current) {
-        return;
-      }
-      setText(newText);
-
-      if (newText && channel && channelCapabities.sendTypingEvents && isOnline) {
-        logChatPromiseExecution(channel.keystroke(thread?.id), 'start typing event');
-      }
-
-      if (onChangeText) {
-        onChangeText(newText);
-      }
-    },
-    [channel, channelCapabities.sendTypingEvents, isOnline, setText, thread?.id, onChangeText],
-  );
-
-  const openCommandsPicker = useStableCallback(() => {
-    appendText('/');
-    if (inputBoxRef.current) {
-      inputBoxRef.current.focus();
-    }
-  });
-
-  const openMentionsPicker = useStableCallback(() => {
-    appendText('@');
-    if (inputBoxRef.current) {
-      inputBoxRef.current.focus();
-    }
   });
 
   /**
@@ -765,10 +723,6 @@ export const MessageInputProvider = ({
     }
   }, [closeAttachmentPicker, openAttachmentPicker, selectedPicker]);
 
-  const onSelectItem = useStableCallback((item: UserResponse) => {
-    setMentionedUsers((prevMentionedUsers) => [...prevMentionedUsers, item.id]);
-  });
-
   const pickFile = useStableCallback(async () => {
     if (!isDocumentPickerAvailable()) {
       console.log(
@@ -821,7 +775,8 @@ export const MessageInputProvider = ({
     [imageUploads, setImageUploads, setNumberOfUploads],
   );
 
-  const resetInput = useStableCallback((pendingAttachments: Attachment[] = []) => {
+  const resetInput = useStableCallback(async (pendingAttachments: Attachment[] = []) => {
+    await messageComposer.clear();
     /**
      * If the MediaLibrary is available, reset the selected files and images
      */
@@ -831,14 +786,10 @@ export const MessageInputProvider = ({
     }
 
     setFileUploads([]);
-    setGiphyActive(false);
-    setShowMoreOptions(true);
     setImageUploads([]);
-    setMentionedUsers([]);
     setNumberOfUploads(
       (prevNumberOfUploads) => prevNumberOfUploads - (pendingAttachments?.length || 0),
     );
-    setText('');
     if (value.editing) {
       value.clearEditingState();
     }
@@ -936,9 +887,6 @@ export const MessageInputProvider = ({
 
       startCooldown();
 
-      const prevText = giphyEnabled && giphyActive ? `/giphy ${text}` : text;
-      setText('');
-
       if (inputBoxRef.current) {
         inputBoxRef.current.clear();
       }
@@ -967,7 +915,6 @@ export const MessageInputProvider = ({
             setAsyncIds((prevAsyncIds) => [...prevAsyncIds, image.id]);
           } else {
             sending.current = false;
-            return setText(prevText);
           }
         }
 
@@ -1001,8 +948,12 @@ export const MessageInputProvider = ({
         }
       }
 
+      const composition = await messageComposer.compose();
+      if (!composition || !composition.message) return;
+      const { localMessage } = composition;
+
       // Disallow sending message if its empty.
-      if (!prevText && attachments.length === 0 && !customMessageData?.poll_id) {
+      if (!localMessage.text && attachments.length === 0 && !localMessage.poll_id) {
         sending.current = false;
         return;
       }
@@ -1012,9 +963,9 @@ export const MessageInputProvider = ({
         const updatedMessage = {
           ...message,
           attachments,
-          mentioned_users: mentionedUsers.map((userId) => ({ id: userId })),
+          mentioned_users: localMessage.mentioned_users?.map((user) => user.id),
           quoted_message: undefined,
-          text: prevText,
+          text: localMessage.text,
           ...customMessageData,
         } as Parameters<StreamChat['updateMessage']>[0];
 
@@ -1039,26 +990,30 @@ export const MessageInputProvider = ({
           if (message && isBouncedMessage(message)) {
             await removeMessage(message);
           }
+
           value.sendMessage({
             attachments,
-            mentioned_users: uniq(mentionedUsers),
+            // TODO: Handle unique users
+            mentioned_users: localMessage.mentioned_users?.map((user) => user.id),
             /** Parent message id - in case of thread */
             parent_id: thread?.id,
-            quoted_message_id: value.quotedMessage ? value.quotedMessage.id : undefined,
+            poll_id: localMessage.poll_id,
+            quoted_message_id: localMessage.quoted_message_id,
             show_in_channel: sendThreadMessageInChannel || undefined,
-            text: prevText,
+            text: localMessage.text,
             ...customMessageData,
-          } as unknown as StreamMessage);
+          });
 
-          value.clearQuotedMessageState();
+          // TODO: This might not be needed. Think about it.
+          // value.clearQuotedMessageState();
           sending.current = false;
           resetInput(attachments);
         } catch (_error) {
           sending.current = false;
-          if (value.quotedMessage && typeof value.quotedMessage !== 'boolean') {
-            value.setQuotedMessageState(value.quotedMessage);
-          }
-          setText(prevText.slice(giphyEnabled && giphyActive ? 7 : 0)); // 7 because of '/giphy ' length
+          // TODO: Test if this is really needed?
+          // if (value.quotedMessage && typeof value.quotedMessage !== 'boolean') {
+          //   value.setQuotedMessageState(value.quotedMessage);
+          // }
           console.log('Failed to send message');
         }
       }
@@ -1085,7 +1040,7 @@ export const MessageInputProvider = ({
           attachments,
           mentioned_users: [],
           parent_id: thread?.id,
-          quoted_message_id: value.quotedMessage ? value.quotedMessage.id : undefined,
+          quoted_message_id: messageComposer.quotedMessage?.id || undefined,
           show_in_channel: sendThreadMessageInChannel || undefined,
           text: '',
         } as unknown as Partial<StreamMessage>);
@@ -1110,42 +1065,13 @@ export const MessageInputProvider = ({
     }
   });
 
-  const triggerSettings = useMemo(() => {
-    try {
-      let triggerSettings: TriggerSettings = {};
-      if (channel) {
-        if (autoCompleteTriggerSettings) {
-          triggerSettings = autoCompleteTriggerSettings({
-            channel,
-            client,
-            emojiSearchIndex,
-            onMentionSelectItem: onSelectItem,
-          });
-        } else {
-          triggerSettings = ACITriggerSettings({
-            channel,
-            client,
-            emojiSearchIndex,
-            onMentionSelectItem: onSelectItem,
-          });
-        }
-      }
-      return triggerSettings;
-    } catch (error) {
-      console.warn('Error in getting trigger settings', error);
-      throw error;
-    }
-  }, [channel, client, onSelectItem, autoCompleteTriggerSettings, emojiSearchIndex]);
-
-  // const triggerSettings = getTriggerSettings();
-
   const updateMessage = useStableCallback(async () => {
     try {
       if (value.editing) {
         await client.updateMessage({
           ...value.editing,
           quoted_message: undefined,
-          text: giphyEnabled && giphyActive ? `/giphy ${text}` : text,
+          text,
         } as Parameters<StreamChat['updateMessage']>[0]);
       }
 
@@ -1440,25 +1366,18 @@ export const MessageInputProvider = ({
   });
 
   const messageInputContext = useCreateMessageInputContext({
-    appendText,
     asyncIds,
     asyncUploads,
     closeAttachmentPicker,
     cooldownEndsAt,
     fileUploads,
-    giphyActive,
-    giphyEnabled,
     imageUploads,
     inputBoxRef,
+    isCommandUIEnabled,
     isValidMessage,
-    mentionedUsers,
     numberOfUploads,
-    onChange,
-    onSelectItem,
     openAttachmentPicker,
-    openCommandsPicker,
     openFilePicker: pickFile,
-    openMentionsPicker,
     pickAndUploadImageFromNativePicker,
     pickFile,
     removeFile,
@@ -1471,20 +1390,13 @@ export const MessageInputProvider = ({
     setAsyncIds,
     setAsyncUploads,
     setFileUploads,
-    setGiphyActive,
     setImageUploads,
     setInputBoxRef,
-    setMentionedUsers,
     setNumberOfUploads,
     setSendThreadMessageInChannel,
-    setShowMoreOptions,
-    setText,
-    showMoreOptions,
     takeAndUploadImage,
-    text,
     thread,
     toggleAttachmentPicker,
-    triggerSettings,
     updateMessage,
     uploadFile,
     uploadImage,
@@ -1492,7 +1404,6 @@ export const MessageInputProvider = ({
     uploadNewImage,
     ...value,
     closePollCreationDialog,
-    hasText: !!text,
     openPollCreationDialog,
     sendMessage, // overriding the originally passed in sendMessage
     showPollCreationDialog,

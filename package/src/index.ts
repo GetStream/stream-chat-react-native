@@ -6,17 +6,15 @@ export * from './components';
 export * from './hooks';
 export { registerNativeHandlers } from './native';
 export * from './contexts';
-export * from './emoji-data';
 
 export * from './icons';
 
+export * from './middlewares';
+
 export * from './types/types';
 
-export * from './utils/ACITriggerSettings';
 export * from './utils/patchMessageTextCommand';
 export * from './utils/i18n/Streami18n';
-export * from './utils/queryMembers';
-export * from './utils/queryUsers';
 export * from './utils/utils';
 
 export { default as enTranslations } from './i18n/en.json';

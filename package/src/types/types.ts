@@ -526,3 +526,16 @@ export type RNCLIRecordingOptions = {
 export type RNCLIAudioRecordingConfiguration = {
   options?: RNCLIRecordingOptions;
 };
+
+export type Emoji = {
+  id: string;
+  name: string;
+  skins: Array<{ native: string }>;
+  emoticons?: Array<string>;
+  keywords?: Array<string>;
+  native?: string;
+};
+
+export type EmojiSearchIndex = {
+  search: (query: string) => PromiseLike<Array<Emoji>> | Array<Emoji> | null;
+};

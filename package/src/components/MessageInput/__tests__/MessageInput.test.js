@@ -88,16 +88,16 @@ describe('MessageInput', () => {
 
   beforeEach(async () => {
     chatClient = await getTestClientWithUser(clientUser);
+    await initializeChannel(generateChannelResponse());
   });
 
   afterEach(() => {
     channel = null;
     cleanup();
+    jest.clearAllMocks();
   });
 
   it('should render MessageInput', async () => {
-    await initializeChannel(generateChannelResponse());
-
     const openPicker = jest.fn();
     const closePicker = jest.fn();
     const attachmentValue = { closePicker, openPicker };
@@ -116,17 +116,7 @@ describe('MessageInput', () => {
   });
 
   it('trigger file size threshold limit alert when images size above the limit', async () => {
-    await initializeChannel(generateChannelResponse());
-
-    render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel}>
-            <MessageInput />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
+    render(getComponent());
 
     // Both for files and for images triggered in one test itself.
     await waitFor(() => {
@@ -135,9 +125,6 @@ describe('MessageInput', () => {
   });
 
   it('should start the audio recorder on long press and cleanup on unmount', async () => {
-    jest.clearAllMocks();
-
-    await initializeChannel(generateChannelResponse());
     const userBot = userEvent.setup();
 
     const { queryByTestId, unmount } = render(
@@ -167,9 +154,6 @@ describe('MessageInput', () => {
   });
 
   it('should trigger an alert if a normal press happened on audio recording', async () => {
-    jest.clearAllMocks();
-
-    await initializeChannel(generateChannelResponse());
     const userBot = userEvent.setup();
 
     const { queryByTestId } = render(
@@ -193,8 +177,6 @@ describe('MessageInput', () => {
   });
 
   it('should render the SendMessageDisallowedIndicator if the send-message capability is not present', async () => {
-    await initializeChannel(generateChannelResponse());
-
     const { queryByTestId } = render(
       <Chat client={chatClient}>
         <Channel audioRecordingEnabled channel={channel}>
@@ -223,15 +205,7 @@ describe('MessageInput', () => {
   });
 
   it('should not render the SendMessageDisallowedIndicator if the channel is frozen and the send-message capability is present', async () => {
-    await initializeChannel(generateChannelResponse({ channel: { frozen: true } }));
-
-    const { queryByTestId } = render(
-      <Chat client={chatClient}>
-        <Channel audioRecordingEnabled channel={channel}>
-          <MessageInput />
-        </Channel>
-      </Chat>,
-    );
+    const { queryByTestId } = render(getComponent());
 
     await waitFor(() => {
       expect(queryByTestId('send-message-disallowed-indicator')).toBeNull();
@@ -239,15 +213,7 @@ describe('MessageInput', () => {
   });
 
   it('should render the SendMessageDisallowedIndicator in a frozen channel only if the send-message capability is not present', async () => {
-    await initializeChannel(generateChannelResponse({ channel: { frozen: true } }));
-
-    const { queryByTestId } = render(
-      <Chat client={chatClient}>
-        <Channel audioRecordingEnabled channel={channel}>
-          <MessageInput />
-        </Channel>
-      </Chat>,
-    );
+    const { queryByTestId } = render(getComponent());
 
     act(() => {
       chatClient.dispatchEvent({
@@ -276,8 +242,6 @@ describe('MessageInput', () => {
   };
 
   it('should not render the SendMessageDisallowedIndicator if we are editing a message, regardless of capabilities', async () => {
-    await initializeChannel(generateChannelResponse());
-
     const { queryByTestId } = render(
       <Chat client={chatClient}>
         <Channel audioRecordingEnabled channel={channel}>

@@ -1,16 +1,16 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { CustomDataManagerState, TextComposerState } from 'stream-chat';
+
+import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
 import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-
-const styles = StyleSheet.create({
-  attachButtonContainer: { paddingRight: 5 },
-});
+import { useStateStore } from '../../hooks/useStateStore';
 
 export type InputButtonsProps = Partial<InputButtonsWithContextProps>;
 
@@ -18,39 +18,47 @@ export type InputButtonsWithContextProps = Pick<
   MessageInputContextValue,
   | 'AttachButton'
   | 'CommandsButton'
-  | 'giphyActive'
   | 'hasCameraPicker'
   | 'hasCommands'
   | 'hasFilePicker'
   | 'hasImagePicker'
-  | 'hasText'
   | 'MoreOptionsButton'
-  | 'openCommandsPicker'
   | 'selectedPicker'
-  | 'setShowMoreOptions'
-  | 'showMoreOptions'
   | 'toggleAttachmentPicker'
 >;
+
+const textComposerStateSelector = (state: TextComposerState) => ({
+  text: state.text,
+});
+
+const customComposerDataSelector = (state: CustomDataManagerState) => ({
+  command: state.custom.command,
+});
 
 export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => {
   const {
     AttachButton,
     CommandsButton,
-    giphyActive,
     hasCameraPicker,
     hasCommands,
     hasFilePicker,
     hasImagePicker,
-    hasText,
     MoreOptionsButton,
-    openCommandsPicker,
-    setShowMoreOptions,
-    showMoreOptions,
   } = props;
+  const { customDataManager, textComposer } = useMessageComposer();
+  const { text } = useStateStore(textComposer.state, textComposerStateSelector);
+  const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
+  const [showMoreOptions, setShowMoreOptions] = useState(true);
+
+  const hasText = !!text;
+
+  useEffect(() => {
+    setShowMoreOptions(!hasText);
+  }, [hasText]);
 
   const {
     theme: {
-      messageInput: { attachButtonContainer, commandsButtonContainer },
+      messageInput: { attachButtonContainer },
     },
   } = useTheme();
 
@@ -60,7 +68,7 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
 
   const ownCapabilities = useOwnCapabilitiesContext();
 
-  if (giphyActive) {
+  if (command) {
     return null;
   }
 
@@ -75,11 +83,7 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
           <AttachButton />
         </View>
       )}
-      {hasCommands && !hasText && (
-        <View style={commandsButtonContainer}>
-          <CommandsButton handleOnPress={openCommandsPicker} />
-        </View>
-      )}
+      {hasCommands && <CommandsButton hasText={hasText} />}
     </>
   );
 };
@@ -89,25 +93,19 @@ const areEqual = (
   nextProps: InputButtonsWithContextProps,
 ) => {
   const {
-    giphyActive: prevGiphyActive,
     hasCameraPicker: prevHasCameraPicker,
     hasCommands: prevHasCommands,
     hasFilePicker: prevHasFilePicker,
     hasImagePicker: prevHasImagePicker,
-    hasText: prevHasText,
     selectedPicker: prevSelectedPicker,
-    showMoreOptions: prevShowMoreOptions,
   } = prevProps;
 
   const {
-    giphyActive: nextGiphyActive,
     hasCameraPicker: nextHasCameraPicker,
     hasCommands: nextHasCommands,
     hasFilePicker: nextHasFilePicker,
     hasImagePicker: nextHasImagePicker,
-    hasText: nextHasText,
     selectedPicker: nextSelectedPicker,
-    showMoreOptions: nextShowMoreOptions,
   } = nextProps;
 
   if (prevHasCameraPicker !== nextHasCameraPicker) {
@@ -130,18 +128,6 @@ const areEqual = (
     return false;
   }
 
-  if (prevShowMoreOptions !== nextShowMoreOptions) {
-    return false;
-  }
-
-  if (prevHasText !== nextHasText) {
-    return false;
-  }
-
-  if (prevGiphyActive !== nextGiphyActive) {
-    return false;
-  }
-
   return true;
 };
 
@@ -154,17 +140,12 @@ export const InputButtons = (props: InputButtonsProps) => {
   const {
     AttachButton,
     CommandsButton,
-    giphyActive,
     hasCameraPicker,
     hasCommands,
     hasFilePicker,
     hasImagePicker,
-    hasText,
     MoreOptionsButton,
-    openCommandsPicker,
     selectedPicker,
-    setShowMoreOptions,
-    showMoreOptions,
     toggleAttachmentPicker,
   } = useMessageInputContext();
 
@@ -173,20 +154,19 @@ export const InputButtons = (props: InputButtonsProps) => {
       {...{
         AttachButton,
         CommandsButton,
-        giphyActive,
         hasCameraPicker,
         hasCommands,
         hasFilePicker,
         hasImagePicker,
-        hasText,
         MoreOptionsButton,
-        openCommandsPicker,
         selectedPicker,
-        setShowMoreOptions,
-        showMoreOptions,
         toggleAttachmentPicker,
       }}
       {...props}
     />
   );
 };
+
+const styles = StyleSheet.create({
+  attachButtonContainer: { paddingRight: 5 },
+});

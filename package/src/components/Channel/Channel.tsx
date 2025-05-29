@@ -60,10 +60,6 @@ import {
   PaginatedMessageListContextValue,
   PaginatedMessageListProvider,
 } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
-import {
-  SuggestionsContextValue,
-  SuggestionsProvider,
-} from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
   ThreadContextValue,
@@ -98,7 +94,6 @@ import { compressedImageURI } from '../../utils/compressImage';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
 import { removeReservedFields } from '../../utils/removeReservedFields';
 import {
-  defaultEmojiSearchIndex,
   generateRandomId,
   getFileNameFromPath,
   isBouncedMessage,
@@ -155,8 +150,8 @@ import { AudioRecordingInProgress as AudioRecordingInProgressDefault } from '../
 import { AudioRecordingLockIndicator as AudioRecordingLockIndicatorDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingLockIndicator';
 import { AudioRecordingPreview as AudioRecordingPreviewDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingPreview';
 import { AudioRecordingWaveform as AudioRecordingWaveformDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingWaveform';
+import { CommandInput as CommandInputDefault } from '../MessageInput/components/CommandInput';
 import { InputEditingStateHeader as InputEditingStateHeaderDefault } from '../MessageInput/components/InputEditingStateHeader';
-import { InputGiphySearch as InputGiphyCommandInputDefault } from '../MessageInput/components/InputGiphySearch';
 import { InputReplyStateHeader as InputReplyStateHeaderDefault } from '../MessageInput/components/InputReplyStateHeader';
 import { CooldownTimer as CooldownTimerDefault } from '../MessageInput/CooldownTimer';
 import { FileUploadPreview as FileUploadPreviewDefault } from '../MessageInput/FileUploadPreview';
@@ -249,7 +244,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'EmptyStateIndicator'
       | 'enableMessageGroupingByUser'
       | 'enforceUniqueReaction'
-      | 'giphyEnabled'
+      | 'isCommandUIEnabled'
       | 'hideStickyDateHeader'
       | 'hideDateSeparators'
       | 'LoadingIndicator'
@@ -259,18 +254,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     >
   > &
   Pick<ChatContextValue, 'client' | 'enableOfflineSupport' | 'isOnline'> &
-  Partial<
-    Omit<
-      InputMessageInputContextValue,
-      'quotedMessage' | 'editing' | 'clearEditingState' | 'clearQuotedMessageState' | 'sendMessage'
-    >
-  > &
-  Partial<
-    Pick<
-      SuggestionsContextValue,
-      'AutoCompleteSuggestionHeader' | 'AutoCompleteSuggestionItem' | 'AutoCompleteSuggestionList'
-    >
-  > &
+  Partial<Omit<InputMessageInputContextValue, 'editing' | 'clearEditingState' | 'sendMessage'>> &
   Pick<TranslationContextValue, 't'> &
   Partial<
     Pick<PaginatedMessageListContextValue, 'messages' | 'loadingMore' | 'loadingMoreRecent'>
@@ -450,7 +434,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      * Boolean flag to enable/disable marking the channel as read on mount
      */
     markReadOnMount?: boolean;
-    maxMessageLength?: number;
     /**
      * Load the channel at a specified message instead of the most recent message.
      */
@@ -498,7 +481,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AutoCompleteSuggestionItem = AutoCompleteSuggestionItemDefault,
     AutoCompleteSuggestionList = AutoCompleteSuggestionListDefault,
     autoCompleteSuggestionsLimit,
-    autoCompleteTriggerSettings,
     Card = CardDefault,
     CardCover,
     CardFooter,
@@ -520,7 +502,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     doMarkReadRequest,
     doSendMessageRequest,
     doUpdateMessageRequest,
-    emojiSearchIndex = defaultEmojiSearchIndex,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     enableMessageGroupingByUser = true,
     enableOfflineSupport,
@@ -535,7 +516,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     Gallery = GalleryDefault,
     getMessagesGroupStyles,
     Giphy = GiphyDefault,
-    giphyEnabled,
+    isCommandUIEnabled,
     giphyVersion = 'fixed_height',
     handleAttachButtonPress,
     handleBan,
@@ -569,7 +550,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     Input,
     InputButtons = InputButtonsDefault,
     InputEditingStateHeader = InputEditingStateHeaderDefault,
-    InputGiphySearch = InputGiphyCommandInputDefault,
+    CommandInput = CommandInputDefault,
     InputReplyStateHeader = InputReplyStateHeaderDefault,
     isAttachmentEqual,
     isMessageAIGenerated = () => false,
@@ -583,7 +564,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     loadingMoreRecent: loadingMoreRecentProp,
     markdownRules,
     markReadOnMount = true,
-    maxMessageLength: maxMessageLengthProp,
     maxNumberOfFiles = 10,
     maxTimeBetweenGroupedMessages,
     mentionAllAppUsersEnabled = false,
@@ -632,8 +612,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     NetworkDownIndicator = NetworkDownIndicatorDefault,
     // TODO: Think about this one
     newMessageStateUpdateThrottleInterval = defaultThrottleInterval,
-    numberOfLines = 5,
-    onChangeText,
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
@@ -689,8 +667,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const [editing, setEditing] = useState<LocalMessage | undefined>(undefined);
   const [error, setError] = useState<Error | boolean>(false);
   const [lastRead, setLastRead] = useState<Date | undefined>();
-
-  const [quotedMessage, setQuotedMessage] = useState<LocalMessage | undefined>(undefined);
   const [thread, setThread] = useState<LocalMessage | null>(threadProps || null);
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
@@ -1400,7 +1376,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           return;
         }
 
-        const mentionedUserIds = mentioned_users?.map((user) => user.id) || [];
+        const mentionedUserIds = mentioned_users?.map((user) => user.id) ?? [];
 
         const messageData = {
           attachments,
@@ -1501,22 +1477,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   );
 
   const setEditingState: MessagesContextValue['setEditingState'] = useStableCallback((message) => {
-    clearQuotedMessageState();
     setEditing(message);
   });
-
-  const setQuotedMessageState: MessagesContextValue['setQuotedMessageState'] = useStableCallback(
-    (messageOrBoolean) => {
-      setQuotedMessage(messageOrBoolean);
-    },
-  );
 
   const clearEditingState: InputMessageInputContextValue['clearEditingState'] = useStableCallback(
     () => setEditing(undefined),
   );
-
-  const clearQuotedMessageState: InputMessageInputContextValue['clearQuotedMessageState'] =
-    useStableCallback(() => setQuotedMessage(undefined));
 
   /**
    * Removes the message from local state
@@ -1708,17 +1674,16 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     channel,
     channelUnreadState,
     disabled: !!channel?.data?.frozen,
+    editing,
     EmptyStateIndicator,
     enableMessageGroupingByUser,
     enforceUniqueReaction,
     error,
-    giphyEnabled:
-      giphyEnabled ??
-      !!(clientChannelConfig?.commands || [])?.some((command) => command.name === 'giphy'),
     hideDateSeparators,
     hideStickyDateHeader,
     highlightedMessageId,
     isChannelActive: shouldSyncChannel,
+    isCommandUIEnabled: isCommandUIEnabled ?? !!clientChannelConfig?.commands?.length,
     lastRead,
     loadChannelAroundMessage,
     loadChannelAtFirstUnreadMessage,
@@ -1769,11 +1734,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AudioRecordingLockIndicator,
     AudioRecordingPreview,
     AudioRecordingWaveform,
+    AutoCompleteSuggestionHeader,
+    AutoCompleteSuggestionItem,
+    AutoCompleteSuggestionList,
     autoCompleteSuggestionsLimit,
-    autoCompleteTriggerSettings,
     channelId,
     clearEditingState,
-    clearQuotedMessageState,
+    CommandInput,
     CommandsButton,
     compressImageQuality,
     CooldownTimer,
@@ -1782,7 +1749,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     doImageUploadRequest,
     editing,
     editMessage,
-    emojiSearchIndex,
     FileUploadPreview,
     handleAttachButtonPress,
     hasCameraPicker,
@@ -1794,23 +1760,17 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     Input,
     InputButtons,
     InputEditingStateHeader,
-    InputGiphySearch,
     InputReplyStateHeader,
-    maxMessageLength: maxMessageLengthProp ?? clientChannelConfig?.max_message_length ?? undefined,
     maxNumberOfFiles,
     mentionAllAppUsersEnabled,
     mentionAllAppUsersQuery,
     MoreOptionsButton,
-    numberOfLines,
-    onChangeText,
     openPollCreationDialog,
-    quotedMessage,
     SendButton,
     sendImageAsync,
     sendMessage,
     SendMessageDisallowedIndicator,
     setInputRef,
-    setQuotedMessageState,
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
     StopMessageStreamingButton,
@@ -1841,7 +1801,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     CardFooter,
     CardHeader,
     channelId,
-    clearQuotedMessageState,
     DateHeader,
     deletedMessagesVisibilityType,
     deleteMessage,
@@ -1928,7 +1887,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     selectReaction,
     sendReaction,
     setEditingState,
-    setQuotedMessageState,
     shouldShowUnreadUnderlay,
     StreamingMessageView,
     supportedReactions,
@@ -1940,14 +1898,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     UrlPreview,
     VideoThumbnail,
   });
-
-  const suggestionsContext = useMemo(() => {
-    return {
-      AutoCompleteSuggestionHeader,
-      AutoCompleteSuggestionItem,
-      AutoCompleteSuggestionList,
-    };
-  }, [AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem, AutoCompleteSuggestionList]);
 
   const threadContext = useCreateThreadContext({
     allowThreadMessagesInChannel,
@@ -1997,11 +1947,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
             <PaginatedMessageListProvider value={messageListContext}>
               <MessagesProvider value={messagesContext}>
                 <ThreadProvider value={threadContext}>
-                  <SuggestionsProvider value={suggestionsContext}>
-                    <MessageInputProvider value={inputMessageInputContext}>
-                      <View style={{ height: '100%' }}>{children}</View>
-                    </MessageInputProvider>
-                  </SuggestionsProvider>
+                  <MessageInputProvider value={inputMessageInputContext}>
+                    <View style={{ height: '100%' }}>{children}</View>
+                  </MessageInputProvider>
                 </ThreadProvider>
               </MessagesProvider>
             </PaginatedMessageListProvider>

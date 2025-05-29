@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { Image, ImageStyle, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
@@ -6,15 +6,11 @@ import dayjs from 'dayjs';
 
 import merge from 'lodash/merge';
 
-import type { Attachment, PollState } from 'stream-chat';
+import type { Attachment, MessageComposerState, PollState } from 'stream-chat';
 
-import { useChatContext } from '../../contexts';
+import { useChatContext, useMessageComposer } from '../../contexts';
 import { useChatConfigContext } from '../../contexts/chatConfigContext/ChatConfigContext';
 import { useMessageContext } from '../../contexts/messageContext/MessageContext';
-import {
-  MessageInputContext,
-  MessageInputContextValue,
-} from '../../contexts/messageInputContext/MessageInputContext';
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -83,8 +79,14 @@ const selector = (nextValue: PollState): ReplySelectorReturnType => ({
   name: nextValue.name,
 });
 
-type ReplyPropsWithContext = Pick<MessageInputContextValue, 'quotedMessage'> &
-  Pick<MessagesContextValue, 'FileAttachmentIcon' | 'MessageAvatar'> &
+const messageComposerStateStoreSelector = (state: MessageComposerState) => ({
+  quotedMessage: state.quotedMessage,
+});
+
+type ReplyPropsWithContext = Pick<
+  MessagesContextValue,
+  'FileAttachmentIcon' | 'MessageAvatar' | 'quotedMessage'
+> &
   Pick<TranslationContextValue, 't'> & {
     attachmentSize?: number;
     styles?: Partial<{
@@ -150,6 +152,7 @@ const ReplyWithContext = (props: ReplyPropsWithContext) => {
     styles: stylesProp = {},
     t,
   } = props;
+
   const { resizableCDNHosts } = useChatConfigContext();
 
   const [error, setError] = useState(false);
@@ -341,18 +344,6 @@ const ReplyWithContext = (props: ReplyPropsWithContext) => {
   );
 };
 
-/**
- * When a reply is rendered in a MessageSimple, it does
- * not have a MessageInputContext. As this is deliberate,
- * this function exists to avoid the error thrown when
- * using a context outside of its provider.
- * */
-const useMessageInputContextIfAvailable = () => {
-  const contextValue = useContext(MessageInputContext) as unknown as MessageInputContextValue;
-
-  return contextValue;
-};
-
 const areEqual = (prevProps: ReplyPropsWithContext, nextProps: ReplyPropsWithContext) => {
   const { quotedMessage: prevQuotedMessage } = prevProps;
   const { quotedMessage: nextQuotedMessage } = nextProps;
@@ -387,11 +378,8 @@ export const Reply = (props: ReplyProps) => {
   const { FileAttachmentIcon = FileIconDefault, MessageAvatar = MessageAvatarDefault } =
     useMessagesContext();
 
-  const { editing, quotedMessage } = useMessageInputContextIfAvailable();
-
-  const quotedEditingMessage = (
-    typeof editing !== 'boolean' ? editing?.quoted_message || false : false
-  ) as MessageInputContextValue['quotedMessage'];
+  const messageComposer = useMessageComposer();
+  const { quotedMessage } = useStateStore(messageComposer.state, messageComposerStateStoreSelector);
 
   const { t } = useTranslationContext();
 
@@ -401,8 +389,8 @@ export const Reply = (props: ReplyProps) => {
         FileAttachmentIcon,
         MessageAvatar,
         quotedMessage: message
-          ? (message.quoted_message as MessageInputContextValue['quotedMessage'])
-          : quotedMessage || quotedEditingMessage,
+          ? (message.quoted_message as MessagesContextValue['quotedMessage'])
+          : quotedMessage,
         t,
       }}
       {...props}

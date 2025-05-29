@@ -307,6 +307,11 @@ export type Theme = {
       waveform: ViewStyle;
     };
     autoCompleteInputContainer: ViewStyle;
+    commandInput: {
+      closeButton: ViewStyle;
+      container: ViewStyle;
+      text: TextStyle;
+    };
     commandsButton: ViewStyle;
     commandsButtonContainer: ViewStyle;
     composerContainer: ViewStyle;
@@ -331,10 +336,7 @@ export type Theme = {
       flatList: ViewStyle;
     };
     focusedInputBoxContainer: ViewStyle;
-    giphyCommandInput: {
-      giphyContainer: ViewStyle;
-      giphyText: TextStyle;
-    };
+
     imageUploadPreview: {
       dismiss: ViewStyle;
       dismissIconColor: ColorValue;
@@ -1072,6 +1074,11 @@ export const defaultTheme: Theme = {
     },
     audioRecordingWaveform: { container: {}, waveform: {} },
     autoCompleteInputContainer: {},
+    commandInput: {
+      closeButton: {},
+      container: {},
+      text: {},
+    },
     commandsButton: {},
     commandsButtonContainer: {},
     composerContainer: {},
@@ -1096,10 +1103,6 @@ export const defaultTheme: Theme = {
       flatList: {},
     },
     focusedInputBoxContainer: {},
-    giphyCommandInput: {
-      giphyContainer: {},
-      giphyText: {},
-    },
     imageUploadPreview: {
       dismiss: {},
       dismissIconColor: '',

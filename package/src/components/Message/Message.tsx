@@ -173,7 +173,6 @@ export type MessagePropsWithContext = Pick<
     | 'retrySendMessage'
     | 'selectReaction'
     | 'setEditingState'
-    | 'setQuotedMessageState'
     | 'supportedReactions'
     | 'updateMessage'
     | 'PollContent'
@@ -256,7 +255,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     selectReaction,
     sendReaction,
     setEditingState,
-    setQuotedMessageState,
     showAvatar,
     showMessageStatus,
     showUnreadUnderlay,
@@ -501,7 +499,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     retrySendMessage,
     sendReaction,
     setEditingState,
-    setQuotedMessageState,
     supportedReactions,
   });
 
@@ -546,7 +543,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     selectReaction,
     sendReaction,
     setEditingState,
-    setQuotedMessageState,
     supportedReactions,
     t,
     updateMessage,
