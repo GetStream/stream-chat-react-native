@@ -23,6 +23,13 @@ export const useChannelPreviewData = (
   const { forceUpdate: contextForceUpdate } = useChannelsContext();
   const channelListForceUpdate = forceUpdateOverride ?? contextForceUpdate;
 
+  useEffect(() => {
+    const unsubscribe = channel.messageComposer.registerSubscriptions();
+    return () => {
+      unsubscribe();
+    };
+  }, [channel.messageComposer]);
+
   const channelLastMessage = channel.lastMessage();
   const channelLastMessageString = `${channelLastMessage?.id}${channelLastMessage?.updated_at}`;
 

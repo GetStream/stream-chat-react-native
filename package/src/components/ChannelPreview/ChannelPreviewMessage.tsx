@@ -26,7 +26,7 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   const {
     theme: {
       channelPreview: { message },
-      colors: { grey },
+      colors: { accent_blue, grey },
     },
   } = useTheme();
 
@@ -37,7 +37,11 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
           preview.text && (
             <Text
               key={`${preview.text}_${index}`}
-              style={[{ color: grey }, preview.bold ? styles.bold : {}, message]}
+              style={[
+                { color: preview?.draft ? accent_blue : grey },
+                preview.bold ? styles.bold : {},
+                message,
+              ]}
             >
               {preview.text}
             </Text>

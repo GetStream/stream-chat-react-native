@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { Image, StyleSheet, View } from 'react-native';
 
@@ -23,11 +23,11 @@ export const ImageAttachmentUploadPreview = ({
   handleRetry,
   removeAttachments,
 }: ImageAttachmentUploadPreviewProps) => {
+  const [loading, setLoading] = useState(false);
   const { enableOfflineSupport } = useChatContext();
-  const indicatorType = getIndicatorTypeForFileState(
-    attachment.localMetadata.uploadState,
-    enableOfflineSupport,
-  );
+  const indicatorType = loading
+    ? ProgressIndicatorTypes.IN_PROGRESS
+    : getIndicatorTypeForFileState(attachment.localMetadata.uploadState, enableOfflineSupport);
 
   const {
     theme: {
@@ -45,6 +45,14 @@ export const ImageAttachmentUploadPreview = ({
     removeAttachments([attachment.localMetadata.id]);
   }, [attachment, removeAttachments]);
 
+  const onLoadEndHandler = useCallback(() => {
+    setLoading(false);
+  }, []);
+
+  const onLoadStartHandler = useCallback(() => {
+    setLoading(true);
+  }, []);
+
   return (
     <View style={[styles.itemContainer, itemContainer]}>
       <AttachmentUploadProgressIndicator
@@ -53,6 +61,8 @@ export const ImageAttachmentUploadPreview = ({
         type={indicatorType}
       >
         <Image
+          onLoadEnd={onLoadEndHandler}
+          onLoadStart={onLoadStartHandler}
           resizeMode='cover'
           source={{ uri: attachment.localMetadata.previewUri ?? attachment.image_url }}
           style={[styles.upload, upload]}

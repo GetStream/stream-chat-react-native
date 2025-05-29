@@ -2,12 +2,14 @@ import { useMemo } from 'react';
 
 import { TFunction } from 'i18next';
 import type {
+  AttachmentManagerState,
   Channel,
   ChannelState,
   MessageResponse,
   PollState,
   PollVote,
   StreamChat,
+  TextComposerState,
   UserResponse,
 } from 'stream-chat';
 
@@ -26,6 +28,7 @@ export type LatestMessagePreview = {
   previews: {
     bold: boolean;
     text: string;
+    draft?: boolean;
   }[];
   status: number;
   created_at?: string | Date;
@@ -82,6 +85,8 @@ const getMentionUsers = (mentionedUser: UserResponse[] | undefined) => {
 const getLatestMessageDisplayText = (
   channel: Channel,
   client: StreamChat,
+  draftText: string | undefined,
+  draftAttachments: boolean | undefined,
   message: LatestMessage | undefined,
   t: (key: string) => string,
   pollState: LatestMessagePreviewSelectorReturnType | undefined,
@@ -101,6 +106,18 @@ const getLatestMessageDisplayText = (
     ? `${messageSender === t('You') ? '' : '@'}${messageSender}: `
     : '';
   const boldOwner = messageSenderText.includes('@');
+  if (draftText) {
+    return [
+      { bold: true, draft: true, text: 'Draft:' },
+      { bold: false, text: draftText },
+    ];
+  }
+  if (draftAttachments) {
+    return [
+      { bold: true, draft: true, text: 'Draft:' },
+      { bold: false, text: t('🏙 Attachment...') },
+    ];
+  }
   if (message.text) {
     // rough guess optimization to limit string preview to max 100 characters
     const shortenedText = message.text.substring(0, 100).replace(/\n/g, ' ');
@@ -201,12 +218,15 @@ const getLatestMessageReadStatus = (
 const getLatestMessagePreview = (params: {
   channel: Channel;
   client: StreamChat;
+  draftText?: string;
+  draftAttachments?: boolean;
   pollState: LatestMessagePreviewSelectorReturnType | undefined;
   readEvents: boolean;
   t: TFunction;
   lastMessage?: ReturnType<ChannelState['formatMessage']> | MessageResponse;
 }) => {
-  const { channel, client, lastMessage, pollState, readEvents, t } = params;
+  const { channel, client, draftText, draftAttachments, lastMessage, pollState, readEvents, t } =
+    params;
 
   const messages = channel.state.messages;
 
@@ -231,10 +251,26 @@ const getLatestMessagePreview = (params: {
   return {
     created_at: message?.created_at,
     messageObject: message,
-    previews: getLatestMessageDisplayText(channel, client, message, t, pollState),
+    previews: getLatestMessageDisplayText(
+      channel,
+      client,
+      draftText,
+      draftAttachments,
+      message,
+      t,
+      pollState,
+    ),
     status: getLatestMessageReadStatus(channel, client, message, readEvents),
   };
 };
+
+const textComposerStateSelector = (state: TextComposerState) => ({
+  text: state.text,
+});
+
+const stateSelector = (state: AttachmentManagerState) => ({
+  attachments: state.attachments,
+});
 
 /**
  * Hook to set the display preview for latest message on channel.
@@ -250,6 +286,18 @@ export const useLatestMessagePreview = (
 ) => {
   const { client } = useChatContext();
   const { t } = useTranslationContext();
+
+  const { text: draftText } = useStateStore(
+    channel.messageComposer.textComposer.state,
+    textComposerStateSelector,
+  );
+
+  const { attachments } = useStateStore(
+    channel.messageComposer.attachmentManager.state,
+    stateSelector,
+  );
+
+  const draftAttachments = attachments.length > 0;
 
   const channelConfigExists = typeof channel?.getConfig === 'function';
 
@@ -282,6 +330,8 @@ export const useLatestMessagePreview = (
     return getLatestMessagePreview({
       channel,
       client,
+      draftAttachments,
+      draftText,
       lastMessage: translatedLastMessage,
       pollState,
       readEvents,
@@ -290,6 +340,8 @@ export const useLatestMessagePreview = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     channelLastMessageString,
+    draftText,
+    draftAttachments,
     forceUpdate,
     readEvents,
     readStatus,

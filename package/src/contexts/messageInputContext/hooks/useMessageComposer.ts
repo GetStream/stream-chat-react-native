@@ -65,8 +65,7 @@ export const useMessageComposer = () => {
     } else {
       return channel.messageComposer;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cachedEditedMessage, cachedParentMessage, channel, threadInstance]);
+  }, [cachedEditedMessage, cachedParentMessage, channel, client, editedMessage, threadInstance]);
 
   if (
     (['legacy_thread', 'message'] as MessageComposer['contextType'][]).includes(

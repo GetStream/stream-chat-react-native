@@ -19,6 +19,7 @@ import Animated, {
 import {
   FileReference,
   isLocalImageAttachment,
+  MessageComposerConfig,
   type MessageComposerState,
   type TextComposerState,
   type UserResponse,
@@ -164,6 +165,10 @@ const messageComposerStateStoreSelector = (state: MessageComposerState) => ({
   quotedMessage: state.quotedMessage,
 });
 
+const configStateSelector = (state: MessageComposerConfig) => ({
+  draftsEnabled: state.drafts.enabled,
+});
+
 const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const {
     additionalTextInputProps,
@@ -215,13 +220,12 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 
   const messageComposer = useMessageComposer();
   const { attachmentManager, textComposer } = messageComposer;
-  const { command, mentionedUsers, text } = useStateStore(
-    textComposer.state,
-    textComposerStateSelector,
-  );
+  const { command, text } = useStateStore(textComposer.state, textComposerStateSelector);
+
   const { quotedMessage } = useStateStore(messageComposer.state, messageComposerStateStoreSelector);
-  const { attachments, availableUploadSlots } = useAttachmentManagerState();
+  const { attachments } = useAttachmentManagerState();
   const hasSendableData = useMessageComposerHasSendableData();
+  const { draftsEnabled } = useStateStore(messageComposer.configState, configStateSelector);
 
   const imageUploads = attachments.filter((attachment) => isLocalImageAttachment(attachment));
   const fileUploads = attachments.filter((attachment) => !isLocalImageAttachment(attachment));
@@ -303,31 +307,36 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const editingExists = !!editing;
-
+  // Effect to ensure we focus the input box when editing a message.
   useEffect(() => {
-    if (editing && inputBoxRef.current) {
+    const { editedMessage } = messageComposer;
+    if (editedMessage && inputBoxRef.current) {
       inputBoxRef.current.focus();
     }
+  }, [messageComposer, inputBoxRef]);
 
-    /**
-     * Make sure to test `initialValue` functionality, if you are modifying following condition.
-     *
-     * We have the following condition, to make sure - when user comes out of "editing message" state,
-     * we wipe out all the state around message input such as text, mentioned users, image uploads etc.
-     * But it also means, this condition will be fired up on first render, which may result in clearing
-     * the initial value set on input box, through the prop - `initialValue`.
-     * This prop generally gets used for the case of draft message functionality.
-     */
-    if (
-      !editing &&
-      (command || attachments.length > 0 || mentionedUsers.length > 0 || availableUploadSlots) &&
-      resetInput
-    ) {
-      resetInput();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editingExists]);
+  // Effect to create draft whenever we un-mount the component.
+  useEffect(() => {
+    return () => {
+      if (draftsEnabled) {
+        messageComposer.createDraft();
+      }
+    };
+  }, [draftsEnabled, messageComposer, resetInput]);
+
+  /**
+   * Effect to get the draft data for legacy thread composer and set it to message composer.
+   * TODO: This can be removed once we remove legacy thread composer.
+   */
+  useEffect(() => {
+    const threadId = messageComposer.threadId;
+    if (!threadId || !messageComposer.channel || !messageComposer.compositionIsEmpty) return;
+    messageComposer.channel.getDraft({ parent_id: threadId }).then(({ draft }) => {
+      if (draft) {
+        messageComposer.initState({ composition: draft });
+      }
+    });
+  }, [messageComposer]);
 
   const uploadImagesHandler = async () => {
     const imageToUpload = selectedImages.find((selectedImage) => {
