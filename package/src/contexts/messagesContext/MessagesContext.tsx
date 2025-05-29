@@ -108,7 +108,7 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * Defaults to: [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)
    **/
   DateHeader: React.ComponentType<DateHeaderProps>;
-  deleteMessage: (message: LocalMessage) => Promise<void>;
+  deleteMessage: (message: LocalMessage, hardDelete?: boolean) => Promise<void>;
   deleteReaction: (type: string, messageId: string) => Promise<void>;
 
   /** Should keyboard be dismissed when messaged is touched */

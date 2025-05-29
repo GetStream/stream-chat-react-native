@@ -25,7 +25,7 @@ export const getChannelMessages = async ({
   const messageIds = messageRows.map(({ id }) => id);
 
   // Populate the message reactions.
-  const reactionRows = await selectReactionsForMessages(messageIds);
+  const reactionRows = await selectReactionsForMessages(messageIds, null);
   const messageIdVsReactions: Record<string, TableRowJoinedUser<'reactions'>[]> = {};
   reactionRows.forEach((reaction) => {
     if (!messageIdVsReactions[reaction.messageId]) {

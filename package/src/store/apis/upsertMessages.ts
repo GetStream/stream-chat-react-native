@@ -8,11 +8,11 @@ import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
 
 export const upsertMessages = async ({
-  flush = true,
+  execute = true,
   messages,
 }: {
   messages: (MessageResponse | LocalMessage)[];
-  flush?: boolean;
+  execute?: boolean;
 }) => {
   const storableMessages: Array<ReturnType<typeof mapMessageToStorable>> = [];
   const storableUsers: Array<ReturnType<typeof mapUserToStorable>> = [];
@@ -45,14 +45,14 @@ export const upsertMessages = async ({
   ];
 
   SqliteClient.logger?.('info', 'upsertMessages', {
-    flush,
+    execute,
     messages: storableMessages,
     polls: storablePolls,
     reactions: storableReactions,
     users: storableUsers,
   });
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSqlBatch(finalQueries);
   }
 

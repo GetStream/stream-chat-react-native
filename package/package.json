@@ -1,7 +1,7 @@
 {
   "name": "stream-chat-react-native-core",
   "description": "The official React Native and Expo components for Stream Chat, a service for building chat applications",
-  "version": "7.0.0",
+  "version": "7.1.0",
   "author": {
     "company": "Stream.io Inc",
     "name": "Stream.io Inc"
@@ -159,10 +159,11 @@
     "react-test-renderer": "19.0.0",
     "rimraf": "^6.0.1",
     "typescript": "5.8.2",
-    "typescript-eslint": "^8.25.0",
+    "typescript-eslint": "^8.29.0",
     "uuid": "^11.1.0"
   },
   "resolutions": {
-    "@types/react": "^19.0.0"
+    "@types/react": "^19.0.0",
+    "@babel/runtime": "^7.26.9"
   }
 }
