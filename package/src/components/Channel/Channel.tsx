@@ -93,9 +93,7 @@ import * as dbApi from '../../store/apis';
 import { ChannelUnreadState, FileTypes } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
 import { compressedImageURI } from '../../utils/compressImage';
-import { DBSyncManager } from '../../utils/DBSyncManager';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
-import { removeReactionFromLocalState } from '../../utils/removeReactionFromLocalState';
 import {
   getFileNameFromPath,
   isBouncedMessage,
@@ -258,7 +256,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'StickyHeader'
     >
   > &
-  Pick<ChatContextValue, 'client' | 'enableOfflineSupport'> &
+  Pick<ChatContextValue, 'client' | 'enableOfflineSupport' | 'isOnline'> &
   Partial<Omit<InputMessageInputContextValue, 'editing' | 'clearEditingState' | 'sendMessage'>> &
   Pick<TranslationContextValue, 't'> &
   Partial<
@@ -652,6 +650,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     UrlPreview = CardDefault,
     VideoAttachmentUploadPreview = FileAttachmentUploadPreviewDefault,
     VideoThumbnail = VideoThumbnailDefault,
+    isOnline,
   } = props;
 
   const { thread: threadProps, threadInstance } = threadFromProps;
@@ -1017,14 +1016,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     syncingChannelRef.current = true;
     setError(false);
 
-    if (channelMessagesState?.messages) {
-      await channel?.watch({
-        messages: {
-          limit: channelMessagesState.messages.length + 30,
-        },
-      });
-    }
-
     const parseMessage = (message: LocalMessage) =>
       ({
         ...message,
@@ -1034,6 +1025,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }) as unknown as MessageResponse;
 
     try {
+      if (channelMessagesState?.messages) {
+        await channel?.watch({
+          messages: {
+            limit: channelMessagesState.messages.length + 30,
+          },
+        });
+      }
+
       if (!thread) {
         copyChannelState();
 
@@ -1080,12 +1079,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     };
     let connectionChangedSubscription: ReturnType<ChannelType['on']>;
 
-    if (enableOfflineSupport) {
-      connectionChangedSubscription = DBSyncManager.onSyncStatusChange((statusChanged) => {
-        if (statusChanged) {
-          connectionChangedHandler();
-        }
-      });
+    if (enableOfflineSupport && client.offlineDb) {
+      connectionChangedSubscription = client.offlineDb.syncManager.onSyncStatusChange(
+        (statusChanged) => {
+          if (statusChanged) {
+            connectionChangedHandler();
+          }
+        },
+      );
     } else {
       connectionChangedSubscription = client.on('connection.changed', (event) => {
         if (event.online) {
@@ -1096,8 +1097,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     return () => {
       connectionChangedSubscription.unsubscribe();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enableOfflineSupport, shouldSyncChannel]);
+  }, [enableOfflineSupport, client, shouldSyncChannel]);
 
   // In case the channel is disconnected which may happen when channel is deleted,
   // underlying js client throws an error. Following function ensures that Channel component
@@ -1274,9 +1274,34 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       options?: SendMessageOptions;
       retrying?: boolean;
     }) => {
-      try {
-        const updatedLocalMessage = await uploadPendingAttachments(localMessage);
+      let failedMessageUpdated = false;
+      const handleFailedMessage = async () => {
+        if (!failedMessageUpdated) {
+          const updatedMessage = {
+            ...localMessage,
+            cid: channel.cid,
+            status: MessageStatusTypes.FAILED,
+          };
+          updateMessage(updatedMessage);
+          threadInstance?.upsertReplyLocally?.({ message: updatedMessage });
+          optimisticallyUpdatedNewMessages.delete(localMessage.id);
 
+          if (enableOfflineSupport) {
+            await dbApi.updateMessage({
+              message: updatedMessage,
+            });
+          }
+
+          failedMessageUpdated = true;
+        }
+      };
+
+      try {
+        if (!isOnline) {
+          await handleFailedMessage();
+        }
+
+        const updatedLocalMessage = await uploadPendingAttachments(localMessage);
         const { attachments } = updatedLocalMessage;
         const { text, mentioned_users } = message;
         if (!channel.id) {
@@ -1290,39 +1315,33 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         } as StreamMessage;
 
         let messageResponse = {} as SendMessageAPIResponse;
+
         if (doSendMessageRequest) {
           messageResponse = await doSendMessageRequest(channel?.cid || '', messageData, options);
         } else if (channel) {
           messageResponse = await channel.sendMessage(messageData, options);
         }
 
-        if (messageResponse.message) {
-          messageResponse.message.status = MessageStatusTypes.RECEIVED;
+        if (messageResponse?.message) {
+          const newMessageResponse = {
+            ...messageResponse.message,
+            status: MessageStatusTypes.RECEIVED,
+          };
 
           if (enableOfflineSupport) {
             await dbApi.updateMessage({
-              message: { ...messageResponse.message, cid: channel.cid },
+              message: { ...newMessageResponse, cid: channel.cid },
             });
           }
           if (retrying) {
-            replaceMessage(localMessage, messageResponse.message);
+            replaceMessage(localMessage, newMessageResponse);
           } else {
-            updateMessage(messageResponse.message, {}, true);
+            updateMessage(newMessageResponse, {}, true);
           }
         }
       } catch (err) {
-        console.log('Error sending a message:', err);
-        localMessage.status = MessageStatusTypes.FAILED;
-        const updatedMessage = { ...localMessage, cid: channel.cid };
-        updateMessage(updatedMessage);
-        threadInstance?.upsertReplyLocally?.({ message: updatedMessage });
-        optimisticallyUpdatedNewMessages.delete(localMessage.id);
-
-        if (enableOfflineSupport) {
-          await dbApi.updateMessage({
-            message: { ...localMessage, cid: channel.cid },
-          });
-        }
+        console.log('Error sending message:', err);
+        await handleFailedMessage();
       }
     },
   );
@@ -1402,10 +1421,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         }
       }
 
-      if (enableOfflineSupport) {
-        await dbApi.deleteMessage({
-          id: message.id,
-        });
+      if (client.offlineDb) {
+        await client.offlineDb.handleRemoveMessage({ messageId: message.id });
       }
     },
   );
@@ -1423,83 +1440,49 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       { enforce_unique: enforceUniqueReaction },
     ];
 
-    if (!enableOfflineSupport) {
-      await channel.sendReaction(...payload);
-      return;
+    if (enableOfflineSupport) {
+      await addReactionToLocalState({
+        channel,
+        enforceUniqueReaction,
+        messageId,
+        reactionType: type,
+        user: client.user,
+      });
+
+      copyMessagesStateFromChannel(channel);
     }
 
-    addReactionToLocalState({
-      channel,
-      enforceUniqueReaction,
-      messageId,
-      reactionType: type,
-      user: client.user,
-    });
+    const sendReactionResponse = await channel.sendReaction(...payload);
 
-    copyMessagesStateFromChannel(channel);
-
-    const sendReactionResponse = await DBSyncManager.queueTask({
-      client,
-      task: {
-        channelId: channel.id,
-        channelType: channel.type,
-        messageId,
-        payload,
-        type: 'send-reaction',
-      },
-    });
     if (sendReactionResponse?.message) {
       threadInstance?.upsertReplyLocally?.({ message: sendReactionResponse.message });
     }
   });
 
   const deleteMessage: MessagesContextValue['deleteMessage'] = useStableCallback(
-    async (message) => {
+    async (message, hardDelete = false) => {
       if (!channel.id) {
         throw new Error('Channel has not been initialized yet');
       }
 
-      if (!enableOfflineSupport) {
-        if (message.status === MessageStatusTypes.FAILED) {
-          await removeMessage(message);
-          return;
-        }
-        try {
-          await client.deleteMessage(message.id);
-        } catch (err) {
-          console.warn('Error deleting message:', err);
-        }
+      if (message.status === MessageStatusTypes.FAILED) {
+        await removeMessage(message);
         return;
       }
+      const updatedMessage = {
+        ...message,
+        cid: channel.cid,
+        deleted_at: new Date(),
+        type: 'deleted' as MessageLabel,
+      };
+      updateMessage(updatedMessage);
 
-      if (message.status === MessageStatusTypes.FAILED) {
-        await DBSyncManager.dropPendingTasks({ messageId: message.id });
-        await removeMessage(message);
-      } else {
-        const updatedMessage = {
-          ...message,
-          cid: channel.cid,
-          deleted_at: new Date(),
-          type: 'deleted' as MessageLabel,
-        };
-        updateMessage(updatedMessage);
+      threadInstance?.upsertReplyLocally({ message: updatedMessage });
 
-        threadInstance?.upsertReplyLocally({ message: updatedMessage });
+      const data = await client.deleteMessage(message.id, hardDelete);
 
-        const data = await DBSyncManager.queueTask({
-          client,
-          task: {
-            channelId: channel.id,
-            channelType: channel.type,
-            messageId: message.id,
-            payload: [message.id],
-            type: 'delete-message',
-          },
-        });
-
-        if (data?.message) {
-          updateMessage({ ...data.message });
-        }
+      if (data?.message) {
+        updateMessage({ ...data.message });
       }
     },
   );
@@ -1512,30 +1495,18 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
       const payload: Parameters<ChannelClass['deleteReaction']> = [messageId, type];
 
-      if (!enableOfflineSupport) {
-        await channel.deleteReaction(...payload);
-        return;
+      if (enableOfflineSupport) {
+        channel.state.removeReaction({
+          created_at: '',
+          message_id: messageId,
+          type,
+          updated_at: '',
+        });
+
+        copyMessagesStateFromChannel(channel);
       }
 
-      removeReactionFromLocalState({
-        channel,
-        messageId,
-        reactionType: type,
-        user: client.user,
-      });
-
-      copyMessagesStateFromChannel(channel);
-
-      await DBSyncManager.queueTask({
-        client,
-        task: {
-          channelId: channel.id,
-          channelType: channel.type,
-          messageId,
-          payload,
-          type: 'delete-reaction',
-        },
-      });
+      await channel.deleteReaction(...payload);
     },
   );
 
@@ -1924,7 +1895,7 @@ export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel' | 'th
  * @example ./Channel.md
  */
 export const Channel = (props: PropsWithChildren<ChannelProps>) => {
-  const { client, enableOfflineSupport, isMessageAIGenerated } = useChatContext();
+  const { client, enableOfflineSupport, isOnline, isMessageAIGenerated } = useChatContext();
   const { t } = useTranslationContext();
 
   const threadFromProps = props?.thread;
@@ -1956,6 +1927,7 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
       shouldSyncChannel={shouldSyncChannel}
       {...{
         isMessageAIGenerated,
+        isOnline,
         setThreadMessages,
         thread,
         threadMessages,

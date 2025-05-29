@@ -27,6 +27,7 @@ export { default as trTranslations } from './i18n/tr.json';
 export { default as heTranslations } from './i18n/he.json';
 
 export { SqliteClient } from './store/SqliteClient';
+export { OfflineDB } from './store/OfflineDB';
 export { version } from './version.json';
 
 import { NativeHandlers } from './native';
