@@ -11,6 +11,9 @@ import { Alert, Keyboard, Linking, TextInput, TextInputProps } from 'react-nativ
 
 import {
   Attachment,
+  createApplyCommandSettingsMiddleware,
+  createCommandInjectionMiddleware,
+  createDraftCommandInjectionMiddleware,
   LocalMessage,
   Message,
   SendMessageOptions,
@@ -57,11 +60,7 @@ import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreO
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import { useStableCallback } from '../../hooks/useStableCallback';
 import { createAttachmentsCompositionMiddleware } from '../../middlewares/attachments';
-import {
-  createCommandControlMiddleware,
-  createCommandInjectionMiddleware,
-  createDraftCommandInjectionMiddleware,
-} from '../../middlewares/commandControl';
+
 import {
   isDocumentPickerAvailable,
   isImageMediaLibraryAvailable,
@@ -408,8 +407,8 @@ export const MessageInputProvider = ({
         });
       isCommandUIEnabled &&
         composer.textComposer.middlewareExecutor.insert({
-          middleware: [createCommandControlMiddleware(composer) as TextComposerMiddleware],
-          position: { before: 'stream-io/text-composer/pre-validation-middleware' },
+          middleware: [createApplyCommandSettingsMiddleware() as TextComposerMiddleware],
+          position: { after: 'stream-io/text-composer/commands-middleware' },
         });
     });
   }, [client, isCommandUIEnabled, enableOfflineSupport]);

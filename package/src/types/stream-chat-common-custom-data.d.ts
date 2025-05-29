@@ -1,4 +1,5 @@
 import 'stream-chat';
+
 import {
   DefaultAttachmentData,
   DefaultChannelData,
@@ -38,9 +39,7 @@ declare module 'stream-chat' {
 
   interface CustomThreadData extends DefaultThreadData {}
 
-  interface CustomMessageComposerData {
-    command: string | null;
-  }
+  interface CustomMessageComposerData {}
 
   /* eslint-enable @typescript-eslint/no-empty-object-type */
 }

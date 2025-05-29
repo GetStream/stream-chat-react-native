@@ -6939,10 +6939,9 @@ statuses@~1.5.0:
   version "0.0.0"
   uid ""
 
-stream-chat@^9.0.0:
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.0.0.tgz#cb22dcb8b7f070c623a13b6b75b212d560534d6c"
-  integrity sha512-I4+/DEp7dP3WBgRmqHaLswL+Y2fyQkUWJhYBS5zx4bpu1cYM6WEir9HYjToDNuJjltqa/FFIEF/tMPWr7iTc0A==
+stream-chat@getstream/stream-chat-js#handle-command-injection:
+  version "0.0.0-development"
+  resolved "https://codeload.github.com/getstream/stream-chat-js/tar.gz/780c52cfc3cd7379273a9b8db34461fb935f568d"
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"
@@ -6953,21 +6952,6 @@ stream-chat@^9.0.0:
     jsonwebtoken "^9.0.2"
     linkifyjs "^4.2.0"
     ws "^8.18.1"
-
-stream-chat@^8.57.6:
-  version "8.60.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.60.0.tgz#b67d4fbb185da53fb8ac5fc5759986d6ad7e19a3"
-  integrity sha512-7FpO7Wno++r+n+x9aFuXtGYtNO06CIMd2Bxe3doYZLhMfS0nuaXloeFlGcMT0r4U/6bnguz1qQdDJUPNQAS8bQ==
-  dependencies:
-    "@babel/runtime" "^7.27.0"
-    "@types/jsonwebtoken" "~9.0.0"
-    "@types/ws" "^7.4.0"
-    axios "^1.6.0"
-    base64-js "^1.5.1"
-    form-data "^4.0.0"
-    isomorphic-ws "^4.0.1"
-    jsonwebtoken "~9.0.0"
-    ws "^7.5.10"
 
 strict-uri-encode@^2.0.0:
   version "2.0.0"

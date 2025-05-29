@@ -17,7 +17,6 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import {
-  type CustomDataManagerState,
   FileReference,
   isLocalImageAttachment,
   type MessageComposerState,
@@ -155,13 +154,10 @@ type MessageInputPropsWithContext = Pick<
   Pick<TranslationContextValue, 't'>;
 
 const textComposerStateSelector = (state: TextComposerState) => ({
+  command: state.command,
   mentionedUsers: state.mentionedUsers,
   suggestions: state.suggestions,
   text: state.text,
-});
-
-const customComposerDataSelector = (state: CustomDataManagerState) => ({
-  command: state.custom.command,
 });
 
 const messageComposerStateStoreSelector = (state: MessageComposerState) => ({
@@ -218,9 +214,11 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const [hasResetFiles, setHasResetFiles] = useState(false);
 
   const messageComposer = useMessageComposer();
-  const { attachmentManager, customDataManager, textComposer } = messageComposer;
-  const { mentionedUsers, text } = useStateStore(textComposer.state, textComposerStateSelector);
-  const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
+  const { attachmentManager, textComposer } = messageComposer;
+  const { command, mentionedUsers, text } = useStateStore(
+    textComposer.state,
+    textComposerStateSelector,
+  );
   const { quotedMessage } = useStateStore(messageComposer.state, messageComposerStateStoreSelector);
   const { attachments, availableUploadSlots } = useAttachmentManagerState();
   const hasSendableData = useMessageComposerHasSendableData();

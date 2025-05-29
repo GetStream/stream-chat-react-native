@@ -9,7 +9,7 @@ import {
   TextInputSelectionChangeEventData,
 } from 'react-native';
 
-import { CustomDataManagerState, TextComposerState } from 'stream-chat';
+import { MessageComposerConfig, TextComposerState } from 'stream-chat';
 
 import {
   ChannelContextValue,
@@ -42,11 +42,12 @@ type AutoCompleteInputPropsWithContext = TextInputProps &
 type AutoCompleteInputProps = Partial<AutoCompleteInputPropsWithContext>;
 
 const textComposerStateSelector = (state: TextComposerState) => ({
+  command: state.command,
   text: state.text,
 });
 
-const customComposerDataSelector = (state: CustomDataManagerState) => ({
-  command: state.custom.command,
+const configStateSelector = (state: MessageComposerConfig) => ({
+  enabled: state.text.enabled,
 });
 
 const MAX_NUMBER_OF_LINES = 5;
@@ -56,9 +57,9 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
   const [localText, setLocalText] = useState('');
   const [textHeight, setTextHeight] = useState(0);
   const messageComposer = useMessageComposer();
-  const { customDataManager, textComposer } = messageComposer;
-  const { text } = useStateStore(textComposer.state, textComposerStateSelector);
-  const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
+  const { textComposer } = messageComposer;
+  const { command, text } = useStateStore(textComposer.state, textComposerStateSelector);
+  const { enabled } = useStateStore(messageComposer.configState, configStateSelector);
 
   const maxMessageLength = useMemo(() => {
     return channel.getConfig()?.max_message_length;
@@ -118,6 +119,7 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
   return (
     <TextInput
       autoFocus={!!command}
+      editable={enabled}
       maxLength={maxMessageLength}
       multiline
       onChangeText={onChangeTextHandler}

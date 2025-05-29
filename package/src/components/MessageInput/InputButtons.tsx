@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { CustomDataManagerState, TextComposerState } from 'stream-chat';
+import { TextComposerState } from 'stream-chat';
 
 import { AttachmentPickerContextValue, useAttachmentPickerContext } from '../../contexts';
 import { useAttachmentManagerState } from '../../contexts/messageInputContext/hooks/useAttachmentManagerState';
@@ -30,11 +30,8 @@ export type InputButtonsWithContextProps = Pick<
   Pick<AttachmentPickerContextValue, 'selectedPicker'>;
 
 const textComposerStateSelector = (state: TextComposerState) => ({
+  command: state.command,
   text: state.text,
-});
-
-const customComposerDataSelector = (state: CustomDataManagerState) => ({
-  command: state.custom.command,
 });
 
 export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => {
@@ -47,9 +44,9 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
     hasImagePicker,
     MoreOptionsButton,
   } = props;
-  const { customDataManager, textComposer } = useMessageComposer();
-  const { text } = useStateStore(textComposer.state, textComposerStateSelector);
-  const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
+  const { textComposer } = useMessageComposer();
+  const { command, text } = useStateStore(textComposer.state, textComposerStateSelector);
+
   const [showMoreOptions, setShowMoreOptions] = useState(true);
   const { attachments } = useAttachmentManagerState();
 

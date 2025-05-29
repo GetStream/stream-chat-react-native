@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 
 import { Pressable } from 'react-native';
 
-import { CustomDataManagerState } from 'stream-chat';
+import { TextComposerState } from 'stream-chat';
 
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
@@ -20,8 +20,8 @@ export type SendButtonProps = Partial<Pick<MessageInputContextValue, 'sendMessag
   disabled: boolean;
 };
 
-const customComposerDataSelector = (state: CustomDataManagerState) => ({
-  command: state.custom.command,
+const textComposerStateSelector = (state: TextComposerState) => ({
+  command: state.command,
 });
 
 export const SendButton = (props: SendButtonProps) => {
@@ -29,8 +29,9 @@ export const SendButton = (props: SendButtonProps) => {
   const { sendMessage: sendMessageFromContext } = useMessageInputContext();
   const sendMessage = propsSendMessage || sendMessageFromContext;
   const messageComposer = useMessageComposer();
-  const { customDataManager } = messageComposer;
-  const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
+  const { textComposer } = messageComposer;
+  const { command } = useStateStore(textComposer.state, textComposerStateSelector);
+
   const {
     theme: {
       colors: { accent_blue, grey_gainsboro },
