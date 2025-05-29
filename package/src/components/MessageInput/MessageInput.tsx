@@ -203,7 +203,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     maxNumberOfFiles,
     members,
     Reply,
-    resetInput,
     SendButton,
     sendMessage,
     showPollCreationDialog,
@@ -266,6 +265,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const { seconds: cooldownRemainingSeconds } = useCountdown(cooldownEndsAt);
 
   useEffect(() => {
+    messageComposer.updateConfig({ drafts: { enabled: true } });
     attachmentManager.maxNumberOfFilesPerMessage = maxNumberOfFiles;
     if (doFileUploadRequest) {
       attachmentManager.setCustomUploadFn(doFileUploadRequest);
@@ -322,7 +322,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
         messageComposer.createDraft();
       }
     };
-  }, [draftsEnabled, messageComposer, resetInput]);
+  }, [draftsEnabled, messageComposer]);
 
   /**
    * Effect to get the draft data for legacy thread composer and set it to message composer.
