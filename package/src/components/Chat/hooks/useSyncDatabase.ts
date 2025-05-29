@@ -1,25 +1,19 @@
-import { useEffect } from 'react';
-
 import type { StreamChat } from 'stream-chat';
-
-import { handleEventToSyncDB } from './handleEventToSyncDB';
 
 type Params = {
   client: StreamChat;
   enableOfflineSupport: boolean;
   initialisedDatabase: boolean;
 };
-export const useSyncDatabase = ({ client, enableOfflineSupport, initialisedDatabase }: Params) => {
-  useEffect(() => {
-    let listener: ReturnType<StreamChat['on']> | undefined;
 
-    if (enableOfflineSupport && initialisedDatabase) {
-      listener = client?.on((event) => handleEventToSyncDB(event, client));
-    }
-
-    return () => {
-      listener?.unsubscribe();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client, initialisedDatabase]);
-};
+/**
+ * @deprecated
+ * With the recent rework of the Offline Support feature, the handling of events has been moved
+ * to the stream-chat client instead of the SDK. This hook now does nothing and you can safely
+ * remove it from your code if you were using it. It will be removed in the next major release.
+ * @param client
+ * @param initialisedDatabase
+ */
+// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const useSyncDatabase = ({ client, initialisedDatabase }: Params) => {};

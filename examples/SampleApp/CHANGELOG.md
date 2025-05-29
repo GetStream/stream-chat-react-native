@@ -1,5 +1,19 @@
 # Change Log
 
+## [3.1.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v3.0.1...sampleapp@v3.1.0) (2025-05-27)
+
+
+### Features
+
+* offline support v2 ([#3096](https://github.com/GetStream/stream-chat-react-native/issues/3096)) ([055199d](https://github.com/GetStream/stream-chat-react-native/commit/055199d3f9c342b94620de6163b944fecbc7315d)), closes [#2993](https://github.com/GetStream/stream-chat-react-native/issues/2993) [#3000](https://github.com/GetStream/stream-chat-react-native/issues/3000) [#3010](https://github.com/GetStream/stream-chat-react-native/issues/3010) [#3050](https://github.com/GetStream/stream-chat-react-native/issues/3050) [#3061](https://github.com/GetStream/stream-chat-react-native/issues/3061) [#3073](https://github.com/GetStream/stream-chat-react-native/issues/3073) [#3072](https://github.com/GetStream/stream-chat-react-native/issues/3072)
+
+### [3.0.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v3.0.0...sampleapp@v3.0.1) (2025-05-23)
+
+
+### Bug Fixes
+
+* issue with animating giphy on android with latest RN version ([#3092](https://github.com/GetStream/stream-chat-react-native/issues/3092)) ([184ce7a](https://github.com/GetStream/stream-chat-react-native/commit/184ce7a40e8911aac6f3db2035788ab5a94ecb48))
+
 ## [3.0.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v2.5.3...sampleapp@v3.0.0) (2025-05-06)
 
 

@@ -7,13 +7,13 @@ import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries } from '../types';
 
 export const insertReaction = async ({
-  flush = true,
+  execute = true,
   message,
   reaction,
 }: {
   message: MessageResponse | LocalMessage;
   reaction: ReactionResponse;
-  flush?: boolean;
+  execute?: boolean;
 }) => {
   const queries: PreparedQueries[] = [];
 
@@ -34,11 +34,11 @@ export const insertReaction = async ({
   );
 
   SqliteClient.logger?.('info', 'insertReaction', {
-    flush,
+    execute,
     reaction: storableReaction,
   });
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSqlBatch(queries);
   }
 

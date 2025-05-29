@@ -12,6 +12,7 @@ export const mapMemberToStorable = ({
   member: ChannelMemberResponse;
 }): TableRow<'members'> => {
   const {
+    archived_at,
     banned,
     channel_role,
     created_at,
@@ -23,9 +24,11 @@ export const mapMemberToStorable = ({
     shadow_banned,
     updated_at,
     user_id,
+    pinned_at,
   } = member;
 
   return {
+    archivedAt: mapDateTimeToStorable(archived_at),
     banned,
     channelRole: channel_role,
     cid,
@@ -34,6 +37,7 @@ export const mapMemberToStorable = ({
     invited,
     inviteRejectedAt: invite_rejected_at,
     isModerator: is_moderator,
+    pinnedAt: mapDateTimeToStorable(pinned_at),
     role,
     shadowBanned: shadow_banned,
     updatedAt: mapDateTimeToStorable(updated_at),
