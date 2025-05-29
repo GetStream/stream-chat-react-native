@@ -269,6 +269,11 @@ export type Theme = {
     attachButtonContainer: ViewStyle;
     attachmentSelectionBar: ViewStyle;
     attachmentSeparator: ViewStyle;
+    attachmentUnsupportedIndicator: {
+      container: ViewStyle;
+      warningIcon: IconProps;
+      text: TextStyle;
+    };
     audioRecorder: {
       arrowLeftIcon: IconProps;
       checkContainer: ViewStyle;
@@ -320,6 +325,11 @@ export type Theme = {
       container: ViewStyle;
       text: TextStyle;
     };
+    dismissAttachmentUpload: {
+      dismiss: ViewStyle;
+      dismissIcon: IconProps;
+      dismissIconColor: ColorValue;
+    };
     editingBoxContainer: ViewStyle;
     editingBoxHeader: ViewStyle;
     editingBoxHeaderTitle: TextStyle;
@@ -327,22 +337,24 @@ export type Theme = {
       editingBoxHeader: ViewStyle;
       editingBoxHeaderTitle: TextStyle;
     };
-    fileUploadPreview: {
-      dismiss: ViewStyle;
+    fileAttachmentUploadPreview: {
       fileContainer: ViewStyle;
       filenameText: TextStyle;
       fileSizeText: TextStyle;
       fileTextContainer: ViewStyle;
+      uploadProgressOverlay: ViewStyle;
+      wrapper: ViewStyle;
+    };
+    fileUploadPreview: {
       flatList: ViewStyle;
     };
     focusedInputBoxContainer: ViewStyle;
-
-    imageUploadPreview: {
-      dismiss: ViewStyle;
-      dismissIconColor: ColorValue;
-      flatList: ViewStyle;
+    imageAttachmentUploadPreview: {
       itemContainer: ViewStyle;
       upload: ImageStyle;
+    };
+    imageUploadPreview: {
+      flatList: ViewStyle;
     };
     inputBox: TextStyle;
     inputBoxContainer: ViewStyle;
@@ -406,6 +418,12 @@ export type Theme = {
       container: ViewStyle;
       indicatorColor: string;
       overlay: ViewStyle;
+    };
+    videoAttachmentUploadPreview: {
+      recorderIconContainer: ViewStyle;
+      recorderIcon: IconProps;
+      itemContainer: ViewStyle;
+      upload: ImageStyle;
     };
   };
   messageList: {
@@ -1049,6 +1067,11 @@ export const defaultTheme: Theme = {
     attachButtonContainer: {},
     attachmentSelectionBar: {},
     attachmentSeparator: {},
+    attachmentUnsupportedIndicator: {
+      container: {},
+      text: {},
+      warningIcon: {},
+    },
     audioRecorder: {
       arrowLeftIcon: {},
       checkContainer: {},
@@ -1087,6 +1110,11 @@ export const defaultTheme: Theme = {
       container: {},
       text: {},
     },
+    dismissAttachmentUpload: {
+      dismiss: {},
+      dismissIcon: {},
+      dismissIconColor: '',
+    },
     editingBoxContainer: {},
     editingBoxHeader: {},
     editingBoxHeaderTitle: {},
@@ -1094,21 +1122,24 @@ export const defaultTheme: Theme = {
       editingBoxHeader: {},
       editingBoxHeaderTitle: {},
     },
-    fileUploadPreview: {
-      dismiss: {},
+    fileAttachmentUploadPreview: {
       fileContainer: {},
       filenameText: {},
       fileSizeText: {},
       fileTextContainer: {},
+      uploadProgressOverlay: {},
+      wrapper: {},
+    },
+    fileUploadPreview: {
       flatList: {},
     },
     focusedInputBoxContainer: {},
-    imageUploadPreview: {
-      dismiss: {},
-      dismissIconColor: '',
-      flatList: {},
+    imageAttachmentUploadPreview: {
       itemContainer: {},
       upload: {},
+    },
+    imageUploadPreview: {
+      flatList: {},
     },
     inputBox: {},
     inputBoxContainer: {},
@@ -1172,6 +1203,12 @@ export const defaultTheme: Theme = {
       container: {},
       indicatorColor: '',
       overlay: {},
+    },
+    videoAttachmentUploadPreview: {
+      itemContainer: {},
+      recorderIcon: {},
+      recorderIconContainer: {},
+      upload: {},
     },
   },
   messageList: {

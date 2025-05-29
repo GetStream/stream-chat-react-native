@@ -1475,7 +1475,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-image-picker (8.2.0):
+  - react-native-image-picker (8.2.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2581,7 +2581,7 @@ SPEC CHECKSUMS:
   op-sqlite: c33561ea312a2ae38aae032fd3a42635dc6b57e8
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
-  RCT-Folly: 36fe2295e44b10d831836cc0d1daec5f8abcf809
+  RCT-Folly: e78785aa9ba2ed998ea4151e314036f6c49e6d82
   RCTDeprecation: b2eecf2d60216df56bc5e6be5f063826d3c1ee35
   RCTRequired: 78522de7dc73b81f3ed7890d145fa341f5bb32ea
   RCTTypeSafety: c135dd2bf50402d87fd12884cbad5d5e64850edd
@@ -2615,7 +2615,7 @@ SPEC CHECKSUMS:
   react-native-blob-util: 875bbeee07e4ada135e4edf9fc7b22acf8d9721d
   react-native-cameraroll: cdc91c4c953d1a18aa3ce88b5a25698025c8c4d2
   react-native-document-picker: 19be73c0423e4bc886cef74ec282eff750698013
-  react-native-image-picker: 1c620a65f900a47d6d12ec94874c6a1820ebea7d
+  react-native-image-picker: 3a03f96b11ef2b727d3d58a7ed009900b0a56a52
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-safe-area-context: 0b43456abcaaa3c8323bbfafe9c5f0f9511219d2
   react-native-video: a225b4d4d3286f3253dc7b00a62e7c8e59d04d51

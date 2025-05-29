@@ -132,7 +132,11 @@ export * from './MessageInput/MoreOptionsButton';
 export * from './MessageInput/SendButton';
 export * from './MessageInput/StopMessageStreamingButton';
 export * from './MessageInput/ShowThreadMessageInChannelButton';
-export * from './MessageInput/UploadProgressIndicator';
+export * from './MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
+export * from './MessageInput/components/AttachmentPreview/AttachmentUnsupportedIndicator';
+export * from './MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
+export * from './MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
+export * from './MessageInput/components/AttachmentPreview/ImageAttachmentUploadPreview';
 
 export * from './MessageList/DateHeader';
 export * from './MessageList/hooks/useMessageList';

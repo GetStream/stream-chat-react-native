@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Modal, SafeAreaView, StyleSheet, View } from 'react-native';
 
 import {
@@ -16,11 +16,12 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import type {
-  CustomDataManagerState,
-  MessageComposerState,
-  TextComposerState,
-  UserResponse,
+import {
+  FileReference,
+  isLocalImageAttachment,
+  type MessageComposerState,
+  type TextComposerState,
+  type UserResponse,
 } from 'stream-chat';
 
 import { useAudioController } from './hooks/useAudioController';
@@ -35,7 +36,9 @@ import {
   ChannelContextValue,
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
+import { useAttachmentManagerState } from '../../contexts/messageInputContext/hooks/useAttachmentManagerState';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
+import { useMessageComposerHasSendableData } from '../../contexts/messageInputContext/hooks/useMessageComposerHasSendableData';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -58,7 +61,6 @@ import {
   isImageMediaLibraryAvailable,
   NativeHandlers,
 } from '../../native';
-import { compressedImageURI } from '../../utils/compressImage';
 import { AIStates, useAIState } from '../AITypingIndicatorView';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
@@ -106,17 +108,15 @@ type MessageInputPropsWithContext = Pick<
   'AttachmentPickerSelectionBar'
 > &
   Pick<ChatContextValue, 'isOnline'> &
-  Pick<ChannelContextValue, 'channel' | 'members' | 'threadList' | 'watchers'> &
+  Pick<ChannelContextValue, 'channel' | 'editing' | 'members' | 'threadList' | 'watchers'> &
   Pick<
     MessageInputContextValue,
     | 'additionalTextInputProps'
-    | 'asyncIds'
     | 'audioRecordingEnabled'
     | 'asyncMessagesLockDistance'
     | 'asyncMessagesMinimumPressDuration'
     | 'asyncMessagesSlideToCancelDistance'
     | 'asyncMessagesMultiSendEnabled'
-    | 'asyncUploads'
     | 'AudioRecorder'
     | 'AudioRecordingInProgress'
     | 'AudioRecordingLockIndicator'
@@ -127,30 +127,21 @@ type MessageInputPropsWithContext = Pick<
     | 'clearEditingState'
     | 'closeAttachmentPicker'
     | 'compressImageQuality'
-    | 'editing'
+    | 'doFileUploadRequest'
     | 'FileUploadPreview'
-    | 'fileUploads'
     | 'ImageUploadPreview'
-    | 'imageUploads'
     | 'Input'
     | 'inputBoxRef'
     | 'InputButtons'
     | 'InputEditingStateHeader'
     | 'CommandInput'
     | 'InputReplyStateHeader'
-    | 'isValidMessage'
     | 'maxNumberOfFiles'
-    | 'numberOfUploads'
     | 'resetInput'
     | 'SendButton'
-    | 'sending'
-    | 'sendMessageAsync'
     | 'ShowThreadMessageInChannelButton'
     | 'StartAudioRecordingButton'
-    | 'removeFile'
-    | 'removeImage'
     | 'uploadNewFile'
-    | 'uploadNewImage'
     | 'openPollCreationDialog'
     | 'closePollCreationDialog'
     | 'showPollCreationDialog'
@@ -163,13 +154,10 @@ type MessageInputPropsWithContext = Pick<
   Pick<TranslationContextValue, 't'>;
 
 const textComposerStateSelector = (state: TextComposerState) => ({
+  command: state.command,
   mentionedUsers: state.mentionedUsers,
   suggestions: state.suggestions,
   text: state.text,
-});
-
-const customComposerDataSelector = (state: CustomDataManagerState) => ({
-  command: state.custom.command,
 });
 
 const messageComposerStateStoreSelector = (state: MessageComposerState) => ({
@@ -179,12 +167,10 @@ const messageComposerStateStoreSelector = (state: MessageComposerState) => ({
 const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const {
     additionalTextInputProps,
-    asyncIds,
     asyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration,
     asyncMessagesMultiSendEnabled,
     asyncMessagesSlideToCancelDistance,
-    asyncUploads,
     AttachmentPickerSelectionBar,
     AudioRecorder,
     audioRecordingEnabled,
@@ -195,15 +181,13 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     channel,
     closeAttachmentPicker,
     closePollCreationDialog,
-    compressImageQuality,
     cooldownEndsAt,
     CooldownTimer,
     CreatePollContent,
+    doFileUploadRequest,
     editing,
     FileUploadPreview,
-    fileUploads,
     ImageUploadPreview,
-    imageUploads,
     Input,
     inputBoxRef,
     InputButtons,
@@ -211,34 +195,36 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     CommandInput,
     InputReplyStateHeader,
     isOnline,
-    isValidMessage,
     maxNumberOfFiles,
     members,
-    numberOfUploads,
-    removeFile,
-    removeImage,
     Reply,
     resetInput,
     SendButton,
-    sending,
     sendMessage,
-    sendMessageAsync,
     showPollCreationDialog,
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
     StopMessageStreamingButton,
-    thread,
     threadList,
     uploadNewFile,
-    uploadNewImage,
     watchers,
   } = props;
 
+  const [hasResetImages, setHasResetImages] = useState(false);
+  const [hasResetFiles, setHasResetFiles] = useState(false);
+
   const messageComposer = useMessageComposer();
-  const { customDataManager, textComposer } = messageComposer;
-  const { mentionedUsers, text } = useStateStore(textComposer.state, textComposerStateSelector);
-  const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
+  const { attachmentManager, textComposer } = messageComposer;
+  const { command, mentionedUsers, text } = useStateStore(
+    textComposer.state,
+    textComposerStateSelector,
+  );
   const { quotedMessage } = useStateStore(messageComposer.state, messageComposerStateStoreSelector);
+  const { attachments, availableUploadSlots } = useAttachmentManagerState();
+  const hasSendableData = useMessageComposerHasSendableData();
+
+  const imageUploads = attachments.filter((attachment) => isLocalImageAttachment(attachment));
+  const fileUploads = attachments.filter((attachment) => !isLocalImageAttachment(attachment));
 
   const [height, setHeight] = useState(0);
 
@@ -269,59 +255,26 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     selectedFiles,
     selectedImages,
     selectedPicker,
-    setMaxNumberOfFiles,
     setSelectedFiles,
     setSelectedImages,
   } = useAttachmentPickerContext();
 
   const { seconds: cooldownRemainingSeconds } = useCountdown(cooldownEndsAt);
 
-  /**
-   * Mounting and un-mounting logic are un-related in following useEffect.
-   * While mounting we want to pass maxNumberOfFiles (which is prop on Channel component)
-   * to AttachmentPicker (on OverlayProvider)
-   *
-   * While un-mounting, we want to close the picker e.g., while navigating away.
-   */
   useEffect(() => {
-    setMaxNumberOfFiles(maxNumberOfFiles ?? 10);
+    attachmentManager.maxNumberOfFilesPerMessage = maxNumberOfFiles;
+    if (doFileUploadRequest) {
+      attachmentManager.setCustomUploadFn(doFileUploadRequest);
+    }
 
     return closeAttachmentPicker;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [hasResetImages, setHasResetImages] = useState(false);
-  const [hasResetFiles, setHasResetFiles] = useState(false);
   const selectedImagesLength = hasResetImages ? selectedImages.length : 0;
   const imageUploadsLength = hasResetImages ? imageUploads.length : 0;
   const selectedFilesLength = hasResetFiles ? selectedFiles.length : 0;
   const fileUploadsLength = hasResetFiles ? fileUploads.length : 0;
-  const imagesForInput = (!!thread && !!threadList) || (!thread && !threadList);
-
-  /**
-   * Reset the selected images when the component is unmounted.
-   */
-  useEffect(() => {
-    setSelectedImages([]);
-    if (imageUploads.length) {
-      imageUploads.forEach((image) => removeImage(image.id));
-    }
-    return () => setSelectedImages([]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  /**
-   * Reset the selected files when the component is unmounted.
-   */
-  useEffect(() => {
-    setSelectedFiles([]);
-    if (fileUploads.length) {
-      fileUploads.forEach((file) => removeFile(file.id));
-    }
-
-    return () => setSelectedFiles([]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     if (hasResetImages === false && imageUploadsLength === 0 && selectedImagesLength === 0) {
@@ -337,28 +290,55 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileUploadsLength, selectedFilesLength]);
 
+  /**
+   * Reset the selected images and files when the component is unmounted.
+   */
   useEffect(() => {
-    if (imagesForInput === false && imageUploadsLength) {
-      imageUploads.forEach((image) => removeImage(image.id));
+    setSelectedImages([]);
+    setSelectedFiles([]);
+    return () => {
+      setSelectedImages([]);
+      setSelectedFiles([]);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const editingExists = !!editing;
+
+  useEffect(() => {
+    if (editing && inputBoxRef.current) {
+      inputBoxRef.current.focus();
+    }
+
+    /**
+     * Make sure to test `initialValue` functionality, if you are modifying following condition.
+     *
+     * We have the following condition, to make sure - when user comes out of "editing message" state,
+     * we wipe out all the state around message input such as text, mentioned users, image uploads etc.
+     * But it also means, this condition will be fired up on first render, which may result in clearing
+     * the initial value set on input box, through the prop - `initialValue`.
+     * This prop generally gets used for the case of draft message functionality.
+     */
+    if (
+      !editing &&
+      (command || attachments.length > 0 || mentionedUsers.length > 0 || availableUploadSlots) &&
+      resetInput
+    ) {
+      resetInput();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imagesForInput, imageUploadsLength]);
+  }, [editingExists]);
 
   const uploadImagesHandler = async () => {
     const imageToUpload = selectedImages.find((selectedImage) => {
       const uploadedImage = imageUploads.find(
-        (imageUpload) =>
-          imageUpload.file.uri === selectedImage.uri || imageUpload.url === selectedImage.uri,
+        (imageUpload) => imageUpload.localMetadata.previewUri === selectedImage.uri,
       );
       return !uploadedImage;
     });
 
     if (imageToUpload) {
-      const compressedImage = await compressedImageURI(imageToUpload, compressImageQuality);
-      uploadNewImage({
-        ...imageToUpload,
-        uri: compressedImage,
-      });
+      await uploadNewFile(imageToUpload);
     }
   };
 
@@ -366,18 +346,18 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     const imagesToRemove = imageUploads.filter(
       (imageUpload) =>
         !selectedImages.find(
-          (selectedImage) =>
-            selectedImage.uri === imageUpload.file.uri || selectedImage.uri === imageUpload.url,
+          (selectedImage) => selectedImage.uri === imageUpload.localMetadata.previewUri,
         ),
     );
-    imagesToRemove.forEach((image) => removeImage(image.id));
+    imagesToRemove.forEach((image) =>
+      attachmentManager.removeAttachments([image.localMetadata.id]),
+    );
   };
 
   const uploadFilesHandler = async () => {
     const fileToUpload = selectedFiles.find((selectedFile) => {
       const uploadedFile = fileUploads.find(
-        (fileUpload) =>
-          fileUpload.file.uri === selectedFile.uri || fileUpload.url === selectedFile.uri,
+        (fileUpload) => (fileUpload.localMetadata.file as FileReference).uri === selectedFile.uri,
       );
       return !uploadedFile;
     });
@@ -391,10 +371,11 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
       (fileUpload) =>
         !selectedFiles.find(
           (selectedFile) =>
-            selectedFile.uri === fileUpload.file.uri || selectedFile.uri === fileUpload.url,
+            selectedFile.uri === (fileUpload.localMetadata.file as FileReference).uri,
         ),
     );
-    filesToRemove.forEach((file) => removeFile(file.id));
+
+    filesToRemove.forEach((file) => attachmentManager.removeAttachments([file.localMetadata.id]));
   };
 
   /**
@@ -402,14 +383,12 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
    */
   useEffect(() => {
     const uploadOrRemoveImage = async () => {
-      if (imagesForInput) {
-        if (selectedImagesLength > imageUploadsLength) {
-          /** User selected an image in bottom sheet attachment picker */
-          await uploadImagesHandler();
-        } else {
-          /** User de-selected an image in bottom sheet attachment picker */
-          removeImagesHandler();
-        }
+      if (selectedImagesLength > imageUploadsLength) {
+        /** User selected an image in bottom sheet attachment picker */
+        await uploadImagesHandler();
+      } else {
+        /** User de-selected an image in bottom sheet attachment picker */
+        removeImagesHandler();
       }
     };
     // If image picker is not available, don't do anything
@@ -433,6 +412,10 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
         removeFilesHandler();
       }
     };
+
+    if (!isImageMediaLibraryAvailable()) {
+      return;
+    }
     uploadOrRemoveFile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFilesLength]);
@@ -441,13 +424,12 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
    * This is for image attachments selected from attachment picker.
    */
   useEffect(() => {
-    if (imagesForInput && isImageMediaLibraryAvailable()) {
+    if (isImageMediaLibraryAvailable()) {
       if (imageUploadsLength < selectedImagesLength) {
         // /** User removed some image from seleted images within ImageUploadPreview. */
         const updatedSelectedImages = selectedImages.filter((selectedImage) => {
           const uploadedImage = imageUploads.find(
-            (imageUpload) =>
-              imageUpload.file.uri === selectedImage.uri || imageUpload.url === selectedImage.uri,
+            (imageUpload) => imageUpload.localMetadata.previewUri === selectedImage.uri,
           );
           return uploadedImage;
         });
@@ -456,7 +438,9 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
         /**
          * User is editing some message which contains image attachments.
          **/
-        setSelectedImages(imageUploads.map((imageUpload) => imageUpload.file));
+        setSelectedImages(
+          imageUploads.map((imageUpload) => imageUpload.localMetadata.file as FileReference),
+        );
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -472,7 +456,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
         const updatedSelectedFiles = selectedFiles.filter((selectedFile) => {
           const uploadedFile = fileUploads.find(
             (fileUpload) =>
-              fileUpload.file.uri === selectedFile.uri || fileUpload.url === selectedFile.uri,
+              (fileUpload.localMetadata.file as FileReference).uri === selectedFile.uri,
           );
           return uploadedFile;
         });
@@ -481,58 +465,13 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
         /**
          * User is editing some message which contains video attachments.
          **/
-        setSelectedFiles(fileUploads.map((fileUpload) => fileUpload.file));
+        setSelectedFiles(
+          fileUploads.map((fileUpload) => fileUpload.localMetadata.file as FileReference),
+        );
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileUploadsLength]);
-
-  const editingExists = !!editing;
-
-  useEffect(() => {
-    if (editing && inputBoxRef.current) {
-      inputBoxRef.current.focus();
-    }
-
-    /**
-     * Make sure to test `initialValue` functionality, if you are modifying following condition.
-     *
-     * We have the following condition, to make sure - when user comes out of "editing message" state,
-     * we wipe out all the state around message input such as text, mentioned users, image uploads etc.
-     * But it also means, this condition will be fired up on first render, which may result in clearing
-     * the initial value set on input box, through the prop - `initialValue`.
-     * This prop generally gets used for the case of draft message functionality.
-     */
-    if (
-      !editing &&
-      (command ||
-        fileUploads.length > 0 ||
-        mentionedUsers.length > 0 ||
-        imageUploads.length > 0 ||
-        numberOfUploads > 0) &&
-      resetInput
-    ) {
-      resetInput();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editingExists]);
-
-  const asyncIdsString = asyncIds.join();
-  const asyncUploadsString = Object.values(asyncUploads)
-    .map(({ state, url }) => `${state}${url}`)
-    .join();
-  useEffect(() => {
-    if (Object.keys(asyncUploads).length) {
-      /**
-       * When successful image upload response occurs after hitting send,
-       * send a follow up message with the image
-       */
-      sending.current = true;
-      asyncIds.forEach((id) => sendMessageAsync(id));
-      sending.current = false;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [asyncIdsString, asyncUploadsString, sendMessageAsync]);
 
   const getMembers = () => {
     const result: UserResponse[] = [];
@@ -591,23 +530,13 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     waveformData,
   } = useAudioController();
 
-  const isSendingButtonVisible = () => {
-    if (audioRecordingEnabled && isAudioRecorderAvailable()) {
-      if (recording) {
-        return false;
-      }
-      if (text && text.trim()) {
-        return true;
-      }
+  const asyncAudioEnabled = audioRecordingEnabled && isAudioRecorderAvailable();
+  const hasText = !!text;
+  const showSendingButton = hasText || attachments.length;
 
-      const imagesAndFiles = [...imageUploads, ...fileUploads];
-      if (imagesAndFiles.length === 0) {
-        return false;
-      }
-    }
-
-    return true;
-  };
+  const isSendingButtonVisible = useMemo(() => {
+    return asyncAudioEnabled && showSendingButton && !recording;
+  }, [asyncAudioEnabled, recording, showSendingButton]);
 
   const micPositionX = useSharedValue(0);
   const micPositionY = useSharedValue(0);
@@ -779,7 +708,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                         <Reply />
                       </View>
                     )}
-                    {imageUploads.length ? <ImageUploadPreview /> : null}
+                    <ImageUploadPreview />
                     {imageUploads.length && fileUploads.length ? (
                       <View
                         style={[
@@ -792,7 +721,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                         ]}
                       />
                     ) : null}
-                    {fileUploads.length ? <FileUploadPreview /> : null}
+                    <FileUploadPreview />
                     {command ? (
                       <CommandInput disabled={!isOnline} />
                     ) : (
@@ -809,14 +738,12 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 
               {shouldDisplayStopAIGeneration ? (
                 <StopMessageStreamingButton onPress={stopGenerating} />
-              ) : isSendingButtonVisible() ? (
+              ) : isSendingButtonVisible ? (
                 cooldownRemainingSeconds ? (
                   <CooldownTimer seconds={cooldownRemainingSeconds} />
                 ) : (
                   <View style={[styles.sendButtonContainer, sendButtonContainer]}>
-                    <SendButton
-                      disabled={sending.current || !isValidMessage() || (!!command && !isOnline)}
-                    />
+                    <SendButton disabled={!hasSendableData || (!!command && !isOnline)} />
                   </View>
                 )
               ) : null}
@@ -893,17 +820,13 @@ const areEqual = (
     asyncMessagesLockDistance: prevAsyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration: prevAsyncMessagesMinimumPressDuration,
     asyncMessagesSlideToCancelDistance: prevAsyncMessagesSlideToCancelDistance,
-    asyncUploads: prevAsyncUploads,
     audioRecordingEnabled: prevAsyncMessagesEnabled,
     channel: prevChannel,
     closePollCreationDialog: prevClosePollCreationDialog,
+    cooldownEndsAt: prevCooldownEndsAt,
     editing: prevEditing,
-    fileUploads: prevFileUploads,
-    imageUploads: prevImageUploads,
     isOnline: prevIsOnline,
-    isValidMessage: prevIsValidMessage,
     openPollCreationDialog: prevOpenPollCreationDialog,
-    sending: prevSending,
     showPollCreationDialog: prevShowPollCreationDialog,
     t: prevT,
     thread: prevThread,
@@ -914,17 +837,13 @@ const areEqual = (
     asyncMessagesLockDistance: nextAsyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration: nextAsyncMessagesMinimumPressDuration,
     asyncMessagesSlideToCancelDistance: nextAsyncMessagesSlideToCancelDistance,
-    asyncUploads: nextAsyncUploads,
     audioRecordingEnabled: nextAsyncMessagesEnabled,
     channel: nextChannel,
     closePollCreationDialog: nextClosePollCreationDialog,
+    cooldownEndsAt: nextCooldownEndsAt,
     editing: nextEditing,
-    fileUploads: nextFileUploads,
-    imageUploads: nextImageUploads,
     isOnline: nextIsOnline,
-    isValidMessage: nextIsValidMessage,
     openPollCreationDialog: nextOpenPollCreationDialog,
-    sending: nextSending,
     showPollCreationDialog: nextShowPollCreationDialog,
     t: nextT,
     thread: nextThread,
@@ -983,37 +902,13 @@ const areEqual = (
     return false;
   }
 
-  const imageUploadsEqual = prevImageUploads.length === nextImageUploads.length;
-  if (!imageUploadsEqual) {
-    return false;
-  }
-
-  const sendingEqual = prevSending.current === nextSending.current;
-  if (!sendingEqual) {
-    return false;
-  }
-
   const isOnlineEqual = prevIsOnline === nextIsOnline;
   if (!isOnlineEqual) {
     return false;
   }
 
-  const isValidMessageEqual = prevIsValidMessage() === nextIsValidMessage();
-  if (!isValidMessageEqual) {
-    return false;
-  }
-
-  const asyncUploadsEqual = Object.keys(prevAsyncUploads).every(
-    (key) =>
-      prevAsyncUploads[key].state === nextAsyncUploads[key].state &&
-      prevAsyncUploads[key].url === nextAsyncUploads[key].url,
-  );
-  if (!asyncUploadsEqual) {
-    return false;
-  }
-
-  const fileUploadsEqual = prevFileUploads.length === nextFileUploads.length;
-  if (!fileUploadsEqual) {
+  const cooldownEndsAtEqual = prevCooldownEndsAt === nextCooldownEndsAt;
+  if (!cooldownEndsAtEqual) {
     return false;
   }
 
@@ -1054,16 +949,14 @@ export const MessageInput = (props: MessageInputProps) => {
   const { isOnline } = useChatContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
-  const { channel, members, threadList, watchers } = useChannelContext();
+  const { channel, editing, members, threadList, watchers } = useChannelContext();
 
   const {
     additionalTextInputProps,
-    asyncIds,
     asyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration,
     asyncMessagesMultiSendEnabled,
     asyncMessagesSlideToCancelDistance,
-    asyncUploads,
     AudioRecorder,
     audioRecordingEnabled,
     AudioRecordingInProgress,
@@ -1078,35 +971,26 @@ export const MessageInput = (props: MessageInputProps) => {
     cooldownEndsAt,
     CooldownTimer,
     CreatePollContent,
-    editing,
+    doFileUploadRequest,
     FileUploadPreview,
-    fileUploads,
     ImageUploadPreview,
-    imageUploads,
     Input,
     inputBoxRef,
     InputButtons,
     InputEditingStateHeader,
     CommandInput,
     InputReplyStateHeader,
-    isValidMessage,
     maxNumberOfFiles,
-    numberOfUploads,
     openPollCreationDialog,
-    removeFile,
-    removeImage,
     resetInput,
     SendButton,
-    sending,
     sendMessage,
-    sendMessageAsync,
     SendMessageDisallowedIndicator,
     showPollCreationDialog,
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
     StopMessageStreamingButton,
     uploadNewFile,
-    uploadNewImage,
   } = useMessageInputContext();
 
   const { Reply } = useMessagesContext();
@@ -1127,12 +1011,10 @@ export const MessageInput = (props: MessageInputProps) => {
     <MemoizedMessageInput
       {...{
         additionalTextInputProps,
-        asyncIds,
         asyncMessagesLockDistance,
         asyncMessagesMinimumPressDuration,
         asyncMessagesMultiSendEnabled,
         asyncMessagesSlideToCancelDistance,
-        asyncUploads,
         AttachmentPickerSelectionBar,
         AudioRecorder,
         audioRecordingEnabled,
@@ -1150,30 +1032,23 @@ export const MessageInput = (props: MessageInputProps) => {
         cooldownEndsAt,
         CooldownTimer,
         CreatePollContent,
+        doFileUploadRequest,
         editing,
         FileUploadPreview,
-        fileUploads,
         ImageUploadPreview,
-        imageUploads,
         Input,
         inputBoxRef,
         InputButtons,
         InputEditingStateHeader,
         InputReplyStateHeader,
         isOnline,
-        isValidMessage,
         maxNumberOfFiles,
         members,
-        numberOfUploads,
         openPollCreationDialog,
-        removeFile,
-        removeImage,
         Reply,
         resetInput,
         SendButton,
-        sending,
         sendMessage,
-        sendMessageAsync,
         SendMessageDisallowedIndicator,
         showPollCreationDialog,
         ShowThreadMessageInChannelButton,
@@ -1183,7 +1058,6 @@ export const MessageInput = (props: MessageInputProps) => {
         thread,
         threadList,
         uploadNewFile,
-        uploadNewImage,
         watchers,
       }}
       {...props}

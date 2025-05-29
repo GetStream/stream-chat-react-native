@@ -1,6 +1,7 @@
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -9,6 +10,52 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
 import { CircleClose, Edit } from '../../../icons';
+
+export type InputEditingStateHeaderProps = Partial<
+  Pick<MessageInputContextValue, 'clearEditingState'>
+>;
+
+export const InputEditingStateHeader = ({
+  clearEditingState: propClearEditingState,
+}: InputEditingStateHeaderProps) => {
+  const messageComposer = useMessageComposer();
+  const { t } = useTranslationContext();
+  const { clearEditingState: contextClearEditingState } = useMessageInputContext();
+
+  const clearEditingState = propClearEditingState || contextClearEditingState;
+
+  const {
+    theme: {
+      colors: { black, grey, grey_gainsboro },
+      messageInput: {
+        editingStateHeader: { editingBoxHeader, editingBoxHeaderTitle },
+      },
+    },
+  } = useTheme();
+
+  const onCloseHandler = useCallback(() => {
+    if (clearEditingState) {
+      clearEditingState();
+    }
+    messageComposer.restore();
+  }, [clearEditingState, messageComposer]);
+
+  return (
+    <View style={[styles.editingBoxHeader, editingBoxHeader]}>
+      <Edit pathFill={grey_gainsboro} />
+      <Text style={[styles.editingBoxHeaderTitle, { color: black }, editingBoxHeaderTitle]}>
+        {t<string>('Editing Message')}
+      </Text>
+      <Pressable
+        onPress={onCloseHandler}
+        style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+        testID='close-button'
+      >
+        <CircleClose pathFill={grey} />
+      </Pressable>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   editingBoxHeader: {
@@ -22,52 +69,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
-export type InputEditingStateHeaderProps = Partial<
-  Pick<MessageInputContextValue, 'clearEditingState' | 'resetInput'>
->;
-
-export const InputEditingStateHeader = ({
-  clearEditingState: propClearEditingState,
-  resetInput: propResetInput,
-}: InputEditingStateHeaderProps) => {
-  const { t } = useTranslationContext();
-  const { clearEditingState: contextClearEditingState, resetInput: contextResetInput } =
-    useMessageInputContext();
-
-  const clearEditingState = propClearEditingState || contextClearEditingState;
-  const resetInput = propResetInput || contextResetInput;
-
-  const {
-    theme: {
-      colors: { black, grey, grey_gainsboro },
-      messageInput: {
-        editingStateHeader: { editingBoxHeader, editingBoxHeaderTitle },
-      },
-    },
-  } = useTheme();
-
-  return (
-    <View style={[styles.editingBoxHeader, editingBoxHeader]}>
-      <Edit pathFill={grey_gainsboro} />
-      <Text style={[styles.editingBoxHeaderTitle, { color: black }, editingBoxHeaderTitle]}>
-        {t<string>('Editing Message')}
-      </Text>
-      <TouchableOpacity
-        onPress={() => {
-          if (resetInput) {
-            resetInput();
-          }
-          if (clearEditingState) {
-            clearEditingState();
-          }
-        }}
-        testID='close-button'
-      >
-        <CircleClose pathFill={grey} />
-      </TouchableOpacity>
-    </View>
-  );
-};
 
 InputEditingStateHeader.displayName = 'EditingStateHeader{messageInput}';

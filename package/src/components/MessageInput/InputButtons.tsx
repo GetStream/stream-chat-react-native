@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { CustomDataManagerState, TextComposerState } from 'stream-chat';
+import { TextComposerState } from 'stream-chat';
 
+import { AttachmentPickerContextValue, useAttachmentPickerContext } from '../../contexts';
+import { useAttachmentManagerState } from '../../contexts/messageInputContext/hooks/useAttachmentManagerState';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
   MessageInputContextValue,
@@ -23,16 +25,13 @@ export type InputButtonsWithContextProps = Pick<
   | 'hasFilePicker'
   | 'hasImagePicker'
   | 'MoreOptionsButton'
-  | 'selectedPicker'
   | 'toggleAttachmentPicker'
->;
+> &
+  Pick<AttachmentPickerContextValue, 'selectedPicker'>;
 
 const textComposerStateSelector = (state: TextComposerState) => ({
+  command: state.command,
   text: state.text,
-});
-
-const customComposerDataSelector = (state: CustomDataManagerState) => ({
-  command: state.custom.command,
 });
 
 export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => {
@@ -45,16 +44,18 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
     hasImagePicker,
     MoreOptionsButton,
   } = props;
-  const { customDataManager, textComposer } = useMessageComposer();
-  const { text } = useStateStore(textComposer.state, textComposerStateSelector);
-  const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
+  const { textComposer } = useMessageComposer();
+  const { command, text } = useStateStore(textComposer.state, textComposerStateSelector);
+
   const [showMoreOptions, setShowMoreOptions] = useState(true);
+  const { attachments } = useAttachmentManagerState();
 
   const hasText = !!text;
+  const shouldShowMoreOptions = hasText || !!attachments.length;
 
   useEffect(() => {
-    setShowMoreOptions(!hasText);
-  }, [hasText]);
+    setShowMoreOptions(!shouldShowMoreOptions);
+  }, [shouldShowMoreOptions]);
 
   const {
     theme: {
@@ -145,9 +146,9 @@ export const InputButtons = (props: InputButtonsProps) => {
     hasFilePicker,
     hasImagePicker,
     MoreOptionsButton,
-    selectedPicker,
     toggleAttachmentPicker,
   } = useMessageInputContext();
+  const { selectedPicker } = useAttachmentPickerContext();
 
   return (
     <MemoizedInputButtonsWithContext
