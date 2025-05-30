@@ -158,7 +158,6 @@ exports[`Thread should match thread snapshot 1`] = `
         onViewableItemsChanged={[Function]}
         removeClippedSubviews={false}
         renderItem={[Function]}
-        scrollEnabled={false}
         scrollEventThrottle={0.0001}
         showsVerticalScrollIndicator={true}
         stickyHeaderIndices={[]}

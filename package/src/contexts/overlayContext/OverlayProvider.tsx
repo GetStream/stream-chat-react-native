@@ -204,8 +204,8 @@ export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) 
       <OverlayContext.Provider value={overlayContext}>
         <AttachmentPickerProvider value={attachmentPickerContext}>
           <ImageGalleryProvider>
-            {children}
             <ThemeProvider style={overlayContext.style}>
+              {children}
               {overlay === 'gallery' && (
                 <ImageGallery
                   autoPlayVideo={autoPlayVideo}
