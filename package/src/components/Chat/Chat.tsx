@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { Image, Platform } from 'react-native';
 
 import { Channel, OfflineDBState } from 'stream-chat';
@@ -11,8 +11,7 @@ import { useMutedUsers } from './hooks/useMutedUsers';
 import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
 import { ChatContextValue, ChatProvider } from '../../contexts/chatContext/ChatContext';
 import { useDebugContext } from '../../contexts/debugContext/DebugContext';
-import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
-import { DeepPartial, ThemeProvider } from '../../contexts/themeContext/ThemeContext';
+import { DeepPartial, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
 import type { Theme } from '../../contexts/themeContext/utils/theme';
 import {
   DEFAULT_USER_LANGUAGE,
@@ -156,6 +155,11 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
   // Setup translators
   const translators = useStreami18n(i18nInstance);
 
+  const translationContextValue = useMemo(
+    () => ({ ...translators, userLanguage: client.user?.language || DEFAULT_USER_LANGUAGE }),
+    [client.user?.language, translators],
+  );
+
   /**
    * Setup connection event listeners
    */
@@ -262,9 +266,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
 
   return (
     <ChatProvider value={chatContext}>
-      <TranslationProvider
-        value={{ ...translators, userLanguage: client.user?.language || DEFAULT_USER_LANGUAGE }}
-      >
+      <TranslationProvider value={translationContextValue}>
         <ThemeProvider style={style}>
           <ChannelsStateProvider>{children}</ChannelsStateProvider>
         </ThemeProvider>
@@ -286,7 +288,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
  * - setActiveChannel - function to set the currently active channel
  */
 export const Chat = (props: PropsWithChildren<ChatProps>) => {
-  const { style } = useOverlayContext();
+  const { theme } = useTheme();
 
-  return <ChatWithContext {...{ style }} {...props} />;
+  return <ChatWithContext style={theme as DeepPartial<Theme>} {...props} />;
 };
