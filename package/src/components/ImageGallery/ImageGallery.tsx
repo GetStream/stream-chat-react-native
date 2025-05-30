@@ -293,7 +293,8 @@ export const ImageGallery = <
   const [selectedIndex, setSelectedIndex] = useState(photoSelectedIndex);
   const index = useSharedValue(photoSelectedIndex);
 
-  const [imageGalleryAttachments, setImageGalleryAttachments] = useState<Photo<StreamChatGenerics>[]>(photos);
+  const [imageGalleryAttachments, setImageGalleryAttachments] =
+    useState<Photo<StreamChatGenerics>[]>(photos);
 
   /**
    * Photos length needs to be kept as a const here so if the length
