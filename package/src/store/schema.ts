@@ -60,6 +60,47 @@ export const tables: Tables = {
     },
     primaryKey: ['cid'],
   },
+  draft: {
+    columns: {
+      cid: 'TEXT NOT NULL',
+      createdAt: 'TEXT',
+      draftMessageId: 'TEXT NOT NULL',
+      parentId: 'TEXT',
+      quotedMessageId: 'TEXT',
+    },
+    foreignKeys: [
+      {
+        column: 'draftMessageId',
+        onDeleteAction: 'CASCADE',
+        referenceTable: 'draftMessage',
+        referenceTableColumn: 'id',
+      },
+    ],
+    indexes: [
+      {
+        columns: ['cid', 'draftMessageId'],
+        name: 'index_draft',
+        unique: false,
+      },
+    ],
+    primaryKey: ['cid', 'draftMessageId'],
+  },
+  draftMessage: {
+    columns: {
+      attachments: 'TEXT',
+      custom: 'TEXT',
+      id: 'TEXT NOT NULL',
+      mentionedUsers: 'TEXT',
+      parentId: 'TEXT',
+      poll_id: 'TEXT',
+      quotedMessageId: 'TEXT',
+      showInChannel: 'BOOLEAN DEFAULT FALSE',
+      silent: 'BOOLEAN DEFAULT FALSE',
+      text: 'TEXT',
+      type: 'TEXT',
+    },
+    primaryKey: ['id'],
+  },
   members: {
     columns: {
       archivedAt: 'TEXT',
@@ -268,6 +309,26 @@ export type Schema = {
     truncatedBy?: string;
     truncatedById?: string;
     updatedAt?: string;
+  };
+  draft: {
+    draftMessageId: string;
+    cid: string;
+    createdAt: string;
+    parentId?: string;
+    quotedMessageId?: string;
+  };
+  draftMessage: {
+    id: string;
+    attachments?: string;
+    custom?: string;
+    mentionedUsers?: string;
+    parentId?: string;
+    poll_id?: string;
+    quotedMessageId?: string;
+    showInChannel?: boolean;
+    silent?: boolean;
+    text: string;
+    type?: MessageLabel;
   };
   members: {
     archivedAt?: string;

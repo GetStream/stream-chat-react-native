@@ -30,6 +30,12 @@ export class OfflineDB extends AbstractOfflineDB {
 
   upsertPoll = api.upsertPoll;
 
+  upsertDraft = api.upsertDraft;
+
+  getDraft = api.getDraft;
+
+  deleteDraft = api.deleteDraft;
+
   upsertChannelData = api.upsertChannelData;
 
   upsertReads = api.upsertReads;

@@ -28,7 +28,7 @@ import type { PreparedBatchQueries, PreparedQueries, Scalar, Table } from './typ
  * This way usage @op-engineering/op-sqlite package is scoped to a single class/file.
  */
 export class SqliteClient {
-  static dbVersion = 9;
+  static dbVersion = 10;
 
   static dbName = DB_NAME;
   static dbLocation = DB_LOCATION;
