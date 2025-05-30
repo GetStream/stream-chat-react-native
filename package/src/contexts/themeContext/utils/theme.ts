@@ -471,8 +471,11 @@ export type Theme = {
       avatarSize: number;
       container: ViewStyle;
       contentContainer: ViewStyle;
+      filledBackgroundColor: ColorValue;
       flatlistColumnContainer: ViewStyle;
       flatlistContainer: ViewStyle;
+      iconFilledColor: ColorValue;
+      iconUnFilledColor: ColorValue;
       radius: number;
       reactionBubble: ViewStyle;
       reactionBubbleBackground: ViewStyle;
@@ -480,6 +483,7 @@ export type Theme = {
       reactionSelectorContainer: ViewStyle;
       reactionsText: TextStyle;
       title: TextStyle;
+      unfilledBackgroundColor: ColorValue;
     };
   };
   messageSimple: {
@@ -1235,8 +1239,11 @@ export const defaultTheme: Theme = {
       avatarSize: 64,
       container: {},
       contentContainer: {},
+      filledBackgroundColor: Colors.light_blue,
       flatlistColumnContainer: {},
       flatlistContainer: {},
+      iconFilledColor: Colors.accent_blue,
+      iconUnFilledColor: Colors.grey,
       radius: 2,
       reactionBubble: {},
       reactionBubbleBackground: {},
@@ -1244,6 +1251,7 @@ export const defaultTheme: Theme = {
       reactionSelectorContainer: {},
       reactionsText: {},
       title: {},
+      unfilledBackgroundColor: Colors.grey_gainsboro,
     },
   },
   messageSimple: {
