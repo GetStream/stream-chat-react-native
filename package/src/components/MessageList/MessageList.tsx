@@ -43,10 +43,6 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import {
-  OverlayContextValue,
-  useOverlayContext,
-} from '../../contexts/overlayContext/OverlayContext';
-import {
   PaginatedMessageListContextValue,
   usePaginatedMessageListContext,
 } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
@@ -166,7 +162,6 @@ type MessageListPropsWithContext<
   Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
   Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setMessages'> &
   Pick<PaginatedMessageListContextValue<StreamChatGenerics>, 'loadMore' | 'loadMoreRecent'> &
-  Pick<OverlayContextValue, 'overlay'> &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
     | 'DateHeader'
@@ -299,7 +294,6 @@ const MessageListWithContext = <
     noGroupByUser,
     onListScroll,
     onThreadSelect,
-    overlay,
     reloadChannel,
     ScrollToBottomButton,
     selectedPicker,
@@ -1276,7 +1270,6 @@ const MessageListWithContext = <
           onViewableItemsChanged={stableOnViwableItemsChanged}
           ref={refCallback}
           renderItem={renderItem}
-          scrollEnabled={overlay === 'none'}
           showsVerticalScrollIndicator={!shouldApplyAndroidWorkaround}
           style={flatListStyle}
           testID='message-flat-list'
@@ -1359,7 +1352,6 @@ export const MessageList = <
     UnreadMessagesNotification,
   } = useMessagesContext<StreamChatGenerics>();
   const { loadMore, loadMoreRecent } = usePaginatedMessageListContext<StreamChatGenerics>();
-  const { overlay } = useOverlayContext();
   const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } =
     useThreadContext<StreamChatGenerics>();
 
@@ -1395,7 +1387,6 @@ export const MessageList = <
         MessageSystem,
         myMessageTheme,
         NetworkDownIndicator,
-        overlay,
         reloadChannel,
         ScrollToBottomButton,
         scrollToFirstUnreadThreshold,

@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { Image, Platform } from 'react-native';
 
 import type { Channel, StreamChat } from 'stream-chat';
@@ -13,8 +13,7 @@ import { useSyncDatabase } from './hooks/useSyncDatabase';
 import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
 import { ChatContextValue, ChatProvider } from '../../contexts/chatContext/ChatContext';
 import { useDebugContext } from '../../contexts/debugContext/DebugContext';
-import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
-import { DeepPartial, ThemeProvider } from '../../contexts/themeContext/ThemeContext';
+import { DeepPartial, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
 import type { Theme } from '../../contexts/themeContext/utils/theme';
 import {
   DEFAULT_USER_LANGUAGE,
@@ -158,6 +157,11 @@ const ChatWithContext = <
   // Setup translators
   const translators = useStreami18n(i18nInstance);
 
+  const translationContextValue = useMemo(
+    () => ({ ...translators, userLanguage: client.user?.language || DEFAULT_USER_LANGUAGE }),
+    [client.user?.language, translators],
+  );
+
   /**
    * Setup connection event listeners
    */
@@ -295,9 +299,7 @@ const ChatWithContext = <
 
   return (
     <ChatProvider<StreamChatGenerics> value={chatContext}>
-      <TranslationProvider
-        value={{ ...translators, userLanguage: client.user?.language || DEFAULT_USER_LANGUAGE }}
-      >
+      <TranslationProvider value={translationContextValue}>
         <ThemeProvider style={style}>
           <ChannelsStateProvider<StreamChatGenerics>>{children}</ChannelsStateProvider>
         </ThemeProvider>
@@ -332,7 +334,7 @@ export const Chat = <
 >(
   props: PropsWithChildren<ChatProps<StreamChatGenerics>>,
 ) => {
-  const { style } = useOverlayContext();
+  const { theme } = useTheme();
 
-  return <ChatWithContext {...{ style }} {...props} />;
+  return <ChatWithContext style={theme as DeepPartial<Theme>} {...props} />;
 };

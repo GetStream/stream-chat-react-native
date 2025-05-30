@@ -1,4 +1,4 @@
-import React, { RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import React, { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image, ImageStyle, Keyboard, StyleSheet, ViewStyle } from 'react-native';
 
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -132,9 +132,6 @@ export const ImageGallery = <
     numberOfImageGalleryGridColumns,
     overlayOpacity,
   } = props;
-  const [imageGalleryAttachments, setImageGalleryAttachments] = useState<
-    Photo<StreamChatGenerics>[]
-  >([]);
   const { resizableCDNHosts } = useChatConfigContext();
   const {
     theme: {
@@ -199,13 +196,6 @@ export const ImageGallery = <
   const [currentImageHeight, setCurrentImageHeight] = useState<number>(fullWindowHeight);
 
   /**
-   * JS and UI index values, the JS follows the UI but is needed
-   * for rendering the virtualized image list
-   */
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const index = useSharedValue(0);
-
-  /**
    * Header visible value for animating in out
    */
   const headerFooterVisible = useSharedValue(1);
@@ -224,57 +214,86 @@ export const ImageGallery = <
    * photo attachments
    */
 
-  const photos = messages.reduce((acc: Photo<StreamChatGenerics>[], cur) => {
-    const attachmentImages =
-      cur.attachments
-        ?.filter(
-          (attachment) =>
-            (attachment.type === FileTypes.Giphy &&
-              (attachment.giphy?.[giphyVersion]?.url ||
-                attachment.thumb_url ||
-                attachment.image_url)) ||
-            (attachment.type === FileTypes.Image &&
-              !attachment.title_link &&
-              !attachment.og_scrape_url &&
-              getUrlOfImageAttachment(attachment)) ||
-            (isVideoPlayerAvailable() && attachment.type === FileTypes.Video),
-        )
-        .reverse() || [];
+  const photos = useMemo(
+    () =>
+      messages.reduce((acc: Photo<StreamChatGenerics>[], cur) => {
+        const attachmentImages =
+          cur.attachments
+            ?.filter(
+              (attachment) =>
+                (attachment.type === FileTypes.Giphy &&
+                  (attachment.giphy?.[giphyVersion]?.url ||
+                    attachment.thumb_url ||
+                    attachment.image_url)) ||
+                (attachment.type === FileTypes.Image &&
+                  !attachment.title_link &&
+                  !attachment.og_scrape_url &&
+                  getUrlOfImageAttachment(attachment)) ||
+                (isVideoPlayerAvailable() && attachment.type === FileTypes.Video),
+            )
+            .reverse() || [];
 
-    const attachmentPhotos = attachmentImages.map((a) => {
-      const imageUrl = getUrlOfImageAttachment(a) as string;
-      const giphyURL = a.giphy?.[giphyVersion]?.url || a.thumb_url || a.image_url;
-      const isInitiallyPaused = !autoPlayVideo;
+        const attachmentPhotos = attachmentImages.map((a) => {
+          const imageUrl = getUrlOfImageAttachment(a) as string;
+          const giphyURL = a.giphy?.[giphyVersion]?.url || a.thumb_url || a.image_url;
+          const isInitiallyPaused = !autoPlayVideo;
 
-      return {
-        channelId: cur.cid,
-        created_at: cur.created_at,
-        duration: 0,
-        id: `photoId-${cur.id}-${imageUrl}`,
-        messageId: cur.id,
-        mime_type: a.type === 'giphy' ? getGiphyMimeType(giphyURL ?? '') : a.mime_type,
-        original_height: a.original_height,
-        original_width: a.original_width,
-        paused: isInitiallyPaused,
-        progress: 0,
-        thumb_url: a.thumb_url,
-        type: a.type,
-        uri:
-          a.type === 'giphy'
-            ? giphyURL
-            : getResizedImageUrl({
-                height: fullWindowHeight,
-                resizableCDNHosts,
-                url: imageUrl,
-                width: fullWindowWidth,
-              }),
-        user: cur.user,
-        user_id: cur.user_id,
-      };
-    });
+          return {
+            channelId: cur.cid,
+            created_at: cur.created_at,
+            duration: 0,
+            id: `photoId-${cur.id}-${imageUrl}`,
+            messageId: cur.id,
+            mime_type: a.type === 'giphy' ? getGiphyMimeType(giphyURL ?? '') : a.mime_type,
+            original_height: a.original_height,
+            original_width: a.original_width,
+            paused: isInitiallyPaused,
+            progress: 0,
+            thumb_url: a.thumb_url,
+            type: a.type,
+            uri:
+              a.type === 'giphy'
+                ? giphyURL
+                : getResizedImageUrl({
+                    height: fullWindowHeight,
+                    resizableCDNHosts,
+                    url: imageUrl,
+                    width: fullWindowWidth,
+                  }),
+            user: cur.user,
+            user_id: cur.user_id,
+          };
+        });
 
-    return [...attachmentPhotos, ...acc] as Photo<StreamChatGenerics>[];
-  }, []);
+        return [...attachmentPhotos, ...acc] as Photo<StreamChatGenerics>[];
+      }, []),
+    [autoPlayVideo, fullWindowHeight, fullWindowWidth, giphyVersion, messages, resizableCDNHosts],
+  );
+
+  /**
+   * The URL for the images may differ because of dimensions passed as
+   * part of the query.
+   */
+  const stripQueryFromUrl = (url: string) => url.split('?')[0];
+
+  const photoSelectedIndex = useMemo(() => {
+    const idx = photos.findIndex(
+      (photo) =>
+        photo.messageId === selectedMessage?.messageId &&
+        stripQueryFromUrl(photo.uri) === stripQueryFromUrl(selectedMessage?.url || ''),
+    );
+
+    return idx === -1 ? 0 : idx;
+  }, [photos, selectedMessage]);
+
+  /**
+   * JS and UI index values, the JS follows the UI but is needed
+   * for rendering the virtualized image list
+   */
+  const [selectedIndex, setSelectedIndex] = useState(photoSelectedIndex);
+  const index = useSharedValue(photoSelectedIndex);
+
+  const [imageGalleryAttachments, setImageGalleryAttachments] = useState<Photo<StreamChatGenerics>[]>(photos);
 
   /**
    * Photos length needs to be kept as a const here so if the length
@@ -283,17 +302,6 @@ export const ImageGallery = <
    * inside the gesture handler as it will have an array as a dependency
    */
   const photoLength = photos.length;
-
-  useEffect(() => {
-    setImageGalleryAttachments(photos);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  /**
-   * The URL for the images may differ because of dimensions passed as
-   * part of the query.
-   */
-  const stripQueryFromUrl = (url: string) => url.split('?')[0];
 
   /**
    * Set selected photo when changed via pressing in the message list
@@ -316,8 +324,7 @@ export const ImageGallery = <
     );
 
     runOnUI(updatePosition)(newIndex);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedMessage, photoLength]);
+  }, [selectedMessage, photos, index, translationX, fullWindowWidth]);
 
   /**
    * Image heights are not provided and therefore need to be calculated.
@@ -328,22 +335,24 @@ export const ImageGallery = <
   const uriForCurrentImage = imageGalleryAttachments[selectedIndex]?.uri;
 
   useEffect(() => {
-    setCurrentImageHeight(fullWindowHeight);
+    let currentImageHeight = fullWindowHeight;
     const photo = imageGalleryAttachments[index.value];
     const height = photo?.original_height;
     const width = photo?.original_width;
 
     if (height && width) {
       const imageHeight = Math.floor(height * (fullWindowWidth / width));
-      setCurrentImageHeight(imageHeight > fullWindowHeight ? fullWindowHeight : imageHeight);
+      currentImageHeight = imageHeight > fullWindowHeight ? fullWindowHeight : imageHeight;
     } else if (photo?.uri) {
       if (photo.type === FileTypes.Image) {
         Image.getSize(photo.uri, (width, height) => {
           const imageHeight = Math.floor(height * (fullWindowWidth / width));
-          setCurrentImageHeight(imageHeight > fullWindowHeight ? fullWindowHeight : imageHeight);
+          currentImageHeight = imageHeight > fullWindowHeight ? fullWindowHeight : imageHeight;
         });
       }
     }
+
+    setCurrentImageHeight(currentImageHeight);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uriForCurrentImage]);
 

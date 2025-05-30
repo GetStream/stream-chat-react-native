@@ -208,8 +208,8 @@ export const OverlayProvider = <
       <OverlayContext.Provider value={overlayContext}>
         <AttachmentPickerProvider value={attachmentPickerContext}>
           <ImageGalleryProvider>
-            {children}
             <ThemeProvider style={overlayContext.style}>
+              {children}
               {overlay === 'gallery' && (
                 <ImageGallery<StreamChatGenerics>
                   autoPlayVideo={autoPlayVideo}
