@@ -19,7 +19,6 @@ import Animated, {
 import {
   FileReference,
   isLocalImageAttachment,
-  MessageComposerConfig,
   type MessageComposerState,
   type TextComposerState,
   type UserResponse,
@@ -165,10 +164,6 @@ const messageComposerStateStoreSelector = (state: MessageComposerState) => ({
   quotedMessage: state.quotedMessage,
 });
 
-const configStateSelector = (state: MessageComposerConfig) => ({
-  draftsEnabled: state.drafts.enabled,
-});
-
 const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const {
     additionalTextInputProps,
@@ -224,7 +219,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const { quotedMessage } = useStateStore(messageComposer.state, messageComposerStateStoreSelector);
   const { attachments } = useAttachmentManagerState();
   const hasSendableData = useMessageComposerHasSendableData();
-  const { draftsEnabled } = useStateStore(messageComposer.configState, configStateSelector);
 
   const imageUploads = attachments.filter((attachment) => isLocalImageAttachment(attachment));
   const fileUploads = attachments.filter((attachment) => !isLocalImageAttachment(attachment));
@@ -265,7 +259,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const { seconds: cooldownRemainingSeconds } = useCountdown(cooldownEndsAt);
 
   useEffect(() => {
-    messageComposer.updateConfig({ drafts: { enabled: true } });
     attachmentManager.maxNumberOfFilesPerMessage = maxNumberOfFiles;
     if (doFileUploadRequest) {
       attachmentManager.setCustomUploadFn(doFileUploadRequest);
@@ -316,13 +309,12 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   }, [messageComposer, inputBoxRef]);
 
   // Effect to create draft whenever we un-mount the component.
-  useEffect(() => {
-    return () => {
-      if (draftsEnabled) {
-        messageComposer.createDraft();
-      }
-    };
-  }, [draftsEnabled, messageComposer]);
+  useEffect(
+    () => () => {
+      messageComposer.createDraft();
+    },
+    [messageComposer],
+  );
 
   const uploadImagesHandler = async () => {
     const imageToUpload = selectedImages.find((selectedImage) => {

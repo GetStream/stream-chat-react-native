@@ -172,6 +172,14 @@ const DrawerNavigatorWrapper: React.FC<{
   const { bottom } = useSafeAreaInsets();
   const streamChatTheme = useStreamChatTheme();
 
+  chatClient.setMessageComposerSetupFunction(({ composer }) => {
+    composer.updateConfig({
+      drafts: {
+        enabled: true,
+      },
+    });
+  });
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <OverlayProvider bottomInset={bottom} value={{ style: streamChatTheme }}>

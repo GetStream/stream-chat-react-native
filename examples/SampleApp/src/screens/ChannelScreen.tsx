@@ -135,7 +135,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         if (!newChannel?.initialized) {
           await newChannel?.watch();
         }
-      } catch(error) {
+      } catch (error) {
         console.log('An error has occurred while watching the channel: ', error);
       }
       setChannel(newChannel);
