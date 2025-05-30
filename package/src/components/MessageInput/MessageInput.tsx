@@ -324,20 +324,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     };
   }, [draftsEnabled, messageComposer]);
 
-  /**
-   * Effect to get the draft data for legacy thread composer and set it to message composer.
-   * TODO: This can be removed once we remove legacy thread composer.
-   */
-  useEffect(() => {
-    const threadId = messageComposer.threadId;
-    if (!threadId || !messageComposer.channel || !messageComposer.compositionIsEmpty) return;
-    messageComposer.channel.getDraft({ parent_id: threadId }).then(({ draft }) => {
-      if (draft) {
-        messageComposer.initState({ composition: draft });
-      }
-    });
-  }, [messageComposer]);
-
   const uploadImagesHandler = async () => {
     const imageToUpload = selectedImages.find((selectedImage) => {
       const uploadedImage = imageUploads.find(

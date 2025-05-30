@@ -2,6 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 
 import { ThreadFooterComponent } from './components/ThreadFooterComponent';
 
+import { useMessageComposer } from '../../contexts';
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
@@ -59,6 +60,7 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     additionalMessageInputProps,
     additionalMessageListProps,
     autoFocus = true,
+    client,
     closeThread,
     closeThreadOnDismount = true,
     disabled,
@@ -70,6 +72,37 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     thread,
     threadInstance,
   } = props;
+
+  const messageComposer = useMessageComposer();
+
+  /**
+   * Effect to get the draft data for legacy thread composer and set it to message composer.
+   * TODO: This can be removed once we remove legacy thread composer.
+   */
+  useEffect(() => {
+    const threadId = messageComposer.threadId;
+    if (!threadId || !messageComposer.channel || !messageComposer.compositionIsEmpty) return;
+
+    if (client.offlineDb && client.userID) {
+      client.offlineDb
+        .getDraft({
+          cid: messageComposer.channel.cid,
+          currentUserId: client.userID,
+          parent_id: threadId,
+        })
+        .then((draft) => {
+          if (draft) {
+            messageComposer.initState({ composition: draft });
+          }
+        });
+    }
+
+    messageComposer.channel.getDraft({ parent_id: threadId }).then(({ draft }) => {
+      if (draft) {
+        messageComposer.initState({ composition: draft });
+      }
+    });
+  }, [client.offlineDb, client.userID, messageComposer, thread]);
 
   useEffect(() => {
     if (threadInstance?.activate) {

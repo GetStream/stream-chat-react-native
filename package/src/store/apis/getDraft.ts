@@ -45,7 +45,7 @@ export const getDraft = async ({
     channelRow: channelRows[0] as unknown as TableRow<'channels'>,
     currentUserId,
     draftMessageRow: draftMessageRows[0] as unknown as TableRow<'draftMessage'>,
-    draftRow: draftRow[0] as unknown as TableRow<'draft'>,
+    draftRow: draftRow as unknown as TableRow<'draft'>,
     pollRow: polls[0],
     quotedMessageRow: quotedMessageRows,
   });

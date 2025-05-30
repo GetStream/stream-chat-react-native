@@ -1,7 +1,14 @@
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { LocalMessage, Thread, ThreadState } from 'stream-chat';
+import {
+  AttachmentManagerState,
+  DraftMessage,
+  LocalMessage,
+  TextComposerState,
+  Thread,
+  ThreadState,
+} from 'stream-chat';
 
 import {
   TranslationContextValue,
@@ -70,11 +77,13 @@ export const attachmentTypeIconMap = {
 
 const getTitleFromMessage = ({
   currentUserId,
+  draftMessage,
   message,
   t,
 }: {
   t: TranslationContextValue['t'];
   currentUserId?: string;
+  draftMessage?: DraftMessage;
   message?: LocalMessage;
 }) => {
   const attachment = message?.attachments?.at(0);
@@ -86,8 +95,15 @@ const getTitleFromMessage = ({
       } `
     : '';
 
-  const messageBelongsToCurrentUserPrefix =
-    message?.user?.id === currentUserId ? `${t('You')}: ` : '';
+  const messageBelongsToCurrentUserPrefix = draftMessage
+    ? 'Draft:'
+    : message?.user?.id === currentUserId
+      ? `${t('You')}: `
+      : '';
+
+  if (draftMessage) {
+    return `${attachmentIcon}${messageBelongsToCurrentUserPrefix}${draftMessage.text || t('🏙 Attachment...') || 'N/A'}`;
+  }
 
   if (message?.deleted_at && message.parent_id) {
     return `${messageBelongsToCurrentUserPrefix}${t('This reply was deleted')}.`;
@@ -105,6 +121,14 @@ const getTitleFromMessage = ({
     message?.text || attachment?.fallback || 'N/A'
   }`;
 };
+
+const textComposerStateSelector = (state: TextComposerState) => ({
+  text: state.text,
+});
+
+const stateSelector = (state: AttachmentManagerState) => ({
+  attachments: state.attachments,
+});
 
 export const ThreadListItemComponent = () => {
   const {
@@ -126,6 +150,27 @@ export const ThreadListItemComponent = () => {
       threadListItem,
     },
   } = useTheme();
+  const { text: draftText } = useStateStore(
+    thread.messageComposer.textComposer.state,
+    textComposerStateSelector,
+  );
+
+  const { attachments } = useStateStore(
+    thread.messageComposer.attachmentManager.state,
+    stateSelector,
+  );
+
+  const draftMessage: DraftMessage | undefined = useMemo(
+    () =>
+      !thread.messageComposer.compositionIsEmpty
+        ? {
+            attachments,
+            id: thread.messageComposer.id,
+            text: draftText,
+          }
+        : undefined,
+    [thread.messageComposer, attachments, draftText],
+  );
 
   return (
     <TouchableOpacity
@@ -194,6 +239,7 @@ export const ThreadListItemComponent = () => {
                 ? 'This thread was deleted.'
                 : getTitleFromMessage({
                     currentUserId: client.userID,
+                    draftMessage,
                     message: lastReply,
                     t,
                   })}
