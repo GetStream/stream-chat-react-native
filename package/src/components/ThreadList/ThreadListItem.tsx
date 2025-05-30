@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import {
@@ -159,6 +159,13 @@ export const ThreadListItemComponent = () => {
     thread.messageComposer.attachmentManager.state,
     stateSelector,
   );
+
+  useEffect(() => {
+    const unsubscribe = thread.messageComposer.registerSubscriptions();
+    return () => {
+      unsubscribe();
+    };
+  }, [thread.messageComposer]);
 
   const draftMessage: DraftMessage | undefined = useMemo(
     () =>
