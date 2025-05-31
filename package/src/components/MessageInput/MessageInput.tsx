@@ -107,7 +107,7 @@ type MessageInputPropsWithContext = Pick<
   AttachmentPickerContextValue,
   'AttachmentPickerSelectionBar'
 > &
-  Pick<ChatContextValue, 'isOnline'> &
+  Pick<ChatContextValue, 'client' | 'isOnline'> &
   Pick<ChannelContextValue, 'channel' | 'editing' | 'members' | 'threadList' | 'watchers'> &
   Pick<
     MessageInputContextValue,
@@ -179,6 +179,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     AudioRecordingPreview,
     AutoCompleteSuggestionList,
     channel,
+    client,
     closeAttachmentPicker,
     closePollCreationDialog,
     cooldownEndsAt,
@@ -315,6 +316,35 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     },
     [messageComposer],
   );
+
+  /**
+   * Effect to get the draft data for legacy thread composer and set it to message composer.
+   * TODO: This can be removed once we remove legacy thread composer.
+   */
+  useEffect(() => {
+    const threadId = messageComposer.threadId;
+    if (!threadId || !messageComposer.channel || !messageComposer.compositionIsEmpty) return;
+
+    if (client.offlineDb && client.userID) {
+      client.offlineDb
+        .getDraft({
+          cid: messageComposer.channel.cid,
+          currentUserId: client.userID,
+          parent_id: threadId,
+        })
+        .then((draft) => {
+          if (draft) {
+            messageComposer.initState({ composition: draft });
+          }
+        });
+    }
+
+    messageComposer.channel.getDraft({ parent_id: threadId }).then(({ draft }) => {
+      if (draft) {
+        messageComposer.initState({ composition: draft });
+      }
+    });
+  }, [client.offlineDb, client.userID, messageComposer]);
 
   const uploadImagesHandler = async () => {
     const imageToUpload = selectedImages.find((selectedImage) => {
@@ -933,7 +963,7 @@ export type MessageInputProps = Partial<MessageInputPropsWithContext>;
  */
 export const MessageInput = (props: MessageInputProps) => {
   const { AttachmentPickerSelectionBar } = useAttachmentPickerContext();
-  const { isOnline } = useChatContext();
+  const { client, isOnline } = useChatContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
   const { channel, editing, members, threadList, watchers } = useChannelContext();
@@ -1012,6 +1042,7 @@ export const MessageInput = (props: MessageInputProps) => {
         AutoCompleteSuggestionList,
         channel,
         clearEditingState,
+        client,
         closeAttachmentPicker,
         closePollCreationDialog,
         CommandInput,

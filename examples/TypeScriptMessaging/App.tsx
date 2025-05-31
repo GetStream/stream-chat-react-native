@@ -1,5 +1,13 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { I18nManager, LogBox, Platform, SafeAreaView, useColorScheme, View } from 'react-native';
+import {
+  DevSettings,
+  I18nManager,
+  LogBox,
+  Platform,
+  SafeAreaView,
+  useColorScheme,
+  View,
+} from 'react-native';
 import { DarkTheme, DefaultTheme, NavigationContainer, RouteProp } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import { useHeaderHeight } from '@react-navigation/elements';
@@ -17,6 +25,7 @@ import {
   Thread,
   ThreadContextValue,
   useAttachmentPickerContext,
+  useChatContext,
   useCreateChatClient,
   useOverlayContext,
 } from 'stream-chat-react-native';
@@ -36,9 +45,12 @@ const options = {
 
 I18nManager.forceRTL(false);
 
-SqliteClient.logger = (level, message, extraData) => {
-  console.log(level, `SqliteClient: ${message}`, extraData);
-};
+if (__DEV__) {
+  DevSettings.addMenuItem('Reset local DB (offline storage)', () => {
+    SqliteClient.resetDB();
+    console.info('Local DB reset');
+  });
+}
 
 const apiKey = 'q95x9hkbyd6p';
 const userToken =
@@ -53,11 +65,7 @@ const filters = {
   type: 'messaging',
 };
 
-const sort: ChannelSort = [
-  { pinned_at: -1 },
-  { last_message_at: -1 },
-  { updated_at: -1 },
-];
+const sort: ChannelSort = [{ pinned_at: -1 }, { last_message_at: -1 }, { updated_at: -1 }];
 
 /**
  * Start playing with streami18n instance here:
@@ -98,7 +106,7 @@ type ChannelScreenProps = {
 const EmptyHeader = () => <></>;
 
 const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
-  const { channel, setThread, thread } = useContext(AppContext);
+  const { channel, setThread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
   const { setTopInset } = useAttachmentPickerContext();
   const { overlay } = useOverlayContext();
@@ -119,12 +127,7 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView>
-      <Channel
-        audioRecordingEnabled={true}
-        channel={channel}
-        keyboardVerticalOffset={headerHeight}
-        thread={thread}
-      >
+      <Channel audioRecordingEnabled={true} channel={channel} keyboardVerticalOffset={headerHeight}>
         <View style={{ flex: 1 }}>
           <MessageList
             onThreadSelect={(selectedThread) => {
@@ -150,6 +153,17 @@ const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation }) => {
   const { channel, setThread, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
   const { overlay } = useOverlayContext();
+  const { client } = useChatContext();
+
+  useEffect(() => {
+    client.setMessageComposerSetupFunction(({ composer }) => {
+      composer.updateConfig({
+        drafts: {
+          enabled: true,
+        },
+      });
+    });
+  }, [client]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -193,18 +207,62 @@ const Stack = createStackNavigator<NavigationParamsList>();
 type AppContextType = {
   channel: ChannelType | undefined;
   setChannel: React.Dispatch<React.SetStateAction<ChannelType | undefined>>;
-  setThread: React.Dispatch<
-    React.SetStateAction<ThreadContextValue['thread'] | undefined>
-  >;
+  setThread: React.Dispatch<React.SetStateAction<ThreadContextValue['thread'] | undefined>>;
   thread: ThreadContextValue['thread'] | undefined;
 };
 
 const AppContext = React.createContext({} as AppContextType);
 
+const NavigatorModule = () => {
+  const { channel } = useContext(AppContext);
+  const { client } = useChatContext();
+
+  useEffect(() => {
+    client.setMessageComposerSetupFunction(({ composer }) => {
+      composer.updateConfig({
+        drafts: {
+          enabled: true,
+        },
+      });
+    });
+  }, [client]);
+
+  return (
+    <Stack.Navigator
+      initialRouteName='ChannelList'
+      screenOptions={{
+        headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
+      }}
+    >
+      <Stack.Screen
+        component={ChannelScreen}
+        name='Channel'
+        options={() => ({
+          headerBackTitle: 'Back',
+          headerRight: EmptyHeader,
+          headerTitle: channel?.data?.name,
+        })}
+      />
+      <Stack.Screen
+        component={ChannelListScreen}
+        name='ChannelList'
+        options={{ headerTitle: 'Channel List' }}
+      />
+      <Stack.Screen
+        component={ThreadScreen}
+        name='Thread'
+        options={() => ({
+          headerBackTitle: 'Back',
+          headerRight: EmptyHeader,
+        })}
+      />
+    </Stack.Navigator>
+  );
+};
+
 const App = () => {
   const { bottom } = useSafeAreaInsets();
   const theme = useStreamChatTheme();
-  const { channel } = useContext(AppContext);
 
   const chatClient = useCreateChatClient({
     apiKey,
@@ -217,38 +275,9 @@ const App = () => {
   }
 
   return (
-    <OverlayProvider
-      bottomInset={bottom}
-      i18nInstance={streami18n}
-      value={{ style: theme }}
-    >
+    <OverlayProvider bottomInset={bottom} i18nInstance={streami18n} value={{ style: theme }}>
       <Chat client={chatClient} i18nInstance={streami18n} enableOfflineSupport>
-        <Stack.Navigator
-          initialRouteName='ChannelList'
-          screenOptions={{
-            headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
-          }}
-        >
-          <Stack.Screen
-            component={ChannelScreen}
-            name='Channel'
-            options={() => ({
-              headerBackTitle: 'Back',
-              headerRight: EmptyHeader,
-              headerTitle: channel?.data?.name,
-            })}
-          />
-          <Stack.Screen
-            component={ChannelListScreen}
-            name='ChannelList'
-            options={{ headerTitle: 'Channel List' }}
-          />
-          <Stack.Screen
-            component={ThreadScreen}
-            name='Thread'
-            options={() => ({ headerLeft: EmptyHeader })}
-          />
-        </Stack.Navigator>
+        <NavigatorModule />
       </Chat>
     </OverlayProvider>
   );
