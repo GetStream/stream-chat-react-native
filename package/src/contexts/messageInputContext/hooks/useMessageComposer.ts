@@ -37,7 +37,7 @@ export const useMessageComposer = () => {
   // editedMessage ?? thread ?? parentMessage ?? channel;
 
   const messageComposer = useMemo(() => {
-    if (editedMessage && cachedEditedMessage) {
+    if (cachedEditedMessage) {
       const tag = MessageComposer.constructTag(cachedEditedMessage);
 
       const cachedComposer = queueCache.get(tag);
@@ -68,8 +68,7 @@ export const useMessageComposer = () => {
     } else {
       return channel.messageComposer;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cachedEditedMessage, cachedParentMessage, channel, threadInstance]);
+  }, [cachedEditedMessage, cachedParentMessage, channel.messageComposer, client, threadInstance]);
 
   if (
     (['legacy_thread', 'message'] as MessageComposer['contextType'][]).includes(

@@ -544,7 +544,9 @@ export const MessageInputProvider = ({
   }, [closeAttachmentPicker, openAttachmentPicker, selectedPicker]);
 
   const resetInput = useStableCallback(() => {
-    messageComposer.clear();
+    if (!value.editing) {
+      messageComposer.clear();
+    }
     /**
      * If the MediaLibrary is available, reset the selected files and images
      */
