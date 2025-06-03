@@ -9,6 +9,7 @@ import { useMessageActions } from './hooks/useMessageActions';
 import { useProcessReactions } from './hooks/useProcessReactions';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
 
+import { useMessageComposer } from '../../contexts';
 import {
   ChannelContextValue,
   useChannelContext,
@@ -31,6 +32,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
+import { useStableCallback } from '../../hooks';
 import { isVideoPlayerAvailable, NativeHandlers } from '../../native';
 import { FileTypes } from '../../types/types';
 import {
@@ -140,7 +142,10 @@ export type MessagePropsWithContext = Pick<
       'groupStyles' | 'handleReaction' | 'message' | 'isMessageAIGenerated' | 'readBy'
     >
   > &
-  Pick<MessageContextValue, 'groupStyles' | 'message' | 'isMessageAIGenerated' | 'readBy'> &
+  Pick<
+    MessageContextValue,
+    'groupStyles' | 'message' | 'isMessageAIGenerated' | 'readBy' | 'setQuotedMessage'
+  > &
   Pick<
     MessagesContextValue,
     | 'sendReaction'
@@ -264,6 +269,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     threadList = false,
     updateMessage,
     readBy,
+    setQuotedMessage,
   } = props;
   const isMessageAIGenerated = messagesContext.isMessageAIGenerated;
   const isAIGenerated = useMemo(
@@ -499,6 +505,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     retrySendMessage,
     sendReaction,
     setEditingState,
+    setQuotedMessage,
     supportedReactions,
   });
 
@@ -543,6 +550,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     selectReaction,
     sendReaction,
     setEditingState,
+    setQuotedMessage,
     supportedReactions,
     t,
     updateMessage,
@@ -691,6 +699,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     reactions,
     readBy,
     setIsEditedMessageOpen,
+    setQuotedMessage,
     showAvatar,
     showMessageOverlay,
     showMessageStatus: typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
@@ -938,6 +947,10 @@ export const Message = (props: MessageProps) => {
   const { openThread } = useThreadContext();
   const { t } = useTranslationContext();
   const readBy = useMemo(() => getReadState(message, read), [message, read]);
+  const messageComposer = useMessageComposer();
+  const setQuotedMessage = useStableCallback((message: LocalMessage | null) =>
+    messageComposer.setQuotedMessage(message),
+  );
 
   return (
     <MemoizedMessage
@@ -951,6 +964,7 @@ export const Message = (props: MessageProps) => {
         messagesContext,
         openThread,
         readBy,
+        setQuotedMessage,
         t,
       }}
       {...props}

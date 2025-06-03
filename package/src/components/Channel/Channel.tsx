@@ -55,6 +55,7 @@ import { ChannelContextValue, ChannelProvider } from '../../contexts/channelCont
 import type { UseChannelStateValue } from '../../contexts/channelsStateContext/useChannelState';
 import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import { MessageComposerProvider } from '../../contexts/messageComposerContext/MessageComposerContext';
 import {
   InputMessageInputContextValue,
   MessageInputProvider,
@@ -1695,7 +1696,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     channel,
     channelUnreadState,
     disabled: !!channel?.data?.frozen,
-    editing,
     EmptyStateIndicator,
     enableMessageGroupingByUser,
     enforceUniqueReaction,
@@ -1946,6 +1946,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     typing: channelState.typing ?? {},
   });
 
+  const messageComposerContext = useMemo(
+    () => ({ channel, editing, thread, threadInstance }),
+    [channel, editing, thread, threadInstance],
+  );
+
   // TODO: replace the null view with appropriate message. Currently this is waiting a design decision.
   if (deleted) {
     return null;
@@ -1977,10 +1982,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
               <MessagesProvider value={messagesContext}>
                 <ThreadProvider value={threadContext}>
                   <AttachmentPickerProvider value={attachmentPickerContext}>
-                    <MessageInputProvider value={inputMessageInputContext}>
-                      <View style={{ height: '100%' }}>{children}</View>
-                      <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
-                    </MessageInputProvider>
+                    <MessageComposerProvider value={messageComposerContext}>
+                      <MessageInputProvider value={inputMessageInputContext}>
+                        <View style={{ height: '100%' }}>{children}</View>
+                        <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
+                      </MessageInputProvider>
+                    </MessageComposerProvider>
                   </AttachmentPickerProvider>
                 </ThreadProvider>
               </MessagesProvider>

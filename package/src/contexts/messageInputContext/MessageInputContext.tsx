@@ -595,8 +595,10 @@ export const MessageInputProvider = ({
     }
   }, [closeAttachmentPicker, openAttachmentPicker, selectedPicker]);
 
-  const resetInput = useStableCallback(async () => {
-    await messageComposer.clear();
+  const resetInput = useStableCallback(() => {
+    if (!value.editing) {
+      messageComposer.clear();
+    }
 
     if (value.editing) {
       value.clearEditingState();

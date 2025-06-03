@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { act, render, renderHook, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { act, render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
-import { OverlayProvider, useMessageInputContext } from '../../../contexts';
+import { OverlayProvider } from '../../../contexts';
 
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
 import * as NativeHandler from '../../../native';

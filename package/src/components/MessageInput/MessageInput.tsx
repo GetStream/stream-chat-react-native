@@ -35,6 +35,10 @@ import {
   ChannelContextValue,
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
+import {
+  MessageComposerContextValue,
+  useMessageComposerContext,
+} from '../../contexts/messageComposerContext/MessageComposerContext';
 import { useAttachmentManagerState } from '../../contexts/messageInputContext/hooks/useAttachmentManagerState';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useMessageComposerHasSendableData } from '../../contexts/messageInputContext/hooks/useMessageComposerHasSendableData';
@@ -117,7 +121,7 @@ type MessageInputPropsWithContext = Partial<
 > &
   Pick<AttachmentPickerContextValue, 'bottomInset' | 'bottomSheetRef' | 'selectedPicker'> &
   Pick<ChatContextValue, 'isOnline'> &
-  Pick<ChannelContextValue, 'channel' | 'editing' | 'members' | 'threadList' | 'watchers'> &
+  Pick<ChannelContextValue, 'channel' | 'members' | 'threadList' | 'watchers'> &
   Pick<
     MessageInputContextValue,
     | 'additionalTextInputProps'
@@ -169,13 +173,14 @@ type MessageInputPropsWithContext = Partial<
     | 'StopMessageStreamingButton'
   > &
   Pick<MessagesContextValue, 'Reply'> &
-  Pick<TranslationContextValue, 't'>;
+  Pick<TranslationContextValue, 't'> &
+  Pick<MessageComposerContextValue, 'editing'>;
 
 const textComposerStateSelector = (state: TextComposerState) => ({
   command: state.command,
+  hasText: !!state.text,
   mentionedUsers: state.mentionedUsers,
   suggestions: state.suggestions,
-  text: state.text,
 });
 
 const messageComposerStateStoreSelector = (state: MessageComposerState) => ({
@@ -234,7 +239,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 
   const messageComposer = useMessageComposer();
   const { attachmentManager, textComposer } = messageComposer;
-  const { command, mentionedUsers, text } = useStateStore(
+  const { command, mentionedUsers, hasText } = useStateStore(
     textComposer.state,
     textComposerStateSelector,
   );
@@ -363,7 +368,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   } = useAudioController();
 
   const asyncAudioEnabled = audioRecordingEnabled && isAudioRecorderAvailable();
-  const hasText = !!text;
   const showSendingButton = hasText || attachments.length;
 
   const isSendingButtonVisible = useMemo(() => {
@@ -429,37 +433,35 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
       runOnJS(setMicLocked)(false);
     });
 
-  const animatedStyles = {
-    lockIndicator: useAnimatedStyle(() => ({
-      transform: [
-        {
-          translateY: interpolate(
-            micPositionY.value,
-            [0, Y_AXIS_POSITION],
-            [0, Y_AXIS_POSITION],
-            Extrapolation.CLAMP,
-          ),
-        },
-      ],
-    })),
-    micButton: useAnimatedStyle(() => ({
-      opacity: interpolate(micPositionX.value, [0, X_AXIS_POSITION], [1, 0], Extrapolation.CLAMP),
-      transform: [{ translateX: micPositionX.value }, { translateY: micPositionY.value }],
-    })),
-    slideToCancel: useAnimatedStyle(() => ({
-      opacity: interpolate(micPositionX.value, [0, X_AXIS_POSITION], [1, 0], Extrapolation.CLAMP),
-      transform: [
-        {
-          translateX: interpolate(
-            micPositionX.value,
-            [0, X_AXIS_POSITION],
-            [0, X_AXIS_POSITION / 2],
-            Extrapolation.CLAMP,
-          ),
-        },
-      ],
-    })),
-  };
+  const lockIndicatorAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateY: interpolate(
+          micPositionY.value,
+          [0, Y_AXIS_POSITION],
+          [0, Y_AXIS_POSITION],
+          Extrapolation.CLAMP,
+        ),
+      },
+    ],
+  }));
+  const micButttonAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(micPositionX.value, [0, X_AXIS_POSITION], [1, 0], Extrapolation.CLAMP),
+    transform: [{ translateX: micPositionX.value }, { translateY: micPositionY.value }],
+  }));
+  const slideToCancelAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(micPositionX.value, [0, X_AXIS_POSITION], [1, 0], Extrapolation.CLAMP),
+    transform: [
+      {
+        translateX: interpolate(
+          micPositionX.value,
+          [0, X_AXIS_POSITION],
+          [0, X_AXIS_POSITION / 2],
+          Extrapolation.CLAMP,
+        ),
+      },
+    ],
+  }));
 
   const { aiState } = useAIState(channel);
 
@@ -484,7 +486,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
             <AudioRecordingLockIndicator
               messageInputHeight={height}
               micLocked={micLocked}
-              style={animatedStyles.lockIndicator}
+              style={lockIndicatorAnimatedStyle}
             />
             {recordingStatus === 'stopped' ? (
               <AudioRecordingPreview
@@ -515,7 +517,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                   recording={recording}
                   recordingDuration={recordingDuration}
                   recordingStopped={recordingStatus === 'stopped'}
-                  slideToCancelStyle={animatedStyles.slideToCancel}
+                  slideToCancelStyle={slideToCancelAnimatedStyle}
                   stopVoiceRecording={stopVoiceRecording}
                   uploadVoiceRecording={uploadVoiceRecording}
                 />
@@ -582,11 +584,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
               {audioRecordingEnabled && isAudioRecorderAvailable() && !micLocked && (
                 <GestureDetector gesture={panGestureMic}>
                   <Animated.View
-                    style={[
-                      styles.micButtonContainer,
-                      animatedStyles.micButton,
-                      micButtonContainer,
-                    ]}
+                    style={[styles.micButtonContainer, micButttonAnimatedStyle, micButtonContainer]}
                   >
                     <StartAudioRecordingButton
                       permissionsGranted={permissionsGranted}
@@ -777,7 +775,8 @@ export const MessageInput = (props: MessageInputProps) => {
   const { isOnline } = useChatContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
-  const { channel, editing, members, threadList, watchers } = useChannelContext();
+  const { channel, members, threadList, watchers } = useChannelContext();
+  const { editing } = useMessageComposerContext();
 
   const {
     additionalTextInputProps,

@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { Channel, ChannelState, LocalMessage } from 'stream-chat';
+import type { Channel, ChannelState } from 'stream-chat';
 
 import { MarkReadFunctionOptions } from '../../components/Channel/Channel';
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
@@ -35,7 +35,6 @@ export type ChannelContextValue = {
    * @overrideType Channel
    */
   channel: Channel;
-  editing?: LocalMessage;
   /**
    * Custom UI component to display empty state when channel has no messages.
    *
