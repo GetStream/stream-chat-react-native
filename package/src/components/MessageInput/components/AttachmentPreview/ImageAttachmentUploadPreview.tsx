@@ -54,7 +54,7 @@ export const ImageAttachmentUploadPreview = ({
   }, []);
 
   return (
-    <View style={[styles.itemContainer, itemContainer]}>
+    <View style={[styles.itemContainer, itemContainer]} testID={'image-attachment-upload-preview'}>
       <AttachmentUploadProgressIndicator
         onPress={onRetryHandler}
         style={styles.upload}
