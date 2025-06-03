@@ -11,10 +11,8 @@ import type { AttachmentPickerErrorProps } from './components/AttachmentPickerEr
 
 import { renderAttachmentPickerItem } from './components/AttachmentPickerItem';
 
-import {
-  AttachmentPickerContextValue,
-  useAttachmentPickerContext,
-} from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import { MessageInputContextValue } from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useScreenDimensions } from '../../hooks/useScreenDimensions';
 import { NativeHandlers } from '../../native';
@@ -31,7 +29,7 @@ const styles = StyleSheet.create({
 });
 
 export type AttachmentPickerProps = Pick<
-  AttachmentPickerContextValue,
+  MessageInputContextValue,
   | 'AttachmentPickerBottomSheetHandle'
   | 'attachmentPickerBottomSheetHandleHeight'
   | 'attachmentSelectionBarHeight'
@@ -91,17 +89,8 @@ export const AttachmentPicker = React.forwardRef(
         colors: { white },
       },
     } = useTheme();
-    const {
-      closePicker,
-      maxNumberOfFiles,
-      selectedFiles,
-      selectedImages,
-      selectedPicker,
-      setSelectedFiles,
-      setSelectedImages,
-      setSelectedPicker,
-      topInset,
-    } = useAttachmentPickerContext();
+    const { closePicker, selectedPicker, setSelectedPicker, topInset } =
+      useAttachmentPickerContext();
     const { vh: screenVh } = useScreenDimensions();
 
     const fullScreenHeight = screenVh(100);
@@ -187,8 +176,7 @@ export const AttachmentPicker = React.forwardRef(
       const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
       return () => backHandler.remove();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedPicker, closePicker]);
+    }, [selectedPicker, closePicker, setSelectedPicker]);
 
     useEffect(() => {
       const onKeyboardOpenHandler = () => {
@@ -212,8 +200,7 @@ export const AttachmentPicker = React.forwardRef(
           Keyboard.removeListener(keyboardShowEvent, onKeyboardOpenHandler);
         }
       };
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [closePicker, selectedPicker]);
+    }, [closePicker, selectedPicker, setSelectedPicker]);
 
     useEffect(() => {
       if (currentIndex < 0) {
@@ -246,16 +233,7 @@ export const AttachmentPicker = React.forwardRef(
     const selectedPhotos = photos.map((asset) => ({
       asset,
       ImageOverlaySelectedComponent,
-      maxNumberOfFiles,
       numberOfAttachmentPickerImageColumns,
-      numberOfUploads: selectedFiles.length + selectedImages.length,
-      selected:
-        selectedImages.some((image) => (image?.uri ? image.uri === asset.uri : false)) ||
-        selectedFiles.some((file) => (file?.uri ? file.uri === asset.uri : false)),
-      selectedFiles,
-      selectedImages,
-      setSelectedFiles,
-      setSelectedImages,
     }));
 
     const handleHeight = attachmentPickerBottomSheetHandleHeight;

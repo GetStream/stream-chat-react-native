@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, LayoutRectangle, Platform, Pressable, StyleSheet } from 'react-native';
 
 import {
-  useAttachmentPickerContext,
   useChannelContext,
   useMessagesContext,
   useOwnCapabilitiesContext,
@@ -39,6 +38,10 @@ export const NativeAttachmentPicker = ({
     },
   } = useTheme();
   const {
+    CameraSelectorIcon,
+    FileSelectorIcon,
+    ImageSelectorIcon,
+    VideoRecorderSelectorIcon,
     hasCameraPicker,
     hasFilePicker,
     hasImagePicker,
@@ -51,8 +54,6 @@ export const NativeAttachmentPicker = ({
   const { threadList } = useChannelContext();
   const { hasCreatePoll } = useMessagesContext();
   const ownCapabilities = useOwnCapabilitiesContext();
-  const { CameraSelectorIcon, FileSelectorIcon, ImageSelectorIcon, VideoRecorderSelectorIcon } =
-    useAttachmentPickerContext();
 
   const popupHeight =
     // the top padding
