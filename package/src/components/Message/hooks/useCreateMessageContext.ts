@@ -41,6 +41,7 @@ export const useCreateMessageContext = ({
   showMessageStatus,
   threadList,
   videos,
+  setQuotedMessage,
 }: MessageContextValue) => {
   const groupStylesLength = groupStyles.length;
   const reactionsValue = reactions.map(({ count, own, type }) => `${own}${type}${count}`).join();
@@ -84,6 +85,7 @@ export const useCreateMessageContext = ({
       reactions,
       readBy,
       setIsEditedMessageOpen,
+      setQuotedMessage,
       showAvatar,
       showMessageOverlay,
       showMessageStatus,

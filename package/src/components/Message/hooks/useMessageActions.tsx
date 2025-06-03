@@ -58,7 +58,7 @@ export type MessageActionsHookProps = Pick<
   Pick<ChannelContextValue, 'channel' | 'enforceUniqueReaction'> &
   Pick<ChatContextValue, 'client'> &
   Pick<ThreadContextValue, 'openThread'> &
-  Pick<MessageContextValue, 'dismissOverlay' | 'message'> &
+  Pick<MessageContextValue, 'dismissOverlay' | 'message' | 'setQuotedMessage'> &
   Pick<TranslationContextValue, 't'> & {
     onThreadSelect?: (message: LocalMessage) => void;
   };
@@ -91,6 +91,7 @@ export const useMessageActions = ({
   setEditingState,
   supportedReactions,
   t,
+  setQuotedMessage,
 }: MessageActionsHookProps) => {
   const {
     theme: {
@@ -119,6 +120,7 @@ export const useMessageActions = ({
     retrySendMessage,
     sendReaction,
     setEditingState,
+    setQuotedMessage,
     supportedReactions,
   });
 

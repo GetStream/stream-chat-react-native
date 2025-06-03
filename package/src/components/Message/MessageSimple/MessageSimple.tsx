@@ -18,7 +18,6 @@ import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
-import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -70,6 +69,7 @@ export type MessageSimplePropsWithContext = Pick<
   | 'onlyEmojis'
   | 'otherAttachments'
   | 'showMessageStatus'
+  | 'setQuotedMessage'
 > &
   Pick<
     MessagesContextValue,
@@ -130,6 +130,7 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
     ReactionListTop,
     showMessageStatus,
     shouldRenderSwipeableWrapper,
+    setQuotedMessage,
   } = props;
 
   const {
@@ -161,7 +162,6 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
     isVeryLastMessage,
     messageGroupedSingleOrBottom,
   } = useMessageData({});
-  const messageComposer = useMessageComposer();
 
   const lastMessageInMessageListStyles = [styles.lastMessageContainer, lastMessageContainer];
   const messageGroupedSingleOrBottomStyles = {
@@ -215,8 +215,8 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
   );
 
   const onSwipeToReply = useCallback(() => {
-    messageComposer.setQuotedMessage(message);
-  }, [messageComposer, message]);
+    setQuotedMessage(message);
+  }, [setQuotedMessage, message]);
 
   const THRESHOLD = 25;
 
@@ -608,6 +608,7 @@ export const MessageSimple = (props: MessageSimpleProps) => {
     otherAttachments,
     showMessageStatus,
     isMessageAIGenerated,
+    setQuotedMessage,
   } = useMessageContext();
   const {
     enableMessageGroupingByUser,
@@ -662,6 +663,7 @@ export const MessageSimple = (props: MessageSimpleProps) => {
         ReactionListBottom,
         reactionListPosition,
         ReactionListTop,
+        setQuotedMessage,
         shouldRenderSwipeableWrapper,
         showMessageStatus,
       }}
