@@ -36,6 +36,10 @@ import {
   ChannelContextValue,
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
+import {
+  MessageComposerContextValue,
+  useMessageComposerContext,
+} from '../../contexts/messageComposerContext/MessageComposerContext';
 import { useAttachmentManagerState } from '../../contexts/messageInputContext/hooks/useAttachmentManagerState';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useMessageComposerHasSendableData } from '../../contexts/messageInputContext/hooks/useMessageComposerHasSendableData';
@@ -107,7 +111,7 @@ type MessageInputPropsWithContext = Pick<
   'AttachmentPickerSelectionBar'
 > &
   Pick<ChatContextValue, 'isOnline'> &
-  Pick<ChannelContextValue, 'channel' | 'editing' | 'members' | 'threadList' | 'watchers'> &
+  Pick<ChannelContextValue, 'channel' | 'members' | 'threadList' | 'watchers'> &
   Pick<
     MessageInputContextValue,
     | 'additionalTextInputProps'
@@ -149,7 +153,8 @@ type MessageInputPropsWithContext = Pick<
     | 'StopMessageStreamingButton'
   > &
   Pick<MessagesContextValue, 'Reply'> &
-  Pick<TranslationContextValue, 't'>;
+  Pick<TranslationContextValue, 't'> &
+  Pick<MessageComposerContextValue, 'editing'>;
 
 const textComposerStateSelector = (state: TextComposerState) => ({
   command: state.command,
@@ -937,7 +942,8 @@ export const MessageInput = (props: MessageInputProps) => {
   const { isOnline } = useChatContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
-  const { channel, editing, members, threadList, watchers } = useChannelContext();
+  const { channel, members, threadList, watchers } = useChannelContext();
+  const { editing } = useMessageComposerContext();
 
   const {
     additionalTextInputProps,
