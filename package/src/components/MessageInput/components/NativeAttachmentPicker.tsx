@@ -168,6 +168,7 @@ export const NativeAttachmentPicker = ({
           onClose({});
         }}
         style={[styles.container, containerPopupStyle, container]}
+        testID={'native-attachment-picker'}
       >
         {/* all the attach buttons */}
         {buttons.map(({ icon, id, onPressHandler }) => (

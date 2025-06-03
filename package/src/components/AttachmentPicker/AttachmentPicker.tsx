@@ -40,13 +40,15 @@ export type AttachmentPickerProps = Pick<
   /**
    * Custom UI component to render error component while opening attachment picker.
    *
-   * **Default** [AttachmentPickerError](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerError.tsx)
+   * **Default**
+   * [AttachmentPickerError](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerError.tsx)
    */
   AttachmentPickerError: React.ComponentType<AttachmentPickerErrorProps>;
   /**
    * Custom UI component to render error image for attachment picker
    *
-   * **Default** [AttachmentPickerErrorImage](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerErrorImage.tsx)
+   * **Default**
+   * [AttachmentPickerErrorImage](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerErrorImage.tsx)
    */
   AttachmentPickerErrorImage: React.ComponentType;
   /**
@@ -54,9 +56,11 @@ export type AttachmentPickerProps = Pick<
    */
   AttachmentPickerIOSSelectMorePhotos: React.ComponentType;
   /**
-   * Custom UI component to render overlay component, that shows up on top of [selected image](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png) (with tick mark)
+   * Custom UI component to render overlay component, that shows up on top of [selected
+   * image](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png) (with tick mark)
    *
-   * **Default** [ImageOverlaySelectedComponent](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/ImageOverlaySelectedComponent.tsx)
+   * **Default**
+   * [ImageOverlaySelectedComponent](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/ImageOverlaySelectedComponent.tsx)
    */
   ImageOverlaySelectedComponent: React.ComponentType;
   attachmentPickerErrorButtonText?: string;
@@ -157,7 +161,8 @@ export const AttachmentPicker = React.forwardRef(
       if (!NativeHandlers.oniOS14GalleryLibrarySelectionChange) {
         return;
       }
-      // ios 14 library selection change event is fired when user reselects the images that are permitted to be readable by the app
+      // ios 14 library selection change event is fired when user reselects the images that are permitted to be
+      // readable by the app
       const { unsubscribe } = NativeHandlers.oniOS14GalleryLibrarySelectionChange(() => {
         // we reset the cursor and has next page to true to facilitate fetching of the first page of photos again
         hasNextPageRef.current = true;
@@ -232,7 +237,8 @@ export const AttachmentPicker = React.forwardRef(
         !loadingPhotos
       ) {
         getMorePhotos();
-        // we do this only once on open for avoiding to request permissions in rationale dialog again and again on Android
+        // we do this only once on open for avoiding to request permissions in rationale dialog again and again on
+        // Android
         attemptedToLoadPhotosOnOpenRef.current = true;
       }
     }, [currentIndex, selectedPicker, getMorePhotos, loadingPhotos]);
@@ -301,6 +307,7 @@ export const AttachmentPicker = React.forwardRef(
             numColumns={numberOfAttachmentPickerImageColumns ?? 3}
             onEndReached={photoError ? undefined : getMorePhotos}
             renderItem={renderAttachmentPickerItem}
+            testID={'attachment-picker-list'}
           />
         </BottomSheet>
         {selectedPicker === 'images' && photoError && (

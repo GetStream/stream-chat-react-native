@@ -25,7 +25,7 @@ export const DismissAttachmentUpload = ({ onPress }: DismissAttachmentUploadProp
         { backgroundColor: overlay, opacity: pressed ? 0.8 : 1 },
         dismiss,
       ]}
-      testID='remove-image-upload-preview'
+      testID='remove-upload-preview'
     >
       <Close pathFill={dismissIconColor || white} {...dismissIcon} />
     </Pressable>

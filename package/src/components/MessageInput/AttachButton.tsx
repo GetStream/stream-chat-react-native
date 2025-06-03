@@ -5,14 +5,14 @@ import { Pressable } from 'react-native';
 import { NativeAttachmentPicker } from './components/NativeAttachmentPicker';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
-import { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
 import { useMessageInputContext } from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Attach } from '../../icons/Attach';
 
 import { isImageMediaLibraryAvailable } from '../../native';
 
-type AttachButtonPropsWithContext = Pick<ChannelContextValue, 'disabled'> & {
+type AttachButtonPropsWithContext = {
+  disabled?: boolean;
   /** Function that opens attachment options bottom sheet */
   handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
   selectedPicker?: 'images';
@@ -21,7 +21,7 @@ type AttachButtonPropsWithContext = Pick<ChannelContextValue, 'disabled'> & {
 const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
   const [showAttachButtonPicker, setShowAttachButtonPicker] = useState<boolean>(false);
   const [attachButtonLayoutRectangle, setAttachButtonLayoutRectangle] = useState<LayoutRectangle>();
-  const { disabled, handleOnPress, selectedPicker } = props;
+  const { disabled = false, handleOnPress, selectedPicker } = props;
   const {
     theme: {
       colors: { accent_blue, grey },
@@ -51,6 +51,9 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
   };
 
   const onPressHandler = () => {
+    if (disabled) {
+      return;
+    }
     if (handleOnPress) {
       handleOnPress();
       return;
@@ -71,7 +74,7 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
       <Pressable
         disabled={disabled}
         onLayout={onAttachButtonLayout}
-        onPress={disabled ? () => null : onPressHandler}
+        onPress={onPressHandler}
         style={[attachButton]}
         testID='attach-button'
       >

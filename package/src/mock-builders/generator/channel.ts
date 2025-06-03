@@ -58,8 +58,7 @@ const getChannelDefaults = (
   { id, type }: { [key: string]: any } = { id: uuidv4(), type: 'messaging' },
 ) => ({
   _client: {},
-  cid: `${type}:${id}`,
-  data: {
+  channel: {
     cid: `${type}:${id}`,
     config: {
       ...defaultConfig,
@@ -74,7 +73,9 @@ const getChannelDefaults = (
     type,
     updated_at: '2020-04-28T11:20:48.578147Z',
   },
+  cid: `${type}:${id}`,
   id,
+  messages: [],
   state: defaultState,
   type,
 });
@@ -115,7 +116,7 @@ export const generateChannelResponse = (
   const defaults = getChannelDefaults();
   return {
     channel: {
-      ...defaults.data,
+      ...defaults.channel,
       ...{
         cid: `${type}:${id}`,
         ...channel,
