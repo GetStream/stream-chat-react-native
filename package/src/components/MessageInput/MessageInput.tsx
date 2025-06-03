@@ -158,9 +158,9 @@ type MessageInputPropsWithContext = Pick<
 
 const textComposerStateSelector = (state: TextComposerState) => ({
   command: state.command,
+  hasText: !!state.text,
   mentionedUsers: state.mentionedUsers,
   suggestions: state.suggestions,
-  text: state.text,
 });
 
 const messageComposerStateStoreSelector = (state: MessageComposerState) => ({
@@ -218,7 +218,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 
   const messageComposer = useMessageComposer();
   const { attachmentManager, textComposer } = messageComposer;
-  const { command, mentionedUsers, text } = useStateStore(
+  const { command, mentionedUsers, hasText } = useStateStore(
     textComposer.state,
     textComposerStateSelector,
   );
@@ -534,7 +534,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   } = useAudioController();
 
   const asyncAudioEnabled = audioRecordingEnabled && isAudioRecorderAvailable();
-  const hasText = !!text;
   const showSendingButton = hasText || attachments.length;
 
   const isSendingButtonVisible = useMemo(() => {
@@ -600,37 +599,35 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
       runOnJS(setMicLocked)(false);
     });
 
-  const animatedStyles = {
-    lockIndicator: useAnimatedStyle(() => ({
-      transform: [
-        {
-          translateY: interpolate(
-            micPositionY.value,
-            [0, Y_AXIS_POSITION],
-            [0, Y_AXIS_POSITION],
-            Extrapolation.CLAMP,
-          ),
-        },
-      ],
-    })),
-    micButton: useAnimatedStyle(() => ({
-      opacity: interpolate(micPositionX.value, [0, X_AXIS_POSITION], [1, 0], Extrapolation.CLAMP),
-      transform: [{ translateX: micPositionX.value }, { translateY: micPositionY.value }],
-    })),
-    slideToCancel: useAnimatedStyle(() => ({
-      opacity: interpolate(micPositionX.value, [0, X_AXIS_POSITION], [1, 0], Extrapolation.CLAMP),
-      transform: [
-        {
-          translateX: interpolate(
-            micPositionX.value,
-            [0, X_AXIS_POSITION],
-            [0, X_AXIS_POSITION / 2],
-            Extrapolation.CLAMP,
-          ),
-        },
-      ],
-    })),
-  };
+  const lockIndicatorAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateY: interpolate(
+          micPositionY.value,
+          [0, Y_AXIS_POSITION],
+          [0, Y_AXIS_POSITION],
+          Extrapolation.CLAMP,
+        ),
+      },
+    ],
+  }));
+  const micButttonAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(micPositionX.value, [0, X_AXIS_POSITION], [1, 0], Extrapolation.CLAMP),
+    transform: [{ translateX: micPositionX.value }, { translateY: micPositionY.value }],
+  }));
+  const slideToCancelAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(micPositionX.value, [0, X_AXIS_POSITION], [1, 0], Extrapolation.CLAMP),
+    transform: [
+      {
+        translateX: interpolate(
+          micPositionX.value,
+          [0, X_AXIS_POSITION],
+          [0, X_AXIS_POSITION / 2],
+          Extrapolation.CLAMP,
+        ),
+      },
+    ],
+  }));
 
   const { aiState } = useAIState(channel);
 
@@ -655,7 +652,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
             <AudioRecordingLockIndicator
               messageInputHeight={height}
               micLocked={micLocked}
-              style={animatedStyles.lockIndicator}
+              style={lockIndicatorAnimatedStyle}
             />
             {recordingStatus === 'stopped' ? (
               <AudioRecordingPreview
@@ -686,7 +683,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                   recording={recording}
                   recordingDuration={recordingDuration}
                   recordingStopped={recordingStatus === 'stopped'}
-                  slideToCancelStyle={animatedStyles.slideToCancel}
+                  slideToCancelStyle={slideToCancelAnimatedStyle}
                   stopVoiceRecording={stopVoiceRecording}
                   uploadVoiceRecording={uploadVoiceRecording}
                 />
@@ -753,11 +750,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
               {audioRecordingEnabled && isAudioRecorderAvailable() && !micLocked && (
                 <GestureDetector gesture={panGestureMic}>
                   <Animated.View
-                    style={[
-                      styles.micButtonContainer,
-                      animatedStyles.micButton,
-                      micButtonContainer,
-                    ]}
+                    style={[styles.micButtonContainer, micButttonAnimatedStyle, micButtonContainer]}
                   >
                     <StartAudioRecordingButton
                       permissionsGranted={permissionsGranted}
