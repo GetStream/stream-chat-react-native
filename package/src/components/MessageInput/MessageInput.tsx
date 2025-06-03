@@ -49,7 +49,6 @@ import {
 } from '../../contexts/messagesContext/MessagesContext';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import {
   TranslationContextValue,
   useTranslationContext,
@@ -150,7 +149,6 @@ type MessageInputPropsWithContext = Pick<
     | 'StopMessageStreamingButton'
   > &
   Pick<MessagesContextValue, 'Reply'> &
-  Pick<ThreadContextValue, 'thread'> &
   Pick<TranslationContextValue, 't'>;
 
 const textComposerStateSelector = (state: TextComposerState) => ({
@@ -829,7 +827,6 @@ const areEqual = (
     openPollCreationDialog: prevOpenPollCreationDialog,
     showPollCreationDialog: prevShowPollCreationDialog,
     t: prevT,
-    thread: prevThread,
     threadList: prevThreadList,
   } = prevProps;
   const {
@@ -846,7 +843,6 @@ const areEqual = (
     openPollCreationDialog: nextOpenPollCreationDialog,
     showPollCreationDialog: nextShowPollCreationDialog,
     t: nextT,
-    thread: nextThread,
     threadList: nextThreadList,
   } = nextProps;
 
@@ -909,14 +905,6 @@ const areEqual = (
 
   const cooldownEndsAtEqual = prevCooldownEndsAt === nextCooldownEndsAt;
   if (!cooldownEndsAtEqual) {
-    return false;
-  }
-
-  const threadEqual =
-    prevThread?.id === nextThread?.id &&
-    prevThread?.text === nextThread?.text &&
-    prevThread?.reply_count === nextThread?.reply_count;
-  if (!threadEqual) {
     return false;
   }
 
@@ -995,8 +983,6 @@ export const MessageInput = (props: MessageInputProps) => {
 
   const { Reply } = useMessagesContext();
 
-  const { thread } = useThreadContext();
-
   const { t } = useTranslationContext();
 
   /**
@@ -1055,7 +1041,6 @@ export const MessageInput = (props: MessageInputProps) => {
         StartAudioRecordingButton,
         StopMessageStreamingButton,
         t,
-        thread,
         threadList,
         uploadNewFile,
         watchers,
