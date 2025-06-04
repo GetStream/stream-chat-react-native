@@ -26,6 +26,7 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import { NativeHandlers } from '../../../native';
 
+import { checkMessageEquality, checkQuotedMessageEquality } from '../../../utils/utils';
 import { useMessageData } from '../hooks/useMessageData';
 
 const styles = StyleSheet.create({
@@ -476,11 +477,6 @@ const areEqual = (
     otherAttachments: nextOtherAttachments,
   } = nextProps;
 
-  const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
-  if (!repliesEqual) {
-    return false;
-  }
-
   const hasReactionsEqual = prevHasReactions === nextHasReactions;
   if (!hasReactionsEqual) {
     return false;
@@ -490,9 +486,6 @@ const areEqual = (
   if (!groupStylesEqual) {
     return false;
   }
-
-  const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
-  const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
 
   const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
   if (!lastGroupMessageEqual) {
@@ -504,24 +497,15 @@ const areEqual = (
     return false;
   }
 
-  const messageEqual =
-    isPrevMessageTypeDeleted === isNextMessageTypeDeleted &&
-    prevMessage.reply_count === nextMessage.reply_count &&
-    prevMessage.status === nextMessage.status &&
-    prevMessage.type === nextMessage.type &&
-    prevMessage.text === nextMessage.text &&
-    prevMessage.i18n === nextMessage.i18n &&
-    prevMessage.pinned === nextMessage.pinned;
+  const messageEqual = checkMessageEquality(prevMessage, nextMessage);
   if (!messageEqual) {
     return false;
   }
 
-  const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';
-  const isNextQuotedMessageTypeDeleted = nextMessage.quoted_message?.type === 'deleted';
-
-  const quotedMessageEqual =
-    prevMessage.quoted_message?.id === nextMessage.quoted_message?.id &&
-    isPrevQuotedMessageTypeDeleted === isNextQuotedMessageTypeDeleted;
+  const quotedMessageEqual = checkQuotedMessageEquality(
+    prevMessage.quoted_message,
+    nextMessage.quoted_message,
+  );
 
   if (!quotedMessageEqual) {
     return false;

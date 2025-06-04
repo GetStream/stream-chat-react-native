@@ -45,12 +45,14 @@ export const useCreateMessageContext = ({
 }: MessageContextValue) => {
   const groupStylesLength = groupStyles.length;
   const reactionsValue = reactions.map(({ count, own, type }) => `${own}${type}${count}`).join();
-  const stringifiedMessage = stringifyMessage(message);
+  const stringifiedMessage = stringifyMessage({ message });
 
   const membersValue = JSON.stringify(members);
   const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
 
-  const quotedMessageDeletedValue = message.quoted_message?.deleted_at;
+  const stringifiedQuotedMessage = message.quoted_message
+    ? stringifyMessage({ includeReactions: false, message: message.quoted_message })
+    : '';
 
   const messageContext: MessageContextValue = useMemo(
     () => ({
@@ -95,7 +97,6 @@ export const useCreateMessageContext = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       actionsEnabled,
-      quotedMessageDeletedValue,
       alignment,
       goToMessage,
       groupStylesLength,
@@ -104,9 +105,10 @@ export const useCreateMessageContext = ({
       lastGroupMessage,
       lastReceivedId,
       membersValue,
-      stringifiedMessage,
       myMessageThemeString,
       reactionsValue,
+      stringifiedMessage,
+      stringifiedQuotedMessage,
       readBy,
       showAvatar,
       showMessageStatus,
