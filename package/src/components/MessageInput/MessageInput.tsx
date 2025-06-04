@@ -160,7 +160,6 @@ type MessageInputPropsWithContext = Partial<
     | 'CommandInput'
     | 'InputReplyStateHeader'
     | 'maxNumberOfFiles'
-    | 'resetInput'
     | 'SendButton'
     | 'ShowThreadMessageInChannelButton'
     | 'StartAudioRecordingButton'
@@ -226,7 +225,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     maxNumberOfFiles,
     members,
     Reply,
-    resetInput,
     SendButton,
     sendMessage,
     showPollCreationDialog,
@@ -302,10 +300,9 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
      */
     if (
       !editing &&
-      (command || attachments.length > 0 || mentionedUsers.length > 0 || availableUploadSlots) &&
-      resetInput
+      (command || attachments.length > 0 || mentionedUsers.length > 0 || availableUploadSlots)
     ) {
-      resetInput();
+      messageComposer.clear();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editingExists]);
@@ -818,7 +815,6 @@ export const MessageInput = (props: MessageInputProps) => {
     InputReplyStateHeader,
     maxNumberOfFiles,
     openPollCreationDialog,
-    resetInput,
     SendButton,
     sendMessage,
     SendMessageDisallowedIndicator,
@@ -892,7 +888,6 @@ export const MessageInput = (props: MessageInputProps) => {
         members,
         openPollCreationDialog,
         Reply,
-        resetInput,
         selectedPicker,
         SendButton,
         sendMessage,

@@ -11,7 +11,6 @@ import { Alert, Keyboard, Linking, TextInput, TextInputProps } from 'react-nativ
 
 import { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import {
-  Attachment,
   createApplyCommandSettingsMiddleware,
   createCommandInjectionMiddleware,
   createDraftCommandInjectionMiddleware,
@@ -90,7 +89,6 @@ export type LocalMessageInputContext = {
    */
   pickAndUploadImageFromNativePicker: () => Promise<void>;
   pickFile: () => Promise<void>;
-  resetInput: (pendingAttachments?: Attachment[]) => void;
   sendMessage: (params?: { customMessageData?: Partial<Message> }) => Promise<void>;
   sendThreadMessageInChannel: boolean;
   /**
@@ -595,16 +593,6 @@ export const MessageInputProvider = ({
     }
   }, [closeAttachmentPicker, openAttachmentPicker, selectedPicker]);
 
-  const resetInput = useStableCallback(() => {
-    if (!value.editing) {
-      messageComposer.clear();
-    }
-
-    if (value.editing) {
-      value.clearEditingState();
-    }
-  });
-
   const sendMessage = useStableCallback(async () => {
     startCooldown();
 
@@ -618,14 +606,14 @@ export const MessageInputProvider = ({
 
     if (editedMessage && editedMessage.type !== 'error') {
       try {
-        resetInput();
+        value.clearEditingState();
         await value.editMessage({ localMessage, options: sendOptions });
       } catch (error) {
         console.log('Failed to edit message:', error);
       }
     } else {
       try {
-        resetInput();
+        messageComposer.clear();
         await value.sendMessage({
           localMessage: {
             ...localMessage,
@@ -686,7 +674,6 @@ export const MessageInputProvider = ({
     openFilePicker: pickFile,
     pickAndUploadImageFromNativePicker,
     pickFile,
-    resetInput,
     sendThreadMessageInChannel,
     setInputBoxRef,
     setSendThreadMessageInChannel,
