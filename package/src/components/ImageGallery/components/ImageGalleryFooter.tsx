@@ -328,6 +328,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   wrapper: {
+    bottom: 0,
     left: 0,
     position: 'absolute',
     right: 0,
