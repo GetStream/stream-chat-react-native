@@ -528,7 +528,7 @@ export const ImageGallery = (props: Props) => {
     <Animated.View
       accessibilityLabel='Image Gallery'
       pointerEvents={'auto'}
-      style={[StyleSheet.absoluteFillObject, showScreenStyle, { paddingVertical: 30 }]}
+      style={[StyleSheet.absoluteFillObject, showScreenStyle]}
     >
       <Animated.View style={[StyleSheet.absoluteFillObject, containerBackground]} />
       <GestureDetector gesture={Gesture.Simultaneous(singleTap, doubleTap, pinch, pan)}>
