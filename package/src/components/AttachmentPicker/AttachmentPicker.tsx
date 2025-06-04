@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BackHandler, Keyboard, Platform, StyleSheet } from 'react-native';
 
 import BottomSheetOriginal from '@gorhom/bottom-sheet';
@@ -230,11 +230,15 @@ export const AttachmentPicker = React.forwardRef(
       }
     }, [currentIndex, selectedPicker, getMorePhotos, loadingPhotos]);
 
-    const selectedPhotos = photos.map((asset) => ({
-      asset,
-      ImageOverlaySelectedComponent,
-      numberOfAttachmentPickerImageColumns,
-    }));
+    const selectedPhotos = useMemo(
+      () =>
+        photos.map((asset) => ({
+          asset,
+          ImageOverlaySelectedComponent,
+          numberOfAttachmentPickerImageColumns,
+        })),
+      [photos, ImageOverlaySelectedComponent, numberOfAttachmentPickerImageColumns],
+    );
 
     const handleHeight = attachmentPickerBottomSheetHandleHeight;
 
