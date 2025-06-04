@@ -151,6 +151,7 @@ export const stringifyMessage = ({
   includeReactions?: boolean;
 }): string => {
   const {
+    attachments,
     deleted_at,
     i18n,
     latest_reactions,
@@ -161,7 +162,7 @@ export const stringifyMessage = ({
     type,
     updated_at,
   } = message;
-  const baseFieldsString = `${type}${deleted_at}${text}${reply_count}${status}${updated_at}${JSON.stringify(i18n)}`;
+  const baseFieldsString = `${type}${deleted_at}${text}${reply_count}${status}${updated_at}${JSON.stringify(i18n)}${attachments?.length}`;
   if (!includeReactions) {
     return baseFieldsString;
   }

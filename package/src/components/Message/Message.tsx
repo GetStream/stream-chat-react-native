@@ -869,6 +869,14 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     return false;
   }
 
+  const quotedMessageAttachmentsEqual =
+    prevMessage.quoted_message?.attachments?.length ===
+    nextMessage.quoted_message?.attachments?.length;
+
+  if (!quotedMessageAttachmentsEqual) {
+    return false;
+  }
+
   const latestReactionsEqual =
     Array.isArray(prevMessage.latest_reactions) && Array.isArray(nextMessage.latest_reactions)
       ? prevMessage.latest_reactions.length === nextMessage.latest_reactions.length &&
