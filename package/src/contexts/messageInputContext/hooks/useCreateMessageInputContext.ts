@@ -63,6 +63,7 @@ export const useCreateMessageInputContext = ({
   openPollCreationDialog,
   pickAndUploadImageFromNativePicker,
   pickFile,
+  selectedPicker,
   SendButton,
   sendMessage,
   SendMessageDisallowedIndicator,
@@ -145,6 +146,7 @@ export const useCreateMessageInputContext = ({
       openPollCreationDialog,
       pickAndUploadImageFromNativePicker,
       pickFile,
+      selectedPicker,
       SendButton,
       sendMessage,
       SendMessageDisallowedIndicator,
@@ -170,6 +172,7 @@ export const useCreateMessageInputContext = ({
       sendThreadMessageInChannel,
       threadId,
       showPollCreationDialog,
+      selectedPicker,
     ],
   );
 

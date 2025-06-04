@@ -89,6 +89,7 @@ export type LocalMessageInputContext = {
    */
   pickAndUploadImageFromNativePicker: () => Promise<void>;
   pickFile: () => Promise<void>;
+  selectedPicker?: 'images';
   sendMessage: (params?: { customMessageData?: Partial<Message> }) => Promise<void>;
   sendThreadMessageInChannel: boolean;
   /**
@@ -684,6 +685,7 @@ export const MessageInputProvider = ({
     ...value,
     closePollCreationDialog,
     openPollCreationDialog,
+    selectedPicker,
     sendMessage, // overriding the originally passed in sendMessage
     showPollCreationDialog,
   });
