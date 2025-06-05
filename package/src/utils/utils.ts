@@ -334,15 +334,20 @@ export const checkQuotedMessageEquality = (
   prevQuotedMessage?: LocalMessage,
   nextQuotedMessage?: LocalMessage,
 ): boolean => {
-  if (!prevQuotedMessage || !nextQuotedMessage) {
+  const prevQuotedMessageExists = !!prevQuotedMessage;
+  const nextQuotedMessageExists = !!nextQuotedMessage;
+  if (!prevQuotedMessageExists && !nextQuotedMessageExists) {
+    return true;
+  }
+  if (prevQuotedMessageExists !== nextQuotedMessageExists) {
     return false;
   }
-  const isPrevQuotedMessageTypeDeleted = prevQuotedMessage.type === 'deleted';
-  const isNextQuotedMessageTypeDeleted = nextQuotedMessage.type === 'deleted';
+  const isPrevQuotedMessageTypeDeleted = prevQuotedMessage?.type === 'deleted';
+  const isNextQuotedMessageTypeDeleted = nextQuotedMessage?.type === 'deleted';
   const quotedMessageEqual =
     isPrevQuotedMessageTypeDeleted === isNextQuotedMessageTypeDeleted &&
-    prevQuotedMessage.type === nextQuotedMessage.type &&
-    prevQuotedMessage.text === nextQuotedMessage.text &&
+    prevQuotedMessage?.type === nextQuotedMessage?.type &&
+    prevQuotedMessage?.text === nextQuotedMessage?.text &&
     `${prevQuotedMessage?.updated_at}` === `${nextQuotedMessage?.updated_at}` &&
     `${prevQuotedMessage?.deleted_at}` === `${nextQuotedMessage?.deleted_at}`;
 
