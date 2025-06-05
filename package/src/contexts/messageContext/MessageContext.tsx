@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { Attachment, LocalMessage } from 'stream-chat';
+import type { Attachment, LocalMessage, MessageComposer } from 'stream-chat';
 
 import type { ActionHandler } from '../../components/Attachment/Attachment';
 import { ReactionSummary } from '../../components/Message/hooks/useProcessReactions';
@@ -119,6 +119,7 @@ export type MessageContextValue = {
   preventPress?: boolean;
   /** Whether or not the avatar show show next to Message */
   showAvatar?: boolean;
+  setQuotedMessage: MessageComposer['setQuotedMessage'];
 } & Pick<ChannelContextValue, 'channel' | 'members'>;
 
 export const MessageContext = React.createContext(

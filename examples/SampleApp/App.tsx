@@ -169,7 +169,6 @@ const isMessageAIGenerated = (message: LocalMessage) => !!message.ai_generated;
 const DrawerNavigatorWrapper: React.FC<{
   chatClient: StreamChat;
 }> = ({ chatClient }) => {
-  const { bottom } = useSafeAreaInsets();
   const streamChatTheme = useStreamChatTheme();
 
   chatClient.setMessageComposerSetupFunction(({ composer }) => {
@@ -182,7 +181,7 @@ const DrawerNavigatorWrapper: React.FC<{
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <OverlayProvider bottomInset={bottom} value={{ style: streamChatTheme }}>
+      <OverlayProvider value={{ style: streamChatTheme }}>
         <Chat
           client={chatClient}
           enableOfflineSupport

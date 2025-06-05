@@ -11,7 +11,7 @@ import {
 import { DarkTheme, DefaultTheme, NavigationContainer, RouteProp } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import { useHeaderHeight } from '@react-navigation/elements';
-import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Channel as ChannelType, ChannelSort } from 'stream-chat';
 import {
   Channel,
@@ -24,7 +24,6 @@ import {
   Streami18n,
   Thread,
   ThreadContextValue,
-  useAttachmentPickerContext,
   useChatContext,
   useCreateChatClient,
   useOverlayContext,
@@ -108,7 +107,6 @@ const EmptyHeader = () => <></>;
 const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
   const { channel, setThread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
-  const { setTopInset } = useAttachmentPickerContext();
   const { overlay } = useOverlayContext();
 
   useEffect(() => {
@@ -116,10 +114,6 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
       gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
     });
   }, [overlay, navigation]);
-
-  useEffect(() => {
-    setTopInset(headerHeight);
-  }, [headerHeight, setTopInset]);
 
   if (channel === undefined) {
     return null;
@@ -261,7 +255,6 @@ const NavigatorModule = () => {
 };
 
 const App = () => {
-  const { bottom } = useSafeAreaInsets();
   const theme = useStreamChatTheme();
 
   const chatClient = useCreateChatClient({
@@ -275,7 +268,7 @@ const App = () => {
   }
 
   return (
-    <OverlayProvider bottomInset={bottom} i18nInstance={streami18n} value={{ style: theme }}>
+    <OverlayProvider i18nInstance={streami18n} value={{ style: theme }}>
       <Chat client={chatClient} i18nInstance={streami18n} enableOfflineSupport>
         <NavigatorModule />
       </Chat>

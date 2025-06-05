@@ -4,13 +4,14 @@ import { StyleSheet, View } from 'react-native';
 
 import { FileReference, LocalAudioAttachment, LocalVoiceRecordingAttachment } from 'stream-chat';
 
+import { AttachmentUnsupportedIndicator } from './AttachmentUnsupportedIndicator';
 import { AttachmentUploadProgressIndicator } from './AttachmentUploadProgressIndicator';
 import { DismissAttachmentUpload } from './DismissAttachmentUpload';
 
 import { AudioAttachment } from '../../../../components/Attachment/AudioAttachment';
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { AudioConfig, UploadAttachmentPreviewProps } from '../../../../types/types';
-import { getIndicatorTypeForFileState } from '../../../../utils/utils';
+import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../../../utils/utils';
 
 export type AudioAttachmentUploadPreviewProps<CustomLocalMetadata = Record<string, unknown>> =
   UploadAttachmentPreviewProps<
@@ -56,7 +57,7 @@ export const AudioAttachmentUploadPreview = ({
   }, [attachment, removeAttachments]);
 
   return (
-    <>
+    <View testID={'audio-attachment-upload-preview'}>
       <AttachmentUploadProgressIndicator
         onPress={onRetryHandler}
         style={styles.overlay}
@@ -69,14 +70,16 @@ export const AudioAttachmentUploadPreview = ({
           onPlayPause={onPlayPause}
           onProgress={onProgress}
           showSpeedSettings={false}
-          testID='audio-attachment-upload-preview'
           titleMaxLength={12}
         />
       </AttachmentUploadProgressIndicator>
       <View style={styles.dismissWrapper}>
         <DismissAttachmentUpload onPress={onDismissHandler} />
       </View>
-    </>
+      {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
+        <AttachmentUnsupportedIndicator indicatorType={indicatorType} isImage={true} />
+      ) : null}
+    </View>
   );
 };
 

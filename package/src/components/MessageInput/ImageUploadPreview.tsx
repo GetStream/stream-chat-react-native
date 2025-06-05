@@ -31,9 +31,7 @@ const UnmemoizedImageUploadPreview = (props: ImageUploadPreviewPropsWithContext)
   const { attachmentManager } = useMessageComposer();
   const { attachments } = useAttachmentManagerState();
 
-  const imageOrVideoUploads = attachments.filter((attachment) =>
-    isLocalImageAttachment(attachment),
-  );
+  const imageUploads = attachments.filter((attachment) => isLocalImageAttachment(attachment));
 
   const {
     theme: {
@@ -60,13 +58,13 @@ const UnmemoizedImageUploadPreview = (props: ImageUploadPreviewPropsWithContext)
     ],
   );
 
-  if (!imageOrVideoUploads.length) {
+  if (!imageUploads.length) {
     return null;
   }
 
   return (
     <FlatList
-      data={imageOrVideoUploads}
+      data={imageUploads}
       getItemLayout={(_, index) => ({
         index,
         length: IMAGE_PREVIEW_SIZE + 8,

@@ -9,6 +9,7 @@ import { useMessageActions } from './hooks/useMessageActions';
 import { useProcessReactions } from './hooks/useProcessReactions';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
 
+import { useMessageComposer } from '../../contexts';
 import {
   ChannelContextValue,
   useChannelContext,
@@ -31,9 +32,11 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
+import { useStableCallback } from '../../hooks';
 import { isVideoPlayerAvailable, NativeHandlers } from '../../native';
 import { FileTypes } from '../../types/types';
 import {
+  checkMessageEquality,
   hasOnlyEmojis,
   isBlockedMessage,
   isBouncedMessage,
@@ -140,7 +143,10 @@ export type MessagePropsWithContext = Pick<
       'groupStyles' | 'handleReaction' | 'message' | 'isMessageAIGenerated' | 'readBy'
     >
   > &
-  Pick<MessageContextValue, 'groupStyles' | 'message' | 'isMessageAIGenerated' | 'readBy'> &
+  Pick<
+    MessageContextValue,
+    'groupStyles' | 'message' | 'isMessageAIGenerated' | 'readBy' | 'setQuotedMessage'
+  > &
   Pick<
     MessagesContextValue,
     | 'sendReaction'
@@ -264,6 +270,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     threadList = false,
     updateMessage,
     readBy,
+    setQuotedMessage,
   } = props;
   const isMessageAIGenerated = messagesContext.isMessageAIGenerated;
   const isAIGenerated = useMemo(
@@ -499,6 +506,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     retrySendMessage,
     sendReaction,
     setEditingState,
+    setQuotedMessage,
     supportedReactions,
   });
 
@@ -543,6 +551,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     selectReaction,
     sendReaction,
     setEditingState,
+    setQuotedMessage,
     supportedReactions,
     t,
     updateMessage,
@@ -691,6 +700,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     reactions,
     readBy,
     setIsEditedMessageOpen,
+    setQuotedMessage,
     showAvatar,
     showMessageOverlay,
     showMessageStatus: typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
@@ -813,28 +823,16 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     return false;
   }
 
-  const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
-  const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
-
-  const messageEqual =
-    isPrevMessageTypeDeleted === isNextMessageTypeDeleted &&
-    prevMessage.status === nextMessage.status &&
-    prevMessage.type === nextMessage.type &&
-    prevMessage.text === nextMessage.text &&
-    prevMessage.pinned === nextMessage.pinned &&
-    `${prevMessage?.updated_at}` === `${nextMessage?.updated_at}` &&
-    prevMessage.i18n === nextMessage.i18n;
+  const messageEqual = checkMessageEquality(prevMessage, nextMessage);
 
   if (!messageEqual) {
     return false;
   }
 
-  const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';
-  const isNextQuotedMessageTypeDeleted = nextMessage.quoted_message?.type === 'deleted';
-
-  const quotedMessageEqual =
-    prevMessage.quoted_message?.id === nextMessage.quoted_message?.id &&
-    isPrevQuotedMessageTypeDeleted === isNextQuotedMessageTypeDeleted;
+  const quotedMessageEqual = checkMessageEquality(
+    prevMessage.quoted_message,
+    nextMessage.quoted_message,
+  );
 
   if (!quotedMessageEqual) {
     return false;
@@ -868,6 +866,14 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
       })) ||
     prevMessageAttachments === nextMessageAttachments;
   if (!attachmentsEqual) {
+    return false;
+  }
+
+  const quotedMessageAttachmentsEqual =
+    prevMessage.quoted_message?.attachments?.length ===
+    nextMessage.quoted_message?.attachments?.length;
+
+  if (!quotedMessageAttachmentsEqual) {
     return false;
   }
 
@@ -938,6 +944,10 @@ export const Message = (props: MessageProps) => {
   const { openThread } = useThreadContext();
   const { t } = useTranslationContext();
   const readBy = useMemo(() => getReadState(message, read), [message, read]);
+  const messageComposer = useMessageComposer();
+  const setQuotedMessage = useStableCallback((message: LocalMessage | null) =>
+    messageComposer.setQuotedMessage(message),
+  );
 
   return (
     <MemoizedMessage
@@ -951,6 +961,7 @@ export const Message = (props: MessageProps) => {
         messagesContext,
         openThread,
         readBy,
+        setQuotedMessage,
         t,
       }}
       {...props}

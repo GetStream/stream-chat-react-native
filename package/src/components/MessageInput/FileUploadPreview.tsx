@@ -61,7 +61,7 @@ const UnMemoizedFileUploadPreview = (props: FileUploadPreviewPropsWithContext) =
     return attachments.filter(
       (attachment) =>
         isLocalFileAttachment(attachment) ||
-        isLocalFileAttachment(attachment) ||
+        isLocalAudioAttachment(attachment) ||
         isLocalVoiceRecordingAttachment(attachment) ||
         isLocalVideoAttachment(attachment),
     );
@@ -89,7 +89,8 @@ const UnMemoizedFileUploadPreview = (props: FileUploadPreviewPropsWithContext) =
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileUploads]);
 
-  // Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here and the duration is set.
+  // Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here
+  // and the duration is set.
   const onLoad = useCallback((index: string, duration: number) => {
     setAudioAttachmentsStateMap((prevState) => ({
       ...prevState,
@@ -100,7 +101,8 @@ const UnMemoizedFileUploadPreview = (props: FileUploadPreviewPropsWithContext) =
     }));
   }, []);
 
-  // The handler which is triggered when the audio progresses/ the thumb is dragged in the progress control. The progressed duration is set here.
+  // The handler which is triggered when the audio progresses/ the thumb is dragged in the progress control. The
+  // progressed duration is set here.
   const onProgress = useCallback((index: string, progress: number) => {
     setAudioAttachmentsStateMap((prevState) => ({
       ...prevState,
@@ -255,6 +257,7 @@ const UnMemoizedFileUploadPreview = (props: FileUploadPreviewPropsWithContext) =
       ref={flatListRef}
       renderItem={renderItem}
       style={[styles.flatList, flatList]}
+      testID={'file-upload-preview'}
     />
   );
 };

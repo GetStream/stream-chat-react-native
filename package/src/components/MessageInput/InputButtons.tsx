@@ -3,7 +3,11 @@ import { StyleSheet, View } from 'react-native';
 
 import { TextComposerState } from 'stream-chat';
 
-import { AttachmentPickerContextValue, useAttachmentPickerContext } from '../../contexts';
+import {
+  AttachmentPickerContextValue,
+  OwnCapabilitiesContextValue,
+  useAttachmentPickerContext,
+} from '../../contexts';
 import { useAttachmentManagerState } from '../../contexts/messageInputContext/hooks/useAttachmentManagerState';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
@@ -27,7 +31,8 @@ export type InputButtonsWithContextProps = Pick<
   | 'MoreOptionsButton'
   | 'toggleAttachmentPicker'
 > &
-  Pick<AttachmentPickerContextValue, 'selectedPicker'>;
+  Pick<AttachmentPickerContextValue, 'selectedPicker'> &
+  Pick<OwnCapabilitiesContextValue, 'uploadFile'>;
 
 const textComposerStateSelector = (state: TextComposerState) => ({
   command: state.command,
@@ -43,6 +48,7 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
     hasFilePicker,
     hasImagePicker,
     MoreOptionsButton,
+    uploadFile: ownCapabilitiesUploadFile,
   } = props;
   const { textComposer } = useMessageComposer();
   const { command, text } = useStateStore(textComposer.state, textComposerStateSelector);
@@ -67,24 +73,29 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
     setShowMoreOptions(true);
   }, [setShowMoreOptions]);
 
-  const ownCapabilities = useOwnCapabilitiesContext();
+  const hasAttachmentUploadCapabilities =
+    (hasCameraPicker || hasFilePicker || hasImagePicker) && ownCapabilitiesUploadFile;
 
   if (command) {
     return null;
   }
 
-  return !showMoreOptions && (hasCameraPicker || hasImagePicker || hasFilePicker) && hasCommands ? (
+  if (!hasAttachmentUploadCapabilities && !hasCommands) {
+    return null;
+  }
+
+  return !showMoreOptions ? (
     <MoreOptionsButton handleOnPress={handleShowMoreOptions} />
   ) : (
     <>
-      {(hasCameraPicker || hasImagePicker || hasFilePicker) && ownCapabilities.uploadFile && (
+      {hasAttachmentUploadCapabilities ? (
         <View
           style={[hasCommands ? styles.attachButtonContainer : undefined, attachButtonContainer]}
         >
           <AttachButton />
         </View>
-      )}
-      {hasCommands && <CommandsButton hasText={hasText} />}
+      ) : null}
+      {hasCommands ? <CommandsButton hasText={hasText} /> : null}
     </>
   );
 };
@@ -149,6 +160,7 @@ export const InputButtons = (props: InputButtonsProps) => {
     toggleAttachmentPicker,
   } = useMessageInputContext();
   const { selectedPicker } = useAttachmentPickerContext();
+  const { uploadFile } = useOwnCapabilitiesContext();
 
   return (
     <MemoizedInputButtonsWithContext
@@ -162,6 +174,7 @@ export const InputButtons = (props: InputButtonsProps) => {
         MoreOptionsButton,
         selectedPicker,
         toggleAttachmentPicker,
+        uploadFile,
       }}
       {...props}
     />

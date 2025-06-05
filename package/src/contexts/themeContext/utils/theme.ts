@@ -318,7 +318,6 @@ export type Theme = {
       text: TextStyle;
     };
     commandsButton: ViewStyle;
-    commandsButtonContainer: ViewStyle;
     composerContainer: ViewStyle;
     container: ViewStyle;
     cooldownTimer: {
@@ -1103,7 +1102,6 @@ export const defaultTheme: Theme = {
       text: {},
     },
     commandsButton: {},
-    commandsButtonContainer: {},
     composerContainer: {},
     container: {},
     cooldownTimer: {

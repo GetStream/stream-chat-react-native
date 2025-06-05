@@ -304,7 +304,7 @@ export const useLatestMessagePreview = (
   const translatedLastMessage = useTranslatedMessage(lastMessage);
 
   const channelLastMessageString = translatedLastMessage
-    ? stringifyMessage(translatedLastMessage)
+    ? stringifyMessage({ message: translatedLastMessage })
     : '';
 
   const readEvents = useMemo(() => {

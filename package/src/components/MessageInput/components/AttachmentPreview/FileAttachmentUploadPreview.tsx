@@ -68,7 +68,7 @@ export const FileAttachmentUploadPreview = ({
   }, [attachment, removeAttachments]);
 
   return (
-    <View style={[styles.wrapper, wrapper]}>
+    <View style={[styles.wrapper, wrapper]} testID={'file-attachment-upload-preview'}>
       <AttachmentUploadProgressIndicator
         onPress={onRetryHandler}
         style={[styles.overlay, { width: flatListWidth - 16 }, uploadProgressOverlay]}

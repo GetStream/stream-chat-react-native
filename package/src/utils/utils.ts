@@ -143,8 +143,15 @@ export const hasOnlyEmojis = (text: string) => {
  * @param {LocalMessage} message - the message object to be stringified
  * @returns {string} The stringified message
  */
-export const stringifyMessage = (message: MessageResponse | LocalMessage): string => {
+export const stringifyMessage = ({
+  message,
+  includeReactions = true,
+}: {
+  message: MessageResponse | LocalMessage;
+  includeReactions?: boolean;
+}): string => {
   const {
+    attachments,
     deleted_at,
     i18n,
     latest_reactions,
@@ -155,6 +162,10 @@ export const stringifyMessage = (message: MessageResponse | LocalMessage): strin
     type,
     updated_at,
   } = message;
+  const baseFieldsString = `${type}${deleted_at}${text}${reply_count}${status}${updated_at}${JSON.stringify(i18n)}${attachments?.length}`;
+  if (!includeReactions) {
+    return baseFieldsString;
+  }
   return `${
     latest_reactions ? latest_reactions.map(({ type, user }) => `${type}${user?.id}`).join() : ''
   }${
@@ -166,7 +177,7 @@ export const stringifyMessage = (message: MessageResponse | LocalMessage): strin
           )
           .join()
       : ''
-  }${type}${deleted_at}${text}${reply_count}${status}${updated_at}${JSON.stringify(i18n)}`;
+  }${baseFieldsString}`;
 };
 
 /**
@@ -175,7 +186,13 @@ export const stringifyMessage = (message: MessageResponse | LocalMessage): strin
  * @returns {string} The mapped message string
  */
 export const reduceMessagesToString = (messages: LocalMessage[]): string =>
-  messages.map(stringifyMessage).join();
+  messages
+    .map((message) =>
+      message?.quoted_message
+        ? `${stringifyMessage({ message })}_${message.quoted_message.type}_${message.quoted_message.deleted_at}_${message.quoted_message.text}_${message.quoted_message.updated_at}`
+        : stringifyMessage({ message }),
+    )
+    .join();
 
 /**
  * Utility to get the file name from the path using regex.
@@ -274,4 +291,60 @@ export const findInMessagesByDate = (
   }
 
   return { index: -1 };
+};
+
+/**
+ * The purpose of this function is to compare two messages and determine if they are equal.
+ * It checks various properties of the messages, such as status, type, text, pinned state, updated_at timestamp, i18n data, and reply count.
+ * If all these properties match, it returns true, indicating that the messages are considered equal.
+ * If any of the properties differ, it returns false, indicating that the messages are not equal.
+ * Useful for the `areEqual` logic in the React.memo of the Message component/sub-components.
+ */
+export const checkMessageEquality = (
+  prevMessage?: LocalMessage,
+  nextMessage?: LocalMessage,
+): boolean => {
+  if (!prevMessage || !nextMessage) {
+    return false;
+  }
+  const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
+  const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
+  const messageEqual =
+    isPrevMessageTypeDeleted === isNextMessageTypeDeleted &&
+    prevMessage.status === nextMessage.status &&
+    prevMessage.type === nextMessage.type &&
+    prevMessage.text === nextMessage.text &&
+    prevMessage.pinned === nextMessage.pinned &&
+    prevMessage.i18n === nextMessage.i18n &&
+    prevMessage.reply_count === nextMessage.reply_count &&
+    `${prevMessage?.updated_at}` === `${nextMessage?.updated_at}` &&
+    `${prevMessage?.deleted_at}` === `${nextMessage?.deleted_at}`;
+
+  return messageEqual;
+};
+
+/**
+ * The purpose of this function is to compare two quoted messages and determine if they are equal.
+ * It checks various properties of the messages, such as status, type, text, updated_at timestamp, and deleted_at.
+ * If all these properties match, it returns true, indicating that the messages are considered equal.
+ * If any of the properties differ, it returns false, indicating that the messages are not equal.
+ * Useful for the `areEqual` logic in the React.memo of the Message component/sub-components.
+ */
+export const checkQuotedMessageEquality = (
+  prevQuotedMessage?: LocalMessage,
+  nextQuotedMessage?: LocalMessage,
+): boolean => {
+  if (!prevQuotedMessage || !nextQuotedMessage) {
+    return false;
+  }
+  const isPrevQuotedMessageTypeDeleted = prevQuotedMessage.type === 'deleted';
+  const isNextQuotedMessageTypeDeleted = nextQuotedMessage.type === 'deleted';
+  const quotedMessageEqual =
+    isPrevQuotedMessageTypeDeleted === isNextQuotedMessageTypeDeleted &&
+    prevQuotedMessage.type === nextQuotedMessage.type &&
+    prevQuotedMessage.text === nextQuotedMessage.text &&
+    `${prevQuotedMessage?.updated_at}` === `${nextQuotedMessage?.updated_at}` &&
+    `${prevQuotedMessage?.deleted_at}` === `${nextQuotedMessage?.deleted_at}`;
+
+  return quotedMessageEqual;
 };

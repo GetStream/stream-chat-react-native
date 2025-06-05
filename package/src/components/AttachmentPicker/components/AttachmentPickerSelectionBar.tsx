@@ -20,26 +20,22 @@ const styles = StyleSheet.create({
 });
 
 export const AttachmentPickerSelectionBar = () => {
+  const { closePicker, selectedPicker, setSelectedPicker } = useAttachmentPickerContext();
+
   const {
     attachmentSelectionBarHeight,
     CameraSelectorIcon,
-    closePicker,
     CreatePollIcon,
     FileSelectorIcon,
-    ImageSelectorIcon,
-    selectedPicker,
-    setSelectedPicker,
-    VideoRecorderSelectorIcon,
-  } = useAttachmentPickerContext();
-
-  const {
     hasCameraPicker,
     hasFilePicker,
     hasImagePicker,
+    ImageSelectorIcon,
     openPollCreationDialog,
     pickFile,
     sendMessage,
     takeAndUploadImage,
+    VideoRecorderSelectorIcon,
   } = useMessageInputContext();
   const { threadList } = useChannelContext();
   const { hasCreatePoll } = useMessagesContext();
@@ -72,6 +68,18 @@ export const AttachmentPickerSelectionBar = () => {
     openPollCreationDialog?.({ sendMessage });
   };
 
+  const onCameraPickerPress = () => {
+    setSelectedPicker(undefined);
+    closePicker();
+    takeAndUploadImage(Platform.OS === 'android' ? 'image' : 'mixed');
+  };
+
+  const onVideoRecorderPickerPress = () => {
+    setSelectedPicker(undefined);
+    closePicker();
+    takeAndUploadImage('video');
+  };
+
   return (
     <View style={[styles.container, container, { height: attachmentSelectionBarHeight }]}>
       {hasImagePicker ? (
@@ -99,9 +107,7 @@ export const AttachmentPickerSelectionBar = () => {
       {hasCameraPicker ? (
         <TouchableOpacity
           hitSlop={{ bottom: 15, top: 15 }}
-          onPress={() => {
-            takeAndUploadImage(Platform.OS === 'android' ? 'image' : 'mixed');
-          }}
+          onPress={onCameraPickerPress}
           testID='take-photo-touchable'
         >
           <View style={[styles.icon, icon]}>
@@ -112,9 +118,7 @@ export const AttachmentPickerSelectionBar = () => {
       {hasCameraPicker && Platform.OS === 'android' ? (
         <TouchableOpacity
           hitSlop={{ bottom: 15, top: 15 }}
-          onPress={() => {
-            takeAndUploadImage('video');
-          }}
+          onPress={onVideoRecorderPickerPress}
           testID='take-photo-touchable'
         >
           <View style={[styles.icon, { marginTop: 4 }, icon]}>

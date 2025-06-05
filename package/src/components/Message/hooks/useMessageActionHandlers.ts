@@ -3,7 +3,6 @@ import { Alert } from 'react-native';
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
-import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
@@ -18,6 +17,7 @@ export const useMessageActionHandlers = ({
   retrySendMessage,
   sendReaction,
   setEditingState,
+  setQuotedMessage,
 }: Pick<
   MessagesContextValue,
   | 'sendReaction'
@@ -29,13 +29,12 @@ export const useMessageActionHandlers = ({
 > &
   Pick<ChannelContextValue, 'channel' | 'enforceUniqueReaction'> &
   Pick<ChatContextValue, 'client'> &
-  Pick<MessageContextValue, 'message'>) => {
+  Pick<MessageContextValue, 'message' | 'setQuotedMessage'>) => {
   const { t } = useTranslationContext();
   const handleResendMessage = () => retrySendMessage(message);
-  const messageComposer = useMessageComposer();
 
   const handleQuotedReplyMessage = () => {
-    messageComposer.setQuotedMessage(message);
+    setQuotedMessage(message);
   };
 
   const isMuted = (client.mutedUsers || []).some(
