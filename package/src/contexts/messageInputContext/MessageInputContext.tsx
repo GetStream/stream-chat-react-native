@@ -70,6 +70,7 @@ import {
 } from '../attachmentPickerContext/AttachmentPickerContext';
 import { useChannelContext } from '../channelContext/ChannelContext';
 import { useChatContext } from '../chatContext/ChatContext';
+import { useMessageComposerAPIContext } from '../messageComposerContext/MessageComposerAPIContext';
 import { useThreadContext } from '../threadContext/ThreadContext';
 import { useTranslationContext } from '../translationContext/TranslationContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
@@ -242,8 +243,6 @@ export type InputMessageInputContextValue = {
   ImageAttachmentUploadPreview: React.ComponentType<ImageAttachmentUploadPreviewProps>;
   FileAttachmentUploadPreview: React.ComponentType<FileAttachmentUploadPreviewProps>;
   VideoAttachmentUploadPreview: React.ComponentType<FileAttachmentUploadPreviewProps>;
-
-  clearEditingState: () => void;
   /**
    * Custom UI component for commands button.
    *
@@ -366,11 +365,6 @@ export type InputMessageInputContextValue = {
   doFileUploadRequest?: UploadRequestFn;
 
   /**
-   * Variable that tracks the editing state.
-   * It is defined with message type if the editing state is true, else its undefined.
-   */
-  editing?: LocalMessage;
-  /**
    * Handler for when the attach button is pressed.
    */
   handleAttachButtonPress?: () => void;
@@ -434,6 +428,7 @@ export const MessageInputProvider = ({
   const { client, enableOfflineSupport } = useChatContext();
 
   const { isCommandUIEnabled, uploadAbortControllerRef } = useChannelContext();
+  const { clearEditingState } = useMessageComposerAPIContext();
   const { thread } = useThreadContext();
   const { t } = useTranslationContext();
   const inputBoxRef = useRef<TextInput | null>(null);
@@ -607,7 +602,7 @@ export const MessageInputProvider = ({
 
     if (editedMessage && editedMessage.type !== 'error') {
       try {
-        value.clearEditingState();
+        clearEditingState();
         await value.editMessage({ localMessage, options: sendOptions });
       } catch (error) {
         console.log('Failed to edit message:', error);

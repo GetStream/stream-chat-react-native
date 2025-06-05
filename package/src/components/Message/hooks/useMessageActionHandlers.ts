@@ -2,6 +2,7 @@ import { Alert } from 'react-native';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
+import { MessageComposerAPIContextValue } from '../../../contexts/messageComposerContext/MessageComposerAPIContext';
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 
@@ -20,16 +21,12 @@ export const useMessageActionHandlers = ({
   setQuotedMessage,
 }: Pick<
   MessagesContextValue,
-  | 'sendReaction'
-  | 'deleteMessage'
-  | 'deleteReaction'
-  | 'retrySendMessage'
-  | 'setEditingState'
-  | 'supportedReactions'
+  'sendReaction' | 'deleteMessage' | 'deleteReaction' | 'retrySendMessage' | 'supportedReactions'
 > &
   Pick<ChannelContextValue, 'channel' | 'enforceUniqueReaction'> &
   Pick<ChatContextValue, 'client'> &
-  Pick<MessageContextValue, 'message' | 'setQuotedMessage'>) => {
+  Pick<MessageContextValue, 'message' | 'setQuotedMessage'> &
+  Pick<MessageComposerAPIContextValue, 'setEditingState'>) => {
   const { t } = useTranslationContext();
   const handleResendMessage = () => retrySendMessage(message);
 

@@ -1,18 +1,18 @@
 import React, { useCallback } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
-  MessageInputContextValue,
-  useMessageInputContext,
-} from '../../../contexts/messageInputContext/MessageInputContext';
+  MessageComposerAPIContextValue,
+  useMessageComposerAPIContext,
+} from '../../../contexts/messageComposerContext/MessageComposerAPIContext';
+import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
 import { CircleClose, Edit } from '../../../icons';
 
 export type InputEditingStateHeaderProps = Partial<
-  Pick<MessageInputContextValue, 'clearEditingState'>
+  Pick<MessageComposerAPIContextValue, 'clearEditingState'>
 >;
 
 export const InputEditingStateHeader = ({
@@ -20,7 +20,7 @@ export const InputEditingStateHeader = ({
 }: InputEditingStateHeaderProps) => {
   const messageComposer = useMessageComposer();
   const { t } = useTranslationContext();
-  const { clearEditingState: contextClearEditingState } = useMessageInputContext();
+  const { clearEditingState: contextClearEditingState } = useMessageComposerAPIContext();
 
   const clearEditingState = propClearEditingState || contextClearEditingState;
 

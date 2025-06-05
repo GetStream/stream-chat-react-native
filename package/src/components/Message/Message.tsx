@@ -9,7 +9,6 @@ import { useMessageActions } from './hooks/useMessageActions';
 import { useProcessReactions } from './hooks/useProcessReactions';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
 
-import { useMessageComposer } from '../../contexts';
 import {
   ChannelContextValue,
   useChannelContext,
@@ -19,6 +18,10 @@ import {
   KeyboardContextValue,
   useKeyboardContext,
 } from '../../contexts/keyboardContext/KeyboardContext';
+import {
+  MessageComposerAPIContextValue,
+  useMessageComposerAPIContext,
+} from '../../contexts/messageComposerContext/MessageComposerAPIContext';
 import { MessageContextValue, MessageProvider } from '../../contexts/messageContext/MessageContext';
 import {
   MessagesContextValue,
@@ -32,7 +35,6 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import { useStableCallback } from '../../hooks';
 import { isVideoPlayerAvailable, NativeHandlers } from '../../native';
 import { FileTypes } from '../../types/types';
 import {
@@ -143,10 +145,7 @@ export type MessagePropsWithContext = Pick<
       'groupStyles' | 'handleReaction' | 'message' | 'isMessageAIGenerated' | 'readBy'
     >
   > &
-  Pick<
-    MessageContextValue,
-    'groupStyles' | 'message' | 'isMessageAIGenerated' | 'readBy' | 'setQuotedMessage'
-  > &
+  Pick<MessageContextValue, 'groupStyles' | 'message' | 'isMessageAIGenerated' | 'readBy'> &
   Pick<
     MessagesContextValue,
     | 'sendReaction'
@@ -178,7 +177,6 @@ export type MessagePropsWithContext = Pick<
     | 'deleteReaction'
     | 'retrySendMessage'
     | 'selectReaction'
-    | 'setEditingState'
     | 'supportedReactions'
     | 'updateMessage'
     | 'PollContent'
@@ -201,7 +199,7 @@ export type MessagePropsWithContext = Pick<
     onThreadSelect?: (message: LocalMessage) => void;
     showUnreadUnderlay?: boolean;
     style?: StyleProp<ViewStyle>;
-  };
+  } & Pick<MessageComposerAPIContextValue, 'setQuotedMessage' | 'setEditingState'>;
 
 /**
  * Since this component doesn't consume `messages` from `MessagesContext`,
@@ -944,10 +942,7 @@ export const Message = (props: MessageProps) => {
   const { openThread } = useThreadContext();
   const { t } = useTranslationContext();
   const readBy = useMemo(() => getReadState(message, read), [message, read]);
-  const messageComposer = useMessageComposer();
-  const setQuotedMessage = useStableCallback((message: LocalMessage | null) =>
-    messageComposer.setQuotedMessage(message),
-  );
+  const { setQuotedMessage, setEditingState } = useMessageComposerAPIContext();
 
   return (
     <MemoizedMessage
@@ -961,6 +956,7 @@ export const Message = (props: MessageProps) => {
         messagesContext,
         openThread,
         readBy,
+        setEditingState,
         setQuotedMessage,
         t,
       }}

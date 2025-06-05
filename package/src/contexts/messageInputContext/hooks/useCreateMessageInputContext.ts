@@ -27,7 +27,6 @@ export const useCreateMessageInputContext = ({
   AutoCompleteSuggestionItem,
   AutoCompleteSuggestionList,
   CameraSelectorIcon,
-  clearEditingState,
   closeAttachmentPicker,
   closePollCreationDialog,
   CommandInput,
@@ -37,7 +36,6 @@ export const useCreateMessageInputContext = ({
   CooldownTimer,
   CreatePollContent,
   CreatePollIcon,
-  editing,
   editMessage,
   FileAttachmentUploadPreview,
   FileSelectorIcon,
@@ -82,7 +80,6 @@ export const useCreateMessageInputContext = ({
   VideoAttachmentUploadPreview,
   VideoRecorderSelectorIcon,
 }: MessageInputContextValue & Pick<ThreadContextValue, 'thread'>) => {
-  const editingdep = editing?.id;
   const threadId = thread?.id;
 
   const messageInputContext: MessageInputContextValue = useMemo(
@@ -110,7 +107,6 @@ export const useCreateMessageInputContext = ({
       AutoCompleteSuggestionItem,
       AutoCompleteSuggestionList,
       CameraSelectorIcon,
-      clearEditingState,
       closeAttachmentPicker,
       closePollCreationDialog,
       CommandInput,
@@ -120,7 +116,6 @@ export const useCreateMessageInputContext = ({
       CooldownTimer,
       CreatePollContent,
       CreatePollIcon,
-      editing,
       editMessage,
       FileAttachmentUploadPreview,
       FileSelectorIcon,
@@ -167,7 +162,6 @@ export const useCreateMessageInputContext = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       cooldownEndsAt,
-      editingdep,
       isCommandUIEnabled,
       sendThreadMessageInChannel,
       threadId,

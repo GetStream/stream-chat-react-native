@@ -3,19 +3,26 @@ import { useEffect, useMemo } from 'react';
 import { FixedSizeQueueCache, MessageComposer } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
-import { useMessageComposerContext } from '../../messageComposerContext/MessageComposerContext';
+import {
+  MessageComposerContextValue,
+  useMessageComposerContext,
+} from '../../messageComposerContext/MessageComposerContext';
 
 const queueCache = new FixedSizeQueueCache<string, MessageComposer>(64);
 
 export const useMessageComposer = () => {
-  const { client } = useChatContext();
-  const {
-    channel,
-    editing: editedMessage,
-    thread: parentMessage,
-    threadInstance,
-  } = useMessageComposerContext();
+  const messageComposerContext = useMessageComposerContext();
 
+  return useCreateMessageComposer(messageComposerContext);
+};
+
+export const useCreateMessageComposer = ({
+  editing: editedMessage,
+  thread: parentMessage,
+  threadInstance,
+  channel,
+}: Pick<MessageComposerContextValue, 'channel' | 'threadInstance' | 'thread' | 'editing'>) => {
+  const { client } = useChatContext();
   // legacy thread will receive new composer
 
   const cachedEditedMessage = useMemo(() => {

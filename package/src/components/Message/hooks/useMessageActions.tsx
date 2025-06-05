@@ -6,6 +6,7 @@ import { useMessageActionHandlers } from './useMessageActionHandlers';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
+import { MessageComposerAPIContextValue } from '../../../contexts/messageComposerContext/MessageComposerAPIContext';
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
@@ -50,7 +51,6 @@ export type MessageActionsHookProps = Pick<
   | 'removeMessage'
   | 'deleteReaction'
   | 'retrySendMessage'
-  | 'setEditingState'
   | 'selectReaction'
   | 'supportedReactions'
   | 'updateMessage'
@@ -61,7 +61,7 @@ export type MessageActionsHookProps = Pick<
   Pick<MessageContextValue, 'dismissOverlay' | 'message' | 'setQuotedMessage'> &
   Pick<TranslationContextValue, 't'> & {
     onThreadSelect?: (message: LocalMessage) => void;
-  };
+  } & Pick<MessageComposerAPIContextValue, 'setEditingState'>;
 
 export const useMessageActions = ({
   channel,
