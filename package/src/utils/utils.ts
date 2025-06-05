@@ -304,21 +304,23 @@ export const checkMessageEquality = (
   prevMessage?: LocalMessage,
   nextMessage?: LocalMessage,
 ): boolean => {
-  if (!prevMessage || !nextMessage) {
+  const prevMessageExists = !!prevMessage;
+  const nextMessageExists = !!nextMessage;
+  if (!prevMessageExists && !nextMessageExists) {
+    return true;
+  }
+  if (prevMessageExists !== nextMessageExists) {
     return false;
   }
-  const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
-  const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
   const messageEqual =
-    isPrevMessageTypeDeleted === isNextMessageTypeDeleted &&
-    prevMessage.status === nextMessage.status &&
-    prevMessage.type === nextMessage.type &&
-    prevMessage.text === nextMessage.text &&
-    prevMessage.pinned === nextMessage.pinned &&
-    prevMessage.i18n === nextMessage.i18n &&
-    prevMessage.reply_count === nextMessage.reply_count &&
-    `${prevMessage?.updated_at}` === `${nextMessage?.updated_at}` &&
-    `${prevMessage?.deleted_at}` === `${nextMessage?.deleted_at}`;
+    prevMessage?.status === nextMessage?.status &&
+    prevMessage?.type === nextMessage?.type &&
+    prevMessage?.text === nextMessage?.text &&
+    prevMessage?.pinned === nextMessage?.pinned &&
+    prevMessage?.i18n === nextMessage?.i18n &&
+    prevMessage?.reply_count === nextMessage?.reply_count &&
+    prevMessage?.updated_at?.getTime?.() === nextMessage?.updated_at?.getTime?.() &&
+    prevMessage?.deleted_at?.getTime?.() === nextMessage?.deleted_at?.getTime?.();
 
   return messageEqual;
 };
@@ -342,14 +344,11 @@ export const checkQuotedMessageEquality = (
   if (prevQuotedMessageExists !== nextQuotedMessageExists) {
     return false;
   }
-  const isPrevQuotedMessageTypeDeleted = prevQuotedMessage?.type === 'deleted';
-  const isNextQuotedMessageTypeDeleted = nextQuotedMessage?.type === 'deleted';
   const quotedMessageEqual =
-    isPrevQuotedMessageTypeDeleted === isNextQuotedMessageTypeDeleted &&
     prevQuotedMessage?.type === nextQuotedMessage?.type &&
     prevQuotedMessage?.text === nextQuotedMessage?.text &&
-    `${prevQuotedMessage?.updated_at}` === `${nextQuotedMessage?.updated_at}` &&
-    `${prevQuotedMessage?.deleted_at}` === `${nextQuotedMessage?.deleted_at}`;
+    prevQuotedMessage?.updated_at?.getTime?.() === nextQuotedMessage?.updated_at?.getTime?.() &&
+    prevQuotedMessage?.deleted_at?.getTime?.() === nextQuotedMessage?.deleted_at?.getTime?.();
 
   return quotedMessageEqual;
 };

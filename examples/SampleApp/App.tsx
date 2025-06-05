@@ -3,7 +3,7 @@ import { DevSettings, LogBox, Platform, useColorScheme } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {
   Chat,
   OverlayProvider,
