@@ -144,7 +144,6 @@ type MessageInputPropsWithContext = Partial<
     | 'CooldownTimer'
     | 'closeAttachmentPicker'
     | 'compressImageQuality'
-    | 'doFileUploadRequest'
     | 'FileUploadPreview'
     | 'ImageUploadPreview'
     | 'Input'
@@ -158,7 +157,6 @@ type MessageInputPropsWithContext = Partial<
     | 'VideoRecorderSelectorIcon'
     | 'CommandInput'
     | 'InputReplyStateHeader'
-    | 'maxNumberOfFiles'
     | 'SendButton'
     | 'ShowThreadMessageInChannelButton'
     | 'StartAudioRecordingButton'
@@ -210,7 +208,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     cooldownEndsAt,
     CooldownTimer,
     CreatePollContent,
-    doFileUploadRequest,
     editing,
     FileUploadPreview,
     ImageUploadPreview,
@@ -221,7 +218,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     CommandInput,
     InputReplyStateHeader,
     isOnline,
-    maxNumberOfFiles,
     members,
     Reply,
     SendButton,
@@ -235,7 +231,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   } = props;
 
   const messageComposer = useMessageComposer();
-  const { attachmentManager, textComposer } = messageComposer;
+  const { textComposer } = messageComposer;
   const { command, mentionedUsers, hasText } = useStateStore(
     textComposer.state,
     textComposerStateSelector,
@@ -271,15 +267,13 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 
   const { seconds: cooldownRemainingSeconds } = useCountdown(cooldownEndsAt);
 
-  useEffect(() => {
-    attachmentManager.maxNumberOfFilesPerMessage = maxNumberOfFiles;
-    if (doFileUploadRequest) {
-      attachmentManager.setCustomUploadFn(doFileUploadRequest);
-    }
-
-    return closeAttachmentPicker;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Close the attachment picker state when the component unmounts
+  useEffect(
+    () => () => {
+      closeAttachmentPicker();
+    },
+    [closeAttachmentPicker],
+  );
 
   const editingExists = !!editing;
 
@@ -799,7 +793,6 @@ export const MessageInput = (props: MessageInputProps) => {
     CooldownTimer,
     CreatePollContent,
     CreatePollIcon,
-    doFileUploadRequest,
     FileSelectorIcon,
     FileUploadPreview,
     ImageSelectorIcon,
@@ -810,7 +803,6 @@ export const MessageInput = (props: MessageInputProps) => {
     InputEditingStateHeader,
     CommandInput,
     InputReplyStateHeader,
-    maxNumberOfFiles,
     openPollCreationDialog,
     SendButton,
     sendMessage,
@@ -872,7 +864,6 @@ export const MessageInput = (props: MessageInputProps) => {
         CooldownTimer,
         CreatePollContent,
         CreatePollIcon,
-        doFileUploadRequest,
         editing,
         FileSelectorIcon,
         FileUploadPreview,
@@ -884,7 +875,6 @@ export const MessageInput = (props: MessageInputProps) => {
         InputEditingStateHeader,
         InputReplyStateHeader,
         isOnline,
-        maxNumberOfFiles,
         members,
         openPollCreationDialog,
         Reply,

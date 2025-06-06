@@ -11,8 +11,8 @@ import { Alert, Keyboard, Linking, TextInput, TextInputProps } from 'react-nativ
 
 import { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import {
-  createApplyCommandSettingsMiddleware,
   createCommandInjectionMiddleware,
+  createCommandStringExtractionMiddleware,
   createDraftCommandInjectionMiddleware,
   LocalMessage,
   Message,
@@ -292,8 +292,6 @@ export type InputMessageInputContextValue = {
   isCommandUIEnabled?: boolean;
   CommandInput: React.ComponentType<CommandInputProps>;
   InputReplyStateHeader: React.ComponentType;
-  /** Limit on allowed number of files to attach at a time. */
-  maxNumberOfFiles: number;
   /**
    * Custom UI component for more options button.
    *
@@ -452,33 +450,44 @@ export const MessageInputProvider = ({
     setSendThreadMessageInChannel(false);
   }, [threadId]);
 
+  /**
+   * These are the RN SDK specific middlewares that are added to the message composer to provide the default behaviour.
+   * TODO: Discuss and decide if we provide them by default in the SDK or leave it to the user to add them if they want the feature.
+   */
   useEffect(() => {
-    if (!client) {
-      return;
+    if (value.doFileUploadRequest) {
+      attachmentManager.setCustomUploadFn(value.doFileUploadRequest);
     }
 
-    client.setMessageComposerSetupFunction(({ composer }) => {
-      isCommandUIEnabled &&
-        composer.compositionMiddlewareExecutor.insert({
-          middleware: [createCommandInjectionMiddleware(composer)],
-          position: { after: 'stream-io/message-composer-middleware/attachments' },
-        });
-      enableOfflineSupport &&
-        composer.compositionMiddlewareExecutor.replace([
-          createAttachmentsCompositionMiddleware(composer),
-        ]);
-      isCommandUIEnabled &&
-        composer.draftCompositionMiddlewareExecutor.insert({
-          middleware: [createDraftCommandInjectionMiddleware(composer)],
-          position: { after: 'stream-io/message-composer-middleware/draft-attachments' },
-        });
-      isCommandUIEnabled &&
-        composer.textComposer.middlewareExecutor.insert({
-          middleware: [createApplyCommandSettingsMiddleware() as TextComposerMiddleware],
-          position: { after: 'stream-io/text-composer/commands-middleware' },
-        });
-    });
-  }, [client, isCommandUIEnabled, enableOfflineSupport]);
+    if (isCommandUIEnabled) {
+      messageComposer.compositionMiddlewareExecutor.insert({
+        middleware: [createCommandInjectionMiddleware(messageComposer)],
+        position: { after: 'stream-io/message-composer-middleware/attachments' },
+      });
+
+      messageComposer.draftCompositionMiddlewareExecutor.insert({
+        middleware: [createDraftCommandInjectionMiddleware(messageComposer)],
+        position: { after: 'stream-io/message-composer-middleware/draft-attachments' },
+      });
+
+      messageComposer.textComposer.middlewareExecutor.insert({
+        middleware: [createCommandStringExtractionMiddleware() as TextComposerMiddleware],
+        position: { after: 'stream-io/text-composer/commands-middleware' },
+      });
+    }
+
+    if (enableOfflineSupport) {
+      messageComposer.compositionMiddlewareExecutor.replace([
+        createAttachmentsCompositionMiddleware(messageComposer),
+      ]);
+    }
+  }, [
+    value.doFileUploadRequest,
+    isCommandUIEnabled,
+    enableOfflineSupport,
+    messageComposer,
+    attachmentManager,
+  ]);
 
   /**
    * Function for capturing a photo and uploading it

@@ -189,9 +189,41 @@ type AppContextType = {
 
 const AppContext = React.createContext({} as AppContextType);
 
+const StackNavigator = () => {
+  const { channel } = useContext(AppContext);
+
+  return (
+    <Stack.Navigator
+      initialRouteName='ChannelList'
+      screenOptions={{
+        headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
+      }}
+    >
+      <Stack.Screen
+        component={ChannelScreen}
+        name='Channel'
+        options={() => ({
+          headerBackTitle: 'Back',
+          headerRight: EmptyHeader,
+          headerTitle: channel?.data?.name,
+        })}
+      />
+      <Stack.Screen
+        component={ChannelListScreen}
+        name='ChannelList'
+        options={{ headerTitle: 'Channel List' }}
+      />
+      <Stack.Screen
+        component={ThreadScreen}
+        name='Thread'
+        options={() => ({ headerLeft: EmptyHeader })}
+      />
+    </Stack.Navigator>
+  );
+};
+
 const App = () => {
   const theme = useStreamChatTheme();
-  const { channel } = useContext(AppContext);
 
   const chatClient = useCreateChatClient({
     apiKey,
@@ -206,32 +238,7 @@ const App = () => {
   return (
     <OverlayProvider i18nInstance={streami18n} value={{ style: theme }}>
       <Chat client={chatClient} i18nInstance={streami18n} enableOfflineSupport>
-        <Stack.Navigator
-          initialRouteName='ChannelList'
-          screenOptions={{
-            headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
-          }}
-        >
-          <Stack.Screen
-            component={ChannelScreen}
-            name='Channel'
-            options={() => ({
-              headerBackTitle: 'Back',
-              headerRight: EmptyHeader,
-              headerTitle: channel?.data?.name,
-            })}
-          />
-          <Stack.Screen
-            component={ChannelListScreen}
-            name='ChannelList'
-            options={{ headerTitle: 'Channel List' }}
-          />
-          <Stack.Screen
-            component={ThreadScreen}
-            name='Thread'
-            options={() => ({ headerLeft: EmptyHeader })}
-          />
-        </Stack.Navigator>
+        <StackNavigator />
       </Chat>
     </OverlayProvider>
   );
