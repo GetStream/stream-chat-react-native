@@ -721,7 +721,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     },
   } = useTheme();
   const [deleted, setDeleted] = useState<boolean>(false);
-  const [editing, setEditing] = useState<LocalMessage | undefined>(undefined);
   const [error, setError] = useState<Error | boolean>(false);
   const [lastRead, setLastRead] = useState<Date | undefined>();
   const [thread, setThread] = useState<LocalMessage | null>(threadProps || null);
@@ -1456,14 +1455,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         : client.updateMessage(localMessage, undefined, options),
   );
 
-  const setEditingState: MessagesContextValue['setEditingState'] = useStableCallback((message) => {
-    setEditing(message);
-  });
-
-  const clearEditingState: InputMessageInputContextValue['clearEditingState'] = useStableCallback(
-    () => setEditing(undefined),
-  );
-
   /**
    * Removes the message from local state
    */
@@ -1766,7 +1757,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AutoCompleteSuggestionList,
     CameraSelectorIcon,
     channelId,
-    clearEditingState,
     CommandInput,
     CommandsButton,
     compressImageQuality,
@@ -1774,7 +1764,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     CreatePollContent,
     CreatePollIcon,
     doFileUploadRequest,
-    editing,
     editMessage,
     FileAttachmentUploadPreview,
     FileSelectorIcon,
@@ -1915,7 +1904,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     ScrollToBottomButton,
     selectReaction,
     sendReaction,
-    setEditingState,
     shouldShowUnreadUnderlay,
     StreamingMessageView,
     supportedReactions,
@@ -1947,8 +1935,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   });
 
   const messageComposerContext = useMemo(
-    () => ({ channel, editing, thread, threadInstance }),
-    [channel, editing, thread, threadInstance],
+    () => ({ channel, thread, threadInstance }),
+    [channel, thread, threadInstance],
   );
 
   // TODO: replace the null view with appropriate message. Currently this is waiting a design decision.

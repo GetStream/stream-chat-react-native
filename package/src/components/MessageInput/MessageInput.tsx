@@ -36,9 +36,9 @@ import {
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
 import {
-  MessageComposerContextValue,
-  useMessageComposerContext,
-} from '../../contexts/messageComposerContext/MessageComposerContext';
+  MessageComposerAPIContextValue,
+  useMessageComposerAPIContext,
+} from '../../contexts/messageComposerContext/MessageComposerAPIContext';
 import { useAttachmentManagerState } from '../../contexts/messageInputContext/hooks/useAttachmentManagerState';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useMessageComposerHasSendableData } from '../../contexts/messageInputContext/hooks/useMessageComposerHasSendableData';
@@ -142,7 +142,6 @@ type MessageInputPropsWithContext = Partial<
     | 'AutoCompleteSuggestionList'
     | 'cooldownEndsAt'
     | 'CooldownTimer'
-    | 'clearEditingState'
     | 'closeAttachmentPicker'
     | 'compressImageQuality'
     | 'doFileUploadRequest'
@@ -173,7 +172,7 @@ type MessageInputPropsWithContext = Partial<
   > &
   Pick<MessagesContextValue, 'Reply'> &
   Pick<TranslationContextValue, 't'> &
-  Pick<MessageComposerContextValue, 'editing'>;
+  Pick<MessageComposerAPIContextValue, 'clearEditingState'> & { editing: boolean };
 
 const textComposerStateSelector = (state: TextComposerState) => ({
   command: state.command,
@@ -773,7 +772,6 @@ export const MessageInput = (props: MessageInputProps) => {
   const ownCapabilities = useOwnCapabilitiesContext();
 
   const { channel, members, threadList, watchers } = useChannelContext();
-  const { editing } = useMessageComposerContext();
 
   const {
     additionalTextInputProps,
@@ -794,7 +792,6 @@ export const MessageInput = (props: MessageInputProps) => {
     AudioRecordingWaveform,
     AutoCompleteSuggestionList,
     CameraSelectorIcon,
-    clearEditingState,
     closeAttachmentPicker,
     closePollCreationDialog,
     compressImageQuality,
@@ -826,6 +823,9 @@ export const MessageInput = (props: MessageInputProps) => {
     VideoRecorderSelectorIcon,
   } = useMessageInputContext();
   const { bottomInset, bottomSheetRef, selectedPicker } = useAttachmentPickerContext();
+  const messageComposer = useMessageComposer();
+  const editing = !!messageComposer.editedMessage;
+  const { clearEditingState } = useMessageComposerAPIContext();
 
   const { Reply } = useMessagesContext();
 
