@@ -5,13 +5,19 @@ import { Pressable } from 'react-native';
 import { NativeAttachmentPicker } from './components/NativeAttachmentPicker';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
-import { useMessageInputContext } from '../../contexts/messageInputContext/MessageInputContext';
+import {
+  MessageInputContextValue,
+  useMessageInputContext,
+} from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Attach } from '../../icons/Attach';
 
 import { isImageMediaLibraryAvailable } from '../../native';
 
-type AttachButtonPropsWithContext = {
+type AttachButtonPropsWithContext = Pick<
+  MessageInputContextValue,
+  'handleAttachButtonPress' | 'toggleAttachmentPicker'
+> & {
   disabled?: boolean;
   /** Function that opens attachment options bottom sheet */
   handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
@@ -21,14 +27,19 @@ type AttachButtonPropsWithContext = {
 const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
   const [showAttachButtonPicker, setShowAttachButtonPicker] = useState<boolean>(false);
   const [attachButtonLayoutRectangle, setAttachButtonLayoutRectangle] = useState<LayoutRectangle>();
-  const { disabled = false, handleOnPress, selectedPicker } = props;
+  const {
+    disabled = false,
+    handleAttachButtonPress,
+    handleOnPress,
+    selectedPicker,
+    toggleAttachmentPicker,
+  } = props;
   const {
     theme: {
       colors: { accent_blue, grey },
       messageInput: { attachButton },
     },
   } = useTheme();
-  const { handleAttachButtonPress, toggleAttachmentPicker } = useMessageInputContext();
 
   const onAttachButtonLayout = (event: LayoutChangeEvent) => {
     const layout = event.nativeEvent.layout;
@@ -122,8 +133,14 @@ export type AttachButtonProps = Partial<AttachButtonPropsWithContext>;
  */
 export const AttachButton = (props: AttachButtonProps) => {
   const { selectedPicker } = useAttachmentPickerContext();
+  const { handleAttachButtonPress, toggleAttachmentPicker } = useMessageInputContext();
 
-  return <MemoizedAttachButton {...{ selectedPicker }} {...props} />;
+  return (
+    <MemoizedAttachButton
+      {...{ handleAttachButtonPress, selectedPicker, toggleAttachmentPicker }}
+      {...props}
+    />
+  );
 };
 
 AttachButton.displayName = 'AttachButton{messageInput}';
