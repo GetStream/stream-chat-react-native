@@ -195,7 +195,7 @@ type AppContextType = {
 
 const AppContext = React.createContext({} as AppContextType);
 
-const NavigatorModule = () => {
+const StackNavigator = () => {
   const { channel } = useContext(AppContext);
 
   return (
@@ -260,7 +260,7 @@ const App = () => {
   return (
     <OverlayProvider i18nInstance={streami18n} value={{ style: theme }}>
       <Chat client={chatClient} i18nInstance={streami18n} enableOfflineSupport>
-        <NavigatorModule />
+        <StackNavigator />
       </Chat>
     </OverlayProvider>
   );
