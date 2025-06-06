@@ -302,6 +302,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     const threadId = messageComposer.threadId;
     if (!threadId || !messageComposer.channel || !messageComposer.compositionIsEmpty) return;
 
+    // This is for the offline db support for getting drafts for legacy thread composer.
     if (client.offlineDb && client.userID) {
       client.offlineDb
         .getDraft({
