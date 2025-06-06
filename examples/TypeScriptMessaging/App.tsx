@@ -24,7 +24,6 @@ import {
   Streami18n,
   Thread,
   ThreadContextValue,
-  useChatContext,
   useCreateChatClient,
   useOverlayContext,
 } from 'stream-chat-react-native';
@@ -147,17 +146,6 @@ const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation }) => {
   const { channel, setThread, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
   const { overlay } = useOverlayContext();
-  const { client } = useChatContext();
-
-  useEffect(() => {
-    client.setMessageComposerSetupFunction(({ composer }) => {
-      composer.updateConfig({
-        drafts: {
-          enabled: true,
-        },
-      });
-    });
-  }, [client]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -209,17 +197,6 @@ const AppContext = React.createContext({} as AppContextType);
 
 const NavigatorModule = () => {
   const { channel } = useContext(AppContext);
-  const { client } = useChatContext();
-
-  useEffect(() => {
-    client.setMessageComposerSetupFunction(({ composer }) => {
-      composer.updateConfig({
-        drafts: {
-          enabled: true,
-        },
-      });
-    });
-  }, [client]);
 
   return (
     <Stack.Navigator
@@ -262,6 +239,19 @@ const App = () => {
     userData: user,
     tokenOrProvider: userToken,
   });
+
+  useEffect(() => {
+    if (!chatClient) {
+      return;
+    }
+    chatClient.setMessageComposerSetupFunction(({ composer }) => {
+      composer.updateConfig({
+        drafts: {
+          enabled: true,
+        },
+      });
+    });
+  }, [chatClient]);
 
   if (!chatClient) {
     return <AuthProgressLoader />;
