@@ -25,8 +25,8 @@ export const useMessageActionHandlers = ({
 > &
   Pick<ChannelContextValue, 'channel' | 'enforceUniqueReaction'> &
   Pick<ChatContextValue, 'client'> &
-  Pick<MessageContextValue, 'message' | 'setQuotedMessage'> &
-  Pick<MessageComposerAPIContextValue, 'setEditingState'>) => {
+  Pick<MessageContextValue, 'message'> &
+  Pick<MessageComposerAPIContextValue, 'setEditingState' | 'setQuotedMessage'>) => {
   const { t } = useTranslationContext();
   const handleResendMessage = () => retrySendMessage(message);
 

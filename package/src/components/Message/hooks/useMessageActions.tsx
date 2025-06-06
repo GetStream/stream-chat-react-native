@@ -58,10 +58,10 @@ export type MessageActionsHookProps = Pick<
   Pick<ChannelContextValue, 'channel' | 'enforceUniqueReaction'> &
   Pick<ChatContextValue, 'client'> &
   Pick<ThreadContextValue, 'openThread'> &
-  Pick<MessageContextValue, 'dismissOverlay' | 'message' | 'setQuotedMessage'> &
+  Pick<MessageContextValue, 'dismissOverlay' | 'message'> &
   Pick<TranslationContextValue, 't'> & {
     onThreadSelect?: (message: LocalMessage) => void;
-  } & Pick<MessageComposerAPIContextValue, 'setEditingState'>;
+  } & Pick<MessageComposerAPIContextValue, 'setEditingState' | 'setQuotedMessage'>;
 
 export const useMessageActions = ({
   channel,

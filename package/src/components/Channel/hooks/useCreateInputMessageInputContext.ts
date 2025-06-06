@@ -70,8 +70,6 @@ export const useCreateInputMessageInputContext = ({
    */
   channelId?: string;
 }) => {
-  // const editingDep = editing ? editing.id : '';
-
   const inputMessageInputContext: InputMessageInputContextValue = useMemo(
     () => ({
       additionalTextInputProps,
