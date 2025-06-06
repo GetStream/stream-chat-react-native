@@ -3,12 +3,13 @@ import { DevSettings, LogBox, Platform, useColorScheme } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {
   Chat,
   OverlayProvider,
   SqliteClient,
   ThemeProvider,
+  useChatContext,
   useOverlayContext,
 } from 'stream-chat-react-native';
 import { getMessaging } from '@react-native-firebase/messaging';
@@ -171,14 +172,6 @@ const DrawerNavigatorWrapper: React.FC<{
 }> = ({ chatClient }) => {
   const streamChatTheme = useStreamChatTheme();
 
-  chatClient.setMessageComposerSetupFunction(({ composer }) => {
-    composer.updateConfig({
-      drafts: {
-        enabled: true,
-      },
-    });
-  });
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <OverlayProvider value={{ style: streamChatTheme }}>
@@ -218,6 +211,19 @@ const UserSelector = () => (
 // TODO: Split the stack into multiple stacks - ChannelStack, CreateChannelStack etc.
 const HomeScreen = () => {
   const { overlay } = useOverlayContext();
+
+  const { client: chatClient } = useChatContext();
+
+  useEffect(() => {
+    chatClient.setMessageComposerSetupFunction(({ composer }) => {
+      console.log('Setting up message composer:', composer.tag);
+      composer.updateConfig({
+        drafts: {
+          enabled: true,
+        },
+      });
+    });
+  }, [chatClient]);
 
   return (
     <Stack.Navigator
