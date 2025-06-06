@@ -26,7 +26,6 @@ export const useCreateInputMessageInputContext = ({
   AutoCompleteSuggestionItem,
   AutoCompleteSuggestionList,
   channelId,
-  clearEditingState,
   CameraSelectorIcon,
   CommandInput,
   CommandsButton,
@@ -35,7 +34,6 @@ export const useCreateInputMessageInputContext = ({
   CreatePollContent,
   CreatePollIcon,
   doFileUploadRequest,
-  editing,
   editMessage,
   FileAttachmentUploadPreview,
   FileSelectorIcon,
@@ -72,8 +70,6 @@ export const useCreateInputMessageInputContext = ({
    */
   channelId?: string;
 }) => {
-  const editingDep = editing ? editing.id : '';
-
   const inputMessageInputContext: InputMessageInputContextValue = useMemo(
     () => ({
       additionalTextInputProps,
@@ -99,7 +95,6 @@ export const useCreateInputMessageInputContext = ({
       AutoCompleteSuggestionItem,
       AutoCompleteSuggestionList,
       CameraSelectorIcon,
-      clearEditingState,
       CommandInput,
       CommandsButton,
       compressImageQuality,
@@ -107,7 +102,6 @@ export const useCreateInputMessageInputContext = ({
       CreatePollContent,
       CreatePollIcon,
       doFileUploadRequest,
-      editing,
       editMessage,
       FileAttachmentUploadPreview,
       FileSelectorIcon,
@@ -140,7 +134,7 @@ export const useCreateInputMessageInputContext = ({
       VideoRecorderSelectorIcon,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [compressImageQuality, channelId, editingDep, CreatePollContent, showPollCreationDialog],
+    [compressImageQuality, channelId, CreatePollContent, showPollCreationDialog],
   );
 
   return inputMessageInputContext;
